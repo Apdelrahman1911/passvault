@@ -30,8 +30,8 @@ legal identity, and store-account actions remain external by design.
 - [x] Windows stable upgrade identity is finalized; publisher identity is a
   validated external release input.
 - [x] macOS signing/notarization inputs are validated before release packaging.
-- [ ] Linux maintainer and license metadata are supplied from release metadata.
-- [ ] Local signing setup and certificate rotation are documented.
+- [x] Linux maintainer and Apache-2.0 license metadata are supplied from release metadata.
+- [x] Local signing setup and certificate rotation are documented.
 
 ## Store and legal material
 
@@ -41,7 +41,7 @@ legal identity, and store-account actions remain external by design.
 - [ ] Apache-2.0 project license and notice are included in packages.
 - [ ] Third-party acknowledgements cover direct production dependencies.
 - [ ] Security policy, backup guide, and recovery guide are publication-ready.
-- [ ] Publisher contact fields are fail-closed release inputs rather than
+- [x] Publisher contact fields are fail-closed release inputs rather than
   fictional or hardcoded data.
 
 ## Automation
@@ -49,9 +49,10 @@ legal identity, and store-account actions remain external by design.
 - [x] Signed Android release workflow builds and verifies APK/AAB artifacts.
 - [x] Signed Windows workflow signs and verifies the launcher, EXE, and MSI.
 - [x] macOS workflow imports a certificate, signs, notarizes, and validates DMG.
-- [ ] Linux packages are produced with release metadata.
-- [ ] Release artifacts and checksums are attached to a draft release.
-- [ ] Release workflow rejects missing identity, contact, or signing inputs.
+- [x] Linux packages are produced with release metadata.
+- [x] Release artifacts and verified checksums are published through one
+  tag-bound GitHub Release after all platform jobs succeed.
+- [x] Release workflow rejects missing identity, contact, or signing inputs.
 
 ## Future iOS integration
 

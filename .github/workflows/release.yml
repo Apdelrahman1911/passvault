@@ -11,6 +11,13 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   JAVA_VERSION: '17'
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
@@ -19,47 +26,63 @@ jobs:
   prepare:
     name: Prepare Release
     runs-on: ubuntu-latest
+    env:
+      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+      SECURITY_EMAIL: ${{ vars.SECURITY_EMAIL }}
+      PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+      PROJECT_URL: ${{ vars.PROJECT_URL }}
+      ANDROID_STORE_LISTING_URL: ${{ vars.ANDROID_STORE_LISTING_URL }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       version_code: ${{ steps.version.outputs.version_code }}
       tag: ${{ steps.version.outputs.tag }}
+      release_channel: ${{ steps.version.outputs.release_channel }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Test release automation scripts
+        run: ./scripts/test-release-automation.sh
 
       - name: Determine Version
         id: version
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
           else
             VERSION="${{ inputs.version }}"
           fi
 
-          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$'; then
-            echo "Invalid semantic version: $VERSION" >&2
-            exit 1
-          fi
+          ./scripts/validate-release-metadata.sh "$VERSION"
 
-          CORE_VERSION=${VERSION%%-*}
-          IFS=. read -r MAJOR MINOR PATCH <<EOF
-          $CORE_VERSION
-          EOF
-          VERSION_CODE=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
-          if [ "$VERSION_CODE" -le 0 ] || [ "$VERSION_CODE" -gt 2100000000 ]; then
-            echo "Calculated Android version code is out of range" >&2
-            exit 1
+          VERSION_CODE="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          RELEASE_CHANNEL="$(awk -F= '$1 == "RELEASE_CHANNEL" { print $2 }' version.properties)"
+          if [[ "$RELEASE_CHANNEL" == "RELEASE" ]]; then
+            PRERELEASE=false
+          else
+            PRERELEASE=true
           fi
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Releasing version: $VERSION"
+          echo "release_channel=$RELEASE_CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "Validated release version: $VERSION ($RELEASE_CHANNEL)"
 
-      - name: Verify version outputs
+      - name: Verify release tag belongs to main
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          test -n "${{ steps.version.outputs.version }}"
-          test -n "${{ steps.version.outputs.version_code }}"
+          git fetch origin main --no-tags
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "Release tag must point to a commit contained in main." >&2
+            exit 1
+          fi
 
   build-android:
     name: Build Android Release
@@ -123,14 +146,20 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-release
+          if-no-files-found: error
+          retention-days: 14
           path: |
             app-android/build/outputs/apk/standard/release/*.apk
             app-android/build/outputs/bundle/googleRelease/*.aab
 
   build-desktop-linux:
-    name: Build unsigned Desktop verification package (Linux)
+    name: Build Desktop packages (Linux)
     runs-on: ubuntu-latest
     needs: prepare
+    env:
+      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -142,7 +171,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-home-cache-cleanup: true
 
@@ -155,6 +184,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-linux
+          if-no-files-found: error
+          retention-days: 14
           path: |
             app-desktop/build/compose/binaries/main-release/deb/*.deb
             app-desktop/build/compose/binaries/main-release/rpm/*.rpm
@@ -311,6 +342,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-windows
+          if-no-files-found: error
+          retention-days: 14
           path: |
             app-desktop/build/compose/binaries/main-release/msi/*.msi
             app-desktop/build/compose/binaries/main-release/exe/*.exe
@@ -443,6 +476,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-macos
+          if-no-files-found: error
+          retention-days: 14
           path: |
             app-desktop/build/compose/binaries/main-release/dmg/*.dmg
 
@@ -450,46 +485,68 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: desktop-macos-notarization-log
+          if-no-files-found: error
+          retention-days: 30
           path: app-desktop/build/reports/macos-notarization.json
 
-  release-notes:
-    name: Generate Release Notes
+  publish-release:
+    name: Publish verified GitHub Release
     runs-on: ubuntu-latest
-    needs: [prepare]
+    needs:
+      - prepare
+      - build-android
+      - build-desktop-linux
+      - build-desktop-windows
+      - build-desktop-macos
     if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Generate Changelog
-        id: changelog
-        run: |
-          VERSION=${{ needs.prepare.outputs.version }}
-          echo "## What's New in PassVault $VERSION" > release_notes.md
-          echo "" >> release_notes.md
-          
-          # Get changes since last tag
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
-          if [ -n "$PREVIOUS_TAG" ]; then
-            echo "### Changes" >> release_notes.md
-            git log --pretty=format:"- %s" "$PREVIOUS_TAG"..HEAD >> release_notes.md
-          else
-            echo "### Initial Release" >> release_notes.md
-          fi
-          
-          echo "" >> release_notes.md
-          echo "### Downloads" >> release_notes.md
-          echo "- Android APK (Standard)" >> release_notes.md
-          echo "- Android App Bundle (Google Play)" >> release_notes.md
-          echo "" >> release_notes.md
-          echo "Desktop packages are unsigned CI verification artifacts and are not attached to the release." >> release_notes.md
-          
-          cat release_notes.md
+      - name: Download verified platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-artifacts
 
-      - name: Upload Release Notes
+      - name: Prepare and verify release assets
+        run: |
+          ./scripts/prepare-release-assets.sh \
+            downloaded-artifacts \
+            release-assets \
+            "${{ needs.prepare.outputs.version }}"
+
+      - name: Upload consolidated release bundle
         uses: actions/upload-artifact@v4
         with:
-          name: release-notes
-          path: release_notes.md
+          name: passvault-${{ needs.prepare.outputs.version }}-release-assets
+          if-no-files-found: error
+          retention-days: 30
+          path: release-assets/
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "A GitHub Release already exists for $RELEASE_TAG; refusing to overwrite it." >&2
+            exit 1
+          fi
+
+          release_flags=()
+          if [[ "$PRERELEASE" == "true" ]]; then
+            release_flags+=(--prerelease --latest=false)
+          fi
+
+          gh release create "$RELEASE_TAG" release-assets/* \
+            --verify-tag \
+            --generate-notes \
+            --title "PassVault $RELEASE_VERSION" \
+            --notes "Android, Windows, and macOS artifacts passed platform signature verification. Linux packages and every other asset are covered by SHA256SUMS.txt." \
+            "${release_flags[@]}"

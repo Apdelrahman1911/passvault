@@ -33,6 +33,7 @@ fun publisherValue(name: String, fallback: String): String =
 
 val publisherName = publisherValue("PUBLISHER_NAME", "PassVault")
 val copyrightHolder = publisherValue("COPYRIGHT_HOLDER", publisherName)
+val supportEmail = publisherValue("SUPPORT_EMAIL", "support@passvault.invalid")
 
 val versionMajor =
     versionProperties.getProperty("VERSION_MAJOR", "1")
@@ -236,9 +237,9 @@ compose.desktop {
                 packageName = "passvault"
                 // A verified publisher contact must be supplied before a
                 // public Debian release. Do not embed a fictional address.
-                debMaintainer = "PassVault publisher"
+                debMaintainer = supportEmail
                 appCategory = "Office"
-                rpmLicenseType = "LicenseRef-Unspecified"
+                rpmLicenseType = "Apache-2.0"
 
                 val linuxIconFile =
                     resourcesDirectory.asFile.resolve(
