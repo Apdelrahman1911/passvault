@@ -1,0 +1,55 @@
+# Project overrides for Detekt 2.
+#
+# `buildUponDefaultConfig` is enabled in build.gradle.kts, so the tool's
+# version-matched defaults remain authoritative. Keep this file deliberately
+# small: the previous copied Detekt 1 configuration contained renamed and
+# removed rules and prevented analysis from running at all.
+
+config:
+  validation: true
+  warningsAsErrors: true
+  checkExhaustiveness: false
+
+comments:
+  active: true
+  AbsentOrWrongFileLicense:
+    active: false
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+complexity:
+  active: true
+
+coroutines:
+  active: true
+
+empty-blocks:
+  active: true
+
+exceptions:
+  active: true
+
+naming:
+  active: true
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true
+
+style:
+  active: true
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludeCommentStatements: false
+    excludeImportStatements: true
+    excludePackageStatements: true
+    excludeRawStrings: true

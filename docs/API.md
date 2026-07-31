@@ -1,0 +1,43 @@
+# Internal contracts
+
+Last reviewed: 2026-07-28
+
+PassVault has no network or public HTTP API. This document identifies the stable internal boundaries; source code is
+authoritative for signatures.
+
+## Domain repositories
+
+- `VaultRepository`: vault existence, creation, password unlock/change, lock, state, and metadata.
+- `CredentialRepository`: credential observation/query, create/update/delete, favorites, folders/tags, and history.
+- `FolderRepository`: observe/create/update/delete folders with hierarchy, duplicate, and cycle validation.
+- `TagRepository`: observe/create/update/delete tags and maintain credential relationships.
+- `AppSettingsStore`: persisted theme, auto-lock, clipboard, screenshot, and generator preferences.
+
+Repositories return `Result` or flows of domain models. UI code never receives Room entities. An encrypted repository
+operation fails safely when the vault session is locked.
+
+## Security and platform boundaries
+
+- `CryptoEngine`: random bytes, Argon2id, XChaCha20-Poly1305, keyed subkey derivation, and constant-time comparison.
+- `VaultSessionManager`: a narrow active-key access boundary implemented by the vault repository.
+- `ClipboardService`: sensitive copy with ownership-aware expiration.
+- `ScreenshotProtection` / `WindowProtection`: platform display controls.
+- `KeyringService`: optional platform secret storage that must fail closed.
+- `BackupFileStore`: bounded platform document/file selection and read/write.
+
+Biometric authentication is intentionally absent. Any future implementation must authorize an OS-protected
+cryptographic key operation that gates vault-key unwrap; a Boolean prompt result is not a sufficient contract.
+
+## Presentation contracts
+
+Each feature exposes immutable state, a sealed event set, and one-shot effects. `shared/PassVaultApp.kt` translates
+effects to the single Navigation 3 back stack. Platform navigation controllers and database/crypto objects are not
+passed into feature Composables.
+
+## Compatibility rules
+
+- Crypto and backup envelopes are explicitly versioned; unknown versions fail closed.
+- New database schemas require exported-schema review and migrations from every supported released version.
+- Domain serialization used inside encrypted records must remain backward-readable before a format version changes.
+- Internal exception text, SQL, paths, ciphertext, and passwords must not cross into user-facing messages.
+
