@@ -160,9 +160,12 @@ jobs:
             app-desktop/build/compose/binaries/main-release/rpm/*.rpm
 
   build-desktop-windows:
-    name: Build unsigned Desktop verification package (Windows)
+    name: Build and sign Desktop packages (Windows)
     runs-on: windows-latest
     needs: prepare
+    env:
+      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -174,15 +177,14 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-home-cache-cleanup: true
 
-      - name: Build Windows Packages
+      - name: Build Windows distributable
         run: >
           ./gradlew :app-desktop:createReleaseDistributable
-          :app-desktop:packageReleaseMsi :app-desktop:packageReleaseExe
-          -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
+          "-Ppassvault.versionName=${{ needs.prepare.outputs.version }}"
         shell: pwsh
 
       - name: Smoke test packaged Windows runtime
@@ -190,6 +192,120 @@ jobs:
           ./scripts/smoke-test-desktop-release.ps1
           -TimeoutSeconds 30
         shell: pwsh
+
+      - name: Import Windows code-signing certificate
+        env:
+          WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_BASE64) -or
+              [string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_PASSWORD)) {
+              throw "WINDOWS_CERTIFICATE_BASE64 and WINDOWS_CERTIFICATE_PASSWORD are required."
+          }
+
+          $pfxPath = Join-Path $env:RUNNER_TEMP "passvault-code-signing.pfx"
+          $bytes = [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64)
+          [IO.File]::WriteAllBytes($pfxPath, $bytes)
+          [Array]::Clear($bytes, 0, $bytes.Length)
+
+          $password = ConvertTo-SecureString `
+              $env:WINDOWS_CERTIFICATE_PASSWORD -AsPlainText -Force
+          $certificates = Import-PfxCertificate `
+              -FilePath $pfxPath `
+              -CertStoreLocation Cert:\CurrentUser\My `
+              -Password $password
+          Remove-Item -LiteralPath $pfxPath -Force
+
+          $codeSigningOid = "1.3.6.1.5.5.7.3.3"
+          $certificate = $certificates | Where-Object {
+              $_.HasPrivateKey -and
+              $_.EnhancedKeyUsageList.ObjectId.Value -contains $codeSigningOid
+          } | Select-Object -First 1
+
+          if (-not $certificate) {
+              throw "The PFX does not contain a private code-signing certificate."
+          }
+
+          if ($certificate.NotAfter.ToUniversalTime() -le [DateTime]::UtcNow) {
+              throw "The Windows code-signing certificate has expired."
+          }
+
+          "WINDOWS_CERTIFICATE_THUMBPRINT=$($certificate.Thumbprint)" >> $env:GITHUB_ENV
+
+      - name: Sign Windows application launcher
+        env:
+          WINDOWS_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+        shell: pwsh
+        run: |
+          $timestampUrl = if ($env:WINDOWS_TIMESTAMP_URL) {
+              $env:WINDOWS_TIMESTAMP_URL
+          } else {
+              "http://timestamp.digicert.com"
+          }
+          $projectUrl = if ($env:PROJECT_URL) {
+              $env:PROJECT_URL
+          } else {
+              "https://github.com/Apdelrahman1911/passvault"
+          }
+          $launcher = Get-ChildItem `
+              app-desktop/build/compose/binaries/main-release/app `
+              -Recurse -Filter "PassVault.exe" | Select-Object -First 1
+          if (-not $launcher) {
+              throw "The packaged PassVault launcher was not found."
+          }
+          ./scripts/sign-windows-artifacts.ps1 `
+              -Path $launcher.FullName `
+              -CertificateThumbprint $env:WINDOWS_CERTIFICATE_THUMBPRINT `
+              -TimestampUrl $timestampUrl `
+              -ProductUrl $projectUrl
+
+      - name: Build Windows installers from signed launcher
+        shell: pwsh
+        run: >
+          ./gradlew :app-desktop:packageReleaseMsi
+          :app-desktop:packageReleaseExe
+          -x :app-desktop:createReleaseDistributable
+          "-Ppassvault.versionName=${{ needs.prepare.outputs.version }}"
+
+      - name: Sign and verify Windows installers
+        env:
+          WINDOWS_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+        shell: pwsh
+        run: |
+          $timestampUrl = if ($env:WINDOWS_TIMESTAMP_URL) {
+              $env:WINDOWS_TIMESTAMP_URL
+          } else {
+              "http://timestamp.digicert.com"
+          }
+          $projectUrl = if ($env:PROJECT_URL) {
+              $env:PROJECT_URL
+          } else {
+              "https://github.com/Apdelrahman1911/passvault"
+          }
+          $artifacts = Get-ChildItem `
+              app-desktop/build/compose/binaries/main-release `
+              -Recurse -File | Where-Object { $_.Extension -in ".exe", ".msi" }
+          $installers = $artifacts | Where-Object {
+              $_.FullName -match "[\\/](exe|msi)[\\/]"
+          }
+          ./scripts/sign-windows-artifacts.ps1 `
+              -Path $installers.FullName `
+              -CertificateThumbprint $env:WINDOWS_CERTIFICATE_THUMBPRINT `
+              -TimestampUrl $timestampUrl `
+              -ProductUrl $projectUrl
+
+      - name: Remove imported Windows certificate
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:WINDOWS_CERTIFICATE_THUMBPRINT) {
+              Remove-Item `
+                  -LiteralPath "Cert:\CurrentUser\My\$env:WINDOWS_CERTIFICATE_THUMBPRINT" `
+                  -Force -ErrorAction SilentlyContinue
+          }
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4

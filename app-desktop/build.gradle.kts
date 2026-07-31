@@ -18,6 +18,22 @@ val versionProperties = Properties().apply {
     }
 }
 
+val publisherProperties = Properties().apply {
+    val publisherFile = rootProject.file("release/publisher.properties")
+
+    if (publisherFile.exists()) {
+        publisherFile.inputStream().use(::load)
+    }
+}
+
+fun publisherValue(name: String, fallback: String): String =
+    System.getenv(name)?.takeUnless(String::isBlank)
+        ?: publisherProperties.getProperty(name)?.takeUnless(String::isBlank)
+        ?: fallback
+
+val publisherName = publisherValue("PUBLISHER_NAME", "PassVault")
+val copyrightHolder = publisherValue("COPYRIGHT_HOLDER", publisherName)
+
 val versionMajor =
     versionProperties.getProperty("VERSION_MAJOR", "1")
 
@@ -129,9 +145,9 @@ compose.desktop {
                 "A secure password manager with end-to-end encryption"
 
             copyright =
-                "© 2026 PassVault. All rights reserved."
+                "© 2026 $copyrightHolder. All rights reserved."
 
-            vendor = "PassVault"
+            vendor = publisherName
 
             val projectLicenseFile =
                 rootProject.file("LICENSE.txt")
@@ -227,7 +243,7 @@ compose.desktop {
                  * Keep this UUID constant between releases.
                  */
                 upgradeUuid =
-                    "A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+                    "B3B60257-BA42-4233-AF33-5CECFA171EB0"
 
                 val windowsIconFile =
                     resourcesDirectory.asFile.resolve(
