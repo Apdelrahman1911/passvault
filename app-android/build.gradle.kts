@@ -31,6 +31,18 @@ abstract class VerifyComposeResourcesInApk : DefaultTask() {
     }
 }
 
+abstract class VerifyReleaseSigningConfiguration : DefaultTask() {
+    @get:Input
+    abstract val signingConfigured: Property<Boolean>
+
+    @TaskAction
+    fun verify() {
+        check(signingConfigured.get()) {
+            "Android release signing inputs are missing or invalid."
+        }
+    }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
@@ -74,6 +86,48 @@ val appVersionName =
             }
         }
 
+val releaseKeystorePath =
+    System.getenv("KEYSTORE_PATH")?.takeUnless(String::isBlank)
+        ?: (findProperty("KEYSTORE_PATH") as? String)?.takeUnless(String::isBlank)
+        ?: "release.keystore"
+
+val releaseKeystorePassword =
+    System.getenv("KEYSTORE_PASSWORD")
+        ?: findProperty("KEYSTORE_PASSWORD") as? String
+        ?: ""
+
+val releaseKeyAlias =
+    System.getenv("KEY_ALIAS")
+        ?: findProperty("KEY_ALIAS") as? String
+        ?: ""
+
+val releaseKeyPassword =
+    System.getenv("KEY_PASSWORD")
+        ?: findProperty("KEY_PASSWORD") as? String
+        ?: ""
+
+val releaseKeystoreFile = rootProject.file(releaseKeystorePath)
+
+val requireReleaseSigning =
+    providers.gradleProperty("passvault.requireReleaseSigning")
+        .map { value -> value.toBooleanStrict() }
+        .getOrElse(false)
+
+fun missingReleaseSigningInputs(): List<String> = buildList {
+    if (!releaseKeystoreFile.isFile) add("KEYSTORE_PATH")
+    if (releaseKeystorePassword.isBlank()) add("KEYSTORE_PASSWORD")
+    if (releaseKeyAlias.isBlank()) add("KEY_ALIAS")
+    if (releaseKeyPassword.isBlank()) add("KEY_PASSWORD")
+}
+
+if (requireReleaseSigning) {
+    val missingInputs = missingReleaseSigningInputs()
+    require(missingInputs.isEmpty()) {
+        "Release signing is required, but these inputs are missing or invalid: " +
+            missingInputs.joinToString()
+    }
+}
+
 android {
     namespace = "com.passvault.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -106,28 +160,8 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePath =
-                System.getenv("KEYSTORE_PATH")
-                    ?: findProperty("KEYSTORE_PATH") as? String
-                    ?: "release.keystore"
-
-            val keystorePassword =
-                System.getenv("KEYSTORE_PASSWORD")
-                    ?: findProperty("KEYSTORE_PASSWORD") as? String
-                    ?: ""
-
-            val releaseKeyAlias =
-                System.getenv("KEY_ALIAS")
-                    ?: findProperty("KEY_ALIAS") as? String
-                    ?: ""
-
-            val releaseKeyPassword =
-                System.getenv("KEY_PASSWORD")
-                    ?: findProperty("KEY_PASSWORD") as? String
-                    ?: ""
-
-            storeFile = file(keystorePath)
-            storePassword = keystorePassword
+            storeFile = releaseKeystoreFile
+            storePassword = releaseKeystorePassword
             keyAlias = releaseKeyAlias
             keyPassword = releaseKeyPassword
         }
@@ -219,6 +253,12 @@ android {
             assets.directories.add("src/release/assets")
         }
     }
+}
+
+tasks.register<VerifyReleaseSigningConfiguration>("verifyReleaseSigningConfiguration") {
+    group = "verification"
+    description = "Fails unless all Android release signing inputs are valid."
+    signingConfigured.set(missingReleaseSigningInputs().isEmpty())
 }
 
 /*

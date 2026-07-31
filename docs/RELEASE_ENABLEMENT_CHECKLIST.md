@@ -24,7 +24,8 @@ legal identity, and store-account actions remain external by design.
 
 - [x] Android signing values load from environment variables or local Gradle
   properties and signing material is ignored by source control.
-- [ ] Android signed artifacts are cryptographically verified in release CI.
+- [x] Android signed artifacts are cryptographically verified in release CI
+  against a pinned release-certificate SHA-256 fingerprint.
 - [ ] Windows Authenticode signing and verification are wired into release CI.
 - [ ] Windows stable upgrade identity and publisher metadata are finalized.
 - [ ] macOS signing/notarization inputs are validated before release packaging.
@@ -44,7 +45,7 @@ legal identity, and store-account actions remain external by design.
 
 ## Automation
 
-- [ ] Signed Android release workflow builds and verifies APK/AAB artifacts.
+- [x] Signed Android release workflow builds and verifies APK/AAB artifacts.
 - [ ] Signed Windows workflow signs and verifies EXE/MSI artifacts.
 - [ ] macOS workflow imports a certificate, signs, notarizes, and validates DMG.
 - [ ] Linux packages are produced with release metadata.
