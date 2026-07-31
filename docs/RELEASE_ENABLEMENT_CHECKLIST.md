@@ -29,7 +29,7 @@ legal identity, and store-account actions remain external by design.
 - [x] Windows Authenticode signing and verification are wired into release CI.
 - [x] Windows stable upgrade identity is finalized; publisher identity is a
   validated external release input.
-- [ ] macOS signing/notarization inputs are validated before release packaging.
+- [x] macOS signing/notarization inputs are validated before release packaging.
 - [ ] Linux maintainer and license metadata are supplied from release metadata.
 - [ ] Local signing setup and certificate rotation are documented.
 
@@ -48,7 +48,7 @@ legal identity, and store-account actions remain external by design.
 
 - [x] Signed Android release workflow builds and verifies APK/AAB artifacts.
 - [x] Signed Windows workflow signs and verifies the launcher, EXE, and MSI.
-- [ ] macOS workflow imports a certificate, signs, notarizes, and validates DMG.
+- [x] macOS workflow imports a certificate, signs, notarizes, and validates DMG.
 - [ ] Linux packages are produced with release metadata.
 - [ ] Release artifacts and checksums are attached to a draft release.
 - [ ] Release workflow rejects missing identity, contact, or signing inputs.

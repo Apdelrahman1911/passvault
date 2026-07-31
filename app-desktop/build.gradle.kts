@@ -186,37 +186,14 @@ compose.desktop {
                 val macIdentity =
                     System.getenv("MACOS_IDENTITY").orEmpty()
 
-                val notarizationAppleId =
-                    System.getenv(
-                        "MACOS_NOTARIZATION_APPLE_ID"
-                    ).orEmpty()
+                if (macSign) {
+                    require(macIdentity.isNotBlank()) {
+                        "MACOS_IDENTITY is required when MACOS_SIGN=true"
+                    }
 
-                val notarizationPassword =
-                    System.getenv(
-                        "MACOS_NOTARIZATION_PASSWORD"
-                    ).orEmpty()
-
-                val notarizationTeamId =
-                    System.getenv(
-                        "MACOS_NOTARIZATION_TEAM_ID"
-                    ).orEmpty()
-
-                if (macSign && macIdentity.isNotBlank()) {
                     signing {
                         sign.set(true)
                         identity.set(macIdentity)
-                    }
-
-                    if (
-                        notarizationAppleId.isNotBlank() &&
-                        notarizationPassword.isNotBlank() &&
-                        notarizationTeamId.isNotBlank()
-                    ) {
-                        notarization {
-                            appleID.set(notarizationAppleId)
-                            password.set(notarizationPassword)
-//                            teamId.set(notarizationTeamId)
-                        }
                     }
                 }
 

@@ -65,3 +65,29 @@ certificate from the runner.
 
 The MSI upgrade UUID is permanently fixed as
 `B3B60257-BA42-4233-AF33-5CECFA171EB0`. It must not change between releases.
+
+## macOS
+
+Direct macOS distribution requires an Apple Developer Program membership and a
+`Developer ID Application` certificate. Export that certificate and its private
+key as a password-protected PKCS #12 file, then configure:
+
+GitHub repository secrets:
+
+- `MACOS_CERTIFICATE_BASE64`
+- `MACOS_CERTIFICATE_PASSWORD`
+- `MACOS_NOTARIZATION_APPLE_ID`
+- `MACOS_NOTARIZATION_PASSWORD` (an Apple app-specific password)
+
+GitHub repository variables:
+
+- `MACOS_SIGNING_IDENTITY` (the full `Developer ID Application: ...` identity)
+- `MACOS_NOTARIZATION_TEAM_ID` (the 10-character Apple Developer Team ID)
+
+CI creates a temporary keychain, validates the certificate and identity, stores
+notarization credentials in that keychain, and removes it after the job. The DMG
+is accepted only if the app has the expected Developer ID signer and secure
+timestamp, does not request `get-task-allow`, passes strict `codesign`
+verification, receives an `Accepted` result from Apple's `notarytool`, has its
+ticket stapled, and passes Gatekeeper assessment. The complete notarization log
+is retained as a CI artifact.
