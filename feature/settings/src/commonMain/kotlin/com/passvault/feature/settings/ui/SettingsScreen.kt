@@ -37,6 +37,7 @@ import com.passvault.feature.settings.presentation.SettingsViewModel
 fun SettingsScreen(
     state: SettingsViewModel.SettingsState,
     onEvent: (SettingsViewModel.SettingsEvent) -> Unit,
+    showBackButton: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -44,13 +45,15 @@ fun SettingsScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = {
-                        onEvent(SettingsViewModel.SettingsEvent.OnBackClick)
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.ui_go_back)
-                        )
+                    if (showBackButton) {
+                        IconButton(onClick = {
+                            onEvent(SettingsViewModel.SettingsEvent.OnBackClick)
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.ui_go_back)
+                            )
+                        }
                     }
                 },
                 actions = {

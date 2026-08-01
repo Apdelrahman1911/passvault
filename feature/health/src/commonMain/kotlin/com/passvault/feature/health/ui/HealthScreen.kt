@@ -91,6 +91,7 @@ private val HealthContentMaxWidth = 920.dp
 fun HealthScreen(
     state: HealthViewModel.HealthState,
     onEvent: (HealthViewModel.HealthEvent) -> Unit,
+    showBackButton: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -109,8 +110,10 @@ fun HealthScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = { onEvent(HealthViewModel.HealthEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
+                    if (showBackButton) {
+                        IconButton(onClick = { onEvent(HealthViewModel.HealthEvent.OnBackClick) }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
+                        }
                     }
                 },
                 actions = {

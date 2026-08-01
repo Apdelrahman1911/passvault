@@ -1,6 +1,8 @@
 package com.passvault.shared
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +20,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import com.passvault.core.designsystem.theme.PassVaultTheme
 import com.passvault.core.designsystem.components.LoadingState
+import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.text.resolveSuspending
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.VaultSessionState
@@ -300,28 +303,128 @@ private fun AppNavigation(
             }
 
             entry<VaultRoute.Vault> {
-                VaultScreenRoute(
-                    viewModel = vaultViewModel,
-                    onNavigateToCredential = { credentialId ->
-                        backStack.add(VaultRoute.CredentialDetail(credentialId.value))
-                    },
-                    onNavigateToCreate = {
-                        backStack.add(VaultRoute.CredentialCreate())
-                    },
-                    onNavigateToGenerator = {
-                        backStack.add(GeneratorRoute.Generator)
-                    },
-                    onNavigateToHealth = {
-                        backStack.add(HealthRoute.Health)
-                    },
-                    onNavigateToSettings = {
-                        backStack.add(SettingsRoute.Settings)
-                    },
-                    onLock = {
-                        scope.launch { vaultRepository.lock() }
-                        replaceRoot(AuthRoute.Unlock)
-                    },
-                )
+                BoxWithConstraints {
+                    val compact = maxWidth < Breakpoints.mediumMin
+                    val vaultContent: @Composable (Modifier) -> Unit = { contentModifier ->
+                        VaultScreenRoute(
+                            viewModel = vaultViewModel,
+                            onNavigateToCredential = { credentialId ->
+                                backStack.add(VaultRoute.CredentialDetail(credentialId.value))
+                            },
+                            onNavigateToCreate = {
+                                backStack.add(VaultRoute.CredentialCreate())
+                            },
+                            onNavigateToGenerator = {
+                                backStack.add(GeneratorRoute.Generator)
+                            },
+                            onNavigateToHealth = {
+                                backStack.add(HealthRoute.Health)
+                            },
+                            onNavigateToSettings = {
+                                backStack.add(SettingsRoute.Settings)
+                            },
+                            onLock = {
+                                scope.launch { vaultRepository.lock() }
+                                replaceRoot(AuthRoute.Unlock)
+                            },
+                            showActionDock = !compact,
+                            modifier = contentModifier,
+                        )
+                    }
+
+                    if (!compact) {
+                        vaultContent(Modifier.fillMaxSize())
+                    } else {
+                        VaultTabShell(
+                            onAdd = {
+                                backStack.add(VaultRoute.CredentialCreate())
+                            },
+                            vaultContent = vaultContent,
+                            generatorContent = { contentModifier ->
+                                val viewModel: GeneratorViewModel = koinInject()
+                                val state by viewModel.state.collectAsState()
+                                LaunchedEffect(viewModel) {
+                                    viewModel.effect.collect { effect ->
+                                        val password = when (effect) {
+                                            is GeneratorViewModel.GeneratorEffect.CopyToClipboard ->
+                                                effect.password
+                                            is GeneratorViewModel.GeneratorEffect.UsePassword ->
+                                                effect.password
+                                        }
+                                        try {
+                                            copySensitive(password)
+                                        } catch (cancel: CancellationException) {
+                                            throw cancel
+                                        } catch (_: Exception) {
+                                            // Clipboard failure leaves the generated value intact.
+                                        }
+                                    }
+                                }
+                                com.passvault.feature.generator.ui.GeneratorScreen(
+                                    state = state,
+                                    onEvent = viewModel::onEvent,
+                                    onNavigateBack = {},
+                                    showBackButton = false,
+                                    modifier = contentModifier,
+                                )
+                            },
+                            healthContent = { contentModifier ->
+                                val viewModel: HealthViewModel = koinInject()
+                                val state by viewModel.state.collectAsState()
+                                LaunchedEffect(viewModel) {
+                                    viewModel.onEvent(HealthViewModel.HealthEvent.OnRefreshScan)
+                                }
+                                ObserveHealthEffects(
+                                    viewModel = viewModel,
+                                    onBack = {},
+                                    onCredential = { id ->
+                                        backStack.add(VaultRoute.CredentialDetail(id.value))
+                                    },
+                                    onEditCredential = { id ->
+                                        backStack.add(VaultRoute.CredentialEdit(id.value))
+                                    },
+                                    onCopySummary = { report ->
+                                        try {
+                                            clipboardService.copy(report)
+                                            true
+                                        } catch (cancel: CancellationException) {
+                                            throw cancel
+                                        } catch (_: Exception) {
+                                            false
+                                        }
+                                    },
+                                )
+                                com.passvault.feature.health.ui.HealthScreen(
+                                    state = state,
+                                    onEvent = viewModel::onEvent,
+                                    showBackButton = false,
+                                    modifier = contentModifier,
+                                )
+                            },
+                            settingsContent = { contentModifier ->
+                                val viewModel: SettingsViewModel = koinInject()
+                                val state by viewModel.state.collectAsState()
+                                ObserveSettingsEffects(
+                                    viewModel = viewModel,
+                                    onBack = {},
+                                    onSecurity = { backStack.add(SettingsRoute.Security) },
+                                    onAppearance = { backStack.add(SettingsRoute.Appearance) },
+                                    onData = { backStack.add(SettingsRoute.Data) },
+                                    onLock = { replaceRoot(AuthRoute.Unlock) },
+                                    onExport = { backStack.add(BackupRoute.Export) },
+                                    onImport = { backStack.add(BackupRoute.Import) },
+                                    onBackup = { backStack.add(BackupRoute.Backup) },
+                                )
+                                com.passvault.feature.settings.ui.SettingsScreen(
+                                    state = state,
+                                    onEvent = viewModel::onEvent,
+                                    showBackButton = false,
+                                    modifier = contentModifier,
+                                )
+                            },
+                        )
+                    }
+                }
             }
 
             entry<VaultRoute.CredentialDetail> { route ->

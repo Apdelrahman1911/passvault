@@ -63,6 +63,7 @@ fun VaultScreenRoute(
     onNavigateToHealth: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onLock: () -> Unit,
+    showActionDock: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
@@ -91,6 +92,7 @@ fun VaultScreenRoute(
     VaultScreen(
         state = state,
         onEvent = viewModel::onEvent,
+        showActionDock = showActionDock,
         modifier = modifier,
     )
 }
@@ -99,6 +101,7 @@ fun VaultScreenRoute(
 fun VaultScreen(
     state: VaultViewModel.VaultState,
     onEvent: (VaultViewModel.VaultEvent) -> Unit,
+    showActionDock: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
@@ -106,7 +109,7 @@ fun VaultScreen(
         Scaffold(
             containerColor = MaterialTheme.colorScheme.background,
             bottomBar = {
-                if (compact) {
+                if (compact && showActionDock) {
                     VaultActionDock(
                         onAddClick = { onEvent(VaultViewModel.VaultEvent.OnAddCredentialClick) },
                         onGeneratorClick = { onEvent(VaultViewModel.VaultEvent.OnGeneratorClick) },
@@ -290,11 +293,14 @@ private fun HeaderAction(
 }
 
 @Composable
-private fun VaultActionDock(
+fun VaultActionDock(
     onAddClick: () -> Unit,
     onGeneratorClick: () -> Unit,
     onHealthClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    generatorSelected: Boolean = false,
+    healthSelected: Boolean = false,
+    settingsSelected: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -332,16 +338,19 @@ private fun VaultActionDock(
                 DockAction(
                     icon = Icons.Default.Password,
                     contentDescription = stringResource(Res.string.ui_password_generator),
+                    selected = generatorSelected,
                     onClick = onGeneratorClick,
                 )
                 DockAction(
                     icon = Icons.Default.HealthAndSafety,
                     contentDescription = stringResource(Res.string.ui_password_health),
+                    selected = healthSelected,
                     onClick = onHealthClick,
                 )
                 DockAction(
                     icon = Icons.Default.Settings,
                     contentDescription = stringResource(Res.string.action_settings),
+                    selected = settingsSelected,
                     onClick = onSettingsClick,
                 )
             }
@@ -353,12 +362,26 @@ private fun VaultActionDock(
 private fun DockAction(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     contentDescription: String,
+    selected: Boolean,
     onClick: () -> Unit,
 ) {
-    IconButton(
+    Surface(
         onClick = onClick,
         modifier = Modifier.size(52.dp),
+        shape = CircleShape,
+        color = if (selected) {
+            MaterialTheme.colorScheme.inverseOnSurface
+        } else {
+            androidx.compose.ui.graphics.Color.Transparent
+        },
+        contentColor = if (selected) {
+            MaterialTheme.colorScheme.inverseSurface
+        } else {
+            MaterialTheme.colorScheme.inverseOnSurface
+        },
     ) {
-        Icon(icon, contentDescription = contentDescription)
+        Box(contentAlignment = Alignment.Center) {
+            Icon(icon, contentDescription = contentDescription)
+        }
     }
 }
