@@ -9,6 +9,7 @@ package com.passvault.core.domain.repository
  */
 data class AppSettings(
     val theme: ThemePreference = ThemePreference.SYSTEM,
+    val accentColor: AccentColorPreference = AccentColorPreference.NEUTRAL,
     val autoLockTimeoutMinutes: Int = DEFAULT_AUTO_LOCK_TIMEOUT_MINUTES,
     val clipboardClearSeconds: Int = DEFAULT_CLIPBOARD_CLEAR_SECONDS,
 ) {
@@ -38,6 +39,15 @@ enum class ThemePreference {
     LIGHT,
     DARK,
     SYSTEM,
+}
+
+enum class AccentColorPreference {
+    NEUTRAL,
+    SAGE,
+    BLUE,
+    PURPLE,
+    ROSE,
+    AMBER,
 }
 
 interface AppSettingsStore {

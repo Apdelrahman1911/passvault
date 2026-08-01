@@ -3,6 +3,7 @@ package com.passvault.android.settings
 import android.content.Context
 import com.passvault.core.domain.repository.AppSettings
 import com.passvault.core.domain.repository.AppSettingsStore
+import com.passvault.core.domain.repository.AccentColorPreference
 import com.passvault.core.domain.repository.ThemePreference
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +24,9 @@ class AndroidAppSettingsStore(
                     theme = preferences.getString(KEY_THEME, null)
                         ?.let { stored -> ThemePreference.entries.firstOrNull { it.name == stored } }
                         ?: ThemePreference.SYSTEM,
+                    accentColor = preferences.getString(KEY_ACCENT_COLOR, null)
+                        ?.let { stored -> AccentColorPreference.entries.firstOrNull { it.name == stored } }
+                        ?: AccentColorPreference.NEUTRAL,
                     autoLockTimeoutMinutes = preferences.getInt(
                         KEY_AUTO_LOCK_TIMEOUT,
                         AppSettings.DEFAULT_AUTO_LOCK_TIMEOUT_MINUTES,
@@ -46,6 +50,7 @@ class AndroidAppSettingsStore(
             check(
                 preferences.edit()
                     .putString(KEY_THEME, normalized.theme.name)
+                    .putString(KEY_ACCENT_COLOR, normalized.accentColor.name)
                     .putInt(KEY_AUTO_LOCK_TIMEOUT, normalized.autoLockTimeoutMinutes)
                     .putInt(KEY_CLIPBOARD_CLEAR, normalized.clipboardClearSeconds)
                     .commit(),
@@ -63,6 +68,7 @@ class AndroidAppSettingsStore(
     private companion object {
         const val PREFERENCES_NAME = "passvault_application_settings"
         const val KEY_THEME = "theme"
+        const val KEY_ACCENT_COLOR = "accent_color"
         const val KEY_AUTO_LOCK_TIMEOUT = "auto_lock_timeout_minutes"
         const val KEY_CLIPBOARD_CLEAR = "clipboard_clear_seconds"
     }

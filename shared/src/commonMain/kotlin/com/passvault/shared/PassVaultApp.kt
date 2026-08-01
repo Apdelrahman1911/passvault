@@ -66,7 +66,10 @@ fun PassVaultApp() {
         SettingsViewModel.AppTheme.SYSTEM -> systemDark
     }
 
-    PassVaultTheme(darkTheme = useDarkTheme) {
+    PassVaultTheme(
+        darkTheme = useDarkTheme,
+        accent = settingsState.accentColor,
+    ) {
         AppContent()
     }
 }

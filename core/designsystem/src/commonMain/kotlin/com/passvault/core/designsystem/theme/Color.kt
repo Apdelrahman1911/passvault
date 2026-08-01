@@ -110,15 +110,15 @@ internal val OnWarningDark = Color(0xFF432E0A)
 internal val WarningContainerDark = Color(0xFF59431E)
 internal val OnWarningContainerDark = Color(0xFFFFE1A9)
 
-// Neutral - charcoal
-internal val BackgroundDark = Color(0xFF151613)
+// Neutral - pure-black canvas with near-black elevation layers
+internal val BackgroundDark = Color(0xFF000000)
 internal val OnBackgroundDark = Color(0xFFF0EFE7)
-internal val SurfaceDark = Color(0xFF1A1B18)
+internal val SurfaceDark = Color(0xFF080908)
 internal val OnSurfaceDark = Color(0xFFF0EFE7)
-internal val SurfaceVariantDark = Color(0xFF343630)
+internal val SurfaceVariantDark = Color(0xFF20221F)
 internal val OnSurfaceVariantDark = Color(0xFFC8C8C0)
 internal val OutlineDark = Color(0xFF92938B)
-internal val OutlineVariantDark = Color(0xFF44463F)
+internal val OutlineVariantDark = Color(0xFF343630)
 
 // Inverse
 internal val InverseSurfaceDark = Color(0xFFF0EFE7)
@@ -129,11 +129,11 @@ internal val InversePrimaryDark = Color(0xFF4B5945)
 internal val ScrimDark = Color(0xB3000000)
 
 // Surface containers
-internal val SurfaceContainerLowestDark = Color(0xFF10110F)
-internal val SurfaceContainerLowDark = Color(0xFF191A17)
-internal val SurfaceContainerDark = Color(0xFF1E1F1C)
-internal val SurfaceContainerHighDark = Color(0xFF272824)
-internal val SurfaceContainerHighestDark = Color(0xFF30312C)
+internal val SurfaceContainerLowestDark = Color(0xFF000000)
+internal val SurfaceContainerLowDark = Color(0xFF0A0B0A)
+internal val SurfaceContainerDark = Color(0xFF101110)
+internal val SurfaceContainerHighDark = Color(0xFF171817)
+internal val SurfaceContainerHighestDark = Color(0xFF20211F)
 
 // ============================================
 // EXTENDED COLORS - For password strength and security states

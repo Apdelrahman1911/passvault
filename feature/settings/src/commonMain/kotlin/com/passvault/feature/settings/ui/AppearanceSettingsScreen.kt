@@ -6,8 +6,10 @@ import org.jetbrains.compose.resources.stringResource
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,6 +24,8 @@ import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialPanel
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
+import com.passvault.core.designsystem.theme.PassVaultAccent
+import com.passvault.core.designsystem.theme.previewColor
 import com.passvault.feature.settings.presentation.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,6 +35,13 @@ fun AppearanceSettingsScreen(
     onEvent: (SettingsViewModel.SettingsEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val systemDark = isSystemInDarkTheme()
+    val usesDarkColors = when (state.theme) {
+        SettingsViewModel.AppTheme.LIGHT -> false
+        SettingsViewModel.AppTheme.DARK -> true
+        SettingsViewModel.AppTheme.SYSTEM -> systemDark
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -121,14 +132,112 @@ fun AppearanceSettingsScreen(
                     )
             }
 
+            EditorialPanel(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(Spacing.lg),
+            ) {
+                Text(
+                    text = stringResource(Res.string.ui_main_color),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = stringResource(Res.string.ui_main_color_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                PassVaultAccent.entries.chunked(2).forEach { accents ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    ) {
+                        accents.forEach { accent ->
+                            AccentColorOption(
+                                accent = accent,
+                                darkTheme = usesDarkColors,
+                                selected = state.accentColor == accent,
+                                onClick = {
+                                    onEvent(SettingsViewModel.SettingsEvent.OnAccentColorChanged(accent))
+                                },
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                        if (accents.size == 1) Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+
             // Preview Card
             ThemePreviewCard(
-                theme = state.theme,
                 modifier = Modifier.fillMaxWidth()
             )
         }
         }
     }
+}
+
+@Composable
+private fun AccentColorOption(
+    accent: PassVaultAccent,
+    darkTheme: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        color = if (selected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        },
+        contentColor = if (selected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        border = BorderStroke(
+            1.dp,
+            if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+        ),
+    ) {
+        Row(
+            modifier = Modifier.padding(Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
+            Surface(
+                modifier = Modifier.size(30.dp),
+                shape = CircleShape,
+                color = accent.previewColor(darkTheme),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {}
+            Text(
+                text = accentLabel(accent),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.weight(1f),
+            )
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = stringResource(Res.string.ui_selected),
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun accentLabel(accent: PassVaultAccent): String = when (accent) {
+    PassVaultAccent.NEUTRAL -> stringResource(Res.string.ui_color_neutral)
+    PassVaultAccent.SAGE -> stringResource(Res.string.ui_color_sage)
+    PassVaultAccent.BLUE -> stringResource(Res.string.ui_color_blue)
+    PassVaultAccent.PURPLE -> stringResource(Res.string.ui_color_purple)
+    PassVaultAccent.ROSE -> stringResource(Res.string.ui_color_rose)
+    PassVaultAccent.AMBER -> stringResource(Res.string.ui_color_amber)
 }
 
 @Composable
@@ -196,7 +305,6 @@ private fun ThemeOption(
 
 @Composable
 private fun ThemePreviewCard(
-    theme: SettingsViewModel.AppTheme,
     modifier: Modifier = Modifier,
 ) {
     Card(

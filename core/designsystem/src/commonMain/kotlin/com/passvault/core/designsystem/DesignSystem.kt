@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.passvault.core.designsystem.components.*
 import com.passvault.core.designsystem.theme.PassVaultTheme
+import com.passvault.core.designsystem.theme.PassVaultAccent
 import com.passvault.core.designsystem.theme.VaultKeeperColors
 import com.passvault.core.designsystem.theme.VaultShapes
 import com.passvault.core.designsystem.tokens.*
@@ -58,6 +59,7 @@ object DesignSystem {
     @Composable
     fun Theme(
         darkTheme: Boolean = androidx.compose.foundation.isSystemInDarkTheme(),
+        accent: PassVaultAccent = PassVaultAccent.NEUTRAL,
         content: @Composable () -> Unit
-    ) = PassVaultTheme(darkTheme, content)
+    ) = PassVaultTheme(darkTheme = darkTheme, accent = accent, content = content)
 }

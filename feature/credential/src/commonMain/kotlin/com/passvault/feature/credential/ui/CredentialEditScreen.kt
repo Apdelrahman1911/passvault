@@ -15,11 +15,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -112,45 +112,13 @@ fun CredentialEditScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCancelClick)
-                        },
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
-                },
-                actions = {
-                    TextButton(
-                        onClick = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnSaveClick)
-                        },
-                        enabled = state.canSave,
-                    ) {
-                        if (state.isSaving) {
-                            CircularProgressIndicator(modifier = Modifier.size(18.dp))
-                        } else {
-                            Text(stringResource(Res.string.action_save))
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-            )
-        },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .imePadding()
-                .navigationBarsPadding(),
+                .imePadding(),
             contentAlignment = Alignment.TopCenter,
         ) {
             Column(
@@ -159,11 +127,46 @@ fun CredentialEditScreen(
                     .widthIn(max = ComponentSpacing.formMaxWidth)
                     .verticalScroll(rememberScrollState())
                     .padding(
-                        horizontal = ComponentSpacing.screenHorizontal,
-                        vertical = ComponentSpacing.screenVertical,
+                        start = ComponentSpacing.screenHorizontal,
+                        end = ComponentSpacing.screenHorizontal,
+                        bottom = ComponentSpacing.screenVertical,
                     ),
                 verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
             ) {
+                TopAppBar(
+                    title = {},
+                    windowInsets = WindowInsets(0, 0, 0, 0),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCancelClick)
+                            },
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.action_back),
+                            )
+                        }
+                    },
+                    actions = {
+                        TextButton(
+                            onClick = {
+                                viewModel.onEvent(CredentialViewModel.CredentialEvent.OnSaveClick)
+                            },
+                            enabled = state.canSave,
+                        ) {
+                            if (state.isSaving) {
+                                CircularProgressIndicator(modifier = Modifier.size(18.dp))
+                            } else {
+                                Text(stringResource(Res.string.action_save))
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
+                )
+
                 EditorialPageHeader(
                     eyebrow = stringResource(Res.string.ui_encrypted_vault),
                     title = if (state.isNewCredential) {

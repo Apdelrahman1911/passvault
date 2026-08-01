@@ -6,12 +6,14 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
+import com.passvault.core.designsystem.theme.PassVaultAccent
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.repository.AppSettings
 import com.passvault.core.domain.repository.AppSettingsStore
+import com.passvault.core.domain.repository.AccentColorPreference
 import com.passvault.core.domain.repository.ThemePreference
 import com.passvault.core.domain.repository.VaultRepository
 import kotlinx.coroutines.CancellationException
@@ -63,6 +65,7 @@ class SettingsViewModel(
                         _state.update {
                             it.copy(
                                 theme = settings.theme.toAppTheme(),
+                                accentColor = settings.accentColor.toPassVaultAccent(),
                                 autoLockTimeoutMinutes = settings.autoLockTimeoutMinutes,
                                 clipboardClearSeconds = settings.clipboardClearSeconds,
                             )
@@ -99,6 +102,9 @@ class SettingsViewModel(
         when (event) {
             is SettingsEvent.OnThemeChanged -> {
                 persistPreferences { it.copy(theme = event.theme) }
+            }
+            is SettingsEvent.OnAccentColorChanged -> {
+                persistPreferences { it.copy(accentColor = event.accentColor) }
             }
             is SettingsEvent.OnAutoLockTimeoutChanged -> {
                 persistPreferences {
@@ -354,6 +360,7 @@ class SettingsViewModel(
 
     data class SettingsState(
         val theme: AppTheme = AppTheme.SYSTEM,
+        val accentColor: PassVaultAccent = PassVaultAccent.NEUTRAL,
         val autoLockTimeoutMinutes: Int = AppSettings.DEFAULT_AUTO_LOCK_TIMEOUT_MINUTES,
         val clipboardClearSeconds: Int = AppSettings.DEFAULT_CLIPBOARD_CLEAR_SECONDS,
         val vaultCreatedAt: String = "",
@@ -386,6 +393,14 @@ class SettingsViewModel(
                 AppTheme.DARK -> ThemePreference.DARK
                 AppTheme.SYSTEM -> ThemePreference.SYSTEM
             },
+            accentColor = when (accentColor) {
+                PassVaultAccent.NEUTRAL -> AccentColorPreference.NEUTRAL
+                PassVaultAccent.SAGE -> AccentColorPreference.SAGE
+                PassVaultAccent.BLUE -> AccentColorPreference.BLUE
+                PassVaultAccent.PURPLE -> AccentColorPreference.PURPLE
+                PassVaultAccent.ROSE -> AccentColorPreference.ROSE
+                PassVaultAccent.AMBER -> AccentColorPreference.AMBER
+            },
             autoLockTimeoutMinutes = autoLockTimeoutMinutes,
             clipboardClearSeconds = clipboardClearSeconds,
         ).normalized()
@@ -407,6 +422,7 @@ class SettingsViewModel(
 
     sealed interface SettingsEvent {
         data class OnThemeChanged(val theme: AppTheme) : SettingsEvent
+        data class OnAccentColorChanged(val accentColor: PassVaultAccent) : SettingsEvent
         data class OnAutoLockTimeoutChanged(val minutes: Int) : SettingsEvent
         data class OnClipboardClearChanged(val seconds: Int) : SettingsEvent
         data object OnSecurityClick : SettingsEvent
@@ -446,6 +462,15 @@ class SettingsViewModel(
         ThemePreference.LIGHT -> AppTheme.LIGHT
         ThemePreference.DARK -> AppTheme.DARK
         ThemePreference.SYSTEM -> AppTheme.SYSTEM
+    }
+
+    private fun AccentColorPreference.toPassVaultAccent(): PassVaultAccent = when (this) {
+        AccentColorPreference.NEUTRAL -> PassVaultAccent.NEUTRAL
+        AccentColorPreference.SAGE -> PassVaultAccent.SAGE
+        AccentColorPreference.BLUE -> PassVaultAccent.BLUE
+        AccentColorPreference.PURPLE -> PassVaultAccent.PURPLE
+        AccentColorPreference.ROSE -> PassVaultAccent.ROSE
+        AccentColorPreference.AMBER -> PassVaultAccent.AMBER
     }
 
     private companion object {
