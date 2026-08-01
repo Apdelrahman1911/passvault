@@ -1,6 +1,6 @@
 # Testing
 
-Last reviewed: 2026-07-29
+Last reviewed: 2026-08-01
 
 Use JDK 17 and the checked-in Gradle wrapper. `gradlew test` is a repository-owned aggregate task that depends on all
 Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's ambiguous unqualified selector.
@@ -21,7 +21,16 @@ Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's amb
 ./gradlew :app-desktop:createReleaseDistributable
 ./gradlew :app-desktop:packageReleaseDistributionForCurrentOS
 ./gradlew :core:designsystem:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosSimulatorArm64
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
 ./gradlew help --warning-mode all
+```
+
+On macOS, Android Studio with the Kotlin Multiplatform plugin discovers the `PassVault` Xcode scheme after Gradle
+sync. Select that run configuration and an iOS simulator. The same host can be checked directly with Xcode:
+
+```bash
+xcodebuild -project iosApp/iosApp.xcodeproj -scheme PassVault \
+  -configuration Debug -destination 'generic/platform=iOS Simulator' build
 ```
 
 On Windows, verify the packaged runtime after creating the release image:
@@ -56,8 +65,9 @@ The aggregate currently contains 609 tests: 310 Desktop/JVM and 299 Android host
 skips in the final run.
 
 Android host tests exercise portable and Android-compilation behavior on the JVM, but do not prove lifecycle,
-IME, screenshot, file-picker, accessibility, or native device integration. Those need an emulator/device; iOS
-runtime tests need macOS/Xcode. A Desktop release is not startup-verified by `:app-desktop:run`: build
+IME, screenshot, file-picker, accessibility, or native device integration. Those need an emulator/device. The iOS
+framework and SwiftUI host build on macOS/Xcode, but interactive workflows and the missing backup document picker
+still need device/simulator validation. A Desktop release is not startup-verified by `:app-desktop:run`: build
 `:app-desktop:createReleaseDistributable` and run the packaged-release smoke script. The release workflow uses this
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.

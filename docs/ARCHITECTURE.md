@@ -1,10 +1,10 @@
 # Architecture
 
-Last reviewed: 2026-07-28
+Last reviewed: 2026-08-01
 
-PassVault is a local-only Kotlin Multiplatform application. Android and JVM Desktop are the application hosts.
-Shared modules also declare iOS-compatible source sets where their dependencies support them, but no production
-iOS host is shipped.
+PassVault is a local-only Kotlin Multiplatform application. Android and JVM Desktop are the production application
+hosts. A minimal SwiftUI/Xcode development host runs the shared Compose application on an iOS simulator, but no
+production iOS host is shipped.
 
 ## Module map
 
@@ -12,6 +12,7 @@ iOS host is shipped.
 |---|---|
 | `app-android` | Android lifecycle, `FLAG_SECURE`, clipboard, document picker, preferences, and app entry point |
 | `app-desktop` | Compose window, keyboard/tray integration, clipboard, file dialog, preferences, and app entry point |
+| `iosApp` | SwiftUI/Xcode development host that builds and embeds the static `PassVaultShared` framework |
 | `shared` | Koin composition, Room construction, theme ownership, session-to-navigation coordination, and the only live `NavDisplay` |
 | `core:domain` | Immutable domain models, typed identifiers, validation, health logic, and repository/settings contracts |
 | `core:crypto` | libsodium-backed Argon2id, XChaCha20-Poly1305, random data, constant-time comparison, and subkey derivation |
@@ -38,7 +39,9 @@ platform app
 ```
 
 Features do not receive Room entities or encryption primitives. Composables receive explicit state and emit feature
-events. Platform work is exposed through common interfaces and bound by the Android/Desktop Koin module.
+events. Platform work is exposed through common interfaces and bound by platform Koin modules. The iOS development
+host implements settings and clipboard boundaries; backup file selection remains intentionally unsupported until a
+`UIDocumentPickerViewController` adapter is implemented.
 
 The active vault session is owned by `VaultRepositoryImpl`, which implements both `VaultRepository` and the narrow
 `VaultSessionManager` used by encrypted repositories. A repository operation must obtain a session-key copy and
@@ -72,4 +75,3 @@ and constrain readable/form widths instead of stretching a phone layout across a
 
 There is no cloud/account/network service, biometric unlock, plaintext/CSV export, attachment-file pipeline, or
 production iOS host. Reserved attachment metadata remains in schema version 1 for format preservation only.
-

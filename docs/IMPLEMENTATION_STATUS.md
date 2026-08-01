@@ -1,6 +1,6 @@
 # PassVault implementation status
 
-Last reviewed: 2026-07-29
+Last reviewed: 2026-08-01
 
 The authoritative issue-by-issue status and command evidence is
 [`PRODUCTION_READINESS_AUDIT.md`](PRODUCTION_READINESS_AUDIT.md). This file is a concise capability summary and
@@ -9,6 +9,8 @@ must not be used as proof that a release gate passed.
 ## Implemented
 
 - Android and JVM Desktop application hosts.
+- A SwiftUI/Xcode development host that embeds the static `PassVaultShared` framework and runs the shared Compose
+  application on an iOS simulator.
 - Shared Compose navigation, onboarding, vault unlock, vault list, credential details/editor, password generator,
   password health, settings, and encrypted backup/restore surfaces.
 - Room KMP schema and encrypted vault, credential, folder, tag, relationship, history, and metadata repositories.
@@ -31,7 +33,8 @@ must not be used as proof that a release gate passed.
 - CSV or any plaintext credential import/export.
 - Attachment-file creation, viewing, or packaging. The version-1 schema can preserve legacy encrypted attachment
   metadata, but there is no attachment feature module or file pipeline.
-- A production iOS app.
+- A production iOS app. The development host does not yet provide an iOS document-picker adapter for backup import
+  or export.
 
 ## Verified and remaining release evidence
 
@@ -52,7 +55,8 @@ must not be used as proof that a release gate passed.
   process recreation, and accessibility behavior beyond the completed install/cold-start smoke.
 - Desktop interactive resize, keyboard, tray, clipboard, keyring, accessibility, and file-dialog behavior still
   requires a human graphical matrix beyond the successful startup smoke.
-- iOS runtime and Xcode application validation require macOS/Xcode; compile-only simulator verification passes.
+- The iOS simulator framework and SwiftUI host build pass on macOS/Xcode. Interactive workflow validation and a
+  production iOS document-picker adapter remain outstanding.
 - There is no previous released schema fixture, so a database upgrade migration cannot be implemented or tested yet.
 - Distribution ownership, license, support/security-contact details, Android signing, and Desktop
   signing/notarization must be supplied by the publisher.

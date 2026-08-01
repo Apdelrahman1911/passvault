@@ -1,8 +1,8 @@
 # PassVault
 
 PassVault is an offline-first password manager built with Kotlin Multiplatform and Compose Multiplatform.
-Android and JVM Desktop are the current application targets. Shared source sets remain compatible with a future
-iOS host, but this repository does not contain a production iOS application.
+Android and JVM Desktop are the production application targets. `iosApp/` is a development host for running the
+shared Compose application in an iOS simulator; it is not a production iOS application.
 
 ## Shipped capabilities
 
@@ -35,6 +35,7 @@ The detailed, evidence-backed status is maintained in
 ```text
 app-android/       Android application and platform services
 app-desktop/       JVM Desktop application and platform services
+iosApp/            SwiftUI/Xcode development host for the shared iOS framework
 shared/            shared app composition, navigation, and dependency injection
 core/
   crypto/          cryptographic engine and key hierarchy
@@ -66,6 +67,9 @@ Use JDK 17 and the checked-in wrapper. The Android application has `standard` an
 ./gradlew :app-desktop:compileKotlinDesktop
 ./gradlew :app-desktop:run
 
+# iOS simulator framework compile (requires macOS/Xcode)
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+
 # Static analysis and dependency checksum policy
 ./gradlew detekt
 ./gradlew verifyDependencies
@@ -73,6 +77,10 @@ Use JDK 17 and the checked-in wrapper. The Android application has `standard` an
 
 Platform package tasks are available through `./gradlew :app-desktop:tasks`. Run only the package task for the
 current operating system.
+
+To run iOS from Android Studio on macOS, enable the Kotlin Multiplatform plugin, sync the project with Gradle,
+select the generated `PassVault` run configuration, and choose an iOS simulator. The configuration is derived from
+`iosApp/iosApp.xcodeproj`; its Xcode build phase builds and embeds `PassVaultShared` automatically.
 
 ## Security notes
 

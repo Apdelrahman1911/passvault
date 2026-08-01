@@ -54,11 +54,11 @@ legal identity, and store-account actions remain external by design.
   tag-bound GitHub Release after all platform jobs succeed.
 - [x] Release workflow rejects missing identity, contact, or signing inputs.
 
-## Future iOS integration
+## iOS development host and future production integration
 
-- [ ] `PassVaultShared` is exported as a static iOS framework.
-- [ ] A minimal SwiftUI/Xcode host scaffold documents application startup.
-- [ ] iOS platform dependency boundaries and remaining adapters are documented.
+- [x] `PassVaultShared` is exported as a static iOS framework.
+- [x] A minimal SwiftUI/Xcode host scaffold documents application startup.
+- [x] iOS platform dependency boundaries and remaining adapters are documented.
 - [ ] iOS simulator framework compilation is included in verification.
 
 ## Safe third-party import
@@ -79,6 +79,6 @@ legal identity, and store-account actions remain external by design.
 - [ ] Android debug and release variants compile.
 - [ ] Android lint/R8 release verification passes.
 - [ ] Desktop runtime smoke test and Windows EXE/MSI packaging pass.
-- [ ] iOS simulator compilation passes.
-- [ ] Release documentation and implementation-status records are updated.
+- [x] iOS simulator compilation passes.
+- [x] Release documentation and implementation-status records are updated.
 - [x] Detekt is excluded from this work at the user's explicit request.

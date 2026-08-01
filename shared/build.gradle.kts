@@ -26,8 +26,18 @@ kotlin {
         }
     }
 
-    iosArm64()
-    iosSimulatorArm64()
+    val iosTargets = listOf(
+        iosArm64(),
+        iosSimulatorArm64(),
+    )
+
+    iosTargets.forEach { target ->
+        target.binaries.framework {
+            baseName = "PassVaultShared"
+            isStatic = true
+            binaryOption("bundleId", "com.passvault.shared")
+        }
+    }
 
     sourceSets {
         val commonMain = getByName("commonMain") {
