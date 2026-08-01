@@ -41,36 +41,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    if (showBackButton) {
-                        IconButton(onClick = {
-                            onEvent(SettingsViewModel.SettingsEvent.OnBackClick)
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(Res.string.ui_go_back)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        onEvent(SettingsViewModel.SettingsEvent.OnLockVaultClick)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = stringResource(Res.string.ui_lock_vault)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-            )
-        },
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
@@ -86,14 +56,57 @@ fun SettingsScreen(
                 .align(Alignment.TopCenter)
                 .verticalScroll(rememberScrollState())
                 .padding(
-                    horizontal = ComponentSpacing.screenHorizontal,
-                    vertical = ComponentSpacing.screenVertical,
+                    start = ComponentSpacing.screenHorizontal,
+                    end = ComponentSpacing.screenHorizontal,
+                    top = if (showBackButton) ComponentSpacing.screenVertical else 0.dp,
+                    bottom = if (showBackButton) ComponentSpacing.screenVertical else 112.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
+            if (showBackButton) {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            onEvent(SettingsViewModel.SettingsEvent.OnBackClick)
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.ui_go_back)
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            onEvent(SettingsViewModel.SettingsEvent.OnLockVaultClick)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = stringResource(Res.string.ui_lock_vault)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
+                )
+            }
+
             EditorialPageHeader(
                 eyebrow = stringResource(Res.string.ui_passvault),
                 title = stringResource(Res.string.action_settings),
+                actions = {
+                    if (!showBackButton) {
+                        IconButton(onClick = {
+                            onEvent(SettingsViewModel.SettingsEvent.OnLockVaultClick)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = stringResource(Res.string.ui_lock_vault)
+                            )
+                        }
+                    }
+                },
             )
 
             // Security section

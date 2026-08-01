@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Search
@@ -130,7 +131,7 @@ fun VaultScreen(
                         .padding(
                             start = ComponentSpacing.screenHorizontal,
                             end = ComponentSpacing.screenHorizontal,
-                            top = ComponentSpacing.screenVertical,
+                            top = if (compact) 0.dp else ComponentSpacing.screenVertical,
                             bottom = Spacing.sm,
                         ),
                     contentAlignment = Alignment.TopCenter,
@@ -298,6 +299,8 @@ fun VaultActionDock(
     onGeneratorClick: () -> Unit,
     onHealthClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onHomeClick: () -> Unit = {},
+    homeSelected: Boolean = true,
     generatorSelected: Boolean = false,
     healthSelected: Boolean = false,
     settingsSelected: Boolean = false,
@@ -321,6 +324,18 @@ fun VaultActionDock(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                DockAction(
+                    icon = Icons.Default.Home,
+                    contentDescription = stringResource(Res.string.ui_home),
+                    selected = homeSelected,
+                    onClick = onHomeClick,
+                )
+                DockAction(
+                    icon = Icons.Default.Password,
+                    contentDescription = stringResource(Res.string.ui_password_generator),
+                    selected = generatorSelected,
+                    onClick = onGeneratorClick,
+                )
                 Surface(
                     onClick = onAddClick,
                     modifier = Modifier.size(52.dp),
@@ -335,12 +350,6 @@ fun VaultActionDock(
                         )
                     }
                 }
-                DockAction(
-                    icon = Icons.Default.Password,
-                    contentDescription = stringResource(Res.string.ui_password_generator),
-                    selected = generatorSelected,
-                    onClick = onGeneratorClick,
-                )
                 DockAction(
                     icon = Icons.Default.HealthAndSafety,
                     contentDescription = stringResource(Res.string.ui_password_health),

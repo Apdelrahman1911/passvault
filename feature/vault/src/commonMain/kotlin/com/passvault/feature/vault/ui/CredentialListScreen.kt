@@ -200,8 +200,10 @@ private fun CompactCredentialList(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        horizontal = ComponentSpacing.screenHorizontal,
-                        vertical = Spacing.smMd,
+                        start = ComponentSpacing.screenHorizontal,
+                        top = Spacing.smMd,
+                        end = ComponentSpacing.screenHorizontal,
+                        bottom = 112.dp,
                     ),
                     verticalArrangement = Arrangement.spacedBy(ComponentSpacing.listItemSpacing),
                 ) {

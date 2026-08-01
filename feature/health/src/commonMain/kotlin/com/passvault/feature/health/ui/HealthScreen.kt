@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,9 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -106,109 +103,172 @@ fun HealthScreen(
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    if (showBackButton) {
-                        IconButton(onClick = { onEvent(HealthViewModel.HealthEvent.OnBackClick) }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { onEvent(HealthViewModel.HealthEvent.OnCopySummary) },
-                        enabled = !state.isLoading && state.lastScanAt != null,
-                    ) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = stringResource(Res.string.ui_copy_health_summary))
-                    }
-                    IconButton(
-                        onClick = { onEvent(HealthViewModel.HealthEvent.OnRefreshScan) },
-                        enabled = !state.isLoading,
-                    ) {
-                        Icon(Icons.Default.Refresh, contentDescription = stringResource(Res.string.ui_scan_again))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-            )
-        },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter,
         ) {
-            Box(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        horizontal = ComponentSpacing.screenHorizontal,
-                        vertical = Spacing.sm,
-                    ),
-                contentAlignment = Alignment.TopCenter,
+                    .widthIn(max = HealthContentMaxWidth)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = ComponentSpacing.screenHorizontal,
+                    end = ComponentSpacing.screenHorizontal,
+                    top = if (showBackButton) ComponentSpacing.screenVertical else 0.dp,
+                    bottom = if (showBackButton) ComponentSpacing.screenVertical else 112.dp,
+                ),
+                verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
             ) {
-                EditorialPageHeader(
-                    eyebrow = stringResource(Res.string.ui_encrypted_vault),
-                    title = stringResource(Res.string.ui_password_health),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .widthIn(max = HealthContentMaxWidth),
-                )
-            }
-
-            PrimaryScrollableTabRow(
-                selectedTabIndex = state.selectedTab.ordinal,
-                edgePadding = ComponentSpacing.screenHorizontal,
-            ) {
-                HealthTab.entries.forEach { tab ->
-                    val count = when (tab) {
-                        HealthTab.OVERVIEW -> 0
-                        HealthTab.WEAK_PASSWORDS -> state.weakPasswords.size
-                        HealthTab.DUPLICATES -> state.duplicatePasswords.size
-                        HealthTab.OLD_PASSWORDS -> state.oldPasswords.size
+                if (showBackButton) {
+                    item(key = "health-top-app-bar") {
+                        TopAppBar(
+                            title = {},
+                            navigationIcon = {
+                                IconButton(onClick = { onEvent(HealthViewModel.HealthEvent.OnBackClick) }) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = stringResource(Res.string.action_back),
+                                    )
+                                }
+                            },
+                            actions = { HealthActions(state, onEvent) },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                            ),
+                        )
                     }
-                    Tab(
-                        selected = state.selectedTab == tab,
-                        onClick = { onEvent(HealthViewModel.HealthEvent.OnTabChanged(tab)) },
-                        text = { Text(tab.displayName.resolve()) },
-                        icon = {
-                            BadgedBox(
-                                badge = {
-                                    if (count > 0) Badge { Text(count.toString()) }
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = when (tab) {
-                                        HealthTab.OVERVIEW -> Icons.Default.Info
-                                        HealthTab.WEAK_PASSWORDS -> Icons.Default.Warning
-                                        HealthTab.DUPLICATES -> Icons.Default.ContentCopy
-                                        HealthTab.OLD_PASSWORDS -> Icons.Default.Schedule
-                                    },
-                                    contentDescription = null,
-                                )
-                            }
+                }
+
+                item(key = "health-header") {
+                    EditorialPageHeader(
+                        eyebrow = stringResource(Res.string.ui_encrypted_vault),
+                        title = stringResource(Res.string.ui_password_health),
+                        modifier = Modifier.fillMaxWidth(),
+                        actions = {
+                            if (!showBackButton) HealthActions(state, onEvent)
                         },
                     )
                 }
-            }
 
-            state.errorMessage?.let { message ->
-                ErrorBanner(
-                    message = message.resolve(),
-                    onRetry = { onEvent(HealthViewModel.HealthEvent.OnRefreshScan) },
-                )
-            }
+                item(key = "health-tabs") {
+                    PrimaryScrollableTabRow(
+                        selectedTabIndex = state.selectedTab.ordinal,
+                        edgePadding = 0.dp,
+                    ) {
+                        HealthTab.entries.forEach { tab ->
+                            val count = when (tab) {
+                                HealthTab.OVERVIEW -> 0
+                                HealthTab.WEAK_PASSWORDS -> state.weakPasswords.size
+                                HealthTab.DUPLICATES -> state.duplicatePasswords.size
+                                HealthTab.OLD_PASSWORDS -> state.oldPasswords.size
+                            }
+                            Tab(
+                                selected = state.selectedTab == tab,
+                                onClick = { onEvent(HealthViewModel.HealthEvent.OnTabChanged(tab)) },
+                                text = { Text(tab.displayName.resolve()) },
+                                icon = {
+                                    BadgedBox(
+                                        badge = {
+                                            if (count > 0) Badge { Text(count.toString()) }
+                                        },
+                                    ) {
+                                        Icon(
+                                            imageVector = when (tab) {
+                                                HealthTab.OVERVIEW -> Icons.Default.Info
+                                                HealthTab.WEAK_PASSWORDS -> Icons.Default.Warning
+                                                HealthTab.DUPLICATES -> Icons.Default.ContentCopy
+                                                HealthTab.OLD_PASSWORDS -> Icons.Default.Schedule
+                                            },
+                                            contentDescription = null,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
 
-            Box(modifier = Modifier.weight(1f)) {
+                state.errorMessage?.let { message ->
+                    item(key = "health-error") {
+                        ErrorBanner(
+                            message = message.resolve(),
+                            onRetry = { onEvent(HealthViewModel.HealthEvent.OnRefreshScan) },
+                        )
+                    }
+                }
+
                 when (state.selectedTab) {
-                    HealthTab.OVERVIEW -> OverviewTab(state, onEvent)
-                    HealthTab.WEAK_PASSWORDS -> WeakPasswordsTab(state, onEvent)
-                    HealthTab.DUPLICATES -> DuplicatesTab(state, onEvent)
-                    HealthTab.OLD_PASSWORDS -> OldPasswordsTab(state, onEvent)
+                    HealthTab.OVERVIEW -> item(key = "health-overview") {
+                        OverviewContent(state, onEvent)
+                    }
+                    HealthTab.WEAK_PASSWORDS -> {
+                        if (!state.isLoading && state.weakPasswords.isEmpty()) {
+                            item(key = "health-weak-empty") {
+                                HealthEmptyState(
+                                    title = stringResource(Res.string.ui_no_weak_passwords_found),
+                                    message = stringResource(Res.string.ui_the_local_strength_check_found_no_weak_passwords_among),
+                                )
+                            }
+                        } else {
+                            items(state.weakPasswords, key = { it.credentialId.value }) { item ->
+                                WeakPasswordCard(
+                                    item = item,
+                                    onFixClick = {
+                                        onEvent(HealthViewModel.HealthEvent.OnFixWeakPasswordClick(item.credentialId))
+                                    },
+                                    onClick = {
+                                        onEvent(HealthViewModel.HealthEvent.OnCredentialClick(item.credentialId))
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    HealthTab.DUPLICATES -> {
+                        if (!state.isLoading && state.duplicatePasswords.isEmpty()) {
+                            item(key = "health-duplicates-empty") {
+                                HealthEmptyState(
+                                    title = stringResource(Res.string.ui_no_duplicate_groups_found),
+                                    message = stringResource(Res.string.ui_the_local_scan_found_no_identical_passwords_shared_by),
+                                )
+                            }
+                        } else {
+                            items(
+                                items = state.duplicatePasswords,
+                                key = { group -> group.credentials.joinToString("|") { it.credentialId.value } },
+                            ) { group ->
+                                DuplicateGroupCard(
+                                    group = group,
+                                    onViewClick = {
+                                        onEvent(HealthViewModel.HealthEvent.OnFixDuplicateClick(group))
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    HealthTab.OLD_PASSWORDS -> {
+                        if (!state.isLoading && state.oldPasswords.isEmpty()) {
+                            item(key = "health-old-empty") {
+                                HealthEmptyState(
+                                    title = stringResource(Res.string.ui_no_old_passwords_found),
+                                    message = stringResource(Res.string.ui_no_scanned_password_is_known_to_be_at_least_365_days_o),
+                                )
+                            }
+                        } else {
+                            items(state.oldPasswords, key = { it.credentialId.value }) { item ->
+                                OldPasswordCard(
+                                    item = item,
+                                    onUpdateClick = {
+                                        onEvent(HealthViewModel.HealthEvent.OnFixOldPasswordClick(item.credentialId))
+                                    },
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -229,103 +289,118 @@ fun HealthScreen(
 }
 
 @Composable
-private fun OverviewTab(
+private fun HealthActions(
     state: HealthViewModel.HealthState,
     onEvent: (HealthViewModel.HealthEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .widthIn(max = HealthContentMaxWidth)
-                .verticalScroll(rememberScrollState())
-                .padding(ComponentSpacing.screenHorizontal),
-            verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
-        ) {
-            HealthScoreCard(state)
-            HealthStats(state)
+    IconButton(
+        onClick = { onEvent(HealthViewModel.HealthEvent.OnCopySummary) },
+        enabled = !state.isLoading && state.lastScanAt != null,
+    ) {
+        Icon(
+            Icons.Default.ContentCopy,
+            contentDescription = stringResource(Res.string.ui_copy_health_summary),
+        )
+    }
+    IconButton(
+        onClick = { onEvent(HealthViewModel.HealthEvent.OnRefreshScan) },
+        enabled = !state.isLoading,
+    ) {
+        Icon(Icons.Default.Refresh, contentDescription = stringResource(Res.string.ui_scan_again))
+    }
+}
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(ComponentSpacing.cardPadding),
-                    verticalArrangement = Arrangement.spacedBy(ComponentSpacing.cardContentSpacing),
-                ) {
-                    Text(
-                        text = stringResource(Res.string.ui_local_checks),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.semantics { heading() },
-                    )
-                    IssueRow(
-                        title = stringResource(Res.string.ui_weak_passwords),
-                        count = state.weakPasswords.size,
-                        icon = Icons.Default.Warning,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                    IssueRow(
-                        title = stringResource(Res.string.ui_duplicate_password_groups),
-                        count = state.duplicatePasswords.size,
-                        icon = Icons.Default.ContentCopy,
-                        color = MaterialTheme.colorScheme.tertiary,
-                    )
-                    IssueRow(
-                        title = stringResource(Res.string.ui_passwords_at_least_365_days_old),
-                        count = state.oldPasswords.size,
-                        icon = Icons.Default.Schedule,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            }
+@Composable
+private fun OverviewContent(
+    state: HealthViewModel.HealthState,
+    onEvent: (HealthViewModel.HealthEvent) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
+    ) {
+        HealthScoreCard(state)
+        HealthStats(state)
 
-            if (state.hasIssues) {
-                Button(
-                    onClick = { onEvent(HealthViewModel.HealthEvent.OnReviewIssues) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(stringResource(Res.string.ui_review_issues))
-                }
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                ),
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(ComponentSpacing.cardPadding),
+                verticalArrangement = Arrangement.spacedBy(ComponentSpacing.cardContentSpacing),
             ) {
-                Row(
-                    modifier = Modifier.padding(ComponentSpacing.cardPadding),
-                    horizontalArrangement = Arrangement.spacedBy(ComponentSpacing.md),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Icon(
-                        Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Column(verticalArrangement = Arrangement.spacedBy(ComponentSpacing.xs)) {
-                        Text(
-                            text = stringResource(Res.string.ui_private_on_device_scan),
-                            style = MaterialTheme.typography.titleSmall,
-                        )
-                        Text(
-                            text = stringResource(Res.string.ui_passvault_checks_password_strength_duplicate_use_and_a) +
-                                stringResource(Res.string.ui_it_does_not_upload_passwords_or_claim_to_check_public),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-
-            state.lastScanAt?.let {
                 Text(
-                    text = stringResource(Res.string.ui_last_local_scan, it),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = stringResource(Res.string.ui_local_checks),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.semantics { heading() },
+                )
+                IssueRow(
+                    title = stringResource(Res.string.ui_weak_passwords),
+                    count = state.weakPasswords.size,
+                    icon = Icons.Default.Warning,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                IssueRow(
+                    title = stringResource(Res.string.ui_duplicate_password_groups),
+                    count = state.duplicatePasswords.size,
+                    icon = Icons.Default.ContentCopy,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+                IssueRow(
+                    title = stringResource(Res.string.ui_passwords_at_least_365_days_old),
+                    count = state.oldPasswords.size,
+                    icon = Icons.Default.Schedule,
+                    color = MaterialTheme.colorScheme.secondary,
                 )
             }
-            Spacer(modifier = Modifier.height(ComponentSpacing.sm))
         }
+
+        if (state.hasIssues) {
+            Button(
+                onClick = { onEvent(HealthViewModel.HealthEvent.OnReviewIssues) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(Res.string.ui_review_issues))
+            }
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            ),
+        ) {
+            Row(
+                modifier = Modifier.padding(ComponentSpacing.cardPadding),
+                horizontalArrangement = Arrangement.spacedBy(ComponentSpacing.md),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Icon(
+                    Icons.Default.Lock,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(ComponentSpacing.xs)) {
+                    Text(
+                        text = stringResource(Res.string.ui_private_on_device_scan),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = stringResource(Res.string.ui_passvault_checks_password_strength_duplicate_use_and_a) +
+                            stringResource(Res.string.ui_it_does_not_upload_passwords_or_claim_to_check_public),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+
+        state.lastScanAt?.let {
+            Text(
+                text = stringResource(Res.string.ui_last_local_scan, it),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Spacer(modifier = Modifier.height(ComponentSpacing.sm))
     }
 }
 
@@ -441,98 +516,6 @@ private fun HealthStats(state: HealthViewModel.HealthState) {
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun WeakPasswordsTab(
-    state: HealthViewModel.HealthState,
-    onEvent: (HealthViewModel.HealthEvent) -> Unit,
-) {
-    if (!state.isLoading && state.weakPasswords.isEmpty()) {
-        HealthEmptyState(
-            title = stringResource(Res.string.ui_no_weak_passwords_found),
-            message = stringResource(Res.string.ui_the_local_strength_check_found_no_weak_passwords_among),
-        )
-        return
-    }
-    HealthList {
-        items(state.weakPasswords, key = { it.credentialId.value }) { item ->
-            WeakPasswordCard(
-                item = item,
-                onFixClick = {
-                    onEvent(HealthViewModel.HealthEvent.OnFixWeakPasswordClick(item.credentialId))
-                },
-                onClick = {
-                    onEvent(HealthViewModel.HealthEvent.OnCredentialClick(item.credentialId))
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun DuplicatesTab(
-    state: HealthViewModel.HealthState,
-    onEvent: (HealthViewModel.HealthEvent) -> Unit,
-) {
-    if (!state.isLoading && state.duplicatePasswords.isEmpty()) {
-        HealthEmptyState(
-            title = stringResource(Res.string.ui_no_duplicate_groups_found),
-            message = stringResource(Res.string.ui_the_local_scan_found_no_identical_passwords_shared_by),
-        )
-        return
-    }
-    HealthList {
-        items(
-            items = state.duplicatePasswords,
-            key = { group -> group.credentials.joinToString("|") { it.credentialId.value } },
-        ) { group ->
-            DuplicateGroupCard(
-                group = group,
-                onViewClick = {
-                    onEvent(HealthViewModel.HealthEvent.OnFixDuplicateClick(group))
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun OldPasswordsTab(
-    state: HealthViewModel.HealthState,
-    onEvent: (HealthViewModel.HealthEvent) -> Unit,
-) {
-    if (!state.isLoading && state.oldPasswords.isEmpty()) {
-        HealthEmptyState(
-            title = stringResource(Res.string.ui_no_old_passwords_found),
-            message = stringResource(Res.string.ui_no_scanned_password_is_known_to_be_at_least_365_days_o),
-        )
-        return
-    }
-    HealthList {
-        items(state.oldPasswords, key = { it.credentialId.value }) { item ->
-            OldPasswordCard(
-                item = item,
-                onUpdateClick = {
-                    onEvent(HealthViewModel.HealthEvent.OnFixOldPasswordClick(item.credentialId))
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun HealthList(content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .widthIn(max = HealthContentMaxWidth),
-            contentPadding = PaddingValues(ComponentSpacing.screenHorizontal),
-            verticalArrangement = Arrangement.spacedBy(ComponentSpacing.listItemSpacing),
-            content = content,
-        )
     }
 }
 
@@ -776,7 +759,8 @@ private fun DuplicateGroupDialog(
 private fun HealthEmptyState(title: String, message: String) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .heightIn(min = 320.dp)
             .padding(ComponentSpacing.xl),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -807,12 +791,7 @@ private fun HealthEmptyState(title: String, message: String) {
 @Composable
 private fun ErrorBanner(message: String, onRetry: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = ComponentSpacing.screenHorizontal,
-                vertical = ComponentSpacing.sm,
-            ),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,
         ),

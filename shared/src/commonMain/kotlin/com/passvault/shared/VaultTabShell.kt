@@ -1,32 +1,30 @@
 package com.passvault.shared
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.passvault.feature.vault.ui.VaultActionDock
 
 internal enum class VaultTab {
+    HOME,
     GENERATOR,
     HEALTH,
     SETTINGS,
 }
 
-internal fun VaultTab?.toggle(destination: VaultTab): VaultTab? =
-    if (this == destination) null else destination
+internal fun VaultTab.toggle(destination: VaultTab): VaultTab =
+    if (this == destination && destination != VaultTab.HOME) VaultTab.HOME else destination
 
 /**
- * Compact root navigation keeps the action dock mounted while switching its
- * three top-level destinations. Selecting the active destination closes it
- * and returns to the vault.
+ * Compact root navigation keeps the action dock overlaid while switching its
+ * top-level destinations. Selecting an active non-home destination returns
+ * to Home.
  */
 @Composable
 internal fun VaultTabShell(
@@ -37,44 +35,36 @@ internal fun VaultTabShell(
     settingsContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTab by remember { mutableStateOf<VaultTab?>(null) }
+    var selectedTab by remember { mutableStateOf(VaultTab.HOME) }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = {
-            VaultActionDock(
-                onAddClick = {
-                    selectedTab = null
-                    onAdd()
-                },
-                onGeneratorClick = {
-                    selectedTab = selectedTab.toggle(VaultTab.GENERATOR)
-                },
-                onHealthClick = {
-                    selectedTab = selectedTab.toggle(VaultTab.HEALTH)
-                },
-                onSettingsClick = {
-                    selectedTab = selectedTab.toggle(VaultTab.SETTINGS)
-                },
-                generatorSelected = selectedTab == VaultTab.GENERATOR,
-                healthSelected = selectedTab == VaultTab.HEALTH,
-                settingsSelected = selectedTab == VaultTab.SETTINGS,
-            )
-        },
-    ) { contentPadding ->
-        val contentModifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding)
-            .consumeWindowInsets(contentPadding)
-
-        Box(modifier = contentModifier) {
-            when (selectedTab) {
-                VaultTab.GENERATOR -> generatorContent(Modifier.fillMaxSize())
-                VaultTab.HEALTH -> healthContent(Modifier.fillMaxSize())
-                VaultTab.SETTINGS -> settingsContent(Modifier.fillMaxSize())
-                null -> vaultContent(Modifier.fillMaxSize())
-            }
+    Box(modifier = modifier.fillMaxSize()) {
+        when (selectedTab) {
+            VaultTab.HOME -> vaultContent(Modifier.fillMaxSize())
+            VaultTab.GENERATOR -> generatorContent(Modifier.fillMaxSize())
+            VaultTab.HEALTH -> healthContent(Modifier.fillMaxSize())
+            VaultTab.SETTINGS -> settingsContent(Modifier.fillMaxSize())
         }
+
+        VaultActionDock(
+            onAddClick = {
+                selectedTab = VaultTab.HOME
+                onAdd()
+            },
+            onGeneratorClick = {
+                selectedTab = selectedTab.toggle(VaultTab.GENERATOR)
+            },
+            onHealthClick = {
+                selectedTab = selectedTab.toggle(VaultTab.HEALTH)
+            },
+            onSettingsClick = {
+                selectedTab = selectedTab.toggle(VaultTab.SETTINGS)
+            },
+            onHomeClick = { selectedTab = VaultTab.HOME },
+            homeSelected = selectedTab == VaultTab.HOME,
+            generatorSelected = selectedTab == VaultTab.GENERATOR,
+            healthSelected = selectedTab == VaultTab.HEALTH,
+            settingsSelected = selectedTab == VaultTab.SETTINGS,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 }

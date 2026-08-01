@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -44,7 +43,24 @@ fun GeneratorScreen(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
-        topBar = {
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.background,
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(
+                    start = ComponentSpacing.screenHorizontal,
+                    end = ComponentSpacing.screenHorizontal,
+                    top = if (showBackButton) ComponentSpacing.screenVertical else 0.dp,
+                    bottom = if (showBackButton) ComponentSpacing.screenVertical else 112.dp,
+                )
+                .widthIn(max = 760.dp)
+                .fillMaxWidth()
+        ) {
             if (showBackButton) {
                 TopAppBar(
                     title = {},
@@ -61,24 +77,7 @@ fun GeneratorScreen(
                     ),
                 )
             }
-        },
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background,
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .imePadding()
-                .navigationBarsPadding()
-                .padding(
-                    horizontal = ComponentSpacing.screenHorizontal,
-                    vertical = ComponentSpacing.screenVertical,
-                )
-                .widthIn(max = 760.dp)
-                .fillMaxWidth()
-        ) {
+
             EditorialPageHeader(
                 eyebrow = stringResource(Res.string.ui_encrypted_vault),
                 title = stringResource(Res.string.ui_password_generator),
