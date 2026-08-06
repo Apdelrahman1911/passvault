@@ -113,6 +113,30 @@ key. In Play Console, invite the generated beta service account with release and
 testing-track permissions only; invite production with only the production and
 store-presence permissions it needs.
 
+### PassVault Play app-Admin exception
+
+The account owner explicitly accepts app-level Admin access for both release
+service accounts as a PassVault-specific security exception. This includes
+financial-data visibility, permission management, reviews, production and test
+releases, tester management, listings, drafts, orders, policy content, quality,
+and deep-link capabilities. The exception is valid only when all of the
+following remain true:
+
+- the exported Play user status is `ACCESS_GRANTED`;
+- the only app grant is `com.passvault.android`;
+- no account-level or global permission is present;
+- `PLAY_SERVICE_ACCOUNT_PERMISSION_MODE=PASSVAULT_APP_ADMIN_ACCEPTED` exists
+  only in the ignored local `values.env`;
+- Google Cloud service accounts have no project role or user-managed JSON key;
+- beta OIDC remains limited to `mobile-beta` and `mobile-external-beta`, while
+  production OIDC remains limited to `mobile-production`.
+
+Without that exact opt-in value, validation defaults to role-separated strict
+least privilege. Re-export `play-users.csv` and revalidate after every Play
+permission change. `Play access check` may create an empty disposable edit to
+verify federated package visibility; it reads tracks/listings, deletes the edit,
+and has no bundle, edit-commit, metadata-write, release, or publication path.
+
 ## 5. Prepare and test the release
 
 Increment `VERSION_CODE` for every store upload and update semantic

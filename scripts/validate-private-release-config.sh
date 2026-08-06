@@ -632,6 +632,47 @@ else
         "Add one real tester email per line before Play closed testing."
 fi
 
+PLAY_USERS_FILE="${PLAY_USERS_FILE:-release/private/play-users.csv}"
+play_permission_mode="${PLAY_SERVICE_ACCOUNT_PERMISSION_MODE:-STRICT_LEAST_PRIVILEGE}"
+check_private_file PLAY_USERS_FILE || true
+play_users_file="$checked_private_file"
+if [[ -n "$play_users_file" ]]; then
+    play_validation_output="$temporary_root/play-service-account-validation.txt"
+    play_validation_error="$temporary_root/play-service-account-validation.err"
+    : > "$play_validation_output"
+    : > "$play_validation_error"
+    chmod 600 "$play_validation_output" "$play_validation_error"
+    beta_play_service_account="passvault-play-beta@${GOOGLE_CLOUD_PROJECT_ID:-missing}.iam.gserviceaccount.com"
+    production_play_service_account="passvault-play-prod@${GOOGLE_CLOUD_PROJECT_ID:-missing}.iam.gserviceaccount.com"
+    if ruby "$repository_root/scripts/validate-play-service-accounts.rb" \
+        --csv "$play_users_file" \
+        --package "${ANDROID_PACKAGE_NAME:-}" \
+        --beta-email "$beta_play_service_account" \
+        --production-email "$production_play_service_account" \
+        --mode "$play_permission_mode" \
+        >"$play_validation_output" 2>"$play_validation_error"; then
+        if [[ "$play_permission_mode" == "PASSVAULT_APP_ADMIN_ACCEPTED" ]]; then
+            play_permission_summary="Active; com.passvault.android only; no account/global permissions; app-level Admin exception accepted"
+            record_result "Google Play app-level Admin security exception" "Local release policy" \
+                "Explicitly accepted" "values.env:PLAY_SERVICE_ACCOUNT_PERMISSION_MODE" \
+                "PassVault-only Admin includes financial, permission management, reviews, production/testing, listings, drafts, orders, policy, quality, and deep-link capabilities" \
+                "Re-audit play-users.csv after every Play permission change; never add account/global access."
+        else
+            play_permission_summary="Active; com.passvault.android only; no account/global permissions; strict role-specific least privilege"
+            record_result "Google Play service-account permission policy" "Local release policy" \
+                "Strict" "default validator policy" "Beta and production permissions are separated" "None"
+        fi
+        record_result "Google Play beta service account" "Play app permission validation" "Ready" \
+            "$PLAY_USERS_FILE" "$play_permission_summary" "None"
+        record_result "Google Play production service account" "Play app permission validation" "Ready" \
+            "$PLAY_USERS_FILE" "$play_permission_summary" "None"
+    else
+        fail_result "Google Play service-account permissions" "Play app permission validation" "No" \
+            "$PLAY_USERS_FILE" "Access state, package scope, account/global access, or permission policy mismatch" \
+            "Correct the Play grants, export a fresh user list, and retain strict mode unless an explicit exception is approved."
+    fi
+fi
+
 report_tmp="$temporary_root/secret-upload-report.md"
 {
     echo "# PassVault Secret Upload Report"

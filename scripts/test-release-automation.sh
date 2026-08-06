@@ -50,6 +50,63 @@ cleanup() {
 }
 trap cleanup EXIT
 
+play_csv_header='Email,Status,Expiration time,Invitation time,App permissions,Account permissions'
+play_beta_email='beta-validator@passvault-test.iam.gserviceaccount.com'
+play_production_email='production-validator@passvault-test.iam.gserviceaccount.com'
+play_strict_csv="$temporary_root/play-strict.csv"
+play_admin_csv="$temporary_root/play-admin.csv"
+play_global_csv="$temporary_root/play-global.csv"
+play_other_app_csv="$temporary_root/play-other-app.csv"
+play_admin_permissions='CAN_VIEW_FINANCIAL_DATA;CAN_MANAGE_PERMISSIONS;CAN_REPLY_TO_REVIEWS;CAN_MANAGE_PUBLIC_APKS;CAN_MANAGE_TRACK_APKS;CAN_MANAGE_TRACK_USERS;CAN_MANAGE_PUBLIC_LISTING;CAN_MANAGE_DRAFT_APPS;CAN_MANAGE_ORDERS;CAN_MANAGE_APP_CONTENT;CAN_VIEW_NON_FINANCIAL_DATA;CAN_VIEW_APP_QUALITY;CAN_MANAGE_DEEPLINKS'
+{
+    printf '%s\n' "$play_csv_header"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:CAN_MANAGE_TRACK_APKS;CAN_VIEW_NON_FINANCIAL_DATA},\n' \
+        "$play_beta_email"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:CAN_MANAGE_PUBLIC_APKS;CAN_MANAGE_PUBLIC_LISTING;CAN_VIEW_NON_FINANCIAL_DATA},\n' \
+        "$play_production_email"
+} > "$play_strict_csv"
+{
+    printf '%s\n' "$play_csv_header"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:%s},\n' "$play_beta_email" "$play_admin_permissions"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:%s},\n' "$play_production_email" "$play_admin_permissions"
+} > "$play_admin_csv"
+{
+    printf '%s\n' "$play_csv_header"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:%s},CAN_MANAGE_PUBLIC_APKS_GLOBAL\n' \
+        "$play_beta_email" "$play_admin_permissions"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:%s},\n' "$play_production_email" "$play_admin_permissions"
+} > "$play_global_csv"
+{
+    printf '%s\n' "$play_csv_header"
+    printf '%s,ACCESS_GRANTED,,,{com.other.app:%s},\n' "$play_beta_email" "$play_admin_permissions"
+    printf '%s,ACCESS_GRANTED,,,{com.passvault.android:%s},\n' "$play_production_email" "$play_admin_permissions"
+} > "$play_other_app_csv"
+
+play_validator_arguments=(
+    --package com.passvault.android
+    --beta-email "$play_beta_email"
+    --production-email "$play_production_email"
+)
+ruby ./scripts/validate-play-service-accounts.rb --csv "$play_strict_csv" \
+    "${play_validator_arguments[@]}" --mode STRICT_LEAST_PRIVILEGE >/dev/null
+ruby ./scripts/validate-play-service-accounts.rb --csv "$play_admin_csv" \
+    "${play_validator_arguments[@]}" --mode PASSVAULT_APP_ADMIN_ACCEPTED >/dev/null
+if ruby ./scripts/validate-play-service-accounts.rb --csv "$play_admin_csv" \
+    "${play_validator_arguments[@]}" --mode STRICT_LEAST_PRIVILEGE >/dev/null 2>&1; then
+    echo "App-level Admin was accepted without the explicit security-exception mode." >&2
+    exit 1
+fi
+if ruby ./scripts/validate-play-service-accounts.rb --csv "$play_global_csv" \
+    "${play_validator_arguments[@]}" --mode PASSVAULT_APP_ADMIN_ACCEPTED >/dev/null 2>&1; then
+    echo "Account/global Play permissions were accepted by the app-Admin exception." >&2
+    exit 1
+fi
+if ruby ./scripts/validate-play-service-accounts.rb --csv "$play_other_app_csv" \
+    "${play_validator_arguments[@]}" --mode PASSVAULT_APP_ADMIN_ACCEPTED >/dev/null 2>&1; then
+    echo "Play access to another app was accepted by the PassVault-only exception." >&2
+    exit 1
+fi
+
 valid_asc_key="$temporary_root/valid-asc-key.p8"
 traditional_asc_key="$temporary_root/valid-asc-key-legacy.pem"
 invalid_asc_key="$temporary_root/invalid-asc-key.p8"
@@ -216,6 +273,16 @@ grep -Fq 'Enforce App Store France availability constraint' \
     .github/workflows/mobile-store-release.yml
 grep -Fq 'IOS_FRANCE_AVAILABLE' fastlane/Fastfile
 bash -n scripts/verify-ios-release-signing.sh
+ruby -c scripts/validate-play-service-accounts.rb >/dev/null
+bash -n scripts/verify-play-oidc-access.sh
+grep -Fq 'VERIFY_ONLY_NO_UPLOAD' .github/workflows/play-access-check.yml
+grep -Fq 'PLAY_EDIT_DELETED=PASS' scripts/verify-play-oidc-access.sh
+grep -Fq 'api_request DELETE' scripts/verify-play-oidc-access.sh
+if grep -Eiq '(edits/.*/commit|/bundles|upload_to_play_store|fastlane)' \
+    scripts/verify-play-oidc-access.sh .github/workflows/play-access-check.yml; then
+    echo "The Play access check contains a store upload or edit-commit path." >&2
+    exit 1
+fi
 ruby -c scripts/configure-app-store-connect-beta.rb >/dev/null
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
 grep -Fq 'EXPORT_COMPLIANCE_CODE=ABSENT' scripts/verify-ios-release-signing.sh
