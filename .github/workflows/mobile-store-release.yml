@@ -285,6 +285,12 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -s \
             -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
           security list-keychains -d user -s "$KEYCHAIN_PATH"
+          CODESIGN_IDENTITY="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
+            awk '$2 ~ /^[0-9A-Fa-f]{40}$/ { print toupper($2); exit }')"
+          if [[ ! "$CODESIGN_IDENTITY" =~ ^[0-9A-F]{40}$ ]]; then
+            echo "The imported Apple Distribution identity is unavailable." >&2
+            exit 1
+          fi
 
           security cms -D -i "$PRIVATE_RUNTIME/profile.mobileprovision" > "$PRIVATE_RUNTIME/profile.plist"
           PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PRIVATE_RUNTIME/profile.plist")"
@@ -305,6 +311,7 @@ jobs:
 
           echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "CODESIGN_IDENTITY=$CODESIGN_IDENTITY" >> "$GITHUB_ENV"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
           if [[ -f "$PRIVATE_RUNTIME/testflight-testers.csv" ]]; then
             echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$PRIVATE_RUNTIME/testflight-testers.csv" >> "$GITHUB_ENV"
@@ -349,6 +356,7 @@ jobs:
             MARKETING_VERSION="${{ needs.validate.outputs.version }}" \
             CURRENT_PROJECT_VERSION="${{ needs.validate.outputs.version_code }}" \
             CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="$CODESIGN_IDENTITY" \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             INFOPLIST_KEY_ITSAppUsesNonExemptEncryption="$ENCRYPTION_FLAG" \
             LD_GENERATE_MAP_FILE=YES \
