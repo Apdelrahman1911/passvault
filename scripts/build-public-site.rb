@@ -94,12 +94,43 @@ FileUtils.cp(logo_source, output.join("assets", "passvault-icon.png"))
 
 Dir.glob(output.join("**", "*.html")).each do |path|
   content = File.read(path, encoding: Encoding::UTF_8)
-  content.scan(/(?:href|src)="(\/passvault\/[^"#?]*)"/).flatten.each do |public_path|
-    relative_path = public_path.delete_prefix("/passvault/")
+  content.scan(/(?:href|src)="(\/[^"#?]*)"/).flatten.each do |public_path|
+    relative_path = public_path.delete_prefix("/")
     destination = output.join(relative_path)
     destination = destination.join("index.html") if relative_path.empty? || destination.directory?
     abort "Broken internal site link in #{path}: #{public_path}" unless destination.file?
   end
+end
+
+legacy_redirects = {
+  "passvault/index.html" => "/",
+  "passvault/privacy/index.html" => "/privacy/",
+  "passvault/support/index.html" => "/support/",
+  "passvault/ar/index.html" => "/ar/",
+  "passvault/ar/privacy/index.html" => "/ar/privacy/",
+  "passvault/ar/support/index.html" => "/ar/support/",
+}.freeze
+
+legacy_redirects.each do |relative_path, target|
+  destination = output.join(relative_path)
+  FileUtils.mkdir_p(destination.dirname)
+  File.write(
+    destination,
+    <<~HTML,
+      <!doctype html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex">
+        <meta http-equiv="refresh" content="0; url=#{target}">
+        <link rel="canonical" href="https://passvault.kiramanga.me#{target}">
+        <title>PassVault</title>
+      </head>
+      <body><p><a href="#{target}">Continue to PassVault</a></p></body>
+      </html>
+    HTML
+    mode: "w:UTF-8",
+  )
 end
 
 puts "Public site built successfully (#{expected_pages.length} pages)."
