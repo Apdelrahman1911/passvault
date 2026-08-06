@@ -12,8 +12,20 @@ repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 private_root="$repository_root/release/private"
 values_file="$private_root/values.env"
 report_file="$private_root/generated/secret-upload-report.md"
+# shellcheck source=scripts/lib/dotenv.sh
+source "$repository_root/scripts/lib/dotenv.sh"
 
 cd "$repository_root"
+
+if ! command -v gcloud >/dev/null 2>&1; then
+    for google_sdk_root in /opt/homebrew/share/google-cloud-sdk /usr/local/share/google-cloud-sdk; do
+        if [[ -x "$google_sdk_root/bin/gcloud" ]]; then
+            PATH="$google_sdk_root/bin:$PATH"
+            export PATH
+            break
+        fi
+    done
+fi
 
 for command_name in gh gcloud jq; do
     if ! command -v "$command_name" >/dev/null 2>&1; then
@@ -32,26 +44,7 @@ if ! git check-ignore -q release/private/values.env || [[ -n "$(git ls-files rel
     exit 1
 fi
 
-load_values() {
-    local line key value
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        line="${line%$'\r'}"
-        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        [[ "$line" == *=* ]] || continue
-        key="${line%%=*}"
-        value="${line#*=}"
-        [[ "$key" =~ ^[A-Z][A-Z0-9_]*$ ]] || continue
-        case "$key" in
-            PATH|IFS|BASH_ENV|ENV|SHELLOPTS|BASHOPTS|CDPATH|GLOBIGNORE|HOME|PWD|TMPDIR|LD_*|DYLD_*)
-                echo "values.env contains an unsafe variable name." >&2
-                exit 1
-                ;;
-        esac
-        printf -v "$key" '%s' "$value"
-    done < "$values_file"
-}
-
-load_values
+passvault_dotenv_load_file "$values_file"
 
 authenticated_account="$(gh api user --jq .login)"
 accessible_repository="$(gh repo view "${GITHUB_REPOSITORY:-}" --json nameWithOwner --jq .nameWithOwner)"
@@ -148,11 +141,28 @@ ensure_service_account() {
     fi
 }
 
+wait_for_service_account() {
+    local service_account="$1"
+    local attempt
+    for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+        if gcloud iam service-accounts describe "$service_account" \
+            --project "$GOOGLE_CLOUD_PROJECT_ID" >/dev/null 2>&1; then
+            return 0
+        fi
+        sleep 5
+    done
+    echo "A newly created release service account did not become visible in time." >&2
+    return 1
+}
+
 ensure_service_account "$beta_service_account_id" "PassVault Play beta publisher"
 ensure_service_account "$production_service_account_id" "PassVault Play production publisher"
 
 beta_service_account="$beta_service_account_id@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com"
 production_service_account="$production_service_account_id@$GOOGLE_CLOUD_PROJECT_ID.iam.gserviceaccount.com"
+
+wait_for_service_account "$beta_service_account"
+wait_for_service_account "$production_service_account"
 
 validate_keyless_service_account() {
     local service_account="$1"

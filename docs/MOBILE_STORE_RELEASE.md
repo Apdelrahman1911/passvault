@@ -27,6 +27,12 @@ P12 private key/certificate/team, the provisioning profile team/bundle, the P8,
 IDs, URLs, any supplied tester emails, bilingual copy, and export-compliance decision. The
 ignored report contains names and validation results only.
 
+`values.env` is parsed strictly as dotenv data, never sourced as shell code.
+Matching single or double quotes are removed without evaluating their contents.
+On macOS, legacy Keychain PKCS#12 exports are checked with Homebrew OpenSSL and
+its legacy provider when available; failures identify the password, provider,
+certificate, private key, key pairing, or provisioning-profile match separately.
+
 Tester fields and files may stay empty during infrastructure and signing
 preparation. They are reported as deferred and are never uploaded. External
 TestFlight and Play closed-test jobs validate their own real tester file before

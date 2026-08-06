@@ -10,24 +10,10 @@ fi
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 private_root="$repository_root/release/private"
 values_file="$private_root/values.env"
-
-load_values() {
-    local line key value
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        line="${line%$'\r'}"
-        [[ -z "$line" || "$line" =~ ^[[:space:]]*# || "$line" != *=* ]] && continue
-        key="${line%%=*}"
-        value="${line#*=}"
-        [[ "$key" =~ ^[A-Z][A-Z0-9_]*$ ]] || continue
-        case "$key" in
-            PATH|IFS|BASH_ENV|ENV|SHELLOPTS|BASHOPTS|CDPATH|GLOBIGNORE|HOME|PWD|TMPDIR|LD_*|DYLD_*)
-                echo "values.env contains an unsafe variable name." >&2
-                exit 1
-                ;;
-        esac
-        printf -v "$key" '%s' "$value"
-    done < "$values_file"
-}
+# shellcheck source=scripts/lib/dotenv.sh
+source "$repository_root/scripts/lib/dotenv.sh"
+# shellcheck source=scripts/lib/pkcs12-validation.sh
+source "$repository_root/scripts/lib/pkcs12-validation.sh"
 
 cd "$repository_root"
 if ! git check-ignore -q release/private/values.env || [[ -n "$(git ls-files release/private)" ]]; then
@@ -36,7 +22,9 @@ if ! git check-ignore -q release/private/values.env || [[ -n "$(git ls-files rel
 fi
 
 ./scripts/validate-private-release-config.sh >/dev/null
-load_values
+passvault_dotenv_load_file "$values_file"
+passvault_select_openssl
+openssl_binary="$PASSVAULT_OPENSSL_BINARY"
 
 for required_name in IOS_DISTRIBUTION_CERTIFICATE_FILE IOS_DISTRIBUTION_CERTIFICATE_PASSWORD \
     IOS_PROVISIONING_PROFILE_FILE APPLE_TEAM_ID IOS_BUNDLE_ID; do
@@ -83,19 +71,15 @@ trap cleanup EXIT
 trap 'status=$?; echo "Signed iOS verification failed at script line $LINENO (status $status)." >&2; exit "$status"' ERR
 
 export IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
-/usr/bin/openssl pkcs12 -in "$certificate_path" -clcerts -nokeys \
-    -passin env:IOS_DISTRIBUTION_CERTIFICATE_PASSWORD \
-    -out "$verification_root/distribution.pem" >/dev/null 2>&1
-/usr/bin/openssl pkcs12 -in "$certificate_path" -nocerts -nodes \
-    -passin env:IOS_DISTRIBUTION_CERTIFICATE_PASSWORD 2>/dev/null |
-    /usr/bin/openssl pkey -pubout -out "$verification_root/private-public.pem" >/dev/null 2>&1
-/usr/bin/openssl x509 -in "$verification_root/distribution.pem" -pubkey -noout \
-    > "$verification_root/certificate-public.pem"
-cmp -s "$verification_root/private-public.pem" "$verification_root/certificate-public.pem"
+p12_validation_root="$verification_root/pkcs12-validation"
+mkdir -m 700 "$p12_validation_root"
+passvault_validate_pkcs12 "$openssl_binary" "$certificate_path" \
+    IOS_DISTRIBUTION_CERTIFICATE_PASSWORD "$p12_validation_root"
+cp "$PASSVAULT_P12_CERTIFICATE_FILE" "$verification_root/distribution.pem"
 
-expected_sha1="$(/usr/bin/openssl x509 -in "$verification_root/distribution.pem" \
+expected_sha1="$("$openssl_binary" x509 -in "$verification_root/distribution.pem" \
     -fingerprint -sha1 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
-expected_sha256="$(/usr/bin/openssl x509 -in "$verification_root/distribution.pem" \
+expected_sha256="$("$openssl_binary" x509 -in "$verification_root/distribution.pem" \
     -fingerprint -sha256 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
 codesign_identity="${expected_sha1//:/}"
 
@@ -117,7 +101,7 @@ else
     installed_profile_by_script=true
 fi
 
-keychain_password="$(/usr/bin/openssl rand -hex 32)"
+keychain_password="$("$openssl_binary" rand -hex 32)"
 security create-keychain -p "$keychain_password" "$keychain_path"
 security set-keychain-settings -lut 21600 "$keychain_path"
 security unlock-keychain -p "$keychain_password" "$keychain_path"
@@ -183,19 +167,19 @@ security cms -D -i "$app_path/embedded.mobileprovision" > "$archive_profile_plis
 archive_profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$archive_profile_plist")"
 [[ "$archive_profile_uuid" == "$profile_uuid" ]]
 /usr/bin/plutil -extract DeveloperCertificates.0 raw -o - "$archive_profile_plist" 2>/dev/null |
-    /usr/bin/openssl base64 -d -A > "$verification_root/archive-profile-cert.der"
-archive_profile_sha1="$(/usr/bin/openssl x509 -inform DER \
+    "$openssl_binary" base64 -d -A > "$verification_root/archive-profile-cert.der"
+archive_profile_sha1="$("$openssl_binary" x509 -inform DER \
     -in "$verification_root/archive-profile-cert.der" -fingerprint -sha1 -noout |
     sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
-archive_profile_sha256="$(/usr/bin/openssl x509 -inform DER \
+archive_profile_sha256="$("$openssl_binary" x509 -inform DER \
     -in "$verification_root/archive-profile-cert.der" -fingerprint -sha256 -noout |
     sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
 [[ "$archive_profile_sha1" == "$expected_sha1" && "$archive_profile_sha256" == "$expected_sha256" ]]
 
 codesign -d --extract-certificates="$verification_root/signed-cert" "$app_path" >/dev/null 2>&1
-signed_sha1="$(/usr/bin/openssl x509 -inform DER -in "$verification_root/signed-cert0" \
+signed_sha1="$("$openssl_binary" x509 -inform DER -in "$verification_root/signed-cert0" \
     -fingerprint -sha1 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
-signed_sha256="$(/usr/bin/openssl x509 -inform DER -in "$verification_root/signed-cert0" \
+signed_sha256="$("$openssl_binary" x509 -inform DER -in "$verification_root/signed-cert0" \
     -fingerprint -sha256 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
 [[ "$signed_sha1" == "$expected_sha1" && "$signed_sha256" == "$expected_sha256" ]]
 

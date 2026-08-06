@@ -11,6 +11,8 @@ fi
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 values_file="$repository_root/release/private/values.env"
 keystore_file="$repository_root/release/private/files/android-upload-keystore.jks"
+# shellcheck source=scripts/lib/dotenv.sh
+source "$repository_root/scripts/lib/dotenv.sh"
 temporary_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-android-cert.XXXXXX")"
 chmod 700 "$temporary_root"
 
@@ -32,21 +34,7 @@ if [[ ! -s "$values_file" || ! -s "$keystore_file" || -L "$values_file" || -L "$
     exit 1
 fi
 
-read_value() {
-    local key="$1"
-    awk -F= -v key="$key" '
-        $0 !~ /^[[:space:]]*#/ && $1 == key {
-            print substr($0, index($0, "=") + 1)
-            found = 1
-            exit
-        }
-        END { if (!found) exit 1 }
-    ' "$values_file"
-}
-
-KEYSTORE_PASSWORD="$(read_value KEYSTORE_PASSWORD)"
-KEY_ALIAS="$(read_value KEY_ALIAS)"
-KEY_PASSWORD="$(read_value KEY_PASSWORD)"
+passvault_dotenv_load_file "$values_file"
 if [[ -z "$KEYSTORE_PASSWORD" || -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" ]]; then
     echo "Android signing values are incomplete." >&2
     exit 1

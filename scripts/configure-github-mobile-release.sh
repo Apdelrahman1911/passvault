@@ -12,6 +12,8 @@ repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 private_root="$repository_root/release/private"
 values_file="$private_root/values.env"
 report_file="$private_root/generated/secret-upload-report.md"
+# shellcheck source=scripts/lib/dotenv.sh
+source "$repository_root/scripts/lib/dotenv.sh"
 
 cd "$repository_root"
 
@@ -31,26 +33,7 @@ if ! git check-ignore -q release/private/values.env || [[ -n "$(git ls-files rel
     exit 1
 fi
 
-load_values() {
-    local line key value
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        line="${line%$'\r'}"
-        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        [[ "$line" == *=* ]] || continue
-        key="${line%%=*}"
-        value="${line#*=}"
-        [[ "$key" =~ ^[A-Z][A-Z0-9_]*$ ]] || continue
-        case "$key" in
-            PATH|IFS|BASH_ENV|ENV|SHELLOPTS|BASHOPTS|CDPATH|GLOBIGNORE|HOME|PWD|TMPDIR|LD_*|DYLD_*)
-                echo "values.env contains an unsafe variable name." >&2
-                exit 1
-                ;;
-        esac
-        printf -v "$key" '%s' "$value"
-    done < "$values_file"
-}
-
-load_values
+passvault_dotenv_load_file "$values_file"
 
 private_tester_path() {
     local relative_path="$1"

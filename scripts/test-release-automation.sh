@@ -5,6 +5,8 @@ set -euo pipefail
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repository_root"
 
+./scripts/test-private-release-validator.sh >/dev/null
+
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
 export SUPPORT_EMAIL="support@passvault.test"

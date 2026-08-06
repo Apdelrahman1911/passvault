@@ -122,6 +122,9 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew test verifyDependencies --stacktrace
 
+      - name: Test release automation scripts
+        run: ./scripts/test-release-automation.sh
+
       - name: Generate Test Report
         if: always()
         uses: dorny/test-reporter@v3

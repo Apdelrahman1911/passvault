@@ -6,6 +6,10 @@ repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 private_root="$repository_root/release/private"
 values_file="$private_root/values.env"
 report_file="$private_root/generated/secret-upload-report.md"
+# shellcheck source=scripts/lib/dotenv.sh
+source "$repository_root/scripts/lib/dotenv.sh"
+# shellcheck source=scripts/lib/pkcs12-validation.sh
+source "$repository_root/scripts/lib/pkcs12-validation.sh"
 temporary_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-release-validation.XXXXXX")"
 chmod 700 "$temporary_root"
 
@@ -65,34 +69,27 @@ fail_result() {
 }
 
 load_values() {
-    local line key value
+    local line
     while IFS= read -r line || [[ -n "$line" ]]; do
-        line="${line%$'\r'}"
-        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        if [[ "$line" != *=* ]]; then
-            fail_result "values.env" "Local only" "No" "values.env" "Invalid line format" \
-                "Use NAME=value format without shell commands."
+        if ! passvault_dotenv_parse_line "$line"; then
+            fail_result "values.env" "Local only" "No" "values.env" \
+                "Invalid dotenv entry: $PASSVAULT_DOTENV_ERROR" \
+                "Use a literal NAME=value entry; matching single or double quotes are supported."
             continue
         fi
-        key="${line%%=*}"
-        value="${line#*=}"
-        if [[ ! "$key" =~ ^[A-Z][A-Z0-9_]*$ ]]; then
-            fail_result "values.env" "Local only" "No" "values.env" "Invalid variable name" \
-                "Use uppercase letters, numbers, and underscores only."
-            continue
+        if [[ "$PASSVAULT_DOTENV_KIND" == "entry" ]]; then
+            printf -v "$PASSVAULT_DOTENV_KEY" '%s' "$PASSVAULT_DOTENV_VALUE"
         fi
-        case "$key" in
-            PATH|IFS|BASH_ENV|ENV|SHELLOPTS|BASHOPTS|CDPATH|GLOBIGNORE|HOME|PWD|TMPDIR|LD_*|DYLD_*)
-                fail_result "values.env" "Local only" "No" "values.env" "Unsafe variable name" \
-                    "Remove shell and process-control variables from values.env."
-                continue
-                ;;
-        esac
-        printf -v "$key" '%s' "$value"
     done < "$values_file"
 }
 
 load_values
+
+if ! passvault_select_openssl; then
+    echo "OpenSSL is required for release validation." >&2
+    exit 1
+fi
+openssl_binary="$PASSVAULT_OPENSSL_BINARY"
 
 required_values=(
     PUBLISHER_NAME_EN PUBLISHER_NAME_AR COPYRIGHT_HOLDER_EN COPYRIGHT_HOLDER_AR
@@ -373,45 +370,72 @@ fi
 
 if [[ -n "$ios_certificate" && -n "${IOS_DISTRIBUTION_CERTIFICATE_PASSWORD:-}" ]]; then
     export PASSVAULT_VALIDATION_P12PASS="$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD"
-    extracted_ios_certificate="$temporary_root/ios-distribution-cert.pem"
-    extracted_ios_private_key="$temporary_root/ios-private-key.pem"
-    if openssl pkcs12 -in "$ios_certificate" -clcerts -nokeys \
-        -passin env:PASSVAULT_VALIDATION_P12PASS -out "$extracted_ios_certificate" >/dev/null 2>&1 &&
-        openssl pkcs12 -in "$ios_certificate" -nocerts -nodes \
-        -passin env:PASSVAULT_VALIDATION_P12PASS -out "$extracted_ios_private_key" >/dev/null 2>&1 &&
-        openssl x509 -in "$extracted_ios_certificate" -checkend 0 -noout >/dev/null 2>&1; then
-        ios_fingerprint="$(openssl x509 -in "$extracted_ios_certificate" -fingerprint -sha256 -noout |
-            sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
-        ios_sha1_fingerprint="$(openssl x509 -in "$extracted_ios_certificate" -fingerprint -sha1 -noout |
-            sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
-        ios_subject="$(openssl x509 -in "$extracted_ios_certificate" -subject -noout -nameopt RFC2253)"
-        certificate_team="$(printf '%s' "$ios_subject" | sed -n 's/.*OU=\([^,]*\).*/\1/p')"
-        certificate_public_key="$(openssl x509 -in "$extracted_ios_certificate" -pubkey -noout |
-            openssl pkey -pubin -outform DER 2>/dev/null | openssl dgst -sha256 -r | awk '{print $1}')"
-        private_public_key="$(openssl pkey -in "$extracted_ios_private_key" -pubout -outform DER 2>/dev/null |
-            openssl dgst -sha256 -r | awk '{print $1}')"
-        if [[ -z "$certificate_public_key" || "$certificate_public_key" != "$private_public_key" ]]; then
+    p12_validation_root="$temporary_root/pkcs12-validation"
+    mkdir -m 700 "$p12_validation_root"
+    if passvault_validate_pkcs12 "$openssl_binary" "$ios_certificate" \
+        PASSVAULT_VALIDATION_P12PASS "$p12_validation_root"; then
+        extracted_ios_certificate="$PASSVAULT_P12_CERTIFICATE_FILE"
+        if ! "$openssl_binary" x509 -in "$extracted_ios_certificate" -checkend 0 -noout \
+            >/dev/null 2>&1; then
             fail_result "iOS distribution certificate" "Signing validation" "No" \
-                "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Certificate and private key do not match" \
-                "Export the Apple Distribution identity together with its private key."
-        elif [[ "$ios_subject" != *"CN=Apple Distribution:"* && "$ios_subject" != *"CN=iPhone Distribution:"* ]]; then
-            fail_result "iOS distribution certificate" "Signing validation" "No" \
-                "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Not an Apple Distribution identity" \
-                "Export an Apple Distribution certificate, not a development certificate."
-        elif [[ -n "${APPLE_TEAM_ID:-}" && -n "$certificate_team" && "$certificate_team" != "$APPLE_TEAM_ID" ]]; then
-            fail_result "iOS distribution certificate" "Signing validation" "No" \
-                "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Valid; SHA-256 $ios_fingerprint; Team ID mismatch" \
-                "Provide a distribution certificate issued to APPLE_TEAM_ID."
+                "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Apple Distribution certificate is expired" \
+                "Obtain a current certificate and profile before release."
         else
-            record_result "iOS distribution certificate" "Signing validation" "Ready" \
-                "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" \
-                "Valid; SHA-1 $ios_sha1_fingerprint; SHA-256 $ios_fingerprint" "None"
+            ios_fingerprint="$("$openssl_binary" x509 -in "$extracted_ios_certificate" \
+                -fingerprint -sha256 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
+            ios_sha1_fingerprint="$("$openssl_binary" x509 -in "$extracted_ios_certificate" \
+                -fingerprint -sha1 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
+            ios_subject="$("$openssl_binary" x509 -in "$extracted_ios_certificate" \
+                -subject -noout -nameopt RFC2253)"
+            certificate_team="$(printf '%s' "$ios_subject" | sed -n 's/.*OU=\([^,]*\).*/\1/p')"
+            if [[ "$ios_subject" != *"CN=Apple Distribution:"* && \
+                "$ios_subject" != *"CN=iPhone Distribution:"* ]]; then
+                fail_result "iOS distribution certificate" "Signing validation" "No" \
+                    "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Not an Apple Distribution identity" \
+                    "Export an Apple Distribution certificate, not a development certificate."
+            elif [[ -n "${APPLE_TEAM_ID:-}" && -n "$certificate_team" && \
+                "$certificate_team" != "$APPLE_TEAM_ID" ]]; then
+                fail_result "iOS distribution certificate" "Signing validation" "No" \
+                    "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" \
+                    "Valid; SHA-256 $ios_fingerprint; Team ID mismatch" \
+                    "Provide a distribution certificate issued to APPLE_TEAM_ID."
+            else
+                record_result "iOS distribution certificate" "Signing validation" "Ready" \
+                    "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" \
+                    "Valid; SHA-1 $ios_sha1_fingerprint; SHA-256 $ios_fingerprint" "None"
+            fi
         fi
     else
+        case "$PASSVAULT_P12_STATUS" in
+            invalid_password)
+                p12_validation_message="Invalid PKCS#12 password"
+                p12_validation_action="Correct IOS_DISTRIBUTION_CERTIFICATE_PASSWORD in values.env."
+                ;;
+            unsupported_legacy_cipher)
+                p12_validation_message="Unsupported legacy PKCS#12 cipher or provider"
+                p12_validation_action="Install Homebrew OpenSSL 3 with its legacy provider enabled."
+                ;;
+            missing_certificate)
+                p12_validation_message="PKCS#12 contains no readable distribution certificate"
+                p12_validation_action="Verify the existing PKCS#12 export includes its certificate."
+                ;;
+            missing_private_key)
+                p12_validation_message="PKCS#12 contains no readable private key"
+                p12_validation_action="Verify the existing PKCS#12 export includes its private key."
+                ;;
+            certificate_private_key_mismatch)
+                p12_validation_message="PKCS#12 certificate and private key do not match"
+                p12_validation_action="Use an identity export whose certificate and private key are paired."
+                ;;
+            *)
+                p12_validation_message="Invalid PKCS#12 structure or MAC"
+                p12_validation_action="Verify the existing PKCS#12 file integrity and stored password."
+                ;;
+        esac
         fail_result "iOS distribution certificate" "Signing validation" "No" \
-            "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Invalid P12, password, certificate, or private key" \
-            "Export the Apple Distribution identity with its private key and correct password."
+            "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "$p12_validation_message" "$p12_validation_action"
     fi
+    unset PASSVAULT_VALIDATION_P12PASS
 fi
 
 decode_mobileprovision() {
@@ -423,12 +447,12 @@ decode_mobileprovision() {
         return 0
     fi
     : > "$output"
-    if openssl cms -inform DER -verify -noverify -in "$input" -out "$output" >/dev/null 2>&1 &&
+    if "$openssl_binary" cms -inform DER -verify -noverify -in "$input" -out "$output" >/dev/null 2>&1 &&
         [[ -s "$output" ]]; then
         return 0
     fi
     : > "$output"
-    openssl smime -inform DER -verify -noverify -in "$input" -out "$output" >/dev/null 2>&1 &&
+    "$openssl_binary" smime -inform DER -verify -noverify -in "$input" -out "$output" >/dev/null 2>&1 &&
         [[ -s "$output" ]]
 }
 
@@ -460,11 +484,11 @@ if [[ -n "$ios_profile" ]]; then
         for ((certificate_index = 0; certificate_index < profile_certificate_count; certificate_index++)); do
             embedded_certificate="$temporary_root/profile-certificate-$certificate_index.der"
             if /usr/bin/plutil -extract "DeveloperCertificates.$certificate_index" raw -o - \
-                "$profile_plist" 2>/dev/null | openssl base64 -d -A > "$embedded_certificate" 2>/dev/null &&
-                openssl x509 -inform DER -in "$embedded_certificate" -noout >/dev/null 2>&1; then
-                embedded_sha1="$(openssl x509 -inform DER -in "$embedded_certificate" \
+                "$profile_plist" 2>/dev/null | "$openssl_binary" base64 -d -A > "$embedded_certificate" 2>/dev/null &&
+                "$openssl_binary" x509 -inform DER -in "$embedded_certificate" -noout >/dev/null 2>&1; then
+                embedded_sha1="$("$openssl_binary" x509 -inform DER -in "$embedded_certificate" \
                     -fingerprint -sha1 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
-                embedded_sha256="$(openssl x509 -inform DER -in "$embedded_certificate" \
+                embedded_sha256="$("$openssl_binary" x509 -inform DER -in "$embedded_certificate" \
                     -fingerprint -sha256 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
                 [[ "$embedded_sha256" == "${ios_fingerprint:-}" ]] && profile_certificate_match=true
                 [[ -n "$embedded_fingerprint_summary" ]] && embedded_fingerprint_summary+="; "
