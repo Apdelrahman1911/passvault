@@ -41,6 +41,7 @@ kotlin {
                 implementation(project(":core:security"))
                 implementation(project(":core:designsystem"))
                 implementation(project(":core:navigation"))
+                implementation(project(":core:otp"))
 
                 // Compose
                 implementation(libs.compose.runtime)
@@ -77,12 +78,20 @@ kotlin {
         val androidMain = getByName("androidMain") {
             dependencies {
                 implementation(libs.compose.ui.tooling)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.lifecycle.runtime.compose)
+                implementation(libs.camerax.core)
+                implementation(libs.camerax.camera2)
+                implementation(libs.camerax.lifecycle)
+                implementation(libs.camerax.view)
+                implementation(libs.zxing.core)
             }
         }
 
         val desktopMain = getByName("desktopMain") {
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation(libs.zxing.core)
             }
         }
 

@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CloudOff
@@ -34,7 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +43,8 @@ import com.passvault.core.designsystem.components.EditorialIconTile
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialPanel
 import com.passvault.core.designsystem.components.EditorialStatusBanner
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.feature.onboarding.presentation.OnboardingViewModel
@@ -72,9 +71,7 @@ fun SecurityExplanationScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+                colors = passVaultTopAppBarColors(),
             )
         },
         modifier = modifier,
@@ -83,10 +80,8 @@ fun SecurityExplanationScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
                 .imePadding()
-                .navigationBarsPadding()
                 .padding(
                     horizontal = ComponentSpacing.screenHorizontal,
                     vertical = ComponentSpacing.screenVertical,

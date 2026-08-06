@@ -23,10 +23,14 @@ operation fails safely when the vault session is locked.
 - `ClipboardService`: sensitive copy with ownership-aware expiration.
 - `ScreenshotProtection` / `WindowProtection`: platform display controls.
 - `KeyringService`: optional platform secret storage that must fail closed.
+- `BiometricKeyStore`: platform storage for a VEK gated by an OS biometric-only key policy.
+- `BiometricUnlockService`: enrollment, status, removal, and verified session unlock for the current vault.
 - `BackupFileStore`: bounded platform document/file selection and read/write.
+- `TotpService`: strict Base32/`otpauth://totp` enrollment parsing and time-based code generation.
 
-Biometric authentication is intentionally absent. Any future implementation must authorize an OS-protected
-cryptographic key operation that gates vault-key unwrap; a Boolean prompt result is not a sufficient contract.
+Biometric unlock never accepts a Boolean prompt result as proof of vault access. Android releases the VEK only
+through an auth-per-use Keystore cipher; iOS releases a device-only Keychain item protected by the current biometric
+set. `VaultRepositoryImpl` then authenticates the vault verification record before publishing the session.
 
 ## Presentation contracts
 
@@ -40,4 +44,3 @@ passed into feature Composables.
 - New database schemas require exported-schema review and migrations from every supported released version.
 - Domain serialization used inside encrypted records must remain backward-readable before a format version changes.
 - Internal exception text, SQL, paths, ciphertext, and passwords must not cross into user-facing messages.
-

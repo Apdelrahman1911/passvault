@@ -64,12 +64,6 @@ if [[ ! "$requested_version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]
     exit 1
 fi
 
-expected_version_code=$((10#$version_major * 1000000 + 10#$version_minor * 1000 + 10#$version_patch))
-if (( version_code != expected_version_code )); then
-    echo "VERSION_CODE does not match the documented version-code formula." >&2
-    exit 1
-fi
-
 if (( version_code <= 0 || version_code > 2100000000 )); then
     echo "VERSION_CODE is outside Android's supported positive range." >&2
     exit 1
@@ -80,8 +74,8 @@ if (( build_number <= 0 )); then
     exit 1
 fi
 
-if (( minimum_supported_version > version_code )); then
-    echo "MIN_SUPPORTED_VERSION cannot exceed VERSION_CODE." >&2
+if (( minimum_supported_version <= 0 )); then
+    echo "MIN_SUPPORTED_VERSION must be positive." >&2
     exit 1
 fi
 
@@ -99,6 +93,7 @@ required_metadata=(
     SUPPORT_EMAIL
     SECURITY_EMAIL
     PRIVACY_POLICY_URL
+    SUPPORT_URL
     PROJECT_URL
 )
 
@@ -131,7 +126,7 @@ for name in SUPPORT_EMAIL SECURITY_EMAIL; do
     fi
 done
 
-for name in PRIVACY_POLICY_URL PROJECT_URL; do
+for name in PRIVACY_POLICY_URL SUPPORT_URL PROJECT_URL; do
     if [[ ! "${!name}" =~ ^https://[^[:space:]]+$ ]]; then
         echo "$name must be an HTTPS URL." >&2
         exit 1

@@ -27,10 +27,10 @@ manual device/visual pass.
 | Domain | models, typed IDs, validation, password strength/health, repository contracts | VERIFIED |
 | Crypto | libsodium engine, KDF, envelopes, associated data, subkeys, memory/cancellation handling | VERIFIED |
 | Database | entities, indexes, foreign keys, DAOs, transactions, encrypted repositories, schema export | VERIFIED |
-| Security | clipboard ownership, screenshot/window protection, keyring failure policy | VERIFIED at unit/source level |
-| Design system | light/dark semantic tokens, typography, spacing, shape, elevation, motion, feedback/form/responsive components, 539-key shared resource catalog, typed locale-safe presentation text | SOURCE |
+| Security | biometric key release/session verification, clipboard ownership, screenshot/window protection, keyring failure policy | VERIFIED at unit/source and target-compile level; device biometric smoke open |
+| Design system | light/dark semantic tokens, typography, spacing, shape, elevation, motion, feedback/form/responsive components, shared resource catalog, typed locale-safe presentation text | SOURCE |
 | Onboarding | welcome, password creation/confirmation, security explanation, vault creation | VERIFIED at state/compile level |
-| Unlock | password unlock, failure/throttle/loading/error, lock-safe state cleanup | VERIFIED at state/compile level |
+| Unlock | password and mobile biometric unlock, failure/throttle/loading/error, lock-safe state cleanup | VERIFIED at state/repository/compile level; device smoke open |
 | Vault | list/search/favorite/filter/sort, folders/tags, compact and expanded navigation | VERIFIED at state/compile level |
 | Credential | detail, copy/reveal, create/edit/delete, validation, dirty-state handling, folder/tag/history/metadata preservation | VERIFIED at state/compile level |
 | Generator | password/passphrase options, strength, copy/use action, saved preferences | VERIFIED at state/compile level |
@@ -50,7 +50,7 @@ preservation; attachment file creation/opening/packaging is not a feature.
 | UI-03 | master-password creation | validation/disabled present | secure field, IME/focus/scroll | SOURCE |
 | UI-04 | password confirmation/vault create | validation/loading/error/disabled | secure field and duplicate-submit guard | VERIFIED |
 | UI-05 | security explanation | normal/action present | semantic cards and bounded content | SOURCE |
-| UI-06 | unlock | normal/loading/error/disabled/throttle | secure input, IME, compact/expanded | VERIFIED |
+| UI-06 | unlock | normal/loading/error/disabled/throttle/biometric | secure input, adjacent biometric action, IME, compact/expanded | VERIFIED |
 | UI-07 | vault list/search/filter/sort | loading/empty/error/retry/list | lazy keys, compact/expanded navigation | VERIFIED |
 | UI-08 | folder sidebar/tag/filter controls | empty/selected/disabled | desktop pointer and compact alternatives | SOURCE |
 | UI-09 | credential detail | loading/error/content/delete confirmation | reveal/copy semantics and width bounds | VERIFIED |
@@ -75,6 +75,7 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 |---|---|
 | First launch -> create password -> confirm -> create vault -> vault | state/crypto/repository tests and target compilation pass |
 | Restart with existing vault -> unlock -> wrong password/throttle -> correct unlock | state and real repository crypto tests pass |
+| Enable mobile biometrics -> lock -> Face ID/Touch ID/strong biometric -> vault | state and verified-candidate repository tests pass; real device prompt/invalidation matrix remains open |
 | Manual/background/inactivity lock -> clear sensitive feature state -> unlock route | source/state tests pass; Android lifecycle device gate remains |
 | Create/edit/favorite/delete credential with folder/tags/history | repository transaction and ViewModel tests pass |
 | Search/filter/sort/empty and large lazy-list behavior | state tests/source review pass; performance device profiling remains |
@@ -90,13 +91,14 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 |---|---|---|---|---|---|---|
 | SEC-001 | S0 | persisted crypto blobs lacked an unambiguous authenticated format | nonce/blob representation had no strict envelope contract | version-2 XChaCha20-Poly1305 envelope, strict parsing and contextual AAD | round-trip/wrong-key/tamper/version tests | VERIFIED |
 | SEC-002 | S0 | record subkey derivation was described/used as password hashing with unsuitable semantics | password KDF and deterministic subkeys were conflated | length-prefixed purpose/record contexts with keyed BLAKE2b | domain-separation tests and source review | VERIFIED |
-| SEC-003 | S0 | incomplete biometric UI/adapters could imply a security feature without VEK-bound OS cryptography | prompt success was not a reviewed key-unwrapping boundary | removed UI, permission, dependencies, adapters, settings, routes, and claims | Android/Desktop/shared compile and source scan | VERIFIED |
+| SEC-003 | S0 | incomplete biometric UI/adapters could imply a security feature without VEK-bound OS cryptography | prompt success was not a reviewed key-unwrapping boundary | removed the unsafe prototype before the reviewed replacement in SEC-010 | historical Android/Desktop/shared compile and source scan | SUPERSEDED |
 | SEC-004 | S0 | sensitive copy controls could bypass expiration/ownership policy | direct Compose clipboard usage | all credential/generator copy events use `ClipboardService`; clear verifies ownership | service tests/source scan | VERIFIED |
 | SEC-005 | S0 | Desktop keyring fallback could create false protection | unavailable keyring behavior had a weak fallback | keyring access fails closed and is not used as vault authentication | source/tests | VERIFIED |
 | SEC-006 | S0 | backup screens advertised simulated/unimplemented paths | UI preceded an integrity-safe storage format | versioned independent-password `.pvault`, bounded parser, AAD, preview and transactional restore | comprehensive backup integration suite | VERIFIED |
 | SEC-007 | S0 | errors/cancellation could leak implementation details or swallow cancellation | broad exception mapping | cancellation rethrow, generic UI errors, bounded validation, buffer wipes | regression/source scan | VERIFIED |
 | SEC-008 | S1 | clipboard expiry could erase content copied later by another app | delayed clear did not prove current ownership | random ownership token/value comparison | service logic tests/source review | VERIFIED |
-| SEC-009 | S1 | incomplete Android biometric permission remained after feature deletion | manifest residue | permission removed | manifest/source scan and Android compile | VERIFIED |
+| SEC-009 | S1 | incomplete Android biometric permission remained after the old feature deletion | manifest residue | permission was removed until the reviewed SEC-010 implementation restored it with a real adapter | historical manifest/source scan and Android compile | SUPERSEDED |
+| SEC-010 | S0 | mobile convenience unlock must not persist a password or trust prompt success alone | biometric auth needs a cryptographic path to the existing VEK | Android auth-per-use Keystore wrapping and iOS device-only `biometryCurrentSet` Keychain storage; candidate VEK authenticates the vault verification record before session publication | unlock ViewModel tests, real Room/libsodium wrong-key tests, Android compile, iOS simulator compile | VERIFIED at source/test/compile level; physical-device matrix OPEN |
 | DATA-001 | S0 | credential payload/relationships/history could partially update | multi-DAO writes lacked one transaction | Room transaction boundaries and explicit reference validation | repository integration tests | VERIFIED |
 | DATA-002 | S0 | restore could destroy the current vault before validation | import/replace stages were not separated | read/authenticate/decode/validate before one replacement transaction | corrupt/wrong/rollback tests | VERIFIED |
 | DATA-003 | S1 | folder column and compatibility cross-reference could diverge | two relationship representations were written independently | synchronize both in the repository transaction | relationship tests | VERIFIED |
@@ -109,7 +111,7 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | UIX-001 | S1 | primary screens had inconsistent spacing/colors/shapes and mobile layouts stretched on Desktop | scattered styling and no shared responsive rules | semantic tokens, bounded content, compact/expanded scaffolds and consistent feedback components | target compilation/source review | SOURCE |
 | UIX-002 | S1 | missing loading/empty/error/disabled and retry behavior | happy-path-only surfaces | feature-specific states and shared feedback components | ViewModel tests/source review | VERIFIED |
 | UIX-003 | S1 | forms lacked robust IME, validation, dirty-exit, and double-submit behavior | local focus/submit state | scrollable secure forms, focus order, visible validation, discard confirmation, guards | state tests/source review | SOURCE |
-| UIX-004 | S1 | text/resources advertised cloud/CSV/biometric/attachments/support that did not ship | aspirational copy | removed unsupported UI/resources and rewrote capability documents | repository claim scan | VERIFIED |
+| UIX-004 | S1 | text/resources advertised cloud/CSV/attachments/support that did not ship | aspirational copy | removed unsupported UI/resources and rewrote capability documents | repository claim scan | VERIFIED |
 | UIX-005 | S1 | user-facing strings and validation/errors bypassed localization, including Desktop native menus/tray/dialogs | literals and pre-rendered English were carried through UI state | centralized 539-key Compose resource catalog; `UiText` resource identifiers/arguments remain unresolved until the UI boundary; plurals and Desktop native labels migrated | duplicate-key XML validation, whole-source literal scans, feature tests, Android/Desktop/iOS compilation | VERIFIED |
 | BUILD-001 | S0 | root `test` could succeed without KMP Desktop suites | ambiguous Gradle task selection | explicit aggregate dependency graph | root test execution | VERIFIED |
 | BUILD-002 | S0 | CI/release used wrong flavor tasks and could publish unsigned/mis-versioned artifacts | generic tasks and job-local version edits | exact tasks, semantic version props, mandatory Android signing, unsigned Desktop artifacts only | workflow/source review, Android release/R8, and current-host Desktop packaging | VERIFIED |
@@ -141,13 +143,16 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | GATE-007 | S1 | future iOS runtime | macOS/Xcode compile, platform services, lifecycle/keychain/UI tests | EXTERNAL |
 | GATE-008 | S2 | Gradle 10 Kotlin DSL and `kotlinx.datetime.Instant` deprecation migration | warning-mode configuration and full regression | VERIFIED |
 | GATE-009 | S2 | Detekt was explicitly skipped by the user; the existing report contains one `ReturnCount`, two `TooManyFunctions`, and two `TooGenericExceptionCaught` findings in Android adapters | a later accepted `gradlew detekt` run with all five findings resolved | OPEN |
+| GATE-010 | S1 | mobile biometric runtime behavior | physical Android and iPhone tests for success, cancel, lockout, backgrounding, process recreation, and enrollment invalidation | OPEN |
 
 `GATE-008` was resolved without warning suppression. The only warning left by `help --warning-mode all` is that an
 iOS simulator test cannot run on a Windows host; compile-only iOS simulator tasks pass.
 
 `GATE-009` is also not represented as a pass. The affected files are `AndroidBackupFileStore.kt`,
 `AndroidClipboardService.kt`, `AndroidScreenshotProtection.kt`, and `AndroidAppSettingsStore.kt`. Detekt was excluded
-only because the user explicitly requested it; no baseline, ignored failure, or suppression was added.
+only because the user explicitly requested it; no baseline, ignored failure, or suppression was added for those five
+findings. The new biometric adapter has a local suppression documenting its intentionally broad fail-closed OEM
+exception boundary and cohesive platform-adapter function count; it adds no Detekt finding.
 
 Android lint has one productivity warning recommending the KTX `SharedPreferences.edit` helper. The checked
 `SharedPreferences.Editor.commit()` call is intentionally retained because the store must observe and report a
@@ -197,11 +202,15 @@ synchronous persistence failure; the KTX helper discards that Boolean result.
 | 2026-07-29 | final UI source scan | PASS: no TODO/FIXME/HACK/XXX markers, legacy component colors, production logging, or hardcoded user-visible prose; matches were Compose animation diagnostic labels and non-sensitive benchmark timing output only |
 | 2026-07-29 | post-rework Android debug runtime request | EXTERNAL: Standard debug APK and Compose-resource assertion pass, but `adb devices -l` reports no connected device, so install/interactive/Logcat verification was not represented as passing |
 | 2026-07-29 | post-rework artifact checksums | PASS: EXE 116,341,760 bytes, SHA-256 `46E5205823F51C590439BA86802742CFECF45DE8C59AC8ECE0B272E55161D760`; MSI 115,637,786 bytes, SHA-256 `CDFF6165EC43BD9EC5BACC9E007EE7E93134A51686A5B85B61A24F4877BE04DE`; debug APK 34,927,908 bytes, SHA-256 `AA735EA6ABDF16800527D7333528AEFBC4F84032E3800501246D884D8982F991`; unsigned release APK 22,936,300 bytes, SHA-256 `B6A3B0A2A0DD1A684197385B1A218179F803633DC865F8364CFE6E84C4C0F9FA` |
+| 2026-08-03 | `gradlew :feature:unlock:desktopTest :feature:settings:desktopTest :core:database:desktopTest` | PASS: biometric availability, cancellation, enrollment state, verified VEK success, and wrong-key fail-closed regressions |
+| 2026-08-03 | `gradlew :app-android:assembleStandardDebug :shared:linkDebugFrameworkIosSimulatorArm64 verifyDependencies` | PASS: Android biometric APK, linked iOS Keychain/LocalAuthentication framework, and dependency checksums |
+| 2026-08-03 | `gradlew :feature:unlock:testAndroidHostTest :feature:settings:testAndroidHostTest :app-android:lintStandardDebug` | PASS |
+| 2026-08-03 | `gradlew detekt` | FAIL only on the five pre-existing GATE-009 findings; the biometric implementation adds none |
+| 2026-08-03 | physical Android/iPhone biometric prompt matrix | NOT RUN: GATE-010 remains open and is not represented as passing |
 
 ## Completion rule
 
-The repository implementation and non-Detekt automation are internally verified. No accepted non-Detekt repository
-action remains. Public production readiness cannot be claimed while `GATE-009` remains user-skipped or until the
-applicable external S0/S1 gates have
+The repository implementation and non-Detekt automation are internally verified. Public production readiness cannot
+be claimed while `GATE-009`, `GATE-010`, or the applicable external S0/S1 gates have
 publisher/device/independent evidence. These gates are not TODO implementations hidden in code; they are explicit
 release dependencies that the repository cannot truthfully manufacture.

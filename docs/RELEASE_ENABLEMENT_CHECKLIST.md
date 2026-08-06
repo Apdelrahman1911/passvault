@@ -9,7 +9,8 @@ legal identity, and store-account actions remain external by design.
 
 - [x] Product name fixed as **PassVault**.
 - [x] Canonical Android application ID fixed as `com.passvault.android`.
-- [x] Google Play application ID fixed as `com.passvault.android.play`.
+- [x] Google Play application ID fixed as `com.passvault.android`; the Standard
+  flavor is the canonical Play artifact.
 - [x] F-Droid application ID fixed as `com.passvault.android.fdroid`.
 - [x] Desktop bundle ID fixed as `com.passvault.desktop`.
 - [x] Version source centralized in `version.properties`.
@@ -17,7 +18,8 @@ legal identity, and store-account actions remain external by design.
 - [ ] Android adaptive, legacy, monochrome, and splash assets replaced with
   user-supplied artwork in a future branding pass.
 - [ ] Windows ICO, macOS ICNS, and Linux PNG assets supplied by the user.
-- [ ] Store feature graphic and screenshot set supplied by the user.
+- [ ] Bilingual store feature graphics and screenshot set supplied under
+  `release/store-assets/` and accepted by the production validator.
 - [ ] User-supplied branding source and usage rights documented.
 
 ## Signing and packaging
@@ -35,7 +37,8 @@ legal identity, and store-account actions remain external by design.
 
 ## Store and legal material
 
-- [ ] Google Play short and full descriptions are ready.
+- [ ] User-approved Google Play/App Store bilingual descriptions are present in
+  the ignored private intake and pass validation.
 - [ ] F-Droid metadata is ready.
 - [ ] Privacy policy is publication-ready and references the shipped behavior.
 - [ ] Apache-2.0 project license and notice are included in packages.
@@ -53,13 +56,20 @@ legal identity, and store-account actions remain external by design.
 - [x] Release artifacts and verified checksums are published through one
   tag-bound GitHub Release after all platform jobs succeed.
 - [x] Release workflow rejects missing identity, contact, or signing inputs.
+- [x] Protected internal, external-beta, and production mobile environments,
+  keyless Google OIDC setup, Fastlane uploads, metadata rendering, and
+  secret-name verification are implemented.
+- [x] Production requires protected approval, exact confirmation, and validated
+  public store assets; iOS production automation stops before review submission.
 
-## iOS development host and future production integration
+## iOS host and production integration
 
 - [x] `PassVaultShared` is exported as a static iOS framework.
-- [x] A minimal SwiftUI/Xcode host scaffold documents application startup.
-- [x] iOS platform dependency boundaries and remaining adapters are documented.
-- [ ] iOS simulator framework compilation is included in verification.
+- [x] SwiftUI/Xcode host, Face ID Keychain adapter, clipboard/preferences, and
+  native encrypted-backup Files picker are implemented.
+- [x] iOS simulator compilation is included in CI.
+- [x] Manual signing/archive/export and App Store Connect API upload are wired.
+- [ ] Publisher certificate/profile/API key and Apple console declarations are supplied.
 
 ## Safe third-party import
 

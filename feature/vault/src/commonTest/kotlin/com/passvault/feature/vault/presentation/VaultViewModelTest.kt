@@ -225,6 +225,51 @@ class VaultViewModelTest {
     }
 
     @Test
+    fun `deleting selected folder confirms then returns credentials to all items`() = runTest(dispatcher) {
+        val folder = TestData.folder(id = "personal", name = "Personal")
+        folderRepository.setupFolders(folder)
+        credentialRepository.setupCredentials(
+            TestData.credential(id = "mail", folderId = folder.id.value),
+        )
+        val viewModel = createLoadedViewModel()
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnFolderSelected(folder.id.value))
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnDeleteFolderClick(folder.id))
+        assertEquals(folder, viewModel.state.value.folderPendingDeletion)
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnConfirmDeleteFolder)
+        runCurrent()
+
+        assertTrue(viewModel.state.value.folders.isEmpty())
+        assertNull(viewModel.state.value.selectedFolderId)
+        assertNull(viewModel.state.value.folderPendingDeletion)
+        assertFalse(viewModel.state.value.isDeletingFolder)
+        assertEquals(
+            listOf(CredentialId("mail")),
+            viewModel.state.value.filteredCredentials.map { it.id },
+        )
+    }
+
+    @Test
+    fun `folder deletion failure is recoverable and keeps confirmation open`() = runTest(dispatcher) {
+        val folder = TestData.folder(id = "personal", name = "Personal")
+        folderRepository.setupFolders(folder)
+        val viewModel = createLoadedViewModel()
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnDeleteFolderClick(folder.id))
+        folderRepository.setShouldFail(true)
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnConfirmDeleteFolder)
+        runCurrent()
+
+        assertEquals(folder, viewModel.state.value.folderPendingDeletion)
+        assertFalse(viewModel.state.value.isDeletingFolder)
+        assertEquals(
+            Res.string.error_folder_delete,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+    }
+
+    @Test
     fun `favorite toggle persists and refreshes the summary`() = runTest(dispatcher) {
         val credential = TestData.credential(id = "one", isFavorite = false)
         credentialRepository.setupCredentials(credential)

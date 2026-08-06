@@ -133,7 +133,7 @@ jobs:
         run: >
           ./gradlew :app-android:verifyReleaseSigningConfiguration
           :app-android:assembleStandardRelease
-          :app-android:bundleGoogleRelease
+          :app-android:bundleStandardRelease
           -Ppassvault.requireReleaseSigning=true
           -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
           -Ppassvault.versionCode=${{ needs.prepare.outputs.version_code }}
@@ -150,7 +150,7 @@ jobs:
           retention-days: 14
           path: |
             app-android/build/outputs/apk/standard/release/*.apk
-            app-android/build/outputs/bundle/googleRelease/*.aab
+            app-android/build/outputs/bundle/standardRelease/*.aab
 
   build-desktop-linux:
     name: Build Desktop packages (Linux)

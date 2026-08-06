@@ -91,6 +91,7 @@ kotlin {
                 api(project(":core:security"))
                 api(project(":core:designsystem"))
                 api(project(":core:navigation"))
+                api(project(":core:otp"))
 
                 // Feature modules
                 api(project(":feature:onboarding"))

@@ -152,6 +152,26 @@ class VaultBackupServiceTest {
     }
 
     @Test
+    fun `vault format two backup survives inspection and restore`() = runTest {
+        val original = validSnapshot("totp-vault", "credential-with-totp", vaultFormatVersion = 2)
+        insertSnapshot(original)
+        val password = SensitiveText.from("format two backup password")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            assertEquals(1, service.inspectBackup(backup, password).getOrThrow().credentialCount)
+
+            replaceWithEmptyVault("sentinel-vault")
+            service.restoreBackup(backup, password).getOrThrow()
+
+            assertEquals(2, backupDao.readSnapshot().metadata.vaultFormatVersion)
+            assertSnapshotEquals(original, backupDao.readSnapshot())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
     fun `restore aborts when the active session cannot be locked`() = runTest {
         val original = validSnapshot("original-vault", "credential-one")
         insertSnapshot(original)
@@ -188,6 +208,7 @@ class VaultBackupServiceTest {
     private suspend fun validSnapshot(
         vaultId: String,
         credentialId: String,
+        vaultFormatVersion: Int = 1,
     ): VaultBackupEntities {
         val key = ByteArray(32) { index -> (index + 1).toByte() }
         try {
@@ -198,7 +219,7 @@ class VaultBackupServiceTest {
 
             return VaultBackupEntities(
                 metadata = VaultMetadataEntity(
-                    vaultFormatVersion = 1,
+                    vaultFormatVersion = vaultFormatVersion,
                     cryptoFormatVersion = 2,
                     vaultId = vaultId,
                     argon2AlgorithmId = "Argon2id",

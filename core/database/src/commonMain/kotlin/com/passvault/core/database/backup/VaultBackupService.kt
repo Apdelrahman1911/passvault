@@ -29,7 +29,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 private const val BACKUP_FORMAT_VERSION = 1
 private const val KDF_ALGORITHM = "Argon2id"
-private const val SUPPORTED_VAULT_FORMAT_VERSION = 1
+private const val MIN_SUPPORTED_VAULT_FORMAT_VERSION = 1
+private const val MAX_SUPPORTED_VAULT_FORMAT_VERSION = 2
 private const val SUPPORTED_CRYPTO_FORMAT_VERSION = 2
 private const val ARGON2_SALT_BYTES = 16
 private const val XCHACHA_NONCE_BYTES = 24
@@ -292,7 +293,10 @@ class VaultBackupService(
 
     private fun validateSnapshot(snapshot: VaultBackupEntities) {
         require(snapshot.metadata.id == 1)
-        require(snapshot.metadata.vaultFormatVersion == SUPPORTED_VAULT_FORMAT_VERSION)
+        require(
+            snapshot.metadata.vaultFormatVersion in
+                MIN_SUPPORTED_VAULT_FORMAT_VERSION..MAX_SUPPORTED_VAULT_FORMAT_VERSION,
+        )
         require(snapshot.metadata.cryptoFormatVersion == SUPPORTED_CRYPTO_FORMAT_VERSION)
         require(snapshot.metadata.vaultId.isValidIdentifier())
         require(snapshot.metadata.argon2AlgorithmId == KDF_ALGORITHM)

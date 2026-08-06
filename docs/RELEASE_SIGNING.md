@@ -12,6 +12,19 @@ The pinned public certificate is stored in
 beside it. CI verifies both the APK and AAB against this fingerprint, so an
 artifact signed with an unexpected key is rejected.
 
+PassVault has not previously been uploaded to Google Play. The canonical first
+upload key was explicitly adopted on 6 August 2026. Its required alias is
+`passvault-upload` (also pinned in
+`release/android/passvault-upload-alias.txt`) and its certificate SHA-256 is:
+
+```text
+7D:4D:11:20:B1:D1:9F:5B:B9:42:E0:6C:60:0F:2B:64:81:E5:E6:82:47:52:23:FA:4E:7D:C7:B2:7C:DB:10:37
+```
+
+The signed `standardRelease` APK and AAB must both match this certificate. Do
+not regenerate or substitute the keystore when creating the first Play app;
+register this certificate as the Play upload key.
+
 Generate signing material once:
 
 ```powershell
@@ -39,8 +52,8 @@ Configure the four GitHub repository secrets listed in the generated
 - `KEY_ALIAS`
 - `KEY_PASSWORD`
 
-Never regenerate the key after publishing. Use the store-specific key upgrade
-or rotation process if compromise is suspected.
+Never regenerate the key. Use the store-specific key upgrade or rotation
+process if compromise is suspected.
 
 ## Windows
 

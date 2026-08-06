@@ -1,6 +1,6 @@
 # PassVault security model
 
-Last reviewed: 2026-07-28
+Last reviewed: 2026-08-03
 
 ## Scope and assumptions
 
@@ -37,11 +37,37 @@ unwraps the VEK, authenticates the verification record, and only then publishes 
 Changing the master password rewraps the same VEK, so record data does not need re-encryption. Vault session
 transitions are serialized. Lock immediately removes and wipes the repository-owned VEK buffer best-effort.
 
+Mobile biometric unlock is an optional second route to the same VEK. It never stores the master password or KEK:
+
+```text
+Face ID / Touch ID / strong Android biometric
+                    |
+       OS-protected key operation
+                    |
+                  VEK
+                    |
+ authenticated vault verification record
+                    |
+              vault session
+```
+
+Android encrypts the VEK with an auth-per-use AES-GCM key in Android Keystore and requires a strong biometric for
+every decrypt. The key is invalidated when biometric enrollment changes. iOS stores the VEK in a
+`WhenPasscodeSetThisDeviceOnly` Keychain item using `biometryCurrentSet`, so it is neither synchronized nor restored
+to another device and becomes inaccessible after enrollment changes. In both cases the released candidate VEK must
+authenticate the existing vault verification record before the repository publishes a session. The master password
+remains the recovery and fallback path.
+
 ## Persisted data boundary
 
-Credential summary and secret payloads, folder/tag payloads, passwords in history, and attachment filenames use
-XChaCha20-Poly1305 with unique random nonces and record-specific associated data. Keyed deterministic blind indexes
-support exact normalized title/folder/tag comparisons without plaintext values.
+Credential summary and secret payloads, TOTP setup keys and parameters, folder/tag payloads, passwords in history,
+and attachment filenames use XChaCha20-Poly1305 with unique random nonces and record-specific associated data. Keyed
+deterministic blind indexes support exact normalized title/folder/tag comparisons without plaintext values.
+
+TOTP codes are derived in memory from the encrypted setup key and authoritative device time. Codes and countdowns
+are not written to Room or backups. QR payloads are handled locally, parsed with strict size/type/Base32/parameter
+bounds, and never sent to a service. Android and iOS camera capture and Desktop-selected image decoding remain OS
+and process trust boundaries.
 
 The database intentionally exposes structural metadata needed for queries: record identifiers, credential type,
 favorite state, timestamps, folder/tag relationship identifiers, attachment MIME/size/path metadata, and row
@@ -65,8 +91,10 @@ bytes are never packaged. See [`BACKUP_FORMAT.md`](BACKUP_FORMAT.md).
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
 - Clipboard expiration verifies a random ownership token/value before clearing, so newer unrelated clipboard data is
   preserved.
+- Copying a TOTP code uses the same ownership-aware clipboard path as other credential values.
 - Desktop platform-keyring lookup fails closed; it never substitutes a plaintext preference file.
-- No biometric UI or platform adapter is present. Master-password unlock is the only shipped authentication path.
+- Android and iOS expose explicit biometric enrollment in Security settings and a biometric action beside the
+  password field. Unsupported platforms and devices fail closed to master-password unlock.
 
 ## Error and memory policy
 
@@ -77,17 +105,22 @@ cannot be guaranteed controllable by common Kotlin code.
 
 ## Validated threats
 
-Automated tests verify wrong-key and tampered-ciphertext rejection, nonce uniqueness, locked repository access,
+Automated tests verify wrong-key and biometric-candidate rejection, tampered-ciphertext rejection, nonce uniqueness,
+locked repository access,
 encrypted raw database rows, backup wrong-password/corruption/transaction behavior, rapid state events, and
-lock-during-edit cleanup. This is useful regression evidence, not an independent security certification.
+lock-during-edit cleanup. RFC 6238 vectors cover all supported hash algorithms, and repository tests verify that TOTP
+setup keys are encrypted and survive format-2 backup restore. This is useful regression evidence, not an independent
+security certification.
 
 ## Residual risks and release dependencies
 
 - A compromised unlocked endpoint can read displayed/decrypted values.
+- Incorrect device time produces invalid TOTP codes; PassVault does not synchronize the clock.
 - Structural database metadata remains observable.
 - No schema-upgrade migration can be tested until an actual earlier release fixture exists.
 - Android device lifecycle and Desktop graphical/keyring behavior need platform smoke tests.
-- A biometric feature must not ship until an OS-protected key operation gates VEK unwrap and enrollment changes fail
-  safely.
+- Face ID/Touch ID and Android biometric prompts, cancellation, lockout, process recreation, and enrollment-change
+  invalidation still require physical-device smoke tests; compilation and common/repository tests cannot prove OS UI
+  behavior.
 - Publisher signing, notarization, update security, disclosure contacts, and external review are outside this
   checkout.

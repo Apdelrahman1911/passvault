@@ -47,7 +47,9 @@ class VaultRepositoryImpl(
     private var failedAttempts = 0
 
     companion object {
-        private const val VAULT_FORMAT_VERSION = 1
+        private const val MIN_VAULT_FORMAT_VERSION = 1
+        private const val MAX_VAULT_FORMAT_VERSION = 2
+        private const val INITIAL_VAULT_FORMAT_VERSION = 1
         private const val CRYPTO_FORMAT_VERSION = 2
         private const val ARGON2_ALGORITHM_ID = "Argon2id"
         private const val VERIFICATION_AAD = "verification"
@@ -105,7 +107,7 @@ class VaultRepositoryImpl(
                 vaultMetadataDao.insert(
                     VaultMetadataEntity(
                         id = 1,
-                        vaultFormatVersion = VAULT_FORMAT_VERSION,
+                        vaultFormatVersion = INITIAL_VAULT_FORMAT_VERSION,
                         cryptoFormatVersion = CRYPTO_FORMAT_VERSION,
                         vaultId = vaultId,
                         argon2AlgorithmId = ARGON2_ALGORITHM_ID,
@@ -176,6 +178,7 @@ class VaultRepositoryImpl(
                     key = candidateVek,
                     associatedData = VERIFICATION_AAD.encodeToByteArray(),
                 ).getOrThrow()
+                require(verificationPlaintext.size == VERIFICATION_BYTES)
 
                 currentVek = candidateVek
                 candidateVek = null
@@ -195,6 +198,56 @@ class VaultRepositoryImpl(
             } finally {
                 passwordBytes?.let { cryptoEngine.secureWipe(it) }
                 derivedKey?.clear()
+                candidateVek?.let { cryptoEngine.secureWipe(it) }
+                verificationPlaintext?.let { cryptoEngine.secureWipe(it) }
+            }
+        }
+
+    /**
+     * Opens a session with a key released by an OS biometric policy. The key
+     * is still authenticated against the vault verification record before it
+     * can become the active session key.
+     */
+    suspend fun unlockWithBiometricKey(vaultKey: ByteArray): Result<SessionId> =
+        sessionMutex.withLock {
+            if (vaultKey.size != VEK_BYTES) {
+                return@withLock Result.failure(IllegalStateException("Unable to unlock vault"))
+            }
+            if (_sessionState.value is VaultSessionState.Unlocked && currentVek != null) {
+                return@withLock Result.failure(IllegalStateException("Vault already unlocked"))
+            }
+
+            _sessionState.value = VaultSessionState.Unlocking
+            var candidateVek: ByteArray? = null
+            var verificationPlaintext: ByteArray? = null
+            try {
+                val metadata = vaultMetadataDao.get()
+                    ?: throw IllegalStateException("Vault does not exist")
+                validateMetadataForUnlock(metadata)
+                candidateVek = vaultKey.copyOf()
+                verificationPlaintext = cryptoEngine.decrypt(
+                    ciphertext = CryptoEnvelope.normalize(metadata.encryptedVerificationRecord),
+                    nonce = metadata.verificationNonce,
+                    key = candidateVek,
+                    associatedData = VERIFICATION_AAD.encodeToByteArray(),
+                ).getOrThrow()
+                require(verificationPlaintext.size == VERIFICATION_BYTES)
+
+                currentVek = candidateVek
+                candidateVek = null
+                currentSessionId = "session-${kotlin.uuid.Uuid.random()}"
+                failedAttempts = 0
+                vaultMetadataDao.updateLastAccessed(Clock.System.now().toEpochMilliseconds())
+                val sessionId = SessionId(requireNotNull(currentSessionId))
+                _sessionState.value = VaultSessionState.Unlocked(sessionId)
+                Result.success(sessionId)
+            } catch (cancel: CancellationException) {
+                _sessionState.value = VaultSessionState.Locked
+                throw cancel
+            } catch (_: Exception) {
+                _sessionState.value = VaultSessionState.Locked
+                Result.failure(IllegalStateException("Unable to unlock vault"))
+            } finally {
                 candidateVek?.let { cryptoEngine.secureWipe(it) }
                 verificationPlaintext?.let { cryptoEngine.secureWipe(it) }
             }
@@ -362,7 +415,7 @@ class VaultRepositoryImpl(
         }
 
     private fun validateMetadataForUnlock(metadata: VaultMetadataEntity) {
-        require(metadata.vaultFormatVersion == VAULT_FORMAT_VERSION)
+        require(metadata.vaultFormatVersion in MIN_VAULT_FORMAT_VERSION..MAX_VAULT_FORMAT_VERSION)
         require(metadata.cryptoFormatVersion == CRYPTO_FORMAT_VERSION)
         require(metadata.argon2AlgorithmId == ARGON2_ALGORITHM_ID)
         require(metadata.argon2Salt.size == ARGON2_SALT_BYTES)

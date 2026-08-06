@@ -26,6 +26,8 @@ import com.passvault.core.domain.model.PasswordHistoryEntry
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.TotpAlgorithm
+import com.passvault.core.domain.model.TotpConfiguration
 import com.passvault.core.domain.model.UrlValue
 import com.passvault.core.domain.repository.CredentialRepository
 import kotlin.time.Clock
@@ -78,6 +80,7 @@ class CredentialRepositoryImpl(
         val customFields: List<SerializedCustomField>,
         val tagIds: List<String>,
         val passwordHealth: SerializedPasswordHealth,
+        val totp: SerializedTotp? = null,
     )
 
     @Serializable
@@ -95,6 +98,16 @@ class CredentialRepositoryImpl(
         val isWeak: Boolean = false,
         val isOld: Boolean = false,
         val ageDays: Int? = null,
+    )
+
+    @Serializable
+    private data class SerializedTotp(
+        val secret: String,
+        val issuer: String? = null,
+        val accountName: String? = null,
+        val algorithm: String = TotpAlgorithm.SHA1.name,
+        val digits: Int = DEFAULT_TOTP_DIGITS,
+        val periodSeconds: Int = DEFAULT_TOTP_PERIOD_SECONDS,
     )
 
     // ==================== Read Operations ====================
@@ -181,6 +194,7 @@ class CredentialRepositoryImpl(
                     entity,
                     credential.tagIds.map { it.value },
                     history,
+                    requiredVaultFormatVersion = credential.totp?.let { TOTP_VAULT_FORMAT_VERSION },
                 )
 
                 credential.id
@@ -366,6 +380,14 @@ class CredentialRepositoryImpl(
                 field.value.length <= MAX_CUSTOM_FIELD_VALUE_LENGTH
         })
         require(credential.urls.all { it.value.length <= MAX_URL_LENGTH && it.host() != null })
+        credential.totp?.let { totp ->
+            require(credential.type == CredentialType.Login)
+            require(totp.secret.toStringUnsafe().isValidTotpSecret())
+            require(totp.issuer.isValidTotpLabel())
+            require(totp.accountName.isValidTotpLabel())
+            require(totp.digits in SUPPORTED_TOTP_DIGITS)
+            require(totp.periodSeconds in MIN_TOTP_PERIOD_SECONDS..MAX_TOTP_PERIOD_SECONDS)
+        }
     }
 
     private suspend fun isVaultUnlocked(): Boolean {
@@ -422,7 +444,17 @@ class CredentialRepositoryImpl(
                 )
             },
             tagIds = credential.tagIds.map { it.value },
-            passwordHealth = credential.passwordHealth.toSerialized()
+            passwordHealth = credential.passwordHealth.toSerialized(),
+            totp = credential.totp?.let { configuration ->
+                SerializedTotp(
+                    secret = configuration.secret.toStringUnsafe(),
+                    issuer = configuration.issuer,
+                    accountName = configuration.accountName,
+                    algorithm = configuration.algorithm.name,
+                    digits = configuration.digits,
+                    periodSeconds = configuration.periodSeconds,
+                )
+            },
         )
             secretJson = json.encodeToString(secretPayload).encodeToByteArray()
             val encryptedSecret = cryptoEngine.encrypt(
@@ -519,6 +551,7 @@ class CredentialRepositoryImpl(
                 updatedAt = Instant.fromEpochMilliseconds(entity.updatedAt),
                 lastUsedAt = entity.lastUsedAt?.let(Instant::fromEpochMilliseconds),
                 passwordHealth = summary.passwordHealth.toDomain(),
+                totp = secret.totp?.toDomain(),
             )
         } finally {
             summaryJson?.let { cryptoEngine.secureWipe(it) }
@@ -632,6 +665,45 @@ class CredentialRepositoryImpl(
         ageDays = ageDays,
     )
 
+    private fun SerializedTotp.toDomain(): TotpConfiguration {
+        val parsedAlgorithm = runCatching { TotpAlgorithm.valueOf(algorithm) }
+            .getOrElse { throw IllegalArgumentException("Invalid TOTP configuration") }
+        val configuration = TotpConfiguration(
+            secret = SensitiveText.from(secret),
+            issuer = issuer,
+            accountName = accountName,
+            algorithm = parsedAlgorithm,
+            digits = digits,
+            periodSeconds = periodSeconds,
+        )
+        return try {
+            require(configuration.secret.toStringUnsafe().isValidTotpSecret())
+            require(configuration.issuer.isValidTotpLabel())
+            require(configuration.accountName.isValidTotpLabel())
+            require(configuration.digits in SUPPORTED_TOTP_DIGITS)
+            require(configuration.periodSeconds in MIN_TOTP_PERIOD_SECONDS..MAX_TOTP_PERIOD_SECONDS)
+            configuration
+        } catch (error: Exception) {
+            configuration.clear()
+            throw error
+        }
+    }
+
+    private fun String?.isValidTotpLabel(): Boolean =
+        this == null || (isNotBlank() && length <= MAX_TOTP_LABEL_LENGTH && none(Char::isISOControl))
+
+    private fun String.isValidTotpSecret(): Boolean {
+        if (length !in MIN_TOTP_SECRET_LENGTH..MAX_TOTP_SECRET_LENGTH) return false
+        if (any { it !in BASE32_ALPHABET }) return false
+        if (length % BASE32_BLOCK_CHARACTERS !in VALID_BASE32_REMAINDERS) return false
+        val decodedByteCount = length * BASE32_BITS_PER_CHARACTER / BITS_PER_BYTE
+        if (decodedByteCount !in MIN_TOTP_SECRET_BYTES..MAX_TOTP_SECRET_BYTES) return false
+        val unusedBitCount = length * BASE32_BITS_PER_CHARACTER % BITS_PER_BYTE
+        if (unusedBitCount == 0) return true
+        val lastValue = BASE32_ALPHABET.indexOf(last())
+        return lastValue and ((1 shl unusedBitCount) - 1) == 0
+    }
+
     private fun Credential.clearSensitiveValues() {
         username?.clear()
         email?.clear()
@@ -642,6 +714,7 @@ class CredentialRepositoryImpl(
         licenseKeys.forEach(SensitiveText::clear)
         customFields.forEach { it.value.clear() }
         passwordHistory.forEach { it.password.clear() }
+        totp?.clear()
     }
 
     private suspend fun PasswordHistoryRecordEntity.toDomainModel(vek: ByteArray): PasswordHistoryEntry {
@@ -708,6 +781,22 @@ class CredentialRepositoryImpl(
 
     private companion object {
         const val MAX_ATTACHMENT_FILENAME_LENGTH = 255
+        const val TOTP_VAULT_FORMAT_VERSION = 2
+        const val MIN_TOTP_SECRET_LENGTH = 16
+        const val MAX_TOTP_SECRET_LENGTH = 205
+        const val MIN_TOTP_SECRET_BYTES = 10
+        const val MAX_TOTP_SECRET_BYTES = 128
+        const val BASE32_BITS_PER_CHARACTER = 5
+        const val BASE32_BLOCK_CHARACTERS = 8
+        const val BITS_PER_BYTE = 8
+        const val MAX_TOTP_LABEL_LENGTH = 200
+        const val MIN_TOTP_PERIOD_SECONDS = 5
+        const val MAX_TOTP_PERIOD_SECONDS = 300
+        const val DEFAULT_TOTP_DIGITS = 6
+        const val DEFAULT_TOTP_PERIOD_SECONDS = 30
+        const val BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+        val SUPPORTED_TOTP_DIGITS = setOf(6, 8)
+        val VALID_BASE32_REMAINDERS = setOf(0, 2, 4, 5, 7)
         const val MAX_IDENTIFIER_LENGTH = 256
         const val MAX_TITLE_LENGTH = 200
         const val MAX_SENSITIVE_LENGTH = 4_096
@@ -747,4 +836,3 @@ private fun String.toCredentialType(): CredentialType = when {
     this.startsWith("Custom:") -> CredentialType.Custom(this.substringAfter(":"))
     else -> throw IllegalArgumentException("Unsupported credential type")
 }
-

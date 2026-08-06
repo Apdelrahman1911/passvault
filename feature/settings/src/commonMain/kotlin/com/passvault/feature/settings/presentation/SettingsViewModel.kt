@@ -16,6 +16,11 @@ import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.core.domain.repository.AccentColorPreference
 import com.passvault.core.domain.repository.ThemePreference
 import com.passvault.core.domain.repository.VaultRepository
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricFailureReason
+import com.passvault.core.security.BiometricOperationResult
+import com.passvault.core.security.BiometricType
+import com.passvault.core.security.BiometricUnlockService
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +37,7 @@ import kotlinx.coroutines.sync.withLock
 class SettingsViewModel(
     private val vaultRepository: VaultRepository,
     private val appSettingsStore: AppSettingsStore,
+    private val biometricUnlockService: BiometricUnlockService,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -43,14 +49,17 @@ class SettingsViewModel(
     private val settingsSaveMutex = Mutex()
     private var settingsRevision = 0L
     private var passwordChangeJob: Job? = null
+    private var biometricJob: Job? = null
 
     init {
         loadPreferences()
         loadVaultMetadata()
+        loadBiometricStatus()
         viewModelScope.launch {
             vaultRepository.getSessionState().collect { session ->
                 if (session is VaultSessionState.Unlocked) {
                     loadVaultMetadata()
+                    loadBiometricStatus()
                 }
             }
         }
@@ -133,6 +142,9 @@ class SettingsViewModel(
             SettingsEvent.OnLockVaultClick -> lockVault()
             SettingsEvent.OnChangePasswordClick -> {
                 _state.update { it.copy(showChangePasswordDialog = true, passwordError = null) }
+            }
+            is SettingsEvent.OnBiometricUnlockChanged -> {
+                setBiometricUnlockEnabled(event.enabled)
             }
             SettingsEvent.OnExportClick -> _effect.trySend(SettingsEffect.ShowExportDialog)
             SettingsEvent.OnImportClick -> _effect.trySend(SettingsEffect.ShowImportDialog)
@@ -231,6 +243,103 @@ class SettingsViewModel(
                 _state.update { it.copy(errorMessage = uiText(Res.string.error_settings_lock)) }
             }
         }
+    }
+
+    private fun loadBiometricStatus() {
+        biometricJob?.cancel()
+        biometricJob = viewModelScope.launch {
+            try {
+                val status = biometricUnlockService.getStatus()
+                _state.update {
+                    it.copy(
+                        biometricType = status.capability.type,
+                        biometricAvailability = status.capability.availability,
+                        isBiometricEnabled = status.isEnabled,
+                        isBiometricLoading = false,
+                    )
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                _state.update {
+                    it.copy(
+                        biometricAvailability = BiometricAvailability.UNAVAILABLE,
+                        isBiometricEnabled = false,
+                        isBiometricLoading = false,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun setBiometricUnlockEnabled(enabled: Boolean) {
+        if (_state.value.isBiometricLoading || enabled == _state.value.isBiometricEnabled) return
+        biometricJob?.cancel()
+        _state.update { it.copy(isBiometricLoading = true, errorMessage = null) }
+        biometricJob = viewModelScope.launch {
+            try {
+                val result = if (enabled) {
+                    biometricUnlockService.enable()
+                } else {
+                    biometricUnlockService.disable()
+                }
+                when (result) {
+                    BiometricOperationResult.Success -> {
+                        _state.update {
+                            it.copy(isBiometricEnabled = enabled, isBiometricLoading = false)
+                        }
+                        _effect.trySend(
+                            SettingsEffect.ShowMessage(
+                                uiText(
+                                    if (enabled) {
+                                        Res.string.message_biometric_enabled
+                                    } else {
+                                        Res.string.message_biometric_disabled
+                                    },
+                                ),
+                            ),
+                        )
+                    }
+                    BiometricOperationResult.Cancelled -> {
+                        _state.update { it.copy(isBiometricLoading = false) }
+                    }
+                    is BiometricOperationResult.Failure -> {
+                        _state.update {
+                            it.copy(
+                                isBiometricEnabled = !enabled,
+                                isBiometricLoading = false,
+                                biometricAvailability = when (result.reason) {
+                                    BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
+                                    BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
+                                    else -> it.biometricAvailability
+                                },
+                                errorMessage = result.reason.toSettingsMessage(),
+                            )
+                        }
+                    }
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                _state.update {
+                    it.copy(
+                        isBiometricLoading = false,
+                        errorMessage = uiText(Res.string.error_biometric_failed),
+                    )
+                }
+            }
+        }
+    }
+
+    private fun BiometricFailureReason.toSettingsMessage(): UiText = when (this) {
+        BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
+        BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
+        BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
+        BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
+        BiometricFailureReason.VAULT_LOCKED -> uiText(Res.string.error_biometric_vault_locked)
+        BiometricFailureReason.AUTHENTICATION_FAILED,
+        BiometricFailureReason.INTERNAL_ERROR,
+        -> uiText(Res.string.error_biometric_failed)
     }
 
     private fun evaluatePasswordStrength(password: String) {
@@ -345,6 +454,8 @@ class SettingsViewModel(
     fun clearForLock() {
         passwordChangeJob?.cancel()
         passwordChangeJob = null
+        biometricJob?.cancel()
+        biometricJob = null
         clearPasswordDialog()
         _state.update {
             it.copy(
@@ -354,6 +465,7 @@ class SettingsViewModel(
                 infoDialogTitle = null,
                 infoDialogMessage = null,
                 isLoading = false,
+                isBiometricLoading = false,
             )
         }
     }
@@ -376,6 +488,10 @@ class SettingsViewModel(
         val isChangingPassword: Boolean = false,
         val infoDialogTitle: UiText? = null,
         val infoDialogMessage: UiText? = null,
+        val biometricType: BiometricType = BiometricType.GENERIC,
+        val biometricAvailability: BiometricAvailability = BiometricAvailability.UNAVAILABLE,
+        val isBiometricEnabled: Boolean = false,
+        val isBiometricLoading: Boolean = false,
     ) {
         val passwordsMatch: Boolean
             get() = newPassword == confirmPassword && confirmPassword.isNotEmpty()
@@ -431,6 +547,7 @@ class SettingsViewModel(
         data object OnBackClick : SettingsEvent
         data object OnLockVaultClick : SettingsEvent
         data object OnChangePasswordClick : SettingsEvent
+        data class OnBiometricUnlockChanged(val enabled: Boolean) : SettingsEvent
         data object OnExportClick : SettingsEvent
         data object OnImportClick : SettingsEvent
         data object OnBackupClick : SettingsEvent

@@ -11,17 +11,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Download
@@ -51,6 +50,7 @@ import com.passvault.core.designsystem.components.SecureTextField
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialPanel
 import com.passvault.core.designsystem.components.EditorialStatusBanner
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.feature.backup.presentation.BackupViewModel
@@ -60,8 +60,9 @@ internal fun BackupExportContent(
     state: BackupViewModel.BackupState,
     onEvent: (BackupViewModel.BackupEvent) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    BackupScrollableColumn(modifier) {
+    BackupScrollableColumn(modifier, contentPadding) {
         EditorialPageHeader(
             eyebrow = stringResource(Res.string.ui_backup_and_restore),
             title = stringResource(Res.string.ui_create_an_encrypted_copy_of_this_vault),
@@ -147,8 +148,9 @@ internal fun BackupImportContent(
     state: BackupViewModel.BackupState,
     onEvent: (BackupViewModel.BackupEvent) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    BackupScrollableColumn(modifier) {
+    BackupScrollableColumn(modifier, contentPadding) {
         EditorialPageHeader(
             eyebrow = stringResource(Res.string.ui_backup_and_restore),
             title = stringResource(Res.string.ui_restore_encrypted_backup),
@@ -336,6 +338,7 @@ internal fun BackupImportContent(
 @Composable
 private fun BackupScrollableColumn(
     modifier: Modifier,
+    contentPadding: PaddingValues,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -344,9 +347,8 @@ private fun BackupScrollableColumn(
                 .fillMaxWidth()
                 .widthIn(max = ComponentSpacing.formMaxWidth)
                 .align(Alignment.TopCenter)
-                .verticalScroll(rememberScrollState())
+                .scaffoldVerticalScroll(rememberScrollState(), contentPadding)
                 .imePadding()
-                .navigationBarsPadding()
                 .padding(
                     horizontal = ComponentSpacing.screenHorizontal,
                     vertical = ComponentSpacing.screenVertical,

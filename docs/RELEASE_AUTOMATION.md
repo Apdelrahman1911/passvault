@@ -1,5 +1,9 @@
 # Release Automation
 
+Mobile store uploads use the separately protected workflow documented in
+`docs/MOBILE_STORE_RELEASE.md`. This document describes the multi-platform
+GitHub Release packaging workflow.
+
 The release workflow is intentionally fail-closed. It will not build public
 artifacts until version metadata, publisher identity, contact details, and all
 platform signing credentials are configured.
@@ -45,8 +49,9 @@ See `docs/RELEASE_SIGNING.md` for certificate requirements and rotation rules.
 
 ## Publishing
 
-1. Update every field in `version.properties`. `VERSION_NAME` and
-   `VERSION_CODE` must match the documented formula.
+1. Update every field in `version.properties`. `VERSION_NAME` uses semantic
+   versioning; increment `VERSION_CODE` for every Play or App Store upload,
+   including rejected and test builds.
 2. Merge the release commit into `main` and complete the normal verification
    workflow.
 3. Create and push an annotated version tag that exactly matches

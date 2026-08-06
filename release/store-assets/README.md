@@ -1,0 +1,32 @@
+# Mobile Store Assets
+
+These files are public release inputs and are intentionally tracked. Never use
+real vault data, real one-time codes, personal email addresses, or notifications
+in screenshots. Populate every locale with the same fictional demo vault.
+
+Required before a production workflow can start:
+
+```text
+android/
+  en-US/images/icon.png                 # 512 × 512, 32-bit PNG with alpha
+  en-US/images/featureGraphic.png       # 1024 × 500, no alpha
+  en-US/images/phoneScreenshots/01.png  # four 1080 × 1920 screenshots
+  ar/images/featureGraphic.png
+  ar/images/icon.png
+  ar/images/phoneScreenshots/01.png
+ios/
+  en-US/01.png                          # one to ten accepted 6.9-inch screenshots
+  ar-SA/01.png
+```
+
+Use 1320 × 2868 portrait screenshots for the current iPhone 6.9-inch capture
+target. The validator also accepts Apple's other current 6.9-inch dimensions.
+Name screenshots in their intended display order (`01-vault.png`,
+`02-account.png`, and so on). Run:
+
+```bash
+./scripts/validate-mobile-store-assets.rb
+```
+
+The workflow uploads these assets only to the store; it never packages private
+release inputs as GitHub artifacts.

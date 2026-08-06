@@ -249,6 +249,16 @@ interface CredentialDao {
     """)
     suspend fun refreshVaultEntryCount()
 
+    @Query("""
+        UPDATE vault_metadata
+        SET vault_format_version = CASE
+            WHEN vault_format_version < :version THEN :version
+            ELSE vault_format_version
+        END
+        WHERE id = 1
+    """)
+    suspend fun markVaultFormatVersion(version: Int)
+
     @Query("SELECT COUNT(*) FROM credential_records WHERE folder_id = :folderId")
     suspend fun getCountByFolder(folderId: String): Int
 
@@ -345,6 +355,7 @@ interface CredentialDao {
         entity: CredentialRecordEntity,
         tagIds: List<String>,
         history: PasswordHistoryRecordEntity?,
+        requiredVaultFormatVersion: Int? = null,
     ) {
         insertOrUpdate(entity)
         replaceTagsForCredential(entity.id, tagIds)
@@ -354,6 +365,7 @@ interface CredentialDao {
             trimPasswordHistory(entity.id, 10)
         }
         refreshVaultEntryCount()
+        requiredVaultFormatVersion?.let { markVaultFormatVersion(it) }
     }
 
     // ==================== Health Analysis ====================

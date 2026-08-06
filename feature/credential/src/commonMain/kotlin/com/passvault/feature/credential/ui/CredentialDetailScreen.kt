@@ -14,16 +14,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
@@ -45,13 +44,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -65,6 +64,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialStatusBanner
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.core.domain.model.CredentialId
@@ -117,53 +118,59 @@ fun CredentialDetailScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { onNavigateToEdit(credentialId) }) {
-                        Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.ui_edit_credential))
-                    }
-                    IconButton(
-                        onClick = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteClick)
-                        },
-                        enabled = !state.isDeleting,
-                    ) {
-                        Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.ui_delete_credential))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-            )
-        },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .imePadding()
-                .navigationBarsPadding(),
+                .imePadding(),
             contentAlignment = Alignment.TopCenter,
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = ComponentSpacing.formMaxWidth)
-                    .verticalScroll(rememberScrollState())
+                    .scaffoldVerticalScroll(rememberScrollState(), padding)
                     .padding(
-                        horizontal = ComponentSpacing.screenHorizontal,
-                        vertical = ComponentSpacing.screenVertical,
+                        start = ComponentSpacing.screenHorizontal,
+                        end = ComponentSpacing.screenHorizontal,
+                        bottom = ComponentSpacing.screenVertical,
                     ),
                 verticalArrangement = Arrangement.spacedBy(Spacing.smMd),
             ) {
+                TopAppBar(
+                    title = {},
+                    windowInsets = WindowInsets(0, 0, 0, 0),
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.action_back),
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { onNavigateToEdit(credentialId) }) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(Res.string.ui_edit_credential),
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteClick)
+                            },
+                            enabled = !state.isDeleting,
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = stringResource(Res.string.ui_delete_credential),
+                            )
+                        }
+                    },
+                    colors = passVaultTopAppBarColors(),
+                )
+
                 EditorialPageHeader(
                     eyebrow = stringResource(Res.string.ui_encrypted_vault),
                     title = state.displayTitle.resolve(),
@@ -208,6 +215,14 @@ fun CredentialDetailScreen(
                             viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyPasswordClick)
                         },
                         isPassword = true,
+                    )
+                }
+                if (state.totpConfiguration != null) {
+                    TotpCodeCard(
+                        state = state,
+                        onCopy = {
+                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyTotpClick)
+                        },
                     )
                 }
 
@@ -403,6 +418,98 @@ fun CredentialDetailScreen(
             },
         )
     }
+}
+
+@Composable
+private fun TotpCodeCard(
+    state: CredentialViewModel.CredentialState,
+    onCopy: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val configuration = state.totpConfiguration ?: return
+    val displayCode = state.currentTotpCode.groupTotpCode()
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = MaterialTheme.shapes.large,
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.ui_totp_code),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            if (state.totpGenerationError || displayCode.isEmpty()) {
+                Text(
+                    text = stringResource(Res.string.ui_totp_code_unavailable),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = displayCode,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    IconButton(onClick = onCopy) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = stringResource(
+                                Res.string.ui_copy_value,
+                                stringResource(Res.string.ui_totp_code),
+                            ),
+                        )
+                    }
+                }
+                LinearProgressIndicator(
+                    progress = { state.totpProgress },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    text = pluralStringResource(
+                        Res.plurals.ui_totp_expires_in_seconds,
+                        state.totpSecondsRemaining,
+                        state.totpSecondsRemaining,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+            val accountLabel = listOfNotNull(configuration.issuer, configuration.accountName)
+                .filter(String::isNotBlank)
+                .joinToString(" · ")
+            if (accountLabel.isNotEmpty()) {
+                Text(
+                    text = accountLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+            Text(
+                text = stringResource(Res.string.ui_totp_device_time_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+        }
+    }
+}
+
+private fun String.groupTotpCode(): String = when (length) {
+    6 -> "${take(3)} ${drop(3)}"
+    8 -> "${take(4)} ${drop(4)}"
+    else -> this
 }
 
 @Composable

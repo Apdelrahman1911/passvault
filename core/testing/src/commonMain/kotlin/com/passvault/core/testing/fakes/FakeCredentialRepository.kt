@@ -235,5 +235,6 @@ class FakeCredentialRepository : CredentialRepository {
         passwordHistory = passwordHistory.map { entry ->
             entry.copy(password = SensitiveText.from(entry.password.toStringUnsafe()))
         },
+        totp = totp?.deepCopy(),
     )
 }

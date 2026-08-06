@@ -1,6 +1,6 @@
 # Local vault format
 
-Last reviewed: 2026-07-28
+Last reviewed: 2026-08-03
 
 This document describes the live local-vault format. It is not a claim that a standalone protobuf or portable
 directory format exists.
@@ -9,6 +9,10 @@ directory format exists.
 
 The local vault is a Room/SQLite database at the platform-managed application path. Database schema version 1 stores
 structural metadata and application-encrypted records. The SQLite file itself is not SQLCipher-encrypted.
+
+The application-level vault format starts at version 1. Saving the first credential with a TOTP authenticator
+atomically raises the metadata marker to version 2; it is never lowered. This reader accepts versions 1 and 2. The
+Room schema remains version 1 because the added fields live inside the existing encrypted credential payload.
 
 ## Key material
 
@@ -33,6 +37,8 @@ Current protected fields use crypto envelope version 2:
 - failure on wrong key, modified ciphertext, nonce, or associated data.
 
 Credential summary and secret payloads are separate to allow list rendering without decrypting passwords and notes.
+Vault format 2 may include one TOTP setup key and its issuer, account label, algorithm, digits, and period in the
+encrypted secret payload of a Login credential. Generated codes and countdown state are never persisted.
 Folder/tag payloads, password history, and attachment filenames have separate key contexts. Keyed blind indexes are
 deterministic and reveal equality for the same normalized value within one vault; they are not plaintext hashes.
 
@@ -41,11 +47,10 @@ deterministic and reveal equality for the same normalized value within one vault
 Database theft can reveal row counts, identifiers, credential types, favorites, timestamps, relationships, folder
 hierarchy IDs, visual colors/icons, and reserved attachment MIME/size/path metadata. It must not reveal credential
 titles, usernames, URLs, passwords, notes, custom-field values, tag/folder names, history passwords, or attachment
-filenames from protected payloads.
+filenames or TOTP setup keys from protected payloads.
 
 ## Backup compatibility
 
 The portable format is the separately encrypted `.pvault` container documented in
 [BACKUP_FORMAT.md](BACKUP_FORMAT.md). Copying the live database is not a supported backup protocol. Attachment file
 bytes are not supported by either the application or backup format.
-

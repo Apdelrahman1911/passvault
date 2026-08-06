@@ -6,7 +6,11 @@ struct ContentView: View {
     var body: some View {
         ComposeView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .ignoresSafeArea()
+            // Compose owns both safe-area and IME padding. Ignoring the
+            // SwiftUI keyboard inset prevents the keyboard height from
+            // being applied a second time around the Compose scene.
+            .ignoresSafeArea(.container, edges: .all)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 

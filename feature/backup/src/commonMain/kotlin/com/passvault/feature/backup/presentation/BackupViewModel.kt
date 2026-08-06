@@ -71,6 +71,7 @@ class BackupViewModel(
             BackupEvent.OnExportClick -> startExport()
             BackupEvent.OnImportFilePickerClick -> chooseImportFile()
             is BackupEvent.OnImportFileSelected -> {
+                discardSelectedImportFile()
                 val displayName = event.filePath.substringAfterLast('/').substringAfterLast('\\')
                 _state.update {
                     it.copy(
@@ -227,6 +228,7 @@ class BackupViewModel(
         viewModelScope.launch {
             fileStore.open()
                 .onSuccess { file ->
+                    discardSelectedImportFile()
                     _state.update {
                         it.copy(
                             selectedImportFile = file.path,
@@ -345,11 +347,13 @@ class BackupViewModel(
         importJob = viewModelScope.launch {
             operationMutex.withLock {
                 var bytes: ByteArray? = null
+                var restoreCompleted = false
                 try {
                     _state.update { it.copy(importProgress = 20) }
                     bytes = fileStore.read(file).getOrThrow()
                     _state.update { it.copy(importProgress = 45) }
                     val restored = backupService.restoreBackup(bytes, password).getOrThrow()
+                    restoreCompleted = true
                     _state.update {
                         it.copy(
                             isImporting = false,
@@ -384,6 +388,9 @@ class BackupViewModel(
                 } finally {
                     bytes?.fill(0)
                     password.clear()
+                    if (restoreCompleted) {
+                        fileStore.discard(file)
+                    }
                     _state.update { it.copy(isImporting = false) }
                 }
             }
@@ -428,8 +435,16 @@ class BackupViewModel(
     }
 
     fun clearForLock() {
+        discardSelectedImportFile()
         cancelOperation()
         _state.value = BackupState()
+    }
+
+    private fun discardSelectedImportFile() {
+        val current = _state.value
+        val path = current.selectedImportFile ?: return
+        val file = BackupFile(path, current.selectedImportDisplayName)
+        viewModelScope.launch { fileStore.discard(file) }
     }
 
     data class BackupState(

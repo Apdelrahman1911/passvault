@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -102,6 +103,48 @@ fun CredentialListScreen(
             },
         )
     }
+
+    state.folderPendingDeletion?.let { folder ->
+        AlertDialog(
+            onDismissRequest = {
+                onEvent(VaultViewModel.VaultEvent.OnDismissDeleteFolder)
+            },
+            icon = { Icon(Icons.Default.Delete, contentDescription = null) },
+            title = {
+                Text(stringResource(Res.string.ui_delete_folder_title, folder.name))
+            },
+            text = {
+                Text(stringResource(Res.string.ui_delete_folder_message))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(VaultViewModel.VaultEvent.OnConfirmDeleteFolder)
+                    },
+                    enabled = !state.isDeletingFolder,
+                ) {
+                    if (state.isDeletingFolder) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                        )
+                    } else {
+                        Text(stringResource(Res.string.action_delete))
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(VaultViewModel.VaultEvent.OnDismissDeleteFolder)
+                    },
+                    enabled = !state.isDeletingFolder,
+                ) {
+                    Text(stringResource(Res.string.action_cancel))
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -147,6 +190,21 @@ private fun CompactCredentialList(
                     },
                     label = { Text(folder.name) },
                 )
+            }
+            state.selectedFolderId?.let { selectedFolderId ->
+                if (state.folders.any { it.id == selectedFolderId }) {
+                    item(key = "delete-folder-${selectedFolderId.value}") {
+                        AssistChip(
+                            onClick = {
+                                onEvent(VaultViewModel.VaultEvent.OnDeleteFolderClick(selectedFolderId))
+                            },
+                            label = { Text(stringResource(Res.string.ui_delete_folder)) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Delete, contentDescription = null)
+                            },
+                        )
+                    }
+                }
             }
             item {
                 AssistChip(
@@ -244,6 +302,9 @@ private fun AdaptiveCredentialList(
             },
             onNewFolder = {
                 onEvent(VaultViewModel.VaultEvent.OnNewFolderClick)
+            },
+            onDeleteFolder = {
+                onEvent(VaultViewModel.VaultEvent.OnDeleteFolderClick(it))
             },
             modifier = Modifier
                 .width(300.dp)

@@ -83,8 +83,9 @@ The restored vault remains locked and must be unlocked with the restored vault's
 
 ## Compatibility policy
 
-Only `formatVersion = 1`, vault format 1, and crypto format 2 are accepted by this implementation. New versions must
-add explicit compatibility code and wrong-password/tamper/truncation/unsupported-version/transaction tests before
-changing these constants.
+Only `formatVersion = 1`, vault formats 1–2, and crypto format 2 are accepted by this implementation. Vault format 2
+identifies encrypted credential payloads that may contain TOTP configuration. New versions must add explicit
+compatibility code and wrong-password/tamper/truncation/unsupported-version/transaction tests before changing these
+constants.
 
 There is no CSV, plaintext export, cloud upload, merge restore, or attachment-file packaging in this release.

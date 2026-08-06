@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -27,6 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.passvault.feature.generator.presentation.GeneratorViewModel
 import com.passvault.core.designsystem.components.EditorialPageHeader
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.passVaultScrollableTopAppBarInsets
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.feature.generator.ui.components.GeneratorOptionsPanel
@@ -49,8 +51,7 @@ fun GeneratorScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
                 .imePadding()
                 .padding(
                     start = ComponentSpacing.screenHorizontal,
@@ -64,6 +65,7 @@ fun GeneratorScreen(
             if (showBackButton) {
                 TopAppBar(
                     title = {},
+                    windowInsets = passVaultScrollableTopAppBarInsets(),
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
                             Icon(
@@ -72,9 +74,7 @@ fun GeneratorScreen(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                    ),
+                    colors = passVaultTopAppBarColors(),
                 )
             }
 

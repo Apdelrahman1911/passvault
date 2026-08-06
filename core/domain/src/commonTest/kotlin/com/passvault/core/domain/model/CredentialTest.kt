@@ -218,6 +218,21 @@ class CredentialTest {
         assertThat(credential.attachments[0].fileName).isEqualTo("document.pdf")
     }
 
+    @Test
+    fun `credential can hold one TOTP configuration`() {
+        val totp = TotpConfiguration(
+            secret = SensitiveText.from("JBSWY3DPEHPK3PXP"),
+            issuer = "Example",
+            accountName = "test@example.com",
+        )
+        val credential = createTestCredential().copy(totp = totp)
+
+        assertThat(credential.totp?.issuer).isEqualTo("Example")
+        assertThat(credential.totp?.accountName).isEqualTo("test@example.com")
+        assertThat(credential.totp?.secret?.toStringUnsafe()).isEqualTo("JBSWY3DPEHPK3PXP")
+        credential.totp?.clear()
+    }
+
     // Helper function
     private fun createTestCredential(
         id: String = "cred-123",

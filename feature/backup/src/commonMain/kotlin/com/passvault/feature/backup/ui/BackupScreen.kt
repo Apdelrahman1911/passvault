@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.passvault.feature.backup.presentation.BackupViewModel
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
 
 @Composable
 fun BackupScreen(
@@ -40,9 +41,7 @@ fun BackupScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
                     }
                 },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+                colors = passVaultTopAppBarColors(),
             )
         },
         containerColor = MaterialTheme.colorScheme.background,

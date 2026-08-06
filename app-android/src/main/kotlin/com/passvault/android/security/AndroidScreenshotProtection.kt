@@ -23,7 +23,6 @@ class AndroidScreenshotProtection : ScreenshotProtection {
     private val isProtectionEnabled = AtomicBoolean(false)
     private val protectionCount = AtomicInteger(0)
     private val protectedActivities = CopyOnWriteArrayList<Activity>()
-    private val activityVisibility = HashMap<Activity, Boolean>()
     private val lock = Any()
 
     companion object {
@@ -88,14 +87,13 @@ class AndroidScreenshotProtection : ScreenshotProtection {
     }
 
     /**
-     * Apply protection to the specified activity.
-     * This registers the activity for lifecycle-aware protection.
+     * Register activity for protection tracking.
+     * Call this in Activity.onCreate() or when activity becomes active.
      */
-    fun apply(activity: Activity) {
+    fun registerActivity(activity: Activity) {
         synchronized(lock) {
             if (!protectedActivities.contains(activity)) {
                 protectedActivities.add(activity)
-                activityVisibility[activity] = activity.hasWindowFocus()
 
                 // Apply immediately if protection is enabled
                 if (isProtectionEnabled.get()) {
@@ -106,31 +104,14 @@ class AndroidScreenshotProtection : ScreenshotProtection {
     }
 
     /**
-     * Remove protection from the specified activity.
-     * This unregisters the activity from lifecycle-aware protection.
-     */
-    fun remove(activity: Activity) {
-        synchronized(lock) {
-            protectedActivities.remove(activity)
-            activityVisibility.remove(activity)
-            removeFromActivity(activity)
-        }
-    }
-
-    /**
-     * Register activity for protection tracking.
-     * Call this in Activity.onCreate() or when activity becomes active.
-     */
-    fun registerActivity(activity: Activity) {
-        apply(activity)
-    }
-
-    /**
      * Unregister activity from protection tracking.
      * Call this in Activity.onDestroy().
      */
     fun unregisterActivity(activity: Activity) {
-        remove(activity)
+        synchronized(lock) {
+            protectedActivities.remove(activity)
+            removeFromActivity(activity)
+        }
     }
 
     /**
@@ -139,8 +120,6 @@ class AndroidScreenshotProtection : ScreenshotProtection {
      */
     fun onActivityResumed(activity: Activity) {
         synchronized(lock) {
-            activityVisibility[activity] = true
-
             if (isProtectionEnabled.get() && protectedActivities.contains(activity)) {
                 applyToActivity(activity)
             }
@@ -151,64 +130,10 @@ class AndroidScreenshotProtection : ScreenshotProtection {
      * Called when activity loses focus.
      * Keeps protection active (protection persists across lifecycle).
      */
-    fun onActivityPaused(activity: Activity) {
+    fun onActivityPaused() {
         synchronized(lock) {
-            activityVisibility[activity] = false
             // Protection remains active - we don't remove FLAG_SECURE on pause
             // This ensures screenshots can't be taken in app switcher
-        }
-    }
-
-    /**
-     * Temporarily disable protection for the specified activity.
-     * Useful for allowing screenshots in specific non-sensitive screens.
-     * Remember to call restoreProtection() when done.
-     */
-    fun temporarilyDisable(activity: Activity): Boolean {
-        return synchronized(lock) {
-            if (protectedActivities.contains(activity)) {
-                removeFromActivity(activity)
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    /**
-     * Restore protection to the specified activity.
-     * Call this after temporarilyDisable() when returning to sensitive content.
-     */
-    fun restoreProtection(activity: Activity): Boolean {
-        return synchronized(lock) {
-            if (protectedActivities.contains(activity) && isProtectionEnabled.get()) {
-                applyToActivity(activity)
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    /**
-     * Temporarily disable protection for all registered activities.
-     * Returns the previous protection state so it can be restored.
-     */
-    fun temporarilyDisableAll(): Boolean {
-        val wasEnabled = isProtectionEnabled.get()
-        if (wasEnabled) {
-            disableProtection()
-        }
-        return wasEnabled
-    }
-
-    /**
-     * Restore global protection state.
-     * Call this after temporarilyDisableAll() when returning to sensitive content.
-     */
-    fun restoreGlobalProtection() {
-        if (!isProtectionEnabled.get()) {
-            enableProtection()
         }
     }
 
@@ -247,28 +172,8 @@ class AndroidScreenshotProtection : ScreenshotProtection {
             protectedActivities.toList().forEach { activity ->
                 if (activity.isFinishing || activity.isDestroyed) {
                     protectedActivities.remove(activity)
-                    activityVisibility.remove(activity)
                 }
             }
-        }
-    }
-
-    /**
-     * Get the number of currently protected activities.
-     */
-    fun getProtectedActivityCount(): Int {
-        return synchronized(lock) {
-            cleanup()
-            protectedActivities.size
-        }
-    }
-
-    /**
-     * Check if a specific activity is being protected.
-     */
-    fun isActivityProtected(activity: Activity): Boolean {
-        return synchronized(lock) {
-            protectedActivities.contains(activity)
         }
     }
 
@@ -282,7 +187,6 @@ class AndroidScreenshotProtection : ScreenshotProtection {
 
             // Clear tracking
             protectedActivities.clear()
-            activityVisibility.clear()
 
             // Reset state
             isProtectionEnabled.set(false)

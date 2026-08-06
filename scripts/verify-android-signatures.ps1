@@ -19,7 +19,7 @@ if ([string]::IsNullOrWhiteSpace($ApkPath)) {
 
 if ([string]::IsNullOrWhiteSpace($AabPath)) {
     $AabPath = Get-ChildItem `
-        -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/bundle/googleRelease") `
+        -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/bundle/standardRelease") `
         -Filter "*.aab" |
         Select-Object -First 1 -ExpandProperty FullName
 }

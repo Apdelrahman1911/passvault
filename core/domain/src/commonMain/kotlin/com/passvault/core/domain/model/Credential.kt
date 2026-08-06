@@ -26,6 +26,7 @@ data class Credential(
     val updatedAt: Instant,
     val lastUsedAt: Instant?,
     val passwordHealth: PasswordHealth = PasswordHealth.UNKNOWN,
+    val totp: TotpConfiguration? = null,
 )
 
 @Serializable

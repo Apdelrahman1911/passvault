@@ -8,6 +8,11 @@ import com.passvault.core.domain.model.SecurityError
 import com.passvault.core.domain.model.SessionId
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.testing.fakes.FakeVaultRepository
+import com.passvault.core.testing.fakes.FakeBiometricUnlockService
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricFailureReason
+import com.passvault.core.security.BiometricOperationResult
+import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -31,12 +36,14 @@ class UnlockViewModelTest {
 
     private lateinit var dispatcher: TestDispatcher
     private lateinit var repository: FakeVaultRepository
+    private lateinit var biometricService: FakeBiometricUnlockService
 
     @BeforeTest
     fun setUp() {
         dispatcher = StandardTestDispatcher()
         Dispatchers.setMain(dispatcher)
         repository = FakeVaultRepository()
+        biometricService = FakeBiometricUnlockService()
     }
 
     @AfterTest
@@ -48,7 +55,7 @@ class UnlockViewModelTest {
 
     @Test
     fun `missing vault navigates to onboarding`() = runTest(dispatcher) {
-        val viewModel = UnlockViewModel(repository)
+        val viewModel = UnlockViewModel(repository, biometricService)
 
         viewModel.effect.test {
             runCurrent()
@@ -129,7 +136,7 @@ class UnlockViewModelTest {
     }
 
     @Test
-    fun `failed unlock clears password and exposes only a generic error`() = runTest(dispatcher) {
+    fun `failed unlock clears password and exposes a stable password error`() = runTest(dispatcher) {
         val viewModel = existingVaultViewModel()
         repository.setShouldFail(IllegalStateException("secret database path"))
 
@@ -176,6 +183,10 @@ class UnlockViewModelTest {
 
         assertTrue(viewModel.state.value.isLockedOut)
         assertFalse(viewModel.state.value.canUnlock)
+        assertEquals(
+            Res.string.error_unlock_cooldown,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
 
         advanceTimeBy(30_000)
         runCurrent()
@@ -226,6 +237,57 @@ class UnlockViewModelTest {
     }
 
     @Test
+    fun `available enrolled biometrics are exposed for the unlock action`() = runTest(dispatcher) {
+        biometricService.setStatus(
+            availability = BiometricAvailability.AVAILABLE,
+            enabled = true,
+            type = BiometricType.FACE,
+        )
+        val viewModel = existingVaultViewModel()
+
+        runCurrent()
+
+        assertEquals(BiometricType.FACE, viewModel.state.value.biometricType)
+        assertEquals(BiometricAvailability.AVAILABLE, viewModel.state.value.biometricAvailability)
+        assertTrue(viewModel.state.value.isBiometricEnabled)
+    }
+
+    @Test
+    fun `biometric cancellation returns to idle without an error`() = runTest(dispatcher) {
+        biometricService.setStatus(BiometricAvailability.AVAILABLE, enabled = true)
+        biometricService.setUnlockResult(BiometricOperationResult.Cancelled)
+        val viewModel = existingVaultViewModel()
+        runCurrent()
+
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick)
+        runCurrent()
+
+        assertEquals(1, biometricService.unlockCalls)
+        assertFalse(viewModel.state.value.isLoading)
+        assertFalse(viewModel.state.value.isBiometricLoading)
+        assertNull(viewModel.state.value.errorMessage)
+    }
+
+    @Test
+    fun `invalidated biometric credential is disabled and requires password`() = runTest(dispatcher) {
+        biometricService.setStatus(BiometricAvailability.AVAILABLE, enabled = true)
+        biometricService.setUnlockResult(
+            BiometricOperationResult.Failure(BiometricFailureReason.INVALIDATED),
+        )
+        val viewModel = existingVaultViewModel()
+        runCurrent()
+
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick)
+        runCurrent()
+
+        assertFalse(viewModel.state.value.isBiometricEnabled)
+        assertEquals(
+            Res.string.error_biometric_invalidated,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+    }
+
+    @Test
     fun `clear for lock removes authentication material and transient state`() = runTest(dispatcher) {
         val viewModel = existingVaultViewModel()
         repository.setShouldFail(IllegalArgumentException("wrong"))
@@ -243,6 +305,6 @@ class UnlockViewModelTest {
 
     private fun existingVaultViewModel(): UnlockViewModel {
         repository.setupExistingVault()
-        return UnlockViewModel(repository)
+        return UnlockViewModel(repository, biometricService)
     }
 }

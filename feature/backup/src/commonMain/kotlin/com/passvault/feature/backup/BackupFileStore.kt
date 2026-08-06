@@ -12,6 +12,15 @@ interface BackupFileStore {
     suspend fun open(): Result<BackupFile>
 
     suspend fun read(file: BackupFile): Result<ByteArray>
+
+    /**
+     * Releases a platform-owned temporary import copy.
+     *
+     * Android and Desktop return user-owned paths, so their default behavior
+     * is intentionally a no-op. iOS imports an app-sandbox copy and removes it
+     * after the restore is complete or the selection is replaced.
+     */
+    suspend fun discard(file: BackupFile) = Unit
 }
 
 /**

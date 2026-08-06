@@ -156,11 +156,28 @@ class VaultViewModel(
             VaultEvent.OnDismissNewFolder -> {
                 _state.update { it.copy(showNewFolderDialog = false, newFolderName = "") }
             }
+            is VaultEvent.OnDeleteFolderClick -> {
+                val folder = _state.value.folders.firstOrNull { it.id == event.folderId }
+                if (folder != null) {
+                    _state.update {
+                        it.copy(
+                            folderPendingDeletion = folder,
+                            errorMessage = null,
+                        )
+                    }
+                }
+            }
+            VaultEvent.OnConfirmDeleteFolder -> deleteFolder()
+            VaultEvent.OnDismissDeleteFolder -> {
+                if (!_state.value.isDeletingFolder) {
+                    _state.update { it.copy(folderPendingDeletion = null) }
+                }
+            }
         }
     }
 
     private fun createFolder() {
-        if (_state.value.isCreatingFolder) return
+        if (_state.value.isCreatingFolder || _state.value.isDeletingFolder) return
         val name = _state.value.newFolderName.trim()
         if (name.isEmpty()) {
             _state.update { it.copy(errorMessage = uiText(Res.string.error_folder_name_required)) }
@@ -210,6 +227,52 @@ class VaultViewModel(
                         it.copy(
                             isCreatingFolder = false,
                             errorMessage = uiText(Res.string.error_folder_create),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteFolder() {
+        val currentState = _state.value
+        val folder = currentState.folderPendingDeletion ?: return
+        if (currentState.isDeletingFolder || currentState.isCreatingFolder) return
+
+        _state.update { it.copy(isDeletingFolder = true, errorMessage = null) }
+        folderJob?.cancel()
+        folderJob = viewModelScope.launch {
+            folderMutex.withLock {
+                try {
+                    folderRepository.delete(folder.id)
+                        .onSuccess {
+                            _state.update { current ->
+                                current.copy(
+                                    folders = current.folders.filterNot { it.id == folder.id },
+                                    selectedFolderId = current.selectedFolderId
+                                        .takeUnless { it == folder.id },
+                                    folderPendingDeletion = null,
+                                    isDeletingFolder = false,
+                                ).withFilteredCredentials()
+                            }
+                            loadData()
+                        }
+                        .onFailure {
+                            _state.update {
+                                it.copy(
+                                    isDeletingFolder = false,
+                                    errorMessage = uiText(Res.string.error_folder_delete),
+                                )
+                            }
+                        }
+                } catch (cancelled: CancellationException) {
+                    _state.update { it.copy(isDeletingFolder = false) }
+                    throw cancelled
+                } catch (_: Exception) {
+                    _state.update {
+                        it.copy(
+                            isDeletingFolder = false,
+                            errorMessage = uiText(Res.string.error_folder_delete),
                         )
                     }
                 }
@@ -305,6 +368,8 @@ class VaultViewModel(
         val showNewFolderDialog: Boolean = false,
         val newFolderName: String = "",
         val isCreatingFolder: Boolean = false,
+        val folderPendingDeletion: Folder? = null,
+        val isDeletingFolder: Boolean = false,
     ) {
         val hasCredentials: Boolean get() = credentials.isNotEmpty()
         val isEmpty: Boolean get() = filteredCredentials.isEmpty() && !isLoading
@@ -334,6 +399,9 @@ class VaultViewModel(
         data class OnNewFolderNameChanged(val name: String) : VaultEvent
         data object OnCreateFolderClick : VaultEvent
         data object OnDismissNewFolder : VaultEvent
+        data class OnDeleteFolderClick(val folderId: FolderId) : VaultEvent
+        data object OnConfirmDeleteFolder : VaultEvent
+        data object OnDismissDeleteFolder : VaultEvent
     }
 
     sealed interface VaultEffect {

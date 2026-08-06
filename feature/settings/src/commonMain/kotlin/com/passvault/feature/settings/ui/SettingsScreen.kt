@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.components.SecureTextField
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialPanel
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.passVaultScrollableTopAppBarInsets
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.theme.PassVaultTextStyles
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
@@ -46,15 +49,14 @@ fun SettingsScreen(
     ) { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .fillMaxSize(),
         ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 880.dp)
                 .align(Alignment.TopCenter)
-                .verticalScroll(rememberScrollState())
+                .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
                 .padding(
                     start = ComponentSpacing.screenHorizontal,
                     end = ComponentSpacing.screenHorizontal,
@@ -66,6 +68,7 @@ fun SettingsScreen(
             if (showBackButton) {
                 TopAppBar(
                     title = {},
+                    windowInsets = passVaultScrollableTopAppBarInsets(),
                     navigationIcon = {
                         IconButton(onClick = {
                             onEvent(SettingsViewModel.SettingsEvent.OnBackClick)
@@ -86,9 +89,7 @@ fun SettingsScreen(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                    ),
+                    colors = passVaultTopAppBarColors(),
                 )
             }
 

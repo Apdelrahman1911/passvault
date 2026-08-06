@@ -75,38 +75,6 @@ class AndroidClipboardService(
             currentToken() == token
         }
 
-    /**
-     * Compatibility helper for callers that want a visible label. The label
-     * remains namespaced and still carries an unguessable ownership token.
-     */
-    fun copySensitiveWithLabel(text: String, label: String, timeoutMs: Long = DEFAULT_TIMEOUT_MS): Job {
-        val result = scope.launch {
-            clipboardMutex.withLock {
-                cancelClearLocked()
-                val token = ownershipToken(label)
-                val clipData = ClipData.newPlainText(token, text).apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        description.extras?.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-                    }
-                }
-                clipboardManager.setPrimaryClip(clipData)
-                ownedToken = token
-                scope.launch {
-                    delay(timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS))
-                    clipboardMutex.withLock { clearIfOwnedLocked(token) }
-                }.also { clearJob = it }
-            }
-        }
-        return result
-    }
-
-    fun getClipboardText(): String? =
-        clipboardManager.primaryClip?.let { clip ->
-            if (clip.itemCount > 0) clip.getItemAt(0).text?.toString() else null
-        }
-
-    fun hasClipboardContent(): Boolean = clipboardManager.hasPrimaryClip()
-
     fun destroy() {
         runBlocking {
             clipboardMutex.withLock {
@@ -142,7 +110,6 @@ class AndroidClipboardService(
         "PassVault:$label:${UUID.randomUUID()}"
 
     private companion object {
-        const val DEFAULT_TIMEOUT_MS = 30_000L
         const val MIN_TIMEOUT_MS = 5_000L
         const val MAX_TIMEOUT_MS = 300_000L
     }

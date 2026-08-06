@@ -9,6 +9,9 @@ import com.passvault.core.database.dao.*
 import com.passvault.core.database.repository.*
 import com.passvault.core.domain.repository.*
 import com.passvault.core.navigation.AppCommandDispatcher
+import com.passvault.core.otp.StandardTotpService
+import com.passvault.core.otp.TotpService
+import com.passvault.core.security.BiometricUnlockService
 import com.passvault.feature.onboarding.presentation.OnboardingViewModel
 import com.passvault.feature.unlock.presentation.UnlockViewModel
 import com.passvault.feature.vault.presentation.VaultViewModel
@@ -45,6 +48,7 @@ object AppModule {
         single<CryptoEngine> { LibsodiumCryptoEngine() }
         single { VaultKeyHierarchy(get()) }
         single { AppCommandDispatcher() }
+        single<TotpService> { StandardTotpService() }
         
         // Coroutine scope for background operations
         single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
@@ -113,6 +117,14 @@ object AppModule {
         single<com.passvault.core.database.repository.VaultSessionManager> {
             get<VaultRepositoryImpl>()
         }
+        single<BiometricUnlockService> {
+            DefaultBiometricUnlockService(
+                vaultRepository = get(),
+                sessionManager = get(),
+                keyStore = get(),
+                cryptoEngine = get(),
+            )
+        }
         single { VaultBackupService(get(), get(), get()) }
     }
     
@@ -124,19 +136,19 @@ object AppModule {
         single { OnboardingViewModel(get()) }
         
         // Unlock
-        single { UnlockViewModel(get()) }
+        single { UnlockViewModel(get(), get()) }
         
         // Vault
         single { VaultViewModel(get(), get(), get()) }
         
         // Credential
-        single { CredentialViewModel(get()) }
+        single { CredentialViewModel(get(), get(), get()) }
         
         // Generator
         single { GeneratorViewModel(get()) }
         
         // Settings
-        single { SettingsViewModel(get(), get()) }
+        single { SettingsViewModel(get(), get(), get()) }
         
         // Backup
         single { BackupViewModel(get(), get(), get()) }

@@ -46,7 +46,7 @@ try {
     $gradleArguments = @(
         ":app-android:verifyReleaseSigningConfiguration"
         ":app-android:assembleStandardRelease"
-        ":app-android:bundleGoogleRelease"
+        ":app-android:bundleStandardRelease"
         "-Ppassvault.requireReleaseSigning=true"
     )
 

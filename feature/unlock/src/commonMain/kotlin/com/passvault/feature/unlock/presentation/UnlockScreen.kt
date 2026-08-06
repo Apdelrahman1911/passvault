@@ -4,20 +4,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -26,6 +31,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,6 +58,8 @@ import com.passvault.core.designsystem.text.resolve
 import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.stringResource
 
@@ -114,8 +122,10 @@ fun UnlockScreen(
     val focusManager = LocalFocusManager.current
     val passwordFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        passwordFocusRequester.requestFocus()
+    LaunchedEffect(state.isBiometricStatusLoaded, state.isBiometricEnabled) {
+        if (state.isBiometricStatusLoaded && !state.isBiometricEnabled) {
+            passwordFocusRequester.requestFocus()
+        }
     }
 
     Surface(
@@ -129,7 +139,7 @@ fun UnlockScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .imePadding()
-                    .navigationBarsPadding()
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
                     .padding(ComponentSpacing.screenHorizontal),
                 contentAlignment = Alignment.Center,
             ) {
@@ -141,7 +151,10 @@ fun UnlockScreen(
                         horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
                         verticalAlignment = Alignment.Top,
                     ) {
-                        LockedVaultVisual(Modifier.weight(0.85f))
+                        LockedVaultVisual(
+                            modifier = Modifier.weight(0.85f),
+                            biometricAvailable = state.biometricAvailability != BiometricAvailability.UNAVAILABLE,
+                        )
                         UnlockForm(
                             state = state,
                             onEvent = onEvent,
@@ -161,7 +174,10 @@ fun UnlockScreen(
                             .padding(vertical = Spacing.md),
                         verticalArrangement = Arrangement.spacedBy(Spacing.md),
                     ) {
-                        LockedVaultVisual(compact = true)
+                        LockedVaultVisual(
+                            compact = true,
+                            biometricAvailable = state.biometricAvailability != BiometricAvailability.UNAVAILABLE,
+                        )
                         UnlockForm(
                             state = state,
                             onEvent = onEvent,
@@ -182,6 +198,7 @@ fun UnlockScreen(
 private fun LockedVaultVisual(
     modifier: Modifier = Modifier,
     compact: Boolean = false,
+    biometricAvailable: Boolean = false,
 ) {
     Surface(
         modifier = modifier
@@ -220,7 +237,13 @@ private fun LockedVaultVisual(
                     modifier = Modifier.semantics { heading() },
                 )
                 Text(
-                    text = stringResource(Res.string.ui_enter_your_master_password_to_unlock),
+                    text = stringResource(
+                        if (biometricAvailable) {
+                            Res.string.ui_use_master_password_or_biometrics_to_unlock
+                        } else {
+                            Res.string.ui_enter_your_master_password_to_unlock
+                        },
+                    ),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.inverseOnSurface.copy(alpha = 0.72f),
                 )
@@ -241,7 +264,7 @@ private fun UnlockForm(
         modifier = modifier.fillMaxWidth(),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(Spacing.lg),
     ) {
-        if (state.failedAttempts > 0) {
+        if (state.failedAttempts > 0 && state.errorMessage == null) {
             FailedAttemptsWarning(attempts = state.failedAttempts)
         }
 
@@ -271,19 +294,56 @@ private fun UnlockForm(
             )
         }
 
-        SecureTextField(
-            value = state.password,
-            onValueChange = {
-                onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged(it))
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(passwordFocusRequester),
-            label = stringResource(Res.string.ui_master_password),
-            enabled = !state.isLockedOut,
-            imeAction = ImeAction.Done,
-            keyboardActions = KeyboardActions(onDone = { onSubmit() }),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SecureTextField(
+                value = state.password,
+                onValueChange = {
+                    onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged(it))
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(passwordFocusRequester),
+                label = stringResource(Res.string.ui_master_password),
+                enabled = !state.isLockedOut && !state.isBiometricLoading,
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+            )
+
+            if (state.biometricAvailability != BiometricAvailability.UNAVAILABLE) {
+                val biometricLabel = stringResource(
+                    when (state.biometricType) {
+                        BiometricType.FACE -> Res.string.ui_unlock_with_face_id
+                        BiometricType.FINGERPRINT -> Res.string.ui_unlock_with_touch_id
+                        BiometricType.GENERIC -> Res.string.ui_unlock_with_biometrics
+                    },
+                )
+                OutlinedButton(
+                    onClick = {
+                        onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick)
+                    },
+                    modifier = Modifier.size(56.dp),
+                    enabled = !state.isLoading,
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    if (state.isBiometricLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
+                    } else {
+                        Icon(
+                            imageVector = if (state.biometricType == BiometricType.FACE) {
+                                Icons.Default.Face
+                            } else {
+                                Icons.Default.Fingerprint
+                            },
+                            contentDescription = biometricLabel,
+                        )
+                    }
+                }
+            }
+        }
 
         Button(
             onClick = onSubmit,
@@ -292,7 +352,7 @@ private fun UnlockForm(
                 .heightIn(min = 56.dp),
             enabled = state.canUnlock && !state.isLockedOut,
         ) {
-            if (state.isLoading) {
+            if (state.isLoading && !state.isBiometricLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(22.dp),
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -314,17 +374,6 @@ private fun UnlockForm(
             Text(stringResource(Res.string.ui_forgot_password))
         }
 
-        if (state.isLockedOut) {
-            EditorialStatusBanner(
-                icon = Icons.Default.Warning,
-                title = stringResource(Res.string.ui_vault_locked),
-                message = stringResource(
-                    Res.string.ui_too_many_failed_attempts_try_again_after_the_short_sec,
-                ),
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-            )
-        }
     }
 }
 

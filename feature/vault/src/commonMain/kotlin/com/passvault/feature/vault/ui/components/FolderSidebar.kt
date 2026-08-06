@@ -26,6 +26,7 @@ fun FolderSidebar(
     selectedFolderId: FolderId?,
     onFolderSelected: (FolderId?) -> Unit,
     onNewFolder: () -> Unit,
+    onDeleteFolder: (FolderId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -75,6 +76,7 @@ fun FolderSidebar(
                         folder = folder,
                         isSelected = folder.id == selectedFolderId,
                         onClick = { onFolderSelected(folder.id) },
+                        onDelete = { onDeleteFolder(folder.id) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -107,33 +109,47 @@ private fun FolderItem(
     folder: Folder,
     isSelected: Boolean,
     onClick: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    NavigationDrawerItem(
-        label = {
-            Text(
-                text = folder.name,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        selected = isSelected,
-        onClick = onClick,
-        icon = {
-            val folderIcon = folder.icon
-            if (folderIcon.isNullOrBlank()) {
-                Icon(
-                    imageVector = Icons.Default.Folder,
-                    contentDescription = null,
-                )
-            } else {
+    Row(
+        modifier = modifier.padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        NavigationDrawerItem(
+            label = {
                 Text(
-                    text = folderIcon,
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = folder.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            selected = isSelected,
+            onClick = onClick,
+            icon = {
+                val folderIcon = folder.icon
+                if (folderIcon.isNullOrBlank()) {
+                    Icon(
+                        imageVector = Icons.Default.Folder,
+                        contentDescription = null,
+                    )
+                } else {
+                    Text(
+                        text = folderIcon,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
+            },
+            modifier = Modifier.weight(1f),
+            shape = MaterialTheme.shapes.large,
+        )
+        if (isSelected) {
+            IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
+                Icon(
+                    imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = stringResource(Res.string.ui_delete_folder),
                 )
             }
-        },
-        modifier = modifier.padding(horizontal = 12.dp),
-        shape = MaterialTheme.shapes.large,
-    )
+        }
+    }
 }

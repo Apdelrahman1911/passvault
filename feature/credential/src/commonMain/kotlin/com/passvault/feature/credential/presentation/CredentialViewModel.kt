@@ -12,6 +12,7 @@ import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.model.CustomField
 import com.passvault.core.domain.model.CustomFieldId
+import com.passvault.core.domain.model.Folder
 import com.passvault.core.domain.model.FolderId
 import com.passvault.core.domain.model.PasswordHealth
 import com.passvault.core.domain.model.PasswordHistoryEntry
@@ -19,10 +20,19 @@ import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.TotpAlgorithm
+import com.passvault.core.domain.model.TotpConfiguration
 import com.passvault.core.domain.model.UrlValue
 import com.passvault.core.domain.repository.CredentialRepository
+import com.passvault.core.domain.repository.FolderRepository
+import com.passvault.core.otp.StandardTotpService
+import com.passvault.core.otp.TotpManualOptions
+import com.passvault.core.otp.TotpParseResult
+import com.passvault.core.otp.TotpService
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +57,9 @@ import kotlin.uuid.Uuid
  */
 class CredentialViewModel(
     private val credentialRepository: CredentialRepository,
+    private val folderRepository: FolderRepository,
+    private val totpService: TotpService = StandardTotpService(),
+    private val clock: Clock = Clock.System,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CredentialState())
@@ -60,6 +73,8 @@ class CredentialViewModel(
     private var loadJob: Job? = null
     private var saveJob: Job? = null
     private var deleteJob: Job? = null
+    private var folderJob: Job? = null
+    private var totpJob: Job? = null
 
     fun loadCredential(credentialId: CredentialId) {
         cancelPendingOperations()
@@ -69,6 +84,7 @@ class CredentialViewModel(
             isLoading = true,
             isNewCredential = false,
         )
+        loadFolders()
         loadJob = viewModelScope.launch {
             val result = credentialRepository.getById(credentialId)
             if (result.isFailure) {
@@ -99,6 +115,7 @@ class CredentialViewModel(
                         changedAt = entry.changedAt,
                     )
                 }
+                val copiedTotp = credential.totp?.deepCopy()
                 _state.value = CredentialState(
                     credentialId = credential.id,
                     credentialType = credential.type,
@@ -121,6 +138,9 @@ class CredentialViewModel(
                     attachments = credential.attachments,
                     passwordHistory = copiedHistory,
                     folderId = credential.folderId,
+                    folders = _state.value.folders,
+                    isLoadingFolders = _state.value.isLoadingFolders,
+                    folderLoadFailed = _state.value.folderLoadFailed,
                     tagIds = credential.tagIds,
                     isFavorite = credential.isFavorite,
                     passwordHealth = credential.passwordHealth,
@@ -130,11 +150,16 @@ class CredentialViewModel(
                     passwordStrength = calculatePasswordStrength(
                         credential.password?.toStringUnsafe().orEmpty(),
                     ),
+                    totpConfiguration = copiedTotp,
+                    totpAlgorithm = copiedTotp?.algorithm ?: TotpAlgorithm.SHA1,
+                    totpDigits = copiedTotp?.digits ?: DEFAULT_TOTP_DIGITS,
+                    totpPeriodInput = copiedTotp?.periodSeconds?.toString() ?: DEFAULT_TOTP_PERIOD,
                     isLoading = false,
                     isEditing = false,
                     isNewCredential = false,
                     isDirty = false,
                 )
+                startTotpTicker()
             } finally {
                 credential.clearSensitiveValues()
             }
@@ -150,6 +175,27 @@ class CredentialViewModel(
             isNewCredential = true,
             isDirty = false,
         )
+        loadFolders()
+    }
+
+    private fun loadFolders() {
+        folderJob?.cancel()
+        _state.update {
+            it.copy(
+                isLoadingFolders = true,
+                folderLoadFailed = false,
+            )
+        }
+        folderJob = viewModelScope.launch {
+            val result = folderRepository.getAll()
+            _state.update {
+                it.copy(
+                    folders = result.getOrDefault(emptyList()),
+                    isLoadingFolders = false,
+                    folderLoadFailed = result.isFailure,
+                )
+            }
+        }
     }
 
     fun onEvent(event: CredentialEvent) {
@@ -190,6 +236,35 @@ class CredentialViewModel(
                 updateState { it.copy(tagIds = event.tagIds.map(::TagId).toSet()) }
             is CredentialEvent.OnFavoriteChanged ->
                 updateState { it.copy(isFavorite = event.isFavorite) }
+            is CredentialEvent.OnTotpSetupInputChanged ->
+                updateState { it.copy(totpSetupInput = event.value, totpSetupError = null) }
+            is CredentialEvent.OnTotpAlgorithmChanged ->
+                updateState { it.copy(totpAlgorithm = event.algorithm, totpSetupError = null) }
+            is CredentialEvent.OnTotpDigitsChanged ->
+                updateState { it.copy(totpDigits = event.digits, totpSetupError = null) }
+            is CredentialEvent.OnTotpPeriodChanged ->
+                updateState { it.copy(totpPeriodInput = event.value, totpSetupError = null) }
+            CredentialEvent.OnTotpAddClick -> parseTotpEnrollment(_state.value.totpSetupInput)
+            CredentialEvent.OnTotpScanClick ->
+                _state.update { it.copy(showTotpScanner = true, totpSetupError = null) }
+            CredentialEvent.OnTotpScanCancel ->
+                _state.update { it.copy(showTotpScanner = false) }
+            is CredentialEvent.OnTotpQrScanned -> parseTotpEnrollment(event.payload)
+            CredentialEvent.OnTotpScanError ->
+                _state.update {
+                    it.copy(
+                        showTotpScanner = false,
+                        totpSetupError = uiText(Res.string.error_totp_scan),
+                    )
+                }
+            CredentialEvent.OnTotpReplaceConfirm -> confirmTotpReplacement()
+            CredentialEvent.OnTotpReplaceCancel -> cancelTotpReplacement()
+            CredentialEvent.OnTotpRemoveClick ->
+                _state.update { it.copy(showTotpRemoveConfirmation = true) }
+            CredentialEvent.OnTotpRemoveConfirm -> removeTotp()
+            CredentialEvent.OnTotpRemoveCancel ->
+                _state.update { it.copy(showTotpRemoveConfirmation = false) }
+            CredentialEvent.OnCopyTotpClick -> copySensitiveValue(_state.value.currentTotpCode)
             is CredentialEvent.OnCustomFieldAdded ->
                 addCustomField(event.name, event.value, event.isSecret)
             is CredentialEvent.OnCustomFieldRemoved ->
@@ -231,7 +306,14 @@ class CredentialViewModel(
             }
             is CredentialEvent.OnLaunchUrlClick -> launchUrl(event.url)
             CredentialEvent.OnDismissError ->
-                _state.update { it.copy(errorMessage = null, titleError = null, urlErrors = emptyMap()) }
+                _state.update {
+                    it.copy(
+                        errorMessage = null,
+                        titleError = null,
+                        urlErrors = emptyMap(),
+                        totpSetupError = null,
+                    )
+                }
             CredentialEvent.OnGeneratePasswordClick ->
                 _effect.trySend(CredentialEffect.NavigateToGenerator)
             is CredentialEvent.OnUrlLaunchResult -> {
@@ -270,6 +352,153 @@ class CredentialViewModel(
             _state.update { it.copy(errorMessage = uiText(Res.string.error_credential_link_invalid)) }
         } else {
             _effect.trySend(CredentialEffect.LaunchUrl(normalized))
+        }
+    }
+
+    private fun parseTotpEnrollment(input: String) {
+        val state = _state.value
+        val periodSeconds = state.totpPeriodInput.toIntOrNull()
+        if (periodSeconds == null) {
+            _state.update { it.copy(totpSetupError = uiText(Res.string.error_totp_invalid_setup)) }
+            return
+        }
+        when (
+            val result = totpService.parse(
+                input,
+                TotpManualOptions(
+                    algorithm = state.totpAlgorithm,
+                    digits = state.totpDigits,
+                    periodSeconds = periodSeconds,
+                ),
+            )
+        ) {
+            is TotpParseResult.Error ->
+                _state.update {
+                    it.copy(
+                        showTotpScanner = false,
+                        totpSetupError = uiText(Res.string.error_totp_invalid_setup),
+                    )
+                }
+            is TotpParseResult.Success -> stageTotpConfiguration(result.configuration)
+        }
+    }
+
+    private fun stageTotpConfiguration(configuration: TotpConfiguration) {
+        val current = _state.value
+        if (current.totpConfiguration != null) {
+            current.pendingTotpConfiguration?.clear()
+            _state.update {
+                it.copy(
+                    pendingTotpConfiguration = configuration,
+                    showTotpReplaceConfirmation = true,
+                    showTotpScanner = false,
+                    totpSetupError = null,
+                )
+            }
+        } else {
+            applyTotpConfiguration(configuration)
+        }
+    }
+
+    private fun confirmTotpReplacement() {
+        val pending = _state.value.pendingTotpConfiguration ?: return
+        _state.value.totpConfiguration?.clear()
+        applyTotpConfiguration(pending)
+    }
+
+    private fun cancelTotpReplacement() {
+        _state.value.pendingTotpConfiguration?.clear()
+        _state.update {
+            it.copy(
+                pendingTotpConfiguration = null,
+                showTotpReplaceConfirmation = false,
+            )
+        }
+    }
+
+    private fun applyTotpConfiguration(configuration: TotpConfiguration) {
+        _state.update {
+            it.copy(
+                totpConfiguration = configuration,
+                pendingTotpConfiguration = null,
+                totpSetupInput = "",
+                totpAlgorithm = configuration.algorithm,
+                totpDigits = configuration.digits,
+                totpPeriodInput = configuration.periodSeconds.toString(),
+                totpSetupError = null,
+                showTotpScanner = false,
+                showTotpReplaceConfirmation = false,
+                isDirty = true,
+            )
+        }
+        startTotpTicker()
+    }
+
+    private fun removeTotp() {
+        _state.value.totpConfiguration?.clear()
+        _state.value.pendingTotpConfiguration?.clear()
+        totpJob?.cancel()
+        totpJob = null
+        _state.update {
+            it.copy(
+                totpConfiguration = null,
+                pendingTotpConfiguration = null,
+                currentTotpCode = "",
+                totpSecondsRemaining = 0,
+                totpProgress = 0f,
+                totpGenerationError = false,
+                showTotpRemoveConfirmation = false,
+                showTotpReplaceConfirmation = false,
+                isDirty = true,
+            )
+        }
+    }
+
+    private fun startTotpTicker() {
+        totpJob?.cancel()
+        if (_state.value.totpConfiguration == null) {
+            totpJob = null
+            return
+        }
+        refreshTotpCode()
+        totpJob = viewModelScope.launch {
+            while (isActive) {
+                val nowMillis = clock.now().toEpochMilliseconds()
+                val delayMillis = (MILLIS_PER_SECOND - nowMillis.mod(MILLIS_PER_SECOND))
+                    .coerceAtLeast(MIN_TICK_DELAY_MILLIS)
+                delay(delayMillis)
+                refreshTotpCode()
+            }
+        }
+    }
+
+    private fun refreshTotpCode() {
+        val configuration = _state.value.totpConfiguration ?: return
+        val now = clock.now()
+        val result = totpService.generate(configuration, now)
+        if (result.isFailure) {
+            _state.update {
+                it.copy(
+                    currentTotpCode = "",
+                    totpSecondsRemaining = 0,
+                    totpProgress = 0f,
+                    totpGenerationError = true,
+                )
+            }
+            return
+        }
+        val code = result.getOrThrow()
+        val remainingMillis = (code.expiresAt.toEpochMilliseconds() - now.toEpochMilliseconds()).coerceAtLeast(0)
+        val secondsRemaining = ((remainingMillis + MILLIS_PER_SECOND - 1) / MILLIS_PER_SECOND).toInt()
+        val progress = (remainingMillis.toFloat() / (configuration.periodSeconds * MILLIS_PER_SECOND))
+            .coerceIn(0f, 1f)
+        _state.update {
+            it.copy(
+                currentTotpCode = code.value,
+                totpSecondsRemaining = secondsRemaining,
+                totpProgress = progress,
+                totpGenerationError = false,
+            )
         }
     }
 
@@ -377,7 +606,7 @@ class CredentialViewModel(
 
     @OptIn(ExperimentalUuidApi::class)
     private fun createCredentialFromState(state: CredentialState): Credential {
-        val now = Clock.System.now()
+        val now = clock.now()
         return Credential(
             id = state.credentialId ?: CredentialId(Uuid.random().toString()),
             type = state.credentialType,
@@ -409,6 +638,7 @@ class CredentialViewModel(
             updatedAt = now,
             lastUsedAt = state.lastUsedAt,
             passwordHealth = state.passwordHealth,
+            totp = state.totpConfiguration?.deepCopy(),
         )
     }
 
@@ -417,6 +647,7 @@ class CredentialViewModel(
         if (_state.value.isBusy) return
         _state.update { it.copy(isDeleting = true, errorMessage = null) }
         deleteJob?.cancel()
+        totpJob?.cancel()
         deleteJob = viewModelScope.launch {
             deleteMutex.withLock {
                 val result = credentialRepository.delete(credentialId)
@@ -449,9 +680,13 @@ class CredentialViewModel(
         loadJob?.cancel()
         saveJob?.cancel()
         deleteJob?.cancel()
+        folderJob?.cancel()
+        totpJob?.cancel()
         loadJob = null
         saveJob = null
         deleteJob = null
+        folderJob = null
+        totpJob = null
     }
 
     private fun clearStateSensitiveValues() {
@@ -461,6 +696,8 @@ class CredentialViewModel(
         current.apiKeys.forEach(SensitiveText::clear)
         current.licenseKeys.forEach(SensitiveText::clear)
         current.passwordHistory.forEach { it.password.clear() }
+        current.totpConfiguration?.clear()
+        current.pendingTotpConfiguration?.clear()
     }
 
     private fun Credential.clearSensitiveValues() {
@@ -473,6 +710,7 @@ class CredentialViewModel(
         licenseKeys.forEach(SensitiveText::clear)
         customFields.forEach { it.value.clear() }
         passwordHistory.forEach { it.password.clear() }
+        totp?.clear()
     }
 
     private fun calculatePasswordStrength(password: String): PasswordStrength {
@@ -558,6 +796,9 @@ class CredentialViewModel(
         val attachments: List<AttachmentMetadata> = emptyList(),
         val passwordHistory: List<PasswordHistoryEntry> = emptyList(),
         val folderId: FolderId? = null,
+        val folders: List<Folder> = emptyList(),
+        val isLoadingFolders: Boolean = false,
+        val folderLoadFailed: Boolean = false,
         val tagIds: Set<TagId> = emptySet(),
         val isFavorite: Boolean = false,
         val passwordHealth: PasswordHealth = PasswordHealth.UNKNOWN,
@@ -565,6 +806,20 @@ class CredentialViewModel(
         val updatedAt: Instant? = null,
         val lastUsedAt: Instant? = null,
         val passwordStrength: PasswordStrength = PasswordStrength.EMPTY,
+        val totpConfiguration: TotpConfiguration? = null,
+        val pendingTotpConfiguration: TotpConfiguration? = null,
+        val totpSetupInput: String = "",
+        val totpAlgorithm: TotpAlgorithm = TotpAlgorithm.SHA1,
+        val totpDigits: Int = DEFAULT_TOTP_DIGITS,
+        val totpPeriodInput: String = DEFAULT_TOTP_PERIOD,
+        val currentTotpCode: String = "",
+        val totpSecondsRemaining: Int = 0,
+        val totpProgress: Float = 0f,
+        val totpGenerationError: Boolean = false,
+        val totpSetupError: UiText? = null,
+        val showTotpScanner: Boolean = false,
+        val showTotpReplaceConfirmation: Boolean = false,
+        val showTotpRemoveConfirmation: Boolean = false,
         val isEditing: Boolean = false,
         val isNewCredential: Boolean = false,
         val isLoading: Boolean = false,
@@ -599,6 +854,11 @@ class CredentialViewModel(
         data class OnFolderChanged(val folderId: String?) : CredentialEvent
         data class OnTagsChanged(val tagIds: List<String>) : CredentialEvent
         data class OnFavoriteChanged(val isFavorite: Boolean) : CredentialEvent
+        data class OnTotpSetupInputChanged(val value: String) : CredentialEvent
+        data class OnTotpAlgorithmChanged(val algorithm: TotpAlgorithm) : CredentialEvent
+        data class OnTotpDigitsChanged(val digits: Int) : CredentialEvent
+        data class OnTotpPeriodChanged(val value: String) : CredentialEvent
+        data class OnTotpQrScanned(val payload: String) : CredentialEvent
         data class OnCustomFieldAdded(val name: String, val value: String, val isSecret: Boolean) : CredentialEvent
         data class OnCustomFieldRemoved(val fieldId: CustomFieldId) : CredentialEvent
         data class OnCustomFieldUpdated(
@@ -621,6 +881,16 @@ class CredentialViewModel(
         data object OnCopyPasswordClick : CredentialEvent
         data object OnCopyUsernameClick : CredentialEvent
         data object OnCopyEmailClick : CredentialEvent
+        data object OnTotpAddClick : CredentialEvent
+        data object OnTotpScanClick : CredentialEvent
+        data object OnTotpScanCancel : CredentialEvent
+        data object OnTotpScanError : CredentialEvent
+        data object OnTotpReplaceConfirm : CredentialEvent
+        data object OnTotpReplaceCancel : CredentialEvent
+        data object OnTotpRemoveClick : CredentialEvent
+        data object OnTotpRemoveConfirm : CredentialEvent
+        data object OnTotpRemoveCancel : CredentialEvent
+        data object OnCopyTotpClick : CredentialEvent
         data object OnBackClick : CredentialEvent
         data object OnDismissError : CredentialEvent
         data object OnGeneratePasswordClick : CredentialEvent
@@ -663,6 +933,10 @@ class CredentialViewModel(
         const val MAX_CUSTOM_FIELDS = 50
         const val MAX_CUSTOM_FIELD_NAME_LENGTH = 200
         const val MAX_CUSTOM_FIELD_VALUE_LENGTH = 20_000
+        const val MILLIS_PER_SECOND = 1_000L
+        const val MIN_TICK_DELAY_MILLIS = 50L
+        const val DEFAULT_TOTP_DIGITS = 6
+        const val DEFAULT_TOTP_PERIOD = "30"
 
         fun normalizeUrl(raw: String): String? {
             val trimmed = raw.trim()

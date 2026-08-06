@@ -85,6 +85,7 @@ kotlin {
 
         val commonTest = getByName("commonTest") {
             dependencies {
+                implementation(project(":core:testing"))
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.assertk)

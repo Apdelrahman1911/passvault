@@ -161,3 +161,20 @@ jobs:
 
       - name: Compile the shared Desktop graph
         run: ./gradlew :shared:compileKotlinDesktop :app-desktop:compileKotlinDesktop --stacktrace
+
+  ios-simulator-compile:
+    name: iOS Simulator Compile
+    runs-on: macos-15
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile iOS simulator framework sources
+        run: ./gradlew :shared:compileKotlinIosSimulatorArm64 --stacktrace

@@ -1,6 +1,6 @@
 # Database schema
 
-Last reviewed: 2026-07-28
+Last reviewed: 2026-08-03
 
 The authoritative Room declaration is `core/database/.../VaultDatabase.kt`. Current database version: **1**.
 Schema export is enabled and generated schemas belong under the configured schema directory.
@@ -40,6 +40,10 @@ record identity. Legacy nonce columns remain part of schema version 1; the repos
 than treating an unauthenticated blob as plaintext. Exact normalized title/folder/tag equality uses deterministic
 keyed BLAKE2b blind indexes. Search beyond exact indexed lookup decrypts records only while unlocked.
 
+A Login credential's optional TOTP setup key and parameters are serialized only inside its encrypted secret payload.
+Adding this field changes the application vault-format marker to 2 but does not add a plaintext column or increment
+the Room schema version.
+
 ## Transactions and migration
 
 Credential payload/relationship/history mutations and full backup replacement are transactional. Restore validates
@@ -47,4 +51,3 @@ and decrypts the entire snapshot before the replacement transaction and locks th
 
 There is no schema migration yet because this checkout has no prior released schema fixture. Before incrementing
 version 1, add Room migrations and tests using an actual exported prior schema; destructive fallback is prohibited.
-

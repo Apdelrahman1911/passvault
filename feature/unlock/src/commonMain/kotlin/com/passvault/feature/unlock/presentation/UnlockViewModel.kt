@@ -10,6 +10,11 @@ import com.passvault.core.domain.model.SecurityError
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.repository.VaultRepository
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricFailureReason
+import com.passvault.core.security.BiometricOperationResult
+import com.passvault.core.security.BiometricType
+import com.passvault.core.security.BiometricUnlockService
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.Job
@@ -20,6 +25,7 @@ import kotlinx.coroutines.sync.Mutex
 
 class UnlockViewModel(
     private val vaultRepository: VaultRepository,
+    private val biometricUnlockService: BiometricUnlockService,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UnlockState())
@@ -30,11 +36,13 @@ class UnlockViewModel(
     private val unlockMutex = Mutex()
     private var lockoutResetJob: Job? = null
     private var unlockJob: Job? = null
+    private var biometricStatusJob: Job? = null
     private var lastNavigatedSession: String? = null
 
     init {
         observeSessionState()
         checkVaultExists()
+        loadBiometricStatus()
     }
 
     private fun observeSessionState() {
@@ -42,7 +50,7 @@ class UnlockViewModel(
             vaultRepository.getSessionState().collect { sessionState ->
                 when (sessionState) {
                     is VaultSessionState.Unlocked -> {
-                        _state.update { it.copy(isLoading = false) }
+                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
                         val sessionId = sessionState.sessionId.value
                         if (lastNavigatedSession != sessionId) {
                             lastNavigatedSession = sessionId
@@ -53,10 +61,10 @@ class UnlockViewModel(
                         _state.update { it.copy(isLoading = true) }
                     }
                     is VaultSessionState.Locking -> {
-                        _state.update { it.copy(isLoading = false) }
+                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
                     }
                     is VaultSessionState.Locked -> {
-                        _state.update { it.copy(isLoading = false) }
+                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
                     }
                     is VaultSessionState.FatalError -> {
                         handleFatalError(sessionState.error)
@@ -97,6 +105,7 @@ class UnlockViewModel(
         _state.update {
             it.copy(
                 isLoading = false,
+                isBiometricLoading = false,
                 errorMessage = message,
                 failedAttempts = if (error is SecurityError.AuthenticationFailed) {
                     error.attempts
@@ -116,6 +125,7 @@ class UnlockViewModel(
                 }
             }
             UnlockEvent.OnUnlockClick -> unlock()
+            UnlockEvent.OnBiometricUnlockClick -> unlockWithBiometrics()
             UnlockEvent.OnDismissError -> {
                 _state.update { it.copy(errorMessage = null) }
             }
@@ -161,7 +171,13 @@ class UnlockViewModel(
                             it.copy(
                                 isLoading = false,
                                 password = "",
-                                errorMessage = uiText(Res.string.error_unlock_failed),
+                                errorMessage = uiText(
+                                    if (attempts >= MAX_FAILED_ATTEMPTS) {
+                                        Res.string.error_unlock_cooldown
+                                    } else {
+                                        Res.string.error_unlock_failed
+                                    },
+                                ),
                                 failedAttempts = attempts,
                             )
                         }
@@ -176,6 +192,108 @@ class UnlockViewModel(
         }
     }
 
+    private fun loadBiometricStatus() {
+        biometricStatusJob?.cancel()
+        biometricStatusJob = viewModelScope.launch {
+            try {
+                val status = biometricUnlockService.getStatus()
+                _state.update {
+                    it.copy(
+                        biometricType = status.capability.type,
+                        biometricAvailability = status.capability.availability,
+                        isBiometricEnabled = status.isEnabled,
+                        isBiometricStatusLoaded = true,
+                    )
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                _state.update {
+                    it.copy(
+                        biometricAvailability = BiometricAvailability.UNAVAILABLE,
+                        isBiometricEnabled = false,
+                        isBiometricStatusLoaded = true,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun unlockWithBiometrics() {
+        val currentState = _state.value
+        when (currentState.biometricAvailability) {
+            BiometricAvailability.NOT_ENROLLED -> {
+                _state.update { it.copy(errorMessage = uiText(Res.string.error_biometric_not_enrolled)) }
+                return
+            }
+            BiometricAvailability.UNAVAILABLE -> {
+                _state.update { it.copy(errorMessage = uiText(Res.string.error_biometric_unavailable)) }
+                return
+            }
+            BiometricAvailability.AVAILABLE -> Unit
+        }
+        if (!currentState.isBiometricEnabled) {
+            _state.update { it.copy(errorMessage = uiText(Res.string.error_biometric_not_enabled)) }
+            return
+        }
+        if (!unlockMutex.tryLock()) return
+
+        _state.update {
+            it.copy(isLoading = true, isBiometricLoading = true, errorMessage = null)
+        }
+        unlockJob = viewModelScope.launch {
+            try {
+                when (val result = biometricUnlockService.unlock()) {
+                    BiometricOperationResult.Success -> Unit
+                    BiometricOperationResult.Cancelled -> {
+                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
+                    }
+                    is BiometricOperationResult.Failure -> {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                isBiometricLoading = false,
+                                isBiometricEnabled = if (
+                                    result.reason == BiometricFailureReason.INVALIDATED ||
+                                    result.reason == BiometricFailureReason.NOT_ENABLED
+                                ) false else it.isBiometricEnabled,
+                                biometricAvailability = when (result.reason) {
+                                    BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
+                                    BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
+                                    else -> it.biometricAvailability
+                                },
+                                errorMessage = result.reason.toUnlockMessage(),
+                            )
+                        }
+                    }
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isBiometricLoading = false,
+                        errorMessage = uiText(Res.string.error_biometric_failed),
+                    )
+                }
+            } finally {
+                unlockMutex.unlock()
+            }
+        }
+    }
+
+    private fun BiometricFailureReason.toUnlockMessage(): UiText = when (this) {
+        BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
+        BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
+        BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
+        BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
+        BiometricFailureReason.VAULT_LOCKED,
+        BiometricFailureReason.AUTHENTICATION_FAILED,
+        BiometricFailureReason.INTERNAL_ERROR,
+        -> uiText(Res.string.error_biometric_failed)
+    }
+
     /**
      * Clears all user-entered authentication material when the application
      * locks or leaves the unlock flow.
@@ -183,8 +301,11 @@ class UnlockViewModel(
     fun clearForLock() {
         unlockJob?.cancel()
         unlockJob = null
+        biometricStatusJob?.cancel()
+        biometricStatusJob = null
         lockoutResetJob?.cancel()
         _state.value = UnlockState()
+        loadBiometricStatus()
     }
 
     data class UnlockState(
@@ -193,6 +314,11 @@ class UnlockViewModel(
         val errorMessage: UiText? = null,
         val failedAttempts: Int = 0,
         val showRecoveryInfo: Boolean = false,
+        val biometricType: BiometricType = BiometricType.GENERIC,
+        val biometricAvailability: BiometricAvailability = BiometricAvailability.UNAVAILABLE,
+        val isBiometricEnabled: Boolean = false,
+        val isBiometricLoading: Boolean = false,
+        val isBiometricStatusLoaded: Boolean = false,
     ) {
         val canUnlock: Boolean get() = password.isNotEmpty() && !isLoading && !isLockedOut
         // This is a bounded local cooldown; it is reset automatically and never
@@ -203,6 +329,7 @@ class UnlockViewModel(
     sealed interface UnlockEvent {
         data class OnPasswordChanged(val password: String) : UnlockEvent
         data object OnUnlockClick : UnlockEvent
+        data object OnBiometricUnlockClick : UnlockEvent
         data object OnDismissError : UnlockEvent
         data object OnForgotPasswordClick : UnlockEvent
         data object OnDismissRecoveryInfo : UnlockEvent

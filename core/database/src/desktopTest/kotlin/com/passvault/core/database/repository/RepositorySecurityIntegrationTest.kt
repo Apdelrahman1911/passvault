@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.DesktopCryptoEngine
 import com.passvault.core.database.VaultDatabase
+import com.passvault.core.database.backup.VaultBackupService
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
@@ -16,7 +17,15 @@ import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.Tag
 import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.TotpAlgorithm
+import com.passvault.core.domain.model.TotpConfiguration
 import com.passvault.core.domain.model.UrlValue
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricCapability
+import com.passvault.core.security.BiometricKeyStore
+import com.passvault.core.security.BiometricKeyStoreException
+import com.passvault.core.security.BiometricOperationResult
+import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +39,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -182,6 +192,35 @@ class RepositorySecurityIntegrationTest {
     }
 
     @Test
+    fun `deleting a folder keeps its credentials and moves them to root`() = runTest {
+        createAndUnlockVault()
+        val folder = Folder(
+            id = FolderId("folder-personal"),
+            parentId = null,
+            name = "Personal",
+            icon = null,
+            sortOrder = 0,
+            createdAt = Instant.fromEpochMilliseconds(100),
+        )
+        val credential = sampleCredential().copy(folderId = folder.id)
+        var restored: Credential? = null
+        try {
+            assertTrue(folderRepository.save(folder).isSuccess)
+            assertTrue(credentialRepository.save(credential).isSuccess)
+
+            assertTrue(folderRepository.delete(folder.id).isSuccess)
+
+            assertNull(folderRepository.getById(folder.id).getOrThrow())
+            restored = credentialRepository.getById(credential.id).getOrThrow()
+            val restoredCredential = assertNotNull(restored)
+            assertNull(restoredCredential.folderId)
+        } finally {
+            restored?.clearSensitiveValuesForTest()
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
     fun `tampered credential ciphertext is rejected without plaintext fallback`() = runTest {
         createAndUnlockVault()
         val credential = sampleCredential()
@@ -199,6 +238,172 @@ class RepositorySecurityIntegrationTest {
             assertFalse(result.exceptionOrNull()?.message.orEmpty().contains("hunter2"))
         } finally {
             credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `TOTP configuration is encrypted and marks the vault format`() = runTest {
+        createAndUnlockVault()
+        assertEquals(1, database.vaultMetadataDao().getVaultFormatVersion())
+        val credential = sampleCredential().copy(
+            totp = TotpConfiguration(
+                secret = SensitiveText.from(TEST_TOTP_SECRET),
+                issuer = "Example",
+                accountName = "alice@example.com",
+                algorithm = TotpAlgorithm.SHA256,
+                digits = 8,
+                periodSeconds = 60,
+            ),
+        )
+
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            assertEquals(2, database.vaultMetadataDao().getVaultFormatVersion())
+            val stored = requireNotNull(database.credentialDao().getById(credential.id.value))
+            assertFalse(stored.secretPayload.decodeToString().contains(TEST_TOTP_SECRET))
+            assertFalse(stored.secretPayload.decodeToString().contains("alice@example.com"))
+
+            val restored = requireNotNull(credentialRepository.getById(credential.id).getOrThrow())
+            try {
+                assertEquals(TEST_TOTP_SECRET, restored.totp?.secret?.toStringUnsafe())
+                assertEquals("Example", restored.totp?.issuer)
+                assertEquals("alice@example.com", restored.totp?.accountName)
+                assertEquals(TotpAlgorithm.SHA256, restored.totp?.algorithm)
+                assertEquals(8, restored.totp?.digits)
+                assertEquals(60, restored.totp?.periodSeconds)
+            } finally {
+                restored.clearSensitiveValuesForTest()
+            }
+        } finally {
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `encrypted backup restores TOTP configuration`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential().copy(
+            totp = TotpConfiguration(
+                secret = SensitiveText.from(TEST_TOTP_SECRET),
+                issuer = "Example",
+                accountName = "alice@example.com",
+            ),
+        )
+        val backupPassword = SensitiveText.from("separate backup password")
+        var backup: ByteArray? = null
+
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            val backupService = VaultBackupService(
+                database.vaultBackupDao(),
+                cryptoEngine,
+                vaultRepository,
+            )
+            backup = backupService.createBackup(backupPassword).getOrThrow()
+            assertTrue(credentialRepository.delete(credential.id).isSuccess)
+
+            backupService.restoreBackup(requireNotNull(backup), backupPassword).getOrThrow()
+            val masterPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+            try {
+                assertTrue(vaultRepository.unlock(masterPassword).isSuccess)
+            } finally {
+                masterPassword.clear()
+            }
+
+            val restored = credentialRepository.getById(credential.id).getOrThrow()
+            try {
+                assertEquals(TEST_TOTP_SECRET, restored?.totp?.secret?.toStringUnsafe())
+                assertEquals("Example", restored?.totp?.issuer)
+                assertEquals("alice@example.com", restored?.totp?.accountName)
+            } finally {
+                restored?.clearSensitiveValuesForTest()
+            }
+        } finally {
+            backup?.fill(0)
+            backupPassword.clear()
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `TOTP configuration is rejected for non-login credentials without upgrading format`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential().copy(
+            type = CredentialType.SecureNote,
+            totp = TotpConfiguration(secret = SensitiveText.from(TEST_TOTP_SECRET)),
+        )
+
+        try {
+            assertTrue(credentialRepository.save(credential).isFailure)
+            assertFalse(database.credentialDao().exists(credential.id.value))
+            assertEquals(1, database.vaultMetadataDao().getVaultFormatVersion())
+        } finally {
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `noncanonical TOTP secret is rejected before persistence`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential().copy(
+            totp = TotpConfiguration(secret = SensitiveText.from("AAAAAAAAAAAAAAAAA")),
+        )
+
+        try {
+            assertTrue(credentialRepository.save(credential).isFailure)
+            assertFalse(database.credentialDao().exists(credential.id.value))
+            assertEquals(1, database.vaultMetadataDao().getVaultFormatVersion())
+        } finally {
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `biometric key opens a session only after vault verification succeeds`() = runTest {
+        createAndUnlockVault()
+        val vaultKey = assertNotNull(vaultRepository.getCurrentVek())
+        try {
+            assertTrue(vaultRepository.lock().isSuccess)
+
+            assertTrue(vaultRepository.unlockWithBiometricKey(vaultKey).isSuccess)
+            assertTrue(vaultRepository.isUnlocked())
+        } finally {
+            cryptoEngine.secureWipe(vaultKey)
+        }
+    }
+
+    @Test
+    fun `invalid biometric key fails closed and leaves vault locked`() = runTest {
+        createAndUnlockVault()
+        assertTrue(vaultRepository.lock().isSuccess)
+        val invalidKey = ByteArray(32) { 0x5a }
+        try {
+            assertTrue(vaultRepository.unlockWithBiometricKey(invalidKey).isFailure)
+            assertFalse(vaultRepository.isUnlocked())
+            assertNull(vaultRepository.getCurrentVek())
+        } finally {
+            cryptoEngine.secureWipe(invalidKey)
+        }
+    }
+
+    @Test
+    fun `biometric service enrolls the active VEK and reopens the verified vault`() = runTest {
+        createAndUnlockVault()
+        val keyStore = InMemoryBiometricKeyStore()
+        val service = DefaultBiometricUnlockService(
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            keyStore = keyStore,
+            cryptoEngine = cryptoEngine,
+        )
+        try {
+            assertEquals(BiometricOperationResult.Success, service.enable())
+            assertTrue(vaultRepository.lock().isSuccess)
+
+            assertEquals(BiometricOperationResult.Success, service.unlock())
+            assertTrue(vaultRepository.isUnlocked())
+        } finally {
+            keyStore.clear()
         }
     }
 
@@ -259,9 +464,42 @@ class RepositorySecurityIntegrationTest {
         licenseKeys.forEach(SensitiveText::clear)
         customFields.forEach { it.value.clear() }
         passwordHistory.forEach { it.password.clear() }
+        totp?.clear()
+    }
+
+    private class InMemoryBiometricKeyStore : BiometricKeyStore {
+        private var key: ByteArray? = null
+
+        override suspend fun getCapability(): BiometricCapability = BiometricCapability(
+            type = BiometricType.GENERIC,
+            availability = BiometricAvailability.AVAILABLE,
+        )
+
+        override suspend fun contains(vaultId: String): Boolean = key != null
+
+        override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> {
+            clear()
+            key = vaultKey.copyOf()
+            return Result.success(Unit)
+        }
+
+        override suspend fun retrieve(vaultId: String): Result<ByteArray> = key?.copyOf()
+            ?.let { Result.success(it) }
+            ?: Result.failure(BiometricKeyStoreException.NotEnabled())
+
+        override suspend fun delete(vaultId: String): Result<Unit> {
+            clear()
+            return Result.success(Unit)
+        }
+
+        fun clear() {
+            key?.fill(0)
+            key = null
+        }
     }
 
     private companion object {
         const val TEST_MASTER_PASSWORD = "correct horse battery staple"
+        const val TEST_TOTP_SECRET = "JBSWY3DPEHPK3PXP"
     }
 }

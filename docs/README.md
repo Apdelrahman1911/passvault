@@ -11,6 +11,10 @@
 - [Testing](TESTING.md)
 - [Implementation status](IMPLEMENTATION_STATUS.md)
 - [Production-readiness audit](PRODUCTION_READINESS_AUDIT.md)
+- [Mobile store release](MOBILE_STORE_RELEASE.md)
+- [Release automation](RELEASE_AUTOMATION.md)
+- [Release signing](RELEASE_SIGNING.md)
+- [iOS encryption and export-compliance record](EXPORT_COMPLIANCE.md)
 
 Documents describe the implemented checkout and explicitly separate automated evidence from device, publisher, and
 independent-review gates. Source code and generated Room schemas remain authoritative when a document conflicts.

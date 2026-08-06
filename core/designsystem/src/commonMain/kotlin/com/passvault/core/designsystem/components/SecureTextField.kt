@@ -129,7 +129,10 @@ fun SecureTextField(
         },
         shape = shape,
         maxLines = maxLines,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = imeAction),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction,
+        ),
         keyboardActions = keyboardActions,
         singleLine = maxLines == 1,
         supportingText = if (supportingText != null) {

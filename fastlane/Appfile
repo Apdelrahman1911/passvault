@@ -1,0 +1,3 @@
+app_identifier(ENV.fetch("IOS_BUNDLE_ID", "com.passvault.ios"))
+package_name(ENV.fetch("ANDROID_PACKAGE_NAME", "com.passvault.android"))
+apple_id(ENV["APP_STORE_APP_ID"]) if ENV["APP_STORE_APP_ID"]

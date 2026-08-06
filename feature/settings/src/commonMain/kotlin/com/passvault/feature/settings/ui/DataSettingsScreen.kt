@@ -8,7 +8,6 @@ import org.jetbrains.compose.resources.stringResource
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -19,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.passvault.feature.settings.presentation.SettingsViewModel
 import com.passvault.core.designsystem.components.EditorialPageHeader
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,9 +46,7 @@ fun DataSettingsScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+                colors = passVaultTopAppBarColors(),
             )
         },
         modifier = modifier,
@@ -56,10 +55,8 @@ fun DataSettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
                 .imePadding()
-                .navigationBarsPadding()
                 .padding(horizontal = 20.dp, vertical = 16.dp)
                 .widthIn(max = 760.dp)
                 .fillMaxWidth(),

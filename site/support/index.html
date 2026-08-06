@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Help and security contact information for PassVault.">
+  <meta name="theme-color" content="#070b18">
+  <title>Support — PassVault</title>
+  <link rel="icon" href="/passvault/assets/passvault-icon.png">
+  <link rel="stylesheet" href="/passvault/assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header"><nav class="nav" aria-label="Main navigation"><a class="brand" href="/passvault/"><img src="/passvault/assets/passvault-icon.png" alt="">PassVault</a><ul class="nav-links"><li><a href="/passvault/">Product</a></li><li><a href="/passvault/privacy/">Privacy</a></li><li><a aria-current="page" href="/passvault/support/">Support</a></li><li><a href="/passvault/ar/support/" lang="ar" hreflang="ar">العربية</a></li></ul></nav></header>
+  <main id="content">
+    <header class="page-header"><p class="eyebrow">Help when you need it</p><h1>PassVault Support</h1><p class="lead">Find practical answers below or contact the appropriate address. Never send a master password, backup password, TOTP setup key, or vault file by email.</p></header>
+    <article class="prose">
+      <section><h2>Contact</h2><div class="grid"><div class="card"><h3>Product and privacy support</h3><p><a href="mailto:__SUPPORT_EMAIL__">__SUPPORT_EMAIL__</a></p><p>Include your platform, app version, and a description that does not contain vault data.</p></div><div class="card"><h3>Security reports</h3><p><a href="mailto:__SECURITY_EMAIL__">__SECURITY_EMAIL__</a></p><p>Describe the issue and reproduction steps. Do not include working credentials or private keys.</p></div></div></section>
+      <section><h2>Frequently asked questions</h2><h3>I forgot my master password. Can it be reset?</h3><p>No. PassVault has no remote account, recovery key held by the publisher, or server-side copy of your vault. You need the correct master password or an accessible enrolled biometric on the original device. An encrypted backup still requires its separate backup password.</p><h3>Why did biometric unlock stop working?</h3><p>Biometric enrollment changes, device security changes, operating-system restrictions, or removal of the protected key can invalidate access. Unlock with the master password, then disable and enroll biometric unlock again in Security settings.</p><h3>How should I protect a backup?</h3><p>Choose a unique backup password, keep the encrypted <code>.pvault</code> file and its password separately, and test restoration before relying on it. Do not rename an arbitrary file to <code>.pvault</code> or edit backup contents.</p><h3>Why is a TOTP code rejected?</h3><p>Confirm the device date and time are correct and automatic, then verify the login’s setup key, algorithm, digit count, and period match the service. PassVault does not synchronize device time.</p><h3>How do I move an account?</h3><p>Open the account details, choose edit, select the destination folder, and save. Select “No folder” to return it to the top level.</p></section>
+      <section><h2>Before reporting a problem</h2><ul><li>Install the latest available build from the same distribution channel.</li><li>Restart the app and reproduce the issue without deleting your vault.</li><li>Record the platform, OS version, app version, and exact non-sensitive steps.</li><li>Remove passwords, usernames, backup files, QR codes, and verification codes from screenshots.</li></ul><div class="notice"><strong>Security issue?</strong> Use the security address above instead of a public issue. Please allow time to investigate before public disclosure.</div></section>
+    </article>
+  </main>
+  <footer class="site-footer"><div class="footer-inner"><p>© 2026 __PUBLISHER_NAME_EN__. PassVault.</p><p><a href="/passvault/privacy/">Privacy Policy</a></p></div></footer>
+</body>
+</html>

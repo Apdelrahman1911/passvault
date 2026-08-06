@@ -3,17 +3,14 @@ package com.passvault.android
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.FragmentActivity
+import com.passvault.android.security.AndroidBiometricKeyStore
 import com.passvault.android.security.AndroidScreenshotProtection
 import com.passvault.android.backup.AndroidBackupFileStore
 import com.passvault.core.domain.repository.VaultRepository
@@ -33,10 +30,11 @@ import org.koin.android.ext.android.inject
  * - Lifecycle-aware security features
  * - Configuration change handling
  */
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val screenshotProtection: AndroidScreenshotProtection by inject()
     private val backupFileStore: AndroidBackupFileStore by inject()
+    private val biometricKeyStore: AndroidBiometricKeyStore by inject()
     private val vaultRepository: VaultRepository by inject()
     private val commandDispatcher: AppCommandDispatcher by inject()
 
@@ -53,9 +51,10 @@ class MainActivity : ComponentActivity() {
         // Register this activity for screenshot protection
         screenshotProtection.registerActivity(this)
         backupFileStore.attach(this)
+        biometricKeyStore.attach(this)
 
         // Apply screenshot protection immediately
-        screenshotProtection.apply(this)
+        AndroidScreenshotProtection.applyToActivity(this)
 
         setContent {
             DisposableEffect(Unit) {
@@ -63,12 +62,7 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background,
-            ) {
-                PassVaultApp()
-            }
+            PassVaultApp()
         }
 
     }
@@ -77,13 +71,13 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         screenshotProtection.onActivityResumed(this)
         if (screenshotProtection.isEnabled()) {
-            screenshotProtection.apply(this)
+            AndroidScreenshotProtection.applyToActivity(this)
         }
     }
 
     override fun onPause() {
         super.onPause()
-        screenshotProtection.onActivityPaused(this)
+        screenshotProtection.onActivityPaused()
     }
 
     override fun onStop() {
@@ -99,6 +93,7 @@ class MainActivity : ComponentActivity() {
         // Unregister from screenshot protection
         screenshotProtection.unregisterActivity(this)
         backupFileStore.detach(this)
+        biometricKeyStore.detach(this)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -106,7 +101,7 @@ class MainActivity : ComponentActivity() {
         if (hasFocus) {
             // Re-apply screenshot protection when window regains focus
             if (screenshotProtection.isEnabled()) {
-                screenshotProtection.apply(this)
+                AndroidScreenshotProtection.applyToActivity(this)
             }
         }
     }

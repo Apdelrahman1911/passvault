@@ -1,23 +1,23 @@
 # Threat model
 
-Last reviewed: 2026-07-28
+Last reviewed: 2026-08-03
 
 ## Assets
 
-Master passwords, the vault encryption key (VEK), credential secrets and notes, folder/tag names, password history,
-backup passwords, decrypted backups, and clipboard values are sensitive. Database relationship/timing metadata is
-privacy-relevant even where it is intentionally not encrypted.
+Master passwords, the vault encryption key (VEK), credential secrets and notes, TOTP setup keys and generated codes,
+folder/tag names, password history, backup passwords, decrypted backups, and clipboard values are sensitive.
+Database relationship/timing metadata is privacy-relevant even where it is intentionally not encrypted.
 
 ## Trust boundaries
 
 - The locked local database or copied `.pvault` file may be controlled by an attacker.
 - The application process and OS are trusted only while the user is actively using an unlocked vault.
-- Android/Desktop file pickers, clipboard managers, window managers, keyrings, filesystems, and crash facilities are
-  platform boundaries, not cryptographic peers.
+- Mobile cameras and biometric services, Android/Desktop file pickers, clipboard managers, window managers,
+  keyrings, Keystore/Keychain, filesystems, and crash facilities are platform boundaries, not cryptographic peers.
 - Build repositories and CI artifacts are supply-chain boundaries.
 
-There is no server, cloud, account, telemetry, analytics, browser extension, biometric, or remote synchronization
-boundary in this codebase.
+There is no server, cloud, account, telemetry, analytics, browser extension, or remote synchronization boundary in
+this codebase.
 
 ## Defended scenarios
 
@@ -33,6 +33,9 @@ boundary in this codebase.
 | Newer clipboard data erased | ownership token/value check before expiration clear |
 | Background/manual exposure | centralized session lock and best-effort VEK wipe |
 | Screenshot capture on Android | `FLAG_SECURE` on sensitive host windows |
+| Copied mobile device with biometric enabled | Android Keystore auth-per-use key or device-only iOS Keychain item; candidate VEK is verified before session publication |
+| Biometric enrollment changes | Android key invalidation and iOS `biometryCurrentSet`; failed release removes app enrollment state |
+| Malformed TOTP enrollment | strict local URI/Base32 parsing, bounded parameters, and QR image limits |
 | Dependency replacement | committed SHA-256 Gradle verification metadata |
 
 ## Residual and out-of-scope threats
@@ -43,8 +46,8 @@ boundary in this codebase.
 - Structural SQLite metadata remains observable; blind indexes reveal equality within a vault.
 - Android overlay/accessibility behavior and Desktop capture/keyring behavior require platform hardening beyond
   common code.
-- No biometric unlock is present. A future implementation would require an OS-protected cryptographic key operation,
-  enrollment invalidation, fallback policy, and device tests.
+- Biometric prompts and enrollment invalidation depend on OS behavior and require physical-device testing. A
+  compromised unlocked process can still copy the active VEK before platform enrollment.
 - Publisher signing/notarization, secure update delivery, an independent penetration test, and a disclosure channel
   are external release dependencies.
 
@@ -56,8 +59,8 @@ boundary in this codebase.
 - Never accept unknown crypto/backup versions or invalid KDF parameters.
 - Never mutate vault tables until an imported backup is completely read, authenticated, decoded, and validated.
 - Never clear clipboard data that no longer belongs to PassVault.
-- Never represent a confirmation dialog or unsupported adapter as biometric authentication.
+- Never publish a biometric session until an OS-protected operation releases a candidate VEK and the authenticated
+  vault verification record accepts it.
 
 Automated tests are regression evidence, not an independent security certification. Exact verification status lives
 in [PRODUCTION_READINESS_AUDIT.md](PRODUCTION_READINESS_AUDIT.md).
-

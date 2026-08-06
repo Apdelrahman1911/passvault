@@ -107,6 +107,10 @@ val releaseKeyPassword =
         ?: ""
 
 val releaseKeystoreFile = rootProject.file(releaseKeystorePath)
+val canonicalReleaseKeyAlias =
+    rootProject.file("release/android/passvault-upload-alias.txt")
+        .readText()
+        .trim()
 
 val requireReleaseSigning =
     providers.gradleProperty("passvault.requireReleaseSigning")
@@ -125,6 +129,9 @@ if (requireReleaseSigning) {
     require(missingInputs.isEmpty()) {
         "Release signing is required, but these inputs are missing or invalid: " +
             missingInputs.joinToString()
+    }
+    require(releaseKeyAlias == canonicalReleaseKeyAlias) {
+        "KEY_ALIAS must match the canonical Android upload alias: $canonicalReleaseKeyAlias"
     }
 }
 
@@ -215,10 +222,6 @@ android {
             versionNameSuffix = "-fdroid"
         }
 
-        create("google") {
-            dimension = "distribution"
-            applicationIdSuffix = ".play"
-        }
     }
 
     compileOptions {
@@ -271,25 +274,6 @@ kotlin {
     }
 }
 
-/*
- * Replaces the deprecated variantFilter API.
- * Disables googleDebug while keeping googleRelease.
- */
-androidComponents {
-    beforeVariants(
-        selector().withBuildType("debug")
-    ) { variant ->
-        val isGoogleFlavor =
-            variant.productFlavors.any { (_, flavorName) ->
-                flavorName == "google"
-            }
-
-        if (isGoogleFlavor) {
-            variant.enable = false
-        }
-    }
-}
-
 val verifyStandardDebugComposeResources =
     tasks.register<VerifyComposeResourcesInApk>("verifyStandardDebugComposeResources") {
         group = "verification"
@@ -315,6 +299,7 @@ dependencies {
     implementation(project(":shared"))
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.biometric)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.foundation)

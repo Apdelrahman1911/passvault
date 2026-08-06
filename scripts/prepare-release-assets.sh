@@ -29,9 +29,10 @@ fi
 
 required_extensions=(apk aab exe msi dmg deb rpm)
 for extension in "${required_extensions[@]}"; do
-    mapfile -d '' matches < <(
-        find "$download_directory" -type f -iname "*.$extension" -print0
-    )
+    matches=()
+    while IFS= read -r -d '' matched_path; do
+        matches+=("$matched_path")
+    done < <(find "$download_directory" -type f -iname "*.$extension" -print0)
     if (( ${#matches[@]} != 1 )); then
         echo "Expected exactly one .$extension artifact, found ${#matches[@]}." >&2
         exit 1
@@ -39,6 +40,10 @@ for extension in "${required_extensions[@]}"; do
 
     source_path="${matches[0]}"
     file_name="$(basename "$source_path")"
+    if [[ ! "$file_name" =~ ^[A-Za-z0-9._+-]+$ ]]; then
+        echo "Release artifact name contains unsupported characters: $file_name" >&2
+        exit 1
+    fi
     destination_path="$output_directory/$file_name"
     if [[ -e "$destination_path" ]]; then
         echo "Duplicate release artifact name: $file_name" >&2
@@ -62,10 +67,17 @@ EOF
 
 (
     cd "$output_directory"
-    find . -maxdepth 1 -type f ! -name 'SHA256SUMS.txt' -printf '%f\0' |
-        sort -z |
-        xargs -0 sha256sum >SHA256SUMS.txt
-    sha256sum --check SHA256SUMS.txt
+    if command -v sha256sum >/dev/null 2>&1; then
+        checksum_tool=(sha256sum)
+    else
+        checksum_tool=(shasum -a 256)
+    fi
+    find . -maxdepth 1 -type f ! -name 'SHA256SUMS.txt' -print |
+        sed 's#^./##' | LC_ALL=C sort |
+        while IFS= read -r file_name; do
+            "${checksum_tool[@]}" "$file_name"
+        done >SHA256SUMS.txt
+    "${checksum_tool[@]}" --check SHA256SUMS.txt
 )
 
 echo "Prepared seven packages, a release manifest, and verified SHA-256 checksums."

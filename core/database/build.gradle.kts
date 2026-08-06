@@ -34,6 +34,7 @@ kotlin {
             dependencies {
                 api(project(":core:domain"))
                 implementation(project(":core:crypto"))
+                implementation(project(":core:security"))
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)

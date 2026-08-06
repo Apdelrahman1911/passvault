@@ -8,7 +8,6 @@ import org.jetbrains.compose.resources.stringResource
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -19,10 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialPanel
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.feature.settings.presentation.SettingsViewModel
 import com.passvault.core.domain.repository.AppSettings
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,9 +48,7 @@ fun SecuritySettingsScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
+                colors = passVaultTopAppBarColors(),
             )
         },
         modifier = modifier,
@@ -55,17 +56,15 @@ fun SecuritySettingsScreen(
     ) { paddingValues ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .fillMaxSize(),
         ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .widthIn(max = 760.dp)
                 .align(Alignment.TopCenter)
-                .verticalScroll(rememberScrollState())
+                .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
                 .imePadding()
-                .navigationBarsPadding()
                 .padding(
                     horizontal = ComponentSpacing.screenHorizontal,
                     vertical = ComponentSpacing.screenVertical,
@@ -90,6 +89,66 @@ fun SecuritySettingsScreen(
                     Icon(Icons.Default.Edit, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(stringResource(Res.string.ui_change_master_password))
+                }
+            }
+
+            if (state.biometricAvailability != BiometricAvailability.UNAVAILABLE || state.isBiometricEnabled) {
+                val biometricName = stringResource(
+                    when (state.biometricType) {
+                        BiometricType.FACE -> Res.string.ui_face_id
+                        BiometricType.FINGERPRINT -> Res.string.ui_touch_id
+                        BiometricType.GENERIC -> Res.string.ui_biometrics
+                    },
+                )
+                SecurityCard(
+                    icon = if (state.biometricType == BiometricType.FACE) {
+                        Icons.Default.Face
+                    } else {
+                        Icons.Default.Fingerprint
+                    },
+                    title = stringResource(Res.string.ui_biometric_unlock),
+                    description = stringResource(
+                        Res.string.ui_biometric_unlock_description,
+                        biometricName,
+                    ),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (state.isBiometricEnabled) {
+                                    stringResource(Res.string.ui_biometric_unlock_on, biometricName)
+                                } else {
+                                    stringResource(Res.string.ui_biometric_unlock_off, biometricName)
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            if (state.biometricAvailability == BiometricAvailability.NOT_ENROLLED) {
+                                Text(
+                                    text = stringResource(Res.string.error_biometric_not_enrolled),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+                        }
+                        if (state.isBiometricLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(28.dp),
+                                strokeWidth = 2.dp,
+                            )
+                        } else {
+                            Switch(
+                                checked = state.isBiometricEnabled,
+                                onCheckedChange = {
+                                    onEvent(SettingsViewModel.SettingsEvent.OnBiometricUnlockChanged(it))
+                                },
+                                enabled = state.biometricAvailability == BiometricAvailability.AVAILABLE,
+                            )
+                        }
+                    }
                 }
             }
 

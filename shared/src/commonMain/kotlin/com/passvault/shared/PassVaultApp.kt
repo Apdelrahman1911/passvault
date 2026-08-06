@@ -1,8 +1,11 @@
 package com.passvault.shared
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,10 +19,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import com.passvault.core.designsystem.theme.PassVaultTheme
 import com.passvault.core.designsystem.components.LoadingState
+import com.passvault.core.designsystem.platform.KeyboardDismissButton
 import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.text.resolveSuspending
 import com.passvault.core.domain.model.CredentialId
@@ -70,7 +75,17 @@ fun PassVaultApp() {
         darkTheme = useDarkTheme,
         accent = settingsState.accentColor,
     ) {
-        AppContent()
+        Box(modifier = Modifier.fillMaxSize()) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background,
+            ) {
+                AppContent()
+            }
+            KeyboardDismissButton(
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        }
     }
 }
 
@@ -138,9 +153,9 @@ private fun AppNavigation(
         )
     }
 
-    fun clearSensitiveUiState() {
+    fun clearSensitiveUiState(clearUnlockState: Boolean = true) {
         vaultViewModel.clearForLock()
-        unlockViewModel.clearForLock()
+        if (clearUnlockState) unlockViewModel.clearForLock()
         credentialViewModel.clearForLock()
         generatorViewModel.clearForLock()
         settingsViewModel.clearForLock()
@@ -155,7 +170,9 @@ private fun AppNavigation(
             is VaultSessionState.Locked,
             is VaultSessionState.FatalError,
             -> {
-                clearSensitiveUiState()
+                clearSensitiveUiState(
+                    clearUnlockState = shouldClearUnlockUiDuringSessionCleanup(sessionState),
+                )
                 try {
                     clipboardService.clear()
                 } catch (cancel: CancellationException) {
@@ -236,6 +253,7 @@ private fun AppNavigation(
 
     NavDisplay(
         modifier = Modifier
+            .fillMaxSize()
             .pointerInput(Unit) {
                 awaitPointerEventScope {
                     while (true) {
@@ -701,6 +719,16 @@ private fun AppNavigation(
         onBack = ::popBack,
     )
 }
+
+/**
+ * A failed unlock returns the repository to [VaultSessionState.Locked]. Keep
+ * the unlock view-model alive for that state so its actionable error remains
+ * visible. [VaultSessionState.Locking] identifies an actual lock operation;
+ * explicit lock commands also clear the unlock state before calling the
+ * repository.
+ */
+internal fun shouldClearUnlockUiDuringSessionCleanup(sessionState: VaultSessionState): Boolean =
+    sessionState is VaultSessionState.Locking
 
 @Composable
 private fun ObserveSettingsEffects(

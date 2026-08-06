@@ -8,11 +8,13 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import com.passvault.android.security.AndroidClipboardService
 import com.passvault.android.security.AndroidScreenshotProtection
+import com.passvault.android.security.AndroidBiometricKeyStore
 import com.passvault.android.backup.AndroidBackupFileStore
 import com.passvault.android.settings.AndroidAppSettingsStore
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.feature.backup.BackupFileStore
 import com.passvault.core.security.ClipboardService
+import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.ScreenshotProtection
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -42,6 +44,8 @@ val androidModule = module {
      */
     single<AndroidScreenshotProtection> { AndroidScreenshotProtection() }
     single<ScreenshotProtection> { get<AndroidScreenshotProtection>() }
+    single<AndroidBiometricKeyStore> { AndroidBiometricKeyStore(androidContext()) }
+    single<BiometricKeyStore> { get<AndroidBiometricKeyStore>() }
 
     /**
      * Clipboard service implementation.

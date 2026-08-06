@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -49,7 +48,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,12 +64,16 @@ import com.passvault.core.designsystem.components.SecureTextField
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialPanel
 import com.passvault.core.designsystem.components.EditorialStatusBanner
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.feature.credential.presentation.CredentialViewModel
 import com.passvault.feature.credential.ui.components.CustomFieldsEditor
+import com.passvault.feature.credential.ui.components.FolderSelector
+import com.passvault.feature.credential.ui.components.TotpEnrollmentSection
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -113,12 +115,10 @@ fun CredentialEditScreen(
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .imePadding(),
             contentAlignment = Alignment.TopCenter,
         ) {
@@ -126,7 +126,7 @@ fun CredentialEditScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .widthIn(max = ComponentSpacing.formMaxWidth)
-                    .verticalScroll(rememberScrollState())
+                    .scaffoldVerticalScroll(rememberScrollState(), padding)
                     .padding(
                         start = ComponentSpacing.screenHorizontal,
                         end = ComponentSpacing.screenHorizontal,
@@ -163,9 +163,7 @@ fun CredentialEditScreen(
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                    ),
+                    colors = passVaultTopAppBarColors(),
                 )
 
                 EditorialPageHeader(
@@ -192,6 +190,19 @@ fun CredentialEditScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                )
+
+                FolderSelector(
+                    folders = state.folders,
+                    selectedFolderId = state.folderId,
+                    isLoading = state.isLoadingFolders,
+                    loadFailed = state.folderLoadFailed,
+                    onFolderSelected = { folderId ->
+                        viewModel.onEvent(
+                            CredentialViewModel.CredentialEvent.OnFolderChanged(folderId?.value),
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
@@ -239,6 +250,13 @@ fun CredentialEditScreen(
                 )
                 if (state.password.isNotEmpty()) {
                     PasswordStrengthBar(state.passwordStrength)
+                }
+
+                if (state.credentialType == CredentialType.Login) {
+                    TotpEnrollmentSection(
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                    )
                 }
 
                 UrlEditor(

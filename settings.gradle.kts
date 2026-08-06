@@ -43,6 +43,7 @@ include(
     ":core:security",
     ":core:designsystem",
     ":core:navigation",
+    ":core:otp",
     ":core:testing",
 
     ":feature:onboarding",

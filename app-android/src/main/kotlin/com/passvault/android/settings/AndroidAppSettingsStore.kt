@@ -5,7 +5,6 @@ import com.passvault.core.domain.repository.AppSettings
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.core.domain.repository.AccentColorPreference
 import com.passvault.core.domain.repository.ThemePreference
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -37,31 +36,23 @@ class AndroidAppSettingsStore(
                     ),
                 ).normalized(),
             )
-        } catch (cancel: CancellationException) {
-            throw cancel
-        } catch (error: Exception) {
+        } catch (error: ClassCastException) {
             Result.failure(error)
         }
     }
 
     override suspend fun save(settings: AppSettings): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            val normalized = settings.normalized()
-            check(
-                preferences.edit()
-                    .putString(KEY_THEME, normalized.theme.name)
-                    .putString(KEY_ACCENT_COLOR, normalized.accentColor.name)
-                    .putInt(KEY_AUTO_LOCK_TIMEOUT, normalized.autoLockTimeoutMinutes)
-                    .putInt(KEY_CLIPBOARD_CLEAR, normalized.clipboardClearSeconds)
-                    .commit(),
-            ) {
-                "Application preferences could not be persisted"
-            }
+        val normalized = settings.normalized()
+        val committed = preferences.edit()
+            .putString(KEY_THEME, normalized.theme.name)
+            .putString(KEY_ACCENT_COLOR, normalized.accentColor.name)
+            .putInt(KEY_AUTO_LOCK_TIMEOUT, normalized.autoLockTimeoutMinutes)
+            .putInt(KEY_CLIPBOARD_CLEAR, normalized.clipboardClearSeconds)
+            .commit()
+        if (committed) {
             Result.success(Unit)
-        } catch (cancel: CancellationException) {
-            throw cancel
-        } catch (error: Exception) {
-            Result.failure(error)
+        } else {
+            Result.failure(IllegalStateException("Application preferences could not be persisted"))
         }
     }
 

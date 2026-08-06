@@ -188,8 +188,13 @@ class FakeFolderRepository : FolderRepository {
     }
     
     override suspend fun delete(id: FolderId): Result<Unit> {
-        folders.remove(id)
-        return Result.success(Unit)
+        return if (shouldFailNext) {
+            shouldFailNext = false
+            Result.failure(RuntimeException("Failed to delete folder"))
+        } else {
+            folders.remove(id)
+            Result.success(Unit)
+        }
     }
     
     override suspend fun reorder(id: FolderId, newOrder: Int): Result<Unit> {

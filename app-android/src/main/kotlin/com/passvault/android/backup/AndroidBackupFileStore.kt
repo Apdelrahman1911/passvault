@@ -162,16 +162,18 @@ class AndroidBackupFileStore(
     }
 
     private fun displayName(uri: Uri): String? {
-        if (uri.scheme != "content") return uri.lastPathSegment
-        resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
-            return if (cursor.moveToFirst()) {
-                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (index >= 0) cursor.getString(index) else null
-            } else {
-                null
+        return if (uri.scheme != "content") {
+            uri.lastPathSegment
+        } else {
+            resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (index >= 0) cursor.getString(index) else null
+                } else {
+                    null
+                }
             }
         }
-        return null
     }
 
     private fun readBounded(input: InputStream): ByteArray {

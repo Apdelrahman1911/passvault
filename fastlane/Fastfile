@@ -1,0 +1,165 @@
+require "base64"
+
+opt_out_usage
+
+def required_env(name)
+  value = ENV[name]
+  UI.user_error!("#{name} is required") if value.nil? || value.strip.empty?
+  value
+end
+
+def store_root
+  File.expand_path(required_env("STORE_METADATA_ROOT"))
+end
+
+def read_store_file(relative_path)
+  path = File.expand_path(relative_path, store_root)
+  UI.user_error!("Unsafe store metadata path") unless path.start_with?(store_root + File::SEPARATOR)
+  UI.user_error!("Missing store metadata file: #{relative_path}") unless File.file?(path)
+  File.read(path, encoding: "UTF-8").strip
+end
+
+def asc_api_key
+  decoded_key = Base64.strict_decode64(required_env("ASC_PRIVATE_KEY_BASE64"))
+  app_store_connect_api_key(
+    key_id: required_env("ASC_KEY_ID"),
+    issuer_id: required_env("ASC_ISSUER_ID"),
+    key_content: decoded_key,
+    is_key_content_base64: false,
+    duration: 1_200,
+    in_house: false,
+  )
+ensure
+  decoded_key&.replace("\0" * decoded_key.bytesize)
+end
+
+def play_upload(track:, release_status:)
+  aab = required_env("ANDROID_AAB_PATH")
+  credentials = required_env("GOOGLE_APPLICATION_CREDENTIALS")
+  UI.user_error!("Signed Android App Bundle is missing") unless File.file?(aab)
+  UI.user_error!("OIDC credentials file is missing") unless File.file?(credentials)
+  upload_store_assets = ENV["UPLOAD_STORE_ASSETS"] == "true"
+
+  upload_to_play_store(
+    package_name: required_env("ANDROID_PACKAGE_NAME"),
+    aab: aab,
+    track: track,
+    release_status: release_status,
+    metadata_path: File.join(store_root, "android"),
+    json_key: credentials,
+    mapping: ENV["ANDROID_MAPPING_PATH"],
+    skip_upload_images: !upload_store_assets,
+    skip_upload_screenshots: !upload_store_assets,
+    timeout: 600,
+  )
+end
+
+def export_compliance_uses_non_exempt_encryption
+  case required_env("EXPORT_COMPLIANCE_STATUS")
+  when "EXEMPT_APPROVED" then false
+  when "NON_EXEMPT_APPROVED" then true
+  else
+    UI.user_error!("An approved export-compliance status is required")
+  end
+end
+
+def testflight_upload(external:)
+  ipa = required_env("IOS_IPA_PATH")
+  UI.user_error!("Signed iOS IPA is missing") unless File.file?(ipa)
+
+  options = {
+    api_key: asc_api_key,
+    app_identifier: required_env("IOS_BUNDLE_ID"),
+    apple_id: required_env("APP_STORE_APP_ID"),
+    ipa: ipa,
+    distribute_external: external,
+    notify_external_testers: external,
+    skip_waiting_for_build_processing: false,
+    uses_non_exempt_encryption: export_compliance_uses_non_exempt_encryption,
+    beta_app_feedback_email: required_env("SUPPORT_EMAIL"),
+    beta_app_description: read_store_file("testflight/en-US/description.txt"),
+    localized_app_info: {
+      "en-US" => {
+        feedback_email: required_env("SUPPORT_EMAIL"),
+        marketing_url: required_env("PROJECT_URL"),
+        privacy_policy_url: required_env("PRIVACY_POLICY_URL"),
+        description: read_store_file("testflight/en-US/description.txt"),
+      },
+      "ar-SA" => {
+        feedback_email: required_env("SUPPORT_EMAIL"),
+        marketing_url: required_env("PROJECT_URL"),
+        privacy_policy_url: required_env("PRIVACY_POLICY_URL"),
+        description: read_store_file("testflight/ar-SA/description.txt"),
+      },
+    },
+    localized_build_info: {
+      "en-US" => { whats_new: read_store_file("testflight/en-US/what_to_test.txt") },
+      "ar-SA" => { whats_new: read_store_file("testflight/ar-SA/what_to_test.txt") },
+    },
+  }
+
+  if external
+    options[:groups] = [required_env("TESTFLIGHT_EXTERNAL_GROUP")]
+    options[:testers_file_path] = required_env("TESTFLIGHT_EXTERNAL_TESTERS_FILE")
+    options[:demo_account_required] = false
+    contact_name = required_env("APP_REVIEW_CONTACT_NAME").split(/\s+/, 2)
+    options[:beta_app_review_info] = {
+      contact_first_name: contact_name.first,
+      contact_last_name: contact_name.last || "Release",
+      contact_email: required_env("APP_REVIEW_EMAIL"),
+      contact_phone: required_env("APP_REVIEW_PHONE"),
+      notes: "PassVault is local-first and has no server-side login. Create a new vault to review the app.",
+    }
+  end
+
+  upload_to_testflight(**options)
+end
+
+platform :android do
+  desc "Upload a signed AAB to the Play internal track"
+  lane :internal do
+    play_upload(track: "internal", release_status: "completed")
+  end
+
+  desc "Upload a signed AAB to the Play closed beta track"
+  lane :closed do
+    play_upload(track: "beta", release_status: "completed")
+  end
+
+  desc "Upload a signed AAB to production after protected confirmation"
+  lane :production do
+    UI.user_error!("Production approval is missing") unless ENV["PASSVAULT_PRODUCTION_APPROVED"] == "I_APPROVE_PRODUCTION"
+    play_upload(track: "production", release_status: "completed")
+  end
+end
+
+platform :ios do
+  desc "Upload a signed IPA to internal TestFlight"
+  lane :internal do
+    testflight_upload(external: false)
+  end
+
+  desc "Upload and submit a signed IPA to external TestFlight review"
+  lane :external do
+    testflight_upload(external: true)
+  end
+
+  desc "Upload an App Store review candidate without submitting or releasing it"
+  lane :production_candidate do
+    UI.user_error!("Production approval is missing") unless ENV["PASSVAULT_PRODUCTION_APPROVED"] == "I_APPROVE_PRODUCTION"
+    upload_to_app_store(
+      api_key: asc_api_key,
+      app_identifier: required_env("IOS_BUNDLE_ID"),
+      apple_id: required_env("APP_STORE_APP_ID"),
+      ipa: required_env("IOS_IPA_PATH"),
+      app_version: required_env("APP_VERSION"),
+      metadata_path: File.join(store_root, "ios"),
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+      screenshots_path: File.join(store_root, "ios-screenshots"),
+      skip_screenshots: false,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+end

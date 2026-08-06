@@ -84,6 +84,8 @@
     <string name="error_credential_invalid_data">The credential contains invalid data.</string>
     <string name="error_credential_save">The credential could not be saved. Try again.</string>
     <string name="error_credential_delete">The credential could not be deleted. Try again.</string>
+    <string name="error_totp_invalid_setup">Enter a valid Base32 secret or TOTP setup URI.</string>
+    <string name="error_totp_scan">The QR code could not be read. Try again or enter the setup key.</string>
     <string name="validation_credential_title_required">Title is required.</string>
     <string name="validation_credential_title_too_long">Title is too long.</string>
     <string name="validation_credential_url_too_long">URL is too long.</string>
@@ -97,6 +99,32 @@
     <string name="validation_credential_custom_field_value">A custom field value is too long.</string>
     <string name="validation_credential_custom_field_limit">You can add up to %1$d custom fields.</string>
     <string name="ui_untitled_credential">Untitled credential</string>
+
+    <!-- Per-credential two-factor authentication -->
+    <string name="ui_totp_title">Two-factor authentication</string>
+    <string name="ui_totp_description">Save this account’s authenticator setup and generate verification codes locally.</string>
+    <string name="ui_totp_setup_key_or_uri">Setup key or otpauth URI</string>
+    <string name="ui_totp_setup_hint">Paste a Base32 setup key or an otpauth://totp URI.</string>
+    <string name="ui_totp_algorithm">Algorithm</string>
+    <string name="ui_totp_digits">Digits</string>
+    <string name="ui_totp_period_seconds">Period (seconds)</string>
+    <string name="ui_totp_scan_qr">Scan QR code</string>
+    <string name="ui_totp_choose_qr_image">Choose QR image</string>
+    <string name="ui_totp_add">Add authenticator</string>
+    <string name="ui_totp_replace">Replace authenticator</string>
+    <string name="ui_totp_remove">Remove authenticator</string>
+    <string name="ui_totp_configured">Authenticator configured</string>
+    <string name="ui_totp_configuration_summary">%1$s · %2$d digits · %3$d seconds</string>
+    <string name="ui_totp_code">Verification code</string>
+    <string name="ui_totp_code_unavailable">Code unavailable. Check this device’s date and time.</string>
+    <string name="ui_totp_device_time_hint">Codes use this device’s date and time.</string>
+    <string name="ui_totp_replace_title">Replace this authenticator?</string>
+    <string name="ui_totp_replace_message">The current setup key will be replaced when you save this credential.</string>
+    <string name="ui_totp_remove_title">Remove this authenticator?</string>
+    <string name="ui_totp_remove_message">PassVault will stop generating verification codes for this account after you save.</string>
+    <string name="ui_totp_scanner_title">Scan authenticator QR code</string>
+    <string name="ui_totp_scanner_instruction">Scan or choose the TOTP QR code shown by the account provider.</string>
+    <string name="ui_totp_camera_permission">Camera access is required to scan a QR code.</string>
 
     <!-- Desktop Chrome -->
     <string name="desktop_menu_file">File</string>
@@ -224,6 +252,9 @@
     <string name="ui_data_management">Data Management</string>
     <string name="ui_delete_credential">Delete credential</string>
     <string name="ui_delete_credential_permanently">Delete credential permanently?</string>
+    <string name="ui_delete_folder">Delete folder</string>
+    <string name="ui_delete_folder_title">Delete “%1$s”?</string>
+    <string name="ui_delete_folder_message">Credentials in this folder will stay in your vault and move to All items.</string>
     <string name="ui_discard">Discard</string>
     <string name="ui_discard_changes">Discard changes?</string>
     <string name="ui_dismiss">Dismiss</string>
@@ -240,6 +271,8 @@
     <string name="ui_export_vault">Export Vault</string>
     <string name="ui_field_name">Field Name</string>
     <string name="ui_folder_name">Folder name</string>
+    <string name="ui_folder">Folder</string>
+    <string name="ui_folder_unavailable">Folder unavailable</string>
     <string name="ui_folders">Folders</string>
     <string name="ui_forgot_password">Forgot password?</string>
     <string name="ui_generate_password">Generate password</string>
@@ -253,6 +286,7 @@
     <string name="ui_important_store_your_master_password_safely">Important: store your master password safely. </string>
     <string name="ui_keep_editing">Keep editing</string>
     <string name="ui_local_checks">Local checks</string>
+    <string name="ui_loading_folders">Loading folders…</string>
     <string name="ui_lock_vault">Lock vault</string>
     <string name="ui_lowercase_a_z">Lowercase (a-z)</string>
     <string name="ui_main_color">Main color</string>
@@ -262,6 +296,7 @@
     <string name="ui_more_vault_actions">More vault actions</string>
     <string name="ui_new">New</string>
     <string name="ui_new_folder">New folder</string>
+    <string name="ui_no_folder">No folder</string>
     <string name="ui_new_password">New Password</string>
     <string name="ui_no_local_password_health_issue_recorded">No local password-health issue recorded.</string>
     <string name="ui_notes_optional">Notes (optional)</string>
@@ -365,6 +400,8 @@
     <string name="error_folder_name_required">Folder name is required</string>
     <string name="error_folder_duplicate">A folder with this name already exists</string>
     <string name="error_folder_create">The folder could not be created. Try again.</string>
+    <string name="error_folder_delete">The folder could not be deleted. Try again.</string>
+    <string name="error_folder_load">Folders could not be loaded. Reopen this screen to try again.</string>
     <string name="error_favorite_update">The favorite status could not be updated.</string>
     <string name="error_unlock_inspect">Unable to inspect the vault</string>
     <string name="error_unlock_auth_remaining">Authentication failed. %1$d attempts remaining.</string>
@@ -374,7 +411,7 @@
     <string name="error_unlock_fatal">A security error prevented the vault from opening.</string>
     <string name="error_unlock_cooldown">Too many failed attempts. Try again shortly.</string>
     <string name="error_unlock_password_required">Please enter your password</string>
-    <string name="error_unlock_failed">Unable to unlock the vault</string>
+    <string name="error_unlock_failed">Incorrect master password. Check it and try again.</string>
     <string name="error_master_password_too_long">Master password cannot exceed %1$d characters</string>
     <string name="error_master_confirmation_too_long">Confirmation is longer than the allowed master password</string>
     <string name="error_master_password_too_short">Password must be at least %1$d characters</string>
@@ -617,6 +654,25 @@
     <string name="ui_theme_light">Light</string>
     <string name="ui_theme_dark">Dark</string>
     <string name="ui_theme_system">System default</string>
+    <string name="ui_face_id">Face ID</string>
+    <string name="ui_touch_id">Touch ID</string>
+    <string name="ui_biometrics">biometrics</string>
+    <string name="ui_biometric_unlock">Biometric unlock</string>
+    <string name="ui_biometric_unlock_description">Use %1$s to open this vault without typing its master password. Your master password remains available.</string>
+    <string name="ui_biometric_unlock_on">%1$s unlock is on</string>
+    <string name="ui_biometric_unlock_off">%1$s unlock is off</string>
+    <string name="ui_unlock_with_face_id">Unlock with Face ID</string>
+    <string name="ui_unlock_with_touch_id">Unlock with Touch ID</string>
+    <string name="ui_unlock_with_biometrics">Unlock with biometrics</string>
+    <string name="ui_use_master_password_or_biometrics_to_unlock">Enter your master password or use biometrics to unlock.</string>
+    <string name="error_biometric_not_enrolled">Set up biometrics in your device settings first.</string>
+    <string name="error_biometric_unavailable">Biometric authentication is not available on this device.</string>
+    <string name="error_biometric_not_enabled">Unlock with your master password, then enable biometric unlock in Settings → Security.</string>
+    <string name="error_biometric_invalidated">Biometric unlock was reset because your device enrollment changed. Unlock with your master password and enable it again.</string>
+    <string name="error_biometric_vault_locked">The vault must be open before biometric unlock can be enabled.</string>
+    <string name="error_biometric_failed">Biometric authentication could not unlock the vault. Use your master password and try again.</string>
+    <string name="message_biometric_enabled">Biometric unlock enabled</string>
+    <string name="message_biometric_disabled">Biometric unlock disabled</string>
 
     <plurals name="ui_created_value_with_items">
         <item quantity="one">Created %1$s · %2$d item</item>
@@ -625,5 +681,9 @@
     <plurals name="ui_duplicate_password_login_count">
         <item quantity="one">%1$d login uses this password</item>
         <item quantity="other">%1$d logins share one password</item>
+    </plurals>
+    <plurals name="ui_totp_expires_in_seconds">
+        <item quantity="one">Expires in %1$d second</item>
+        <item quantity="other">Expires in %1$d seconds</item>
     </plurals>
 </resources>

@@ -6,9 +6,11 @@ shared Compose application in an iOS simulator; it is not a production iOS appli
 
 ## Shipped capabilities
 
-- Local vault creation, password unlock, manual lock, background/inactivity lock, and failed-attempt throttling.
+- Local vault creation, password unlock, mobile biometric unlock, manual lock, background/inactivity lock, and
+  failed-attempt throttling.
 - Authenticated XChaCha20-Poly1305 encryption with Argon2id-derived key-encryption keys and per-purpose subkeys.
 - Credential creation, editing, deletion, favorites, folders, tags, search, filters, and password history.
+- Per-login TOTP authenticators with local code generation, QR enrollment, and encrypted setup-key storage.
 - Password and passphrase generation plus local weak, reused, and old-password analysis.
 - Versioned, password-protected `.pvault` backup creation, validation preview, and transactional replacement restore.
 - Clipboard expiration with ownership checks, Android screenshot protection, persistent security/theme settings, and
@@ -17,8 +19,10 @@ shared Compose application in an iOS simulator; it is not a production iOS appli
 ## Deliberate limitations
 
 - PassVault has no cloud service or cross-device synchronization.
-- Biometric vault unlock is not shipped. There is no biometric UI or platform adapter in the release graph; the
-  master password is the supported unlock path.
+- Biometric unlock is opt-in per vault on Android and the iOS development host; Desktop and devices without an
+  enrolled supported biometric continue to use the master password.
+- Saved TOTP authenticators protect the external accounts they belong to; they do not add a second factor to
+  PassVault vault unlock.
 - CSV/plaintext import and export are not shipped.
 - Attachment file storage is not shipped. The current schema can preserve encrypted attachment metadata during a
   backup, but backup files never package attachment bytes.
@@ -41,6 +45,7 @@ core/
   crypto/          cryptographic engine and key hierarchy
   database/        Room schema, DAOs, encrypted repositories, and backup service
   domain/          domain models, validation, and repository contracts
+  otp/             TOTP parsing and RFC 6238 code generation
   security/        clipboard, screenshot, keyring, lifecycle, and settings boundaries
   designsystem/    themes, tokens, and reusable Compose controls
   navigation/      Navigation 3 route and command contracts

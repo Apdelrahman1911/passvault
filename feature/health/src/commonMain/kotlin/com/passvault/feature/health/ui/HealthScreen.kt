@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +29,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -40,7 +45,6 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,14 +54,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -66,7 +68,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,6 +79,10 @@ import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.core.designsystem.components.EditorialPageHeader
+import com.passvault.core.designsystem.platform.drawsBehindSystemBars
+import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
+import com.passvault.core.designsystem.platform.passVaultScrollableTopAppBarInsets
+import com.passvault.core.designsystem.platform.scaffoldLazyViewport
 import com.passvault.feature.health.presentation.HealthViewModel
 import com.passvault.feature.health.presentation.HealthViewModel.DuplicateGroup
 import com.passvault.feature.health.presentation.HealthViewModel.HealthTab
@@ -105,10 +113,30 @@ fun HealthScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
+        val layoutDirection = LocalLayoutDirection.current
+        val topContentPadding = if (showBackButton) ComponentSpacing.screenVertical else 0.dp
+        val bottomContentPadding = if (showBackButton) ComponentSpacing.screenVertical else 112.dp
+        val listContentPadding = if (drawsBehindSystemBars) {
+            PaddingValues(
+                start = innerPadding.calculateStartPadding(layoutDirection) +
+                    ComponentSpacing.screenHorizontal,
+                end = innerPadding.calculateEndPadding(layoutDirection) +
+                    ComponentSpacing.screenHorizontal,
+                top = innerPadding.calculateTopPadding() + topContentPadding,
+                bottom = innerPadding.calculateBottomPadding() + bottomContentPadding,
+            )
+        } else {
+            PaddingValues(
+                start = ComponentSpacing.screenHorizontal,
+                end = ComponentSpacing.screenHorizontal,
+                top = topContentPadding,
+                bottom = bottomContentPadding,
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .scaffoldLazyViewport(innerPadding),
             contentAlignment = Alignment.TopCenter,
         ) {
             LazyColumn(
@@ -116,18 +144,14 @@ fun HealthScreen(
                     .fillMaxWidth()
                     .widthIn(max = HealthContentMaxWidth)
                     .fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = ComponentSpacing.screenHorizontal,
-                    end = ComponentSpacing.screenHorizontal,
-                    top = if (showBackButton) ComponentSpacing.screenVertical else 0.dp,
-                    bottom = if (showBackButton) ComponentSpacing.screenVertical else 112.dp,
-                ),
+                contentPadding = listContentPadding,
                 verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
             ) {
                 if (showBackButton) {
                     item(key = "health-top-app-bar") {
                         TopAppBar(
                             title = {},
+                            windowInsets = passVaultScrollableTopAppBarInsets(),
                             navigationIcon = {
                                 IconButton(onClick = { onEvent(HealthViewModel.HealthEvent.OnBackClick) }) {
                                     Icon(
@@ -137,9 +161,7 @@ fun HealthScreen(
                                 }
                             },
                             actions = { HealthActions(state, onEvent) },
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                            ),
+                            colors = passVaultTopAppBarColors(),
                         )
                     }
                 }
@@ -156,41 +178,7 @@ fun HealthScreen(
                 }
 
                 item(key = "health-tabs") {
-                    PrimaryScrollableTabRow(
-                        selectedTabIndex = state.selectedTab.ordinal,
-                        edgePadding = 0.dp,
-                    ) {
-                        HealthTab.entries.forEach { tab ->
-                            val count = when (tab) {
-                                HealthTab.OVERVIEW -> 0
-                                HealthTab.WEAK_PASSWORDS -> state.weakPasswords.size
-                                HealthTab.DUPLICATES -> state.duplicatePasswords.size
-                                HealthTab.OLD_PASSWORDS -> state.oldPasswords.size
-                            }
-                            Tab(
-                                selected = state.selectedTab == tab,
-                                onClick = { onEvent(HealthViewModel.HealthEvent.OnTabChanged(tab)) },
-                                text = { Text(tab.displayName.resolve()) },
-                                icon = {
-                                    BadgedBox(
-                                        badge = {
-                                            if (count > 0) Badge { Text(count.toString()) }
-                                        },
-                                    ) {
-                                        Icon(
-                                            imageVector = when (tab) {
-                                                HealthTab.OVERVIEW -> Icons.Default.Info
-                                                HealthTab.WEAK_PASSWORDS -> Icons.Default.Warning
-                                                HealthTab.DUPLICATES -> Icons.Default.ContentCopy
-                                                HealthTab.OLD_PASSWORDS -> Icons.Default.Schedule
-                                            },
-                                            contentDescription = null,
-                                        )
-                                    }
-                                },
-                            )
-                        }
-                    }
+                    HealthTabSelector(state = state, onEvent = onEvent)
                 }
 
                 state.errorMessage?.let { message ->
@@ -286,6 +274,140 @@ fun HealthScreen(
             },
         )
     }
+}
+
+@Composable
+private fun HealthTabSelector(
+    state: HealthViewModel.HealthState,
+    onEvent: (HealthViewModel.HealthEvent) -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = MaterialTheme.shapes.extraLarge,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        BoxWithConstraints(modifier = Modifier.padding(Spacing.xs)) {
+            if (maxWidth >= 680.dp) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                ) {
+                    HealthTab.entries.forEach { tab ->
+                        HealthTabButton(
+                            tab = tab,
+                            count = state.countFor(tab),
+                            selected = state.selectedTab == tab,
+                            onClick = {
+                                onEvent(HealthViewModel.HealthEvent.OnTabChanged(tab))
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+            } else {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                ) {
+                    items(HealthTab.entries, key = { it.name }) { tab ->
+                        HealthTabButton(
+                            tab = tab,
+                            count = state.countFor(tab),
+                            selected = state.selectedTab == tab,
+                            onClick = {
+                                onEvent(HealthViewModel.HealthEvent.OnTabChanged(tab))
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HealthTabButton(
+    tab: HealthTab,
+    count: Int,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val containerColor = if (selected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        Color.Transparent
+    }
+    val contentColor = if (selected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Surface(
+        modifier = modifier
+            .defaultMinSize(minHeight = ComponentSpacing.touchTargetMin)
+            .selectable(
+                selected = selected,
+                role = Role.Tab,
+                onClick = onClick,
+            ),
+        color = containerColor,
+        contentColor = contentColor,
+        shape = MaterialTheme.shapes.large,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = tab.icon(),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+            Text(
+                text = tab.displayName.resolve(),
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+            )
+            if (count > 0) {
+                Surface(
+                    color = if (selected) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceContainerHighest
+                    },
+                    contentColor = if (selected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    shape = CircleShape,
+                ) {
+                    Text(
+                        text = count.toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun HealthViewModel.HealthState.countFor(tab: HealthTab): Int = when (tab) {
+    HealthTab.OVERVIEW -> 0
+    HealthTab.WEAK_PASSWORDS -> weakPasswords.size
+    HealthTab.DUPLICATES -> duplicatePasswords.size
+    HealthTab.OLD_PASSWORDS -> oldPasswords.size
+}
+
+private fun HealthTab.icon(): ImageVector = when (this) {
+    HealthTab.OVERVIEW -> Icons.Default.Info
+    HealthTab.WEAK_PASSWORDS -> Icons.Default.Warning
+    HealthTab.DUPLICATES -> Icons.Default.ContentCopy
+    HealthTab.OLD_PASSWORDS -> Icons.Default.Schedule
 }
 
 @Composable

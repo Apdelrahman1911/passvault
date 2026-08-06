@@ -1,8 +1,10 @@
 package com.passvault.desktop.di
 
 import com.passvault.core.security.ClipboardService
+import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.KeyringService
 import com.passvault.core.security.WindowProtection
+import com.passvault.core.security.UnavailableBiometricKeyStore
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.desktop.security.DesktopClipboardService
 import com.passvault.desktop.security.DesktopKeyringService
@@ -26,6 +28,7 @@ val desktopModule = module {
 
     // Security services - Desktop implementations
     single<ClipboardService> { DesktopClipboardService(scope = get()) }
+    single<BiometricKeyStore> { UnavailableBiometricKeyStore() }
     single<KeyringService> { DesktopKeyringService() }
     single { DesktopWindowProtection() }
     single<WindowProtection> { get<DesktopWindowProtection>() }

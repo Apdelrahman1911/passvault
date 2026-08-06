@@ -1,0 +1,370 @@
+name: Mobile Store Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build and upload
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+      channel:
+        description: Store destination
+        required: true
+        default: internal
+        type: choice
+        options:
+          - internal
+          - external
+          - production
+      production_confirmation:
+        description: Type I_APPROVE_PRODUCTION only for a production upload
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-store-${{ inputs.channel }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  JAVA_VERSION: '17'
+  RUBY_VERSION: '3.3'
+  FASTLANE_OPT_OUT_USAGE: '1'
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+
+jobs:
+  validate:
+    name: Validate release request
+    runs-on: ubuntu-latest
+    env:
+      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+      SECURITY_EMAIL: ${{ vars.SECURITY_EMAIL }}
+      PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+      SUPPORT_URL: ${{ vars.SUPPORT_URL }}
+      PROJECT_URL: ${{ vars.PROJECT_URL }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_code: ${{ steps.version.outputs.version_code }}
+      environment: ${{ steps.environment.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Require main and explicit production confirmation
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Mobile store uploads must run from main." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.channel }}" == "production" &&
+                "${{ inputs.production_confirmation }}" != "I_APPROVE_PRODUCTION" ]]; then
+            echo "Production requires the exact confirmation I_APPROVE_PRODUCTION." >&2
+            exit 1
+          fi
+
+      - name: Validate version and public release metadata
+        id: version
+        run: |
+          VERSION="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
+          VERSION_CODE="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          ./scripts/validate-release-metadata.sh "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Select protected environment
+        id: environment
+        run: |
+          case "${{ inputs.channel }}" in
+            internal) environment=mobile-beta ;;
+            external) environment=mobile-external-beta ;;
+            production) environment=mobile-production ;;
+            *) exit 1 ;;
+          esac
+          echo "name=$environment" >> "$GITHUB_OUTPUT"
+
+      - name: Validate repository release automation
+        run: ./scripts/test-release-automation.sh
+
+      - name: Require production store assets
+        if: inputs.channel == 'production'
+        run: ./scripts/validate-mobile-store-assets.rb
+
+  android:
+    name: Android ${{ inputs.channel }}
+    if: inputs.platform == 'both' || inputs.platform == 'android'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: ${{ needs.validate.outputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PRIVATE_RUNTIME: ${{ runner.temp }}/passvault-release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-cleanup: true
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Create private runtime inputs
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
+          TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
+          PLAY_CLOSED_TESTERS_BASE64: ${{ secrets.PLAY_CLOSED_TESTERS_BASE64 }}
+          COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+          SUPPORT_URL: ${{ vars.SUPPORT_URL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+        run: |
+          install -d -m 700 "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store"
+          printf '%s' "$KEYSTORE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/android-upload.jks"
+          chmod 600 "$PRIVATE_RUNTIME/android-upload.jks"
+          printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
+            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/store-input"
+          if [[ "${{ inputs.channel }}" == "external" ]]; then
+            printf '%s' "$TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64" |
+              openssl base64 -d -A > "$PRIVATE_RUNTIME/testflight-testers.csv"
+            printf '%s' "$PLAY_CLOSED_TESTERS_BASE64" |
+              openssl base64 -d -A > "$PRIVATE_RUNTIME/play-testers.txt"
+            chmod 600 "$PRIVATE_RUNTIME/testflight-testers.csv" "$PRIVATE_RUNTIME/play-testers.txt"
+            ./scripts/validate-mobile-tester-files.sh \
+              "$PRIVATE_RUNTIME/testflight-testers.csv" "$PRIVATE_RUNTIME/play-testers.txt"
+          fi
+          ./scripts/prepare-mobile-store-metadata.sh \
+            "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
+          echo "KEYSTORE_PATH=$PRIVATE_RUNTIME/android-upload.jks" >> "$GITHUB_ENV"
+          echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
+
+      - name: Validate Android signing input
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          keytool -list -keystore "$KEYSTORE_PATH" -storepass:env KEYSTORE_PASSWORD \
+            -alias "$KEY_ALIAS" >/dev/null
+
+      - name: Build signed Android release
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew \
+            :app-android:verifyReleaseSigningConfiguration \
+            :app-android:assembleStandardRelease \
+            :app-android:bundleStandardRelease \
+            -Ppassvault.requireReleaseSigning=true \
+            -Ppassvault.versionName=${{ needs.validate.outputs.version }} \
+            -Ppassvault.versionCode=${{ needs.validate.outputs.version_code }}
+          pwsh ./scripts/verify-android-signatures.ps1
+          echo "ANDROID_AAB_PATH=$GITHUB_WORKSPACE/app-android/build/outputs/bundle/standardRelease/app-android-standard-release.aab" >> "$GITHUB_ENV"
+          mapping="$GITHUB_WORKSPACE/app-android/build/outputs/mapping/standardRelease/mapping.txt"
+          if [[ -f "$mapping" ]]; then echo "ANDROID_MAPPING_PATH=$mapping" >> "$GITHUB_ENV"; fi
+
+      - name: Authenticate to Google with OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - name: Upload to Google Play
+        env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
+          UPLOAD_STORE_ASSETS: ${{ inputs.channel == 'production' }}
+        run: |
+          case "${{ inputs.channel }}" in
+            internal) bundle exec fastlane android internal ;;
+            external) bundle exec fastlane android closed ;;
+            production) bundle exec fastlane android production ;;
+          esac
+
+      - name: Remove private runtime inputs
+        if: always()
+        run: |
+          if [[ -n "${PRIVATE_RUNTIME:-}" && -d "$PRIVATE_RUNTIME" ]]; then
+            find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
+            find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
+            find "$PRIVATE_RUNTIME" -depth -type d -exec rmdir {} + 2>/dev/null || true
+          fi
+
+  ios:
+    name: iOS ${{ inputs.channel }}
+    if: inputs.platform == 'both' || inputs.platform == 'ios'
+    needs: validate
+    runs-on: macos-15
+    environment: ${{ needs.validate.outputs.environment }}
+    permissions:
+      contents: read
+    env:
+      PRIVATE_RUNTIME: ${{ runner.temp }}/passvault-release
+      KEYCHAIN_PATH: ${{ runner.temp }}/passvault-release/release.keychain-db
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Create private runtime inputs and signing keychain
+        env:
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
+          TESTERS_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
+          COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+          SUPPORT_URL: ${{ vars.SUPPORT_URL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+        run: |
+          install -d -m 700 "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$PRIVATE_RUNTIME/export"
+          printf '%s' "$IOS_CERTIFICATE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
+          printf '%s' "$IOS_PROFILE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/profile.mobileprovision"
+          printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
+            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/store-input"
+          chmod 600 "$PRIVATE_RUNTIME/distribution.p12" "$PRIVATE_RUNTIME/profile.mobileprovision"
+
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 32)"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$PRIVATE_RUNTIME/distribution.p12" -k "$KEYCHAIN_PATH" \
+            -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 >/dev/null
+          security set-key-partition-list -S apple-tool:,apple: -s \
+            -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+
+          security cms -D -i "$PRIVATE_RUNTIME/profile.mobileprovision" > "$PRIVATE_RUNTIME/profile.plist"
+          PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PRIVATE_RUNTIME/profile.plist")"
+          install -d "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PRIVATE_RUNTIME/profile.mobileprovision" \
+            "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+
+          if [[ "${{ inputs.channel }}" == "external" ]]; then
+            printf '%s' "$TESTERS_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/testflight-testers.csv"
+            chmod 600 "$PRIVATE_RUNTIME/testflight-testers.csv"
+          fi
+          ./scripts/prepare-mobile-store-metadata.sh \
+            "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
+
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
+          echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$PRIVATE_RUNTIME/testflight-testers.csv" >> "$GITHUB_ENV"
+
+      - name: Archive and export signed IPA
+        env:
+          TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+        run: |
+          case "$EXPORT_COMPLIANCE_STATUS" in
+            EXEMPT_APPROVED) ENCRYPTION_FLAG=NO ;;
+            NON_EXEMPT_APPROVED) ENCRYPTION_FLAG=YES ;;
+            *) echo "Approved export compliance is required." >&2; exit 1 ;;
+          esac
+          ARCHIVE_PATH="$PRIVATE_RUNTIME/PassVault.xcarchive"
+          xcodebuild archive \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme PassVault \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$ARCHIVE_PATH" \
+            TEAM_ID="$TEAM_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            MARKETING_VERSION="${{ needs.validate.outputs.version }}" \
+            CURRENT_PROJECT_VERSION="${{ needs.validate.outputs.version_code }}" \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            INFOPLIST_KEY_ITSAppUsesNonExemptEncryption="$ENCRYPTION_FLAG"
+
+          /usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' "$PRIVATE_RUNTIME/ExportOptions.plist"
+          /usr/libexec/PlistBuddy -c 'Add :signingStyle string manual' "$PRIVATE_RUNTIME/ExportOptions.plist"
+          /usr/libexec/PlistBuddy -c "Add :teamID string $TEAM_ID" "$PRIVATE_RUNTIME/ExportOptions.plist"
+          /usr/libexec/PlistBuddy -c 'Add :uploadSymbols bool true' "$PRIVATE_RUNTIME/ExportOptions.plist"
+          /usr/libexec/PlistBuddy -c 'Add :provisioningProfiles dict' "$PRIVATE_RUNTIME/ExportOptions.plist"
+          /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:$BUNDLE_ID string $PROFILE_NAME" \
+            "$PRIVATE_RUNTIME/ExportOptions.plist"
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$PRIVATE_RUNTIME/export" \
+            -exportOptionsPlist "$PRIVATE_RUNTIME/ExportOptions.plist"
+          IPA_PATH="$(find "$PRIVATE_RUNTIME/export" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
+          test -n "$IPA_PATH"
+          echo "IOS_IPA_PATH=$IPA_PATH" >> "$GITHUB_ENV"
+
+      - name: Upload to App Store Connect
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          APP_VERSION: ${{ needs.validate.outputs.version }}
+          SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
+          APP_REVIEW_CONTACT_NAME: ${{ vars.APP_REVIEW_CONTACT_NAME }}
+          APP_REVIEW_EMAIL: ${{ vars.APP_REVIEW_EMAIL }}
+          APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}
+          PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
+        run: |
+          case "${{ inputs.channel }}" in
+            internal) bundle exec fastlane ios internal ;;
+            external) bundle exec fastlane ios external ;;
+            production) bundle exec fastlane ios production_candidate ;;
+          esac
+
+      - name: Remove private runtime inputs and keychain
+        if: always()
+        run: |
+          profile_uuid="${PROFILE_UUID:-}"
+          if [[ -z "$profile_uuid" && -f "$PRIVATE_RUNTIME/profile.plist" ]]; then
+            profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PRIVATE_RUNTIME/profile.plist" 2>/dev/null || true)"
+          fi
+          if [[ "$profile_uuid" =~ ^[A-Fa-f0-9-]{36}$ ]]; then
+            profile="$HOME/Library/MobileDevice/Provisioning Profiles/$profile_uuid.mobileprovision"
+            test ! -f "$profile" || rm -f -- "$profile"
+          fi
+          security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
+          if [[ -n "${PRIVATE_RUNTIME:-}" && -d "$PRIVATE_RUNTIME" ]]; then
+            find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
+            find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
+            find "$PRIVATE_RUNTIME" -depth -type d -exec rmdir {} + 2>/dev/null || true
+          fi

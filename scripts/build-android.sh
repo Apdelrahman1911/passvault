@@ -232,13 +232,13 @@ build_fdroid() {
     fi
 }
 
-# Function to build Google Play variant
+# Function to build the canonical Google Play artifact
 build_google() {
-    print_info "Building Google Play variant..."
-    ./gradlew :app-android:assembleGoogleRelease --no-daemon
+    print_info "Building the Standard variant for Google Play..."
+    ./gradlew :app-android:assembleStandardRelease --no-daemon
     
     if [[ $? -eq 0 ]]; then
-        APK_PATH="app-android/build/outputs/apk/google/release/app-android-google-release.apk"
+        APK_PATH="app-android/build/outputs/apk/standard/release/app-android-standard-release.apk"
         if [[ -f "$APK_PATH" ]]; then
             print_success "Google Play APK built successfully!"
             print_info "APK location: ${APK_PATH}"
@@ -249,10 +249,10 @@ build_google() {
         
         # Also build AAB
         print_info "Building Google Play AAB..."
-        ./gradlew :app-android:bundleGoogleRelease --no-daemon
+        ./gradlew :app-android:bundleStandardRelease --no-daemon
         
         if [[ $? -eq 0 ]]; then
-            AAB_PATH="app-android/build/outputs/bundle/googleRelease/app-android-google-release.aab"
+            AAB_PATH="app-android/build/outputs/bundle/standardRelease/app-android-standard-release.aab"
             if [[ -f "$AAB_PATH" ]]; then
                 print_success "Google Play AAB built successfully!"
                 print_info "AAB location: ${AAB_PATH}"
