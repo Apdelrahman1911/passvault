@@ -307,6 +307,8 @@ ruby -c fastlane/Fastfile >/dev/null
 bash -n scripts/verify-ios-exported-artifact.sh
 grep -Fq 'TESTFLIGHT_DISTRIBUTION_MODE' fastlane/Fastfile
 grep -Fq 'public-link' .github/workflows/mobile-store-release.yml
+grep -Fq 'runs-on: macos-26' .github/workflows/mobile-store-release.yml
+grep -Fq 'Require Xcode 26 or newer' .github/workflows/mobile-store-release.yml
 grep -Fq 'Beta App Review is not approved' scripts/manage-testflight-public-link.rb
 grep -Fq 'publicLinkLimitEnabled: true' scripts/manage-testflight-public-link.rb
 grep -Fq 'verify-ios-exported-artifact.sh' .github/workflows/mobile-store-release.yml

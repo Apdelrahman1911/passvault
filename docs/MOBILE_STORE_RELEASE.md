@@ -11,6 +11,10 @@ iOS 18.5, so the Xcode host intentionally declares iOS 18.5 as its minimum.
 Lowering that target requires upgrading or replacing the dependency and
 revalidating every linked object before release.
 
+iOS store archives run on GitHub's `macos-26` image and fail early on Xcode
+versions older than 26. Compose Multiplatform 1.11 links UIKit SDK symbols that
+the Xcode 16 toolchain on `macos-15` cannot resolve.
+
 ## 1. Complete the local private intake
 
 Read `release/private/README.md`, fill `release/private/values.env`, replace all

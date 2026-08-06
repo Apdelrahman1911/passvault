@@ -230,7 +230,9 @@ jobs:
     name: iOS ${{ inputs.channel }}
     if: inputs.platform == 'both' || inputs.platform == 'ios'
     needs: validate
-    runs-on: macos-15
+    # Compose Multiplatform 1.11 links UIKit symbols introduced with the
+    # Xcode 26 SDK. Keep the store archive on the matching hosted image.
+    runs-on: macos-26
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
       contents: read
@@ -253,6 +255,16 @@ jobs:
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
+
+      - name: Require Xcode 26 or newer
+        run: |
+          XCODE_VERSION="$(xcodebuild -version | awk 'NR == 1 { print $2 }')"
+          XCODE_MAJOR="${XCODE_VERSION%%.*}"
+          if [[ ! "$XCODE_MAJOR" =~ ^[0-9]+$ || "$XCODE_MAJOR" -lt 26 ]]; then
+            echo "PassVault iOS release builds require Xcode 26 or newer; found $XCODE_VERSION." >&2
+            exit 1
+          fi
+          echo "Xcode release toolchain: $XCODE_VERSION"
 
       - name: Create private runtime inputs and signing keychain
         env:
