@@ -14,9 +14,9 @@ legal identity, and store-account actions remain external by design.
 - [x] F-Droid application ID fixed as `com.passvault.android.fdroid`.
 - [x] Desktop bundle ID fixed as `com.passvault.desktop`.
 - [x] Version source centralized in `version.properties`.
-- [ ] User-supplied icon master added in a future branding pass.
-- [ ] Android adaptive, legacy, monochrome, and splash assets replaced with
-  user-supplied artwork in a future branding pass.
+- [x] User-supplied icon artwork is present in the application resources.
+- [x] Android adaptive, legacy, monochrome, and splash assets use the approved
+  PassVault artwork.
 - [ ] Windows ICO, macOS ICNS, and Linux PNG assets supplied by the user.
 - [ ] Bilingual store feature graphics and screenshot set supplied under
   `release/store-assets/` and accepted by the production validator.
@@ -37,10 +37,11 @@ legal identity, and store-account actions remain external by design.
 
 ## Store and legal material
 
-- [ ] User-approved Google Play/App Store bilingual descriptions are present in
+- [x] User-approved Google Play/App Store bilingual descriptions are present in
   the ignored private intake and pass validation.
 - [ ] F-Droid metadata is ready.
-- [ ] Privacy policy is publication-ready and references the shipped behavior.
+- [x] The bilingual privacy policy is public at the stable HTTPS Pages routes and
+  matches the reviewed local-first behavior.
 - [ ] Apache-2.0 project license and notice are included in packages.
 - [ ] Third-party acknowledgements cover direct production dependencies.
 - [ ] Security policy, backup guide, and recovery guide are publication-ready.

@@ -81,6 +81,22 @@ requires completed store testing, protected review, and both confirmation phrase
    gate per the supplied account status; the internal/closed tracks remain the
    release-quality gates.
 
+Use `docs/GOOGLE_PLAY_READINESS.md` for the source-verified App content answers,
+Console paths, and remaining owner confirmations. Validate the tracked
+machine-readable record with:
+
+```bash
+./scripts/validate-google-play-readiness.rb
+```
+
+The no-upload OIDC check inventories tracks, localized listing completeness,
+public graphics, app contact-field presence, tester-group counts, and country
+availability using an empty disposable edit. It never prints listing text or
+tester identities, and it deletes the edit without committing it. Play does not
+expose App content questionnaire state, account production eligibility, or
+email-list membership through the Publishing API, so those remain explicit
+Console checks.
+
 ## 4. Configure GitHub and keyless Google access
 
 Authenticate locally, then run the scripts only after private validation passes:

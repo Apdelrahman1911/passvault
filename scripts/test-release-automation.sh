@@ -107,6 +107,18 @@ if ruby ./scripts/validate-play-service-accounts.rb --csv "$play_other_app_csv" 
     exit 1
 fi
 
+ruby ./scripts/validate-google-play-readiness.rb >/dev/null
+invalid_play_declaration="$temporary_root/invalid-play-app-content.json"
+ruby -rjson -e '
+  record = JSON.parse(File.read(ARGV.fetch(0), encoding: "UTF-8"))
+  record.fetch("dataSafety")["collectsOrSharesRequiredUserData"] = true
+  File.write(ARGV.fetch(1), JSON.pretty_generate(record))
+' release/google-play/app-content.json "$invalid_play_declaration"
+if ruby ./scripts/validate-google-play-readiness.rb "$invalid_play_declaration" >/dev/null 2>&1; then
+    echo "A Play declaration contradicting the verified no-network behavior was accepted." >&2
+    exit 1
+fi
+
 valid_asc_key="$temporary_root/valid-asc-key.p8"
 traditional_asc_key="$temporary_root/valid-asc-key-legacy.pem"
 invalid_asc_key="$temporary_root/invalid-asc-key.p8"
@@ -273,12 +285,17 @@ grep -Fq 'Enforce App Store France availability constraint' \
     .github/workflows/mobile-store-release.yml
 grep -Fq 'IOS_FRANCE_AVAILABLE' fastlane/Fastfile
 bash -n scripts/verify-ios-release-signing.sh
+bash -n scripts/verify-android-signatures.sh
 ruby -c scripts/validate-play-service-accounts.rb >/dev/null
+ruby -c scripts/validate-google-play-readiness.rb >/dev/null
 bash -n scripts/verify-play-oidc-access.sh
 grep -Fq 'VERIFY_ONLY_NO_UPLOAD' .github/workflows/play-access-check.yml
 grep -Fq 'PLAY_EDIT_DELETED=PASS' scripts/verify-play-oidc-access.sh
+grep -Fq 'PLAY_PRODUCTION_ACCESS_ELIGIBILITY_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
+grep -Fq 'PLAY_EMAIL_LIST_TESTERS_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
+grep -Fq 'PLAY_EMPTY_EDIT_VALIDATION=' scripts/verify-play-oidc-access.sh
 grep -Fq 'api_request DELETE' scripts/verify-play-oidc-access.sh
-if grep -Eiq '(edits/.*/commit|/bundles|upload_to_play_store|fastlane)' \
+if grep -Eiq '(edits/.*/commit|edits/.*:commit|/bundles|upload_to_play_store|fastlane|api_request (PATCH|PUT))' \
     scripts/verify-play-oidc-access.sh .github/workflows/play-access-check.yml; then
     echo "The Play access check contains a store upload or edit-commit path." >&2
     exit 1

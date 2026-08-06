@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "lastTechnicalReview": "2026-08-06",
+  "packageName": "com.passvault.android",
+  "appType": "APP",
+  "category": "TOOLS",
+  "defaultLanguage": "en-US",
+  "locales": [
+    "en-US",
+    "ar"
+  ],
+  "privacyPolicyUrl": "https://passvault.kiramanga.me/privacy/",
+  "supportUrl": "https://passvault.kiramanga.me/support/",
+  "appAccess": {
+    "restricted": false,
+    "reviewInstructions": "No remote account or review credentials are required. Create a local vault with a new master password to review all functionality."
+  },
+  "monetization": {
+    "containsAds": false,
+    "usesAdvertisingId": false,
+    "usesPlayBilling": false,
+    "recommendedPrice": "FREE_OWNER_CONFIRMATION_REQUIRED"
+  },
+  "dataSafety": {
+    "collectsOrSharesRequiredUserData": false,
+    "dataTypes": [],
+    "allowsAccountCreation": false,
+    "remoteAccountDeletionUrlRequired": false,
+    "localDataDeletion": "Delete records or the local vault in the app, clear app data, or uninstall. Delete exported backups from their user-selected locations."
+  },
+  "audience": {
+    "designedForChildren": false,
+    "recommendedTargetAge": "18_AND_OVER_OWNER_CONFIRMATION_REQUIRED"
+  },
+  "contentRating": {
+    "questionnaireCategory": "UTILITY_PRODUCTIVITY_COMMUNICATION_OR_OTHER",
+    "isGame": false,
+    "violence": false,
+    "sexualContent": false,
+    "language": false,
+    "controlledSubstances": false,
+    "gambling": false,
+    "publicUserGeneratedContent": false,
+    "onlineInteraction": false,
+    "locationSharing": false,
+    "digitalPurchases": false
+  },
+  "declarations": {
+    "financialFeatures": "NONE",
+    "healthFeatures": "NONE",
+    "governmentApp": false,
+    "newsOrMagazineApp": false,
+    "socialOrDatingApp": false,
+    "vpnService": false
+  },
+  "sourcePermissions": [
+    "android.permission.CAMERA",
+    "android.permission.HIDE_OVERLAY_WINDOWS",
+    "android.permission.USE_BIOMETRIC"
+  ],
+  "packagedPermissions": [
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.CAMERA",
+    "android.permission.HIDE_OVERLAY_WINDOWS",
+    "android.permission.USE_BIOMETRIC",
+    "android.permission.USE_FINGERPRINT",
+    "com.passvault.android.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "permissionPurposes": {
+    "android.permission.ACCESS_NETWORK_STATE": "Inherited from AndroidX Media3; observes connectivity state but cannot transmit data because INTERNET is absent.",
+    "android.permission.CAMERA": "Optional, user-initiated TOTP QR-code scanning processed on device.",
+    "android.permission.HIDE_OVERLAY_WINDOWS": "Platform protection for sensitive screens against overlays where supported.",
+    "android.permission.USE_BIOMETRIC": "Optional local vault unlock through the operating-system biometric prompt.",
+    "android.permission.USE_FINGERPRINT": "Legacy compatibility permission inherited from AndroidX Biometric for optional local vault unlock.",
+    "com.passvault.android.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION": "AndroidX Core signature-level permission restricting app-private dynamic receivers."
+  },
+  "networkBehavior": {
+    "internetPermission": false,
+    "publisherOperatedService": false,
+    "cloudSync": false,
+    "analytics": false,
+    "telemetry": false,
+    "automaticCrashUpload": false
+  },
+  "testing": {
+    "internalTrackPrepared": true,
+    "closedTestingDeferred": true,
+    "openTestingEnabled": false,
+    "productionRequiresTestingConfirmation": true
+  }
+}

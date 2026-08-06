@@ -183,7 +183,7 @@ jobs:
             -Ppassvault.requireReleaseSigning=true \
             -Ppassvault.versionName=${{ needs.validate.outputs.version }} \
             -Ppassvault.versionCode=${{ needs.validate.outputs.version_code }}
-          pwsh ./scripts/verify-android-signatures.ps1
+          ./scripts/verify-android-signatures.sh
           echo "ANDROID_AAB_PATH=$GITHUB_WORKSPACE/app-android/build/outputs/bundle/standardRelease/app-android-standard-release.aab" >> "$GITHUB_ENV"
           mapping="$GITHUB_WORKSPACE/app-android/build/outputs/mapping/standardRelease/mapping.txt"
           if [[ -f "$mapping" ]]; then echo "ANDROID_MAPPING_PATH=$mapping" >> "$GITHUB_ENV"; fi
