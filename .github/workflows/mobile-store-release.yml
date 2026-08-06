@@ -266,6 +266,9 @@ jobs:
           fi
           echo "Xcode release toolchain: $XCODE_VERSION"
 
+      - name: Validate Fastlane runtime
+        run: bundle exec fastlane --version
+
       - name: Create private runtime inputs and signing keychain
         env:
           IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
