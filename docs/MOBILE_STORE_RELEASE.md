@@ -48,12 +48,13 @@ requires completed store testing, protected review, and both confirmation phrase
    `TESTFLIGHT_EXTERNAL_GROUP`; the workflow imports the external CSV into it.
 6. Review `docs/EXPORT_COMPLIANCE.md`, then complete App Privacy, age rating,
    category, pricing/availability, encryption, review contact, and legal
-   declarations. App Store availability is not configured yet; the planned
-   worldwide release includes France. Keep export status `PENDING` until the
-   Account Holder or legal reviewer completes the
-   questionnaire and any documentation Apple requests. Do not silently exclude
-   France or claim an exemption. Publish the approved bilingual privacy text at
-   `PRIVACY_POLICY_URL` before configuration.
+   declarations. The completed encryption questionnaire reported that no
+   documentation is required while France is excluded. Keep
+   `EXPORT_COMPLIANCE_STATUS=EXEMPT_APPROVED` and
+   `IOS_FRANCE_AVAILABLE=false` for this release configuration. Never enable
+   France silently: reopen App Encryption Documentation and complete the French
+   compliance process before changing either value. Publish the approved
+   bilingual privacy text at `PRIVACY_POLICY_URL` before configuration.
 
 ## 3. Complete first-time Google Play setup
 

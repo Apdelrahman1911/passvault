@@ -249,6 +249,7 @@ set_environment_variable mobile-external-beta TESTFLIGHT_EXTERNAL_GROUP "$TESTFL
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
     set_environment_variable "$environment_name" EXPORT_COMPLIANCE_STATUS "$EXPORT_COMPLIANCE_STATUS"
+    set_environment_variable "$environment_name" IOS_FRANCE_AVAILABLE "$IOS_FRANCE_AVAILABLE"
 done
 
 for environment_name in mobile-external-beta mobile-production; do
@@ -312,6 +313,7 @@ environment_variable_source() {
         GOOGLE_CLOSED_TEST_GROUP) echo "values.env:GOOGLE_CLOSED_TEST_GROUP" ;;
         TESTFLIGHT_EXTERNAL_GROUP) echo "values.env:TESTFLIGHT_EXTERNAL_GROUP" ;;
         EXPORT_COMPLIANCE_STATUS) echo "values.env:EXPORT_COMPLIANCE_STATUS" ;;
+        IOS_FRANCE_AVAILABLE) echo "values.env:IOS_FRANCE_AVAILABLE" ;;
         APP_REVIEW_CONTACT_NAME) echo "values.env:APP_REVIEW_CONTACT_NAME" ;;
         APP_REVIEW_EMAIL) echo "values.env:APP_REVIEW_EMAIL" ;;
         *) echo "values.env" ;;
@@ -371,6 +373,7 @@ verify_environment_variables() {
 
 expected_external_variables=(
     TESTFLIGHT_EXTERNAL_GROUP APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS
+    IOS_FRANCE_AVAILABLE
 )
 if [[ "$play_group_ready" == "true" ]]; then
     expected_external_variables+=(GOOGLE_CLOSED_TEST_GROUP)
@@ -378,8 +381,9 @@ fi
 verify_environment_variables mobile-external-beta "$external_variables" \
     "${expected_external_variables[@]}"
 verify_environment_variables mobile-production "$production_variables" \
-    APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS
-verify_environment_variables mobile-beta "$beta_variables" EXPORT_COMPLIANCE_STATUS
+    APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
+verify_environment_variables mobile-beta "$beta_variables" \
+    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
     if gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" >/dev/null 2>&1; then

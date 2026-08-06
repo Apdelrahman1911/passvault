@@ -102,7 +102,7 @@ required_values=(
     APP_REVIEW_EMAIL APP_REVIEW_PHONE GOOGLE_CLOUD_PROJECT_ID GOOGLE_CLOUD_PROJECT_NUMBER
     GITHUB_REPOSITORY GITHUB_DEPLOYMENT_APPROVER KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
     IOS_DISTRIBUTION_CERTIFICATE_PASSWORD TESTFLIGHT_EXTERNAL_GROUP
-    EXPORT_COMPLIANCE_STATUS
+    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
     RELEASE_NOTES_EN_FILE RELEASE_NOTES_AR_FILE PRIVACY_TEXT_EN_FILE PRIVACY_TEXT_AR_FILE
     ANDROID_UPLOAD_KEYSTORE_FILE IOS_DISTRIBUTION_CERTIFICATE_FILE
     IOS_PROVISIONING_PROFILE_FILE ASC_PRIVATE_KEY_FILE STORE_METADATA_EN_FILE
@@ -238,6 +238,44 @@ case "${EXPORT_COMPLIANCE_STATUS:-}" in
             "Use PENDING, EXEMPT_APPROVED, or NON_EXEMPT_APPROVED."
         ;;
 esac
+
+case "${IOS_FRANCE_AVAILABLE:-}" in
+    false)
+        record_result "IOS_FRANCE_AVAILABLE" "App Store availability gate" "Not uploaded" \
+            "values.env:IOS_FRANCE_AVAILABLE" "France explicitly excluded" \
+            "Reopen App Encryption Documentation before changing this value."
+        ;;
+    true)
+        if [[ "${EXPORT_COMPLIANCE_STATUS:-}" == "EXEMPT_APPROVED" ]]; then
+            fail_result "IOS_FRANCE_AVAILABLE" "App Store availability gate" "No" \
+                "values.env:IOS_FRANCE_AVAILABLE" \
+                "France cannot be enabled with the no-documentation determination" \
+                "Set France back to false or complete renewed compliance review before release."
+        else
+            record_result "IOS_FRANCE_AVAILABLE" "App Store availability gate" "Not uploaded" \
+                "values.env:IOS_FRANCE_AVAILABLE" "France enabled under a separate compliance state" \
+                "Verify the corresponding approved declaration before release."
+        fi
+        ;;
+    *)
+        fail_result "IOS_FRANCE_AVAILABLE" "App Store availability gate" "No" \
+            "values.env:IOS_FRANCE_AVAILABLE" "Invalid boolean" \
+            "Use exactly false while France is excluded, or true only after renewed approval."
+        ;;
+esac
+
+if [[ -n "${EXPORT_COMPLIANCE_STATUS:-}" && -n "${IOS_FRANCE_AVAILABLE:-}" ]]; then
+    if ! EXPORT_COMPLIANCE_STATUS="$EXPORT_COMPLIANCE_STATUS" \
+        IOS_FRANCE_AVAILABLE="$IOS_FRANCE_AVAILABLE" \
+        "$repository_root/scripts/validate-ios-export-compliance.sh" >/dev/null 2>&1; then
+        fail_result "iOS export policy" "Release configuration" "No" \
+            "values.env:EXPORT_COMPLIANCE_STATUS" "Status and France scope are inconsistent" \
+            "Keep France excluded for EXEMPT_APPROVED or complete renewed compliance review."
+    else
+        record_result "iOS export policy" "Release configuration" "Ready" \
+            "values.env:EXPORT_COMPLIANCE_STATUS" "Status and France scope agree" "None"
+    fi
+fi
 
 resolve_private_file() {
     local relative_path="$1"

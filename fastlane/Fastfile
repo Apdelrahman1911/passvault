@@ -56,7 +56,11 @@ end
 
 def export_compliance_uses_non_exempt_encryption
   case required_env("EXPORT_COMPLIANCE_STATUS")
-  when "EXEMPT_APPROVED" then false
+  when "EXEMPT_APPROVED"
+    UI.user_error!(
+      "France must remain excluded while EXEMPT_APPROVED is used",
+    ) unless required_env("IOS_FRANCE_AVAILABLE") == "false"
+    false
   when "NON_EXEMPT_APPROVED" then true
   else
     UI.user_error!("An approved export-compliance status is required")
@@ -154,6 +158,7 @@ platform :ios do
   lane :production_candidate do
     UI.user_error!("Production approval is missing") unless ENV["PASSVAULT_PRODUCTION_APPROVED"] == "I_APPROVE_PRODUCTION"
     UI.user_error!("Required store testing is not confirmed") unless ENV["PASSVAULT_REQUIRED_TESTING_CONFIRMED"] == "I_CONFIRM_REQUIRED_TESTING_COMPLETED"
+    export_compliance_uses_non_exempt_encryption
     upload_to_app_store(
       api_key: asc_api_key,
       app_identifier: required_env("IOS_BUNDLE_ID"),

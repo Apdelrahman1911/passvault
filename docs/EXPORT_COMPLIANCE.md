@@ -2,31 +2,36 @@
 
 Last technical review: 6 August 2026
 
-This document is engineering evidence, not legal advice, an export
-classification, or an approval. `EXPORT_COMPLIANCE_STATUS` must remain
-`PENDING` until the publisher completes Apple’s questionnaire and obtains any
-required US or French documentation.
+This document is engineering evidence, not legal advice or an independent
+export classification. The publisher completed App Store Connect’s encryption
+questionnaire with France excluded. Apple reported that no export-compliance
+documentation is required for that distribution scope. The repository status
+is therefore `EXEMPT_APPROVED`, and `IOS_FRANCE_AVAILABLE` must remain `false`.
 
 ## Audited release artifact
 
-The audit used Xcode 26.5 to create an unsigned, generic-device Release archive
-with signing explicitly disabled. It is not an uploadable App Store artifact.
+The audit used Xcode 26.5 to create and locally verify a signed generic-device
+Release archive. The archive was built in a temporary keychain and deleted after
+inspection; it was not uploaded to App Store Connect.
 
 | Property | Audited value |
 | --- | --- |
 | Bundle ID | `com.passvault.ios` |
 | Version / build | `1.0.1` / `1000001` |
 | Target | arm64, minimum iOS 18.5 |
-| Executable SHA-256 | `51b51dd0d2b36ee5d52345ec606c2ab595266b7d2f55f6dcf125484c516b8166` |
-| dSYM UUID | `3CB7F6A1-20D9-3728-AB04-A024A65856A3` |
-| `ITSAppUsesNonExemptEncryption` | Unset; no determination has been asserted |
+| Executable SHA-256 | `62fef5e36eba8eaa889f034de7405267c1489af28bffdf275ad9110f08772435` |
+| dSYM UUID | `9403D74D-9C2F-34F5-AF4B-8BE55A8B3219` |
+| `ITSAppUsesNonExemptEncryption` | `false`; no documentation is required for the approved non-France scope |
+| `ITSEncryptionExportComplianceCode` | Absent; Apple issued and required no code |
+| Signing certificate SHA-256 | `9A:5B:6D:B6:2B:D4:E4:7B:AF:63:30:A9:D4:4D:CB:63:36:35:38:A5:D3:84:AD:AB:32:CC:7E:28:B5:E7:2A:F2` |
+| Embedded provisioning profile | `6493524d-9e4f-46a2-b256-0802afeba3e0`; matches the signing certificate |
 
 The Release framework was built with
 `./gradlew :shared:linkReleaseFrameworkIosArm64`. Its static archive SHA-256
 was `abc22d7f8d92c40b29c3103e6eace9a6cea27009203854d3af0ba7730f46d014`.
-The app and dSYM UUIDs match. dSYM symbols confirm that the final executable
-contains XChaCha20-Poly1305, Argon2 password hashing, BLAKE2b, libsodium random
-generation, and Okio HMAC/SHA implementations.
+Fourteen matching Release dSYM symbols confirm that the final application
+contains XChaCha20-Poly1305, Argon2 password hashing, BLAKE2b, and libsodium
+random-generation implementations; Okio HMAC/SHA remains linked for TOTP.
 
 ## Cryptographic software in the app
 
@@ -69,7 +74,7 @@ Encryption is therefore **not limited to encryption supplied by Apple’s
 operating system** and is not limited to authentication. It covers secure local
 storage and user-created encrypted backups.
 
-## Apple and France decision gate
+## Current App Store Connect determination
 
 [Apple’s export-compliance overview](https://developer.apple.com/help/app-store-connect/manage-app-information/overview-of-export-compliance)
 requires a determination when an app uses, accesses, contains, implements, or
@@ -78,52 +83,37 @@ incorporates encryption. Apple’s
 states that an app using an industry-standard algorithm outside Apple’s OS
 requires a French encryption declaration when distributed in France.
 
-The read-only App Store Connect API check on 6 August 2026 found that territory
-availability has not yet been configured. A planned worldwide release includes
-France, so its questionnaire answer would be **Yes** unless the Account Holder
-explicitly changes the plan. Do not silently exclude France. Apple currently
-documents a French encryption declaration for an industry-standard algorithm
-implemented outside its operating system when the app is distributed in France.
+The App Store Connect questionnaire was completed on 6 August 2026 using the
+actual behavior above and with France excluded from distribution. Apple’s result
+was **no documentation required**. No French declaration, US document, Apple
+approval code, or other file was requested or issued.
 
-## Questionnaire evidence and recommended technical answers
+`ITSAppUsesNonExemptEncryption = false` records that documentation is not
+required for the approved distribution configuration. It does **not** mean that
+PassVault has no encryption: PassVault continues to include and use standard
+third-party cryptography through libsodium and Okio.
 
-Apple does not publish the full dialog wording in its help page. The durable
-App Store Connect declaration fields and the answers supported by this audit are:
+The durable questionnaire facts are:
 
-| Declaration question/field | Evidence-based answer |
+| Declaration fact | Recorded result |
 | --- | --- |
-| Uses or contains encryption (`usesEncryption`) | **Yes** |
-| Encryption limited to Apple OS, HTTPS, or US/Canada-only distribution | **No** |
-| Contains proprietary/non-standard cryptography (`containsProprietaryCryptography`) | **No** |
-| Implements standard cryptography outside Apple OS / contains third-party cryptography (`containsThirdPartyCryptography`) | **Yes** — libsodium and Okio |
-| Available on the French App Store (`availableOnFrenchStore`) | **Yes** for the planned worldwide release; App Store availability is currently unconfigured |
-| Qualifies for a Category 5 Part 2 or other documentation exemption (`exempt`) | **Account Holder/legal decision required**; do not infer approval from this audit |
+| PassVault uses encryption | **Yes** |
+| Contains proprietary/non-standard cryptography | **No** |
+| Contains standard third-party cryptography | **Yes** — libsodium and Okio |
+| France included in distribution | **No** |
+| Documentation required for the selected scope | **No**, per App Store Connect |
 
-PassVault may be eligible for a US mass-market or other standard-cryptography
-exemption, but encryption is a core secure-storage feature rather than only OS
-crypto, HTTPS, authentication, or signatures. The engineering record therefore
-does not establish Apple’s no-document exemption. Based on Apple’s current
-documentation table, the expected App Store Connect upload for the verified
-standard, non-proprietary implementation and French availability is a **French
-encryption declaration**, not a US CCATS. Separate US classification or
-self-classification duties remain for the Account Holder/legal reviewer to
-determine. Apple reviews submissions case by case and provides an approval code
-after accepting required documentation.
+## France release constraint
 
-Before TestFlight external testing or App Store submission:
+The no-documentation result is valid only while France remains excluded. The
+release configuration must keep `IOS_FRANCE_AVAILABLE=false`; release tooling
+also checks App Store Connect’s actual territory availability before any iOS
+store upload. France must never be enabled silently.
 
-1. Complete App Store Connect’s encryption questionnaire using the behavior
-   documented here.
-2. Confirm the worldwide plan (which includes France), prepare the French
-   declaration, and upload it when App Store Connect requests it.
-3. Determine the applicable US export classification or exemption with
-   qualified advice where needed.
-4. Wait for the declaration state to become approved and retain Apple’s code,
-   then set
-   `EXPORT_COMPLIANCE_STATUS` to the corresponding approved release value.
-5. Only after approval, set the correct `ITSAppUsesNonExemptEncryption` value
-   (and any Apple-provided compliance key) in the Release Info.plist.
-
-Apple evaluates documentation case by case and recommends completing it before
-TestFlight App Review or App Review. See
+Before enabling France later, the Account Holder or authorized release manager
+must reopen **Apps → PassVault → App Information → App Encryption
+Documentation**, complete a new review for French availability, upload the
+French encryption declaration if Apple requests it, and record the renewed
+result. Only then may the availability constraint, compliance status, plist
+flag, or an Apple-issued code be changed. See
 [Apple’s submission procedure](https://developer.apple.com/help/app-store-connect/manage-app-information/determine-and-upload-app-encryption-documentation/).

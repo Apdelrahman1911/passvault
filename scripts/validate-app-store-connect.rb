@@ -9,28 +9,61 @@ require "uri"
 repository_root = File.expand_path("..", __dir__)
 private_root = File.join(repository_root, "release", "private")
 values_path = File.join(private_root, "values.env")
-
-unless File.file?(values_path) && !File.symlink?(values_path)
-  warn "The private values file is missing or unsafe."
-  exit 1
-end
-
 values = {}
-File.foreach(values_path, chomp: true) do |line|
-  next if line.empty? || line.lstrip.start_with?("#")
-  key, value = line.split("=", 2)
-  next unless key&.match?(/\A[A-Z][A-Z0-9_]*\z/) && !value.nil?
-  values[key] = value.delete_suffix("\r")
+environment_source = ENV["PASSVAULT_ASC_CONFIGURATION_SOURCE"] == "environment"
+
+if environment_source
+  %w[
+    ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY_FILE IOS_BUNDLE_ID APP_STORE_APP_ID
+    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
+  ].each { |name| values[name] = ENV[name].to_s }
+  runtime_root = ENV["PRIVATE_RUNTIME"].to_s
+  if runtime_root.empty?
+    warn "The private runtime path is missing."
+    exit 1
+  end
+  private_root = File.expand_path(runtime_root)
+else
+  unless File.file?(values_path) && !File.symlink?(values_path)
+    warn "The private values file is missing or unsafe."
+    exit 1
+  end
+
+  File.foreach(values_path, chomp: true) do |line|
+    next if line.empty? || line.lstrip.start_with?("#")
+    key, value = line.split("=", 2)
+    next unless key&.match?(/\A[A-Z][A-Z0-9_]*\z/) && !value.nil?
+    values[key] = value.delete_suffix("\r")
+  end
 end
 
-required = %w[ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY_FILE IOS_BUNDLE_ID APP_STORE_APP_ID]
+required = %w[
+  ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY_FILE IOS_BUNDLE_ID APP_STORE_APP_ID
+  EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
+]
 if required.any? { |name| values[name].to_s.empty? }
   warn "App Store Connect validation inputs are incomplete."
   exit 1
 end
 
+unless %w[EXEMPT_APPROVED NON_EXEMPT_APPROVED].include?(values.fetch("EXPORT_COMPLIANCE_STATUS"))
+  warn "An approved export-compliance status is required."
+  exit 1
+end
+
+unless %w[true false].include?(values.fetch("IOS_FRANCE_AVAILABLE"))
+  warn "IOS_FRANCE_AVAILABLE must be exactly true or false."
+  exit 1
+end
+
+if values.fetch("EXPORT_COMPLIANCE_STATUS") == "EXEMPT_APPROVED" &&
+   values.fetch("IOS_FRANCE_AVAILABLE") != "false"
+  warn "EXEMPT_APPROVED requires France to remain excluded."
+  exit 1
+end
+
 private_key_path = File.expand_path(values.fetch("ASC_PRIVATE_KEY_FILE"), repository_root)
-unless private_key_path.start_with?(private_root + File::SEPARATOR) &&
+unless !private_root.empty? && private_key_path.start_with?(private_root + File::SEPARATOR) &&
        File.file?(private_key_path) && !File.symlink?(private_key_path)
   warn "The App Store Connect private-key path is unsafe or missing."
   exit 1
@@ -110,6 +143,7 @@ begin
     read_timeout: 30,
   ) { |http| http.request(availability_request) }
 
+  france_available = nil
   if availability_response.is_a?(Net::HTTPSuccess)
     availability = JSON.parse(availability_response.body).fetch("data")
     availability_id = availability.fetch("id")
@@ -132,18 +166,33 @@ begin
       france = territories.find do |territory|
         territory.dig("relationships", "territory", "data", "id") == "FRA"
       end
-      france_status = france&.dig("attributes", "available") == true ? "enabled" : "disabled"
+      france_available = france&.dig("attributes", "available") == true
+      france_status = france_available ? "enabled" : "disabled"
       puts "App Store France availability: #{france_status}."
       puts "Automatic availability in new territories: " \
         "#{availability.dig('attributes', 'availableInNewTerritories') == true ? 'enabled' : 'disabled'}."
     else
       warn "App Store territory availability could not be read (HTTP #{territories_response.code})."
+      exit 1
     end
   elsif availability_response.code == "404"
+    france_available = false
     puts "App Store territory availability: not configured."
   else
     warn "App Store availability could not be read (HTTP #{availability_response.code})."
+    exit 1
   end
+
+  expected_france_available = values.fetch("IOS_FRANCE_AVAILABLE") == "true"
+  if france_available != expected_france_available
+    warn "App Store France availability does not match the approved release configuration."
+    exit 1
+  end
+  if values.fetch("EXPORT_COMPLIANCE_STATUS") == "EXEMPT_APPROVED" && france_available
+    warn "France is enabled while the no-documentation determination is configured."
+    exit 1
+  end
+  puts "App Store France availability matches the approved release constraint."
 
   declarations_uri = URI(
     "https://api.appstoreconnect.apple.com/v1/apps/#{expected_id}/appEncryptionDeclarations",

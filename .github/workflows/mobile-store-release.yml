@@ -251,6 +251,7 @@ jobs:
           IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
           IOS_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
           STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
           TESTERS_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
           COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -261,9 +262,11 @@ jobs:
           install -d -m 700 "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$PRIVATE_RUNTIME/export"
           printf '%s' "$IOS_CERTIFICATE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
           printf '%s' "$IOS_PROFILE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/profile.mobileprovision"
+          printf '%s' "$ASC_PRIVATE_KEY_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/app-store-connect-key.p8"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
             openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/store-input"
-          chmod 600 "$PRIVATE_RUNTIME/distribution.p12" "$PRIVATE_RUNTIME/profile.mobileprovision"
+          chmod 600 "$PRIVATE_RUNTIME/distribution.p12" "$PRIVATE_RUNTIME/profile.mobileprovision" \
+            "$PRIVATE_RUNTIME/app-store-connect-key.p8"
 
           KEYCHAIN_PASSWORD="$(openssl rand -hex 32)"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -296,12 +299,27 @@ jobs:
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
           echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$PRIVATE_RUNTIME/testflight-testers.csv" >> "$GITHUB_ENV"
 
+      - name: Enforce App Store France availability constraint
+        env:
+          PASSVAULT_ASC_CONFIGURATION_SOURCE: environment
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+        run: |
+          export ASC_PRIVATE_KEY_FILE="$PRIVATE_RUNTIME/app-store-connect-key.p8"
+          ruby scripts/validate-app-store-connect.rb
+
       - name: Archive and export signed IPA
         env:
           TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
           BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
           EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
         run: |
+          ./scripts/validate-ios-export-compliance.sh
           case "$EXPORT_COMPLIANCE_STATUS" in
             EXEMPT_APPROVED) ENCRYPTION_FLAG=NO ;;
             NON_EXEMPT_APPROVED) ENCRYPTION_FLAG=YES ;;
@@ -322,6 +340,9 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
             INFOPLIST_KEY_ITSAppUsesNonExemptEncryption="$ENCRYPTION_FLAG"
+
+          APP_PLIST="$ARCHIVE_PATH/Products/Applications/PassVault.app/Info.plist"
+          ./scripts/validate-ios-export-compliance.sh "$APP_PLIST"
 
           /usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c 'Add :signingStyle string manual' "$PRIVATE_RUNTIME/ExportOptions.plist"
@@ -350,6 +371,7 @@ jobs:
           PROJECT_URL: ${{ vars.PROJECT_URL }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
           EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
           TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
           APP_REVIEW_CONTACT_NAME: ${{ vars.APP_REVIEW_CONTACT_NAME }}
           APP_REVIEW_EMAIL: ${{ vars.APP_REVIEW_EMAIL }}

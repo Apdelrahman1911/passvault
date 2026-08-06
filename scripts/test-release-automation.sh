@@ -142,8 +142,53 @@ if ./scripts/validate-mobile-tester-files.sh testflight "$placeholder_testflight
     exit 1
 fi
 
+exempt_plist="$temporary_root/exempt-Info.plist"
+non_exempt_plist="$temporary_root/non-exempt-Info.plist"
+invented_code_plist="$temporary_root/invented-code-Info.plist"
+printf '%s\n' \
+    '<?xml version="1.0" encoding="UTF-8"?>' \
+    '<plist version="1.0"><dict>' \
+    '<key>ITSAppUsesNonExemptEncryption</key><false/>' \
+    '</dict></plist>' > "$exempt_plist"
+printf '%s\n' \
+    '<?xml version="1.0" encoding="UTF-8"?>' \
+    '<plist version="1.0"><dict>' \
+    '<key>ITSAppUsesNonExemptEncryption</key><true/>' \
+    '</dict></plist>' > "$non_exempt_plist"
+printf '%s\n' \
+    '<?xml version="1.0" encoding="UTF-8"?>' \
+    '<plist version="1.0"><dict>' \
+    '<key>ITSAppUsesNonExemptEncryption</key><false/>' \
+    '<key>ITSEncryptionExportComplianceCode</key><string>invented-code</string>' \
+    '</dict></plist>' > "$invented_code_plist"
+
+EXPORT_COMPLIANCE_STATUS=EXEMPT_APPROVED IOS_FRANCE_AVAILABLE=false \
+    ./scripts/validate-ios-export-compliance.sh "$exempt_plist" >/dev/null
+EXPORT_COMPLIANCE_STATUS=NON_EXEMPT_APPROVED IOS_FRANCE_AVAILABLE=true \
+    ./scripts/validate-ios-export-compliance.sh "$non_exempt_plist" >/dev/null
+if EXPORT_COMPLIANCE_STATUS=EXEMPT_APPROVED IOS_FRANCE_AVAILABLE=true \
+    ./scripts/validate-ios-export-compliance.sh "$exempt_plist" >/dev/null 2>&1; then
+    echo "France was allowed with the no-documentation export status." >&2
+    exit 1
+fi
+if EXPORT_COMPLIANCE_STATUS=EXEMPT_APPROVED IOS_FRANCE_AVAILABLE=false \
+    ./scripts/validate-ios-export-compliance.sh "$non_exempt_plist" >/dev/null 2>&1; then
+    echo "A non-exempt plist was accepted for the approved no-documentation state." >&2
+    exit 1
+fi
+if EXPORT_COMPLIANCE_STATUS=EXEMPT_APPROVED IOS_FRANCE_AVAILABLE=false \
+    ./scripts/validate-ios-export-compliance.sh "$invented_code_plist" >/dev/null 2>&1; then
+    echo "An invented Apple export-compliance code was accepted." >&2
+    exit 1
+fi
+
 grep -Fq 'I_CONFIRM_REQUIRED_TESTING_COMPLETED' .github/workflows/mobile-store-release.yml
 grep -Fq 'I_CONFIRM_REQUIRED_TESTING_COMPLETED' fastlane/Fastfile
 grep -Fq 'lane :open do' fastlane/Fastfile
+grep -Fq 'INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj
+grep -Fq 'Enforce App Store France availability constraint' \
+    .github/workflows/mobile-store-release.yml
+grep -Fq 'IOS_FRANCE_AVAILABLE' fastlane/Fastfile
 
 echo "Release automation tests passed."
