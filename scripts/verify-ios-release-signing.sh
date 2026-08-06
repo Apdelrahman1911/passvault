@@ -211,6 +211,34 @@ archive_team="$(codesign -dv --verbose=4 "$app_path" 2>&1 |
 [[ "$archive_team" == "$APPLE_TEAM_ID" ]]
 app_sha256="$(shasum -a 256 "$app_path/PassVault" | awk '{ print $1 }')"
 
+export_options="$verification_root/ExportOptions.plist"
+export_path="$verification_root/export"
+/usr/bin/plutil -create xml1 "$export_options"
+/usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' "$export_options"
+/usr/libexec/PlistBuddy -c 'Add :signingStyle string manual' "$export_options"
+/usr/libexec/PlistBuddy -c "Add :teamID string $APPLE_TEAM_ID" "$export_options"
+/usr/libexec/PlistBuddy -c 'Add :manageAppVersionAndBuildNumber bool false' "$export_options"
+/usr/libexec/PlistBuddy -c 'Add :uploadSymbols bool true' "$export_options"
+/usr/libexec/PlistBuddy -c 'Add :provisioningProfiles dict' "$export_options"
+/usr/libexec/PlistBuddy -c "Add :provisioningProfiles:$IOS_BUNDLE_ID string $profile_name" \
+    "$export_options"
+if ! xcodebuild -exportArchive \
+    -archivePath "$archive_path" \
+    -exportPath "$export_path" \
+    -exportOptionsPlist "$export_options" \
+    >> "$build_log" 2>&1; then
+    tail -n 80 "$build_log" >&2
+    exit 1
+fi
+ipa_path="$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
+if [[ -z "$ipa_path" ]]; then
+    echo "The signed archive did not export an IPA." >&2
+    exit 1
+fi
+./scripts/verify-ios-exported-artifact.sh \
+    "$archive_path" "$ipa_path" "$APPLE_TEAM_ID" "$IOS_BUNDLE_ID" "$profile_uuid" \
+    "$version_name" "$version_code" "$link_map"
+
 printf 'SIGNED_IOS_ARCHIVE=PASS\n'
 printf 'P12_SHA1=%s\n' "$expected_sha1"
 printf 'P12_SHA256=%s\n' "$expected_sha256"

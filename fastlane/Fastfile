@@ -67,6 +67,24 @@ def export_compliance_uses_non_exempt_encryption
   end
 end
 
+def beta_review_notes
+  <<~NOTES.strip
+    PassVault is a local-first password manager. It has no PassVault account, server login, advertising, paid features, purchases, or PassVault-operated cloud synchronization.
+
+    Access instructions: launch the app, choose to create a new vault, and enter any new master password created only for review. No supplied credentials or network account are required.
+
+    Suggested review flow:
+    1. Create and unlock a local vault.
+    2. Add, edit, move, and delete a test credential and secure note.
+    3. Add a TOTP secret to a test credential and observe the rotating one-time code.
+    4. If Face ID is enrolled on the device, enable optional biometric unlock in Settings, lock the vault, and unlock it biometrically. The master password remains the vault credential; biometric protection uses the platform facility.
+    5. In Settings > Backup, export an encrypted backup using a new review-only backup password. Import that file and password to validate restore.
+    6. Delete individual test items in the app. Removing PassVault from the device deletes its local app sandbox and vault.
+
+    Vault records and backup payloads are encrypted by the app on device. PassVault does not require or contact an application server. Please use fictional review data only.
+  NOTES
+end
+
 def testflight_upload(external:)
   ipa = required_env("IOS_IPA_PATH")
   UI.user_error!("Signed iOS IPA is missing") unless File.file?(ipa)
@@ -77,11 +95,15 @@ def testflight_upload(external:)
     apple_id: required_env("APP_STORE_APP_ID"),
     ipa: ipa,
     distribute_external: external,
-    notify_external_testers: external,
+    notify_external_testers: external && ENV["TESTFLIGHT_NOTIFY_AFTER_APPROVAL"] == "true",
+    submit_beta_review: external,
     skip_waiting_for_build_processing: false,
+    app_version: required_env("APP_VERSION"),
+    build_number: required_env("BUILD_NUMBER"),
     uses_non_exempt_encryption: export_compliance_uses_non_exempt_encryption,
     beta_app_feedback_email: required_env("SUPPORT_EMAIL"),
     beta_app_description: read_store_file("testflight/en-US/description.txt"),
+    changelog: read_store_file("testflight/en-US/what_to_test.txt"),
     localized_app_info: {
       "en-US" => {
         feedback_email: required_env("SUPPORT_EMAIL"),
@@ -104,7 +126,15 @@ def testflight_upload(external:)
 
   if external
     options[:groups] = [required_env("TESTFLIGHT_EXTERNAL_GROUP")]
-    options[:testers_file_path] = required_env("TESTFLIGHT_EXTERNAL_TESTERS_FILE")
+    distribution_mode = required_env("TESTFLIGHT_DISTRIBUTION_MODE")
+    unless %w[public-link email-list].include?(distribution_mode)
+      UI.user_error!("TESTFLIGHT_DISTRIBUTION_MODE must be public-link or email-list")
+    end
+    if distribution_mode == "email-list"
+      tester_file = required_env("TESTFLIGHT_EXTERNAL_TESTERS_FILE")
+      UI.user_error!("The external tester CSV is missing") unless File.file?(tester_file)
+      options[:testers_file_path] = tester_file
+    end
     options[:demo_account_required] = false
     contact_name = required_env("APP_REVIEW_CONTACT_NAME").split(/\s+/, 2)
     options[:beta_app_review_info] = {
@@ -112,7 +142,7 @@ def testflight_upload(external:)
       contact_last_name: contact_name.last || "Release",
       contact_email: required_env("APP_REVIEW_EMAIL"),
       contact_phone: required_env("APP_REVIEW_PHONE"),
-      notes: "PassVault is local-first and has no server-side login. Create a new vault to review the app.",
+      notes: beta_review_notes,
     }
   end
 

@@ -21,6 +21,14 @@ on:
           - internal
           - external
           - production
+      testflight_distribution:
+        description: External iOS invitation method; public links do not import tester identities
+        required: true
+        default: public-link
+        type: choice
+        options:
+          - public-link
+          - email-list
       production_confirmation:
         description: Type I_APPROVE_PRODUCTION only for a production upload
         required: false
@@ -285,7 +293,8 @@ jobs:
           cp "$PRIVATE_RUNTIME/profile.mobileprovision" \
             "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
 
-          if [[ "${{ inputs.channel }}" == "external" ]]; then
+          if [[ "${{ inputs.channel }}" == "external" &&
+                "${{ inputs.testflight_distribution }}" == "email-list" ]]; then
             printf '%s' "$TESTERS_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/testflight-testers.csv"
             chmod 600 "$PRIVATE_RUNTIME/testflight-testers.csv"
             ./scripts/validate-mobile-tester-files.sh \
@@ -297,7 +306,9 @@ jobs:
           echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
-          echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$PRIVATE_RUNTIME/testflight-testers.csv" >> "$GITHUB_ENV"
+          if [[ -f "$PRIVATE_RUNTIME/testflight-testers.csv" ]]; then
+            echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$PRIVATE_RUNTIME/testflight-testers.csv" >> "$GITHUB_ENV"
+          fi
 
       - name: Enforce App Store France availability constraint
         env:
@@ -339,14 +350,18 @@ jobs:
             CURRENT_PROJECT_VERSION="${{ needs.validate.outputs.version_code }}" \
             CODE_SIGN_STYLE=Manual \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
-            INFOPLIST_KEY_ITSAppUsesNonExemptEncryption="$ENCRYPTION_FLAG"
+            INFOPLIST_KEY_ITSAppUsesNonExemptEncryption="$ENCRYPTION_FLAG" \
+            LD_GENERATE_MAP_FILE=YES \
+            LD_MAP_FILE_PATH="$PRIVATE_RUNTIME/PassVault-LinkMap.txt"
 
           APP_PLIST="$ARCHIVE_PATH/Products/Applications/PassVault.app/Info.plist"
           ./scripts/validate-ios-export-compliance.sh "$APP_PLIST"
 
+          /usr/bin/plutil -create xml1 "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c 'Add :method string app-store-connect' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c 'Add :signingStyle string manual' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c "Add :teamID string $TEAM_ID" "$PRIVATE_RUNTIME/ExportOptions.plist"
+          /usr/libexec/PlistBuddy -c 'Add :manageAppVersionAndBuildNumber bool false' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c 'Add :uploadSymbols bool true' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c 'Add :provisioningProfiles dict' "$PRIVATE_RUNTIME/ExportOptions.plist"
           /usr/libexec/PlistBuddy -c "Add :provisioningProfiles:$BUNDLE_ID string $PROFILE_NAME" \
@@ -357,6 +372,10 @@ jobs:
             -exportOptionsPlist "$PRIVATE_RUNTIME/ExportOptions.plist"
           IPA_PATH="$(find "$PRIVATE_RUNTIME/export" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
           test -n "$IPA_PATH"
+          ./scripts/verify-ios-exported-artifact.sh \
+            "$ARCHIVE_PATH" "$IPA_PATH" "$TEAM_ID" "$BUNDLE_ID" "$PROFILE_UUID" \
+            "${{ needs.validate.outputs.version }}" "${{ needs.validate.outputs.version_code }}" \
+            "$PRIVATE_RUNTIME/PassVault-LinkMap.txt"
           echo "IOS_IPA_PATH=$IPA_PATH" >> "$GITHUB_ENV"
 
       - name: Upload to App Store Connect
@@ -367,12 +386,15 @@ jobs:
           APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
           IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
           APP_VERSION: ${{ needs.validate.outputs.version }}
+          BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
           SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
           PROJECT_URL: ${{ vars.PROJECT_URL }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
           EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
           IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
           TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
+          TESTFLIGHT_DISTRIBUTION_MODE: ${{ inputs.testflight_distribution }}
+          TESTFLIGHT_NOTIFY_AFTER_APPROVAL: 'true'
           APP_REVIEW_CONTACT_NAME: ${{ vars.APP_REVIEW_CONTACT_NAME }}
           APP_REVIEW_EMAIL: ${{ vars.APP_REVIEW_EMAIL }}
           APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}

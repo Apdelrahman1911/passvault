@@ -302,6 +302,14 @@ if grep -Eiq '(edits/.*/commit|edits/.*:commit|/bundles|upload_to_play_store|fas
     exit 1
 fi
 ruby -c scripts/configure-app-store-connect-beta.rb >/dev/null
+ruby -c scripts/manage-testflight-public-link.rb >/dev/null
+ruby -c fastlane/Fastfile >/dev/null
+bash -n scripts/verify-ios-exported-artifact.sh
+grep -Fq 'TESTFLIGHT_DISTRIBUTION_MODE' fastlane/Fastfile
+grep -Fq 'public-link' .github/workflows/mobile-store-release.yml
+grep -Fq 'Beta App Review is not approved' scripts/manage-testflight-public-link.rb
+grep -Fq 'publicLinkLimitEnabled: true' scripts/manage-testflight-public-link.rb
+grep -Fq 'verify-ios-exported-artifact.sh' .github/workflows/mobile-store-release.yml
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
 grep -Fq 'EXPORT_COMPLIANCE_CODE=ABSENT' scripts/verify-ios-release-signing.sh
 

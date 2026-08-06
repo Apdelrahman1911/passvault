@@ -35,9 +35,12 @@ certificate, private key, key pairing, or provisioning-profile match separately.
 
 Tester fields and files may stay empty during infrastructure and signing
 preparation. They are reported as deferred and are never uploaded. External
-TestFlight and Play closed-test jobs validate their own real tester file before
-any store call. Play open testing has no enabled upload path. Production still
-requires completed store testing, protected review, and both confirmation phrases.
+TestFlight may use the explicit `public-link` mode without importing tester
+identities; its link stays disabled until Apple approves the beta build. The
+`email-list` mode and Play closed testing validate their own real tester file
+before any store call. Play open testing has no enabled upload path. Production
+still requires completed store testing, protected review, and both confirmation
+phrases.
 
 ## 2. Complete first-time Apple setup
 
@@ -51,8 +54,9 @@ requires completed store testing, protected review, and both confirmation phrase
    its issuer/key IDs. The `.p8` can only be downloaded once.
 5. When tester setup resumes, add the emails in `TESTFLIGHT_INTERNAL_EMAILS` as App Store Connect users and
    internal testers. Create the external group named by
-   `TESTFLIGHT_EXTERNAL_GROUP`; the workflow imports the external CSV into it.
-   Empty groups can be prepared without assigning users or builds by running
+   `TESTFLIGHT_EXTERNAL_GROUP`. The external workflow either uses a public link
+   without email identities or imports the validated external CSV when
+   `email-list` is selected. Empty groups can be prepared without assigning users or builds by running
    `ruby scripts/configure-app-store-connect-beta.rb --apply` after validation.
 6. Review `docs/EXPORT_COMPLIANCE.md`, then complete App Privacy, age rating,
    category, pricing/availability, encryption, review contact, and legal
@@ -178,8 +182,11 @@ offline operation.
 From GitHub Actions, dispatch **Mobile Store Release** on `main`:
 
 - `internal`: Play internal and/or internal TestFlight.
-- `external`: Play closed beta and/or external TestFlight review; protected and
-  disabled until the selected platform has a real, validated tester list.
+- `external`: Play closed beta and/or external TestFlight review. Play closed
+  beta and TestFlight `email-list` require a real validated tester list.
+  TestFlight `public-link` submits the build without importing identities; run
+  `scripts/manage-testflight-public-link.rb --enable-public-link` only after the
+  build reports `APPROVED`, which creates a limited open invitation link.
 - `production`: requires protected approval and both exact confirmations. Android
   releases to production. iOS uploads metadata, screenshots, and a candidate but
   does not submit for review or release it.
