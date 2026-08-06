@@ -144,6 +144,39 @@ begin
   else
     warn "App Store availability could not be read (HTTP #{availability_response.code})."
   end
+
+  declarations_uri = URI(
+    "https://api.appstoreconnect.apple.com/v1/apps/#{expected_id}/appEncryptionDeclarations",
+  )
+  declarations_uri.query = URI.encode_www_form(
+    "fields[appEncryptionDeclarations]" =>
+      "usesEncryption,exempt,containsProprietaryCryptography,containsThirdPartyCryptography," \
+      "availableOnFrenchStore,appEncryptionDeclarationState",
+    "limit" => "200",
+  )
+  declarations_request = Net::HTTP::Get.new(declarations_uri)
+  declarations_request["Authorization"] = "Bearer #{token}"
+  declarations_response = Net::HTTP.start(
+    declarations_uri.host,
+    declarations_uri.port,
+    use_ssl: true,
+    open_timeout: 15,
+    read_timeout: 30,
+  ) { |http| http.request(declarations_request) }
+
+  if declarations_response.is_a?(Net::HTTPSuccess)
+    declarations = JSON.parse(declarations_response.body).fetch("data", [])
+    if declarations.empty?
+      puts "App Store encryption declarations: none configured."
+    else
+      states = declarations.filter_map { |item| item.dig("attributes", "appEncryptionDeclarationState") }.uniq
+      puts "App Store encryption declarations: #{declarations.length}; states: #{states.join(', ')}."
+    end
+  elsif declarations_response.code == "404"
+    puts "App Store encryption declarations: none configured."
+  else
+    warn "App Store encryption declarations could not be read (HTTP #{declarations_response.code})."
+  end
 rescue OpenSSL::PKey::PKeyError, OpenSSL::ASN1::ASN1Error, JSON::ParserError, KeyError, RuntimeError => error
   warn "App Store Connect validation failed: #{error.class}."
   exit 1
