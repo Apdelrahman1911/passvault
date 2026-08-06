@@ -294,6 +294,7 @@ grep -Fq 'PLAY_EDIT_DELETED=PASS' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_PRODUCTION_ACCESS_ELIGIBILITY_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_EMAIL_LIST_TESTERS_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_EMPTY_EDIT_VALIDATION=' scripts/verify-play-oidc-access.sh
+grep -Fq 'PLAY_LISTING_LOCALES=' scripts/verify-play-oidc-access.sh
 grep -Fq 'api_request DELETE' scripts/verify-play-oidc-access.sh
 if grep -Eiq '(edits/.*/commit|edits/.*:commit|/bundles|upload_to_play_store|fastlane|api_request (PATCH|PUT))' \
     scripts/verify-play-oidc-access.sh .github/workflows/play-access-check.yml; then

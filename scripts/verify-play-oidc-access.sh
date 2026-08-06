@@ -121,6 +121,7 @@ fi
 production_track_visible="$(jq -r 'any(.tracks[]?; .track == "production")' "$tracks_response")"
 track_count="$(jq -r '.tracks | length' "$tracks_response")"
 listing_count="$(jq -r '.listings | length' "$listings_response")"
+listing_locales="$(jq -r '[.listings[]?.language] | sort | join(",")' "$listings_response")"
 track_names="$(jq -r '[.tracks[]?.track] | sort | join(",")' "$tracks_response")"
 release_count="$(jq -r '[.tracks[]?.releases[]?] | length' "$tracks_response")"
 default_language="$(jq -r '.defaultLanguage // "UNSET"' "$details_response")"
@@ -181,7 +182,7 @@ track_country_count() {
         "$api_root/edits/$edit_id/countryAvailability/$track" "$response_file" || true)"
     if [[ "$status_code" == "200" ]]; then
         jq -r '.countries | length' "$response_file"
-    elif [[ "$status_code" == "400" || "$status_code" == "404" ]]; then
+    elif [[ "$status_code" == "204" || "$status_code" == "400" || "$status_code" == "404" ]]; then
         echo "NOT_CONFIGURED"
     else
         safe_api_error "Country availability ($track)" "$status_code" "$response_file"
@@ -240,6 +241,7 @@ for audited_track in internal alpha beta production; do
     echo "PLAY_${audited_track^^}_RELEASE_COUNT=$(track_release_count "$audited_track")"
 done
 echo "PLAY_LISTING_COUNT=$listing_count"
+echo "PLAY_LISTING_LOCALES=$listing_locales"
 echo "PLAY_PRODUCTION_TRACK_VISIBLE=$production_track_visible"
 echo "PLAY_DEFAULT_LANGUAGE=$default_language"
 echo "PLAY_CONTACT_EMAIL_CONFIGURED=$contact_email_configured"

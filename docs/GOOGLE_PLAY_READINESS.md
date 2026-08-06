@@ -73,12 +73,19 @@ free app cannot later be changed to paid without creating a new package.
   reviewer approval, `I_APPROVE_PRODUCTION`, and
   `I_CONFIRM_REQUIRED_TESTING_COMPLETED`.
 
+The no-upload API inventory on 6 August 2026 found all four tracks, zero releases,
+and a valid empty edit that was deleted. The current Play record still defaults
+to `en-GB`; its single existing listing is not either approved target locale.
+The `en-US` and `ar` listings, app contact fields, Play graphics, and country
+availability are not configured. No internal or closed Google Group is attached.
+
 ## Remaining Console-only actions
 
 1. In **Policy and programs → App content**, complete and save every declaration
    above. Content rating and target audience require publisher attestations.
-2. In **Grow users → Store presence → Main store listing**, review the approved
-   English and Arabic copy, contact website, support email, and privacy URL.
+2. In **Grow users → Store presence → Main store listing**, change the default
+   language from `en-GB` to `en-US`, add the approved `en-US` and `ar` copy, and
+   set the approved contact website, support email, and privacy URL.
 3. Supply and review the missing public graphics listed in
    `release/store-assets/README.md`; use only fictional vault data.
 4. In **Test and release → Setup → App integrity → App signing**, confirm Play App
