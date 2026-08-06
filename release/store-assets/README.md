@@ -19,6 +19,12 @@ ios/
   ar-SA/01.png
 ```
 
+The Android icons and text-free feature graphics are derived from the approved
+in-app PassVault artwork and may be reused for both locales. They pass the PNG,
+dimension, and alpha-mode checks. The remaining screenshots must be captured
+from the actual application with fictional data; do not replace them with a UI
+mockup.
+
 Use 1320 × 2868 portrait screenshots for the current iPhone 6.9-inch capture
 target. The validator also accepts Apple's other current 6.9-inch dimensions.
 Name screenshots in their intended display order (`01-vault.png`,

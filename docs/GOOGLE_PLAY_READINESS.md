@@ -86,8 +86,10 @@ availability are not configured. No internal or closed Google Group is attached.
 2. In **Grow users → Store presence → Main store listing**, change the default
    language from `en-GB` to `en-US`, add the approved `en-US` and `ar` copy, and
    set the approved contact website, support email, and privacy URL.
-3. Supply and review the missing public graphics listed in
-   `release/store-assets/README.md`; use only fictional vault data.
+3. Capture and review four English and four Arabic phone screenshots as listed
+   in `release/store-assets/README.md`; use only fictional vault data. The
+   approved 512 × 512 icons and text-free 1024 × 500 feature graphics are already
+   present and pass the local format/dimension checks.
 4. In **Test and release → Setup → App integrity → App signing**, confirm Play App
    Signing is active and that the registered upload certificate matches
    `7D:4D:11:20:B1:D1:9F:5B:B9:42:E0:6C:60:0F:2B:64:81:E5:E6:82:47:52:23:FA:4E:7D:C7:B2:7C:DB:10:37`.
