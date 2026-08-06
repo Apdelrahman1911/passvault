@@ -46,6 +46,8 @@ requires completed store testing, protected review, and both confirmation phrase
 5. When tester setup resumes, add the emails in `TESTFLIGHT_INTERNAL_EMAILS` as App Store Connect users and
    internal testers. Create the external group named by
    `TESTFLIGHT_EXTERNAL_GROUP`; the workflow imports the external CSV into it.
+   Empty groups can be prepared without assigning users or builds by running
+   `ruby scripts/configure-app-store-connect-beta.rb --apply` after validation.
 6. Review `docs/EXPORT_COMPLIANCE.md`, then complete App Privacy, age rating,
    category, pricing/availability, encryption, review contact, and legal
    declarations. The completed encryption questionnaire reported that no
@@ -64,9 +66,11 @@ requires completed store testing, protected review, and both confirmation phrase
 2. Complete App content, Data safety, content rating, target audience, app
    access (no remote account is required), ads, category, contact, and privacy
    policy sections.
-3. When closed testing resumes, create the Google Group in `GOOGLE_CLOSED_TEST_GROUP`, add the validated Play
-   tester list, and attach the group to the closed `beta` track. Google Play's
-   Publishing API does not manage Google Group membership.
+3. When closed testing resumes, prefer a Play Console email list populated from
+   the validated `play-closed-testers.txt` file and attach it to the closed
+   `beta` track. `GOOGLE_CLOSED_TEST_GROUP` is optional legacy configuration;
+   use it only if the approved test plan specifically chooses a Google Group.
+   The Publishing API does not manage email-list or group membership.
 4. Your existing account can skip the newer personal-account tester eligibility
    gate per the supplied account status; the internal/closed tracks remain the
    release-quality gates.
@@ -93,6 +97,9 @@ then requires the exact repository name before mutation. It configures
 `mobile-beta`, `mobile-external-beta`, and `mobile-production`, streams secrets
 through standard input, and verifies every name/scope through GitHub. External
 beta and production require the configured reviewer and only allow `main`.
+The local `GITHUB_DEPLOYMENT_APPROVER` input is stored in GitHub as
+`DEPLOYMENT_APPROVER` because GitHub reserves variable names beginning with
+`GITHUB_`; reviewer protection is configured from the same verified local value.
 
 The Google script creates repository/environment-restricted Workload Identity
 providers and separate beta/production service accounts. It never creates a JSON
@@ -111,6 +118,7 @@ graphics documented in `release/store-assets/README.md`.
 ./gradlew :shared:compileKotlinIosSimulatorArm64
 ./gradlew :app-android:assembleStandardDebug
 ./scripts/test-release-automation.sh
+./scripts/verify-ios-release-signing.sh  # macOS; builds a temporary signed archive
 ./scripts/validate-mobile-store-assets.rb   # required for production
 ```
 

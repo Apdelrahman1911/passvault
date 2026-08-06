@@ -128,13 +128,13 @@ for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL; do
 done
 
 if [[ -z "${GOOGLE_CLOSED_TEST_GROUP:-}" ]]; then
-    record_result "GOOGLE_CLOSED_TEST_GROUP" "Play closed testing" "Deferred" \
-        "values.env:GOOGLE_CLOSED_TEST_GROUP" "Intentionally empty" \
-        "Add the real Google Group email before Play closed testing."
+    record_result "GOOGLE_CLOSED_TEST_GROUP" "Optional Play group configuration" "Not required" \
+        "values.env:GOOGLE_CLOSED_TEST_GROUP" "Intentionally empty; email-list testing is preferred" \
+        "None; populate play-closed-testers.txt before Play closed testing."
 elif [[ ! "$GOOGLE_CLOSED_TEST_GROUP" =~ $email_pattern || "$GOOGLE_CLOSED_TEST_GROUP" == *.invalid ]]; then
     record_result "GOOGLE_CLOSED_TEST_GROUP" "Play closed testing" "Deferred" \
         "values.env:GOOGLE_CLOSED_TEST_GROUP" "Not a real group email" \
-        "Replace it before Play closed testing; it will not be uploaded."
+        "Clear it or replace it only if a Google Group is deliberately selected; it will not be uploaded."
 else
     record_result "GOOGLE_CLOSED_TEST_GROUP" "Play closed testing" "Ready" \
         "values.env:GOOGLE_CLOSED_TEST_GROUP" "Valid group email format" "None"
@@ -499,7 +499,7 @@ if [[ -n "$ios_profile" ]]; then
         else
             record_result "iOS provisioning profile" "Signing validation" "Ready" \
                 "${IOS_PROVISIONING_PROFILE_FILE}" \
-                "Valid App Store profile; UUID $profile_uuid; Team $profile_team; bundle ${IOS_BUNDLE_ID}; get-task-allow false; beta-reports-active true; no provisioned devices; created $profile_creation; expires $profile_expiration; matching SHA-256 ${ios_fingerprint:-unavailable}" \
+                "Valid App Store profile; UUID $profile_uuid; Team $profile_team; bundle ${IOS_BUNDLE_ID}; get-task-allow false; beta-reports-active true; no provisioned devices; created $profile_creation; expires $profile_expiration; matching certificates: $embedded_fingerprint_summary" \
                 "None"
         fi
     else
@@ -552,6 +552,23 @@ validate_text_file STORE_METADATA_EN_FILE English
 validate_text_file STORE_METADATA_AR_FILE Arabic
 validate_text_file STORE_DESCRIPTION_EN_FILE English
 validate_text_file STORE_DESCRIPTION_AR_FILE Arabic
+
+prepared_metadata="$temporary_root/prepared-mobile-store-metadata"
+if COPYRIGHT_HOLDER="${COPYRIGHT_HOLDER_EN:-}" \
+    SUPPORT_URL="${SUPPORT_URL:-}" \
+    PROJECT_URL="${PROJECT_URL:-}" \
+    PRIVACY_POLICY_URL="${PRIVACY_POLICY_URL:-}" \
+    "$repository_root/scripts/prepare-mobile-store-metadata.sh" \
+        "$private_root" "$prepared_metadata" 1 >/dev/null 2>&1; then
+    record_result "Bilingual store metadata" "Metadata validation" "Ready" \
+        "release/private metadata files" \
+        "All required fields are present and within App Store and Google Play character limits" "None"
+else
+    fail_result "Bilingual store metadata" "Metadata validation" "No" \
+        "release/private metadata files" \
+        "A required field is missing, empty, or exceeds its store character limit" \
+        "Correct the eight bilingual metadata files, then rerun validation."
+fi
 
 optional_private_file() {
     local variable_name="$1"

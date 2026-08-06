@@ -112,6 +112,29 @@ test -s "$mobile_output/ios/ar-SA/release_notes.txt"
 test -s "$mobile_output/ios/en-US/support_url.txt"
 test -s "$mobile_output/ios/copyright.txt"
 test -s "$mobile_output/testflight/en-US/what_to_test.txt"
+
+overlong_description_fixture="$temporary_root/overlong-description"
+cp -R "$mobile_fixture" "$overlong_description_fixture"
+awk 'BEGIN { print "# Description"; print ""; for (i = 0; i < 4001; i++) printf "x"; print "" }' \
+    > "$overlong_description_fixture/store-description-en.md"
+if ./scripts/prepare-mobile-store-metadata.sh \
+    "$overlong_description_fixture" "$temporary_root/overlong-description-output" "123" \
+    >/dev/null 2>&1; then
+    echo "An overlong store description was accepted." >&2
+    exit 1
+fi
+
+overlong_notes_fixture="$temporary_root/overlong-notes"
+cp -R "$mobile_fixture" "$overlong_notes_fixture"
+awk 'BEGIN { print "# Release notes"; print ""; for (i = 0; i < 501; i++) printf "x"; print "" }' \
+    > "$overlong_notes_fixture/release-notes-en.md"
+if ./scripts/prepare-mobile-store-metadata.sh \
+    "$overlong_notes_fixture" "$temporary_root/overlong-notes-output" "123" \
+    >/dev/null 2>&1; then
+    echo "Google Play release notes over 500 characters were accepted." >&2
+    exit 1
+fi
+
 ./scripts/validate-mobile-tester-files.sh \
     testflight "$mobile_fixture/testflight-external-testers.csv" >/dev/null
 ./scripts/validate-mobile-tester-files.sh \
@@ -190,5 +213,9 @@ grep -Fq 'INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;' \
 grep -Fq 'Enforce App Store France availability constraint' \
     .github/workflows/mobile-store-release.yml
 grep -Fq 'IOS_FRANCE_AVAILABLE' fastlane/Fastfile
+bash -n scripts/verify-ios-release-signing.sh
+ruby -c scripts/configure-app-store-connect-beta.rb >/dev/null
+grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
+grep -Fq 'EXPORT_COMPLIANCE_CODE=ABSENT' scripts/verify-ios-release-signing.sh
 
 echo "Release automation tests passed."

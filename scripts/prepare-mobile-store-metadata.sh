@@ -71,6 +71,19 @@ write_field() {
     printf '%s\n' "$value" > "$target"
 }
 
+write_markdown_field() {
+    local source="$1"
+    local maximum="$2"
+    local target="$3"
+    local value
+    value="$(plain_markdown "$source")"
+    if [[ -z "$value" || ${#value} -gt $maximum ]]; then
+        echo "Store content for $(basename "$target") is empty or exceeds $maximum characters." >&2
+        exit 1
+    fi
+    printf '%s\n' "$value" > "$target"
+}
+
 mkdir -p \
     "$output_root/android/en-US/changelogs" "$output_root/android/ar/changelogs" \
     "$output_root/ios/en-US" "$output_root/ios/ar-SA" \
@@ -95,8 +108,10 @@ for locale_spec in "en:en-US:en-US" "ar:ar:ar-SA"; do
 
     write_field "$store_name" 30 "$output_root/android/$play_locale/title.txt"
     write_field "$play_short_description" 80 "$output_root/android/$play_locale/short_description.txt"
-    plain_markdown "$description_file" > "$output_root/android/$play_locale/full_description.txt"
-    plain_markdown "$notes_file" > "$output_root/android/$play_locale/changelogs/$version_code.txt"
+    write_markdown_field "$description_file" 4000 \
+        "$output_root/android/$play_locale/full_description.txt"
+    write_markdown_field "$notes_file" 500 \
+        "$output_root/android/$play_locale/changelogs/$version_code.txt"
 
     write_field "$store_name" 30 "$output_root/ios/$apple_locale/name.txt"
     write_field "$apple_subtitle" 30 "$output_root/ios/$apple_locale/subtitle.txt"
@@ -105,8 +120,8 @@ for locale_spec in "en:en-US:en-US" "ar:ar:ar-SA"; do
     write_field "$PROJECT_URL" 255 "$output_root/ios/$apple_locale/marketing_url.txt"
     write_field "$PRIVACY_POLICY_URL" 255 "$output_root/ios/$apple_locale/privacy_url.txt"
     write_field "$SUPPORT_URL" 255 "$output_root/ios/$apple_locale/support_url.txt"
-    plain_markdown "$description_file" > "$output_root/ios/$apple_locale/description.txt"
-    plain_markdown "$notes_file" > "$output_root/ios/$apple_locale/release_notes.txt"
+    write_markdown_field "$description_file" 4000 "$output_root/ios/$apple_locale/description.txt"
+    write_markdown_field "$notes_file" 4000 "$output_root/ios/$apple_locale/release_notes.txt"
 
     write_field "$beta_description" 4000 "$output_root/testflight/$apple_locale/description.txt"
     write_field "$what_to_test" 4000 "$output_root/testflight/$apple_locale/what_to_test.txt"

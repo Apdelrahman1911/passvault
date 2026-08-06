@@ -162,7 +162,7 @@ repo_variable_names=(
     COUNTRY_OR_JURISDICTION SUPPORT_EMAIL SECURITY_EMAIL PRIVACY_POLICY_URL SUPPORT_URL
     PROJECT_URL ANDROID_PACKAGE_NAME IOS_BUNDLE_ID APPLE_TEAM_ID APP_STORE_APP_ID
     APP_STORE_SKU ASC_ISSUER_ID ASC_KEY_ID GOOGLE_CLOUD_PROJECT_ID
-    GOOGLE_CLOUD_PROJECT_NUMBER GITHUB_DEPLOYMENT_APPROVER
+    GOOGLE_CLOUD_PROJECT_NUMBER DEPLOYMENT_APPROVER
 )
 repo_variable_sources=(
     PUBLISHER_NAME_EN PUBLISHER_NAME_AR COPYRIGHT_HOLDER_EN COPYRIGHT_HOLDER_AR
@@ -408,8 +408,9 @@ if [[ "$play_testers_ready" != "true" ]]; then
 fi
 if [[ "$play_group_ready" != "true" ]]; then
     append_github_row "GOOGLE_CLOSED_TEST_GROUP" "mobile-external-beta variable" \
-        "Deferred" "values.env:GOOGLE_CLOSED_TEST_GROUP" \
-        "No real Google Group email; not configured" "Add it before Play closed testing."
+        "Not required" "values.env:GOOGLE_CLOSED_TEST_GROUP" \
+        "Not configured; Play Console email-list testing is preferred" \
+        "None; populate the validated tester file before Play closed testing."
 fi
 append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual/deferred" \
     "values.env:TESTFLIGHT_INTERNAL_EMAILS" "Not stored in GitHub" \

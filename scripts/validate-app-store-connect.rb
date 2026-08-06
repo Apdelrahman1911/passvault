@@ -130,6 +130,119 @@ begin
 
   puts "App Store Connect API validation passed for the configured app identifiers."
 
+  tester_candidates = ENV.fetch(
+    "PASSVAULT_ASC_INTERNAL_TESTER_CANDIDATES",
+    values.fetch("TESTFLIGHT_INTERNAL_EMAILS", ""),
+  ).split(",").map(&:strip).reject(&:empty?).uniq
+  eligible_internal_roles = %w[ACCOUNT_HOLDER ADMIN APP_MANAGER DEVELOPER MARKETING].freeze
+
+  tester_candidates.each do |email|
+    unless email.match?(/\A[^\s@]+@[^\s@]+\.[^\s@]+\z/) && !email.end_with?(".invalid")
+      puts "Internal TestFlight candidate #{email}: not eligible (invalid email format)."
+      next
+    end
+
+    users_uri = URI("https://api.appstoreconnect.apple.com/v1/users")
+    users_uri.query = URI.encode_www_form(
+      "filter[username]" => email,
+      "fields[users]" => "username,roles,allAppsVisible",
+      "limit" => "1",
+    )
+    users_request = Net::HTTP::Get.new(users_uri)
+    users_request["Authorization"] = "Bearer #{token}"
+    users_response = Net::HTTP.start(
+      users_uri.host,
+      users_uri.port,
+      use_ssl: true,
+      open_timeout: 15,
+      read_timeout: 30,
+    ) { |http| http.request(users_request) }
+
+    unless users_response.is_a?(Net::HTTPSuccess)
+      puts "Internal TestFlight candidate #{email}: eligibility could not be verified " \
+        "(Users API HTTP #{users_response.code})."
+      next
+    end
+
+    user = JSON.parse(users_response.body).fetch("data", []).first
+    unless user
+      puts "Internal TestFlight candidate #{email}: not eligible (not an App Store Connect user)."
+      next
+    end
+
+    roles = Array(user.dig("attributes", "roles"))
+    role_eligible = !(roles & eligible_internal_roles).empty?
+    app_visible = user.dig("attributes", "allAppsVisible") == true
+
+    unless app_visible
+      apps_uri = URI(
+        "https://api.appstoreconnect.apple.com/v1/users/#{user.fetch('id')}/relationships/visibleApps",
+      )
+      apps_uri.query = URI.encode_www_form("limit" => "200")
+      apps_request = Net::HTTP::Get.new(apps_uri)
+      apps_request["Authorization"] = "Bearer #{token}"
+      apps_response = Net::HTTP.start(
+        apps_uri.host,
+        apps_uri.port,
+        use_ssl: true,
+        open_timeout: 15,
+        read_timeout: 30,
+      ) { |http| http.request(apps_request) }
+      if apps_response.is_a?(Net::HTTPSuccess)
+        visible_app_ids = JSON.parse(apps_response.body).fetch("data", []).map { |item| item["id"] }
+        app_visible = visible_app_ids.include?(expected_id)
+      else
+        puts "Internal TestFlight candidate #{email}: eligibility could not be verified " \
+          "(app-access API HTTP #{apps_response.code})."
+        next
+      end
+    end
+
+    if role_eligible && app_visible
+      puts "Internal TestFlight candidate #{email}: eligible App Store Connect user."
+    else
+      puts "Internal TestFlight candidate #{email}: not eligible " \
+        "(required role or PassVault app access is missing)."
+    end
+  end
+
+  external_group_name = values.fetch("TESTFLIGHT_EXTERNAL_GROUP", "").strip
+  unless external_group_name.empty?
+    groups_uri = URI("https://api.appstoreconnect.apple.com/v1/betaGroups")
+    groups_uri.query = URI.encode_www_form(
+      "filter[app]" => expected_id,
+      "filter[name]" => external_group_name,
+      "fields[betaGroups]" => "name,isInternalGroup,publicLinkEnabled",
+      "limit" => "10",
+    )
+    groups_request = Net::HTTP::Get.new(groups_uri)
+    groups_request["Authorization"] = "Bearer #{token}"
+    groups_response = Net::HTTP.start(
+      groups_uri.host,
+      groups_uri.port,
+      use_ssl: true,
+      open_timeout: 15,
+      read_timeout: 30,
+    ) { |http| http.request(groups_request) }
+
+    if groups_response.is_a?(Net::HTTPSuccess)
+      group = JSON.parse(groups_response.body).fetch("data", []).find do |candidate|
+        candidate.dig("attributes", "name") == external_group_name
+      end
+      if group.nil?
+        puts "External TestFlight group: not configured."
+      elsif group.dig("attributes", "isInternalGroup") == true
+        puts "External TestFlight group: invalid (configured name belongs to an internal group)."
+      elsif group.dig("attributes", "publicLinkEnabled") == true
+        puts "External TestFlight group: configured, but its public link is enabled."
+      else
+        puts "External TestFlight group: configured with no public link."
+      end
+    else
+      puts "External TestFlight group: could not be verified (HTTP #{groups_response.code})."
+    end
+  end
+
   availability_uri = URI(
     "https://api.appstoreconnect.apple.com/v1/apps/#{expected_id}/appAvailabilityV2",
   )
