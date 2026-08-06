@@ -52,6 +52,37 @@ load_values() {
 
 load_values
 
+private_tester_path() {
+    local relative_path="$1"
+    if [[ "$relative_path" != release/private/* || "$relative_path" == *".."* ]]; then
+        return 1
+    fi
+    printf '%s/%s' "$repository_root" "$relative_path"
+}
+
+testflight_testers_ready=false
+testflight_testers_path=""
+if testflight_testers_path="$(private_tester_path "${TESTFLIGHT_EXTERNAL_TESTERS_FILE:-}")" &&
+    "$repository_root/scripts/validate-mobile-tester-files.sh" testflight \
+        "$testflight_testers_path" >/dev/null 2>&1; then
+    testflight_testers_ready=true
+fi
+
+play_testers_ready=false
+play_testers_path=""
+if play_testers_path="$(private_tester_path "${PLAY_CLOSED_TESTERS_FILE:-}")" &&
+    "$repository_root/scripts/validate-mobile-tester-files.sh" play \
+        "$play_testers_path" >/dev/null 2>&1; then
+    play_testers_ready=true
+fi
+
+email_pattern='^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
+play_group_ready=false
+if [[ -n "${GOOGLE_CLOSED_TEST_GROUP:-}" && "$GOOGLE_CLOSED_TEST_GROUP" =~ $email_pattern &&
+    "$GOOGLE_CLOSED_TEST_GROUP" != *.invalid ]]; then
+    play_group_ready=true
+fi
+
 authenticated_account="$(gh api user --jq .login)"
 accessible_repository="$(gh repo view "${GITHUB_REPOSITORY:-}" --json nameWithOwner --jq .nameWithOwner)"
 
@@ -194,9 +225,13 @@ for environment_name in mobile-beta mobile-external-beta mobile-production; do
     set_metadata_archive_secret "$environment_name"
 done
 
-set_binary_secret TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 mobile-external-beta \
-    "$TESTFLIGHT_EXTERNAL_TESTERS_FILE"
-set_binary_secret PLAY_CLOSED_TESTERS_BASE64 mobile-external-beta "$PLAY_CLOSED_TESTERS_FILE"
+if [[ "$testflight_testers_ready" == "true" ]]; then
+    set_binary_secret TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 mobile-external-beta \
+        "$TESTFLIGHT_EXTERNAL_TESTERS_FILE"
+fi
+if [[ "$play_testers_ready" == "true" ]]; then
+    set_binary_secret PLAY_CLOSED_TESTERS_BASE64 mobile-external-beta "$PLAY_CLOSED_TESTERS_FILE"
+fi
 
 set_environment_variable() {
     local environment_name="$1"
@@ -207,7 +242,9 @@ set_environment_variable() {
             --repo "$GITHUB_REPOSITORY" >/dev/null
 }
 
-set_environment_variable mobile-external-beta GOOGLE_CLOSED_TEST_GROUP "$GOOGLE_CLOSED_TEST_GROUP"
+if [[ "$play_group_ready" == "true" ]]; then
+    set_environment_variable mobile-external-beta GOOGLE_CLOSED_TEST_GROUP "$GOOGLE_CLOSED_TEST_GROUP"
+fi
 set_environment_variable mobile-external-beta TESTFLIGHT_EXTERNAL_GROUP "$TESTFLIGHT_EXTERNAL_GROUP"
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
@@ -228,8 +265,13 @@ expected_shared_mobile_secrets=(
 expected_mobile_beta_secrets=("${expected_shared_mobile_secrets[@]}")
 expected_external_secrets=(
     "${expected_shared_mobile_secrets[@]}" APP_REVIEW_PHONE
-    TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64
 )
+if [[ "$testflight_testers_ready" == "true" ]]; then
+    expected_external_secrets+=(TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64)
+fi
+if [[ "$play_testers_ready" == "true" ]]; then
+    expected_external_secrets+=(PLAY_CLOSED_TESTERS_BASE64)
+fi
 expected_production_secrets=("${expected_shared_mobile_secrets[@]}" APP_REVIEW_PHONE)
 
 repository_variables="$(gh variable list --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
@@ -327,9 +369,14 @@ verify_environment_variables() {
     done
 }
 
+expected_external_variables=(
+    TESTFLIGHT_EXTERNAL_GROUP APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS
+)
+if [[ "$play_group_ready" == "true" ]]; then
+    expected_external_variables+=(GOOGLE_CLOSED_TEST_GROUP)
+fi
 verify_environment_variables mobile-external-beta "$external_variables" \
-    GOOGLE_CLOSED_TEST_GROUP TESTFLIGHT_EXTERNAL_GROUP \
-    APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS
+    "${expected_external_variables[@]}"
 verify_environment_variables mobile-production "$production_variables" \
     APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS
 verify_environment_variables mobile-beta "$beta_variables" EXPORT_COMPLIANCE_STATUS
@@ -345,9 +392,24 @@ for environment_name in mobile-beta mobile-external-beta mobile-production; do
     fi
 done
 
-append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual" \
-    "values.env:TESTFLIGHT_INTERNAL_EMAILS" "Validated locally; not stored in GitHub" \
-    "Add these addresses as App Store Connect users and internal testers."
+if [[ "$testflight_testers_ready" != "true" ]]; then
+    append_github_row "TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64" "mobile-external-beta secret" \
+        "Deferred" "release/private/testflight-external-testers.csv" \
+        "No real tester rows; not uploaded" "Add real testers before external TestFlight."
+fi
+if [[ "$play_testers_ready" != "true" ]]; then
+    append_github_row "PLAY_CLOSED_TESTERS_BASE64" "mobile-external-beta secret" \
+        "Deferred" "release/private/play-closed-testers.txt" \
+        "No real tester emails; not uploaded" "Add real testers before Play closed testing."
+fi
+if [[ "$play_group_ready" != "true" ]]; then
+    append_github_row "GOOGLE_CLOSED_TEST_GROUP" "mobile-external-beta variable" \
+        "Deferred" "values.env:GOOGLE_CLOSED_TEST_GROUP" \
+        "No real Google Group email; not configured" "Add it before Play closed testing."
+fi
+append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual/deferred" \
+    "values.env:TESTFLIGHT_INTERNAL_EMAILS" "Not stored in GitHub" \
+    "Add real App Store Connect users before assigning internal testers."
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
     custom_policy="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \

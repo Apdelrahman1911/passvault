@@ -25,6 +25,10 @@ on:
         description: Type I_APPROVE_PRODUCTION only for a production upload
         required: false
         type: string
+      testing_confirmation:
+        description: Type I_CONFIRM_REQUIRED_TESTING_COMPLETED only after required store testing is complete
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -67,6 +71,11 @@ jobs:
           if [[ "${{ inputs.channel }}" == "production" &&
                 "${{ inputs.production_confirmation }}" != "I_APPROVE_PRODUCTION" ]]; then
             echo "Production requires the exact confirmation I_APPROVE_PRODUCTION." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.channel }}" == "production" &&
+                "${{ inputs.testing_confirmation }}" != "I_CONFIRM_REQUIRED_TESTING_COMPLETED" ]]; then
+            echo "Production requires confirmation that all required store testing is complete." >&2
             exit 1
           fi
 
@@ -130,7 +139,6 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
-          TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
           PLAY_CLOSED_TESTERS_BASE64: ${{ secrets.PLAY_CLOSED_TESTERS_BASE64 }}
           COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
           SUPPORT_URL: ${{ vars.SUPPORT_URL }}
@@ -143,13 +151,10 @@ jobs:
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
             openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/store-input"
           if [[ "${{ inputs.channel }}" == "external" ]]; then
-            printf '%s' "$TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64" |
-              openssl base64 -d -A > "$PRIVATE_RUNTIME/testflight-testers.csv"
             printf '%s' "$PLAY_CLOSED_TESTERS_BASE64" |
               openssl base64 -d -A > "$PRIVATE_RUNTIME/play-testers.txt"
-            chmod 600 "$PRIVATE_RUNTIME/testflight-testers.csv" "$PRIVATE_RUNTIME/play-testers.txt"
-            ./scripts/validate-mobile-tester-files.sh \
-              "$PRIVATE_RUNTIME/testflight-testers.csv" "$PRIVATE_RUNTIME/play-testers.txt"
+            chmod 600 "$PRIVATE_RUNTIME/play-testers.txt"
+            ./scripts/validate-mobile-tester-files.sh play "$PRIVATE_RUNTIME/play-testers.txt"
           fi
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
@@ -195,6 +200,7 @@ jobs:
         env:
           ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
           PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
+          PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
           UPLOAD_STORE_ASSETS: ${{ inputs.channel == 'production' }}
         run: |
           case "${{ inputs.channel }}" in
@@ -279,6 +285,8 @@ jobs:
           if [[ "${{ inputs.channel }}" == "external" ]]; then
             printf '%s' "$TESTERS_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/testflight-testers.csv"
             chmod 600 "$PRIVATE_RUNTIME/testflight-testers.csv"
+            ./scripts/validate-mobile-tester-files.sh \
+              testflight "$PRIVATE_RUNTIME/testflight-testers.csv"
           fi
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
@@ -347,6 +355,7 @@ jobs:
           APP_REVIEW_EMAIL: ${{ vars.APP_REVIEW_EMAIL }}
           APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}
           PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
+          PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
         run: |
           case "${{ inputs.channel }}" in
             internal) bundle exec fastlane ios internal ;;

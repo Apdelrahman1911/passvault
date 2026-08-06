@@ -96,6 +96,54 @@ begin
   end
 
   puts "App Store Connect API validation passed for the configured app identifiers."
+
+  availability_uri = URI(
+    "https://api.appstoreconnect.apple.com/v1/apps/#{expected_id}/appAvailabilityV2",
+  )
+  availability_request = Net::HTTP::Get.new(availability_uri)
+  availability_request["Authorization"] = "Bearer #{token}"
+  availability_response = Net::HTTP.start(
+    availability_uri.host,
+    availability_uri.port,
+    use_ssl: true,
+    open_timeout: 15,
+    read_timeout: 30,
+  ) { |http| http.request(availability_request) }
+
+  if availability_response.is_a?(Net::HTTPSuccess)
+    availability = JSON.parse(availability_response.body).fetch("data")
+    availability_id = availability.fetch("id")
+    territories_uri = URI(
+      "https://api.appstoreconnect.apple.com/v2/appAvailabilities/#{availability_id}/territoryAvailabilities",
+    )
+    territories_uri.query = URI.encode_www_form("limit" => "200")
+    territories_request = Net::HTTP::Get.new(territories_uri)
+    territories_request["Authorization"] = "Bearer #{token}"
+    territories_response = Net::HTTP.start(
+      territories_uri.host,
+      territories_uri.port,
+      use_ssl: true,
+      open_timeout: 15,
+      read_timeout: 30,
+    ) { |http| http.request(territories_request) }
+
+    if territories_response.is_a?(Net::HTTPSuccess)
+      territories = JSON.parse(territories_response.body).fetch("data", [])
+      france = territories.find do |territory|
+        territory.dig("relationships", "territory", "data", "id") == "FRA"
+      end
+      france_status = france&.dig("attributes", "available") == true ? "enabled" : "disabled"
+      puts "App Store France availability: #{france_status}."
+      puts "Automatic availability in new territories: " \
+        "#{availability.dig('attributes', 'availableInNewTerritories') == true ? 'enabled' : 'disabled'}."
+    else
+      warn "App Store territory availability could not be read (HTTP #{territories_response.code})."
+    end
+  elsif availability_response.code == "404"
+    puts "App Store territory availability: not configured."
+  else
+    warn "App Store availability could not be read (HTTP #{availability_response.code})."
+  end
 rescue OpenSSL::PKey::PKeyError, OpenSSL::ASN1::ASN1Error, JSON::ParserError, KeyError, RuntimeError => error
   warn "App Store Connect validation failed: #{error.class}."
   exit 1

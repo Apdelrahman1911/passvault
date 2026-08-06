@@ -3,8 +3,8 @@
 The repository supports Android internal/closed/production uploads and iOS
 internal TestFlight, external TestFlight, and App Store review-candidate uploads.
 It never publishes iOS automatically. Android production requires both the
-`mobile-production` approval and the exact dispatch confirmation
-`I_APPROVE_PRODUCTION`.
+`mobile-production` approval plus the exact dispatch confirmations
+`I_APPROVE_PRODUCTION` and `I_CONFIRM_REQUIRED_TESTING_COMPLETED`.
 
 The current Kotlin/Compose iOS framework includes a native dependency built for
 iOS 18.5, so the Xcode host intentionally declares iOS 18.5 as its minimum.
@@ -14,7 +14,7 @@ revalidating every linked object before release.
 ## 1. Complete the local private intake
 
 Read `release/private/README.md`, fill `release/private/values.env`, replace all
-metadata/tester placeholders, and add the four named files under
+metadata placeholders, and add the four named files under
 `release/private/files/`. Keep the directory after setup as an encrypted offline
 backup. It is ignored by Git and must remain untracked.
 
@@ -24,8 +24,14 @@ backup. It is ignored by Git and must remain untracked.
 
 Validation checks the JKS alias/passwords and pinned SHA-256 certificate, the
 P12 private key/certificate/team, the provisioning profile team/bundle, the P8,
-IDs, URLs, tester emails, bilingual copy, and export-compliance decision. The
+IDs, URLs, any supplied tester emails, bilingual copy, and export-compliance decision. The
 ignored report contains names and validation results only.
+
+Tester fields and files may stay empty during infrastructure and signing
+preparation. They are reported as deferred and are never uploaded. External
+TestFlight and Play closed-test jobs validate their own real tester file before
+any store call. Play open testing has no enabled upload path. Production still
+requires completed store testing, protected review, and both confirmation phrases.
 
 ## 2. Complete first-time Apple setup
 
@@ -37,14 +43,16 @@ ignored report contains names and validation results only.
    then export/copy them using the exact private filenames.
 4. Create a Team App Store Connect API key with the App Manager role and record
    its issuer/key IDs. The `.p8` can only be downloaded once.
-5. Add the emails in `TESTFLIGHT_INTERNAL_EMAILS` as App Store Connect users and
+5. When tester setup resumes, add the emails in `TESTFLIGHT_INTERNAL_EMAILS` as App Store Connect users and
    internal testers. Create the external group named by
    `TESTFLIGHT_EXTERNAL_GROUP`; the workflow imports the external CSV into it.
 6. Review `docs/EXPORT_COMPLIANCE.md`, then complete App Privacy, age rating,
    category, pricing/availability, encryption, review contact, and legal
-   declarations. France is not approved for the current plan; keep it
-   unselected until the required export review and any French declaration are
-   complete. Publish the approved bilingual privacy text at
+   declarations. App Store availability is not configured yet; the planned
+   worldwide release includes France. Keep export status `PENDING` until the
+   Account Holder or legal reviewer completes the
+   questionnaire and any documentation Apple requests. Do not silently exclude
+   France or claim an exemption. Publish the approved bilingual privacy text at
    `PRIVACY_POLICY_URL` before configuration.
 
 ## 3. Complete first-time Google Play setup
@@ -55,7 +63,7 @@ ignored report contains names and validation results only.
 2. Complete App content, Data safety, content rating, target audience, app
    access (no remote account is required), ads, category, contact, and privacy
    policy sections.
-3. Create the Google Group in `GOOGLE_CLOSED_TEST_GROUP`, add the validated Play
+3. When closed testing resumes, create the Google Group in `GOOGLE_CLOSED_TEST_GROUP`, add the validated Play
    tester list, and attach the group to the closed `beta` track. Google Play's
    Publishing API does not manage Google Group membership.
 4. Your existing account can skip the newer personal-account tester eligibility
@@ -115,8 +123,9 @@ offline operation.
 From GitHub Actions, dispatch **Mobile Store Release** on `main`:
 
 - `internal`: Play internal and/or internal TestFlight.
-- `external`: Play closed beta and/or external TestFlight review; protected.
-- `production`: requires protected approval and the exact confirmation. Android
+- `external`: Play closed beta and/or external TestFlight review; protected and
+  disabled until the selected platform has a real, validated tester list.
+- `production`: requires protected approval and both exact confirmations. Android
   releases to production. iOS uploads metadata, screenshots, and a candidate but
   does not submit for review or release it.
 

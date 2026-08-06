@@ -78,21 +78,48 @@ incorporates encryption. Apple’s
 states that an app using an industry-standard algorithm outside Apple’s OS
 requires a French encryption declaration when distributed in France.
 
-**France is not currently approved as part of the release plan.** No tracked
-availability selection or completed French declaration exists. Keep France
-unselected in App Store Connect until the publisher deliberately confirms the
-territory and any required declaration is accepted. Do not infer a US
-classification or exemption from this technical record.
+The read-only App Store Connect API check on 6 August 2026 found that territory
+availability has not yet been configured. A planned worldwide release includes
+France, so its questionnaire answer would be **Yes** unless the Account Holder
+explicitly changes the plan. Do not silently exclude France. Apple currently
+documents a French encryption declaration for an industry-standard algorithm
+implemented outside its operating system when the app is distributed in France.
+
+## Questionnaire evidence and recommended technical answers
+
+Apple does not publish the full dialog wording in its help page. The durable
+App Store Connect declaration fields and the answers supported by this audit are:
+
+| Declaration question/field | Evidence-based answer |
+| --- | --- |
+| Uses or contains encryption (`usesEncryption`) | **Yes** |
+| Encryption limited to Apple OS, HTTPS, or US/Canada-only distribution | **No** |
+| Contains proprietary/non-standard cryptography (`containsProprietaryCryptography`) | **No** |
+| Implements standard cryptography outside Apple OS / contains third-party cryptography (`containsThirdPartyCryptography`) | **Yes** — libsodium and Okio |
+| Available on the French App Store (`availableOnFrenchStore`) | **Yes** for the planned worldwide release; App Store availability is currently unconfigured |
+| Qualifies for a Category 5 Part 2 or other documentation exemption (`exempt`) | **Account Holder/legal decision required**; do not infer approval from this audit |
+
+PassVault may be eligible for a US mass-market or other standard-cryptography
+exemption, but encryption is a core secure-storage feature rather than only OS
+crypto, HTTPS, authentication, or signatures. The engineering record therefore
+does not establish Apple’s no-document exemption. Based on Apple’s current
+documentation table, the expected App Store Connect upload for the verified
+standard, non-proprietary implementation and French availability is a **French
+encryption declaration**, not a US CCATS. Separate US classification or
+self-classification duties remain for the Account Holder/legal reviewer to
+determine. Apple reviews submissions case by case and provides an approval code
+after accepting required documentation.
 
 Before TestFlight external testing or App Store submission:
 
 1. Complete App Store Connect’s encryption questionnaire using the behavior
    documented here.
-2. Decide whether France will be offered. If yes, prepare and submit the French
-   declaration before enabling that territory.
+2. Confirm the worldwide plan (which includes France), prepare the French
+   declaration, and upload it when App Store Connect requests it.
 3. Determine the applicable US export classification or exemption with
    qualified advice where needed.
-4. Store Apple’s approved status or key, then set
+4. Wait for the declaration state to become approved and retain Apple’s code,
+   then set
    `EXPORT_COMPLIANCE_STATUS` to the corresponding approved release value.
 5. Only after approval, set the correct `ITSAppUsesNonExemptEncryption` value
    (and any Apple-provided compliance key) in the Release Info.plist.

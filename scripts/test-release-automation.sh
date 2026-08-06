@@ -113,7 +113,37 @@ test -s "$mobile_output/ios/en-US/support_url.txt"
 test -s "$mobile_output/ios/copyright.txt"
 test -s "$mobile_output/testflight/en-US/what_to_test.txt"
 ./scripts/validate-mobile-tester-files.sh \
-    "$mobile_fixture/testflight-external-testers.csv" \
-    "$mobile_fixture/play-closed-testers.txt" >/dev/null
+    testflight "$mobile_fixture/testflight-external-testers.csv" >/dev/null
+./scripts/validate-mobile-tester-files.sh \
+    play "$mobile_fixture/play-closed-testers.txt" >/dev/null
+
+empty_testers="$temporary_root/empty-testers.txt"
+placeholder_testers="$temporary_root/placeholder-testers.txt"
+empty_testflight="$temporary_root/empty-testflight.csv"
+placeholder_testflight="$temporary_root/placeholder-testflight.csv"
+: > "$empty_testers"
+printf '%s\n' 'tester@example.invalid' > "$placeholder_testers"
+printf '%s\n' 'first_name,last_name,email' > "$empty_testflight"
+printf '%s\n' 'first_name,last_name,email' 'Test,User,tester@example.invalid' > "$placeholder_testflight"
+if ./scripts/validate-mobile-tester-files.sh play "$empty_testers" >/dev/null 2>&1; then
+    echo "An empty Play tester list was accepted for distribution." >&2
+    exit 1
+fi
+if ./scripts/validate-mobile-tester-files.sh play "$placeholder_testers" >/dev/null 2>&1; then
+    echo "A placeholder Play tester list was accepted for distribution." >&2
+    exit 1
+fi
+if ./scripts/validate-mobile-tester-files.sh testflight "$empty_testflight" >/dev/null 2>&1; then
+    echo "A header-only TestFlight tester list was accepted for distribution." >&2
+    exit 1
+fi
+if ./scripts/validate-mobile-tester-files.sh testflight "$placeholder_testflight" >/dev/null 2>&1; then
+    echo "A placeholder TestFlight tester list was accepted for distribution." >&2
+    exit 1
+fi
+
+grep -Fq 'I_CONFIRM_REQUIRED_TESTING_COMPLETED' .github/workflows/mobile-store-release.yml
+grep -Fq 'I_CONFIRM_REQUIRED_TESTING_COMPLETED' fastlane/Fastfile
+grep -Fq 'lane :open do' fastlane/Fastfile
 
 echo "Release automation tests passed."
