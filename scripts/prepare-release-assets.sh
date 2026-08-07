@@ -27,7 +27,7 @@ if find "$output_directory" -mindepth 1 -print -quit | grep -q .; then
     exit 1
 fi
 
-required_extensions=(apk aab exe msi dmg deb rpm)
+required_extensions=(exe msi dmg deb rpm)
 for extension in "${required_extensions[@]}"; do
     matches=()
     while IFS= read -r -d '' matched_path; do
@@ -59,7 +59,6 @@ Version: $version
 Commit: $commit_sha
 
 Signature policy:
-- Android APK and AAB: signed and checked against the pinned release certificate.
 - Windows launcher, EXE, and MSI: Authenticode-signed, timestamped, and trust-verified.
 - macOS DMG: Developer ID-signed, notarized, stapled, and Gatekeeper-verified.
 - Linux DEB and RPM: integrity-protected by this SHA-256 manifest; no platform signature.
@@ -80,4 +79,4 @@ EOF
     "${checksum_tool[@]}" --check SHA256SUMS.txt
 )
 
-echo "Prepared seven packages, a release manifest, and verified SHA-256 checksums."
+echo "Prepared five desktop packages, a release manifest, and verified SHA-256 checksums."

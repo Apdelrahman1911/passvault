@@ -138,7 +138,7 @@ input_directory="$temporary_root/input"
 output_directory="$temporary_root/output"
 mkdir -p "$input_directory"
 
-for extension in apk aab exe msi dmg deb rpm; do
+for extension in exe msi dmg deb rpm; do
     printf 'PassVault %s test artifact\n' "$extension" >"$input_directory/PassVault-$version.$extension"
 done
 
@@ -148,7 +148,7 @@ GITHUB_SHA=0123456789abcdef \
     "$output_directory" \
     "$version" >/dev/null
 
-if [[ "$(find "$output_directory" -maxdepth 1 -type f | wc -l | tr -d ' ')" != "9" ]]; then
+if [[ "$(find "$output_directory" -maxdepth 1 -type f | wc -l | tr -d ' ')" != "7" ]]; then
     echo "Unexpected number of consolidated release files." >&2
     exit 1
 fi

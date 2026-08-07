@@ -4,9 +4,10 @@ Mobile store uploads use the separately protected workflow documented in
 `docs/MOBILE_STORE_RELEASE.md`. This document describes the multi-platform
 GitHub Release packaging workflow.
 
-The release workflow is intentionally fail-closed. It will not build public
-artifacts until version metadata, publisher identity, contact details, and all
-platform signing credentials are configured.
+The desktop release workflow is intentionally fail-closed. It will not build
+public artifacts until version metadata, publisher identity, contact details,
+and the Windows and macOS signing credentials are configured. Android and iOS
+store releases remain in the separate mobile store workflow.
 
 ## GitHub repository variables
 
@@ -15,8 +16,8 @@ platform signing credentials are configured.
 - `SUPPORT_EMAIL`
 - `SECURITY_EMAIL`
 - `PRIVACY_POLICY_URL`
+- `SUPPORT_URL`
 - `PROJECT_URL`
-- `ANDROID_STORE_LISTING_URL` (optional until a listing exists)
 - `WINDOWS_TIMESTAMP_URL` (optional; an RFC 3161 service)
 - `MACOS_SIGNING_IDENTITY`
 - `MACOS_NOTARIZATION_TEAM_ID`
@@ -25,13 +26,6 @@ Placeholder domains, local URLs, invalid email addresses, and missing required
 values are rejected before any platform build begins.
 
 ## GitHub repository secrets
-
-Android:
-
-- `KEYSTORE_BASE64`
-- `KEYSTORE_PASSWORD`
-- `KEY_ALIAS`
-- `KEY_PASSWORD`
 
 Windows:
 
@@ -63,10 +57,11 @@ See `docs/RELEASE_SIGNING.md` for certificate requirements and rotation rules.
    ```
 
 4. The Release workflow verifies that the tag commit is contained in `main`,
-   builds all packages, verifies platform signatures, consolidates the outputs,
-   produces `SHA256SUMS.txt`, checks every checksum, and publishes one GitHub
-   Release. `ALPHA`, `BETA`, and `RC` channels publish as prereleases;
-   `RELEASE` publishes as the latest stable release.
+   builds the Windows EXE/MSI, macOS DMG, and Linux DEB/RPM packages, verifies
+   platform signatures, consolidates the outputs, produces `SHA256SUMS.txt`,
+   checks every checksum, and publishes one GitHub Release. `ALPHA`, `BETA`,
+   and `RC` channels publish as prereleases; `RELEASE` publishes as the latest
+   stable release.
 
 Manual workflow dispatch builds and verifies the requested repository version
 but does not create a tag or publish a release.
