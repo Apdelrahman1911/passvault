@@ -353,6 +353,7 @@ ruby -c scripts/create-candidate-manifest.rb >/dev/null
 ruby -c scripts/validate-candidate-manifest.rb >/dev/null
 bash -n scripts/check-play-track-build.sh
 grep -Fq 'track_promote_to' fastlane/Fastfile
+grep -Fq 'skip_upload_changelogs: false' fastlane/Fastfile
 grep -Fq 'distribute_only: true' fastlane/Fastfile
 grep -Fq 'app_platform: "ios"' fastlane/Fastfile
 grep -Fq 'skip_binary_upload: true' fastlane/Fastfile
@@ -370,6 +371,11 @@ grep -Fq 'Require Xcode 26 or newer' .github/workflows/mobile-store-release.yml
 grep -Fq 'gem "multi_json", ">= 1.15", "< 2.0"' Gemfile
 grep -Fq 'Validate Fastlane runtime' .github/workflows/mobile-store-release.yml
 grep -Fq 'Beta App Review is not approved' scripts/manage-testflight-public-link.rb
+grep -Fq 'Verify exact Google Play source build' .github/workflows/mobile-store-release.yml
+grep -Fq 'GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}' \
+    .github/workflows/mobile-store-release.yml
+grep -Fq 'Verify exact processed App Store Connect build' .github/workflows/mobile-store-release.yml
+grep -Fq "grep -Fqx 'PROCESSING_STATE=VALID'" .github/workflows/mobile-store-release.yml
 grep -Fq 'publicLinkLimitEnabled: true' scripts/manage-testflight-public-link.rb
 grep -Fq 'verify-ios-exported-artifact.sh' .github/workflows/mobile-store-release.yml
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh

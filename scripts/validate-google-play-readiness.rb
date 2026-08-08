@@ -108,7 +108,7 @@ fail_validation("security model no longer states the no-network boundary") unles
   security.include?("There is no server, account, network sync, telemetry, or analytics boundary")
 
 fail_validation("internal preparation must remain enabled") unless testing.fetch("internalTrackPrepared") == true
-fail_validation("closed testing must remain deferred") unless testing.fetch("closedTestingDeferred") == true
+fail_validation("closed testing must remain enabled") unless testing.fetch("closedTestingDeferred") == false
 fail_validation("open testing must remain disabled") unless testing.fetch("openTestingEnabled") == false
 fail_validation("production testing gate must remain enabled") unless testing.fetch("productionRequiresTestingConfirmation") == true
 fail_validation("production workflow testing phrase is missing") unless

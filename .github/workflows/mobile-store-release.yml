@@ -541,8 +541,7 @@ jobs:
           ./scripts/validate-mobile-tester-files.sh play "$testers"
           rm -f "$testers"
 
-      - name: Prepare production metadata and screenshots
-        if: inputs.channel == 'production'
+      - name: Prepare promotion metadata
         env:
           STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
           COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -560,12 +559,29 @@ jobs:
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
 
       - name: Authenticate to Google with OIDC
+        id: google-auth
         uses: google-github-actions/auth@v3
         with:
           project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
           workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
           create_credentials_file: true
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          access_token_lifetime: 600s
+
+      - name: Verify exact Google Play source build
+        env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+        run: |
+          if [[ "${{ inputs.channel }}" == "external" ]]; then
+            source_track=internal
+          else
+            source_track=beta
+          fi
+          ./scripts/check-play-track-build.sh \
+            "$source_track" "${{ needs.validate.outputs.version_code }}"
 
       - name: Promote exact Google Play build
         env:
@@ -582,7 +598,7 @@ jobs:
           fi
 
       - name: Remove promotion metadata
-        if: always() && inputs.channel == 'production'
+        if: always()
         run: |
           private_runtime="$RUNNER_TEMP/passvault-play-promotion"
           if [[ -d "$private_runtime" ]]; then
@@ -635,6 +651,36 @@ jobs:
             "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
             "${{ needs.validate.outputs.version_code }}"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
+
+      - name: Verify exact processed App Store Connect build
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
+          EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+        run: |
+          private_runtime="$RUNNER_TEMP/passvault-promotion"
+          key_path="$private_runtime/AuthKey.p8"
+          install -d -m 700 "$private_runtime"
+          printf '%s' "$ASC_PRIVATE_KEY_BASE64" | openssl base64 -d -A > "$key_path"
+          chmod 600 "$key_path"
+          status="$(
+            PRIVATE_RUNTIME="$private_runtime" \
+            PASSVAULT_ASC_CONFIGURATION_SOURCE=environment \
+            ASC_PRIVATE_KEY_FILE="$key_path" \
+            ./scripts/manage-testflight-public-link.rb --status \
+              --version "${{ needs.validate.outputs.version }}" \
+              --build-number "${{ needs.validate.outputs.version_code }}"
+          )"
+          printf '%s\n' "$status"
+          grep -Fqx 'MARKETING_VERSION=${{ needs.validate.outputs.version }}' <<< "$status"
+          grep -Fqx 'BUILD_NUMBER=${{ needs.validate.outputs.version_code }}' <<< "$status"
+          grep -Fqx 'PROCESSING_STATE=VALID' <<< "$status"
+          grep -Fqx 'USES_NON_EXEMPT_ENCRYPTION=false' <<< "$status"
 
       - name: Promote exact App Store Connect build
         env:
