@@ -348,6 +348,7 @@ if grep -Eiq '(edits/.*/commit|edits/.*:commit|/bundles|upload_to_play_store|fas
 fi
 ruby -c scripts/configure-app-store-connect-beta.rb >/dev/null
 ruby -c scripts/manage-testflight-public-link.rb >/dev/null
+ruby -c scripts/strip-opaque-png-alpha.rb >/dev/null
 ruby -c fastlane/Fastfile >/dev/null
 ruby -c scripts/create-candidate-manifest.rb >/dev/null
 ruby -c scripts/validate-candidate-manifest.rb >/dev/null
@@ -357,6 +358,11 @@ grep -Fq 'skip_upload_changelogs: false' fastlane/Fastfile
 grep -Fq 'distribute_only: true' fastlane/Fastfile
 grep -Fq 'app_platform: "ios"' fastlane/Fastfile
 grep -Fq 'skip_binary_upload: true' fastlane/Fastfile
+grep -Fq 'lane :update_store_assets do' fastlane/Fastfile
+grep -Fq 'reject_if_possible: true' fastlane/Fastfile
+grep -Fq 'overwrite_screenshots: true' fastlane/Fastfile
+grep -Fq 'PASSVAULT_REVIEW_WITHDRAWAL_APPROVED' fastlane/Fastfile
+grep -Fq 'I_APPROVE_REVIEW_WITHDRAWAL' .github/workflows/mobile-store-release.yml
 test "$(grep -Fc 'app_review_information: app_review_information' fastlane/Fastfile)" -eq 2
 grep -Fq 'APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}' \
     .github/workflows/mobile-store-release.yml
@@ -365,6 +371,20 @@ fastfile = File.read("fastlane/Fastfile", encoding: "UTF-8")
 upload_blocks = fastfile.scan(/upload_to_app_store\((.*?)^\s*\)/m).flatten
 abort("upload_to_app_store must not receive the unsupported apple_id option") if
   upload_blocks.any? { |block| block.include?("apple_id:") }
+
+asset_lane = fastfile[/lane :update_store_assets do(.*?)^  end/m, 1]
+abort("Missing the iOS store asset maintenance lane") unless asset_lane
+required_asset_options = [
+  "skip_binary_upload: true",
+  "skip_metadata: true",
+  "overwrite_screenshots: true",
+  "reject_if_possible: true",
+  "submit_for_review: false",
+  "automatic_release: false",
+]
+missing_options = required_asset_options.reject { |option| asset_lane.include?(option) }
+abort("Unsafe iOS store asset lane: missing #{missing_options.join(', ')}") unless missing_options.empty?
+abort("iOS store asset maintenance must not submit for review") if asset_lane.include?("submit_for_review: true")
 RUBY
 grep -Fq 'needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]' \
     .github/workflows/testing-release.yml

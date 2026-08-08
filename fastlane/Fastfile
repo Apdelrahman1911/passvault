@@ -305,4 +305,30 @@ platform :ios do
       precheck_include_in_app_purchases: false,
     )
   end
+
+  desc "Withdraw the production version from review and replace its store screenshots"
+  lane :update_store_assets do
+    unless ENV["PASSVAULT_PRODUCTION_APPROVED"] == "I_APPROVE_PRODUCTION"
+      UI.user_error!("Production approval is missing")
+    end
+    unless ENV["PASSVAULT_REVIEW_WITHDRAWAL_APPROVED"] == "I_APPROVE_REVIEW_WITHDRAWAL"
+      UI.user_error!("Review withdrawal approval is missing")
+    end
+    upload_to_app_store(
+      api_key: asc_api_key,
+      app_identifier: required_env("IOS_BUNDLE_ID"),
+      app_version: required_env("APP_VERSION"),
+      build_number: required_env("BUILD_NUMBER"),
+      screenshots_path: File.join(store_root, "ios-screenshots"),
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      overwrite_screenshots: true,
+      reject_if_possible: true,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+      precheck_include_in_app_purchases: false,
+    )
+  end
 end
