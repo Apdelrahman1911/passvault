@@ -357,6 +357,12 @@ grep -Fq 'skip_upload_changelogs: false' fastlane/Fastfile
 grep -Fq 'distribute_only: true' fastlane/Fastfile
 grep -Fq 'app_platform: "ios"' fastlane/Fastfile
 grep -Fq 'skip_binary_upload: true' fastlane/Fastfile
+ruby <<'RUBY'
+fastfile = File.read("fastlane/Fastfile", encoding: "UTF-8")
+upload_blocks = fastfile.scan(/upload_to_app_store\((.*?)^\s*\)/m).flatten
+abort("upload_to_app_store must not receive the unsupported apple_id option") if
+  upload_blocks.any? { |block| block.include?("apple_id:") }
+RUBY
 grep -Fq 'needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]' \
     .github/workflows/testing-release.yml
 grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
