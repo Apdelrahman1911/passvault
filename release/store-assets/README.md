@@ -15,8 +15,10 @@ android/
   ar/images/icon.png
   ar/images/phoneScreenshots/01.png
 ios/
-  en-US/01.png                          # one to ten accepted 6.9-inch screenshots
-  ar-SA/01.png
+  en-US/01-welcome.png                  # one to ten accepted 6.9-inch screenshots
+  en-US/02-ipad-12.9.png                # one to ten 2048 × 2732 iPad screenshots
+  ar-SA/01-welcome.png
+  ar-SA/02-ipad-12.9.png
 ```
 
 The Android icons and text-free feature graphics are derived from the approved
@@ -26,7 +28,8 @@ from the actual application with fictional data; do not replace them with a UI
 mockup.
 
 Use 1320 × 2868 portrait screenshots for the current iPhone 6.9-inch capture
-target. The validator also accepts Apple's other current 6.9-inch dimensions.
+target and 2048 × 2732 for the required 12.9-inch iPad capture. The validator
+also accepts Apple's other current 6.9-inch iPhone dimensions.
 Name screenshots in their intended display order (`01-vault.png`,
 `02-account.png`, and so on). Run:
 

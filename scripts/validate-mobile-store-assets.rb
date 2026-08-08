@@ -50,25 +50,35 @@ errors = []
   end
 end
 
-apple_sizes = [
+apple_phone_sizes = [
   [1_260, 2_736], [2_736, 1_260],
   [1_290, 2_796], [2_796, 1_290],
   [1_320, 2_868], [2_868, 1_320],
 ]
+apple_ipad_sizes = [[2_048, 2_732], [2_732, 2_048]]
 
 %w[en-US ar-SA].each do |locale|
   screenshots = Dir.glob(File.join(assets_root, "ios", locale, "*.png")).sort
-  errors << "Add at least one iOS #{locale} screenshot" if screenshots.empty?
-  errors << "iOS #{locale} supports at most ten screenshots" if screenshots.length > 10
+  phone_count = 0
+  ipad_count = 0
   screenshots.each do |path|
     begin
       width, height, alpha = png_info(path)
-      errors << "#{path.delete_prefix(assets_root + "/")} is not an accepted 6.9-inch size" unless apple_sizes.include?([width, height])
+      dimensions = [width, height]
+      phone_count += 1 if apple_phone_sizes.include?(dimensions)
+      ipad_count += 1 if apple_ipad_sizes.include?(dimensions)
+      unless apple_phone_sizes.include?(dimensions) || apple_ipad_sizes.include?(dimensions)
+        errors << "#{path.delete_prefix(assets_root + "/")} is not an accepted iPhone or iPad size"
+      end
       errors << "#{path.delete_prefix(assets_root + "/")} must not use alpha" if alpha
     rescue StandardError
       errors << "#{path.delete_prefix(assets_root + "/")} is not a valid PNG"
     end
   end
+  errors << "Add at least one 6.9-inch iPhone screenshot for iOS #{locale}" if phone_count.zero?
+  errors << "Add at least one 12.9-inch iPad screenshot for iOS #{locale}" if ipad_count.zero?
+  errors << "iOS #{locale} supports at most ten 6.9-inch iPhone screenshots" if phone_count > 10
+  errors << "iOS #{locale} supports at most ten 12.9-inch iPad screenshots" if ipad_count > 10
 end
 
 if errors.any?
