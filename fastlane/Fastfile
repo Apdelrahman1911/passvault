@@ -66,14 +66,15 @@ def play_promote(from:, to:, release_status:)
     track_promote_to: to,
     version_code: required_env("BUILD_NUMBER"),
     release_status: release_status,
+    metadata_path: File.join(store_root, "android"),
     skip_upload_apk: true,
     skip_upload_aab: true,
     skip_upload_metadata: !upload_store_assets,
+    skip_upload_changelogs: false,
     skip_upload_images: !upload_store_assets,
     skip_upload_screenshots: !upload_store_assets,
     timeout: 600,
   }
-  options[:metadata_path] = File.join(store_root, "android") if upload_store_assets
   upload_to_play_store(**options)
 end
 
@@ -177,6 +178,7 @@ def distribute_existing_testflight_build
     api_key: asc_api_key,
     app_identifier: required_env("IOS_BUNDLE_ID"),
     apple_id: required_env("APP_STORE_APP_ID"),
+    app_platform: "ios",
     distribute_only: true,
     distribute_external: true,
     app_version: required_env("APP_VERSION"),
