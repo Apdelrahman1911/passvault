@@ -18,9 +18,26 @@ fi
 
 adb install -r "$apk_path" >/dev/null
 
+assert_capture_ready() {
+    local ui_dump
+
+    if ! adb shell uiautomator dump /sdcard/passvault-window.xml >/dev/null; then
+        echo "Unable to inspect the emulator UI before screenshot capture." >&2
+        exit 1
+    fi
+    ui_dump="$(adb exec-out cat /sdcard/passvault-window.xml)"
+    if [[ "$ui_dump" == *"isn't responding"* ||
+        "$ui_dump" == *"is not responding"* ||
+        "$ui_dump" == *"Close app"* ]]; then
+        echo "Android displayed a system crash or ANR dialog; refusing to capture store screenshots." >&2
+        exit 1
+    fi
+}
+
 capture() {
     local destination="$1"
     sleep 2
+    assert_capture_ready
     adb exec-out screencap -p > "$destination"
     convert "$destination" -alpha off PNG24:"$destination"
 }

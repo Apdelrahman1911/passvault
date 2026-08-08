@@ -24,6 +24,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends --yes imagemagick
+      - name: Enable KVM acceleration
+        run: |
+          test -e /dev/kvm
+          sudo chmod 0666 /dev/kvm
       - name: Build isolated screenshot APK
         run: ./gradlew :app-android:assembleStandardStoreScreenshot
       - name: Capture real app screens
