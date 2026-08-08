@@ -55,7 +55,10 @@ apple_phone_sizes = [
   [1_290, 2_796], [2_796, 1_290],
   [1_320, 2_868], [2_868, 1_320],
 ]
-apple_ipad_sizes = [[2_048, 2_732], [2_732, 2_048]]
+apple_ipad_sizes = [
+  [2_048, 2_732], [2_732, 2_048],
+  [2_064, 2_752], [2_752, 2_064],
+]
 
 %w[en-US ar-SA].each do |locale|
   screenshots = Dir.glob(File.join(assets_root, "ios", locale, "*.png")).sort

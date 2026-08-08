@@ -30,6 +30,10 @@ on:
         required: false
         default: ''
         type: string
+      review_withdrawal_confirmation:
+        required: false
+        default: ''
+        type: string
   workflow_dispatch:
     inputs:
       platform:
@@ -58,6 +62,7 @@ on:
         options:
           - upload
           - promote
+          - store-assets
       version:
         description: Exact marketing version; blank uses version.properties
         required: false
@@ -80,6 +85,10 @@ on:
         type: string
       testing_confirmation:
         description: Type I_CONFIRM_REQUIRED_TESTING_COMPLETED only after required store testing is complete
+        required: false
+        type: string
+      review_withdrawal_confirmation:
+        description: Type I_APPROVE_REVIEW_WITHDRAWAL to withdraw review and replace iOS store assets
         required: false
         type: string
 
@@ -129,6 +138,16 @@ jobs:
           fi
           if [[ "${{ inputs.operation }}" == "promote" && "${{ inputs.channel }}" == "internal" ]]; then
             echo "Internal testing requires an upload operation." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.operation }}" == "store-assets" &&
+                ( "${{ inputs.channel }}" != "production" || "${{ inputs.platform }}" != "ios" ) ]]; then
+            echo "Store asset maintenance requires the iOS production target." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.operation }}" == "store-assets" &&
+                "${{ inputs.review_withdrawal_confirmation }}" != "I_APPROVE_REVIEW_WITHDRAWAL" ]]; then
+            echo "Store asset maintenance requires the exact confirmation I_APPROVE_REVIEW_WITHDRAWAL." >&2
             exit 1
           fi
           if [[ "${{ inputs.channel }}" == "production" &&
@@ -608,8 +627,10 @@ jobs:
           fi
 
   promote-ios:
-    name: Promote iOS ${{ inputs.channel }}
-    if: inputs.operation == 'promote' && (inputs.platform == 'both' || inputs.platform == 'ios')
+    name: iOS ${{ inputs.operation }} ${{ inputs.channel }}
+    if: >-
+      (inputs.operation == 'promote' || inputs.operation == 'store-assets') &&
+      (inputs.platform == 'both' || inputs.platform == 'ios')
     needs: validate
     runs-on: macos-26
     environment: ${{ needs.validate.outputs.environment }}
@@ -701,8 +722,11 @@ jobs:
           APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}
           PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
           PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
+          PASSVAULT_REVIEW_WITHDRAWAL_APPROVED: ${{ inputs.review_withdrawal_confirmation }}
         run: |
-          if [[ "${{ inputs.channel }}" == "external" ]]; then
+          if [[ "${{ inputs.operation }}" == "store-assets" ]]; then
+            bundle exec fastlane ios update_store_assets
+          elif [[ "${{ inputs.channel }}" == "external" ]]; then
             bundle exec fastlane ios promote_external
           else
             bundle exec fastlane ios promote_production

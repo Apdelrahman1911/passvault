@@ -96,6 +96,13 @@ Review generated images before merging. They must contain only fictional data
 and must be checked for localization, cropping, status-bar content, and store
 quality. Production is blocked until `validate-mobile-store-assets.rb` passes.
 
+To replace iOS screenshots after a version has been submitted, run `Mobile
+Store Release` from `release` with platform `ios`, channel `production`, and
+operation `store-assets`. Enter `I_APPROVE_PRODUCTION` and
+`I_APPROVE_REVIEW_WITHDRAWAL` in their confirmation fields. The protected job
+withdraws the version when Apple permits it, replaces the screenshots, uploads
+no binary or metadata, and leaves the version unsubmitted for review.
+
 ## Required GitHub configuration
 
 Repository variables used by candidate provenance:
