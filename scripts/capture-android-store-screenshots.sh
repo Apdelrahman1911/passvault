@@ -5,6 +5,7 @@ set -euo pipefail
 apk_path="${1:-}"
 output_root="${2:-}"
 package_name="com.passvault.android.storescreenshot"
+capture_password="CaptureOnlyVaultPassphrase2026"
 
 if [[ ! -f "$apk_path" || -z "$output_root" ]]; then
     echo "Usage: $0 <store-screenshot-apk> <output-root>" >&2
@@ -106,11 +107,19 @@ for locale in en-US ar; do
         continue_label="متابعة"
         security_label="نظرة عامة على الأمان"
         master_password_label="أنشئ كلمة مرور رئيسية قوية"
+        master_password_field_label="كلمة المرور الرئيسية"
+        confirm_password_label="تأكيد كلمة المرور الرئيسية"
+        confirm_password_field_label="تأكيد كلمة المرور"
+        create_vault_label="إنشاء خزنة مشفّرة"
     else
         get_started_label="Get started"
         continue_label="Continue"
         security_label="Security overview"
         master_password_label="Create a strong master password"
+        master_password_field_label="Master password"
+        confirm_password_label="Confirm master password"
+        confirm_password_field_label="Confirm password"
+        create_vault_label="Create encrypted vault"
     fi
     adb shell pm clear "$package_name" >/dev/null
     adb shell cmd locale set-app-locales "$package_name" --user 0 --locales "$locale" || true
@@ -120,15 +129,25 @@ for locale in en-US ar; do
     adb shell input swipe 540 1650 540 500 450
     capture "$locale_root/02-security-features.png"
     tap_text_after_scrolling "$get_started_label"
-    wait_for_text "$security_label"
-    capture "$locale_root/03-security-model.png"
-    tap_text_after_scrolling "$continue_label"
     wait_for_text "$master_password_label"
-    capture "$locale_root/04-master-password.png"
+    capture "$locale_root/03-master-password.png"
+    tap_text_after_scrolling "$master_password_field_label"
+    adb shell input text "$capture_password"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 2
+    tap_text_after_scrolling "$continue_label"
+    wait_for_text "$confirm_password_label"
+    tap_text_after_scrolling "$confirm_password_field_label"
+    adb shell input text "$capture_password"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 2
+    tap_text_after_scrolling "$create_vault_label"
+    wait_for_text "$security_label"
+    capture "$locale_root/04-security-model.png"
     adb shell am force-stop "$package_name"
 
-    if cmp -s "$locale_root/02-security-features.png" "$locale_root/03-security-model.png" ||
-        cmp -s "$locale_root/03-security-model.png" "$locale_root/04-master-password.png"; then
+    if cmp -s "$locale_root/02-security-features.png" "$locale_root/03-master-password.png" ||
+        cmp -s "$locale_root/03-master-password.png" "$locale_root/04-security-model.png"; then
         echo "Android navigation produced duplicate store screenshots for $locale." >&2
         exit 1
     fi
