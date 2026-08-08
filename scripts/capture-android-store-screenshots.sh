@@ -58,19 +58,6 @@ text_center() {
     ' "$label"
 }
 
-wait_for_text() {
-    local label="$1"
-
-    for _ in 1 2 3 4 5; do
-        if text_center "$label" >/dev/null; then
-            return
-        fi
-        sleep 1
-    done
-    echo "Expected Android screen text was not visible: $label" >&2
-    exit 1
-}
-
 tap_text_after_scrolling() {
     local label="$1"
     local point
@@ -88,6 +75,29 @@ tap_text_after_scrolling() {
         sleep 1
     done
     echo "Unable to find and tap Android screen text: $label" >&2
+    exit 1
+}
+
+tap_text_and_wait() {
+    local source_label="$1"
+    local destination_label="$2"
+    local point
+    local x
+    local y
+
+    for _ in 1 2 3 4 5; do
+        if text_center "$destination_label" >/dev/null; then
+            return
+        fi
+        if point="$(text_center "$source_label")"; then
+            read -r x y <<< "$point"
+            adb shell input tap "$x" "$y"
+        else
+            adb shell input swipe 540 1650 540 450 350
+        fi
+        sleep 1
+    done
+    echo "Unable to navigate from '$source_label' to '$destination_label'." >&2
     exit 1
 }
 
@@ -125,10 +135,10 @@ for locale in en-US ar; do
     adb shell cmd locale set-app-locales "$package_name" --user 0 --locales "$locale" || true
     adb shell am start -W -n "$package_name/com.passvault.android.MainActivity" >/dev/null
 
+    sleep 2
     adb shell input swipe 540 1650 540 500 450
     capture "$locale_root/01-welcome.png"
-    tap_text_after_scrolling "$get_started_label"
-    wait_for_text "$master_password_label"
+    tap_text_and_wait "$get_started_label" "$master_password_label"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
     capture "$locale_root/02-master-password.png"
@@ -136,8 +146,7 @@ for locale in en-US ar; do
     adb shell input text "$capture_password"
     adb shell input keyevent KEYCODE_BACK
     sleep 2
-    tap_text_after_scrolling "$continue_label"
-    wait_for_text "$confirm_password_label"
+    tap_text_and_wait "$continue_label" "$confirm_password_label"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
     capture "$locale_root/03-confirm-password.png"
@@ -145,8 +154,7 @@ for locale in en-US ar; do
     adb shell input text "$capture_password"
     adb shell input keyevent KEYCODE_BACK
     sleep 2
-    tap_text_after_scrolling "$create_vault_label"
-    wait_for_text "$security_label"
+    tap_text_and_wait "$create_vault_label" "$security_label"
     capture "$locale_root/04-security-model.png"
     adb shell am force-stop "$package_name"
 
