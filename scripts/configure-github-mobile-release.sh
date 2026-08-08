@@ -148,6 +148,8 @@ configure_environment() {
 configure_environment mobile-beta false testing
 configure_environment mobile-external-beta true testing
 configure_environment mobile-production true release
+configure_environment play-access-beta false main
+configure_environment play-access-production false main
 
 ANDROID_UPLOAD_CERTIFICATE_SHA256="$(openssl x509 \
     -in "$repository_root/release/android/passvault-release-cert.pem" \
@@ -419,9 +421,20 @@ append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual
     "values.env:TESTFLIGHT_INTERNAL_EMAILS" "Not stored in GitHub" \
     "Add real App Store Connect users before assigning internal testers."
 
-for environment_name in mobile-beta mobile-external-beta mobile-production; do
-    expected_branch=testing
-    [[ "$environment_name" == mobile-production ]] && expected_branch=release
+for environment_name in \
+    mobile-beta mobile-external-beta mobile-production \
+    play-access-beta play-access-production; do
+    case "$environment_name" in
+    mobile-beta | mobile-external-beta)
+        expected_branch=testing
+        ;;
+    mobile-production)
+        expected_branch=release
+        ;;
+    play-access-beta | play-access-production)
+        expected_branch=main
+        ;;
+    esac
     custom_policy="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
         --jq '.deployment_branch_policy.custom_branch_policies')"
     branch_policy="$(gh api \
