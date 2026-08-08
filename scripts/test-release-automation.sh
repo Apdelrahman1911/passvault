@@ -357,6 +357,9 @@ grep -Fq 'skip_upload_changelogs: false' fastlane/Fastfile
 grep -Fq 'distribute_only: true' fastlane/Fastfile
 grep -Fq 'app_platform: "ios"' fastlane/Fastfile
 grep -Fq 'skip_binary_upload: true' fastlane/Fastfile
+test "$(grep -Fc 'app_review_information: app_review_information' fastlane/Fastfile)" -eq 2
+grep -Fq 'APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}' \
+    .github/workflows/mobile-store-release.yml
 ruby <<'RUBY'
 fastfile = File.read("fastlane/Fastfile", encoding: "UTF-8")
 upload_blocks = fastfile.scan(/upload_to_app_store\((.*?)^\s*\)/m).flatten

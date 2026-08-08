@@ -109,6 +109,17 @@ def beta_review_notes
   NOTES
 end
 
+def app_review_information
+  contact_name = required_env("APP_REVIEW_CONTACT_NAME").split(/\s+/, 2)
+  {
+    first_name: contact_name.first,
+    last_name: contact_name.last || "Release",
+    phone_number: required_env("APP_REVIEW_PHONE"),
+    email_address: required_env("APP_REVIEW_EMAIL"),
+    notes: beta_review_notes,
+  }
+end
+
 def testflight_upload(external:)
   ipa = required_env("IOS_IPA_PATH")
   UI.user_error!("Signed iOS IPA is missing") unless File.file?(ipa)
@@ -262,6 +273,7 @@ platform :ios do
       ipa: required_env("IOS_IPA_PATH"),
       app_version: required_env("APP_VERSION"),
       metadata_path: File.join(store_root, "ios"),
+      app_review_information: app_review_information,
       submit_for_review: false,
       automatic_release: false,
       force: true,
@@ -284,6 +296,7 @@ platform :ios do
       build_number: required_env("BUILD_NUMBER"),
       metadata_path: File.join(store_root, "ios"),
       screenshots_path: File.join(store_root, "ios-screenshots"),
+      app_review_information: app_review_information,
       skip_binary_upload: true,
       submit_for_review: true,
       automatic_release: true,
