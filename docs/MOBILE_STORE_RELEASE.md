@@ -97,9 +97,9 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
 1. Merge a reviewed `main` → `testing` PR. `Testing Candidate` performs the
    internal uploads, waits for the external environment approval, promotes the
    exact builds, and publishes the unsigned desktop prerelease.
-2. After Apple reports Beta App Review approved, run `Candidate Readiness` for
-   that candidate tag. It verifies Apple and Google through their APIs and
-   starts production from the exact tested SHA.
+2. After Apple reports Beta App Review approved, run `Candidate Readiness` from
+   the `testing` branch for that candidate tag. It verifies Apple and Google
+   through their APIs and starts production from the exact tested SHA.
 3. Approve `mobile-production`. The exact builds are promoted to production.
 4. After both stores show the version live, run `Publish Stable Release` with
    the same tag and confirmation phrase. It publishes signed/notarized desktop

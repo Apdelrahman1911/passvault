@@ -32,6 +32,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [[ "$GITHUB_REF" != refs/heads/testing ]]; then
+            echo "Candidate Readiness must run from testing." >&2
+            exit 1
+          fi
           gh release download "${{ inputs.candidate_tag }}" \
             --pattern candidate-manifest.json --dir "$RUNNER_TEMP/candidate"
           ruby scripts/validate-candidate-manifest.rb --allow-pending \
@@ -60,6 +64,8 @@ jobs:
           service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
           token_format: access_token
           create_credentials_file: false
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          access_token_lifetime: 600s
       - name: Require exact build on closed testing
         env:
           ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
@@ -85,6 +91,14 @@ jobs:
         run: |
           PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-readiness"
           install -d -m 700 "$PRIVATE_RUNTIME"
+          cleanup() {
+            if [[ -d "$PRIVATE_RUNTIME" ]]; then
+              find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
+              find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
+              rmdir "$PRIVATE_RUNTIME" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
           printf '%s' "$ASC_PRIVATE_KEY_BASE64" |
             openssl base64 -d -A > "$PRIVATE_RUNTIME/asc-key.p8"
           chmod 600 "$PRIVATE_RUNTIME/asc-key.p8"
@@ -94,12 +108,11 @@ jobs:
             --status \
             --version "${{ needs.candidate.outputs.version }}" \
             --build-number "${{ needs.candidate.outputs.build_number }}")"
+          printf '%s\n' "$status"
           grep -Fqx 'PROCESSING_STATE=VALID' <<< "$status"
           grep -Fqx 'GROUP_HAS_BUILD=true' <<< "$status"
           grep -Fqx 'BETA_REVIEW_STATE=APPROVED' <<< "$status"
           grep -Eq '^EXTERNAL_BUILD_STATE=(READY_FOR_BETA_TESTING|IN_BETA_TESTING)$' <<< "$status"
-          find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} +
-          rmdir "$PRIVATE_RUNTIME"
 
   promote-release-branch:
     needs: [ candidate, google-play, testflight ]
