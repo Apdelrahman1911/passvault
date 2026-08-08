@@ -49,7 +49,7 @@ text_center() {
         end
       end
       exit 1 unless node
-      bounds = node.attributes.fetch("bounds")
+      bounds = node.attributes.fetch("bounds").to_s
       match = bounds.match(/\[(\d+),(\d+)\]\[(\d+),(\d+)\]/)
       exit 1 unless match
       left, top, right, bottom = match.captures.map(&:to_i)
