@@ -3,6 +3,10 @@ name: Generate Store Screenshots
 on:
   workflow_dispatch:
 
+concurrency:
+  group: store-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -97,24 +101,38 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           pattern: generated-*-store-screenshots
-          path: generated
+          path: ${{ runner.temp }}/generated
       - name: Install generated screenshots
         run: |
-          cp -R generated/generated-android-store-screenshots/. release/store-assets/android/
-          cp -R generated/generated-ios-store-screenshots/. release/store-assets/ios/
+          cp -R "$RUNNER_TEMP/generated/generated-android-store-screenshots/." release/store-assets/android/
+          cp -R "$RUNNER_TEMP/generated/generated-ios-store-screenshots/." release/store-assets/ios/
           ./scripts/validate-mobile-store-assets.rb
-      - uses: peter-evans/create-pull-request@v8
-        with:
-          branch: automation/store-screenshots
-          delete-branch: true
-          commit-message: Update automated store screenshots
-          title: Update automated store screenshots
-          body: |
-            Generated from the isolated screenshot build. Review every image for fictional data,
-            localization, cropping, and store quality before merging.
+      - name: Publish screenshot review branch
+        env:
+          REVIEW_BRANCH: automation/store-screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "$REVIEW_BRANCH:refs/remotes/origin/$REVIEW_BRANCH" || true
+          git checkout -B "$REVIEW_BRANCH"
+          git add release/store-assets
+          if git diff --cached --quiet; then
+            echo "Generated screenshots already match the base branch." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git commit -m "Update automated store screenshots"
+          remote_ref="refs/remotes/origin/$REVIEW_BRANCH"
+          if git show-ref --verify --quiet "$remote_ref"; then
+            expected_remote="$(git rev-parse "$remote_ref")"
+            git push --force-with-lease="refs/heads/$REVIEW_BRANCH:$expected_remote" \
+              origin "HEAD:refs/heads/$REVIEW_BRANCH"
+          else
+            git push origin "HEAD:refs/heads/$REVIEW_BRANCH"
+          fi
+          review_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/$GITHUB_REF_NAME...$REVIEW_BRANCH?expand=1"
+          echo "Open the validated screenshot review: $review_url" >> "$GITHUB_STEP_SUMMARY"
