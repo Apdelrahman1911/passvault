@@ -125,7 +125,7 @@ private fun WelcomeHero(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = if (compact) 320.dp else 380.dp),
+            .heightIn(min = if (compact) 300.dp else 380.dp),
         color = MaterialTheme.colorScheme.inverseSurface,
         contentColor = MaterialTheme.colorScheme.inverseOnSurface,
         shape = MaterialTheme.shapes.extraLarge,
