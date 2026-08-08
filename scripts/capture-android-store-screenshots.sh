@@ -11,7 +11,10 @@ if [[ ! -f "$apk_path" || -z "$output_root" ]]; then
     exit 2
 fi
 command -v adb >/dev/null
-command -v convert >/dev/null
+if ! command -v convert >/dev/null; then
+    echo "ImageMagick's convert command is required to create store-compatible PNG24 screenshots." >&2
+    exit 1
+fi
 
 adb install -r "$apk_path" >/dev/null
 

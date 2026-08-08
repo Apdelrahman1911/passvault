@@ -20,6 +20,10 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v6
+      - name: Install screenshot image tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes imagemagick
       - name: Build isolated screenshot APK
         run: ./gradlew :app-android:assembleStandardStoreScreenshot
       - name: Capture real app screens
