@@ -317,6 +317,14 @@ ruby -c scripts/validate-play-service-accounts.rb >/dev/null
 ruby -c scripts/validate-google-play-readiness.rb >/dev/null
 bash -n scripts/verify-play-oidc-access.sh
 grep -Fq 'VERIFY_ONLY_NO_UPLOAD' .github/workflows/play-access-check.yml
+grep -Fq 'environment: play-access-beta' .github/workflows/play-access-check.yml
+grep -Fq 'environment: play-access-production' .github/workflows/play-access-check.yml
+grep -Fq 'configure_environment play-access-beta false main' \
+    scripts/configure-github-mobile-release.sh
+grep -Fq 'configure_environment play-access-production false main' \
+    scripts/configure-github-mobile-release.sh
+grep -Fq "assertion.environment=='play-access-beta'" scripts/configure-google-oidc.sh
+grep -Fq "assertion.environment=='play-access-production'" scripts/configure-google-oidc.sh
 grep -Fq 'PLAY_EDIT_DELETED=PASS' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_PRODUCTION_ACCESS_ELIGIBILITY_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_EMAIL_LIST_TESTERS_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh

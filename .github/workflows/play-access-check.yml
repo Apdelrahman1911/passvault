@@ -35,7 +35,7 @@ jobs:
     name: Verify beta Play access
     needs: validate
     runs-on: ubuntu-latest
-    environment: mobile-beta
+    environment: play-access-beta
     permissions:
       contents: read
       id-token: write
@@ -64,7 +64,7 @@ jobs:
     name: Verify production Play access
     needs: [validate, beta]
     runs-on: ubuntu-latest
-    environment: mobile-production
+    environment: play-access-production
     permissions:
       contents: read
       id-token: write

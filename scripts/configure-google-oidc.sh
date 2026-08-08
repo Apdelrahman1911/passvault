@@ -99,8 +99,8 @@ if ! gcloud iam workload-identity-pools describe "$pool_id" --location=global \
 fi
 
 attribute_mapping='google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.environment=assertion.environment'
-beta_condition="assertion.repository=='$GITHUB_REPOSITORY' && (assertion.environment=='mobile-beta' || assertion.environment=='mobile-external-beta')"
-production_condition="assertion.repository=='$GITHUB_REPOSITORY' && assertion.environment=='mobile-production'"
+beta_condition="assertion.repository=='$GITHUB_REPOSITORY' && (assertion.environment=='mobile-beta' || assertion.environment=='mobile-external-beta' || assertion.environment=='play-access-beta')"
+production_condition="assertion.repository=='$GITHUB_REPOSITORY' && (assertion.environment=='mobile-production' || assertion.environment=='play-access-production')"
 
 upsert_provider() {
     local provider_id="$1"
@@ -189,17 +189,19 @@ validate_keyless_service_account "$production_service_account"
 
 principal_prefix="principalSet://iam.googleapis.com/projects/$GOOGLE_CLOUD_PROJECT_NUMBER/locations/global/workloadIdentityPools/$pool_id/attribute.environment"
 
-for environment_name in mobile-beta mobile-external-beta; do
+for environment_name in mobile-beta mobile-external-beta play-access-beta; do
     gcloud iam service-accounts add-iam-policy-binding "$beta_service_account" \
         --project "$GOOGLE_CLOUD_PROJECT_ID" \
         --role=roles/iam.workloadIdentityUser \
         --member="$principal_prefix/$environment_name" >/dev/null
 done
 
-gcloud iam service-accounts add-iam-policy-binding "$production_service_account" \
-    --project "$GOOGLE_CLOUD_PROJECT_ID" \
-    --role=roles/iam.workloadIdentityUser \
-    --member="$principal_prefix/mobile-production" >/dev/null
+for environment_name in mobile-production play-access-production; do
+    gcloud iam service-accounts add-iam-policy-binding "$production_service_account" \
+        --project "$GOOGLE_CLOUD_PROJECT_ID" \
+        --role=roles/iam.workloadIdentityUser \
+        --member="$principal_prefix/$environment_name" >/dev/null
+done
 
 beta_provider="projects/$GOOGLE_CLOUD_PROJECT_NUMBER/locations/global/workloadIdentityPools/$pool_id/providers/$beta_provider_id"
 production_provider="projects/$GOOGLE_CLOUD_PROJECT_NUMBER/locations/global/workloadIdentityPools/$pool_id/providers/$production_provider_id"
@@ -213,13 +215,15 @@ set_environment_variable() {
             --repo "$GITHUB_REPOSITORY" >/dev/null
 }
 
-for environment_name in mobile-beta mobile-external-beta; do
+for environment_name in mobile-beta mobile-external-beta play-access-beta; do
     set_environment_variable "$environment_name" GOOGLE_WORKLOAD_IDENTITY_PROVIDER "$beta_provider"
     set_environment_variable "$environment_name" GOOGLE_SERVICE_ACCOUNT "$beta_service_account"
 done
 
-set_environment_variable mobile-production GOOGLE_WORKLOAD_IDENTITY_PROVIDER "$production_provider"
-set_environment_variable mobile-production GOOGLE_SERVICE_ACCOUNT "$production_service_account"
+for environment_name in mobile-production play-access-production; do
+    set_environment_variable "$environment_name" GOOGLE_WORKLOAD_IDENTITY_PROVIDER "$production_provider"
+    set_environment_variable "$environment_name" GOOGLE_SERVICE_ACCOUNT "$production_service_account"
+done
 
 verification_failures=0
 declare -a oidc_rows=()
@@ -229,16 +233,17 @@ append_oidc_row() {
 }
 
 for provider_spec in \
-    "$beta_provider_id|$GITHUB_REPOSITORY|mobile-beta|mobile-external-beta" \
-    "$production_provider_id|$GITHUB_REPOSITORY|mobile-production"; do
-    IFS='|' read -r provider_id expected_repository expected_environment extra_environment \
+    "$beta_provider_id|$GITHUB_REPOSITORY|mobile-beta|mobile-external-beta|play-access-beta" \
+    "$production_provider_id|$GITHUB_REPOSITORY|mobile-production|play-access-production|"; do
+    IFS='|' read -r provider_id expected_repository expected_environment extra_environment extra_environment_2 \
         <<< "$provider_spec"
     provider_condition_actual="$(gcloud iam workload-identity-pools providers describe "$provider_id" \
         --workload-identity-pool="$pool_id" --location=global \
         --project "$GOOGLE_CLOUD_PROJECT_ID" --format='value(attributeCondition)' 2>/dev/null || true)"
     if [[ "$provider_condition_actual" == *"$expected_repository"* &&
         "$provider_condition_actual" == *"$expected_environment"* &&
-        ( -z "$extra_environment" || "$provider_condition_actual" == *"$extra_environment"* ) ]]; then
+        ( -z "$extra_environment" || "$provider_condition_actual" == *"$extra_environment"* ) &&
+        ( -z "$extra_environment_2" || "$provider_condition_actual" == *"$extra_environment_2"* ) ]]; then
         append_oidc_row "$provider_id" "Google Workload Identity provider" "Yes" \
             "Google Cloud project" "Repository/environment restriction verified" "None"
     else
@@ -284,7 +289,9 @@ verify_workload_binding() {
 
 verify_workload_binding "$beta_service_account" mobile-beta
 verify_workload_binding "$beta_service_account" mobile-external-beta
+verify_workload_binding "$beta_service_account" play-access-beta
 verify_workload_binding "$production_service_account" mobile-production
+verify_workload_binding "$production_service_account" play-access-production
 
 for service_account in "$beta_service_account" "$production_service_account"; do
     validate_keyless_service_account "$service_account"
@@ -292,7 +299,9 @@ for service_account in "$beta_service_account" "$production_service_account"; do
         "Google IAM" "No user-managed keys or project-level roles" "None"
 done
 
-for environment_name in mobile-beta mobile-external-beta mobile-production; do
+for environment_name in \
+    mobile-beta mobile-external-beta mobile-production \
+    play-access-beta play-access-production; do
     environment_variables="$(gh variable list --env "$environment_name" \
         --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
     for variable_name in GOOGLE_WORKLOAD_IDENTITY_PROVIDER GOOGLE_SERVICE_ACCOUNT; do

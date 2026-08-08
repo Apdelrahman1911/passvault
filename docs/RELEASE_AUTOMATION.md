@@ -28,8 +28,11 @@ force pushes and deletion and is advanced only by Candidate Readiness.
 Run `scripts/configure-release-branches.sh --apply` once to create and protect
 the branches. Run `scripts/configure-github-mobile-release.sh` when rotating
 mobile credentials; it scopes beta environments to `testing`, production to
-`release`, and records the Android/iOS signing fingerprints used by candidate
-provenance.
+`release`, and credential-free Play access-check environments to `main`. The
+access-check environments expose only the keyless Google identity variables;
+mobile signing and store-upload secrets remain confined to their release
+environments. The script also records the Android/iOS signing fingerprints used
+by candidate provenance.
 
 ## Candidate release
 
