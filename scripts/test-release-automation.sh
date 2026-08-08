@@ -354,7 +354,10 @@ ruby -c scripts/validate-candidate-manifest.rb >/dev/null
 bash -n scripts/check-play-track-build.sh
 grep -Fq 'track_promote_to' fastlane/Fastfile
 grep -Fq 'distribute_only: true' fastlane/Fastfile
+grep -Fq 'app_platform: "ios"' fastlane/Fastfile
 grep -Fq 'skip_binary_upload: true' fastlane/Fastfile
+grep -Fq 'needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]' \
+    .github/workflows/testing-release.yml
 grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
 grep -Fq 'readiness-manifest.json' .github/workflows/production-release.yml
 grep -Fq 'refs/heads/release' .github/workflows/production-release.yml

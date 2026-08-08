@@ -177,6 +177,7 @@ def distribute_existing_testflight_build
     api_key: asc_api_key,
     app_identifier: required_env("IOS_BUNDLE_ID"),
     apple_id: required_env("APP_STORE_APP_ID"),
+    app_platform: "ios",
     distribute_only: true,
     distribute_external: true,
     app_version: required_env("APP_VERSION"),

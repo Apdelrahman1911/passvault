@@ -87,7 +87,7 @@ jobs:
     secrets: inherit
 
   mobile-external:
-    needs: [ prepare, mobile-internal ]
+    needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]
     uses: ./.github/workflows/mobile-store-release.yml
     with:
       platform: both
