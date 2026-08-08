@@ -125,18 +125,22 @@ for locale in en-US ar; do
     adb shell cmd locale set-app-locales "$package_name" --user 0 --locales "$locale" || true
     adb shell am start -W -n "$package_name/com.passvault.android.MainActivity" >/dev/null
 
-    capture "$locale_root/01-welcome.png"
     adb shell input swipe 540 1650 540 500 450
-    capture "$locale_root/02-security-features.png"
+    capture "$locale_root/01-welcome.png"
     tap_text_after_scrolling "$get_started_label"
     wait_for_text "$master_password_label"
-    capture "$locale_root/03-master-password.png"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+    capture "$locale_root/02-master-password.png"
     tap_text_after_scrolling "$master_password_field_label"
     adb shell input text "$capture_password"
     adb shell input keyevent KEYCODE_BACK
     sleep 2
     tap_text_after_scrolling "$continue_label"
     wait_for_text "$confirm_password_label"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+    capture "$locale_root/03-confirm-password.png"
     tap_text_after_scrolling "$confirm_password_field_label"
     adb shell input text "$capture_password"
     adb shell input keyevent KEYCODE_BACK
@@ -146,8 +150,9 @@ for locale in en-US ar; do
     capture "$locale_root/04-security-model.png"
     adb shell am force-stop "$package_name"
 
-    if cmp -s "$locale_root/02-security-features.png" "$locale_root/03-master-password.png" ||
-        cmp -s "$locale_root/03-master-password.png" "$locale_root/04-security-model.png"; then
+    if cmp -s "$locale_root/01-welcome.png" "$locale_root/02-master-password.png" ||
+        cmp -s "$locale_root/02-master-password.png" "$locale_root/03-confirm-password.png" ||
+        cmp -s "$locale_root/03-confirm-password.png" "$locale_root/04-security-model.png"; then
         echo "Android navigation produced duplicate store screenshots for $locale." >&2
         exit 1
     fi

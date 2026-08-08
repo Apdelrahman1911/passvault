@@ -57,6 +57,8 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v6
+      - name: Install screenshot image tools
+        run: brew install imagemagick
       - name: Boot a 6.9-inch simulator
         run: |
           runtime="$(xcrun simctl list runtimes --json |
