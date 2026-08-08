@@ -696,6 +696,9 @@ jobs:
           TESTFLIGHT_NOTIFY_AFTER_APPROVAL: 'true'
           EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
           IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+          APP_REVIEW_CONTACT_NAME: ${{ vars.APP_REVIEW_CONTACT_NAME }}
+          APP_REVIEW_EMAIL: ${{ vars.APP_REVIEW_EMAIL }}
+          APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}
           PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
           PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
         run: |
