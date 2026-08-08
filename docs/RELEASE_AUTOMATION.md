@@ -82,9 +82,12 @@ back to unsigned Windows or macOS output.
 `Generate Store Screenshots` builds the isolated Android `storeScreenshot`
 variant, captures actual app onboarding screens in `en-US` and `ar`, builds the
 iOS simulator app, captures the 6.9-inch welcome screen in `en-US` and `ar-SA`,
-validates dimensions, and opens a review PR. Screenshot mode disables Android
-screen capture protection only in that dedicated application ID. Static tests
-verify that normal builds keep `STORE_SCREENSHOT_MODE=false`.
+validates dimensions, and publishes the `automation/store-screenshots` review
+branch. Open the compare link in the workflow summary to create the review PR;
+repository-wide permission for Actions to create or approve PRs stays disabled.
+Screenshot mode disables Android screen capture protection only in that dedicated
+application ID. Static tests verify that normal builds keep
+`STORE_SCREENSHOT_MODE=false`.
 
 Review generated images before merging. They must contain only fictional data
 and must be checked for localization, cropping, status-bar content, and store
@@ -130,7 +133,7 @@ The repository cannot truthfully automate these owner/legal decisions:
   Developer ID certificate. Keep all private material out of Git.
 - Testers: add at least one eligible App Store Connect internal tester and real
   external tester identities/email lists.
-- Assets: review and merge the generated screenshot PR.
+- Assets: open the generated screenshot compare link, then review and merge its PR.
 
 Everything after these inputs—building, signing, notarizing, uploading,
 promoting exact builds, provenance validation, checksums, and GitHub Release

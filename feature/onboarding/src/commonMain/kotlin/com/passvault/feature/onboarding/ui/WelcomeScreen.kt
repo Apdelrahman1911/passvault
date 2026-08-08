@@ -102,12 +102,13 @@ fun WelcomeScreen(
                             .fillMaxWidth()
                             .widthIn(max = 640.dp)
                             .padding(vertical = Spacing.sm),
-                        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.smMd),
                     ) {
-                        WelcomeHero()
+                        WelcomeHero(compact = true)
                         WelcomeDetails(
                             state = state,
                             onEvent = onEvent,
+                            compact = true,
                         )
                     }
                 }
@@ -117,17 +118,20 @@ fun WelcomeScreen(
 }
 
 @Composable
-private fun WelcomeHero(modifier: Modifier = Modifier) {
+private fun WelcomeHero(
+    modifier: Modifier = Modifier,
+    compact: Boolean = false,
+) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 380.dp),
+            .heightIn(min = if (compact) 300.dp else 380.dp),
         color = MaterialTheme.colorScheme.inverseSurface,
         contentColor = MaterialTheme.colorScheme.inverseOnSurface,
         shape = MaterialTheme.shapes.extraLarge,
     ) {
         Column(
-            modifier = Modifier.padding(Spacing.xl),
+            modifier = Modifier.padding(if (compact) Spacing.lg else Spacing.xl),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Surface(
@@ -173,8 +177,9 @@ private fun WelcomeDetails(
     state: OnboardingViewModel.OnboardingState,
     onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
     modifier: Modifier = Modifier,
+    compact: Boolean = false,
 ) {
-    WelcomeDetailsContent(state, onEvent, modifier)
+    WelcomeDetailsContent(state, onEvent, modifier, compact)
 }
 
 @Composable
@@ -182,11 +187,14 @@ private fun WelcomeDetailsContent(
     @Suppress("UNUSED_PARAMETER") state: OnboardingViewModel.OnboardingState,
     onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
     modifier: Modifier,
+    compact: Boolean,
 ) {
     EditorialPanel(
         modifier = modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(Spacing.lg),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            if (compact) Spacing.md else Spacing.lg,
+        ),
     ) {
         FeatureItem(
             icon = Icons.Default.EnhancedEncryption,
@@ -194,6 +202,7 @@ private fun WelcomeDetailsContent(
             description = stringResource(
                 Res.string.ui_vault_records_are_authenticated_and_encrypted_before_t,
             ),
+            compact = compact,
         )
         FeatureItem(
             icon = Icons.Default.Security,
@@ -201,6 +210,7 @@ private fun WelcomeDetailsContent(
             description = stringResource(
                 Res.string.ui_your_master_password_is_used_to_unlock_the_vault_key_a,
             ),
+            compact = compact,
         )
         FeatureItem(
             icon = Icons.Default.Archive,
@@ -208,6 +218,7 @@ private fun WelcomeDetailsContent(
             description = stringResource(
                 Res.string.ui_create_an_independent_encrypted_backup_before_moving_d,
             ),
+            compact = compact,
         )
         Button(
             onClick = { onEvent(OnboardingViewModel.OnboardingEvent.OnGetStartedClick) },
@@ -237,11 +248,12 @@ private fun FeatureItem(
     title: String,
     description: String,
     modifier: Modifier = Modifier,
+    compact: Boolean = false,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = Spacing.sm),
+            .padding(vertical = if (compact) Spacing.xs else Spacing.sm),
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.Top,
     ) {
