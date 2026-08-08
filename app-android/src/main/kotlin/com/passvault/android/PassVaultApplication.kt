@@ -36,8 +36,10 @@ class PassVaultApplication : Application() {
         super.onCreate()
         initializeKoin()
         configureDebugStrictMode()
-        applicationScope.launch {
-            screenshotProtection.enableProtection()
+        if (!BuildConfig.STORE_SCREENSHOT_MODE) {
+            applicationScope.launch {
+                screenshotProtection.enableProtection()
+            }
         }
     }
 

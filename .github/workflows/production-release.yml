@@ -1,0 +1,72 @@
+name: Production Store Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Readiness-approved candidate tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-${{ inputs.candidate_tag }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.manifest.outputs.version }}
+      build_number: ${{ steps.manifest.outputs.build_number }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Validate exact release-branch candidate
+        id: manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$GITHUB_REF" != refs/heads/release ]]; then
+            echo "Production must run from release." >&2
+            exit 1
+          fi
+          gh release download "${{ inputs.candidate_tag }}" \
+            --pattern readiness-manifest.json --dir "$RUNNER_TEMP/candidate"
+          manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA"
+          echo "version=$(jq -r .marketingVersion "$manifest")" >> "$GITHUB_OUTPUT"
+          echo "build_number=$(jq -r .buildNumber "$manifest")" >> "$GITHUB_OUTPUT"
+      - name: Require production store assets
+        run: ./scripts/validate-mobile-store-assets.rb
+
+  promote-mobile-production:
+    needs: candidate
+    uses: ./.github/workflows/mobile-store-release.yml
+    with:
+      platform: both
+      channel: production
+      operation: promote
+      version: ${{ needs.candidate.outputs.version }}
+      build_number: ${{ needs.candidate.outputs.build_number }}
+      testflight_distribution: email-list
+      production_confirmation: I_APPROVE_PRODUCTION
+      testing_confirmation: I_CONFIRM_REQUIRED_TESTING_COMPLETED
+    secrets: inherit
+
+  submitted:
+    needs: [ candidate, promote-mobile-production ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record handoff
+        run: |
+          {
+            echo '## Production submission completed'
+            echo
+            echo 'Google Play received the exact closed-test build at 100% rollout.'
+            echo 'Apple received the exact TestFlight build for review with automatic release enabled.'
+            echo 'After both stores report the version live, run **Publish Stable Release** for the same candidate tag.'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,50 @@
+name: Publish Stable Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Production candidate whose stores are live
+        required: true
+        type: string
+      stores_live_confirmation:
+        description: Type I_CONFIRM_BOTH_STORES_LIVE
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.manifest.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate stable publication request
+        id: manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$GITHUB_REF" != refs/heads/release ]]; then
+            echo "Stable publication must run from release." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.stores_live_confirmation }}" != I_CONFIRM_BOTH_STORES_LIVE ]]; then
+            echo "Confirm the same version is live in both stores." >&2
+            exit 1
+          fi
+          gh release download "${{ inputs.candidate_tag }}" \
+            --pattern readiness-manifest.json --dir "$RUNNER_TEMP/candidate"
+          manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA"
+          echo "version=$(jq -r .marketingVersion "$manifest")" >> "$GITHUB_OUTPUT"
+
+  desktop-and-github:
+    needs: verify
+    uses: ./.github/workflows/release.yml
+    with:
+      version: ${{ needs.verify.outputs.version }}
+      candidate_tag: ${{ inputs.candidate_tag }}
+    secrets: inherit

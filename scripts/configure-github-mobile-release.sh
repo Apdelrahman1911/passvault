@@ -100,6 +100,7 @@ reviewer_id="$(gh api "users/$GITHUB_DEPLOYMENT_APPROVER" --jq .id)"
 configure_environment() {
     local environment_name="$1"
     local require_review="$2"
+    local allowed_branch="$3"
     local payload
     if [[ "$require_review" == "true" ]]; then
         payload="$(jq -n --argjson reviewer_id "$reviewer_id" '{
@@ -127,32 +128,50 @@ configure_environment() {
         gh api --method PUT "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
             --input - >/dev/null
 
+    while IFS= read -r policy_id; do
+        [[ -z "$policy_id" ]] && continue
+        gh api --method DELETE \
+            "repos/$GITHUB_REPOSITORY/environments/$environment_name/deployment-branch-policies/$policy_id" \
+            >/dev/null
+    done < <(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name/deployment-branch-policies" \
+        --jq ".branch_policies[] | select(.name != \"$allowed_branch\" or .type != \"branch\") | .id")
+
     if ! gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name/deployment-branch-policies" \
-        --jq '.branch_policies[] | select(.name == "main" and .type == "branch") | .id' |
+        --jq ".branch_policies[] | select(.name == \"$allowed_branch\" and .type == \"branch\") | .id" |
         grep -q .; then
         gh api --method POST \
             "repos/$GITHUB_REPOSITORY/environments/$environment_name/deployment-branch-policies" \
-            -f name=main -f type=branch >/dev/null
+            -f name="$allowed_branch" -f type=branch >/dev/null
     fi
 }
 
-configure_environment mobile-beta false
-configure_environment mobile-external-beta true
-configure_environment mobile-production true
+configure_environment mobile-beta false testing
+configure_environment mobile-external-beta true testing
+configure_environment mobile-production true release
+
+ANDROID_UPLOAD_CERTIFICATE_SHA256="$(openssl x509 \
+    -in "$repository_root/release/android/passvault-release-cert.pem" \
+    -noout -fingerprint -sha256 | cut -d= -f2 | tr -d ':')"
+IOS_DISTRIBUTION_CERTIFICATE_SHA1="$(openssl pkcs12 \
+    -in "$repository_root/$IOS_DISTRIBUTION_CERTIFICATE_FILE" \
+    -clcerts -nokeys -passin env:IOS_DISTRIBUTION_CERTIFICATE_PASSWORD 2>/dev/null |
+    openssl x509 -noout -fingerprint -sha1 | cut -d= -f2 | tr -d ':')"
 
 repo_variable_names=(
     PUBLISHER_NAME PUBLISHER_NAME_AR COPYRIGHT_HOLDER COPYRIGHT_HOLDER_AR
     COUNTRY_OR_JURISDICTION SUPPORT_EMAIL SECURITY_EMAIL PRIVACY_POLICY_URL SUPPORT_URL
     PROJECT_URL ANDROID_PACKAGE_NAME IOS_BUNDLE_ID APPLE_TEAM_ID APP_STORE_APP_ID
     APP_STORE_SKU ASC_ISSUER_ID ASC_KEY_ID GOOGLE_CLOUD_PROJECT_ID
-    GOOGLE_CLOUD_PROJECT_NUMBER DEPLOYMENT_APPROVER
+    GOOGLE_CLOUD_PROJECT_NUMBER DEPLOYMENT_APPROVER ANDROID_UPLOAD_CERTIFICATE_SHA256
+    IOS_DISTRIBUTION_CERTIFICATE_SHA1
 )
 repo_variable_sources=(
     PUBLISHER_NAME_EN PUBLISHER_NAME_AR COPYRIGHT_HOLDER_EN COPYRIGHT_HOLDER_AR
     COUNTRY_OR_JURISDICTION SUPPORT_EMAIL SECURITY_EMAIL PRIVACY_POLICY_URL SUPPORT_URL
     PROJECT_URL ANDROID_PACKAGE_NAME IOS_BUNDLE_ID APPLE_TEAM_ID APP_STORE_APP_ID
     APP_STORE_SKU ASC_ISSUER_ID ASC_KEY_ID GOOGLE_CLOUD_PROJECT_ID
-    GOOGLE_CLOUD_PROJECT_NUMBER GITHUB_DEPLOYMENT_APPROVER
+    GOOGLE_CLOUD_PROJECT_NUMBER GITHUB_DEPLOYMENT_APPROVER ANDROID_UPLOAD_CERTIFICATE_SHA256
+    IOS_DISTRIBUTION_CERTIFICATE_SHA1
 )
 
 for index in "${!repo_variable_names[@]}"; do
@@ -228,6 +247,7 @@ set_environment_variable() {
 if [[ "$play_group_ready" == "true" ]]; then
     set_environment_variable mobile-external-beta GOOGLE_CLOSED_TEST_GROUP "$GOOGLE_CLOSED_TEST_GROUP"
 fi
+set_environment_variable mobile-beta TESTFLIGHT_EXTERNAL_GROUP "$TESTFLIGHT_EXTERNAL_GROUP"
 set_environment_variable mobile-external-beta TESTFLIGHT_EXTERNAL_GROUP "$TESTFLIGHT_EXTERNAL_GROUP"
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
@@ -366,7 +386,7 @@ verify_environment_variables mobile-external-beta "$external_variables" \
 verify_environment_variables mobile-production "$production_variables" \
     APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
 verify_environment_variables mobile-beta "$beta_variables" \
-    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
+    TESTFLIGHT_EXTERNAL_GROUP EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
     if gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" >/dev/null 2>&1; then
@@ -400,18 +420,23 @@ append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual
     "Add real App Store Connect users before assigning internal testers."
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
+    expected_branch=testing
+    [[ "$environment_name" == mobile-production ]] && expected_branch=release
     custom_policy="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
         --jq '.deployment_branch_policy.custom_branch_policies')"
-    main_policy="$(gh api \
+    branch_policy="$(gh api \
         "repos/$GITHUB_REPOSITORY/environments/$environment_name/deployment-branch-policies" \
-        --jq '.branch_policies[] | select(.name == "main" and .type == "branch") | .name')"
-    if [[ "$custom_policy" == "true" && "$main_policy" == "main" ]]; then
-        append_github_row "$environment_name main policy" "GitHub environment protection" "Yes" \
-            "GitHub API" "Only the configured main branch is allowed" "None"
+        --jq ".branch_policies[] | select(.name == \"$expected_branch\" and .type == \"branch\") | .name")"
+    if [[ "$custom_policy" == "true" && "$branch_policy" == "$expected_branch" ]]; then
+        append_github_row "$environment_name $expected_branch policy" \
+            "GitHub environment protection" "Yes" \
+            "GitHub API" "Only the configured $expected_branch branch is allowed" "None"
     else
         verification_failures=$((verification_failures + 1))
-        append_github_row "$environment_name main policy" "GitHub environment protection" "No" \
-            "GitHub API" "Main-only deployment policy missing" "Rerun environment configuration."
+        append_github_row "$environment_name $expected_branch policy" \
+            "GitHub environment protection" "No" \
+            "GitHub API" "$expected_branch-only deployment policy missing" \
+            "Rerun environment configuration."
     fi
 done
 

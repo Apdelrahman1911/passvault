@@ -2,14 +2,20 @@
 
 set -euo pipefail
 
-if [[ $# -ne 3 ]]; then
-    echo "Usage: $0 <download-directory> <output-directory> <version>" >&2
+if [[ $# -lt 3 || $# -gt 4 ]]; then
+    echo "Usage: $0 <download-directory> <output-directory> <version> [test|production]" >&2
     exit 1
 fi
 
 download_directory="$1"
 output_directory="$2"
 version="$3"
+release_kind="${4:-production}"
+
+if [[ "$release_kind" != "test" && "$release_kind" != "production" ]]; then
+    echo "Release kind must be test or production." >&2
+    exit 1
+fi
 
 if [[ ! -d "$download_directory" ]]; then
     echo "Downloaded artifact directory was not found: $download_directory" >&2
@@ -27,7 +33,7 @@ if find "$output_directory" -mindepth 1 -print -quit | grep -q .; then
     exit 1
 fi
 
-required_extensions=(exe msi dmg deb rpm)
+required_extensions=(exe msi deb rpm)
 for extension in "${required_extensions[@]}"; do
     matches=()
     while IFS= read -r -d '' matched_path; do
@@ -52,16 +58,39 @@ for extension in "${required_extensions[@]}"; do
     install -m 0644 "$source_path" "$destination_path"
 done
 
+dmg_matches=()
+while IFS= read -r -d '' matched_path; do
+    dmg_matches+=("$matched_path")
+done < <(find "$download_directory" -type f -iname '*.dmg' -print0)
+if (( ${#dmg_matches[@]} != 2 )); then
+    echo "Expected exactly two architecture-specific .dmg artifacts, found ${#dmg_matches[@]}." >&2
+    exit 1
+fi
+for architecture in arm64 x64; do
+    matches=()
+    for matched_path in "${dmg_matches[@]}"; do
+        [[ "$(basename "$matched_path")" == *"-$architecture.dmg" ]] && matches+=("$matched_path")
+    done
+    if (( ${#matches[@]} != 1 )); then
+        echo "Expected exactly one macOS $architecture DMG." >&2
+        exit 1
+    fi
+    install -m 0644 "${matches[0]}" "$output_directory/$(basename "${matches[0]}")"
+done
+
 commit_sha="${GITHUB_SHA:-unknown}"
 cat >"$output_directory/RELEASE-MANIFEST.txt" <<EOF
 PassVault release manifest
 Version: $version
 Commit: $commit_sha
 
+Release kind: $release_kind
+
 Signature policy:
-- Windows launcher, EXE, and MSI: Authenticode-signed, timestamped, and trust-verified.
-- macOS DMG: Developer ID-signed, notarized, stapled, and Gatekeeper-verified.
+- Windows EXE and MSI: $(if [[ "$release_kind" == production ]]; then echo 'Authenticode signing is mandatory and verified.'; else echo 'intentionally unsigned testing artifacts.'; fi)
+- macOS DMGs (arm64 and x64): $(if [[ "$release_kind" == production ]]; then echo 'Developer ID signing and notarization are mandatory and verified.'; else echo 'intentionally unsigned testing artifacts.'; fi)
 - Linux DEB and RPM: integrity-protected by this SHA-256 manifest; no platform signature.
+- Always verify downloaded files against SHA256SUMS.txt before installation.
 EOF
 
 (
@@ -79,4 +108,4 @@ EOF
     "${checksum_tool[@]}" --check SHA256SUMS.txt
 )
 
-echo "Prepared five desktop packages, a release manifest, and verified SHA-256 checksums."
+echo "Prepared six desktop packages, a release manifest, and verified SHA-256 checksums."

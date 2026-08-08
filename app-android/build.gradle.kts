@@ -147,6 +147,7 @@ android {
 
         versionCode = appVersionCode
         versionName = appVersionName
+        buildConfigField("boolean", "STORE_SCREENSHOT_MODE", "false")
     }
 
     buildFeatures {
@@ -206,6 +207,14 @@ android {
             ) {
                 signingConfig = releaseSigningConfig
             }
+        }
+
+        create("storeScreenshot") {
+            initWith(getByName("debug"))
+            matchingFallbacks += listOf("debug")
+            applicationIdSuffix = ".storescreenshot"
+            versionNameSuffix = "-storescreenshot"
+            buildConfigField("boolean", "STORE_SCREENSHOT_MODE", "true")
         }
     }
 

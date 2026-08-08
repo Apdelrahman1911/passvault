@@ -54,7 +54,9 @@ class MainActivity : FragmentActivity() {
         biometricKeyStore.attach(this)
 
         // Apply screenshot protection immediately
-        AndroidScreenshotProtection.applyToActivity(this)
+        if (!BuildConfig.STORE_SCREENSHOT_MODE) {
+            AndroidScreenshotProtection.applyToActivity(this)
+        }
 
         setContent {
             DisposableEffect(Unit) {
@@ -111,17 +113,22 @@ class MainActivity : FragmentActivity() {
      */
     private fun configureWindow() {
         // Ensure FLAG_SECURE is applied before window becomes visible
-        window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        if (!BuildConfig.STORE_SCREENSHOT_MODE) {
+            window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
 
         // Configure insets handling for edge-to-edge
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (
+            !BuildConfig.STORE_SCREENSHOT_MODE &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        ) {
             setRecentsScreenshotEnabled(false)
         }
 
         // Handle secure flags for different Android versions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (!BuildConfig.STORE_SCREENSHOT_MODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Android 12+: Additional privacy features
             window?.setHideOverlayWindows(true)
         }

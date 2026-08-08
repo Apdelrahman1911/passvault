@@ -1,6 +1,35 @@
 name: Mobile Store Release
 
 on:
+  workflow_call:
+    inputs:
+      platform:
+        required: true
+        type: string
+      channel:
+        required: true
+        type: string
+      operation:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      build_number:
+        required: true
+        type: string
+      testflight_distribution:
+        required: false
+        default: email-list
+        type: string
+      production_confirmation:
+        required: false
+        default: ''
+        type: string
+      testing_confirmation:
+        required: false
+        default: ''
+        type: string
   workflow_dispatch:
     inputs:
       platform:
@@ -21,6 +50,22 @@ on:
           - internal
           - external
           - production
+      operation:
+        description: Upload a new internal binary or promote the exact existing build
+        required: true
+        default: upload
+        type: choice
+        options:
+          - upload
+          - promote
+      version:
+        description: Exact marketing version; blank uses version.properties
+        required: false
+        type: string
+      build_number:
+        description: Exact store build number; blank uses version.properties
+        required: false
+        type: string
       testflight_distribution:
         description: External iOS invitation method; public links do not import tester identities
         required: true
@@ -70,10 +115,20 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Require main and explicit production confirmation
+      - name: Require the correct protected branch and confirmations
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
-            echo "Mobile store uploads must run from main." >&2
+          expected_branch=testing
+          if [[ "${{ inputs.channel }}" == "production" ]]; then expected_branch=release; fi
+          if [[ "$GITHUB_REF" != "refs/heads/$expected_branch" ]]; then
+            echo "${{ inputs.channel }} must run from $expected_branch." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.operation }}" == "upload" && "${{ inputs.channel }}" != "internal" ]]; then
+            echo "New binaries may only be uploaded to internal testing." >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.operation }}" == "promote" && "${{ inputs.channel }}" == "internal" ]]; then
+            echo "Internal testing requires an upload operation." >&2
             exit 1
           fi
           if [[ "${{ inputs.channel }}" == "production" &&
@@ -90,8 +145,18 @@ jobs:
       - name: Validate version and public release metadata
         id: version
         run: |
-          VERSION="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
-          VERSION_CODE="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          VERSION="${{ inputs.version }}"
+          VERSION_CODE="${{ inputs.build_number }}"
+          if [[ -z "$VERSION" ]]; then
+            VERSION="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
+          fi
+          if [[ -z "$VERSION_CODE" ]]; then
+            VERSION_CODE="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          fi
+          if [[ ! "$VERSION_CODE" =~ ^[0-9]+$ || "$VERSION_CODE" -lt 1000000 ]]; then
+            echo "The build number must be an integer of at least 1000000." >&2
+            exit 1
+          fi
           ./scripts/validate-release-metadata.sh "$VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
@@ -116,7 +181,7 @@ jobs:
 
   android:
     name: Android ${{ inputs.channel }}
-    if: inputs.platform == 'both' || inputs.platform == 'android'
+    if: inputs.operation == 'upload' && (inputs.platform == 'both' || inputs.platform == 'android')
     needs: validate
     runs-on: ubuntu-latest
     environment: ${{ needs.validate.outputs.environment }}
@@ -228,7 +293,7 @@ jobs:
 
   ios:
     name: iOS ${{ inputs.channel }}
-    if: inputs.platform == 'both' || inputs.platform == 'ios'
+    if: inputs.operation == 'upload' && (inputs.platform == 'both' || inputs.platform == 'ios')
     needs: validate
     # Compose Multiplatform 1.11 links UIKit symbols introduced with the
     # Xcode 26 SDK. Keep the store archive on the matching hosted image.
@@ -446,4 +511,161 @@ jobs:
             find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
             find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
             find "$PRIVATE_RUNTIME" -depth -type d -exec rmdir {} + 2>/dev/null || true
+          fi
+
+  promote-android:
+    name: Promote Android ${{ inputs.channel }}
+    if: inputs.operation == 'promote' && (inputs.platform == 'both' || inputs.platform == 'android')
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: ${{ needs.validate.outputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Validate configured Play closed testers
+        if: inputs.channel == 'external'
+        env:
+          PLAY_CLOSED_TESTERS_BASE64: ${{ secrets.PLAY_CLOSED_TESTERS_BASE64 }}
+        run: |
+          testers="$RUNNER_TEMP/play-closed-testers.txt"
+          printf '%s' "$PLAY_CLOSED_TESTERS_BASE64" | openssl base64 -d -A > "$testers"
+          chmod 600 "$testers"
+          ./scripts/validate-mobile-tester-files.sh play "$testers"
+          rm -f "$testers"
+
+      - name: Prepare production metadata and screenshots
+        if: inputs.channel == 'production'
+        env:
+          STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
+          COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+          SUPPORT_URL: ${{ vars.SUPPORT_URL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+        run: |
+          PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-play-promotion"
+          install -d -m 700 "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store"
+          printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
+            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/input"
+          ./scripts/prepare-mobile-store-metadata.sh \
+            "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
+            "${{ needs.validate.outputs.version_code }}"
+          echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
+
+      - name: Authenticate to Google with OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+
+      - name: Promote exact Google Play build
+        env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
+          PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
+          PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
+          UPLOAD_STORE_ASSETS: ${{ inputs.channel == 'production' }}
+        run: |
+          if [[ "${{ inputs.channel }}" == "external" ]]; then
+            bundle exec fastlane android promote_external
+          else
+            bundle exec fastlane android promote_production
+          fi
+
+      - name: Remove promotion metadata
+        if: always() && inputs.channel == 'production'
+        run: |
+          private_runtime="$RUNNER_TEMP/passvault-play-promotion"
+          if [[ -d "$private_runtime" ]]; then
+            find "$private_runtime" -type f -exec chmod 600 {} + 2>/dev/null || true
+            find "$private_runtime" -type f -exec rm -f -- {} + 2>/dev/null || true
+            find "$private_runtime" -depth -type d -exec rmdir {} + 2>/dev/null || true
+          fi
+
+  promote-ios:
+    name: Promote iOS ${{ inputs.channel }}
+    if: inputs.operation == 'promote' && (inputs.platform == 'both' || inputs.platform == 'ios')
+    needs: validate
+    runs-on: macos-26
+    environment: ${{ needs.validate.outputs.environment }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Validate configured TestFlight email testers
+        if: inputs.channel == 'external'
+        env:
+          TESTERS_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
+        run: |
+          testers="$RUNNER_TEMP/testflight-testers.csv"
+          printf '%s' "$TESTERS_BASE64" | openssl base64 -d -A > "$testers"
+          chmod 600 "$testers"
+          ./scripts/validate-mobile-tester-files.sh testflight "$testers"
+          echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$testers" >> "$GITHUB_ENV"
+
+      - name: Prepare production metadata
+        if: inputs.channel == 'production'
+        env:
+          STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
+          COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+          SUPPORT_URL: ${{ vars.SUPPORT_URL }}
+          PROJECT_URL: ${{ vars.PROJECT_URL }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+        run: |
+          PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-promotion"
+          install -d -m 700 "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store"
+          printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
+            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/input"
+          ./scripts/prepare-mobile-store-metadata.sh \
+            "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
+            "${{ needs.validate.outputs.version_code }}"
+          echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
+
+      - name: Promote exact App Store Connect build
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          APP_VERSION: ${{ needs.validate.outputs.version }}
+          BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
+          TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
+          TESTFLIGHT_DISTRIBUTION_MODE: ${{ inputs.testflight_distribution }}
+          TESTFLIGHT_NOTIFY_AFTER_APPROVAL: 'true'
+          EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+          PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
+          PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
+        run: |
+          if [[ "${{ inputs.channel }}" == "external" ]]; then
+            bundle exec fastlane ios promote_external
+          else
+            bundle exec fastlane ios promote_production
+          fi
+
+      - name: Remove promotion metadata
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/testflight-testers.csv"
+          private_runtime="$RUNNER_TEMP/passvault-promotion"
+          if [[ -d "$private_runtime" ]]; then
+            find "$private_runtime" -type f -exec chmod 600 {} + 2>/dev/null || true
+            find "$private_runtime" -type f -exec rm -f -- {} + 2>/dev/null || true
+            find "$private_runtime" -depth -type d -exec rmdir {} + 2>/dev/null || true
           fi

@@ -138,22 +138,25 @@ input_directory="$temporary_root/input"
 output_directory="$temporary_root/output"
 mkdir -p "$input_directory"
 
-for extension in exe msi dmg deb rpm; do
+for extension in exe msi deb rpm; do
     printf 'PassVault %s test artifact\n' "$extension" >"$input_directory/PassVault-$version.$extension"
 done
+printf 'PassVault arm64 test artifact\n' >"$input_directory/PassVault-$version-macos-arm64.dmg"
+printf 'PassVault x64 test artifact\n' >"$input_directory/PassVault-$version-macos-x64.dmg"
 
 GITHUB_SHA=0123456789abcdef \
     ./scripts/prepare-release-assets.sh \
     "$input_directory" \
     "$output_directory" \
-    "$version" >/dev/null
+    "$version" test >/dev/null
 
-if [[ "$(find "$output_directory" -maxdepth 1 -type f | wc -l | tr -d ' ')" != "7" ]]; then
+if [[ "$(find "$output_directory" -maxdepth 1 -type f | wc -l | tr -d ' ')" != "8" ]]; then
     echo "Unexpected number of consolidated release files." >&2
     exit 1
 fi
 
 grep -Fq '0123456789abcdef' "$output_directory/RELEASE-MANIFEST.txt"
+grep -Fq 'intentionally unsigned testing artifacts' "$output_directory/RELEASE-MANIFEST.txt"
 (
     cd "$output_directory"
     if command -v sha256sum >/dev/null 2>&1; then
@@ -171,6 +174,30 @@ if ./scripts/prepare-release-assets.sh \
     echo "Missing required release artifact was accepted." >&2
     exit 1
 fi
+
+candidate_manifest="$temporary_root/candidate-manifest.json"
+APP_VERSION="$version" \
+BUILD_NUMBER=1000123 \
+SOURCE_COMMIT=0123456789abcdef0123456789abcdef01234567 \
+CANDIDATE_TAG="v$version-rc.1000123" \
+ANDROID_PACKAGE_NAME=com.passvault.android \
+ANDROID_SIGNING_SHA256=7D4D1120B1D19F5BB942E06C600F2B6481E5E682475223FA4E7DC7B27CDB1037 \
+ANDROID_INTERNAL_STATE=completed \
+ANDROID_EXTERNAL_STATE=completed \
+IOS_BUNDLE_ID=com.passvault.ios \
+APP_STORE_APP_ID=1234567890 \
+IOS_SIGNING_SHA1=0123456789ABCDEF0123456789ABCDEF01234567 \
+IOS_INTERNAL_STATE=completed \
+IOS_EXTERNAL_STATE=submitted_for_review \
+    ruby scripts/create-candidate-manifest.rb > "$candidate_manifest"
+ruby scripts/validate-candidate-manifest.rb --allow-pending "$candidate_manifest" \
+    0123456789abcdef0123456789abcdef01234567 >/dev/null
+if ruby scripts/validate-candidate-manifest.rb "$candidate_manifest" >/dev/null 2>&1; then
+    echo "A candidate pending Apple Beta Review was accepted for production." >&2
+    exit 1
+fi
+jq '.ios.external = "approved"' "$candidate_manifest" > "$temporary_root/readiness-manifest.json"
+ruby scripts/validate-candidate-manifest.rb "$temporary_root/readiness-manifest.json" >/dev/null
 
 mobile_fixture="$repository_root/scripts/testdata/mobile-store"
 mobile_output="$temporary_root/mobile-store"
@@ -304,6 +331,16 @@ fi
 ruby -c scripts/configure-app-store-connect-beta.rb >/dev/null
 ruby -c scripts/manage-testflight-public-link.rb >/dev/null
 ruby -c fastlane/Fastfile >/dev/null
+ruby -c scripts/create-candidate-manifest.rb >/dev/null
+ruby -c scripts/validate-candidate-manifest.rb >/dev/null
+bash -n scripts/check-play-track-build.sh
+grep -Fq 'track_promote_to' fastlane/Fastfile
+grep -Fq 'distribute_only: true' fastlane/Fastfile
+grep -Fq 'skip_binary_upload: true' fastlane/Fastfile
+grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
+grep -Fq 'readiness-manifest.json' .github/workflows/production-release.yml
+grep -Fq 'refs/heads/release' .github/workflows/production-release.yml
+grep -Fq 'I_CONFIRM_BOTH_STORES_LIVE' .github/workflows/publish-stable-release.yml
 bash -n scripts/verify-ios-exported-artifact.sh
 grep -Fq 'TESTFLIGHT_DISTRIBUTION_MODE' fastlane/Fastfile
 grep -Fq 'public-link' .github/workflows/mobile-store-release.yml

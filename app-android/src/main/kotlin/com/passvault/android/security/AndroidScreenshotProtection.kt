@@ -3,6 +3,7 @@ package com.passvault.android.security
 import android.app.Activity
 import android.os.Build
 import android.view.WindowManager
+import com.passvault.android.BuildConfig
 import com.passvault.core.security.ScreenshotProtection
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
@@ -31,6 +32,7 @@ class AndroidScreenshotProtection : ScreenshotProtection {
          * This is a convenience method for one-time application.
          */
         fun applyToActivity(activity: Activity) {
+            if (BuildConfig.STORE_SCREENSHOT_MODE) return
             activity.window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

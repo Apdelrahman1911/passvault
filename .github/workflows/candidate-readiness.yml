@@ -1,0 +1,145 @@
+name: Candidate Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Testing candidate tag to verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate-readiness-${{ inputs.candidate_tag }}
+  cancel-in-progress: false
+
+env:
+  RUBY_VERSION: '3.3'
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.manifest.outputs.version }}
+      build_number: ${{ steps.manifest.outputs.build_number }}
+      source_commit: ${{ steps.manifest.outputs.source_commit }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read candidate provenance
+        id: manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "${{ inputs.candidate_tag }}" \
+            --pattern candidate-manifest.json --dir "$RUNNER_TEMP/candidate"
+          ruby scripts/validate-candidate-manifest.rb --allow-pending \
+            "$RUNNER_TEMP/candidate/candidate-manifest.json"
+          manifest="$RUNNER_TEMP/candidate/candidate-manifest.json"
+          [[ "$(jq -r .candidateTag "$manifest")" == "${{ inputs.candidate_tag }}" ]]
+          echo "version=$(jq -r .marketingVersion "$manifest")" >> "$GITHUB_OUTPUT"
+          echo "build_number=$(jq -r .buildNumber "$manifest")" >> "$GITHUB_OUTPUT"
+          echo "source_commit=$(jq -r .sourceCommit "$manifest")" >> "$GITHUB_OUTPUT"
+
+  google-play:
+    needs: candidate
+    runs-on: ubuntu-latest
+    environment: mobile-beta
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Authenticate to Google Play
+        id: google-auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          create_credentials_file: false
+      - name: Require exact build on closed testing
+        env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+        run: ./scripts/check-play-track-build.sh beta "${{ needs.candidate.outputs.build_number }}"
+
+  testflight:
+    needs: candidate
+    runs-on: ubuntu-latest
+    environment: mobile-beta
+    steps:
+      - uses: actions/checkout@v7
+      - name: Require Beta Review approval and external availability
+        env:
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
+          EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
+          IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+        run: |
+          PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-readiness"
+          install -d -m 700 "$PRIVATE_RUNTIME"
+          printf '%s' "$ASC_PRIVATE_KEY_BASE64" |
+            openssl base64 -d -A > "$PRIVATE_RUNTIME/asc-key.p8"
+          chmod 600 "$PRIVATE_RUNTIME/asc-key.p8"
+          export PRIVATE_RUNTIME PASSVAULT_ASC_CONFIGURATION_SOURCE=environment
+          export ASC_PRIVATE_KEY_FILE="$PRIVATE_RUNTIME/asc-key.p8"
+          status="$(ruby scripts/manage-testflight-public-link.rb \
+            --status \
+            --version "${{ needs.candidate.outputs.version }}" \
+            --build-number "${{ needs.candidate.outputs.build_number }}")"
+          grep -Fqx 'PROCESSING_STATE=VALID' <<< "$status"
+          grep -Fqx 'GROUP_HAS_BUILD=true' <<< "$status"
+          grep -Fqx 'BETA_REVIEW_STATE=APPROVED' <<< "$status"
+          grep -Eq '^EXTERNAL_BUILD_STATE=(READY_FOR_BETA_TESTING|IN_BETA_TESTING)$' <<< "$status"
+          find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} +
+          rmdir "$PRIVATE_RUNTIME"
+
+  promote-release-branch:
+    needs: [ candidate, google-play, testflight ]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Create immutable readiness attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ needs.candidate.outputs.source_commit }}
+        run: |
+          gh release download "${{ inputs.candidate_tag }}" \
+            --pattern candidate-manifest.json --dir "$RUNNER_TEMP/candidate"
+          jq '.android.external = "completed" | .ios.external = "approved"' \
+            "$RUNNER_TEMP/candidate/candidate-manifest.json" \
+            > readiness-manifest.json
+          ruby scripts/validate-candidate-manifest.rb readiness-manifest.json "$SOURCE_COMMIT"
+          gh release upload "${{ inputs.candidate_tag }}" readiness-manifest.json --clobber
+
+      - name: Fast-forward release to the tested commit
+        env:
+          SOURCE_COMMIT: ${{ needs.candidate.outputs.source_commit }}
+        run: |
+          git fetch origin release --no-tags || true
+          if git show-ref --verify --quiet refs/remotes/origin/release; then
+            git merge-base --is-ancestor origin/release "$SOURCE_COMMIT" || {
+              echo "release cannot be fast-forwarded to the candidate." >&2; exit 1;
+            }
+          fi
+          git push origin "$SOURCE_COMMIT:refs/heads/release"
+
+      - name: Start protected production deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run production-release.yml \
+            --ref release \
+            -f candidate_tag="${{ inputs.candidate_tag }}"
