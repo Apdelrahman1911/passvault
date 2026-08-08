@@ -54,10 +54,11 @@ are unsigned. Mobile IPA/AAB files are never attached to a public release.
 
 Apple review is asynchronous and App Store Connect has no GitHub event hook.
 After Apple emails that Beta App Review is approved, manually run `Candidate
-Readiness` for the candidate tag. That workflow verifies both stores using
-their APIs, writes `readiness-manifest.json`, fast-forwards `release` to the
-exact candidate commit, and starts `Production Store Release` automatically.
-This is the only unavoidable post-review manual start.
+Readiness` from the `testing` branch for the candidate tag. That workflow
+verifies both stores using their APIs, writes `readiness-manifest.json`,
+fast-forwards `release` to the exact candidate commit, and starts `Production
+Store Release` automatically. This is the only unavoidable post-review manual
+start.
 
 ## Production release
 

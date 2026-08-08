@@ -390,6 +390,11 @@ grep -Fq 'needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, des
     .github/workflows/testing-release.yml
 grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
 grep -Fq 'readiness-manifest.json' .github/workflows/production-release.yml
+grep -Fq 'Candidate Readiness must run from testing.' .github/workflows/candidate-readiness.yml
+grep -Fq 'access_token_scopes: https://www.googleapis.com/auth/androidpublisher' \
+    .github/workflows/candidate-readiness.yml
+grep -Fq 'access_token_lifetime: 600s' .github/workflows/candidate-readiness.yml
+grep -Fq "printf '%s\\n' \"\$status\"" .github/workflows/candidate-readiness.yml
 grep -Fq 'refs/heads/release' .github/workflows/production-release.yml
 grep -Fq 'I_CONFIRM_BOTH_STORES_LIVE' .github/workflows/publish-stable-release.yml
 bash -n scripts/verify-ios-exported-artifact.sh
