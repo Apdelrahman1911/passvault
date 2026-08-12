@@ -1,21 +1,40 @@
 package com.passvault.core.testing
 
-import com.passvault.core.domain.model.*
+import com.passvault.core.domain.model.AttachmentId
+import com.passvault.core.domain.model.AttachmentMetadata
+import com.passvault.core.domain.model.Credential
+import com.passvault.core.domain.model.CredentialId
+import com.passvault.core.domain.model.CredentialType
+import com.passvault.core.domain.model.CustomField
+import com.passvault.core.domain.model.CustomFieldId
+import com.passvault.core.domain.model.Folder
+import com.passvault.core.domain.model.FolderId
+import com.passvault.core.domain.model.PasswordHealth
+import com.passvault.core.domain.model.PasswordHistoryEntry
+import com.passvault.core.domain.model.PasswordScore
+import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.model.Tag
+import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.UrlValue
+import com.passvault.core.domain.model.VaultId
+import com.passvault.core.domain.model.VaultMetadata
 import kotlin.time.Clock
 import kotlin.time.Instant
 
 /**
  * Test data factory for creating sample credentials and other domain objects.
+ *
+ * The factory intentionally keeps canonical domain fixtures under one
+ * namespace so tests do not diverge on security-sensitive defaults.
  */
+@Suppress("TooManyFunctions")
 object TestData {
-    private var nextId = 0L
-
     private fun uniqueId(prefix: String): String =
-        "$prefix-${Clock.System.now().toEpochMilliseconds()}-${nextId++}"
-    
+        "$prefix-${kotlin.uuid.Uuid.random()}"
+
     val now: Instant
         get() = Clock.System.now()
-    
+
     /**
      * Create a sample credential for testing.
      */
@@ -54,7 +73,7 @@ object TestData {
             lastUsedAt = null,
         )
     }
-    
+
     /**
      * Create a sample login credential.
      */
@@ -72,7 +91,7 @@ object TestData {
         url = url,
         isFavorite = isFavorite,
     )
-    
+
     /**
      * Create a sample secure note credential.
      */
@@ -87,7 +106,7 @@ object TestData {
     ).copy(
         notes = SensitiveText.from(notes),
     )
-    
+
     /**
      * Create a sample API key credential.
      */
@@ -100,7 +119,7 @@ object TestData {
         username = "",
         password = apiKey,
     )
-    
+
     /**
      * Create a sample WiFi credential.
      */
@@ -113,7 +132,7 @@ object TestData {
         username = "",
         password = password,
     )
-    
+
     /**
      * Create a sample payment card credential.
      */
@@ -143,7 +162,7 @@ object TestData {
             ),
         ),
     )
-    
+
     /**
      * Create a sample folder.
      */
@@ -163,7 +182,7 @@ object TestData {
             createdAt = now,
         )
     }
-    
+
     /**
      * Create a sample tag.
      */
@@ -178,7 +197,7 @@ object TestData {
             color = color,
         )
     }
-    
+
     /**
      * Create sample vault metadata.
      */
@@ -195,7 +214,7 @@ object TestData {
             entryCount = entryCount,
         )
     }
-    
+
     /**
      * Create a sample attachment metadata.
      */
@@ -213,7 +232,7 @@ object TestData {
             createdAt = now,
         )
     }
-    
+
     /**
      * Create a password history entry.
      */
@@ -226,7 +245,7 @@ object TestData {
             changedAt = changedAt,
         )
     }
-    
+
     /**
      * Create a password health assessment.
      */
@@ -245,7 +264,7 @@ object TestData {
             ageDays = ageDays,
         )
     }
-    
+
     /**
      * Create a list of test credentials.
      */
@@ -260,7 +279,7 @@ object TestData {
             )
         }
     }
-    
+
     /**
      * Create a list of test folders.
      */
@@ -273,7 +292,7 @@ object TestData {
             )
         }
     }
-    
+
     /**
      * Create a list of test tags.
      */
@@ -287,43 +306,43 @@ object TestData {
             )
         }
     }
-    
+
     /**
      * Test byte arrays for crypto operations.
      */
     object Crypto {
-        
+
         /**
          * Known test key (32 bytes).
          */
         val testKey: ByteArray
             get() = ByteArray(32) { (it + 1).toByte() }
-        
+
         /**
          * Known test salt (16 bytes).
          */
         val testSalt: ByteArray
             get() = ByteArray(16) { (it + 100).toByte() }
-        
+
         /**
          * Known test nonce (24 bytes for XChaCha20).
          */
         val testNonce: ByteArray
             get() = ByteArray(24) { (it + 50).toByte() }
-        
+
         /**
          * Known plaintext.
          */
         val testPlaintext: ByteArray
             get() = "Hello, PassVault! This is test data.".encodeToByteArray()
-        
+
         /**
          * Known password for key derivation.
          */
         val testPassword: ByteArray
             get() = "TestPassword123!".encodeToByteArray()
     }
-    
+
     private fun randomString(length: Int = 16): String {
         val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
         return (1..length).map { chars.random() }.joinToString("")

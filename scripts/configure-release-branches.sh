@@ -3,11 +3,51 @@
 set -euo pipefail
 
 apply=false
-if [[ "${1:-}" == "--apply" ]]; then apply=true; fi
+case "$#:${1:-}" in
+    0:) ;;
+    1:--apply) apply=true ;;
+    *)
+        echo "Usage: $0 [--apply]" >&2
+        exit 2
+        ;;
+esac
 
+for required_command in gh jq; do
+    if ! command -v "$required_command" >/dev/null 2>&1; then
+        echo "$required_command is required." >&2
+        exit 1
+    fi
+done
+if ! gh auth status; then
+    echo "GitHub authentication is invalid." >&2
+    exit 1
+fi
+
+repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repository_root"
 repository="${GITHUB_REPOSITORY:-}"
 if [[ -z "$repository" ]]; then
     repository="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
+fi
+if [[ ! "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] ||
+    [[ "$(gh repo view "$repository" --json nameWithOwner --jq .nameWithOwner)" != "$repository" ]]; then
+    echo "The target GitHub repository is invalid or inaccessible." >&2
+    exit 1
+fi
+remote_url="$(git remote get-url origin)"
+case "$remote_url" in
+    "https://github.com/$repository.git"|"git@github.com:$repository.git") ;;
+    *)
+        echo "The current Git remote does not match the target repository." >&2
+        exit 1
+        ;;
+esac
+if [[ "$apply" == true ]]; then
+    read -r -p "Type $repository to confirm branch-protection changes: " confirmation
+    if [[ "$confirmation" != "$repository" ]]; then
+        echo "Branch configuration cancelled; no settings were changed." >&2
+        exit 1
+    fi
 fi
 default_sha="$(gh api "repos/$repository/git/ref/heads/main" --jq .object.sha)"
 
@@ -34,7 +74,7 @@ protect_review_branch() {
     jq -n '{
       required_status_checks: {
         strict: true,
-        contexts: ["Validate Gradle Wrapper", "Run Tests"]
+        contexts: ["CI Gate"]
       },
       enforce_admins: false,
       required_pull_request_reviews: {

@@ -15,8 +15,10 @@ fi
 dmg_path="$1"
 app_path="${2:-}"
 report_path="${3:-app-desktop/build/reports/macos-notarization.json}"
+repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 : "${MACOS_IDENTITY:?MACOS_IDENTITY is required}"
+: "${MACOS_TEAM_ID:?MACOS_TEAM_ID is required}"
 : "${MACOS_KEYCHAIN_PATH:?MACOS_KEYCHAIN_PATH is required}"
 : "${MACOS_NOTARY_PROFILE:?MACOS_NOTARY_PROFILE is required}"
 
@@ -33,7 +35,8 @@ if [[ ! -f "$dmg_path" ]]; then
 fi
 
 mount_path=""
-result_path="$(mktemp -t passvault-notary-result).json"
+result_path="$(mktemp -t passvault-notary-result)"
+app_from_dmg=false
 
 cleanup() {
     if [[ -n "$mount_path" ]]; then
@@ -46,10 +49,16 @@ trap cleanup EXIT
 
 hdiutil verify "$dmg_path"
 
-if [[ -z "$app_path" || ! -d "$app_path" ]]; then
+if [[ -z "$app_path" || ! -d "$app_path" || -L "$app_path" ]]; then
     mount_path="$(mktemp -d -t passvault-dmg)"
     hdiutil attach "$dmg_path" -mountpoint "$mount_path" -nobrowse -readonly -quiet
-    app_path="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' -print -quit)"
+    app_count="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' | wc -l | tr -d ' ')"
+    if [[ "$app_count" != 1 ]]; then
+        echo "Expected exactly one PassVault.app in the DMG; found $app_count." >&2
+        exit 1
+    fi
+    app_path="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' -print)"
+    app_from_dmg=true
 fi
 
 if [[ -z "$app_path" || ! -d "$app_path" ]]; then
@@ -57,33 +66,7 @@ if [[ -z "$app_path" || ! -d "$app_path" ]]; then
     exit 1
 fi
 
-codesign --verify --deep --strict --verbose=2 "$app_path"
-signature_details="$(codesign --display --verbose=4 "$app_path" 2>&1)"
-
-if ! grep -Fq "Authority=$MACOS_IDENTITY" <<<"$signature_details"; then
-    echo "The app signer does not match MACOS_IDENTITY." >&2
-    exit 1
-fi
-
-if ! grep -Eq '^Timestamp=' <<<"$signature_details"; then
-    echo "The app signature does not contain a secure Apple timestamp." >&2
-    exit 1
-fi
-
-if ! grep -Eq '^CodeDirectory .*flags=.*\(runtime\)' <<<"$signature_details"; then
-    echo "The app signature does not enable Hardened Runtime." >&2
-    exit 1
-fi
-
-entitlements_path="$(mktemp -t passvault-entitlements).plist"
-if codesign --display --entitlements :- "$app_path" >"$entitlements_path" 2>/dev/null; then
-    if grep -A1 -F 'com.apple.security.get-task-allow' "$entitlements_path" | grep -Fq '<true/>'; then
-        rm -f "$entitlements_path"
-        echo "Release app contains the forbidden get-task-allow entitlement." >&2
-        exit 1
-    fi
-fi
-rm -f "$entitlements_path"
+"$repository_root/scripts/verify-macos-release-artifact.sh" "$app_path"
 
 if [[ -n "$mount_path" ]]; then
     hdiutil detach "$mount_path" -quiet
@@ -92,7 +75,22 @@ if [[ -n "$mount_path" ]]; then
 fi
 
 codesign --force --timestamp --sign "$MACOS_IDENTITY" "$dmg_path"
-codesign --verify --strict --verbose=2 "$dmg_path"
+if [[ "$app_from_dmg" == true ]]; then
+    mount_path="$(mktemp -d -t passvault-signed-dmg)"
+    hdiutil attach "$dmg_path" -mountpoint "$mount_path" -nobrowse -readonly -quiet
+    app_count="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' | wc -l | tr -d ' ')"
+    if [[ "$app_count" != 1 ]]; then
+        echo "Expected exactly one PassVault.app in the signed DMG; found $app_count." >&2
+        exit 1
+    fi
+    app_path="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' -print)"
+fi
+"$repository_root/scripts/verify-macos-release-artifact.sh" "$app_path" "$dmg_path" false
+if [[ -n "$mount_path" ]]; then
+    hdiutil detach "$mount_path" -quiet
+    rmdir "$mount_path"
+    mount_path=""
+fi
 
 mkdir -p "$(dirname "$report_path")"
 xcrun notarytool submit "$dmg_path" \
@@ -117,7 +115,16 @@ if [[ "$status" != "Accepted" ]]; then
 fi
 
 xcrun stapler staple "$dmg_path"
-xcrun stapler validate "$dmg_path"
-spctl --assess --type open --context context:primary-signature --verbose=4 "$dmg_path"
+
+mount_path="$(mktemp -d -t passvault-notarized-dmg)"
+hdiutil attach "$dmg_path" -mountpoint "$mount_path" -nobrowse -readonly -quiet
+stapled_app_count="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' | wc -l | tr -d ' ')"
+if [[ "$stapled_app_count" != 1 ]]; then
+    echo "The notarized DMG must contain exactly one PassVault.app; found $stapled_app_count." >&2
+    exit 1
+fi
+stapled_app_path="$(find "$mount_path" -maxdepth 2 -type d -name 'PassVault.app' -print)"
+"$repository_root/scripts/verify-macos-release-artifact.sh" \
+    "$stapled_app_path" "$dmg_path" true
 
 echo "macOS Developer ID signature, notarization, stapling, and Gatekeeper checks passed."

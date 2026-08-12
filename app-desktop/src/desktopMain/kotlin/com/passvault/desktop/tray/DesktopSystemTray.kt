@@ -1,33 +1,26 @@
 package com.passvault.desktop.tray
 
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.passvault.desktop.OperatingSystem
+import com.passvault.desktop.getOperatingSystem
 import java.awt.Image
 import java.awt.MenuItem
 import java.awt.PopupMenu
 import java.awt.SystemTray
 import java.awt.TrayIcon
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
+import java.util.logging.Logger
 import javax.imageio.ImageIO
 import javax.swing.SwingUtilities
-import java.util.logging.Logger
 
 /**
  * Desktop system tray integration for PassVault.
  * Provides tray icon, context menu, and notifications.
  */
-class DesktopSystemTray(
-    private val scope: CoroutineScope,
-) {
+class DesktopSystemTray {
 
     private val logger = Logger.getLogger(DesktopSystemTray::class.java.name)
 
     private var trayIcon: TrayIcon? = null
-    private var popupMenu: PopupMenu? = null
     private var isVisible = false
     private var strings: DesktopTrayStrings? = null
 
@@ -62,14 +55,18 @@ class DesktopSystemTray(
         this.onExitCallback = onExit
         this.strings = strings
 
-        scope.launch {
-            SwingUtilities.invokeLater {
-                try {
-                    createTrayIcon()
-                    isVisible = true
-                } catch (_: Exception) {
-                    logger.warning("Unable to create the system tray icon")
-                }
+        runOnEventDispatchThread {
+            try {
+                if (trayIcon == null) createTrayIcon()
+                isVisible = true
+            } catch (_: Exception) {
+                // createTrayIcon only publishes the property after SystemTray
+                // accepts it, but also clear state here in case a later setup
+                // step fails. A stale non-null icon would otherwise prevent all
+                // future setup attempts for the lifetime of this singleton.
+                trayIcon = null
+                isVisible = false
+                logger.warning("Unable to create the system tray icon")
             }
         }
     }
@@ -80,17 +77,14 @@ class DesktopSystemTray(
     fun hide() {
         if (!isSupported() || !isVisible) return
 
-        scope.launch {
-            SwingUtilities.invokeLater {
-                try {
-                    val tray = SystemTray.getSystemTray()
-                    trayIcon?.let { tray.remove(it) }
-                    trayIcon = null
-                    popupMenu = null
-                    isVisible = false
-                } catch (_: Exception) {
-                    logger.warning("Unable to hide the system tray icon")
-                }
+        runOnEventDispatchThread {
+            try {
+                val tray = SystemTray.getSystemTray()
+                trayIcon?.let { tray.remove(it) }
+                trayIcon = null
+                isVisible = false
+            } catch (_: Exception) {
+                logger.warning("Unable to hide the system tray icon")
             }
         }
     }
@@ -103,7 +97,7 @@ class DesktopSystemTray(
         val currentStrings = checkNotNull(strings) { "Tray strings must be configured before setup" }
 
         // Create popup menu
-        popupMenu = PopupMenu().apply {
+        val popupMenu = PopupMenu().apply {
             // Show window
             add(MenuItem(currentStrings.showApp).apply {
                 addActionListener { onShowCallback?.invoke() }
@@ -126,29 +120,19 @@ class DesktopSystemTray(
 
         // Create tray icon
         val image = loadTrayIcon()
-        trayIcon = TrayIcon(image, currentStrings.tooltip, popupMenu).apply {
+        val newTrayIcon = TrayIcon(image, currentStrings.tooltip, popupMenu).apply {
             isImageAutoSize = true
 
             // Double-click handler
             addActionListener { onShowCallback?.invoke() }
 
-            // Mouse click handler
-            addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent) {
-                    when (e.button) {
-                        java.awt.event.MouseEvent.BUTTON1 -> {
-                            // Left click - show window
-                            if (e.clickCount == 2) {
-                                onShowCallback?.invoke()
-                            }
-                        }
-                    }
-                }
-            })
         }
 
-        // Add to system tray
-        tray.add(trayIcon)
+        // Publish the icon only after the native tray accepts it. Some Linux
+        // desktop environments report tray support but reject an add request;
+        // retaining that rejected icon would make setup incorrectly look done.
+        tray.add(newTrayIcon)
+        trayIcon = newTrayIcon
     }
 
     /**
@@ -165,7 +149,7 @@ class DesktopSystemTray(
 
             javaClass.getResourceAsStream(iconName)?.use(ImageIO::read)
                 ?: createDefaultIcon()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             createDefaultIcon()
         }
     }
@@ -202,24 +186,17 @@ class DesktopSystemTray(
         onShowCallback = null
         onLockCallback = null
         onExitCallback = null
+        strings = null
     }
 
-    /**
-     * Get the current operating system.
-     */
-    private fun getOperatingSystem(): OperatingSystem {
-        val osName = System.getProperty("os.name").lowercase()
-        return when {
-            osName.contains("win") -> OperatingSystem.WINDOWS
-            osName.contains("mac") -> OperatingSystem.MACOS
-            osName.contains("nix") || osName.contains("nux") || osName.contains("aix") -> OperatingSystem.LINUX
-            else -> OperatingSystem.UNKNOWN
+    private fun runOnEventDispatchThread(block: () -> Unit) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            block()
+        } else {
+            SwingUtilities.invokeAndWait(block)
         }
     }
 
-    enum class OperatingSystem {
-        WINDOWS, MACOS, LINUX, UNKNOWN
-    }
 }
 
 data class DesktopTrayStrings(
@@ -228,24 +205,3 @@ data class DesktopTrayStrings(
     val lockVault: String,
     val exit: String,
 )
-
-/**
- * Extension to convert AWT Image to Compose ImageBitmap.
- */
-fun Image.toImageBitmap(): ImageBitmap {
-    if (this is BufferedImage) {
-        return toComposeImageBitmap()
-    }
-
-    // Convert to BufferedImage first
-    val buffered = BufferedImage(
-        getWidth(null),
-        getHeight(null),
-        BufferedImage.TYPE_INT_ARGB
-    )
-    val graphics = buffered.createGraphics()
-    graphics.drawImage(this, 0, 0, null)
-    graphics.dispose()
-
-    return buffered.toComposeImageBitmap()
-}

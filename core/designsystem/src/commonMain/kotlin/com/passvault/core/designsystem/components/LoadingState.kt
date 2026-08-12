@@ -1,5 +1,3 @@
-@file:OptIn(org.jetbrains.compose.resources.InternalResourceApi::class)
-
 package com.passvault.core.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.passvault.core.designsystem.generated.resources.Res
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LoadingState(

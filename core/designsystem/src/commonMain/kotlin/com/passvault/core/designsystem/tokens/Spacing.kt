@@ -1,6 +1,5 @@
 package com.passvault.core.designsystem.tokens
 
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
@@ -8,13 +7,7 @@ import androidx.compose.ui.unit.dp
  * Based on 4dp grid system for consistent spacing throughout the app.
  */
 
-@Suppress("unused")
 object Spacing {
-    /**
-     * Zero spacing.
-     */
-    val none = 0.dp
-
     /**
      * 4dp - Extra small spacing.
      * Used for tight gaps between related elements.
@@ -56,36 +49,6 @@ object Spacing {
      * Used for major section dividers.
      */
     val xl = 32.dp
-
-    /**
-     * 40dp - 2x Extra large spacing.
-     * Used for major content sections.
-     */
-    val xl2 = 40.dp
-
-    /**
-     * 48dp - 3x Extra large spacing.
-     * Used for page-level spacing.
-     */
-    val xl3 = 48.dp
-
-    /**
-     * 64dp - 4x Extra large spacing.
-     * Used for large page sections.
-     */
-    val xl4 = 64.dp
-
-    /**
-     * 80dp - 5x Extra large spacing.
-     * Used for very large sections.
-     */
-    val xl5 = 80.dp
-
-    /**
-     * 96dp - 6x Extra large spacing.
-     * Maximum standard spacing.
-     */
-    val xl6 = 96.dp
 }
 
 /**
@@ -119,16 +82,6 @@ object ComponentSpacing {
     val listItemPadding = Spacing.mdLg
 
     /**
-     * Button horizontal padding - standard button internal padding.
-     */
-    val buttonHorizontal = Spacing.lg
-
-    /**
-     * Button vertical padding - standard button internal padding.
-     */
-    val buttonVertical = Spacing.smMd
-
-    /**
      * Screen horizontal padding - standard screen edge padding.
      */
     val screenHorizontal = Spacing.mdLg
@@ -144,56 +97,6 @@ object ComponentSpacing {
     val sectionSpacing = Spacing.lg
 
     /**
-     * Form field spacing - space between form fields.
-     */
-    val formFieldSpacing = Spacing.md
-
-    /**
-     * Dialog padding - internal padding for dialogs.
-     */
-    val dialogPadding = Spacing.lg
-
-    /**
-     * Dialog content spacing - space between dialog elements.
-     */
-    val dialogContentSpacing = Spacing.md
-
-    /**
-     * Icon button padding - padding for icon-only buttons.
-     */
-    val iconButtonPadding = Spacing.sm
-
-    /**
-     * Chip spacing - space between chips.
-     */
-    val chipSpacing = Spacing.sm
-
-    /**
-     * Chip padding - internal chip padding.
-     */
-    val chipPadding = Spacing.sm
-
-    /**
-     * Top bar padding - top bar content padding.
-     */
-    val topBarPadding = Spacing.md
-
-    /**
-     * Bottom bar padding - bottom bar content padding.
-     */
-    val bottomBarPadding = Spacing.md
-
-    /**
-     * Navigation rail width.
-     */
-    val navigationRailWidth = 80.dp
-
-    /**
-     * Navigation drawer width.
-     */
-    val navigationDrawerWidth = 280.dp
-
-    /**
      * Maximum readable width for forms and narrative content.
      */
     val formMaxWidth = 680.dp
@@ -207,11 +110,6 @@ object ComponentSpacing {
      * Touch target minimum size (accessibility).
      */
     val touchTargetMin = 48.dp
-
-    /**
-     * Minimum icon button size.
-     */
-    val iconButtonMinSize = 48.dp
 }
 
 /**
@@ -219,15 +117,9 @@ object ComponentSpacing {
  */
 object Breakpoints {
     /**
-     * Compact width (phone portrait) - less than 600dp.
-     */
-    val compactMax = 599.dp
-
-    /**
-     * Medium width (tablet portrait, phone landscape) - 600dp to 839dp.
+     * Medium width (tablet portrait, phone landscape) begins at 600dp.
      */
     val mediumMin = 600.dp
-    val mediumMax = 839.dp
 
     /**
      * Expanded width (tablet landscape, desktop) - 840dp and up.

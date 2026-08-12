@@ -6,9 +6,12 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
-import com.passvault.core.domain.model.SecurityError
+import com.passvault.core.domain.model.MasterPasswordPolicy
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.VaultSessionState
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.hasWellFormedUnicode
+import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.VaultRepository
 import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricFailureReason
@@ -16,10 +19,18 @@ import com.passvault.core.security.BiometricOperationResult
 import com.passvault.core.security.BiometricType
 import com.passvault.core.security.BiometricUnlockService
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 
@@ -31,8 +42,8 @@ class UnlockViewModel(
     private val _state = MutableStateFlow(UnlockState())
     val state: StateFlow<UnlockState> = _state.asStateFlow()
 
-    private val _effect = Channel<UnlockEffect>(Channel.BUFFERED)
-    val effect: Flow<UnlockEffect> = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<UnlockEffect>(extraBufferCapacity = 1)
+    val effect: SharedFlow<UnlockEffect> = _effect.asSharedFlow()
     private val unlockMutex = Mutex()
     private var lockoutResetJob: Job? = null
     private var unlockJob: Job? = null
@@ -54,7 +65,7 @@ class UnlockViewModel(
                         val sessionId = sessionState.sessionId.value
                         if (lastNavigatedSession != sessionId) {
                             lastNavigatedSession = sessionId
-                            _effect.trySend(UnlockEffect.NavigateToVault)
+                            _effect.tryEmit(UnlockEffect.NavigateToVault)
                         }
                     }
                     is VaultSessionState.Unlocking -> {
@@ -66,9 +77,6 @@ class UnlockViewModel(
                     is VaultSessionState.Locked -> {
                         _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
                     }
-                    is VaultSessionState.FatalError -> {
-                        handleFatalError(sessionState.error)
-                    }
                     else -> { }
                 }
             }
@@ -79,48 +87,33 @@ class UnlockViewModel(
         unlockJob = viewModelScope.launch {
             // Allow bootstrap/provisioning to settle before the first probe.
             kotlinx.coroutines.yield()
-            vaultRepository.exists().onSuccess { exists ->
-                if (!exists && _state.value.failedAttempts == 0) {
-                    _effect.trySend(UnlockEffect.NavigateToOnboarding)
+            try {
+                val result = vaultRepository.exists()
+                currentCoroutineContext().ensureActive()
+                result.onSuccess { exists ->
+                    if (!exists && _state.value.failedAttempts == 0) {
+                        _effect.tryEmit(UnlockEffect.NavigateToOnboarding)
+                    }
+                }.onFailure {
+                    _state.update { it.copy(errorMessage = uiText(Res.string.error_unlock_inspect)) }
                 }
-            }.onFailure {
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update { it.copy(errorMessage = uiText(Res.string.error_unlock_inspect)) }
             }
-        }
-    }
-
-    private fun handleFatalError(error: SecurityError) {
-        val message = when (error) {
-            is SecurityError.AuthenticationFailed -> {
-                val remaining = 5 - error.attempts.coerceAtMost(5)
-                uiText(Res.string.error_unlock_auth_remaining, remaining)
-            }
-            is SecurityError.CorruptedData -> uiText(Res.string.error_unlock_corrupted)
-            is SecurityError.CryptoError -> uiText(Res.string.error_unlock_crypto)
-            is SecurityError.SessionExpired -> uiText(Res.string.error_unlock_session_expired)
-            // Fatal errors can contain implementation details or paths. Keep
-            // those inside diagnostics and expose only a stable recovery hint.
-            is SecurityError.Fatal -> uiText(Res.string.error_unlock_fatal)
-        }
-        _state.update {
-            it.copy(
-                isLoading = false,
-                isBiometricLoading = false,
-                errorMessage = message,
-                failedAttempts = if (error is SecurityError.AuthenticationFailed) {
-                    error.attempts
-                } else it.failedAttempts
-            )
         }
     }
 
     fun onEvent(event: UnlockEvent) {
         when (event) {
             is UnlockEvent.OnPasswordChanged -> {
+                val password = event.password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1)
                 _state.update {
                     it.copy(
-                        password = event.password.take(MAX_MASTER_PASSWORD_LENGTH),
-                        errorMessage = null,
+                        password = password,
+                        errorMessage = password.inputValidationError(),
                     )
                 }
             }
@@ -139,57 +132,66 @@ class UnlockViewModel(
     }
 
     private fun unlock() {
-        if (_state.value.isLockedOut) {
-            _state.update { it.copy(errorMessage = uiText(Res.string.error_unlock_cooldown)) }
-            return
+        val current = _state.value
+        val validationError = current.passwordUnlockError()
+        when {
+            validationError != null -> _state.update { it.copy(errorMessage = validationError) }
+            unlockMutex.tryLock() -> startPasswordUnlock(current.password)
+            else -> Unit
         }
-        val password = _state.value.password
-        if (password.isEmpty()) {
-            _state.update { it.copy(errorMessage = uiText(Res.string.error_unlock_password_required)) }
-            return
-        }
+    }
 
-        if (!unlockMutex.tryLock()) return
+    private fun startPasswordUnlock(password: String) {
         _state.update { it.copy(isLoading = true, errorMessage = null) }
-        viewModelScope.launch {
+        unlockJob?.cancel()
+        val job = viewModelScope.launch {
             val sensitivePassword = SensitiveText.from(password)
             try {
-                vaultRepository.unlock(sensitivePassword)
-                    .onSuccess {
-                        lockoutResetJob?.cancel()
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                password = "",
-                                failedAttempts = 0,
-                            )
-                        }
+                val result = vaultRepository.unlock(sensitivePassword)
+                currentCoroutineContext().ensureActive()
+                if (result.isSuccess) {
+                    lockoutResetJob?.cancel()
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            password = "",
+                            failedAttempts = 0,
+                        )
                     }
-                    .onFailure {
-                        val attempts = _state.value.failedAttempts + 1
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                password = "",
-                                errorMessage = uiText(
-                                    if (attempts >= MAX_FAILED_ATTEMPTS) {
-                                        Res.string.error_unlock_cooldown
-                                    } else {
-                                        Res.string.error_unlock_failed
-                                    },
-                                ),
-                                failedAttempts = attempts,
-                            )
-                        }
-                        if (attempts >= MAX_FAILED_ATTEMPTS) scheduleLockoutReset()
-                    }
+                } else {
+                    currentCoroutineContext().ensureActive()
+                    handlePasswordUnlockFailure()
+                }
             } catch (cancelled: CancellationException) {
                 throw cancelled
+            } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
+                handlePasswordUnlockFailure()
             } finally {
                 sensitivePassword.clear()
-                unlockMutex.unlock()
             }
         }
+        job.invokeOnCompletion { unlockMutex.unlock() }
+        unlockJob = job
+    }
+
+    private fun handlePasswordUnlockFailure() {
+        val attempts = _state.value.failedAttempts + 1
+        _state.update {
+            it.copy(
+                isLoading = false,
+                password = "",
+                errorMessage = uiText(
+                    if (attempts >= MAX_FAILED_ATTEMPTS) {
+                        Res.string.error_unlock_cooldown
+                    } else {
+                        Res.string.error_unlock_failed
+                    },
+                ),
+                failedAttempts = attempts,
+            )
+        }
+        if (attempts >= MAX_FAILED_ATTEMPTS) scheduleLockoutReset()
     }
 
     private fun loadBiometricStatus() {
@@ -197,6 +199,7 @@ class UnlockViewModel(
         biometricStatusJob = viewModelScope.launch {
             try {
                 val status = biometricUnlockService.getStatus()
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         biometricType = status.capability.type,
@@ -208,6 +211,7 @@ class UnlockViewModel(
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         biometricAvailability = BiometricAvailability.UNAVAILABLE,
@@ -221,55 +225,28 @@ class UnlockViewModel(
 
     private fun unlockWithBiometrics() {
         val currentState = _state.value
-        when (currentState.biometricAvailability) {
-            BiometricAvailability.NOT_ENROLLED -> {
-                _state.update { it.copy(errorMessage = uiText(Res.string.error_biometric_not_enrolled)) }
-                return
-            }
-            BiometricAvailability.UNAVAILABLE -> {
-                _state.update { it.copy(errorMessage = uiText(Res.string.error_biometric_unavailable)) }
-                return
-            }
-            BiometricAvailability.AVAILABLE -> Unit
+        val validationError = currentState.biometricUnlockError()
+        when {
+            validationError != null -> _state.update { it.copy(errorMessage = validationError) }
+            unlockMutex.tryLock() -> startBiometricUnlock()
+            else -> Unit
         }
-        if (!currentState.isBiometricEnabled) {
-            _state.update { it.copy(errorMessage = uiText(Res.string.error_biometric_not_enabled)) }
-            return
-        }
-        if (!unlockMutex.tryLock()) return
+    }
 
-        _state.update {
-            it.copy(isLoading = true, isBiometricLoading = true, errorMessage = null)
-        }
-        unlockJob = viewModelScope.launch {
+    private fun startBiometricUnlock() {
+        _state.update { it.copy(isLoading = true, isBiometricLoading = true, errorMessage = null) }
+        unlockJob?.cancel()
+        val job = viewModelScope.launch {
             try {
-                when (val result = biometricUnlockService.unlock()) {
-                    BiometricOperationResult.Success -> Unit
-                    BiometricOperationResult.Cancelled -> {
-                        _state.update { it.copy(isLoading = false, isBiometricLoading = false) }
-                    }
-                    is BiometricOperationResult.Failure -> {
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                isBiometricLoading = false,
-                                isBiometricEnabled = if (
-                                    result.reason == BiometricFailureReason.INVALIDATED ||
-                                    result.reason == BiometricFailureReason.NOT_ENABLED
-                                ) false else it.isBiometricEnabled,
-                                biometricAvailability = when (result.reason) {
-                                    BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
-                                    BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
-                                    else -> it.biometricAvailability
-                                },
-                                errorMessage = result.reason.toUnlockMessage(),
-                            )
-                        }
-                    }
+                val result = biometricUnlockService.unlock()
+                currentCoroutineContext().ensureActive()
+                if (result !is BiometricOperationResult.Success) {
+                    _state.update { it.afterBiometricResult(result) }
                 }
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -277,21 +254,10 @@ class UnlockViewModel(
                         errorMessage = uiText(Res.string.error_biometric_failed),
                     )
                 }
-            } finally {
-                unlockMutex.unlock()
             }
         }
-    }
-
-    private fun BiometricFailureReason.toUnlockMessage(): UiText = when (this) {
-        BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
-        BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
-        BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
-        BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
-        BiometricFailureReason.VAULT_LOCKED,
-        BiometricFailureReason.AUTHENTICATION_FAILED,
-        BiometricFailureReason.INTERNAL_ERROR,
-        -> uiText(Res.string.error_biometric_failed)
+        job.invokeOnCompletion { unlockMutex.unlock() }
+        unlockJob = job
     }
 
     /**
@@ -320,7 +286,16 @@ class UnlockViewModel(
         val isBiometricLoading: Boolean = false,
         val isBiometricStatusLoaded: Boolean = false,
     ) {
-        val canUnlock: Boolean get() = password.isNotEmpty() && !isLoading && !isLockedOut
+        val canUnlock: Boolean
+            get() = password.isNotEmpty() &&
+                password.codePointLength() <= MasterPasswordPolicy.MAX_LENGTH &&
+                password.hasWellFormedUnicode() &&
+                !isLoading &&
+                !isLockedOut
+        val canUseBiometrics: Boolean
+            get() = isBiometricStatusLoaded &&
+                biometricAvailability == BiometricAvailability.AVAILABLE &&
+                isBiometricEnabled
         // This is a bounded local cooldown; it is reset automatically and never
         // permanently denies access to the vault.
         val isLockedOut: Boolean get() = failedAttempts >= MAX_FAILED_ATTEMPTS
@@ -351,6 +326,66 @@ class UnlockViewModel(
     private companion object {
         const val MAX_FAILED_ATTEMPTS = 5
         const val LOCKOUT_WINDOW_MS = 30_000L
-        const val MAX_MASTER_PASSWORD_LENGTH = 1_024
     }
+}
+
+private fun UnlockViewModel.UnlockState.passwordUnlockError(): UiText? = when {
+    isLockedOut -> uiText(Res.string.error_unlock_cooldown)
+    password.isEmpty() -> uiText(Res.string.error_unlock_password_required)
+    else -> password.inputValidationError()
+}
+
+private fun String.inputValidationError(): UiText? = when {
+    codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+        uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
+    !hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
+    else -> null
+}
+
+private fun UnlockViewModel.UnlockState.biometricUnlockError(): UiText? = when {
+    biometricAvailability == BiometricAvailability.NOT_ENROLLED ->
+        uiText(Res.string.error_biometric_not_enrolled)
+    biometricAvailability == BiometricAvailability.UNAVAILABLE ->
+        uiText(Res.string.error_biometric_unavailable)
+    !isBiometricEnabled -> uiText(Res.string.error_biometric_not_enabled)
+    else -> null
+}
+
+private fun UnlockViewModel.UnlockState.afterBiometricResult(
+    result: BiometricOperationResult,
+): UnlockViewModel.UnlockState = when (result) {
+    BiometricOperationResult.Success -> this
+    BiometricOperationResult.Cancelled -> copy(
+        isLoading = false,
+        isBiometricLoading = false,
+    )
+    is BiometricOperationResult.Failure -> copy(
+        isLoading = false,
+        isBiometricLoading = false,
+        isBiometricEnabled = if (
+            result.reason == BiometricFailureReason.INVALIDATED ||
+            result.reason == BiometricFailureReason.NOT_ENABLED
+        ) {
+            false
+        } else {
+            isBiometricEnabled
+        },
+        biometricAvailability = when (result.reason) {
+            BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
+            BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
+            else -> biometricAvailability
+        },
+        errorMessage = result.reason.toUnlockMessage(),
+    )
+}
+
+private fun BiometricFailureReason.toUnlockMessage(): UiText = when (this) {
+    BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
+    BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
+    BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
+    BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
+    BiometricFailureReason.VAULT_LOCKED,
+    BiometricFailureReason.AUTHENTICATION_FAILED,
+    BiometricFailureReason.INTERNAL_ERROR,
+    -> uiText(Res.string.error_biometric_failed)
 }

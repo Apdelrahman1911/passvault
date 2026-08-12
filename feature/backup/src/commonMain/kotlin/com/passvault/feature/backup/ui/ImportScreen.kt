@@ -37,12 +37,19 @@ fun ImportScreen(
         }
     }
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
+                    IconButton(
+                        onClick = onNavigateBack,
+                        enabled = !state.hasActiveOperation,
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.action_back),
+                        )
                     }
                 },
                 colors = passVaultTopAppBarColors(),
@@ -53,7 +60,7 @@ fun ImportScreen(
         BackupImportContent(
             state = state,
             onEvent = viewModel::onEvent,
-            modifier = modifier,
+            modifier = Modifier,
             contentPadding = padding,
         )
     }

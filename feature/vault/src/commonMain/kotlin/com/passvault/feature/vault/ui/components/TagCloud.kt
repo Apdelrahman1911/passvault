@@ -4,16 +4,24 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.passvault.core.domain.model.Tag
 import com.passvault.core.domain.model.TagId
@@ -53,6 +61,10 @@ fun TagCloud(
                 colorString = tag.color,
                 fallback = MaterialTheme.colorScheme.primary,
             )
+            val selectedPalette = tagChipPalette(
+                tagColor = tagColor,
+                surfaceColor = MaterialTheme.colorScheme.surface,
+            )
 
             FilterChip(
                 selected = isSelected,
@@ -70,37 +82,59 @@ fun TagCloud(
                     }
                 } else null,
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = tagColor.copy(alpha = 0.2f),
-                    selectedLabelColor = tagColor
+                    selectedContainerColor = selectedPalette.containerColor,
+                    selectedLabelColor = selectedPalette.contentColor,
+                    selectedLeadingIconColor = selectedPalette.contentColor,
                 )
             )
         }
     }
 }
 
+internal data class TagChipPalette(
+    val containerColor: Color,
+    val contentColor: Color,
+)
+
+internal fun tagChipPalette(tagColor: Color, surfaceColor: Color): TagChipPalette {
+    val containerColor = tagColor
+        .copy(alpha = 0.2f)
+        .compositeOver(surfaceColor)
+    val blackContrast = contrastRatio(Color.Black, containerColor)
+    val whiteContrast = contrastRatio(Color.White, containerColor)
+    return TagChipPalette(
+        containerColor = containerColor,
+        contentColor = if (blackContrast >= whiteContrast) Color.Black else Color.White,
+    )
+}
+
+internal fun contrastRatio(foreground: Color, background: Color): Float {
+    val foregroundLuminance = foreground.compositeOver(background).luminance()
+    val backgroundLuminance = background.luminance()
+    val lighter = maxOf(foregroundLuminance, backgroundLuminance)
+    val darker = minOf(foregroundLuminance, backgroundLuminance)
+    return (lighter + 0.05f) / (darker + 0.05f)
+}
+
 private fun parseTagColor(colorString: String?, fallback: Color): Color {
-    if (colorString.isNullOrBlank()) {
-        return fallback
-    }
-    return try {
-        val hex = colorString.removePrefix("#")
-        when (hex.length) {
-            6 -> {
-                val r = hex.substring(0, 2).toInt(16)
-                val g = hex.substring(2, 4).toInt(16)
-                val b = hex.substring(4, 6).toInt(16)
-                Color(r, g, b)
-            }
-            8 -> {
-                val a = hex.substring(0, 2).toInt(16)
-                val r = hex.substring(2, 4).toInt(16)
-                val g = hex.substring(4, 6).toInt(16)
-                val b = hex.substring(6, 8).toInt(16)
-                Color(r, g, b, a)
-            }
-            else -> fallback
-        }
-    } catch (e: Exception) {
-        fallback
+    val hex = colorString?.takeUnless(String::isBlank)?.removePrefix("#")
+    return hex?.let(::parseHexColor) ?: fallback
+}
+
+private fun parseHexColor(hex: String): Color? {
+    val components = hex.chunked(2).mapNotNull { it.toIntOrNull(radix = 16) }
+    return when {
+        hex.length == 6 && components.size == 3 -> Color(
+            red = components[0],
+            green = components[1],
+            blue = components[2],
+        )
+        hex.length == 8 && components.size == 4 -> Color(
+            red = components[1],
+            green = components[2],
+            blue = components[3],
+            alpha = components[0],
+        )
+        else -> null
     }
 }

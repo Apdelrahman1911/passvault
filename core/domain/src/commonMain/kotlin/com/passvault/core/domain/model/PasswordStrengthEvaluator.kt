@@ -11,41 +11,49 @@ package com.passvault.core.domain.model
  */
 object PasswordStrengthEvaluator {
     fun score(password: CharSequence): PasswordScore {
-        if (password.isEmpty() || password.length < 8) return PasswordScore.VERY_WEAK
-
         val value = password.toString()
+        val codePoints = value.toCodePointStrings()
+        if (codePoints.size < MIN_PASSWORD_CODE_POINTS) return PasswordScore.VERY_WEAK
+
         val normalized = normalizeLeetspeak(value.lowercase())
-        val characterClasses = listOf(
-            value.any(Char::isLowerCase),
-            value.any(Char::isUpperCase),
-            value.any(Char::isDigit),
-            value.any { !it.isLetterOrDigit() },
-        ).count { it }
+        val characterClasses = characterClassCount(value)
+        val points = lengthPoints(codePoints.size) +
+            (characterClasses - 1).coerceAtLeast(0) +
+            diversityBonus(codePoints) -
+            weaknessPenalty(normalized, characterClasses)
+        return points.toPasswordScore()
+    }
 
-        var points = when {
-            value.length >= 20 -> 4
-            value.length >= 16 -> 3
-            value.length >= 12 -> 2
-            else -> 1
-        }
-        points += (characterClasses - 1).coerceAtLeast(0)
+    private fun characterClassCount(value: String): Int = listOf(
+        value.any(Char::isLowerCase),
+        value.any(Char::isUpperCase),
+        value.any(Char::isDigit),
+        value.any { !it.isLetterOrDigit() },
+    ).count { it }
 
-        val distinctRatio = value.toSet().size.toDouble() / value.length
-        if (distinctRatio >= 0.65) points += 1
+    private fun lengthPoints(codePointCount: Int): Int = when {
+        codePointCount >= 20 -> 4
+        codePointCount >= 16 -> 3
+        codePointCount >= 12 -> 2
+        else -> 1
+    }
 
-        if (COMMON_TOKENS.any(normalized::contains)) points -= 3
-        if (hasSequence(normalized)) points -= 2
-        if (hasExcessiveRepetition(normalized)) points -= 3
-        if (characterClasses == 1) points -= 1
+    private fun diversityBonus(codePoints: List<String>): Int =
+        if (codePoints.toSet().size.toDouble() / codePoints.size >= 0.65) 1 else 0
 
-        return when {
-            points <= 0 -> PasswordScore.VERY_WEAK
-            points <= 2 -> PasswordScore.WEAK
-            points == 3 -> PasswordScore.FAIR
-            points == 4 -> PasswordScore.GOOD
-            points <= 6 -> PasswordScore.STRONG
-            else -> PasswordScore.VERY_STRONG
-        }
+    private fun weaknessPenalty(normalized: String, characterClasses: Int): Int =
+        (if (COMMON_TOKENS.any(normalized::contains)) 3 else 0) +
+            (if (hasSequence(normalized)) 2 else 0) +
+            (if (hasExcessiveRepetition(normalized)) 3 else 0) +
+            (if (characterClasses == 1) 1 else 0)
+
+    private fun Int.toPasswordScore(): PasswordScore = when {
+        this <= 0 -> PasswordScore.VERY_WEAK
+        this <= 2 -> PasswordScore.WEAK
+        this == 3 -> PasswordScore.FAIR
+        this == 4 -> PasswordScore.GOOD
+        this <= 6 -> PasswordScore.STRONG
+        else -> PasswordScore.VERY_STRONG
     }
 
     private fun normalizeLeetspeak(value: String): String = buildString(value.length) {
@@ -73,11 +81,15 @@ object PasswordStrengthEvaluator {
     }
 
     private fun hasExcessiveRepetition(value: String): Boolean {
-        if (value.isEmpty()) return false
-        if (value.toSet().size <= (value.length / 3).coerceAtLeast(1)) return true
-        return value.windowed(3).any { chunk -> chunk.toSet().size == 1 }
+        val codePoints = value.toCodePointStrings()
+        return codePoints.isNotEmpty() &&
+            (
+                codePoints.toSet().size <= (codePoints.size / 3).coerceAtLeast(1) ||
+                    codePoints.windowed(3).any { chunk -> chunk.toSet().size == 1 }
+            )
     }
 
+    private const val MIN_PASSWORD_CODE_POINTS = 8
     private const val SEQUENCE_LENGTH = 4
     private val COMMON_TOKENS = listOf(
         "password",

@@ -1,6 +1,7 @@
 package com.passvault.feature.credential.presentation
 
 import app.cash.turbine.test
+import com.passvault.core.crypto.SecurePasswordGenerator
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
@@ -13,9 +14,12 @@ import com.passvault.core.domain.model.PasswordHistoryEntry
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.TotpAlgorithm
+import com.passvault.core.domain.model.TotpConfiguration
+import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.testing.TestData
 import com.passvault.core.testing.fakes.FakeCredentialRepository
 import com.passvault.core.testing.fakes.FakeFolderRepository
+import com.passvault.core.testing.fakes.FakeCryptoEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -112,7 +116,6 @@ class CredentialViewModelTest {
         assertEquals("api-key", state.apiKeys.single().toStringUnsafe())
         assertEquals("license-key", state.licenseKeys.single().toStringUnsafe())
         assertEquals("1234", state.customFields.single().value.toStringUnsafe())
-        assertEquals("old-secret", state.passwordHistory.single().password.toStringUnsafe())
         assertTrue(state.isFavorite)
         assertEquals(source.passwordHealth, state.passwordHealth)
 
@@ -186,7 +189,7 @@ class CredentialViewModelTest {
         viewModel.createNewCredential(com.passvault.core.domain.model.CredentialType.Login)
         viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged(""))
         viewModel.onEvent(
-            CredentialViewModel.CredentialEvent.OnPrimaryUrlChanged("javascript:alert(1)"),
+            CredentialViewModel.CredentialEvent.OnUrlChanged(0, "javascript:alert(1)"),
         )
         viewModel.onEvent(CredentialViewModel.CredentialEvent.OnSaveClick)
         runCurrent()
@@ -229,6 +232,27 @@ class CredentialViewModelTest {
     }
 
     @Test
+    fun `editable state cannot change while a save is in progress`() = runTest(dispatcher) {
+        repository.setOperationDelay(100)
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("Original"))
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnSaveClick)
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("Too late"))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnFavoriteChanged(true))
+        runCurrent()
+        advanceTimeBy(100)
+        runCurrent()
+
+        val stored = repository.getAllCredentials().single()
+        assertEquals("Original", stored.title)
+        assertFalse(stored.isFavorite)
+        assertEquals("Original", viewModel.state.value.title)
+        assertFalse(viewModel.state.value.isFavorite)
+    }
+
+    @Test
     fun `clear for lock cancels pending save and clears all sensitive state`() = runTest(dispatcher) {
         repository.setOperationDelay(1_000)
         val viewModel = createViewModel()
@@ -258,12 +282,10 @@ class CredentialViewModelTest {
         val viewModel = createViewModel()
         viewModel.createNewCredential(com.passvault.core.domain.model.CredentialType.Login)
         viewModel.onEvent(CredentialViewModel.CredentialEvent.OnUsernameChanged("ada"))
-        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnLaunchUrlClick("example.com"))
-        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyUsernameClick)
 
         viewModel.effect.test {
-            // Events are buffered, so subscribe after dispatch and drain in
-            // order to keep this test independent of Compose collection.
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnLaunchUrlClick("example.com"))
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyUsernameClick)
             assertEquals(
                 CredentialViewModel.CredentialEffect.LaunchUrl("https://example.com"),
                 awaitItem(),
@@ -274,6 +296,250 @@ class CredentialViewModelTest {
             )
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `successful copy and url launch record the latest credential use`() = runTest(dispatcher) {
+        val firstUse = Instant.fromEpochSeconds(1_700_000_100)
+        val secondUse = Instant.fromEpochSeconds(1_700_000_200)
+        val clock = MutableClock(firstUse)
+        val credential = TestData.credential(id = "used")
+        repository.setupCredentials(credential)
+        val viewModel = createViewModel(clock)
+        viewModel.loadCredential(credential.id)
+        runCurrent()
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyResult(succeeded = true))
+        runCurrent()
+        assertEquals(firstUse, repository.getAllCredentials().single().lastUsedAt)
+        assertEquals(firstUse, viewModel.state.value.lastUsedAt)
+
+        clock.instant = secondUse
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnUrlLaunchResult(succeeded = true))
+        runCurrent()
+        assertEquals(secondUse, repository.getAllCredentials().single().lastUsedAt)
+        assertEquals(secondUse, viewModel.state.value.lastUsedAt)
+    }
+
+    @Test
+    fun `failed copy is reported and does not record credential use`() = runTest(dispatcher) {
+        val credential = TestData.credential(id = "copy-failure")
+        repository.setupCredentials(credential)
+        val viewModel = createViewModel()
+        viewModel.loadCredential(credential.id)
+        runCurrent()
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyResult(succeeded = false))
+        runCurrent()
+
+        assertEquals(
+            Res.string.error_credential_copy,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+        assertEquals(null, repository.getAllCredentials().single().lastUsedAt)
+    }
+
+    @Test
+    fun `successful save preserves creation timestamp in editable state`() = runTest(dispatcher) {
+        val now = Instant.fromEpochSeconds(1_700_000_300)
+        val viewModel = createViewModel(FixedClock(now))
+        viewModel.createNewCredential(CredentialType.Login)
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("Created"))
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnSaveClick)
+        runCurrent()
+
+        assertEquals(now, viewModel.state.value.createdAt)
+        assertEquals(now, viewModel.state.value.updatedAt)
+    }
+
+    @Test
+    fun `replacing and removing custom fields clears superseded sensitive values`() =
+        runTest(dispatcher) {
+            val viewModel = createViewModel()
+            viewModel.createNewCredential(CredentialType.SecureNote)
+            viewModel.onEvent(
+                CredentialViewModel.CredentialEvent.OnCustomFieldAdded(
+                    name = "First",
+                    value = "old-secret",
+                    isSecret = true,
+                ),
+            )
+            val field = viewModel.state.value.customFields.single()
+            val originalValue = field.value
+
+            viewModel.onEvent(
+                CredentialViewModel.CredentialEvent.OnCustomFieldUpdated(
+                    fieldId = field.id,
+                    name = "Second",
+                    value = "new-secret",
+                    isSecret = true,
+                ),
+            )
+
+            assertTrue(originalValue.toStringUnsafe().all { it == '\u0000' })
+            val replacement = viewModel.state.value.customFields.single().value
+            assertEquals("new-secret", replacement.toStringUnsafe())
+
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCustomFieldRemoved(field.id))
+
+            assertTrue(replacement.toStringUnsafe().all { it == '\u0000' })
+            assertTrue(viewModel.state.value.customFields.isEmpty())
+        }
+
+    @Test
+    fun `generate action fills password without navigation effect`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+
+        viewModel.effect.test {
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnGeneratePasswordClick)
+            runCurrent()
+
+            expectNoEvents()
+            assertEquals(16, viewModel.state.value.password.length)
+            assertTrue(viewModel.state.value.isDirty)
+            assertFalse(viewModel.state.value.isGeneratingPassword)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `back closes delete confirmation before navigating`() = runTest(dispatcher) {
+        val credential = TestData.credential(id = "delete-dialog")
+        repository.setupCredentials(credential)
+        val viewModel = createViewModel()
+        viewModel.loadCredential(credential.id)
+        runCurrent()
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteClick)
+
+        viewModel.effect.test {
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnBackClick)
+            assertFalse(viewModel.state.value.showDeleteConfirmation)
+            expectNoEvents()
+
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnBackClick)
+            assertEquals(CredentialViewModel.CredentialEffect.NavigateBack, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `back from an edited existing credential requires discard confirmation`() = runTest(dispatcher) {
+        val credential = TestData.credential(id = "edited")
+        repository.setupCredentials(credential)
+        val viewModel = createViewModel()
+        viewModel.loadCredential(credential.id)
+        runCurrent()
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("Changed"))
+
+        viewModel.effect.test {
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnBackClick)
+            assertTrue(viewModel.state.value.showDiscardConfirmation)
+            expectNoEvents()
+
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDiscardConfirm)
+            assertEquals(CredentialViewModel.CredentialEffect.NavigateBack, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `failed load cannot be overwritten or deleted`() = runTest(dispatcher) {
+        val credential = TestData.credential(id = "protected")
+        repository.setupCredentials(credential)
+        repository.setShouldFail()
+        val viewModel = createViewModel()
+
+        viewModel.loadCredential(credential.id)
+        runCurrent()
+        assertFalse(viewModel.state.value.isCredentialLoaded)
+        assertFalse(viewModel.state.value.canSave)
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("Replacement"))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnSaveClick)
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteClick)
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteConfirm)
+        runCurrent()
+
+        assertFalse(viewModel.state.value.showDeleteConfirmation)
+        assertEquals("Test Credential", repository.getAllCredentials().single().title)
+    }
+
+    @Test
+    fun `sensitive collection copies require an existing index`() = runTest(dispatcher) {
+        val credential = TestData.credential(id = "collections").copy(
+            recoveryCodes = listOf(SensitiveText.from("recovery")),
+            apiKeys = listOf(SensitiveText.from("api")),
+            licenseKeys = listOf(SensitiveText.from("license")),
+        )
+        repository.setupCredentials(credential)
+        credential.recoveryCodes.forEach(SensitiveText::clear)
+        credential.apiKeys.forEach(SensitiveText::clear)
+        credential.licenseKeys.forEach(SensitiveText::clear)
+        val viewModel = createViewModel()
+        viewModel.loadCredential(credential.id)
+        runCurrent()
+
+        viewModel.effect.test {
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyRecoveryCodeClick(0))
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyApiKeyClick(0))
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyLicenseKeyClick(0))
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyRecoveryCodeClick(1))
+
+            assertEquals(CredentialViewModel.CredentialEffect.CopyToClipboard("recovery"), awaitItem())
+            assertEquals(CredentialViewModel.CredentialEffect.CopyToClipboard("api"), awaitItem())
+            assertEquals(CredentialViewModel.CredentialEffect.CopyToClipboard("license"), awaitItem())
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `text and collection inputs are bounded before entering state`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("t".repeat(500)))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnUsernameChanged("u".repeat(5_000)))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnEmailChanged("e".repeat(5_000)))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnPasswordChanged("p".repeat(5_000)))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnNotesChanged("n".repeat(100_500)))
+        repeat(105) {
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnUrlAdded("https://example.com/$it"))
+        }
+
+        val state = viewModel.state.value
+        assertEquals(201, state.title.length)
+        assertEquals(4_097, state.username.length)
+        assertEquals(4_097, state.email.length)
+        assertEquals(4_097, state.password.length)
+        assertEquals(100_001, state.notes.length)
+        assertEquals(100, state.urls.size)
+    }
+
+    @Test
+    fun `text boundaries preserve complete supplementary characters`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTitleChanged("🔐".repeat(500)))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnPasswordChanged("🔐".repeat(5_000)))
+
+        assertEquals(201, viewModel.state.value.title.codePointLength())
+        assertEquals("🔐".repeat(201), viewModel.state.value.title)
+        assertEquals(4_097, viewModel.state.value.password.codePointLength())
+        assertEquals("🔐".repeat(4_097), viewModel.state.value.password)
+    }
+
+    @Test
+    fun `supplementary characters count as one character for strength feedback`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnPasswordChanged("🔐🔑🔒🔓"))
+
+        assertEquals(CredentialViewModel.PasswordStrength.TOO_SHORT, viewModel.state.value.passwordStrength)
     }
 
     @Test
@@ -352,7 +618,39 @@ class CredentialViewModelTest {
         viewModel.clearForLock()
     }
 
+    @Test
+    fun `canceling a staged TOTP replacement clears the new secret without dirtying the credential`() =
+        runTest(dispatcher) {
+            val sourceTotp = TotpConfiguration(secret = SensitiveText.from("JBSWY3DPEHPK3PXP"))
+            val credential = TestData.credential(id = "totp-cancel").copy(totp = sourceTotp)
+            repository.setupCredentials(credential)
+            sourceTotp.clear()
+            val viewModel = createViewModel()
+            viewModel.loadCredential(credential.id)
+            runCurrent()
+
+            viewModel.onEvent(
+                CredentialViewModel.CredentialEvent.OnTotpSetupInputChanged("KRUGS4ZANFZSAYJA"),
+            )
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpAddClick)
+            val pending = viewModel.state.value.pendingTotpConfiguration
+            assertTrue(viewModel.state.value.showTotpReplaceConfirmation)
+            assertFalse(viewModel.state.value.isDirty)
+
+            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpReplaceCancel)
+
+            assertEquals(null, viewModel.state.value.pendingTotpConfiguration)
+            assertEquals("", viewModel.state.value.totpSetupInput)
+            assertFalse(viewModel.state.value.isDirty)
+            assertTrue(pending?.secret?.toStringUnsafe()?.all { it == '\u0000' } == true)
+            viewModel.clearForLock()
+        }
+
     private class FixedClock(private val instant: Instant) : Clock {
+        override fun now(): Instant = instant
+    }
+
+    private class MutableClock(var instant: Instant) : Clock {
         override fun now(): Instant = instant
     }
 
@@ -360,6 +658,7 @@ class CredentialViewModelTest {
         CredentialViewModel(
             credentialRepository = repository,
             folderRepository = folderRepository,
+            passwordGenerator = SecurePasswordGenerator(FakeCryptoEngine()),
             clock = clock,
         )
 }

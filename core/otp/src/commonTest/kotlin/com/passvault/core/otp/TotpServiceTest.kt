@@ -67,6 +67,23 @@ class TotpServiceTest {
     }
 
     @Test
+    fun `TOTP label limit counts complete supplementary characters`() {
+        val accepted = service.parse(
+            "otpauth://totp/${"🔐".repeat(200)}?secret=JBSWY3DPEHPK3PXP",
+        )
+        val acceptedConfiguration = assertIs<TotpParseResult.Success>(accepted).configuration
+        try {
+            assertEquals("🔐".repeat(200), acceptedConfiguration.accountName)
+        } finally {
+            acceptedConfiguration.clear()
+        }
+
+        assertIs<TotpParseResult.Error>(
+            service.parse("otpauth://totp/${"🔐".repeat(201)}?secret=JBSWY3DPEHPK3PXP"),
+        )
+    }
+
+    @Test
     fun `manual secret is normalized and uses selected options`() {
         val result = service.parse(
             "jbsw y3dp ehpk 3pxp",
@@ -110,6 +127,35 @@ class TotpServiceTest {
         assertIs<TotpParseResult.Error>(
             service.parse("otpauth://totp/Example:ada?secret=JBSWY3DPEHPK3PXP&secret=AAAAAAAAAAAAAAAA"),
         )
+        assertEquals(
+            TotpParseError.UNSUPPORTED_CONFIGURATION,
+            assertIs<TotpParseResult.Error>(
+                service.parse("otpauth://totp/Example:ada?secret=JBSWY3DPEHPK3PXP&digits=six"),
+            ).reason,
+        )
+        assertEquals(
+            TotpParseError.UNSUPPORTED_CONFIGURATION,
+            assertIs<TotpParseResult.Error>(
+                service.parse("otpauth://totp/Example:ada?secret=JBSWY3DPEHPK3PXP&period=thirty"),
+            ).reason,
+        )
+        assertIs<TotpParseResult.Error>(
+            service.parse("otpauth://totp/Example%00:ada?secret=JBSWY3DPEHPK3PXP"),
+        )
+        assertIs<TotpParseResult.Error>(
+            service.parse("otpauth://totp/Example:ada?secret=AAAAAAAAAAAAAAAAAB"),
+        )
+        assertIs<TotpParseResult.Error>(service.parse("ß".repeat(8)))
+        assertIs<TotpParseResult.Error>(
+            service.parse("otpauth://totp/Example%4:ada?secret=JBSWY3DPEHPK3PXP"),
+        )
+        assertIs<TotpParseResult.Error>(
+            service.parse("otpauth://totp/Example%E2%80%AE:ada?secret=JBSWY3DPEHPK3PXP"),
+        )
+        assertIs<TotpParseResult.Error>(
+            service.parse("otpauth://totp/Example%FF:ada?secret=JBSWY3DPEHPK3PXP"),
+        )
+        assertIs<TotpParseResult.Error>(service.parse(" ".repeat(8 * 1024 + 1)))
     }
 
     @Test
@@ -124,6 +170,30 @@ class TotpServiceTest {
         assertEquals(Instant.fromEpochSeconds(60), code.expiresAt)
         assertTrue(code.value.length == 6)
         configuration.clear()
+    }
+
+    @Test
+    fun `generation rejects negative timestamps and keeps the enrolled secret owned by the caller`() {
+        val configuration = TotpConfiguration(
+            secret = SensitiveText.from("JBSWY3DPEHPK3PXP"),
+        )
+
+        val result = service.generate(configuration, Instant.fromEpochSeconds(-1))
+
+        assertTrue(result.isFailure)
+        assertEquals("JBSWY3DPEHPK3PXP", configuration.secret.toStringUnsafe())
+        configuration.clear()
+    }
+
+    @Test
+    fun `generation rejects an oversized secret before decoding`() {
+        val configuration = TotpConfiguration(secret = SensitiveText.from("A".repeat(208)))
+
+        try {
+            assertTrue(service.generate(configuration, Instant.fromEpochSeconds(0)).isFailure)
+        } finally {
+            configuration.clear()
+        }
     }
 
     private fun base32Encode(bytes: ByteArray): String {

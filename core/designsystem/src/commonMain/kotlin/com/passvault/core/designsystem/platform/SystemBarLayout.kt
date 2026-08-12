@@ -16,6 +16,10 @@ import androidx.compose.ui.graphics.Color
 /** Whether this platform overlays its system bars on the Compose scene. */
 expect val drawsBehindSystemBars: Boolean
 
+/** Keeps native system-bar icon contrast aligned with the in-app theme. */
+@Composable
+expect fun ConfigureSystemBarAppearance(darkTheme: Boolean)
+
 /**
  * Keeps the iOS scroll viewport edge-to-edge while treating Scaffold padding
  * as scrollable content spacing. Other platforms retain their existing layout.

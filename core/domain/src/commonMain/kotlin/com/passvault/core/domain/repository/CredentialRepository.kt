@@ -1,6 +1,19 @@
 package com.passvault.core.domain.repository
 
-import com.passvault.core.domain.model.*
+import com.passvault.core.domain.model.Credential
+import com.passvault.core.domain.model.CredentialId
+import com.passvault.core.domain.model.CredentialSummary
+import com.passvault.core.domain.model.CredentialType
+import com.passvault.core.domain.model.Folder
+import com.passvault.core.domain.model.FolderId
+import com.passvault.core.domain.model.PasswordHealth
+import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.model.SessionId
+import com.passvault.core.domain.model.Tag
+import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.VaultId
+import com.passvault.core.domain.model.VaultMetadata
+import com.passvault.core.domain.model.VaultSessionState
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Instant
 
@@ -51,20 +64,37 @@ interface CredentialRepository {
     suspend fun recordUsage(id: CredentialId, timestamp: Instant): Result<Unit>
 
     /**
-     * Add password to history.
-     */
-    suspend fun addPasswordHistory(id: CredentialId, password: SensitiveText): Result<Unit>
-
-    /**
      * Get all credentials that need health analysis.
      */
-    suspend fun getCredentialsForHealthAnalysis(): Result<List<Credential>>
+    suspend fun getCredentialsForHealthAnalysis(): Result<List<CredentialHealthInput>>
 
     /**
      * Update credential health.
      */
     suspend fun updateHealth(id: CredentialId, health: PasswordHealth): Result<Unit>
 }
+
+/**
+ * Minimum decrypted view required by the local password-health scan.
+ * Unrelated notes, TOTP seeds, custom secrets, recovery codes, API keys,
+ * attachments, and historical password values never cross this boundary.
+ */
+data class CredentialHealthInput(
+    val id: CredentialId,
+    val type: CredentialType,
+    val title: String,
+    val username: SensitiveText?,
+    val email: SensitiveText?,
+    val password: SensitiveText?,
+    val isFavorite: Boolean,
+    val folderId: FolderId?,
+    val tagIds: Set<TagId>,
+    val createdAt: Instant,
+    val updatedAt: Instant,
+    val lastUsedAt: Instant?,
+    val passwordHealth: PasswordHealth,
+    val passwordChangedAt: Instant?,
+)
 
 interface FolderRepository {
     suspend fun getAll(): Result<List<Folder>>
@@ -98,9 +128,14 @@ interface VaultRepository {
     suspend fun unlock(masterPassword: SensitiveText): Result<SessionId>
 
     /**
-     * Lock vault.
+     * Lock vault and revoke the in-memory session.
+     *
+     * Every non-cancelled return, including a failure result caused by
+     * best-effort cleanup, must leave the repository in a terminal
+     * [VaultSessionState.Locked] state with no usable vault key. The result
+     * reports cleanup health; it is not authorization to retain the session.
      */
-    suspend fun lock(): Result<Unit>
+    suspend fun lock(reason: LockReason = LockReason.Manual): Result<Unit>
 
     /**
      * Change master password.
@@ -125,6 +160,6 @@ sealed interface LockReason {
     data object Manual : LockReason
     data object AutoLock : LockReason
     data object Background : LockReason
-    data object DesktopFocusLost : LockReason
-    data object SystemSuspend : LockReason
+    data object MemoryPressure : LockReason
+    data object Restore : LockReason
 }

@@ -2,6 +2,8 @@
 
 # PKCS#12 validation helpers. Passwords are provided only through a named
 # environment variable and are never printed or included in diagnostics.
+# Output variables in this library are consumed by scripts that source it.
+# shellcheck disable=SC2034
 
 PASSVAULT_OPENSSL_BINARY=""
 PASSVAULT_P12_STATUS=""

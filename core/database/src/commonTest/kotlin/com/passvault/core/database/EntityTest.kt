@@ -33,7 +33,7 @@ class EntityTest {
             updatedAt = 1234567890L,
             lastUsedAt = null
         )
-        
+
         val entity2 = CredentialRecordEntity(
             id = "test-id",
             type = "Login",
@@ -48,7 +48,7 @@ class EntityTest {
             updatedAt = 1234567890L,
             lastUsedAt = null
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }
@@ -69,7 +69,7 @@ class EntityTest {
             updatedAt = 1234567890L,
             lastUsedAt = null
         )
-        
+
         val entity2 = CredentialRecordEntity(
             id = "test-id-2",
             type = "Login",
@@ -84,7 +84,7 @@ class EntityTest {
             updatedAt = 1234567890L,
             lastUsedAt = null
         )
-        
+
         assertNotEquals(entity1, entity2)
     }
 
@@ -101,7 +101,7 @@ class EntityTest {
             createdAt = 1234567890L,
             updatedAt = 1234567890L
         )
-        
+
         val entity2 = FolderRecordEntity(
             id = "folder-id",
             parentId = null,
@@ -113,7 +113,7 @@ class EntityTest {
             createdAt = 1234567890L,
             updatedAt = 1234567890L
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }
@@ -128,7 +128,7 @@ class EntityTest {
             color = "#FF0000",
             createdAt = 1234567890L
         )
-        
+
         val entity2 = TagRecordEntity(
             id = "tag-id",
             nameHash = byteArrayOf(1, 2, 3),
@@ -137,7 +137,7 @@ class EntityTest {
             color = "#FF0000",
             createdAt = 1234567890L
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }
@@ -148,12 +148,12 @@ class EntityTest {
             credentialId = "cred-id",
             tagId = "tag-id"
         )
-        
+
         val ref2 = CredentialTagCrossRef(
             credentialId = "cred-id",
             tagId = "tag-id"
         )
-        
+
         assertEquals(ref1, ref2)
     }
 
@@ -170,7 +170,7 @@ class EntityTest {
             keyDerivationContext = "attachment:abc",
             createdAt = 1234567890L
         )
-        
+
         val entity2 = AttachmentRecordEntity(
             id = "attach-id",
             credentialId = "cred-id",
@@ -182,7 +182,7 @@ class EntityTest {
             keyDerivationContext = "attachment:abc",
             createdAt = 1234567890L
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }
@@ -196,7 +196,7 @@ class EntityTest {
             passwordNonce = byteArrayOf(4, 5, 6),
             changedAt = 1234567890L
         )
-        
+
         val entity2 = PasswordHistoryRecordEntity(
             id = "history-id",
             credentialId = "cred-id",
@@ -204,7 +204,7 @@ class EntityTest {
             passwordNonce = byteArrayOf(4, 5, 6),
             changedAt = 1234567890L
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }
@@ -222,7 +222,7 @@ class EntityTest {
             startedAt = 1234567890L,
             durationMs = 100L
         )
-        
+
         val entity2 = MigrationStateEntity(
             id = 1,
             fromVersion = 1,
@@ -234,7 +234,7 @@ class EntityTest {
             startedAt = 1234567890L,
             durationMs = 100L
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }
@@ -248,7 +248,7 @@ class EntityTest {
             lastCheckedAt = 1234567890L,
             isHealthy = true
         )
-        
+
         val entity2 = CurrentVersionInfoEntity(
             singletonKey = 1,
             currentVersion = 1,
@@ -256,7 +256,7 @@ class EntityTest {
             lastCheckedAt = 1234567890L,
             isHealthy = true
         )
-        
+
         assertEquals(entity1, entity2)
         assertEquals(entity1.hashCode(), entity2.hashCode())
     }

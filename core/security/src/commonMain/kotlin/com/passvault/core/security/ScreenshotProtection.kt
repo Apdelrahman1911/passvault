@@ -10,13 +10,13 @@ interface ScreenshotProtection {
      * This should be called when sensitive content is visible.
      */
     fun enableProtection()
-    
+
     /**
      * Disable screenshot protection.
      * This should be called when navigating away from sensitive content.
      */
     fun disableProtection()
-    
+
     /**
      * Check if protection is currently enabled.
      */

@@ -21,6 +21,7 @@ testflight)
     testflight_count=0
     testflight_line=0
     testflight_header_seen=false
+    testflight_emails=$'\n'
     while IFS=, read -r first_name last_name email extra || [[ -n "${first_name:-}${last_name:-}${email:-}" ]]; do
         testflight_line=$((testflight_line + 1))
         first_name="${first_name%$'\r'}"
@@ -46,6 +47,12 @@ testflight)
             echo "The TestFlight tester CSV has an invalid or placeholder row at line $testflight_line." >&2
             exit 1
         fi
+        normalized_email="$(printf '%s' "$email" | tr '[:upper:]' '[:lower:]')"
+        if [[ "$testflight_emails" == *$'\n'"$normalized_email"$'\n'* ]]; then
+            echo "The TestFlight tester CSV repeats an email at line $testflight_line." >&2
+            exit 1
+        fi
+        testflight_emails+="$normalized_email"$'\n'
         testflight_count=$((testflight_count + 1))
     done < "$tester_file"
 
@@ -63,6 +70,7 @@ testflight)
 play)
     play_count=0
     play_line=0
+    play_emails=$'\n'
     while IFS= read -r email || [[ -n "$email" ]]; do
         play_line=$((play_line + 1))
         email="${email%$'\r'}"
@@ -71,6 +79,12 @@ play)
             echo "The Play tester list contains an invalid or placeholder email at line $play_line." >&2
             exit 1
         fi
+        normalized_email="$(printf '%s' "$email" | tr '[:upper:]' '[:lower:]')"
+        if [[ "$play_emails" == *$'\n'"$normalized_email"$'\n'* ]]; then
+            echo "The Play tester list repeats an email at line $play_line." >&2
+            exit 1
+        fi
+        play_emails+="$normalized_email"$'\n'
         play_count=$((play_count + 1))
     done < "$tester_file"
 

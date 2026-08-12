@@ -68,7 +68,13 @@ cleanup() {
     fi
 }
 trap cleanup EXIT
-trap 'status=$?; echo "Signed iOS verification failed at script line $LINENO (status $status)." >&2; exit "$status"' ERR
+report_failure() {
+    local failure_status="$1"
+    local failure_line="$2"
+    echo "Signed iOS verification failed at script line $failure_line (status $failure_status)." >&2
+    exit "$failure_status"
+}
+trap 'report_failure "$?" "$LINENO"' ERR
 
 export IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
 p12_validation_root="$verification_root/pkcs12-validation"
@@ -87,6 +93,11 @@ profile_plist="$verification_root/profile.plist"
 security cms -D -i "$profile_path" > "$profile_plist"
 profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$profile_plist")"
 profile_name="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$profile_plist")"
+if [[ ! "$profile_uuid" =~ ^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$ ||
+    -z "$profile_name" || "$profile_name" == *$'\n'* || "$profile_name" == *$'\r'* ]]; then
+    echo "The provisioning profile UUID or name is invalid." >&2
+    exit 1
+fi
 profile_directory="$HOME/Library/MobileDevice/Provisioning Profiles"
 mkdir -p "$profile_directory"
 installed_profile="$profile_directory/$profile_uuid.mobileprovision"
@@ -119,12 +130,29 @@ IOS_DISTRIBUTION_CERTIFICATE_PASSWORD=""
 unset IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
 keychain_password=""
 
-export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+export JAVA_HOME
 archive_path="$verification_root/PassVault.xcarchive"
 build_log="$verification_root/xcodebuild.log"
 link_map="$verification_root/PassVault-LinkMap.txt"
 version_name="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
 version_code="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+case "$EXPORT_COMPLIANCE_STATUS" in
+    EXEMPT_APPROVED)
+        encryption_build_setting=NO
+        expected_encryption=false
+        ;;
+    NON_EXEMPT_APPROVED)
+        encryption_build_setting=YES
+        expected_encryption=true
+        ;;
+    *)
+        echo "Approved export compliance is required." >&2
+        exit 1
+        ;;
+esac
+export EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
+./scripts/validate-ios-export-compliance.sh
 if ! xcodebuild archive \
     -project iosApp/iosApp.xcodeproj \
     -scheme PassVault \
@@ -139,7 +167,7 @@ if ! xcodebuild archive \
     CODE_SIGN_STYLE=Manual \
     PROVISIONING_PROFILE_SPECIFIER="$profile_name" \
     CODE_SIGN_IDENTITY="$codesign_identity" \
-    INFOPLIST_KEY_ITSAppUsesNonExemptEncryption=NO \
+    INFOPLIST_KEY_ITSAppUsesNonExemptEncryption="$encryption_build_setting" \
     LD_GENERATE_MAP_FILE=YES \
     LD_MAP_FILE_PATH="$link_map" \
     > "$build_log" 2>&1; then
@@ -149,10 +177,11 @@ fi
 
 app_path="$archive_path/Products/Applications/PassVault.app"
 app_plist="$app_path/Info.plist"
+"$repository_root/scripts/verify-legal-notice-bundle.sh" "$app_path" >/dev/null
 codesign --verify --deep --strict --verbose=2 "$app_path" >/dev/null 2>&1
 plist_encryption="$(/usr/libexec/PlistBuddy -c \
     'Print :ITSAppUsesNonExemptEncryption' "$app_plist")"
-if [[ "$plist_encryption" != false ]]; then
+if [[ "$plist_encryption" != "$expected_encryption" ]]; then
     echo "The archived application does not contain the approved encryption flag." >&2
     exit 1
 fi
@@ -230,11 +259,12 @@ if ! xcodebuild -exportArchive \
     tail -n 80 "$build_log" >&2
     exit 1
 fi
-ipa_path="$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
-if [[ -z "$ipa_path" ]]; then
-    echo "The signed archive did not export an IPA." >&2
+ipa_count="$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' | wc -l | tr -d ' ')"
+if [[ "$ipa_count" != 1 ]]; then
+    echo "The signed archive must export exactly one IPA; found $ipa_count." >&2
     exit 1
 fi
+ipa_path="$(find "$export_path" -maxdepth 1 -type f -name '*.ipa' -print)"
 ./scripts/verify-ios-exported-artifact.sh \
     "$archive_path" "$ipa_path" "$APPLE_TEAM_ID" "$IOS_BUNDLE_ID" "$profile_uuid" \
     "$version_name" "$version_code" "$link_map"

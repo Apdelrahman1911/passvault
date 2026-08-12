@@ -1,6 +1,6 @@
 # Threat model
 
-Last reviewed: 2026-08-03
+Last reviewed: 2026-08-11
 
 ## Assets
 
@@ -13,7 +13,7 @@ Database relationship/timing metadata is privacy-relevant even where it is inten
 - The locked local database or copied `.pvault` file may be controlled by an attacker.
 - The application process and OS are trusted only while the user is actively using an unlocked vault.
 - Mobile cameras and biometric services, Android/Desktop file pickers, clipboard managers, window managers,
-  keyrings, Keystore/Keychain, filesystems, and crash facilities are platform boundaries, not cryptographic peers.
+  Keystore/Keychain, filesystems, and crash facilities are platform boundaries, not cryptographic peers.
 - Build repositories and CI artifacts are supply-chain boundaries.
 
 There is no server, cloud, account, telemetry, analytics, browser extension, or remote synchronization boundary in
@@ -26,7 +26,7 @@ this codebase.
 | Offline database theft | Argon2id-protected wrapped random VEK; application-level authenticated record encryption |
 | Modified/wrong ciphertext | XChaCha20-Poly1305 authentication, contextual AAD, strict envelope parsing |
 | Reused nonce | fresh cryptographic random nonce; automated uniqueness regression tests |
-| Cross-record substitution | record/purpose-specific key contexts and AAD |
+| Encrypted-payload substitution between record IDs or purposes | record/purpose-specific key contexts and AAD |
 | Plaintext equality index theft | vault-keyed deterministic BLAKE2b blind indexes |
 | Malicious/corrupt backup | bounded/versioned parser, authenticated container, full validation before transactional replace |
 | Wrong backup password | authenticated decryption failure without database write |
@@ -44,7 +44,18 @@ this codebase.
 - Managed Kotlin strings, garbage-collected copies, swap/pagefile, hibernation, and OS crash dumps cannot be
   guaranteed wipeable.
 - Structural SQLite metadata remains observable; blind indexes reveal equality within a vault.
-- Android overlay/accessibility behavior and Desktop capture/keyring behavior require platform hardening beyond
+- Credential type/folder/favorite/timestamps, folder/tag relationships, row ordering, and other routing metadata are
+  not included in record-payload AAD. A database attacker can tamper with that structural metadata without an AEAD
+  failure; authenticated payload substitution between record IDs or purposes is still rejected. Binding routing
+  metadata requires a versioned AAD/schema migration.
+- New backup import streams independently bounded metadata rows and 256 KiB attachment records, using a two-pass
+  authenticated transcript before atomic Room replacement. A maximum-size 65 MiB metadata row can still cause a
+  roughly 130–195 MiB transient managed-memory peak. Legacy format-1 compatibility retains its 128 MiB JSON/Base64
+  container and 64 MiB snapshot limits and can amplify memory substantially on constrained devices.
+- Room replacement and deletion of the previous vault's OS biometric item cannot share a transaction. A Room
+  failure after biometric deletion leaves the prior database intact. PassVault attempts to restore the former
+  enrollment, but an OS key-store failure can still require biometric re-enrollment.
+- Android overlay/accessibility behavior and Desktop capture/window behavior require platform hardening beyond
   common code.
 - Biometric prompts and enrollment invalidation depend on OS behavior and require physical-device testing. A
   compromised unlocked process can still copy the active VEK before platform enrollment.

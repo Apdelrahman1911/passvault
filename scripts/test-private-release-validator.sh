@@ -20,6 +20,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Command syntax is intentional hostile test data.
+# shellcheck disable=SC2016
 fixture_password='p@$$ w`rd ! # ; $(must-not-run) \ exact'
 dotenv_file="$temporary_root/values.env"
 execution_marker="$temporary_root/dotenv-was-sourced"
@@ -27,6 +29,8 @@ execution_marker="$temporary_root/dotenv-was-sourced"
     printf 'IOS_DISTRIBUTION_CERTIFICATE_PASSWORD="%s"\n' "$fixture_password"
     printf '%s\n' 'PUBLISHER_NAME_EN=PassVault Test Publisher With Spaces'
     printf '%s\n' "PUBLISHER_NAME_AR='ناشر باس فولت للاختبار'"
+    # Command substitution must remain literal test data.
+    # shellcheck disable=SC2016
     printf 'UNTRUSTED_VALUE=$(touch %s)\n' "$execution_marker"
 } > "$dotenv_file"
 chmod 600 "$dotenv_file"
@@ -37,6 +41,15 @@ passvault_dotenv_load_file "$dotenv_file"
 [[ "$PUBLISHER_NAME_AR" == "ناشر باس فولت للاختبار" ]]
 [[ ! -e "$execution_marker" ]]
 
+duplicate_dotenv_file="$temporary_root/duplicate-values.env"
+printf '%s\n' 'DUPLICATE=first' 'DUPLICATE=second' > "$duplicate_dotenv_file"
+if passvault_dotenv_load_file "$duplicate_dotenv_file" >/dev/null 2>&1; then
+    echo "A duplicate dotenv key was accepted." >&2
+    exit 1
+fi
+
+# The pattern intentionally matches a literal variable reference.
+# shellcheck disable=SC2016
 if grep -E '^[[:space:]]*(source|\.)[[:space:]]+[^#]*(values\.env|\$values_file)' \
     "$repository_root/scripts/validate-private-release-config.sh" \
     "$repository_root/scripts/configure-google-oidc.sh" \

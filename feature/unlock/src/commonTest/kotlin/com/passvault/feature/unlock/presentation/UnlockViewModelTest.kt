@@ -4,9 +4,10 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import app.cash.turbine.test
-import com.passvault.core.domain.model.SecurityError
+import com.passvault.core.domain.model.MasterPasswordPolicy
 import com.passvault.core.domain.model.SessionId
 import com.passvault.core.domain.model.VaultSessionState
+import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.testing.fakes.FakeVaultRepository
 import com.passvault.core.testing.fakes.FakeBiometricUnlockService
 import com.passvault.core.security.BiometricAvailability
@@ -76,13 +77,33 @@ class UnlockViewModelTest {
     }
 
     @Test
-    fun `password input is bounded and enables unlock`() = runTest(dispatcher) {
+    fun `overlong password input keeps a sentinel and disables unlock`() = runTest(dispatcher) {
         val viewModel = existingVaultViewModel()
 
-        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("a".repeat(2_000)))
+        viewModel.onEvent(
+            UnlockViewModel.UnlockEvent.OnPasswordChanged("🔐".repeat(MasterPasswordPolicy.MAX_LENGTH + 50)),
+        )
 
-        assertEquals(1_024, viewModel.state.value.password.length)
-        assertTrue(viewModel.state.value.canUnlock)
+        assertEquals(MasterPasswordPolicy.MAX_LENGTH + 1, viewModel.state.value.password.codePointLength())
+        assertEquals("🔐".repeat(MasterPasswordPolicy.MAX_LENGTH + 1), viewModel.state.value.password)
+        assertEquals(
+            Res.string.error_master_password_too_long,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canUnlock)
+    }
+
+    @Test
+    fun `malformed password input is rejected before repository access`() = runTest(dispatcher) {
+        val viewModel = existingVaultViewModel()
+
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("password\uD800"))
+
+        assertEquals(
+            Res.string.error_master_password_invalid,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canUnlock)
     }
 
     @Test
@@ -123,12 +144,12 @@ class UnlockViewModelTest {
         val unlocked = VaultSessionState.Unlocked(SessionId("one-session"))
 
         viewModel.effect.test {
-            repository.setSessionState(unlocked)
+            repository.currentSessionState = unlocked
             runCurrent()
             assertIs<UnlockViewModel.UnlockEffect.NavigateToVault>(awaitItem())
 
-            repository.setSessionState(VaultSessionState.Locked)
-            repository.setSessionState(unlocked)
+            repository.currentSessionState = VaultSessionState.Locked()
+            repository.currentSessionState = unlocked
             runCurrent()
             expectNoEvents()
             cancelAndIgnoreRemainingEvents()
@@ -155,7 +176,7 @@ class UnlockViewModelTest {
     @Test
     fun `rapid repeated submit starts only one unlock operation`() = runTest(dispatcher) {
         val viewModel = existingVaultViewModel()
-        repository.setUnlockDelay(100)
+        repository.unlockDelayMillis = 100
 
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("password"))
         repeat(3) {
@@ -166,6 +187,26 @@ class UnlockViewModelTest {
         assertTrue(viewModel.state.value.isLoading)
         advanceTimeBy(100)
         runCurrent()
+        assertEquals("", viewModel.state.value.password)
+        assertFalse(viewModel.state.value.isLoading)
+    }
+
+    @Test
+    fun `cancelling before a scheduled unlock runs releases the submit guard`() = runTest(dispatcher) {
+        val viewModel = existingVaultViewModel()
+        repository.unlockDelayMillis = 1_000
+
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("first-attempt"))
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+        viewModel.clearForLock()
+        runCurrent()
+
+        repository.unlockDelayMillis = 0
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged("retry"))
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+        runCurrent()
+
+        assertIs<VaultSessionState.Unlocked>(repository.currentSessionState)
         assertEquals("", viewModel.state.value.password)
         assertFalse(viewModel.state.value.isLoading)
     }
@@ -193,36 +234,6 @@ class UnlockViewModelTest {
 
         assertEquals(0, viewModel.state.value.failedAttempts)
         assertFalse(viewModel.state.value.isLockedOut)
-    }
-
-    @Test
-    fun `fatal session errors are mapped to stable redacted messages`() = runTest(dispatcher) {
-        val viewModel = existingVaultViewModel()
-
-        repository.setSessionState(
-            VaultSessionState.FatalError(SecurityError.Fatal("C:\\Users\\person\\vault.db")),
-        )
-        runCurrent()
-
-        assertEquals(
-            Res.string.error_unlock_fatal,
-            (viewModel.state.value.errorMessage as UiText.Resource).resource,
-        )
-    }
-
-    @Test
-    fun `authentication failure reports bounded remaining attempts`() = runTest(dispatcher) {
-        val viewModel = existingVaultViewModel()
-
-        repository.setSessionState(
-            VaultSessionState.FatalError(SecurityError.AuthenticationFailed(attempts = 3)),
-        )
-        runCurrent()
-
-        assertEquals(3, viewModel.state.value.failedAttempts)
-        val message = viewModel.state.value.errorMessage as UiText.Resource
-        assertEquals(Res.string.error_unlock_auth_remaining, message.resource)
-        assertEquals(listOf(2), message.arguments)
     }
 
     @Test

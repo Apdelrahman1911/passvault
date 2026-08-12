@@ -6,7 +6,10 @@ import kotlin.test.assertEquals
 class VaultTabShellTest {
     @Test
     fun selectingInactiveTabOpensIt() {
-        assertEquals(VaultTab.HEALTH, VaultTab.HOME.toggle(VaultTab.HEALTH))
+        assertEquals(
+            VaultTab.TWO_FACTOR_CODES,
+            VaultTab.HOME.toggle(VaultTab.TWO_FACTOR_CODES),
+        )
         assertEquals(VaultTab.SETTINGS, VaultTab.GENERATOR.toggle(VaultTab.SETTINGS))
     }
 

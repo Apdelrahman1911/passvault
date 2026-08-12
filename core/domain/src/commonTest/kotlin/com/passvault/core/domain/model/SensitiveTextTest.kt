@@ -1,8 +1,19 @@
 package com.passvault.core.domain.model
 
 import assertk.assertThat
-import assertk.assertions.*
-import kotlin.test.*
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNotEmpty
+import assertk.assertions.isNotEqualTo
+import assertk.assertions.isTrue
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
+import kotlin.text.CharacterCodingException
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * Unit tests for SensitiveText value type.
@@ -33,17 +44,52 @@ class SensitiveTextTest {
     }
 
     @Test
-    fun `toString masks content`() {
-        val sensitive = SensitiveText.from("secret")
+    fun `create from byte array rejects malformed UTF-8`() {
+        val malformed = byteArrayOf(0xC3.toByte(), 0x28)
 
-        assertThat(sensitive.toString()).isEqualTo("[REDACTED: 6 chars]")
+        assertFailsWith<CharacterCodingException> {
+            SensitiveText.from(malformed)
+        }
     }
 
     @Test
-    fun `toString shows length`() {
+    fun `strict UTF-8 encoding rejects malformed UTF-16`() {
+        val sensitive = SensitiveText.from("secret\uD800")
+        try {
+            assertThat(sensitive.hasWellFormedUnicode()).isFalse()
+            assertFailsWith<CharacterCodingException> {
+                sensitive.toUtf8ByteArray()
+            }
+        } finally {
+            sensitive.clear()
+        }
+    }
+
+    @Test
+    fun `single-line validation rejects controls without exposing the secret`() {
+        val safe = SensitiveText.from("PassVault العربية 🔐")
+        val unsafe = SensitiveText.from("invoice\u202Efdp.exe")
+        try {
+            assertThat(safe.hasOnlySafeSingleLineCodePoints()).isTrue()
+            assertThat(unsafe.hasOnlySafeSingleLineCodePoints()).isFalse()
+        } finally {
+            safe.clear()
+            unsafe.clear()
+        }
+    }
+
+    @Test
+    fun `toString masks content`() {
+        val sensitive = SensitiveText.from("secret")
+
+        assertThat(sensitive.toString()).isEqualTo("[REDACTED]")
+    }
+
+    @Test
+    fun `toString does not reveal length`() {
         val sensitive = SensitiveText.from("longsecret")
 
-        assertThat(sensitive.toString()).isEqualTo("[REDACTED: 10 chars]")
+        assertThat(sensitive.toString()).isEqualTo("[REDACTED]")
     }
 
     @Test
@@ -57,15 +103,13 @@ class SensitiveTextTest {
     @Test
     fun `clear wipes data`() {
         val sensitive = SensitiveText.from("secret")
-
-        // Note: We can't directly test the cleared state
-        // since expose() returns a copy and toString masks content
-        // This test documents the intended behavior
         sensitive.clear()
-
-        // After clear, the internal value should be zeroed
-        // but we verify the API works
-        assertThat(sensitive.isEmpty()).isFalse()
+        val cleared = sensitive.expose()
+        try {
+            assertTrue(cleared.all { it == '\u0000' })
+        } finally {
+            cleared.fill('\u0000')
+        }
     }
 
     @Test
@@ -165,11 +209,11 @@ class SensitiveTextTest {
     }
 
     @Test
-    fun `hashCode is different for different content`() {
+    fun `hashCode does not fingerprint different secret content`() {
         val sensitive1 = SensitiveText.from("secret1")
         val sensitive2 = SensitiveText.from("secret2")
 
-        assertThat(sensitive1.hashCode()).isNotEqualTo(sensitive2.hashCode())
+        assertThat(sensitive1.hashCode()).isEqualTo(sensitive2.hashCode())
     }
 
     @Test
@@ -219,5 +263,18 @@ class SensitiveTextTest {
         val sensitive = SensitiveText.from("🔐🔑🔒")
 
         assertThat(sensitive.length).isEqualTo(3)
+    }
+
+    @Test
+    fun `serialization fails closed instead of emitting a lossy marker`() {
+        val sensitive = SensitiveText.from("secret")
+
+        try {
+            assertFailsWith<SerializationException> {
+                Json.encodeToString(sensitive)
+            }
+        } finally {
+            sensitive.clear()
+        }
     }
 }

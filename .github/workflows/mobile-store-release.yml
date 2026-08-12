@@ -18,6 +18,10 @@ on:
       build_number:
         required: true
         type: string
+      candidate_tag:
+        required: false
+        default: ''
+        type: string
       testflight_distribution:
         required: false
         default: email-list
@@ -34,6 +38,11 @@ on:
         required: false
         default: ''
         type: string
+      pipeline_lock_held:
+        description: The protected caller already holds the repository-wide release-pipeline lock
+        required: false
+        default: false
+        type: boolean
   workflow_dispatch:
     inputs:
       platform:
@@ -68,16 +77,19 @@ on:
         required: false
         type: string
       build_number:
-        description: Exact store build number; blank uses version.properties
+        description: Exact store build number; uploads must exceed the canonical published-build floor
+        required: true
+        type: string
+      candidate_tag:
+        description: Required readiness-approved candidate tag for production
         required: false
         type: string
       testflight_distribution:
-        description: External iOS invitation method; public links do not import tester identities
+        description: External iOS invitation method
         required: true
-        default: public-link
+        default: email-list
         type: choice
         options:
-          - public-link
           - email-list
       production_confirmation:
         description: Type I_APPROVE_PRODUCTION only for a production upload
@@ -96,7 +108,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: mobile-store-${{ inputs.channel }}-${{ github.ref }}
+  # Direct retries share the repository-wide pipeline lock. Reusable calls get
+  # a run-local child lock because their protected parent already holds it.
+  group: ${{ inputs.pipeline_lock_held && format('passvault-mobile-child-{0}', github.run_id) || 'passvault-release-pipeline' }}
   cancel-in-progress: false
 
 env:
@@ -104,11 +118,24 @@ env:
   RUBY_VERSION: '3.3'
   FASTLANE_OPT_OUT_USAGE: '1'
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
+  REQUEST_PLATFORM: ${{ inputs.platform }}
+  REQUEST_CHANNEL: ${{ inputs.channel }}
+  REQUEST_OPERATION: ${{ inputs.operation }}
+  REQUEST_VERSION: ${{ inputs.version }}
+  REQUEST_BUILD_NUMBER: ${{ inputs.build_number }}
+  REQUEST_TESTFLIGHT_DISTRIBUTION: ${{ inputs.testflight_distribution }}
+  REQUEST_PRODUCTION_CONFIRMATION: ${{ inputs.production_confirmation }}
+  REQUEST_TESTING_CONFIRMATION: ${{ inputs.testing_confirmation }}
+  REQUEST_REVIEW_WITHDRAWAL_CONFIRMATION: ${{ inputs.review_withdrawal_confirmation }}
 
 jobs:
   validate:
     name: Validate release request
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      attestations: read
+      contents: read
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -122,41 +149,54 @@ jobs:
       version_code: ${{ steps.version.outputs.version_code }}
       environment: ${{ steps.environment.outputs.name }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Require the correct protected branch and confirmations
         run: |
-          expected_branch=testing
-          if [[ "${{ inputs.channel }}" == "production" ]]; then expected_branch=release; fi
-          if [[ "$GITHUB_REF" != "refs/heads/$expected_branch" ]]; then
-            echo "${{ inputs.channel }} must run from $expected_branch." >&2
+          case "$REQUEST_PLATFORM" in both|android|ios) ;; *)
+            echo "Platform must be both, android, or ios." >&2; exit 1 ;;
+          esac
+          case "$REQUEST_CHANNEL" in internal|external|production) ;; *)
+            echo "Channel must be internal, external, or production." >&2; exit 1 ;;
+          esac
+          case "$REQUEST_OPERATION" in upload|promote|store-assets) ;; *)
+            echo "Operation must be upload, promote, or store-assets." >&2; exit 1 ;;
+          esac
+          if [[ "$REQUEST_TESTFLIGHT_DISTRIBUTION" != email-list ]]; then
+            echo "Only the validated TestFlight email-list distribution mode is supported." >&2
             exit 1
           fi
-          if [[ "${{ inputs.operation }}" == "upload" && "${{ inputs.channel }}" != "internal" ]]; then
+          expected_branch=testing
+          if [[ "$REQUEST_CHANNEL" == "production" ]]; then expected_branch=release; fi
+          if [[ "$GITHUB_REF" != "refs/heads/$expected_branch" ]]; then
+            echo "$REQUEST_CHANNEL must run from $expected_branch." >&2
+            exit 1
+          fi
+          if [[ "$REQUEST_OPERATION" == "upload" && "$REQUEST_CHANNEL" != "internal" ]]; then
             echo "New binaries may only be uploaded to internal testing." >&2
             exit 1
           fi
-          if [[ "${{ inputs.operation }}" == "promote" && "${{ inputs.channel }}" == "internal" ]]; then
+          if [[ "$REQUEST_OPERATION" == "promote" && "$REQUEST_CHANNEL" == "internal" ]]; then
             echo "Internal testing requires an upload operation." >&2
             exit 1
           fi
-          if [[ "${{ inputs.operation }}" == "store-assets" &&
-                ( "${{ inputs.channel }}" != "production" || "${{ inputs.platform }}" != "ios" ) ]]; then
+          if [[ "$REQUEST_OPERATION" == "store-assets" &&
+                ( "$REQUEST_CHANNEL" != "production" || "$REQUEST_PLATFORM" != "ios" ) ]]; then
             echo "Store asset maintenance requires the iOS production target." >&2
             exit 1
           fi
-          if [[ "${{ inputs.operation }}" == "store-assets" &&
-                "${{ inputs.review_withdrawal_confirmation }}" != "I_APPROVE_REVIEW_WITHDRAWAL" ]]; then
+          if [[ "$REQUEST_OPERATION" == "store-assets" &&
+                "$REQUEST_REVIEW_WITHDRAWAL_CONFIRMATION" != "I_APPROVE_REVIEW_WITHDRAWAL" ]]; then
             echo "Store asset maintenance requires the exact confirmation I_APPROVE_REVIEW_WITHDRAWAL." >&2
             exit 1
           fi
-          if [[ "${{ inputs.channel }}" == "production" &&
-                "${{ inputs.production_confirmation }}" != "I_APPROVE_PRODUCTION" ]]; then
+          if [[ "$REQUEST_CHANNEL" == "production" &&
+                "$REQUEST_PRODUCTION_CONFIRMATION" != "I_APPROVE_PRODUCTION" ]]; then
             echo "Production requires the exact confirmation I_APPROVE_PRODUCTION." >&2
             exit 1
           fi
-          if [[ "${{ inputs.channel }}" == "production" &&
-                "${{ inputs.testing_confirmation }}" != "I_CONFIRM_REQUIRED_TESTING_COMPLETED" ]]; then
+          if [[ "$REQUEST_CHANNEL" == "production" &&
+                "$REQUEST_TESTING_CONFIRMATION" != "I_CONFIRM_REQUIRED_TESTING_COMPLETED" ]]; then
             echo "Production requires confirmation that all required store testing is complete." >&2
             exit 1
           fi
@@ -164,26 +204,75 @@ jobs:
       - name: Validate version and public release metadata
         id: version
         run: |
-          VERSION="${{ inputs.version }}"
-          VERSION_CODE="${{ inputs.build_number }}"
+          VERSION="$REQUEST_VERSION"
+          VERSION_CODE="$REQUEST_BUILD_NUMBER"
           if [[ -z "$VERSION" ]]; then
             VERSION="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
           fi
-          if [[ -z "$VERSION_CODE" ]]; then
-            VERSION_CODE="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
-          fi
-          if [[ ! "$VERSION_CODE" =~ ^[0-9]+$ || "$VERSION_CODE" -lt 1000000 ]]; then
-            echo "The build number must be an integer of at least 1000000." >&2
+          if [[ ! "$VERSION_CODE" =~ ^[1-9][0-9]*$ ]] ||
+             (( ${#VERSION_CODE} > 10 )) ||
+             (( 10#$VERSION_CODE < 1000000 || 10#$VERSION_CODE > 2100000000 )); then
+            echo "The build number must be a canonical integer from 1000000 through 2100000000." >&2
             exit 1
           fi
           ./scripts/validate-release-metadata.sh "$VERSION"
+          CANONICAL_BUILD_FLOOR="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          if [[ "$REQUEST_OPERATION" == "upload" ]]; then
+            if (( 10#$VERSION_CODE <= 10#$CANONICAL_BUILD_FLOOR )); then
+              echo "A new store upload must use a build above the canonical floor $CANONICAL_BUILD_FLOOR." >&2
+              exit 1
+            fi
+          elif (( 10#$VERSION_CODE < 10#$CANONICAL_BUILD_FLOOR )); then
+            echo "A store promotion cannot target a build below the canonical floor $CANONICAL_BUILD_FLOOR." >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Bind production to the readiness-approved candidate
+        if: inputs.channel == 'production'
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          expected_tag="v${{ steps.version.outputs.version }}-rc.${{ steps.version.outputs.version_code }}"
+          if [[ "$CANDIDATE_TAG" != "$expected_tag" ]]; then
+            echo "Production requires the exact readiness candidate $expected_tag." >&2
+            exit 1
+          fi
+          gh release download "$CANDIDATE_TAG" \
+            --pattern readiness-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir "$RUNNER_TEMP/production-candidate"
+          manifest="$RUNNER_TEMP/production-candidate/readiness-manifest.json"
+          gh attestation verify "$manifest" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$GITHUB_SHA" \
+            --deny-self-hosted-runners >/dev/null
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
+          for receipt in "$RUNNER_TEMP/production-candidate"/*-artifact-receipt.json; do
+            gh attestation verify "$receipt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            "$manifest" "$RUNNER_TEMP/production-candidate" "$GITHUB_SHA" "$source_tree"
+          ./scripts/require-production-signing-validation.sh "$CANDIDATE_TAG"
+          if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
+            echo "Readiness provenance does not match the requested candidate tag." >&2
+            exit 1
+          fi
 
       - name: Select protected environment
         id: environment
         run: |
-          case "${{ inputs.channel }}" in
+          case "$REQUEST_CHANNEL" in
             internal) environment=mobile-beta ;;
             external) environment=mobile-external-beta ;;
             production) environment=mobile-production ;;
@@ -205,24 +294,26 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
+      artifact-metadata: write
+      attestations: write
       contents: read
       id-token: write
     steps:
       - name: Initialize private runtime path
         run: echo "PRIVATE_RUNTIME=$RUNNER_TEMP/passvault-release" >> "$GITHUB_ENV"
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           cache-cleanup: always
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -231,7 +322,6 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
-          PLAY_CLOSED_TESTERS_BASE64: ${{ secrets.PLAY_CLOSED_TESTERS_BASE64 }}
           COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
           SUPPORT_URL: ${{ vars.SUPPORT_URL }}
           PROJECT_URL: ${{ vars.PROJECT_URL }}
@@ -241,13 +331,10 @@ jobs:
           printf '%s' "$KEYSTORE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/android-upload.jks"
           chmod 600 "$PRIVATE_RUNTIME/android-upload.jks"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
-            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/store-input"
-          if [[ "${{ inputs.channel }}" == "external" ]]; then
-            printf '%s' "$PLAY_CLOSED_TESTERS_BASE64" |
-              openssl base64 -d -A > "$PRIVATE_RUNTIME/play-testers.txt"
-            chmod 600 "$PRIVATE_RUNTIME/play-testers.txt"
-            ./scripts/validate-mobile-tester-files.sh play "$PRIVATE_RUNTIME/play-testers.txt"
-          fi
+            openssl base64 -d -A > "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          chmod 600 "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          ruby scripts/extract-store-metadata-archive.rb \
+            "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/store-input"
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
           echo "KEYSTORE_PATH=$PRIVATE_RUNTIME/android-upload.jks" >> "$GITHUB_ENV"
@@ -272,16 +359,84 @@ jobs:
             :app-android:verifyReleaseSigningConfiguration \
             :app-android:assembleStandardRelease \
             :app-android:bundleStandardRelease \
+            :app-android:lintStandardRelease \
+            :app-android:verifyStandardReleasePackageContents \
+            :app-android:verifyStandardReleaseBundleContents \
+            --no-configuration-cache \
             -Ppassvault.requireReleaseSigning=true \
             -Ppassvault.versionName=${{ needs.validate.outputs.version }} \
             -Ppassvault.versionCode=${{ needs.validate.outputs.version_code }}
           ./scripts/verify-android-signatures.sh
+          ruby scripts/validate-google-play-readiness.rb
           echo "ANDROID_AAB_PATH=$GITHUB_WORKSPACE/app-android/build/outputs/bundle/standardRelease/app-android-standard-release.aab" >> "$GITHUB_ENV"
           mapping="$GITHUB_WORKSPACE/app-android/build/outputs/mapping/standardRelease/mapping.txt"
-          if [[ -f "$mapping" ]]; then echo "ANDROID_MAPPING_PATH=$mapping" >> "$GITHUB_ENV"; fi
+          if [[ ! -s "$mapping" ]]; then
+            echo "The minified Android release did not produce an R8 mapping file." >&2
+            exit 1
+          fi
+          echo "ANDROID_MAPPING_PATH=$mapping" >> "$GITHUB_ENV"
+
+      - name: Bind exact signed Android artifacts to candidate provenance
+        env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          ANDROID_SIGNING_SHA256: ${{ vars.ANDROID_UPLOAD_CERTIFICATE_SHA256 }}
+          RECEIPT_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
+          RECEIPT_VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          provenance_root="$RUNNER_TEMP/passvault-android-provenance"
+          install -d -m 700 "$provenance_root"
+          apk_source="$GITHUB_WORKSPACE/app-android/build/outputs/apk/standard/release/app-android-standard-release.apk"
+          install -m 600 "$ANDROID_AAB_PATH" \
+            "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.aab"
+          install -m 600 "$apk_source" \
+            "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.apk"
+          install -m 600 "$ANDROID_MAPPING_PATH" "$provenance_root/r8-mapping.txt"
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          RECEIPT_PLATFORM=android \
+          RECEIPT_SOURCE_COMMIT="$GITHUB_SHA" \
+          RECEIPT_SOURCE_TREE="$source_tree" \
+          RECEIPT_IDENTIFIER="$ANDROID_PACKAGE_NAME" \
+          RECEIPT_SIGNING_FINGERPRINT="$ANDROID_SIGNING_SHA256" \
+          RECEIPT_AAB_PATH="$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.aab" \
+          RECEIPT_APK_PATH="$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.apk" \
+          RECEIPT_R8_MAPPING_PATH="$provenance_root/r8-mapping.txt" \
+            ruby scripts/create-mobile-artifact-receipt.rb \
+              > "$provenance_root/android-artifact-receipt.json"
+          ruby scripts/validate-mobile-artifact-receipt.rb \
+            "$provenance_root/android-artifact-receipt.json" android \
+            "$RECEIPT_VERSION" "$RECEIPT_BUILD_NUMBER" "$GITHUB_SHA" "$source_tree" \
+            "$provenance_root"
+          echo "ANDROID_PROVENANCE_ROOT=$provenance_root" >> "$GITHUB_ENV"
+
+      - name: Attest exact signed Android candidate artifacts
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            ${{ env.ANDROID_PROVENANCE_ROOT }}/*.aab
+            ${{ env.ANDROID_PROVENANCE_ROOT }}/*.apk
+            ${{ env.ANDROID_PROVENANCE_ROOT }}/r8-mapping.txt
+
+      - name: Retain exact signed Android candidate artifacts privately
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-signed-android-${{ needs.validate.outputs.version_code }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            ${{ env.ANDROID_PROVENANCE_ROOT }}/*.aab
+            ${{ env.ANDROID_PROVENANCE_ROOT }}/*.apk
+            ${{ env.ANDROID_PROVENANCE_ROOT }}/r8-mapping.txt
+
+      - name: Retain Android provenance receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-receipt-android-${{ needs.validate.outputs.version_code }}
+          if-no-files-found: error
+          retention-days: 90
+          path: ${{ env.ANDROID_PROVENANCE_ROOT }}/android-artifact-receipt.json
 
       - name: Authenticate to Google with OIDC
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
           workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
@@ -294,12 +449,7 @@ jobs:
           PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
           PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
           UPLOAD_STORE_ASSETS: ${{ inputs.channel == 'production' }}
-        run: |
-          case "${{ inputs.channel }}" in
-            internal) bundle exec fastlane android internal ;;
-            external) bundle exec fastlane android closed ;;
-            production) bundle exec fastlane android production ;;
-          esac
+        run: bundle exec fastlane android internal
 
       - name: Remove private runtime inputs
         if: always()
@@ -319,23 +469,26 @@ jobs:
     runs-on: macos-26
     environment: ${{ needs.validate.outputs.environment }}
     permissions:
+      artifact-metadata: write
+      attestations: write
       contents: read
+      id-token: write
     steps:
       - name: Initialize private runtime paths
         run: |
           echo "PRIVATE_RUNTIME=$RUNNER_TEMP/passvault-release" >> "$GITHUB_ENV"
           echo "KEYCHAIN_PATH=$RUNNER_TEMP/passvault-release/release.keychain-db" >> "$GITHUB_ENV"
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -360,7 +513,9 @@ jobs:
           IOS_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
           ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
           STORE_METADATA_ARCHIVE_BASE64: ${{ secrets.STORE_METADATA_ARCHIVE_BASE64 }}
-          TESTERS_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
+          EXPECTED_IOS_SIGNING_SHA1: ${{ vars.IOS_DISTRIBUTION_CERTIFICATE_SHA1 }}
+          EXPECTED_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          EXPECTED_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
           COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
           SUPPORT_URL: ${{ vars.SUPPORT_URL }}
           PROJECT_URL: ${{ vars.PROJECT_URL }}
@@ -371,50 +526,76 @@ jobs:
           printf '%s' "$IOS_PROFILE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/profile.mobileprovision"
           printf '%s' "$ASC_PRIVATE_KEY_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/app-store-connect-key.p8"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
-            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/store-input"
+            openssl base64 -d -A > "$PRIVATE_RUNTIME/store-metadata.tar.gz"
           chmod 600 "$PRIVATE_RUNTIME/distribution.p12" "$PRIVATE_RUNTIME/profile.mobileprovision" \
-            "$PRIVATE_RUNTIME/app-store-connect-key.p8"
+            "$PRIVATE_RUNTIME/app-store-connect-key.p8" "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          ruby scripts/extract-store-metadata-archive.rb \
+            "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/store-input"
 
           KEYCHAIN_PASSWORD="$(openssl rand -hex 32)"
+          ORIGINAL_KEYCHAINS_PATH="$PRIVATE_RUNTIME/original-user-keychains.txt"
+          source scripts/lib/macos-keychain.sh
+          passvault_capture_user_keychains "$ORIGINAL_KEYCHAINS_PATH"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security import "$PRIVATE_RUNTIME/distribution.p12" -k "$KEYCHAIN_PATH" \
-            -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 >/dev/null
+            -P "$IOS_CERTIFICATE_PASSWORD" -t cert -f pkcs12 \
+            -T /usr/bin/codesign -T /usr/bin/security >/dev/null
           security set-key-partition-list -S apple-tool:,apple: -s \
             -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
-          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          passvault_activate_release_keychain "$KEYCHAIN_PATH" "$ORIGINAL_KEYCHAINS_PATH"
           CODESIGN_IDENTITY="$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
             awk '$2 ~ /^[0-9A-Fa-f]{40}$/ { print toupper($2); exit }')"
           if [[ ! "$CODESIGN_IDENTITY" =~ ^[0-9A-F]{40}$ ]]; then
             echo "The imported Apple Distribution identity is unavailable." >&2
             exit 1
           fi
+          expected_codesign_identity="$(printf '%s' "$EXPECTED_IOS_SIGNING_SHA1" | tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]')"
+          if [[ ! "$expected_codesign_identity" =~ ^[0-9A-F]{40}$ ||
+                "$CODESIGN_IDENTITY" != "$expected_codesign_identity" ]]; then
+            echo "The imported Apple Distribution identity does not match candidate provenance." >&2
+            exit 1
+          fi
 
           security cms -D -i "$PRIVATE_RUNTIME/profile.mobileprovision" > "$PRIVATE_RUNTIME/profile.plist"
           PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PRIVATE_RUNTIME/profile.plist")"
           PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_TEAM_ID="$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_APP_IDENTIFIER="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_ENTITLEMENT_TEAM="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_GET_TASK_ALLOW="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:get-task-allow' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_BETA_REPORTS="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:beta-reports-active' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_EXPIRATION="$(sed -n '/<key>ExpirationDate<\/key>/{n;s/.*<date>\(.*\)<\/date>.*/\1/p;}' "$PRIVATE_RUNTIME/profile.plist")"
+          PROFILE_EXPIRATION_EPOCH="$(date -j -u -f '%Y-%m-%dT%H:%M:%SZ' "$PROFILE_EXPIRATION" '+%s' 2>/dev/null || true)"
+          if [[ ! "$PROFILE_UUID" =~ ^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$ ||
+                -z "$PROFILE_NAME" || "$PROFILE_NAME" == *$'\n'* || "$PROFILE_NAME" == *$'\r'* ||
+                ! "$EXPECTED_TEAM_ID" =~ ^[A-Z0-9]{10}$ ||
+                "$PROFILE_TEAM_ID" != "$EXPECTED_TEAM_ID" ||
+                "$PROFILE_ENTITLEMENT_TEAM" != "$EXPECTED_TEAM_ID" ||
+                "$PROFILE_APP_IDENTIFIER" != "$EXPECTED_TEAM_ID.$EXPECTED_BUNDLE_ID" ||
+                "$PROFILE_GET_TASK_ALLOW" != false || "$PROFILE_BETA_REPORTS" != true ||
+                -z "$PROFILE_EXPIRATION_EPOCH" || "$PROFILE_EXPIRATION_EPOCH" -le "$(date -u '+%s')" ]] ||
+              /usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' \
+                "$PRIVATE_RUNTIME/profile.plist" >/dev/null 2>&1 ||
+              [[ "$(/usr/libexec/PlistBuddy -c 'Print :ProvisionsAllDevices' \
+                "$PRIVATE_RUNTIME/profile.plist" 2>/dev/null || true)" == true ]]; then
+            echo "The provisioning profile identity does not match the configured App Store app." >&2
+            exit 1
+          fi
           install -d "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PRIVATE_RUNTIME/profile.mobileprovision" \
             "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
 
-          if [[ "${{ inputs.channel }}" == "external" &&
-                "${{ inputs.testflight_distribution }}" == "email-list" ]]; then
-            printf '%s' "$TESTERS_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/testflight-testers.csv"
-            chmod 600 "$PRIVATE_RUNTIME/testflight-testers.csv"
-            ./scripts/validate-mobile-tester-files.sh \
-              testflight "$PRIVATE_RUNTIME/testflight-testers.csv"
-          fi
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "${{ needs.validate.outputs.version_code }}"
 
-          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
-          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
-          echo "CODESIGN_IDENTITY=$CODESIGN_IDENTITY" >> "$GITHUB_ENV"
-          echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
-          if [[ -f "$PRIVATE_RUNTIME/testflight-testers.csv" ]]; then
-            echo "TESTFLIGHT_EXTERNAL_TESTERS_FILE=$PRIVATE_RUNTIME/testflight-testers.csv" >> "$GITHUB_ENV"
-          fi
+          {
+            printf 'PROFILE_UUID=%s\n' "$PROFILE_UUID"
+            printf 'PROFILE_NAME=%s\n' "$PROFILE_NAME"
+            printf 'CODESIGN_IDENTITY=%s\n' "$CODESIGN_IDENTITY"
+            printf 'STORE_METADATA_ROOT=%s\n' "$PRIVATE_RUNTIME/store"
+          } >> "$GITHUB_ENV"
 
       - name: Enforce App Store France availability constraint
         env:
@@ -477,13 +658,78 @@ jobs:
             -archivePath "$ARCHIVE_PATH" \
             -exportPath "$PRIVATE_RUNTIME/export" \
             -exportOptionsPlist "$PRIVATE_RUNTIME/ExportOptions.plist"
-          IPA_PATH="$(find "$PRIVATE_RUNTIME/export" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
-          test -n "$IPA_PATH"
+          ipa_count="$(find "$PRIVATE_RUNTIME/export" -maxdepth 1 -type f -name '*.ipa' | wc -l | tr -d ' ')"
+          if [[ "$ipa_count" != 1 ]]; then
+            echo "The App Store export must produce exactly one IPA; found $ipa_count." >&2
+            exit 1
+          fi
+          IPA_PATH="$(find "$PRIVATE_RUNTIME/export" -maxdepth 1 -type f -name '*.ipa' -print)"
           ./scripts/verify-ios-exported-artifact.sh \
             "$ARCHIVE_PATH" "$IPA_PATH" "$TEAM_ID" "$BUNDLE_ID" "$PROFILE_UUID" \
             "${{ needs.validate.outputs.version }}" "${{ needs.validate.outputs.version_code }}" \
             "$PRIVATE_RUNTIME/PassVault-LinkMap.txt"
           echo "IOS_IPA_PATH=$IPA_PATH" >> "$GITHUB_ENV"
+
+      - name: Bind exact signed iOS artifacts to candidate provenance
+        env:
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          IOS_SIGNING_SHA1: ${{ vars.IOS_DISTRIBUTION_CERTIFICATE_SHA1 }}
+          RECEIPT_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
+          RECEIPT_VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          provenance_root="$RUNNER_TEMP/passvault-ios-provenance"
+          install -d -m 700 "$provenance_root"
+          install -m 600 "$IOS_IPA_PATH" \
+            "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.ipa"
+          install -m 600 "$PRIVATE_RUNTIME/PassVault-LinkMap.txt" \
+            "$provenance_root/PassVault-LinkMap.txt"
+          /usr/bin/ditto -c -k --sequesterRsrc --keepParent \
+            "$PRIVATE_RUNTIME/PassVault.xcarchive" \
+            "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.xcarchive.zip"
+          chmod 600 "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.xcarchive.zip"
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          RECEIPT_PLATFORM=ios \
+          RECEIPT_SOURCE_COMMIT="$GITHUB_SHA" \
+          RECEIPT_SOURCE_TREE="$source_tree" \
+          RECEIPT_IDENTIFIER="$IOS_BUNDLE_ID" \
+          RECEIPT_SIGNING_FINGERPRINT="$IOS_SIGNING_SHA1" \
+          RECEIPT_IPA_PATH="$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.ipa" \
+          RECEIPT_XCARCHIVE_PATH="$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.xcarchive.zip" \
+          RECEIPT_LINK_MAP_PATH="$provenance_root/PassVault-LinkMap.txt" \
+            ruby scripts/create-mobile-artifact-receipt.rb \
+              > "$provenance_root/ios-artifact-receipt.json"
+          ruby scripts/validate-mobile-artifact-receipt.rb \
+            "$provenance_root/ios-artifact-receipt.json" ios \
+            "$RECEIPT_VERSION" "$RECEIPT_BUILD_NUMBER" "$GITHUB_SHA" "$source_tree" \
+            "$provenance_root"
+          echo "IOS_PROVENANCE_ROOT=$provenance_root" >> "$GITHUB_ENV"
+
+      - name: Attest exact signed iOS candidate artifacts
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            ${{ env.IOS_PROVENANCE_ROOT }}/*.ipa
+            ${{ env.IOS_PROVENANCE_ROOT }}/*.xcarchive.zip
+            ${{ env.IOS_PROVENANCE_ROOT }}/PassVault-LinkMap.txt
+
+      - name: Retain exact signed iOS candidate artifacts privately
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-signed-ios-${{ needs.validate.outputs.version_code }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            ${{ env.IOS_PROVENANCE_ROOT }}/*.ipa
+            ${{ env.IOS_PROVENANCE_ROOT }}/*.xcarchive.zip
+            ${{ env.IOS_PROVENANCE_ROOT }}/PassVault-LinkMap.txt
+
+      - name: Retain iOS provenance receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-receipt-ios-${{ needs.validate.outputs.version_code }}
+          if-no-files-found: error
+          retention-days: 90
+          path: ${{ env.IOS_PROVENANCE_ROOT }}/ios-artifact-receipt.json
 
       - name: Upload to App Store Connect
         env:
@@ -507,16 +753,12 @@ jobs:
           APP_REVIEW_PHONE: ${{ secrets.APP_REVIEW_PHONE }}
           PASSVAULT_PRODUCTION_APPROVED: ${{ inputs.production_confirmation }}
           PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
-        run: |
-          case "${{ inputs.channel }}" in
-            internal) bundle exec fastlane ios internal ;;
-            external) bundle exec fastlane ios external ;;
-            production) bundle exec fastlane ios production_candidate ;;
-          esac
+        run: bundle exec fastlane ios internal
 
       - name: Remove private runtime inputs and keychain
         if: always()
         run: |
+          source scripts/lib/macos-keychain.sh
           profile_uuid="${PROFILE_UUID:-}"
           if [[ -z "$profile_uuid" && -f "$PRIVATE_RUNTIME/profile.plist" ]]; then
             profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PRIVATE_RUNTIME/profile.plist" 2>/dev/null || true)"
@@ -525,6 +767,8 @@ jobs:
             profile="$HOME/Library/MobileDevice/Provisioning Profiles/$profile_uuid.mobileprovision"
             test ! -f "$profile" || rm -f -- "$profile"
           fi
+          passvault_restore_user_keychains \
+            "$PRIVATE_RUNTIME/original-user-keychains.txt" 2>/dev/null || true
           security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
           if [[ -n "${PRIVATE_RUNTIME:-}" && -d "$PRIVATE_RUNTIME" ]]; then
             find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
@@ -542,9 +786,9 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
@@ -571,7 +815,10 @@ jobs:
           PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-play-promotion"
           install -d -m 700 "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
-            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/input"
+            openssl base64 -d -A > "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          chmod 600 "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          ruby scripts/extract-store-metadata-archive.rb \
+            "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/input"
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
             "${{ needs.validate.outputs.version_code }}"
@@ -579,7 +826,7 @@ jobs:
 
       - name: Authenticate to Google with OIDC
         id: google-auth
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
           workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
@@ -594,7 +841,7 @@ jobs:
           ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
           GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
         run: |
-          if [[ "${{ inputs.channel }}" == "external" ]]; then
+          if [[ "$REQUEST_CHANNEL" == "external" ]]; then
             source_track=internal
           else
             source_track=beta
@@ -610,7 +857,7 @@ jobs:
           PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
           UPLOAD_STORE_ASSETS: ${{ inputs.channel == 'production' }}
         run: |
-          if [[ "${{ inputs.channel }}" == "external" ]]; then
+          if [[ "$REQUEST_CHANNEL" == "external" ]]; then
             bundle exec fastlane android promote_external
           else
             bundle exec fastlane android promote_production
@@ -619,6 +866,7 @@ jobs:
       - name: Remove promotion metadata
         if: always()
         run: |
+          rm -f -- "$RUNNER_TEMP/play-closed-testers.txt"
           private_runtime="$RUNNER_TEMP/passvault-play-promotion"
           if [[ -d "$private_runtime" ]]; then
             find "$private_runtime" -type f -exec chmod 600 {} + 2>/dev/null || true
@@ -637,15 +885,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
 
       - name: Validate configured TestFlight email testers
-        if: inputs.channel == 'external'
+        if: inputs.channel == 'external' && inputs.testflight_distribution == 'email-list'
         env:
           TESTERS_BASE64: ${{ secrets.TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 }}
         run: |
@@ -667,7 +915,10 @@ jobs:
           PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-promotion"
           install -d -m 700 "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
-            openssl base64 -d -A | tar -xzf - -C "$PRIVATE_RUNTIME/input"
+            openssl base64 -d -A > "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          chmod 600 "$PRIVATE_RUNTIME/store-metadata.tar.gz"
+          ruby scripts/extract-store-metadata-archive.rb \
+            "$PRIVATE_RUNTIME/store-metadata.tar.gz" "$PRIVATE_RUNTIME/input"
           ./scripts/prepare-mobile-store-metadata.sh \
             "$PRIVATE_RUNTIME/input" "$PRIVATE_RUNTIME/store" \
             "${{ needs.validate.outputs.version_code }}"
@@ -683,6 +934,8 @@ jobs:
           TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
           EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
           IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+          EXPECTED_VERSION: ${{ needs.validate.outputs.version }}
+          EXPECTED_BUILD_NUMBER: ${{ needs.validate.outputs.version_code }}
         run: |
           private_runtime="$RUNNER_TEMP/passvault-promotion"
           key_path="$private_runtime/AuthKey.p8"
@@ -694,14 +947,20 @@ jobs:
             PASSVAULT_ASC_CONFIGURATION_SOURCE=environment \
             ASC_PRIVATE_KEY_FILE="$key_path" \
             ./scripts/manage-testflight-public-link.rb --status \
-              --version "${{ needs.validate.outputs.version }}" \
-              --build-number "${{ needs.validate.outputs.version_code }}"
+              --version "$EXPECTED_VERSION" \
+              --build-number "$EXPECTED_BUILD_NUMBER"
           )"
           printf '%s\n' "$status"
-          grep -Fqx 'MARKETING_VERSION=${{ needs.validate.outputs.version }}' <<< "$status"
-          grep -Fqx 'BUILD_NUMBER=${{ needs.validate.outputs.version_code }}' <<< "$status"
+          case "$EXPORT_COMPLIANCE_STATUS" in
+            EXEMPT_APPROVED) expected_encryption=false ;;
+            NON_EXEMPT_APPROVED) expected_encryption=true ;;
+            *) echo "Approved export compliance is required." >&2; exit 1 ;;
+          esac
+          grep -Fqx "MARKETING_VERSION=$EXPECTED_VERSION" <<< "$status"
+          grep -Fqx "BUILD_NUMBER=$EXPECTED_BUILD_NUMBER" <<< "$status"
           grep -Fqx 'PROCESSING_STATE=VALID' <<< "$status"
-          grep -Fqx 'USES_NON_EXEMPT_ENCRYPTION=false' <<< "$status"
+          grep -Fqx "USES_NON_EXEMPT_ENCRYPTION=$expected_encryption" <<< "$status"
+          grep -Fqx 'PUBLIC_LINK_ENABLED=false' <<< "$status"
 
       - name: Promote exact App Store Connect build
         env:
@@ -724,9 +983,9 @@ jobs:
           PASSVAULT_REQUIRED_TESTING_CONFIRMED: ${{ inputs.testing_confirmation }}
           PASSVAULT_REVIEW_WITHDRAWAL_APPROVED: ${{ inputs.review_withdrawal_confirmation }}
         run: |
-          if [[ "${{ inputs.operation }}" == "store-assets" ]]; then
+          if [[ "$REQUEST_OPERATION" == "store-assets" ]]; then
             bundle exec fastlane ios update_store_assets
-          elif [[ "${{ inputs.channel }}" == "external" ]]; then
+          elif [[ "$REQUEST_CHANNEL" == "external" ]]; then
             bundle exec fastlane ios promote_external
           else
             bundle exec fastlane ios promote_production

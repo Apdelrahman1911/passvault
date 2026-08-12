@@ -36,8 +36,8 @@ data class CredentialRecordEntity(
     val titleHash: ByteArray,
 
     /**
-     * Encrypted summary payload containing non-sensitive metadata
-     * (title, username hint, URL domains for display).
+     * Encrypted summary payload containing privacy-sensitive list metadata
+     * (title and username/email display hint).
      */
     @ColumnInfo(name = "summary_payload", typeAffinity = ColumnInfo.BLOB)
     val summaryPayload: ByteArray,
@@ -70,27 +70,27 @@ data class CredentialRecordEntity(
     @ColumnInfo(name = "last_used_at")
     val lastUsedAt: Long?,
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
+    override fun equals(other: Any?): Boolean =
+        this === other ||
+            (other is CredentialRecordEntity &&
+                hasSameEncryptedValues(other) &&
+                hasSameRecordMetadata(other))
 
-        other as CredentialRecordEntity
+    private fun hasSameEncryptedValues(other: CredentialRecordEntity): Boolean =
+        titleHash.contentEquals(other.titleHash) &&
+            summaryPayload.contentEquals(other.summaryPayload) &&
+            summaryNonce.contentEquals(other.summaryNonce) &&
+            secretPayload.contentEquals(other.secretPayload) &&
+            secretNonce.contentEquals(other.secretNonce)
 
-        if (id != other.id) return false
-        if (type != other.type) return false
-        if (!titleHash.contentEquals(other.titleHash)) return false
-        if (!summaryPayload.contentEquals(other.summaryPayload)) return false
-        if (!summaryNonce.contentEquals(other.summaryNonce)) return false
-        if (!secretPayload.contentEquals(other.secretPayload)) return false
-        if (!secretNonce.contentEquals(other.secretNonce)) return false
-        if (folderId != other.folderId) return false
-        if (isFavorite != other.isFavorite) return false
-        if (createdAt != other.createdAt) return false
-        if (updatedAt != other.updatedAt) return false
-        if (lastUsedAt != other.lastUsedAt) return false
-
-        return true
-    }
+    private fun hasSameRecordMetadata(other: CredentialRecordEntity): Boolean =
+        id == other.id &&
+            type == other.type &&
+            folderId == other.folderId &&
+            isFavorite == other.isFavorite &&
+            createdAt == other.createdAt &&
+            updatedAt == other.updatedAt &&
+            lastUsedAt == other.lastUsedAt
 
     override fun hashCode(): Int {
         var result = id.hashCode()

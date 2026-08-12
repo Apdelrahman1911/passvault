@@ -1,8 +1,12 @@
 package com.passvault.core.domain.model
 
 import assertk.assertThat
-import assertk.assertions.*
-import kotlin.test.*
+import assertk.assertions.contains
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import kotlin.test.Test
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -148,6 +152,54 @@ class CredentialTest {
     fun `url value returns null for invalid url`() {
         val url = UrlValue("not-a-valid-url")
         assertThat(url.host()).isNull()
+    }
+
+    @Test
+    fun `url value accepts bounded HTTP authorities`() {
+        val cases = mapOf(
+            "HTTP://WWW.Example.COM:443/path?query=value#fragment" to "example.com",
+            "https://localhost:8080" to "localhost",
+            "https://127.0.0.1/login" to "127.0.0.1",
+            "https://[2001:db8::1]:8443/login" to "2001:db8::1",
+            "https://[::ffff:192.0.2.128]/" to "::ffff:192.0.2.128",
+            "https://[2001:db8:0:1:1:1:1:1]" to "2001:db8:0:1:1:1:1:1",
+        )
+
+        cases.forEach { (value, expectedHost) ->
+            assertThat(UrlValue(value).host()).isEqualTo(expectedHost)
+        }
+    }
+
+    @Test
+    fun `url value rejects ambiguous or malformed authorities`() {
+        val invalidValues = listOf(
+            "ftp://example.com",
+            "https://user@example.com",
+            "https://example.com:",
+            "https://example.com:0",
+            "https://example.com:65536",
+            "https://example.com:https",
+            "https://bad_host.example",
+            "https://-example.com",
+            "https://example-.com",
+            "https://256.0.0.1",
+            "https://127.00.0.1",
+            "https://2001:db8::1",
+            "https://[2001:db8::1",
+            "https://[2001:db8:::1]",
+            "https://[1:2:3:4:5:6:7::8]",
+            "https://[192.0.2.1::]",
+            "https://example.com/path with space",
+            "https://example.com\\redirect",
+            "https://example.com/invoice\u202Efdp.exe",
+            " https://example.com",
+            "https://example.com\n",
+            "https://éxample.com",
+        )
+
+        invalidValues.forEach { value ->
+            assertThat(UrlValue(value).host()).isNull()
+        }
     }
 
     @Test

@@ -7,9 +7,22 @@ import com.passvault.core.crypto.DesktopCryptoEngine
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.dao.VaultBackupDao
 import com.passvault.core.database.dao.VaultBackupEntities
+import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.entity.CredentialRecordEntity
+import com.passvault.core.database.entity.CredentialTagCrossRef
+import com.passvault.core.database.entity.FolderRecordEntity
+import com.passvault.core.database.entity.PasswordHistoryRecordEntity
+import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.entity.VaultMetadataEntity
+import com.passvault.core.database.repository.MAX_FOLDER_ENCRYPTED_PAYLOAD_BYTES
+import com.passvault.core.database.repository.VaultSessionManager
 import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.repository.LockReason
+import com.passvault.core.security.BiometricAvailability
+import com.passvault.core.security.BiometricCapability
+import com.passvault.core.security.BiometricKeyStore
+import com.passvault.core.security.BiometricKeyStoreException
+import com.passvault.core.security.BiometricType
 import com.passvault.core.testing.fakes.FakeVaultRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
@@ -18,14 +31,21 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
+@Suppress(
+    "LargeClass",
+    "TooManyFunctions",
+) // Legacy compatibility and biometric rollback cases share one strict snapshot fixture.
 class VaultBackupServiceTest {
 
     private lateinit var database: VaultDatabase
     private lateinit var backupDao: VaultBackupDao
     private lateinit var cryptoEngine: DesktopCryptoEngine
     private lateinit var vaultRepository: FakeVaultRepository
+    private lateinit var sessionManager: TestVaultSessionManager
+    private lateinit var biometricKeyStore: RecordingBiometricKeyStore
     private lateinit var service: VaultBackupService
 
     @BeforeTest
@@ -36,7 +56,15 @@ class VaultBackupServiceTest {
         backupDao = database.vaultBackupDao()
         cryptoEngine = DesktopCryptoEngine()
         vaultRepository = FakeVaultRepository().apply { setupExistingVault() }
-        service = VaultBackupService(backupDao, cryptoEngine, vaultRepository)
+        sessionManager = TestVaultSessionManager(vaultRepository)
+        biometricKeyStore = RecordingBiometricKeyStore()
+        service = VaultBackupService(
+            backupDao,
+            cryptoEngine,
+            vaultRepository,
+            sessionManager,
+            biometricKeyStore,
+        )
     }
 
     @AfterTest
@@ -91,6 +119,86 @@ class VaultBackupServiceTest {
         } finally {
             correct.clear()
             wrong.clear()
+        }
+    }
+
+    @Test
+    fun `new backup rejects a passphrase below the shared minimum`() = runTest {
+        insertSnapshot(validSnapshot("policy-vault", "credential-one"))
+        val password = SensitiveText.from("too-short")
+
+        try {
+            assertTrue(service.createBackup(password).isFailure)
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `secure-store failure reports restore activation failure and preserves current data`() = runTest {
+        insertSnapshot(validSnapshot("source-vault", "credential-one"))
+        val password = SensitiveText.from("independent backup password")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            replaceWithEmptyVault("sentinel-vault")
+            val before = backupDao.readSnapshot()
+            biometricKeyStore.failDeletion = true
+
+            val result = service.restoreBackup(backup, password)
+
+            assertTrue(result.isFailure)
+            assertEquals("The validated backup could not be restored.", result.exceptionOrNull()?.message)
+            assertSnapshotEquals(before, backupDao.readSnapshot())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `database rollback restores a previously enabled biometric enrollment`() = runTest {
+        insertSnapshot(validSnapshot("source-vault", "credential-one"))
+        val password = SensitiveText.from("biometric rollback backup password")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            replaceWithEmptyVault("sentinel-vault")
+            val before = backupDao.readSnapshot()
+            biometricKeyStore.enabled = true
+            val failingService = VaultBackupService(
+                FailingReplaceBackupDao(backupDao),
+                cryptoEngine,
+                vaultRepository,
+                sessionManager,
+                biometricKeyStore,
+            )
+
+            val result = failingService.restoreBackup(backup, password)
+
+            assertTrue(result.isFailure)
+            assertTrue(biometricKeyStore.enabled)
+            assertEquals(listOf("test-vault-123"), biometricKeyStore.enrolledVaultIds)
+            assertSnapshotEquals(before, backupDao.readSnapshot())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `successful restore removes the previous vault biometric key`() = runTest {
+        val original = validSnapshot("original-vault", "credential-one")
+        insertSnapshot(original)
+        val password = SensitiveText.from("independent backup password")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            replaceWithEmptyVault("sentinel-vault")
+
+            service.restoreBackup(backup, password).getOrThrow()
+
+            assertEquals(listOf("test-vault-123"), biometricKeyStore.deletedVaultIds)
+        } finally {
+            password.clear()
         }
     }
 
@@ -205,6 +313,271 @@ class VaultBackupServiceTest {
         }
     }
 
+    @Test
+    fun `attachment accounting rejects backups that claim to package files or contain phantom rows`() {
+        assertFailsWith<IllegalArgumentException> {
+            validateBackupAttachmentAccounting(
+                attachmentsIncluded = true,
+                attachmentRowCount = 0,
+                omittedAttachmentCount = 0,
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            validateBackupAttachmentAccounting(
+                attachmentsIncluded = false,
+                attachmentRowCount = 1,
+                omittedAttachmentCount = 0,
+            )
+        }
+
+        validateBackupAttachmentAccounting(
+            attachmentsIncluded = false,
+            attachmentRowCount = 0,
+            omittedAttachmentCount = 1,
+        )
+    }
+
+    @Test
+    fun `metadata-only backup reports but does not restore unusable attachment rows`() = runTest {
+        val base = validSnapshot("attachment-vault", "credential-one")
+        val source = base.copy(attachments = listOf(validAttachment("credential-one")))
+        insertSnapshot(source)
+        val password = SensitiveText.from("metadata-only attachment backup")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            val preview = service.inspectBackup(backup, password).getOrThrow()
+            assertEquals(1, preview.attachmentCount)
+            assertEquals(
+                listOf(VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_IN_PREVIEW),
+                preview.warnings,
+            )
+
+            replaceWithEmptyVault("sentinel-vault")
+            val restored = service.restoreBackup(backup, password).getOrThrow()
+
+            assertEquals(1, restored.attachmentCount)
+            assertEquals(
+                listOf(VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE),
+                restored.warnings,
+            )
+            assertTrue(backupDao.readSnapshot().attachments.isEmpty())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `snapshot validation rejects non-production credential types`() = runTest {
+        val snapshot = validSnapshot("type-vault", "credential-one")
+
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(
+                    credentials = snapshot.credentials.map { it.copy(type = "login") },
+                ),
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(
+                    credentials = snapshot.credentials.map { it.copy(type = "Custom:") },
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `snapshot validation rejects non-exact fixed secret envelopes`() = runTest {
+        val snapshot = validSnapshot("envelope-vault", "credential-one")
+
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(
+                    metadata = snapshot.metadata.copy(
+                        wrappedVek = snapshot.metadata.wrappedVek + byteArrayOf(0),
+                    ),
+                ),
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(
+                    metadata = snapshot.metadata.copy(
+                        encryptedVerificationRecord = snapshot.metadata.encryptedVerificationRecord.copyOf(36),
+                    ),
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `snapshot validation requires canonical blind index sizes`() = runTest {
+        val snapshot = validSnapshot("index-vault", "credential-one")
+
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(
+                    credentials = snapshot.credentials.map { it.copy(titleHash = ByteArray(31)) },
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `snapshot validation rejects encrypted metadata payloads repositories cannot read`() = runTest {
+        val snapshot = validSnapshot("payload-vault", "credential-one")
+        val credential = snapshot.credentials.single()
+        val oversizedPayload = credential.summaryPayload.copyOf(MAX_FOLDER_ENCRYPTED_PAYLOAD_BYTES + 1)
+        val folder = FolderRecordEntity(
+            id = "folder-one",
+            parentId = null,
+            nameHash = ByteArray(32),
+            encryptedPayload = oversizedPayload,
+            payloadNonce = credential.summaryNonce.copyOf(),
+            icon = null,
+            sortOrder = 0,
+            createdAt = 1,
+            updatedAt = 1,
+        )
+        val tag = TagRecordEntity(
+            id = "tag-one",
+            nameHash = ByteArray(32),
+            encryptedPayload = oversizedPayload.copyOf(),
+            payloadNonce = credential.summaryNonce.copyOf(),
+            color = null,
+            createdAt = 1,
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(snapshot.copy(folders = listOf(folder)))
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(snapshot.copy(tags = listOf(tag)))
+        }
+    }
+
+    @Test
+    fun `snapshot validation bounds credential relations`() = runTest {
+        val snapshot = validSnapshot("relation-vault", "credential-one")
+        val credential = snapshot.credentials.single()
+        val tags = (0..100).map { index ->
+            TagRecordEntity(
+                id = "tag-$index",
+                nameHash = ByteArray(32) { index.toByte() },
+                encryptedPayload = credential.summaryPayload.copyOf(),
+                payloadNonce = credential.summaryNonce.copyOf(),
+                color = null,
+                createdAt = index.toLong(),
+            )
+        }
+        val tagReferences = tags.map { tag ->
+            CredentialTagCrossRef(credentialId = credential.id, tagId = tag.id)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(tags = tags, credentialTagReferences = tagReferences),
+            )
+        }
+
+        val history = (0..10).map { index ->
+            PasswordHistoryRecordEntity(
+                id = "history-$index",
+                credentialId = credential.id,
+                encryptedPassword = credential.secretPayload.copyOf(),
+                passwordNonce = credential.secretNonce.copyOf(),
+                changedAt = index.toLong(),
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(snapshot.copy(passwordHistory = history))
+        }
+    }
+
+    @Test
+    fun `snapshot validation rejects folder cycles and accepts a deep acyclic hierarchy`() = runTest {
+        val snapshot = validSnapshot("folder-vault", "credential-one")
+        val encryptedFolder = encryptedPayload("folder".encodeToByteArray(), ByteArray(32) { 9 }, "folder")
+        val deepFolders = (0 until 5_000).map { index ->
+            FolderRecordEntity(
+                id = "folder-$index",
+                parentId = if (index == 0) null else "folder-${index - 1}",
+                nameHash = ByteArray(32) { 1 },
+                encryptedPayload = encryptedFolder.payload.copyOf(),
+                payloadNonce = encryptedFolder.nonce.copyOf(),
+                icon = null,
+                sortOrder = index,
+                createdAt = index.toLong(),
+                updatedAt = index.toLong(),
+            )
+        }
+
+        service.validateSnapshot(snapshot.copy(folders = deepFolders))
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(
+                snapshot.copy(
+                    folders = deepFolders.take(2).mapIndexed { index, folder ->
+                        folder.copy(parentId = "folder-${1 - index}")
+                    },
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `snapshot validation rejects unsafe unencrypted metadata`() = runTest {
+        val snapshot = validSnapshot("metadata-vault", "credential-one")
+        val attachment = validAttachment("credential-one")
+        val key = ByteArray(32) { 4 }
+        try {
+            val folderPayload = encryptedPayload("folder".encodeToByteArray(), key, "folder")
+            val folder = FolderRecordEntity(
+                id = "folder-one",
+                parentId = null,
+                nameHash = ByteArray(32) { 1 },
+                encryptedPayload = folderPayload.payload,
+                payloadNonce = folderPayload.nonce,
+                icon = null,
+                sortOrder = 0,
+                createdAt = 1,
+                updatedAt = 1,
+            )
+            val tagPayload = encryptedPayload("tag".encodeToByteArray(), key, "tag")
+            val tag = TagRecordEntity(
+                id = "tag-one",
+                nameHash = ByteArray(32) { 1 },
+                encryptedPayload = tagPayload.payload,
+                payloadNonce = tagPayload.nonce,
+                color = null,
+                createdAt = 1,
+            )
+
+            assertFailsWith<IllegalArgumentException> {
+                val invalidAttachment = attachment.copy(storagePath = "../secret")
+                service.validateSnapshot(snapshot.copy(attachments = listOf(invalidAttachment)))
+            }
+            assertFailsWith<IllegalArgumentException> {
+                val invalidAttachment = attachment.copy(mimeType = "text/\u0000plain")
+                service.validateSnapshot(snapshot.copy(attachments = listOf(invalidAttachment)))
+            }
+            assertFailsWith<IllegalArgumentException> {
+                val invalidAttachment = attachment.copy(storagePath = "attachments/invoice\u202Efdp.enc")
+                service.validateSnapshot(snapshot.copy(attachments = listOf(invalidAttachment)))
+            }
+            assertFailsWith<IllegalArgumentException> {
+                service.validateSnapshot(snapshot.copy(folders = listOf(folder.copy(sortOrder = -1))))
+            }
+            assertFailsWith<IllegalArgumentException> {
+                service.validateSnapshot(snapshot.copy(folders = listOf(folder.copy(icon = "\u0000"))))
+            }
+            assertFailsWith<IllegalArgumentException> {
+                service.validateSnapshot(snapshot.copy(tags = listOf(tag.copy(color = "\u0000"))))
+            }
+        } finally {
+            cryptoEngine.secureWipe(key)
+        }
+    }
+
     private suspend fun validSnapshot(
         vaultId: String,
         credentialId: String,
@@ -213,7 +586,7 @@ class VaultBackupServiceTest {
         val key = ByteArray(32) { index -> (index + 1).toByte() }
         try {
             val wrappedVek = encryptedPayload(ByteArray(32) { 7 }, key, "VEK_WRAP")
-            val verification = encryptedPayload("verification".encodeToByteArray(), key, "verification")
+            val verification = encryptedPayload(ByteArray(32) { 8 }, key, "verification")
             val summary = encryptedPayload("private-title".encodeToByteArray(), key, "summary")
             val secret = encryptedPayload("private-secret".encodeToByteArray(), key, "secret")
 
@@ -238,7 +611,7 @@ class VaultBackupServiceTest {
                 credentials = listOf(
                     CredentialRecordEntity(
                         id = credentialId,
-                        type = "login",
+                        type = "Login",
                         titleHash = ByteArray(32) { 9 },
                         summaryPayload = summary.payload,
                         summaryNonce = summary.nonce,
@@ -286,7 +659,37 @@ class VaultBackupServiceTest {
 
     private suspend fun insertSnapshot(snapshot: VaultBackupEntities) {
         backupDao.insertVaultMetadata(snapshot.metadata)
+        if (snapshot.folders.isNotEmpty()) backupDao.insertFolders(snapshot.folders)
+        if (snapshot.tags.isNotEmpty()) backupDao.insertTags(snapshot.tags)
         backupDao.insertCredentials(snapshot.credentials)
+        if (snapshot.credentialFolderReferences.isNotEmpty()) {
+            backupDao.insertCredentialFolderReferences(snapshot.credentialFolderReferences)
+        }
+        if (snapshot.credentialTagReferences.isNotEmpty()) {
+            backupDao.insertCredentialTagReferences(snapshot.credentialTagReferences)
+        }
+        if (snapshot.attachments.isNotEmpty()) backupDao.insertAttachments(snapshot.attachments)
+        if (snapshot.passwordHistory.isNotEmpty()) backupDao.insertPasswordHistory(snapshot.passwordHistory)
+    }
+
+    private suspend fun validAttachment(credentialId: String): AttachmentRecordEntity {
+        val key = ByteArray(32) { 5 }
+        return try {
+            val filename = encryptedPayload("document.txt".encodeToByteArray(), key, "attachment")
+            AttachmentRecordEntity(
+                id = "attachment-one",
+                credentialId = credentialId,
+                encryptedFilename = filename.payload,
+                filenameNonce = filename.nonce,
+                mimeType = "text/plain",
+                sizeBytes = 12,
+                storagePath = "attachments/document.enc",
+                keyDerivationContext = "attachment-context",
+                createdAt = 1_000,
+            )
+        } finally {
+            cryptoEngine.secureWipe(key)
+        }
     }
 
     private suspend fun replaceWithEmptyVault(vaultId: String) {
@@ -322,4 +725,71 @@ class VaultBackupServiceTest {
         val payload: ByteArray,
         val nonce: ByteArray,
     )
+
+    private class TestVaultSessionManager(
+        private val vaultRepository: FakeVaultRepository,
+    ) : VaultSessionManager {
+        private var unlocked = true
+        private var vek = ByteArray(32) { 7 }
+
+        override suspend fun <T> withUnlockedSession(block: suspend (ByteArray) -> T): T {
+            check(unlocked) { "Vault not unlocked" }
+            val leasedVek = vek.copyOf()
+            return try {
+                block(leasedVek)
+            } finally {
+                leasedVek.fill(0)
+            }
+        }
+
+        override suspend fun <T> lockAndRun(reason: LockReason, block: suspend () -> T): T {
+            check(unlocked) { "Vault not unlocked" }
+            vaultRepository.lock(reason).getOrThrow()
+            unlocked = false
+            vek.fill(0)
+            return block()
+        }
+
+    }
+
+    private class RecordingBiometricKeyStore : BiometricKeyStore {
+        val deletedVaultIds = mutableListOf<String>()
+        val enrolledVaultIds = mutableListOf<String>()
+        var failDeletion = false
+        var enabled = false
+
+        override suspend fun getCapability(): BiometricCapability = BiometricCapability(
+            type = BiometricType.GENERIC,
+            availability = BiometricAvailability.AVAILABLE,
+        )
+
+        override suspend fun contains(vaultId: String): Boolean = enabled
+
+        override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> {
+            enrolledVaultIds += vaultId
+            enabled = true
+            return Result.success(Unit)
+        }
+
+        override suspend fun retrieve(vaultId: String): Result<ByteArray> =
+            Result.failure(BiometricKeyStoreException.NotEnabled())
+
+        override suspend fun delete(vaultId: String): Result<Unit> {
+            deletedVaultIds += vaultId
+            return if (failDeletion) {
+                Result.failure(BiometricKeyStoreException.Invalidated())
+            } else {
+                enabled = false
+                Result.success(Unit)
+            }
+        }
+    }
+
+    private class FailingReplaceBackupDao(
+        delegate: VaultBackupDao,
+    ) : VaultBackupDao by delegate {
+        override suspend fun replaceVault(snapshot: VaultBackupEntities) {
+            error("simulated Room replacement failure")
+        }
+    }
 }

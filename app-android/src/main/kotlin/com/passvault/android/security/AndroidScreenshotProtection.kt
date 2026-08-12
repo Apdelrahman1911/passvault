@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * Android implementation of screenshot protection using FLAG_SECURE.
  * Prevents screenshots and screen recordings in activities showing sensitive content.
- * 
+ *
  * Security features:
  * - FLAG_SECURE: Prevents screenshots and screen recordings
  * - Task snapshot exclusion: Prevents app switcher screenshots (Android 11+)
@@ -112,7 +112,10 @@ class AndroidScreenshotProtection : ScreenshotProtection {
     fun unregisterActivity(activity: Activity) {
         synchronized(lock) {
             protectedActivities.remove(activity)
-            removeFromActivity(activity)
+            // Destruction is not an authorization to expose the final window
+            // buffer. Leave FLAG_SECURE on the retiring window until Android
+            // releases it; disableProtection() is the explicit path that may
+            // remove protection from a live Activity.
         }
     }
 
@@ -125,17 +128,6 @@ class AndroidScreenshotProtection : ScreenshotProtection {
             if (isProtectionEnabled.get() && protectedActivities.contains(activity)) {
                 applyToActivity(activity)
             }
-        }
-    }
-
-    /**
-     * Called when activity loses focus.
-     * Keeps protection active (protection persists across lifecycle).
-     */
-    fun onActivityPaused() {
-        synchronized(lock) {
-            // Protection remains active - we don't remove FLAG_SECURE on pause
-            // This ensures screenshots can't be taken in app switcher
         }
     }
 
@@ -179,34 +171,4 @@ class AndroidScreenshotProtection : ScreenshotProtection {
         }
     }
 
-    /**
-     * Clear all registrations. Use with caution - only for testing or app termination.
-     */
-    fun clearAll() {
-        synchronized(lock) {
-            // Remove protection from all activities first
-            removeFromAllActivities()
-
-            // Clear tracking
-            protectedActivities.clear()
-
-            // Reset state
-            isProtectionEnabled.set(false)
-            protectionCount.set(0)
-        }
-    }
-}
-
-/**
- * Extension function to apply screenshot protection to an Activity.
- */
-fun Activity.secureAgainstScreenshots() {
-    AndroidScreenshotProtection.applyToActivity(this)
-}
-
-/**
- * Extension function to remove screenshot protection from an Activity.
- */
-fun Activity.allowScreenshots() {
-    AndroidScreenshotProtection.removeFromActivity(this)
 }

@@ -1,5 +1,8 @@
 package com.passvault.feature.backup
 
+import com.passvault.core.database.backup.BackupContentSink
+import com.passvault.core.database.backup.BackupContentSource
+
 /**
  * Platform file access for encrypted backups.
  *
@@ -7,11 +10,11 @@ package com.passvault.feature.backup
  * Storage Access Framework and Desktop uses a native file dialog.
  */
 interface BackupFileStore {
-    suspend fun save(bytes: ByteArray, suggestedName: String): Result<BackupFile>
+    suspend fun create(suggestedName: String): Result<BackupOutput>
 
     suspend fun open(): Result<BackupFile>
 
-    suspend fun read(file: BackupFile): Result<ByteArray>
+    suspend fun source(file: BackupFile): Result<BackupContentSource>
 
     /**
      * Releases a platform-owned temporary import copy.
@@ -22,6 +25,11 @@ interface BackupFileStore {
      */
     suspend fun discard(file: BackupFile) = Unit
 }
+
+data class BackupOutput(
+    val file: BackupFile,
+    val sink: BackupContentSink,
+)
 
 /**
  * Normal user cancellation is not an error state. Platform adapters return

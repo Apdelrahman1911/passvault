@@ -6,14 +6,28 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
-import com.passvault.core.domain.model.*
+import com.passvault.core.domain.model.CredentialId
+import com.passvault.core.domain.model.CredentialSummary
+import com.passvault.core.domain.model.Folder
+import com.passvault.core.domain.model.FolderId
+import com.passvault.core.domain.model.Tag
+import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.domain.repository.FolderRepository
 import com.passvault.core.domain.repository.TagRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -29,13 +43,14 @@ class VaultViewModel(
     private val _state = MutableStateFlow(VaultState(isLoading = true))
     val state: StateFlow<VaultState> = _state.asStateFlow()
 
-    private val _effect = Channel<VaultEffect>(Channel.BUFFERED)
-    val effect: Flow<VaultEffect> = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<VaultEffect>(extraBufferCapacity = 1)
+    val effect: SharedFlow<VaultEffect> = _effect.asSharedFlow()
     private val loadMutex = Mutex()
-    private val favoriteMutex = Mutex()
     private val folderMutex = Mutex()
     private var loadJob: Job? = null
-    private var favoriteJob: Job? = null
+    private var favoriteRevision = 0L
+    private val favoriteTargets = mutableMapOf<CredentialId, Boolean>()
+    private val favoriteJobs = mutableMapOf<CredentialId, Job>()
     private var folderJob: Job? = null
 
     init {
@@ -44,30 +59,56 @@ class VaultViewModel(
 
     private fun loadData() {
         loadJob?.cancel()
+        val favoriteRevisionAtStart = favoriteRevision
         loadJob = viewModelScope.launch {
             loadMutex.withLock {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
+                _state.update {
+                    it.copy(
+                        isLoading = true,
+                        errorMessage = null,
+                        canRetryLoad = false,
+                    )
+                }
                 try {
                     val credentials = credentialRepository.getAllSummaries().getOrThrow()
+                    currentCoroutineContext().ensureActive()
                     val folders = folderRepository.getAll().getOrThrow()
+                    currentCoroutineContext().ensureActive()
                     val tags = tagRepository.getAll().getOrThrow()
+                    currentCoroutineContext().ensureActive()
                     _state.update { current ->
                         val loaded = current.copy(
                             isLoading = false,
-                            credentials = credentials,
+                            credentials = reconcileLoadedCredentials(
+                                loaded = credentials,
+                                current = current.credentials,
+                                favoriteRevisionAtStart = favoriteRevisionAtStart,
+                            ),
                             folders = folders,
                             tags = tags,
+                            selectedFolderId = current.selectedFolderId?.takeIf { selectedId ->
+                                folders.any { it.id == selectedId }
+                            },
+                            selectedTagId = current.selectedTagId?.takeIf { selectedId ->
+                                tags.any { it.id == selectedId }
+                            },
+                            folderPendingDeletion = current.folderPendingDeletion?.takeIf { pending ->
+                                folders.any { it.id == pending.id }
+                            },
                             errorMessage = null,
+                            canRetryLoad = false,
                         )
                         loaded.copy(filteredCredentials = filterCredentials(loaded))
                     }
                 } catch (cancelled: CancellationException) {
                     throw cancelled
                 } catch (_: Exception) {
+                    currentCoroutineContext().ensureActive()
                     _state.update {
                         it.copy(
                             isLoading = false,
                             errorMessage = uiText(Res.string.error_vault_load),
+                            canRetryLoad = true,
                         )
                     }
                 }
@@ -75,13 +116,16 @@ class VaultViewModel(
         }
     }
 
+    /* This exhaustive router keeps every public UI event visible at one boundary. */
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     fun onEvent(event: VaultEvent) {
         when (event) {
             is VaultEvent.OnSearchQueryChanged -> {
                 updateFilters {
                     it.copy(
-                        searchQuery = event.query.take(MAX_SEARCH_QUERY_LENGTH),
+                        searchQuery = event.query.takeCodePoints(MAX_SEARCH_QUERY_LENGTH),
                         errorMessage = null,
+                        canRetryLoad = false,
                     )
                 }
             }
@@ -102,17 +146,16 @@ class VaultViewModel(
                 }
             }
             is VaultEvent.OnCredentialClick -> {
-                _effect.trySend(VaultEffect.NavigateToCredentialDetail(event.credentialId))
+                _effect.tryEmit(VaultEffect.NavigateToCredentialDetail(event.credentialId))
             }
             is VaultEvent.OnCredentialFavoriteClick -> {
                 toggleFavorite(event.credentialId)
             }
             VaultEvent.OnAddCredentialClick -> {
-                _effect.trySend(VaultEffect.NavigateToCredentialEdit(null))
+                _effect.tryEmit(VaultEffect.NavigateToCredentialEdit(null))
             }
             VaultEvent.OnSearchClick -> {
                 _state.update { it.copy(isSearchActive = true) }
-                _effect.trySend(VaultEffect.NavigateToSearch(_state.value.searchQuery))
             }
             VaultEvent.OnSearchDismiss -> {
                 updateFilters {
@@ -123,22 +166,30 @@ class VaultViewModel(
                 }
             }
             VaultEvent.OnSettingsClick -> {
-                _effect.trySend(VaultEffect.NavigateToSettings)
+                _effect.tryEmit(VaultEffect.NavigateToSettings)
             }
             VaultEvent.OnGeneratorClick -> {
-                _effect.trySend(VaultEffect.NavigateToGenerator)
+                _effect.tryEmit(VaultEffect.NavigateToGenerator)
             }
-            VaultEvent.OnHealthClick -> {
-                _effect.trySend(VaultEffect.NavigateToHealth)
+            VaultEvent.OnTwoFactorCodesClick -> {
+                _effect.tryEmit(VaultEffect.NavigateToTwoFactorCodes)
             }
             VaultEvent.OnLockClick -> {
-                _effect.trySend(VaultEffect.LockVault)
+                _effect.tryEmit(VaultEffect.LockVault)
+            }
+            VaultEvent.OnLockFailed -> {
+                _state.update {
+                    it.copy(
+                        errorMessage = uiText(Res.string.error_settings_lock),
+                        canRetryLoad = false,
+                    )
+                }
             }
             VaultEvent.OnRefresh -> {
                 loadData()
             }
             VaultEvent.OnDismissError -> {
-                _state.update { it.copy(errorMessage = null) }
+                _state.update { it.copy(errorMessage = null, canRetryLoad = false) }
             }
             is VaultEvent.OnFilterChanged -> {
                 updateFilters { it.copy(activeFilter = event.filter) }
@@ -147,14 +198,45 @@ class VaultViewModel(
                 updateFilters { it.copy(sortOrder = event.sortOrder) }
             }
             VaultEvent.OnNewFolderClick -> {
-                _state.update { it.copy(showNewFolderDialog = true, newFolderName = "") }
+                _state.update {
+                    it.copy(
+                        showNewFolderDialog = true,
+                        newFolderName = "",
+                        folderError = null,
+                    )
+                }
             }
             is VaultEvent.OnNewFolderNameChanged -> {
-                _state.update { it.copy(newFolderName = event.name, errorMessage = null) }
+                val boundedName = event.name.takeCodePoints(MAX_FOLDER_NAME_LENGTH + 1)
+                val normalizedName = boundedName.trim()
+                val folderError = when {
+                    event.name.codePointLength() > MAX_FOLDER_NAME_LENGTH ->
+                        uiText(Res.string.error_folder_name_too_long)
+                    normalizedName.isNotEmpty() && _state.value.folders.any {
+                        it.name.equals(normalizedName, ignoreCase = true)
+                    } -> uiText(Res.string.error_folder_duplicate)
+                    else -> null
+                }
+                _state.update {
+                    it.copy(
+                        newFolderName = boundedName,
+                        folderError = folderError,
+                        errorMessage = null,
+                        canRetryLoad = false,
+                    )
+                }
             }
             VaultEvent.OnCreateFolderClick -> createFolder()
             VaultEvent.OnDismissNewFolder -> {
-                _state.update { it.copy(showNewFolderDialog = false, newFolderName = "") }
+                if (!_state.value.isCreatingFolder) {
+                    _state.update {
+                        it.copy(
+                            showNewFolderDialog = false,
+                            newFolderName = "",
+                            folderError = null,
+                        )
+                    }
+                }
             }
             is VaultEvent.OnDeleteFolderClick -> {
                 val folder = _state.value.folders.firstOrNull { it.id == event.folderId }
@@ -163,6 +245,7 @@ class VaultViewModel(
                         it.copy(
                             folderPendingDeletion = folder,
                             errorMessage = null,
+                            canRetryLoad = false,
                         )
                     }
                 }
@@ -179,58 +262,65 @@ class VaultViewModel(
     private fun createFolder() {
         if (_state.value.isCreatingFolder || _state.value.isDeletingFolder) return
         val name = _state.value.newFolderName.trim()
-        if (name.isEmpty()) {
-            _state.update { it.copy(errorMessage = uiText(Res.string.error_folder_name_required)) }
+        val validationError = folderNameError(name, _state.value.folders)
+        if (validationError != null) {
+            _state.update { it.copy(folderError = validationError) }
             return
         }
-        if (_state.value.folders.any { it.name.equals(name, ignoreCase = true) }) {
-            _state.update { it.copy(errorMessage = uiText(Res.string.error_folder_duplicate)) }
-            return
+        _state.update {
+            it.copy(
+                isCreatingFolder = true,
+                folderError = null,
+                errorMessage = null,
+                canRetryLoad = false,
+            )
         }
-        _state.update { it.copy(isCreatingFolder = true, errorMessage = null) }
 
         folderJob?.cancel()
         folderJob = viewModelScope.launch {
-            folderMutex.withLock {
-                try {
-                    folderRepository.save(
-                        Folder(
-                            id = FolderId(Uuid.random().toString()),
-                            parentId = null,
-                            name = name,
-                            icon = null,
-                            sortOrder = _state.value.folders.size,
-                            createdAt = Clock.System.now(),
-                        )
-                    ).onSuccess {
-                        _state.update {
-                            it.copy(
-                                showNewFolderDialog = false,
-                                newFolderName = "",
-                                isCreatingFolder = false,
-                            )
-                        }
-                        loadData()
-                    }.onFailure {
-                        _state.update {
-                            it.copy(
-                                isCreatingFolder = false,
-                                errorMessage = uiText(Res.string.error_folder_create),
-                            )
-                        }
-                    }
-                } catch (cancelled: CancellationException) {
-                    _state.update { it.copy(isCreatingFolder = false) }
-                    throw cancelled
-                } catch (_: Exception) {
-                    _state.update {
-                        it.copy(
-                            isCreatingFolder = false,
-                            errorMessage = uiText(Res.string.error_folder_create),
-                        )
-                    }
+            folderMutex.withLock { persistFolder(name) }
+        }
+    }
+
+    private suspend fun persistFolder(name: String) {
+        try {
+            val folder = Folder(
+                id = FolderId(Uuid.random().toString()),
+                parentId = null,
+                name = name,
+                icon = null,
+                sortOrder = _state.value.folders.size,
+                createdAt = Clock.System.now(),
+            )
+            val result = folderRepository.save(folder)
+            currentCoroutineContext().ensureActive()
+            if (result.isSuccess) {
+                _state.update {
+                    it.copy(
+                        showNewFolderDialog = false,
+                        newFolderName = "",
+                        isCreatingFolder = false,
+                        folderError = null,
+                    )
                 }
+                loadData()
+            } else {
+                showFolderCreateError()
             }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            currentCoroutineContext().ensureActive()
+            showFolderCreateError()
+        }
+    }
+
+    private fun showFolderCreateError() {
+        _state.update {
+            it.copy(
+                isCreatingFolder = false,
+                folderError = uiText(Res.string.error_folder_create),
+            )
         }
     }
 
@@ -239,40 +329,49 @@ class VaultViewModel(
         val folder = currentState.folderPendingDeletion ?: return
         if (currentState.isDeletingFolder || currentState.isCreatingFolder) return
 
-        _state.update { it.copy(isDeletingFolder = true, errorMessage = null) }
+        _state.update {
+            it.copy(
+                isDeletingFolder = true,
+                errorMessage = null,
+                canRetryLoad = false,
+            )
+        }
         folderJob?.cancel()
         folderJob = viewModelScope.launch {
             folderMutex.withLock {
                 try {
-                    folderRepository.delete(folder.id)
-                        .onSuccess {
-                            _state.update { current ->
-                                current.copy(
-                                    folders = current.folders.filterNot { it.id == folder.id },
-                                    selectedFolderId = current.selectedFolderId
-                                        .takeUnless { it == folder.id },
-                                    folderPendingDeletion = null,
-                                    isDeletingFolder = false,
-                                ).withFilteredCredentials()
-                            }
-                            loadData()
+                    val result = folderRepository.delete(folder.id)
+                    currentCoroutineContext().ensureActive()
+                    result.onSuccess {
+                        _state.update { current ->
+                            current.copy(
+                                folders = current.folders.filterNot { it.id == folder.id },
+                                selectedFolderId = current.selectedFolderId
+                                    .takeUnless { it == folder.id },
+                                folderPendingDeletion = null,
+                                isDeletingFolder = false,
+                            ).withFilteredCredentials()
                         }
+                        loadData()
+                    }
                         .onFailure {
                             _state.update {
                                 it.copy(
                                     isDeletingFolder = false,
                                     errorMessage = uiText(Res.string.error_folder_delete),
+                                    canRetryLoad = false,
                                 )
                             }
                         }
                 } catch (cancelled: CancellationException) {
-                    _state.update { it.copy(isDeletingFolder = false) }
                     throw cancelled
                 } catch (_: Exception) {
+                    currentCoroutineContext().ensureActive()
                     _state.update {
                         it.copy(
                             isDeletingFolder = false,
                             errorMessage = uiText(Res.string.error_folder_delete),
+                            canRetryLoad = false,
                         )
                     }
                 }
@@ -284,70 +383,96 @@ class VaultViewModel(
         _state.update { current -> transform(current).withFilteredCredentials() }
     }
 
-    private fun filterCredentials(currentState: VaultState = _state.value): List<CredentialSummary.Decrypted> {
-        var filtered = currentState.credentials
-
-        if (currentState.searchQuery.isNotBlank()) {
-            val query = currentState.searchQuery.lowercase()
-            filtered = filtered.filter { credential ->
-                credential.title.lowercase().contains(query) ||
-                        credential.displayUsername?.lowercase()?.contains(query) == true
-            }
+    private fun reconcileLoadedCredentials(
+        loaded: List<CredentialSummary.Decrypted>,
+        current: List<CredentialSummary.Decrypted>,
+        favoriteRevisionAtStart: Long,
+    ): List<CredentialSummary.Decrypted> {
+        val currentFavorites = current.associate { it.id to it.isFavorite }
+        val favoriteChangedDuringLoad = favoriteRevision != favoriteRevisionAtStart
+        return loaded.map { credential ->
+            val favorite = favoriteTargets[credential.id]
+                ?: currentFavorites[credential.id]?.takeIf { favoriteChangedDuringLoad }
+            favorite?.let { credential.copy(isFavorite = it) } ?: credential
         }
-
-        currentState.selectedFolderId?.let { folderId ->
-            filtered = filtered.filter { it.folderId == folderId }
-        }
-
-        currentState.selectedTagId?.let { tagId ->
-            filtered = filtered.filter { tagId in it.tagIds }
-        }
-
-        filtered = when (currentState.activeFilter) {
-            CredentialFilter.FAVORITES -> filtered.filter { it.isFavorite }
-            CredentialFilter.WEAK_PASSWORDS -> filtered.filter { it.passwordHealth.isWeak }
-            CredentialFilter.DUPLICATES -> filtered.filter { it.passwordHealth.isDuplicate }
-            CredentialFilter.EXPIRED -> filtered.filter { it.passwordHealth.isOld }
-            CredentialFilter.ALL -> filtered
-        }
-
-        filtered = when (currentState.sortOrder) {
-            SortOrder.NAME_ASC -> filtered.sortedBy { it.title.lowercase() }
-            SortOrder.NAME_DESC -> filtered.sortedByDescending { it.title.lowercase() }
-            SortOrder.LAST_USED -> filtered.sortedByDescending { it.lastUsedAt }
-            SortOrder.CREATED -> filtered.sortedByDescending { it.createdAt }
-        }
-
-        return filtered
     }
 
-    private fun VaultState.withFilteredCredentials(): VaultState =
-        copy(filteredCredentials = filterCredentials(this))
-
     private fun toggleFavorite(credentialId: CredentialId) {
-        favoriteJob?.cancel()
-        favoriteJob = viewModelScope.launch {
-            favoriteMutex.withLock {
-                val credential = state.value.credentials.find { it.id == credentialId }
-                credential?.let {
-                    credentialRepository.updateFavorite(credentialId, !it.isFavorite)
-                        .onSuccess { loadData() }
-                        .onFailure {
-                            _state.update { current ->
-                                current.copy(errorMessage = uiText(Res.string.error_favorite_update))
-                            }
-                        }
-                }
+        val credential = state.value.credentials.find { it.id == credentialId } ?: return
+        val originalFavorite = credential.isFavorite
+        val targetFavorite = !originalFavorite
+        favoriteRevision++
+        _state.update { current ->
+            current.copy(
+                credentials = current.credentials.map {
+                    if (it.id == credentialId) it.copy(isFavorite = targetFavorite) else it
+                },
+                errorMessage = null,
+                canRetryLoad = false,
+            ).withFilteredCredentials()
+        }
+
+        favoriteTargets[credentialId] = targetFavorite
+        if (favoriteJobs[credentialId]?.isActive == true) return
+        val job = viewModelScope.launch {
+            persistLatestFavorite(credentialId, originalFavorite)
+        }
+        favoriteJobs[credentialId] = job
+        job.invokeOnCompletion {
+            if (favoriteJobs[credentialId] === job) {
+                favoriteJobs.remove(credentialId)
             }
+        }
+    }
+
+    private suspend fun persistLatestFavorite(
+        credentialId: CredentialId,
+        initialFavorite: Boolean,
+    ) {
+        var persistedFavorite = initialFavorite
+        while (true) {
+            val targetFavorite = favoriteTargets[credentialId] ?: return
+            val succeeded = try {
+                credentialRepository.updateFavorite(credentialId, targetFavorite).isSuccess
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                false
+            }
+            currentCoroutineContext().ensureActive()
+            if (succeeded) persistedFavorite = targetFavorite
+            favoriteRevision++
+
+            if (favoriteTargets[credentialId] != targetFavorite) continue
+            favoriteTargets.remove(credentialId)
+            _state.update { current ->
+                current.copy(
+                    credentials = current.credentials.map { credential ->
+                        if (credential.id == credentialId) {
+                            credential.copy(
+                                isFavorite = if (succeeded) targetFavorite else persistedFavorite,
+                            )
+                        } else {
+                            credential
+                        }
+                    },
+                    errorMessage = if (succeeded) current.errorMessage else {
+                        uiText(Res.string.error_favorite_update)
+                    },
+                    canRetryLoad = if (succeeded) current.canRetryLoad else false,
+                ).withFilteredCredentials()
+            }
+            return
         }
     }
 
     fun clearForLock() {
         loadJob?.cancel()
-        favoriteJob?.cancel()
+        favoriteJobs.values.forEach(Job::cancel)
+        favoriteJobs.clear()
+        favoriteTargets.clear()
         folderJob?.cancel()
         loadJob = null
-        favoriteJob = null
         folderJob = null
         _state.value = VaultState(isLoading = false)
     }
@@ -364,18 +489,23 @@ class VaultViewModel(
         val activeFilter: CredentialFilter = CredentialFilter.ALL,
         val sortOrder: SortOrder = SortOrder.LAST_USED,
         val errorMessage: UiText? = null,
+        val canRetryLoad: Boolean = false,
         val isSearchActive: Boolean = false,
         val showNewFolderDialog: Boolean = false,
         val newFolderName: String = "",
         val isCreatingFolder: Boolean = false,
+        val folderError: UiText? = null,
         val folderPendingDeletion: Folder? = null,
         val isDeletingFolder: Boolean = false,
     ) {
         val hasCredentials: Boolean get() = credentials.isNotEmpty()
         val isEmpty: Boolean get() = filteredCredentials.isEmpty() && !isLoading
         val credentialCount: Int get() = credentials.size
-        val favoriteCount: Int get() = credentials.count { it.isFavorite }
-        val weakPasswordCount: Int get() = credentials.count { it.passwordHealth.isWeak }
+        val canCreateFolder: Boolean
+            get() = newFolderName.trim().isNotEmpty() &&
+                folderError == null &&
+                !isCreatingFolder &&
+                !isDeletingFolder
     }
 
     sealed interface VaultEvent {
@@ -391,8 +521,9 @@ class VaultViewModel(
         data object OnSearchDismiss : VaultEvent
         data object OnSettingsClick : VaultEvent
         data object OnGeneratorClick : VaultEvent
-        data object OnHealthClick : VaultEvent
+        data object OnTwoFactorCodesClick : VaultEvent
         data object OnLockClick : VaultEvent
+        data object OnLockFailed : VaultEvent
         data object OnRefresh : VaultEvent
         data object OnDismissError : VaultEvent
         data object OnNewFolderClick : VaultEvent
@@ -407,12 +538,9 @@ class VaultViewModel(
     sealed interface VaultEffect {
         data class NavigateToCredentialDetail(val credentialId: CredentialId) : VaultEffect
         data class NavigateToCredentialEdit(val credentialId: CredentialId?) : VaultEffect
-        data class NavigateToSearch(val query: String) : VaultEffect
-        data class NavigateToFolder(val folderId: FolderId) : VaultEffect
-        data class NavigateToTag(val tagId: TagId) : VaultEffect
         data object NavigateToSettings : VaultEffect
         data object NavigateToGenerator : VaultEffect
-        data object NavigateToHealth : VaultEffect
+        data object NavigateToTwoFactorCodes : VaultEffect
         data object LockVault : VaultEffect
     }
 
@@ -424,7 +552,58 @@ class VaultViewModel(
         NAME_ASC, NAME_DESC, LAST_USED, CREATED
     }
 
-    private companion object {
-        const val MAX_SEARCH_QUERY_LENGTH = 256
-    }
 }
+
+private const val MAX_SEARCH_QUERY_LENGTH = 256
+private const val MAX_FOLDER_NAME_LENGTH = 256
+
+private fun folderNameError(name: String, folders: List<Folder>): UiText? = when {
+    name.isEmpty() -> uiText(Res.string.error_folder_name_required)
+    name.codePointLength() > MAX_FOLDER_NAME_LENGTH -> uiText(Res.string.error_folder_name_too_long)
+    folders.any { it.name.equals(name, ignoreCase = true) } ->
+        uiText(Res.string.error_folder_duplicate)
+    else -> null
+}
+
+private fun filterCredentials(
+    state: VaultViewModel.VaultState,
+): List<CredentialSummary.Decrypted> {
+    val query = state.searchQuery.takeIf(String::isNotBlank)?.lowercase()
+    val matchingText = state.credentials.filter { it.matchesQuery(query) }
+    val matchingFolder = state.selectedFolderId?.let { folderId ->
+        matchingText.filter { it.folderId == folderId }
+    } ?: matchingText
+    val matchingTag = state.selectedTagId?.let { tagId ->
+        matchingFolder.filter { tagId in it.tagIds }
+    } ?: matchingFolder
+    return matchingTag
+        .matching(state.activeFilter)
+        .sorted(state.sortOrder)
+}
+
+private fun CredentialSummary.Decrypted.matchesQuery(query: String?): Boolean =
+    query == null ||
+        title.lowercase().contains(query) ||
+        displayUsername?.lowercase()?.contains(query) == true
+
+private fun List<CredentialSummary.Decrypted>.matching(
+    filter: VaultViewModel.CredentialFilter,
+): List<CredentialSummary.Decrypted> = when (filter) {
+    VaultViewModel.CredentialFilter.FAVORITES -> filter(CredentialSummary.Decrypted::isFavorite)
+    VaultViewModel.CredentialFilter.WEAK_PASSWORDS -> filter { it.passwordHealth.isWeak }
+    VaultViewModel.CredentialFilter.DUPLICATES -> filter { it.passwordHealth.isDuplicate }
+    VaultViewModel.CredentialFilter.EXPIRED -> filter { it.passwordHealth.isOld }
+    VaultViewModel.CredentialFilter.ALL -> this
+}
+
+private fun List<CredentialSummary.Decrypted>.sorted(
+    order: VaultViewModel.SortOrder,
+): List<CredentialSummary.Decrypted> = when (order) {
+    VaultViewModel.SortOrder.NAME_ASC -> sortedBy { it.title.lowercase() }
+    VaultViewModel.SortOrder.NAME_DESC -> sortedByDescending { it.title.lowercase() }
+    VaultViewModel.SortOrder.LAST_USED -> sortedByDescending { it.lastUsedAt }
+    VaultViewModel.SortOrder.CREATED -> sortedByDescending { it.createdAt }
+}
+
+private fun VaultViewModel.VaultState.withFilteredCredentials(): VaultViewModel.VaultState =
+    copy(filteredCredentials = filterCredentials(this))

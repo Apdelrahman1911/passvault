@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+for required_command in curl jq; do
+    if ! command -v "$required_command" >/dev/null 2>&1; then
+        echo "$required_command is required." >&2
+        exit 1
+    fi
+done
+
 role="${1:-}"
 package_name="${ANDROID_PACKAGE_NAME:-}"
 access_token="${GOOGLE_OAUTH_ACCESS_TOKEN:-}"
@@ -21,9 +28,12 @@ fi
 
 temporary_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-play-access.XXXXXX")"
 chmod 700 "$temporary_root"
+umask 077
 api_root="https://androidpublisher.googleapis.com/androidpublisher/v3/applications/$package_name"
 edit_id=""
 edit_deleted=false
+auth_header="$temporary_root/authorization-header.txt"
+printf 'Authorization: Bearer %s\n' "$access_token" > "$auth_header"
 
 api_request() {
     local method="$1"
@@ -32,12 +42,17 @@ api_request() {
     local body_file="${4:-}"
     local arguments=(
         --silent --show-error
+        --connect-timeout 15
+        --max-time 60
         --request "$method"
-        --header "Authorization: Bearer $access_token"
+        --header "@$auth_header"
         --header "Accept: application/json"
         --output "$output_file"
         --write-out '%{http_code}'
     )
+    if [[ "$method" == "GET" ]]; then
+        arguments+=(--retry 3 --retry-delay 2 --retry-connrefused)
+    fi
     if [[ -n "$body_file" ]]; then
         arguments+=(--header "Content-Type: application/json" --data-binary "@$body_file")
     fi
@@ -92,7 +107,7 @@ if [[ "$create_status" != "200" ]]; then
     exit 1
 fi
 edit_id="$(jq -r '.id // empty' "$edit_response")"
-if [[ -z "$edit_id" ]]; then
+if [[ ! "$edit_id" =~ ^[A-Za-z0-9._-]+$ ]]; then
     echo "Play returned no disposable edit identifier." >&2
     exit 1
 fi
@@ -164,7 +179,7 @@ image_count() {
         echo 0
     else
         safe_api_error "Image inventory ($locale/$image_type)" "$status_code" "$response_file"
-        echo "UNAVAILABLE"
+        return 1
     fi
 }
 
@@ -186,7 +201,7 @@ track_country_count() {
         echo "NOT_CONFIGURED"
     else
         safe_api_error "Country availability ($track)" "$status_code" "$response_file"
-        echo "UNAVAILABLE"
+        return 1
     fi
 }
 
@@ -202,7 +217,7 @@ track_group_count() {
         echo 0
     else
         safe_api_error "Tester-group inventory ($track)" "$status_code" "$response_file"
-        echo "UNAVAILABLE"
+        return 1
     fi
 }
 

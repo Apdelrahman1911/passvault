@@ -21,10 +21,21 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.ui_totp_choose_qr_image
 import java.awt.FileDialog
 import java.awt.Frame
+import java.awt.KeyboardFocusManager
+import java.awt.image.BufferedImage
+import java.awt.image.DataBufferByte
+import java.awt.image.DataBufferDouble
+import java.awt.image.DataBufferFloat
+import java.awt.image.DataBufferInt
+import java.awt.image.DataBufferShort
+import java.awt.image.DataBufferUShort
 import java.io.File
 import javax.imageio.ImageIO
+import javax.imageio.stream.FileImageInputStream
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 
@@ -36,6 +47,7 @@ internal actual fun PlatformTotpQrScanner(
 ) {
     val scope = rememberCoroutineScope()
     var isReading by remember { mutableStateOf(false) }
+    val dialogTitle = stringResource(Res.string.ui_totp_choose_qr_image)
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         if (isReading) {
@@ -45,26 +57,41 @@ internal actual fun PlatformTotpQrScanner(
                 onClick = {
                     scope.launch {
                         isReading = true
-                        when (val result = withContext(Dispatchers.IO) { chooseAndDecodeQrImage() }) {
-                            DesktopQrResult.Cancelled -> Unit
-                            DesktopQrResult.Error -> onError()
-                            is DesktopQrResult.Success -> onPayload(result.payload)
+                        try {
+                            val selectedFile = withContext(Dispatchers.Swing) {
+                                chooseQrImage(dialogTitle)
+                            }
+                            val result = if (selectedFile == null) {
+                                DesktopQrResult.Cancelled
+                            } else {
+                                withContext(Dispatchers.IO) { decodeQrImage(selectedFile) }
+                            }
+                            when (result) {
+                                DesktopQrResult.Cancelled -> Unit
+                                DesktopQrResult.Error -> onError()
+                                is DesktopQrResult.Success -> onPayload(result.payload)
+                            }
+                        } catch (cancel: CancellationException) {
+                            throw cancel
+                        } catch (_: Exception) {
+                            onError()
+                        } finally {
+                            isReading = false
                         }
-                        isReading = false
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(stringResource(Res.string.ui_totp_choose_qr_image))
+                Text(dialogTitle)
             }
         }
     }
 }
 
-private fun chooseAndDecodeQrImage(): DesktopQrResult {
+private fun chooseQrImage(title: String): File? {
     val dialog = FileDialog(
-        null as Frame?,
-        "Choose authenticator QR image",
+        activeOwnerFrame(),
+        title,
         FileDialog.LOAD,
     ).apply {
         setFilenameFilter { _, name ->
@@ -73,18 +100,29 @@ private fun chooseAndDecodeQrImage(): DesktopQrResult {
                 name.endsWith(".jpeg", ignoreCase = true)
         }
     }
-    val file = try {
+    return try {
         dialog.isVisible = true
-        val directory = dialog.directory ?: return DesktopQrResult.Cancelled
-        val fileName = dialog.file ?: return DesktopQrResult.Cancelled
-        File(directory, fileName)
+        val directory = dialog.directory
+        val fileName = dialog.file
+        if (directory == null || fileName == null) null else File(directory, fileName)
     } finally {
         dialog.dispose()
     }
+}
+
+private fun activeOwnerFrame(): Frame? {
+    val activeWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow
+    return activeWindow as? Frame ?: Frame.getFrames().firstOrNull { it.isActive }
+}
+
+private fun decodeQrImage(file: File): DesktopQrResult {
     if (!file.isFile || file.length() > MAX_IMAGE_BYTES) return DesktopQrResult.Error
 
     return try {
-        val image = ImageIO.createImageInputStream(file)?.use { stream ->
+        // Read directly from the selected file. ImageIO's default generic
+        // stream may cache a QR image containing an OTP secret in a second
+        // temporary file.
+        val image = FileImageInputStream(file).use { stream ->
             val readers = ImageIO.getImageReaders(stream)
             require(readers.hasNext())
             val reader = readers.next()
@@ -92,22 +130,60 @@ private fun chooseAndDecodeQrImage(): DesktopQrResult {
                 reader.input = stream
                 val width = reader.getWidth(0)
                 val height = reader.getHeight(0)
-                require(width > 0 && height > 0)
-                require(width.toLong() * height.toLong() <= MAX_IMAGE_PIXELS)
-                reader.read(0)
+                requireValidImageDimensions(width, height)
+                reader.read(0).also { decoded ->
+                    // Re-check the actual decoded raster. A malformed or custom
+                    // ImageIO provider must not bypass the header dimensions and
+                    // trigger an unbounded pixel-array allocation below.
+                    requireValidImageDimensions(decoded.width, decoded.height)
+                }
             } finally {
                 reader.dispose()
             }
-        } ?: error("Unsupported image")
+        }
 
-        val pixels = IntArray(image.width * image.height)
-        image.getRGB(0, 0, image.width, image.height, pixels, 0, image.width)
-        val source = RGBLuminanceSource(image.width, image.height, pixels)
-        val bitmap = BinaryBitmap(HybridBinarizer(source))
-        DesktopQrResult.Success(QRCodeReader().decode(bitmap).text)
+        try {
+            val pixels = IntArray(image.width * image.height)
+            try {
+                image.getRGB(0, 0, image.width, image.height, pixels, 0, image.width)
+                val source = RGBLuminanceSource(image.width, image.height, pixels)
+                try {
+                    val bitmap = BinaryBitmap(HybridBinarizer(source))
+                    DesktopQrResult.Success(QRCodeReader().decode(bitmap).text)
+                } finally {
+                    source.matrix.fill(0)
+                }
+            } finally {
+                pixels.fill(0)
+            }
+        } finally {
+            image.clearPixelStorage()
+        }
     } catch (_: Exception) {
         DesktopQrResult.Error
     }
+}
+
+private fun requireValidImageDimensions(width: Int, height: Int) {
+    require(width > 0 && height > 0)
+    require(width.toLong() * height.toLong() <= MAX_IMAGE_PIXELS)
+}
+
+private fun BufferedImage.clearPixelStorage() {
+    when (val buffer = raster.dataBuffer) {
+        is DataBufferByte -> buffer.bankData.forEach { it.fill(0) }
+        is DataBufferInt -> buffer.bankData.forEach { it.fill(0) }
+        is DataBufferShort -> buffer.bankData.forEach { it.fill(0) }
+        is DataBufferUShort -> buffer.bankData.forEach { it.fill(0) }
+        is DataBufferFloat -> buffer.bankData.forEach { it.fill(0f) }
+        is DataBufferDouble -> buffer.bankData.forEach { it.fill(0.0) }
+        else -> {
+            repeat(buffer.numBanks) { bank ->
+                repeat(buffer.size) { index -> buffer.setElem(bank, index, 0) }
+            }
+        }
+    }
+    flush()
 }
 
 private sealed interface DesktopQrResult {

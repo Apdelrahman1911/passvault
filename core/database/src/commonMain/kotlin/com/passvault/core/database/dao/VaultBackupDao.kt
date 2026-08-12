@@ -21,6 +21,7 @@ import com.passvault.core.database.entity.VaultMetadataEntity
  * receives the vault encryption key or decrypted domain objects.
  */
 @Dao
+@Suppress("TooManyFunctions") // Room requires every step of the atomic replacement on the transaction-owning DAO.
 interface VaultBackupDao {
     @Query("SELECT * FROM vault_metadata WHERE id = 1 LIMIT 1")
     suspend fun getVaultMetadata(): VaultMetadataEntity?
@@ -43,8 +44,98 @@ interface VaultBackupDao {
     @Query("SELECT * FROM attachment_records ORDER BY created_at ASC")
     suspend fun getAttachments(): List<AttachmentRecordEntity>
 
-    @Query("SELECT * FROM password_history_records ORDER BY changed_at DESC")
+    @Query("SELECT * FROM password_history_records ORDER BY changed_at DESC, id DESC")
     suspend fun getPasswordHistory(): List<PasswordHistoryRecordEntity>
+
+    @Query("SELECT COUNT(*) FROM credential_records")
+    suspend fun getCredentialCount(): Int
+
+    @Query("SELECT COUNT(*) FROM folder_records")
+    suspend fun getFolderCount(): Int
+
+    @Query("SELECT COUNT(*) FROM tag_records")
+    suspend fun getTagCount(): Int
+
+    @Query("SELECT COUNT(*) FROM credential_records WHERE folder_id IS NOT NULL")
+    suspend fun getCanonicalCredentialFolderReferenceCount(): Int
+
+    @Query("SELECT COUNT(*) FROM credential_tag_cross_ref")
+    suspend fun getCredentialTagReferenceCount(): Int
+
+    @Query("SELECT COUNT(*) FROM attachment_records")
+    suspend fun getAttachmentCount(): Int
+
+    @Query("SELECT COUNT(*) FROM attachment_records WHERE storage_state = 'READY'")
+    suspend fun getManagedAttachmentCount(): Int
+
+    @Query("SELECT COUNT(*) FROM password_history_records")
+    suspend fun getPasswordHistoryCount(): Int
+
+    @Query("SELECT * FROM credential_records WHERE id > :afterId ORDER BY id LIMIT :limit")
+    suspend fun getCredentialPage(afterId: String, limit: Int): List<CredentialRecordEntity>
+
+    @Query("SELECT * FROM folder_records WHERE id > :afterId ORDER BY id LIMIT :limit")
+    suspend fun getFolderPage(afterId: String, limit: Int): List<FolderRecordEntity>
+
+    @Query("SELECT * FROM tag_records WHERE id > :afterId ORDER BY id LIMIT :limit")
+    suspend fun getTagPage(afterId: String, limit: Int): List<TagRecordEntity>
+
+    @Query(
+        """
+        SELECT id AS credential_id, folder_id AS folder_id
+        FROM credential_records
+        WHERE folder_id IS NOT NULL AND id > :afterCredentialId
+        ORDER BY id
+        LIMIT :limit
+        """,
+    )
+    suspend fun getCanonicalCredentialFolderReferencePage(
+        afterCredentialId: String,
+        limit: Int,
+    ): List<CredentialFolderCrossRef>
+
+    @Query(
+        """
+        SELECT * FROM credential_tag_cross_ref
+        WHERE credential_id > :afterCredentialId
+           OR (credential_id = :afterCredentialId AND tag_id > :afterTagId)
+        ORDER BY credential_id, tag_id
+        LIMIT :limit
+        """,
+    )
+    suspend fun getCredentialTagReferencePage(
+        afterCredentialId: String,
+        afterTagId: String,
+        limit: Int,
+    ): List<CredentialTagCrossRef>
+
+    @Query("SELECT * FROM attachment_records WHERE id > :afterId ORDER BY id LIMIT :limit")
+    suspend fun getAttachmentPage(afterId: String, limit: Int): List<AttachmentRecordEntity>
+
+    @Query(
+        """
+        SELECT * FROM attachment_records
+        WHERE storage_state = 'READY' AND id > :afterId
+        ORDER BY id
+        LIMIT :limit
+        """,
+    )
+    suspend fun getManagedAttachmentPage(afterId: String, limit: Int): List<AttachmentRecordEntity>
+
+    @Query(
+        """
+        SELECT * FROM password_history_records
+        WHERE credential_id > :afterCredentialId
+           OR (credential_id = :afterCredentialId AND id > :afterHistoryId)
+        ORDER BY credential_id, id
+        LIMIT :limit
+        """,
+    )
+    suspend fun getPasswordHistoryPage(
+        afterCredentialId: String,
+        afterHistoryId: String,
+        limit: Int,
+    ): List<PasswordHistoryRecordEntity>
 
     @Transaction
     suspend fun readSnapshot(): VaultBackupEntities {

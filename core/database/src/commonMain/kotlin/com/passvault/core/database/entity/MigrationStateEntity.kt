@@ -6,8 +6,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Index
 
 /**
- * Tracks database migration state and version history.
- * Used for recovery and audit purposes.
+ * Schema-retained migration history from the original database format.
+ * Runtime code intentionally exposes no DAO for this table: migrations are
+ * handled by Room and must not persist exception text from decrypted work.
  */
 @Entity(
     tableName = "migration_state",
@@ -74,29 +75,26 @@ data class MigrationStateEntity(
     @ColumnInfo(name = "duration_ms")
     val durationMs: Long? = null,
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
+    override fun equals(other: Any?): Boolean =
+        this === other ||
+            (other is MigrationStateEntity &&
+                hasSameMigrationIdentity(other) &&
+                hasSameMigrationOutcome(other))
 
-        other as MigrationStateEntity
+    private fun hasSameMigrationIdentity(other: MigrationStateEntity): Boolean =
+        id == other.id &&
+            fromVersion == other.fromVersion &&
+            toVersion == other.toVersion &&
+            migrationName == other.migrationName &&
+            checksum.contentEqualsNullable(other.checksum) &&
+            startedAt == other.startedAt
 
-        if (id != other.id) return false
-        if (fromVersion != other.fromVersion) return false
-        if (toVersion != other.toVersion) return false
-        if (migrationName != other.migrationName) return false
-        if (checksum != null) {
-            if (other.checksum == null) return false
-            if (!checksum.contentEquals(other.checksum)) return false
-        } else if (other.checksum != null) return false
-        if (isSuccessful != other.isSuccessful) return false
-        if (errorMessage != other.errorMessage) return false
-        if (startedAt != other.startedAt) return false
-        if (completedAt != other.completedAt) return false
-        if (isRolledBack != other.isRolledBack) return false
-        if (durationMs != other.durationMs) return false
-
-        return true
-    }
+    private fun hasSameMigrationOutcome(other: MigrationStateEntity): Boolean =
+        isSuccessful == other.isSuccessful &&
+            errorMessage == other.errorMessage &&
+            completedAt == other.completedAt &&
+            isRolledBack == other.isRolledBack &&
+            durationMs == other.durationMs
 
     override fun hashCode(): Int {
         var result = id.hashCode()
@@ -112,6 +110,12 @@ data class MigrationStateEntity(
         result = 31 * result + (durationMs?.hashCode() ?: 0)
         return result
     }
+}
+
+private fun ByteArray?.contentEqualsNullable(other: ByteArray?): Boolean = when {
+    this == null -> other == null
+    other == null -> false
+    else -> contentEquals(other)
 }
 
 /**
@@ -164,8 +168,9 @@ data class CurrentVersionInfoEntity(
 }
 
 /**
- * Corruption log entity for tracking database corruption events.
- * Used for debugging and audit purposes.
+ * Schema-retained corruption-log row. Runtime code intentionally exposes no
+ * writer for this table so exception messages and stack traces cannot capture
+ * vault data. The table remains only to preserve version-1 schema identity.
  */
 @Entity(
     tableName = "corruption_logs",

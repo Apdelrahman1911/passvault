@@ -1,8 +1,16 @@
 package com.passvault.core.domain.model
 
 import assertk.assertThat
-import assertk.assertions.*
-import kotlin.test.*
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isGreaterThan
+import assertk.assertions.isGreaterThanOrEqualTo
+import assertk.assertions.isLessThan
+import assertk.assertions.isLessThanOrEqualTo
+import assertk.assertions.isNotEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import kotlin.test.Test
 
 /**
  * Unit tests for PasswordHealth and PasswordScore.
@@ -255,6 +263,12 @@ class PasswordStrengthCalculatorTest {
         val result = PasswordStrengthEvaluator.score("aaaaaaaaaa")
 
         assertThat(result).isEqualTo(PasswordScore.VERY_WEAK)
+    }
+
+    @Test
+    fun `surrogate pairs do not inflate password length or uniqueness`() {
+        assertThat(PasswordStrengthEvaluator.score("🔐🔑🔒🗝️")).isEqualTo(PasswordScore.VERY_WEAK)
+        assertThat(PasswordStrengthEvaluator.score("🔐🔐🔐🔐🔐🔐🔐🔐")).isEqualTo(PasswordScore.VERY_WEAK)
     }
 
     @Test

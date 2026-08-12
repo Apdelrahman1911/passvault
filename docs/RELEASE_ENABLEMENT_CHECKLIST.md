@@ -43,7 +43,8 @@ legal identity, and store-account actions remain external by design.
 - [x] The bilingual privacy policy is public at the stable HTTPS Pages routes and
   matches the reviewed local-first behavior.
 - [ ] Apache-2.0 project license and notice are included in packages.
-- [ ] Third-party acknowledgements cover direct production dependencies.
+- [x] Third-party acknowledgements cover direct production dependencies and
+  the material transitive native/runtime projects shipped in Desktop packages.
 - [ ] Security policy, backup guide, and recovery guide are publication-ready.
 - [x] Publisher contact fields are fail-closed release inputs rather than
   fictional or hardcoded data.
@@ -61,7 +62,8 @@ legal identity, and store-account actions remain external by design.
   keyless Google OIDC setup, Fastlane uploads, metadata rendering, and
   secret-name verification are implemented.
 - [x] Production requires protected approval, exact confirmation, and validated
-  public store assets; iOS production automation stops before review submission.
+  public store assets; iOS production submits the exact tested build for review
+  with automatic release after approval.
 
 ## iOS host and production integration
 
@@ -92,4 +94,4 @@ legal identity, and store-account actions remain external by design.
 - [ ] Desktop runtime smoke test and Windows EXE/MSI packaging pass.
 - [x] iOS simulator compilation passes.
 - [x] Release documentation and implementation-status records are updated.
-- [x] Detekt is excluded from this work at the user's explicit request.
+- [ ] Detekt and the final aggregate verification pass.

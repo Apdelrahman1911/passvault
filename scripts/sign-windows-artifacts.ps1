@@ -7,6 +7,10 @@ param(
     [ValidatePattern("^[0-9A-Fa-f]{40}$")]
     [string]$CertificateThumbprint,
 
+    [Parameter(Mandatory = $true)]
+    [ValidatePattern("^[0-9A-Fa-f]{64}$")]
+    [string]$CertificateSha256,
+
     [string]$TimestampUrl = "http://timestamp.digicert.com",
     [string]$ProductName = "PassVault",
     [string]$ProductUrl = "https://github.com/Apdelrahman1911/passvault",
@@ -47,6 +51,7 @@ if (-not $SignToolPath -or -not (Test-Path -LiteralPath $SignToolPath -PathType 
 }
 
 $normalizedThumbprint = $CertificateThumbprint.ToUpperInvariant()
+$normalizedSha256 = $CertificateSha256.ToUpperInvariant()
 $certificate = Get-Item -LiteralPath "Cert:/CurrentUser/My/$normalizedThumbprint" -ErrorAction SilentlyContinue
 if (-not $certificate) {
     throw "The requested code-signing certificate is not installed in Cert:/CurrentUser/My."
@@ -65,17 +70,26 @@ if (-not $hasCodeSigningEku) {
 if ($certificate.NotAfter.ToUniversalTime() -le [DateTime]::UtcNow) {
     throw "The code-signing certificate has expired."
 }
+if ($certificate.NotBefore.ToUniversalTime() -gt [DateTime]::UtcNow) {
+    throw "The code-signing certificate is not valid yet."
+}
+$actualSha256 = $certificate.GetCertHashString(
+    [Security.Cryptography.HashAlgorithmName]::SHA256
+).ToUpperInvariant()
+if ($actualSha256 -ne $normalizedSha256) {
+    throw "The code-signing certificate SHA-256 fingerprint does not match release policy."
+}
 
 $artifacts = foreach ($candidate in $Path) {
     $resolved = Resolve-Path -LiteralPath $candidate -ErrorAction Stop
     $item = Get-Item -LiteralPath $resolved.Path
     if ($item.PSIsContainer) {
         Get-ChildItem -LiteralPath $item.FullName -Recurse -File |
-            Where-Object { $_.Extension -in ".exe", ".msi" }
-    } elseif ($item.Extension -in ".exe", ".msi") {
+            Where-Object { $_.Extension -in ".exe", ".dll", ".msi" }
+    } elseif ($item.Extension -in ".exe", ".dll", ".msi") {
         $item
     } else {
-        throw "Only Windows EXE and MSI artifacts can be signed: $candidate"
+        throw "Only Windows EXE, DLL, and MSI artifacts can be signed: $candidate"
     }
 }
 
@@ -113,9 +127,16 @@ foreach ($artifact in $artifacts) {
         throw "The signer certificate does not match for $($artifact.Name)."
     }
 
+    $signerSha256 = $signature.SignerCertificate.GetCertHashString(
+        [Security.Cryptography.HashAlgorithmName]::SHA256
+    ).ToUpperInvariant()
+    if ($signerSha256 -ne $normalizedSha256) {
+        throw "The signer SHA-256 fingerprint does not match for $($artifact.Name)."
+    }
+
     if (-not $signature.TimeStamperCertificate) {
         throw "The Authenticode signature is missing an RFC 3161 timestamp: $($artifact.Name)."
     }
 }
 
-Write-Host "Signed and verified $($artifacts.Count) Windows artifact(s)."
+Write-Output "Signed and verified $($artifacts.Count) Windows artifact(s)."

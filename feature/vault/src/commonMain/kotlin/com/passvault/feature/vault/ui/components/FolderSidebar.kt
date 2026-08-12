@@ -5,14 +5,29 @@ import com.passvault.core.designsystem.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,38 +53,17 @@ fun FolderSidebar(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 12.dp)
+                .padding(vertical = 12.dp),
         ) {
-            Text(
-                text = stringResource(Res.string.ui_folders),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-            )
-
-            // All items option
-            NavigationDrawerItem(
-                label = { Text(stringResource(Res.string.ui_all_items)) },
+            FolderSidebarHeader()
+            AllItemsOption(
                 selected = selectedFolderId == null,
                 onClick = { onFolderSelected(null) },
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.List,
-                        contentDescription = null
-                    )
-                },
-                modifier = Modifier.padding(horizontal = 12.dp),
-                shape = MaterialTheme.shapes.large,
             )
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-            )
-
-            // Folder list
+            FolderDivider()
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 items(folders, key = { it.id.value }) { folder ->
                     FolderItem(
@@ -77,31 +71,63 @@ fun FolderSidebar(
                         isSelected = folder.id == selectedFolderId,
                         onClick = { onFolderSelected(folder.id) },
                         onDelete = { onDeleteFolder(folder.id) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-            )
-
-            // Add folder button
-            NavigationDrawerItem(
-                label = { Text(stringResource(Res.string.ui_new_folder)) },
-                selected = false,
-                onClick = onNewFolder,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.CreateNewFolder,
-                        contentDescription = null
-                    )
-                },
-                modifier = Modifier.padding(horizontal = 12.dp),
-                shape = MaterialTheme.shapes.large,
-            )
+            FolderDivider()
+            NewFolderOption(onClick = onNewFolder)
         }
     }
+}
+
+@Composable
+private fun FolderSidebarHeader() {
+    Text(
+        text = stringResource(Res.string.ui_folders),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+    )
+}
+
+@Composable
+private fun AllItemsOption(selected: Boolean, onClick: () -> Unit) {
+    NavigationDrawerItem(
+        label = { Text(stringResource(Res.string.ui_all_items)) },
+        selected = selected,
+        onClick = onClick,
+        icon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.List,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.padding(horizontal = 12.dp),
+        shape = MaterialTheme.shapes.large,
+    )
+}
+
+@Composable
+private fun FolderDivider() {
+    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp))
+}
+
+@Composable
+private fun NewFolderOption(onClick: () -> Unit) {
+    NavigationDrawerItem(
+        label = { Text(stringResource(Res.string.ui_new_folder)) },
+        selected = false,
+        onClick = onClick,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.CreateNewFolder,
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.padding(horizontal = 12.dp),
+        shape = MaterialTheme.shapes.large,
+    )
 }
 
 @Composable
@@ -144,7 +170,7 @@ private fun FolderItem(
             shape = MaterialTheme.shapes.large,
         )
         if (isSelected) {
-            IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
+            IconButton(onClick = onDelete, modifier = Modifier.size(48.dp)) {
                 Icon(
                     imageVector = Icons.Default.DeleteOutline,
                     contentDescription = stringResource(Res.string.ui_delete_folder),

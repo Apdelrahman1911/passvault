@@ -6,69 +6,48 @@ require "net/http"
 require "openssl"
 require "optparse"
 require "uri"
+require_relative "lib/app_store_configuration"
+require_relative "lib/dotenv"
+require_relative "lib/private_path"
 
-options = {
-  action: "status",
-  limit: 250,
-}
+options = {}
 OptionParser.new do |parser|
   parser.banner = "Usage: #{File.basename($PROGRAM_NAME)} [options]"
-  parser.on("--status", "Read TestFlight status without changing it") { options[:action] = "status" }
-  parser.on("--enable-public-link", "Enable the public link after beta approval") do
-    options[:action] = "enable"
-  end
+  parser.on("--status", "Read TestFlight status without changing it") { options[:status] = true }
   parser.on("--version VERSION", "Marketing version") { |value| options[:version] = value }
   parser.on("--build-number NUMBER", "App Store build number") { |value| options[:build] = value }
-  parser.on("--limit NUMBER", Integer, "Public-link tester limit (1-10,000)") do |value|
-    options[:limit] = value
-  end
 end.parse!
 
-unless options[:version]&.match?(/\A\d+\.\d+\.\d+\z/) && options[:build]&.match?(/\A[1-9]\d*\z/)
-  warn "A semantic --version and positive --build-number are required."
+canonical_version = /\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\z/
+valid_build = options[:build]&.match?(/\A[1-9]\d*\z/) &&
+  options[:build].length <= 10 && options[:build].to_i <= 2_100_000_000
+unless options[:version]&.match?(canonical_version) && valid_build
+  warn "A canonical semantic --version and --build-number from 1 through 2100000000 are required."
   exit 2
 end
-unless (1..10_000).cover?(options[:limit])
-  warn "The public-link tester limit must be between 1 and 10,000."
-  exit 2
-end
-
 repository_root = File.expand_path("..", __dir__)
 private_root = File.join(repository_root, "release", "private")
 environment_source = ENV["PASSVAULT_ASC_CONFIGURATION_SOURCE"] == "environment"
 values = {}
-
-def parse_dotenv(path)
-  values = {}
-  File.foreach(path, chomp: true) do |line|
-    line = line.delete_suffix("\r")
-    next if line.strip.empty? || line.lstrip.start_with?("#")
-
-    key, value = line.split("=", 2)
-    raise "Invalid dotenv entry" unless key&.match?(/\A[A-Z][A-Z0-9_]*\z/) && value
-
-    if value.length >= 2 && ((value.start_with?("\"") && value.end_with?("\"")) ||
-       (value.start_with?("'") && value.end_with?("'")))
-      value = value[1...-1]
-    end
-    values[key] = value
-  end
-  values
-end
 
 if environment_source
   %w[
     ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY_FILE IOS_BUNDLE_ID APP_STORE_APP_ID
     TESTFLIGHT_EXTERNAL_GROUP EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
   ].each { |name| values[name] = ENV[name].to_s }
-  private_root = File.expand_path(ENV.fetch("PRIVATE_RUNTIME", ""))
+  runtime_root = ENV["PRIVATE_RUNTIME"].to_s
+  if runtime_root.empty?
+    warn "The private runtime path is missing."
+    exit 1
+  end
+  private_root = File.expand_path(runtime_root)
 else
   values_path = File.join(private_root, "values.env")
   unless File.file?(values_path) && !File.symlink?(values_path)
     warn "The ignored private values file is missing or unsafe."
     exit 1
   end
-  values = parse_dotenv(values_path)
+  values = PassVault::Dotenv.load(values_path)
 end
 
 required = %w[
@@ -79,15 +58,34 @@ if required.any? { |name| values[name].to_s.empty? }
   warn "TestFlight status inputs are incomplete."
   exit 1
 end
-unless values.fetch("EXPORT_COMPLIANCE_STATUS") == "EXEMPT_APPROVED" &&
-       values.fetch("IOS_FRANCE_AVAILABLE") == "false"
-  warn "The approved no-documentation, non-France release constraint is required."
+unless PassVault::AppStoreConfiguration.identifiers_valid?(values)
+  warn "TestFlight status identifiers are malformed or do not identify PassVault."
+  exit 1
+end
+unless PassVault::AppStoreConfiguration.external_group_name_valid?(
+  values.fetch("TESTFLIGHT_EXTERNAL_GROUP"),
+)
+  warn "The external TestFlight group name must be a trimmed printable line of at most 100 characters."
+  exit 1
+end
+case values.fetch("EXPORT_COMPLIANCE_STATUS")
+when "EXEMPT_APPROVED"
+  if values.fetch("IOS_FRANCE_AVAILABLE") != "false"
+    warn "EXEMPT_APPROVED requires France to remain excluded."
+    exit 1
+  end
+when "NON_EXEMPT_APPROVED"
+  unless %w[true false].include?(values.fetch("IOS_FRANCE_AVAILABLE"))
+    warn "IOS_FRANCE_AVAILABLE must be exactly true or false."
+    exit 1
+  end
+else
+  warn "An approved export-compliance status is required."
   exit 1
 end
 
 key_path = File.expand_path(values.fetch("ASC_PRIVATE_KEY_FILE"), repository_root)
-unless !private_root.empty? && key_path.start_with?(private_root + File::SEPARATOR) &&
-       File.file?(key_path) && !File.symlink?(key_path)
+unless PassVault::PrivatePath.regular_file_within?(key_path, private_root)
   warn "The App Store Connect private-key path is unsafe or missing."
   exit 1
 end
@@ -126,20 +124,11 @@ ensure
   signature = nil
 end
 
-def request(token, method, path, query: nil, payload: nil, allow_not_found: false)
+def request(token, path, query: nil, allow_not_found: false)
   uri = URI("https://api.appstoreconnect.apple.com#{path}")
   uri.query = URI.encode_www_form(query) if query
-  request_class = {
-    get: Net::HTTP::Get,
-    post: Net::HTTP::Post,
-    patch: Net::HTTP::Patch,
-  }.fetch(method)
-  http_request = request_class.new(uri)
+  http_request = Net::HTTP::Get.new(uri)
   http_request["Authorization"] = "Bearer #{token}"
-  if payload
-    http_request["Content-Type"] = "application/json"
-    http_request.body = JSON.generate(payload)
-  end
   response = Net::HTTP.start(
     uri.host,
     uri.port,
@@ -149,8 +138,7 @@ def request(token, method, path, query: nil, payload: nil, allow_not_found: fals
   ) { |http| http.request(http_request) }
   return nil if allow_not_found && response.code == "404"
 
-  expected = method == :post ? %w[200 201 204] : %w[200 201 204]
-  unless expected.include?(response.code)
+  unless response.code == "200"
     error_code = begin
       JSON.parse(response.body).fetch("errors", []).first&.fetch("code", nil)
     rescue JSON::ParserError
@@ -170,7 +158,6 @@ begin
   token = token_for(values, key_path)
   app_response = request(
     token,
-    :get,
     "/v1/apps",
     query: { "filter[bundleId]" => values.fetch("IOS_BUNDLE_ID"), "limit" => "10" },
   )
@@ -183,7 +170,6 @@ begin
 
   groups = request(
     token,
-    :get,
     "/v1/betaGroups",
     query: {
       "filter[app]" => app_id,
@@ -193,16 +179,17 @@ begin
       "limit" => "20",
     },
   ).fetch("data", [])
-  group = groups.find do |candidate|
+  matching_groups = groups.select do |candidate|
     candidate.dig("attributes", "name") == values.fetch("TESTFLIGHT_EXTERNAL_GROUP")
   end
+  raise "The configured external TestFlight group name is ambiguous" if matching_groups.length > 1
+  group = matching_groups.first
   raise "The configured external TestFlight group does not exist" unless group
   raise "The configured TestFlight group is internal" if group.dig("attributes", "isInternalGroup") == true
   group_id = group.fetch("id")
 
   prerelease_versions = request(
     token,
-    :get,
     "/v1/preReleaseVersions",
     query: {
       "filter[app]" => app_id,
@@ -212,14 +199,15 @@ begin
       "limit" => "10",
     },
   ).fetch("data", [])
-  prerelease = prerelease_versions.find do |candidate|
+  matching_prereleases = prerelease_versions.select do |candidate|
     candidate.dig("attributes", "version") == options.fetch(:version) &&
       candidate.dig("attributes", "platform") == "IOS"
   end
+  raise "The requested App Store prerelease version is ambiguous" if matching_prereleases.length > 1
+  prerelease = matching_prereleases.first
   builds = if prerelease
              request(
                token,
-               :get,
                "/v1/preReleaseVersions/#{prerelease.fetch('id')}/builds",
                query: {
                  "fields[builds]" =>
@@ -230,13 +218,16 @@ begin
            else
              []
            end
-  build = builds.find { |candidate| candidate.dig("attributes", "version") == options.fetch(:build) }
+  matching_builds = builds.select do |candidate|
+    candidate.dig("attributes", "version") == options.fetch(:build)
+  end
+  raise "The requested App Store build number is ambiguous" if matching_builds.length > 1
+  build = matching_builds.first
   latest_build = builds.map { |candidate| candidate.dig("attributes", "version") }
     .compact.select { |value| value.match?(/\A\d+\z/) }.max_by(&:to_i)
 
   review_detail = request(
     token,
-    :get,
     "/v1/apps/#{app_id}/betaAppReviewDetail",
     query: {
       "fields[betaAppReviewDetails]" =>
@@ -251,7 +242,6 @@ begin
 
   app_localizations = request(
     token,
-    :get,
     "/v1/apps/#{app_id}/betaAppLocalizations",
     query: {
       "fields[betaAppLocalizations]" =>
@@ -259,10 +249,23 @@ begin
       "limit" => "50",
     },
   ).fetch("data", [])
+  duplicate_app_locales = app_localizations.group_by { |item| item.dig("attributes", "locale") }
+    .select { |locale, items| locale && items.length > 1 }.keys
+  unless duplicate_app_locales.empty?
+    raise "Duplicate beta app localizations: #{duplicate_app_locales.sort.join(', ')}"
+  end
   en_localization = app_localizations.find { |item| item.dig("attributes", "locale") == "en-US" }
   en_attributes = en_localization&.fetch("attributes", {}) || {}
   en_complete = %w[feedbackEmail marketingUrl privacyPolicyUrl description].all? do |name|
     presence(en_attributes[name])
+  end
+  required_locales = %w[en-US ar-SA]
+  beta_localizations_complete = required_locales.all? do |locale|
+    localization = app_localizations.find { |item| item.dig("attributes", "locale") == locale }
+    attributes = localization&.fetch("attributes", {}) || {}
+    %w[feedbackEmail marketingUrl privacyPolicyUrl description].all? do |name|
+      presence(attributes[name])
+    end
   end
 
   group_has_build = false
@@ -273,14 +276,12 @@ begin
     build_id = build.fetch("id")
     group_builds = request(
       token,
-      :get,
       "/v1/betaGroups/#{group_id}/builds",
       query: { "fields[builds]" => "version", "limit" => "200" },
     ).fetch("data", [])
     group_has_build = group_builds.any? { |candidate| candidate["id"] == build_id }
     beta_detail = request(
       token,
-      :get,
       "/v1/builds/#{build_id}/buildBetaDetail",
       query: { "fields[buildBetaDetails]" => "autoNotifyEnabled,internalBuildState,externalBuildState" },
       allow_not_found: true,
@@ -288,7 +289,6 @@ begin
     beta_detail_attributes = beta_detail&.dig("data", "attributes") || {}
     beta_review = request(
       token,
-      :get,
       "/v1/builds/#{build_id}/betaAppReviewSubmission",
       query: { "fields[betaAppReviewSubmissions]" => "betaReviewState,submittedDate" },
       allow_not_found: true,
@@ -296,51 +296,13 @@ begin
     beta_review_attributes = beta_review&.dig("data", "attributes") || {}
     build_localizations = request(
       token,
-      :get,
       "/v1/builds/#{build_id}/betaBuildLocalizations",
       query: { "fields[betaBuildLocalizations]" => "whatsNew,locale", "limit" => "50" },
     ).fetch("data", [])
-  end
-
-  if options.fetch(:action) == "enable"
-    raise "The requested build is not available in App Store Connect" unless build
-    raise "The build has not completed processing" unless build.dig("attributes", "processingState") == "VALID"
-    raise "The build encryption flag is not the approved value" unless build.dig("attributes", "usesNonExemptEncryption") == false
-    raise "The build is not assigned to the external group" unless group_has_build
-    raise "Beta App Review is not approved" unless beta_review_attributes["betaReviewState"] == "APPROVED"
-    unless %w[READY_FOR_BETA_TESTING IN_BETA_TESTING].include?(beta_detail_attributes["externalBuildState"])
-      raise "The approved build is not eligible for external testing"
-    end
-
-    request(
-      token,
-      :patch,
-      "/v1/betaGroups/#{group_id}",
-      payload: {
-        data: {
-          type: "betaGroups",
-          id: group_id,
-          attributes: {
-            publicLinkEnabled: true,
-            publicLinkLimitEnabled: true,
-            publicLinkLimit: options.fetch(:limit),
-          },
-        },
-      },
-    )
-    group = request(
-      token,
-      :get,
-      "/v1/betaGroups/#{group_id}",
-      query: {
-        "fields[betaGroups]" =>
-          "name,isInternalGroup,publicLinkEnabled,publicLinkLimitEnabled,publicLinkLimit,publicLink",
-      },
-    ).fetch("data")
-    public_link = group.dig("attributes", "publicLink")
-    unless group.dig("attributes", "publicLinkEnabled") == true &&
-           public_link&.match?(%r{\Ahttps://testflight\.apple\.com/join/[A-Za-z0-9]+\z})
-      raise "Apple did not return an active TestFlight public link"
+    duplicate_build_locales = build_localizations.group_by { |item| item.dig("attributes", "locale") }
+      .select { |locale, items| locale && items.length > 1 }.keys
+    unless duplicate_build_locales.empty?
+      raise "Duplicate beta build localizations: #{duplicate_build_locales.sort.join(', ')}"
     end
   end
 
@@ -351,9 +313,10 @@ begin
   puts "EXTERNAL_GROUP_ID=#{group_id}"
   puts "PUBLIC_LINK_ENABLED=#{attributes['publicLinkEnabled'] == true}"
   puts "PUBLIC_LINK_LIMIT=#{attributes['publicLinkLimitEnabled'] == true ? attributes['publicLinkLimit'] : 'DISABLED'}"
-  puts "PUBLIC_LINK=#{attributes['publicLink']}" if attributes["publicLinkEnabled"] == true
+  puts "PUBLIC_LINK_PRESENT=#{presence(attributes['publicLink'])}"
   puts "REVIEW_INFORMATION=#{review_complete ? 'COMPLETE' : 'INCOMPLETE'}"
   puts "ENGLISH_TEST_INFORMATION=#{en_complete ? 'COMPLETE' : 'INCOMPLETE'}"
+  puts "REQUIRED_TEST_INFORMATION=#{beta_localizations_complete ? 'COMPLETE' : 'INCOMPLETE'}"
   puts "BETA_APP_LOCALIZATIONS=#{app_localizations.map { |item| item.dig('attributes', 'locale') }.compact.sort.join(',')}"
   puts "LATEST_BUILD_NUMBER=#{latest_build || 'NONE'}"
   if build
@@ -369,6 +332,11 @@ begin
     puts "EXTERNAL_BUILD_STATE=#{beta_detail_attributes.fetch('externalBuildState', 'UNKNOWN')}"
     puts "BETA_REVIEW_STATE=#{beta_review_attributes.fetch('betaReviewState', 'NOT_SUBMITTED')}"
     puts "BETA_REVIEW_SUBMITTED_DATE=#{beta_review_attributes.fetch('submittedDate', 'NONE')}"
+    required_build_localizations_complete = required_locales.all? do |locale|
+      localization = build_localizations.find { |item| item.dig("attributes", "locale") == locale }
+      presence(localization&.dig("attributes", "whatsNew"))
+    end
+    puts "REQUIRED_WHAT_TO_TEST=#{required_build_localizations_complete ? 'COMPLETE' : 'INCOMPLETE'}"
     puts "WHAT_TO_TEST_LOCALIZATIONS=#{build_localizations.map { |item| item.dig('attributes', 'locale') }.compact.sort.join(',')}"
   else
     puts "BUILD_ID=NOT_FOUND"

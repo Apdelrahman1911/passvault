@@ -6,11 +6,25 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.passvault.core.database.dao.*
-import com.passvault.core.database.entity.*
+import com.passvault.core.database.dao.AttachmentDao
+import com.passvault.core.database.dao.CredentialDao
+import com.passvault.core.database.dao.FolderDao
+import com.passvault.core.database.dao.PasswordHistoryDao
+import com.passvault.core.database.dao.TagDao
+import com.passvault.core.database.dao.VaultBackupDao
+import com.passvault.core.database.dao.VaultMetadataDao
+import com.passvault.core.database.entity.AttachmentRecordEntity
+import com.passvault.core.database.entity.CorruptionLogEntity
+import com.passvault.core.database.entity.CredentialFolderCrossRef
+import com.passvault.core.database.entity.CredentialRecordEntity
+import com.passvault.core.database.entity.CredentialTagCrossRef
+import com.passvault.core.database.entity.CurrentVersionInfoEntity
+import com.passvault.core.database.entity.FolderRecordEntity
+import com.passvault.core.database.entity.MigrationStateEntity
+import com.passvault.core.database.entity.PasswordHistoryRecordEntity
+import com.passvault.core.database.entity.TagRecordEntity
+import com.passvault.core.database.entity.VaultMetadataEntity
 import kotlin.time.Instant
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Database(
     entities = [
@@ -26,7 +40,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
         CurrentVersionInfoEntity::class,
         CorruptionLogEntity::class,
     ],
-    version = 1,
+    version = 3,
     exportSchema = true,
 )
 @TypeConverters(VaultDatabaseConverters::class)
@@ -38,7 +52,6 @@ abstract class VaultDatabase : RoomDatabase() {
     abstract fun tagDao(): TagDao
     abstract fun attachmentDao(): AttachmentDao
     abstract fun passwordHistoryDao(): PasswordHistoryDao
-    abstract fun migrationStateDao(): MigrationStateDao
     abstract fun vaultBackupDao(): VaultBackupDao
 }
 
@@ -47,7 +60,6 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<VaultDatabase> {
     override fun initialize(): VaultDatabase
 }
 
-@OptIn(ExperimentalEncodingApi::class)
 class VaultDatabaseConverters {
     @TypeConverter
     fun fromInstant(instant: Instant?): Long? {
@@ -57,15 +69,5 @@ class VaultDatabaseConverters {
     @TypeConverter
     fun toInstant(millis: Long?): Instant? {
         return millis?.let { Instant.fromEpochMilliseconds(it) }
-    }
-
-    @TypeConverter
-    fun fromByteArray(bytes: ByteArray?): String? {
-        return bytes?.let { Base64.encode(it) }
-    }
-
-    @TypeConverter
-    fun toByteArray(base64: String?): ByteArray? {
-        return base64?.let { Base64.decode(it) }
     }
 }

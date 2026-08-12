@@ -8,6 +8,7 @@ import kotlinx.coroutines.CancellationException
  * Coroutine cancellation and VM-fatal errors are control flow, not domain
  * failures. Only ordinary exceptions are converted to [Result.failure].
  */
+@Suppress("TooGenericExceptionCaught") // Repository boundary must preserve arbitrary domain failures in Result.
 internal suspend inline fun <T> repositoryResult(block: () -> T): Result<T> =
     try {
         Result.success(block())

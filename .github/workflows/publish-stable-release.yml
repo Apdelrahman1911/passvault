@@ -7,44 +7,238 @@ on:
         description: Production candidate whose stores are live
         required: true
         type: string
-      stores_live_confirmation:
-        description: Type I_CONFIRM_BOTH_STORES_LIVE
-        required: true
-        type: string
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  # Store-live verification and public GitHub release publication must remain
+  # atomic with respect to every other candidate/release operation.
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+env:
+  RUBY_VERSION: '3.3'
 
 jobs:
-  verify:
+  candidate:
     runs-on: ubuntu-latest
+    permissions:
+      attestations: read
+      contents: read
     outputs:
       version: ${{ steps.manifest.outputs.version }}
+      build_number: ${{ steps.manifest.outputs.build_number }}
+      android_package: ${{ steps.manifest.outputs.android_package }}
+      ios_bundle_id: ${{ steps.manifest.outputs.ios_bundle_id }}
+      app_store_app_id: ${{ steps.manifest.outputs.app_store_app_id }}
+      source_tree: ${{ steps.manifest.outputs.source_tree }}
     steps:
-      - uses: actions/checkout@v7
-      - name: Validate stable publication request
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Validate exact stable candidate
         id: manifest
         env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
           GH_TOKEN: ${{ github.token }}
         run: |
           if [[ "$GITHUB_REF" != refs/heads/release ]]; then
             echo "Stable publication must run from release." >&2
             exit 1
           fi
-          if [[ "${{ inputs.stores_live_confirmation }}" != I_CONFIRM_BOTH_STORES_LIVE ]]; then
-            echo "Confirm the same version is live in both stores." >&2
+          if [[ ! "$CANDIDATE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc\.[1-9][0-9]*$ ]]; then
+            echo "The candidate tag is invalid." >&2
             exit 1
           fi
-          gh release download "${{ inputs.candidate_tag }}" \
-            --pattern readiness-manifest.json --dir "$RUNNER_TEMP/candidate"
+          gh release download "$CANDIDATE_TAG" \
+            --pattern readiness-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir "$RUNNER_TEMP/candidate"
           manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
-          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA"
-          echo "version=$(jq -r .marketingVersion "$manifest")" >> "$GITHUB_OUTPUT"
+          gh attestation verify "$manifest" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$GITHUB_SHA" \
+            --deny-self-hosted-runners >/dev/null
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
+          for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
+            gh attestation verify "$receipt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            "$manifest" "$RUNNER_TEMP/candidate" "$GITHUB_SHA" "$source_tree"
+          if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
+            echo "Downloaded candidate provenance does not match the requested tag." >&2
+            exit 1
+          fi
+          {
+            printf 'version=%s\n' "$(jq -r .marketingVersion "$manifest")"
+            printf 'build_number=%s\n' "$(jq -r .buildNumber "$manifest")"
+            printf 'android_package=%s\n' "$(jq -r .android.packageName "$manifest")"
+            printf 'ios_bundle_id=%s\n' "$(jq -r .ios.bundleId "$manifest")"
+            printf 'app_store_app_id=%s\n' "$(jq -r .ios.appStoreAppId "$manifest")"
+            printf 'source_tree=%s\n' "$source_tree"
+          } >> "$GITHUB_OUTPUT"
 
-  desktop-and-github:
-    needs: verify
-    uses: ./.github/workflows/release.yml
-    with:
-      version: ${{ needs.verify.outputs.version }}
-      candidate_tag: ${{ inputs.candidate_tag }}
-    secrets: inherit
+  stores-live:
+    needs: candidate
+    runs-on: ubuntu-latest
+    environment: mobile-production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Authenticate to Google Play
+        id: google-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          create_credentials_file: false
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          access_token_lifetime: 600s
+
+      - name: Require exact build active on Google Play production
+        env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          EXPECTED_ANDROID_PACKAGE: ${{ needs.candidate.outputs.android_package }}
+          GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+          STORE_BUILD_NUMBER: ${{ needs.candidate.outputs.build_number }}
+        run: |
+          if [[ -z "$ANDROID_PACKAGE_NAME" || "$ANDROID_PACKAGE_NAME" != "$EXPECTED_ANDROID_PACKAGE" ]]; then
+            echo "The production Android package does not match candidate provenance." >&2
+            exit 1
+          fi
+          ./scripts/check-play-track-build.sh production "$STORE_BUILD_NUMBER"
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+
+      - name: Require exact build publicly live on the iOS App Store
+        env:
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          EXPECTED_APP_STORE_APP_ID: ${{ needs.candidate.outputs.app_store_app_id }}
+          EXPECTED_IOS_BUNDLE_ID: ${{ needs.candidate.outputs.ios_bundle_id }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          STORE_BUILD_NUMBER: ${{ needs.candidate.outputs.build_number }}
+          STORE_VERSION: ${{ needs.candidate.outputs.version }}
+        run: |
+          if [[ -z "$IOS_BUNDLE_ID" || "$IOS_BUNDLE_ID" != "$EXPECTED_IOS_BUNDLE_ID" ||
+                -z "$APP_STORE_APP_ID" || "$APP_STORE_APP_ID" != "$EXPECTED_APP_STORE_APP_ID" ]]; then
+            echo "The production iOS identifiers do not match candidate provenance." >&2
+            exit 1
+          fi
+          PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-stable-check"
+          install -d -m 700 "$PRIVATE_RUNTIME"
+          cleanup() {
+            if [[ -d "$PRIVATE_RUNTIME" ]]; then
+              find "$PRIVATE_RUNTIME" -type f -exec chmod 600 {} + 2>/dev/null || true
+              find "$PRIVATE_RUNTIME" -type f -exec rm -f -- {} + 2>/dev/null || true
+              rmdir "$PRIVATE_RUNTIME" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
+          printf '%s' "$ASC_PRIVATE_KEY_BASE64" |
+            openssl base64 -d -A > "$PRIVATE_RUNTIME/asc-key.p8"
+          chmod 600 "$PRIVATE_RUNTIME/asc-key.p8"
+          export PRIVATE_RUNTIME PASSVAULT_ASC_CONFIGURATION_SOURCE=environment
+          export ASC_PRIVATE_KEY_FILE="$PRIVATE_RUNTIME/asc-key.p8"
+          ruby scripts/check-app-store-live-version.rb "$STORE_VERSION" "$STORE_BUILD_NUMBER"
+
+  publish-exact-validated-github-release:
+    needs: [ candidate, stores-live ]
+    runs-on: ubuntu-latest
+    environment: mobile-production
+    permissions:
+      actions: read
+      attestations: read
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Locate exact successful production-signing validation
+        id: validation
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          artifact_name="production-signed-$CANDIDATE_TAG"
+          run_id="$(
+            gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts?name=$artifact_name&per_page=100" \
+              --jq ".artifacts |
+                map(select(.expired == false and .workflow_run.head_sha == \"$GITHUB_SHA\")) |
+                sort_by(.created_at) | reverse | first | .workflow_run.id // empty"
+          )"
+          if [[ ! "$run_id" =~ ^[1-9][0-9]*$ ]]; then
+            echo "No successful production-signing validation exists for exact commit $GITHUB_SHA." >&2
+            echo "Run Production Signing Validation for $CANDIDATE_TAG before stable publication." >&2
+            exit 1
+          fi
+          gh api "/repos/$GITHUB_REPOSITORY/actions/runs/$run_id" \
+            > "$RUNNER_TEMP/production-signing-run.json"
+          jq -e --arg sha "$GITHUB_SHA" '
+            .conclusion == "success" and
+            .event == "workflow_dispatch" and
+            .head_branch == "release" and
+            .head_sha == $sha and
+            .path == ".github/workflows/production-signing-validation.yml"
+          ' "$RUNNER_TEMP/production-signing-run.json" >/dev/null || {
+            echo "The frozen bundle was not produced by a successful exact production-signing run." >&2
+            exit 1
+          }
+          validation_root="$RUNNER_TEMP/validated-release-$run_id"
+          install -d "$validation_root"
+          gh run download "$run_id" --name "$artifact_name" --dir "$validation_root"
+          {
+            printf 'run_id=%s\n' "$run_id"
+            printf 'root=%s\n' "$validation_root"
+          } >> "$GITHUB_OUTPUT"
+      - name: Verify exact frozen bundle, checksums, and workflow attestations
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
+          VALIDATION_ROOT: ${{ steps.validation.outputs.root }}
+        run: |
+          ruby scripts/validate-desktop-release-provenance.rb \
+            "$VALIDATION_ROOT" "$CANDIDATE_TAG" "${{ needs.candidate.outputs.version }}" \
+            "${{ needs.candidate.outputs.build_number }}" "$GITHUB_SHA" \
+            "${{ needs.candidate.outputs.source_tree }}"
+          (cd "$VALIDATION_ROOT" && sha256sum --check SHA256SUMS.txt)
+          while IFS= read -r -d '' release_file; do
+            gh attestation verify "$release_file" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/production-signing-validation.yml" \
+              --source-ref refs/heads/release \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done < <(find "$VALIDATION_ROOT" -maxdepth 1 -type f -print0)
+      - name: Publish immutable stable GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: v${{ needs.candidate.outputs.version }}
+          RELEASE_VERSION: ${{ needs.candidate.outputs.version }}
+          VALIDATION_ROOT: ${{ steps.validation.outputs.root }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "A GitHub Release already exists for $RELEASE_TAG; refusing to overwrite it." >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" "$VALIDATION_ROOT"/* \
+            --target "$GITHUB_SHA" \
+            --generate-notes \
+            --title "PassVault $RELEASE_VERSION" \
+            --notes "Exact production-validated desktop packages for Windows x64, macOS arm64/x64, and Linux x64. Windows native code/installers are Authenticode verified; macOS packages are Developer ID signed, notarized, stapled, and Gatekeeper verified. SHA256SUMS.txt and release-provenance.json bind every asset to the tested candidate commit and mobile build receipts."

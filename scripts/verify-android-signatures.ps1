@@ -11,23 +11,33 @@ Set-StrictMode -Version Latest
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 
 if ([string]::IsNullOrWhiteSpace($ApkPath)) {
-    $ApkPath = Get-ChildItem `
+    $apkMatches = @(Get-ChildItem `
         -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/apk/standard/release") `
-        -Filter "*.apk" |
-        Select-Object -First 1 -ExpandProperty FullName
+        -File -Filter "*.apk")
+    if ($apkMatches.Count -ne 1) {
+        throw "Expected exactly one Standard release APK; found $($apkMatches.Count)."
+    }
+    $ApkPath = $apkMatches[0].FullName
 }
 
 if ([string]::IsNullOrWhiteSpace($AabPath)) {
-    $AabPath = Get-ChildItem `
+    $aabMatches = @(Get-ChildItem `
         -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/bundle/standardRelease") `
-        -Filter "*.aab" |
-        Select-Object -First 1 -ExpandProperty FullName
+        -File -Filter "*.aab")
+    if ($aabMatches.Count -ne 1) {
+        throw "Expected exactly one Standard release AAB; found $($aabMatches.Count)."
+    }
+    $AabPath = $aabMatches[0].FullName
 }
 
 $fingerprintPath = [IO.Path]::GetFullPath((Join-Path $repositoryRoot $ExpectedFingerprintFile))
 foreach ($path in @($ApkPath, $AabPath, $fingerprintPath)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
         throw "Required signature-verification input was not found: $path"
+    }
+    $item = Get-Item -LiteralPath $path -Force
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Signature-verification inputs must not be symlinks or reparse points: $path"
     }
 }
 
@@ -50,17 +60,17 @@ if (-not $sdkRoot) {
 }
 
 $apksignerName = if ($IsWindows) { "apksigner.bat" } else { "apksigner" }
-$apksigner = Get-ChildItem -LiteralPath (Join-Path $sdkRoot "build-tools") -Directory |
-    Sort-Object { [version]$_.Name } -Descending |
-    ForEach-Object { Join-Path $_.FullName $apksignerName } |
-    Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } |
-    Select-Object -First 1
+$apksigner = & (Join-Path $PSScriptRoot "select-android-build-tool.ps1") `
+    -BuildToolsRoot (Join-Path $sdkRoot "build-tools") `
+    -ToolName $apksignerName
 
 if (-not $apksigner) {
     throw "apksigner was not found under $sdkRoot/build-tools."
 }
 
-$expectedFingerprint = (Get-Content -LiteralPath $fingerprintPath -Raw) -replace "[^0-9A-Fa-f]", ""
+$expectedFingerprint = (
+    (Get-Content -LiteralPath $fingerprintPath -Raw) -replace "[^0-9A-Fa-f]", ""
+).ToUpperInvariant()
 if ($expectedFingerprint.Length -ne 64) {
     throw "The expected Android SHA-256 signer fingerprint is invalid."
 }
@@ -71,18 +81,23 @@ if ($LASTEXITCODE -ne 0) {
     throw "APK cryptographic signature verification failed."
 }
 
-$apkDigestLine = $apkOutput |
+$apkDigestLines = @($apkOutput |
     Where-Object { $_ -match "certificate SHA-256 digest:" } |
-    Select-Object -First 1
-$apkFingerprint = ($apkDigestLine -replace ".*digest:\s*", "") -replace "[^0-9A-Fa-f]", ""
+    ForEach-Object {
+        (($_ -replace ".*digest:\s*", "") -replace "[^0-9A-Fa-f]", "").ToUpperInvariant()
+    } |
+    Sort-Object -Unique)
 
-if ($apkFingerprint -ne $expectedFingerprint) {
-    throw "APK signer fingerprint does not match the pinned PassVault release certificate."
+if ($apkDigestLines.Count -ne 1 -or $apkDigestLines[0] -ne $expectedFingerprint) {
+    throw "APK must have exactly the pinned PassVault release-certificate signer."
 }
 
-& jarsigner -verify $AabPath | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    throw "AAB JAR signature verification failed."
+& jarsigner -verify -strict $AabPath 2>&1 | Out-Null
+$jarsignerExitCode = $LASTEXITCODE
+# jarsigner strict status 4 reports the expected untrusted/self-signed chain.
+# The Android upload certificate is separately pinned by its exact SHA-256 digest below.
+if ($jarsignerExitCode -ne 0 -and $jarsignerExitCode -ne 4) {
+    throw "AAB strict JAR signature verification failed."
 }
 
 $aabCertificate = & keytool -printcert -jarfile $AabPath
@@ -90,13 +105,15 @@ if ($LASTEXITCODE -ne 0) {
     throw "Could not read the AAB signing certificate."
 }
 
-$aabDigestLine = $aabCertificate |
+$aabDigestLines = @($aabCertificate |
     Where-Object { $_ -match "SHA256:" } |
-    Select-Object -First 1
-$aabFingerprint = ($aabDigestLine -replace ".*SHA256:\s*", "") -replace "[^0-9A-Fa-f]", ""
+    ForEach-Object {
+        (($_ -replace ".*SHA256:\s*", "") -replace "[^0-9A-Fa-f]", "").ToUpperInvariant()
+    } |
+    Sort-Object -Unique)
 
-if ($aabFingerprint -ne $expectedFingerprint) {
-    throw "AAB signer fingerprint does not match the pinned PassVault release certificate."
+if ($aabDigestLines.Count -ne 1 -or $aabDigestLines[0] -ne $expectedFingerprint) {
+    throw "AAB must have exactly the pinned PassVault release-certificate signer."
 }
 
-Write-Host "Android signatures verified against the pinned release certificate."
+Write-Output "Android signatures verified against the pinned release certificate."

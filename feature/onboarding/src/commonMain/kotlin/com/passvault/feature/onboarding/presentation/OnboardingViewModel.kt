@@ -6,17 +6,23 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
+import com.passvault.core.domain.model.MasterPasswordPolicy
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.hasWellFormedUnicode
+import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.VaultRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
@@ -30,8 +36,8 @@ class OnboardingViewModel(
     private val _state = MutableStateFlow(OnboardingState())
     val state: StateFlow<OnboardingState> = _state.asStateFlow()
 
-    private val _effect = Channel<OnboardingEffect>(Channel.BUFFERED)
-    val effect: Flow<OnboardingEffect> = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<OnboardingEffect>(extraBufferCapacity = 1)
+    val effect: SharedFlow<OnboardingEffect> = _effect.asSharedFlow()
 
     private val createMutex = Mutex()
     private var createJob: Job? = null
@@ -43,29 +49,35 @@ class OnboardingViewModel(
             OnboardingEvent.OnCreateVaultClick -> continueToConfirmation()
             OnboardingEvent.OnConfirmPasswordClick -> createAndVerifyVault()
             OnboardingEvent.OnBackClick -> {
-                if (!_state.value.isLoading) {
+                if (!_state.value.isLoading && !_state.value.vaultCreated) {
                     clearPasswordInputs()
-                    _effect.trySend(OnboardingEffect.NavigateBack)
+                    _effect.tryEmit(OnboardingEffect.NavigateBack)
                 }
-            }
-            OnboardingEvent.OnContinueToSecurityClick -> {
-                _effect.trySend(OnboardingEffect.NavigateToSecurityExplanation)
             }
             OnboardingEvent.OnCompleteSetupClick -> completeOnboarding()
             OnboardingEvent.OnGetStartedClick -> {
-                _effect.trySend(OnboardingEffect.NavigateToMasterPasswordCreation)
+                _effect.tryEmit(OnboardingEffect.NavigateToMasterPasswordCreation)
             }
         }
     }
 
     private fun updateMasterPassword(password: String) {
-        if (password.length > MAX_MASTER_PASSWORD_LENGTH) {
+        val boundedPassword = password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1)
+        val validationError = when {
+            password.codePointLength() > MasterPasswordPolicy.MAX_LENGTH -> uiText(
+                Res.string.error_master_password_too_long,
+                MasterPasswordPolicy.MAX_LENGTH,
+            )
+            !password.hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
+            else -> null
+        }
+        if (validationError != null) {
             _state.update {
                 it.copy(
-                    errorMessage = uiText(
-                        Res.string.error_master_password_too_long,
-                        MAX_MASTER_PASSWORD_LENGTH,
-                    ),
+                    masterPassword = boundedPassword,
+                    confirmPassword = "",
+                    passwordsMatch = false,
+                    errorMessage = validationError,
                 )
             }
             return
@@ -85,9 +97,19 @@ class OnboardingViewModel(
     }
 
     private fun updateConfirmation(password: String) {
-        if (password.length > MAX_MASTER_PASSWORD_LENGTH) {
+        val validationError = when {
+            password.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+                uiText(Res.string.error_master_confirmation_too_long)
+            !password.hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
+            else -> null
+        }
+        if (validationError != null) {
             _state.update {
-                it.copy(errorMessage = uiText(Res.string.error_master_confirmation_too_long))
+                it.copy(
+                    confirmPassword = password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1),
+                    passwordsMatch = false,
+                    errorMessage = validationError,
+                )
             }
             return
         }
@@ -102,7 +124,7 @@ class OnboardingViewModel(
     }
 
     private fun calculatePasswordStrength(password: String): PasswordStrength {
-        if (password.length < MIN_MASTER_PASSWORD_LENGTH) return PasswordStrength.TOO_SHORT
+        if (password.codePointLength() < MasterPasswordPolicy.MIN_LENGTH) return PasswordStrength.TOO_SHORT
 
         return when (PasswordStrengthEvaluator.score(password)) {
             PasswordScore.UNKNOWN,
@@ -119,16 +141,32 @@ class OnboardingViewModel(
     private fun continueToConfirmation() {
         val currentState = _state.value
         if (currentState.isLoading) return
+        val passwordLength = currentState.masterPassword.codePointLength()
 
         when {
-            currentState.masterPassword.length < MIN_MASTER_PASSWORD_LENGTH -> {
+            passwordLength < MasterPasswordPolicy.MIN_LENGTH -> {
                 _state.update {
                     it.copy(
                         errorMessage = uiText(
                             Res.string.error_master_password_too_short,
-                            MIN_MASTER_PASSWORD_LENGTH,
+                            MasterPasswordPolicy.MIN_LENGTH,
                         ),
                     )
+                }
+            }
+            passwordLength > MasterPasswordPolicy.MAX_LENGTH -> {
+                _state.update {
+                    it.copy(
+                        errorMessage = uiText(
+                            Res.string.error_master_password_too_long,
+                            MasterPasswordPolicy.MAX_LENGTH,
+                        ),
+                    )
+                }
+            }
+            !currentState.masterPassword.hasWellFormedUnicode() -> {
+                _state.update {
+                    it.copy(errorMessage = uiText(Res.string.error_master_password_invalid))
                 }
             }
             currentState.passwordStrength < PasswordStrength.FAIR -> {
@@ -138,16 +176,22 @@ class OnboardingViewModel(
             }
             else -> {
                 _state.update { it.copy(errorMessage = null, confirmPassword = "", passwordsMatch = false) }
-                _effect.trySend(OnboardingEffect.NavigateToMasterPasswordConfirmation)
+                _effect.tryEmit(OnboardingEffect.NavigateToMasterPasswordConfirmation)
             }
         }
     }
 
     private fun validateConfirmation(): Boolean {
         val currentState = _state.value
+        val passwordLength = currentState.masterPassword.codePointLength()
         val error = when {
-            currentState.masterPassword.length < MIN_MASTER_PASSWORD_LENGTH ->
-                uiText(Res.string.error_master_password_too_short, MIN_MASTER_PASSWORD_LENGTH)
+            passwordLength < MasterPasswordPolicy.MIN_LENGTH ->
+                uiText(Res.string.error_master_password_too_short, MasterPasswordPolicy.MIN_LENGTH)
+            passwordLength > MasterPasswordPolicy.MAX_LENGTH ->
+                uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
+            !currentState.masterPassword.hasWellFormedUnicode() ||
+                !currentState.confirmPassword.hasWellFormedUnicode() ->
+                uiText(Res.string.error_master_password_invalid)
             currentState.passwordStrength < PasswordStrength.FAIR ->
                 uiText(Res.string.error_master_password_predictable)
             currentState.confirmPassword.isEmpty() ->
@@ -171,14 +215,18 @@ class OnboardingViewModel(
                 var createPassword: SensitiveText? = null
                 var verifyPassword: SensitiveText? = null
                 try {
-                    val vaultExists = vaultRepository.exists().getOrElse {
+                    val existsResult = vaultRepository.exists()
+                    currentCoroutineContext().ensureActive()
+                    val vaultExists = existsResult.getOrElse {
                         showCreationError(uiText(Res.string.error_vault_setup_check))
                         return@withLock
                     }
 
                     if (!vaultExists) {
                         createPassword = SensitiveText.from(password)
-                        vaultRepository.create(createPassword).getOrElse {
+                        val createResult = vaultRepository.create(createPassword)
+                        currentCoroutineContext().ensureActive()
+                        if (createResult.isFailure) {
                             showCreationError(uiText(Res.string.error_vault_setup_create))
                             return@withLock
                         }
@@ -189,8 +237,9 @@ class OnboardingViewModel(
                     }
 
                     verifyPassword = SensitiveText.from(password)
-                    vaultRepository.unlock(verifyPassword)
-                        .onSuccess {
+                    val unlockResult = vaultRepository.unlock(verifyPassword)
+                    currentCoroutineContext().ensureActive()
+                    if (unlockResult.isSuccess) {
                             _state.update {
                                 it.copy(
                                     masterPassword = "",
@@ -200,14 +249,15 @@ class OnboardingViewModel(
                                     errorMessage = null,
                                 )
                             }
-                            _effect.trySend(OnboardingEffect.NavigateToSecurityExplanation)
-                        }
-                        .onFailure {
-                            showCreationError(uiText(Res.string.error_vault_setup_verify))
-                        }
+                            _effect.tryEmit(OnboardingEffect.NavigateToSecurityExplanation)
+                    } else {
+                        currentCoroutineContext().ensureActive()
+                        showCreationError(uiText(Res.string.error_vault_setup_verify))
+                    }
                 } catch (cancel: CancellationException) {
                     throw cancel
                 } catch (_: Exception) {
+                    currentCoroutineContext().ensureActive()
                     showCreationError(uiText(Res.string.error_vault_setup_finish))
                 } finally {
                     createPassword?.clear()
@@ -224,7 +274,7 @@ class OnboardingViewModel(
 
     private fun completeOnboarding() {
         clearPasswordInputs()
-        _effect.trySend(OnboardingEffect.NavigateToVault)
+        _effect.tryEmit(OnboardingEffect.NavigateToVault)
     }
 
     fun clearForLock() {
@@ -240,6 +290,9 @@ class OnboardingViewModel(
                 masterPassword = "",
                 confirmPassword = "",
                 passwordsMatch = false,
+                passwordStrength = PasswordStrength.TOO_SHORT,
+                strengthFeedback = PasswordStrength.TOO_SHORT.feedback,
+                errorMessage = null,
             )
         }
     }
@@ -255,7 +308,7 @@ class OnboardingViewModel(
         val errorMessage: UiText? = null,
     ) {
         val canContinueToConfirmation: Boolean
-            get() = masterPassword.length >= MIN_MASTER_PASSWORD_LENGTH &&
+            get() = MasterPasswordPolicy.accepts(masterPassword) &&
                 passwordStrength >= PasswordStrength.FAIR &&
                 !isLoading
 
@@ -271,7 +324,6 @@ class OnboardingViewModel(
         data object OnCreateVaultClick : OnboardingEvent
         data object OnConfirmPasswordClick : OnboardingEvent
         data object OnBackClick : OnboardingEvent
-        data object OnContinueToSecurityClick : OnboardingEvent
         data object OnCompleteSetupClick : OnboardingEvent
         data object OnGetStartedClick : OnboardingEvent
     }
@@ -287,7 +339,7 @@ class OnboardingViewModel(
     enum class PasswordStrength(
         val feedback: UiText,
     ) {
-        TOO_SHORT(uiText(Res.string.error_master_password_too_short, MIN_MASTER_PASSWORD_LENGTH)),
+        TOO_SHORT(uiText(Res.string.error_master_password_too_short, MasterPasswordPolicy.MIN_LENGTH)),
         VERY_WEAK(uiText(Res.string.feedback_master_very_weak)),
         WEAK(uiText(Res.string.feedback_master_weak)),
         FAIR(uiText(Res.string.feedback_master_fair)),
@@ -296,8 +348,4 @@ class OnboardingViewModel(
         VERY_STRONG(uiText(Res.string.feedback_master_very_strong)),
     }
 
-    private companion object {
-        const val MIN_MASTER_PASSWORD_LENGTH = 12
-        const val MAX_MASTER_PASSWORD_LENGTH = 1_024
-    }
 }

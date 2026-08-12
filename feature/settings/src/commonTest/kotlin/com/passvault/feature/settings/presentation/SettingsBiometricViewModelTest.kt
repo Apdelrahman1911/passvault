@@ -1,7 +1,14 @@
 package com.passvault.feature.settings.presentation
 
+import com.passvault.core.designsystem.generated.resources.Res
+import com.passvault.core.designsystem.generated.resources.error_master_password_mismatch
+import com.passvault.core.designsystem.generated.resources.error_master_password_too_long
+import com.passvault.core.designsystem.text.UiText
+import com.passvault.core.domain.model.MasterPasswordPolicy
+import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.domain.repository.AppSettings
 import com.passvault.core.domain.repository.AppSettingsStore
+import com.passvault.core.domain.repository.LanguagePreference
 import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricOperationResult
 import com.passvault.core.security.BiometricType
@@ -65,6 +72,16 @@ class SettingsBiometricViewModelTest {
     }
 
     @Test
+    fun `biometric capability check starts in a loading state`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+
+        assertTrue(viewModel.state.value.isBiometricLoading)
+
+        runCurrent()
+        assertFalse(viewModel.state.value.isBiometricLoading)
+    }
+
+    @Test
     fun `cancelled biometric enrollment leaves setting off without an error`() = runTest(dispatcher) {
         biometricService.setEnableResult(BiometricOperationResult.Cancelled)
         val viewModel = createViewModel()
@@ -78,14 +95,97 @@ class SettingsBiometricViewModelTest {
         assertNull(viewModel.state.value.errorMessage)
     }
 
-    private fun createViewModel(): SettingsViewModel = SettingsViewModel(
+    @Test
+    fun `supplementary characters count as one new password character`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+
+        viewModel.onEvent(
+            SettingsViewModel.SettingsEvent.OnNewPasswordChanged("🔐🔑🛡️🔒🔓🔏"),
+        )
+
+        assertEquals(SettingsViewModel.PasswordStrength.TOO_SHORT, viewModel.state.value.passwordStrength)
+        assertFalse(viewModel.state.value.canChangePassword)
+    }
+
+    @Test
+    fun `overlong new master password is not silently truncated`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+
+        viewModel.onEvent(
+            SettingsViewModel.SettingsEvent.OnNewPasswordChanged(
+                "🔐".repeat(MasterPasswordPolicy.MAX_LENGTH + 50),
+            ),
+        )
+
+        assertEquals(
+            MasterPasswordPolicy.MAX_LENGTH + 1,
+            viewModel.state.value.newPassword.codePointLength(),
+        )
+        assertEquals(
+            Res.string.error_master_password_too_long,
+            (viewModel.state.value.passwordError as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canChangePassword)
+    }
+
+    @Test
+    fun `confirmation mismatch is explained while editing`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnNewPasswordChanged(STRONG_PASSWORD))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnConfirmPasswordChanged("different-password"))
+
+        assertEquals(
+            Res.string.error_master_password_mismatch,
+            (viewModel.state.value.passwordError as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canChangePassword)
+    }
+
+    @Test
+    fun `language change updates the app state and persistent preference`() = runTest(dispatcher) {
+        val settingsStore = InMemoryAppSettingsStore()
+        val viewModel = createViewModel(settingsStore)
+        runCurrent()
+
+        viewModel.onEvent(
+            SettingsViewModel.SettingsEvent.OnLanguageChanged(SettingsViewModel.AppLanguage.ARABIC),
+        )
+        runCurrent()
+
+        assertEquals(SettingsViewModel.AppLanguage.ARABIC, viewModel.state.value.language)
+        assertEquals(LanguagePreference.ARABIC, settingsStore.settings.language)
+    }
+
+    @Test
+    fun `password inputs cannot repopulate after change starts`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnCurrentPasswordChanged("current-password"))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnNewPasswordChanged(STRONG_PASSWORD))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnConfirmPasswordChanged(STRONG_PASSWORD))
+
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnChangePasswordConfirm)
+        assertTrue(viewModel.state.value.isChangingPassword)
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnCurrentPasswordChanged("queued-secret"))
+
+        assertEquals("", viewModel.state.value.currentPassword)
+    }
+
+    private fun createViewModel(
+        settingsStore: AppSettingsStore = InMemoryAppSettingsStore(),
+    ): SettingsViewModel = SettingsViewModel(
         vaultRepository = repository,
-        appSettingsStore = InMemoryAppSettingsStore(),
+        appSettingsStore = settingsStore,
         biometricUnlockService = biometricService,
     )
 
     private class InMemoryAppSettingsStore : AppSettingsStore {
-        private var settings = AppSettings()
+        var settings = AppSettings()
+            private set
 
         override suspend fun load(): Result<AppSettings> = Result.success(settings)
 
@@ -93,5 +193,9 @@ class SettingsBiometricViewModelTest {
             this.settings = settings
             return Result.success(Unit)
         }
+    }
+
+    private companion object {
+        const val STRONG_PASSWORD = "Cedar-Lantern_92!Orbit"
     }
 }

@@ -6,24 +6,24 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
-import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialSummary
 import com.passvault.core.domain.model.PasswordHealth
-import com.passvault.core.domain.model.PasswordScore
-import com.passvault.core.domain.model.PasswordStrengthEvaluator
-import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.repository.CredentialRepository
+import com.passvault.core.domain.repository.CredentialHealthInput
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -37,13 +37,14 @@ import kotlin.time.Instant
  */
 class HealthViewModel(
     private val credentialRepository: CredentialRepository,
+    private val clock: Clock = Clock.System,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HealthState())
     val state: StateFlow<HealthState> = _state.asStateFlow()
 
-    private val _effect = Channel<HealthEffect>(Channel.BUFFERED)
-    val effect: Flow<HealthEffect> = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<HealthEffect>(extraBufferCapacity = 1)
+    val effect: Flow<HealthEffect> = _effect.asSharedFlow()
 
     private var scanJob: Job? = null
 
@@ -51,11 +52,11 @@ class HealthViewModel(
         when (event) {
             is HealthEvent.OnTabChanged -> _state.update { it.copy(selectedTab = event.tab) }
             is HealthEvent.OnCredentialClick ->
-                _effect.trySend(HealthEffect.NavigateToCredential(event.credentialId))
+                _effect.tryEmit(HealthEffect.NavigateToCredential(event.credentialId))
             is HealthEvent.OnFixWeakPasswordClick ->
-                _effect.trySend(HealthEffect.NavigateToEditCredential(event.credentialId))
+                _effect.tryEmit(HealthEffect.NavigateToEditCredential(event.credentialId))
             is HealthEvent.OnFixOldPasswordClick ->
-                _effect.trySend(HealthEffect.NavigateToEditCredential(event.credentialId))
+                _effect.tryEmit(HealthEffect.NavigateToEditCredential(event.credentialId))
             is HealthEvent.OnFixDuplicateClick ->
                 _state.update { it.copy(showingDuplicateGroup = event.group) }
             HealthEvent.OnDismissDuplicateGroup ->
@@ -63,205 +64,92 @@ class HealthViewModel(
             HealthEvent.OnRefreshScan -> loadHealthData()
             HealthEvent.OnReviewIssues -> selectFirstIssueTab()
             HealthEvent.OnCopySummary -> copyHealthSummary()
-            is HealthEvent.OnCopySummaryResult -> {
-                _state.update {
-                    it.copy(
-                        transientMessage = if (event.succeeded) {
-                            uiText(Res.string.message_health_summary_copied)
-                        } else {
-                            uiText(Res.string.error_health_summary_copy)
-                        },
-                    )
+            is HealthEvent.OnCopySummaryResult -> updateCopyResult(event.succeeded)
+            HealthEvent.OnBackClick -> {
+                if (_state.value.showingDuplicateGroup != null) {
+                    _state.update { it.copy(showingDuplicateGroup = null) }
+                } else {
+                    _effect.tryEmit(HealthEffect.NavigateBack)
                 }
             }
-            HealthEvent.OnBackClick -> _effect.trySend(HealthEffect.NavigateBack)
             HealthEvent.OnDismissMessage ->
-                _state.update { it.copy(errorMessage = null, transientMessage = null) }
+                _state.update { it.copy(transientMessage = null) }
+        }
+    }
+
+    private fun updateCopyResult(succeeded: Boolean) {
+        _state.update {
+            it.copy(
+                transientMessage = if (succeeded) {
+                    uiText(Res.string.message_health_summary_copied)
+                } else {
+                    uiText(Res.string.error_health_summary_copy)
+                },
+            )
         }
     }
 
     private fun loadHealthData() {
         scanJob?.cancel()
+        _state.update {
+            it.copy(
+                isLoading = true,
+                errorMessage = null,
+                transientMessage = null,
+                showingDuplicateGroup = null,
+            )
+        }
         scanJob = viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isLoading = true,
-                    errorMessage = null,
-                    transientMessage = null,
-                    showingDuplicateGroup = null,
-                )
-            }
-
-            val result = credentialRepository.getCredentialsForHealthAnalysis()
-            if (result.isFailure) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = uiText(Res.string.error_health_scan_locked),
-                    )
-                }
-                return@launch
-            }
-
-            val credentials = result.getOrThrow()
+            var credentials = emptyList<CredentialHealthInput>()
             try {
+                val result = credentialRepository.getCredentialsForHealthAnalysis()
+                currentCoroutineContext().ensureActive()
+                if (result.isFailure) {
+                    showScanError(Res.string.error_health_scan_locked)
+                    return@launch
+                }
+
+                credentials = result.getOrThrow()
                 val analysis = analyzePasswordHealth(credentials)
                 val summaries = credentials.map { credential ->
-                    credential.toSummary(
+                    credential.toHealthSummary(
                         analysis.healthByCredential[credential.id] ?: PasswordHealth.UNKNOWN,
                     )
                 }
-                var persistenceFailures = 0
-                analysis.healthByCredential.forEach { (id, health) ->
-                    val previous = credentials.firstOrNull { it.id == id }?.passwordHealth
-                    if (previous != health && credentialRepository.updateHealth(id, health).isFailure) {
-                        persistenceFailures += 1
-                    }
-                }
-
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        credentials = summaries,
-                        weakPasswords = analysis.weakPasswords,
-                        duplicatePasswords = analysis.duplicatePasswords,
-                        oldPasswords = analysis.oldPasswords,
-                        overallScore = analysis.overallScore,
-                        totalAnalyzed = analysis.totalAnalyzed,
-                        lastScanAt = Clock.System.now(),
-                        errorMessage = if (persistenceFailures > 0) {
-                            uiText(Res.string.error_health_save)
-                        } else {
-                            null
-                        },
-                    )
-                }
+                val persistenceFailures = persistChangedHealth(credentials, analysis.healthByCredential)
+                currentCoroutineContext().ensureActive()
+                _state.value = _state.value.withAnalysis(
+                    analysis = analysis,
+                    summaries = summaries,
+                    scannedAt = clock.now(),
+                    persistenceFailures = persistenceFailures,
+                )
             } catch (cancel: CancellationException) {
                 throw cancel
             } catch (_: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = uiText(Res.string.error_health_scan),
-                    )
-                }
+                currentCoroutineContext().ensureActive()
+                showScanError(Res.string.error_health_scan)
             } finally {
-                credentials.forEach { it.clearSensitiveValues() }
+                credentials.forEach(CredentialHealthInput::clearSensitiveHealthValues)
             }
         }
     }
 
-    internal fun analyzePasswordHealth(credentials: List<Credential>): HealthAnalysis {
-        val passwordCredentials = credentials.filter { it.password?.isNotEmpty() == true }
-        val passwordGroups = passwordCredentials.groupBy { requireNotNull(it.password) }
-        val duplicateIds = passwordGroups
-            .filterValues { it.size > 1 }
-            .values
-            .flatten()
-            .mapTo(mutableSetOf()) { it.id }
-        val now = Clock.System.now()
-        val weakPasswords = mutableListOf<WeakPasswordItem>()
-        val oldPasswords = mutableListOf<OldPasswordItem>()
-        val healthByCredential = mutableMapOf<CredentialId, PasswordHealth>()
+    internal fun analyzePasswordHealth(credentials: List<CredentialHealthInput>): HealthAnalysis =
+        buildHealthAnalysis(credentials, clock.now())
 
-        credentials.forEach { credential ->
-            val password = credential.password
-            val hasPassword = password?.isNotEmpty() == true
-            val score = if (hasPassword) calculatePasswordScore(requireNotNull(password)) else PasswordScore.UNKNOWN
-            val passwordChangedAt = credential.passwordHistory
-                .maxByOrNull { it.changedAt }
-                ?.changedAt
-                ?: credential.createdAt
-            val ageDays = if (hasPassword) {
-                (now - passwordChangedAt).inWholeDays.coerceAtLeast(0).toInt()
-            } else {
-                null
-            }
-            val isWeak = hasPassword && score in setOf(PasswordScore.VERY_WEAK, PasswordScore.WEAK)
-            val isOld = ageDays != null && ageDays >= OLD_PASSWORD_DAYS
-            val health = PasswordHealth(
-                score = score,
-                isDuplicate = credential.id in duplicateIds,
-                isWeak = isWeak,
-                isOld = isOld,
-                ageDays = ageDays,
-            )
-            healthByCredential[credential.id] = health
-
-            if (isWeak) {
-                weakPasswords += WeakPasswordItem(
-                    credentialId = credential.id,
-                    title = credential.title,
-                    username = credential.username?.mask() ?: credential.email?.mask(),
-                    reason = determineWeakness(requireNotNull(password)),
-                )
-            }
-            if (isOld) {
-                oldPasswords += OldPasswordItem(
-                    credentialId = credential.id,
-                    title = credential.title,
-                    username = credential.username?.mask() ?: credential.email?.mask(),
-                    ageDays = requireNotNull(ageDays),
-                )
-            }
-        }
-
-        val duplicatePasswords = passwordGroups.values
-            .filter { it.size > 1 }
-            .map { group ->
-                DuplicateGroup(
-                    credentials = group.map { credential ->
-                        DuplicateItem(
-                            credentialId = credential.id,
-                            title = credential.title,
-                            username = credential.username?.mask() ?: credential.email?.mask(),
-                        )
-                    }.sortedBy { it.title.lowercase() },
-                )
-            }
-            .sortedByDescending { it.credentials.size }
-        val healthyCount = passwordCredentials.count { credential ->
-            healthByCredential[credential.id]?.let { !it.isWeak && !it.isOld && !it.isDuplicate } == true
-        }
-        val overallScore = if (passwordCredentials.isEmpty()) {
-            0
-        } else {
-            (healthyCount * 100) / passwordCredentials.size
-        }
-
-        return HealthAnalysis(
-            weakPasswords = weakPasswords.sortedBy { it.title.lowercase() },
-            duplicatePasswords = duplicatePasswords,
-            oldPasswords = oldPasswords.sortedByDescending { it.ageDays },
-            overallScore = overallScore,
-            totalAnalyzed = passwordCredentials.size,
-            healthByCredential = healthByCredential,
-        )
-    }
-
-    private fun calculatePasswordScore(password: SensitiveText): PasswordScore {
-        val chars = password.expose()
-        return try {
-            PasswordStrengthEvaluator.score(chars.concatToString())
-        } finally {
-            chars.fill('\u0000')
+    private suspend fun persistChangedHealth(
+        credentials: List<CredentialHealthInput>,
+        healthByCredential: Map<CredentialId, PasswordHealth>,
+    ): Int {
+        val previousHealth = credentials.associate { it.id to it.passwordHealth }
+        return healthByCredential.count { (id, health) ->
+            previousHealth[id] != health && credentialRepository.updateHealth(id, health).isFailure
         }
     }
 
-    private fun determineWeakness(password: SensitiveText): WeakPasswordReason {
-        val chars = password.expose()
-        return try {
-            when {
-                chars.size < RECOMMENDED_MIN_PASSWORD_LENGTH -> WeakPasswordReason.TOO_SHORT
-                chars.none(Char::isLowerCase) -> WeakPasswordReason.NO_LOWERCASE
-                chars.none(Char::isUpperCase) -> WeakPasswordReason.NO_UPPERCASE
-                chars.none(Char::isDigit) -> WeakPasswordReason.NO_NUMBERS
-                chars.none { !it.isLetterOrDigit() } -> WeakPasswordReason.NO_SYMBOLS
-                else -> WeakPasswordReason.COMMON_OR_PREDICTABLE
-            }
-        } finally {
-            chars.fill('\u0000')
-        }
+    private fun showScanError(message: StringResource) {
+        _state.update { it.copy(isLoading = false, errorMessage = uiText(message)) }
     }
 
     private fun selectFirstIssueTab() {
@@ -287,33 +175,7 @@ class HealthViewModel(
             OLD_PASSWORD_DAYS,
             current.oldPasswords.size,
         )
-        _effect.trySend(HealthEffect.CopySummary(report))
-    }
-
-    private fun Credential.toSummary(health: PasswordHealth) = CredentialSummary.Decrypted(
-        id = id,
-        type = type,
-        title = title,
-        displayUsername = username?.mask() ?: email?.mask(),
-        isFavorite = isFavorite,
-        folderId = folderId,
-        tagIds = tagIds,
-        passwordHealth = health,
-        lastUsedAt = lastUsedAt,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-    )
-
-    private fun Credential.clearSensitiveValues() {
-        username?.clear()
-        email?.clear()
-        password?.clear()
-        notes?.clear()
-        recoveryCodes.forEach(SensitiveText::clear)
-        apiKeys.forEach(SensitiveText::clear)
-        licenseKeys.forEach(SensitiveText::clear)
-        customFields.forEach { it.value.clear() }
-        passwordHistory.forEach { it.password.clear() }
+        _effect.tryEmit(HealthEffect.CopySummary(report))
     }
 
     fun clearForLock() {
@@ -444,8 +306,4 @@ class HealthViewModel(
         ),
     }
 
-    private companion object {
-        const val OLD_PASSWORD_DAYS = 365
-        const val RECOMMENDED_MIN_PASSWORD_LENGTH = 12
-    }
 }

@@ -2,6 +2,7 @@ package com.passvault.core.domain.model
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -12,11 +13,13 @@ import kotlinx.serialization.encoding.Encoder
  * Sensitive text wrapper that prevents accidental logging and serialization.
  */
 @Serializable(with = SensitiveTextSerializer::class)
+@Suppress("TooManyFunctions") // Secret lifecycle, validation, and redacted value semantics belong together.
 class SensitiveText private constructor(
-    private val _value: CharArray
-)
-{
+    private val characters: CharArray,
+) {
     companion object {
+        private const val REDACTED_HASH_CODE = 0
+
         fun from(value: String): SensitiveText {
             return SensitiveText(value.toCharArray())
         }
@@ -26,7 +29,9 @@ class SensitiveText private constructor(
         }
 
         fun from(value: ByteArray): SensitiveText {
-            return SensitiveText(value.decodeToString().toCharArray())
+            return SensitiveText(
+                value.decodeToString(throwOnInvalidSequence = true).toCharArray(),
+            )
         }
     }
 
@@ -34,43 +39,57 @@ class SensitiveText private constructor(
      * Access the sensitive value. Caller is responsible for clearing when done.
      */
     fun expose(): CharArray {
-        return _value.copyOf()
+        return characters.copyOf()
     }
 
     /**
      * Get the value as a String. Use with caution - strings are immutable.
      */
     fun toStringUnsafe(): String {
-        return _value.concatToString()
+        return characters.concatToString()
     }
+
+    /**
+     * Encodes this value without replacing malformed UTF-16. The returned
+     * bytes remain sensitive and must be cleared by the caller.
+     */
+    fun toUtf8ByteArray(): ByteArray {
+        return characters.concatToString().encodeToByteArray(throwOnInvalidSequence = true)
+    }
+
+    /** Returns false when the value contains an unpaired UTF-16 surrogate. */
+    fun hasWellFormedUnicode(): Boolean = characters.hasWellFormedUnicode()
+
+    /** Returns false when this value could alter or escape a single-line label. */
+    fun hasOnlySafeSingleLineCodePoints(): Boolean = characters.hasOnlySafeSingleLineCodePoints()
 
     /**
      * Clear the sensitive data from memory.
      */
     fun clear() {
-        _value.fill('\u0000')
+        characters.fill('\u0000')
     }
 
     /**
      * Returns true if the value is empty.
      */
-    fun isEmpty(): Boolean = _value.isEmpty()
+    fun isEmpty(): Boolean = characters.isEmpty()
 
     /**
      * Returns true if the value is not empty.
      */
-    fun isNotEmpty(): Boolean = _value.isNotEmpty()
+    fun isNotEmpty(): Boolean = characters.isNotEmpty()
 
     /**
      * Length of the sensitive text.
      */
-    val length: Int get() = codePointCount(_value)
+    val length: Int get() = characters.codePointLength()
 
     /**
      * Mask the value for display (e.g., "•••••" or first/last 3 chars).
      */
     fun mask(): String {
-        val codePoints = _value.toCodePointStrings()
+        val codePoints = characters.toCodePointStrings()
         return if (codePoints.size <= 6) {
             "•".repeat(codePoints.size)
         } else {
@@ -81,17 +100,23 @@ class SensitiveText private constructor(
     /**
      * For debugging - returns redacted representation.
      */
-    override fun toString(): String = "[REDACTED: ${length} chars]"
+    override fun toString(): String = "[REDACTED]"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SensitiveText) return false
-        return _value.contentEquals(other._value)
+        if (characters.size != other.characters.size) return false
+        var difference = 0
+        characters.indices.forEach { index ->
+            difference = difference or (characters[index].code xor other.characters[index].code)
+        }
+        return difference == 0
     }
 
-    override fun hashCode(): Int {
-        return _value.contentHashCode()
-    }
+    // Do not expose a predictable plaintext-derived fingerprint through logs,
+    // metrics, hash-based debugging, or an enclosing data class. Unequal
+    // secrets may deliberately collide; equality remains the authority.
+    override fun hashCode(): Int = REDACTED_HASH_CODE
 
     protected fun finalize() {
         clear()
@@ -100,57 +125,21 @@ class SensitiveText private constructor(
 
 /**
  * Serializer that prevents accidental serialization of sensitive data.
- * Always serializes as REDACTED marker.
+ * Both directions fail closed; encrypted persistence uses dedicated DTOs.
  */
 object SensitiveTextSerializer : KSerializer<SensitiveText> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SensitiveText", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: SensitiveText) {
-        // Never serialize actual content
-        encoder.encodeString("[SENSITIVE]")
+        throw SerializationException("SensitiveText cannot be serialized. Use encrypted storage.")
     }
 
     override fun deserialize(decoder: Decoder): SensitiveText {
         // Deserializing sensitive text from storage should fail
         // Sensitive text should only be created programmatically
-        throw IllegalStateException("SensitiveText cannot be deserialized. Use encrypted storage.")
+        throw SerializationException("SensitiveText cannot be deserialized. Use encrypted storage.")
     }
-}
-
-private fun codePointCount(chars: CharArray): Int {
-    var count = 0
-    var index = 0
-    while (index < chars.size) {
-        if (chars[index].isHighSurrogate() &&
-            index + 1 < chars.size &&
-            chars[index + 1].isLowSurrogate()
-        ) {
-            index++
-        }
-        count++
-        index++
-    }
-    return count
-}
-
-private fun CharArray.toCodePointStrings(): List<String> {
-    val values = mutableListOf<String>()
-    var index = 0
-    while (index < size) {
-        val end = if (
-            this[index].isHighSurrogate() &&
-            index + 1 < size &&
-            this[index + 1].isLowSurrogate()
-        ) {
-            index + 2
-        } else {
-            index + 1
-        }
-        values += concatToString(index, end)
-        index = end
-    }
-    return values
 }
 
 /**

@@ -12,6 +12,7 @@ import androidx.room.Index
 @Entity(
     tableName = "tag_records",
     indices = [
+        Index(value = ["name_hash"]),
         Index(value = ["color"]),
         Index(value = ["created_at"]),
     ]
@@ -28,8 +29,8 @@ data class TagRecordEntity(
     val nameHash: ByteArray,
 
     /**
-     * Encrypted payload containing tag metadata.
-     * (name, description, etc.)
+     * Encrypted payload containing the name and schema-retained optional
+     * description field. The display color is stored separately below.
      */
     @ColumnInfo(name = "encrypted_payload", typeAffinity = ColumnInfo.BLOB)
     val encryptedPayload: ByteArray,

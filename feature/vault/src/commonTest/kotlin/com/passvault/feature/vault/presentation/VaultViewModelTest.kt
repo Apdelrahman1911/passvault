@@ -9,18 +9,24 @@ import com.passvault.core.domain.model.FolderId
 import com.passvault.core.domain.model.PasswordHealth
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.TagId
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.testing.TestData
 import com.passvault.core.testing.fakes.FakeCredentialRepository
 import com.passvault.core.testing.fakes.FakeFolderRepository
 import com.passvault.core.testing.fakes.FakeTagRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -86,10 +92,12 @@ class VaultViewModelTest {
             Res.string.error_vault_load,
             (viewModel.state.value.errorMessage as UiText.Resource).resource,
         )
+        assertTrue(viewModel.state.value.canRetryLoad)
 
         viewModel.onEvent(VaultViewModel.VaultEvent.OnRefresh)
         runCurrent()
         assertNull(viewModel.state.value.errorMessage)
+        assertFalse(viewModel.state.value.canRetryLoad)
     }
 
     @Test
@@ -111,9 +119,10 @@ class VaultViewModelTest {
         val viewModel = createLoadedViewModel()
 
         viewModel.onEvent(
-            VaultViewModel.VaultEvent.OnSearchQueryChanged("x".repeat(1_000)),
+            VaultViewModel.VaultEvent.OnSearchQueryChanged("🔐".repeat(1_000)),
         )
-        assertEquals(256, viewModel.state.value.searchQuery.length)
+        assertEquals(256, viewModel.state.value.searchQuery.codePointLength())
+        assertEquals("🔐".repeat(256), viewModel.state.value.searchQuery)
         assertTrue(viewModel.state.value.filteredCredentials.isEmpty())
 
         viewModel.onEvent(VaultViewModel.VaultEvent.OnSearchDismiss)
@@ -137,6 +146,27 @@ class VaultViewModelTest {
         assertNull(viewModel.state.value.selectedFolderId)
         assertEquals(TagId("tag"), viewModel.state.value.selectedTagId)
         assertEquals(listOf(CredentialId("work")), viewModel.state.value.filteredCredentials.map { it.id })
+    }
+
+    @Test
+    fun `refresh removes selections that no longer exist`() = runTest(dispatcher) {
+        val folder = TestData.folder(id = "folder", name = "Folder")
+        val tag = TestData.tag(id = "tag", name = "Tag")
+        folderRepository.setupFolders(folder)
+        tagRepository.setupTags(tag)
+        val viewModel = createLoadedViewModel()
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnFolderSelected(folder.id.value))
+        folderRepository.delete(folder.id)
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnRefresh)
+        runCurrent()
+        assertNull(viewModel.state.value.selectedFolderId)
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnTagSelected(tag.id.value))
+        tagRepository.delete(tag.id)
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnRefresh)
+        runCurrent()
+        assertNull(viewModel.state.value.selectedTagId)
     }
 
     @Test
@@ -196,7 +226,7 @@ class VaultViewModelTest {
         runCurrent()
         assertEquals(
             Res.string.error_folder_name_required,
-            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+            (viewModel.state.value.folderError as UiText.Resource).resource,
         )
 
         viewModel.onEvent(VaultViewModel.VaultEvent.OnNewFolderNameChanged(" work "))
@@ -204,7 +234,22 @@ class VaultViewModelTest {
         runCurrent()
         assertEquals(
             Res.string.error_folder_duplicate,
-            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+            (viewModel.state.value.folderError as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canCreateFolder)
+    }
+
+    @Test
+    fun `new folder name keeps complete supplementary characters at its boundary`() = runTest(dispatcher) {
+        val viewModel = createLoadedViewModel()
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnNewFolderNameChanged("🔐".repeat(300)))
+
+        assertEquals(257, viewModel.state.value.newFolderName.codePointLength())
+        assertEquals("🔐".repeat(257), viewModel.state.value.newFolderName)
+        assertEquals(
+            Res.string.error_folder_name_too_long,
+            (viewModel.state.value.folderError as UiText.Resource).resource,
         )
     }
 
@@ -282,6 +327,27 @@ class VaultViewModelTest {
     }
 
     @Test
+    fun `rapid favorite changes are persisted in user-visible order`() = runTest(dispatcher) {
+        val credential = TestData.credential(id = "one", isFavorite = false)
+        credentialRepository.setupCredentials(credential)
+        val reorderingRepository = ReorderingFavoriteRepository(credentialRepository)
+        val viewModel = VaultViewModel(reorderingRepository, folderRepository, tagRepository)
+        runCurrent()
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnCredentialFavoriteClick(credential.id))
+        runCurrent()
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnCredentialFavoriteClick(credential.id))
+        runCurrent()
+        advanceTimeBy(110)
+        runCurrent()
+
+        assertFalse(viewModel.state.value.credentials.single().isFavorite)
+        assertFalse(
+            credentialRepository.getAllSummaries().getOrThrow().single().isFavorite,
+        )
+    }
+
+    @Test
     fun `navigation events emit explicit one shot effects`() = runTest(dispatcher) {
         val viewModel = createLoadedViewModel()
 
@@ -294,6 +360,30 @@ class VaultViewModelTest {
 
             viewModel.onEvent(VaultViewModel.VaultEvent.OnLockClick)
             assertIs<VaultViewModel.VaultEffect.LockVault>(awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `failed lock request remains unlocked and surfaces a retryable error`() = runTest(dispatcher) {
+        val viewModel = createLoadedViewModel()
+
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnLockFailed)
+
+        assertEquals(
+            Res.string.error_settings_lock,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canRetryLoad)
+    }
+
+    @Test
+    fun `navigation effects are not replayed to a later screen`() = runTest(dispatcher) {
+        val viewModel = createLoadedViewModel()
+        viewModel.onEvent(VaultViewModel.VaultEvent.OnSettingsClick)
+
+        viewModel.effect.test {
+            expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -319,5 +409,18 @@ class VaultViewModelTest {
         val viewModel = createViewModel()
         dispatcher.scheduler.runCurrent()
         return viewModel
+    }
+}
+
+private class ReorderingFavoriteRepository(
+    private val delegate: FakeCredentialRepository,
+) : CredentialRepository by delegate {
+    override suspend fun updateFavorite(id: CredentialId, isFavorite: Boolean): Result<Unit> {
+        if (isFavorite) {
+            withContext(NonCancellable) { delay(100) }
+        } else {
+            delay(10)
+        }
+        return delegate.updateFavorite(id, isFavorite)
     }
 }

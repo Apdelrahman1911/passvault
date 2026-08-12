@@ -11,7 +11,8 @@ must not be interpreted as proof that version 1.0.0 was publicly shipped or inde
   data.
 - Added Argon2id metadata bounds, purpose-separated keyed-BLAKE2b subkeys, encrypted folder/tag/title blind indexes,
   cancellation safety, and best-effort key/buffer wiping.
-- Made Desktop keyring behavior fail closed and removed the incomplete biometric UI, dependencies, and adapters.
+- Removed the unused Desktop keyring prototype and replaced the incomplete mobile biometric prototype with Android
+  auth-per-use Keystore wrapping and iOS device-only, enrollment-bound Keychain storage.
 - Added clipboard ownership-aware expiration and Android screenshot protection.
 - Added encrypted raw-database integration tests, wrong-key/tamper/nonce tests, and sensitive-error assertions.
 
@@ -38,12 +39,13 @@ must not be interpreted as proof that version 1.0.0 was publicly shipped or inde
 - Added committed SHA-256 Gradle dependency verification metadata.
 - Corrected Android flavor task paths, release-version propagation, Android signing gates, and unsigned Desktop
   artifact handling in CI.
-- Removed unsupported cloud, CSV, attachment-file, biometric-unlock, certification, and support-contact claims.
+- Removed unsupported cloud, CSV, attachment-file, certification, and support-contact claims; documented the
+  implemented opt-in mobile biometric boundary without claiming physical-device assurance.
 
 ### Known release gates
 
 - Android device/emulator UI and lifecycle verification.
 - Desktop graphical smoke testing and publisher signing.
-- macOS-hosted iOS verification.
+- Physical iOS/Android biometric and lifecycle verification.
 - A previous-release schema fixture before database migration testing can exist.
 - Independent security review and publisher-provided license/contact/distribution metadata.

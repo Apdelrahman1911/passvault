@@ -1,6 +1,6 @@
 # Architecture
 
-Last reviewed: 2026-08-05
+Last reviewed: 2026-08-11
 
 PassVault is a local-only Kotlin Multiplatform application with Android, JVM Desktop, and SwiftUI-hosted iOS targets.
 The iOS target embeds the shared Compose framework and has protected store archive/upload automation; publisher
@@ -18,13 +18,13 @@ credentials and physical-device release evidence remain external gates.
 | `core:crypto` | libsodium-backed Argon2id, XChaCha20-Poly1305, random data, constant-time comparison, and subkey derivation |
 | `core:otp` | Strict TOTP setup parsing and RFC 6238 code generation for SHA-1, SHA-256, and SHA-512 |
 | `core:database` | Room schema/DAOs, encrypted repositories, vault session, and versioned backup service |
-| `core:security` | Platform-neutral biometric, clipboard, screenshot/window, and keyring boundaries |
+| `core:security` | Biometric, clipboard, screenshot, and Desktop window-protection boundaries |
 | `core:designsystem` | Semantic theme tokens and reusable responsive/feedback/form controls |
 | `core:navigation` | Serializable route keys and app-command dispatcher |
 | `core:testing` | Deterministic fakes and shared test data only |
 | `feature:*` | Onboarding, unlock, vault, credential, generator, health, settings, and backup UI/state |
 
-`core:data` contains cross-platform repository contract tests. Production implementations live in `core:database`
+Cross-platform fake-repository contract tests live in `core:testing`. Production implementations live in `core:database`
 because their responsibilities include both Room transactions and the application encryption boundary.
 
 ## Dependency and data flow
@@ -63,6 +63,13 @@ ViewModels are application-scoped Koin singletons because the shared host coordi
 Sensitive feature state is explicitly cleared on lock/route exit. Changing this lifetime requires route-scoped
 handoff design, not merely replacing `single` with `factory`.
 
+Native Android, iOS, and Desktop privacy surfaces coordinate with shared Compose through a monotonic
+`VaultUiSecurityCoordinator` epoch. During a lock/security episode, a platform reveals or restores content only
+after its serialized repository lock and clipboard cleanup succeed, shared singleton state and guarded navigation
+are scrubbed for that exact epoch, and an additional rendered frame has elapsed. A failed lock, cancelled job, stale
+acknowledgement, or acknowledgement timeout keeps the native surface concealed and leaves a later lifecycle/user
+retry armed.
+
 Biometric enrollment is an explicit unlocked-vault action. `DefaultBiometricUnlockService` copies the active VEK to
 the platform `BiometricKeyStore`; Android encrypts it with an auth-per-use Keystore key, while iOS stores it as a
 device-only Keychain item bound to the current biometric set. On biometric unlock, the repository authenticates its
@@ -71,7 +78,8 @@ fallback and is never stored for biometric use.
 
 ## Persistence boundary
 
-Room schema version is 1 and schema export is enabled. Record payloads are encrypted before DAO writes; the database
+Room schema version is 3 and schema export is enabled. Explicit non-destructive migrations cover every exported
+version starting at version 1. Record payloads are encrypted before DAO writes; the database
 file itself is not SQLCipher. Identifiers, record types, timestamps, favorites, relationships, and selected visual or
 attachment metadata remain structural plaintext. See [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) and
 [SECURITY_MODEL.md](SECURITY_MODEL.md).
@@ -84,5 +92,7 @@ and constrain readable/form widths instead of stretching a phone layout across a
 
 ## Deliberate non-features
 
-There is no cloud/account/network service, Desktop biometric unlock, plaintext/CSV export, attachment-file pipeline,
-or production iOS host. Reserved attachment metadata remains in schema version 1 for format preservation only.
+There is no cloud/account/network service, Desktop biometric unlock, or plaintext/CSV export. Attachment contents
+use independently authenticated, app-private encrypted objects outside Room; Room retains encrypted filenames and
+transaction/recovery metadata. Versioned encrypted backups include both managed attachment metadata and object
+contents while retaining read compatibility with legacy version-1 backups that omitted them.

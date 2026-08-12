@@ -36,17 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.components.EditorialIconTile
 import com.passvault.core.designsystem.components.EditorialPanel
-import com.passvault.core.designsystem.generated.resources.Res
-import com.passvault.core.designsystem.generated.resources.ui_a_calm_local_first_password_manager_for_credentials_no
-import com.passvault.core.designsystem.generated.resources.ui_create_an_independent_encrypted_backup_before_moving_d
-import com.passvault.core.designsystem.generated.resources.ui_encrypted_backups
-import com.passvault.core.designsystem.generated.resources.ui_encrypted_vault
-import com.passvault.core.designsystem.generated.resources.ui_get_started
-import com.passvault.core.designsystem.generated.resources.ui_master_password_protection
-import com.passvault.core.designsystem.generated.resources.ui_passvault
-import com.passvault.core.designsystem.generated.resources.ui_vault_records_are_authenticated_and_encrypted_before_t
-import com.passvault.core.designsystem.generated.resources.ui_welcome_to_passvault
-import com.passvault.core.designsystem.generated.resources.ui_your_master_password_is_used_to_unlock_the_vault_key_a
+import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
@@ -55,7 +45,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WelcomeScreen(
-    state: OnboardingViewModel.OnboardingState,
     onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -83,15 +72,14 @@ fun WelcomeScreen(
                 if (expanded) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .widthIn(max = ComponentSpacing.contentMaxWidth)
+                            .fillMaxWidth()
                             .heightIn(min = 680.dp)
                             .padding(vertical = Spacing.lg),
                         horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
                     ) {
                         WelcomeHero(Modifier.weight(1.12f))
                         WelcomeDetails(
-                            state = state,
                             onEvent = onEvent,
                             modifier = Modifier.weight(0.88f),
                         )
@@ -99,14 +87,13 @@ fun WelcomeScreen(
                 } else {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .widthIn(max = 640.dp)
+                            .fillMaxWidth()
                             .padding(vertical = Spacing.sm),
                         verticalArrangement = Arrangement.spacedBy(Spacing.smMd),
                     ) {
                         WelcomeHero(compact = true)
                         WelcomeDetails(
-                            state = state,
                             onEvent = onEvent,
                             compact = true,
                         )
@@ -174,17 +161,15 @@ private fun WelcomeHero(
 
 @Composable
 private fun WelcomeDetails(
-    state: OnboardingViewModel.OnboardingState,
     onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false,
 ) {
-    WelcomeDetailsContent(state, onEvent, modifier, compact)
+    WelcomeDetailsContent(onEvent, modifier, compact)
 }
 
 @Composable
 private fun WelcomeDetailsContent(
-    @Suppress("UNUSED_PARAMETER") state: OnboardingViewModel.OnboardingState,
     onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
     modifier: Modifier,
     compact: Boolean,

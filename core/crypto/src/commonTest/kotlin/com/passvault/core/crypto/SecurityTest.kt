@@ -1,7 +1,12 @@
 package com.passvault.core.crypto
 
 import kotlinx.coroutines.test.runTest
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.time.TimeSource
 
 /**
@@ -85,6 +90,53 @@ class SecurityTest {
             encrypted1.nonce.contentEquals(encrypted2.nonce),
             "Nonces should be different"
         )
+    }
+
+    @Test
+    fun `production encryption owns outputs without mutating caller buffers`() = runTest {
+        val plaintext = "secret message".encodeToByteArray()
+        val key = ByteArray(32) { it.toByte() }
+        val associatedData = "record:test".encodeToByteArray()
+        val expectedPlaintext = plaintext.copyOf()
+        val expectedKey = key.copyOf()
+        val expectedAssociatedData = associatedData.copyOf()
+        var encrypted: EncryptedData? = null
+        var decrypted: ByteArray? = null
+        try {
+            val encryptedResult = cryptoEngine.encrypt(plaintext, key, associatedData).getOrThrow()
+            encrypted = encryptedResult
+            assertContentEquals(expectedPlaintext, plaintext)
+            assertContentEquals(expectedKey, key)
+            assertContentEquals(expectedAssociatedData, associatedData)
+
+            val expectedCiphertext = encryptedResult.ciphertext.copyOf()
+            val expectedNonce = encryptedResult.nonce.copyOf()
+            try {
+                val decryptedResult = cryptoEngine.decrypt(
+                    encryptedResult.ciphertext,
+                    encryptedResult.nonce,
+                    key,
+                    associatedData,
+                )
+                    .getOrThrow()
+                decrypted = decryptedResult
+                assertContentEquals(expectedPlaintext, decryptedResult)
+                assertContentEquals(expectedCiphertext, encryptedResult.ciphertext)
+                assertContentEquals(expectedNonce, encryptedResult.nonce)
+            } finally {
+                expectedCiphertext.fill(0)
+                expectedNonce.fill(0)
+            }
+        } finally {
+            plaintext.fill(0)
+            key.fill(0)
+            associatedData.fill(0)
+            expectedPlaintext.fill(0)
+            expectedKey.fill(0)
+            expectedAssociatedData.fill(0)
+            encrypted?.clear()
+            decrypted?.fill(0)
+        }
     }
 
     @Test

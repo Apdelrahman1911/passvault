@@ -23,10 +23,9 @@ The source manifest requests:
 - `HIDE_OVERLAY_WINDOWS`, for supported sensitive-screen protection.
 
 The final merged Standard release also contains `USE_FINGERPRINT` from AndroidX
-Biometric for legacy compatibility, `ACCESS_NETWORK_STATE` from AndroidX Media3,
-and AndroidX Core’s app-specific, signature-protected
-`DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. Connectivity state alone cannot send
-data: the release still has no `INTERNET` permission or application network
+Biometric for legacy compatibility and AndroidX Core’s app-specific,
+signature-protected `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. The release has
+no `INTERNET` or `ACCESS_NETWORK_STATE` permission and no application network
 client. It does not request Advertising ID, location, contacts, broad storage,
 media, microphone, phone, notification, exact-alarm, accessibility, VPN, or
 billing permissions.

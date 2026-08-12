@@ -23,6 +23,11 @@ comments:
 
 complexity:
   active: true
+  # Private helpers are the preferred way to decompose state owners and UI
+  # coordinators. Keep the strict 11-function limit on their public API while
+  # allowing cohesive private implementation steps to remain named and small.
+  TooManyFunctions:
+    ignorePrivate: true
 
 coroutines:
   active: true
@@ -35,6 +40,11 @@ exceptions:
 
 naming:
   active: true
+  FunctionNaming:
+    ignoreAnnotated:
+      - Composable
+    excludes:
+      - '**/src/*Test/**'
 
 performance:
   active: true
@@ -44,6 +54,9 @@ potential-bugs:
 
 style:
   active: true
+  WildcardImport:
+    excludeImports:
+      - 'com.passvault.core.designsystem.generated.resources.*'
   MagicNumber:
     active: false
   MaxLineLength:

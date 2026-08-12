@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 if [[ "$(uname -s)" != "Darwin" ]]; then
     echo "Exported iOS artifact verification requires macOS." >&2
     exit 1
@@ -20,6 +22,15 @@ expected_profile_uuid="$5"
 expected_version="$6"
 expected_build="$7"
 link_map="$8"
+
+case "${EXPORT_COMPLIANCE_STATUS:-}" in
+    EXEMPT_APPROVED) expected_encryption=false ;;
+    NON_EXEMPT_APPROVED) expected_encryption=true ;;
+    *)
+        echo "Approved export compliance is required for artifact verification." >&2
+        exit 1
+        ;;
+esac
 
 archive_app="$archive_path/Products/Applications/PassVault.app"
 if [[ ! -d "$archive_app" || ! -f "$ipa_path" || ! -f "$link_map" ]]; then
@@ -56,7 +67,9 @@ verify_app() {
     local profile_plist="$verification_root/$label-profile.plist"
     local entitlements="$verification_root/$label-entitlements.plist"
     local bundle version build encryption profile_uuid team application_identifier
+    local get_task_allow beta_reports profile_expiration profile_expiration_epoch
 
+    "$repository_root/scripts/verify-legal-notice-bundle.sh" "$app" >/dev/null
     codesign --verify --deep --strict --verbose=2 "$app" >/dev/null 2>&1
     bundle="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$plist")"
     version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")"
@@ -65,7 +78,7 @@ verify_app() {
     [[ "$bundle" == "$expected_bundle" ]]
     [[ "$version" == "$expected_version" ]]
     [[ "$build" == "$expected_build" ]]
-    [[ "$encryption" == false ]]
+    [[ "$encryption" == "$expected_encryption" ]]
     if /usr/libexec/PlistBuddy -c 'Print :ITSEncryptionExportComplianceCode' \
         "$plist" >/dev/null 2>&1; then
         echo "$label contains an unexpected export-compliance code." >&2
@@ -75,6 +88,22 @@ verify_app() {
     security cms -D -i "$embedded_profile" > "$profile_plist"
     profile_uuid="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$profile_plist")"
     [[ "$profile_uuid" == "$expected_profile_uuid" ]]
+    get_task_allow="$(/usr/libexec/PlistBuddy -c \
+        'Print :Entitlements:get-task-allow' "$profile_plist")"
+    beta_reports="$(/usr/libexec/PlistBuddy -c \
+        'Print :Entitlements:beta-reports-active' "$profile_plist")"
+    profile_expiration="$(sed -n '/<key>ExpirationDate<\/key>/{n;s/.*<date>\(.*\)<\/date>.*/\1/p;}' \
+        "$profile_plist")"
+    profile_expiration_epoch="$(date -j -u -f '%Y-%m-%dT%H:%M:%SZ' \
+        "$profile_expiration" '+%s' 2>/dev/null || true)"
+    if [[ "$get_task_allow" != false || "$beta_reports" != true ||
+        -z "$profile_expiration_epoch" || "$profile_expiration_epoch" -le "$(date -u '+%s')" ]] ||
+       /usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' "$profile_plist" >/dev/null 2>&1 ||
+       [[ "$(/usr/libexec/PlistBuddy -c 'Print :ProvisionsAllDevices' \
+           "$profile_plist" 2>/dev/null || true)" == true ]]; then
+        echo "$label does not contain a current App Store distribution profile." >&2
+        exit 1
+    fi
 
     codesign -d --entitlements :- "$app" > "$entitlements" 2>/dev/null
     team="$(/usr/libexec/PlistBuddy -c 'Print :com.apple.developer.team-identifier' "$entitlements")"
@@ -133,7 +162,7 @@ printf 'TEAM_ID=%s\n' "$expected_team"
 printf 'PROFILE_UUID=%s\n' "$expected_profile_uuid"
 printf 'SIGNING_CERTIFICATE_SHA1=%s\n' "$(<"$verification_root/ipa-sha1")"
 printf 'SIGNING_CERTIFICATE_SHA256=%s\n' "$(<"$verification_root/ipa-sha256")"
-printf 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=false\n'
+printf 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s\n' "$expected_encryption"
 printf 'EXPORT_COMPLIANCE_CODE=ABSENT\n'
 printf 'MACHO_UUID_MATCH=PASS\n'
 printf 'LIBSODIUM_IMPLEMENTATION=PRESENT_IN_VERIFIED_ARCHIVE\n'

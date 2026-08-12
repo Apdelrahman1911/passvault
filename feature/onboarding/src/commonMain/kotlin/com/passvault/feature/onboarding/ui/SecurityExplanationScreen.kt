@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,6 +53,7 @@ import com.passvault.feature.onboarding.presentation.OnboardingViewModel
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityExplanationScreen(
+    canNavigateBack: Boolean,
     onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -60,15 +62,15 @@ fun SecurityExplanationScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            onEvent(OnboardingViewModel.OnboardingEvent.OnBackClick)
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.ui_go_back),
-                        )
+                    if (canNavigateBack) {
+                        IconButton(
+                            onClick = { onEvent(OnboardingViewModel.OnboardingEvent.OnBackClick) },
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.ui_go_back),
+                            )
+                        }
                     }
                 },
                 colors = passVaultTopAppBarColors(),
@@ -77,17 +79,32 @@ fun SecurityExplanationScreen(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
+        SecurityExplanationContent(
+            onContinue = {
+                onEvent(OnboardingViewModel.OnboardingEvent.OnCompleteSetupClick)
+            },
+            modifier = Modifier.scaffoldVerticalScroll(rememberScrollState(), paddingValues),
+        )
+    }
+}
+
+@Composable
+private fun SecurityExplanationContent(
+    onContinue: () -> Unit,
+    modifier: Modifier,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize().imePadding(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
-                .imePadding()
+            modifier = modifier
+                .widthIn(max = ComponentSpacing.formMaxWidth)
+                .fillMaxWidth()
                 .padding(
                     horizontal = ComponentSpacing.screenHorizontal,
                     vertical = ComponentSpacing.screenVertical,
-                )
-                .widthIn(max = ComponentSpacing.formMaxWidth)
-                .fillMaxWidth(),
+                ),
             verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
         ) {
             EditorialPageHeader(
@@ -97,33 +114,7 @@ fun SecurityExplanationScreen(
                     Res.string.ui_a_few_practical_details_help_you_use_a_password_manage,
                 ),
             )
-
-            EditorialPanel(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(Spacing.lg),
-            ) {
-                SecurityFeatureCard(
-                    icon = Icons.Default.Key,
-                    title = stringResource(Res.string.ui_your_master_password_stays_local),
-                    description = stringResource(Res.string.ui_it_is_used_on_this_device_to_unlock_the_vault_passvaul),
-                )
-                SecurityFeatureCard(
-                    icon = Icons.Default.Lock,
-                    title = stringResource(Res.string.ui_authenticated_encryption),
-                    description = stringResource(Res.string.ui_vault_records_use_xchacha20_poly1305_with_argon2id_key),
-                )
-                SecurityFeatureCard(
-                    icon = Icons.Default.CloudOff,
-                    title = stringResource(Res.string.ui_local_first_storage),
-                    description = stringResource(Res.string.ui_your_vault_remains_on_this_device_unless_you_explicitl),
-                )
-                SecurityFeatureCard(
-                    icon = Icons.Default.Timer,
-                    title = stringResource(Res.string.ui_auto_lock_protection),
-                    description = stringResource(Res.string.ui_the_configured_inactivity_timer_and_explicit_lock_acti),
-                )
-            }
-
+            SecurityFeaturesPanel()
             EditorialStatusBanner(
                 icon = Icons.Default.Warning,
                 title = stringResource(Res.string.ui_remember_your_password),
@@ -133,18 +124,53 @@ fun SecurityExplanationScreen(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
             )
-
             Button(
-                onClick = {
-                    onEvent(OnboardingViewModel.OnboardingEvent.OnCompleteSetupClick)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
             ) {
-                Text(stringResource(Res.string.ui_continue), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(Res.string.ui_continue),
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun SecurityFeaturesPanel() {
+    EditorialPanel(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(Spacing.lg),
+    ) {
+        SecurityFeatureCard(
+            icon = Icons.Default.Key,
+            title = stringResource(Res.string.ui_your_master_password_stays_local),
+            description = stringResource(
+                Res.string.ui_it_is_used_on_this_device_to_unlock_the_vault_passvaul,
+            ),
+        )
+        SecurityFeatureCard(
+            icon = Icons.Default.Lock,
+            title = stringResource(Res.string.ui_authenticated_encryption),
+            description = stringResource(
+                Res.string.ui_vault_records_use_xchacha20_poly1305_with_argon2id_key,
+            ),
+        )
+        SecurityFeatureCard(
+            icon = Icons.Default.CloudOff,
+            title = stringResource(Res.string.ui_local_first_storage),
+            description = stringResource(
+                Res.string.ui_your_vault_remains_on_this_device_unless_you_explicitl,
+            ),
+        )
+        SecurityFeatureCard(
+            icon = Icons.Default.Timer,
+            title = stringResource(Res.string.ui_auto_lock_protection),
+            description = stringResource(
+                Res.string.ui_the_configured_inactivity_timer_and_explicit_lock_acti,
+            ),
+        )
     }
 }
 

@@ -1,6 +1,5 @@
 package com.passvault.desktop.di
 
-import com.passvault.core.security.WindowProtection
 import com.passvault.desktop.security.DesktopWindowProtection
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -16,14 +15,14 @@ class DesktopModuleTest {
     }
 
     @Test
-    fun `window protection resolves by concrete and shared types`() {
+    fun `window protection is a singleton`() {
         val koin = startKoin {
             modules(desktopModule)
         }.koin
 
-        val concrete = koin.get<DesktopWindowProtection>()
-        val shared = koin.get<WindowProtection>()
+        val first = koin.get<DesktopWindowProtection>()
+        val second = koin.get<DesktopWindowProtection>()
 
-        assertSame(concrete, shared)
+        assertSame(first, second)
     }
 }

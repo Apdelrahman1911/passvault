@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -35,7 +34,6 @@ kotlin {
                 implementation(project(":core:domain"))
                 implementation(project(":core:security"))
                 implementation(project(":core:designsystem"))
-                implementation(project(":core:navigation"))
 
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
@@ -43,23 +41,14 @@ kotlin {
                 implementation(libs.compose.components.resources)
                 implementation(libs.compose.ui)
 
-                implementation(libs.koin.core)
-                implementation(libs.koin.compose)
-                implementation(libs.koin.viewmodel)
-
                 implementation(libs.lifecycle.viewmodel)
-                implementation(libs.lifecycle.viewmodel.compose)
             }
         }
-
-        val androidMain = getByName("androidMain")
-        val desktopMain = getByName("desktopMain")
 
         val commonTest = getByName("commonTest") {
             dependencies {
                 implementation(project(":core:testing"))
                 implementation(libs.kotlin.test)
-                implementation(libs.assertk)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.turbine)
             }

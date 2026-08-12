@@ -1,18 +1,19 @@
 # Local vault format
 
-Last reviewed: 2026-08-03
+Last reviewed: 2026-08-11
 
 This document describes the live local-vault format. It is not a claim that a standalone protobuf or portable
 directory format exists.
 
 ## Container
 
-The local vault is a Room/SQLite database at the platform-managed application path. Database schema version 1 stores
+The local vault is a Room/SQLite database at the platform-managed application path. Database schema version 3 stores
 structural metadata and application-encrypted records. The SQLite file itself is not SQLCipher-encrypted.
 
 The application-level vault format starts at version 1. Saving the first credential with a TOTP authenticator
 atomically raises the metadata marker to version 2; it is never lowered. This reader accepts versions 1 and 2. The
-Room schema remains version 1 because the added fields live inside the existing encrypted credential payload.
+TOTP fields remain inside the encrypted credential payload. Room versions 2 and 3 independently add justified
+blind-index lookup indexes and attachment object state/version columns through explicit non-destructive migrations.
 
 ## Key material
 
@@ -45,7 +46,7 @@ deterministic and reveal equality for the same normalized value within one vault
 ## Visible metadata
 
 Database theft can reveal row counts, identifiers, credential types, favorites, timestamps, relationships, folder
-hierarchy IDs, visual colors/icons, and reserved attachment MIME/size/path metadata. It must not reveal credential
+hierarchy IDs, visual colors/icons, and attachment MIME/size/opaque-path metadata. It must not reveal credential
 titles, usernames, URLs, passwords, notes, custom-field values, tag/folder names, history passwords, or attachment
 filenames or TOTP setup keys from protected payloads.
 
@@ -53,4 +54,5 @@ filenames or TOTP setup keys from protected payloads.
 
 The portable format is the separately encrypted `.pvault` container documented in
 [BACKUP_FORMAT.md](BACKUP_FORMAT.md). Copying the live database is not a supported backup protocol. Attachment file
-bytes are not supported by either the application or backup format.
+bytes live as independently authenticated encrypted app-private objects outside Room and are included by format-2
+backups.

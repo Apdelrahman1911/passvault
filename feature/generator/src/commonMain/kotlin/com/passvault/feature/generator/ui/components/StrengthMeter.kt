@@ -6,9 +6,20 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,7 +32,18 @@ fun StrengthMeter(
     passwordLength: Int,
     modifier: Modifier = Modifier,
 ) {
-    val presentation = when (strength) {
+    StrengthMeterCard(
+        presentation = strengthPresentation(strength),
+        passwordLength = passwordLength,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun strengthPresentation(
+    strength: GeneratorViewModel.PasswordStrength,
+): StrengthPresentation =
+    when (strength) {
         GeneratorViewModel.PasswordStrength.WEAK ->
             StrengthPresentation(
                 stringResource(Res.string.password_strength_weak),
@@ -58,8 +80,13 @@ fun StrengthMeter(
                 stringResource(Res.string.ui_this_password_is_extremely_secure),
             )
     }
-    val (label, color, progress, description) = presentation
 
+@Composable
+private fun StrengthMeterCard(
+    presentation: StrengthPresentation,
+    passwordLength: Int,
+    modifier: Modifier = Modifier,
+) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -70,34 +97,14 @@ fun StrengthMeter(
         shape = MaterialTheme.shapes.large,
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(Res.string.ui_password_strength),
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Surface(
-                    color = color.copy(alpha = 0.2f),
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = color,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-            }
+            StrengthHeader(presentation)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             LinearProgressIndicator(
-                progress = { progress },
+                progress = { presentation.progress },
                 modifier = Modifier.fillMaxWidth(),
-                color = color,
+                color = presentation.color,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant
             )
 
@@ -107,11 +114,36 @@ fun StrengthMeter(
                 text = pluralStringResource(
                     Res.plurals.ui_strength_character_count,
                     passwordLength,
-                    description,
+                    presentation.description,
                     passwordLength,
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun StrengthHeader(presentation: StrengthPresentation) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(Res.string.ui_password_strength),
+            style = MaterialTheme.typography.labelMedium,
+        )
+        Surface(
+            color = presentation.color.copy(alpha = 0.2f),
+            shape = MaterialTheme.shapes.small,
+        ) {
+            Text(
+                text = presentation.label,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             )
         }
     }

@@ -3,16 +3,9 @@ package com.passvault.android
 import android.app.Application
 import android.os.StrictMode
 import com.passvault.android.di.androidModule
+import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
 import com.passvault.android.security.AndroidScreenshotProtection
-import com.passvault.core.domain.repository.VaultRepository
-import com.passvault.core.navigation.AppCommand
-import com.passvault.core.navigation.AppCommandDispatcher
 import com.passvault.shared.di.AppModule
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -28,21 +21,20 @@ import org.koin.core.logger.Level
  */
 class PassVaultApplication : Application() {
     private val screenshotProtection: AndroidScreenshotProtection by inject()
-    private val vaultRepository: VaultRepository by inject()
-    private val commandDispatcher: AppCommandDispatcher by inject()
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val lifecycleLockCoordinator: AndroidLifecycleLockCoordinator by inject()
 
     override fun onCreate() {
         super.onCreate()
         initializeKoin()
         configureDebugStrictMode()
         if (!BuildConfig.STORE_SCREENSHOT_MODE) {
-            applicationScope.launch {
-                screenshotProtection.enableProtection()
-            }
+            // Window flags are a main-thread UI boundary. Enable the singleton
+            // synchronously before the first Activity can register itself.
+            screenshotProtection.enableProtection()
         }
     }
 
+    @Suppress("DEPRECATION") // Keep foreground pressure signals on pre-Android 14 devices.
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         if (
@@ -61,17 +53,15 @@ class PassVaultApplication : Application() {
     }
 
     override fun onTerminate() {
-        screenshotProtection.clearAll()
-        applicationScope.cancel()
+        // Do not remove FLAG_SECURE from any retiring Activity. Android only
+        // calls this hook in emulated process environments, and clearing the
+        // flag can expose the final native window buffer before destruction.
         super.onTerminate()
     }
 
     private fun lockAndReleaseSensitiveResources() {
-        commandDispatcher.dispatch(AppCommand.LOCK)
         screenshotProtection.cleanup()
-        applicationScope.launch {
-            vaultRepository.lock()
-        }
+        lifecycleLockCoordinator.onMemoryPressure()
     }
 
     private fun initializeKoin() {

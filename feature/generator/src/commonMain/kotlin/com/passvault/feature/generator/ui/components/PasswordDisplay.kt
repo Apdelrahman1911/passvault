@@ -4,37 +4,56 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PasswordDisplay(
     password: String,
+    isGenerating: Boolean,
     onCopy: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showPassword by remember { mutableStateOf(false) }
-    var showCopied by remember { mutableStateOf(false) }
-
-    LaunchedEffect(showCopied) {
-        if (showCopied) {
-            kotlinx.coroutines.delay(2000)
-            showCopied = false
-        }
+    LaunchedEffect(password) {
+        showPassword = false
     }
-    LaunchedEffect(showPassword, password) {
+    LaunchedEffect(showPassword) {
         if (showPassword) {
             kotlinx.coroutines.delay(15_000)
             showPassword = false
@@ -48,110 +67,126 @@ fun PasswordDisplay(
         shape = MaterialTheme.shapes.extraLarge,
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            // Password text
-            Box(
+            PasswordValue(
+                password = password,
+                visible = showPassword,
+                isGenerating = isGenerating,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            PasswordActions(
+                passwordAvailable = password.isNotEmpty(),
+                passwordVisible = showPassword,
+                isGenerating = isGenerating,
+                onCopy = onCopy,
+                onVisibilityChange = { showPassword = !showPassword },
+                onRefresh = onRefresh,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PasswordValue(
+    password: String,
+    visible: Boolean,
+    isGenerating: Boolean,
+) {
+    val hiddenDescription = stringResource(Res.string.secure_field_password_hidden)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 60.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (isGenerating) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(28.dp),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Text(
+                text = when {
+                    visible -> password
+                    password.isEmpty() -> ""
+                    else -> "\u2022".repeat(12)
+                },
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.inverseOnSurface,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 60.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (showPassword) password else "\u2022".repeat(password.length.coerceAtLeast(12)),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.inverseOnSurface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Action buttons
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                maxItemsInEachRow = 2,
-            ) {
-                // Copy button
-                FilledTonalButton(
-                    onClick = {
-                        onCopy()
-                        showCopied = true
-                    },
-                    enabled = password.isNotEmpty(),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ContentCopy,
-                        contentDescription = stringResource(Res.string.action_copy),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(Res.string.action_copy))
-                }
-
-                // Toggle visibility
-                FilledTonalButton(
-                    onClick = { showPassword = !showPassword },
-                    enabled = password.isNotEmpty(),
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = if (showPassword) {
-                            Icons.Default.VisibilityOff
+                    .then(
+                        if (visible || password.isEmpty()) {
+                            Modifier
                         } else {
-                            Icons.Default.Visibility
+                            Modifier.clearAndSetSemantics { contentDescription = hiddenDescription }
                         },
-                        contentDescription = if (showPassword) stringResource(Res.string.action_hide) else stringResource(Res.string.action_show),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (showPassword) stringResource(Res.string.action_hide) else stringResource(Res.string.action_show))
-                }
+                    ),
+            )
+        }
+    }
+}
 
-                // Regenerate
-                FilledTonalButton(
-                    onClick = onRefresh,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = stringResource(Res.string.ui_regenerate),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(Res.string.ui_new))
-                }
-            }
-
-            // Copied indicator
-            AnimatedVisibility(
-                visible = showCopied,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.inversePrimary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(Res.string.action_copy_success),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.inversePrimary,
-                    )
-                }
-            }
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PasswordActions(
+    passwordAvailable: Boolean,
+    passwordVisible: Boolean,
+    isGenerating: Boolean,
+    onCopy: () -> Unit,
+    onVisibilityChange: () -> Unit,
+    onRefresh: () -> Unit,
+) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        maxItemsInEachRow = 2,
+    ) {
+        FilledTonalButton(
+            onClick = onCopy,
+            enabled = passwordAvailable,
+            modifier = Modifier.weight(1f),
+        ) {
+            Icon(
+                imageVector = Icons.Default.ContentCopy,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(Res.string.action_copy))
+        }
+        FilledTonalButton(
+            onClick = onVisibilityChange,
+            enabled = passwordAvailable,
+            modifier = Modifier.weight(1f),
+        ) {
+            val action = if (passwordVisible) Res.string.action_hide else Res.string.action_show
+            Icon(
+                imageVector = if (passwordVisible) {
+                    Icons.Default.VisibilityOff
+                } else {
+                    Icons.Default.Visibility
+                },
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(action))
+        }
+        FilledTonalButton(
+            onClick = onRefresh,
+            enabled = !isGenerating,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(Res.string.ui_new))
         }
     }
 }

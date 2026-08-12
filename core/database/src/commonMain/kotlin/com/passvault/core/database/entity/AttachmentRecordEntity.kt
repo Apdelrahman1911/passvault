@@ -6,13 +6,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Index
 import androidx.room.ForeignKey
 
-/**
- * Reserved attachment metadata from the version-1 schema.
- *
- * The current application does not implement attachment-file storage. These
- * rows are retained only so an existing database or backup can preserve its
- * encrypted metadata without pretending that the referenced file is managed.
- */
+/** Attachment metadata for encrypted blobs stored outside Room. */
 @Entity(
     tableName = "attachment_records",
     foreignKeys = [
@@ -59,23 +53,26 @@ data class AttachmentRecordEntity(
     @ColumnInfo(name = "size_bytes")
     val sizeBytes: Long,
 
-    /**
-     * Legacy relative storage reference. The current application never opens
-     * or creates a file from this value.
-     */
+    /** App-private relative object path. Never derived from a user filename. */
     @ColumnInfo(name = "storage_path")
     val storagePath: String,
 
-    /**
-     * Encryption key ID reference.
-     * Used to derive the per-file encryption key.
-     */
+    /** Unique context for the independently derived per-attachment key. */
     @ColumnInfo(name = "key_derivation_context")
     val keyDerivationContext: String,
 
     @ColumnInfo(name = "created_at")
     val createdAt: Long,
+
+    /** Zero identifies metadata-only rows retained from schema versions 1/2. */
+    @ColumnInfo(name = "content_format_version", defaultValue = "0")
+    val contentFormatVersion: Int = 0,
+
+    /** Two-phase filesystem/database operation state. */
+    @ColumnInfo(name = "storage_state", defaultValue = "'LEGACY'")
+    val storageState: String = STORAGE_STATE_LEGACY,
 ) {
+    @Suppress("CyclomaticComplexMethod") // Explicit field equality is required for ByteArray content semantics.
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -91,6 +88,8 @@ data class AttachmentRecordEntity(
         if (storagePath != other.storagePath) return false
         if (keyDerivationContext != other.keyDerivationContext) return false
         if (createdAt != other.createdAt) return false
+        if (contentFormatVersion != other.contentFormatVersion) return false
+        if (storageState != other.storageState) return false
 
         return true
     }
@@ -105,6 +104,15 @@ data class AttachmentRecordEntity(
         result = 31 * result + storagePath.hashCode()
         result = 31 * result + keyDerivationContext.hashCode()
         result = 31 * result + createdAt.hashCode()
+        result = 31 * result + contentFormatVersion
+        result = 31 * result + storageState.hashCode()
         return result
+    }
+
+    companion object {
+        const val STORAGE_STATE_LEGACY = "LEGACY"
+        const val STORAGE_STATE_STAGING = "STAGING"
+        const val STORAGE_STATE_READY = "READY"
+        const val STORAGE_STATE_DELETING = "DELETING"
     }
 }

@@ -7,27 +7,36 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
+import com.passvault.core.domain.model.BackupPasswordPolicy
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.hasWellFormedUnicode
+import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.VaultRepository
 import com.passvault.feature.backup.BackupFile
 import com.passvault.feature.backup.BackupFileStore
 import com.passvault.feature.backup.BackupFileSelectionCancelled
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.time.Instant
+import kotlinx.coroutines.withContext
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Coordinates encrypted backup export and restore.
@@ -47,13 +56,15 @@ class BackupViewModel(
     private val _state = MutableStateFlow(BackupState())
     val state: StateFlow<BackupState> = _state.asStateFlow()
 
-    private val _effect = Channel<BackupEffect>(Channel.BUFFERED)
-    val effect: Flow<BackupEffect> = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<BackupEffect>(extraBufferCapacity = 1)
+    val effect: SharedFlow<BackupEffect> = _effect.asSharedFlow()
 
     private val operationMutex = Mutex()
     private var exportJob: Job? = null
     private var importJob: Job? = null
     private var previewJob: Job? = null
+    private var filePickerJob: Job? = null
+    private var refreshJob: Job? = null
 
     init {
         refresh()
@@ -61,34 +72,28 @@ class BackupViewModel(
 
     fun onEvent(event: BackupEvent) {
         when (event) {
-            is BackupEvent.OnTabChanged -> _state.update { it.copy(selectedTab = event.tab) }
             is BackupEvent.OnPasswordChanged -> {
-                if (event.password.length <= MAX_PASSWORD_LENGTH) {
-                    _state.update { it.copy(exportPassword = event.password, errorMessage = null) }
-                    evaluatePasswordStrength(event.password)
+                val password = event.password.takeCodePoints(BackupPasswordPolicy.MAX_LENGTH + 1)
+                _state.update {
+                    it.copy(
+                        exportPassword = password,
+                        passwordStrength = passwordStrength(password),
+                        errorMessage = password.backupPasswordInputError,
+                    )
                 }
             }
             BackupEvent.OnExportClick -> startExport()
             BackupEvent.OnImportFilePickerClick -> chooseImportFile()
             is BackupEvent.OnImportFileSelected -> {
-                discardSelectedImportFile()
-                val displayName = event.filePath.substringAfterLast('/').substringAfterLast('\\')
-                _state.update {
-                    it.copy(
-                        selectedImportFile = event.filePath,
-                        selectedImportDisplayName = displayName,
-                        detectedImportFormat = detectFormat(displayName),
-                        importPreview = null,
-                        importError = null,
-                    )
-                }
-                previewImportIfPossible()
-            }
-            is BackupEvent.OnImportPasswordChanged -> {
-                if (event.password.length <= MAX_PASSWORD_LENGTH) {
+                if (!_state.value.hasActiveOperation) {
+                    previewJob?.cancel()
+                    discardSelectedImportFile(viewModelScope, fileStore, _state.value)
+                    val displayName = event.filePath.substringAfterLast('/').substringAfterLast('\\')
                     _state.update {
                         it.copy(
-                            importPassword = event.password,
+                            selectedImportFile = event.filePath,
+                            selectedImportDisplayName = displayName,
+                            detectedImportFormat = detectFormat(displayName),
                             importPreview = null,
                             importError = null,
                         )
@@ -96,25 +101,59 @@ class BackupViewModel(
                     previewImportIfPossible()
                 }
             }
-            BackupEvent.OnImportClick -> requestRestoreConfirmation()
-            BackupEvent.OnRestoreConfirmClick -> startImport()
+            is BackupEvent.OnImportPasswordChanged -> {
+                val password = event.password.takeCodePoints(BackupPasswordPolicy.MAX_LENGTH + 1)
+                _state.update {
+                    it.copy(
+                        importPassword = password,
+                        importPreview = null,
+                        importError = password.backupPasswordInputError,
+                    )
+                }
+                previewImportIfPossible()
+            }
+            BackupEvent.OnImportClick -> _state.update(BackupState::withRestoreConfirmationRequest)
+            BackupEvent.OnRestoreConfirmClick -> {
+                val current = _state.value
+                current.confirmedRestoreFile()?.let { file ->
+                    launchImport(file, current.importPassword)
+                }
+            }
+            else -> onSecondaryEvent(event)
+        }
+    }
+
+    private fun onSecondaryEvent(event: BackupEvent) {
+        when (event) {
+            is BackupEvent.OnTabChanged -> {
+                if (!_state.value.hasActiveOperation && !_state.value.showRestoreConfirmation) {
+                    _state.update { it.copy(selectedTab = event.tab) }
+                }
+            }
             BackupEvent.OnRestoreCancelClick -> _state.update { it.copy(showRestoreConfirmation = false) }
             BackupEvent.OnDismissError -> _state.update { it.copy(errorMessage = null, importError = null) }
             BackupEvent.OnDismissSuccess -> _state.update { it.copy(successMessage = null) }
             BackupEvent.OnBackClick -> {
-                if (!_state.value.isExporting && !_state.value.isImporting) {
-                    _effect.trySend(BackupEffect.NavigateBack)
+                val current = _state.value
+                when {
+                    current.showRestoreConfirmation ->
+                        _state.update { it.copy(showRestoreConfirmation = false) }
+                    current.hasActiveOperation -> Unit
+                    else -> _effect.tryEmit(BackupEffect.NavigateBack)
                 }
             }
             BackupEvent.OnCancelOperation -> cancelOperation()
+            else -> Unit
         }
     }
 
     fun refresh() {
-        viewModelScope.launch {
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
             try {
                 val metadata = vaultRepository.getMetadata().getOrThrow()
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -130,6 +169,7 @@ class BackupViewModel(
             } catch (cancel: CancellationException) {
                 throw cancel
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -140,43 +180,18 @@ class BackupViewModel(
         }
     }
 
-    private fun evaluatePasswordStrength(password: String) {
-        val score = if (password.isEmpty()) PasswordScore.UNKNOWN else PasswordStrengthEvaluator.score(password)
-        val strength = when {
-            password.isEmpty() -> PasswordStrength.EMPTY
-            password.length < MIN_PASSWORD_LENGTH -> PasswordStrength.TOO_SHORT
-            score <= PasswordScore.WEAK -> PasswordStrength.WEAK
-            score <= PasswordScore.GOOD -> PasswordStrength.GOOD
-            else -> PasswordStrength.STRONG
-        }
-        _state.update { it.copy(passwordStrength = strength) }
-    }
-
     private fun startExport() {
         val current = _state.value
+        val validationError = current.exportValidationError()
         when {
-            current.exportPassword.length < MIN_PASSWORD_LENGTH -> {
-                _state.update {
-                    it.copy(
-                        errorMessage = uiText(
-                            Res.string.error_backup_password_length,
-                            MIN_PASSWORD_LENGTH,
-                        ),
-                    )
-                }
-                return
-            }
-            PasswordStrengthEvaluator.score(current.exportPassword) < PasswordScore.FAIR -> {
-                _state.update {
-                    it.copy(errorMessage = uiText(Res.string.error_backup_password_weak))
-                }
-                return
-            }
-            current.isExporting || current.isImporting -> return
+            validationError != null -> _state.update { it.copy(errorMessage = validationError) }
+            current.hasActiveOperation -> Unit
+            else -> launchExport(current.exportPassword)
         }
+    }
 
+    private fun launchExport(password: String) {
         exportJob?.cancel()
-        val password = SensitiveText.from(current.exportPassword)
         _state.update {
             it.copy(
                 isExporting = true,
@@ -187,26 +202,31 @@ class BackupViewModel(
         }
         exportJob = viewModelScope.launch {
             operationMutex.withLock {
-                var bytes: ByteArray? = null
                 try {
-                    _state.update { it.copy(exportProgress = 15) }
-                    bytes = backupService.createBackup(password).getOrThrow()
-                    _state.update { it.copy(exportProgress = 70) }
-                    val file = fileStore.save(bytes, suggestedBackupName()).getOrThrow()
+                    val file = createBackupFile(
+                        backupService = backupService,
+                        fileStore = fileStore,
+                        password = password,
+                        onProgress = { progress ->
+                            _state.update { it.copy(exportProgress = progress) }
+                        },
+                    )
                     _state.update {
                         it.copy(
                             isExporting = false,
                             exportProgress = 100,
+                            exportPassword = "",
+                            passwordStrength = PasswordStrength.EMPTY,
                             successMessage = uiText(
                                 Res.string.message_backup_saved,
                                 file.displayName,
                             ),
                         )
                     }
-                    _effect.trySend(BackupEffect.ShowExportSuccess)
                 } catch (cancel: CancellationException) {
                     throw cancel
                 } catch (_: Exception) {
+                    currentCoroutineContext().ensureActive()
                     _state.update {
                         it.copy(
                             isExporting = false,
@@ -215,8 +235,6 @@ class BackupViewModel(
                         )
                     }
                 } finally {
-                    bytes?.fill(0)
-                    password.clear()
                     _state.update { it.copy(isExporting = false) }
                 }
             }
@@ -224,66 +242,97 @@ class BackupViewModel(
     }
 
     private fun chooseImportFile() {
-        if (_state.value.isImporting || _state.value.isExporting) return
-        viewModelScope.launch {
-            fileStore.open()
-                .onSuccess { file ->
-                    discardSelectedImportFile()
-                    _state.update {
-                        it.copy(
-                            selectedImportFile = file.path,
-                            selectedImportDisplayName = file.displayName,
-                            detectedImportFormat = detectFormat(file.displayName),
-                            importPreview = null,
-                            importError = null,
-                        )
-                    }
-                    previewImportIfPossible()
-                }
-                .onFailure { error ->
-                    if (error !is BackupFileSelectionCancelled) {
+        if (_state.value.hasActiveOperation) return
+        filePickerJob?.cancel()
+        _state.update { it.copy(isSelectingImportFile = true, importError = null) }
+        filePickerJob = viewModelScope.launch {
+            var unclaimedFile: BackupFile? = null
+            try {
+                val result = fileStore.open()
+                unclaimedFile = result.getOrNull()
+                currentCoroutineContext().ensureActive()
+                result.fold(
+                    onSuccess = { file ->
+                        discardSelectedImportFile(viewModelScope, fileStore, _state.value)
                         _state.update {
-                            it.copy(importError = uiText(Res.string.error_backup_file_select))
+                            it.copy(
+                                selectedImportFile = file.path,
+                                selectedImportDisplayName = file.displayName,
+                                detectedImportFormat = detectFormat(file.displayName),
+                                importPreview = null,
+                                importError = null,
+                            )
                         }
+                        unclaimedFile = null
+                        previewImportIfPossible()
+                    },
+                    onFailure = { error ->
+                        when (error) {
+                            is CancellationException -> throw error
+                            is BackupFileSelectionCancelled -> Unit
+                            else -> _state.update {
+                                it.copy(importError = uiText(Res.string.error_backup_file_select))
+                            }
+                        }
+                    },
+                )
+            } catch (cancel: CancellationException) {
+                throw cancel
+            } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
+                _state.update { it.copy(importError = uiText(Res.string.error_backup_file_select)) }
+            } finally {
+                unclaimedFile?.let { file ->
+                    withContext(NonCancellable) {
+                        discardIgnoringFailure(fileStore, file)
                     }
                 }
+                _state.update { it.copy(isSelectingImportFile = false) }
+            }
         }
     }
 
     private fun previewImportIfPossible() {
+        previewJob?.cancel()
+        previewJob = null
+        _state.update {
+            it.copy(
+                isAnalyzingFile = false,
+                importPreview = null,
+            )
+        }
         val current = _state.value
-        if (current.selectedImportFile == null ||
-            current.detectedImportFormat != ImportFormat.ENCRYPTED ||
-            current.importPassword.length < MIN_PASSWORD_LENGTH ||
-            current.isImporting
-        ) {
+        val canPreview = listOf(
+            current.selectedImportFile != null,
+            current.detectedImportFormat == ImportFormat.ENCRYPTED,
+            BackupPasswordPolicy.acceptsExisting(current.importPassword),
+            !current.isImporting,
+        ).all { it }
+        if (!canPreview) {
             return
         }
-
-        previewJob?.cancel()
-        val file = BackupFile(current.selectedImportFile, current.selectedImportDisplayName)
-        val password = SensitiveText.from(current.importPassword)
+        val file = BackupFile(requireNotNull(current.selectedImportFile), current.selectedImportDisplayName)
+        val passwordValue = current.importPassword
         _state.update { it.copy(isAnalyzingFile = true, importError = null) }
         previewJob = viewModelScope.launch {
-            var bytes: ByteArray? = null
+            var password: SensitiveText? = null
             try {
-                bytes = fileStore.read(file).getOrThrow()
-                val preview = backupService.inspectBackup(bytes, password).getOrThrow()
+                delay(IMPORT_PREVIEW_DEBOUNCE_MS)
+                val sensitivePassword = SensitiveText.from(passwordValue)
+                password = sensitivePassword
+                val source = fileStore.source(file).getOrThrow()
+                val preview = backupService.inspectBackup(source, sensitivePassword).getOrThrow()
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isAnalyzingFile = false,
-                        importPreview = ImportPreview(
-                            credentialCount = preview.credentialCount,
-                            folderCount = preview.folderCount,
-                            tagCount = preview.tagCount,
-                            attachmentCount = preview.attachmentCount,
-                            warnings = preview.warnings.map(::backupWarningText),
-                        ),
+                        importPreview = preview.toImportPreview(),
                     )
                 }
             } catch (cancel: CancellationException) {
                 throw cancel
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isAnalyzingFile = false,
@@ -292,67 +341,27 @@ class BackupViewModel(
                     )
                 }
             } finally {
-                bytes?.fill(0)
-                password.clear()
+                password?.clear()
             }
         }
     }
 
-    private fun requestRestoreConfirmation() {
-        val current = _state.value
-        when {
-            current.selectedImportFile == null ->
-                _state.update {
-                    it.copy(importError = uiText(Res.string.error_backup_select_first))
-                }
-            current.detectedImportFormat != ImportFormat.ENCRYPTED ->
-                _state.update {
-                    it.copy(importError = uiText(Res.string.error_backup_select_passvault))
-                }
-            current.importPassword.length < MIN_PASSWORD_LENGTH ->
-                _state.update {
-                    it.copy(
-                        importError = uiText(
-                            Res.string.error_backup_password_length,
-                            MIN_PASSWORD_LENGTH,
-                        ),
-                    )
-                }
-            current.importPreview == null ->
-                _state.update {
-                    it.copy(importError = uiText(Res.string.error_backup_validate_first))
-                }
-            current.isImporting || current.isExporting || current.isAnalyzingFile -> Unit
-            else -> _state.update { it.copy(showRestoreConfirmation = true, importError = null) }
-        }
-    }
-
-    private fun startImport() {
-        val current = _state.value
-        val path = current.selectedImportFile ?: return
-        if (!current.showRestoreConfirmation || current.importPreview == null) return
-
+    private fun launchImport(file: BackupFile, password: String) {
         importJob?.cancel()
-        val file = BackupFile(path, current.selectedImportDisplayName)
-        val password = SensitiveText.from(current.importPassword)
-        _state.update {
-            it.copy(
-                showRestoreConfirmation = false,
-                isImporting = true,
-                importProgress = 0,
-                importError = null,
-                successMessage = null,
-            )
-        }
+        _state.update { it.restoreStarted() }
         importJob = viewModelScope.launch {
             operationMutex.withLock {
-                var bytes: ByteArray? = null
                 var restoreCompleted = false
                 try {
-                    _state.update { it.copy(importProgress = 20) }
-                    bytes = fileStore.read(file).getOrThrow()
-                    _state.update { it.copy(importProgress = 45) }
-                    val restored = backupService.restoreBackup(bytes, password).getOrThrow()
+                    val restored = restoreBackupFile(
+                        backupService = backupService,
+                        fileStore = fileStore,
+                        file = file,
+                        password = password,
+                        onProgress = { progress ->
+                            _state.update { it.copy(importProgress = progress) }
+                        },
+                    )
                     restoreCompleted = true
                     _state.update {
                         it.copy(
@@ -364,20 +373,15 @@ class BackupViewModel(
                             importPassword = "",
                             selectedImportFile = null,
                             selectedImportDisplayName = "",
-                            importPreview = ImportPreview(
-                                credentialCount = restored.credentialCount,
-                                folderCount = restored.folderCount,
-                                tagCount = restored.tagCount,
-                                attachmentCount = restored.attachmentCount,
-                                warnings = restored.warnings.map(::backupWarningText),
-                            ),
+                            importPreview = restored.toImportPreview(),
                         )
                     }
-                    _effect.trySend(BackupEffect.ShowImportSuccess)
+                    _effect.tryEmit(BackupEffect.ShowImportSuccess)
                     refresh()
                 } catch (cancel: CancellationException) {
                     throw cancel
                 } catch (_: Exception) {
+                    currentCoroutineContext().ensureActive()
                     _state.update {
                         it.copy(
                             isImporting = false,
@@ -386,10 +390,15 @@ class BackupViewModel(
                         )
                     }
                 } finally {
-                    bytes?.fill(0)
-                    password.clear()
-                    if (restoreCompleted) {
-                        fileStore.discard(file)
+                    if (shouldDiscardImportFileAfterRestore(file, _state.value, restoreCompleted)) {
+                        // The restore has committed, so temporary-file cleanup
+                        // must survive a cancellation arriving during teardown.
+                        // A failed post-lock restore also clears the selected
+                        // path from state and has no retry route, so its owned
+                        // platform copy must be released here as well.
+                        withContext(NonCancellable) {
+                            discardIgnoringFailure(fileStore, file)
+                        }
                     }
                     _state.update { it.copy(isImporting = false) }
                 }
@@ -397,37 +406,22 @@ class BackupViewModel(
         }
     }
 
-    private fun detectFormat(name: String): ImportFormat =
-        if (name.endsWith(".pvault", ignoreCase = true) ||
-            name.endsWith(".encrypted", ignoreCase = true) ||
-            name.endsWith(".json", ignoreCase = true)
-        ) {
-            ImportFormat.ENCRYPTED
-        } else {
-            ImportFormat.UNKNOWN
-        }
-
-    private fun suggestedBackupName(): String =
-        "passvault-${Clock.System.now().epochSeconds}.pvault"
-
-    private fun backupWarningText(warning: VaultBackupService.BackupWarning): UiText =
-        when (warning) {
-            VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_IN_PREVIEW ->
-                uiText(Res.string.warning_backup_attachment_preview)
-            VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE ->
-                uiText(Res.string.warning_backup_attachment_restored)
-        }
-
     private fun cancelOperation() {
         exportJob?.cancel()
         importJob?.cancel()
         previewJob?.cancel()
+        filePickerJob?.cancel()
+        exportJob = null
+        importJob = null
+        previewJob = null
+        filePickerJob = null
         _state.update {
             it.copy(
                 showRestoreConfirmation = false,
                 isExporting = false,
                 isImporting = false,
                 isAnalyzingFile = false,
+                isSelectingImportFile = false,
                 exportProgress = 0,
                 importProgress = 0,
             )
@@ -435,16 +429,35 @@ class BackupViewModel(
     }
 
     fun clearForLock() {
-        discardSelectedImportFile()
+        refreshJob?.cancel()
+        refreshJob = null
+        discardSelectedImportFile(viewModelScope, fileStore, _state.value)
         cancelOperation()
         _state.value = BackupState()
     }
 
-    private fun discardSelectedImportFile() {
-        val current = _state.value
-        val path = current.selectedImportFile ?: return
-        val file = BackupFile(path, current.selectedImportDisplayName)
-        viewModelScope.launch { fileStore.discard(file) }
+    /**
+     * Scrubs UI-owned secrets when this ViewModel's confirmed restore is the
+     * operation locking the vault. The import job must remain alive: cancelling
+     * it here would interrupt the validated restore between lock and commit.
+     * External/manual locks continue to use [clearForLock] and cancel it.
+     */
+    fun clearForRestoreLock() {
+        exportJob?.cancel()
+        previewJob?.cancel()
+        filePickerJob?.cancel()
+        refreshJob?.cancel()
+        exportJob = null
+        previewJob = null
+        filePickerJob = null
+        refreshJob = null
+        _state.update { current ->
+            BackupState(
+                selectedTab = current.selectedTab,
+                isImporting = current.isImporting,
+                importProgress = current.importProgress,
+            )
+        }
     }
 
     data class BackupState(
@@ -460,6 +473,7 @@ class BackupViewModel(
         val selectedImportFile: String? = null,
         val selectedImportDisplayName: String = "",
         val importPassword: String = "",
+        val isSelectingImportFile: Boolean = false,
         val detectedImportFormat: ImportFormat = ImportFormat.UNKNOWN,
         val isAnalyzingFile: Boolean = false,
         val isImporting: Boolean = false,
@@ -470,20 +484,20 @@ class BackupViewModel(
         val errorMessage: UiText? = null,
         val successMessage: UiText? = null,
     ) {
+        val hasActiveOperation: Boolean
+            get() = isExporting || isImporting || isAnalyzingFile || isSelectingImportFile
+
         val canExport: Boolean
-            get() = exportPassword.length >= MIN_PASSWORD_LENGTH &&
+            get() = BackupPasswordPolicy.acceptsNew(exportPassword) &&
                 passwordStrength >= PasswordStrength.GOOD &&
-                !isExporting &&
-                !isImporting
+                !hasActiveOperation
 
         val canImport: Boolean
             get() = selectedImportFile != null &&
                 detectedImportFormat == ImportFormat.ENCRYPTED &&
-                importPassword.length >= MIN_PASSWORD_LENGTH &&
+                BackupPasswordPolicy.acceptsExisting(importPassword) &&
                 importPreview != null &&
-                !isImporting &&
-                !isExporting &&
-                !isAnalyzingFile
+                !hasActiveOperation
     }
 
     data class ImportPreview(
@@ -512,7 +526,6 @@ class BackupViewModel(
 
     sealed interface BackupEffect {
         data object NavigateBack : BackupEffect
-        data object ShowExportSuccess : BackupEffect
         data object ShowImportSuccess : BackupEffect
     }
 
@@ -533,9 +546,141 @@ class BackupViewModel(
         GOOD,
         STRONG,
     }
+}
 
-    private companion object {
-        const val MIN_PASSWORD_LENGTH = 12
-        const val MAX_PASSWORD_LENGTH = 1_024
+private fun passwordStrength(password: String): BackupViewModel.PasswordStrength {
+    val score = if (password.isEmpty()) PasswordScore.UNKNOWN else PasswordStrengthEvaluator.score(password)
+    return when {
+        password.isEmpty() -> BackupViewModel.PasswordStrength.EMPTY
+        password.codePointLength() < BackupPasswordPolicy.MIN_LENGTH -> BackupViewModel.PasswordStrength.TOO_SHORT
+        score <= PasswordScore.WEAK -> BackupViewModel.PasswordStrength.WEAK
+        score <= PasswordScore.GOOD -> BackupViewModel.PasswordStrength.GOOD
+        else -> BackupViewModel.PasswordStrength.STRONG
+    }
+}
+
+private fun BackupViewModel.BackupState.exportValidationError(): UiText? = when {
+    exportPassword.codePointLength() < BackupPasswordPolicy.MIN_LENGTH -> uiText(
+        Res.string.error_backup_password_length,
+        BackupPasswordPolicy.MIN_LENGTH,
+    )
+    exportPassword.codePointLength() > BackupPasswordPolicy.MAX_LENGTH -> uiText(
+        Res.string.error_backup_password_too_long,
+        BackupPasswordPolicy.MAX_LENGTH,
+    )
+    !exportPassword.hasWellFormedUnicode() -> uiText(Res.string.error_backup_password_invalid)
+    PasswordStrengthEvaluator.score(exportPassword) < PasswordScore.FAIR ->
+        uiText(Res.string.error_backup_password_weak)
+    else -> null
+}
+
+private fun BackupViewModel.BackupState.withRestoreConfirmationRequest(): BackupViewModel.BackupState {
+    val validationError = when {
+        selectedImportFile == null -> uiText(Res.string.error_backup_select_first)
+        detectedImportFormat != BackupViewModel.ImportFormat.ENCRYPTED ->
+            uiText(Res.string.error_backup_select_passvault)
+        importPassword.codePointLength() > BackupPasswordPolicy.MAX_LENGTH -> uiText(
+            Res.string.error_backup_password_too_long,
+            BackupPasswordPolicy.MAX_LENGTH,
+        )
+        !importPassword.hasWellFormedUnicode() -> uiText(Res.string.error_backup_password_invalid)
+        !BackupPasswordPolicy.acceptsExisting(importPassword) || importPreview == null ->
+            uiText(Res.string.error_backup_validate_first)
+        else -> null
+    }
+    return when {
+        hasActiveOperation -> this
+        validationError != null -> copy(importError = validationError)
+        else -> copy(showRestoreConfirmation = true, importError = null)
+    }
+}
+
+private fun BackupViewModel.BackupState.confirmedRestoreFile(): BackupFile? =
+    selectedImportFile
+        ?.takeIf { showRestoreConfirmation && importPreview != null }
+        ?.let { path -> BackupFile(path, selectedImportDisplayName) }
+
+private fun BackupViewModel.BackupState.restoreStarted(): BackupViewModel.BackupState = copy(
+    showRestoreConfirmation = false,
+    isImporting = true,
+    importProgress = 0,
+    importError = null,
+    successMessage = null,
+)
+
+private fun detectFormat(name: String): BackupViewModel.ImportFormat =
+    if (name.endsWith(".pvault", ignoreCase = true) ||
+        name.endsWith(".encrypted", ignoreCase = true) ||
+        name.endsWith(".json", ignoreCase = true)
+    ) {
+        BackupViewModel.ImportFormat.ENCRYPTED
+    } else {
+        BackupViewModel.ImportFormat.UNKNOWN
+    }
+
+private val String.backupPasswordInputError: UiText?
+    get() = when {
+        codePointLength() > BackupPasswordPolicy.MAX_LENGTH -> uiText(
+            Res.string.error_backup_password_too_long,
+            BackupPasswordPolicy.MAX_LENGTH,
+        )
+        !hasWellFormedUnicode() -> uiText(Res.string.error_backup_password_invalid)
+        else -> null
+    }
+
+private const val IMPORT_PREVIEW_DEBOUNCE_MS = 300L
+
+private fun VaultBackupService.BackupInspection.toImportPreview(): BackupViewModel.ImportPreview =
+    BackupViewModel.ImportPreview(
+        credentialCount = credentialCount,
+        folderCount = folderCount,
+        tagCount = tagCount,
+        attachmentCount = attachmentCount,
+        warnings = warnings.map { warning ->
+            when (warning) {
+                VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_IN_PREVIEW ->
+                    uiText(Res.string.warning_backup_attachment_preview)
+                VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE ->
+                    uiText(Res.string.warning_backup_attachment_restored)
+            }
+        },
+    )
+
+private suspend fun createBackupFile(
+    backupService: VaultBackupService,
+    fileStore: BackupFileStore,
+    password: String,
+    onProgress: (Int) -> Unit,
+): BackupFile {
+    val sensitivePassword = SensitiveText.from(password)
+    try {
+        val output = fileStore.create(
+            "passvault-${Clock.System.now().epochSeconds}.pvault",
+        ).getOrThrow()
+        backupService.createBackup(
+            password = sensitivePassword,
+            sink = output.sink,
+            onProgress = onProgress,
+        ).getOrThrow()
+        return output.file
+    } finally {
+        sensitivePassword.clear()
+    }
+}
+
+private suspend fun restoreBackupFile(
+    backupService: VaultBackupService,
+    fileStore: BackupFileStore,
+    file: BackupFile,
+    password: String,
+    onProgress: (Int) -> Unit,
+): VaultBackupService.BackupInspection {
+    val sensitivePassword = SensitiveText.from(password)
+    try {
+        onProgress(20)
+        val source = fileStore.source(file).getOrThrow()
+        return backupService.restoreBackup(source, sensitivePassword, onProgress).getOrThrow()
+    } finally {
+        sensitivePassword.clear()
     }
 }

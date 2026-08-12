@@ -5,6 +5,9 @@ require "json"
 require "net/http"
 require "openssl"
 require "uri"
+require_relative "lib/app_store_configuration"
+require_relative "lib/dotenv"
+require_relative "lib/private_path"
 
 repository_root = File.expand_path("..", __dir__)
 private_root = File.join(repository_root, "release", "private")
@@ -29,12 +32,7 @@ else
     exit 1
   end
 
-  File.foreach(values_path, chomp: true) do |line|
-    next if line.empty? || line.lstrip.start_with?("#")
-    key, value = line.split("=", 2)
-    next unless key&.match?(/\A[A-Z][A-Z0-9_]*\z/) && !value.nil?
-    values[key] = value.delete_suffix("\r")
-  end
+  values = PassVault::Dotenv.load(values_path)
 end
 
 required = %w[
@@ -43,6 +41,17 @@ required = %w[
 ]
 if required.any? { |name| values[name].to_s.empty? }
   warn "App Store Connect validation inputs are incomplete."
+  exit 1
+end
+unless PassVault::AppStoreConfiguration.identifiers_valid?(values)
+  warn "App Store Connect identifiers are malformed or do not identify PassVault."
+  exit 1
+end
+
+external_group_name = values.fetch("TESTFLIGHT_EXTERNAL_GROUP", "")
+unless external_group_name.empty? ||
+       PassVault::AppStoreConfiguration.external_group_name_valid?(external_group_name)
+  warn "The external TestFlight group name must be a trimmed printable line of at most 100 characters."
   exit 1
 end
 
@@ -63,8 +72,7 @@ if values.fetch("EXPORT_COMPLIANCE_STATUS") == "EXEMPT_APPROVED" &&
 end
 
 private_key_path = File.expand_path(values.fetch("ASC_PRIVATE_KEY_FILE"), repository_root)
-unless !private_root.empty? && private_key_path.start_with?(private_root + File::SEPARATOR) &&
-       File.file?(private_key_path) && !File.symlink?(private_key_path)
+unless PassVault::PrivatePath.regular_file_within?(private_key_path, private_root)
   warn "The App Store Connect private-key path is unsafe or missing."
   exit 1
 end

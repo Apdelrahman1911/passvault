@@ -5,15 +5,14 @@ import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
+import android.os.PersistableBundle
 import com.passvault.core.security.ClipboardService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.UUID
@@ -27,39 +26,43 @@ import java.util.UUID
  * text.
  */
 class AndroidClipboardService(
-    private val context: Context,
+    context: Context,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
 ) : ClipboardService {
 
+    private val appContext = context.applicationContext
     private val clipboardManager by lazy {
-        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        appContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
     private val clipboardMutex = Mutex()
     private var ownedToken: String? = null
     private var clearJob: Job? = null
 
-    override suspend fun copySensitive(text: String, timeoutMs: Long): Job =
+    override suspend fun copySensitive(text: String, timeoutMs: Long) {
         clipboardMutex.withLock {
-            cancelClearLocked()
             val token = ownershipToken("secret")
             val clipData = ClipData.newPlainText(token, text).apply {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    description.extras?.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                    description.extras = PersistableBundle().apply {
+                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                    }
                 }
             }
             clipboardManager.setPrimaryClip(clipData)
+            cancelClearLocked()
             ownedToken = token
-            scope.launch {
+            clearJob = scope.launch {
                 delay(timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS))
                 clipboardMutex.withLock { clearIfOwnedLocked(token) }
-            }.also { clearJob = it }
+            }
         }
+    }
 
     override suspend fun copy(text: String) {
         clipboardMutex.withLock {
+            clipboardManager.setPrimaryClip(ClipData.newPlainText("PassVault", text))
             cancelClearLocked()
             ownedToken = null
-            clipboardManager.setPrimaryClip(ClipData.newPlainText("PassVault", text))
         }
     }
 
@@ -72,21 +75,22 @@ class AndroidClipboardService(
     override suspend fun containsSensitive(): Boolean =
         clipboardMutex.withLock {
             val token = ownedToken ?: return@withLock false
-            currentToken() == token
-        }
-
-    fun destroy() {
-        runBlocking {
-            clipboardMutex.withLock {
-                ownedToken?.let { clearIfOwnedLocked(it) }
+            val isOwned = currentToken() == token
+            if (!isOwned && ownedToken == token) {
+                ownedToken = null
                 cancelClearLocked()
             }
+            isOwned
         }
-        scope.cancel()
-    }
 
     private fun clearIfOwnedLocked(expectedToken: String) {
-        if (currentToken() != expectedToken) return
+        if (currentToken() != expectedToken) {
+            if (ownedToken == expectedToken) {
+                ownedToken = null
+                clearJob = null
+            }
+            return
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             clipboardManager.clearPrimaryClip()
         } else {

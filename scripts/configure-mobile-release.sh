@@ -22,6 +22,16 @@ if ! gh auth status; then
     exit 1
 fi
 
+if ! command -v gcloud >/dev/null 2>&1; then
+    for google_sdk_root in /opt/homebrew/share/google-cloud-sdk /usr/local/share/google-cloud-sdk; do
+        if [[ -x "$google_sdk_root/bin/gcloud" ]]; then
+            PATH="$google_sdk_root/bin:$PATH"
+            export PATH
+            break
+        fi
+    done
+fi
+
 for command_name in gcloud jq ruby; do
     if ! command -v "$command_name" >/dev/null 2>&1; then
         echo "$command_name is required before configuration can start." >&2

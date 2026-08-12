@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -56,36 +55,16 @@ kotlin {
                 // Koin
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
-                implementation(libs.koin.viewmodel)
-                implementation(libs.koin.navigation)
 
-                // Lifecycle
+                // Public supertypes used by the composition root.
                 implementation(libs.lifecycle.viewmodel)
-                implementation(libs.lifecycle.viewmodel.compose)
-                implementation(libs.lifecycle.runtime.compose)
-
-                // Serialization
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.datetime)
+                implementation(libs.room.runtime)
 
                 // Coroutines
                 implementation(libs.kotlinx.coroutines.core)
 
-                // Image loading
-                implementation(libs.coil.compose)
-                implementation(libs.coil.core)
-
-                // Crypto
-                implementation(libs.libsodium.bindings)
-
-                // Storage
-                implementation(libs.datastore)
-                implementation(libs.room.runtime)
-                implementation(libs.sqlite.bundled)
-
                 // Core modules
                 api(project(":core:domain"))
-                api(project(":core:data"))
                 api(project(":core:database"))
                 api(project(":core:crypto"))
                 api(project(":core:security"))
@@ -104,9 +83,6 @@ kotlin {
                 api(project(":feature:backup"))
             }
         }
-
-        val androidMain = getByName("androidMain")
-        val desktopMain = getByName("desktopMain")
 
         val commonTest = getByName("commonTest") {
             dependencies {

@@ -33,12 +33,16 @@ fun BackupScreen(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = { onEvent(BackupViewModel.BackupEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.action_back))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.action_back),
+                        )
                     }
                 },
                 colors = passVaultTopAppBarColors(),
@@ -46,17 +50,20 @@ fun BackupScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
-        Column(modifier = modifier.padding(padding)) {
+        Column(modifier = Modifier.padding(padding)) {
             PrimaryTabRow(selectedTabIndex = state.selectedTab.ordinal) {
                 BackupViewModel.BackupTab.entries.forEach { tab ->
                     Tab(
                         selected = state.selectedTab == tab,
                         onClick = { onEvent(BackupViewModel.BackupEvent.OnTabChanged(tab)) },
+                        enabled = !state.hasActiveOperation && !state.showRestoreConfirmation,
                         text = {
                             Text(
                                 when (tab) {
-                                    BackupViewModel.BackupTab.EXPORT -> stringResource(Res.string.ui_create_backup)
-                                    BackupViewModel.BackupTab.IMPORT -> stringResource(Res.string.ui_restore_backup)
+                                    BackupViewModel.BackupTab.EXPORT ->
+                                        stringResource(Res.string.ui_create_backup)
+                                    BackupViewModel.BackupTab.IMPORT ->
+                                        stringResource(Res.string.ui_restore_backup)
                                 },
                             )
                         },

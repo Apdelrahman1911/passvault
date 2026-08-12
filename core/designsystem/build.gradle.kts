@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 // Compose Multiplatform resources configuration
@@ -52,37 +51,19 @@ kotlin {
             dependencies {
                 // Compose
                 implementation(libs.compose.runtime)
+                implementation(libs.compose.animation)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)
-                implementation(libs.compose.material3.adaptive)
-                implementation(libs.compose.material3.adaptive.layout)
-                implementation(libs.compose.material3.adaptive.navigation)
                 api(libs.compose.material.icons.extended)
                 implementation(libs.compose.components.resources)
                 implementation(libs.compose.ui)
-
-                // Window Size Class
-                implementation(libs.androidx.window)
-
-                // Koin
-                implementation(libs.koin.core)
-                implementation(libs.koin.compose)
-
-                // ViewModel
-                implementation(libs.lifecycle.viewmodel)
-                implementation(libs.lifecycle.viewmodel.compose)
-
-                // Serialization
-                implementation(libs.kotlinx.serialization.json)
-
-                // DateTime
-                implementation(libs.kotlinx.datetime)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
         val androidMain = getByName("androidMain") {
             dependencies {
-                implementation(libs.compose.ui.tooling)
+                implementation(libs.androidx.core.ktx)
             }
         }
 
@@ -95,9 +76,6 @@ kotlin {
         val commonTest = getByName("commonTest") {
             dependencies {
                 implementation(libs.kotlin.test)
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(libs.assertk)
-                implementation(libs.turbine)
             }
         }
     }

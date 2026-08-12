@@ -12,7 +12,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: candidate-readiness-${{ inputs.candidate_tag }}
+  # This reads store state and advances release, so it shares the complete
+  # release lifecycle lock with testing, production, and stable publication.
+  group: passvault-release-pipeline
   cancel-in-progress: false
 
 env:
@@ -21,30 +23,97 @@ env:
 jobs:
   candidate:
     runs-on: ubuntu-latest
+    permissions:
+      attestations: read
+      contents: read
     outputs:
       version: ${{ steps.manifest.outputs.version }}
       build_number: ${{ steps.manifest.outputs.build_number }}
       source_commit: ${{ steps.manifest.outputs.source_commit }}
+      candidate_tag: ${{ steps.manifest.outputs.candidate_tag }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
       - name: Read candidate provenance
         id: manifest
         env:
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          ANDROID_SIGNING_SHA256: ${{ vars.ANDROID_UPLOAD_CERTIFICATE_SHA256 }}
+          APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
           GH_TOKEN: ${{ github.token }}
+          IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
+          IOS_SIGNING_SHA1: ${{ vars.IOS_DISTRIBUTION_CERTIFICATE_SHA1 }}
         run: |
           if [[ "$GITHUB_REF" != refs/heads/testing ]]; then
             echo "Candidate Readiness must run from testing." >&2
             exit 1
           fi
-          gh release download "${{ inputs.candidate_tag }}" \
-            --pattern candidate-manifest.json --dir "$RUNNER_TEMP/candidate"
+          if [[ ! "$CANDIDATE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc\.[1-9][0-9]*$ ]]; then
+            echo "The candidate tag is invalid." >&2
+            exit 1
+          fi
+          gh release download "$CANDIDATE_TAG" \
+            --pattern candidate-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir "$RUNNER_TEMP/candidate"
           ruby scripts/validate-candidate-manifest.rb --allow-pending \
             "$RUNNER_TEMP/candidate/candidate-manifest.json"
           manifest="$RUNNER_TEMP/candidate/candidate-manifest.json"
-          [[ "$(jq -r .candidateTag "$manifest")" == "${{ inputs.candidate_tag }}" ]]
-          echo "version=$(jq -r .marketingVersion "$manifest")" >> "$GITHUB_OUTPUT"
-          echo "build_number=$(jq -r .buildNumber "$manifest")" >> "$GITHUB_OUTPUT"
-          echo "source_commit=$(jq -r .sourceCommit "$manifest")" >> "$GITHUB_OUTPUT"
+          [[ "$(jq -r .candidateTag "$manifest")" == "$CANDIDATE_TAG" ]]
+          source_commit="$(jq -r .sourceCommit "$manifest")"
+          if [[ "$source_commit" != "$GITHUB_SHA" ]]; then
+            echo "Candidate Readiness must run while testing still points to the exact candidate commit." >&2
+            exit 1
+          fi
+          gh attestation verify "$manifest" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$source_commit" \
+            --deny-self-hosted-runners >/dev/null
+          git fetch origin "refs/tags/$CANDIDATE_TAG:refs/tags/$CANDIDATE_TAG" --force --no-tags
+          if [[ "$(git rev-list -n 1 "$CANDIDATE_TAG")" != "$source_commit" ]]; then
+            echo "The candidate tag does not point to its recorded source commit." >&2
+            exit 1
+          fi
+          source_tree="$(git rev-parse "$source_commit^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb --allow-pending \
+            "$manifest" "$source_commit" "$source_tree"
+          for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
+            gh attestation verify "$receipt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$source_commit" \
+              --deny-self-hosted-runners >/dev/null
+          done
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            "$manifest" "$RUNNER_TEMP/candidate" "$source_commit" "$source_tree"
+          normalized_android_signing="$(printf '%s' "$ANDROID_SIGNING_SHA256" | tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]')"
+          normalized_ios_signing="$(printf '%s' "$IOS_SIGNING_SHA1" | tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]')"
+          jq -e \
+            --arg android_package "$ANDROID_PACKAGE_NAME" \
+            --arg android_signing "$normalized_android_signing" \
+            --arg ios_bundle "$IOS_BUNDLE_ID" \
+            --arg app_store_app_id "$APP_STORE_APP_ID" \
+            --arg ios_signing "$normalized_ios_signing" \
+            '.android.packageName == $android_package and
+             (.android.signingCertificateSha256 | ascii_upcase) == $android_signing and
+             .ios.bundleId == $ios_bundle and
+             .ios.appStoreAppId == $app_store_app_id and
+             (.ios.signingIdentitySha1 | ascii_upcase) == $ios_signing' \
+            "$manifest" >/dev/null || {
+              echo "Candidate identifiers or signing fingerprints do not match repository configuration." >&2
+              exit 1
+            }
+          {
+            printf 'version=%s\n' "$(jq -r .marketingVersion "$manifest")"
+            printf 'build_number=%s\n' "$(jq -r .buildNumber "$manifest")"
+            printf 'source_commit=%s\n' "$source_commit"
+            printf 'candidate_tag=%s\n' "$CANDIDATE_TAG"
+          } >> "$GITHUB_OUTPUT"
 
   google-play:
     needs: candidate
@@ -54,10 +123,10 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Authenticate to Google Play
         id: google-auth
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           project_id: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
           workload_identity_provider: ${{ vars.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
@@ -77,7 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: mobile-beta
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Require Beta Review approval and external availability
         env:
           ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
@@ -88,6 +157,8 @@ jobs:
           TESTFLIGHT_EXTERNAL_GROUP: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP }}
           EXPORT_COMPLIANCE_STATUS: ${{ vars.EXPORT_COMPLIANCE_STATUS }}
           IOS_FRANCE_AVAILABLE: ${{ vars.IOS_FRANCE_AVAILABLE }}
+          EXPECTED_VERSION: ${{ needs.candidate.outputs.version }}
+          EXPECTED_BUILD_NUMBER: ${{ needs.candidate.outputs.build_number }}
         run: |
           PRIVATE_RUNTIME="$RUNNER_TEMP/passvault-readiness"
           install -d -m 700 "$PRIVATE_RUNTIME"
@@ -106,11 +177,15 @@ jobs:
           export ASC_PRIVATE_KEY_FILE="$PRIVATE_RUNTIME/asc-key.p8"
           status="$(ruby scripts/manage-testflight-public-link.rb \
             --status \
-            --version "${{ needs.candidate.outputs.version }}" \
-            --build-number "${{ needs.candidate.outputs.build_number }}")"
+            --version "$EXPECTED_VERSION" \
+            --build-number "$EXPECTED_BUILD_NUMBER")"
           printf '%s\n' "$status"
           grep -Fqx 'PROCESSING_STATE=VALID' <<< "$status"
           grep -Fqx 'GROUP_HAS_BUILD=true' <<< "$status"
+          grep -Fqx 'REVIEW_INFORMATION=COMPLETE' <<< "$status"
+          grep -Fqx 'REQUIRED_TEST_INFORMATION=COMPLETE' <<< "$status"
+          grep -Fqx 'REQUIRED_WHAT_TO_TEST=COMPLETE' <<< "$status"
+          grep -Fqx 'PUBLIC_LINK_ENABLED=false' <<< "$status"
           grep -Fqx 'BETA_REVIEW_STATE=APPROVED' <<< "$status"
           grep -Eq '^EXTERNAL_BUILD_STATE=(READY_FOR_BETA_TESTING|IN_BETA_TESTING)$' <<< "$status"
 
@@ -119,23 +194,62 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: write
+      artifact-metadata: write
+      attestations: write
       contents: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - name: Create immutable readiness attestation
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_COMMIT: ${{ needs.candidate.outputs.source_commit }}
+          CANDIDATE_TAG: ${{ needs.candidate.outputs.candidate_tag }}
         run: |
-          gh release download "${{ inputs.candidate_tag }}" \
-            --pattern candidate-manifest.json --dir "$RUNNER_TEMP/candidate"
+          gh release download "$CANDIDATE_TAG" \
+            --pattern candidate-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir "$RUNNER_TEMP/candidate"
+          gh attestation verify "$RUNNER_TEMP/candidate/candidate-manifest.json" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$SOURCE_COMMIT" \
+            --deny-self-hosted-runners >/dev/null
+          for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
+            gh attestation verify "$receipt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$SOURCE_COMMIT" \
+              --deny-self-hosted-runners >/dev/null
+          done
           jq '.android.external = "completed" | .ios.external = "approved"' \
             "$RUNNER_TEMP/candidate/candidate-manifest.json" \
             > readiness-manifest.json
-          ruby scripts/validate-candidate-manifest.rb readiness-manifest.json "$SOURCE_COMMIT"
-          gh release upload "${{ inputs.candidate_tag }}" readiness-manifest.json --clobber
+          source_tree="$(git rev-parse "$SOURCE_COMMIT^{tree}")"
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            readiness-manifest.json "$RUNNER_TEMP/candidate" "$SOURCE_COMMIT" "$source_tree"
+          ruby scripts/validate-candidate-manifest.rb \
+            readiness-manifest.json "$SOURCE_COMMIT" "$source_tree"
+          install -d "$RUNNER_TEMP/existing-readiness"
+          if gh release download "$CANDIDATE_TAG" --pattern readiness-manifest.json \
+              --dir "$RUNNER_TEMP/existing-readiness" 2>/dev/null; then
+            if ! cmp -s readiness-manifest.json "$RUNNER_TEMP/existing-readiness/readiness-manifest.json"; then
+              echo "The existing readiness attestation differs; refusing to overwrite it." >&2
+              exit 1
+            fi
+            echo "The identical readiness attestation is already attached."
+          else
+            gh release upload "$CANDIDATE_TAG" readiness-manifest.json
+          fi
+
+      - name: Attest the production-readiness manifest
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: readiness-manifest.json
 
       - name: Fast-forward release to the tested commit
         env:
@@ -149,10 +263,12 @@ jobs:
           fi
           git push origin "$SOURCE_COMMIT:refs/heads/release"
 
-      - name: Start protected production deployment
+      - name: Start protected no-publication signing validation
         env:
+          CANDIDATE_TAG: ${{ needs.candidate.outputs.candidate_tag }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh workflow run production-release.yml \
+          gh workflow run production-signing-validation.yml \
             --ref release \
-            -f candidate_tag="${{ inputs.candidate_tag }}"
+            -f candidate_tag="$CANDIDATE_TAG" \
+            -f start_production_after_validation=true

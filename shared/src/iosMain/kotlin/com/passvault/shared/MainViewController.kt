@@ -12,7 +12,7 @@ import platform.UIKit.UIViewController
  * UIKit entry point consumed by the lightweight SwiftUI host in iosApp.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-fun MainViewController(): UIViewController {
+fun mainViewController(): UIViewController {
     if (KoinPlatform.getKoinOrNull() == null) {
         startKoin {
             modules(AppModule.getAllModules(iosModule))

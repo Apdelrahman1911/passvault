@@ -56,11 +56,11 @@ ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
 ij_kotlin_packages_to_use_import_on_demand = unset
 
 # Compose specific
-[*/ui/**/*.{kt,kts}]
+[**/ui/**/*.{kt,kts}]
 max_line_length = 100
 
-# Test files
-[*/test/**/*.{kt,kts}]
+# JVM and multiplatform test source sets (for example, commonTest and desktopTest).
+[**/{test,*Test}/**/*.{kt,kts}]
 max_line_length = 140
 
 [*.kts]

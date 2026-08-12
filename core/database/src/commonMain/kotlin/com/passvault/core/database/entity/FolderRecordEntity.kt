@@ -13,6 +13,7 @@ import androidx.room.Index
     tableName = "folder_records",
     indices = [
         Index(value = ["parent_id"]),
+        Index(value = ["name_hash"]),
         Index(value = ["sort_order"]),
         Index(value = ["created_at"]),
     ]
@@ -32,8 +33,8 @@ data class FolderRecordEntity(
     val nameHash: ByteArray,
 
     /**
-     * Encrypted payload containing folder metadata.
-     * (name, icon, color, etc.)
+     * Encrypted payload containing the name and schema-retained optional
+     * description/color fields. The icon is stored separately below.
      */
     @ColumnInfo(name = "encrypted_payload", typeAffinity = ColumnInfo.BLOB)
     val encryptedPayload: ByteArray,

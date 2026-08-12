@@ -5,6 +5,9 @@ require "json"
 require "net/http"
 require "openssl"
 require "uri"
+require_relative "lib/app_store_configuration"
+require_relative "lib/dotenv"
+require_relative "lib/private_path"
 
 unless ARGV == ["--apply"]
   warn "Usage: #{File.basename($PROGRAM_NAME)} --apply"
@@ -22,12 +25,7 @@ unless File.file?(values_path) && !File.symlink?(values_path)
   exit 1
 end
 
-File.foreach(values_path, chomp: true) do |line|
-  next if line.empty? || line.lstrip.start_with?("#")
-  key, value = line.split("=", 2)
-  next unless key&.match?(/\A[A-Z][A-Z0-9_]*\z/) && !value.nil?
-  values[key] = value.delete_suffix("\r")
-end
+values = PassVault::Dotenv.load(values_path)
 
 required = %w[
   ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY_FILE IOS_BUNDLE_ID APP_STORE_APP_ID
@@ -37,10 +35,19 @@ if required.any? { |name| values[name].to_s.empty? }
   warn "App Store Connect beta-group inputs are incomplete."
   exit 1
 end
+unless PassVault::AppStoreConfiguration.identifiers_valid?(values)
+  warn "App Store Connect beta-group identifiers are malformed or do not identify PassVault."
+  exit 1
+end
+unless PassVault::AppStoreConfiguration.external_group_name_valid?(
+  values.fetch("TESTFLIGHT_EXTERNAL_GROUP"),
+)
+  warn "The external TestFlight group name must be a trimmed printable line of at most 100 characters."
+  exit 1
+end
 
 private_key_path = File.expand_path(values.fetch("ASC_PRIVATE_KEY_FILE"), repository_root)
-unless private_key_path.start_with?(private_root + File::SEPARATOR) &&
-       File.file?(private_key_path) && !File.symlink?(private_key_path)
+unless PassVault::PrivatePath.regular_file_within?(private_key_path, private_root)
   warn "The App Store Connect private-key path is unsafe or missing."
   exit 1
 end
@@ -159,7 +166,14 @@ begin
   end
 
   external_name = values.fetch("TESTFLIGHT_EXTERNAL_GROUP")
-  external_group = groups.find { |group| group.dig("attributes", "name") == external_name }
+  matching_external_groups = groups.select do |group|
+    group.dig("attributes", "name") == external_name
+  end
+  if matching_external_groups.length > 1
+    warn "The configured external TestFlight group name is ambiguous."
+    exit 1
+  end
+  external_group = matching_external_groups.first
   if external_group&.dig("attributes", "isInternalGroup") == true
     warn "The configured external group name belongs to an internal group."
     exit 1

@@ -7,9 +7,18 @@ output_root="${2:-}"
 package_name="com.passvault.android.storescreenshot"
 capture_password="CaptureOnlyVaultPassphrase2026"
 
-if [[ ! -f "$apk_path" || -z "$output_root" ]]; then
+if [[ ! -f "$apk_path" || -L "$apk_path" || -z "$output_root" ]]; then
     echo "Usage: $0 <store-screenshot-apk> <output-root>" >&2
     exit 2
+fi
+if [[ -L "$output_root" || ( -e "$output_root" && ! -d "$output_root" ) ]]; then
+    echo "The Android screenshot output path must be a real directory." >&2
+    exit 1
+fi
+mkdir -p "$output_root"
+if find "$output_root" -type l -print -quit | grep -q .; then
+    echo "The Android screenshot output tree contains a symlink." >&2
+    exit 1
 fi
 command -v adb >/dev/null
 if ! command -v convert >/dev/null; then
@@ -103,6 +112,10 @@ tap_text_and_wait() {
 
 capture() {
     local destination="$1"
+    if [[ -e "$destination" || -L "$destination" ]]; then
+        echo "Refusing to overwrite an existing Android store screenshot: $destination" >&2
+        exit 1
+    fi
     sleep 2
     assert_capture_ready
     adb exec-out screencap -p > "$destination"
@@ -132,7 +145,7 @@ for locale in en-US ar; do
         create_vault_label="Create encrypted vault"
     fi
     adb shell pm clear "$package_name" >/dev/null
-    adb shell cmd locale set-app-locales "$package_name" --user 0 --locales "$locale" || true
+    adb shell cmd locale set-app-locales "$package_name" --user 0 --locales "$locale"
     adb shell am start -W -n "$package_name/com.passvault.android.MainActivity" >/dev/null
 
     sleep 2
@@ -162,6 +175,15 @@ for locale in en-US ar; do
         cmp -s "$locale_root/02-master-password.png" "$locale_root/03-confirm-password.png" ||
         cmp -s "$locale_root/03-confirm-password.png" "$locale_root/04-security-model.png"; then
         echo "Android navigation produced duplicate store screenshots for $locale." >&2
+        exit 1
+    fi
+done
+
+for screenshot_name in 01-welcome 02-master-password 03-confirm-password 04-security-model; do
+    if cmp -s \
+        "$output_root/en-US/images/phoneScreenshots/$screenshot_name.png" \
+        "$output_root/ar/images/phoneScreenshots/$screenshot_name.png"; then
+        echo "Android locale switching produced identical $screenshot_name screenshots." >&2
         exit 1
     fi
 done

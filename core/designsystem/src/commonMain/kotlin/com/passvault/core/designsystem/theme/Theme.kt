@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import com.passvault.core.designsystem.platform.ConfigureSystemBarAppearance
 
 /** Curated primary-color families with contrast-safe light and dark roles. */
 enum class PassVaultAccent {
@@ -149,98 +150,98 @@ internal val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = SurfaceContainerHighestDark,
 )
 
-private fun PassVaultAccent.palette(darkTheme: Boolean): AccentPalette = when (this) {
-    PassVaultAccent.NEUTRAL -> if (darkTheme) {
-        AccentPalette(PrimaryDark, OnPrimaryDark, PrimaryContainerDark, OnPrimaryContainerDark, InversePrimaryDark)
-    } else {
-        AccentPalette(PrimaryLight, OnPrimaryLight, PrimaryContainerLight, OnPrimaryContainerLight, InversePrimaryLight)
-    }
-    PassVaultAccent.SAGE -> if (darkTheme) {
-        AccentPalette(
+private val LightAccentPalettes = mapOf(
+    PassVaultAccent.NEUTRAL to AccentPalette(
+        PrimaryLight,
+        OnPrimaryLight,
+        PrimaryContainerLight,
+        OnPrimaryContainerLight,
+        InversePrimaryLight,
+    ),
+    PassVaultAccent.SAGE to AccentPalette(
+        primary = Color(0xFF496442),
+        onPrimary = Color.White,
+        primaryContainer = Color(0xFFDDE8D8),
+        onPrimaryContainer = Color(0xFF142210),
+        inversePrimary = Color(0xFFB9D1AF),
+    ),
+    PassVaultAccent.BLUE to AccentPalette(
+        primary = Color(0xFF3D5F8F),
+        onPrimary = Color.White,
+        primaryContainer = Color(0xFFDCE7F7),
+        onPrimaryContainer = Color(0xFF13233A),
+        inversePrimary = Color(0xFFAFC9F0),
+    ),
+    PassVaultAccent.PURPLE to AccentPalette(
+        primary = Color(0xFF67507D),
+        onPrimary = Color.White,
+        primaryContainer = Color(0xFFEADFF2),
+        onPrimaryContainer = Color(0xFF291737),
+        inversePrimary = Color(0xFFD9BCEB),
+    ),
+    PassVaultAccent.ROSE to AccentPalette(
+        primary = Color(0xFF8B465A),
+        onPrimary = Color.White,
+        primaryContainer = Color(0xFFF2DEE4),
+        onPrimaryContainer = Color(0xFF35121D),
+        inversePrimary = Color(0xFFF0B8C8),
+    ),
+    PassVaultAccent.AMBER to AccentPalette(
+        primary = Color(0xFF755B2C),
+        onPrimary = Color.White,
+        primaryContainer = Color(0xFFF1E5CA),
+        onPrimaryContainer = Color(0xFF2B210E),
+        inversePrimary = Color(0xFFE0C58D),
+    ),
+)
+
+private val DarkAccentPalettes = mapOf(
+    PassVaultAccent.NEUTRAL to AccentPalette(
+        PrimaryDark,
+        OnPrimaryDark,
+        PrimaryContainerDark,
+        OnPrimaryContainerDark,
+        InversePrimaryDark,
+    ),
+    PassVaultAccent.SAGE to AccentPalette(
             primary = Color(0xFFB9D1AF),
             onPrimary = Color(0xFF263C21),
             primaryContainer = Color(0xFF34472F),
             onPrimaryContainer = Color(0xFFD4EACB),
             inversePrimary = Color(0xFF496442),
-        )
-    } else {
-        AccentPalette(
-            primary = Color(0xFF496442),
-            onPrimary = Color.White,
-            primaryContainer = Color(0xFFDDE8D8),
-            onPrimaryContainer = Color(0xFF142210),
-            inversePrimary = Color(0xFFB9D1AF),
-        )
-    }
-    PassVaultAccent.BLUE -> if (darkTheme) {
-        AccentPalette(
+    ),
+    PassVaultAccent.BLUE to AccentPalette(
             primary = Color(0xFFAFC9F0),
             onPrimary = Color(0xFF19304E),
             primaryContainer = Color(0xFF243B5C),
             onPrimaryContainer = Color(0xFFDCE8FA),
             inversePrimary = Color(0xFF496A98),
-        )
-    } else {
-        AccentPalette(
-            primary = Color(0xFF3D5F8F),
-            onPrimary = Color.White,
-            primaryContainer = Color(0xFFDCE7F7),
-            onPrimaryContainer = Color(0xFF13233A),
-            inversePrimary = Color(0xFFAFC9F0),
-        )
-    }
-    PassVaultAccent.PURPLE -> if (darkTheme) {
-        AccentPalette(
+    ),
+    PassVaultAccent.PURPLE to AccentPalette(
             primary = Color(0xFFD9BCEB),
             onPrimary = Color(0xFF382247),
             primaryContainer = Color(0xFF4A3258),
             onPrimaryContainer = Color(0xFFF1DCF9),
             inversePrimary = Color(0xFF73558B),
-        )
-    } else {
-        AccentPalette(
-            primary = Color(0xFF67507D),
-            onPrimary = Color.White,
-            primaryContainer = Color(0xFFEADFF2),
-            onPrimaryContainer = Color(0xFF291737),
-            inversePrimary = Color(0xFFD9BCEB),
-        )
-    }
-    PassVaultAccent.ROSE -> if (darkTheme) {
-        AccentPalette(
+    ),
+    PassVaultAccent.ROSE to AccentPalette(
             primary = Color(0xFFF0B8C8),
             onPrimary = Color(0xFF4B1F2B),
             primaryContainer = Color(0xFF5C303C),
             onPrimaryContainer = Color(0xFFFFD9E3),
             inversePrimary = Color(0xFF945166),
-        )
-    } else {
-        AccentPalette(
-            primary = Color(0xFF8B465A),
-            onPrimary = Color.White,
-            primaryContainer = Color(0xFFF2DEE4),
-            onPrimaryContainer = Color(0xFF35121D),
-            inversePrimary = Color(0xFFF0B8C8),
-        )
-    }
-    PassVaultAccent.AMBER -> if (darkTheme) {
-        AccentPalette(
+    ),
+    PassVaultAccent.AMBER to AccentPalette(
             primary = Color(0xFFE0C58D),
             onPrimary = Color(0xFF3B2E13),
             primaryContainer = Color(0xFF55451F),
             onPrimaryContainer = Color(0xFFF5E1B7),
             inversePrimary = Color(0xFF755B2C),
-        )
-    } else {
-        AccentPalette(
-            primary = Color(0xFF755B2C),
-            onPrimary = Color.White,
-            primaryContainer = Color(0xFFF1E5CA),
-            onPrimaryContainer = Color(0xFF2B210E),
-            inversePrimary = Color(0xFFE0C58D),
-        )
-    }
-}
+    ),
+)
+
+private fun PassVaultAccent.palette(darkTheme: Boolean): AccentPalette =
+    if (darkTheme) DarkAccentPalettes.getValue(this) else LightAccentPalettes.getValue(this)
 
 /** Representative swatch for an accent in the requested brightness mode. */
 fun PassVaultAccent.previewColor(darkTheme: Boolean): Color = palette(darkTheme).primary
@@ -286,9 +287,10 @@ fun PassVaultTheme(
     accent: PassVaultAccent = PassVaultAccent.NEUTRAL,
     content: @Composable () -> Unit
 ) {
+    ConfigureSystemBarAppearance(darkTheme)
     val colorScheme = colorSchemeFor(darkTheme, accent)
     val extendedColors = if (darkTheme) DarkExtendedColors else LightExtendedColors
-    
+
     CompositionLocalProvider(
         LocalExtendedColors provides extendedColors
     ) {

@@ -5,24 +5,31 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.core.view.WindowCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.FragmentActivity
+import com.passvault.android.backup.AndroidBackupFileStore
+import com.passvault.android.attachment.AndroidAttachmentFileStore
+import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
 import com.passvault.android.security.AndroidBiometricKeyStore
 import com.passvault.android.security.AndroidScreenshotProtection
-import com.passvault.android.backup.AndroidBackupFileStore
-import com.passvault.core.domain.repository.VaultRepository
-import com.passvault.core.navigation.AppCommand
-import com.passvault.core.navigation.AppCommandDispatcher
 import com.passvault.shared.PassVaultApp
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /**
  * MainActivity for PassVault Android application.
- * 
+ *
  * Handles:
  * - Edge-to-edge display with proper insets
  * - Screenshot protection for sensitive content
@@ -34,9 +41,9 @@ class MainActivity : FragmentActivity() {
 
     private val screenshotProtection: AndroidScreenshotProtection by inject()
     private val backupFileStore: AndroidBackupFileStore by inject()
+    private val attachmentFileStore: AndroidAttachmentFileStore by inject()
     private val biometricKeyStore: AndroidBiometricKeyStore by inject()
-    private val vaultRepository: VaultRepository by inject()
-    private val commandDispatcher: AppCommandDispatcher by inject()
+    private val lifecycleLockCoordinator: AndroidLifecycleLockCoordinator by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -51,6 +58,7 @@ class MainActivity : FragmentActivity() {
         // Register this activity for screenshot protection
         screenshotProtection.registerActivity(this)
         backupFileStore.attach(this)
+        attachmentFileStore.attach(this)
         biometricKeyStore.attach(this)
 
         // Apply screenshot protection immediately
@@ -59,42 +67,68 @@ class MainActivity : FragmentActivity() {
         }
 
         setContent {
+            val privacyCoverVisible by lifecycleLockCoordinator.privacyCoverVisible.collectAsState()
+            val coverColor = if (isSystemInDarkTheme()) Color.Black else Color.White
+
             DisposableEffect(Unit) {
                 WindowCompat.setDecorFitsSystemWindows(window, false)
                 onDispose {}
             }
 
-            PassVaultApp()
+            Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (privacyCoverVisible) {
+                                Modifier.clearAndSetSemantics { }
+                            } else {
+                                Modifier
+                            },
+                        ),
+                ) {
+                    PassVaultApp()
+                }
+                if (privacyCoverVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(coverColor)
+                            .clearAndSetSemantics { }
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        awaitPointerEvent().changes.forEach { it.consume() }
+                                    }
+                                }
+                            },
+                    )
+                }
+            }
         }
 
     }
 
     override fun onResume() {
         super.onResume()
+        lifecycleLockCoordinator.onActivityResumed()
         screenshotProtection.onActivityResumed(this)
         if (screenshotProtection.isEnabled()) {
             AndroidScreenshotProtection.applyToActivity(this)
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        screenshotProtection.onActivityPaused()
-    }
-
     override fun onStop() {
         super.onStop()
-        commandDispatcher.dispatch(AppCommand.LOCK)
-        lifecycleScope.launch {
-            vaultRepository.lock()
-        }
+        lifecycleLockCoordinator.onActivityStopped(isChangingConfigurations)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         // Unregister from screenshot protection
         screenshotProtection.unregisterActivity(this)
-        backupFileStore.detach(this)
+        backupFileStore.detach(this, isChangingConfigurations)
+        attachmentFileStore.detach(this, isChangingConfigurations)
         biometricKeyStore.detach(this)
     }
 

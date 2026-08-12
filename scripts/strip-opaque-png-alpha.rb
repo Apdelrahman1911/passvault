@@ -40,11 +40,14 @@ def unfilter_row(filter, filtered, previous, bytes_per_pixel)
 end
 
 def parse_png(path)
+  raise "PNG source is missing or unsafe: #{path}" unless File.file?(path) && !File.symlink?(path)
+
   contents = File.binread(path)
   raise "Invalid PNG signature: #{path}" unless contents.start_with?(PNG_SIGNATURE)
 
   offset = PNG_SIGNATURE.bytesize
   chunks = []
+  iend_seen = false
   while offset < contents.bytesize
     length = contents.byteslice(offset, 4)&.unpack1("N")
     raise "Truncated PNG chunk: #{path}" unless length
@@ -55,10 +58,18 @@ def parse_png(path)
     raise "Truncated PNG chunk: #{path}" unless type&.bytesize == 4 && data&.bytesize == length && crc
     raise "Invalid PNG checksum: #{path}" unless Zlib.crc32(type + data) == crc
 
+    raise "IHDR must be the first PNG chunk: #{path}" if chunks.empty? && type != "IHDR"
+    raise "Duplicate PNG IHDR: #{path}" if type == "IHDR" && chunks.any?
+    raise "Invalid PNG IEND: #{path}" if type == "IEND" && !data.empty?
     chunks << [type, data]
     offset += 12 + length
-    break if type == "IEND"
+    if type == "IEND"
+      iend_seen = true
+      break
+    end
   end
+  raise "PNG is missing IEND: #{path}" unless iend_seen
+  raise "PNG contains trailing data: #{path}" unless offset == contents.bytesize
   chunks
 end
 
@@ -71,13 +82,32 @@ def strip_opaque_alpha(source, destination)
   unless bit_depth == 8 && color_type == 6 && compression.zero? && filter_method.zero? && interlace.zero?
     raise "Expected a non-interlaced 8-bit RGBA PNG: #{source}"
   end
+  unless width.positive? && height.positive? && width <= 10_000 && height <= 10_000 &&
+         width * height <= 50_000_000
+    raise "PNG dimensions exceed the safe store-image range: #{source}"
+  end
 
   compressed = chunks.each_with_object([]) do |(type, data), parts|
     parts << data if type == "IDAT"
   end.join
-  scanlines = Zlib::Inflate.inflate(compressed)
   rgba_stride = width * 4
   expected_bytes = height * (rgba_stride + 1)
+  inflater = Zlib::Inflate.new
+  scanlines = String.new(capacity: expected_bytes, encoding: Encoding::BINARY)
+  compressed_offset = 0
+  while compressed_offset < compressed.bytesize
+    compressed_part = compressed.byteslice(compressed_offset, 64 * 1024)
+    inflated = inflater.inflate(compressed_part)
+    raise "PNG data exceeds the expected scanline size: #{source}" if
+      scanlines.bytesize + inflated.bytesize > expected_bytes
+    scanlines << inflated
+    compressed_offset += compressed_part.bytesize
+  end
+  final_bytes = inflater.finish
+  raise "PNG data exceeds the expected scanline size: #{source}" if
+    scanlines.bytesize + final_bytes.bytesize > expected_bytes
+  scanlines << final_bytes
+  inflater.close
   raise "Unexpected PNG scanline length: #{source}" unless scanlines.bytesize == expected_bytes
 
   output = String.new(capacity: height * (width * 3 + 1), encoding: Encoding::BINARY)
@@ -109,4 +139,9 @@ unless ARGV.length == 2
   exit 2
 end
 
-strip_opaque_alpha(File.expand_path(ARGV[0]), File.expand_path(ARGV[1]))
+source = File.expand_path(ARGV[0])
+destination = File.expand_path(ARGV[1])
+if File.symlink?(destination) || (File.exist?(destination) && !File.file?(destination))
+  abort "PNG destination is unsafe: #{destination}"
+end
+strip_opaque_alpha(source, destination)

@@ -6,12 +6,23 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* LICENSE.txt */; };
+		A10000000000000000000002 /* NOTICE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* NOTICE.txt */; };
+		A10000000000000000000003 /* THIRD_PARTY_NOTICES.md in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* THIRD_PARTY_NOTICES.md */; };
+		A10000000000000000000004 /* THIRD_PARTY_LICENSES in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* THIRD_PARTY_LICENSES */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		950B081BB1F708A3B5315571 /* PassVault.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PassVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000001 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../LICENSE.txt; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000002 /* NOTICE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = NOTICE.txt; path = ../NOTICE.txt; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000003 /* THIRD_PARTY_NOTICES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = THIRD_PARTY_NOTICES.md; path = ../THIRD_PARTY_NOTICES.md; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000004 /* THIRD_PARTY_LICENSES */ = {isa = PBXFileReference; lastKnownFileType = folder; name = THIRD_PARTY_LICENSES; path = ../THIRD_PARTY_LICENSES; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		44E2A972E7966AE17EE588B1 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		44E2A972E7966AE17EE588B1 /* Exceptions for "iosApp" folder in "PassVault" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -24,7 +35,7 @@
 		11BFF8BE325A6A431938A365 /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				44E2A972E7966AE17EE588B1 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				44E2A972E7966AE17EE588B1 /* Exceptions for "iosApp" folder in "PassVault" target */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -52,6 +63,7 @@
 			children = (
 				1626286312FD6E4F309D5B36 /* Configuration */,
 				11BFF8BE325A6A431938A365 /* iosApp */,
+				C10000000000000000000001 /* Legal */,
 				A6D2AD839D584037202BD705 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,6 +74,17 @@
 				950B081BB1F708A3B5315571 /* PassVault.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000001 /* Legal */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* LICENSE.txt */,
+				B10000000000000000000002 /* NOTICE.txt */,
+				B10000000000000000000003 /* THIRD_PARTY_NOTICES.md */,
+				B10000000000000000000004 /* THIRD_PARTY_LICENSES */,
+			);
+			name = Legal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,6 +153,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000001 /* LICENSE.txt in Resources */,
+				A10000000000000000000002 /* NOTICE.txt in Resources */,
+				A10000000000000000000003 /* THIRD_PARTY_NOTICES.md in Resources */,
+				A10000000000000000000004 /* THIRD_PARTY_LICENSES in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,12 +229,12 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = 7CGZ2343AA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -226,13 +253,13 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = 7CGZ2343AA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

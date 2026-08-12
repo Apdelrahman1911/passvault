@@ -4,6 +4,9 @@ import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.TotpAlgorithm
 import com.passvault.core.domain.model.TotpCode
 import com.passvault.core.domain.model.TotpConfiguration
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.hasOnlySafeSingleLineCodePoints
+import kotlin.text.CharacterCodingException
 import kotlin.time.Instant
 import okio.ByteString.Companion.toByteString
 
@@ -35,17 +38,10 @@ enum class TotpParseError {
 }
 
 class StandardTotpService : TotpService {
-    override fun parse(input: String, manualOptions: TotpManualOptions): TotpParseResult {
-        val trimmed = input.trim()
-        if (trimmed.isEmpty() || trimmed.length > MAX_ENROLLMENT_LENGTH) {
-            return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-        }
-        return if (trimmed.startsWith(OTP_AUTH_PREFIX, ignoreCase = true)) {
-            parseUri(trimmed)
-        } else {
-            parseManualSecret(trimmed, manualOptions)
-        }
-    }
+    private val enrollmentParser = TotpEnrollmentParser()
+
+    override fun parse(input: String, manualOptions: TotpManualOptions): TotpParseResult =
+        enrollmentParser.parse(input, manualOptions)
 
     override fun generate(configuration: TotpConfiguration, at: Instant): Result<TotpCode> = runCatching {
         requireValidConfiguration(configuration)
@@ -56,7 +52,7 @@ class StandardTotpService : TotpService {
         val counterBytes = ByteArray(COUNTER_BYTES)
         var digestBytes: ByteArray? = null
         try {
-            val decodedSecret = decodeBase32(secretCharacters.concatToString())
+            val decodedSecret = Base32Codec.decode(secretCharacters.concatToString())
                 ?: throw IllegalArgumentException("Invalid TOTP configuration")
             secretBytes = decodedSecret
             require(decodedSecret.size in MIN_SECRET_BYTES..MAX_SECRET_BYTES) {
@@ -64,6 +60,9 @@ class StandardTotpService : TotpService {
             }
 
             val counter = at.epochSeconds / configuration.periodSeconds
+            require(counter < Long.MAX_VALUE / configuration.periodSeconds) {
+                "Invalid TOTP timestamp"
+            }
             var remainingCounter = counter
             for (index in counterBytes.lastIndex downTo 0) {
                 counterBytes[index] = (remainingCounter and BYTE_MASK).toByte()
@@ -87,12 +86,15 @@ class StandardTotpService : TotpService {
                     ((digestBytes[offset + 1].toInt() and BYTE_MASK_INT) shl 16) or
                     ((digestBytes[offset + 2].toInt() and BYTE_MASK_INT) shl 8) or
                     (digestBytes[offset + 3].toInt() and BYTE_MASK_INT)
-            val modulus = if (configuration.digits == 6) ONE_MILLION else ONE_HUNDRED_MILLION
+            val modulus = if (configuration.digits == DEFAULT_DIGITS) {
+                ONE_MILLION
+            } else {
+                ONE_HUNDRED_MILLION
+            }
             val value = (binaryCode % modulus).toString().padStart(configuration.digits, '0')
-            val expiresAtSeconds = (counter + 1) * configuration.periodSeconds
             TotpCode(
                 value = value,
-                expiresAt = Instant.fromEpochSeconds(expiresAtSeconds),
+                expiresAt = Instant.fromEpochSeconds((counter + 1) * configuration.periodSeconds),
             )
         } finally {
             secretCharacters.fill('\u0000')
@@ -102,73 +104,129 @@ class StandardTotpService : TotpService {
         }
     }
 
-    private fun parseManualSecret(input: String, options: TotpManualOptions): TotpParseResult {
-        if (!isValidOptions(options.algorithm, options.digits, options.periodSeconds)) {
-            return TotpParseResult.Error(TotpParseError.UNSUPPORTED_CONFIGURATION)
+    private fun requireValidConfiguration(configuration: TotpConfiguration) {
+        require(isValidOptions(configuration.algorithm, configuration.digits, configuration.periodSeconds)) {
+            "Invalid TOTP configuration"
         }
-        return configurationFrom(
-            rawSecret = input,
-            issuer = null,
-            accountName = null,
-            algorithm = options.algorithm,
-            digits = options.digits,
-            periodSeconds = options.periodSeconds,
-        )
+        require(isValidTotpLabel(configuration.issuer) && isValidTotpLabel(configuration.accountName)) {
+            "Invalid TOTP configuration"
+        }
+        require(configuration.secret.length in MIN_SECRET_CHARACTERS..MAX_SECRET_CHARACTERS) {
+            "Invalid TOTP configuration"
+        }
+    }
+}
+
+private class TotpEnrollmentParser {
+    fun parse(input: String, manualOptions: TotpManualOptions): TotpParseResult {
+        val trimmed = input
+            .takeIf { it.length <= MAX_ENROLLMENT_LENGTH }
+            ?.trim()
+        return when {
+            trimmed.isNullOrEmpty() -> {
+                TotpParseResult.Error(TotpParseError.INVALID_INPUT)
+            }
+            trimmed.startsWith(OTP_AUTH_PREFIX, ignoreCase = true) -> parseUri(trimmed)
+            else -> parseManualSecret(trimmed, manualOptions)
+        }
     }
 
-    private fun parseUri(input: String): TotpParseResult {
-        val withoutScheme = input.substring(OTP_AUTH_PREFIX.length)
-        val type = withoutScheme.substringBefore('/')
-        if (!type.equals(TOTP_TYPE, ignoreCase = true)) {
-            return TotpParseResult.Error(TotpParseError.UNSUPPORTED_TYPE)
-        }
-        if ('#' in withoutScheme) return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-
-        val pathAndQuery = withoutScheme.substringAfter('/', missingDelimiterValue = "")
-        if (pathAndQuery.isEmpty()) return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-        val encodedLabel = pathAndQuery.substringBefore('?')
-        val label = percentDecode(encodedLabel, plusAsSpace = false)?.trim()
-            ?.takeIf(String::isNotEmpty)
-            ?: return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-        val query = pathAndQuery.substringAfter('?', missingDelimiterValue = "")
-        val parameters = parseQuery(query) ?: return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-        val rawSecret = parameters[SECRET_PARAMETER]
-            ?: return TotpParseResult.Error(TotpParseError.INVALID_SECRET)
-
-        val labelParts = label.split(':', limit = 2)
-        val labelIssuer = labelParts.takeIf { it.size == 2 }?.first()?.trim()?.takeIf(String::isNotEmpty)
-        val accountName = labelParts.last().trim().takeIf(String::isNotEmpty)
-            ?: return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-        val queryIssuer = parameters[ISSUER_PARAMETER]?.trim()?.takeIf(String::isNotEmpty)
-        if (labelIssuer != null && queryIssuer != null && labelIssuer != queryIssuer) {
-            return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
-        }
-        val issuer = queryIssuer ?: labelIssuer
-        if (!isValidLabel(issuer) || !isValidLabel(accountName)) {
-            return TotpParseResult.Error(TotpParseError.INVALID_INPUT)
+    private fun parseManualSecret(input: String, options: TotpManualOptions): TotpParseResult =
+        parseEnrollment {
+            ensureEnrollment(
+                isValidOptions(options.algorithm, options.digits, options.periodSeconds),
+                TotpParseError.UNSUPPORTED_CONFIGURATION,
+            )
+            configurationFrom(
+                rawSecret = input,
+                issuer = null,
+                accountName = null,
+                algorithm = options.algorithm,
+                digits = options.digits,
+                periodSeconds = options.periodSeconds,
+            )
         }
 
-        val algorithm = when (parameters[ALGORITHM_PARAMETER]?.uppercase()?.replace("-", "")) {
-            null, "SHA1" -> TotpAlgorithm.SHA1
-            "SHA256" -> TotpAlgorithm.SHA256
-            "SHA512" -> TotpAlgorithm.SHA512
-            else -> return TotpParseResult.Error(TotpParseError.UNSUPPORTED_CONFIGURATION)
-        }
-        val digits = parameters[DIGITS_PARAMETER]?.toIntOrNull() ?: DEFAULT_DIGITS
-        val periodSeconds = parameters[PERIOD_PARAMETER]?.toIntOrNull() ?: DEFAULT_PERIOD_SECONDS
-        if (!isValidOptions(algorithm, digits, periodSeconds)) {
-            return TotpParseResult.Error(TotpParseError.UNSUPPORTED_CONFIGURATION)
-        }
-
-        return configurationFrom(
-            rawSecret = rawSecret,
-            issuer = issuer,
-            accountName = accountName,
+    private fun parseUri(input: String): TotpParseResult = parseEnrollment {
+        val parts = parseUriParts(input)
+        val label = parseLabel(parts.label, parts.parameters[ISSUER_PARAMETER])
+        val algorithm = parseAlgorithm(parts.parameters[ALGORITHM_PARAMETER])
+        val digits = parseNumericOption(parts.parameters, DIGITS_PARAMETER, DEFAULT_DIGITS)
+        val periodSeconds = parseNumericOption(parts.parameters, PERIOD_PARAMETER, DEFAULT_PERIOD_SECONDS)
+        ensureEnrollment(
+            isValidOptions(algorithm, digits, periodSeconds),
+            TotpParseError.UNSUPPORTED_CONFIGURATION,
+        )
+        configurationFrom(
+            rawSecret = parts.secret,
+            issuer = label.issuer,
+            accountName = label.accountName,
             algorithm = algorithm,
             digits = digits,
             periodSeconds = periodSeconds,
         )
     }
+
+    private fun parseUriParts(input: String): ParsedUriParts {
+        val withoutScheme = input.substring(OTP_AUTH_PREFIX.length)
+        ensureEnrollment(
+            withoutScheme.substringBefore('/').equals(TOTP_TYPE, ignoreCase = true),
+            TotpParseError.UNSUPPORTED_TYPE,
+        )
+        ensureEnrollment('#' !in withoutScheme, TotpParseError.INVALID_INPUT)
+
+        val pathAndQuery = withoutScheme.substringAfter('/', missingDelimiterValue = "")
+        ensureEnrollment(pathAndQuery.isNotEmpty(), TotpParseError.INVALID_INPUT)
+        val label = PercentCodec.decode(pathAndQuery.substringBefore('?'), plusAsSpace = false)
+            ?.trim()
+            ?.takeIf(String::isNotEmpty)
+            ?: rejectEnrollment(TotpParseError.INVALID_INPUT)
+        val parameters = parseQuery(pathAndQuery.substringAfter('?', missingDelimiterValue = ""))
+        val secret = parameters[SECRET_PARAMETER]
+            ?: rejectEnrollment(TotpParseError.INVALID_SECRET)
+        return ParsedUriParts(label = label, parameters = parameters, secret = secret)
+    }
+
+    private fun parseLabel(label: String, encodedIssuer: String?): ParsedLabel {
+        val labelParts = label.split(':', limit = 2)
+        val labelIssuer = labelParts
+            .takeIf { it.size == 2 }
+            ?.first()
+            ?.trim()
+            ?.takeIf(String::isNotEmpty)
+        val accountName = labelParts.last().trim().takeIf(String::isNotEmpty)
+            ?: rejectEnrollment(TotpParseError.INVALID_INPUT)
+        val queryIssuer = encodedIssuer?.trim()?.takeIf(String::isNotEmpty)
+        ensureEnrollment(
+            labelIssuer == null || queryIssuer == null || labelIssuer == queryIssuer,
+            TotpParseError.INVALID_INPUT,
+        )
+        val issuer = queryIssuer ?: labelIssuer
+        ensureEnrollment(
+            isValidTotpLabel(issuer) && isValidTotpLabel(accountName),
+            TotpParseError.INVALID_INPUT,
+        )
+        return ParsedLabel(issuer = issuer, accountName = accountName)
+    }
+
+    private fun parseAlgorithm(value: String?): TotpAlgorithm =
+        when (value?.uppercase()?.replace("-", "")) {
+            null, "SHA1" -> TotpAlgorithm.SHA1
+            "SHA256" -> TotpAlgorithm.SHA256
+            "SHA512" -> TotpAlgorithm.SHA512
+            else -> rejectEnrollment(TotpParseError.UNSUPPORTED_CONFIGURATION)
+        }
+
+    private fun parseNumericOption(
+        parameters: Map<String, String>,
+        name: String,
+        defaultValue: Int,
+    ): Int = parameters[name]?.toIntOrNull()
+        ?: if (name in parameters) {
+            rejectEnrollment(TotpParseError.UNSUPPORTED_CONFIGURATION)
+        } else {
+            defaultValue
+        }
 
     private fun configurationFrom(
         rawSecret: String,
@@ -177,93 +235,92 @@ class StandardTotpService : TotpService {
         algorithm: TotpAlgorithm,
         digits: Int,
         periodSeconds: Int,
-    ): TotpParseResult {
-        val normalizedSecret = normalizeBase32(rawSecret)
-            ?: return TotpParseResult.Error(TotpParseError.INVALID_SECRET)
-        val decoded = decodeBase32(normalizedSecret)
-            ?: return TotpParseResult.Error(TotpParseError.INVALID_SECRET)
+    ): TotpConfiguration {
+        val normalizedSecret = Base32Codec.normalize(rawSecret)
+            ?: rejectEnrollment(TotpParseError.INVALID_SECRET)
+        val decoded = Base32Codec.decode(normalizedSecret)
+            ?: rejectEnrollment(TotpParseError.INVALID_SECRET)
         return try {
-            if (decoded.size !in MIN_SECRET_BYTES..MAX_SECRET_BYTES) {
-                TotpParseResult.Error(TotpParseError.INVALID_SECRET)
-            } else {
-                TotpParseResult.Success(
-                    TotpConfiguration(
-                        secret = SensitiveText.from(normalizedSecret),
-                        issuer = issuer,
-                        accountName = accountName,
-                        algorithm = algorithm,
-                        digits = digits,
-                        periodSeconds = periodSeconds,
-                    ),
-                )
-            }
+            ensureEnrollment(
+                decoded.size in MIN_SECRET_BYTES..MAX_SECRET_BYTES,
+                TotpParseError.INVALID_SECRET,
+            )
+            TotpConfiguration(
+                secret = SensitiveText.from(normalizedSecret),
+                issuer = issuer,
+                accountName = accountName,
+                algorithm = algorithm,
+                digits = digits,
+                periodSeconds = periodSeconds,
+            )
         } finally {
             decoded.fill(0)
         }
     }
 
-    private fun parseQuery(query: String): Map<String, String>? {
+    private fun parseQuery(query: String): Map<String, String> {
         if (query.isEmpty()) return emptyMap()
         val result = mutableMapOf<String, String>()
         query.split('&').forEach { item ->
-            if (item.isEmpty()) return null
+            ensureEnrollment(item.isNotEmpty(), TotpParseError.INVALID_INPUT)
             val encodedName = item.substringBefore('=')
             val encodedValue = item.substringAfter('=', missingDelimiterValue = "")
-            val name = percentDecode(encodedName, plusAsSpace = true)?.lowercase() ?: return null
-            val value = percentDecode(encodedValue, plusAsSpace = true) ?: return null
-            if (name in RECOGNIZED_PARAMETERS && result.put(name, value) != null) return null
+            val name = PercentCodec.decode(encodedName, plusAsSpace = true)?.lowercase()
+                ?: rejectEnrollment(TotpParseError.INVALID_INPUT)
+            val value = PercentCodec.decode(encodedValue, plusAsSpace = true)
+                ?: rejectEnrollment(TotpParseError.INVALID_INPUT)
+            val previous = result.put(name, value)
+            ensureEnrollment(
+                name !in RECOGNIZED_PARAMETERS || previous == null,
+                TotpParseError.INVALID_INPUT,
+            )
         }
         return result
     }
+}
 
-    private fun requireValidConfiguration(configuration: TotpConfiguration) {
-        require(isValidOptions(configuration.algorithm, configuration.digits, configuration.periodSeconds)) {
-            "Invalid TOTP configuration"
+private object Base32Codec {
+    fun normalize(input: String): String? {
+        val withoutWhitespace = buildString(input.length) {
+            input.forEach { character ->
+                when {
+                    character.isWhitespace() -> Unit
+                    character in 'a'..'z' -> append(character.uppercaseChar())
+                    else -> append(character)
+                }
+            }
         }
-        require(isValidLabel(configuration.issuer) && isValidLabel(configuration.accountName)) {
-            "Invalid TOTP configuration"
-        }
-    }
-
-    private fun isValidOptions(algorithm: TotpAlgorithm, digits: Int, periodSeconds: Int): Boolean =
-        algorithm in TotpAlgorithm.entries &&
-            digits in SUPPORTED_DIGITS &&
-            periodSeconds in MIN_PERIOD_SECONDS..MAX_PERIOD_SECONDS
-
-    private fun isValidLabel(value: String?): Boolean =
-        value == null || (
-            value.isNotBlank() &&
-                value.length <= MAX_LABEL_LENGTH &&
-                value.none(Char::isISOControl)
-            )
-
-    private fun normalizeBase32(input: String): String? {
-        val withoutWhitespace = input.filterNot(Char::isWhitespace).uppercase()
         val firstPadding = withoutWhitespace.indexOf('=')
-        if (firstPadding >= 0 && withoutWhitespace.drop(firstPadding).any { it != '=' }) return null
-        val normalized = withoutWhitespace.substringBefore('=').takeIf(String::isNotEmpty) ?: return null
-        if (normalized.length % BASE32_BLOCK_CHARACTERS !in VALID_BASE32_REMAINDERS) return null
-        if (firstPadding >= 0) {
+        val normalized = if (firstPadding >= 0) {
+            withoutWhitespace.substring(0, firstPadding)
+        } else {
+            withoutWhitespace
+        }
+        val hasOnlyTrailingPadding = firstPadding < 0 ||
+            withoutWhitespace.drop(firstPadding).all { it == '=' }
+        val hasCanonicalPadding = firstPadding < 0 || run {
             val paddingLength = withoutWhitespace.length - firstPadding
             val expectedPadding = (BASE32_BLOCK_CHARACTERS - normalized.length % BASE32_BLOCK_CHARACTERS) %
                 BASE32_BLOCK_CHARACTERS
-            if (paddingLength != expectedPadding || withoutWhitespace.length % BASE32_BLOCK_CHARACTERS != 0) {
-                return null
-            }
+            paddingLength == expectedPadding && withoutWhitespace.length % BASE32_BLOCK_CHARACTERS == 0
         }
-        return normalized.takeIf { value -> value.all { it in BASE32_ALPHABET } }
+        return normalized.takeIf { value ->
+            value.isNotEmpty() &&
+                value.length % BASE32_BLOCK_CHARACTERS in VALID_BASE32_REMAINDERS &&
+                value.all { it in BASE32_ALPHABET } &&
+                hasOnlyTrailingPadding &&
+                hasCanonicalPadding
+        }
     }
 
-    private fun decodeBase32(input: String): ByteArray? {
-        val normalized = normalizeBase32(input) ?: return null
+    fun decode(input: String): ByteArray? {
+        val normalized = normalize(input) ?: return null
         val output = ByteArray((normalized.length * BASE32_BITS_PER_CHARACTER) / BITS_PER_BYTE)
         var outputIndex = 0
         var buffer = 0
         var bitsInBuffer = 0
         normalized.forEach { character ->
-            val value = BASE32_ALPHABET.indexOf(character)
-            if (value < 0) return null
-            buffer = (buffer shl BASE32_BITS_PER_CHARACTER) or value
+            buffer = (buffer shl BASE32_BITS_PER_CHARACTER) or BASE32_ALPHABET.indexOf(character)
             bitsInBuffer += BASE32_BITS_PER_CHARACTER
             while (bitsInBuffer >= BITS_PER_BYTE) {
                 bitsInBuffer -= BITS_PER_BYTE
@@ -271,80 +328,159 @@ class StandardTotpService : TotpService {
                 buffer = if (bitsInBuffer == 0) 0 else buffer and ((1 shl bitsInBuffer) - 1)
             }
         }
-        if (bitsInBuffer > 0 && buffer != 0) {
+        return if (bitsInBuffer == 0 || buffer == 0) {
+            output
+        } else {
             output.fill(0)
-            return null
+            null
         }
-        return output
     }
+}
 
-    private fun percentDecode(input: String, plusAsSpace: Boolean): String? {
+private object PercentCodec {
+    fun decode(input: String, plusAsSpace: Boolean): String? {
         val result = StringBuilder(input.length)
         var index = 0
         while (index < input.length) {
-            if (input[index] != '%') {
-                val nextPercent = input.indexOf('%', startIndex = index).let { if (it < 0) input.length else it }
-                val segment = input.substring(index, nextPercent)
-                result.append(if (plusAsSpace) segment.replace('+', ' ') else segment)
-                index = nextPercent
-                continue
-            }
+            val nextPercent = input.indexOf('%', startIndex = index)
+                .let { found -> if (found < 0) input.length else found }
+            result.appendPlainText(input.substring(index, nextPercent), plusAsSpace)
+            if (nextPercent == input.length) break
 
-            val bytes = mutableListOf<Byte>()
-            while (index < input.length && input[index] == '%') {
-                if (index + 2 >= input.length) return null
-                val high = input[index + 1].digitToIntOrNull(16) ?: return null
-                val low = input[index + 2].digitToIntOrNull(16) ?: return null
-                bytes += ((high shl 4) or low).toByte()
-                index += 3
-            }
-            val decoded = try {
-                bytes.toByteArray().decodeToString(throwOnInvalidSequence = true)
-            } catch (_: IllegalArgumentException) {
-                return null
-            }
-            result.append(decoded)
+            val decodedRun = decodePercentRun(input, nextPercent) ?: return null
+            result.append(decodedRun.text)
+            index = decodedRun.nextIndex
         }
         return result.toString()
     }
 
-    private companion object {
-        const val OTP_AUTH_PREFIX = "otpauth://"
-        const val TOTP_TYPE = "totp"
-        const val SECRET_PARAMETER = "secret"
-        const val ISSUER_PARAMETER = "issuer"
-        const val ALGORITHM_PARAMETER = "algorithm"
-        const val DIGITS_PARAMETER = "digits"
-        const val PERIOD_PARAMETER = "period"
-        const val MAX_ENROLLMENT_LENGTH = 8 * 1024
-        const val MAX_LABEL_LENGTH = 200
-        const val MIN_SECRET_BYTES = 10
-        const val MAX_SECRET_BYTES = 128
-        const val MIN_PERIOD_SECONDS = 5
-        const val MAX_PERIOD_SECONDS = 300
-        const val COUNTER_BYTES = 8
-        const val BITS_PER_BYTE = 8
-        const val BASE32_BITS_PER_CHARACTER = 5
-        const val BASE32_BLOCK_CHARACTERS = 8
-        const val BYTE_MASK = 0xffL
-        const val BYTE_MASK_INT = 0xff
-        const val SIGN_BIT_MASK = 0x7f
-        const val DYNAMIC_TRUNCATION_MASK = 0x0f
-        const val DYNAMIC_TRUNCATION_BYTES = 4
-        const val ONE_MILLION = 1_000_000
-        const val ONE_HUNDRED_MILLION = 100_000_000
-        const val BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
-        val SUPPORTED_DIGITS = setOf(6, 8)
-        val VALID_BASE32_REMAINDERS = setOf(0, 2, 4, 5, 7)
-        val RECOGNIZED_PARAMETERS = setOf(
-            SECRET_PARAMETER,
-            ISSUER_PARAMETER,
-            ALGORITHM_PARAMETER,
-            DIGITS_PARAMETER,
-            PERIOD_PARAMETER,
-        )
+    private fun StringBuilder.appendPlainText(value: String, plusAsSpace: Boolean) {
+        append(if (plusAsSpace) value.replace('+', ' ') else value)
+    }
+
+    private fun decodePercentRun(input: String, startIndex: Int): DecodedPercentRun? {
+        val endIndex = percentRunEnd(input, startIndex) ?: return null
+        val bytes = ByteArray((endIndex - startIndex) / PERCENT_ENCODED_LENGTH)
+        return try {
+            val isValid = bytes.indices.all { byteIndex ->
+                val encodedIndex = startIndex + byteIndex * PERCENT_ENCODED_LENGTH
+                val decodedByte = decodeHexByte(input, encodedIndex)
+                if (decodedByte != null) bytes[byteIndex] = decodedByte
+                decodedByte != null
+            }
+            if (isValid) {
+                DecodedPercentRun(
+                    text = bytes.decodeToString(throwOnInvalidSequence = true),
+                    nextIndex = endIndex,
+                )
+            } else {
+                null
+            }
+        } catch (_: CharacterCodingException) {
+            null
+        } finally {
+            bytes.fill(0)
+        }
+    }
+
+    private fun percentRunEnd(input: String, startIndex: Int): Int? {
+        var index = startIndex
+        while (index < input.length && input[index] == '%') {
+            if (index + PERCENT_ENCODED_LENGTH > input.length) return null
+            index += PERCENT_ENCODED_LENGTH
+        }
+        return index
+    }
+
+    private fun decodeHexByte(input: String, encodedIndex: Int): Byte? {
+        val high = input[encodedIndex + 1].digitToIntOrNull(HEX_RADIX)
+        val low = input[encodedIndex + 2].digitToIntOrNull(HEX_RADIX)
+        return if (high != null && low != null) ((high shl 4) or low).toByte() else null
     }
 }
 
+private data class DecodedPercentRun(
+    val text: String,
+    val nextIndex: Int,
+)
+
+private inline fun parseEnrollment(block: () -> TotpConfiguration): TotpParseResult =
+    try {
+        TotpParseResult.Success(block())
+    } catch (failure: TotpEnrollmentException) {
+        TotpParseResult.Error(failure.reason)
+    }
+
+private fun ensureEnrollment(condition: Boolean, reason: TotpParseError) {
+    if (!condition) rejectEnrollment(reason)
+}
+
+private fun rejectEnrollment(reason: TotpParseError): Nothing = throw TotpEnrollmentException(reason)
+
+private fun isValidOptions(algorithm: TotpAlgorithm, digits: Int, periodSeconds: Int): Boolean =
+    algorithm in TotpAlgorithm.entries &&
+        digits in SUPPORTED_DIGITS &&
+        periodSeconds in MIN_PERIOD_SECONDS..MAX_PERIOD_SECONDS
+
+private fun isValidTotpLabel(value: String?): Boolean =
+    value == null ||
+        (
+            value.isNotBlank() &&
+                value.codePointLength() <= MAX_LABEL_LENGTH &&
+                value.hasOnlySafeSingleLineCodePoints()
+        )
+
+private class TotpEnrollmentException(val reason: TotpParseError) : IllegalArgumentException()
+
+private data class ParsedUriParts(
+    val label: String,
+    val parameters: Map<String, String>,
+    val secret: String,
+)
+
+private data class ParsedLabel(
+    val issuer: String?,
+    val accountName: String,
+)
+
 const val DEFAULT_DIGITS = 6
 const val DEFAULT_PERIOD_SECONDS = 30
+
+private const val OTP_AUTH_PREFIX = "otpauth://"
+private const val TOTP_TYPE = "totp"
+private const val SECRET_PARAMETER = "secret"
+private const val ISSUER_PARAMETER = "issuer"
+private const val ALGORITHM_PARAMETER = "algorithm"
+private const val DIGITS_PARAMETER = "digits"
+private const val PERIOD_PARAMETER = "period"
+private const val MAX_ENROLLMENT_LENGTH = 8 * 1024
+private const val MAX_LABEL_LENGTH = 200
+private const val MIN_SECRET_BYTES = 10
+private const val MAX_SECRET_BYTES = 128
+private const val MIN_SECRET_CHARACTERS = 16
+private const val MAX_SECRET_CHARACTERS = 205
+private const val MIN_PERIOD_SECONDS = 5
+private const val MAX_PERIOD_SECONDS = 300
+private const val COUNTER_BYTES = 8
+private const val BITS_PER_BYTE = 8
+private const val BASE32_BITS_PER_CHARACTER = 5
+private const val BASE32_BLOCK_CHARACTERS = 8
+private const val PERCENT_ENCODED_LENGTH = 3
+private const val HEX_RADIX = 16
+private const val BYTE_MASK = 0xffL
+private const val BYTE_MASK_INT = 0xff
+private const val SIGN_BIT_MASK = 0x7f
+private const val DYNAMIC_TRUNCATION_MASK = 0x0f
+private const val DYNAMIC_TRUNCATION_BYTES = 4
+private const val ONE_MILLION = 1_000_000
+private const val ONE_HUNDRED_MILLION = 100_000_000
+private const val BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+private val SUPPORTED_DIGITS = setOf(DEFAULT_DIGITS, 8)
+private val VALID_BASE32_REMAINDERS = setOf(0, 2, 4, 5, 7)
+private val RECOGNIZED_PARAMETERS = setOf(
+    SECRET_PARAMETER,
+    ISSUER_PARAMETER,
+    ALGORITHM_PARAMETER,
+    DIGITS_PARAMETER,
+    PERIOD_PARAMETER,
+)

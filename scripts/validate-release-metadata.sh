@@ -10,9 +10,14 @@ fi
 requested_version="$1"
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 properties_path="$repository_root/version.properties"
+build_info_path="$repository_root/core/domain/src/commonMain/kotlin/com/passvault/core/domain/PassVaultBuildInfo.kt"
 
 if [[ ! -f "$properties_path" ]]; then
     echo "version.properties was not found." >&2
+    exit 1
+fi
+if [[ ! -f "$build_info_path" ]]; then
+    echo "PassVaultBuildInfo.kt was not found." >&2
     exit 1
 fi
 
@@ -30,11 +35,24 @@ property_value() {
     ' "$properties_path"
 }
 
+for key in \
+    VERSION_MAJOR VERSION_MINOR VERSION_PATCH VERSION_NAME VERSION_CODE \
+    BUILD_TIMESTAMP BUILD_NUMBER RELEASE_CHANNEL MIN_SUPPORTED_VERSION; do
+    declaration_count="$(awk -F= -v key="$key" \
+        '$0 !~ /^[[:space:]]*#/ && $1 == key { count++ } END { print count + 0 }' \
+        "$properties_path")"
+    if [[ "$declaration_count" != 1 ]]; then
+        echo "version.properties must define $key exactly once." >&2
+        exit 1
+    fi
+done
+
 version_major="$(property_value VERSION_MAJOR)"
 version_minor="$(property_value VERSION_MINOR)"
 version_patch="$(property_value VERSION_PATCH)"
 version_name="$(property_value VERSION_NAME)"
 version_code="$(property_value VERSION_CODE)"
+build_timestamp="$(property_value BUILD_TIMESTAMP)"
 build_number="$(property_value BUILD_NUMBER)"
 release_channel="$(property_value RELEASE_CHANNEL)"
 minimum_supported_version="$(property_value MIN_SUPPORTED_VERSION)"
@@ -42,8 +60,8 @@ minimum_supported_version="$(property_value MIN_SUPPORTED_VERSION)"
 for value_name in \
     version_major version_minor version_patch version_code build_number minimum_supported_version; do
     value="${!value_name}"
-    if [[ ! "$value" =~ ^(0|[1-9][0-9]*)$ ]]; then
-        echo "$value_name must be a non-negative integer." >&2
+    if [[ ! "$value" =~ ^(0|[1-9][0-9]*)$ || ${#value} -gt 10 ]]; then
+        echo "$value_name must be a canonical non-negative integer of at most 10 digits." >&2
         exit 1
     fi
 done
@@ -59,23 +77,50 @@ if [[ "$requested_version" != "$version_name" ]]; then
     exit 1
 fi
 
+build_info_declarations="$(grep -Ec \
+    '^[[:space:]]*const val VERSION: String = "[^"]+"[[:space:]]*$' \
+    "$build_info_path" || true)"
+if [[ "$build_info_declarations" != 1 ]]; then
+    echo "PassVaultBuildInfo.kt must contain exactly one literal VERSION declaration." >&2
+    exit 1
+fi
+build_info_version="$(sed -nE \
+    's/^[[:space:]]*const val VERSION: String = "([^"]+)"[[:space:]]*$/\1/p' \
+    "$build_info_path")"
+if [[ "$build_info_version" != "$version_name" ]]; then
+    echo "PassVaultBuildInfo.VERSION does not match VERSION_NAME in version.properties." >&2
+    exit 1
+fi
+
 if [[ ! "$requested_version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
     echo "Release version must use MAJOR.MINOR.PATCH semantic versioning." >&2
     exit 1
 fi
 
-if (( version_code <= 0 || version_code > 2100000000 )); then
+if (( 10#$version_code <= 0 || 10#$version_code > 2100000000 )); then
     echo "VERSION_CODE is outside Android's supported positive range." >&2
     exit 1
 fi
 
-if (( build_number <= 0 )); then
+if (( 10#$build_number <= 0 )); then
     echo "BUILD_NUMBER must be positive." >&2
     exit 1
 fi
 
-if (( minimum_supported_version <= 0 )); then
-    echo "MIN_SUPPORTED_VERSION must be positive." >&2
+if (( 10#$minimum_supported_version <= 0 ||
+    10#$minimum_supported_version > 2100000000 ||
+    10#$minimum_supported_version > 10#$version_code )); then
+    echo "MIN_SUPPORTED_VERSION must be positive, supported by Android, and no newer than VERSION_CODE." >&2
+    exit 1
+fi
+
+if [[ ! "$build_timestamp" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]] ||
+    ! ruby -rtime -e '
+      value = ARGV.fetch(0)
+      parsed = Time.iso8601(value)
+      abort unless parsed.utc? && parsed.strftime("%Y-%m-%dT%H:%M:%SZ") == value
+    ' "$build_timestamp"; then
+    echo "BUILD_TIMESTAMP must be a valid UTC timestamp in YYYY-MM-DDTHH:MM:SSZ format." >&2
     exit 1
 fi
 
@@ -112,6 +157,10 @@ fi
 placeholder_pattern='example\.(com|invalid)|localhost|127\.0\.0\.1|your verified|change[ -]?me|todo'
 for name in "${required_metadata[@]}"; do
     value="${!name}"
+    if [[ "$value" == *$'\n'* || "$value" == *$'\r'* ]]; then
+        echo "$name must be a single line." >&2
+        exit 1
+    fi
     if grep -Eiq "$placeholder_pattern" <<<"$value"; then
         echo "$name contains a placeholder and cannot be used for a release." >&2
         exit 1
@@ -127,14 +176,24 @@ for name in SUPPORT_EMAIL SECURITY_EMAIL; do
 done
 
 for name in PRIVACY_POLICY_URL SUPPORT_URL PROJECT_URL; do
-    if [[ ! "${!name}" =~ ^https://[^[:space:]]+$ ]]; then
+    if ! ruby -ruri -e '
+      uri = URI.parse(ARGV.fetch(0))
+      abort unless uri.is_a?(URI::HTTPS) && uri.host && !uri.host.empty? &&
+        uri.userinfo.nil? && uri.fragment.nil?
+    ' "${!name}"; then
         echo "$name must be an HTTPS URL." >&2
         exit 1
     fi
 done
 
 if [[ -n "${ANDROID_STORE_LISTING_URL:-}" ]]; then
-    if [[ ! "$ANDROID_STORE_LISTING_URL" =~ ^https://[^[:space:]]+$ ]] ||
+    if [[ "$ANDROID_STORE_LISTING_URL" == *$'\n'* ||
+        "$ANDROID_STORE_LISTING_URL" == *$'\r'* ]] ||
+        ! ruby -ruri -e '
+          uri = URI.parse(ARGV.fetch(0))
+          abort unless uri.is_a?(URI::HTTPS) && uri.host && !uri.host.empty? &&
+            uri.userinfo.nil? && uri.fragment.nil?
+        ' "$ANDROID_STORE_LISTING_URL" ||
         grep -Eiq "$placeholder_pattern" <<<"$ANDROID_STORE_LISTING_URL"; then
         echo "ANDROID_STORE_LISTING_URL must be a non-placeholder HTTPS URL." >&2
         exit 1

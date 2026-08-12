@@ -1,8 +1,11 @@
 package com.passvault.core.domain.model
 
 import assertk.assertThat
-import assertk.assertions.*
-import kotlin.test.*
+import assertk.assertions.hasSize
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEqualTo
+import kotlin.test.Test
 
 /**
  * Unit tests for strongly-typed ID value classes.

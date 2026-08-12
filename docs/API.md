@@ -1,6 +1,6 @@
 # Internal contracts
 
-Last reviewed: 2026-07-28
+Last reviewed: 2026-08-11
 
 PassVault has no network or public HTTP API. This document identifies the stable internal boundaries; source code is
 authoritative for signatures.
@@ -11,7 +11,7 @@ authoritative for signatures.
 - `CredentialRepository`: credential observation/query, create/update/delete, favorites, folders/tags, and history.
 - `FolderRepository`: observe/create/update/delete folders with hierarchy, duplicate, and cycle validation.
 - `TagRepository`: observe/create/update/delete tags and maintain credential relationships.
-- `AppSettingsStore`: persisted theme, auto-lock, clipboard, screenshot, and generator preferences.
+- `AppSettingsStore`: persisted theme, accent color, auto-lock timeout, and clipboard-expiry preferences.
 
 Repositories return `Result` or flows of domain models. UI code never receives Room entities. An encrypted repository
 operation fails safely when the vault session is locked.
@@ -21,8 +21,9 @@ operation fails safely when the vault session is locked.
 - `CryptoEngine`: random bytes, Argon2id, XChaCha20-Poly1305, keyed subkey derivation, and constant-time comparison.
 - `VaultSessionManager`: a narrow active-key access boundary implemented by the vault repository.
 - `ClipboardService`: sensitive copy with ownership-aware expiration.
-- `ScreenshotProtection` / `WindowProtection`: platform display controls.
-- `KeyringService`: optional platform secret storage that must fail closed.
+- `ScreenshotProtection`: Android sensitive-window display control.
+- `DesktopWindowProtection`: Desktop minimize/focus locking and native-window concealment owned by the Desktop host;
+  it does not claim portable screenshot prevention.
 - `BiometricKeyStore`: platform storage for a VEK gated by an OS biometric-only key policy.
 - `BiometricUnlockService`: enrollment, status, removal, and verified session unlock for the current vault.
 - `BackupFileStore`: bounded platform document/file selection and read/write.

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -86,14 +87,45 @@ fun MasterPasswordConfirmationScreen(
         }
     }
 
+    MasterPasswordConfirmationScaffold(
+        state = state,
+        onEvent = onEvent,
+        confirmFocusRequester = confirmFocusRequester,
+        passwordVisible = passwordVisible,
+        onToggleVisibility = { passwordVisible = !passwordVisible },
+        onSubmit = {
+            focusManager.clearFocus()
+            onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordClick)
+        },
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun MasterPasswordConfirmationScaffold(
+    state: OnboardingViewModel.OnboardingState,
+    onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
+    confirmFocusRequester: FocusRequester,
+    passwordVisible: Boolean,
+    onToggleVisibility: () -> Unit,
+    onSubmit: () -> Unit,
+    modifier: Modifier,
+) {
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = { onEvent(OnboardingViewModel.OnboardingEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.ui_go_back))
+                    if (!state.vaultCreated) {
+                        IconButton(
+                            onClick = { onEvent(OnboardingViewModel.OnboardingEvent.OnBackClick) },
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(Res.string.ui_go_back),
+                            )
+                        }
                     }
                 },
                 colors = passVaultTopAppBarColors(),
@@ -101,127 +133,176 @@ fun MasterPasswordConfirmationScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding(),
-            contentAlignment = Alignment.TopCenter,
+        ConfirmationContent(
+            state = state,
+            onEvent = onEvent,
+            confirmFocusRequester = confirmFocusRequester,
+            passwordVisible = passwordVisible,
+            onToggleVisibility = onToggleVisibility,
+            onSubmit = onSubmit,
+            modifier = Modifier.scaffoldVerticalScroll(rememberScrollState(), paddingValues),
+        )
+    }
+}
+
+@Composable
+private fun ConfirmationContent(
+    state: OnboardingViewModel.OnboardingState,
+    onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
+    confirmFocusRequester: FocusRequester,
+    passwordVisible: Boolean,
+    onToggleVisibility: () -> Unit,
+    onSubmit: () -> Unit,
+    modifier: Modifier,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize().imePadding(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
+            modifier = modifier
+                .widthIn(max = ComponentSpacing.formMaxWidth)
+                .fillMaxWidth()
+                .padding(
+                    horizontal = ComponentSpacing.screenHorizontal,
+                    vertical = ComponentSpacing.screenVertical,
+                ),
+            verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .widthIn(max = ComponentSpacing.formMaxWidth)
-                    .scaffoldVerticalScroll(rememberScrollState(), paddingValues)
-                    .padding(
-                        horizontal = ComponentSpacing.screenHorizontal,
-                        vertical = ComponentSpacing.screenVertical,
-                    ),
-                verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
-            ) {
-                EditorialPageHeader(
-                    eyebrow = stringResource(Res.string.ui_confirm_master_password),
-                    title = stringResource(Res.string.ui_type_it_again_carefully),
-                    subtitle = stringResource(
-                        Res.string.ui_the_vault_cannot_be_recovered_without_this_password_it,
-                    ),
+            EditorialPageHeader(
+                eyebrow = stringResource(Res.string.ui_confirm_master_password),
+                title = stringResource(Res.string.ui_type_it_again_carefully),
+                subtitle = stringResource(
+                    Res.string.ui_the_vault_cannot_be_recovered_without_this_password_it,
+                ),
+            )
+            ConfirmationFormPanel(
+                state = state,
+                onEvent = onEvent,
+                confirmFocusRequester = confirmFocusRequester,
+                passwordVisible = passwordVisible,
+                onToggleVisibility = onToggleVisibility,
+                onSubmit = onSubmit,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ConfirmationFormPanel(
+    state: OnboardingViewModel.OnboardingState,
+    onEvent: (OnboardingViewModel.OnboardingEvent) -> Unit,
+    confirmFocusRequester: FocusRequester,
+    passwordVisible: Boolean,
+    onToggleVisibility: () -> Unit,
+    onSubmit: () -> Unit,
+) {
+    EditorialPanel(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(Spacing.lg),
+    ) {
+        ConfirmationPasswordInput(
+            state = state,
+            onPasswordChanged = {
+                onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordChanged(it))
+            },
+            focusRequester = confirmFocusRequester,
+            passwordVisible = passwordVisible,
+            onToggleVisibility = onToggleVisibility,
+            onSubmit = onSubmit,
+            enabled = !state.isLoading,
+        )
+        if (state.confirmPassword.isNotEmpty()) MatchIndicator(state.passwordsMatch)
+        EditorialStatusBanner(
+            icon = Icons.Default.Warning,
+            title = stringResource(Res.string.ui_important_store_your_master_password_safely),
+            message = stringResource(
+                Res.string.ui_passvault_cannot_reset_it_or_decrypt_your_vault_withou,
+            ),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        )
+        state.errorMessage?.let { error ->
+            EditorialStatusBanner(
+                icon = Icons.Default.Warning,
+                title = stringResource(Res.string.ui_confirm_master_password),
+                message = error.resolve(),
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        }
+        ConfirmationSubmitButton(state, onSubmit)
+    }
+}
+
+@Composable
+private fun ConfirmationPasswordInput(
+    state: OnboardingViewModel.OnboardingState,
+    onPasswordChanged: (String) -> Unit,
+    focusRequester: FocusRequester,
+    passwordVisible: Boolean,
+    onToggleVisibility: () -> Unit,
+    onSubmit: () -> Unit,
+    enabled: Boolean,
+) {
+    OutlinedTextField(
+        value = state.confirmPassword,
+        onValueChange = onPasswordChanged,
+        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+        label = { Text(stringResource(Res.string.ui_confirm_password)) },
+        visualTransformation = if (passwordVisible) {
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation()
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+        singleLine = true,
+        enabled = enabled,
+        trailingIcon = {
+            TextButton(onClick = onToggleVisibility, enabled = enabled) {
+                Text(
+                    if (passwordVisible) {
+                        stringResource(Res.string.action_hide)
+                    } else {
+                        stringResource(Res.string.action_show)
+                    },
                 )
-
-                EditorialPanel(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(Spacing.lg),
-                ) {
-                    OutlinedTextField(
-                        value = state.confirmPassword,
-                        onValueChange = {
-                            onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordChanged(it))
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(confirmFocusRequester),
-                        label = { Text(stringResource(Res.string.ui_confirm_password)) },
-                        visualTransformation = if (passwordVisible) {
-                            VisualTransformation.None
-                        } else {
-                            PasswordVisualTransformation()
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done,
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus()
-                                onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordClick)
-                            },
-                        ),
-                        singleLine = true,
-                        trailingIcon = {
-                            TextButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Text(
-                                    if (passwordVisible) {
-                                        stringResource(Res.string.action_hide)
-                                    } else {
-                                        stringResource(Res.string.action_show)
-                                    },
-                                )
-                            }
-                        },
-                        isError = state.confirmPassword.isNotEmpty() && !state.passwordsMatch,
-                        supportingText = {
-                            if (state.confirmPassword.isNotEmpty() && !state.passwordsMatch) {
-                                Text(stringResource(Res.string.ui_passwords_do_not_match))
-                            }
-                        },
-                    )
-
-                    if (state.confirmPassword.isNotEmpty()) {
-                        MatchIndicator(state.passwordsMatch)
-                    }
-
-                    EditorialStatusBanner(
-                        icon = Icons.Default.Warning,
-                        title = stringResource(Res.string.ui_important_store_your_master_password_safely),
-                        message = stringResource(
-                            Res.string.ui_passvault_cannot_reset_it_or_decrypt_your_vault_withou,
-                        ),
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    )
-
-                    state.errorMessage?.let { error ->
-                        EditorialStatusBanner(
-                            icon = Icons.Default.Warning,
-                            title = stringResource(Res.string.ui_confirm_master_password),
-                            message = error.resolve(),
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                        )
-                    }
-
-                    Button(
-                        onClick = {
-                            onEvent(OnboardingViewModel.OnboardingEvent.OnConfirmPasswordClick)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        enabled = state.canCreateVault,
-                        shape = MaterialTheme.shapes.large,
-                    ) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        } else {
-                            Text(
-                                stringResource(Res.string.ui_create_encrypted_vault),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                    }
-                }
             }
+        },
+        isError = state.confirmPassword.isNotEmpty() && !state.passwordsMatch,
+        supportingText = {
+            if (state.confirmPassword.isNotEmpty() && !state.passwordsMatch) {
+                Text(stringResource(Res.string.ui_passwords_do_not_match))
+            }
+        },
+    )
+}
+
+@Composable
+private fun ConfirmationSubmitButton(
+    state: OnboardingViewModel.OnboardingState,
+    onSubmit: () -> Unit,
+) {
+    Button(
+        onClick = onSubmit,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+        enabled = state.canCreateVault,
+        shape = MaterialTheme.shapes.large,
+    ) {
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
+        } else {
+            Text(
+                stringResource(Res.string.ui_create_encrypted_vault),
+                style = MaterialTheme.typography.titleMedium,
+            )
         }
     }
 }
@@ -256,7 +337,11 @@ private fun MatchIndicator(passwordsMatch: Boolean, modifier: Modifier = Modifie
             }
         }
         Text(
-            if (passwordsMatch) stringResource(Res.string.ui_passwords_match) else stringResource(Res.string.ui_passwords_do_not_match_b6eb82cd),
+            text = if (passwordsMatch) {
+                stringResource(Res.string.ui_passwords_match)
+            } else {
+                stringResource(Res.string.ui_passwords_do_not_match_b6eb82cd)
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = if (passwordsMatch) {
                 MaterialTheme.colorScheme.primary

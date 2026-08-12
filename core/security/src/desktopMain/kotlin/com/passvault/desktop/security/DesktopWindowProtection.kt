@@ -1,433 +1,257 @@
 package com.passvault.desktop.security
 
-import androidx.compose.ui.awt.ComposeWindow
-import com.passvault.core.security.WindowProtection
 import java.awt.Frame
+import java.awt.Window
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.util.concurrent.CopyOnWriteArrayList
+import java.awt.event.WindowStateListener
 import javax.swing.JFrame
+import javax.swing.Timer
 
 /**
- * Desktop implementation of window protection.
- * Manages screenshot protection, window lock state, and security features
- * specific to desktop platforms (Windows, macOS, Linux).
+ * Desktop window lifecycle boundary.
+ *
+ * Desktop platforms do not expose portable screenshot prevention. This class
+ * therefore owns only behavior it can guarantee: locking on minimize or real
+ * focus loss, minimizing locked content, and rearming after an unlock.
  */
-class DesktopWindowProtection : WindowProtection {
-
-    private var composeWindow: ComposeWindow? = null
-    private var jFrame: JFrame? = null
-    private var isProtectionEnabled = false
-    private var isLockedState = false
+class DesktopWindowProtection {
+    private var frame: JFrame? = null
+    private var locked = false
     private var autoLockOnMinimize = false
     private var autoLockOnFocusLost = false
     private var autoLockDelayMs = 0L
-    private var lockTimer: javax.swing.Timer? = null
-
-    // Listeners for lock/unlock events
-    private val lockListeners = CopyOnWriteArrayList<() -> Unit>()
-    private val unlockListeners = CopyOnWriteArrayList<() -> Unit>()
-    private val minimizeListeners = CopyOnWriteArrayList<() -> Unit>()
-    private val restoreListeners = CopyOnWriteArrayList<() -> Unit>()
-
-    /**
-     * Attach to a Compose window.
-     */
-    fun attachWindow(window: ComposeWindow) {
-        this.composeWindow = window
-        this.jFrame = window
-        setupWindowListeners()
-    }
-
-    /**
-     * Attach to a JFrame.
-     */
-    fun attachFrame(frame: JFrame) {
-        this.jFrame = frame
-        setupWindowListeners()
-    }
-
-    override fun enableProtection() {
-        isProtectionEnabled = true
-
-        // Platform-specific protection implementations
-        when (getOperatingSystem()) {
-            OperatingSystem.WINDOWS -> enableWindowsProtection()
-            OperatingSystem.MACOS -> enableMacProtection()
-            OperatingSystem.LINUX -> enableLinuxProtection()
-            else -> {}
+    private var lockTimer: Timer? = null
+        set(value) {
+            field?.stop()
+            field = value
         }
-    }
+    private var previousNonIconifiedState = Frame.NORMAL
+    private var contentSecured = false
+    private var restoreRequested = false
+    private var contentSecurityInProgress = false
 
-    override fun disableProtection() {
-        isProtectionEnabled = false
+    private var windowListeners: DesktopWindowListeners? = null
+    private var lockListener: (() -> Unit)? = null
 
-        // Restore normal window behavior
-        jFrame?.let { frame ->
-            try {
-                frame.rootPane.putClientProperty("apple.awt.dragWindow", true)
-                frame.rootPane.putClientProperty("apple.awt.window.shadow", true)
-            } catch (e: Exception) {
-                // Ignore
-            }
-        }
-    }
+    val isLocked: Boolean
+        get() = locked
 
-    override fun isProtected(): Boolean = isProtectionEnabled
+    val isMinimized: Boolean
+        get() = frame?.let { it.extendedState and Frame.ICONIFIED != 0 } ?: false
 
-    override fun minimize() {
-        jFrame?.let { frame ->
-            val state = frame.extendedState
-            frame.extendedState = state or Frame.ICONIFIED
-        }
-        minimizeListeners.forEach { it() }
-    }
+    internal val isRestoreDeferred: Boolean
+        get() = restoreRequested
 
-    override fun lock() {
-        if (!isLockedState) {
-            isLockedState = true
-            lockListeners.forEach { it() }
-            minimize()
-        }
-    }
-
-    override fun unlock() {
-        if (isLockedState) {
-            isLockedState = false
-            restoreWindow()
-            unlockListeners.forEach { it() }
-        }
-    }
-
-    /**
-     * Restore window from minimized state.
-     */
-    fun restoreWindow() {
-        jFrame?.let { frame ->
-            frame.extendedState = Frame.NORMAL
-            frame.toFront()
-            frame.requestFocus()
-        }
-        restoreListeners.forEach { it() }
-    }
-
-    /**
-     * Check if window is currently locked.
-     */
-    fun isLocked(): Boolean = isLockedState
-
-    /**
-     * Check if window is minimized.
-     */
-    fun isMinimized(): Boolean {
-        return jFrame?.extendedState?.and(Frame.ICONIFIED) != 0
-    }
-
-    /**
-     * Set auto-lock on minimize.
-     */
-    fun setAutoLockOnMinimize(enabled: Boolean) {
-        autoLockOnMinimize = enabled
-    }
-
-    /**
-     * Set auto-lock on focus lost.
-     */
-    fun setAutoLockOnFocusLost(enabled: Boolean, delayMs: Long = 0) {
-        autoLockOnFocusLost = enabled
-        autoLockDelayMs = delayMs
-    }
-
-    /**
-     * Add lock listener.
-     */
-    fun addLockListener(listener: () -> Unit) {
-        lockListeners.add(listener)
-    }
-
-    /**
-     * Remove lock listener.
-     */
-    fun removeLockListener(listener: () -> Unit) {
-        lockListeners.remove(listener)
-    }
-
-    /**
-     * Add unlock listener.
-     */
-    fun addUnlockListener(listener: () -> Unit) {
-        unlockListeners.add(listener)
-    }
-
-    /**
-     * Remove unlock listener.
-     */
-    fun removeUnlockListener(listener: () -> Unit) {
-        unlockListeners.remove(listener)
-    }
-
-    /**
-     * Add minimize listener.
-     */
-    fun addMinimizeListener(listener: () -> Unit) {
-        minimizeListeners.add(listener)
-    }
-
-    /**
-     * Remove minimize listener.
-     */
-    fun removeMinimizeListener(listener: () -> Unit) {
-        minimizeListeners.remove(listener)
-    }
-
-    /**
-     * Add restore listener.
-     */
-    fun addRestoreListener(listener: () -> Unit) {
-        restoreListeners.add(listener)
-    }
-
-    /**
-     * Remove restore listener.
-     */
-    fun removeRestoreListener(listener: () -> Unit) {
-        restoreListeners.remove(listener)
-    }
-
-    /**
-     * Blur window content (for lock screen).
-     */
-    fun blurContent() {
-        // On desktop, we can't easily blur the entire window
-        // This should be handled at the Compose layer
-        isLockedState = true
-        lockListeners.forEach { it() }
-    }
-
-    /**
-     * Unblur window content.
-     */
-    fun unblurContent() {
-        isLockedState = false
-        unlockListeners.forEach { it() }
-    }
-
-    /**
-     * Flash the window to get attention.
-     */
-    fun flashWindow() {
-        jFrame?.let { frame ->
-            when (getOperatingSystem()) {
-                OperatingSystem.WINDOWS -> flashWindowsWindow(frame)
-                OperatingSystem.MACOS -> flashMacWindow(frame)
-                else -> {
-                    frame.toFront()
-                    frame.requestFocus()
-                }
-            }
-        }
-    }
-
-    /**
-     * Set window opacity.
-     */
-    fun setWindowOpacity(opacity: Float) {
-        jFrame?.let { frame ->
-            if (java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment()
-                    .defaultScreenDevice
-                    .isWindowTranslucencySupported
-                    (java.awt.GraphicsDevice.WindowTranslucency.TRANSLUCENT)
-            ) {
-                frame.opacity = opacity.coerceIn(0.0f, 1.0f)
-            }
-        }
-    }
-
-    /**
-     * Get window bounds.
-     */
-    fun getWindowBounds(): java.awt.Rectangle? {
-        return jFrame?.bounds
-    }
-
-    /**
-     * Set window bounds.
-     */
-    fun setWindowBounds(bounds: java.awt.Rectangle) {
-        jFrame?.bounds = bounds
-    }
-
-    /**
-     * Get the underlying JFrame.
-     */
-    fun getFrame(): JFrame? = jFrame
-
-    /**
-     * Get the Compose window.
-     */
-    fun getComposeWindow(): ComposeWindow? = composeWindow
-
-    private fun setupWindowListeners() {
-        jFrame?.let { frame ->
-            // Window state listener for minimize
-            frame.addWindowStateListener { e ->
-                if (e.newState and Frame.ICONIFIED != 0) {
-                    // Window was minimized
-                    minimizeListeners.forEach { it() }
-
-                    if (autoLockOnMinimize) {
-                        lock()
+    fun attachWindow(window: JFrame) {
+        if (frame === window) return
+        lockTimer = null
+        windowListeners?.detach()
+        frame = window
+        windowListeners = DesktopWindowListeners(
+            frame = window,
+            onStateChanged = { event ->
+                if (event.newState and Frame.ICONIFIED != 0) {
+                    if (event.oldState and Frame.ICONIFIED == 0) {
+                        previousNonIconifiedState = event.oldState
                     }
-                } else if (e.oldState and Frame.ICONIFIED != 0) {
-                    // Window was restored
-                    restoreListeners.forEach { it() }
+                    if (autoLockOnMinimize) lock()
+                } else if (
+                    shouldDeferDesktopWindowRestore(
+                        oldState = event.oldState,
+                        newState = event.newState,
+                        locked = locked,
+                        contentSecured = contentSecured,
+                    )
+                ) {
+                    // Taskbar and window-manager restores do not pass through
+                    // restoreWindow(). Keep the native surface concealed until
+                    // Compose has observed the terminal Locked state, then
+                    // honor the user's restore request.
+                    restoreRequested = true
+                    window.extendedState = event.newState or Frame.ICONIFIED
+                    requestContentSecurity()
                 }
-            }
-
-            // Focus listener
-            frame.addWindowFocusListener(object : WindowAdapter() {
-                override fun windowLostFocus(e: WindowEvent?) {
-                    if (autoLockOnFocusLost) {
-                        if (autoLockDelayMs > 0) {
-                            lockTimer?.stop()
-                            lockTimer = javax.swing.Timer(autoLockDelayMs.toInt()) {
-                                lock()
-                            }.apply { isRepeats = false; start() }
-                        } else {
-                            lock()
+            },
+            onFocusLost = { event ->
+                if (!event?.oppositeWindow.isOwnedBy(window) && autoLockOnFocusLost) {
+                    if (autoLockDelayMs == 0L) {
+                        lock()
+                    } else {
+                        val delay = autoLockDelayMs.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+                        lockTimer = Timer(delay) { lock() }.apply {
+                            isRepeats = false
+                            start()
                         }
                     }
                 }
-
-                override fun windowGainedFocus(e: WindowEvent?) {
-                    lockTimer?.stop()
-                }
-            })
-
-            // Window closing listener
-            frame.addWindowListener(object : WindowAdapter() {
-                override fun windowClosing(e: WindowEvent?) {
-                    // Clean up before closing
-                    cleanup()
-                }
-            })
-        }
+            },
+            onFocusGained = { lockTimer = null },
+            onClosed = ::cleanup,
+        ).also(DesktopWindowListeners::attach)
     }
 
-    private fun enableWindowsProtection() {
-        jFrame?.let { frame ->
-            // Windows-specific protection
-            // Note: True screenshot protection requires native Windows APIs
-            // This is a best-effort implementation
-            try {
-                // Set window to not appear in window switcher (optional)
-                // frame.type = javax.swing.JWindow.Type.UTILITY
-            } catch (e: Exception) {
-                // Ignore
-            }
-        }
-    }
-
-    private fun enableMacProtection() {
-        jFrame?.let { frame ->
-            // macOS-specific protection
-            try {
-                // Disable window shadow in screenshots
-                frame.rootPane.putClientProperty("apple.awt.window.shadow", false)
-                // Disable window dragging during protection
-                frame.rootPane.putClientProperty("apple.awt.dragWindow", false)
-            } catch (e: Exception) {
-                // Ignore
-            }
-        }
-    }
-
-    private fun enableLinuxProtection() {
-        jFrame?.let { frame ->
-            // Linux-specific protection
-            // Most Linux window managers don't support screenshot protection
-            try {
-                // Set window properties via X11 (if available)
-                frame.rootPane.putClientProperty("AWT_TRANSPARENT_REDIRECT_POLICY", false)
-            } catch (e: Exception) {
-                // Ignore
-            }
-        }
-    }
-
-    private fun flashWindowsWindow(frame: JFrame) {
-        try {
-            // Windows-specific flash
-            frame.toFront()
-            java.awt.Taskbar.getTaskbar()?.requestUserAttention(true, true)
-        } catch (e: Exception) {
-            frame.toFront()
-        }
-    }
-
-    private fun flashMacWindow(frame: JFrame) {
-        try {
-            // macOS-specific flash via AppKit
-            val app = java.awt.Desktop.getDesktop()
-            frame.toFront()
-        } catch (e: Exception) {
-            frame.toFront()
-        }
-    }
-
-    private fun getOperatingSystem(): OperatingSystem {
-        val osName = System.getProperty("os.name").lowercase()
-        return when {
-            osName.contains("win") -> OperatingSystem.WINDOWS
-            osName.contains("mac") -> OperatingSystem.MACOS
-            osName.contains("nix") || osName.contains("nux") || osName.contains("aix") -> OperatingSystem.LINUX
-            else -> OperatingSystem.UNKNOWN
-        }
+    fun lock() {
+        prepareForShutdown()
+        requestContentSecurity()
     }
 
     /**
-     * Clean up resources.
+     * Conceals the native window immediately while the shutdown owner performs
+     * its own non-cancellable repository and clipboard cleanup.
+     *
+     * Unlike [lock], this does not notify the normal lock listener; doing so
+     * would start a duplicate cleanup job and delay process termination behind
+     * two serialized repository locks.
      */
+    fun prepareForShutdown() {
+        if (locked) return
+        lockTimer = null
+        locked = true
+        contentSecured = false
+        restoreRequested = false
+        contentSecurityInProgress = false
+        frame?.let { current ->
+            val state = current.extendedState
+            if (state and Frame.ICONIFIED == 0) {
+                previousNonIconifiedState = state
+            }
+            current.extendedState = state or Frame.ICONIFIED
+        }
+    }
+
+    fun unlock() {
+        if (!locked) return
+        locked = false
+        contentSecured = false
+        restoreRequested = false
+        contentSecurityInProgress = false
+        restoreDesktopNativeWindow(frame, previousNonIconifiedState)
+    }
+
+    fun restoreWindow() {
+        if (locked && !contentSecured) {
+            restoreRequested = true
+            requestContentSecurity()
+            return
+        }
+        restoreRequested = false
+        restoreDesktopNativeWindow(frame, previousNonIconifiedState)
+    }
+
+    /** Allows a deferred restore only after shared sensitive UI has been scrubbed, guarded, and rendered. */
+    fun onVaultContentSecured() {
+        if (!locked) return
+        contentSecurityInProgress = false
+        contentSecured = true
+        if (restoreRequested) {
+            restoreRequested = false
+            restoreDesktopNativeWindow(frame, previousNonIconifiedState)
+        }
+    }
+
+    /** Rearms a user- or lifecycle-triggered retry without exposing the concealed native window. */
+    fun onVaultContentSecurityFailed() {
+        if (locked && !contentSecured) contentSecurityInProgress = false
+    }
+
+    private fun requestContentSecurity() {
+        if (!locked || contentSecured || contentSecurityInProgress) return
+        val listener = lockListener ?: return
+        contentSecurityInProgress = true
+        try {
+            listener()
+        } catch (_: Exception) {
+            contentSecurityInProgress = false
+        }
+    }
+
+    fun configureAutoLock(
+        lockOnMinimize: Boolean,
+        lockOnFocusLost: Boolean,
+        focusLossDelayMs: Long = 0,
+    ) {
+        autoLockOnMinimize = lockOnMinimize
+        autoLockOnFocusLost = lockOnFocusLost
+        autoLockDelayMs = focusLossDelayMs.coerceAtLeast(0L)
+        if (!lockOnFocusLost) lockTimer = null
+    }
+
+    fun setLockListener(listener: (() -> Unit)?) {
+        lockListener = listener
+    }
+
     fun cleanup() {
-        lockTimer?.stop()
-        lockListeners.clear()
-        unlockListeners.clear()
-        minimizeListeners.clear()
-        restoreListeners.clear()
-        composeWindow = null
-        jFrame = null
+        lockTimer = null
+        windowListeners?.detach()
+        windowListeners = null
+        lockListener = null
+        frame = null
+        locked = false
+        autoLockOnMinimize = false
+        autoLockOnFocusLost = false
+        autoLockDelayMs = 0L
+        previousNonIconifiedState = Frame.NORMAL
+        contentSecured = false
+        restoreRequested = false
+        contentSecurityInProgress = false
     }
 
-    /**
-     * Get current window state.
-     */
-    fun getWindowState(): WindowState {
-        return WindowState(
-            isLocked = isLockedState,
-            isMinimized = isMinimized(),
-            isProtected = isProtectionEnabled,
-            bounds = getWindowBounds(),
-        )
-    }
+}
 
-    private enum class OperatingSystem {
-        WINDOWS,
-        MACOS,
-        LINUX,
-        UNKNOWN
-    }
-
-    /**
-     * Window state information.
-     */
-    data class WindowState(
-        val isLocked: Boolean,
-        val isMinimized: Boolean,
-        val isProtected: Boolean,
-        val bounds: java.awt.Rectangle?,
-    )
-
-    companion object {
-        const val DEFAULT_AUTO_LOCK_DELAY_MS = 30000L // 30 seconds
+private fun restoreDesktopNativeWindow(frame: JFrame?, previousNonIconifiedState: Int) {
+    frame?.let { current ->
+        current.extendedState = previousNonIconifiedState and Frame.ICONIFIED.inv()
+        current.toFront()
+        current.requestFocus()
     }
 }
+
+private class DesktopWindowListeners(
+    private val frame: JFrame,
+    onStateChanged: (WindowEvent) -> Unit,
+    onFocusLost: (WindowEvent?) -> Unit,
+    onFocusGained: (WindowEvent?) -> Unit,
+    onClosed: () -> Unit,
+) {
+    private val stateListener = WindowStateListener(onStateChanged)
+    private val focusListener = object : WindowAdapter() {
+        override fun windowLostFocus(event: WindowEvent?) = onFocusLost(event)
+
+        override fun windowGainedFocus(event: WindowEvent?) = onFocusGained(event)
+    }
+    private val closeListener = object : WindowAdapter() {
+        override fun windowClosed(event: WindowEvent?) = onClosed()
+    }
+
+    fun attach() {
+        frame.addWindowStateListener(stateListener)
+        frame.addWindowFocusListener(focusListener)
+        frame.addWindowListener(closeListener)
+    }
+
+    fun detach() {
+        frame.removeWindowStateListener(stateListener)
+        frame.removeWindowFocusListener(focusListener)
+        frame.removeWindowListener(closeListener)
+    }
+}
+
+private fun Window?.isOwnedBy(owner: JFrame): Boolean {
+    var window = this
+    while (window != null) {
+        if (window === owner) return true
+        window = window.owner
+    }
+    return false
+}
+
+internal fun shouldDeferDesktopWindowRestore(
+    oldState: Int,
+    newState: Int,
+    locked: Boolean,
+    contentSecured: Boolean,
+): Boolean = locked &&
+    !contentSecured &&
+    oldState and Frame.ICONIFIED != 0 &&
+    newState and Frame.ICONIFIED == 0

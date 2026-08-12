@@ -41,7 +41,7 @@ internal val PassVaultTypography = Typography(
         lineHeight = 44.sp,
         letterSpacing = (-0.6).sp,
     ),
-    
+
     // Headline - Section headers
     headlineLarge = TextStyle(
         fontFamily = DefaultFontFamily,
@@ -64,7 +64,7 @@ internal val PassVaultTypography = Typography(
         lineHeight = 32.sp,
         letterSpacing = 0.sp
     ),
-    
+
     // Title - Card titles, list headers
     titleLarge = TextStyle(
         fontFamily = DefaultFontFamily,
@@ -87,7 +87,7 @@ internal val PassVaultTypography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
-    
+
     // Body - Main content text
     bodyLarge = TextStyle(
         fontFamily = DefaultFontFamily,
@@ -110,7 +110,7 @@ internal val PassVaultTypography = Typography(
         lineHeight = 16.sp,
         letterSpacing = 0.15.sp,
     ),
-    
+
     // Label - Buttons, chips, captions
     labelLarge = TextStyle(
         fontFamily = DefaultFontFamily,
@@ -150,7 +150,7 @@ object PassVaultTextStyles {
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
-    
+
     val MonospaceMedium = TextStyle(
         fontFamily = FontFamily.Monospace,
         fontWeight = FontWeight.Normal,
@@ -158,7 +158,7 @@ object PassVaultTextStyles {
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     )
-    
+
     val MonospaceSmall = TextStyle(
         fontFamily = FontFamily.Monospace,
         fontWeight = FontWeight.Normal,
@@ -166,7 +166,7 @@ object PassVaultTextStyles {
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     )
-    
+
     /**
      * Secure text - slightly larger letter spacing for readability
      */
@@ -177,7 +177,7 @@ object PassVaultTextStyles {
         lineHeight = 24.sp,
         letterSpacing = 0.8.sp
     )
-    
+
     /**
      * Credential title in lists - slightly bolder for scanning
      */
@@ -188,7 +188,7 @@ object PassVaultTextStyles {
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
     )
-    
+
     /**
      * Credential subtitle - username/email
      */
@@ -199,7 +199,7 @@ object PassVaultTextStyles {
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     )
-    
+
     /**
      * Metadata text - timestamps, counts
      */

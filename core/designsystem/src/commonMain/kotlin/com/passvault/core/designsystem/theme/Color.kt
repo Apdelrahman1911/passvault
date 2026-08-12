@@ -147,13 +147,13 @@ object VaultKeeperColors {
     val Good = Color(0xFF64764F)
     val Strong = Color(0xFF4C7247)
     val VeryStrong = Color(0xFF37683F)
-    
+
     // Security status colors
     val Secure = Color(0xFF4C7247)
     val AtRisk = Color(0xFFB83E46)
     val Warning = Color(0xFF9A742B)
     val Info = Color(0xFF596452)
-    
+
     // Password mask color
     val MaskCharacter = Color(0xFF8B8C85)
 }

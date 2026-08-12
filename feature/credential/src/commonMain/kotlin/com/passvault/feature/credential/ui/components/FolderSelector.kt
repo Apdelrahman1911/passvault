@@ -36,12 +36,11 @@ internal fun FolderSelector(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedFolder = folders.firstOrNull { it.id == selectedFolderId }
-    val selectedLabel = when {
-        isLoading && selectedFolderId != null -> stringResource(Res.string.ui_loading_folders)
-        selectedFolderId == null -> stringResource(Res.string.ui_no_folder)
-        selectedFolder != null -> selectedFolder.name
-        else -> stringResource(Res.string.ui_folder_unavailable)
-    }
+    val selectedLabel = selectedFolderLabel(
+        selectedFolder = selectedFolder,
+        selectedFolderId = selectedFolderId,
+        isLoading = isLoading,
+    )
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -50,53 +49,89 @@ internal fun FolderSelector(
         },
         modifier = modifier,
     ) {
-        OutlinedTextField(
-            value = selectedLabel,
-            onValueChange = {},
+        FolderSelectorField(
+            selectedLabel = selectedLabel,
+            expanded = expanded,
+            enabled = !isLoading && !loadFailed,
+            loadFailed = loadFailed,
             modifier = Modifier
                 .menuAnchor(
                     type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                     enabled = !isLoading && !loadFailed,
                 )
                 .fillMaxWidth(),
-            readOnly = true,
-            enabled = !isLoading && !loadFailed,
-            isError = loadFailed,
-            label = { Text(stringResource(Res.string.ui_folder)) },
-            leadingIcon = { Icon(Icons.Default.Folder, contentDescription = null) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            supportingText = if (loadFailed) {
-                { Text(stringResource(Res.string.error_folder_load)) }
-            } else {
-                null
-            },
         )
-
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            FolderOption(
-                label = stringResource(Res.string.ui_no_folder),
-                selected = selectedFolderId == null,
-                onClick = {
+            FolderSelectorOptions(
+                folders = folders,
+                selectedFolderId = selectedFolderId,
+                onFolderSelected = { folderId ->
                     expanded = false
-                    onFolderSelected(null)
+                    onFolderSelected(folderId)
                 },
             )
-            folders.forEach { folder ->
-                FolderOption(
-                    label = folder.name,
-                    selected = selectedFolderId == folder.id,
-                    onClick = {
-                        expanded = false
-                        onFolderSelected(folder.id)
-                    },
-                )
-            }
         }
+    }
+}
+
+@Composable
+private fun selectedFolderLabel(
+    selectedFolder: Folder?,
+    selectedFolderId: FolderId?,
+    isLoading: Boolean,
+): String = when {
+    isLoading && selectedFolderId != null -> stringResource(Res.string.ui_loading_folders)
+    selectedFolderId == null -> stringResource(Res.string.ui_no_folder)
+    selectedFolder != null -> selectedFolder.name
+    else -> stringResource(Res.string.ui_folder_unavailable)
+}
+
+@Composable
+private fun FolderSelectorField(
+    selectedLabel: String,
+    expanded: Boolean,
+    enabled: Boolean,
+    loadFailed: Boolean,
+    modifier: Modifier,
+) {
+    OutlinedTextField(
+        value = selectedLabel,
+        onValueChange = {},
+        modifier = modifier,
+        readOnly = true,
+        enabled = enabled,
+        isError = loadFailed,
+        label = { Text(stringResource(Res.string.ui_folder)) },
+        leadingIcon = { Icon(Icons.Default.Folder, contentDescription = null) },
+        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+        supportingText = if (loadFailed) {
+            { Text(stringResource(Res.string.error_folder_load)) }
+        } else {
+            null
+        },
+    )
+}
+
+@Composable
+private fun FolderSelectorOptions(
+    folders: List<Folder>,
+    selectedFolderId: FolderId?,
+    onFolderSelected: (FolderId?) -> Unit,
+) {
+    FolderOption(
+        label = stringResource(Res.string.ui_no_folder),
+        selected = selectedFolderId == null,
+        onClick = { onFolderSelected(null) },
+    )
+    folders.forEach { folder ->
+        FolderOption(
+            label = folder.name,
+            selected = selectedFolderId == folder.id,
+            onClick = { onFolderSelected(folder.id) },
+        )
     }
 }
 

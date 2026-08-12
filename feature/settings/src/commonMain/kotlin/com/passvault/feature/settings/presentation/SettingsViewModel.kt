@@ -7,27 +7,35 @@ import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
 import com.passvault.core.designsystem.theme.PassVaultAccent
+import com.passvault.core.domain.model.MasterPasswordPolicy
 import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.VaultSessionState
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.hasWellFormedUnicode
+import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.AppSettings
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.core.domain.repository.AccentColorPreference
+import com.passvault.core.domain.repository.LanguagePreference
 import com.passvault.core.domain.repository.ThemePreference
 import com.passvault.core.domain.repository.VaultRepository
+import com.passvault.core.domain.repository.lockWithBoundedRetry
 import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricFailureReason
 import com.passvault.core.security.BiometricOperationResult
 import com.passvault.core.security.BiometricType
 import com.passvault.core.security.BiometricUnlockService
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
@@ -43,12 +51,14 @@ class SettingsViewModel(
     private val _state = MutableStateFlow(SettingsState())
     val state: StateFlow<SettingsState> = _state.asStateFlow()
 
-    private val _effect = Channel<SettingsEffect>(Channel.BUFFERED)
-    val effect: Flow<SettingsEffect> = _effect.receiveAsFlow()
+    private val _effect = MutableSharedFlow<SettingsEffect>(extraBufferCapacity = 1)
+    val effect: Flow<SettingsEffect> = _effect.asSharedFlow()
 
     private val settingsSaveMutex = Mutex()
     private var settingsRevision = 0L
-    private var passwordChangeJob: Job? = null
+    private var preferencesSaveJob: Job? = null
+    private var metadataJob: Job? = null
+    private var masterPasswordChangeJob: Job? = null
     private var biometricJob: Job? = null
 
     init {
@@ -68,12 +78,15 @@ class SettingsViewModel(
     private fun loadPreferences() {
         val revisionAtStart = settingsRevision
         viewModelScope.launch {
-            appSettingsStore.load()
-                .onSuccess { settings ->
+            try {
+                val result = appSettingsStore.load()
+                currentCoroutineContext().ensureActive()
+                result.onSuccess { settings ->
                     if (settingsRevision == revisionAtStart) {
                         _state.update {
                             it.copy(
                                 theme = settings.theme.toAppTheme(),
+                                language = settings.language.toAppLanguage(),
                                 accentColor = settings.accentColor.toPassVaultAccent(),
                                 autoLockTimeoutMinutes = settings.autoLockTimeoutMinutes,
                                 clipboardClearSeconds = settings.clipboardClearSeconds,
@@ -82,16 +95,31 @@ class SettingsViewModel(
                     }
                 }
                 .onFailure {
+                    if (settingsRevision == revisionAtStart) {
+                        _state.update {
+                            it.copy(errorMessage = uiText(Res.string.error_settings_load))
+                        }
+                    }
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                if (settingsRevision == revisionAtStart) {
                     _state.update {
                         it.copy(errorMessage = uiText(Res.string.error_settings_load))
                     }
                 }
+            }
         }
     }
 
     private fun loadVaultMetadata() {
-        viewModelScope.launch {
-            vaultRepository.getMetadata()
+        metadataJob?.cancel()
+        metadataJob = viewModelScope.launch {
+            try {
+                val result = vaultRepository.getMetadata()
+                currentCoroutineContext().ensureActive()
+                result
                 .onSuccess { metadata ->
                     _state.update {
                         it.copy(
@@ -104,13 +132,25 @@ class SettingsViewModel(
                 .onFailure {
                     _state.update { state -> state.copy(isLoading = false) }
                 }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
+                _state.update { state -> state.copy(isLoading = false) }
+            }
         }
     }
 
+    /* This exhaustive router is the single public boundary for settings UI events. */
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     fun onEvent(event: SettingsEvent) {
+        if (_state.value.isChangingPassword && event.isPasswordInputChange()) return
         when (event) {
             is SettingsEvent.OnThemeChanged -> {
                 persistPreferences { it.copy(theme = event.theme) }
+            }
+            is SettingsEvent.OnLanguageChanged -> {
+                persistPreferences { it.copy(language = event.language) }
             }
             is SettingsEvent.OnAccentColorChanged -> {
                 persistPreferences { it.copy(accentColor = event.accentColor) }
@@ -135,10 +175,10 @@ class SettingsViewModel(
                     )
                 }
             }
-            SettingsEvent.OnSecurityClick -> _effect.trySend(SettingsEffect.NavigateToSecurity)
-            SettingsEvent.OnAppearanceClick -> _effect.trySend(SettingsEffect.NavigateToAppearance)
-            SettingsEvent.OnDataClick -> _effect.trySend(SettingsEffect.NavigateToData)
-            SettingsEvent.OnBackClick -> _effect.trySend(SettingsEffect.NavigateBack)
+            SettingsEvent.OnSecurityClick -> _effect.tryEmit(SettingsEffect.NavigateToSecurity)
+            SettingsEvent.OnAppearanceClick -> _effect.tryEmit(SettingsEffect.NavigateToAppearance)
+            SettingsEvent.OnDataClick -> _effect.tryEmit(SettingsEffect.NavigateToData)
+            SettingsEvent.OnBackClick -> requestBack()
             SettingsEvent.OnLockVaultClick -> lockVault()
             SettingsEvent.OnChangePasswordClick -> {
                 _state.update { it.copy(showChangePasswordDialog = true, passwordError = null) }
@@ -146,23 +186,47 @@ class SettingsViewModel(
             is SettingsEvent.OnBiometricUnlockChanged -> {
                 setBiometricUnlockEnabled(event.enabled)
             }
-            SettingsEvent.OnExportClick -> _effect.trySend(SettingsEffect.ShowExportDialog)
-            SettingsEvent.OnImportClick -> _effect.trySend(SettingsEffect.ShowImportDialog)
-            SettingsEvent.OnBackupClick -> _effect.trySend(SettingsEffect.ShowBackupDialog)
+            SettingsEvent.OnExportClick -> _effect.tryEmit(SettingsEffect.ShowExportDialog)
+            SettingsEvent.OnImportClick -> _effect.tryEmit(SettingsEffect.ShowImportDialog)
+            SettingsEvent.OnBackupClick -> _effect.tryEmit(SettingsEffect.ShowBackupDialog)
             is SettingsEvent.OnCurrentPasswordChanged -> {
-                if (event.password.length <= MAX_PASSWORD_LENGTH) {
-                    _state.update { it.copy(currentPassword = event.password, passwordError = null) }
+                val password = event.password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1)
+                _state.update { current ->
+                    current.copy(
+                        currentPassword = password,
+                        passwordError = passwordInputFeedback(
+                            currentPassword = password,
+                            newPassword = current.newPassword,
+                            confirmPassword = current.confirmPassword,
+                        ),
+                    )
                 }
             }
             is SettingsEvent.OnNewPasswordChanged -> {
-                if (event.password.length <= MAX_PASSWORD_LENGTH) {
-                    _state.update { it.copy(newPassword = event.password, passwordError = null) }
-                    evaluatePasswordStrength(event.password)
+                val password = event.password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1)
+                _state.update { current ->
+                    current.copy(
+                        newPassword = password,
+                        passwordStrength = passwordStrength(password),
+                        passwordError = passwordInputFeedback(
+                            currentPassword = current.currentPassword,
+                            newPassword = password,
+                            confirmPassword = current.confirmPassword,
+                        ),
+                    )
                 }
             }
             is SettingsEvent.OnConfirmPasswordChanged -> {
-                if (event.password.length <= MAX_PASSWORD_LENGTH) {
-                    _state.update { it.copy(confirmPassword = event.password, passwordError = null) }
+                val password = event.password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1)
+                _state.update { current ->
+                    current.copy(
+                        confirmPassword = password,
+                        passwordError = passwordInputFeedback(
+                            currentPassword = current.currentPassword,
+                            newPassword = current.newPassword,
+                            confirmPassword = password,
+                        ),
+                    )
                 }
             }
             SettingsEvent.OnChangePasswordConfirm -> changePassword()
@@ -172,6 +236,7 @@ class SettingsViewModel(
                 }
             }
             SettingsEvent.OnDismissError -> _state.update { it.copy(errorMessage = null) }
+            SettingsEvent.OnDismissStatusMessage -> _state.update { it.copy(statusMessage = null) }
             SettingsEvent.OnVaultInfoClick -> {
                 _state.update {
                     it.copy(
@@ -207,49 +272,74 @@ class SettingsViewModel(
         }
     }
 
+    private fun requestBack() {
+        val current = _state.value
+        when {
+            current.isChangingPassword -> Unit
+            current.showChangePasswordDialog -> clearPasswordDialog()
+            current.infoDialogTitle != null || current.infoDialogMessage != null ->
+                _state.update { it.copy(infoDialogTitle = null, infoDialogMessage = null) }
+            current.errorMessage != null -> _state.update { it.copy(errorMessage = null) }
+            else -> _effect.tryEmit(SettingsEffect.NavigateBack)
+        }
+    }
+
     private fun persistPreferences(transform: (SettingsState) -> SettingsState) {
-        val updated = transform(_state.value)
+        val updated = transform(_state.value).copy(errorMessage = null)
         val revision = ++settingsRevision
         _state.value = updated
 
-        passwordChangeJob?.cancel()
-        passwordChangeJob = viewModelScope.launch {
+        preferencesSaveJob?.cancel()
+        preferencesSaveJob = viewModelScope.launch {
             settingsSaveMutex.withLock {
                 if (revision != settingsRevision) return@withLock
 
-                appSettingsStore.save(updated.toAppSettings())
-                    .onFailure {
-                        if (revision == settingsRevision) {
-                            _state.update {
-                                it.copy(errorMessage = uiText(Res.string.error_settings_save))
-                            }
-                        }
+                try {
+                    val result = appSettingsStore.save(updated.toAppSettings())
+                    currentCoroutineContext().ensureActive()
+                    if (result.isFailure && revision == settingsRevision) {
+                        _state.update { it.copy(errorMessage = uiText(Res.string.error_settings_save)) }
                     }
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: Exception) {
+                    currentCoroutineContext().ensureActive()
+                    if (revision == settingsRevision) {
+                        _state.update { it.copy(errorMessage = uiText(Res.string.error_settings_save)) }
+                    }
+                }
             }
         }
     }
 
     private fun lockVault() {
+        if (_state.value.isLockingVault) return
+        _state.update { it.copy(isLockingVault = true, errorMessage = null) }
         viewModelScope.launch {
             try {
-                vaultRepository.lock()
-                    .onSuccess { _effect.trySend(SettingsEffect.LockVault) }
-                    .onFailure {
-                        _state.update { it.copy(errorMessage = uiText(Res.string.error_settings_lock)) }
-                    }
+                if (vaultRepository.lockWithBoundedRetry()) {
+                    _effect.tryEmit(SettingsEffect.LockVault)
+                } else {
+                    currentCoroutineContext().ensureActive()
+                    _state.update { it.copy(errorMessage = uiText(Res.string.error_settings_lock)) }
+                }
             } catch (cancel: CancellationException) {
                 throw cancel
             } catch (_: Exception) {
                 _state.update { it.copy(errorMessage = uiText(Res.string.error_settings_lock)) }
+            } finally {
+                _state.update { it.copy(isLockingVault = false) }
             }
         }
     }
 
     private fun loadBiometricStatus() {
         biometricJob?.cancel()
+        _state.update { it.copy(isBiometricLoading = true) }
         biometricJob = viewModelScope.launch {
             try {
                 val status = biometricUnlockService.getStatus()
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         biometricType = status.capability.type,
@@ -261,6 +351,7 @@ class SettingsViewModel(
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         biometricAvailability = BiometricAvailability.UNAVAILABLE,
@@ -283,44 +374,12 @@ class SettingsViewModel(
                 } else {
                     biometricUnlockService.disable()
                 }
-                when (result) {
-                    BiometricOperationResult.Success -> {
-                        _state.update {
-                            it.copy(isBiometricEnabled = enabled, isBiometricLoading = false)
-                        }
-                        _effect.trySend(
-                            SettingsEffect.ShowMessage(
-                                uiText(
-                                    if (enabled) {
-                                        Res.string.message_biometric_enabled
-                                    } else {
-                                        Res.string.message_biometric_disabled
-                                    },
-                                ),
-                            ),
-                        )
-                    }
-                    BiometricOperationResult.Cancelled -> {
-                        _state.update { it.copy(isBiometricLoading = false) }
-                    }
-                    is BiometricOperationResult.Failure -> {
-                        _state.update {
-                            it.copy(
-                                isBiometricEnabled = !enabled,
-                                isBiometricLoading = false,
-                                biometricAvailability = when (result.reason) {
-                                    BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
-                                    BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
-                                    else -> it.biometricAvailability
-                                },
-                                errorMessage = result.reason.toSettingsMessage(),
-                            )
-                        }
-                    }
-                }
+                currentCoroutineContext().ensureActive()
+                applyBiometricOperationResult(result, enabled)
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isBiometricLoading = false,
@@ -331,97 +390,84 @@ class SettingsViewModel(
         }
     }
 
-    private fun BiometricFailureReason.toSettingsMessage(): UiText = when (this) {
-        BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
-        BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
-        BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
-        BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
-        BiometricFailureReason.VAULT_LOCKED -> uiText(Res.string.error_biometric_vault_locked)
-        BiometricFailureReason.AUTHENTICATION_FAILED,
-        BiometricFailureReason.INTERNAL_ERROR,
-        -> uiText(Res.string.error_biometric_failed)
-    }
-
-    private fun evaluatePasswordStrength(password: String) {
-        val score = if (password.isEmpty()) PasswordScore.UNKNOWN else PasswordStrengthEvaluator.score(password)
-        val strength = when {
-            password.isEmpty() -> PasswordStrength.EMPTY
-            password.length < 12 -> PasswordStrength.TOO_SHORT
-            score <= PasswordScore.WEAK -> PasswordStrength.WEAK
-            score <= PasswordScore.GOOD -> PasswordStrength.GOOD
-            else -> PasswordStrength.STRONG
+    private fun applyBiometricOperationResult(
+        result: BiometricOperationResult,
+        enabled: Boolean,
+    ) {
+        _state.update { current ->
+            when (result) {
+                BiometricOperationResult.Success -> current.copy(
+                    isBiometricEnabled = enabled,
+                    isBiometricLoading = false,
+                    statusMessage = uiText(
+                        if (enabled) {
+                            Res.string.message_biometric_enabled
+                        } else {
+                            Res.string.message_biometric_disabled
+                        },
+                    ),
+                )
+                BiometricOperationResult.Cancelled -> current.copy(isBiometricLoading = false)
+                is BiometricOperationResult.Failure -> current.copy(
+                    isBiometricEnabled = !enabled,
+                    isBiometricLoading = false,
+                    biometricAvailability = when (result.reason) {
+                        BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
+                        BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
+                        else -> current.biometricAvailability
+                    },
+                    errorMessage = result.reason.toSettingsMessage(),
+                )
+            }
         }
-        _state.update { it.copy(passwordStrength = strength) }
     }
 
     private fun changePassword() {
         val currentState = _state.value
         if (currentState.isChangingPassword) return
 
-        when {
-            currentState.currentPassword.isEmpty() -> {
-                _state.update { it.copy(passwordError = uiText(Res.string.error_current_password_required)) }
-                return
-            }
-            currentState.newPassword.length < 12 -> {
-                _state.update { it.copy(passwordError = uiText(Res.string.error_new_password_too_short)) }
-                return
-            }
-            PasswordStrengthEvaluator.score(currentState.newPassword) < PasswordScore.FAIR -> {
-                _state.update {
-                    it.copy(passwordError = uiText(Res.string.error_new_password_weak))
-                }
-                return
-            }
-            currentState.newPassword != currentState.confirmPassword -> {
-                _state.update { it.copy(passwordError = uiText(Res.string.error_master_password_mismatch)) }
-                return
-            }
+        val validationError = passwordChangeValidationError(currentState)
+        if (validationError != null) {
+            _state.update { it.copy(passwordError = validationError) }
+            return
         }
 
-        val currentSensitive = SensitiveText.from(currentState.currentPassword)
-        val newSensitive = SensitiveText.from(currentState.newPassword)
-        _state.update {
-            it.copy(
-                isChangingPassword = true,
-                currentPassword = "",
-                newPassword = "",
-                confirmPassword = "",
-                passwordError = null,
-            )
-        }
+        val currentPassword = currentState.currentPassword
+        val newPassword = currentState.newPassword
+        _state.update { it.beginPasswordChange() }
 
-        viewModelScope.launch {
+        masterPasswordChangeJob?.cancel()
+        masterPasswordChangeJob = viewModelScope.launch {
+            val currentSensitive = SensitiveText.from(currentPassword)
+            val newSensitive = SensitiveText.from(newPassword)
             try {
-                vaultRepository.changeMasterPassword(currentSensitive, newSensitive)
-                    .onSuccess {
-                        _state.update {
-                            it.copy(
-                                isChangingPassword = false,
-                                showChangePasswordDialog = false,
-                                passwordStrength = PasswordStrength.EMPTY,
-                            )
-                        }
-                        _effect.trySend(
-                            SettingsEffect.ShowMessage(
-                                uiText(Res.string.message_master_password_changed),
+                val result = vaultRepository.changeMasterPassword(currentSensitive, newSensitive)
+                currentCoroutineContext().ensureActive()
+                if (result.isSuccess) {
+                    _state.update {
+                        it.copy(
+                            isChangingPassword = false,
+                            showChangePasswordDialog = false,
+                            passwordStrength = PasswordStrength.EMPTY,
+                            statusMessage = uiText(Res.string.message_master_password_changed),
+                        )
+                    }
+                } else {
+                    currentCoroutineContext().ensureActive()
+                    _state.update {
+                        it.copy(
+                            isChangingPassword = false,
+                            passwordStrength = PasswordStrength.EMPTY,
+                            passwordError = uiText(
+                                Res.string.error_master_password_change_verify,
                             ),
                         )
                     }
-                    .onFailure {
-                        _state.update {
-                            it.copy(
-                                isChangingPassword = false,
-                                passwordStrength = PasswordStrength.EMPTY,
-                                passwordError = uiText(
-                                    Res.string.error_master_password_change_verify,
-                                ),
-                            )
-                        }
-                    }
+                }
             } catch (cancel: CancellationException) {
                 throw cancel
             } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
                 _state.update {
                     it.copy(
                         isChangingPassword = false,
@@ -452,8 +498,10 @@ class SettingsViewModel(
     }
 
     fun clearForLock() {
-        passwordChangeJob?.cancel()
-        passwordChangeJob = null
+        masterPasswordChangeJob?.cancel()
+        masterPasswordChangeJob = null
+        metadataJob?.cancel()
+        metadataJob = null
         biometricJob?.cancel()
         biometricJob = null
         clearPasswordDialog()
@@ -462,16 +510,19 @@ class SettingsViewModel(
                 vaultCreatedAt = "",
                 vaultEntryCount = 0,
                 errorMessage = null,
+                statusMessage = null,
                 infoDialogTitle = null,
                 infoDialogMessage = null,
                 isLoading = false,
                 isBiometricLoading = false,
+                isLockingVault = false,
             )
         }
     }
 
     data class SettingsState(
         val theme: AppTheme = AppTheme.SYSTEM,
+        val language: AppLanguage = AppLanguage.SYSTEM,
         val accentColor: PassVaultAccent = PassVaultAccent.NEUTRAL,
         val autoLockTimeoutMinutes: Int = AppSettings.DEFAULT_AUTO_LOCK_TIMEOUT_MINUTES,
         val clipboardClearSeconds: Int = AppSettings.DEFAULT_CLIPBOARD_CLEAR_SECONDS,
@@ -479,6 +530,7 @@ class SettingsViewModel(
         val vaultEntryCount: Int = 0,
         val isLoading: Boolean = true,
         val errorMessage: UiText? = null,
+        val statusMessage: UiText? = null,
         val showChangePasswordDialog: Boolean = false,
         val currentPassword: String = "",
         val newPassword: String = "",
@@ -492,13 +544,15 @@ class SettingsViewModel(
         val biometricAvailability: BiometricAvailability = BiometricAvailability.UNAVAILABLE,
         val isBiometricEnabled: Boolean = false,
         val isBiometricLoading: Boolean = false,
+        val isLockingVault: Boolean = false,
     ) {
         val passwordsMatch: Boolean
             get() = newPassword == confirmPassword && confirmPassword.isNotEmpty()
 
         val canChangePassword: Boolean
-            get() = currentPassword.isNotEmpty() &&
-                newPassword.length >= 12 &&
+            get() = currentPassword.codePointLength() in 1..MasterPasswordPolicy.MAX_LENGTH &&
+                currentPassword.hasWellFormedUnicode() &&
+                MasterPasswordPolicy.accepts(newPassword) &&
                 PasswordStrengthEvaluator.score(newPassword) >= PasswordScore.FAIR &&
                 passwordsMatch &&
                 !isChangingPassword
@@ -508,6 +562,11 @@ class SettingsViewModel(
                 AppTheme.LIGHT -> ThemePreference.LIGHT
                 AppTheme.DARK -> ThemePreference.DARK
                 AppTheme.SYSTEM -> ThemePreference.SYSTEM
+            },
+            language = when (language) {
+                AppLanguage.SYSTEM -> LanguagePreference.SYSTEM
+                AppLanguage.ENGLISH -> LanguagePreference.ENGLISH
+                AppLanguage.ARABIC -> LanguagePreference.ARABIC
             },
             accentColor = when (accentColor) {
                 PassVaultAccent.NEUTRAL -> AccentColorPreference.NEUTRAL
@@ -528,6 +587,12 @@ class SettingsViewModel(
         SYSTEM,
     }
 
+    enum class AppLanguage {
+        SYSTEM,
+        ENGLISH,
+        ARABIC,
+    }
+
     enum class PasswordStrength {
         EMPTY,
         TOO_SHORT,
@@ -538,6 +603,7 @@ class SettingsViewModel(
 
     sealed interface SettingsEvent {
         data class OnThemeChanged(val theme: AppTheme) : SettingsEvent
+        data class OnLanguageChanged(val language: AppLanguage) : SettingsEvent
         data class OnAccentColorChanged(val accentColor: PassVaultAccent) : SettingsEvent
         data class OnAutoLockTimeoutChanged(val minutes: Int) : SettingsEvent
         data class OnClipboardClearChanged(val seconds: Int) : SettingsEvent
@@ -557,6 +623,7 @@ class SettingsViewModel(
         data object OnChangePasswordConfirm : SettingsEvent
         data object OnChangePasswordCancel : SettingsEvent
         data object OnDismissError : SettingsEvent
+        data object OnDismissStatusMessage : SettingsEvent
         data object OnVaultInfoClick : SettingsEvent
         data object OnHelpClick : SettingsEvent
         data object OnPrivacyClick : SettingsEvent
@@ -572,25 +639,103 @@ class SettingsViewModel(
         data object ShowExportDialog : SettingsEffect
         data object ShowImportDialog : SettingsEffect
         data object ShowBackupDialog : SettingsEffect
-        data class ShowMessage(val message: UiText) : SettingsEffect
     }
 
-    private fun ThemePreference.toAppTheme(): AppTheme = when (this) {
-        ThemePreference.LIGHT -> AppTheme.LIGHT
-        ThemePreference.DARK -> AppTheme.DARK
-        ThemePreference.SYSTEM -> AppTheme.SYSTEM
-    }
+}
 
-    private fun AccentColorPreference.toPassVaultAccent(): PassVaultAccent = when (this) {
-        AccentColorPreference.NEUTRAL -> PassVaultAccent.NEUTRAL
-        AccentColorPreference.SAGE -> PassVaultAccent.SAGE
-        AccentColorPreference.BLUE -> PassVaultAccent.BLUE
-        AccentColorPreference.PURPLE -> PassVaultAccent.PURPLE
-        AccentColorPreference.ROSE -> PassVaultAccent.ROSE
-        AccentColorPreference.AMBER -> PassVaultAccent.AMBER
-    }
+private fun SettingsViewModel.SettingsState.beginPasswordChange(): SettingsViewModel.SettingsState = copy(
+    isChangingPassword = true,
+    currentPassword = "",
+    newPassword = "",
+    confirmPassword = "",
+    passwordError = null,
+)
 
-    private companion object {
-        const val MAX_PASSWORD_LENGTH = 1_024
+private fun BiometricFailureReason.toSettingsMessage(): UiText = when (this) {
+    BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
+    BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
+    BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
+    BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
+    BiometricFailureReason.VAULT_LOCKED -> uiText(Res.string.error_biometric_vault_locked)
+    BiometricFailureReason.AUTHENTICATION_FAILED,
+    BiometricFailureReason.INTERNAL_ERROR,
+    -> uiText(Res.string.error_biometric_failed)
+}
+
+private fun passwordStrength(password: String): SettingsViewModel.PasswordStrength {
+    val score = if (password.isEmpty()) PasswordScore.UNKNOWN else PasswordStrengthEvaluator.score(password)
+    return when {
+        password.isEmpty() -> SettingsViewModel.PasswordStrength.EMPTY
+        password.codePointLength() < MasterPasswordPolicy.MIN_LENGTH -> SettingsViewModel.PasswordStrength.TOO_SHORT
+        score <= PasswordScore.WEAK -> SettingsViewModel.PasswordStrength.WEAK
+        score <= PasswordScore.GOOD -> SettingsViewModel.PasswordStrength.GOOD
+        else -> SettingsViewModel.PasswordStrength.STRONG
     }
+}
+
+private fun passwordChangeValidationError(state: SettingsViewModel.SettingsState): UiText? = when {
+    state.currentPassword.isEmpty() -> uiText(Res.string.error_current_password_required)
+    state.currentPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+        uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
+    !state.currentPassword.hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
+    state.newPassword.codePointLength() < MasterPasswordPolicy.MIN_LENGTH ->
+        uiText(Res.string.error_new_password_too_short)
+    state.newPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+        uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
+    !state.newPassword.hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
+    PasswordStrengthEvaluator.score(state.newPassword) < PasswordScore.FAIR ->
+        uiText(Res.string.error_new_password_weak)
+    state.confirmPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+        uiText(Res.string.error_master_confirmation_too_long)
+    !state.confirmPassword.hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
+    state.newPassword != state.confirmPassword -> uiText(Res.string.error_master_password_mismatch)
+    else -> null
+}
+
+private fun passwordInputFeedback(
+    currentPassword: String,
+    newPassword: String,
+    confirmPassword: String,
+): UiText? = when {
+    currentPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ||
+        newPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+        uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
+    confirmPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
+        uiText(Res.string.error_master_confirmation_too_long)
+    !currentPassword.hasWellFormedUnicode() ||
+        !newPassword.hasWellFormedUnicode() ||
+        !confirmPassword.hasWellFormedUnicode() ->
+        uiText(Res.string.error_master_password_invalid)
+    confirmPassword.isNotEmpty() && newPassword != confirmPassword ->
+        uiText(Res.string.error_master_password_mismatch)
+    else -> null
+}
+
+private fun SettingsViewModel.SettingsEvent.isPasswordInputChange(): Boolean = when (this) {
+    is SettingsViewModel.SettingsEvent.OnCurrentPasswordChanged,
+    is SettingsViewModel.SettingsEvent.OnNewPasswordChanged,
+    is SettingsViewModel.SettingsEvent.OnConfirmPasswordChanged,
+    -> true
+    else -> false
+}
+
+private fun ThemePreference.toAppTheme(): SettingsViewModel.AppTheme = when (this) {
+    ThemePreference.LIGHT -> SettingsViewModel.AppTheme.LIGHT
+    ThemePreference.DARK -> SettingsViewModel.AppTheme.DARK
+    ThemePreference.SYSTEM -> SettingsViewModel.AppTheme.SYSTEM
+}
+
+private fun LanguagePreference.toAppLanguage(): SettingsViewModel.AppLanguage = when (this) {
+    LanguagePreference.SYSTEM -> SettingsViewModel.AppLanguage.SYSTEM
+    LanguagePreference.ENGLISH -> SettingsViewModel.AppLanguage.ENGLISH
+    LanguagePreference.ARABIC -> SettingsViewModel.AppLanguage.ARABIC
+}
+
+private fun AccentColorPreference.toPassVaultAccent(): PassVaultAccent = when (this) {
+    AccentColorPreference.NEUTRAL -> PassVaultAccent.NEUTRAL
+    AccentColorPreference.SAGE -> PassVaultAccent.SAGE
+    AccentColorPreference.BLUE -> PassVaultAccent.BLUE
+    AccentColorPreference.PURPLE -> PassVaultAccent.PURPLE
+    AccentColorPreference.ROSE -> PassVaultAccent.ROSE
+    AccentColorPreference.AMBER -> PassVaultAccent.AMBER
 }

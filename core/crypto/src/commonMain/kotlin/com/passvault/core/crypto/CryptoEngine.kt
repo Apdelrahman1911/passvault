@@ -15,17 +15,17 @@ interface CryptoEngine {
         opsLimit: Int,
         memLimit: Int,
     ): Result<DerivedKey>
-    
+
     /**
      * Generate random bytes.
      */
     suspend fun generateRandom(size: Int): Result<ByteArray>
-    
+
     /**
      * Generate a cryptographically secure random master key.
      */
     suspend fun generateMasterKey(): Result<ByteArray>
-    
+
     /**
      * Encrypt data with XChaCha20-Poly1305.
      */
@@ -34,7 +34,7 @@ interface CryptoEngine {
         key: ByteArray,
         associatedData: ByteArray? = null,
     ): Result<EncryptedData>
-    
+
     /**
      * Decrypt data with XChaCha20-Poly1305.
      */
@@ -44,7 +44,7 @@ interface CryptoEngine {
         key: ByteArray,
         associatedData: ByteArray? = null,
     ): Result<ByteArray>
-    
+
     /**
      * Derive a domain-separated subkey from a master key.
      *
@@ -57,18 +57,18 @@ interface CryptoEngine {
         context: String,
         size: Int = 32,
     ): Result<ByteArray>
-    
+
     /**
      * Compare two byte arrays in constant time.
      */
     suspend fun constantTimeEquals(a: ByteArray, b: ByteArray): Boolean
-    
+
     /**
      * Securely wipe sensitive data.
      * Note: Best effort on managed runtimes.
      */
-    suspend fun secureWipe(data: ByteArray)
-    
+    fun secureWipe(data: ByteArray)
+
     /**
      * Benchmark Argon2 parameters for this device.
      * Returns recommended parameters for interactive use.
@@ -127,11 +127,8 @@ data class EncryptedData(
 }
 
 data class Argon2Parameters(
-    val algorithmId: String = "Argon2id",
-    val version: Int = 19, // 0x13
     val opsLimit: Int,
     val memLimit: Int, // in bytes
-    val parallelism: Int = 1,
 ) {
     companion object {
         /**
@@ -142,7 +139,7 @@ data class Argon2Parameters(
             opsLimit = 3,
             memLimit = 64 * 1024 * 1024, // 64 MB
         )
-        
+
         /**
          * Moderate use - balanced security and performance.
          * ~500ms on modern hardware.
@@ -151,7 +148,7 @@ data class Argon2Parameters(
             opsLimit = 3,
             memLimit = 256 * 1024 * 1024, // 256 MB
         )
-        
+
         /**
          * Sensitive use - high security.
          * ~1-2s on modern hardware.
@@ -160,7 +157,7 @@ data class Argon2Parameters(
             opsLimit = 4,
             memLimit = 1024 * 1024 * 1024, // 1 GB
         )
-        
+
         /**
          * Minimum acceptable parameters.
          */
@@ -184,7 +181,7 @@ class VaultKeyHierarchy(
     suspend fun generateVEK(): Result<ByteArray> {
         return cryptoEngine.generateMasterKey()
     }
-    
+
     /**
      * Wrap VEK with Key Encryption Key (derived from master password).
      */
@@ -194,13 +191,17 @@ class VaultKeyHierarchy(
     ): Result<WrappedKey> {
         return cryptoEngine.encrypt(vek, kek, "VEK_WRAP".encodeToByteArray())
             .map { encrypted ->
-                WrappedKey(
-                    ciphertext = encrypted.ciphertext,
-                    nonce = encrypted.nonce,
+                val wrapped = WrappedKey(
+                    ciphertext = encrypted.ciphertext.copyOf(),
+                    nonce = encrypted.nonce.copyOf(),
                 )
+                // WrappedKey takes independent ownership before every temporary
+                // representation, including the duplicate tag, is cleared.
+                encrypted.clear()
+                wrapped
             }
     }
-    
+
     /**
      * Unwrap VEK with Key Encryption Key.
      */
@@ -215,7 +216,7 @@ class VaultKeyHierarchy(
             "VEK_WRAP".encodeToByteArray(),
         )
     }
-    
+
     /**
      * Derive record encryption key from VEK.
      */
@@ -229,7 +230,7 @@ class VaultKeyHierarchy(
             32,
         )
     }
-    
+
     /**
      * Derive attachment encryption key from VEK.
      */
@@ -243,7 +244,7 @@ class VaultKeyHierarchy(
             32,
         )
     }
-    
+
     /**
      * Derive backup encryption key from VEK.
      */
@@ -256,7 +257,7 @@ class VaultKeyHierarchy(
             32,
         )
     }
-    
+
     /**
      * Derive search index key from VEK.
      */
@@ -269,7 +270,7 @@ class VaultKeyHierarchy(
             32,
         )
     }
-    
+
     /**
      * Derive duplicate detection key from VEK.
      */
@@ -295,6 +296,11 @@ data class WrappedKey(
 
     override fun hashCode(): Int =
         31 * ciphertext.contentHashCode() + nonce.contentHashCode()
+
+    fun clear() {
+        ciphertext.fill(0)
+        nonce.fill(0)
+    }
 }
 
 /**
@@ -311,7 +317,12 @@ object CryptoEnvelope {
     private const val TAG_SIZE = 16
 
     fun encode(encrypted: EncryptedData): ByteArray {
+        require(encrypted.tag.size == TAG_SIZE) { "AEAD tags must be exactly $TAG_SIZE bytes" }
         return if (encrypted.ciphertext.startsWithMagic()) {
+            require(
+                encrypted.ciphertext.size >= MAGIC_SIZE + TAG_SIZE &&
+                    encrypted.ciphertext.endsWith(encrypted.tag),
+            ) { "Versioned ciphertext does not contain its authentication tag" }
             encrypted.ciphertext.copyOf()
         } else {
             encrypted.ciphertext + encrypted.tag
@@ -340,28 +351,24 @@ object CryptoEnvelope {
      * Fake/test engines use an unversioned ciphertext plus a trailing tag.
      */
     fun normalize(stored: ByteArray): ByteArray {
-        if (stored.startsWithMagic()) {
-            if (stored.size >= MAGIC_SIZE + TAG_SIZE * 2) {
-                val last = stored.copyOfRange(stored.size - TAG_SIZE, stored.size)
-                val previous = stored.copyOfRange(
-                    stored.size - TAG_SIZE * 2,
-                    stored.size - TAG_SIZE,
-                )
-                if (last.contentEquals(previous)) {
-                    return stored.copyOfRange(0, stored.size - TAG_SIZE)
-                }
+        val isVersioned = stored.startsWithMagic()
+        return when {
+            isVersioned && stored.hasDuplicatedTrailingTag() -> {
+                stored.copyOfRange(0, stored.size - TAG_SIZE)
             }
-            return stored.copyOf()
-        }
-        return if (stored.size >= TAG_SIZE) {
-            stored.copyOfRange(0, stored.size - TAG_SIZE)
-        } else {
-            stored.copyOf()
+            isVersioned -> stored.copyOf()
+            stored.size >= TAG_SIZE -> stored.copyOfRange(0, stored.size - TAG_SIZE)
+            else -> stored.copyOf()
         }
     }
 
     private fun ByteArray.startsWithMagic(): Boolean =
         size >= MAGIC_SIZE && copyOfRange(0, MAGIC_SIZE).contentEquals(MAGIC)
+
+    private fun ByteArray.endsWith(suffix: ByteArray): Boolean =
+        size >= suffix.size && suffix.indices.all { index ->
+            this[size - suffix.size + index] == suffix[index]
+        }
 
     private fun ByteArray.hasDuplicatedTrailingTag(): Boolean {
         if (size < MAGIC_SIZE + TAG_SIZE * 2) return false

@@ -13,7 +13,7 @@ binaries.
 ## Private intake
 
 Fill the ignored `release/private/values.env` and the files described in
-`release/private/README.md`, then run:
+`docs/PRODUCTION_SIGNING_HANDOFF.md`, then run:
 
 ```bash
 ./scripts/validate-private-release-config.sh
@@ -26,7 +26,8 @@ Apple distribution certificate/profile/team/bundle, App Store Connect P8 key,
 metadata, tester files, contact details, and export-compliance constraints. The
 configuration scripts upload secrets without printing them, configure keyless
 Google OIDC, scope beta environments to `testing`, scope production to
-`release`, and protect the release branches.
+`release`, delete stale repository-level copies of mobile secrets, verify their
+absence, and protect the release branches.
 
 Keep `release/private/` untracked and back it up to encrypted offline storage.
 Never place mobile IPA/AAB files, tester identities, private keys, or store
@@ -70,9 +71,10 @@ questionnaire answers. Those remain explicit Console checks. See
 
 ## Store assets and verification
 
-Run `Generate Store Screenshots` to create a review PR from isolated builds.
-Review every image for fictional data and quality, then merge it. Production is
-blocked until:
+Run `Generate Store Screenshots` to create a short-lived artifact from isolated
+builds. Download and review every image for fictional data and quality, then
+install only the approved images in the tracked store-assets directories.
+Production is blocked until:
 
 ```bash
 ./scripts/validate-mobile-store-assets.rb
@@ -98,12 +100,16 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
    internal uploads, waits for the external environment approval, promotes the
    exact builds, and publishes the unsigned desktop prerelease.
 2. After Apple reports Beta App Review approved, run `Candidate Readiness` from
-   the `testing` branch for that candidate tag. It verifies Apple and Google
-   through their APIs and starts production from the exact tested SHA.
-3. Approve `mobile-production`. The exact builds are promoted to production.
+   the `testing` branch for that candidate tag. It verifies Apple and Google,
+   advances `release` to the exact tested SHA, and starts no-publication
+   production signing validation.
+3. Approve `mobile-production`. The workflow signs/verifies Windows, notarizes
+   and verifies macOS, freezes exact desktop artifacts, and only then starts the
+   protected mobile-production promotion. Direct promotion is rejected without
+   that matching validation result.
 4. After both stores show the version live, run `Publish Stable Release` with
-   the same tag and confirmation phrase. It publishes signed/notarized desktop
-   packages and provenance checksums.
+   the same tag. It verifies both store builds and publishes the previously
+   frozen signed/notarized desktop bundle without rebuilding it.
 
 Never reuse a store build number, move an existing tag, replace signing keys
 without a recorded rotation, or manually upload a different binary under the

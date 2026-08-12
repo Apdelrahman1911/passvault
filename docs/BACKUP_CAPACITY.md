@@ -1,0 +1,127 @@
+# Backup capacity and memory
+
+Last reviewed: 2026-08-11
+
+This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, repository validation, and
+`AttachmentPolicy`. MiB/GiB use binary units.
+
+## Exact accepted limits
+
+| Boundary | Format 2 (new export/import) | Legacy format 1 import |
+|---|---:|---:|
+| complete encrypted backup | 16 GiB | 128 MiB |
+| aggregate decrypted metadata snapshot | none; row streamed | 64 MiB |
+| largest independently materialized metadata record | 65 MiB | entire snapshot, up to 64 MiB |
+| credential summary encrypted payload | 32 MiB | 32 MiB |
+| credential secret encrypted payload | 32 MiB | 32 MiB |
+| folder/tag encrypted payload | 64 KiB each | 64 KiB each |
+| attachment filename/password-history encrypted payload | 32 MiB each | 32 MiB each |
+| attachment outer backup chunk | 256 KiB | not supported |
+| attachment plaintext file | 100 MiB | not supported |
+| attachment encrypted object at the 100 MiB boundary | 104,882,093 bytes | not supported |
+| attachment total per credential | 512 MiB | not supported |
+
+The 100 MiB attachment produces exactly 400 data chunks. Its independently encrypted object adds 24,493 bytes:
+16 bytes of container header, 61 bytes per chunk, and a 77-byte authenticated final record. The format-2 backup then
+streams that object through a second 256 KiB authenticated record layer.
+
+Each manifest category accepts at most **1,000,000 rows**, subject to the smaller 16 GiB complete-container limit.
+Limits that materially affect growth are:
+
+- one folder per credential and at most 100 tags per credential;
+- at most 10 password-history rows per credential;
+- at most 20 managed attachments and 512 MiB of attachment plaintext per credential;
+- at most 50 custom fields per credential, each name up to 200 code points and value up to 20,000 code points;
+- at most 100 URLs, 100 recovery codes, 100 API keys, and 100 license keys per credential;
+- notes up to 100,000 code points and common sensitive values up to 4,096 code points;
+- zero or one TOTP configuration per credential, with a decoded setup key up to 128 bytes and label up to 200 code
+  points; and
+- up to 1,000,000 folders and 1,000,000 tags globally, although storage/container bounds normally win first.
+
+Backup validation enforces these relationship/history/managed-attachment limits again; an authenticated but
+policy-violating input cannot bypass the ordinary repository limits.
+
+## Import and export symmetry
+
+Format-2 create, inspect, and restore use the same 16 GiB byte counter, record lengths, entity counts, relationship
+limits, attachment size/count/aggregate limits, and exact EOF rule. Export also verifies every inner attachment
+container with the active VEK before packaging it. Import authenticates every outer record, stages complete encrypted
+objects atomically, and restores only after all records and EOF validate.
+
+Legacy format 1 is intentionally asymmetric: it remains readable with its historical 128 MiB/64 MiB bounds, omits
+attachments, and is not the default export route. The old in-memory byte-array creation API exists only for legacy
+compatibility/tests; user-facing file export uses format 2.
+
+## Peak-memory behavior
+
+Format 2 never holds the complete backup, all Room rows, or all attachment bytes in memory. Its bounded peaks are:
+
+| Operation | Simultaneous materialization |
+|---|---|
+| password KDF | Argon2id working memory, 32–256 MiB; released before row streaming |
+| metadata export | one large Room row, its compact binary encoding, and its encrypted record; about 3× one row in the worst case |
+| metadata inspect/restore | ciphertext + plaintext during AEAD, then plaintext + decoded row arrays; about 2× the single-record size |
+| folder/tag export paging | at most 64 rows, each capped at 64 KiB payload |
+| relationship export paging | at most 512 pairs of bounded identifiers |
+| attachment verify/package/restore | 256 KiB chunks and their owned/encrypted copies; normally under 1 MiB plus I/O buffers |
+| referential validation | identifier sets/maps and counters only; proportional to row count, not payload or attachment bytes |
+
+The deliberately conservative theoretical metadata peak is therefore about **195 MiB on export** (three 65 MiB
+representations) or **130 MiB on import** (two representations), plus runtime overhead. A repository-created normal
+credential is far smaller; the 65 MiB cap exists to read bounded legacy encrypted fields. Argon2id's maximum 256 MiB
+workspace is not intentionally concurrent with that row peak.
+
+Format 1 is different: the input bytes, UTF-8/UTF-16 JSON, Base64 fields, decoded ciphertext, decrypted snapshot, DTO
+graph, and decoded entity arrays can overlap until garbage collection. Its worst peak is runtime-dependent and can
+exceed several times the 128 MiB input limit. This is why format 1 is compatibility-only and why attachments are not
+added to it.
+
+Mutable byte arrays are wiped best-effort after each record. Managed strings, native crypto internals, garbage-
+collected copies, swap/pagefile, and crash dumps cannot be guaranteed wipeable by common Kotlin code.
+
+## Realistic growth model
+
+These are capacity estimates, not quotas. Attachment content is not compressed, so file choice dominates storage.
+Local vault storage and a format-2 backup are usually within a few percent of one another: both contain the encrypted
+objects, while SQLite and the outer backup record layer add different small overheads.
+
+**Typical model per credential:** approximately 4.5 KiB for the encrypted credential, three history entries, three
+tag references, folder/tag amortization, one small custom field, occasional OTP metadata, and record overhead; plus
+0.1 attachment averaging 512 KiB (one such attachment per ten credentials). Total: about **55.7 KiB/credential**.
+
+**Conservative normal-use model per credential:** approximately 32 KiB for rich notes, ten history entries, ten tags,
+five custom fields, and frequent OTP metadata; plus 0.25 attachment averaging 2 MiB (one attachment per four
+credentials). Total: about **544 KiB/credential**.
+
+| Credentials | Typical | Conservative normal use |
+|---:|---:|---:|
+| 1,000 | ~54 MiB | ~531 MiB |
+| 5,000 | ~272 MiB | ~2.59 GiB |
+| 10,000 | ~544 MiB | ~5.19 GiB |
+| 50,000 | ~2.66 GiB | ~25.9 GiB |
+
+At the typical rate, the 16 GiB container is reached around 300,000 credentials. At the conservative rate it is
+reached around 30,800 credentials, so a 50,000-credential vault with that attachment density cannot fit one backup.
+Attachment-heavy use reaches the cap much sooner: roughly 31 credentials each filled to the 512 MiB aggregate limit,
+or about 163 independent 100 MiB files, exhaust 16 GiB after encryption/record overhead.
+
+Metadata alone no longer has the old 64 MiB aggregate ceiling. With the assumptions above, 50,000 metadata-only
+credentials are roughly 220 MiB typical or 1.53 GiB conservative and stream successfully within the outer limit.
+
+## Failure behavior
+
+- A declared format-2 size above 16 GiB is rejected before expensive KDF/record processing; unknown-size sources are
+  stopped by the same running byte counter.
+- A record length is checked before allocating its nonce/ciphertext; a value above its exact type-specific maximum is
+  rejected.
+- Declared attachment size/count/aggregate failures happen before reading plaintext. Unknown-size input that crosses
+  100 MiB or 512 MiB aborts its atomic object write and removes staging metadata/files.
+- Export overflow or sink failure aborts the candidate output. Restore limit, authentication, transcript, relation,
+  constraint, I/O, or cancellation failure leaves Room unchanged and removes newly staged objects.
+- Android document providers cannot guarantee atomic replacement of the external selected URI; a provider failure may
+  leave a partial destination, but never a committed PassVault backup result or retained private plaintext staging file.
+
+Automated evidence covers the exact 100 MiB attachment, one-byte-over attachment/count limits, the 65 MiB maximum
+credential record with two 32 MiB fields, a one-byte-over field rejection, 50,000 independently encoded representative
+rows, fragmented reads, 16 GiB declared-size rejection, tamper/truncation, source changes between passes, transaction
+rollback, cancellation, and staging cleanup.

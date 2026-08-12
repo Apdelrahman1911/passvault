@@ -7,7 +7,6 @@ import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import java.awt.GraphicsEnvironment
 import java.awt.SplashScreen
-import javax.swing.SwingUtilities
 import javax.swing.UIManager
 
 /**
@@ -59,7 +58,7 @@ private fun setupDesktopEnvironment() {
     // Close splash screen if present
     try {
         SplashScreen.getSplashScreen()?.close()
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         // Ignore
     }
 }
@@ -99,16 +98,13 @@ private fun setupMacOSEnvironment() {
     System.setProperty("apple.awt.application.name", "PassVault")
     System.setProperty("apple.awt.enableTemplate", "true")
 
-    // Enable file drag and drop
-    System.setProperty("apple.awt.fileDialogForDirectories", "true")
-
     // Set up menu bar name
     try {
         val appClass = Class.forName("com.apple.eawt.Application")
         val application = appClass.getMethod("getApplication").invoke(null)
         appClass.getMethod("setDockIconImage", java.awt.Image::class.java)
             ?.invoke(application, getAppIcon())
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         // Not on macOS or library not available
     }
 }
@@ -135,7 +131,7 @@ private fun setupLinuxEnvironment() {
     // GTK theme integration
     try {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         // Fallback to default
     }
 }
@@ -157,10 +153,8 @@ private fun getAppIcon(): java.awt.Image? {
             OperatingSystem.WINDOWS -> "/icons/app-icon-win.png"
             else -> "/icons/app-icon.png"
         }
-        javax.imageio.ImageIO.read(
-            AppInfo::class.java.getResourceAsStream(iconPath)
-        )
-    } catch (e: Exception) {
+        AppInfo::class.java.getResourceAsStream(iconPath)?.use(javax.imageio.ImageIO::read)
+    } catch (_: Exception) {
         null
     }
 }
@@ -168,12 +162,17 @@ private fun getAppIcon(): java.awt.Image? {
 /**
  * Detect the current operating system.
  */
-private fun getOperatingSystem(): OperatingSystem {
-    val osName = System.getProperty("os.name").lowercase()
+internal fun getOperatingSystem(): OperatingSystem =
+    operatingSystemFromName(System.getProperty("os.name").orEmpty())
+
+internal fun operatingSystemFromName(osName: String): OperatingSystem {
+    val normalizedName = osName.lowercase()
     return when {
-        osName.contains("win") -> OperatingSystem.WINDOWS
-        osName.contains("mac") -> OperatingSystem.MACOS
-        osName.contains("nix") || osName.contains("nux") || osName.contains("aix") -> OperatingSystem.LINUX
+        normalizedName.contains("mac") || normalizedName.contains("darwin") -> OperatingSystem.MACOS
+        normalizedName.contains("win") -> OperatingSystem.WINDOWS
+        normalizedName.contains("nix") ||
+            normalizedName.contains("nux") ||
+            normalizedName.contains("aix") -> OperatingSystem.LINUX
         else -> OperatingSystem.UNKNOWN
     }
 }
@@ -181,7 +180,7 @@ private fun getOperatingSystem(): OperatingSystem {
 /**
  * Operating system types.
  */
-enum class OperatingSystem {
+internal enum class OperatingSystem {
     WINDOWS,
     MACOS,
     LINUX,
@@ -192,7 +191,7 @@ enum class OperatingSystem {
  * Application version information.
  */
 object AppInfo {
-    const val VERSION = "1.0.0"
+    const val VERSION = com.passvault.core.domain.PassVaultBuildInfo.VERSION
     const val NAME = "PassVault"
     const val FULL_NAME = "PassVault Password Manager"
     const val COPYRIGHT = "© 2026 PassVault project"

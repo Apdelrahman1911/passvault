@@ -1,10 +1,13 @@
 package com.passvault.feature.credential.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,35 +29,52 @@ internal fun TotpQrScannerDialog(
     onError: () -> Unit,
 ) {
     Dialog(onDismissRequest = onCancel) {
-        Surface(
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+        BoxWithConstraints {
+            val compactHeight = maxHeight < 520.dp
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = maxHeight),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surface,
             ) {
-                Text(
-                    text = stringResource(Res.string.ui_totp_scanner_title),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    text = stringResource(Res.string.ui_totp_scanner_instruction),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                PlatformTotpQrScanner(
-                    onPayload = onPayload,
-                    onError = onError,
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 220.dp, max = 480.dp),
-                )
-                TextButton(
-                    onClick = onCancel,
-                    modifier = Modifier.fillMaxWidth(),
+                        .then(
+                            if (compactHeight) {
+                                Modifier.verticalScroll(rememberScrollState())
+                            } else {
+                                Modifier
+                            },
+                        )
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Text(stringResource(Res.string.action_cancel))
+                    Text(
+                        text = stringResource(Res.string.ui_totp_scanner_title),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Text(
+                        text = stringResource(Res.string.ui_totp_scanner_instruction),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    PlatformTotpQrScanner(
+                        onPayload = onPayload,
+                        onError = onError,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(
+                                min = if (compactHeight) 160.dp else 220.dp,
+                                max = if (compactHeight) 280.dp else 480.dp,
+                            ),
+                    )
+                    TextButton(
+                        onClick = onCancel,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(Res.string.action_cancel))
+                    }
                 }
             }
         }

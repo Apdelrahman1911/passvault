@@ -1,70 +1,87 @@
 package com.passvault.desktop.security
 
 import com.passvault.core.security.ClipboardService
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.cancel
 import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Ownership-aware AWT clipboard service.
  *
  * Timers never blindly replace the user's later clipboard contents.  The
- * service retains only an opaque digest and the transferable instance, not the
- * copied secret.
+ * secret carries a JVM-local ownership flavor. Expiry verifies that
+ * unforgeable token before clearing, and releases the local reference when the
+ * clip changes or is cleared.
  */
-class DesktopClipboardService(
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+class DesktopClipboardService internal constructor(
+    private val scope: CoroutineScope,
+    private val clipboardProvider: () -> Clipboard,
+    registerShutdownHook: Boolean,
 ) : ClipboardService {
 
-    private val clipboard: Clipboard by lazy { Toolkit.getDefaultToolkit().systemClipboard }
-    private val ownedTransferable = AtomicReference<Transferable?>(null)
+    constructor(
+        scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+    ) : this(
+        scope = scope,
+        clipboardProvider = { Toolkit.getDefaultToolkit().systemClipboard },
+        registerShutdownHook = true,
+    )
+
+    private val clipboard: Clipboard by lazy(clipboardProvider)
+    private val ownedTransferable = AtomicReference<OwnedSensitiveSelection?>(null)
     private val clipboardMutex = Mutex()
     private var clearJob: Job? = null
-    private var defaultTimeoutMs = DEFAULT_TIMEOUT_MS
 
     init {
-        Runtime.getRuntime().addShutdownHook(Thread {
-            runBlocking { clear() }
-        })
+        if (registerShutdownHook) {
+            Runtime.getRuntime().addShutdownHook(Thread {
+                clearOwnedAtShutdown()
+            })
+        }
     }
 
-    override suspend fun copySensitive(text: String, timeoutMs: Long): Job {
-        return clipboardMutex.withLock {
+    override suspend fun copySensitive(text: String, timeoutMs: Long) {
+        clipboardMutex.withLock {
             val timeout = timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS)
-            clearJob?.cancel()
-            val selection = StringSelection(text)
-            setClipboard(selection)
-            ownedTransferable.set(selection)
+            val selection = OwnedSensitiveSelection(text)
+            // withContext has a prompt-cancellation boundary when returning
+            // from the dispatcher used by setClipboard(). Once the OS accepts
+            // a secret, ownership and its expiry job must therefore be
+            // installed before caller cancellation can escape this method.
+            withContext(NonCancellable) {
+                setClipboard(selection)
+                clearJob?.cancel()
+                ownedTransferable.set(selection)
 
-            val job = scope.launch {
-                delay(timeout)
-                clipboardMutex.withLock { clearIfOwned(selection) }
+                clearJob = scope.launch {
+                    delay(timeout)
+                    clipboardMutex.withLock { clearIfOwned(selection) }
+                }
             }
-            clearJob = job
-            job
         }
     }
 
     override suspend fun copy(text: String) {
         clipboardMutex.withLock {
+            setClipboard(StringSelection(text))
             clearJob?.cancel()
             clearJob = null
             ownedTransferable.set(null)
-            setClipboard(StringSelection(text))
         }
     }
 
@@ -77,117 +94,119 @@ class DesktopClipboardService(
 
     override suspend fun containsSensitive(): Boolean {
         return clipboardMutex.withLock {
-            withContext(Dispatchers.Default) {
-                try {
-                    val current = clipboard.getContents(null)
-                    current === ownedTransferable.get()
-                } catch (_: Exception) {
-                    false
-                }
-            }
-        }
-    }
-
-    suspend fun copySensitiveWithId(
-        text: String,
-        jobId: String,
-        timeoutMs: Long = defaultTimeoutMs,
-    ): Job = copySensitive(text, timeoutMs)
-
-    fun cancelClearJob(jobId: String) {
-        clearJob?.cancel()
-        clearJob = null
-    }
-
-    fun cancelAllClearJobs() {
-        clearJob?.cancel()
-        clearJob = null
-    }
-
-    suspend fun getClipboardContent(): String? = withContext(Dispatchers.Default) {
-        try {
-            clipboard.getData(DataFlavor.stringFlavor) as? String
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    fun hasContent(): Boolean = runCatching { clipboard.getContents(null) != null }.getOrDefault(false)
-
-    fun setDefaultTimeout(timeoutMs: Long) {
-        defaultTimeoutMs = timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS)
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    suspend fun clearIfMatches(text: String): Boolean {
-        return clipboardMutex.withLock {
             val owned = ownedTransferable.get() ?: return@withLock false
-            val current = withContext(Dispatchers.Default) {
-                runCatching { clipboard.getContents(null) }.getOrNull()
-            }
-            if (current !== owned) return@withLock false
-            clearIfOwned(owned)
-            true
-        }
-    }
-
-    suspend fun clearNow(): Boolean = clipboardMutex.withLock {
-        val owned = ownedTransferable.get() ?: return@withLock true
-        clearIfOwned(owned)
-        ownedTransferable.get() == null
-    }
-
-    fun hasClearJob(jobId: String): Boolean = clearJob?.isActive == true
-
-    fun getPendingClearJobCount(): Int = if (clearJob?.isActive == true) 1 else 0
-
-    suspend fun copyMultipleSensitive(
-        items: Map<String, String>,
-        timeoutMs: Long = defaultTimeoutMs,
-    ): Map<String, Job> = items.mapValues { copySensitive(it.value, timeoutMs) }
-
-    suspend fun onWindowFocusLost() {
-        if (containsSensitive()) clear()
-    }
-
-    fun destroy() {
-        runBlocking {
-            clipboardMutex.withLock {
-                ownedTransferable.get()?.let { clearIfOwned(it) }
-                clearJob?.cancel()
-                clearJob = null
-            }
-        }
-        scope.cancel()
-    }
-
-    private suspend fun clearIfOwned(expected: Transferable): Boolean =
-        withContext(Dispatchers.Default) {
             try {
-                val current = clipboard.getContents(null)
-                if (current !== expected) {
-                    ownedTransferable.compareAndSet(expected, null)
-                    return@withContext false
-                }
-                clipboard.setContents(StringSelection(""), null)
-                ownedTransferable.compareAndSet(expected, null)
-                clearJob?.cancel()
-                clearJob = null
-                true
+                val isOwned = ownsClipboardContent(
+                    current = withClipboardRetry { clipboard.getContents(null) },
+                    expected = owned,
+                )
+                if (!isOwned) releaseOwnership(owned)
+                isOwned
+            } catch (cancel: CancellationException) {
+                throw cancel
             } catch (_: Exception) {
                 false
             }
         }
+    }
 
-    private suspend fun setClipboard(selection: Transferable) {
-        withContext(Dispatchers.Default) {
-            clipboard.setContents(selection, null)
+    private suspend fun clearIfOwned(expected: OwnedSensitiveSelection): Boolean {
+        return try {
+            val current = withClipboardRetry { clipboard.getContents(null) }
+            if (!ownsClipboardContent(current, expected)) {
+                releaseOwnership(expected)
+                false
+            } else {
+                withClipboardRetry { clipboard.setContents(StringSelection(""), null) }
+                releaseOwnership(expected)
+                true
+            }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (_: Exception) {
+            // Windows can keep the clipboard busy beyond the short immediate
+            // retry window. Retain ownership and continue retrying instead of
+            // silently leaving a secret with no expiry job.
+            if (ownedTransferable.get() === expected) {
+                clearJob = scope.launch {
+                    delay(CLIPBOARD_RETRY_RESCHEDULE_MS)
+                    clipboardMutex.withLock {
+                        if (ownedTransferable.get() === expected) clearIfOwned(expected)
+                    }
+                }
+            }
+            false
         }
     }
 
+    private suspend fun setClipboard(selection: Transferable) {
+        withClipboardRetry { clipboard.setContents(selection, null) }
+    }
+
+    private fun clearOwnedAtShutdown() {
+        val expected = ownedTransferable.get() ?: return
+        runCatching {
+            if (ownsClipboardContent(clipboard.getContents(null), expected)) {
+                clipboard.setContents(StringSelection(""), null)
+            }
+        }
+        ownedTransferable.compareAndSet(expected, null)
+    }
+
+    private fun ownsClipboardContent(
+        current: Transferable?,
+        expected: OwnedSensitiveSelection,
+    ): Boolean {
+        val markerMatches = current?.isDataFlavorSupported(OWNERSHIP_FLAVOR) == true &&
+            runCatching { current.getTransferData(OWNERSHIP_FLAVOR) == expected.token }
+                .getOrDefault(false)
+        return current === expected || markerMatches
+    }
+
+    private fun releaseOwnership(expected: OwnedSensitiveSelection) {
+        if (ownedTransferable.compareAndSet(expected, null)) {
+            clearJob?.cancel()
+            clearJob = null
+        }
+    }
+
+    private suspend fun <T> withClipboardRetry(operation: () -> T): T =
+        withContext(Dispatchers.Default) {
+            var lastFailure: IllegalStateException? = null
+            repeat(CLIPBOARD_RETRY_ATTEMPTS) { attempt ->
+                try {
+                    return@withContext operation()
+                } catch (error: IllegalStateException) {
+                    lastFailure = error
+                    if (attempt + 1 < CLIPBOARD_RETRY_ATTEMPTS) delay(CLIPBOARD_RETRY_DELAY_MS)
+                }
+            }
+            throw checkNotNull(lastFailure)
+        }
+
+    private class OwnedSensitiveSelection(text: String) : Transferable {
+        val token: String = UUID.randomUUID().toString()
+        private val textSelection = StringSelection(text)
+
+        override fun getTransferDataFlavors(): Array<DataFlavor> =
+            arrayOf(DataFlavor.stringFlavor, OWNERSHIP_FLAVOR)
+
+        override fun isDataFlavorSupported(flavor: DataFlavor): Boolean =
+            flavor == OWNERSHIP_FLAVOR || textSelection.isDataFlavorSupported(flavor)
+
+        override fun getTransferData(flavor: DataFlavor): Any =
+            if (flavor == OWNERSHIP_FLAVOR) token else textSelection.getTransferData(flavor)
+    }
+
     companion object {
-        const val DEFAULT_TIMEOUT_MS = 30_000L
         const val MAX_TIMEOUT_MS = 300_000L
         const val MIN_TIMEOUT_MS = 5_000L
+        private const val CLIPBOARD_RETRY_ATTEMPTS = 8
+        private const val CLIPBOARD_RETRY_DELAY_MS = 40L
+        private const val CLIPBOARD_RETRY_RESCHEDULE_MS = 1_000L
+        private val OWNERSHIP_FLAVOR = DataFlavor(
+            "${DataFlavor.javaJVMLocalObjectMimeType};class=java.lang.String",
+            "PassVault sensitive clipboard owner",
+        )
     }
 }

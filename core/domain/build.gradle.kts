@@ -30,8 +30,7 @@ kotlin {
     sourceSets {
         val commonMain = getByName("commonMain") {
             dependencies {
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.datetime)
+                implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
@@ -40,8 +39,8 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.assertk)
-                implementation(libs.turbine)
             }
         }
     }

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
@@ -60,7 +59,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.components.EditorialPageHeader
 import com.passvault.core.designsystem.components.EditorialStatusBanner
@@ -69,10 +69,13 @@ import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.core.domain.model.CredentialId
-import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.PasswordScore
+import com.passvault.core.domain.model.SensitiveText
 import com.passvault.feature.credential.presentation.CredentialViewModel
+import com.passvault.feature.credential.ui.components.CredentialAttachmentSection
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun CredentialDetailScreen(
@@ -80,21 +83,50 @@ fun CredentialDetailScreen(
     credentialId: CredentialId,
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (CredentialId) -> Unit,
-    onCopyToClipboard: (String) -> Unit,
+    onCopyToClipboard: suspend (String) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+    LaunchedEffect(credentialId) { viewModel.loadCredential(credentialId) }
+    CredentialDetailEffects(viewModel, onNavigateBack, onCopyToClipboard)
 
-    LaunchedEffect(credentialId) {
-        viewModel.loadCredential(credentialId)
+    if (state.isLoading) {
+        CredentialDetailLoading(modifier)
+    } else {
+        CredentialDetailContent(
+            state = state,
+            credentialId = credentialId,
+            onNavigateToEdit = onNavigateToEdit,
+            onEvent = viewModel::onEvent,
+            modifier = modifier,
+        )
     }
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collectLatest { effect ->
+    if (state.showDeleteConfirmation) {
+        DeleteCredentialDialog(onEvent = viewModel::onEvent)
+    }
+}
+
+@Composable
+private fun CredentialDetailEffects(
+    viewModel: CredentialViewModel,
+    onNavigateBack: () -> Unit,
+    onCopyToClipboard: suspend (String) -> Boolean,
+) {
+    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+    LaunchedEffect(viewModel, uriHandler) {
+        viewModel.effect.collect { effect ->
             when (effect) {
                 CredentialViewModel.CredentialEffect.NavigateBack -> onNavigateBack()
-                is CredentialViewModel.CredentialEffect.CopyToClipboard ->
-                    onCopyToClipboard(effect.text)
+                is CredentialViewModel.CredentialEffect.CopyToClipboard -> {
+                    val copied = try {
+                        onCopyToClipboard(effect.text)
+                    } catch (cancel: CancellationException) {
+                        throw cancel
+                    } catch (_: Exception) {
+                        false
+                    }
+                    viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyResult(copied))
+                }
                 is CredentialViewModel.CredentialEffect.LaunchUrl -> {
                     val opened = try {
                         uriHandler.openUri(effect.url)
@@ -108,28 +140,35 @@ fun CredentialDetailScreen(
             }
         }
     }
+}
 
-    if (state.isLoading) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
+@Composable
+private fun CredentialDetailLoading(modifier: Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
     }
+}
 
+@Composable
+private fun CredentialDetailContent(
+    state: CredentialViewModel.CredentialState,
+    credentialId: CredentialId,
+    onNavigateToEdit: (CredentialId) -> Unit,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+    modifier: Modifier,
+) {
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .imePadding(),
+            modifier = Modifier.fillMaxSize().imePadding(),
             contentAlignment = Alignment.TopCenter,
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .widthIn(max = ComponentSpacing.formMaxWidth)
+                    .fillMaxWidth()
                     .scaffoldVerticalScroll(rememberScrollState(), padding)
                     .padding(
                         start = ComponentSpacing.screenHorizontal,
@@ -138,286 +177,319 @@ fun CredentialDetailScreen(
                     ),
                 verticalArrangement = Arrangement.spacedBy(Spacing.smMd),
             ) {
-                TopAppBar(
-                    title = {},
-                    windowInsets = WindowInsets(0, 0, 0, 0),
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(Res.string.action_back),
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { onNavigateToEdit(credentialId) }) {
-                            Icon(
-                                Icons.Default.Edit,
-                                contentDescription = stringResource(Res.string.ui_edit_credential),
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteClick)
-                            },
-                            enabled = !state.isDeleting,
-                        ) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = stringResource(Res.string.ui_delete_credential),
-                            )
-                        }
-                    },
-                    colors = passVaultTopAppBarColors(),
-                )
-
+                CredentialDetailTopBar(state, credentialId, onNavigateToEdit, onEvent)
                 EditorialPageHeader(
                     eyebrow = stringResource(Res.string.ui_encrypted_vault),
                     title = state.displayTitle.resolve(),
                 )
-
-                state.errorMessage?.let { message ->
-                    EditorialStatusBanner(
-                        icon = Icons.Default.Error,
-                        title = state.displayTitle.resolve(),
-                        message = message.resolve(),
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    )
-                }
-
-                CredentialField(stringResource(Res.string.ui_title), state.title, onCopy = null, isPassword = false)
-                if (state.username.isNotBlank()) {
-                    CredentialField(
-                        stringResource(Res.string.ui_username),
-                        state.username,
-                        onCopy = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyUsernameClick)
-                        },
-                        isPassword = false,
-                    )
-                }
-                if (state.email.isNotBlank()) {
-                    CredentialField(
-                        stringResource(Res.string.ui_email),
-                        state.email,
-                        onCopy = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyEmailClick)
-                        },
-                        isPassword = false,
-                    )
-                }
-                if (state.password.isNotBlank()) {
-                    CredentialField(
-                        stringResource(Res.string.ui_password),
-                        state.password,
-                        onCopy = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyPasswordClick)
-                        },
-                        isPassword = true,
-                    )
-                }
+                CredentialErrorBanner(state)
+                CredentialLoginFields(state, onEvent)
                 if (state.totpConfiguration != null) {
                     TotpCodeCard(
                         state = state,
-                        onCopy = {
-                            viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyTotpClick)
-                        },
+                        onCopy = { onEvent(CredentialViewModel.CredentialEvent.OnCopyTotpClick) },
                     )
                 }
-
-                state.urls.forEach { url ->
-                    CredentialField(
-                        label = stringResource(Res.string.ui_website),
-                        value = url,
-                        onCopy = null,
-                        isPassword = false,
-                        action = {
-                            TextButton(
-                                onClick = {
-                                    viewModel.onEvent(
-                                        CredentialViewModel.CredentialEvent.OnLaunchUrlClick(url),
-                                    )
-                                },
-                            ) {
-                                Text(stringResource(Res.string.ui_open))
-                                Icon(
-                                    Icons.AutoMirrored.Filled.OpenInNew,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                )
-                            }
-                        },
-                    )
-                }
-
-                if (state.notes.isNotBlank()) {
-                    CredentialField(stringResource(Res.string.ui_notes), state.notes, onCopy = null, isPassword = false)
-                }
-
-                state.customFields.forEach { field ->
-                    CredentialField(
-                        label = field.name,
-                        value = field.value.toStringUnsafe(),
-                        onCopy = {
-                            viewModel.onEvent(
-                                CredentialViewModel.CredentialEvent.OnCopyCustomFieldClick(field.id),
-                            )
-                        },
-                        isPassword = field.isSecret,
-                    )
-                }
-
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    shape = MaterialTheme.shapes.large,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                if (state.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                            Text(
-                                if (state.isFavorite) {
-                                    stringResource(Res.string.ui_favorite_credential)
-                                } else {
-                                    stringResource(Res.string.ui_not_a_favorite)
-                                },
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                        }
-                        state.passwordHealth.ageDays?.let { ageDays ->
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(Icons.Default.Schedule, contentDescription = null)
-                                Text(
-                                    pluralStringResource(
-                                        Res.plurals.ui_password_age_days,
-                                        ageDays,
-                                        ageDays,
-                                    ),
-                                )
-                            }
-                        }
-                        if (state.passwordHealth.isWeak || state.passwordHealth.isDuplicate) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    Icons.Default.Error,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error,
-                                )
-                                Text(
-                                    stringResource(Res.string.ui_this_credential_needs_attention_in_password_health),
-                                    color = MaterialTheme.colorScheme.error,
-                                )
-                            }
-                        } else if (state.passwordHealth.score != com.passvault.core.domain.model.PasswordScore.UNKNOWN) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                )
-                                Text(stringResource(Res.string.ui_no_local_password_health_issue_recorded))
-                            }
-                        }
-                    }
-                }
-
-                if (state.attachments.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                        ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        shape = MaterialTheme.shapes.large,
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            Text(stringResource(Res.string.ui_encrypted_attachments), style = MaterialTheme.typography.titleSmall)
-                            state.attachments.forEach { attachment ->
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Icon(Icons.AutoMirrored.Filled.InsertDriveFile, contentDescription = null)
-                                    Text(
-                                        stringResource(
-                                            Res.string.ui_attachment_file_size,
-                                            attachment.fileName,
-                                            attachment.sizeBytes,
-                                        ),
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
-                            }
-                            Text(
-                                stringResource(Res.string.ui_attachment_editing_and_file_opening_are_not_available),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                }
+                CredentialUrlsAndNotes(state, onEvent)
+                CredentialCustomFields(state, onEvent)
+                CredentialSensitiveLists(state, onEvent)
+                CredentialHealthCard(state)
+                CredentialAttachmentSection(state = state, onEvent = onEvent)
                 Spacer(modifier = Modifier.size(24.dp))
             }
         }
     }
+}
 
-    if (state.showDeleteConfirmation) {
-        AlertDialog(
-            onDismissRequest = {
-                viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteCancel)
-            },
-            title = { Text(stringResource(Res.string.ui_delete_credential_permanently)) },
-            text = {
-                Text(
-                    stringResource(Res.string.ui_this_removes_the_encrypted_credential_and_its_history) +
-                        stringResource(Res.string.ui_create_a_backup_first_if_you_may_need_to_recover_it),
+@Composable
+private fun CredentialDetailTopBar(
+    state: CredentialViewModel.CredentialState,
+    credentialId: CredentialId,
+    onNavigateToEdit: (CredentialId) -> Unit,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+) {
+    TopAppBar(
+        title = {},
+        windowInsets = WindowInsets(0, 0, 0, 0),
+        navigationIcon = {
+            IconButton(onClick = { onEvent(CredentialViewModel.CredentialEvent.OnBackClick) }) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(Res.string.action_back),
                 )
-            },
-            confirmButton = {
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { onNavigateToEdit(credentialId) },
+                enabled = state.isCredentialLoaded && !state.isBusy,
+            ) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = stringResource(Res.string.ui_edit_credential),
+                )
+            }
+            IconButton(
+                onClick = { onEvent(CredentialViewModel.CredentialEvent.OnDeleteClick) },
+                enabled = state.isCredentialLoaded && !state.isBusy,
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(Res.string.ui_delete_credential),
+                )
+            }
+        },
+        colors = passVaultTopAppBarColors(),
+    )
+}
+
+@Composable
+private fun CredentialErrorBanner(state: CredentialViewModel.CredentialState) {
+    state.errorMessage?.let { message ->
+        EditorialStatusBanner(
+            icon = Icons.Default.Error,
+            title = state.displayTitle.resolve(),
+            message = message.resolve(),
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        )
+    }
+}
+
+@Composable
+private fun CredentialLoginFields(
+    state: CredentialViewModel.CredentialState,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+) {
+    CredentialField(
+        label = stringResource(Res.string.ui_title),
+        value = state.title,
+        onCopy = null,
+        isPassword = false,
+    )
+    if (state.username.isNotBlank()) {
+        CredentialField(
+            stringResource(Res.string.ui_username),
+            state.username,
+            onCopy = { onEvent(CredentialViewModel.CredentialEvent.OnCopyUsernameClick) },
+            isPassword = false,
+        )
+    }
+    if (state.email.isNotBlank()) {
+        CredentialField(
+            stringResource(Res.string.ui_email),
+            state.email,
+            onCopy = { onEvent(CredentialViewModel.CredentialEvent.OnCopyEmailClick) },
+            isPassword = false,
+        )
+    }
+    if (state.password.isNotBlank()) {
+        CredentialField(
+            stringResource(Res.string.ui_password),
+            state.password,
+            onCopy = { onEvent(CredentialViewModel.CredentialEvent.OnCopyPasswordClick) },
+            isPassword = true,
+        )
+    }
+}
+
+@Composable
+private fun CredentialUrlsAndNotes(
+    state: CredentialViewModel.CredentialState,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+) {
+    state.urls.forEach { url ->
+        CredentialField(
+            label = stringResource(Res.string.ui_website),
+            value = url,
+            onCopy = null,
+            isPassword = false,
+            action = {
                 TextButton(
                     onClick = {
-                        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteConfirm)
+                        onEvent(CredentialViewModel.CredentialEvent.OnLaunchUrlClick(url))
                     },
                 ) {
-                    Text(stringResource(Res.string.action_delete), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnDeleteCancel)
-                    },
-                ) {
-                    Text(stringResource(Res.string.action_cancel))
+                    Text(stringResource(Res.string.ui_open))
+                    Icon(
+                        Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
             },
         )
     }
+    if (state.notes.isNotBlank()) {
+        CredentialField(
+            label = stringResource(Res.string.ui_notes),
+            value = state.notes,
+            onCopy = null,
+            isPassword = false,
+        )
+    }
+}
+
+@Composable
+private fun CredentialCustomFields(
+    state: CredentialViewModel.CredentialState,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+) {
+    state.customFields.forEach { field ->
+        val onCopy = {
+            onEvent(CredentialViewModel.CredentialEvent.OnCopyCustomFieldClick(field.id))
+        }
+        if (field.isSecret) {
+            SensitiveCredentialField(label = field.name, value = field.value, onCopy = onCopy)
+        } else {
+            CredentialField(
+                label = field.name,
+                value = field.value.toStringUnsafe(),
+                onCopy = onCopy,
+                isPassword = false,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CredentialSensitiveLists(
+    state: CredentialViewModel.CredentialState,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+) {
+    state.recoveryCodes.forEachIndexed { index, value ->
+        SensitiveCredentialField(
+            label = stringResource(Res.string.ui_recovery_code_number, index + 1),
+            value = value,
+            onCopy = {
+                onEvent(CredentialViewModel.CredentialEvent.OnCopyRecoveryCodeClick(index))
+            },
+        )
+    }
+    state.apiKeys.forEachIndexed { index, value ->
+        SensitiveCredentialField(
+            label = stringResource(Res.string.ui_api_key_number, index + 1),
+            value = value,
+            onCopy = { onEvent(CredentialViewModel.CredentialEvent.OnCopyApiKeyClick(index)) },
+        )
+    }
+    state.licenseKeys.forEachIndexed { index, value ->
+        SensitiveCredentialField(
+            label = stringResource(Res.string.ui_license_key_number, index + 1),
+            value = value,
+            onCopy = {
+                onEvent(CredentialViewModel.CredentialEvent.OnCopyLicenseKeyClick(index))
+            },
+        )
+    }
+}
+
+@Composable
+private fun CredentialHealthCard(state: CredentialViewModel.CredentialState) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            FavoriteStatus(state.isFavorite)
+            state.passwordHealth.ageDays?.let { PasswordAgeStatus(it) }
+            PasswordHealthStatus(state)
+        }
+    }
+}
+
+@Composable
+private fun FavoriteStatus(isFavorite: Boolean) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            if (isFavorite) {
+                stringResource(Res.string.ui_favorite_credential)
+            } else {
+                stringResource(Res.string.ui_not_a_favorite)
+            },
+            style = MaterialTheme.typography.titleSmall,
+        )
+    }
+}
+
+@Composable
+private fun PasswordAgeStatus(ageDays: Int) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Default.Schedule, contentDescription = null)
+        Text(pluralStringResource(Res.plurals.ui_password_age_days, ageDays, ageDays))
+    }
+}
+
+@Composable
+private fun PasswordHealthStatus(state: CredentialViewModel.CredentialState) {
+    val needsAttention = state.passwordHealth.isWeak || state.passwordHealth.isDuplicate
+    val hasScore = state.passwordHealth.score != PasswordScore.UNKNOWN
+    if (!needsAttention && !hasScore) return
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            if (needsAttention) Icons.Default.Error else Icons.Default.CheckCircle,
+            contentDescription = null,
+            tint = if (needsAttention) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.primary
+            },
+        )
+        Text(
+            text = if (needsAttention) {
+                stringResource(Res.string.ui_this_credential_needs_attention_in_password_health)
+            } else {
+                stringResource(Res.string.ui_no_local_password_health_issue_recorded)
+            },
+            color = if (needsAttention) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+        )
+    }
+}
+
+@Composable
+private fun DeleteCredentialDialog(
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onEvent(CredentialViewModel.CredentialEvent.OnDeleteCancel) },
+        title = { Text(stringResource(Res.string.ui_delete_credential_permanently)) },
+        text = { Text(stringResource(Res.string.ui_delete_credential_backup_warning)) },
+        confirmButton = {
+            TextButton(onClick = { onEvent(CredentialViewModel.CredentialEvent.OnDeleteConfirm) }) {
+                Text(
+                    text = stringResource(Res.string.action_delete),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onEvent(CredentialViewModel.CredentialEvent.OnDeleteCancel) }) {
+                Text(stringResource(Res.string.action_cancel))
+            }
+        },
+    )
 }
 
 @Composable
@@ -427,8 +499,6 @@ private fun TotpCodeCard(
     modifier: Modifier = Modifier,
 ) {
     val configuration = state.totpConfiguration ?: return
-    val displayCode = state.currentTotpCode.groupTotpCode()
-
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -447,63 +517,71 @@ private fun TotpCodeCard(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
-            if (state.totpGenerationError || displayCode.isEmpty()) {
-                Text(
-                    text = stringResource(Res.string.ui_totp_code_unavailable),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = displayCode,
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.weight(1f),
-                    )
-                    IconButton(onClick = onCopy) {
-                        Icon(
-                            imageVector = Icons.Default.ContentCopy,
-                            contentDescription = stringResource(
-                                Res.string.ui_copy_value,
-                                stringResource(Res.string.ui_totp_code),
-                            ),
-                        )
-                    }
-                }
-                LinearProgressIndicator(
-                    progress = { state.totpProgress },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Text(
-                    text = pluralStringResource(
-                        Res.plurals.ui_totp_expires_in_seconds,
-                        state.totpSecondsRemaining,
-                        state.totpSecondsRemaining,
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            }
-            val accountLabel = listOfNotNull(configuration.issuer, configuration.accountName)
-                .filter(String::isNotBlank)
-                .joinToString(" · ")
-            if (accountLabel.isNotEmpty()) {
-                Text(
-                    text = accountLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                )
-            }
-            Text(
-                text = stringResource(Res.string.ui_totp_device_time_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            TotpCodeValue(state, onCopy)
+            TotpAccountInfo(configuration.issuer, configuration.accountName)
+        }
+    }
+}
+
+@Composable
+private fun TotpCodeValue(
+    state: CredentialViewModel.CredentialState,
+    onCopy: () -> Unit,
+) {
+    val displayCode = state.currentTotpCode.groupTotpCode()
+    if (state.totpGenerationError || displayCode.isEmpty()) {
+        Text(
+            text = stringResource(Res.string.ui_totp_code_unavailable),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+        return
+    }
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = displayCode,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.weight(1f),
+        )
+        IconButton(onClick = onCopy) {
+            Icon(
+                imageVector = Icons.Default.ContentCopy,
+                contentDescription = stringResource(
+                    Res.string.ui_copy_value,
+                    stringResource(Res.string.ui_totp_code),
+                ),
             )
         }
     }
+    LinearProgressIndicator(progress = { state.totpProgress }, modifier = Modifier.fillMaxWidth())
+    Text(
+        text = pluralStringResource(
+            Res.plurals.ui_totp_expires_in_seconds,
+            state.totpSecondsRemaining,
+            state.totpSecondsRemaining,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+    )
+}
+
+@Composable
+private fun TotpAccountInfo(issuer: String?, accountName: String?) {
+    val accountLabel = listOfNotNull(issuer, accountName)
+        .filter(String::isNotBlank)
+        .joinToString(" · ")
+    if (accountLabel.isNotEmpty()) {
+        Text(
+            text = accountLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+    }
+    Text(
+        text = stringResource(Res.string.ui_totp_device_time_hint),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+    )
 }
 
 private fun String.groupTotpCode(): String = when (length) {
@@ -522,13 +600,69 @@ private fun CredentialField(
     action: @Composable (() -> Unit)? = null,
 ) {
     var visible by remember(value, isPassword) { mutableStateOf(!isPassword) }
+    val hiddenDescription = stringResource(Res.string.secure_field_password_hidden)
     LaunchedEffect(visible, value, isPassword) {
         if (visible && isPassword) {
-            delay(15_000)
+            delay(SENSITIVE_VALUE_REVEAL_MILLIS)
             visible = false
         }
     }
 
+    CredentialFieldCard(
+        label = label,
+        value = value,
+        visible = visible,
+        hiddenDescription = hiddenDescription,
+        isPassword = isPassword,
+        onVisibilityClick = { visible = !visible },
+        onCopy = onCopy,
+        modifier = modifier,
+        action = action,
+    )
+}
+
+/** Keeps wrapped secrets out of immutable UI strings until the user explicitly reveals one. */
+@Composable
+private fun SensitiveCredentialField(
+    label: String,
+    value: SensitiveText,
+    onCopy: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var visible by remember(value) { mutableStateOf(false) }
+    val hiddenDescription = stringResource(Res.string.secure_field_password_hidden)
+    LaunchedEffect(visible, value) {
+        if (visible) {
+            delay(SENSITIVE_VALUE_REVEAL_MILLIS)
+            visible = false
+        }
+    }
+
+    CredentialFieldCard(
+        label = label,
+        value = if (visible) value.toStringUnsafe() else "",
+        visible = visible,
+        hiddenDescription = hiddenDescription,
+        isPassword = true,
+        onVisibilityClick = { visible = !visible },
+        onCopy = onCopy,
+        modifier = modifier,
+        action = null,
+    )
+}
+
+@Composable
+private fun CredentialFieldCard(
+    label: String,
+    value: String,
+    visible: Boolean,
+    hiddenDescription: String,
+    isPassword: Boolean,
+    onVisibilityClick: () -> Unit,
+    onCopy: (() -> Unit)?,
+    modifier: Modifier,
+    action: @Composable (() -> Unit)?,
+) {
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -545,38 +679,71 @@ private fun CredentialField(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.size(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = if (visible) value else "•".repeat(value.codePointLength().coerceAtMost(24)),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                if (isPassword) {
-                    IconButton(onClick = { visible = !visible }) {
-                        Icon(
-                            if (visible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = if (visible) {
-                                stringResource(Res.string.ui_hide_value, label)
-                            } else {
-                                stringResource(Res.string.ui_show_value, label)
-                            },
-                        )
-                    }
-                }
-                if (onCopy != null) {
-                    IconButton(onClick = onCopy) {
-                        Icon(
-                            Icons.Default.ContentCopy,
-                            contentDescription = stringResource(Res.string.ui_copy_value, label),
-                        )
-                    }
-                }
-                action?.invoke()
-            }
+            CredentialFieldValueRow(
+                label = label,
+                value = value,
+                visible = visible,
+                hiddenDescription = hiddenDescription,
+                isPassword = isPassword,
+                onVisibilityClick = onVisibilityClick,
+                onCopy = onCopy,
+                action = action,
+            )
         }
     }
 }
+
+@Composable
+private fun CredentialFieldValueRow(
+    label: String,
+    value: String,
+    visible: Boolean,
+    hiddenDescription: String,
+    isPassword: Boolean,
+    onVisibilityClick: () -> Unit,
+    onCopy: (() -> Unit)?,
+    action: @Composable (() -> Unit)?,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val valueModifier = Modifier.weight(1f).then(
+            if (!visible && isPassword) {
+                Modifier.clearAndSetSemantics { contentDescription = hiddenDescription }
+            } else {
+                Modifier
+            },
+        )
+        Text(
+            text = if (visible) value else "•".repeat(HIDDEN_VALUE_BULLET_COUNT),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = valueModifier,
+        )
+        if (isPassword) {
+            IconButton(onClick = onVisibilityClick) {
+                Icon(
+                    if (visible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                    contentDescription = if (visible) {
+                        stringResource(Res.string.ui_hide_value, label)
+                    } else {
+                        stringResource(Res.string.ui_show_value, label)
+                    },
+                )
+            }
+        }
+        if (onCopy != null) {
+            IconButton(onClick = onCopy) {
+                Icon(
+                    Icons.Default.ContentCopy,
+                    contentDescription = stringResource(Res.string.ui_copy_value, label),
+                )
+            }
+        }
+        action?.invoke()
+    }
+}
+
+private const val HIDDEN_VALUE_BULLET_COUNT = 12
+private const val SENSITIVE_VALUE_REVEAL_MILLIS = 15_000L

@@ -1,6 +1,6 @@
 # Testing
 
-Last reviewed: 2026-08-01
+Last reviewed: 2026-08-11
 
 Use JDK 17 and the checked-in Gradle wrapper. `gradlew test` is a repository-owned aggregate task that depends on all
 Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's ambiguous unqualified selector.
@@ -61,13 +61,15 @@ behavior rather than private implementation detail.
 
 ## Evidence limits
 
-The aggregate currently contains 609 tests: 310 Desktop/JVM and 299 Android host, with no failures, errors, or
-skips in the final run.
+The repository-owned `test` aggregate currently contains 1,082 tests: 604 Desktop/JVM and 478 Android host. The
+complete final `check` result set additionally contains 42 Android application host tests and 478 iOS simulator tests,
+for 1,602 tests total with no failures, errors, or skips.
 
 Android host tests exercise portable and Android-compilation behavior on the JVM, but do not prove lifecycle,
 IME, screenshot, file-picker, accessibility, or native device integration. Those need an emulator/device. The iOS
-framework and SwiftUI host build on macOS/Xcode, but interactive workflows and the missing backup document picker
-still need device/simulator validation. A Desktop release is not startup-verified by `:app-desktop:run`: build
+framework and SwiftUI host build on macOS/Xcode, but interactive backup/attachment pickers, viewers/share sheets,
+biometrics, lifecycle behavior, and layouts still need device/simulator validation. A Desktop release is not
+startup-verified by `:app-desktop:run`: build
 `:app-desktop:createReleaseDistributable` and run the packaged-release smoke script. The release workflow uses this
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.

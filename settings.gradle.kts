@@ -1,6 +1,6 @@
-pluginManagement {
-    includeBuild("build-logic")
+import org.gradle.api.initialization.resolve.RepositoriesMode
 
+pluginManagement {
     repositories {
         google {
             content {
@@ -20,12 +20,11 @@ plugins {
 }
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     repositories {
         google()
         mavenCentral()
-
-        // Keep only if a dependency is unavailable on Maven Central.
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -37,7 +36,6 @@ include(
     ":shared",
 
     ":core:domain",
-    ":core:data",
     ":core:database",
     ":core:crypto",
     ":core:security",

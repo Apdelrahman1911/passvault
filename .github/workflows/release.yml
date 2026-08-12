@@ -1,4 +1,4 @@
-name: Desktop Release
+name: Production Desktop Signing
 
 on:
   workflow_call:
@@ -7,16 +7,6 @@ on:
         required: true
         type: string
       candidate_tag:
-        required: true
-        type: string
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (e.g., 1.0.0)'
-        required: true
-        type: string
-      candidate_tag:
-        description: 'Validated testing tag (e.g., v1.0.2-rc.1000123)'
         required: true
         type: string
 
@@ -35,6 +25,9 @@ jobs:
   prepare:
     name: Prepare Release
     runs-on: ubuntu-latest
+    permissions:
+      attestations: read
+      contents: read
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
@@ -49,9 +42,11 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
       release_channel: ${{ steps.version.outputs.release_channel }}
       prerelease: ${{ steps.version.outputs.prerelease }}
+      build_number: ${{ steps.candidate.outputs.build_number }}
+      source_tree: ${{ steps.candidate.outputs.source_tree }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
@@ -60,8 +55,10 @@ jobs:
 
       - name: Determine Version
         id: version
+        env:
+          REQUEST_VERSION: ${{ inputs.version }}
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="$REQUEST_VERSION"
 
           ./scripts/validate-release-metadata.sh "$VERSION"
 
@@ -69,30 +66,66 @@ jobs:
           RELEASE_CHANNEL="$(awk -F= '$1 == "RELEASE_CHANNEL" { print $2 }' version.properties)"
           PRERELEASE=false
 
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
-          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-          echo "release_channel=$RELEASE_CHANNEL" >> "$GITHUB_OUTPUT"
-          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          {
+            printf 'version=%s\n' "$VERSION"
+            printf 'version_code=%s\n' "$VERSION_CODE"
+            printf 'tag=v%s\n' "$VERSION"
+            printf 'release_channel=%s\n' "$RELEASE_CHANNEL"
+            printf 'prerelease=%s\n' "$PRERELEASE"
+          } >> "$GITHUB_OUTPUT"
           echo "Validated release version: $VERSION ($RELEASE_CHANNEL)"
 
       - name: Verify exact tested candidate on release branch
+        id: candidate
         env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          EXPECTED_VERSION: ${{ inputs.version }}
           GH_TOKEN: ${{ github.token }}
         run: |
           if [[ "$GITHUB_REF" != refs/heads/release ]]; then
             echo "Stable desktop releases must run from the release branch." >&2
             exit 1
           fi
-          gh release download "${{ inputs.candidate_tag }}" \
-            --pattern readiness-manifest.json --dir "$RUNNER_TEMP/candidate"
-          ruby scripts/validate-candidate-manifest.rb \
-            "$RUNNER_TEMP/candidate/readiness-manifest.json" "$GITHUB_SHA"
-          manifest_version="$(jq -r .marketingVersion "$RUNNER_TEMP/candidate/readiness-manifest.json")"
-          if [[ "$manifest_version" != "${{ inputs.version }}" ]]; then
+          if [[ ! "$CANDIDATE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc\.[1-9][0-9]*$ ]]; then
+            echo "The candidate tag is invalid." >&2
+            exit 1
+          fi
+          gh release download "$CANDIDATE_TAG" \
+            --pattern readiness-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir "$RUNNER_TEMP/candidate"
+          manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
+          gh attestation verify "$manifest" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$GITHUB_SHA" \
+            --deny-self-hosted-runners >/dev/null
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
+          for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
+            gh attestation verify "$receipt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            "$manifest" "$RUNNER_TEMP/candidate" "$GITHUB_SHA" "$source_tree"
+          if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
+            echo "Readiness provenance does not match the requested candidate tag." >&2
+            exit 1
+          fi
+          manifest_version="$(jq -r .marketingVersion "$manifest")"
+          if [[ "$manifest_version" != "$EXPECTED_VERSION" ]]; then
             echo "Candidate version $manifest_version does not match the requested version." >&2
             exit 1
           fi
+          {
+            printf 'build_number=%s\n' "$(jq -r .buildNumber "$manifest")"
+            printf 'source_tree=%s\n' "$source_tree"
+          } >> "$GITHUB_OUTPUT"
 
   build-desktop-linux:
     name: Build Desktop packages (Linux)
@@ -104,26 +137,30 @@ jobs:
       SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           cache-cleanup: always
 
       - name: Build Linux Packages
         run: >
-          ./gradlew :app-desktop:packageReleaseDeb :app-desktop:packageReleaseRpm
+          ./gradlew :app-desktop:createReleaseDistributable
+          :app-desktop:packageReleaseDeb :app-desktop:packageReleaseRpm
           -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
 
+      - name: Smoke test packaged Linux runtime
+        run: ./scripts/smoke-test-desktop-release.sh 30
+
       - name: Upload Linux Artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: desktop-linux
           if-no-files-found: error
@@ -136,21 +173,27 @@ jobs:
     name: Build Desktop packages (Windows)
     runs-on: windows-latest
     needs: prepare
+    environment: mobile-production
+    permissions:
+      actions: write
+      contents: read
+      id-token: write
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           cache-cleanup: always
 
@@ -168,24 +211,127 @@ jobs:
 
       - name: Require Windows signing
         env:
+          WINDOWS_SIGNING_BACKEND: ${{ vars.WINDOWS_SIGNING_BACKEND }}
+          WINDOWS_EXPECTED_PUBLISHER_NAME: ${{ vars.WINDOWS_EXPECTED_PUBLISHER_NAME }}
+          WINDOWS_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL }}
           WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          EXPECTED_WINDOWS_CERTIFICATE_SHA256: ${{ vars.WINDOWS_SIGNING_CERTIFICATE_SHA256 }}
+          WINDOWS_AZURE_CLIENT_ID: ${{ vars.WINDOWS_AZURE_CLIENT_ID }}
+          WINDOWS_AZURE_TENANT_ID: ${{ vars.WINDOWS_AZURE_TENANT_ID }}
+          WINDOWS_AZURE_SUBSCRIPTION_ID: ${{ vars.WINDOWS_AZURE_SUBSCRIPTION_ID }}
+          WINDOWS_ARTIFACT_SIGNING_ENDPOINT: ${{ vars.WINDOWS_ARTIFACT_SIGNING_ENDPOINT }}
+          WINDOWS_ARTIFACT_SIGNING_ACCOUNT: ${{ vars.WINDOWS_ARTIFACT_SIGNING_ACCOUNT }}
+          WINDOWS_ARTIFACT_SIGNING_PROFILE: ${{ vars.WINDOWS_ARTIFACT_SIGNING_PROFILE }}
+          WINDOWS_SIGNPATH_API_TOKEN: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
+          WINDOWS_SIGNPATH_ORGANIZATION_ID: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
+          WINDOWS_SIGNPATH_PROJECT_SLUG: ${{ vars.WINDOWS_SIGNPATH_PROJECT_SLUG }}
+          WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG: ${{ vars.WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG }}
+          WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG: ${{ vars.WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
         shell: pwsh
         run: |
-          $hasCertificate = -not [string]::IsNullOrWhiteSpace(
-              $env:WINDOWS_CERTIFICATE_BASE64
-          )
-          $hasPassword = -not [string]::IsNullOrWhiteSpace(
-              $env:WINDOWS_CERTIFICATE_PASSWORD
-          )
-          if (-not $hasCertificate -or -not $hasPassword) {
-              throw "Production requires WINDOWS_CERTIFICATE_BASE64 and WINDOWS_CERTIFICATE_PASSWORD."
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_EXPECTED_PUBLISHER_NAME)) {
+              throw "WINDOWS_EXPECTED_PUBLISHER_NAME is required."
+          }
+          switch ($env:WINDOWS_SIGNING_BACKEND) {
+              "azure-artifact-signing" {
+                  $timestampUri = $null
+                  if (-not [Uri]::TryCreate(
+                      $env:WINDOWS_TIMESTAMP_URL,
+                      [UriKind]::Absolute,
+                      [ref]$timestampUri
+                  ) -or $timestampUri.Scheme -notin "http", "https" -or
+                      [string]::IsNullOrWhiteSpace($timestampUri.Host)) {
+                      throw "WINDOWS_TIMESTAMP_URL must be an absolute HTTP(S) RFC 3161 endpoint."
+                  }
+                  $required = @(
+                      $env:WINDOWS_AZURE_CLIENT_ID,
+                      $env:WINDOWS_AZURE_TENANT_ID,
+                      $env:WINDOWS_AZURE_SUBSCRIPTION_ID,
+                      $env:WINDOWS_ARTIFACT_SIGNING_ENDPOINT,
+                      $env:WINDOWS_ARTIFACT_SIGNING_ACCOUNT,
+                      $env:WINDOWS_ARTIFACT_SIGNING_PROFILE
+                  )
+                  if ($required.Where({ [string]::IsNullOrWhiteSpace($_) }).Count -ne 0) {
+                      throw "Azure Artifact Signing configuration is incomplete."
+                  }
+                  if ($env:WINDOWS_CERTIFICATE_BASE64 -or $env:WINDOWS_CERTIFICATE_PASSWORD -or
+                      $env:EXPECTED_WINDOWS_CERTIFICATE_SHA256) {
+                      throw "Azure signing must not receive a PFX, password, or static certificate fingerprint."
+                  }
+                  if ($env:WINDOWS_TIMESTAMP_URL.TrimEnd('/') -cne
+                      "http://timestamp.acs.microsoft.com") {
+                      throw "Azure Artifact Signing must use Microsoft's recommended timestamp authority."
+                  }
+                  if ($env:WINDOWS_SIGNPATH_API_TOKEN -or
+                      $env:WINDOWS_SIGNPATH_ORGANIZATION_ID -or
+                      $env:WINDOWS_SIGNPATH_PROJECT_SLUG -or
+                      $env:WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG -or
+                      $env:WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG) {
+                      throw "Azure signing must not receive SignPath configuration."
+                  }
+              }
+              "signpath" {
+                  $required = @(
+                      $env:WINDOWS_SIGNPATH_API_TOKEN,
+                      $env:WINDOWS_SIGNPATH_ORGANIZATION_ID,
+                      $env:WINDOWS_SIGNPATH_PROJECT_SLUG,
+                      $env:WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG,
+                      $env:WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG
+                  )
+                  if ($required.Where({ [string]::IsNullOrWhiteSpace($_) }).Count -ne 0) {
+                      throw "SignPath configuration is incomplete."
+                  }
+                  if ($env:WINDOWS_TIMESTAMP_URL -or $env:WINDOWS_CERTIFICATE_BASE64 -or
+                      $env:WINDOWS_CERTIFICATE_PASSWORD -or
+                      $env:EXPECTED_WINDOWS_CERTIFICATE_SHA256 -or
+                      $env:WINDOWS_AZURE_CLIENT_ID -or $env:WINDOWS_AZURE_TENANT_ID -or
+                      $env:WINDOWS_AZURE_SUBSCRIPTION_ID -or
+                      $env:WINDOWS_ARTIFACT_SIGNING_ENDPOINT -or
+                      $env:WINDOWS_ARTIFACT_SIGNING_ACCOUNT -or
+                      $env:WINDOWS_ARTIFACT_SIGNING_PROFILE) {
+                      throw "SignPath must not receive another Windows signing backend's configuration."
+                  }
+              }
+              "local-pfx" {
+                  $timestampUri = $null
+                  if (-not [Uri]::TryCreate(
+                      $env:WINDOWS_TIMESTAMP_URL,
+                      [UriKind]::Absolute,
+                      [ref]$timestampUri
+                  ) -or $timestampUri.Scheme -notin "http", "https" -or
+                      [string]::IsNullOrWhiteSpace($timestampUri.Host)) {
+                      throw "WINDOWS_TIMESTAMP_URL must be an absolute HTTP(S) RFC 3161 endpoint."
+                  }
+                  if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_BASE64) -or
+                      [string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_PASSWORD) -or
+                      $env:EXPECTED_WINDOWS_CERTIFICATE_SHA256 -notmatch "^[0-9A-Fa-f]{64}$") {
+                      throw "The explicitly selected local-PFX backend is incomplete."
+                  }
+                  if ($env:WINDOWS_AZURE_CLIENT_ID -or $env:WINDOWS_AZURE_TENANT_ID -or
+                      $env:WINDOWS_AZURE_SUBSCRIPTION_ID -or $env:WINDOWS_ARTIFACT_SIGNING_ENDPOINT -or
+                      $env:WINDOWS_ARTIFACT_SIGNING_ACCOUNT -or $env:WINDOWS_ARTIFACT_SIGNING_PROFILE) {
+                      throw "The local-PFX backend must not receive Azure signing configuration."
+                  }
+                  if ($env:WINDOWS_SIGNPATH_API_TOKEN -or
+                      $env:WINDOWS_SIGNPATH_ORGANIZATION_ID -or
+                      $env:WINDOWS_SIGNPATH_PROJECT_SLUG -or
+                      $env:WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG -or
+                      $env:WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG) {
+                      throw "The local-PFX backend must not receive SignPath configuration."
+                  }
+              }
+              default {
+                  throw "WINDOWS_SIGNING_BACKEND must be azure-artifact-signing, signpath, or local-pfx."
+              }
           }
 
       - name: Import Windows code-signing certificate
+        if: vars.WINDOWS_SIGNING_BACKEND == 'local-pfx'
         env:
           WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          EXPECTED_WINDOWS_CERTIFICATE_SHA256: ${{ vars.WINDOWS_SIGNING_CERTIFICATE_SHA256 }}
         shell: pwsh
         run: |
           if ([string]::IsNullOrWhiteSpace($env:WINDOWS_CERTIFICATE_BASE64) -or
@@ -206,6 +352,14 @@ jobs:
               -Password $password
           Remove-Item -LiteralPath $pfxPath -Force
 
+          $importedThumbprints = @($certificates |
+              ForEach-Object { $_.Thumbprint.ToUpperInvariant() } |
+              Where-Object { $_ -match "^[0-9A-F]{40}$" } |
+              Sort-Object -Unique)
+          if ($importedThumbprints.Count -eq 0) {
+              throw "The PFX import did not report any removable certificate identities."
+          }
+
           $codeSigningOid = "1.3.6.1.5.5.7.3.3"
           $certificate = $certificates | Where-Object {
               $_.HasPrivateKey -and
@@ -219,56 +373,182 @@ jobs:
           if ($certificate.NotAfter.ToUniversalTime() -le [DateTime]::UtcNow) {
               throw "The Windows code-signing certificate has expired."
           }
+          if ($certificate.NotBefore.ToUniversalTime() -gt [DateTime]::UtcNow) {
+              throw "The Windows code-signing certificate is not valid yet."
+          }
+
+          $certificateSha256 = $certificate.GetCertHashString(
+              [Security.Cryptography.HashAlgorithmName]::SHA256
+          ).ToUpperInvariant()
+          $expectedSha256 = $env:EXPECTED_WINDOWS_CERTIFICATE_SHA256.ToUpperInvariant()
+          if ($certificateSha256 -ne $expectedSha256) {
+              throw "The imported Windows certificate does not match WINDOWS_SIGNING_CERTIFICATE_SHA256."
+          }
 
           "WINDOWS_CERTIFICATE_THUMBPRINT=$($certificate.Thumbprint)" >> $env:GITHUB_ENV
+          "WINDOWS_CERTIFICATE_SHA256=$certificateSha256" >> $env:GITHUB_ENV
+          "WINDOWS_IMPORTED_CERTIFICATE_THUMBPRINTS=$($importedThumbprints -join ',')" >> $env:GITHUB_ENV
 
-      - name: Sign Windows application launcher
+      - name: Preserve valid vendor signatures and sign unsigned packaged native code
+        if: vars.WINDOWS_SIGNING_BACKEND == 'local-pfx'
         env:
           WINDOWS_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL }}
           PROJECT_URL: ${{ vars.PROJECT_URL }}
         shell: pwsh
         run: |
-          $timestampUrl = if ($env:WINDOWS_TIMESTAMP_URL) {
-              $env:WINDOWS_TIMESTAMP_URL
-          } else {
-              "http://timestamp.digicert.com"
-          }
           $projectUrl = if ($env:PROJECT_URL) {
               $env:PROJECT_URL
           } else {
               "https://github.com/Apdelrahman1911/passvault"
           }
-          $launcher = Get-ChildItem `
-              app-desktop/build/compose/binaries/main-release/app `
-              -Recurse -Filter "PassVault.exe" | Select-Object -First 1
-          if (-not $launcher) {
-              throw "The packaged PassVault launcher was not found."
-          }
-          ./scripts/sign-windows-artifacts.ps1 `
-              -Path $launcher.FullName `
+          ./scripts/prepare-windows-runtime-signing.ps1 `
+              -RuntimePath app-desktop/build/compose/binaries/main-release/app `
               -CertificateThumbprint $env:WINDOWS_CERTIFICATE_THUMBPRINT `
-              -TimestampUrl $timestampUrl `
+              -CertificateSha256 $env:WINDOWS_CERTIFICATE_SHA256 `
+              -TimestampUrl $env:WINDOWS_TIMESTAMP_URL `
               -ProductUrl $projectUrl
 
-      - name: Build Windows installers
+      - name: Catalog unsigned Windows runtime code for HSM-backed signing
+        if: >-
+          vars.WINDOWS_SIGNING_BACKEND == 'azure-artifact-signing' ||
+          vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        shell: pwsh
+        run: |
+          ./scripts/create-windows-signing-catalog.ps1 `
+              -RuntimePath app-desktop/build/compose/binaries/main-release/app `
+              -CatalogPath app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt
+          $catalog = @(
+              Get-Content `
+                  -LiteralPath app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt
+          )
+          if ($catalog.Count -ne 1 -or
+              $catalog[0] -notmatch '^\./(?:[^/]+/)*PassVault\.exe$') {
+              throw "Only the PassVault launcher may receive the PassVault publisher signature."
+          }
+
+      - name: Authenticate to Azure Artifact Signing with OIDC
+        if: vars.WINDOWS_SIGNING_BACKEND == 'azure-artifact-signing'
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
+        with:
+          client-id: ${{ vars.WINDOWS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.WINDOWS_AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.WINDOWS_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign unsigned runtime code with Azure Artifact Signing
+        if: vars.WINDOWS_SIGNING_BACKEND == 'azure-artifact-signing'
+        uses: azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82 # v2.0.0
+        with:
+          endpoint: ${{ vars.WINDOWS_ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.WINDOWS_ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.WINDOWS_ARTIFACT_SIGNING_PROFILE }}
+          files-catalog: app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt
+          file-digest: SHA256
+          timestamp-rfc3161: ${{ vars.WINDOWS_TIMESTAMP_URL }}
+          timestamp-digest: SHA256
+          description: PassVault
+          description-url: ${{ vars.PROJECT_URL }}
+          timeout: 600
+
+      - name: Prepare exact unsigned runtime request for SignPath
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        shell: pwsh
+        run: |
+          ./scripts/prepare-signpath-windows-request.ps1 `
+              -SourceRoot app-desktop/build/compose/binaries/main-release/app `
+              -CatalogPath app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt `
+              -ArchivePath "$env:RUNNER_TEMP/passvault-signpath-runtime-request.zip"
+
+      - name: Upload immutable unsigned runtime request for SignPath
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        id: signpath-runtime-upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          archive: false
+          if-no-files-found: error
+          path: ${{ runner.temp }}\passvault-signpath-runtime-request.zip
+          retention-days: 1
+
+      - name: Sign runtime request with SignPath HSM
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        with:
+          api-token: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.WINDOWS_SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.signpath-runtime-upload.outputs.artifact-id }}
+          parameters: |
+            version: "${{ needs.prepare.outputs.version }}"
+            publisher: ${{ toJSON(vars.PUBLISHER_NAME) }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 7200
+          output-artifact-directory: ${{ runner.temp }}\passvault-signpath-runtime-signed
+
+      - name: Verify and atomically apply the SignPath runtime result
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        env:
+          WINDOWS_EXPECTED_PUBLISHER_NAME: ${{ vars.WINDOWS_EXPECTED_PUBLISHER_NAME }}
+        shell: pwsh
+        run: |
+          ./scripts/apply-signpath-windows-result.ps1 `
+              -DestinationRoot app-desktop/build/compose/binaries/main-release/app `
+              -CatalogPath app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt `
+              -SignedOutputRoot "$env:RUNNER_TEMP/passvault-signpath-runtime-signed" `
+              -ExpectedPublisherName $env:WINDOWS_EXPECTED_PUBLISHER_NAME
+
+      - name: Remove the transient Windows signing catalog
+        if: >-
+          always() &&
+          (vars.WINDOWS_SIGNING_BACKEND == 'azure-artifact-signing' ||
+          vars.WINDOWS_SIGNING_BACKEND == 'signpath')
         shell: pwsh
         run: >
-          ./gradlew :app-desktop:packageReleaseMsi
-          :app-desktop:packageReleaseExe
-          -x :app-desktop:createReleaseDistributable
-          "-Ppassvault.versionName=${{ needs.prepare.outputs.version }}"
+          Remove-Item
+          -LiteralPath app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt
+          -Force -ErrorAction SilentlyContinue
+
+      - name: Remove transient SignPath runtime request
+        if: always() && vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNPATH_ARTIFACT_ID: ${{ steps.signpath-runtime-upload.outputs.artifact-id }}
+        shell: pwsh
+        run: |
+          Remove-Item `
+              -LiteralPath "$env:RUNNER_TEMP/passvault-signpath-runtime-request.zip" `
+              -Force -ErrorAction SilentlyContinue
+          Remove-Item `
+              -LiteralPath "$env:RUNNER_TEMP/passvault-signpath-runtime-signed" `
+              -Recurse -Force -ErrorAction SilentlyContinue
+          if ($env:SIGNPATH_ARTIFACT_ID -match "^[1-9][0-9]*$") {
+              gh api --method DELETE `
+                  "repos/$env:GITHUB_REPOSITORY/actions/artifacts/$env:SIGNPATH_ARTIFACT_ID"
+              if ($LASTEXITCODE -ne 0) {
+                  throw "Failed to delete the transient unsigned SignPath runtime artifact."
+              }
+          }
+
+      - name: Package installers from the exact signed Windows app image
+        env:
+          WINDOWS_EXPECTED_PUBLISHER_NAME: ${{ vars.WINDOWS_EXPECTED_PUBLISHER_NAME }}
+        shell: pwsh
+        run: |
+          ./scripts/package-signed-windows-installers.ps1 `
+              -RuntimePath app-desktop/build/compose/binaries/main-release/app `
+              -Version "${{ needs.prepare.outputs.version }}" `
+              -CertificateSha256 $env:WINDOWS_CERTIFICATE_SHA256 `
+              -ExpectedPublisherName $env:WINDOWS_EXPECTED_PUBLISHER_NAME `
+              -Publisher $env:PUBLISHER_NAME `
+              -CopyrightHolder $env:COPYRIGHT_HOLDER
 
       - name: Sign and verify Windows installers
+        if: vars.WINDOWS_SIGNING_BACKEND == 'local-pfx'
         env:
           WINDOWS_TIMESTAMP_URL: ${{ vars.WINDOWS_TIMESTAMP_URL }}
           PROJECT_URL: ${{ vars.PROJECT_URL }}
         shell: pwsh
         run: |
-          $timestampUrl = if ($env:WINDOWS_TIMESTAMP_URL) {
-              $env:WINDOWS_TIMESTAMP_URL
-          } else {
-              "http://timestamp.digicert.com"
-          }
           $projectUrl = if ($env:PROJECT_URL) {
               $env:PROJECT_URL
           } else {
@@ -277,27 +557,166 @@ jobs:
           $artifacts = Get-ChildItem `
               app-desktop/build/compose/binaries/main-release `
               -Recurse -File | Where-Object { $_.Extension -in ".exe", ".msi" }
-          $installers = $artifacts | Where-Object {
+          $installers = @($artifacts | Where-Object {
               $_.FullName -match "[\\/](exe|msi)[\\/]"
+          })
+          $installerExtensions = @($installers.Extension.ToLowerInvariant() | Sort-Object)
+          if ($installers.Count -ne 2 -or
+              ($installerExtensions -join ",") -ne ".exe,.msi") {
+              throw "Expected exactly one EXE and one MSI installer before signing."
           }
           ./scripts/sign-windows-artifacts.ps1 `
               -Path $installers.FullName `
               -CertificateThumbprint $env:WINDOWS_CERTIFICATE_THUMBPRINT `
-              -TimestampUrl $timestampUrl `
+              -CertificateSha256 $env:WINDOWS_CERTIFICATE_SHA256 `
+              -TimestampUrl $env:WINDOWS_TIMESTAMP_URL `
               -ProductUrl $projectUrl
 
-      - name: Remove imported Windows certificate
-        if: always()
+      - name: Sign Windows installers with Azure Artifact Signing
+        if: vars.WINDOWS_SIGNING_BACKEND == 'azure-artifact-signing'
+        uses: azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82 # v2.0.0
+        with:
+          endpoint: ${{ vars.WINDOWS_ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.WINDOWS_ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.WINDOWS_ARTIFACT_SIGNING_PROFILE }}
+          files: |
+            ${{ github.workspace }}\app-desktop\build\compose\binaries\main-release\exe\PassVault-${{ needs.prepare.outputs.version }}.exe
+            ${{ github.workspace }}\app-desktop\build\compose\binaries\main-release\msi\PassVault-${{ needs.prepare.outputs.version }}.msi
+          file-digest: SHA256
+          timestamp-rfc3161: ${{ vars.WINDOWS_TIMESTAMP_URL }}
+          timestamp-digest: SHA256
+          description: PassVault
+          description-url: ${{ vars.PROJECT_URL }}
+          timeout: 600
+
+      - name: Catalog exact unsigned Windows installers for SignPath
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
         shell: pwsh
         run: |
-          if ($env:WINDOWS_CERTIFICATE_THUMBPRINT) {
-              Remove-Item `
-                  -LiteralPath "Cert:\CurrentUser\My\$env:WINDOWS_CERTIFICATE_THUMBPRINT" `
-                  -Force -ErrorAction SilentlyContinue
+          ./scripts/create-windows-signing-catalog.ps1 `
+              -RuntimePath app-desktop/build/compose/binaries/main-release `
+              -CatalogPath app-desktop/build/compose/binaries/main-release/passvault-unsigned-installers.txt `
+              -Extensions ".exe", ".msi"
+          $catalog = @(
+              Get-Content `
+                  -LiteralPath app-desktop/build/compose/binaries/main-release/passvault-unsigned-installers.txt |
+                  Sort-Object
+          )
+          $expected = @(
+              "./exe/PassVault-${{ needs.prepare.outputs.version }}.exe",
+              "./msi/PassVault-${{ needs.prepare.outputs.version }}.msi"
+          ) | Sort-Object
+          if ($catalog.Count -ne 2 -or ($catalog -join "`n") -cne ($expected -join "`n")) {
+              throw "The SignPath request must contain exactly the expected EXE and MSI installers."
+          }
+
+      - name: Prepare exact unsigned installer request for SignPath
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        shell: pwsh
+        run: |
+          ./scripts/prepare-signpath-windows-request.ps1 `
+              -SourceRoot app-desktop/build/compose/binaries/main-release `
+              -CatalogPath app-desktop/build/compose/binaries/main-release/passvault-unsigned-installers.txt `
+              -ArchivePath "$env:RUNNER_TEMP/passvault-signpath-installers-request.zip"
+
+      - name: Upload immutable unsigned installer request for SignPath
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        id: signpath-installers-upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          archive: false
+          if-no-files-found: error
+          path: ${{ runner.temp }}\passvault-signpath-installers-request.zip
+          retention-days: 1
+
+      - name: Sign installer request with SignPath HSM
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        with:
+          api-token: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.WINDOWS_SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.signpath-installers-upload.outputs.artifact-id }}
+          parameters: |
+            version: "${{ needs.prepare.outputs.version }}"
+            publisher: ${{ toJSON(vars.PUBLISHER_NAME) }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 7200
+          output-artifact-directory: ${{ runner.temp }}\passvault-signpath-installers-signed
+
+      - name: Verify and atomically apply the SignPath installer result
+        if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        env:
+          WINDOWS_EXPECTED_PUBLISHER_NAME: ${{ vars.WINDOWS_EXPECTED_PUBLISHER_NAME }}
+        shell: pwsh
+        run: |
+          ./scripts/apply-signpath-windows-result.ps1 `
+              -DestinationRoot app-desktop/build/compose/binaries/main-release `
+              -CatalogPath app-desktop/build/compose/binaries/main-release/passvault-unsigned-installers.txt `
+              -SignedOutputRoot "$env:RUNNER_TEMP/passvault-signpath-installers-signed" `
+              -ExpectedPublisherName $env:WINDOWS_EXPECTED_PUBLISHER_NAME
+
+      - name: Remove transient SignPath installer request
+        if: always() && vars.WINDOWS_SIGNING_BACKEND == 'signpath'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNPATH_ARTIFACT_ID: ${{ steps.signpath-installers-upload.outputs.artifact-id }}
+        shell: pwsh
+        run: |
+          Remove-Item `
+              -LiteralPath app-desktop/build/compose/binaries/main-release/passvault-unsigned-installers.txt `
+              -Force -ErrorAction SilentlyContinue
+          Remove-Item `
+              -LiteralPath "$env:RUNNER_TEMP/passvault-signpath-installers-request.zip" `
+              -Force -ErrorAction SilentlyContinue
+          Remove-Item `
+              -LiteralPath "$env:RUNNER_TEMP/passvault-signpath-installers-signed" `
+              -Recurse -Force -ErrorAction SilentlyContinue
+          if ($env:SIGNPATH_ARTIFACT_ID -match "^[1-9][0-9]*$") {
+              gh api --method DELETE `
+                  "repos/$env:GITHUB_REPOSITORY/actions/artifacts/$env:SIGNPATH_ARTIFACT_ID"
+              if ($LASTEXITCODE -ne 0) {
+                  throw "Failed to delete the transient unsigned SignPath installer artifact."
+              }
+          }
+
+      - name: Verify every nested Windows native signature and final installer
+        env:
+          WINDOWS_EXPECTED_PUBLISHER_NAME: ${{ vars.WINDOWS_EXPECTED_PUBLISHER_NAME }}
+        shell: pwsh
+        run: |
+          $installers = @(Get-ChildItem `
+              app-desktop/build/compose/binaries/main-release `
+              -Recurse -File | Where-Object {
+                  $_.FullName -match "[\\/](exe|msi)[\\/]" -and
+                  $_.Extension.ToLowerInvariant() -in ".exe", ".msi"
+              })
+          ./scripts/verify-windows-release-artifacts.ps1 `
+              -RuntimePath app-desktop/build/compose/binaries/main-release/app `
+              -InstallerPath $installers.FullName `
+              -CertificateSha256 $env:WINDOWS_CERTIFICATE_SHA256 `
+              -ExpectedPublisherName $env:WINDOWS_EXPECTED_PUBLISHER_NAME
+
+      - name: Remove imported Windows certificate
+        if: always() && vars.WINDOWS_SIGNING_BACKEND == 'local-pfx'
+        shell: pwsh
+        run: |
+          $pfxPath = Join-Path $env:RUNNER_TEMP "passvault-code-signing.pfx"
+          Remove-Item -LiteralPath $pfxPath -Force -ErrorAction SilentlyContinue
+          if ($env:WINDOWS_IMPORTED_CERTIFICATE_THUMBPRINTS) {
+              foreach ($thumbprint in $env:WINDOWS_IMPORTED_CERTIFICATE_THUMBPRINTS.Split(',')) {
+                  if ($thumbprint -match "^[0-9A-F]{40}$") {
+                      Remove-Item `
+                          -LiteralPath "Cert:\CurrentUser\My\$thumbprint" `
+                          -Force -ErrorAction SilentlyContinue
+                  }
+              }
           }
 
       - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: desktop-windows
           if-no-files-found: error
@@ -318,23 +737,26 @@ jobs:
             architecture: x64
     runs-on: ${{ matrix.runner }}
     needs: prepare
+    environment: mobile-production
     env:
       MACOS_SIGN: 'true'
       MACOS_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+      MACOS_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           cache-cleanup: always
 
@@ -345,6 +767,7 @@ jobs:
           MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
           MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
           MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
+          MACOS_DEVELOPER_ID_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
         run: |
           values=(
             "$MACOS_IDENTITY"
@@ -353,6 +776,7 @@ jobs:
             "$MACOS_NOTARIZATION_APPLE_ID"
             "$MACOS_NOTARIZATION_PASSWORD"
             "$MACOS_NOTARIZATION_TEAM_ID"
+            "$MACOS_DEVELOPER_ID_CERTIFICATE_SHA256"
           )
           for value in "${values[@]}"; do
             if [[ -z "$value" ]]; then
@@ -368,6 +792,15 @@ jobs:
             echo "MACOS_NOTARIZATION_TEAM_ID must be a 10-character Apple Team ID." >&2
             exit 1
           fi
+          normalized_macos_sha256="$(printf '%s' "$MACOS_DEVELOPER_ID_CERTIFICATE_SHA256" | tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]')"
+          if [[ ! "$normalized_macos_sha256" =~ ^[0-9A-F]{64}$ ]]; then
+            echo "MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 is invalid." >&2
+            exit 1
+          fi
+          if [[ "$MACOS_IDENTITY" != *"($MACOS_NOTARIZATION_TEAM_ID)" ]]; then
+            echo "MACOS_SIGNING_IDENTITY does not end with the configured Apple Team ID." >&2
+            exit 1
+          fi
 
       - name: Import macOS signing certificate
         env:
@@ -376,13 +809,17 @@ jobs:
           MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
           MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
           MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
+          EXPECTED_MACOS_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
         run: |
           certificate_path="$RUNNER_TEMP/passvault-developer-id.p12"
           keychain_path="$RUNNER_TEMP/passvault-signing.keychain-db"
+          original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
           keychain_password="$(openssl rand -base64 32)"
           notary_profile="passvault-notary-${GITHUB_RUN_ID}"
 
           echo "::add-mask::$keychain_password"
+          source scripts/lib/macos-keychain.sh
+          passvault_capture_user_keychains "$original_keychains_path"
           printf '%s' "$MACOS_CERTIFICATE_BASE64" |
             openssl base64 -d -A -out "$certificate_path"
           chmod 600 "$certificate_path"
@@ -400,12 +837,23 @@ jobs:
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign: \
             -s -k "$keychain_password" "$keychain_path"
-          security list-keychains -d user -s "$keychain_path"
+          passvault_activate_release_keychain "$keychain_path" "$original_keychains_path"
 
           security find-identity -v -p codesigning "$keychain_path" |
             grep -F "$MACOS_IDENTITY"
           security find-certificate -c "$MACOS_IDENTITY" -p "$keychain_path" |
             openssl x509 -checkend 0 -noout
+          actual_certificate_sha256="$(
+            security find-certificate -c "$MACOS_IDENTITY" -p "$keychain_path" |
+              openssl x509 -fingerprint -sha256 -noout |
+              sed 's/^[^=]*=//' | tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]'
+          )"
+          expected_certificate_sha256="$(printf '%s' "$EXPECTED_MACOS_CERTIFICATE_SHA256" |
+            tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]')"
+          if [[ "$actual_certificate_sha256" != "$expected_certificate_sha256" ]]; then
+            echo "The imported Developer ID certificate does not match the pinned SHA-256 fingerprint." >&2
+            exit 1
+          fi
 
           xcrun notarytool store-credentials "$notary_profile" \
             --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
@@ -421,14 +869,23 @@ jobs:
           ./gradlew :app-desktop:packageReleaseDmg
           -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
 
+      - name: Smoke test packaged macOS runtime
+        run: ./scripts/smoke-test-desktop-release.sh 30
+
       - name: Verify and notarize macOS package
         run: |
-          dmg_path="$(find app-desktop/build/compose/binaries/main-release/dmg -name '*.dmg' -print -quit)"
-          app_path="$(find app-desktop/build/compose/binaries/main-release/app -type d -name 'PassVault.app' -print -quit 2>/dev/null || true)"
-          if [[ -z "$dmg_path" ]]; then
-            echo "The PassVault DMG was not produced." >&2
+          dmg_count="$(find app-desktop/build/compose/binaries/main-release/dmg \
+            -type f -name '*.dmg' | wc -l | tr -d ' ')"
+          app_count="$(find app-desktop/build/compose/binaries/main-release/app \
+            -type d -name 'PassVault.app' | wc -l | tr -d ' ')"
+          if [[ "$dmg_count" != 1 || "$app_count" != 1 ]]; then
+            echo "Expected exactly one PassVault DMG and app; found $dmg_count DMG(s) and $app_count app(s)." >&2
             exit 1
           fi
+          dmg_path="$(find app-desktop/build/compose/binaries/main-release/dmg \
+            -type f -name '*.dmg' -print)"
+          app_path="$(find app-desktop/build/compose/binaries/main-release/app \
+            -type d -name 'PassVault.app' -print)"
           ./scripts/notarize-macos-artifact.sh \
             "$dmg_path" \
             "$app_path" \
@@ -436,19 +893,31 @@ jobs:
 
       - name: Give the architecture an unambiguous asset name
         run: |
-          dmg_path="$(find app-desktop/build/compose/binaries/main-release/dmg -name '*.dmg' -print -quit)"
-          test -n "$dmg_path"
+          dmg_count="$(find app-desktop/build/compose/binaries/main-release/dmg \
+            -type f -name '*.dmg' | wc -l | tr -d ' ')"
+          if [[ "$dmg_count" != 1 ]]; then
+            echo "Expected exactly one notarized DMG; found $dmg_count." >&2
+            exit 1
+          fi
+          dmg_path="$(find app-desktop/build/compose/binaries/main-release/dmg \
+            -type f -name '*.dmg' -print)"
           cp "$dmg_path" "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg"
 
       - name: Remove temporary macOS keychain
         if: always()
         run: |
-          if [[ -n "${MACOS_KEYCHAIN_PATH:-}" ]]; then
-            security delete-keychain "$MACOS_KEYCHAIN_PATH" || true
+          source scripts/lib/macos-keychain.sh
+          rm -f -- "$RUNNER_TEMP/passvault-developer-id.p12"
+          original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
+          passvault_restore_user_keychains "$original_keychains_path" || true
+          keychain_path="${MACOS_KEYCHAIN_PATH:-$RUNNER_TEMP/passvault-signing.keychain-db}"
+          if [[ -f "$keychain_path" ]]; then
+            security delete-keychain "$keychain_path" || true
           fi
+          rm -f -- "$original_keychains_path"
 
       - name: Upload macOS Artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: desktop-macos-${{ matrix.architecture }}
           if-no-files-found: error
@@ -456,15 +925,15 @@ jobs:
           path: PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg
 
       - name: Upload macOS notarization log
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: desktop-macos-notarization-log-${{ matrix.architecture }}
           if-no-files-found: error
           retention-days: 30
           path: app-desktop/build/reports/macos-notarization.json
 
-  publish-release:
-    name: Publish verified GitHub Release
+  assemble-release:
+    name: Assemble exact signed release bundle
     runs-on: ubuntu-latest
     needs:
       - prepare
@@ -472,52 +941,85 @@ jobs:
       - build-desktop-windows
       - build-desktop-macos
     permissions:
-      contents: write
+      artifact-metadata: write
+      attestations: write
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
 
       - name: Download verified platform artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           path: downloaded-artifacts
 
       - name: Prepare and verify release assets
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           ./scripts/prepare-release-assets.sh \
             downloaded-artifacts \
             release-assets \
             "${{ needs.prepare.outputs.version }}" \
             production
-          gh release download "${{ inputs.candidate_tag }}" \
-            --pattern readiness-manifest.json --dir release-assets
-          (cd release-assets && sha256sum readiness-manifest.json >> SHA256SUMS.txt)
-        env:
-          GH_TOKEN: ${{ github.token }}
+          gh release download "$CANDIDATE_TAG" \
+            --pattern readiness-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir release-assets
+          gh attestation verify release-assets/readiness-manifest.json \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$GITHUB_SHA" \
+            --deny-self-hosted-runners >/dev/null
+          for provenance_file in release-assets/*-artifact-receipt.json; do
+            gh attestation verify "$provenance_file" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            release-assets/readiness-manifest.json release-assets \
+            "$GITHUB_SHA" "${{ needs.prepare.outputs.source_tree }}"
+          RELEASE_VERSION="${{ needs.prepare.outputs.version }}" \
+          RELEASE_BUILD_NUMBER="${{ needs.prepare.outputs.build_number }}" \
+          RELEASE_CANDIDATE_TAG="$CANDIDATE_TAG" \
+          RELEASE_SOURCE_COMMIT="$GITHUB_SHA" \
+          RELEASE_SOURCE_TREE="${{ needs.prepare.outputs.source_tree }}" \
+            ruby scripts/create-desktop-release-provenance.rb release-assets \
+              > release-assets/release-provenance.json
+          (cd release-assets && find . -maxdepth 1 -type f ! -name 'SHA256SUMS.txt' \
+            -print | sed 's#^./##' | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.txt)
+          (cd release-assets && sha256sum --check SHA256SUMS.txt)
+          ruby scripts/validate-desktop-release-provenance.rb \
+            release-assets "$CANDIDATE_TAG" "${{ needs.prepare.outputs.version }}" \
+            "${{ needs.prepare.outputs.build_number }}" "$GITHUB_SHA" \
+            "${{ needs.prepare.outputs.source_tree }}"
+
+      - name: Attest every production desktop release asset
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: release-assets/*
 
       - name: Upload consolidated release bundle
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: passvault-${{ needs.prepare.outputs.version }}-release-assets
+          name: assembled-production-signed-${{ inputs.candidate_tag }}
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
           path: release-assets/
 
-      - name: Publish GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
-          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+      - name: Record validation-only result
         run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "A GitHub Release already exists for $RELEASE_TAG; refusing to overwrite it." >&2
-            exit 1
-          fi
-
-          gh release create "$RELEASE_TAG" release-assets/* \
-            --target "$GITHUB_SHA" \
-            --generate-notes \
-            --title "PassVault $RELEASE_VERSION" \
-            --notes "Production desktop installers are included for Windows x64, macOS arm64/x64, and Linux x64. Windows packages are Authenticode signed; both macOS packages are Developer ID signed and notarized. Every asset is covered by SHA256SUMS.txt and tied to the tested candidate manifest."
+          {
+            echo '## Production signing validation passed'
+            echo
+            echo 'The exact candidate source produced signed Windows packages, accepted/stapled macOS packages, and verified Linux packages.'
+            echo 'Nothing was published. The immutable Actions artifact is the only bundle eligible for stable publication.'
+          } >> "$GITHUB_STEP_SUMMARY"

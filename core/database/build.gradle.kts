@@ -37,34 +37,19 @@ kotlin {
                 implementation(project(":core:security"))
 
                 implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kermit)
+                implementation(libs.okio)
 
                 // Room
                 implementation(libs.room.runtime)
 
                 // SQLite
                 implementation(libs.sqlite.bundled)
-
-                // DI
-                implementation(libs.koin.core)
-            }
-        }
-
-        val androidMain = getByName("androidMain") {
-            dependencies {
-                // Android-specific database dependencies
-            }
-        }
-
-        val desktopMain = getByName("desktopMain") {
-            dependencies {
-                // Desktop-specific database dependencies
             }
         }
 
         val desktopTest = getByName("desktopTest") {
+            resources.srcDir("schemas")
             dependencies {
                 implementation(project(":core:testing"))
             }
@@ -87,7 +72,6 @@ room {
 
 dependencies {
     add("kspAndroid", libs.room.compiler)
-//    add("kspIosX64", libs.room.compiler)
     add("kspIosArm64", libs.room.compiler)
     add("kspIosSimulatorArm64", libs.room.compiler)
     add("kspDesktop", libs.room.compiler)

@@ -1,0 +1,146 @@
+name: Production Signing Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Readiness-approved candidate tag to sign without publishing
+        required: true
+        type: string
+      start_production_after_validation:
+        description: Start the protected mobile production workflow only after validation passes
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: read
+      contents: read
+    outputs:
+      version: ${{ steps.manifest.outputs.version }}
+      build_number: ${{ steps.manifest.outputs.build_number }}
+      source_tree: ${{ steps.manifest.outputs.source_tree }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Validate exact release-branch candidate and mobile artifact receipts
+        id: manifest
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$GITHUB_REF" != refs/heads/release ]]; then
+            echo "Production signing validation must run from release." >&2
+            exit 1
+          fi
+          if [[ ! "$CANDIDATE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc\.[1-9][0-9]*$ ]]; then
+            echo "The candidate tag is invalid." >&2
+            exit 1
+          fi
+          candidate_root="$RUNNER_TEMP/candidate"
+          gh release download "$CANDIDATE_TAG" \
+            --pattern readiness-manifest.json \
+            --pattern '*-artifact-receipt.json' \
+            --dir "$candidate_root"
+          manifest="$candidate_root/readiness-manifest.json"
+          gh attestation verify "$manifest" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
+            --source-ref refs/heads/testing \
+            --source-digest "$GITHUB_SHA" \
+            --deny-self-hosted-runners >/dev/null
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
+          for receipt in "$candidate_root"/*-artifact-receipt.json; do
+            gh attestation verify "$receipt" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            "$manifest" "$candidate_root" "$GITHUB_SHA" "$source_tree"
+          if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
+            echo "Readiness provenance does not match the requested candidate tag." >&2
+            exit 1
+          fi
+          {
+            printf 'version=%s\n' "$(jq -r .marketingVersion "$manifest")"
+            printf 'build_number=%s\n' "$(jq -r .buildNumber "$manifest")"
+            printf 'source_tree=%s\n' "$source_tree"
+          } >> "$GITHUB_OUTPUT"
+
+  sign-and-validate:
+    needs: candidate
+    permissions:
+      actions: write
+      artifact-metadata: write
+      attestations: write
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/release.yml
+    with:
+      version: ${{ needs.candidate.outputs.version }}
+      candidate_tag: ${{ inputs.candidate_tag }}
+    secrets: inherit
+
+  freeze-validated-bundle:
+    needs: [ candidate, sign-and-validate ]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      artifact-metadata: write
+      attestations: write
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Download assembled signed bundle
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: assembled-production-signed-${{ inputs.candidate_tag }}
+          path: validated-release
+      - name: Independently validate the frozen candidate bundle
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+        run: |
+          ruby scripts/validate-desktop-release-provenance.rb \
+            validated-release "$CANDIDATE_TAG" "${{ needs.candidate.outputs.version }}" \
+            "${{ needs.candidate.outputs.build_number }}" "$GITHUB_SHA" \
+            "${{ needs.candidate.outputs.source_tree }}"
+          (cd validated-release && sha256sum --check SHA256SUMS.txt)
+      - name: Attest the immutable validation bundle from the top-level workflow
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: validated-release/*
+      - name: Retain the only stable-publication-eligible bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: production-signed-${{ inputs.candidate_tag }}
+          if-no-files-found: error
+          retention-days: 90
+          path: validated-release/
+      - name: Start protected mobile production only after signing validation
+        if: inputs.start_production_after_validation
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run production-release.yml \
+            --ref release \
+            -f candidate_tag="$CANDIDATE_TAG" \
+            -f platform=both

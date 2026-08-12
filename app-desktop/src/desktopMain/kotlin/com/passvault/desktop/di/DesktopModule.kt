@@ -2,18 +2,17 @@ package com.passvault.desktop.di
 
 import com.passvault.core.security.ClipboardService
 import com.passvault.core.security.BiometricKeyStore
-import com.passvault.core.security.KeyringService
-import com.passvault.core.security.WindowProtection
 import com.passvault.core.security.UnavailableBiometricKeyStore
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.desktop.security.DesktopClipboardService
-import com.passvault.desktop.security.DesktopKeyringService
 import com.passvault.desktop.security.DesktopWindowProtection
 import com.passvault.desktop.backup.DesktopBackupFileStore
+import com.passvault.desktop.attachment.DesktopAttachmentFileStore
 import com.passvault.desktop.settings.DesktopAppSettingsStore
 import com.passvault.desktop.AppInfo
 import com.passvault.desktop.tray.DesktopSystemTray
 import com.passvault.feature.backup.BackupFileStore
+import com.passvault.feature.credential.AttachmentFileStore
 import org.koin.dsl.module
 import java.util.prefs.Preferences
 
@@ -29,15 +28,14 @@ val desktopModule = module {
     // Security services - Desktop implementations
     single<ClipboardService> { DesktopClipboardService(scope = get()) }
     single<BiometricKeyStore> { UnavailableBiometricKeyStore() }
-    single<KeyringService> { DesktopKeyringService() }
     single { DesktopWindowProtection() }
-    single<WindowProtection> { get<DesktopWindowProtection>() }
 
     // Desktop-specific services
-    single { DesktopSystemTray(scope = get()) }
+    single { DesktopSystemTray() }
 
     // Preferences for desktop settings persistence
     single { Preferences.userNodeForPackage(AppInfo::class.java) }
     single<AppSettingsStore> { DesktopAppSettingsStore(get()) }
     single<BackupFileStore> { DesktopBackupFileStore() }
+    single<AttachmentFileStore> { DesktopAttachmentFileStore() }
 }

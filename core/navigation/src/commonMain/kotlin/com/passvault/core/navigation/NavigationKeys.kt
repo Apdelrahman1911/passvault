@@ -29,7 +29,6 @@ sealed interface AuthRoute : PassVaultRoute {
 
     @Serializable
     data object Unlock : AuthRoute
-
 }
 
 @Serializable
@@ -63,6 +62,12 @@ sealed interface GeneratorRoute : PassVaultRoute {
 sealed interface HealthRoute : PassVaultRoute {
     @Serializable
     data object Health : HealthRoute
+}
+
+@Serializable
+sealed interface TwoFactorRoute : PassVaultRoute {
+    @Serializable
+    data object Codes : TwoFactorRoute
 }
 
 @Serializable

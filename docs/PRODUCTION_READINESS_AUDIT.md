@@ -1,8 +1,8 @@
 # Production-readiness audit ledger
 
-Last updated: 2026-07-29  
-Overall state: **repository implementation and non-Detekt automation verified; user-skipped Detekt and external
-publication/interactive-assurance gates remain**
+Last updated: 2026-08-11
+Overall state: **expanded remediation is implemented and focused verification passes; the final frozen-tree package,
+signing-validation, and full regression gates are in progress, while publisher/device/independent gates remain**
 
 This is the persistent source of truth for the audit. A code review or successful compilation is not recorded as a
 manual device/visual pass.
@@ -20,26 +20,28 @@ manual device/visual pass.
 
 | Area | Reviewed responsibility | State |
 |---|---|---|
-| Gradle/build logic | KMP convention plugins, catalogs, Android flavors, Desktop packaging, dependency verification, CI/release workflows | VERIFIED |
+| Gradle configuration | KMP modules, catalogs, Android flavors, Desktop packaging, dependency verification, root verification aggregation, CI/release workflows | VERIFIED |
 | Android host | application/activity, lifecycle, clipboard, screenshot flag, preferences, backup document picker | SOURCE |
-| Desktop host | window lifecycle, keyboard/tray, clipboard, keyring, preferences, native backup file dialog | SOURCE |
+| Desktop host | window lifecycle/concealment, keyboard/tray, clipboard, preferences, native backup file dialog | SOURCE |
 | Shared host | Koin graph, database providers, theme, session bootstrap, Navigation 3 back stack | VERIFIED |
 | Domain | models, typed IDs, validation, password strength/health, repository contracts | VERIFIED |
 | Crypto | libsodium engine, KDF, envelopes, associated data, subkeys, memory/cancellation handling | VERIFIED |
 | Database | entities, indexes, foreign keys, DAOs, transactions, encrypted repositories, schema export | VERIFIED |
-| Security | biometric key release/session verification, clipboard ownership, screenshot/window protection, keyring failure policy | VERIFIED at unit/source and target-compile level; device biometric smoke open |
+| Security | biometric key release/session verification, clipboard ownership, and screenshot/window protection | VERIFIED at unit/source and target-compile level; device biometric smoke open |
 | Design system | light/dark semantic tokens, typography, spacing, shape, elevation, motion, feedback/form/responsive components, shared resource catalog, typed locale-safe presentation text | SOURCE |
 | Onboarding | welcome, password creation/confirmation, security explanation, vault creation | VERIFIED at state/compile level |
 | Unlock | password and mobile biometric unlock, failure/throttle/loading/error, lock-safe state cleanup | VERIFIED at state/repository/compile level; device smoke open |
 | Vault | list/search/favorite/filter/sort, folders/tags, compact and expanded navigation | VERIFIED at state/compile level |
-| Credential | detail, copy/reveal, create/edit/delete, validation, dirty-state handling, folder/tag/history/metadata preservation | VERIFIED at state/compile level |
-| Generator | password/passphrase options, strength, copy/use action, saved preferences | VERIFIED at state/compile level |
+| Credential | detail, copy/reveal, create/edit/delete, validation, dirty-state handling, folder/tag/history, and attachment lifecycle | VERIFIED at repository/state/compile level; platform picker/viewer smoke open |
+| Generator | password/passphrase options, strength, copy/use action, and in-session option state | VERIFIED at state/compile level |
 | Health | weak/reused/old analysis, category lists, credential navigation | VERIFIED at state/compile level |
-| Settings | security, appearance, data, local help/info; persistent theme/lock/clipboard/screenshot settings | VERIFIED at state/compile level |
-| Backup | encrypted export/import, password confirmation, preview, errors, transaction restore | VERIFIED |
+| Settings | security, appearance, data, local help/info; persistent theme/accent/lock/clipboard settings | VERIFIED at state/compile level |
+| Backup | bounded streaming encrypted export/import, attachment preservation, password confirmation, preview, transcript validation, staging cleanup, and transactional restore | VERIFIED |
+| Localization | complete English/Arabic strings and plurals, placeholder parity, RTL configuration, and future-key enforcement | VERIFIED at resource/static/compile level; real-device visual sweep open |
+| Release automation | exact candidate manifest/SHA receipts, protected environments, mobile artifact promotion, macOS signing/notarization, and Windows signing adapters | SOURCE and validator verified; real credential dry-run open |
 
-The empty attachment feature module was removed. Schema-version-1 attachment metadata remains only for format
-preservation; attachment file creation/opening/packaging is not a feature.
+Attachment bytes are stored as independently authenticated, app-private encrypted objects rather than Room blobs.
+Version-1/2 metadata-only rows migrate non-destructively to an explicit unavailable legacy state.
 
 ## Screen and surface inventory
 
@@ -65,6 +67,7 @@ preservation; attachment file creation/opening/packaging is not a feature.
 | UI-18 | confirmations, menus, snackbars, tooltips | destructive/feedback paths reviewed | rounded indications/semantics reviewed | SOURCE |
 | UI-19 | Android system document picker and screenshot state | callback/cancel/error source reviewed | device behavior pending | EXTERNAL |
 | UI-20 | Desktop file dialog/window/tray/shortcuts | cancel/error/source reviewed; packaged release startup smoke passes | detailed graphical behavior pending | SOURCE |
+| UI-21 | attachment list/import/rename/open/export/delete | empty/loading/error/limit/cancel states and accessibility strings reviewed | platform document/viewer behavior pending | SOURCE |
 
 Manual light/dark, RTL/Arabic, maximum font scale, tiny/large window, Android IME/rotation/process recreation, and
 screen-reader sweeps remain platform gates and are not falsely marked as automated passes.
@@ -83,7 +86,8 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | Backup export -> read/import -> wrong password/corruption/version -> preview -> restore | backup integration tests pass |
 | Settings/theme change -> persistence/restart | settings tests and platform store source review pass |
 | Process termination during edit | sensitive route is not restored; repository transaction boundary protects committed data |
-| Database upgrade | EXTERNAL: no earlier released schema fixture exists for version 1 |
+| Database upgrade | exported schema 1 -> 3 and 2 -> 3 migrations, fresh schema 3, index query plans, and injected-failure rollback tests pass |
+| Attach files -> rename/open/export/delete -> backup/restore | repository, authenticated-container tamper, file-system, cancellation, duplicate/concurrent, boundary, and controller tests pass; native picker/viewer smoke remains |
 
 ## Resolved issue register
 
@@ -93,7 +97,7 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | SEC-002 | S0 | record subkey derivation was described/used as password hashing with unsuitable semantics | password KDF and deterministic subkeys were conflated | length-prefixed purpose/record contexts with keyed BLAKE2b | domain-separation tests and source review | VERIFIED |
 | SEC-003 | S0 | incomplete biometric UI/adapters could imply a security feature without VEK-bound OS cryptography | prompt success was not a reviewed key-unwrapping boundary | removed the unsafe prototype before the reviewed replacement in SEC-010 | historical Android/Desktop/shared compile and source scan | SUPERSEDED |
 | SEC-004 | S0 | sensitive copy controls could bypass expiration/ownership policy | direct Compose clipboard usage | all credential/generator copy events use `ClipboardService`; clear verifies ownership | service tests/source scan | VERIFIED |
-| SEC-005 | S0 | Desktop keyring fallback could create false protection | unavailable keyring behavior had a weak fallback | keyring access fails closed and is not used as vault authentication | source/tests | VERIFIED |
+| SEC-005 | S0 | Desktop keyring fallback could create false protection | unavailable keyring behavior had a weak fallback | removed the unused keyring authentication prototype; Desktop uses master-password unlock only | source/tests | VERIFIED |
 | SEC-006 | S0 | backup screens advertised simulated/unimplemented paths | UI preceded an integrity-safe storage format | versioned independent-password `.pvault`, bounded parser, AAD, preview and transactional restore | comprehensive backup integration suite | VERIFIED |
 | SEC-007 | S0 | errors/cancellation could leak implementation details or swallow cancellation | broad exception mapping | cancellation rethrow, generic UI errors, bounded validation, buffer wipes | regression/source scan | VERIFIED |
 | SEC-008 | S1 | clipboard expiry could erase content copied later by another app | delayed clear did not prove current ownership | random ownership token/value comparison | service logic tests/source review | VERIFIED |
@@ -111,8 +115,8 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | UIX-001 | S1 | primary screens had inconsistent spacing/colors/shapes and mobile layouts stretched on Desktop | scattered styling and no shared responsive rules | semantic tokens, bounded content, compact/expanded scaffolds and consistent feedback components | target compilation/source review | SOURCE |
 | UIX-002 | S1 | missing loading/empty/error/disabled and retry behavior | happy-path-only surfaces | feature-specific states and shared feedback components | ViewModel tests/source review | VERIFIED |
 | UIX-003 | S1 | forms lacked robust IME, validation, dirty-exit, and double-submit behavior | local focus/submit state | scrollable secure forms, focus order, visible validation, discard confirmation, guards | state tests/source review | SOURCE |
-| UIX-004 | S1 | text/resources advertised cloud/CSV/attachments/support that did not ship | aspirational copy | removed unsupported UI/resources and rewrote capability documents | repository claim scan | VERIFIED |
-| UIX-005 | S1 | user-facing strings and validation/errors bypassed localization, including Desktop native menus/tray/dialogs | literals and pre-rendered English were carried through UI state | centralized 539-key Compose resource catalog; `UiText` resource identifiers/arguments remain unresolved until the UI boundary; plurals and Desktop native labels migrated | duplicate-key XML validation, whole-source literal scans, feature tests, Android/Desktop/iOS compilation | VERIFIED |
+| UIX-004 | S1 | text/resources advertised capabilities before their implementation and later documents still described attachments/schema migration as absent | aspirational and stale copy | removed unsupported claims, implemented the attachment feature, and reconciled capability/security/privacy/release documents | repository claim scan and documentation review | VERIFIED |
+| UIX-005 | S1 | user-facing strings and validation/errors bypassed localization, including Desktop native menus/tray/dialogs | literals and pre-rendered English were carried through UI state | centralized 536-string/13-plural Compose resource catalog; `UiText` resource identifiers/arguments remain unresolved until the UI boundary; Arabic placeholders/plurals and Desktop native labels migrated | localization consistency validator, source scans, feature tests, Android/Desktop/iOS compilation | VERIFIED |
 | BUILD-001 | S0 | root `test` could succeed without KMP Desktop suites | ambiguous Gradle task selection | explicit aggregate dependency graph | root test execution | VERIFIED |
 | BUILD-002 | S0 | CI/release used wrong flavor tasks and could publish unsigned/mis-versioned artifacts | generic tasks and job-local version edits | exact tasks, semantic version props, mandatory Android signing, unsigned Desktop artifacts only | workflow/source review, Android release/R8, and current-host Desktop packaging | VERIFIED |
 | BUILD-003 | S1 | dependency policy task only printed text | no machine-enforced metadata check | committed SHA-256 verification metadata plus validating task | `verifyDependencies help` | VERIFIED |
@@ -126,33 +130,39 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | PORT-001 | S1 | common tests contained JVM-only `String.codePointCount` and `System.currentTimeMillis` calls | JVM APIs leaked into portable source sets | multiplatform Unicode counter plus `Clock.System`; Room-only DAO test scoped to Desktop | common tests, Android host tests, and iOS simulator compilation | VERIFIED |
 | TEST-001 | S1 | Android host crypto integration tests could not load libsodium on Windows | Android AAR packages device `.so` files but the host runner needs the JVM native resource | JVM libsodium artifact added to Android host-test runtime only | 119 crypto host tests pass | VERIFIED |
 | DOC-001 | S1 | architecture/security/schema/release documents described nonexistent behavior and certifications | design documents were treated as implementation evidence | replaced with source-derived contracts and explicit evidence limits | claim scan | VERIFIED |
-| DEAD-001 | S2 | empty attachment feature module and duplicate route files remained in build | abandoned scaffolding | module removed; metadata schema retained for compatibility | Gradle configuration/compile | VERIFIED |
+| DEAD-001 | S2 | empty attachment feature module and duplicate route files remained in build | abandoned scaffolding | empty module removed; production attachment behavior now lives at credential/domain/database/platform boundaries | Gradle configuration/compile | VERIFIED |
 | DEAD-002 | S2 | Desktop tray exposed unreachable notification/icon/visibility helpers | prototype public API had no production or test consumers | removed unused helpers and made active tray text an explicit localized setup contract | whole-repository reference scan and Desktop compile/startup smoke | VERIFIED |
 | CLEAN-001 | S2 | generated compiler/test logs accumulated at repository root | diagnostic output was redirected into source-tree files during earlier repairs | removed 52 temporary log/text artifacts and ignored `.pvault` exports | final repository scan | VERIFIED |
+| DATA-006 | S1 | exact folder/tag lookup predicates scanned their tables | schema 1 lacked indexes for the keyed blind-index columns | Room 1 -> 2 adds only `folder_records.name_hash` and `tag_records.name_hash`; 2 -> 3 adds managed-attachment state without destructive fallback | exported schemas, 1 -> 3/2 -> 3/fresh/rollback tests, and `EXPLAIN QUERY PLAN` index assertions | VERIFIED |
+| BACKUP-001 | S0 | format-1 backup processing could retain the complete backup and multiple decoded copies in memory and could not carry attachment bytes | monolithic JSON/base64 snapshot architecture | default format 2 streams authenticated bounded records and attachment objects, validates a final transcript, stages before one Room replacement, and retains bounded legacy read support | limit/large-row/50k-row/tamper/truncation/cancellation/rollback/staging tests and capacity model | VERIFIED |
+| ATTACH-001 | S0 | attachment metadata had no production content-storage lifecycle | no authenticated blob store, transaction/file coordination, or platform boundary existed | independent per-object encryption/AAD, opaque app-private paths, staged/ready states, atomic writes, ownership/metadata binding, limits, validated orphan/staging cleanup, controlled platform handoff, UI, localization, and format-2 backup integration | repository/crypto/tamper/file-system/crash-staging/cancellation/concurrency/boundary/backup/controller/platform tests and Android/Desktop/iOS compile | VERIFIED at automated/source level; physical/native interaction open |
+| ATTACH-002 | S1 | attachment preview/export could hold the session mutex and VEK lease while a native viewer/share sheet or Android document-provider copy remained active | native presentation/provider handoff was coupled to authenticated repository copying | output preparation/staging is separated from presentation; repository copy and VEK lease finish before OS viewer/share/provider handoff, and unpresented plaintext is aborted non-cancellably | controller ordering/failure tests plus Android/Desktop/iOS compile and Detekt | VERIFIED |
+| ATTACH-003 | S1 | Desktop startup cleanup accepted any temporary directory sharing the preview prefix | stale-preview ownership was inferred from a broad prefix plus an unlocked file | preview roots now use exact UUID identities, owner and root-shape validation, no-follow traversal, atomic owner-only POSIX creation where available, and live-lock preservation | abandoned/live/partial/symlink/prefix-lookalike/unknown-entry cleanup regressions plus Desktop tests and Detekt | VERIFIED |
+| ATTACH-004 | S1 | an unexpected Android activity-result launcher exception could retain the pending picker and lifecycle lock | only two launcher exception subtypes released state | every runtime launcher failure now clears the pending slot, releases the lock token, and resumes the request with failure | Android compilation, host tests, and zero-baseline Detekt | VERIFIED |
+| ATTACH-005 | S1 | the iOS external-view activity sheet had no explicit iPad popover anchor | phone-style presentation assumptions do not hold for every iPad size class | the activity controller now binds its popover source view/rect and disables directional arrows before presentation | Kotlin/Native iOS simulator compile and unsigned Xcode Release build; physical iPad interaction remains open | VERIFIED at compile/source level |
+| RELEASE-001 | S0 | promotion jobs could rebuild or sign artifacts without a complete candidate-to-release provenance contract | branch/version checks did not cryptographically bind every promoted artifact | candidate manifest, artifact receipts/SHA validation, protected environments, no-publication validation workflow, and platform-specific signing/notarization/upload gates | release automation tests and script/workflow validators; protected real-credential run remains external | SOURCE |
 
 ## Remaining gates
 
 | ID | Sev | Required work | Completion evidence | State |
 |---|---|---|---|---|
-| GATE-001 | S0 | root tests, non-Detekt `check`, dependency policy, Android release/R8, current-host Desktop package, and exact packaged-launch startup after the last source edit | successful command log below | VERIFIED |
+| GATE-001 | S0 | zero-baseline Detekt, root `check`, dependency policy, both Android release flavors/R8, iOS Release validation, current-host Desktop package/runtime inspection, and exact packaged-launch startup after the final frozen source edit | successful final command log and unchanged candidate-tree digest | OPEN: every repository-controlled gate passes; the final Desktop package is blocked by missing verified publisher metadata and a supported non-Homebrew JDK 17 |
 | GATE-002 | S1 | remaining Android interactive lifecycle, process recreation, IME, rotation, picker cancellation/permissions, screenshot, clipboard, accessibility/font/RTL sweep; install and cold-start Logcat smoke now pass on a physical Android 10 device | completed emulator/device matrix with results | EXTERNAL |
-| GATE-003 | S1 | Desktop interactive resize/minimize/focus/keyboard/tray/clipboard/keyring/file-dialog/light-dark/accessibility sweep | graphical Windows/Linux/macOS matrix | EXTERNAL |
-| GATE-004 | S1 | prior-release migration/upgrade test | actual supported earlier schema/database fixture | EXTERNAL |
-| GATE-005 | S0 | release identity and trust | publisher license/owner/contact, Android signing, Desktop signing/notarization/update policy | EXTERNAL |
+| GATE-003 | S1 | Desktop interactive resize/minimize/focus/keyboard/tray/clipboard/concealment/file-dialog/light-dark/accessibility sweep; screen-capture prevention is not claimed | graphical Windows/Linux/macOS matrix | EXTERNAL |
+| GATE-004 | S1 | every supported schema upgrade, fresh install, index plan, and migration failure safety | exported schemas 1/2/3 and migration tests | VERIFIED |
+| GATE-005 | S0 | release identity and trust | publisher license/owner/contact plus real Android/iOS/macOS/Windows credentials and protected validation run | EXTERNAL |
 | GATE-006 | S0 | independent security assurance | third-party cryptographic review and penetration-test report | EXTERNAL |
-| GATE-007 | S1 | future iOS runtime | macOS/Xcode compile, platform services, lifecycle/keychain/UI tests | EXTERNAL |
+| GATE-007 | S1 | iOS runtime assurance | Xcode build plus physical-device lifecycle, Keychain, camera, document, and UI tests | EXTERNAL |
 | GATE-008 | S2 | Gradle 10 Kotlin DSL and `kotlinx.datetime.Instant` deprecation migration | warning-mode configuration and full regression | VERIFIED |
-| GATE-009 | S2 | Detekt was explicitly skipped by the user; the existing report contains one `ReturnCount`, two `TooManyFunctions`, and two `TooGenericExceptionCaught` findings in Android adapters | a later accepted `gradlew detekt` run with all five findings resolved | OPEN |
-| GATE-010 | S1 | mobile biometric runtime behavior | physical Android and iPhone tests for success, cancel, lockout, backgrounding, process recreation, and enrollment invalidation | OPEN |
+| GATE-009 | S2 | zero-baseline Detekt after all remediation | successful `gradlew detekt`; no baseline or ignored failure | VERIFIED |
+| GATE-010 | S1 | mobile biometric runtime behavior | physical Android and iPhone tests for success, cancel, lockout, backgrounding, process recreation, and enrollment invalidation | EXTERNAL |
+| GATE-011 | S0 | real production-signing assurance without publication | protected `production-signing-validation` run using publisher credentials, Accepted macOS notarization, verified/stapled Gatekeeper state, valid iOS archive/IPA, and timestamped Windows signatures, all bound to one approved candidate | EXTERNAL |
 
 `GATE-008` was resolved without warning suppression. The only warning left by `help --warning-mode all` is that an
 iOS simulator test cannot run on a Windows host; compile-only iOS simulator tasks pass.
 
-`GATE-009` is also not represented as a pass. The affected files are `AndroidBackupFileStore.kt`,
-`AndroidClipboardService.kt`, `AndroidScreenshotProtection.kt`, and `AndroidAppSettingsStore.kt`. Detekt was excluded
-only because the user explicitly requested it; no baseline, ignored failure, or suppression was added for those five
-findings. The new biometric adapter has a local suppression documenting its intentionally broad fail-closed OEM
-exception boundary and cohesive platform-adapter function count; it adds no Detekt finding.
+`GATE-009` is now verified without a baseline or ignored task. Narrow suppressions remain only at documented native
+adapter boundaries whose operating-system APIs surface broad exceptions and whose cleanup must fail closed.
 
 Android lint has one productivity warning recommending the KTX `SharedPreferences.edit` helper. The checked
 `SharedPreferences.Editor.commit()` call is intentionally retained because the store must observe and report a
@@ -207,10 +217,29 @@ synchronous persistence failure; the KTX helper discards that Boolean result.
 | 2026-08-03 | `gradlew :feature:unlock:testAndroidHostTest :feature:settings:testAndroidHostTest :app-android:lintStandardDebug` | PASS |
 | 2026-08-03 | `gradlew detekt` | FAIL only on the five pre-existing GATE-009 findings; the biometric implementation adds none |
 | 2026-08-03 | physical Android/iPhone biometric prompt matrix | NOT RUN: GATE-010 remains open and is not represented as passing |
+| 2026-08-11 | `gradlew --no-daemon check` | PASS before the final native attachment-handoff hardening: 980 tasks, including zero-baseline Detekt, Desktop/JVM and Android host tests, lint, localization, dependency, release, and legal validators |
+| 2026-08-11 | `gradlew :app-android:assembleStandardRelease :app-android:bundleStandardRelease :app-android:assembleFdroidRelease` | PASS with R8/resource shrinking; locally produced artifacts are correctly unsigned because publisher signing credentials were not supplied |
+| 2026-08-11 | Android APK/AAB inspection | PASS: package/version/permissions, exact native ABI set, DEX namespaces, packaged legal/resources, unsigned-local state, and no native `.debug_*`/`.zdebug_*` sections verified |
+| 2026-08-11 | `ruby scripts/validate-localizations.rb` | PASS: complete Arabic parity for 536 strings and 13 plurals, including placeholders |
+| 2026-08-11 | focused attachment lifecycle matrix: `:feature:credential:desktopTest`, Android host tests, Desktop tests, iOS simulator compile, and affected Detekt tasks | PASS after separating authenticated copy/VEK lease from native viewer/share presentation: 365 tasks |
+| 2026-08-11 | forced migration/attachment/backup boundary matrix with `--rerun-tasks` | PASS: 259 tasks executed, including Room migration/query-plan, format-2 large-data, attachment crypto/filesystem/cancellation, and Android cleanup suites |
+| 2026-08-11 | unsigned Xcode `Release` simulator build with temporary DerivedData | PASS: Kotlin/Native Release framework link, Swift whole-module optimization, bilingual native resources, privacy/legal bundle, dSYM, and Xcode store-style validation; no simulator launch/sign/upload |
+| 2026-08-11 | Actionlint, ShellCheck, 11 workflow YAML parses, all PowerShell parses, action-pin validator, private-config regression, Play declaration validator, and release-automation adversarial harness | PASS |
+| 2026-08-11 | current attachment sibling-fix matrix across Domain, Database, Credential, Android, Desktop, iOS simulator, and affected Detekt tasks | PASS: 385 tasks after stale encrypted-staging recovery, shared filename/size policy, clear limit errors, and iOS presentation-guard repair |
+| 2026-08-11 | local Desktop package preflight | BLOCKED AS DESIGNED before packaging: verified `SUPPORT_EMAIL` is absent and the only local JDK 17 is Homebrew; no publisher value was invented and the Compose JDK-vendor safety check was not disabled |
+| 2026-08-11 | final focused native-attachment matrix: `:app-desktop:desktopTest :app-desktop:detekt :app-android:testStandardDebugUnitTest :app-android:detekt :shared:compileKotlinIosSimulatorArm64 :shared:detekt` | PASS: 356 tasks after exact Desktop preview-root ownership/shape validation, Android picker launch cleanup, and the iPad popover anchor repair |
+| 2026-08-11 | final `gradlew --no-daemon check verifyDependencies --stacktrace` | PASS: 980 tasks; zero-baseline Detekt, all configured checks/tests, dependency verification, Android lint/package assertions, localization, Room migration, attachment, backup, security, release, and legal validators; the complete current JUnit result set contains 1,602 tests with 0 failures, errors, or skips |
+| 2026-08-11 | final Android release matrix: Standard APK/AAB plus F-Droid APK, both release lints, R8, and package-content verification | PASS: 523 tasks; Standard APK SHA-256 `22e6be58ddb999b05c4b361022e4af3b4651b5ab16d701873079d5df373c3b39`, F-Droid APK `96725448c62d50c9215168ac1d183d6b3c9b3a860e3c36991dcae794887da8fa`, Standard AAB `83cf566e8f96f0a979a2636b617a0190a6f06a1a3ea5d79c228b02007ed0fcf1`; all remain intentionally unsigned locally |
+| 2026-08-11 | final Android artifact inspection | PASS: exact package/version/SDK/permission declarations, four expected ABIs and 24 native libraries, one release DEX with no test/debug namespace, 1,118 PassVault R8 mapping roots per flavor, no native debug sections, canonical legal payloads, and no prohibited private/signing entries |
+| 2026-08-11 | final unsigned Xcode `Release` simulator build and bundle inspection | PASS: `com.passvault.ios` 1.0.2 (1000031), arm64, minimum iOS 18.5, expected platform dependencies, valid privacy manifest, bilingual native resources, canonical legal resources, and linker-only ad-hoc simulator signature; binary SHA-256 `847c7b9005a098804973ce2d5755f7edaa7cb94ef0976039c195d71647d50b9d` |
+| 2026-08-11 | final Actionlint, ShellCheck, workflow YAML, PowerShell, Ruby, immutable-action-pin, release-automation, private-validator-fixture, Google Play declaration, localization, and packaged-legal checks | PASS; Arabic parity remains 536 strings and 13 plurals |
+| 2026-08-11 | production-signing handoff/workflow reference cross-check | PASS: all 61 distinct workflow secret/variable references are explicitly accounted for; certificate fingerprints are derived from validated inputs and no private value is committed or hard-coded |
+| 2026-08-11 | final source/diff/security scan | PASS: no unfinished production markers, Detekt baselines, or destructive Room migration fallback; backup/attachment byte reads are bounded record reads, and plain-HTTP references are limited to cryptographically authenticated RFC-3161 timestamp services plus a SignPath XML namespace; `git diff --check` exits successfully with only the three expected `.gitattributes` LF-to-CRLF notices for PowerShell files |
 
 ## Completion rule
 
-The repository implementation and non-Detekt automation are internally verified. Public production readiness cannot
-be claimed while `GATE-009`, `GATE-010`, or the applicable external S0/S1 gates have
-publisher/device/independent evidence. These gates are not TODO implementations hidden in code; they are explicit
-release dependencies that the repository cannot truthfully manufacture.
+The expanded implementation is not declared complete until `GATE-001` passes from a frozen unchanged tree. Public
+production readiness additionally requires the applicable `GATE-002`, `GATE-003`, `GATE-005`, `GATE-006`,
+`GATE-007`, `GATE-010`, and `GATE-011` publisher/device/independent evidence. The repository cannot truthfully
+manufacture those external results, and no workflow may publish while the no-publication signing validation remains
+unproven.

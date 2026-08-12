@@ -68,10 +68,18 @@ passvault_dotenv_parse_line() {
 
 passvault_dotenv_load_file() {
     local input_file="$1"
-    local line line_number=0
+    local line line_number=0 loaded_keys=$'\n'
 
     if [[ ! -f "$input_file" || -L "$input_file" ]]; then
         echo "The dotenv input is missing or unsafe." >&2
+        return 1
+    fi
+    if ! ruby -e '
+      contents = File.binread(ARGV.fetch(0)).force_encoding(Encoding::UTF_8)
+      abort unless contents.valid_encoding? && !contents.include?("\0") &&
+        contents.bytesize <= 1024 * 1024
+    ' "$input_file" >/dev/null 2>&1; then
+        echo "The dotenv input must be valid UTF-8, contain no NUL bytes, and not exceed 1 MiB." >&2
         return 1
     fi
 
@@ -82,6 +90,11 @@ passvault_dotenv_load_file() {
             return 1
         fi
         if [[ "$PASSVAULT_DOTENV_KIND" == "entry" ]]; then
+            if [[ "$loaded_keys" == *$'\n'"$PASSVAULT_DOTENV_KEY"$'\n'* ]]; then
+                echo "Duplicate dotenv key at line $line_number: $PASSVAULT_DOTENV_KEY." >&2
+                return 1
+            fi
+            loaded_keys+="$PASSVAULT_DOTENV_KEY"$'\n'
             printf -v "$PASSVAULT_DOTENV_KEY" '%s' "$PASSVAULT_DOTENV_VALUE"
         fi
     done < "$input_file"

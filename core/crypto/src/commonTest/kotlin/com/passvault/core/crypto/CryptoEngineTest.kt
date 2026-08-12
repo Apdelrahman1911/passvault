@@ -4,7 +4,11 @@ import com.passvault.core.testing.TestData
 import com.passvault.core.testing.fakes.FakeCryptoEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * Comprehensive test suite for the cryptographic engine.
@@ -213,6 +217,37 @@ class CryptoEngineTest {
         assertEquals(memLimit, derived.memLimit)
     }
 
+    @Test
+    fun `production deriveKey rejects salts that are not exactly 16 bytes`() = runTest {
+        val engine = LibsodiumCryptoEngine()
+        val password = "TestPassword123!".encodeToByteArray()
+
+        assertTrue(engine.deriveKey(password, ByteArray(15), 3, 64 * 1024 * 1024).isFailure)
+        assertTrue(engine.deriveKey(password, ByteArray(17), 3, 64 * 1024 * 1024).isFailure)
+    }
+
+    @Test
+    fun `production deriveKey rejects resource-exhausting parameters before native allocation`() = runTest {
+        val engine = LibsodiumCryptoEngine()
+        val password = "TestPassword123!".encodeToByteArray()
+        val salt = ByteArray(16)
+
+        assertTrue(engine.deriveKey(password, salt, 11, 64 * 1024 * 1024).isFailure)
+        assertTrue(engine.deriveKey(password, salt, 3, Int.MAX_VALUE).isFailure)
+    }
+
+    @Test
+    fun `Argon2 benchmark selection is monotonic and memory bounded`() {
+        val fast = selectArgon2Parameters(49)
+        val boundary = selectArgon2Parameters(50)
+        val slow = selectArgon2Parameters(500)
+
+        assertTrue(fast.opsLimit >= boundary.opsLimit)
+        assertEquals(boundary, slow)
+        assertTrue(fast.memLimit <= 64 * 1024 * 1024)
+        assertTrue(boundary.memLimit <= 64 * 1024 * 1024)
+    }
+
     // ==================== Random Generation Tests ====================
 
     @Test
@@ -286,6 +321,24 @@ class CryptoEngineTest {
         }
     }
 
+    @Test
+    fun `production deriveSubkey rejects malformed Unicode contexts`() = runTest {
+        val masterKey = ByteArray(32)
+
+        assertTrue(
+            LibsodiumCryptoEngine().deriveSubkey(masterKey, "context\uD800", 32).isFailure,
+        )
+    }
+
+    @Test
+    fun `production deriveSubkey rejects oversized contexts before hashing`() = runTest {
+        val masterKey = ByteArray(32)
+
+        assertTrue(
+            LibsodiumCryptoEngine().deriveSubkey(masterKey, "x".repeat(16 * 1024 + 1), 32).isFailure,
+        )
+    }
+
     // ==================== Constant Time Comparison Tests ====================
 
     @Test
@@ -357,8 +410,14 @@ class CryptoEngineTest {
 
         assertTrue(params.opsLimit >= 2)
         assertTrue(params.memLimit >= 32 * 1024 * 1024)
-        assertEquals("Argon2id", params.algorithmId)
-        assertTrue(params.parallelism >= 1)
+    }
+
+    @Test
+    fun `production benchmark returns the bounded interactive profile`() = runTest {
+        val params = LibsodiumCryptoEngine().benchmarkArgon2()
+
+        assertTrue(params.opsLimit in 3..4)
+        assertEquals(64 * 1024 * 1024, params.memLimit)
     }
 
     // ==================== Tamper Detection Tests ====================
@@ -443,12 +502,13 @@ class CryptoEngineTest {
         val password = "MySecretPassword123!".encodeToByteArray()
         val salt = cryptoEngine.generateRandom(16).getOrThrow()
 
-        // Derive key with high security parameters
+        // The workflow is parameter-independent; use the bounded minimum so a
+        // correctness test cannot reserve 1 GiB on constrained CI workers.
         val derived = cryptoEngine.deriveKey(
             password,
             salt,
-            opsLimit = 4,
-            memLimit = 1024 * 1024 * 1024
+            opsLimit = Argon2Parameters.MINIMUM.opsLimit,
+            memLimit = Argon2Parameters.MINIMUM.memLimit,
         ).getOrThrow()
 
         assertEquals(32, derived.key.size)

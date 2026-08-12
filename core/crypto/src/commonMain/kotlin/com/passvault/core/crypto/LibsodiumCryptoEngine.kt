@@ -6,8 +6,6 @@ import com.ionspin.kotlin.crypto.LibsodiumInitializer
 import com.ionspin.kotlin.crypto.generichash.GenericHash
 import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MAX
 import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MIN
-import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_KEYBYTES_MAX
-import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_KEYBYTES_MIN
 import com.ionspin.kotlin.crypto.pwhash.PasswordHash
 import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_OPSLIMIT_INTERACTIVE
 import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_MEMLIMIT_INTERACTIVE
@@ -35,67 +33,84 @@ class LibsodiumCryptoEngine : CryptoEngine {
             }
         }
     }
-    
+
     override suspend fun deriveKey(
         password: ByteArray,
         salt: ByteArray,
         opsLimit: Int,
         memLimit: Int,
-    ): Result<DerivedKey> = withContext(Dispatchers.Default) {
-        safeResult {
-            ensureInitialized()
-            require(password.isNotEmpty()) { "Password must not be empty" }
-            require(salt.size >= ARGON2_SALT_BYTES) {
-                "Argon2 salt must be at least $ARGON2_SALT_BYTES bytes"
-            }
-            require(opsLimit > 0) { "Argon2 operations limit must be positive" }
-            require(memLimit >= ARGON2_MIN_MEMORY_BYTES) {
-                "Argon2 memory limit is too small"
-            }
-            val nativeSalt = salt.copyOf(ARGON2_SALT_BYTES)
-            try {
-                val passwordHex = password.toHexString()
-                val derived = PasswordHash.pwhash(
-                    outputLength = 32,
-                    password = passwordHex,
-                    salt = nativeSalt.asUByteArray(),
-                    opsLimit = opsLimit.toULong(),
-                    memLimit = memLimit,
-                    algorithm = crypto_pwhash_ALG_DEFAULT,
-                )
-                DerivedKey(
-                    key = derived.asByteArray(),
-                    // Keep an owned copy. Callers may wipe their input salt
-                    // after derivation without invalidating the returned value.
-                    salt = salt.copyOf(),
-                    opsLimit = opsLimit,
-                    memLimit = memLimit,
-                )
+    ): Result<DerivedKey> = cryptoOperation(DerivedKey::clear) {
+        ensureInitialized()
+        require(password.isNotEmpty()) { "Password must not be empty" }
+        require(salt.size == ARGON2_SALT_BYTES) {
+            "Argon2 salt must be exactly $ARGON2_SALT_BYTES bytes"
+        }
+        require(opsLimit in ARGON2_MIN_OPS..ARGON2_MAX_OPS) {
+            "Argon2 operations limit is outside the supported range"
+        }
+        require(memLimit in ARGON2_MIN_MEMORY_BYTES..ARGON2_MAX_MEMORY_BYTES) {
+            "Argon2 memory limit is outside the supported range"
+        }
+        val nativeSalt = salt.copyOf()
+        var ownedKey: ByteArray? = null
+        var ownedSalt: ByteArray? = null
+        var ownershipTransferred = false
+        try {
+            val passwordHex = password.toHexString()
+            val nativeDerived = PasswordHash.pwhash(
+                outputLength = 32,
+                password = passwordHex,
+                salt = nativeSalt.asUByteArray(),
+                opsLimit = opsLimit.toULong(),
+                memLimit = memLimit,
+                algorithm = crypto_pwhash_ALG_DEFAULT,
+            )
+            val nativeDerivedBytes = nativeDerived.asByteArray()
+            val keyCopy = try {
+                nativeDerivedBytes.copyOf()
             } finally {
-                nativeSalt.fill(0)
+                nativeDerivedBytes.fill(0)
+            }
+            ownedKey = keyCopy
+            val saltCopy = salt.copyOf()
+            ownedSalt = saltCopy
+            DerivedKey(
+                key = keyCopy,
+                salt = saltCopy,
+                opsLimit = opsLimit,
+                memLimit = memLimit,
+            ).also { ownershipTransferred = true }
+        } finally {
+            nativeSalt.fill(0)
+            if (!ownershipTransferred) {
+                ownedKey?.fill(0)
+                ownedSalt?.fill(0)
             }
         }
     }
-    
-    override suspend fun generateRandom(size: Int): Result<ByteArray> = withContext(Dispatchers.Default) {
-        safeResult {
-            ensureInitialized()
-            require(size >= 0) { "Random byte count must not be negative" }
-            LibsodiumRandom.buf(size).asByteArray()
+
+    override suspend fun generateRandom(size: Int): Result<ByteArray> = cryptoOperation({ it.fill(0) }) {
+        ensureInitialized()
+        require(size >= 0) { "Random byte count must not be negative" }
+        val nativeRandom = LibsodiumRandom.buf(size).asByteArray()
+        try {
+            nativeRandom.copyOf()
+        } finally {
+            nativeRandom.fill(0)
         }
     }
-    
+
     override suspend fun generateMasterKey(): Result<ByteArray> = generateRandom(32)
-    
+
     override suspend fun encrypt(
         plaintext: ByteArray,
         key: ByteArray,
         associatedData: ByteArray?,
-    ): Result<EncryptedData> = withContext(Dispatchers.Default) {
-        safeResult {
-            ensureInitialized()
-            require(key.size == KEY_BYTES) { "XChaCha20-Poly1305 keys must be 32 bytes" }
-            val nonce = LibsodiumRandom.buf(crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
+    ): Result<EncryptedData> = cryptoOperation(EncryptedData::clear) {
+        ensureInitialized()
+        require(key.size == KEY_BYTES) { "XChaCha20-Poly1305 keys must be 32 bytes" }
+        val nonce = LibsodiumRandom.buf(crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
+        try {
             val ciphertextAndTag =
                 AuthenticatedEncryptionWithAssociatedData.xChaCha20Poly1305IetfEncrypt(
                     message = plaintext.asUByteArray(),
@@ -103,74 +118,122 @@ class LibsodiumCryptoEngine : CryptoEngine {
                     nonce = nonce,
                     key = key.asUByteArray(),
                 )
-            val combined = AEAD_ENVELOPE_MAGIC + ciphertextAndTag.asByteArray()
-            
-            EncryptedData(
-                ciphertext = combined,
-                nonce = nonce.asByteArray(),
-                tag = ciphertextAndTag
-                    .takeLast(crypto_aead_xchacha20poly1305_ietf_ABYTES)
-                    .toUByteArray()
-                    .asByteArray(),
-            )
+            val ciphertextBytes = ciphertextAndTag.asByteArray()
+            var ownedCiphertext: ByteArray? = null
+            var ownedNonce: ByteArray? = null
+            var ownedTag: ByteArray? = null
+            var ownershipTransferred = false
+            try {
+                val ciphertextCopy = AEAD_ENVELOPE_MAGIC + ciphertextBytes
+                ownedCiphertext = ciphertextCopy
+                val nonceCopy = nonce.asByteArray().copyOf()
+                ownedNonce = nonceCopy
+                val tagCopy = ciphertextBytes.copyOfRange(
+                    ciphertextBytes.size - crypto_aead_xchacha20poly1305_ietf_ABYTES,
+                    ciphertextBytes.size,
+                )
+                ownedTag = tagCopy
+                EncryptedData(
+                    ciphertext = ciphertextCopy,
+                    nonce = nonceCopy,
+                    tag = tagCopy,
+                ).also { ownershipTransferred = true }
+            } finally {
+                ciphertextBytes.fill(0)
+                if (!ownershipTransferred) {
+                    ownedCiphertext?.fill(0)
+                    ownedNonce?.fill(0)
+                    ownedTag?.fill(0)
+                }
+            }
+        } finally {
+            nonce.asByteArray().fill(0)
         }
     }
-    
+
     override suspend fun decrypt(
         ciphertext: ByteArray,
         nonce: ByteArray,
         key: ByteArray,
         associatedData: ByteArray?,
-    ): Result<ByteArray> = withContext(Dispatchers.Default) {
-        safeResult {
-            ensureInitialized()
-            require(key.size == KEY_BYTES) { "XChaCha20-Poly1305 keys must be 32 bytes" }
-            require(nonce.size == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES) {
-                "XChaCha20-Poly1305 nonces must be $crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes"
+    ): Result<ByteArray> = cryptoOperation({ it.fill(0) }) {
+        ensureInitialized()
+        require(key.size == KEY_BYTES) { "XChaCha20-Poly1305 keys must be 32 bytes" }
+        require(nonce.size == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES) {
+            "XChaCha20-Poly1305 nonces must be $crypto_aead_xchacha20poly1305_ietf_NPUBBYTES bytes"
+        }
+        require(ciphertext.hasAeadEnvelopeMagic()) {
+            "Unsupported encrypted payload version"
+        }
+        require(ciphertext.size >= AEAD_ENVELOPE_MAGIC.size + crypto_aead_xchacha20poly1305_ietf_ABYTES) {
+            "Encrypted payload is truncated"
+        }
+        val nativeCiphertext = ciphertext.copyOfRange(AEAD_ENVELOPE_MAGIC.size, ciphertext.size)
+        try {
+            val nativePlaintext =
+                AuthenticatedEncryptionWithAssociatedData.xChaCha20Poly1305IetfDecrypt(
+                    ciphertextAndTag = nativeCiphertext.asUByteArray(),
+                    associatedData = (associatedData ?: ByteArray(0)).asUByteArray(),
+                    nonce = nonce.asUByteArray(),
+                    key = key.asUByteArray(),
+                ).asByteArray()
+            try {
+                nativePlaintext.copyOf()
+            } finally {
+                nativePlaintext.fill(0)
             }
-            require(ciphertext.hasAeadEnvelopeMagic()) {
-                "Unsupported encrypted payload version"
-            }
-            require(ciphertext.size >= AEAD_ENVELOPE_MAGIC.size + crypto_aead_xchacha20poly1305_ietf_ABYTES) {
-                "Encrypted payload is truncated"
-            }
-            AuthenticatedEncryptionWithAssociatedData.xChaCha20Poly1305IetfDecrypt(
-                ciphertextAndTag = ciphertext
-                    .copyOfRange(AEAD_ENVELOPE_MAGIC.size, ciphertext.size)
-                    .asUByteArray(),
-                associatedData = (associatedData ?: ByteArray(0)).asUByteArray(),
-                nonce = nonce.asUByteArray(),
-                key = key.asUByteArray(),
-            ).asByteArray()
+        } finally {
+            nativeCiphertext.fill(0)
         }
     }
-    
+
     override suspend fun deriveSubkey(
         masterKey: ByteArray,
         context: String,
         size: Int,
-    ): Result<ByteArray> = withContext(Dispatchers.Default) {
-        safeResult {
-            ensureInitialized()
-            require(masterKey.size == KEY_BYTES) { "Master keys must be 32 bytes" }
-            require(size in crypto_generichash_blake2b_BYTES_MIN..crypto_generichash_blake2b_BYTES_MAX) {
-                "BLAKE2b subkeys must be between $crypto_generichash_blake2b_BYTES_MIN and " +
-                    "$crypto_generichash_blake2b_BYTES_MAX bytes"
+    ): Result<ByteArray> = cryptoOperation({ it.fill(0) }) {
+        ensureInitialized()
+        require(masterKey.size == KEY_BYTES) { "Master keys must be 32 bytes" }
+        require(size in crypto_generichash_blake2b_BYTES_MIN..crypto_generichash_blake2b_BYTES_MAX) {
+            "BLAKE2b subkeys must be between $crypto_generichash_blake2b_BYTES_MIN and " +
+                "$crypto_generichash_blake2b_BYTES_MAX bytes"
+        }
+        require(context.length <= MAX_SUBKEY_CONTEXT_CODE_UNITS) { "Subkey context is too long" }
+        val contextBytes = context.encodeToByteArray(throwOnInvalidSequence = true)
+        var lengthBytes: ByteArray? = null
+        var message: ByteArray? = null
+        try {
+            require(contextBytes.isNotEmpty() && contextBytes.size <= MAX_SUBKEY_CONTEXT_BYTES) {
+                "Subkey context must have a supported UTF-8 length"
             }
-            val contextBytes = context.encodeToByteArray()
-            require(contextBytes.isNotEmpty()) { "Subkey context must not be empty" }
-            val message = SUBKEY_DOMAIN +
-                contextBytes.size.toString().encodeToByteArray() +
-                byteArrayOf(0) +
-                contextBytes
-            GenericHash.genericHash(
-                message = message.asUByteArray(),
+            val encodedLength = contextBytes.size.toString().encodeToByteArray()
+            lengthBytes = encodedLength
+            val hashMessage = ByteArray(SUBKEY_DOMAIN.size + encodedLength.size + 1 + contextBytes.size)
+            message = hashMessage
+            var offset = 0
+            SUBKEY_DOMAIN.copyInto(hashMessage, destinationOffset = offset)
+            offset += SUBKEY_DOMAIN.size
+            encodedLength.copyInto(hashMessage, destinationOffset = offset)
+            offset += encodedLength.size
+            hashMessage[offset] = 0
+            contextBytes.copyInto(hashMessage, destinationOffset = offset + 1)
+            val nativeHash = GenericHash.genericHash(
+                message = hashMessage.asUByteArray(),
                 requestedHashLength = size,
                 key = masterKey.asUByteArray(),
             ).asByteArray()
+            try {
+                nativeHash.copyOf()
+            } finally {
+                nativeHash.fill(0)
+            }
+        } finally {
+            contextBytes.fill(0)
+            lengthBytes?.fill(0)
+            message?.fill(0)
         }
     }
-    
+
     override suspend fun constantTimeEquals(a: ByteArray, b: ByteArray): Boolean {
         if (a.size != b.size) return false
         var result = 0
@@ -179,62 +242,94 @@ class LibsodiumCryptoEngine : CryptoEngine {
         }
         return result == 0
     }
-    
-    override suspend fun secureWipe(data: ByteArray) {
+
+    override fun secureWipe(data: ByteArray) {
         data.fill(0)
     }
-    
-    override suspend fun benchmarkArgon2(): Argon2Parameters = withContext(Dispatchers.Default) {
-        safeResult {
-            ensureInitialized()
-            val testPassword = "passvault-benchmark"
-            val testSalt = LibsodiumRandom.buf(16).asByteArray()
-            try {
-                val start = TimeSource.Monotonic.markNow()
-                PasswordHash.pwhash(
-                    outputLength = 32,
-                    password = testPassword,
-                    salt = testSalt.asUByteArray(),
-                    opsLimit = crypto_pwhash_OPSLIMIT_INTERACTIVE.toULong(),
-                    memLimit = crypto_pwhash_MEMLIMIT_INTERACTIVE,
-                    algorithm = crypto_pwhash_ALG_DEFAULT,
-                )
-                val duration = start.elapsedNow().inWholeMilliseconds
-                when {
-                    duration < 50 -> Argon2Parameters.INTERACTIVE
-                    duration < 150 -> Argon2Parameters.MODERATE
-                    else -> Argon2Parameters.INTERACTIVE
-                }
-            } finally {
-                testSalt.fill(0)
-            }
-        }.getOrElse { error ->
-            if (error is CancellationException) throw error
-            Argon2Parameters.INTERACTIVE
+
+    override suspend fun benchmarkArgon2(): Argon2Parameters = cryptoOperation({}) {
+        ensureInitialized()
+        val testPassword = "passvault-benchmark"
+        val testSalt = LibsodiumRandom.buf(16).asByteArray()
+        var benchmarkOutput: ByteArray? = null
+        try {
+            val start = TimeSource.Monotonic.markNow()
+            benchmarkOutput = PasswordHash.pwhash(
+                outputLength = 32,
+                password = testPassword,
+                salt = testSalt.asUByteArray(),
+                opsLimit = crypto_pwhash_OPSLIMIT_INTERACTIVE.toULong(),
+                memLimit = crypto_pwhash_MEMLIMIT_INTERACTIVE,
+                algorithm = crypto_pwhash_ALG_DEFAULT,
+            ).asByteArray()
+            val duration = start.elapsedNow().inWholeMilliseconds
+            selectArgon2Parameters(duration)
+        } finally {
+            benchmarkOutput?.fill(0)
+            testSalt.fill(0)
         }
+    }.getOrElse { error ->
+        if (error is CancellationException) throw error
+        Argon2Parameters.INTERACTIVE
     }
 
-    private suspend inline fun <T> safeResult(crossinline block: suspend () -> T): Result<T> =
-        try {
-            Result.success(block())
+    /**
+     * A dispatched coroutine can be cancelled after [block] has produced an
+     * owned secret but before `withContext` delivers it to the caller. Track
+     * that result in the worker context so the cancellation path can clear it.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private suspend inline fun <T> cryptoOperation(
+        crossinline clearOnCancellation: (T) -> Unit,
+        crossinline block: suspend () -> T,
+    ): Result<T> {
+        var completedResult: Result<T>? = null
+        return try {
+            withContext(Dispatchers.Default) {
+                val result = try {
+                    Result.success(block())
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (error: Exception) {
+                    Result.failure(error)
+                }
+                completedResult = result
+                result
+            }
         } catch (cancelled: CancellationException) {
+            completedResult?.getOrNull()?.let(clearOnCancellation)
             throw cancelled
-        } catch (error: Exception) {
-            Result.failure(error)
         }
+    }
 }
 
-class CryptoException(message: String) : Exception(message)
+/**
+ * Selects a bounded interactive profile without increasing memory use on faster devices.
+ * Slower benchmark results can never select a stronger profile than faster results.
+ */
+internal fun selectArgon2Parameters(durationMilliseconds: Long): Argon2Parameters =
+    if (durationMilliseconds < FAST_ARGON2_BENCHMARK_MILLISECONDS) {
+        Argon2Parameters.INTERACTIVE.copy(opsLimit = FAST_DEVICE_OPS_LIMIT)
+    } else {
+        Argon2Parameters.INTERACTIVE
+    }
 
 private const val KEY_BYTES = 32
 private const val ARGON2_SALT_BYTES = 16
+private const val ARGON2_MIN_OPS = 1
+private const val ARGON2_MAX_OPS = 10
 private const val ARGON2_MIN_MEMORY_BYTES = 8 * 1024
+private const val ARGON2_MAX_MEMORY_BYTES = 1024 * 1024 * 1024
+private const val FAST_ARGON2_BENCHMARK_MILLISECONDS = 50L
+private const val FAST_DEVICE_OPS_LIMIT = 4
+private const val MAX_SUBKEY_CONTEXT_CODE_UNITS = 16 * 1024
+private const val MAX_SUBKEY_CONTEXT_BYTES = 64 * 1024
 private val SUBKEY_DOMAIN = "passvault-subkey-v1\u0000".encodeToByteArray()
-internal val AEAD_ENVELOPE_MAGIC = byteArrayOf(0x50, 0x56, 0x02, 0x00)
+private val AEAD_ENVELOPE_MAGIC = byteArrayOf(0x50, 0x56, 0x02, 0x00)
 
 private fun ByteArray.hasAeadEnvelopeMagic(): Boolean =
     size >= AEAD_ENVELOPE_MAGIC.size &&
-        copyOfRange(0, AEAD_ENVELOPE_MAGIC.size).contentEquals(AEAD_ENVELOPE_MAGIC)
+        AEAD_ENVELOPE_MAGIC.indices.all { index -> this[index] == AEAD_ENVELOPE_MAGIC[index] }
 
 private fun ByteArray.toHexString(): String =
     joinToString(separator = "") { byte -> byte.toUByte().toString(16).padStart(2, '0') }

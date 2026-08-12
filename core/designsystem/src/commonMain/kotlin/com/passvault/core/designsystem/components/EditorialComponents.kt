@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,37 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.theme.PassVaultTextStyles
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
-
-/**
- * Bounded content container shared by feature screens.
- */
-@Composable
-fun EditorialContentContainer(
-    modifier: Modifier = Modifier,
-    maxWidth: Dp = ComponentSpacing.contentMaxWidth,
-    contentPadding: PaddingValues = PaddingValues(
-        horizontal = ComponentSpacing.screenHorizontal,
-        vertical = ComponentSpacing.screenVertical,
-    ),
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .widthIn(max = maxWidth)
-            .padding(contentPadding),
-        verticalArrangement = Arrangement.spacedBy(ComponentSpacing.sectionSpacing),
-        content = content,
-    )
-}
 
 /**
  * Editorial page title with a compact security-context label and optional actions.
@@ -133,49 +110,6 @@ fun EditorialPanel(
 }
 
 /**
- * Large status panel for vault counts and security metrics.
- */
-@Composable
-fun EditorialMetricPanel(
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier,
-    supportingText: String? = null,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-) {
-    Surface(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.extraLarge,
-        color = containerColor,
-        contentColor = contentColor,
-    ) {
-        Column(
-            modifier = Modifier.padding(Spacing.lg),
-            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-        ) {
-            Text(
-                text = label,
-                style = PassVaultTextStyles.Eyebrow,
-                color = contentColor.copy(alpha = 0.72f),
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.displayMedium,
-                color = contentColor,
-            )
-            if (!supportingText.isNullOrBlank()) {
-                Text(
-                    text = supportingText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.78f),
-                )
-            }
-        }
-    }
-}
-
-/**
  * Shape-safe icon container used by list rows, onboarding highlights, and metrics.
  */
 @Composable
@@ -217,34 +151,43 @@ fun EditorialStatusBanner(
     action: (@Composable RowScope.() -> Unit)? = null,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { liveRegion = LiveRegionMode.Polite },
         shape = MaterialTheme.shapes.large,
         color = containerColor,
         contentColor = contentColor,
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(Spacing.mdLg),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.smMd),
-            verticalAlignment = Alignment.Top,
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(22.dp),
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.smMd),
+                verticalAlignment = Alignment.Top,
             ) {
-                Text(title, style = MaterialTheme.typography.titleSmall)
-                Text(
-                    message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.8f),
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
                 )
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+                ) {
+                    Text(title, style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = contentColor.copy(alpha = 0.8f),
+                    )
+                }
             }
             if (action != null) {
-                Row(content = action)
+                Row(
+                    modifier = Modifier.align(Alignment.End),
+                    content = action,
+                )
             }
         }
     }

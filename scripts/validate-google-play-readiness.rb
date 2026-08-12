@@ -45,7 +45,6 @@ fail_validation("source permissions are missing from the packaged inventory") un
   (declared_source_permissions - declared_packaged_permissions).empty?
 
 expected_inherited_permissions = %w[
-  android.permission.ACCESS_NETWORK_STATE
   android.permission.USE_FINGERPRINT
   com.passvault.android.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ]

@@ -47,9 +47,12 @@ fi
 passvault_dotenv_load_file "$values_file"
 
 authenticated_account="$(gh api user --jq .login)"
-accessible_repository="$(gh repo view "${GITHUB_REPOSITORY:-}" --json nameWithOwner --jq .nameWithOwner)"
+repository_details="$(gh repo view "${GITHUB_REPOSITORY:-}" --json databaseId,nameWithOwner)"
+accessible_repository="$(jq -r .nameWithOwner <<< "$repository_details")"
+repository_id="$(jq -r '.databaseId | tostring' <<< "$repository_details")"
 if [[ "$authenticated_account" != "${GITHUB_DEPLOYMENT_APPROVER:-}" ||
-    "$accessible_repository" != "${GITHUB_REPOSITORY:-}" ]]; then
+    "$accessible_repository" != "${GITHUB_REPOSITORY:-}" ||
+    ! "$repository_id" =~ ^[1-9][0-9]*$ ]]; then
     echo "GitHub account or repository confirmation failed." >&2
     exit 1
 fi
@@ -98,9 +101,10 @@ if ! gcloud iam workload-identity-pools describe "$pool_id" --location=global \
         --display-name="PassVault GitHub Actions" >/dev/null
 fi
 
-attribute_mapping='google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.environment=assertion.environment'
-beta_condition="assertion.repository=='$GITHUB_REPOSITORY' && (assertion.environment=='mobile-beta' || assertion.environment=='mobile-external-beta' || assertion.environment=='play-access-beta')"
-production_condition="assertion.repository=='$GITHUB_REPOSITORY' && (assertion.environment=='mobile-production' || assertion.environment=='play-access-production')"
+attribute_mapping='google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_id=assertion.repository_id,attribute.environment=assertion.environment'
+repository_condition="assertion.repository=='$GITHUB_REPOSITORY' && assertion.repository_id=='$repository_id'"
+beta_condition="$repository_condition && (assertion.environment=='mobile-beta' || assertion.environment=='mobile-external-beta' || assertion.environment=='play-access-beta')"
+production_condition="$repository_condition && (assertion.environment=='mobile-production' || assertion.environment=='play-access-production')"
 
 upsert_provider() {
     local provider_id="$1"
@@ -143,8 +147,7 @@ ensure_service_account() {
 
 wait_for_service_account() {
     local service_account="$1"
-    local attempt
-    for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+    for _ in 1 2 3 4 5 6 7 8 9 10 11 12; do
         if gcloud iam service-accounts describe "$service_account" \
             --project "$GOOGLE_CLOUD_PROJECT_ID" >/dev/null 2>&1; then
             return 0
@@ -232,20 +235,31 @@ append_oidc_row() {
     oidc_rows+=("| $1 | $2 | $3 | \`$4\` | $5 | $6 |")
 }
 
-for provider_spec in \
-    "$beta_provider_id|$GITHUB_REPOSITORY|mobile-beta|mobile-external-beta|play-access-beta" \
-    "$production_provider_id|$GITHUB_REPOSITORY|mobile-production|play-access-production|"; do
-    IFS='|' read -r provider_id expected_repository expected_environment extra_environment extra_environment_2 \
-        <<< "$provider_spec"
-    provider_condition_actual="$(gcloud iam workload-identity-pools providers describe "$provider_id" \
+expected_mapping_json="$(jq -cnS '{
+    "google.subject": "assertion.sub",
+    "attribute.repository": "assertion.repository",
+    "attribute.repository_id": "assertion.repository_id",
+    "attribute.environment": "assertion.environment"
+}')"
+for provider_id in "$beta_provider_id" "$production_provider_id"; do
+    if [[ "$provider_id" == "$beta_provider_id" ]]; then
+        expected_condition="$beta_condition"
+    else
+        expected_condition="$production_condition"
+    fi
+    provider_document="$(gcloud iam workload-identity-pools providers describe "$provider_id" \
         --workload-identity-pool="$pool_id" --location=global \
-        --project "$GOOGLE_CLOUD_PROJECT_ID" --format='value(attributeCondition)' 2>/dev/null || true)"
-    if [[ "$provider_condition_actual" == *"$expected_repository"* &&
-        "$provider_condition_actual" == *"$expected_environment"* &&
-        ( -z "$extra_environment" || "$provider_condition_actual" == *"$extra_environment"* ) &&
-        ( -z "$extra_environment_2" || "$provider_condition_actual" == *"$extra_environment_2"* ) ]]; then
+        --project "$GOOGLE_CLOUD_PROJECT_ID" --format=json 2>/dev/null || true)"
+    provider_condition_actual="$(jq -r '.attributeCondition // ""' <<< "$provider_document" 2>/dev/null || true)"
+    provider_mapping_actual="$(jq -cS '.attributeMapping // {}' <<< "$provider_document" 2>/dev/null || true)"
+    provider_issuer_actual="$(jq -r '.oidc.issuerUri // ""' <<< "$provider_document" 2>/dev/null || true)"
+    provider_state_actual="$(jq -r '.state // ""' <<< "$provider_document" 2>/dev/null || true)"
+    if [[ "$provider_condition_actual" == "$expected_condition" &&
+        "$provider_mapping_actual" == "$expected_mapping_json" &&
+        "$provider_issuer_actual" == "https://token.actions.githubusercontent.com" &&
+        "$provider_state_actual" == "ACTIVE" ]]; then
         append_oidc_row "$provider_id" "Google Workload Identity provider" "Yes" \
-            "Google Cloud project" "Repository/environment restriction verified" "None"
+            "Google Cloud project" "Exact issuer, mapping, and repository/environment restriction verified" "None"
     else
         verification_failures=$((verification_failures + 1))
         append_oidc_row "$provider_id" "Google Workload Identity provider" "No" \
@@ -293,6 +307,36 @@ verify_workload_binding "$beta_service_account" play-access-beta
 verify_workload_binding "$production_service_account" mobile-production
 verify_workload_binding "$production_service_account" play-access-production
 
+verify_exclusive_workload_bindings() {
+    local service_account="$1"
+    shift
+    local actual_members expected_members environment_name
+    actual_members="$(gcloud iam service-accounts get-iam-policy "$service_account" \
+        --project "$GOOGLE_CLOUD_PROJECT_ID" \
+        --flatten='bindings[].members' \
+        --filter='bindings.role:roles/iam.workloadIdentityUser' \
+        --format='value(bindings.members)' | LC_ALL=C sort -u)"
+    expected_members="$(
+        for environment_name in "$@"; do
+            printf '%s/%s\n' "$principal_prefix" "$environment_name"
+        done | LC_ALL=C sort -u
+    )"
+    if [[ "$actual_members" == "$expected_members" ]]; then
+        append_oidc_row "$service_account federation policy" "Google service-account IAM" "Yes" \
+            "Dedicated PassVault identities" "No unexpected Workload Identity principals" "None"
+    else
+        verification_failures=$((verification_failures + 1))
+        append_oidc_row "$service_account federation policy" "Google service-account IAM" "No" \
+            "Dedicated PassVault identities" "Unexpected Workload Identity principal detected" \
+            "Remove every principal not created by this script, then rerun configuration."
+    fi
+}
+
+verify_exclusive_workload_bindings "$beta_service_account" \
+    mobile-beta mobile-external-beta play-access-beta
+verify_exclusive_workload_bindings "$production_service_account" \
+    mobile-production play-access-production
+
 for service_account in "$beta_service_account" "$production_service_account"; do
     validate_keyless_service_account "$service_account"
     append_oidc_row "$service_account key policy" "Google service account" "Yes" \
@@ -302,12 +346,23 @@ done
 for environment_name in \
     mobile-beta mobile-external-beta mobile-production \
     play-access-beta play-access-production; do
-    environment_variables="$(gh variable list --env "$environment_name" \
-        --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
-    for variable_name in GOOGLE_WORKLOAD_IDENTITY_PROVIDER GOOGLE_SERVICE_ACCOUNT; do
-        if grep -Fxq "$variable_name" <<< "$environment_variables"; then
+    if [[ "$environment_name" == mobile-production ||
+        "$environment_name" == play-access-production ]]; then
+        expected_provider="$production_provider"
+        expected_service_account="$production_service_account"
+    else
+        expected_provider="$beta_provider"
+        expected_service_account="$beta_service_account"
+    fi
+    for variable_spec in \
+        "GOOGLE_WORKLOAD_IDENTITY_PROVIDER|$expected_provider" \
+        "GOOGLE_SERVICE_ACCOUNT|$expected_service_account"; do
+        IFS='|' read -r variable_name expected_value <<< "$variable_spec"
+        actual_value="$(gh variable get "$variable_name" --env "$environment_name" \
+            --repo "$GITHUB_REPOSITORY" 2>/dev/null || true)"
+        if [[ "$actual_value" == "$expected_value" ]]; then
             append_oidc_row "$variable_name" "$environment_name variable" "Yes" \
-                "OIDC resource identifier" "Name exists at expected scope" "None"
+                "OIDC resource identifier" "Exact value exists at expected scope" "None"
         else
             verification_failures=$((verification_failures + 1))
             append_oidc_row "$variable_name" "$environment_name variable" "No" \

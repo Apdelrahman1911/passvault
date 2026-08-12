@@ -2,23 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>PassVault Encrypted Backup</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.passvault.backup</string>
-			</array>
-		</dict>
-	</array>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<false/>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -45,7 +28,17 @@
 	<string>Scan authenticator QR codes for your saved accounts.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Use Face ID to unlock your PassVault vault.</string>
+	<key>UILaunchStoryboardName</key>
+	<string>PassVaultLaunchScreen</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<!-- The vault, lifecycle bridge, and native picker services are process-wide
+	     singletons. Keep one scene so a second iPad window cannot race their
+	     lock state or receive a picker requested by another scene. -->
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
 </dict>
 </plist>

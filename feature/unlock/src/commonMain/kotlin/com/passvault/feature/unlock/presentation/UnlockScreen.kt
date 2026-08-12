@@ -58,9 +58,8 @@ import com.passvault.core.designsystem.text.resolve
 import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
-import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricType
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -73,7 +72,7 @@ fun UnlockScreenRoute(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(viewModel) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 UnlockViewModel.UnlockEffect.NavigateToVault -> onUnlockSuccess()
                 UnlockViewModel.UnlockEffect.NavigateToOnboarding -> onNavigateToOnboarding()
@@ -95,10 +94,7 @@ fun UnlockScreenRoute(
             icon = { Icon(Icons.Default.Lock, contentDescription = null) },
             title = { Text(stringResource(Res.string.ui_master_password_recovery)) },
             text = {
-                Text(
-                    stringResource(Res.string.ui_passvault_cannot_recover_or_reset_the_master_password) +
-                        stringResource(Res.string.ui_an_encrypted_backup_can_only_be_restored_with_its_sepa),
-                )
+                Text(stringResource(Res.string.ui_unlock_recovery_warning))
             },
             confirmButton = {
                 TextButton(
@@ -122,75 +118,103 @@ fun UnlockScreen(
     val focusManager = LocalFocusManager.current
     val passwordFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(state.isBiometricStatusLoaded, state.isBiometricEnabled) {
-        if (state.isBiometricStatusLoaded && !state.isBiometricEnabled) {
+    LaunchedEffect(state.isBiometricStatusLoaded, state.canUseBiometrics) {
+        if (state.isBiometricStatusLoaded && !state.canUseBiometrics) {
             passwordFocusRequester.requestFocus()
         }
     }
 
+    val onSubmit = {
+        focusManager.clearFocus()
+        onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
+    }
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val expanded = maxWidth >= Breakpoints.expandedMin
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .imePadding()
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
-                    .padding(ComponentSpacing.screenHorizontal),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (expanded) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .widthIn(max = 980.dp),
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
-                        verticalAlignment = Alignment.Top,
-                    ) {
-                        LockedVaultVisual(
-                            modifier = Modifier.weight(0.85f),
-                            biometricAvailable = state.biometricAvailability != BiometricAvailability.UNAVAILABLE,
-                        )
-                        UnlockForm(
-                            state = state,
-                            onEvent = onEvent,
-                            passwordFocusRequester = passwordFocusRequester,
-                            onSubmit = {
-                                focusManager.clearFocus()
-                                onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
-                            },
-                            modifier = Modifier.weight(1.15f),
-                        )
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .widthIn(max = 520.dp)
-                            .padding(vertical = Spacing.md),
-                        verticalArrangement = Arrangement.spacedBy(Spacing.md),
-                    ) {
-                        LockedVaultVisual(
-                            compact = true,
-                            biometricAvailable = state.biometricAvailability != BiometricAvailability.UNAVAILABLE,
-                        )
-                        UnlockForm(
-                            state = state,
-                            onEvent = onEvent,
-                            passwordFocusRequester = passwordFocusRequester,
-                            onSubmit = {
-                                focusManager.clearFocus()
-                                onEvent(UnlockViewModel.UnlockEvent.OnUnlockClick)
-                            },
-                        )
-                    }
-                }
+        UnlockResponsiveLayout(
+            state = state,
+            onEvent = onEvent,
+            passwordFocusRequester = passwordFocusRequester,
+            onSubmit = onSubmit,
+        )
+    }
+}
+
+@Composable
+private fun UnlockResponsiveLayout(
+    state: UnlockViewModel.UnlockState,
+    onEvent: (UnlockViewModel.UnlockEvent) -> Unit,
+    passwordFocusRequester: FocusRequester,
+    onSubmit: () -> Unit,
+) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val expanded = maxWidth >= Breakpoints.expandedMin
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(ComponentSpacing.screenHorizontal),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (expanded) {
+                ExpandedUnlockLayout(state, onEvent, passwordFocusRequester, onSubmit)
+            } else {
+                CompactUnlockLayout(state, onEvent, passwordFocusRequester, onSubmit)
             }
         }
+    }
+}
+
+@Composable
+private fun ExpandedUnlockLayout(
+    state: UnlockViewModel.UnlockState,
+    onEvent: (UnlockViewModel.UnlockEvent) -> Unit,
+    passwordFocusRequester: FocusRequester,
+    onSubmit: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.widthIn(max = 980.dp).fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
+        verticalAlignment = Alignment.Top,
+    ) {
+        LockedVaultVisual(
+            modifier = Modifier.weight(0.85f),
+            biometricAvailable = state.canUseBiometrics,
+        )
+        UnlockForm(
+            state = state,
+            onEvent = onEvent,
+            passwordFocusRequester = passwordFocusRequester,
+            onSubmit = onSubmit,
+            modifier = Modifier.weight(1.15f),
+        )
+    }
+}
+
+@Composable
+private fun CompactUnlockLayout(
+    state: UnlockViewModel.UnlockState,
+    onEvent: (UnlockViewModel.UnlockEvent) -> Unit,
+    passwordFocusRequester: FocusRequester,
+    onSubmit: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth().padding(vertical = Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+    ) {
+        LockedVaultVisual(
+            compact = true,
+            biometricAvailable = state.canUseBiometrics,
+        )
+        UnlockForm(
+            state = state,
+            onEvent = onEvent,
+            passwordFocusRequester = passwordFocusRequester,
+            onSubmit = onSubmit,
+        )
     }
 }
 
@@ -267,83 +291,8 @@ private fun UnlockForm(
         if (state.failedAttempts > 0 && state.errorMessage == null) {
             FailedAttemptsWarning(attempts = state.failedAttempts)
         }
-
-        state.errorMessage?.let { message ->
-            EditorialStatusBanner(
-                icon = Icons.Default.Warning,
-                title = stringResource(Res.string.ui_vault_locked),
-                message = message.resolve(),
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                action = if (!state.isLockedOut) {
-                    {
-                        IconButton(
-                            onClick = {
-                                onEvent(UnlockViewModel.UnlockEvent.OnDismissError)
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(Res.string.ui_dismiss),
-                            )
-                        }
-                    }
-                } else {
-                    null
-                },
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SecureTextField(
-                value = state.password,
-                onValueChange = {
-                    onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged(it))
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .focusRequester(passwordFocusRequester),
-                label = stringResource(Res.string.ui_master_password),
-                enabled = !state.isLockedOut && !state.isBiometricLoading,
-                imeAction = ImeAction.Done,
-                keyboardActions = KeyboardActions(onDone = { onSubmit() }),
-            )
-
-            if (state.biometricAvailability != BiometricAvailability.UNAVAILABLE) {
-                val biometricLabel = stringResource(
-                    when (state.biometricType) {
-                        BiometricType.FACE -> Res.string.ui_unlock_with_face_id
-                        BiometricType.FINGERPRINT -> Res.string.ui_unlock_with_touch_id
-                        BiometricType.GENERIC -> Res.string.ui_unlock_with_biometrics
-                    },
-                )
-                OutlinedButton(
-                    onClick = {
-                        onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick)
-                    },
-                    modifier = Modifier.size(56.dp),
-                    enabled = !state.isLoading,
-                    contentPadding = PaddingValues(0.dp),
-                ) {
-                    if (state.isBiometricLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
-                    } else {
-                        Icon(
-                            imageVector = if (state.biometricType == BiometricType.FACE) {
-                                Icons.Default.Face
-                            } else {
-                                Icons.Default.Fingerprint
-                            },
-                            contentDescription = biometricLabel,
-                        )
-                    }
-                }
-            }
-        }
+        UnlockErrorBanner(state, onEvent)
+        UnlockInputRow(state, onEvent, passwordFocusRequester, onSubmit)
 
         Button(
             onClick = onSubmit,
@@ -373,7 +322,96 @@ private fun UnlockForm(
         ) {
             Text(stringResource(Res.string.ui_forgot_password))
         }
+    }
+}
 
+@Composable
+private fun UnlockErrorBanner(
+    state: UnlockViewModel.UnlockState,
+    onEvent: (UnlockViewModel.UnlockEvent) -> Unit,
+) {
+    state.errorMessage?.let { message ->
+        EditorialStatusBanner(
+            icon = Icons.Default.Warning,
+            title = stringResource(Res.string.ui_vault_locked),
+            message = message.resolve(),
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            action = if (state.isLockedOut) null else {
+                {
+                    IconButton(
+                        onClick = { onEvent(UnlockViewModel.UnlockEvent.OnDismissError) },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.ui_dismiss),
+                        )
+                    }
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun UnlockInputRow(
+    state: UnlockViewModel.UnlockState,
+    onEvent: (UnlockViewModel.UnlockEvent) -> Unit,
+    passwordFocusRequester: FocusRequester,
+    onSubmit: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        SecureTextField(
+            value = state.password,
+            onValueChange = {
+                onEvent(UnlockViewModel.UnlockEvent.OnPasswordChanged(it))
+            },
+            modifier = Modifier.weight(1f).focusRequester(passwordFocusRequester),
+            label = stringResource(Res.string.ui_master_password),
+            enabled = !state.isLockedOut && !state.isLoading,
+            imeAction = ImeAction.Done,
+            keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+        )
+        if (state.canUseBiometrics) {
+            BiometricUnlockButton(state, onEvent)
+        }
+    }
+}
+
+@Composable
+private fun BiometricUnlockButton(
+    state: UnlockViewModel.UnlockState,
+    onEvent: (UnlockViewModel.UnlockEvent) -> Unit,
+) {
+    val biometricLabel = stringResource(
+        when (state.biometricType) {
+            BiometricType.FACE -> Res.string.ui_unlock_with_face_id
+            BiometricType.FINGERPRINT -> Res.string.ui_unlock_with_touch_id
+            BiometricType.GENERIC -> Res.string.ui_unlock_with_biometrics
+        },
+    )
+    OutlinedButton(
+        onClick = { onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick) },
+        modifier = Modifier.size(56.dp),
+        enabled = !state.isLoading,
+        contentPadding = PaddingValues(0.dp),
+    ) {
+        if (state.isBiometricLoading) {
+            CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
+        } else {
+            Icon(
+                imageVector = if (state.biometricType == BiometricType.FACE) {
+                    Icons.Default.Face
+                } else {
+                    Icons.Default.Fingerprint
+                },
+                contentDescription = biometricLabel,
+            )
+        }
     }
 }
 

@@ -6,12 +6,24 @@ repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 private_root="$repository_root/release/private"
 values_file="$private_root/values.env"
 report_file="$private_root/generated/secret-upload-report.md"
-# shellcheck source=scripts/lib/dotenv.sh
+# shellcheck disable=SC1091 # Resolved from the runtime repository root.
 source "$repository_root/scripts/lib/dotenv.sh"
-# shellcheck source=scripts/lib/pkcs12-validation.sh
+# shellcheck disable=SC1091 # Resolved from the runtime repository root.
 source "$repository_root/scripts/lib/pkcs12-validation.sh"
 temporary_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-release-validation.XXXXXX")"
 chmod 700 "$temporary_root"
+
+private_file_is_safe() {
+    ruby -I "$repository_root/scripts" -r lib/private_path -e \
+        'exit(PassVault::PrivatePath.regular_file_within?(ARGV.fetch(0), ARGV.fetch(1)) ? 0 : 1)' \
+        "$1" "$private_root"
+}
+
+private_directory_is_safe() {
+    ruby -I "$repository_root/scripts" -r lib/private_path -e \
+        'exit(PassVault::PrivatePath.directory_within?(ARGV.fetch(0), ARGV.fetch(1)) ? 0 : 1)' \
+        "$1" "$private_root"
+}
 
 cleanup() {
     if [[ -d "$temporary_root" ]]; then
@@ -37,8 +49,16 @@ if [[ -n "$(git ls-files release/private)" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$values_file" || -L "$values_file" ]]; then
-    echo "release/private/values.env is missing or is a symlink." >&2
+if ! private_file_is_safe "$values_file"; then
+    echo "release/private/values.env is missing or traverses an unsafe path." >&2
+    exit 1
+fi
+if ! ruby -e '
+  contents = File.binread(ARGV.fetch(0)).force_encoding(Encoding::UTF_8)
+  abort unless contents.valid_encoding? && !contents.include?("\0") &&
+    contents.bytesize <= 1024 * 1024
+' "$values_file" >/dev/null 2>&1; then
+    echo "release/private/values.env must be valid UTF-8 without NUL bytes and at most 1 MiB." >&2
     exit 1
 fi
 
@@ -48,7 +68,9 @@ failure_count=0
 sanitize_report_text() {
     local value="$1"
     value="${value//$'\n'/ }"
+    value="${value//$'\r'/ }"
     value="${value//|/\/}"
+    value="${value//\`/ }"
     printf '%s' "$value"
 }
 
@@ -68,8 +90,46 @@ fail_result() {
     record_result "$@"
 }
 
+required_values=(
+    PUBLISHER_NAME_EN PUBLISHER_NAME_AR COPYRIGHT_HOLDER_EN COPYRIGHT_HOLDER_AR
+    COUNTRY_OR_JURISDICTION SUPPORT_EMAIL SECURITY_EMAIL PROJECT_URL
+    PRIVACY_POLICY_URL SUPPORT_URL ANDROID_PACKAGE_NAME IOS_BUNDLE_ID APP_STORE_SKU
+    APP_STORE_APP_ID APPLE_TEAM_ID ASC_ISSUER_ID ASC_KEY_ID APP_REVIEW_CONTACT_NAME
+    APP_REVIEW_EMAIL APP_REVIEW_PHONE GOOGLE_CLOUD_PROJECT_ID GOOGLE_CLOUD_PROJECT_NUMBER
+    GITHUB_REPOSITORY GITHUB_DEPLOYMENT_APPROVER KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+    IOS_DISTRIBUTION_CERTIFICATE_PASSWORD TESTFLIGHT_EXTERNAL_GROUP
+    WINDOWS_SIGNING_BACKEND WINDOWS_EXPECTED_PUBLISHER_NAME
+    MACOS_CERTIFICATE_PASSWORD
+    MACOS_NOTARIZATION_APPLE_ID MACOS_NOTARIZATION_PASSWORD
+    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
+    RELEASE_NOTES_EN_FILE RELEASE_NOTES_AR_FILE PRIVACY_TEXT_EN_FILE PRIVACY_TEXT_AR_FILE
+    ANDROID_UPLOAD_KEYSTORE_FILE IOS_DISTRIBUTION_CERTIFICATE_FILE
+    IOS_PROVISIONING_PROFILE_FILE ASC_PRIVATE_KEY_FILE STORE_METADATA_EN_FILE
+    STORE_METADATA_AR_FILE STORE_DESCRIPTION_EN_FILE STORE_DESCRIPTION_AR_FILE
+    MACOS_CERTIFICATE_FILE
+)
+optional_values=(
+    GOOGLE_CLOSED_TEST_GROUP TESTFLIGHT_INTERNAL_EMAILS
+    TESTFLIGHT_EXTERNAL_TESTERS_FILE PLAY_CLOSED_TESTERS_FILE
+    PLAY_USERS_FILE PLAY_SERVICE_ACCOUNT_PERMISSION_MODE
+    WINDOWS_TIMESTAMP_URL
+    WINDOWS_CERTIFICATE_FILE WINDOWS_CERTIFICATE_PASSWORD WINDOWS_PFX_POLICY_CONFIRMATION
+    WINDOWS_AZURE_CLIENT_ID WINDOWS_AZURE_TENANT_ID WINDOWS_AZURE_SUBSCRIPTION_ID
+    WINDOWS_ARTIFACT_SIGNING_ENDPOINT WINDOWS_ARTIFACT_SIGNING_ACCOUNT
+    WINDOWS_ARTIFACT_SIGNING_PROFILE
+    WINDOWS_SIGNPATH_API_TOKEN WINDOWS_SIGNPATH_ORGANIZATION_ID
+    WINDOWS_SIGNPATH_PROJECT_SLUG WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG
+    WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG
+)
+
+# The ignored values file is the sole source of release configuration. Ambient
+# variables must not silently fill a missing declaration and then be uploaded.
+for name in "${required_values[@]}" "${optional_values[@]}"; do
+    unset "$name"
+done
+
 load_values() {
-    local line
+    local line loaded_keys=$'\n'
     while IFS= read -r line || [[ -n "$line" ]]; do
         if ! passvault_dotenv_parse_line "$line"; then
             fail_result "values.env" "Local only" "No" "values.env" \
@@ -78,6 +138,13 @@ load_values() {
             continue
         fi
         if [[ "$PASSVAULT_DOTENV_KIND" == "entry" ]]; then
+            if [[ "$loaded_keys" == *$'\n'"$PASSVAULT_DOTENV_KEY"$'\n'* ]]; then
+                fail_result "values.env" "Local only" "No" "values.env" \
+                    "Duplicate dotenv key: $PASSVAULT_DOTENV_KEY" \
+                    "Keep exactly one literal entry for each setting."
+                continue
+            fi
+            loaded_keys+="$PASSVAULT_DOTENV_KEY"$'\n'
             printf -v "$PASSVAULT_DOTENV_KEY" '%s' "$PASSVAULT_DOTENV_VALUE"
         fi
     done < "$values_file"
@@ -91,21 +158,6 @@ if ! passvault_select_openssl; then
 fi
 openssl_binary="$PASSVAULT_OPENSSL_BINARY"
 
-required_values=(
-    PUBLISHER_NAME_EN PUBLISHER_NAME_AR COPYRIGHT_HOLDER_EN COPYRIGHT_HOLDER_AR
-    COUNTRY_OR_JURISDICTION SUPPORT_EMAIL SECURITY_EMAIL PROJECT_URL
-    PRIVACY_POLICY_URL SUPPORT_URL ANDROID_PACKAGE_NAME IOS_BUNDLE_ID APP_STORE_SKU
-    APP_STORE_APP_ID APPLE_TEAM_ID ASC_ISSUER_ID ASC_KEY_ID APP_REVIEW_CONTACT_NAME
-    APP_REVIEW_EMAIL APP_REVIEW_PHONE GOOGLE_CLOUD_PROJECT_ID GOOGLE_CLOUD_PROJECT_NUMBER
-    GITHUB_REPOSITORY GITHUB_DEPLOYMENT_APPROVER KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
-    IOS_DISTRIBUTION_CERTIFICATE_PASSWORD TESTFLIGHT_EXTERNAL_GROUP
-    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
-    RELEASE_NOTES_EN_FILE RELEASE_NOTES_AR_FILE PRIVACY_TEXT_EN_FILE PRIVACY_TEXT_AR_FILE
-    ANDROID_UPLOAD_KEYSTORE_FILE IOS_DISTRIBUTION_CERTIFICATE_FILE
-    IOS_PROVISIONING_PROFILE_FILE ASC_PRIVATE_KEY_FILE STORE_METADATA_EN_FILE
-    STORE_METADATA_AR_FILE STORE_DESCRIPTION_EN_FILE STORE_DESCRIPTION_AR_FILE
-)
-
 for name in "${required_values[@]}"; do
     if [[ -z "${!name:-}" ]]; then
         fail_result "$name" "Input validation" "No" "values.env:$name" "Missing" \
@@ -115,8 +167,8 @@ for name in "${required_values[@]}"; do
     fi
 done
 
-email_pattern='^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
-for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL; do
+email_pattern='^[^[:space:]@,]+@[^[:space:]@,]+\.[^[:space:]@,]+$'
+for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL MACOS_NOTARIZATION_APPLE_ID; do
     value="${!name:-}"
     if [[ -n "$value" && ( ! "$value" =~ $email_pattern || "$value" == *.invalid ) ]]; then
         fail_result "$name" "Input validation" "No" "values.env:$name" "Invalid email" \
@@ -143,13 +195,17 @@ if [[ -z "${TESTFLIGHT_INTERNAL_EMAILS:-}" ]]; then
         "Add real App Store Connect user emails before assigning internal testers."
 else
     internal_testers_valid=true
+    internal_tester_emails=$'\n'
     IFS=',' read -r -a internal_testers <<< "$TESTFLIGHT_INTERNAL_EMAILS"
     for internal_tester in "${internal_testers[@]}"; do
         internal_tester="${internal_tester//[[:space:]]/}"
-        if [[ ! "$internal_tester" =~ $email_pattern || "$internal_tester" == *.invalid ]]; then
+        normalized_internal_tester="$(printf '%s' "$internal_tester" | tr '[:upper:]' '[:lower:]')"
+        if [[ ! "$internal_tester" =~ $email_pattern || "$internal_tester" == *.invalid ||
+            "$internal_tester_emails" == *$'\n'"$normalized_internal_tester"$'\n'* ]]; then
             internal_testers_valid=false
             break
         fi
+        internal_tester_emails+="$normalized_internal_tester"$'\n'
     done
     if [[ "$internal_testers_valid" == "true" ]]; then
         record_result "TESTFLIGHT_INTERNAL_EMAILS" "Internal TestFlight assignment" "Ready" \
@@ -163,11 +219,178 @@ fi
 
 for name in PROJECT_URL PRIVACY_POLICY_URL SUPPORT_URL; do
     value="${!name:-}"
-    if [[ -n "$value" && ! "$value" =~ ^https://[^[:space:]]+$ ]]; then
+    if [[ -n "$value" ]] && ! ruby -ruri -e '
+      uri = URI.parse(ARGV.fetch(0))
+      abort unless uri.is_a?(URI::HTTPS) && uri.host && !uri.host.empty? &&
+        uri.userinfo.nil? && uri.fragment.nil?
+    ' "$value"; then
         fail_result "$name" "Input validation" "No" "values.env:$name" "Invalid URL" \
             "Provide a public HTTPS URL."
     fi
 done
+
+if [[ -n "${WINDOWS_TIMESTAMP_URL:-}" ]] && ! ruby -ruri -e '
+  uri = URI.parse(ARGV.fetch(0))
+  abort unless (uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)) &&
+    uri.host && !uri.host.empty? && uri.userinfo.nil? && uri.fragment.nil?
+' "$WINDOWS_TIMESTAMP_URL"; then
+    fail_result "WINDOWS_TIMESTAMP_URL" "Signing validation" "No" \
+        "values.env:WINDOWS_TIMESTAMP_URL" "Invalid RFC 3161 URL" \
+        "Use a trusted HTTP or HTTPS timestamp service URL."
+fi
+
+if [[ -n "${WINDOWS_EXPECTED_PUBLISHER_NAME:-}" ]] && {
+    ((${#WINDOWS_EXPECTED_PUBLISHER_NAME} > 200)) ||
+        [[ "$WINDOWS_EXPECTED_PUBLISHER_NAME" == *$'\n'* ||
+           "$WINDOWS_EXPECTED_PUBLISHER_NAME" == *$'\r'* ]]
+}; then
+    fail_result "WINDOWS_EXPECTED_PUBLISHER_NAME" "Signing validation" "No" \
+        "values.env:WINDOWS_EXPECTED_PUBLISHER_NAME" "Invalid publisher name" \
+        "Use the exact bounded certificate simple name shown by the selected signing provider."
+fi
+
+require_windows_backend_value() {
+    local name="$1"
+    if [[ -z "${!name:-}" ]]; then
+        fail_result "$name" "Windows signing backend" "No" "values.env:$name" "Missing" \
+            "Add the selected backend value to release/private/values.env."
+    else
+        record_result "$name" "Windows signing backend" "Local only" "values.env:$name" "Present" "None"
+    fi
+}
+
+uuid_pattern='^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+case "${WINDOWS_SIGNING_BACKEND:-}" in
+azure-artifact-signing)
+    require_windows_backend_value WINDOWS_TIMESTAMP_URL
+    for name in \
+        WINDOWS_AZURE_CLIENT_ID WINDOWS_AZURE_TENANT_ID WINDOWS_AZURE_SUBSCRIPTION_ID \
+        WINDOWS_ARTIFACT_SIGNING_ENDPOINT WINDOWS_ARTIFACT_SIGNING_ACCOUNT \
+        WINDOWS_ARTIFACT_SIGNING_PROFILE; do
+        require_windows_backend_value "$name"
+    done
+    for name in WINDOWS_AZURE_CLIENT_ID WINDOWS_AZURE_TENANT_ID WINDOWS_AZURE_SUBSCRIPTION_ID; do
+        if [[ -n "${!name:-}" && ! "${!name}" =~ $uuid_pattern ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" "Invalid UUID" \
+                "Copy the exact Azure identifier."
+        fi
+    done
+    if [[ -n "${WINDOWS_ARTIFACT_SIGNING_ENDPOINT:-}" ]] && ! ruby -ruri -e '
+      uri = URI.parse(ARGV.fetch(0))
+      abort unless uri.is_a?(URI::HTTPS) && uri.host&.end_with?(".codesigning.azure.net") &&
+        uri.path.match?(%r{\A/?\z}) && uri.query.nil? && uri.fragment.nil? && uri.userinfo.nil?
+    ' "$WINDOWS_ARTIFACT_SIGNING_ENDPOINT"; then
+        fail_result "WINDOWS_ARTIFACT_SIGNING_ENDPOINT" "Windows signing backend" "No" \
+            "values.env:WINDOWS_ARTIFACT_SIGNING_ENDPOINT" "Invalid Artifact Signing endpoint" \
+            "Copy the HTTPS region endpoint from the Azure Artifact Signing account."
+    fi
+    for name in WINDOWS_ARTIFACT_SIGNING_ACCOUNT WINDOWS_ARTIFACT_SIGNING_PROFILE; do
+        value="${!name:-}"
+        if [[ -n "$value" && ( ! "$value" =~ ^[A-Za-z][A-Za-z0-9-]{2,98}[A-Za-z0-9]$ ||
+            "$value" == *--* ) ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "Invalid resource name" "Copy the exact Azure Artifact Signing resource name."
+        fi
+    done
+    if [[ "${WINDOWS_TIMESTAMP_URL:-}" != "http://timestamp.acs.microsoft.com" &&
+        "${WINDOWS_TIMESTAMP_URL:-}" != "http://timestamp.acs.microsoft.com/" ]]; then
+        fail_result "WINDOWS_TIMESTAMP_URL" "Windows signing backend" "No" \
+            "values.env:WINDOWS_TIMESTAMP_URL" "Unexpected Artifact Signing timestamp authority" \
+            "Use http://timestamp.acs.microsoft.com as recommended by Microsoft."
+    fi
+    for name in WINDOWS_CERTIFICATE_FILE WINDOWS_CERTIFICATE_PASSWORD WINDOWS_PFX_POLICY_CONFIRMATION; do
+        if [[ -n "${!name:-}" ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "PFX input conflicts with Azure Artifact Signing" "Remove the unused local-PFX value."
+        fi
+    done
+    for name in WINDOWS_SIGNPATH_API_TOKEN WINDOWS_SIGNPATH_ORGANIZATION_ID \
+        WINDOWS_SIGNPATH_PROJECT_SLUG WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG \
+        WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG; do
+        if [[ -n "${!name:-}" ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "SignPath input conflicts with Azure Artifact Signing" \
+                "Remove the unused SignPath value."
+        fi
+    done
+    ;;
+signpath)
+    for name in \
+        WINDOWS_SIGNPATH_API_TOKEN WINDOWS_SIGNPATH_ORGANIZATION_ID \
+        WINDOWS_SIGNPATH_PROJECT_SLUG WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG \
+        WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG; do
+        require_windows_backend_value "$name"
+    done
+    if [[ -n "${WINDOWS_SIGNPATH_API_TOKEN:-}" &&
+        ( ${#WINDOWS_SIGNPATH_API_TOKEN} -gt 2048 ||
+            "$WINDOWS_SIGNPATH_API_TOKEN" == *[[:space:]]* ) ]]; then
+        fail_result "WINDOWS_SIGNPATH_API_TOKEN" "Windows signing backend" "No" \
+            "values.env:WINDOWS_SIGNPATH_API_TOKEN" "Invalid API token shape" \
+            "Use the bounded single-line SignPath submitter token exactly as issued."
+    fi
+    if [[ -n "${WINDOWS_SIGNPATH_ORGANIZATION_ID:-}" &&
+        ! "$WINDOWS_SIGNPATH_ORGANIZATION_ID" =~ $uuid_pattern ]]; then
+        fail_result "WINDOWS_SIGNPATH_ORGANIZATION_ID" "Windows signing backend" "No" \
+            "values.env:WINDOWS_SIGNPATH_ORGANIZATION_ID" "Invalid organization UUID" \
+            "Copy the exact SignPath organization ID."
+    fi
+    for name in WINDOWS_SIGNPATH_PROJECT_SLUG WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG \
+        WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG; do
+        value="${!name:-}"
+        if [[ -n "$value" && ! "$value" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$ ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "Invalid SignPath slug" "Copy the exact bounded SignPath slug."
+        fi
+    done
+    for name in WINDOWS_CERTIFICATE_FILE WINDOWS_CERTIFICATE_PASSWORD \
+        WINDOWS_PFX_POLICY_CONFIRMATION WINDOWS_TIMESTAMP_URL \
+        WINDOWS_AZURE_CLIENT_ID WINDOWS_AZURE_TENANT_ID WINDOWS_AZURE_SUBSCRIPTION_ID \
+        WINDOWS_ARTIFACT_SIGNING_ENDPOINT WINDOWS_ARTIFACT_SIGNING_ACCOUNT \
+        WINDOWS_ARTIFACT_SIGNING_PROFILE; do
+        if [[ -n "${!name:-}" ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "Input conflicts with SignPath signing" "Remove the unused backend value."
+        fi
+    done
+    ;;
+local-pfx)
+    for name in WINDOWS_CERTIFICATE_FILE WINDOWS_CERTIFICATE_PASSWORD \
+        WINDOWS_PFX_POLICY_CONFIRMATION WINDOWS_TIMESTAMP_URL; do
+        require_windows_backend_value "$name"
+    done
+    if [[ "${WINDOWS_PFX_POLICY_CONFIRMATION:-}" != \
+        "I_CONFIRM_CA_AUTHORIZED_EXPORTABLE_PRODUCTION_KEY" ]]; then
+        fail_result "WINDOWS_PFX_POLICY_CONFIRMATION" "Windows signing policy" "No" \
+            "values.env:WINDOWS_PFX_POLICY_CONFIRMATION" "Required CA authorization confirmation missing" \
+            "Use Azure Artifact Signing, or confirm only an existing key whose issuing CA permits this CI use."
+    fi
+    for name in \
+        WINDOWS_AZURE_CLIENT_ID WINDOWS_AZURE_TENANT_ID WINDOWS_AZURE_SUBSCRIPTION_ID \
+        WINDOWS_ARTIFACT_SIGNING_ENDPOINT WINDOWS_ARTIFACT_SIGNING_ACCOUNT \
+        WINDOWS_ARTIFACT_SIGNING_PROFILE; do
+        if [[ -n "${!name:-}" ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "Azure input conflicts with local-PFX signing" "Remove the unused Azure value."
+        fi
+    done
+    for name in WINDOWS_SIGNPATH_API_TOKEN WINDOWS_SIGNPATH_ORGANIZATION_ID \
+        WINDOWS_SIGNPATH_PROJECT_SLUG WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG \
+        WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG; do
+        if [[ -n "${!name:-}" ]]; then
+            fail_result "$name" "Windows signing backend" "No" "values.env:$name" \
+                "SignPath input conflicts with local-PFX signing" \
+                "Remove the unused SignPath value."
+        fi
+    done
+    ;;
+*)
+    if [[ -n "${WINDOWS_SIGNING_BACKEND:-}" ]]; then
+        fail_result "WINDOWS_SIGNING_BACKEND" "Windows signing backend" "No" \
+            "values.env:WINDOWS_SIGNING_BACKEND" "Unsupported backend" \
+            "Use exactly azure-artifact-signing, signpath, or local-pfx."
+    fi
+    ;;
+esac
 
 if [[ "${ANDROID_PACKAGE_NAME:-}" != "com.passvault.android" ]]; then
     fail_result "ANDROID_PACKAGE_NAME" "Application identity" "No" "values.env:ANDROID_PACKAGE_NAME" \
@@ -184,7 +407,7 @@ if [[ "${APP_STORE_SKU:-}" != "passvault-ios-2026" ]]; then
         "Unexpected SKU" "Use passvault-ios-2026 for the new App Store record."
 fi
 
-if [[ -n "${APP_STORE_APP_ID:-}" && ! "${APP_STORE_APP_ID}" =~ ^[0-9]{8,15}$ ]]; then
+if [[ -n "${APP_STORE_APP_ID:-}" && ! "${APP_STORE_APP_ID}" =~ ^[1-9][0-9]{7,14}$ ]]; then
     fail_result "APP_STORE_APP_ID" "Apple identifier" "No" "values.env:APP_STORE_APP_ID" \
         "Invalid numeric Apple ID" "Copy the numeric Apple ID from App Store Connect."
 fi
@@ -199,7 +422,8 @@ if [[ -n "${ASC_KEY_ID:-}" && ! "${ASC_KEY_ID}" =~ ^[A-Z0-9]{10}$ ]]; then
         "Invalid key ID" "Copy the ten-character App Store Connect API key ID."
 fi
 
-if [[ -n "${ASC_ISSUER_ID:-}" && ! "${ASC_ISSUER_ID}" =~ ^[0-9a-fA-F-]{36}$ ]]; then
+if [[ -n "${ASC_ISSUER_ID:-}" &&
+    ! "${ASC_ISSUER_ID}" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
     fail_result "ASC_ISSUER_ID" "Apple identifier" "No" "values.env:ASC_ISSUER_ID" \
         "Invalid issuer ID" "Copy the issuer UUID from App Store Connect."
 fi
@@ -217,6 +441,39 @@ fi
 if [[ -n "${GITHUB_REPOSITORY:-}" && ! "${GITHUB_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
     fail_result "GITHUB_REPOSITORY" "GitHub identifier" "No" "values.env:GITHUB_REPOSITORY" \
         "Invalid owner/repository" "Use the exact owner/repository name."
+fi
+
+if [[ -n "${GITHUB_DEPLOYMENT_APPROVER:-}" &&
+    ! "${GITHUB_DEPLOYMENT_APPROVER}" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$ ]]; then
+    fail_result "GITHUB_DEPLOYMENT_APPROVER" "GitHub identifier" "No" \
+        "values.env:GITHUB_DEPLOYMENT_APPROVER" "Invalid GitHub username" \
+        "Use the exact GitHub username that approves protected deployments."
+fi
+
+if [[ -n "${APP_REVIEW_CONTACT_NAME:-}" &&
+    ! "${APP_REVIEW_CONTACT_NAME}" =~ ^[^[:space:]]+([[:space:]]+[^[:space:]]+)+$ ]]; then
+    fail_result "APP_REVIEW_CONTACT_NAME" "App Review contact" "No" \
+        "values.env:APP_REVIEW_CONTACT_NAME" "A first and last name are required" \
+        "Provide the real two-part App Review contact name."
+fi
+
+if [[ -n "${APP_REVIEW_PHONE:-}" ]]; then
+    app_review_phone_digits="$(printf '%s' "$APP_REVIEW_PHONE" | tr -cd '0-9')"
+    if [[ ! "$APP_REVIEW_PHONE" =~ ^[+0-9().[:space:]-]+$ ||
+        ${#app_review_phone_digits} -lt 7 || ${#app_review_phone_digits} -gt 20 ]]; then
+        fail_result "APP_REVIEW_PHONE" "App Review contact" "No" \
+            "values.env:APP_REVIEW_PHONE" "Invalid phone number" \
+            "Provide a reachable international App Review phone number."
+    fi
+fi
+
+if [[ -n "${TESTFLIGHT_EXTERNAL_GROUP:-}" &&
+    ( "${TESTFLIGHT_EXTERNAL_GROUP}" == *$'\n'* ||
+      "${TESTFLIGHT_EXTERNAL_GROUP}" == *$'\r'* ||
+      ${#TESTFLIGHT_EXTERNAL_GROUP} -gt 100 ) ]]; then
+    fail_result "TESTFLIGHT_EXTERNAL_GROUP" "TestFlight configuration" "No" \
+        "values.env:TESTFLIGHT_EXTERNAL_GROUP" "Invalid group name" \
+        "Use a single-line external group name of at most 100 characters."
 fi
 
 case "${EXPORT_COMPLIANCE_STATUS:-}" in
@@ -294,7 +551,7 @@ check_private_file() {
             "Unsafe path" "Use a path below release/private/."
         return 1
     fi
-    if [[ ! -s "$absolute_path" || -L "$absolute_path" ]]; then
+    if [[ ! -s "$absolute_path" ]] || ! private_file_is_safe "$absolute_path"; then
         fail_result "$variable_name" "Local private file" "No" "$relative_path" \
             "Missing, empty, or symlink" "Add a non-empty regular file at the documented path."
         return 1
@@ -307,6 +564,8 @@ android_keystore=""
 ios_certificate=""
 ios_profile=""
 asc_private_key=""
+windows_certificate=""
+macos_certificate=""
 
 check_private_file ANDROID_UPLOAD_KEYSTORE_FILE || true
 android_keystore="$checked_private_file"
@@ -316,6 +575,12 @@ check_private_file IOS_PROVISIONING_PROFILE_FILE || true
 ios_profile="$checked_private_file"
 check_private_file ASC_PRIVATE_KEY_FILE || true
 asc_private_key="$checked_private_file"
+if [[ "${WINDOWS_SIGNING_BACKEND:-}" == local-pfx ]]; then
+    check_private_file WINDOWS_CERTIFICATE_FILE || true
+    windows_certificate="$checked_private_file"
+fi
+check_private_file MACOS_CERTIFICATE_FILE || true
+macos_certificate="$checked_private_file"
 
 if [[ -n "$android_keystore" && -n "${KEYSTORE_PASSWORD:-}" && -n "${KEY_ALIAS:-}" && -n "${KEY_PASSWORD:-}" ]]; then
     expected_android_alias="$(tr -d '\r\n' < release/android/passvault-upload-alias.txt)"
@@ -393,8 +658,7 @@ if [[ -n "$ios_certificate" && -n "${IOS_DISTRIBUTION_CERTIFICATE_PASSWORD:-}" ]
                 fail_result "iOS distribution certificate" "Signing validation" "No" \
                     "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" "Not an Apple Distribution identity" \
                     "Export an Apple Distribution certificate, not a development certificate."
-            elif [[ -n "${APPLE_TEAM_ID:-}" && -n "$certificate_team" && \
-                "$certificate_team" != "$APPLE_TEAM_ID" ]]; then
+            elif [[ -n "${APPLE_TEAM_ID:-}" && "$certificate_team" != "$APPLE_TEAM_ID" ]]; then
                 fail_result "iOS distribution certificate" "Signing validation" "No" \
                     "${IOS_DISTRIBUTION_CERTIFICATE_FILE}" \
                     "Valid; SHA-256 $ios_fingerprint; Team ID mismatch" \
@@ -438,6 +702,64 @@ if [[ -n "$ios_certificate" && -n "${IOS_DISTRIBUTION_CERTIFICATE_PASSWORD:-}" ]
     unset PASSVAULT_VALIDATION_P12PASS
 fi
 
+validate_desktop_pkcs12() {
+    local label="$1"
+    local certificate_path="$2"
+    local password_name="$3"
+    local expected_identity="$4"
+    local certificate_source_name="$5"
+    local validation_root extracted_certificate subject team fingerprint eku
+
+    [[ -n "$certificate_path" && -n "${!password_name:-}" ]] || return
+    validation_root="$temporary_root/${label// /-}-pkcs12"
+    mkdir -m 700 "$validation_root"
+    export PASSVAULT_DESKTOP_P12_PASSWORD="${!password_name}"
+    if ! passvault_validate_pkcs12 "$openssl_binary" "$certificate_path" \
+        PASSVAULT_DESKTOP_P12_PASSWORD "$validation_root"; then
+        fail_result "$label certificate" "Signing validation" "No" \
+            "values.env:$certificate_source_name" \
+            "Invalid PKCS#12 container, password, private key, or certificate pairing" \
+            "Export the existing production identity as a password-protected PKCS#12 file."
+        unset PASSVAULT_DESKTOP_P12_PASSWORD
+        return
+    fi
+    unset PASSVAULT_DESKTOP_P12_PASSWORD
+    extracted_certificate="$PASSVAULT_P12_CERTIFICATE_FILE"
+    if ! "$openssl_binary" x509 -in "$extracted_certificate" -checkend 0 -noout \
+        >/dev/null 2>&1; then
+        fail_result "$label certificate" "Signing validation" "No" \
+            "$certificate_path" "Certificate is expired" "Renew it before production signing."
+        return
+    fi
+    subject="$($openssl_binary x509 -in "$extracted_certificate" -subject -noout -nameopt RFC2253)"
+    fingerprint="$($openssl_binary x509 -in "$extracted_certificate" -fingerprint -sha256 -noout |
+        sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
+    if [[ "$expected_identity" == windows ]]; then
+        eku="$($openssl_binary x509 -in "$extracted_certificate" -ext extendedKeyUsage -noout 2>/dev/null || true)"
+        if [[ "$eku" != *"Code Signing"* && "$eku" != *"1.3.6.1.5.5.7.3.3"* ]]; then
+            fail_result "$label certificate" "Signing validation" "No" "$certificate_path" \
+                "Code Signing EKU is missing" "Obtain a trusted Windows Authenticode certificate."
+            return
+        fi
+    else
+        team="$(printf '%s' "$subject" | sed -n 's/.*OU=\([^,]*\).*/\1/p')"
+        if [[ "$subject" != *"CN=Developer ID Application:"* ||
+            "$team" != "${APPLE_TEAM_ID:-}" ]]; then
+            fail_result "$label certificate" "Signing validation" "No" "$certificate_path" \
+                "Not a Developer ID Application identity for APPLE_TEAM_ID" \
+                "Export the Developer ID Application identity for the configured Apple team."
+            return
+        fi
+    fi
+    record_result "$label certificate" "Signing validation" "Ready" "$certificate_path" \
+        "Valid paired private key and certificate; SHA-256 $fingerprint" "None"
+}
+
+validate_desktop_pkcs12 \
+    "Windows" "$windows_certificate" WINDOWS_CERTIFICATE_PASSWORD windows WINDOWS_CERTIFICATE_FILE
+validate_desktop_pkcs12 \
+    "macOS" "$macos_certificate" MACOS_CERTIFICATE_PASSWORD macos MACOS_CERTIFICATE_FILE
+
 decode_mobileprovision() {
     local input="$1"
     local output="$2"
@@ -470,7 +792,7 @@ if [[ -n "$ios_profile" ]]; then
         profile_creation="$(sed -n '/<key>CreationDate<\/key>/{n;s/.*<date>\(.*\)<\/date>.*/\1/p;}' \
             "$profile_plist")"
         profile_expiration="$(sed -n '/<key>ExpirationDate<\/key>/{n;s/.*<date>\(.*\)<\/date>.*/\1/p;}' "$profile_plist")"
-        profile_expiration_epoch="$(date -j -f '%Y-%m-%dT%H:%M:%SZ' "$profile_expiration" '+%s' 2>/dev/null || true)"
+        profile_expiration_epoch="$(date -j -u -f '%Y-%m-%dT%H:%M:%SZ' "$profile_expiration" '+%s' 2>/dev/null || true)"
         profile_has_devices=false
         if /usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' "$profile_plist" >/dev/null 2>&1; then
             profile_has_devices=true
@@ -496,7 +818,8 @@ if [[ -n "$ios_profile" ]]; then
             fi
         done
         expected_profile_app_id="${APPLE_TEAM_ID:-}.${IOS_BUNDLE_ID:-}"
-        if [[ -z "$profile_team" || "$profile_team" != "${APPLE_TEAM_ID:-}" ||
+        if [[ ! "$profile_uuid" =~ ^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$ ||
+            -z "$profile_team" || "$profile_team" != "${APPLE_TEAM_ID:-}" ||
             -z "$profile_app_id" || "$profile_app_id" != "$expected_profile_app_id" ||
             "$profile_entitlement_team" != "${APPLE_TEAM_ID:-}" ]]; then
             fail_result "iOS provisioning profile" "Signing validation" "No" \
@@ -554,6 +877,16 @@ validate_text_file() {
     check_private_file "$variable_name" || true
     path="$checked_private_file"
     [[ -z "$path" ]] && return
+    if ! ruby -e '
+      contents = File.binread(ARGV.fetch(0)).force_encoding(Encoding::UTF_8)
+      abort unless contents.valid_encoding? && !contents.include?("\0") &&
+        contents.bytesize <= 512 * 1024
+    ' "$path"; then
+        fail_result "$variable_name" "Metadata validation" "No" "${!variable_name}" \
+            "Not valid UTF-8 or exceeds 512 KiB" \
+            "Save the approved $language text as a small UTF-8 file without NUL bytes."
+        return
+    fi
     if grep -Eiq 'replace this placeholder|example\.invalid|todo|draft|change[ -]?me|استبدل هذا النص|استبدل هذا' "$path"; then
         fail_result "$variable_name" "Metadata validation" "No" "${!variable_name}" \
             "Placeholder content" "Replace all placeholder content with approved $language text."
@@ -600,7 +933,7 @@ optional_private_file() {
     local absolute_path
     checked_private_file=""
     if [[ -z "$relative_path" ]] || ! absolute_path="$(resolve_private_file "$relative_path")" ||
-        [[ ! -s "$absolute_path" || -L "$absolute_path" ]]; then
+        [[ ! -s "$absolute_path" ]] || ! private_file_is_safe "$absolute_path"; then
         return 1
     fi
     checked_private_file="$absolute_path"
@@ -692,6 +1025,11 @@ report_tmp="$temporary_root/secret-upload-report.md"
     echo "This report intentionally excludes passwords, phone numbers, tester details, private keys, and Base64 data."
 } > "$report_tmp"
 chmod 600 "$report_tmp"
+report_directory="$(dirname "$report_file")"
+if ! private_directory_is_safe "$report_directory"; then
+    echo "The private report directory is missing or unsafe." >&2
+    exit 1
+fi
 mv "$report_tmp" "$report_file"
 chmod 600 "$report_file"
 

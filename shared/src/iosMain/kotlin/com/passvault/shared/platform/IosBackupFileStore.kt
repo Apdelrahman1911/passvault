@@ -5,31 +5,33 @@
 
 package com.passvault.shared.platform
 
+import com.passvault.core.database.backup.BackupContentSink
+import com.passvault.core.database.backup.BackupContentSource
+import com.passvault.core.database.backup.BackupLimits
+import com.passvault.core.domain.model.codePointLength
+import com.passvault.core.domain.model.hasOnlySafeSingleLineCodePoints
+import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.feature.backup.BackupFile
 import com.passvault.feature.backup.BackupFileSelectionCancelled
 import com.passvault.feature.backup.BackupFileStore
-import kotlinx.cinterop.ObjCObjectVar
+import com.passvault.feature.backup.BackupOutput
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
+import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
-import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSCachesDirectory
-import platform.Foundation.NSData
-import platform.Foundation.NSDataWritingAtomic
-import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSInputStream
+import platform.Foundation.NSOutputStream
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
-import platform.Foundation.dataWithContentsOfFile
-import platform.Foundation.writeToFile
+import platform.Foundation.inputStreamWithFileAtPath
+import platform.Foundation.outputStreamToFileAtPath
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
@@ -39,7 +41,8 @@ import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
 import platform.UniformTypeIdentifiers.UTTypeData
 import platform.darwin.NSObject
-import platform.posix.memcpy
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 import kotlin.coroutines.resume
 
 /** Native Files/iCloud import and export for the encrypted `.pvault` format. */
@@ -49,6 +52,9 @@ class IosBackupFileStore(
     // UIDocumentPickerViewController retains its delegate weakly.
     private var activeDelegate: NSObject? = null
     private var pickerActive = false
+
+    /** Main-thread-confined paths copied into the sandbox by the picker. */
+    private val ownedImportPaths = mutableSetOf<String>()
 
     private val cacheRoot: String by lazy {
         fileManager.URLForDirectory(
@@ -60,19 +66,24 @@ class IosBackupFileStore(
         )?.path ?: error("The iOS cache directory is unavailable")
     }
 
-    override suspend fun save(bytes: ByteArray, suggestedName: String): Result<BackupFile> {
-        val safeName = safeFileName(suggestedName)
-        val path = "$cacheRoot/passvault-export-${randomToken()}-$safeName"
-        return try {
-            withContext(Dispatchers.Default) { writeTemporary(path, bytes) }
-            presentPicker(exportPath = path, suggestedName = safeName)
-        } catch (cancel: CancellationException) {
-            throw cancel
-        } catch (_: Exception) {
-            Result.failure(IllegalStateException("The backup file could not be saved"))
-        } finally {
-            withContext(NonCancellable + Dispatchers.Default) { deleteIfTemporary(path) }
-        }
+    override suspend fun create(suggestedName: String): Result<BackupOutput> {
+        val safeName = safeBackupFileName(suggestedName)
+        // Keep uniqueness in the private parent directory so Files presents
+        // exactly the user-facing backup name rather than an internal token.
+        val path = "$cacheRoot/passvault-export-${randomToken()}/$safeName"
+        return Result.success(
+            BackupOutput(
+                file = BackupFile(path, safeName),
+                sink = IosBackupSink(
+                    path = path,
+                    fileManager = fileManager,
+                    present = {
+                        presentPicker(exportPath = path, suggestedName = safeName).getOrThrow()
+                    },
+                    cleanup = { deleteOwnedExport(path) },
+                ),
+            ),
+        )
     }
 
     override suspend fun open(): Result<BackupFile> = try {
@@ -83,31 +94,30 @@ class IosBackupFileStore(
         Result.failure(IllegalStateException("The backup file could not be opened"))
     }
 
-    override suspend fun read(file: BackupFile): Result<ByteArray> = withContext(Dispatchers.Default) {
-        try {
-            val path = normalizedPath(file.path)
-            val attributes = fileManager.attributesOfItemAtPath(path, error = null)
-                ?: error("Missing backup file")
-            val size = (attributes["NSFileSize"] as? Number)?.toLong()
-                ?: error("Missing backup size")
-            require(size in 0..MAX_BACKUP_BYTES)
-            val data = memScoped {
-                val error = alloc<ObjCObjectVar<NSError?>>()
-                error.value = null
-                NSData.dataWithContentsOfFile(path, options = 0u, error = error.ptr)
-                    ?: error("Unreadable backup file")
+    override suspend fun source(file: BackupFile): Result<BackupContentSource> =
+        withContext(Dispatchers.Default) {
+            try {
+                val path = normalizedPath(file.path)
+                val attributes = fileManager.attributesOfItemAtPath(path, error = null)
+                    ?: error("Missing backup file")
+                val size = (attributes["NSFileSize"] as? Number)?.toLong()
+                    ?: error("Missing backup size")
+                require(size in 1..BackupLimits.MAX_BACKUP_BYTES)
+                Result.success(IosBackupSource(path, size))
+            } catch (cancel: CancellationException) {
+                throw cancel
+            } catch (_: Exception) {
+                Result.failure(IllegalStateException("The backup file could not be read"))
             }
-            require(data.length <= MAX_BACKUP_BYTES.toULong())
-            Result.success(data.toByteArray())
-        } catch (cancel: CancellationException) {
-            throw cancel
-        } catch (_: Exception) {
-            Result.failure(IllegalStateException("The backup file could not be read"))
         }
-    }
 
-    override suspend fun discard(file: BackupFile) {
-        withContext(Dispatchers.Default) { deleteIfTemporary(file.path) }
+    override suspend fun discard(file: BackupFile) = withContext(NonCancellable) {
+        val normalized = runCatching { normalizedPath(file.path) }.getOrNull()
+            ?: return@withContext
+        val wasOwned = withContext(Dispatchers.Main) { ownedImportPaths.remove(normalized) }
+        if (wasOwned) {
+            withContext(Dispatchers.Default) { deleteExactPath(normalized) }
+        }
     }
 
     private suspend fun presentPicker(
@@ -117,59 +127,121 @@ class IosBackupFileStore(
         if (pickerActive) {
             return@withContext Result.failure(IllegalStateException("Another file operation is active"))
         }
-        val presenter = resolvePresenter()
+        val presenter = resolveIosPresenter()
             ?: return@withContext Result.failure(IllegalStateException("The document picker is unavailable"))
+        awaitPicker(presenter, exportPath, suggestedName)
+    }
 
-        suspendCancellableCoroutine { continuation ->
-            pickerActive = true
-            lateinit var picker: UIDocumentPickerViewController
-            val delegate = object : NSObject(), UIDocumentPickerDelegateProtocol {
-                override fun documentPicker(
-                    controller: UIDocumentPickerViewController,
-                    didPickDocumentsAtURLs: List<*>,
-                ) {
-                    finishPicker()
-                    val selectedUrl = didPickDocumentsAtURLs.firstOrNull() as? NSURL
-                    val result = if (exportPath != null) {
-                        Result.success(BackupFile(exportPath, suggestedName ?: "passvault-backup.pvault"))
-                    } else {
-                        val path = selectedUrl?.path
-                        if (path == null) {
-                            Result.failure(IllegalStateException("No backup file was selected"))
-                        } else {
-                            Result.success(BackupFile(path, path.substringAfterLast('/')))
-                        }
-                    }
-                    if (continuation.isActive) continuation.resume(result)
-                }
+    private suspend fun awaitPicker(
+        presenter: UIViewController,
+        exportPath: String?,
+        suggestedName: String?,
+    ): Result<BackupFile> = suspendCancellableCoroutine { continuation ->
+        pickerActive = true
+        lateinit var picker: UIDocumentPickerViewController
+        var finished = false
+        var resumedImportPath: String? = null
 
-                override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-                    finishPicker()
-                    if (continuation.isActive) {
-                        continuation.resume(Result.failure(BackupFileSelectionCancelled()))
+        fun deleteCancelledImport() {
+            val path = resumedImportPath ?: return
+            resumedImportPath = null
+            ownedImportPaths.remove(path)
+            deleteExactPath(path)
+        }
+
+        fun finish(result: Result<BackupFile>?) {
+            if (finished) return
+            finished = true
+            finishPicker()
+            if (result != null && continuation.isActive) {
+                if (exportPath == null) {
+                    result.getOrNull()?.let { importedFile ->
+                        resumedImportPath = importedFile.path
+                        ownedImportPaths += importedFile.path
                     }
                 }
+                continuation.resume(result)
+            } else if (exportPath == null) {
+                result?.getOrNull()?.let { deleteExactPath(it.path) }
             }
-            activeDelegate = delegate
-            picker = if (exportPath != null) {
-                UIDocumentPickerViewController(
-                    forExportingURLs = listOf(NSURL.fileURLWithPath(exportPath)),
-                    asCopy = true,
-                )
-            } else {
-                UIDocumentPickerViewController(
-                    forOpeningContentTypes = listOf(UTTypeData),
-                    asCopy = true,
-                )
+        }
+
+        val delegate = object : NSObject(), UIDocumentPickerDelegateProtocol {
+            override fun documentPicker(
+                controller: UIDocumentPickerViewController,
+                didPickDocumentsAtURLs: List<*>,
+            ) {
+                val result = try {
+                    pickedFileResult(exportPath, suggestedName, didPickDocumentsAtURLs)
+                } catch (_: Exception) {
+                    Result.failure(IllegalStateException("The selected backup file is invalid"))
+                }
+                finish(result)
             }
-            picker.delegate = delegate
-            continuation.invokeOnCancellation {
-                // The picker callback owns final state cleanup. UIKit callbacks
-                // arrive on the main thread even if the caller was cancelled.
+
+            override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
+                finish(Result.failure(BackupFileSelectionCancelled()))
+            }
+        }
+        activeDelegate = delegate
+        picker = if (exportPath != null) {
+            UIDocumentPickerViewController(
+                forExportingURLs = listOf(NSURL.fileURLWithPath(exportPath)),
+                asCopy = true,
+            )
+        } else {
+            UIDocumentPickerViewController(
+                forOpeningContentTypes = listOf(UTTypeData),
+                asCopy = true,
+            )
+        }
+        picker.delegate = delegate
+        continuation.invokeOnCancellation {
+            dispatch_async(dispatch_get_main_queue()) {
+                if (finished) {
+                    // Cancellation can win after the picker callback has
+                    // resumed the continuation but before its result is
+                    // dispatched to the caller. In that race no ViewModel
+                    // receives the copied file, so this boundary must
+                    // remove it from both the registry and the sandbox.
+                    deleteCancelledImport()
+                    return@dispatch_async
+                }
                 picker.dismissViewControllerAnimated(true, completion = null)
-                finishPicker()
+                finish(result = null)
             }
+        }
+        try {
             presenter.presentViewController(picker, animated = true, completion = null)
+        } catch (_: Exception) {
+            // Do not leave the singleton permanently marked busy when UIKit
+            // rejects presentation during a scene transition.
+            finish(Result.failure(IllegalStateException("The document picker could not be opened")))
+        }
+    }
+
+    private fun pickedFileResult(
+        exportPath: String?,
+        suggestedName: String?,
+        selectedUrls: List<*>,
+    ): Result<BackupFile> {
+        return if (exportPath != null) {
+            Result.success(
+                BackupFile(exportPath, suggestedName ?: "passvault-backup.pvault"),
+            )
+        } else {
+            val path = (selectedUrls.firstOrNull() as? NSURL)?.path
+            if (path == null) {
+                Result.failure(IllegalStateException("No backup file was selected"))
+            } else {
+                val normalized = normalizedPath(path)
+                Result.success(
+                    BackupFile(
+                        normalized,
+                        safeImportedDisplayName(normalized.substringAfterLast('/')),
+                    ),
+                )
+            }
         }
     }
 
@@ -178,81 +250,176 @@ class IosBackupFileStore(
         activeDelegate = null
     }
 
-    private fun writeTemporary(path: String, bytes: ByteArray) {
-        require(bytes.size.toLong() <= MAX_BACKUP_BYTES)
-        val data = bytes.toNSData()
-        memScoped {
-            val error = alloc<ObjCObjectVar<NSError?>>()
-            error.value = null
-            if (!data.writeToFile(path, options = NSDataWritingAtomic, error = error.ptr)) {
-                throw IllegalStateException("The temporary backup could not be written")
-            }
-        }
+    private fun deleteOwnedExport(path: String) {
+        val normalized = runCatching { normalizedPath(path) }.getOrNull() ?: return
+        val exportDirectory = normalized.substringBeforeLast('/', missingDelimiterValue = "")
+        if (!exportDirectory.startsWith("$cacheRoot/passvault-export-")) return
+        deleteExactPath(exportDirectory)
     }
 
-    private fun deleteIfTemporary(path: String) {
-        val normalized = runCatching { normalizedPath(path) }.getOrNull() ?: return
-        val allowedPrefixes = listOf(
-            "$cacheRoot/passvault-export-",
-            "$cacheRoot/passvault-import-",
-            "${NSTemporaryDirectoryPath()}/",
-        )
-        if (allowedPrefixes.none(normalized::startsWith)) return
+    private fun deleteExactPath(path: String) {
+        val normalized = normalizedPath(path)
         if (fileManager.fileExistsAtPath(normalized)) {
             fileManager.removeItemAtPath(normalized, error = null)
         }
     }
 
-    private fun normalizedPath(path: String): String {
-        require(path.startsWith('/'))
-        require(!path.split('/').contains(".."))
-        return path
-    }
+}
 
-    private fun safeFileName(name: String): String {
-        val sanitized = name.substringAfterLast('/').substringAfterLast('\\')
-            .filter { it.isLetterOrDigit() || it in "._-" }
-            .take(96)
-        return sanitized.takeIf { it.endsWith(".pvault", ignoreCase = true) }
-            ?: "passvault-backup.pvault"
-    }
+private class IosBackupSource(
+    private val path: String,
+    override val declaredSizeBytes: Long,
+) : BackupContentSource {
+    private var stream: NSInputStream? = null
+    private var totalBytes = 0L
 
-    private fun randomToken(): String = platform.Foundation.NSUUID.UUID().UUIDString.lowercase()
-
-    @Suppress("DEPRECATION")
-    private fun resolvePresenter(): UIViewController? {
-        val app = UIApplication.sharedApplication
-        val sceneWindow = app.connectedScenes
-            .filterIsInstance<UIWindowScene>()
-            .firstOrNull { it.activationState == UISceneActivationStateForegroundActive }
-            ?.let { scene ->
-                val windows = scene.windows.filterIsInstance<UIWindow>()
-                windows.firstOrNull { it.isKeyWindow() } ?: windows.firstOrNull()
+    override suspend fun read(buffer: ByteArray): Int = withContext(Dispatchers.Default) {
+        require(buffer.isNotEmpty())
+        val input = stream ?: NSInputStream.inputStreamWithFileAtPath(path)
+            ?.also {
+                it.open()
+                stream = it
             }
-        var controller = (sceneWindow ?: app.keyWindow)?.rootViewController
-        while (controller?.presentedViewController != null) {
-            controller = controller.presentedViewController
+            ?: error("Unreadable backup file")
+        val count = buffer.usePinned { pinned ->
+            input.read(
+                buffer = pinned.addressOf(0).reinterpret(),
+                maxLength = buffer.size.toULong(),
+            )
         }
-        return controller
-    }
-
-    private fun NSData.toByteArray(): ByteArray {
-        val size = length.toInt()
-        if (size == 0) return ByteArray(0)
-        return ByteArray(size).also { destination ->
-            destination.usePinned { pinned -> memcpy(pinned.addressOf(0), bytes, length) }
+        check(count >= 0) { "Unreadable backup file" }
+        if (count == 0L) {
+            -1
+        } else {
+            totalBytes += count
+            require(totalBytes <= BackupLimits.MAX_BACKUP_BYTES)
+            count.toInt()
         }
     }
 
-    private fun ByteArray.toNSData(): NSData = if (isEmpty()) {
-        NSData.create(bytes = null, length = 0u)
-    } else {
-        usePinned { pinned -> NSData.create(bytes = pinned.addressOf(0), length = size.toULong()) }
+    override suspend fun rewind() = withContext(Dispatchers.Default) {
+        stream?.close()
+        stream = null
+        totalBytes = 0L
     }
 
-    private fun NSTemporaryDirectoryPath(): String = platform.Foundation.NSTemporaryDirectory().trimEnd('/')
-
-    private companion object {
-        const val MAX_BACKUP_BYTES = 128L * 1024L * 1024L
+    override suspend fun close() = withContext(Dispatchers.Default) {
+        stream?.close()
+        stream = null
     }
 }
+
+private class IosBackupSink(
+    private val path: String,
+    private val fileManager: NSFileManager,
+    private val present: suspend () -> Unit,
+    private val cleanup: () -> Unit,
+) : BackupContentSink {
+    private var stream: NSOutputStream? = null
+    private var totalBytes = 0L
+    private var finished = false
+
+    override suspend fun write(buffer: ByteArray, byteCount: Int) = withContext(Dispatchers.Default) {
+        check(!finished)
+        require(byteCount in 0..buffer.size)
+        totalBytes += byteCount
+        require(totalBytes <= BackupLimits.MAX_BACKUP_BYTES)
+        val output = stream ?: createOutputStream()
+        var offset = 0
+        while (offset < byteCount) {
+            val written = buffer.usePinned { pinned ->
+                output.write(
+                    buffer = pinned.addressOf(offset).reinterpret(),
+                    maxLength = (byteCount - offset).toULong(),
+                )
+            }
+            check(written > 0) { "The backup output could not be written" }
+            offset += written.toInt()
+        }
+    }
+
+    override suspend fun commit() {
+        check(!finished)
+        withContext(NonCancellable + Dispatchers.Default) {
+            if (stream == null) createOutputStream()
+            stream?.close()
+            stream = null
+        }
+        try {
+            present()
+            finished = true
+        } finally {
+            withContext(NonCancellable + Dispatchers.Default) { cleanup() }
+        }
+    }
+
+    override suspend fun abort() = withContext(NonCancellable + Dispatchers.Default) {
+        if (finished) return@withContext
+        finished = true
+        stream?.close()
+        stream = null
+        cleanup()
+    }
+
+    private fun createOutputStream(): NSOutputStream {
+        val directory = path.substringBeforeLast('/')
+        check(
+            fileManager.createDirectoryAtPath(
+                path = directory,
+                withIntermediateDirectories = true,
+                attributes = null,
+                error = null,
+            ),
+        ) { "The temporary export directory could not be created" }
+        return NSOutputStream.outputStreamToFileAtPath(path, append = false).also {
+            it.open()
+            stream = it
+        }
+    }
+}
+
+private fun resolveIosPresenter(): UIViewController? {
+    val app = UIApplication.sharedApplication
+    val sceneWindow = app.connectedScenes
+        .filterIsInstance<UIWindowScene>()
+        .firstOrNull { it.activationState == UISceneActivationStateForegroundActive }
+        ?.let { scene ->
+            val windows = scene.windows.filterIsInstance<UIWindow>()
+            windows.firstOrNull { it.isKeyWindow() } ?: windows.firstOrNull()
+        }
+    var controller = sceneWindow?.rootViewController
+    while (controller?.presentedViewController != null) {
+        controller = controller.presentedViewController
+    }
+    return controller
+}
+
+private fun normalizedPath(path: String): String {
+    require(path.startsWith('/'))
+    require(!path.split('/').contains(".."))
+    return path
+}
+
+private fun safeBackupFileName(name: String): String {
+    val sanitized = name.substringAfterLast('/').substringAfterLast('\\')
+        .filter { it.isLetterOrDigit() || it in "._-" }
+        // APFS limits a filename component to 255 UTF-8 bytes. Retained
+        // characters are BMP letters/digits or ASCII punctuation, so 64 code
+        // points remain below that limit even at three bytes per character.
+        .takeCodePoints(MAX_EXPORT_FILE_NAME_CODE_POINTS)
+    return sanitized.takeIf { it.endsWith(".pvault", ignoreCase = true) }
+        ?: "passvault-backup.pvault"
+}
+
+private fun safeImportedDisplayName(name: String): String = name.takeIf {
+    it.isNotBlank() &&
+        it != "." &&
+        it != ".." &&
+        it.codePointLength() <= MAX_DISPLAY_NAME_CODE_POINTS &&
+        it.hasOnlySafeSingleLineCodePoints()
+} ?: "backup"
+
+private fun randomToken(): String = platform.Foundation.NSUUID.UUID().UUIDString.lowercase()
+
+private const val MAX_DISPLAY_NAME_CODE_POINTS = 160
+private const val MAX_EXPORT_FILE_NAME_CODE_POINTS = 64

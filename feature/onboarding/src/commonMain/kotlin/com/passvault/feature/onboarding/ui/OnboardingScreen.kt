@@ -6,19 +6,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.passvault.feature.onboarding.presentation.OnboardingViewModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel,
     onNavigateToCreatePassword: () -> Unit,
-    onNavigateToUnlock: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state by viewModel.state.collectAsState()
-
     LaunchedEffect(viewModel) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 OnboardingViewModel.OnboardingEffect.NavigateToMasterPasswordCreation ->
                     onNavigateToCreatePassword()
@@ -28,7 +25,6 @@ fun OnboardingScreen(
     }
 
     WelcomeScreen(
-        state = state,
         onEvent = viewModel::onEvent,
         modifier = modifier,
     )
@@ -44,7 +40,7 @@ fun CreatePasswordScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(viewModel) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 OnboardingViewModel.OnboardingEffect.NavigateToMasterPasswordConfirmation ->
                     onNavigateToConfirm()
@@ -65,18 +61,16 @@ fun CreatePasswordScreen(
 fun ConfirmPasswordScreen(
     viewModel: OnboardingViewModel,
     onNavigateToSecurity: () -> Unit,
-    onNavigateToComplete: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(viewModel) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 OnboardingViewModel.OnboardingEffect.NavigateToSecurityExplanation ->
                     onNavigateToSecurity()
-                OnboardingViewModel.OnboardingEffect.NavigateToVault -> onNavigateToComplete()
                 OnboardingViewModel.OnboardingEffect.NavigateBack -> onNavigateBack()
                 else -> Unit
             }
@@ -97,8 +91,10 @@ fun SecurityExplanationRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val state by viewModel.state.collectAsState()
+
     LaunchedEffect(viewModel) {
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 OnboardingViewModel.OnboardingEffect.NavigateToVault ->
                     onComplete()
@@ -109,6 +105,7 @@ fun SecurityExplanationRoute(
     }
 
     SecurityExplanationScreen(
+        canNavigateBack = !state.vaultCreated,
         onEvent = viewModel::onEvent,
         modifier = modifier,
     )

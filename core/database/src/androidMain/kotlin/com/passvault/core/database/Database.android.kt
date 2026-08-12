@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 
 /**
@@ -11,7 +12,9 @@ import kotlinx.coroutines.Dispatchers
  */
 fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<VaultDatabase> {
     val appContext = context.applicationContext
-    val dbFile = appContext.getDatabasePath("passvault.db")
+    // This private filesDir location is the path shipped by the first release.
+    // Moving it requires an explicit, transactional migration.
+    val dbFile = File(appContext.filesDir, "passvault.db")
     return Room.databaseBuilder<VaultDatabase>(
         context = appContext,
         name = dbFile.absolutePath
@@ -23,6 +26,7 @@ fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<VaultDatabase> {
  */
 fun createDatabase(context: Context): VaultDatabase {
     return getDatabaseBuilder(context)
+        .addVaultMigrations()
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
