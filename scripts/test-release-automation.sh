@@ -1558,7 +1558,8 @@ grep -Fq 'Verify exact Google Play source build' .github/workflows/mobile-store-
 # shellcheck disable=SC2016
 grep -Fq 'GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}' \
     .github/workflows/mobile-store-release.yml
-grep -Fq 'Verify exact processed App Store Connect build' .github/workflows/mobile-store-release.yml
+grep -Fq 'Enforce email-list TestFlight policy and verify exact processed App Store Connect build' \
+    .github/workflows/mobile-store-release.yml
 grep -Fq "grep -Fqx 'PROCESSING_STATE=VALID'" .github/workflows/mobile-store-release.yml
 grep -Fq 'set_environment_variable mobile-production TESTFLIGHT_EXTERNAL_GROUP' \
     scripts/configure-github-mobile-release.sh
@@ -1608,11 +1609,20 @@ abort("External TestFlight promotion omits Beta App Review information") unless
   external_lane.include?("options[:beta_app_review_info]") &&
   external_lane.include?("notes: beta_review_notes")
 RUBY
-if grep -Eq '(--enable-public-link|Net::HTTP::Patch|PUBLIC_LINK=)' \
+if grep -Eq '(--enable-public-link|publicLinkEnabled:[[:space:]]*true|PUBLIC_LINK=)' \
     scripts/manage-testflight-public-link.rb; then
-    echo "The TestFlight status checker still exposes public-link mutation or disclosure." >&2
+    echo "The TestFlight utility exposes public-link enablement or disclosure." >&2
     exit 1
 fi
+grep -Fq 'parser.on("--disable-public-link", "Enforce email-list-only distribution")' \
+    scripts/manage-testflight-public-link.rb
+grep -Fq 'when :patch then Net::HTTP::Patch.new(uri)' scripts/manage-testflight-public-link.rb
+grep -Fq 'attributes: { publicLinkEnabled: false }' scripts/manage-testflight-public-link.rb
+grep -Fq 'PUBLIC_LINK_POLICY=#{public_link_policy}' scripts/manage-testflight-public-link.rb
+grep -Fq './scripts/manage-testflight-public-link.rb --disable-public-link' \
+    .github/workflows/mobile-store-release.yml
+grep -Fq "grep -Fqx 'PUBLIC_LINK_POLICY=EMAIL_LIST_ONLY_ENFORCED'" \
+    .github/workflows/mobile-store-release.yml
 grep -Fq 'PUBLIC_LINK_PRESENT=' scripts/manage-testflight-public-link.rb
 public_link_gate_count="$(grep -Fhc \
     "          grep -Fqx 'PUBLIC_LINK_ENABLED=false' <<< \"\$status\"" \

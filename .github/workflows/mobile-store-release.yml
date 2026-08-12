@@ -924,7 +924,7 @@ jobs:
             "${{ needs.validate.outputs.version_code }}"
           echo "STORE_METADATA_ROOT=$PRIVATE_RUNTIME/store" >> "$GITHUB_ENV"
 
-      - name: Verify exact processed App Store Connect build
+      - name: Enforce email-list TestFlight policy and verify exact processed App Store Connect build
         env:
           ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
           ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
@@ -946,7 +946,7 @@ jobs:
             PRIVATE_RUNTIME="$private_runtime" \
             PASSVAULT_ASC_CONFIGURATION_SOURCE=environment \
             ASC_PRIVATE_KEY_FILE="$key_path" \
-            ./scripts/manage-testflight-public-link.rb --status \
+            ./scripts/manage-testflight-public-link.rb --disable-public-link \
               --version "$EXPECTED_VERSION" \
               --build-number "$EXPECTED_BUILD_NUMBER"
           )"
@@ -961,6 +961,7 @@ jobs:
           grep -Fqx 'PROCESSING_STATE=VALID' <<< "$status"
           grep -Fqx "USES_NON_EXEMPT_ENCRYPTION=$expected_encryption" <<< "$status"
           grep -Fqx 'PUBLIC_LINK_ENABLED=false' <<< "$status"
+          grep -Fqx 'PUBLIC_LINK_POLICY=EMAIL_LIST_ONLY_ENFORCED' <<< "$status"
 
       - name: Promote exact App Store Connect build
         env:

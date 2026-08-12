@@ -14,9 +14,17 @@ options = {}
 OptionParser.new do |parser|
   parser.banner = "Usage: #{File.basename($PROGRAM_NAME)} [options]"
   parser.on("--status", "Read TestFlight status without changing it") { options[:status] = true }
+  parser.on("--disable-public-link", "Enforce email-list-only distribution") do
+    options[:disable_public_link] = true
+  end
   parser.on("--version VERSION", "Marketing version") { |value| options[:version] = value }
   parser.on("--build-number NUMBER", "App Store build number") { |value| options[:build] = value }
 end.parse!
+
+unless [options[:status], options[:disable_public_link]].count(true) == 1
+  warn "Choose exactly one operation: --status or --disable-public-link."
+  exit 2
+end
 
 canonical_version = /\A(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\z/
 valid_build = options[:build]&.match?(/\A[1-9]\d*\z/) &&
@@ -124,11 +132,19 @@ ensure
   signature = nil
 end
 
-def request(token, path, query: nil, allow_not_found: false)
+def request(token, path, query: nil, method: :get, payload: nil, allow_not_found: false)
   uri = URI("https://api.appstoreconnect.apple.com#{path}")
   uri.query = URI.encode_www_form(query) if query
-  http_request = Net::HTTP::Get.new(uri)
+  http_request = case method
+                 when :get then Net::HTTP::Get.new(uri)
+                 when :patch then Net::HTTP::Patch.new(uri)
+                 else raise "Unsupported App Store Connect request method"
+                 end
   http_request["Authorization"] = "Bearer #{token}"
+  if payload
+    http_request["Content-Type"] = "application/json"
+    http_request.body = JSON.generate(payload)
+  end
   response = Net::HTTP.start(
     uri.host,
     uri.port,
@@ -306,6 +322,37 @@ begin
     end
   end
 
+  public_link_policy = "READ_ONLY"
+  if options[:disable_public_link]
+    unless build && build.dig("attributes", "processingState") == "VALID" &&
+           [true, false].include?(build.dig("attributes", "usesNonExemptEncryption"))
+      raise "The exact processed App Store build must be valid before changing TestFlight distribution"
+    end
+    if group.dig("attributes", "publicLinkEnabled") == true
+      update = request(
+        token,
+        "/v1/betaGroups/#{group_id}",
+        method: :patch,
+        payload: {
+          data: {
+            type: "betaGroups",
+            id: group_id,
+            attributes: { publicLinkEnabled: false },
+          },
+        },
+      ).fetch("data")
+      unless update["id"] == group_id && update["type"] == "betaGroups" &&
+             update.dig("attributes", "publicLinkEnabled") == false
+        raise "App Store Connect did not confirm public-link disablement"
+      end
+      group.fetch("attributes")["publicLinkEnabled"] = false
+    end
+    raise "The external TestFlight public link remains enabled" unless
+      group.dig("attributes", "publicLinkEnabled") == false
+
+    public_link_policy = "EMAIL_LIST_ONLY_ENFORCED"
+  end
+
   attributes = group.fetch("attributes")
   puts "APP_STORE_APP_ID=#{app_id}"
   puts "APP_BUNDLE_ID=#{values.fetch('IOS_BUNDLE_ID')}"
@@ -314,6 +361,7 @@ begin
   puts "PUBLIC_LINK_ENABLED=#{attributes['publicLinkEnabled'] == true}"
   puts "PUBLIC_LINK_LIMIT=#{attributes['publicLinkLimitEnabled'] == true ? attributes['publicLinkLimit'] : 'DISABLED'}"
   puts "PUBLIC_LINK_PRESENT=#{presence(attributes['publicLink'])}"
+  puts "PUBLIC_LINK_POLICY=#{public_link_policy}"
   puts "REVIEW_INFORMATION=#{review_complete ? 'COMPLETE' : 'INCOMPLETE'}"
   puts "ENGLISH_TEST_INFORMATION=#{en_complete ? 'COMPLETE' : 'INCOMPLETE'}"
   puts "REQUIRED_TEST_INFORMATION=#{beta_localizations_complete ? 'COMPLETE' : 'INCOMPLETE'}"
