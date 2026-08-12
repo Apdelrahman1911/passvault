@@ -1221,7 +1221,7 @@ done
 grep -Fq "'passvault-release-pipeline'" .github/workflows/mobile-store-release.yml
 test "$(grep -Fc 'pipeline_lock_held: true' .github/workflows/testing-release.yml)" -eq 2
 test "$(grep -Fc 'pipeline_lock_held: true' .github/workflows/production-release.yml)" -eq 1
-if rg -q 'group: (testing-candidate|candidate-readiness|production-store-release|stable-release)' \
+if grep -E -R -q 'group: (testing-candidate|candidate-readiness|production-store-release|stable-release)' \
     .github/workflows; then
     echo "A release lifecycle still uses a workflow-local concurrency group." >&2
     exit 1
@@ -1646,7 +1646,8 @@ abort("Production review configuration does not prevent self-review") unless
   script.scan("prevent_self_review: true").length == 1 &&
   script.scan('"prevent_self_review": false').length == 1
 RUBY
-xmllint --noout release/windows/signpath-artifact-configuration.xml
+# REXML parses the complete document before the structural assertions below,
+# so malformed XML fails without relying on runner-specific xmllint packages.
 ruby -rrexml/document <<'RUBY'
 document = REXML::Document.new(
   File.read("release/windows/signpath-artifact-configuration.xml", encoding: "UTF-8"),

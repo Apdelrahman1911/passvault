@@ -10,6 +10,18 @@ if [[ ! -d "$workflow_root" ]]; then
     exit 1
 fi
 
+list_action_references() {
+    while IFS= read -r -d '' workflow_file; do
+        awk '
+            /^[[:space:]]*uses:[[:space:]]+/ {
+                printf "%s:%d:%s\n", FILENAME, FNR, $0
+            }
+        ' "$workflow_file"
+    done < <(
+        find "$workflow_root" -type f \( -name '*.yml' -o -name '*.yaml' \) -print0
+    )
+}
+
 failure=0
 while IFS=: read -r file line_number reference; do
     reference="${reference#"${reference%%[![:space:]]*}"}"
@@ -33,7 +45,7 @@ while IFS=: read -r file line_number reference; do
             failure=1
             ;;
     esac
-done < <(rg -n --no-heading '^[[:space:]]*uses:[[:space:]]+' "$workflow_root")
+done < <(list_action_references)
 
 if (( failure != 0 )); then
     exit 1
