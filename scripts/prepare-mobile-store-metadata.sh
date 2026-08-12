@@ -74,14 +74,28 @@ metadata_keys=(
 
 validate_metadata_file() {
     local file="$1"
+    local expected_description_file="$2"
     ruby -I "$repository_root/scripts" -r lib/dotenv -e '
       values = PassVault::Dotenv.load(ARGV.fetch(0))
-      expected = ARGV.drop(1)
+      expected_description_file = ARGV.fetch(1)
+      expected = ARGV.drop(2)
       missing = expected - values.keys
-      unknown = values.keys - expected
+      unknown = values.keys - expected - ["FULL_DESCRIPTION_FILE"]
       abort("Missing store metadata keys: #{missing.join(", ")}") unless missing.empty?
       abort("Unknown store metadata keys: #{unknown.join(", ")}") unless unknown.empty?
-    ' "$file" "${metadata_keys[@]}"
+      if values.key?("FULL_DESCRIPTION_FILE")
+        legacy_path = values.fetch("FULL_DESCRIPTION_FILE")
+        components = legacy_path.split("/", -1)
+        safe_legacy_path = legacy_path.bytesize <= 256 &&
+          components.last == expected_description_file &&
+          components.all? do |component|
+            !["", ".", ".."].include?(component) &&
+              component.match?(/\A[A-Za-z0-9][A-Za-z0-9._-]*\z/)
+          end
+        abort("Legacy FULL_DESCRIPTION_FILE does not identify the approved description file") unless
+          safe_legacy_path
+      end
+    ' "$file" "$expected_description_file" "${metadata_keys[@]}"
 }
 
 read_metadata() {
@@ -141,7 +155,7 @@ for locale_spec in "en:en-US:en-US" "ar:ar:ar-SA"; do
     description_file="$source_root/store-description-$source_locale.md"
     notes_file="$source_root/release-notes-$source_locale.md"
 
-    validate_metadata_file "$metadata_file"
+    validate_metadata_file "$metadata_file" "$(basename "$description_file")"
     store_name="$(read_metadata "$metadata_file" STORE_NAME)"
     apple_subtitle="$(read_metadata "$metadata_file" APPLE_SUBTITLE)"
     play_short_description="$(read_metadata "$metadata_file" PLAY_SHORT_DESCRIPTION)"

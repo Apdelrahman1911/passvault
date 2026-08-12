@@ -844,6 +844,27 @@ test -s "$mobile_output/ios/en-US/support_url.txt"
 test -s "$mobile_output/ios/copyright.txt"
 test -s "$mobile_output/testflight/en-US/what_to_test.txt"
 
+legacy_metadata_fixture="$temporary_root/legacy-mobile-store"
+cp -R "$mobile_fixture" "$legacy_metadata_fixture"
+printf '\nFULL_DESCRIPTION_FILE=release/private/store-description-en.md\n' \
+    >> "$legacy_metadata_fixture/store-metadata-en.env"
+printf '\nFULL_DESCRIPTION_FILE=release/private/store-description-ar.md\n' \
+    >> "$legacy_metadata_fixture/store-metadata-ar.env"
+./scripts/prepare-mobile-store-metadata.sh \
+    "$legacy_metadata_fixture" "$temporary_root/legacy-mobile-output" "123" >/dev/null
+test -s "$temporary_root/legacy-mobile-output/android/en-US/full_description.txt"
+
+invalid_legacy_metadata_fixture="$temporary_root/invalid-legacy-mobile-store"
+cp -R "$mobile_fixture" "$invalid_legacy_metadata_fixture"
+printf '\nFULL_DESCRIPTION_FILE=../outside.md\n' \
+    >> "$invalid_legacy_metadata_fixture/store-metadata-en.env"
+if ./scripts/prepare-mobile-store-metadata.sh \
+    "$invalid_legacy_metadata_fixture" "$temporary_root/invalid-legacy-mobile-output" "123" \
+    >/dev/null 2>&1; then
+    echo "An unsafe legacy store-description path was accepted." >&2
+    exit 1
+fi
+
 if ./scripts/prepare-mobile-store-metadata.sh \
     "$mobile_fixture" "$temporary_root/oversized-version-code" "2100000001" \
     >/dev/null 2>&1; then
