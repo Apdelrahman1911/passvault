@@ -3,19 +3,11 @@
 require "fileutils"
 require "rubygems/package"
 require "zlib"
+require_relative "lib/store_metadata_archive"
 
-EXPECTED_FILES = %w[
-  privacy-ar.md
-  privacy-en.md
-  release-notes-ar.md
-  release-notes-en.md
-  store-description-ar.md
-  store-description-en.md
-  store-metadata-ar.env
-  store-metadata-en.env
-].freeze
-MAX_FILE_BYTES = 512 * 1024
-MAX_TOTAL_BYTES = 2 * 1024 * 1024
+EXPECTED_FILES = PassVault::StoreMetadataArchive::EXPECTED_FILES
+MAX_FILE_BYTES = PassVault::StoreMetadataArchive::MAX_FILE_BYTES
+MAX_TOTAL_BYTES = PassVault::StoreMetadataArchive::MAX_TOTAL_BYTES
 
 archive_path, output_path = ARGV
 unless ARGV.length == 2

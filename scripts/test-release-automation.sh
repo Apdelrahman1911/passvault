@@ -150,13 +150,34 @@ for metadata_name in \
     store-metadata-ar.env store-metadata-en.env; do
     cp "scripts/testdata/mobile-store/$metadata_name" "$metadata_source/$metadata_name"
 done
-tar -czf "$temporary_root/store-metadata.tar.gz" -C "$metadata_source" \
-    privacy-ar.md privacy-en.md release-notes-ar.md release-notes-en.md \
-    store-description-ar.md store-description-en.md \
-    store-metadata-ar.env store-metadata-en.env
+ruby scripts/create-store-metadata-archive.rb \
+    "$metadata_source" "$temporary_root/store-metadata.tar.gz" >/dev/null
 ruby scripts/extract-store-metadata-archive.rb \
     "$temporary_root/store-metadata.tar.gz" "$metadata_output" >/dev/null
 test "$(find "$metadata_output" -type f | wc -l | tr -d ' ')" = 8
+ruby -I scripts -r lib/store_metadata_archive -rrubygems/package -rzlib \
+    - "$temporary_root/store-metadata.tar.gz" <<'RUBY'
+archive_path = ARGV.fetch(0)
+entries = []
+Zlib::GzipReader.open(archive_path) do |gzip|
+  Gem::Package::TarReader.new(gzip) do |tar|
+    tar.each { |entry| entries << [entry.full_name, entry.header.typeflag, entry.file?] }
+  end
+end
+expected = PassVault::StoreMetadataArchive::EXPECTED_FILES.map { |name| [name, "0", true] }
+abort("The store-metadata creator emitted a non-portable tar header") unless entries == expected
+RUBY
+
+metadata_symlink_source="$temporary_root/metadata-symlink-source"
+cp -R "$metadata_source" "$metadata_symlink_source"
+rm "$metadata_symlink_source/privacy-en.md"
+ln -s "$metadata_source/privacy-en.md" "$metadata_symlink_source/privacy-en.md"
+if ruby scripts/create-store-metadata-archive.rb "$metadata_symlink_source" \
+    "$temporary_root/symlink-metadata.tar.gz" >/dev/null 2>&1; then
+    echo "A symlinked store-metadata source was archived." >&2
+    exit 1
+fi
+test ! -e "$temporary_root/symlink-metadata.tar.gz"
 
 ruby -rrubygems/package -rzlib -e '
   Zlib::GzipWriter.open(ARGV.fetch(0)) do |gzip|
@@ -1153,7 +1174,9 @@ fi
 ruby -c scripts/configure-app-store-connect-beta.rb >/dev/null
 ruby -c scripts/manage-testflight-public-link.rb >/dev/null
 ruby -c scripts/strip-opaque-png-alpha.rb >/dev/null
+ruby -c scripts/create-store-metadata-archive.rb >/dev/null
 ruby -c scripts/extract-store-metadata-archive.rb >/dev/null
+ruby -c scripts/lib/store_metadata_archive.rb >/dev/null
 ruby -c fastlane/Fastfile >/dev/null
 ruby -c scripts/create-candidate-manifest.rb >/dev/null
 ruby -c scripts/validate-candidate-manifest.rb >/dev/null

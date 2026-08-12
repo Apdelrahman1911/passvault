@@ -71,6 +71,13 @@ cleanup_signing_validation() {
 }
 trap cleanup_signing_validation EXIT
 
+metadata_archive_path="$signing_validation_root/store-metadata.tar.gz"
+metadata_validation_root="$signing_validation_root/store-metadata-validation"
+mkdir -m 700 "$metadata_validation_root"
+ruby scripts/create-store-metadata-archive.rb "$private_root" "$metadata_archive_path" >/dev/null
+ruby scripts/extract-store-metadata-archive.rb \
+    "$metadata_archive_path" "$metadata_validation_root" >/dev/null
+
 # Consumed through repo_variable_sources indirection when local-pfx is selected.
 # shellcheck disable=SC2034
 WINDOWS_SIGNING_CERTIFICATE_SHA256=""
@@ -369,12 +376,7 @@ set_binary_secret() {
 
 set_metadata_archive_secret() {
     local environment_name="$1"
-    tar -czf - -C "$private_root" \
-        release-notes-en.md release-notes-ar.md \
-        privacy-en.md privacy-ar.md \
-        store-metadata-en.env store-metadata-ar.env \
-        store-description-en.md store-description-ar.md |
-        "$openssl_binary" base64 -A |
+    "$openssl_binary" base64 -A -in "$metadata_archive_path" |
         gh secret set STORE_METADATA_ARCHIVE_BASE64 --env "$environment_name" \
             --repo "$GITHUB_REPOSITORY" >/dev/null
 }
