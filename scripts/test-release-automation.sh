@@ -1239,7 +1239,8 @@ expected_permissions = {
   },
   "mobile-external" => {
     "actions" => "read",
-    "attestations" => "read",
+    "artifact-metadata" => "write",
+    "attestations" => "write",
     "contents" => "read",
     "id-token" => "write",
   },
@@ -1288,10 +1289,22 @@ end
 reusable_call_permissions = {
   ".github/workflows/testing-release.yml" => {
     "mobile-internal" => { "artifact-metadata" => "write", "attestations" => "write" },
-    "mobile-external" => { "attestations" => "read", "actions" => "read" },
+    "mobile-external" => {
+      "actions" => "read",
+      "artifact-metadata" => "write",
+      "attestations" => "write",
+      "contents" => "read",
+      "id-token" => "write",
+    },
   },
   ".github/workflows/production-release.yml" => {
-    "promote-mobile-production" => { "attestations" => "read", "actions" => "read" },
+    "promote-mobile-production" => {
+      "actions" => "read",
+      "artifact-metadata" => "write",
+      "attestations" => "write",
+      "contents" => "read",
+      "id-token" => "write",
+    },
   },
   ".github/workflows/production-signing-validation.yml" => {
     "sign-and-validate" => { "artifact-metadata" => "write", "attestations" => "write" },

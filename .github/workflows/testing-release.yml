@@ -124,9 +124,13 @@ jobs:
 
   mobile-external:
     needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]
+    # A reusable workflow cannot elevate above its caller. Pass the union of
+    # its statically declared job permissions; the selected promotion jobs
+    # immediately downgrade to their narrower per-job permissions.
     permissions:
       actions: read
-      attestations: read
+      artifact-metadata: write
+      attestations: write
       contents: read
       id-token: write
     uses: ./.github/workflows/mobile-store-release.yml
