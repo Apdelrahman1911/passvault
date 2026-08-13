@@ -10,6 +10,10 @@ PLATFORM_KINDS = {
   "android" => %w[aab apk r8-mapping],
   "ios" => %w[ipa xcarchive link-map],
 }.freeze
+PLATFORM_IDENTIFIERS = {
+  "android" => "com.passvault.android",
+  "ios" => "com.passvault.ios",
+}.freeze
 
 def required_environment(name)
   value = ENV[name]&.strip
@@ -41,6 +45,7 @@ abort("Invalid marketing version") unless version.match?(/\A(?:0|[1-9]\d*)\.(?:0
 abort("Invalid build number") unless build_number.between?(1_000_000, 2_100_000_000)
 abort("Invalid source commit") unless source_commit.match?(/\A[0-9a-f]{40}\z/)
 abort("Invalid source tree") unless source_tree.match?(/\A[0-9a-f]{40}\z/)
+abort("Unexpected #{platform} Store identity") unless identifier == PLATFORM_IDENTIFIERS.fetch(platform)
 expected_fingerprint_length = platform == "android" ? 64 : 40
 unless signing_fingerprint.match?(/\A[0-9A-F]{#{expected_fingerprint_length}}\z/)
   abort("Invalid #{platform} signing fingerprint")

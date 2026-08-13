@@ -22,7 +22,7 @@ The source manifest requests:
 - `USE_BIOMETRIC`, for optional local vault unlock; and
 - `HIDE_OVERLAY_WINDOWS`, for supported sensitive-screen protection.
 
-The final merged Standard release also contains `USE_FINGERPRINT` from AndroidX
+The final merged release also contains `USE_FINGERPRINT` from AndroidX
 Biometric for legacy compatibility and AndroidX Core’s app-specific,
 signature-protected `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. The release has
 no `INTERNET` or `ACCESS_NETWORK_STATE` permission and no application network

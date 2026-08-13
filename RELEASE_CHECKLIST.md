@@ -7,12 +7,17 @@ Do not publish an artifact while any required item is unchecked. Command evidenc
 
 - [x] `./gradlew check` passes in this checkout with no ignored failure or static-analysis baseline.
 - [x] Android Desktop/JVM, Android host, and iOS simulator compilation/test tasks pass after the final source edit.
-- [ ] `./gradlew :app-android:assembleStandardRelease :app-android:bundleStandardRelease` passes with R8/resource
+- [x] `./gradlew :app-android:assembleRelease :app-android:bundleRelease` passes with R8/resource
   shrinking enabled.
-- [x] The next Google Play/App Store candidate uses `VERSION_CODE` / `CURRENT_PROJECT_VERSION` `1000032`, greater
-  than the already-distributed tester build `1000031`.
+- [x] Android Debug is `PassVault Dev` / `com.passvault.android.debug`; Android Release remains `PassVault` /
+  `com.passvault.android`. No testing-track flavor or F-Droid identity exists.
+- [x] The Xcode scheme runs Debug as `PassVault Dev` / `com.passvault.ios.debug` and archives Release as
+  `PassVault` / `com.passvault.ios`.
+- [x] The next Google Play/App Store candidate uses a canonical floor of `1000033`; the Testing Candidate workflow
+  allocates a unique `VERSION_CODE` / `CURRENT_PROJECT_VERSION` above that floor and the previously distributed
+  `1000032` build.
 - [ ] The release APK/AAB is signed with publisher-owned credentials and signature verification passes.
-- [ ] The current-host Desktop package task and exact packaged-launch startup smoke pass after the final source edit.
+- [x] The current-host Desktop package task and exact packaged-launch startup smoke pass after the final source edit.
 - [ ] Desktop packages are built for every claimed OS and signed/notarized with publisher-owned credentials.
 - [x] Source scans found no vault export, signing file, strong secret signature, or sensitive production log; local
   configuration, signing material, `.pvault` files, and the local-only release runbook are ignored.

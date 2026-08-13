@@ -50,8 +50,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,71 +69,31 @@ import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
 import com.passvault.core.designsystem.platform.scaffoldVerticalScroll
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
-import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.feature.credential.presentation.CredentialViewModel
 import com.passvault.feature.credential.ui.components.CredentialAttachmentSection
 import com.passvault.feature.credential.ui.components.CustomFieldsEditor
 import com.passvault.feature.credential.ui.components.FolderSelector
 import com.passvault.feature.credential.ui.components.TotpEnrollmentSection
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun CredentialEditScreen(
-    viewModel: CredentialViewModel,
-    credentialId: CredentialId?,
-    onNavigateBack: () -> Unit,
-    onSaveSuccess: (CredentialId?) -> Unit,
+    state: CredentialViewModel.CredentialState,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state by viewModel.state.collectAsState()
-
-    CredentialEditEffects(
-        viewModel = viewModel,
-        credentialId = credentialId,
-        onNavigateBack = onNavigateBack,
-        onSaveSuccess = onSaveSuccess,
-    )
-
     if (state.isLoading) {
         CredentialEditLoading(modifier)
     } else {
         CredentialEditContent(
             state = state,
-            onEvent = viewModel::onEvent,
+            onEvent = onEvent,
             modifier = modifier,
         )
     }
 
     if (state.showDiscardConfirmation) {
-        DiscardChangesDialog(onEvent = viewModel::onEvent)
-    }
-}
-
-@Composable
-private fun CredentialEditEffects(
-    viewModel: CredentialViewModel,
-    credentialId: CredentialId?,
-    onNavigateBack: () -> Unit,
-    onSaveSuccess: (CredentialId?) -> Unit,
-) {
-    LaunchedEffect(credentialId) {
-        if (credentialId == null) {
-            viewModel.createNewCredential(CredentialType.Login)
-        } else {
-            viewModel.loadCredential(credentialId)
-        }
-    }
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                CredentialViewModel.CredentialEffect.NavigateBack -> onNavigateBack()
-                is CredentialViewModel.CredentialEffect.SaveCompleted -> {
-                    onSaveSuccess(effect.credentialId)
-                }
-                else -> Unit
-            }
-        }
+        DiscardChangesDialog(onEvent = onEvent)
     }
 }
 

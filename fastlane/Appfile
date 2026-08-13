@@ -1,3 +1,9 @@
-app_identifier(ENV.fetch("IOS_BUNDLE_ID", "com.passvault.ios"))
-package_name(ENV.fetch("ANDROID_PACKAGE_NAME", "com.passvault.android"))
+ios_bundle_id = ENV.fetch("IOS_BUNDLE_ID", "com.passvault.ios")
+android_package_name = ENV.fetch("ANDROID_PACKAGE_NAME", "com.passvault.android")
+
+abort("Unexpected iOS Store identity") unless ios_bundle_id == "com.passvault.ios"
+abort("Unexpected Android Store identity") unless android_package_name == "com.passvault.android"
+
+app_identifier(ios_bundle_id)
+package_name(android_package_name)
 apple_id(ENV["APP_STORE_APP_ID"]) if ENV["APP_STORE_APP_ID"]

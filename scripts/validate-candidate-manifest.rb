@@ -75,6 +75,7 @@ android_package = require_string(document, "android", "packageName")
 unless android_package.match?(/\A[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+\z/)
   abort("Invalid android.packageName")
 end
+abort("Unexpected Android Store identity") unless android_package == "com.passvault.android"
 android_fingerprint = require_string(document, "android", "signingCertificateSha256")
 abort("Invalid Android signing fingerprint") unless android_fingerprint.match?(/\A[0-9A-F]{64}\z/)
 android_receipt = require_string(document, "android", "artifactReceiptSha256")
@@ -83,6 +84,7 @@ ios_bundle_id = require_string(document, "ios", "bundleId")
 unless ios_bundle_id.match?(/\A[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+\z/)
   abort("Invalid ios.bundleId")
 end
+abort("Unexpected iOS Store identity") unless ios_bundle_id == "com.passvault.ios"
 app_store_app_id = require_string(document, "ios", "appStoreAppId")
 abort("Invalid ios.appStoreAppId") unless app_store_app_id.match?(/\A[1-9]\d{7,14}\z/)
 ios_fingerprint = require_string(document, "ios", "signingIdentitySha1")

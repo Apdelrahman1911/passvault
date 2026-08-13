@@ -29,6 +29,7 @@ class SceneStrategiesTest {
             VaultRoute.CredentialEdit("credential"),
             GeneratorRoute.Generator,
             HealthRoute.Health,
+            TwoFactorRoute.Codes,
             SettingsRoute.Settings,
             SettingsRoute.Security,
             SettingsRoute.Appearance,

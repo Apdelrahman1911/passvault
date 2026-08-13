@@ -12,20 +12,20 @@ $repositoryRoot = Split-Path -Parent $PSScriptRoot
 
 if ([string]::IsNullOrWhiteSpace($ApkPath)) {
     $apkMatches = @(Get-ChildItem `
-        -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/apk/standard/release") `
+        -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/apk/release") `
         -File -Filter "*.apk")
     if ($apkMatches.Count -ne 1) {
-        throw "Expected exactly one Standard release APK; found $($apkMatches.Count)."
+        throw "Expected exactly one release APK; found $($apkMatches.Count)."
     }
     $ApkPath = $apkMatches[0].FullName
 }
 
 if ([string]::IsNullOrWhiteSpace($AabPath)) {
     $aabMatches = @(Get-ChildItem `
-        -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/bundle/standardRelease") `
+        -LiteralPath (Join-Path $repositoryRoot "app-android/build/outputs/bundle/release") `
         -File -Filter "*.aab")
     if ($aabMatches.Count -ne 1) {
-        throw "Expected exactly one Standard release AAB; found $($aabMatches.Count)."
+        throw "Expected exactly one release AAB; found $($aabMatches.Count)."
     }
     $AabPath = $aabMatches[0].FullName
 }

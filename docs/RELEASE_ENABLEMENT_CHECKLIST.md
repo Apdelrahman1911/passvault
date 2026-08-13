@@ -9,9 +9,12 @@ legal identity, and store-account actions remain external by design.
 
 - [x] Product name fixed as **PassVault**.
 - [x] Canonical Android application ID fixed as `com.passvault.android`.
-- [x] Google Play application ID fixed as `com.passvault.android`; the Standard
-  flavor is the canonical Play artifact.
-- [x] F-Droid application ID fixed as `com.passvault.android.fdroid`.
+- [x] Google Play application ID fixed as `com.passvault.android`; the Release
+  build type is the canonical artifact for every Play track.
+- [x] Local Android Debug uses `com.passvault.android.debug`; F-Droid and testing
+  flavors are retired.
+- [x] Local iOS Debug uses `com.passvault.ios.debug`; TestFlight and App Store
+  archives preserve `com.passvault.ios`.
 - [x] Desktop bundle ID fixed as `com.passvault.desktop`.
 - [x] Version source centralized in `version.properties`.
 - [x] User-supplied icon artwork is present in the application resources.
@@ -39,7 +42,6 @@ legal identity, and store-account actions remain external by design.
 
 - [x] User-approved Google Play/App Store bilingual descriptions are present in
   the ignored private intake and pass validation.
-- [ ] F-Droid metadata is ready.
 - [x] The bilingual privacy policy is public at the stable HTTPS Pages routes and
   matches the reviewed local-first behavior.
 - [ ] Apache-2.0 project license and notice are included in packages.
@@ -88,9 +90,9 @@ legal identity, and store-account actions remain external by design.
 
 ## Verification
 
-- [ ] Shared/Desktop and Android host tests pass.
-- [ ] Android debug and release variants compile.
-- [ ] Android lint/R8 release verification passes.
+- [x] Shared/Desktop and Android host tests pass.
+- [x] Android Debug, screenshot, and Release variants compile with only the two approved application identities.
+- [x] Android lint/R8 release verification passes.
 - [ ] Desktop runtime smoke test and Windows EXE/MSI packaging pass.
 - [x] iOS simulator compilation passes.
 - [x] Release documentation and implementation-status records are updated.

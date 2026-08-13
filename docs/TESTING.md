@@ -1,6 +1,6 @@
 # Testing
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-13
 
 Use JDK 17 and the checked-in Gradle wrapper. `gradlew test` is a repository-owned aggregate task that depends on all
 Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's ambiguous unqualified selector.
@@ -13,10 +13,11 @@ Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's amb
 ./gradlew check
 ./gradlew check -x detekt
 ./gradlew verifyDependencies
-./gradlew :app-android:assembleStandardDebug
-./gradlew :app-android:verifyStandardDebugComposeResources
-./gradlew :app-android:assembleStandardRelease
-./gradlew :app-android:lintStandardRelease
+./gradlew :app-android:assembleDebug
+./gradlew :app-android:verifyDebugComposeResources
+./gradlew :app-android:verifyAndroidApplicationIdentities
+./gradlew :app-android:assembleRelease
+./gradlew :app-android:lintRelease
 ./gradlew :app-desktop:compileKotlinDesktop
 ./gradlew :app-desktop:createReleaseDistributable
 ./gradlew :app-desktop:packageReleaseDistributionForCurrentOS
@@ -31,6 +32,7 @@ sync. Select that run configuration and an iOS simulator. The same host can be c
 ```bash
 xcodebuild -project iosApp/iosApp.xcodeproj -scheme PassVault \
   -configuration Debug -destination 'generic/platform=iOS Simulator' build
+./scripts/validate-ios-build-identities.sh
 ```
 
 On Windows, verify the packaged runtime after creating the release image:
@@ -61,9 +63,9 @@ behavior rather than private implementation detail.
 
 ## Evidence limits
 
-The repository-owned `test` aggregate currently contains 1,082 tests: 604 Desktop/JVM and 478 Android host. The
-complete final `check` result set additionally contains 42 Android application host tests and 478 iOS simulator tests,
-for 1,602 tests total with no failures, errors, or skips.
+The repository-owned `test` aggregate currently contains 1,143 tests: 625 Desktop/JVM and 518 Android tests (497
+shared Android-host tests plus 21 application tests). The complete clean `check` result set adds 497 iOS simulator
+tests, for 1,640 tests total with no failures, errors, or skips.
 
 Android host tests exercise portable and Android-compilation behavior on the JVM, but do not prove lifecycle,
 IME, screenshot, file-picker, accessibility, or native device integration. Those need an emulator/device. The iOS
@@ -74,7 +76,8 @@ startup-verified by `:app-desktop:run`: build
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.
 
-Android `check` depends on `:app-android:verifyStandardDebugComposeResources`. This opens the generated APK and
+Android `check` depends on `:app-android:verifyDebugComposeResources` and application-identity validation. The
+package check opens the generated APK and
 fails if the shared design-system Compose string bundle was not merged into Android assets.
 
 These limits must remain explicit in the audit ledger.

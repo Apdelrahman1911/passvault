@@ -32,6 +32,12 @@ fastfile = File.read(fastfile_path, encoding: "UTF-8")
 fail_validation("unexpected schema") unless record.fetch("schemaVersion") == 1
 fail_validation("unexpected package") unless record.fetch("packageName") == "com.passvault.android"
 fail_validation("Android applicationId mismatch") unless android_build.include?('applicationId = "com.passvault.android"')
+fail_validation("Android Debug applicationId suffix mismatch") unless
+  android_build.scan('applicationIdSuffix = ".debug"').length == 2
+fail_validation("obsolete Android product flavors remain configured") if
+  android_build.include?("productFlavors") || android_build.match?(/fdroid/i)
+fail_validation("a third screenshot application identity remains configured") if
+  android_build.include?('applicationIdSuffix = ".storescreenshot"')
 fail_validation("Play app must be categorized as an app") unless record.fetch("appType") == "APP"
 fail_validation("Play category must be Tools") unless record.fetch("category") == "TOOLS"
 fail_validation("required bilingual locales changed") unless record.fetch("locales").sort == %w[ar en-US]
@@ -53,13 +59,15 @@ fail_validation("packaged dependency-permission inventory changed") unless
 
 merged_manifest_path = File.join(
   repository_root,
-  "app-android", "build", "intermediates", "merged_manifests", "standardRelease",
-  "processStandardReleaseManifest", "AndroidManifest.xml",
+  "app-android", "build", "intermediates", "merged_manifests", "release",
+  "processReleaseManifest", "AndroidManifest.xml",
 )
 if File.file?(merged_manifest_path)
   merged_manifest = File.read(merged_manifest_path, encoding: "UTF-8")
+  fail_validation("built release application ID changed") unless
+    merged_manifest.match?(/<manifest[^>]+package="com\.passvault\.android"/m)
   merged_permissions = merged_manifest.scan(/<uses-permission android:name="([^"]+)"/).flatten.sort
-  fail_validation("built Standard release permission inventory changed") unless
+  fail_validation("built release permission inventory changed") unless
     merged_permissions == declared_packaged_permissions
 end
 

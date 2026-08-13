@@ -11,10 +11,10 @@ if [[ -z "$apk_path" ]]; then
     apk_matches=()
     while IFS= read -r -d '' match; do
         apk_matches+=("$match")
-    done < <(find "$repository_root/app-android/build/outputs/apk/standard/release" \
+    done < <(find "$repository_root/app-android/build/outputs/apk/release" \
         -maxdepth 1 -type f -name '*.apk' -print0 2>/dev/null)
     if (( ${#apk_matches[@]} != 1 )); then
-        echo "Expected exactly one Standard release APK; found ${#apk_matches[@]}." >&2
+        echo "Expected exactly one release APK; found ${#apk_matches[@]}." >&2
         exit 1
     fi
     apk_path="${apk_matches[0]}"
@@ -23,10 +23,10 @@ if [[ -z "$aab_path" ]]; then
     aab_matches=()
     while IFS= read -r -d '' match; do
         aab_matches+=("$match")
-    done < <(find "$repository_root/app-android/build/outputs/bundle/standardRelease" \
+    done < <(find "$repository_root/app-android/build/outputs/bundle/release" \
         -maxdepth 1 -type f -name '*.aab' -print0 2>/dev/null)
     if (( ${#aab_matches[@]} != 1 )); then
-        echo "Expected exactly one Standard release AAB; found ${#aab_matches[@]}." >&2
+        echo "Expected exactly one release AAB; found ${#aab_matches[@]}." >&2
         exit 1
     fi
     aab_path="${aab_matches[0]}"

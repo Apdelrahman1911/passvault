@@ -42,6 +42,11 @@ class GeneratorViewModel(
         generatePassword()
     }
 
+    override fun onCleared() {
+        clearForLock()
+        super.onCleared()
+    }
+
     fun onEvent(event: GeneratorEvent) {
         when (event) {
             is PasswordOptionEvent -> updatePasswordOptions(event)

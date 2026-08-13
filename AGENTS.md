@@ -8,7 +8,7 @@ PassVault is a Kotlin Multiplatform project using Compose. `app-android/` and `a
 
 Use JDK 17 and the checked-in Gradle wrapper (`.\gradlew.bat` on Windows; `./gradlew` elsewhere).
 
-- `./gradlew :app-android:assembleDebug` builds debug APK variants.
+- `./gradlew :app-android:assembleDebug` builds the local PassVault Dev APK.
 - `./gradlew :app-desktop:run` launches the desktop app locally.
 - `./gradlew test` runs all unit tests.
 - `./gradlew :core:crypto:test` tests one module.
@@ -17,6 +17,9 @@ Use JDK 17 and the checked-in Gradle wrapper (`.\gradlew.bat` on Windows; `./gra
 - `./gradlew koverHtmlReport` generates coverage reports where configured.
 
 Bash helpers in `scripts/` wrap Android, desktop, test, and release workflows.
+Android has no product flavors: Debug uses `com.passvault.android.debug`, while Release and every Google Play track
+use `com.passvault.android`. The Xcode `PassVault` scheme similarly runs Debug as `com.passvault.ios.debug` and
+archives Release as `com.passvault.ios` for TestFlight/App Store.
 
 ## Coding Style & Naming Conventions
 
