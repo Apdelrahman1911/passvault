@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-# Build explicit PassVault Android flavor/build-type combinations.
-# Usage: ./scripts/build-android.sh [--debug] [--release|--google] [--fdroid]
+# Build explicit PassVault Android build types.
+# Usage: ./scripts/build-android.sh [--debug] [--release|--google]
 #        [--all] [--clean] [--test]
 
 set -euo pipefail
 
 build_debug=false
-build_standard_release=false
-build_fdroid_release=false
+build_release=false
 clean=false
 run_tests=false
 signing_environment_present=false
@@ -23,12 +22,10 @@ done
 while (( $# > 0 )); do
     case "$1" in
         --debug) build_debug=true ;;
-        --release|--google) build_standard_release=true ;;
-        --fdroid) build_fdroid_release=true ;;
+        --release|--google) build_release=true ;;
         --all)
             build_debug=true
-            build_standard_release=true
-            build_fdroid_release=true
+            build_release=true
             ;;
         --clean) clean=true ;;
         --test) run_tests=true ;;
@@ -44,8 +41,7 @@ while (( $# > 0 )); do
     shift
 done
 
-if [[ "$build_debug" == false && "$build_standard_release" == false &&
-      "$build_fdroid_release" == false ]]; then
+if [[ "$build_debug" == false && "$build_release" == false ]]; then
     build_debug=true
 fi
 
@@ -56,28 +52,19 @@ gradle_arguments=()
 [[ "$clean" == true ]] && gradle_arguments+=(clean)
 if [[ "$build_debug" == true ]]; then
     gradle_arguments+=(
-        :app-android:assembleStandardDebug
-        :app-android:verifyStandardDebugComposeResources
+        :app-android:assembleDebug
+        :app-android:verifyDebugComposeResources
     )
 fi
-if [[ "$build_standard_release" == true ]]; then
+if [[ "$build_release" == true ]]; then
     gradle_arguments+=(
-        :app-android:assembleStandardRelease
-        :app-android:bundleStandardRelease
-        :app-android:lintStandardRelease
-        :app-android:verifyStandardReleasePackageContents
-        :app-android:verifyStandardReleaseBundleContents
+        :app-android:assembleRelease
+        :app-android:bundleRelease
+        :app-android:lintRelease
+        :app-android:verifyReleasePackageContents
     )
 fi
-if [[ "$build_fdroid_release" == true ]]; then
-    gradle_arguments+=(
-        :app-android:assembleFdroidRelease
-        :app-android:lintFdroidRelease
-        :app-android:verifyFdroidReleasePackageContents
-    )
-fi
-if [[ "$build_standard_release" == true || "$build_fdroid_release" == true ||
-      "$signing_environment_present" == true ]]; then
+if [[ "$build_release" == true || "$signing_environment_present" == true ]]; then
     # Signing credentials must never be serialized into Gradle's configuration cache.
     gradle_arguments+=(--no-configuration-cache)
 fi

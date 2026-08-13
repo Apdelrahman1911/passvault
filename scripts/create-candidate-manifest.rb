@@ -24,6 +24,10 @@ abort("SOURCE_COMMIT must be a full Git SHA") unless source_commit.match?(/\A[0-
 abort("SOURCE_TREE must be a full Git tree SHA") unless source_tree.match?(/\A[0-9a-f]{40}\z/)
 expected_tag = "v#{version}-rc.#{build_number}"
 abort("CANDIDATE_TAG must match #{expected_tag}") unless candidate_tag == expected_tag
+android_package_name = required("ANDROID_PACKAGE_NAME")
+ios_bundle_id = required("IOS_BUNDLE_ID")
+abort("Unexpected Android Store identity") unless android_package_name == "com.passvault.android"
+abort("Unexpected iOS Store identity") unless ios_bundle_id == "com.passvault.ios"
 
 manifest = {
   schemaVersion: 2,
@@ -34,14 +38,14 @@ manifest = {
   candidateTag: candidate_tag,
   createdAt: Time.now.utc.iso8601,
   android: {
-    packageName: required("ANDROID_PACKAGE_NAME"),
+    packageName: android_package_name,
     signingCertificateSha256: required("ANDROID_SIGNING_SHA256").delete(":").upcase,
     artifactReceiptSha256: required("ANDROID_ARTIFACT_RECEIPT_SHA256").downcase,
     internal: required("ANDROID_INTERNAL_STATE"),
     external: required("ANDROID_EXTERNAL_STATE"),
   },
   ios: {
-    bundleId: required("IOS_BUNDLE_ID"),
+    bundleId: ios_bundle_id,
     appStoreAppId: required("APP_STORE_APP_ID"),
     signingIdentitySha1: required("IOS_SIGNING_SHA1").delete(":").upcase,
     artifactReceiptSha256: required("IOS_ARTIFACT_RECEIPT_SHA256").downcase,

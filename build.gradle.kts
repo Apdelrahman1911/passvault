@@ -293,8 +293,7 @@ val sharedTestPaths = listOf(
 )
 
 val androidHostTestPaths = listOf(
-    ":app-android:testFdroidDebugUnitTest",
-    ":app-android:testStandardDebugUnitTest",
+    ":app-android:testDebugUnitTest",
     ":core:crypto:testAndroidHostTest",
     ":core:database:testAndroidHostTest",
     ":core:designsystem:testAndroidHostTest",

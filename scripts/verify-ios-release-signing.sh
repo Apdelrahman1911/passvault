@@ -21,23 +21,41 @@ if ! git check-ignore -q release/private/values.env || [[ -n "$(git ls-files rel
     exit 1
 fi
 
-./scripts/validate-private-release-config.sh >/dev/null
+private_file_is_safe() {
+    ruby -I "$repository_root/scripts" -r lib/private_path -e \
+        'exit(PassVault::PrivatePath.regular_file_within?(ARGV.fetch(0), ARGV.fetch(1)) ? 0 : 1)' \
+        "$1" "$private_root"
+}
+
+if ! private_file_is_safe "$values_file"; then
+    echo "release/private/values.env is missing or traverses an unsafe path." >&2
+    exit 1
+fi
 passvault_dotenv_load_file "$values_file"
 passvault_select_openssl
 openssl_binary="$PASSVAULT_OPENSSL_BINARY"
 
 for required_name in IOS_DISTRIBUTION_CERTIFICATE_FILE IOS_DISTRIBUTION_CERTIFICATE_PASSWORD \
-    IOS_PROVISIONING_PROFILE_FILE APPLE_TEAM_ID IOS_BUNDLE_ID; do
+    IOS_PROVISIONING_PROFILE_FILE APPLE_TEAM_ID IOS_BUNDLE_ID \
+    EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE; do
     if [[ -z "${!required_name:-}" ]]; then
         echo "A required iOS signing input is missing." >&2
         exit 1
     fi
 done
+if [[ "$IOS_BUNDLE_ID" != com.passvault.ios || ! "$APPLE_TEAM_ID" =~ ^[A-Z0-9]{10}$ ]]; then
+    echo "The iOS signing verifier requires the canonical Store bundle and a valid Apple team ID." >&2
+    exit 1
+fi
 
 certificate_path="$repository_root/$IOS_DISTRIBUTION_CERTIFICATE_FILE"
 profile_path="$repository_root/$IOS_PROVISIONING_PROFILE_FILE"
 case "$certificate_path" in "$private_root"/*) ;; *) echo "Unsafe certificate path." >&2; exit 1 ;; esac
 case "$profile_path" in "$private_root"/*) ;; *) echo "Unsafe profile path." >&2; exit 1 ;; esac
+if ! private_file_is_safe "$certificate_path" || ! private_file_is_safe "$profile_path"; then
+    echo "The iOS signing certificate or provisioning profile is missing or unsafe." >&2
+    exit 1
+fi
 
 verification_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-ios-signed-verify.XXXXXX")"
 keychain_path="$verification_root/release.keychain-db"

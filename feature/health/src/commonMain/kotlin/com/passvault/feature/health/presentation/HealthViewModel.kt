@@ -48,6 +48,11 @@ class HealthViewModel(
 
     private var scanJob: Job? = null
 
+    override fun onCleared() {
+        clearForLock()
+        super.onCleared()
+    }
+
     fun onEvent(event: HealthEvent) {
         when (event) {
             is HealthEvent.OnTabChanged -> _state.update { it.copy(selectedTab = event.tab) }

@@ -51,13 +51,16 @@ kotlin {
                 // Navigation 3
                 implementation(libs.navigation3.runtime)
                 implementation(libs.navigation3.ui)
+                implementation(libs.lifecycle.viewmodel.navigation3)
 
                 // Koin
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
 
                 // Public supertypes used by the composition root.
                 implementation(libs.lifecycle.viewmodel)
+                implementation(libs.lifecycle.runtime.compose)
                 implementation(libs.room.runtime)
 
                 // Coroutines
@@ -91,6 +94,7 @@ kotlin {
                 implementation(libs.assertk)
                 implementation(libs.turbine)
                 implementation(libs.koin.test)
+                implementation(project(":core:testing"))
             }
         }
     }

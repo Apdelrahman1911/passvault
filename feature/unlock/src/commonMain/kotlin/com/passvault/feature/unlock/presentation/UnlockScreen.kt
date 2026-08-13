@@ -37,8 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,55 +57,7 @@ import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
 import com.passvault.core.security.BiometricType
-import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.stringResource
-
-@Composable
-fun UnlockScreenRoute(
-    viewModel: UnlockViewModel,
-    onUnlockSuccess: () -> Unit,
-    onNavigateToOnboarding: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                UnlockViewModel.UnlockEffect.NavigateToVault -> onUnlockSuccess()
-                UnlockViewModel.UnlockEffect.NavigateToOnboarding -> onNavigateToOnboarding()
-            }
-        }
-    }
-
-    UnlockScreen(
-        state = state,
-        onEvent = viewModel::onEvent,
-        modifier = modifier,
-    )
-
-    if (state.showRecoveryInfo) {
-        AlertDialog(
-            onDismissRequest = {
-                viewModel.onEvent(UnlockViewModel.UnlockEvent.OnDismissRecoveryInfo)
-            },
-            icon = { Icon(Icons.Default.Lock, contentDescription = null) },
-            title = { Text(stringResource(Res.string.ui_master_password_recovery)) },
-            text = {
-                Text(stringResource(Res.string.ui_unlock_recovery_warning))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnDismissRecoveryInfo)
-                    },
-                ) {
-                    Text(stringResource(Res.string.ui_ok))
-                }
-            },
-        )
-    }
-}
 
 @Composable
 fun UnlockScreen(
@@ -137,6 +87,21 @@ fun UnlockScreen(
             onEvent = onEvent,
             passwordFocusRequester = passwordFocusRequester,
             onSubmit = onSubmit,
+        )
+    }
+    if (state.showRecoveryInfo) {
+        AlertDialog(
+            onDismissRequest = { onEvent(UnlockViewModel.UnlockEvent.OnDismissRecoveryInfo) },
+            icon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            title = { Text(stringResource(Res.string.ui_master_password_recovery)) },
+            text = { Text(stringResource(Res.string.ui_unlock_recovery_warning)) },
+            confirmButton = {
+                TextButton(
+                    onClick = { onEvent(UnlockViewModel.UnlockEvent.OnDismissRecoveryInfo) },
+                ) {
+                    Text(stringResource(Res.string.ui_ok))
+                }
+            },
         )
     }
 }

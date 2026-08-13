@@ -4,7 +4,7 @@ set -euo pipefail
 
 apk_path="${1:-}"
 output_root="${2:-}"
-package_name="com.passvault.android.storescreenshot"
+package_name="com.passvault.android.debug"
 capture_password="CaptureOnlyVaultPassphrase2026"
 
 if [[ ! -f "$apk_path" || -L "$apk_path" || -z "$output_root" ]]; then
@@ -21,6 +21,11 @@ if find "$output_root" -type l -print -quit | grep -q .; then
     exit 1
 fi
 command -v adb >/dev/null
+device_count="$(adb devices | awk 'NR > 1 && $2 == "device" { count++ } END { print count + 0 }')"
+if [[ "$device_count" != 1 || "$(adb shell getprop ro.kernel.qemu | tr -d '\r')" != 1 ]]; then
+    echo "Store screenshot capture requires exactly one Android emulator and refuses physical devices." >&2
+    exit 1
+fi
 if ! command -v convert >/dev/null; then
     echo "ImageMagick's convert command is required to create store-compatible PNG24 screenshots." >&2
     exit 1

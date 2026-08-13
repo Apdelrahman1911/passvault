@@ -130,11 +130,10 @@ try {
     }
     $gradleArguments = @(
         ":app-android:verifyReleaseSigningConfiguration",
-        ":app-android:assembleStandardRelease",
-        ":app-android:bundleStandardRelease",
-        ":app-android:lintStandardRelease",
-        ":app-android:verifyStandardReleasePackageContents",
-        ":app-android:verifyStandardReleaseBundleContents",
+        ":app-android:assembleRelease",
+        ":app-android:bundleRelease",
+        ":app-android:lintRelease",
+        ":app-android:verifyReleasePackageContents",
         "--no-configuration-cache",
         "-Ppassvault.requireReleaseSigning=true"
     )

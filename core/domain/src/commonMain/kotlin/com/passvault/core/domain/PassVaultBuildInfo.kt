@@ -7,5 +7,5 @@ package com.passvault.core.domain
  * `version.properties`, preventing platform titles and settings from drifting.
  */
 object PassVaultBuildInfo {
-    const val VERSION: String = "1.0.3"
+    const val VERSION: String = "1.0.4"
 }

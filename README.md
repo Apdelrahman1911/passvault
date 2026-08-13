@@ -37,6 +37,9 @@ ships the shared Compose application on iPhone and iPad.
 
 The detailed, evidence-backed status is maintained in
 [`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md).
+The implemented Navigation 3 design and its iOS hardware release gate are documented in
+[`docs/NAVIGATION_ARCHITECTURE.md`](docs/NAVIGATION_ARCHITECTURE.md) and
+[`docs/NAVIGATION_IOS_PHYSICAL_TEST_MATRIX.md`](docs/NAVIGATION_IOS_PHYSICAL_TEST_MATRIX.md).
 
 ## Project structure
 
@@ -60,17 +63,27 @@ feature/           onboarding, unlock, vault, credential, generator, health,
 
 ## Build and verification
 
-Use JDK 17 and the checked-in wrapper. The Android application has `standard` and `fdroid` product flavors.
+Use JDK 17 and the checked-in wrapper. PassVault has two application identities, implemented with the existing
+Debug and Release build configurations rather than product flavors:
+
+| Use | Name | Android application ID | iOS bundle ID |
+| --- | --- | --- | --- |
+| Local development | PassVault Dev | `com.passvault.android.debug` | `com.passvault.ios.debug` |
+| Store release | PassVault | `com.passvault.android` | `com.passvault.ios` |
+
+TestFlight and every Google Play testing track distribute the Store identity. They are promotion channels for the
+same build that can later reach production, not separate application environments. The Debug apps have independent
+platform storage and can coexist with an installed Store/TestFlight/Play build.
 
 ```bash
 # All Desktop/JVM and Android host unit/integration suites
 ./gradlew test
 
-# Android debug APK
-./gradlew :app-android:assembleStandardDebug
+# Android local-development APK
+./gradlew :app-android:assembleDebug
 
 # Android unsigned/release verification
-./gradlew :app-android:assembleStandardRelease
+./gradlew :app-android:assembleRelease :app-android:bundleRelease
 
 # Desktop compile and local run
 ./gradlew :app-desktop:compileKotlinDesktop
@@ -87,9 +100,22 @@ Use JDK 17 and the checked-in wrapper. The Android application has `standard` an
 Platform package tasks are available through `./gradlew :app-desktop:tasks`. Run only the package task for the
 current operating system.
 
-To run iOS from Android Studio on macOS, enable the Kotlin Multiplatform plugin, sync the project with Gradle,
-select the generated `PassVault` run configuration, and choose an iOS simulator. The configuration is derived from
-`iosApp/iosApp.xcodeproj`; its Xcode build phase builds and embeds `PassVaultShared` automatically.
+For normal Android development, select the `app-android` **debug** build variant in Android Studio and press Run.
+This installs PassVault Dev; no machine-specific IDE run configuration is required or committed. The equivalent
+command is `./gradlew :app-android:installDebug`.
+
+For iOS, open `iosApp/iosApp.xcodeproj`, select the shared `PassVault` scheme and a simulator or development device,
+then press Run. The scheme's Run/Test/Analyze actions use Debug and therefore install PassVault Dev. Profile and
+Archive use Release and retain the Store bundle ID. Android Studio with the Kotlin Multiplatform plugin discovers
+the same shared scheme after Gradle sync; its Xcode build phase builds and embeds `PassVaultShared` automatically.
+
+The `Testing Candidate` and protected mobile release workflows always build Release: the signed AAB uses
+`com.passvault.android`, and the App Store archive uses `com.passvault.ios`. Candidate promotion reuses those exact
+Store artifacts/build numbers for Google Play testing and production and for TestFlight/App Store production.
+The CI-only Android `storeScreenshot` build type reuses the development application ID and is restricted to an
+emulator; it is not a third application identity or a distribution artifact. F-Droid packaging is retired. The
+repository does not configure Firebase, Crashlytics, push notifications, OAuth, associated domains, deep links, or
+a backend, so the Debug identifiers do not require separate service credentials.
 
 ## Security notes
 

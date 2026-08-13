@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Run PassVault host tests or the explicit Android standard-debug device suite.
+# Run PassVault host tests or the explicit Android Debug device suite.
 # Usage: ./scripts/run-tests.sh [--unit|--desktop|--android|--all]
 #        [--ci] [--clean] [--no-daemon] [--parallel]
 
@@ -53,7 +53,7 @@ run_android_device_tests() {
         echo "An online Android device or emulator is required for --android/--all." >&2
         return 1
     fi
-    ./gradlew :app-android:connectedStandardDebugAndroidTest "${gradle_options[@]}"
+    ./gradlew :app-android:connectedDebugAndroidTest "${gradle_options[@]}"
 }
 
 case "$suite" in

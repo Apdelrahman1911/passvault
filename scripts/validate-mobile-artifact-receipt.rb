@@ -11,6 +11,10 @@ PLATFORM_KINDS = {
   "android" => %w[aab apk r8-mapping],
   "ios" => %w[ipa xcarchive link-map],
 }.freeze
+PLATFORM_IDENTIFIERS = {
+  "android" => "com.passvault.android",
+  "ios" => "com.passvault.ios",
+}.freeze
 
 def canonical_string(document, key)
   value = document.fetch(key)
@@ -67,6 +71,7 @@ end
 identifier = canonical_string(document, "identifier")
 identifier_pattern = platform == "android" ? /\A[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+\z/ : /\A[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+\z/
 abort("Invalid platform identifier") unless identifier.match?(identifier_pattern)
+abort("Unexpected #{platform} Store identity") unless identifier == PLATFORM_IDENTIFIERS.fetch(platform)
 fingerprint = canonical_string(document, "signingFingerprint")
 fingerprint_length = platform == "android" ? 64 : 40
 abort("Invalid signing fingerprint") unless fingerprint.match?(/\A[0-9A-F]{#{fingerprint_length}}\z/)

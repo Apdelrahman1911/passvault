@@ -54,7 +54,8 @@ actual fun KeyboardDismissButton(modifier: Modifier) {
             ),
             tonalElevation = 4.dp,
             shadowElevation = 6.dp,
-            modifier = Modifier.defaultMinSize(minWidth = 64.dp, minHeight = 48.dp),
+            modifier = Modifier
+//                .defaultMinSize(minWidth = 64.dp, minHeight = 48.dp),
         ) {
             Text(
                 text = stringResource(Res.string.ui_done),

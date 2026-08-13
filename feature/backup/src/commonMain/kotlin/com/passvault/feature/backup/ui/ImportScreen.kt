@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.passvault.feature.backup.presentation.BackupViewModel
@@ -25,17 +24,9 @@ import com.passvault.core.designsystem.platform.passVaultTopAppBarColors
 fun ImportScreen(
     viewModel: BackupViewModel,
     onNavigateBack: () -> Unit,
-    onImportComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state = viewModel.state.collectAsState().value
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
-            if (effect is BackupViewModel.BackupEffect.ShowImportSuccess) {
-                onImportComplete()
-            }
-        }
-    }
     Scaffold(
         modifier = modifier,
         topBar = {

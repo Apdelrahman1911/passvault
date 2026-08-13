@@ -1,22 +1,28 @@
 package com.passvault.core.navigation
 
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Bridges platform menus and keyboard shortcuts to the shared navigation host.
  */
 class AppCommandDispatcher {
-    // Platform callbacks are non-suspending. A channel preserves every menu
-    // or keyboard command until the single application collector handles it;
-    // MutableSharedFlow.tryEmit could silently discard commands during bursts.
-    private val commandChannel = Channel<AppCommand>(capacity = Channel.UNLIMITED)
-    val commands = commandChannel.receiveAsFlow()
+    // Native commands are transient UI input, not durable work. A bounded, no-replay flow prevents
+    // stale menu clicks from navigating after authentication or after the host is recreated.
+    private val mutableCommands = MutableSharedFlow<AppCommand>(
+        replay = 0,
+        extraBufferCapacity = COMMAND_BUFFER_CAPACITY,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val commands = mutableCommands.asSharedFlow()
 
     fun dispatch(command: AppCommand) {
-        check(commandChannel.trySend(command).isSuccess) {
-            "Application command channel is unavailable"
-        }
+        mutableCommands.tryEmit(command)
+    }
+
+    private companion object {
+        const val COMMAND_BUFFER_CAPACITY = 16
     }
 }
 

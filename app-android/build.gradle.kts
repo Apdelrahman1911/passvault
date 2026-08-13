@@ -334,6 +334,22 @@ abstract class VerifyReleaseSigningConfiguration : DefaultTask() {
     }
 }
 
+abstract class VerifyAndroidApplicationIdentity : DefaultTask() {
+    @get:Input
+    abstract val applicationId: Property<String>
+
+    @get:Input
+    abstract val expectedApplicationId: Property<String>
+
+    @TaskAction
+    fun verify() {
+        check(applicationId.get() == expectedApplicationId.get()) {
+            "Android application ID ${applicationId.get()} does not match " +
+                "the approved identity ${expectedApplicationId.get()}."
+        }
+    }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
@@ -551,25 +567,10 @@ android {
         create("storeScreenshot") {
             initWith(getByName("debug"))
             matchingFallbacks += listOf("debug")
-            applicationIdSuffix = ".storescreenshot"
+            applicationIdSuffix = ".debug"
             versionNameSuffix = "-storescreenshot"
             buildConfigField("boolean", "STORE_SCREENSHOT_MODE", "true")
         }
-    }
-
-    flavorDimensions += "distribution"
-
-    productFlavors {
-        create("standard") {
-            dimension = "distribution"
-        }
-
-        create("fdroid") {
-            dimension = "distribution"
-            applicationIdSuffix = ".fdroid"
-            versionNameSuffix = "-fdroid"
-        }
-
     }
 
     compileOptions {
@@ -606,6 +607,12 @@ android {
     }
 }
 
+val verifyAndroidApplicationIdentities =
+    tasks.register("verifyAndroidApplicationIdentities") {
+        group = "verification"
+        description = "Verifies that local and Store Android variants use only the approved identities."
+    }
+
 androidComponents {
     onVariants(selector().all()) { variant ->
         checkNotNull(variant.sources.assets) {
@@ -614,6 +621,27 @@ androidComponents {
             prepareAndroidLegalAssets,
             PrepareAndroidLegalAssets::outputDirectory,
         )
+
+        val expectedApplicationId = when (variant.name) {
+            "debug", "storeScreenshot" -> "com.passvault.android.debug"
+            "release" -> "com.passvault.android"
+            else -> error("Android variant ${variant.name} has no approved application identity.")
+        }
+        val capitalizedVariantName = variant.name.replaceFirstChar { character ->
+            character.uppercase()
+        }
+        val verifyVariantIdentity =
+            tasks.register<VerifyAndroidApplicationIdentity>(
+                "verify${capitalizedVariantName}ApplicationIdentity",
+            ) {
+                group = "verification"
+                description = "Verifies the application ID for Android variant ${variant.name}."
+                applicationId.set(variant.applicationId)
+                this.expectedApplicationId.set(expectedApplicationId)
+            }
+        verifyAndroidApplicationIdentities.configure {
+            dependsOn(verifyVariantIdentity)
+        }
     }
 }
 
@@ -633,12 +661,13 @@ kotlin {
     }
 }
 
-val verifyStandardDebugComposeResources =
-    tasks.register<VerifyAndroidPackageContents>("verifyStandardDebugComposeResources") {
+val verifyDebugComposeResources =
+    tasks.register<VerifyAndroidPackageContents>("verifyDebugComposeResources") {
         group = "verification"
-        description = "Verifies shared resources and supported native ABIs in the Standard debug APK."
-        dependsOn("assembleStandardDebug")
-        archiveDirectory.set(layout.buildDirectory.dir("outputs/apk/standard/debug"))
+        description = "Verifies shared resources and supported native ABIs in the debug APK."
+        dependsOn("assembleDebug")
+        dependsOn(verifyAndroidApplicationIdentities)
+        archiveDirectory.set(layout.buildDirectory.dir("outputs/apk/debug"))
         archiveExtension.set("apk")
         expectedEntry.set(
             "assets/composeResources/" +
@@ -655,12 +684,13 @@ val verifyStandardDebugComposeResources =
         legalEntryPrefix.set("assets/legal/")
     }
 
-val verifyStandardReleasePackageContents =
-    tasks.register<VerifyAndroidPackageContents>("verifyStandardReleasePackageContents") {
+val verifyReleaseApkContents =
+    tasks.register<VerifyAndroidPackageContents>("verifyReleaseApkContents") {
         group = "verification"
-        description = "Verifies shared resources and supported native ABIs in the Standard release APK."
-        dependsOn("assembleStandardRelease")
-        archiveDirectory.set(layout.buildDirectory.dir("outputs/apk/standard/release"))
+        description = "Verifies shared resources and supported native ABIs in the release APK."
+        dependsOn("assembleRelease")
+        dependsOn(verifyAndroidApplicationIdentities)
+        archiveDirectory.set(layout.buildDirectory.dir("outputs/apk/release"))
         archiveExtension.set("apk")
         expectedEntry.set(
             "assets/composeResources/" +
@@ -677,34 +707,13 @@ val verifyStandardReleasePackageContents =
         legalEntryPrefix.set("assets/legal/")
     }
 
-val verifyFdroidReleasePackageContents =
-    tasks.register<VerifyAndroidPackageContents>("verifyFdroidReleasePackageContents") {
+val verifyReleaseBundleContents =
+    tasks.register<VerifyAndroidPackageContents>("verifyReleaseBundleContents") {
         group = "verification"
-        description = "Verifies shared resources and supported native ABIs in the F-Droid release APK."
-        dependsOn("assembleFdroidRelease")
-        archiveDirectory.set(layout.buildDirectory.dir("outputs/apk/fdroid/release"))
-        archiveExtension.set("apk")
-        expectedEntry.set(
-            "assets/composeResources/" +
-                "com.passvault.core.designsystem.generated.resources/" +
-                "values/strings.commonMain.cvr"
-        )
-        expectedNativeAbis.set(supportedAndroidAbis)
-        expectedNativeLibraries.set(expectedAndroidNativeLibraries)
-        nativeLibraryPrefix.set("lib/")
-        legalDocuments.from(
-            rootProject.files("LICENSE.txt", "NOTICE.txt", "THIRD_PARTY_NOTICES.md"),
-        )
-        thirdPartyLicenseDirectory.set(rootProject.layout.projectDirectory.dir("THIRD_PARTY_LICENSES"))
-        legalEntryPrefix.set("assets/legal/")
-    }
-
-val verifyStandardReleaseBundleContents =
-    tasks.register<VerifyAndroidPackageContents>("verifyStandardReleaseBundleContents") {
-        group = "verification"
-        description = "Verifies shared resources and supported native ABIs in the Standard release AAB."
-        dependsOn("bundleStandardRelease")
-        archiveDirectory.set(layout.buildDirectory.dir("outputs/bundle/standardRelease"))
+        description = "Verifies shared resources and supported native ABIs in the release AAB."
+        dependsOn("bundleRelease")
+        dependsOn(verifyAndroidApplicationIdentities)
+        archiveDirectory.set(layout.buildDirectory.dir("outputs/bundle/release"))
         archiveExtension.set("aab")
         expectedEntry.set(
             "base/assets/composeResources/" +
@@ -724,13 +733,13 @@ val verifyStandardReleaseBundleContents =
 tasks.register("verifyReleasePackageContents") {
     group = "verification"
     description = "Verifies every Android release archive produced for publication."
-    dependsOn(verifyStandardReleasePackageContents)
-    dependsOn(verifyFdroidReleasePackageContents)
-    dependsOn(verifyStandardReleaseBundleContents)
+    dependsOn(verifyReleaseApkContents)
+    dependsOn(verifyReleaseBundleContents)
 }
 
 tasks.named("check") {
-    dependsOn(verifyStandardDebugComposeResources)
+    dependsOn(verifyDebugComposeResources)
+    dependsOn(verifyAndroidApplicationIdentities)
 }
 
 dependencies {
