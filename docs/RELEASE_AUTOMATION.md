@@ -30,6 +30,13 @@ CI, linear history, resolved conversations, and one approval. `release` rejects
 force pushes and deletion; the documented automation advances it only through
 Candidate Readiness.
 
+GitHub's protected rebase merge can give the reviewed `main` tree a new commit
+SHA when it enters `testing`. Candidate preparation therefore accepts either
+the current `main` commit as an ancestor or a commit with shared repository
+history and the exact same Git tree. A version match, commit message, partial
+diff, or unrelated matching tree is never sufficient. Every artifact and
+receipt is then bound to the resulting exact `testing` commit and tree.
+
 Run `scripts/configure-release-branches.sh --apply` once to create and protect
 the branches. Run `scripts/configure-github-mobile-release.sh --apply` when rotating
 mobile credentials; it scopes beta environments to `testing`, production to

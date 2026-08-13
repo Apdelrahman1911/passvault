@@ -43,6 +43,8 @@ must not be interpreted as proof that version 1.0.0 was publicly shipped or inde
 - Added committed SHA-256 Gradle dependency verification metadata.
 - Corrected Android flavor task paths, release-version propagation, Android signing gates, and unsigned Desktop
   artifact handling in CI.
+- Made testing-candidate provenance recognize only exact Git-tree equivalence when protected rebase promotion
+  rewrites the reviewed `main` commit SHA.
 - Removed unsupported cloud, CSV, attachment-file, certification, and support-contact claims; documented the
   implemented opt-in mobile biometric boundary without claiming physical-device assurance.
 
