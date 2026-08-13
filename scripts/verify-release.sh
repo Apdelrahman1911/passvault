@@ -17,11 +17,9 @@ fi
 ./scripts/test-release-automation.sh
 ./gradlew test detekt verifyDependencies --continue
 ./gradlew \
-    :app-android:assembleStandardRelease \
-    :app-android:bundleStandardRelease \
-    :app-android:lintStandardRelease \
-    :app-android:assembleFdroidRelease \
-    :app-android:lintFdroidRelease \
+    :app-android:assembleRelease \
+    :app-android:bundleRelease \
+    :app-android:lintRelease \
     :app-android:verifyReleasePackageContents \
     --no-configuration-cache \
     -Ppassvault.versionName="$version"

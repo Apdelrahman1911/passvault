@@ -39,9 +39,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -54,50 +51,9 @@ import com.passvault.core.designsystem.text.resolve
 import com.passvault.core.designsystem.tokens.Breakpoints
 import com.passvault.core.designsystem.tokens.ComponentSpacing
 import com.passvault.core.designsystem.tokens.Spacing
-import com.passvault.core.domain.model.CredentialId
 import com.passvault.feature.vault.presentation.VaultViewModel
-import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-
-@Composable
-fun VaultScreenRoute(
-    viewModel: VaultViewModel,
-    onNavigateToCredential: (CredentialId) -> Unit,
-    onNavigateToCreate: () -> Unit,
-    onNavigateToGenerator: () -> Unit,
-    onNavigateToTwoFactorCodes: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onLock: suspend () -> Unit,
-    showActionDock: Boolean = true,
-    modifier: Modifier = Modifier,
-) {
-    val state by viewModel.state.collectAsState()
-
-    LaunchedEffect(viewModel) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                is VaultViewModel.VaultEffect.NavigateToCredentialDetail ->
-                    onNavigateToCredential(effect.credentialId)
-                is VaultViewModel.VaultEffect.NavigateToCredentialEdit -> {
-                    if (effect.credentialId == null) onNavigateToCreate()
-                    else onNavigateToCredential(effect.credentialId)
-                }
-                VaultViewModel.VaultEffect.NavigateToSettings -> onNavigateToSettings()
-                VaultViewModel.VaultEffect.NavigateToGenerator -> onNavigateToGenerator()
-                VaultViewModel.VaultEffect.NavigateToTwoFactorCodes -> onNavigateToTwoFactorCodes()
-                VaultViewModel.VaultEffect.LockVault -> onLock()
-            }
-        }
-    }
-
-    VaultScreen(
-        state = state,
-        onEvent = viewModel::onEvent,
-        showActionDock = showActionDock,
-        modifier = modifier,
-    )
-}
 
 @Composable
 fun VaultScreen(

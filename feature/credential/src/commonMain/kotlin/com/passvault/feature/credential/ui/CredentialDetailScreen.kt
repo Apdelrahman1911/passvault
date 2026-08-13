@@ -52,7 +52,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,23 +72,16 @@ import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.feature.credential.presentation.CredentialViewModel
 import com.passvault.feature.credential.ui.components.CredentialAttachmentSection
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun CredentialDetailScreen(
-    viewModel: CredentialViewModel,
+    state: CredentialViewModel.CredentialState,
     credentialId: CredentialId,
-    onNavigateBack: () -> Unit,
+    onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
     onNavigateToEdit: (CredentialId) -> Unit,
-    onCopyToClipboard: suspend (String) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val state by viewModel.state.collectAsState()
-    LaunchedEffect(credentialId) { viewModel.loadCredential(credentialId) }
-    CredentialDetailEffects(viewModel, onNavigateBack, onCopyToClipboard)
-
     if (state.isLoading) {
         CredentialDetailLoading(modifier)
     } else {
@@ -97,48 +89,12 @@ fun CredentialDetailScreen(
             state = state,
             credentialId = credentialId,
             onNavigateToEdit = onNavigateToEdit,
-            onEvent = viewModel::onEvent,
+            onEvent = onEvent,
             modifier = modifier,
         )
     }
     if (state.showDeleteConfirmation) {
-        DeleteCredentialDialog(onEvent = viewModel::onEvent)
-    }
-}
-
-@Composable
-private fun CredentialDetailEffects(
-    viewModel: CredentialViewModel,
-    onNavigateBack: () -> Unit,
-    onCopyToClipboard: suspend (String) -> Boolean,
-) {
-    val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
-    LaunchedEffect(viewModel, uriHandler) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                CredentialViewModel.CredentialEffect.NavigateBack -> onNavigateBack()
-                is CredentialViewModel.CredentialEffect.CopyToClipboard -> {
-                    val copied = try {
-                        onCopyToClipboard(effect.text)
-                    } catch (cancel: CancellationException) {
-                        throw cancel
-                    } catch (_: Exception) {
-                        false
-                    }
-                    viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyResult(copied))
-                }
-                is CredentialViewModel.CredentialEffect.LaunchUrl -> {
-                    val opened = try {
-                        uriHandler.openUri(effect.url)
-                        true
-                    } catch (_: Exception) {
-                        false
-                    }
-                    viewModel.onEvent(CredentialViewModel.CredentialEvent.OnUrlLaunchResult(opened))
-                }
-                else -> Unit
-            }
-        }
+        DeleteCredentialDialog(onEvent = onEvent)
     }
 }
 

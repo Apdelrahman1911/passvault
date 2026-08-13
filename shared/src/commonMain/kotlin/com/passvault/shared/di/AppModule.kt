@@ -22,6 +22,7 @@ import com.passvault.core.domain.repository.FolderRepository
 import com.passvault.core.domain.repository.TagRepository
 import com.passvault.core.domain.repository.VaultRepository
 import com.passvault.core.navigation.AppCommandDispatcher
+import com.passvault.core.navigation.ExternalNavigationDispatcher
 import com.passvault.core.otp.StandardTotpService
 import com.passvault.core.otp.TotpService
 import com.passvault.core.security.BiometricUnlockService
@@ -39,6 +40,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 /**
@@ -63,6 +65,7 @@ object AppModule {
         single<PasswordGenerator> { SecurePasswordGenerator(get()) }
         single { VaultKeyHierarchy(get()) }
         single { AppCommandDispatcher() }
+        single { ExternalNavigationDispatcher() }
         single { VaultUiSecurityCoordinator() }
         single<TotpService> { StandardTotpService() }
 
@@ -179,12 +182,16 @@ object AppModule {
         // Unlock
         single { UnlockViewModel(get(), get()) }
 
-        // Vault
+        // App/session-scoped roots. These owners coordinate secure teardown
+        // across every navigation entry and intentionally outlive one screen.
         single { VaultViewModel(get(), get(), get()) }
-        single { TwoFactorCodesViewModel(get(), get()) }
+        single { SettingsViewModel(get(), get(), get()) }
+        single { BackupViewModel(get(), get(), get()) }
 
-        // Credential
-        single {
+        // Navigation-entry-scoped state. Nav3's ViewModelStore decorator owns
+        // these instances, so a popped entry cannot retain sensitive UI state.
+        viewModel { TwoFactorCodesViewModel(get(), get()) }
+        viewModel {
             CredentialViewModel(
                 credentialRepository = get(),
                 folderRepository = get(),
@@ -196,15 +203,7 @@ object AppModule {
         }
 
         // Generator
-        single { GeneratorViewModel(get()) }
-
-        // Settings
-        single { SettingsViewModel(get(), get(), get()) }
-
-        // Backup
-        single { BackupViewModel(get(), get(), get()) }
-
-        // Health
-        single { HealthViewModel(get()) }
+        viewModel { GeneratorViewModel(get()) }
+        viewModel { HealthViewModel(get()) }
     }
 }

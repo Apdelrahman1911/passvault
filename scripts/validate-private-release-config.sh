@@ -710,7 +710,9 @@ validate_desktop_pkcs12() {
     local certificate_source_name="$5"
     local validation_root extracted_certificate subject team fingerprint eku
 
-    [[ -n "$certificate_path" && -n "${!password_name:-}" ]] || return
+    if [[ -z "$certificate_path" || -z "${!password_name:-}" ]]; then
+        return 0
+    fi
     validation_root="$temporary_root/${label// /-}-pkcs12"
     mkdir -m 700 "$validation_root"
     export PASSVAULT_DESKTOP_P12_PASSWORD="${!password_name}"

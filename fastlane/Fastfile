@@ -8,6 +8,18 @@ def required_env(name)
   value
 end
 
+def android_package_name
+  value = required_env("ANDROID_PACKAGE_NAME")
+  UI.user_error!("Unexpected Android Store identity") unless value == "com.passvault.android"
+  value
+end
+
+def ios_bundle_id
+  value = required_env("IOS_BUNDLE_ID")
+  UI.user_error!("Unexpected iOS Store identity") unless value == "com.passvault.ios"
+  value
+end
+
 def store_root
   File.expand_path(required_env("STORE_METADATA_ROOT"))
 end
@@ -43,7 +55,7 @@ def play_internal_upload
   upload_store_assets = ENV["UPLOAD_STORE_ASSETS"] == "true"
 
   upload_to_play_store(
-    package_name: required_env("ANDROID_PACKAGE_NAME"),
+    package_name: android_package_name,
     aab: aab,
     track: "internal",
     release_status: "completed",
@@ -64,7 +76,7 @@ def play_promote(from:, to:, release_status:)
 
   upload_store_assets = ENV["UPLOAD_STORE_ASSETS"] == "true"
   options = {
-    package_name: required_env("ANDROID_PACKAGE_NAME"),
+    package_name: android_package_name,
     json_key: credentials,
     track: from,
     track_promote_to: to,
@@ -130,7 +142,7 @@ def testflight_internal_upload
 
   options = {
     api_key: asc_api_key,
-    app_identifier: required_env("IOS_BUNDLE_ID"),
+    app_identifier: ios_bundle_id,
     apple_id: required_env("APP_STORE_APP_ID"),
     ipa: ipa,
     distribute_external: false,
@@ -169,7 +181,7 @@ end
 def distribute_existing_testflight_build
   options = {
     api_key: asc_api_key,
-    app_identifier: required_env("IOS_BUNDLE_ID"),
+    app_identifier: ios_bundle_id,
     apple_id: required_env("APP_STORE_APP_ID"),
     app_platform: "ios",
     distribute_only: true,
@@ -242,7 +254,7 @@ platform :ios do
     export_compliance_uses_non_exempt_encryption
     upload_to_app_store(
       api_key: asc_api_key,
-      app_identifier: required_env("IOS_BUNDLE_ID"),
+      app_identifier: ios_bundle_id,
       app_version: required_env("APP_VERSION"),
       build_number: required_env("BUILD_NUMBER"),
       metadata_path: File.join(store_root, "ios"),
@@ -267,7 +279,7 @@ platform :ios do
     end
     upload_to_app_store(
       api_key: asc_api_key,
-      app_identifier: required_env("IOS_BUNDLE_ID"),
+      app_identifier: ios_bundle_id,
       app_version: required_env("APP_VERSION"),
       build_number: required_env("BUILD_NUMBER"),
       screenshots_path: File.join(store_root, "ios-screenshots"),

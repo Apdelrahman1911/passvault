@@ -28,6 +28,10 @@ must not be interpreted as proof that version 1.0.0 was publicly shipped or inde
 ### UI and lifecycle
 
 - Consolidated duplicate screens and state machines.
+- Replaced the monolithic navigation shell with application-owned Navigation 3 state, typed routes, independent tab
+  stacks, feature route adapters, bounded navigation commands, and one guarded Back policy across platforms.
+- Added secure route quarantine/restoration and supported iOS interactive Back behavior with mirrored Arabic/RTL
+  direction and an explicit 200 ms iOS transition base without private recognizer hooks.
 - Reworked onboarding, unlock, vault, credential detail/editor, generator, health, settings, and backup surfaces with
   shared semantic tokens, secure fields, error/empty/loading states, and compact/expanded layouts.
 - Added operation-job admission/cancellation, rapid-submit protection, and sensitive editor-state cleanup on lock.

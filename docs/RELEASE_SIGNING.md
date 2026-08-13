@@ -21,7 +21,7 @@ canonical upload key was explicitly adopted on 6 August 2026. Its required alias
 7D:4D:11:20:B1:D1:9F:5B:B9:42:E0:6C:60:0F:2B:64:81:E5:E6:82:47:52:23:FA:4E:7D:C7:B2:7C:DB:10:37
 ```
 
-The signed `standardRelease` APK and AAB must both match this certificate. Do
+The signed `release` APK and AAB must both match this certificate. Do
 not generate or substitute a new keystore: an arbitrary key cannot update the
 existing Play app. Keep the registered keystore in the ignored path named by
 `ANDROID_UPLOAD_KEYSTORE_FILE` in `release/private/values.env`, with encrypted

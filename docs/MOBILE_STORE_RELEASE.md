@@ -85,7 +85,8 @@ Before merging `main` to `testing`, also run:
 ```bash
 ./gradlew test check detekt verifyDependencies
 ./gradlew :shared:compileKotlinIosSimulatorArm64
-./gradlew :app-android:assembleStandardDebug
+./gradlew :app-android:assembleDebug
+./scripts/validate-ios-build-identities.sh
 ./scripts/test-release-automation.sh
 ./scripts/verify-ios-release-signing.sh
 ```
@@ -114,3 +115,16 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
 Never reuse a store build number, move an existing tag, replace signing keys
 without a recorded rotation, or manually upload a different binary under the
 candidate version.
+
+## Application identities
+
+Local developer runs are deliberately separate from Store distribution:
+
+- Android Debug: PassVault Dev / `com.passvault.android.debug`.
+- iOS Debug: PassVault Dev / `com.passvault.ios.debug`.
+- Android Release and all Play tracks: PassVault / `com.passvault.android`.
+- iOS Release, TestFlight, and App Store: PassVault / `com.passvault.ios`.
+
+There is no testing flavor or testing bundle ID. Testing Candidate builds Release once, and later jobs promote the
+recorded version code or Apple build number without rebuilding. CI validates both canonical Store identifiers before
+creating receipts or performing an upload. F-Droid packaging is retired.

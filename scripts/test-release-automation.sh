@@ -561,6 +561,16 @@ ruby scripts/validate-mobile-artifact-receipt.rb \
     "$mobile_receipt_root/android-artifact-receipt.json" android "$version" 1000123 \
     0123456789abcdef0123456789abcdef01234567 \
     89abcdef0123456789abcdef0123456789abcdef "$mobile_receipt_root" >/dev/null
+debug_android_receipt="$temporary_root/debug-android-artifact-receipt.json"
+jq '.identifier = "com.passvault.android.debug"' \
+    "$mobile_receipt_root/android-artifact-receipt.json" > "$debug_android_receipt"
+if ruby scripts/validate-mobile-artifact-receipt.rb \
+    "$debug_android_receipt" android "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "A Development Android identity was accepted in a Store artifact receipt." >&2
+    exit 1
+fi
 
 printf 'signed-ipa\n' > "$mobile_receipt_root/PassVault-$version-1000123.ipa"
 printf 'signed-archive\n' > "$mobile_receipt_root/PassVault-$version-1000123.xcarchive.zip"
@@ -581,6 +591,16 @@ ruby scripts/validate-mobile-artifact-receipt.rb \
     "$mobile_receipt_root/ios-artifact-receipt.json" ios "$version" 1000123 \
     0123456789abcdef0123456789abcdef01234567 \
     89abcdef0123456789abcdef0123456789abcdef "$mobile_receipt_root" >/dev/null
+debug_ios_receipt="$temporary_root/debug-ios-artifact-receipt.json"
+jq '.identifier = "com.passvault.ios.debug"' \
+    "$mobile_receipt_root/ios-artifact-receipt.json" > "$debug_ios_receipt"
+if ruby scripts/validate-mobile-artifact-receipt.rb \
+    "$debug_ios_receipt" ios "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "A Development iOS identity was accepted in a Store artifact receipt." >&2
+    exit 1
+fi
 
 candidate_manifest="$temporary_root/candidate-manifest.json"
 APP_VERSION="$version" \
@@ -704,6 +724,13 @@ jq '.android.packageName = "com.passvault.android\nforged-output=value"' \
     "$temporary_root/readiness-manifest.json" > "$invalid_candidate_manifest"
 if ruby scripts/validate-candidate-manifest.rb "$invalid_candidate_manifest" >/dev/null 2>&1; then
     echo "A candidate manifest with an unsafe package identifier was accepted." >&2
+    exit 1
+fi
+debug_candidate_manifest="$temporary_root/debug-candidate-manifest.json"
+jq '.android.packageName = "com.passvault.android.debug" | .ios.bundleId = "com.passvault.ios.debug"' \
+    "$temporary_root/readiness-manifest.json" > "$debug_candidate_manifest"
+if ruby scripts/validate-candidate-manifest.rb "$debug_candidate_manifest" >/dev/null 2>&1; then
+    echo "Development application identities were accepted in candidate provenance." >&2
     exit 1
 fi
 invalid_app_id_manifest="$temporary_root/invalid-app-id-manifest.json"
@@ -1015,6 +1042,15 @@ grep -Fq 'Enforce App Store France availability constraint' \
     .github/workflows/mobile-store-release.yml
 grep -Fq 'IOS_FRANCE_AVAILABLE' fastlane/Fastfile
 bash -n scripts/verify-ios-release-signing.sh
+# The pattern intentionally matches a literal variable reference.
+# shellcheck disable=SC2016
+grep -Fq 'passvault_dotenv_load_file "$values_file"' scripts/verify-ios-release-signing.sh
+grep -Fq 'PassVault::PrivatePath.regular_file_within?' scripts/verify-ios-release-signing.sh
+grep -Fq 'IOS_BUNDLE_ID" != com.passvault.ios' scripts/verify-ios-release-signing.sh
+if grep -Fq './scripts/validate-private-release-config.sh' scripts/verify-ios-release-signing.sh; then
+  echo "The iOS-only signing verifier must not require unrelated production Desktop credentials." >&2
+  exit 1
+fi
 bash -n scripts/verify-android-signatures.sh
 android_build_script_fixture="$temporary_root/android-build-script"
 mkdir -p \
@@ -1386,19 +1422,31 @@ release_workflow = YAML.safe_load(File.read(".github/workflows/release.yml", enc
 end
 RUBY
 grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
+grep -Fq 'applicationIdSuffix = ".debug"' app-android/build.gradle.kts
+grep -Fq '<string name="app_name">PassVault Dev</string>' \
+    app-android/src/debug/res/values/strings.xml
+grep -Fq '<string name="app_name">PassVault Dev</string>' \
+    app-android/src/debug/res/values-ar/strings.xml
+grep -Fq '<string name="app_name">PassVault</string>' \
+    app-android/src/main/res/values/strings.xml
+grep -Fq '<string name="app_name">PassVault</string>' \
+    app-android/src/main/res/values-ar/strings.xml
+if grep -Eiq 'productFlavors|fdroid|applicationIdSuffix = "\.storescreenshot"' \
+    app-android/build.gradle.kts; then
+    echo "Android still defines an obsolete third application identity." >&2
+    exit 1
+fi
 grep -Fq -- '--no-configuration-cache' .github/workflows/mobile-store-release.yml
 grep -Fq -- '--no-configuration-cache' scripts/build-android.sh
 grep -Fq 'signing_environment_present' scripts/build-android.sh
 grep -Fq -- '"--no-configuration-cache"' scripts/build-signed-android.ps1
 grep -Fq -- '--no-configuration-cache' scripts/verify-release.sh
-grep -Fq ':app-android:lintFdroidRelease' scripts/build-android.sh
-grep -Fq ':app-android:lintFdroidRelease' scripts/verify-release.sh
-grep -Fq ':app-android:lintFdroidRelease' .github/workflows/ci.yml
-grep -Fq ':app-android:verifyStandardReleasePackageContents' scripts/build-android.sh
-grep -Fq ':app-android:verifyStandardReleaseBundleContents' scripts/build-android.sh
-grep -Fq ':app-android:verifyFdroidReleasePackageContents' scripts/build-android.sh
-grep -Fq ':app-android:verifyStandardDebugComposeResources' scripts/build-android.sh
-grep -Fq ':app-android:verifyStandardDebugComposeResources' .github/workflows/ci.yml
+grep -Fq ':app-android:lintRelease' scripts/build-android.sh
+grep -Fq ':app-android:lintRelease' scripts/verify-release.sh
+grep -Fq ':app-android:lintRelease' .github/workflows/ci.yml
+grep -Fq ':app-android:verifyReleasePackageContents' scripts/build-android.sh
+grep -Fq ':app-android:verifyDebugComposeResources' scripts/build-android.sh
+grep -Fq ':app-android:verifyDebugComposeResources' .github/workflows/ci.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/verify-release.sh
 grep -Fq ':app-android:verifyReleasePackageContents' .github/workflows/ci.yml
 grep -Fq 'listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")' \
@@ -1413,7 +1461,7 @@ for native_library in \
     grep -Fq "\"$native_library\"" app-android/build.gradle.kts
 done
 test "$(grep -Fc 'expectedNativeLibraries.set(expectedAndroidNativeLibraries)' \
-    app-android/build.gradle.kts)" -eq 4
+    app-android/build.gradle.kts)" -eq 3
 grep -Fq 'packagedNativeLibraryEntries == expectedNativeLibraryEntries' \
     app-android/build.gradle.kts
 grep -Fq 'select-android-build-tool.ps1' scripts/verify-android-signatures.ps1
@@ -1446,18 +1494,28 @@ if grep -Eq 'assets\.(srcDir|directories\.add).*generatedAndroidLegalAssets' \
     echo "Generated Android legal assets use the legacy SourceSet API." >&2
     exit 1
 fi
-test "$(grep -Fc 'legalEntryPrefix.set(' app-android/build.gradle.kts)" -eq 4
+test "$(grep -Fc 'legalEntryPrefix.set(' app-android/build.gradle.kts)" -eq 3
 grep -Fq 'Duplicate entries are present' app-android/build.gradle.kts
 grep -Fq 'verifyDesktopInstalledLegalNotices' app-desktop/build.gradle.kts
 grep -Fq 'THIRD_PARTY_LICENSES in Resources' iosApp/iosApp.xcodeproj/project.pbxproj
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-release-signing.sh
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-exported-artifact.sh
-grep -Fq ':app-android:verifyStandardReleasePackageContents' \
+grep -Fq ':app-android:verifyReleasePackageContents' \
     .github/workflows/mobile-store-release.yml
-grep -Fq ':app-android:verifyStandardReleaseBundleContents' \
+grep -Fq ':app-android:verifyReleasePackageContents' scripts/build-signed-android.ps1
+grep -Fq 'Mobile Store Release requires the canonical Store application identities.' \
     .github/workflows/mobile-store-release.yml
-grep -Fq ':app-android:verifyStandardReleasePackageContents' scripts/build-signed-android.ps1
-grep -Fq ':app-android:verifyStandardReleaseBundleContents' scripts/build-signed-android.ps1
+grep -Fq 'Unexpected Android Store identity' fastlane/Fastfile
+grep -Fq 'Unexpected iOS Store identity' fastlane/Fastfile
+bash -n scripts/validate-ios-build-identities.sh
+grep -Fq 'com.passvault.ios.debug' scripts/validate-ios-build-identities.sh
+grep -Fq 'com.passvault.ios' scripts/validate-ios-build-identities.sh
+if grep -Eq '^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=' \
+    iosApp/Configuration/Config.xcconfig; then
+    echo "The common Xcode configuration overrides the two application identities." >&2
+    exit 1
+fi
+grep -Fq -- '-configuration Release' .github/workflows/store-screenshots.yml
 grep -Fq 'readiness-manifest.json' .github/workflows/production-release.yml
 grep -Fq 'Candidate Readiness must run from testing.' .github/workflows/candidate-readiness.yml
 grep -Fq 'production-signing-validation.yml' .github/workflows/candidate-readiness.yml

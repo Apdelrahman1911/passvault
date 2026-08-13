@@ -3,7 +3,7 @@
 This document records the production runtime libraries resolved for PassVault's
 Android, iOS, and Desktop applications. Build plugins and test-only libraries
 are intentionally excluded. Versions below match the checked-in dependency
-configuration, the resolved Android Standard release and Desktop runtime
+configuration, the resolved Android release and Desktop runtime
 graphs, and the native archives linked into the iOS and Desktop applications.
 
 The full Apache License 2.0 text is distributed as [`LICENSE.txt`](LICENSE.txt).
@@ -94,7 +94,7 @@ checked for pinned-but-unused optional projects. Perfetto, Brotli, giflib,
 libheif, libavif, Highway, Graphite2, Fontations, Vulkan Memory Allocator, and
 SPIRV-Tools are not linked into the installed PassVault applications.
 
-The Android Standard and F-Droid release APKs are shrunk with R8. The R8 mapping
+The Android release APK is shrunk with R8. The R8 mapping
 and removed-code reports show that Guava is reduced to an obfuscated
 `ListenableFuture` interface, while Media3, JSpecify, Checker Framework, Error
 Prone, and J2ObjC classes are removed from the current APKs. They remain listed

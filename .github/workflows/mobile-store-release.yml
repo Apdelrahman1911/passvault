@@ -137,6 +137,7 @@ jobs:
       attestations: read
       contents: read
     env:
+      ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
       SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
@@ -144,6 +145,7 @@ jobs:
       PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
       SUPPORT_URL: ${{ vars.SUPPORT_URL }}
       PROJECT_URL: ${{ vars.PROJECT_URL }}
+      IOS_BUNDLE_ID: ${{ vars.IOS_BUNDLE_ID }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       version_code: ${{ steps.version.outputs.version_code }}
@@ -153,6 +155,11 @@ jobs:
 
       - name: Require the correct protected branch and confirmations
         run: |
+          if [[ "$ANDROID_PACKAGE_NAME" != com.passvault.android ||
+                "$IOS_BUNDLE_ID" != com.passvault.ios ]]; then
+            echo "Mobile Store Release requires the canonical Store application identities." >&2
+            exit 1
+          fi
           case "$REQUEST_PLATFORM" in both|android|ios) ;; *)
             echo "Platform must be both, android, or ios." >&2; exit 1 ;;
           esac
@@ -357,19 +364,18 @@ jobs:
         run: |
           ./gradlew \
             :app-android:verifyReleaseSigningConfiguration \
-            :app-android:assembleStandardRelease \
-            :app-android:bundleStandardRelease \
-            :app-android:lintStandardRelease \
-            :app-android:verifyStandardReleasePackageContents \
-            :app-android:verifyStandardReleaseBundleContents \
+            :app-android:assembleRelease \
+            :app-android:bundleRelease \
+            :app-android:lintRelease \
+            :app-android:verifyReleasePackageContents \
             --no-configuration-cache \
             -Ppassvault.requireReleaseSigning=true \
             -Ppassvault.versionName=${{ needs.validate.outputs.version }} \
             -Ppassvault.versionCode=${{ needs.validate.outputs.version_code }}
           ./scripts/verify-android-signatures.sh
           ruby scripts/validate-google-play-readiness.rb
-          echo "ANDROID_AAB_PATH=$GITHUB_WORKSPACE/app-android/build/outputs/bundle/standardRelease/app-android-standard-release.aab" >> "$GITHUB_ENV"
-          mapping="$GITHUB_WORKSPACE/app-android/build/outputs/mapping/standardRelease/mapping.txt"
+          echo "ANDROID_AAB_PATH=$GITHUB_WORKSPACE/app-android/build/outputs/bundle/release/app-android-release.aab" >> "$GITHUB_ENV"
+          mapping="$GITHUB_WORKSPACE/app-android/build/outputs/mapping/release/mapping.txt"
           if [[ ! -s "$mapping" ]]; then
             echo "The minified Android release did not produce an R8 mapping file." >&2
             exit 1
@@ -385,7 +391,7 @@ jobs:
         run: |
           provenance_root="$RUNNER_TEMP/passvault-android-provenance"
           install -d -m 700 "$provenance_root"
-          apk_source="$GITHUB_WORKSPACE/app-android/build/outputs/apk/standard/release/app-android-standard-release.apk"
+          apk_source="$GITHUB_WORKSPACE/app-android/build/outputs/apk/release/app-android-release.apk"
           install -m 600 "$ANDROID_AAB_PATH" \
             "$provenance_root/PassVault-$RECEIPT_VERSION-$RECEIPT_BUILD_NUMBER.aab"
           install -m 600 "$apk_source" \

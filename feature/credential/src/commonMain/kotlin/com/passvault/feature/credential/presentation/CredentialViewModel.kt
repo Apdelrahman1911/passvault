@@ -88,6 +88,11 @@ class CredentialViewModel(
         repository = attachmentRepository,
         fileStore = attachmentFileStore,
     )
+
+    override fun onCleared() {
+        clearForLock()
+        super.onCleared()
+    }
     private val eventRouter = CredentialEventRouter(
         state = _state,
         effect = _effect,

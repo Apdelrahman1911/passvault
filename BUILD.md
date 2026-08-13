@@ -17,18 +17,28 @@ Do not commit `local.properties`, keystores, certificates, signing passwords, re
 ```bash
 ./gradlew test
 ./gradlew detekt verifyDependencies
-./gradlew :app-android:assembleStandardDebug
+./gradlew :app-android:assembleDebug
 ./gradlew :app-desktop:run
 ```
 
-Android has `standard` and `fdroid` product flavors. Use an explicit flavor/build type in CI; a generic
-`assembleDebug` can build more variants than intended.
+Android has no product flavors. `debug` is the local PassVault Dev application
+(`com.passvault.android.debug`); `release` is the Store application (`com.passvault.android`). Android Studio's
+`app-android` Debug variant is therefore the safe default for Run. F-Droid packaging is retired.
+
+The shared Xcode `PassVault` scheme uses Debug for Run/Test/Analyze and Release for Profile/Archive. Debug installs
+PassVault Dev (`com.passvault.ios.debug`); Release preserves the App Store/TestFlight identity
+(`com.passvault.ios`).
+
+The CI-only `storeScreenshot` APK shares the Debug application ID and must be built separately with
+`./gradlew :app-android:assembleStoreScreenshot`. Do not combine screenshot packaging, every host/iOS test, and the
+optimized Release APK/AAB into one highly parallel Gradle invocation; the workflows intentionally isolate those
+memory-heavy stages and cap workers.
 
 ## Release verification
 
 ```bash
 ./gradlew clean test detekt check verifyDependencies
-./gradlew :app-android:assembleStandardRelease :app-android:bundleStandardRelease \
+./gradlew :app-android:assembleRelease :app-android:bundleRelease \
   -Ppassvault.versionName=1.2.3 -Ppassvault.versionCode=1002003
 ./gradlew :app-desktop:packageReleaseDistributionForCurrentOS -Ppassvault.versionName=1.2.3
 ```
