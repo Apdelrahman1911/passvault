@@ -54,6 +54,84 @@ cleanup() {
 }
 trap cleanup EXIT
 
+candidate_source_repository="$temporary_root/candidate-source"
+git init -q "$candidate_source_repository"
+git -C "$candidate_source_repository" config user.name "PassVault release test"
+git -C "$candidate_source_repository" config user.email "release-test@passvault.test"
+printf 'base\n' > "$candidate_source_repository/app.txt"
+git -C "$candidate_source_repository" add app.txt
+git -C "$candidate_source_repository" commit -qm "Create shared base"
+candidate_base="$(git -C "$candidate_source_repository" rev-parse HEAD)"
+
+git -C "$candidate_source_repository" checkout -qb reviewed-main
+printf 'reviewed\n' > "$candidate_source_repository/app.txt"
+git -C "$candidate_source_repository" commit -qam "Create reviewed main tree"
+approved_main_commit="$(git -C "$candidate_source_repository" rev-parse HEAD)"
+approved_main_tree="$(git -C "$candidate_source_repository" rev-parse "$approved_main_commit^{tree}")"
+
+git -C "$candidate_source_repository" checkout -qb rebased-testing "$candidate_base"
+printf 'reviewed\n' > "$candidate_source_repository/app.txt"
+git -C "$candidate_source_repository" commit -qam "Create protected rebase equivalent"
+rebased_candidate_commit="$(git -C "$candidate_source_repository" rev-parse HEAD)"
+test "$rebased_candidate_commit" != "$approved_main_commit"
+test "$(git -C "$candidate_source_repository" rev-parse "$rebased_candidate_commit^{tree}")" = \
+    "$approved_main_tree"
+if git -C "$candidate_source_repository" merge-base --is-ancestor \
+    "$approved_main_commit" "$rebased_candidate_commit"; then
+    echo "The protected-rebase fixture unexpectedly contains main." >&2
+    exit 1
+fi
+(
+    cd "$candidate_source_repository"
+    "$repository_root/scripts/validate-testing-candidate-source.sh" \
+        "$rebased_candidate_commit" "$approved_main_commit"
+) >/dev/null
+
+git -C "$candidate_source_repository" checkout -qb descendant-candidate "$approved_main_commit"
+printf 'reviewed follow-up\n' > "$candidate_source_repository/follow-up.txt"
+git -C "$candidate_source_repository" add follow-up.txt
+git -C "$candidate_source_repository" commit -qm "Create main descendant"
+descendant_candidate_commit="$(git -C "$candidate_source_repository" rev-parse HEAD)"
+(
+    cd "$candidate_source_repository"
+    "$repository_root/scripts/validate-testing-candidate-source.sh" \
+        "$descendant_candidate_commit" "$approved_main_commit"
+) >/dev/null
+
+git -C "$candidate_source_repository" checkout -qb divergent-candidate "$candidate_base"
+printf 'different\n' > "$candidate_source_repository/app.txt"
+git -C "$candidate_source_repository" commit -qam "Create divergent candidate"
+divergent_candidate_commit="$(git -C "$candidate_source_repository" rev-parse HEAD)"
+if (
+    cd "$candidate_source_repository"
+    "$repository_root/scripts/validate-testing-candidate-source.sh" \
+        "$divergent_candidate_commit" "$approved_main_commit"
+) >/dev/null 2>&1; then
+    echo "A candidate with different content was accepted." >&2
+    exit 1
+fi
+
+orphan_candidate_commit="$(
+    printf 'Create unrelated equivalent tree\n' |
+        git -C "$candidate_source_repository" commit-tree "$approved_main_tree"
+)"
+if (
+    cd "$candidate_source_repository"
+    "$repository_root/scripts/validate-testing-candidate-source.sh" \
+        "$orphan_candidate_commit" "$approved_main_commit"
+) >/dev/null 2>&1; then
+    echo "An unrelated candidate with a matching tree was accepted." >&2
+    exit 1
+fi
+if (
+    cd "$candidate_source_repository"
+    "$repository_root/scripts/validate-testing-candidate-source.sh" \
+        deadbeef "$approved_main_commit"
+) >/dev/null 2>&1; then
+    echo "A malformed candidate SHA was accepted." >&2
+    exit 1
+fi
+
 dotenv_fixture="$temporary_root/values.env"
 printf '%s\n' \
     '# parsed as data, never evaluated' \
@@ -1289,6 +1367,12 @@ abort("Unsafe iOS store asset lane: missing #{missing_options.join(', ')}") unle
 abort("iOS store asset maintenance must not submit for review") if asset_lane.include?("submit_for_review: true")
 RUBY
 grep -Fq 'needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]' \
+    .github/workflows/testing-release.yml
+bash -n scripts/validate-testing-candidate-source.sh
+grep -Fq 'git rev-parse FETCH_HEAD' .github/workflows/testing-release.yml
+# Workflow variables must be matched literally.
+# shellcheck disable=SC2016
+grep -Fq 'validate-testing-candidate-source.sh "$GITHUB_SHA" "$MAIN_SHA"' \
     .github/workflows/testing-release.yml
 for workflow_path in \
     .github/workflows/testing-release.yml \
