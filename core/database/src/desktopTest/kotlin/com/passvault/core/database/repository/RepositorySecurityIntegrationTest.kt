@@ -32,9 +32,11 @@ import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.repository.LockReason
 import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricCapability
+import com.passvault.core.security.BiometricFailureReason
 import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.BiometricKeyStoreException
 import com.passvault.core.security.BiometricOperationResult
+import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -914,6 +916,41 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
     }
 
     @Test
+    fun `biometric unlock preserves invalidation reported while checking enrollment`() = runTest {
+        createAndUnlockVault()
+        assertTrue(vaultRepository.lock().isSuccess)
+        val keyStore = object : BiometricKeyStore {
+            override suspend fun getCapability(): BiometricCapability = BiometricCapability(
+                type = BiometricType.TOUCH_ID,
+                availability = BiometricAvailability.AVAILABLE,
+            )
+
+            override suspend fun contains(vaultId: String): Boolean =
+                throw BiometricKeyStoreException.Invalidated()
+
+            override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> =
+                Result.failure(BiometricKeyStoreException.Invalidated())
+
+            override suspend fun retrieve(vaultId: String): Result<ByteArray> =
+                Result.failure(BiometricKeyStoreException.Invalidated())
+
+            override suspend fun delete(vaultId: String): Result<Unit> = Result.success(Unit)
+        }
+        val service = DefaultBiometricUnlockService(
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            keyStore = keyStore,
+            cryptoEngine = cryptoEngine,
+        )
+
+        assertEquals(
+            BiometricOperationResult.Failure(BiometricFailureReason.INVALIDATED),
+            service.unlock(),
+        )
+        assertFalse(vaultRepository.isUnlocked())
+    }
+
+    @Test
     fun `lock waits for an active session lease and wipes its key`() = runTest {
         createAndUnlockVault()
         val leaseEntered = CompletableDeferred<Unit>()
@@ -947,6 +984,68 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
 }
 
 class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
+
+    @Test
+    fun `lock cancels a platform prompt before waiting for an active session lease`() = runTest {
+        val cancellationObserved = CompletableDeferred<Unit>()
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = cryptoEngine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(cryptoEngine),
+            biometricPromptController = BiometricPromptController {
+                cancellationObserved.complete(Unit)
+            },
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val leaseEntered = CompletableDeferred<Unit>()
+        val releaseLease = CompletableDeferred<Unit>()
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            val lease = async(Dispatchers.Default) {
+                repository.withUnlockedSession {
+                    leaseEntered.complete(Unit)
+                    releaseLease.await()
+                }
+            }
+            leaseEntered.await()
+
+            val locking = async(Dispatchers.Default) { repository.lock(LockReason.AutoLock) }
+            cancellationObserved.await()
+            assertFalse(locking.isCompleted, "Lock must still wait for key-lease cleanup")
+
+            releaseLease.complete(Unit)
+            lease.await()
+            assertTrue(locking.await().isSuccess)
+            assertFalse(repository.isUnlocked())
+        } finally {
+            releaseLease.complete(Unit)
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `platform prompt cancellation failure cannot prevent vault locking`() = runTest {
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = cryptoEngine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(cryptoEngine),
+            biometricPromptController = BiometricPromptController {
+                error("simulated platform cancellation failure")
+            },
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            assertTrue(repository.lockAndRun(LockReason.Restore) { true })
+            assertFalse(repository.isUnlocked())
+        } finally {
+            password.clear()
+        }
+    }
 
     @Test
     fun `failed key wipe still removes the live key and reaches terminal locked state`() = runTest {

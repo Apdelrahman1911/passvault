@@ -118,6 +118,42 @@ class NavigationBackCoordinatorTest {
         assertEquals(BackDisposition.PopNow, coordinator.effectiveDisposition())
     }
 
+    @Test
+    fun `policy composed while Face ID is inactive recovers when the host resumes`() {
+        val navigator = unlockedNavigatorWithDetail()
+        navigator.setHostResumed(false)
+        val coordinator = NavigationBackCoordinator(navigator)
+        val inactiveToken = navigator.currentToken(entryResumed = false)
+        var cleanup = 0
+        coordinator.register(
+            BackRegistration(
+                token = inactiveToken,
+                disposition = navigator.defaultBackDisposition(),
+                handleInPlace = {},
+                beforePop = { cleanup++ },
+                blocksForwardNavigation = false,
+            ),
+        )
+
+        assertEquals(BackDisposition.Blocked, coordinator.effectiveDisposition(hostResumed = false))
+        assertFalse(coordinator.canLeaveForForwardNavigation())
+        assertEquals(
+            NavigationMutation.Rejected(
+                com.passvault.core.navigation.NavigationRejection.HostInactive,
+            ),
+            coordinator.completeInteractivePop(),
+        )
+        assertEquals(0, cleanup)
+
+        navigator.setHostResumed(true)
+
+        assertEquals(BackDisposition.PopNow, coordinator.effectiveDisposition(hostResumed = true))
+        assertTrue(coordinator.canLeaveForForwardNavigation())
+        assertTrue(coordinator.requestBack())
+        assertEquals(1, cleanup)
+        assertEquals(listOf(VaultRoute.Vault), navigator.state.activeStack())
+    }
+
     private fun unlockedNavigatorWithDetail(): AppNavigator = unlockedNavigator().also { navigator ->
         navigator.push(VaultRoute.CredentialDetail(CREDENTIAL_ID), navigator.currentToken())
     }

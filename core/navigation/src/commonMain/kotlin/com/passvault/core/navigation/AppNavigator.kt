@@ -53,6 +53,8 @@ class AppNavigator(
         hostResumed = resumed
     }
 
+    fun isHostResumed(): Boolean = hostResumed
+
     fun normalizeBootstrap(initialRoute: PassVaultRoute) {
         state.normalizeBootstrap(initialRoute)
         access = if (initialRoute == AuthRoute.Onboarding) {
@@ -103,11 +105,24 @@ class AppNavigator(
     fun isCurrent(token: NavigationToken, requireResumed: Boolean = true): Boolean =
         validateToken(token, requireResumed) == null
 
+    /**
+     * Checks durable entry identity without treating a temporary platform
+     * lifecycle pause as a different destination. This is suitable for
+     * looking up policy registered by the current entry; mutations must still
+     * use the lifecycle-gated APIs below.
+     */
+    fun isCurrentEntry(token: NavigationToken): Boolean =
+        validateToken(
+            token = token,
+            requireResumed = false,
+            requireHostResumed = false,
+        ) == null
+
     fun canPop(token: NavigationToken = currentToken()): Boolean =
-        isCurrent(token, requireResumed = false) && state.activeStack().size > 1
+        isCurrentEntry(token) && state.activeStack().size > 1
 
     fun previousRoute(token: NavigationToken): PassVaultRoute? =
-        if (isCurrent(token, requireResumed = false)) state.previousRoute() else null
+        if (isCurrentEntry(token)) state.previousRoute() else null
 
     fun push(route: PassVaultRoute, token: NavigationToken): NavigationMutation {
         require(route.requiresUnlockedVault()) { "Use pushAuthentication for authentication routes" }
@@ -230,7 +245,6 @@ class AppNavigator(
     }
 
     fun defaultBackDisposition(conservativeGuard: Boolean = false): BackDisposition {
-        if (!hostResumed) return BackDisposition.Blocked
         val route = state.currentRoute()
         if (state.activeStack().size > 1) {
             if (conservativeGuard && route.requiresExplicitBackRegistration()) {
@@ -318,12 +332,13 @@ class AppNavigator(
     private fun validateToken(
         token: NavigationToken,
         requireResumed: Boolean = true,
+        requireHostResumed: Boolean = true,
     ): NavigationRejection? = when {
         token.sessionGeneration != sessionGeneration -> NavigationRejection.StaleSession
         token.root != state.root.value -> NavigationRejection.EntryInactive
         token.destination != state.selectedDestination.value -> NavigationRejection.EntryInactive
         token.route != state.currentRoute() -> NavigationRejection.EntryInactive
-        !hostResumed -> NavigationRejection.HostInactive
+        requireHostResumed && !hostResumed -> NavigationRejection.HostInactive
         requireResumed && !token.entryResumed -> NavigationRejection.EntryInactive
         else -> null
     }

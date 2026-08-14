@@ -3,6 +3,8 @@ package com.passvault.shared.di
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.core.security.ClipboardService
 import com.passvault.core.security.BiometricKeyStore
+import com.passvault.core.security.BiometricPromptController
+import com.passvault.core.security.NoOpBiometricPromptController
 import com.passvault.feature.backup.BackupFileStore
 import com.passvault.feature.credential.AttachmentFileStore
 import com.passvault.shared.platform.IosAppSettingsStore
@@ -18,6 +20,7 @@ val iosModule = module {
     single<AppSettingsStore> { IosAppSettingsStore() }
     single<ClipboardService> { IosClipboardService() }
     single<BiometricKeyStore> { IosBiometricKeyStore() }
+    single<BiometricPromptController> { NoOpBiometricPromptController }
     single<BackupFileStore> { IosBackupFileStore() }
     single<AttachmentFileStore> { IosAttachmentFileStore() }
 }

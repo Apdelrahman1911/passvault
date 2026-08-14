@@ -156,11 +156,12 @@ internal fun PassVaultNavigationHost(
     val currentSessionState by rememberUpdatedState(sessionState)
     val settingsState by context.settingsViewModel.state.collectAsState()
     val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+    val hostResumed = lifecycleState == Lifecycle.State.RESUMED
     var previousSessionPhase by remember { mutableStateOf(SessionPhase.UNINITIALIZED) }
     var pendingSecurityAcknowledgement by remember { mutableLongStateOf(0L) }
 
-    DisposableEffect(navigator, lifecycleState) {
-        navigator.setHostResumed(lifecycleState == Lifecycle.State.RESUMED)
+    DisposableEffect(navigator, hostResumed) {
+        navigator.setHostResumed(hostResumed)
         onDispose { navigator.setHostResumed(false) }
     }
     DisposableEffect(userActivitySignal) { onDispose(userActivitySignal::close) }
@@ -195,7 +196,7 @@ internal fun PassVaultNavigationHost(
         dispatcher = runtime.externalDispatcher,
         validator = runtime.validator,
         sessionState = sessionState,
-        hostResumed = lifecycleState == Lifecycle.State.RESUMED,
+        hostResumed = hostResumed,
     )
     ObserveAutoLock(
         context = context,
@@ -204,13 +205,14 @@ internal fun PassVaultNavigationHost(
         userActivitySignal = userActivitySignal,
     )
 
-    NavigationDisplay(context = context, userActivitySignal = userActivitySignal)
+    NavigationDisplay(context, userActivitySignal, hostResumed)
 }
 
 @Composable
 private fun NavigationDisplay(
     context: RouteAdapterContext,
     userActivitySignal: UserActivitySignal,
+    hostResumed: Boolean,
 ) {
     val state = context.navigator.state
     val root by state.root.collectAsState()
@@ -218,8 +220,7 @@ private fun NavigationDisplay(
     val layoutDirection = LocalLayoutDirection.current
     val entryCollections = rememberNavigationEntryCollections(context)
     val activeEntries = entryCollections.active(root, selected)
-    val disposition = context.backCoordinator.effectiveDisposition()
-    val shellToken = context.navigator.currentToken()
+    val disposition = context.backCoordinator.effectiveDisposition(hostResumed)
     val visibleEntries = entriesAllowedByBackPolicy(activeEntries, disposition)
     val transitions = remember(layoutDirection) {
         platformNavigationTransitionSpecs(layoutDirection)
@@ -239,19 +240,14 @@ private fun NavigationDisplay(
             selectedTab = selected,
             onSelectedTab = { destination ->
                 if (context.backCoordinator.canLeaveForForwardNavigation()) {
-                    context.navigator.selectTab(destination, shellToken).checkExpected()
+                    selectShellTab(context, destination)
                 } else if (disposition == BackDisposition.HandleInPlace) {
                     context.backCoordinator.requestBack()
                 }
             },
             onAdd = {
                 if (context.backCoordinator.canLeaveForForwardNavigation()) {
-                    context.navigator.openInTab(
-                        destination = TopLevelDestination.HOME,
-                        route = VaultRoute.CredentialCreate(),
-                        resetStack = false,
-                        token = shellToken,
-                    ).checkExpected()
+                    openCredentialCreate(context)
                 } else if (disposition == BackDisposition.HandleInPlace) {
                     context.backCoordinator.requestBack()
                 }
@@ -270,6 +266,19 @@ private fun NavigationDisplay(
         )
         ConsumeGuardedPlatformBack(disposition, context.backCoordinator)
     }
+}
+
+private fun selectShellTab(context: RouteAdapterContext, destination: TopLevelDestination) {
+    context.navigator.selectTab(destination, context.navigator.currentToken()).checkExpected()
+}
+
+private fun openCredentialCreate(context: RouteAdapterContext) {
+    context.navigator.openInTab(
+        destination = TopLevelDestination.HOME,
+        route = VaultRoute.CredentialCreate(),
+        resetStack = false,
+        token = context.navigator.currentToken(),
+    ).checkExpected()
 }
 
 internal fun isApplicationBackKey(key: Key, type: KeyEventType): Boolean =

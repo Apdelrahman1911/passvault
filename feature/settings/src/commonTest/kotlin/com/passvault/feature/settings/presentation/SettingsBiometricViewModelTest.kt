@@ -45,7 +45,7 @@ class SettingsBiometricViewModelTest {
             setStatus(
                 availability = BiometricAvailability.AVAILABLE,
                 enabled = false,
-                type = BiometricType.FACE,
+                type = BiometricType.FACE_ID,
             )
         }
     }
@@ -68,7 +68,7 @@ class SettingsBiometricViewModelTest {
         assertEquals(1, biometricService.enableCalls)
         assertTrue(viewModel.state.value.isBiometricEnabled)
         assertFalse(viewModel.state.value.isBiometricLoading)
-        assertEquals(BiometricType.FACE, viewModel.state.value.biometricType)
+        assertEquals(BiometricType.FACE_ID, viewModel.state.value.biometricType)
     }
 
     @Test
@@ -93,6 +93,23 @@ class SettingsBiometricViewModelTest {
         assertFalse(viewModel.state.value.isBiometricEnabled)
         assertFalse(viewModel.state.value.isBiometricLoading)
         assertNull(viewModel.state.value.errorMessage)
+    }
+
+    @Test
+    fun `an unavailable enrolled method can still be explicitly disabled`() = runTest(dispatcher) {
+        biometricService.setStatus(
+            availability = BiometricAvailability.NOT_ENROLLED,
+            enabled = true,
+            type = BiometricType.WINDOWS_HELLO,
+        )
+        val viewModel = createViewModel()
+        runCurrent()
+
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnBiometricUnlockChanged(false))
+        runCurrent()
+
+        assertEquals(1, biometricService.disableCalls)
+        assertFalse(viewModel.state.value.isBiometricEnabled)
     }
 
     @Test

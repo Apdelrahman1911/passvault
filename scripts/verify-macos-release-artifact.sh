@@ -37,7 +37,7 @@ case "$require_stapled" in true|false) ;; *)
     ;;
 esac
 
-for command_name in codesign file find plutil readlink ruby spctl xcrun; do
+for command_name in codesign file find otool plutil readlink ruby shasum spctl xcrun; do
     command -v "$command_name" >/dev/null 2>&1 || {
         echo "$command_name is required for macOS release verification." >&2
         exit 1
@@ -111,6 +111,57 @@ verify_signature_details() {
 
 codesign --verify --deep --strict --verbose=2 "$app_path" >/dev/null 2>&1
 verify_signature_details "$app_path"
+
+bridge_count="$(find "$app_path" -type f -name 'libpassvault_biometric.dylib' | wc -l | tr -d ' ')"
+manifest_count="$(find "$app_path" -type f -name 'bridge.properties' | wc -l | tr -d ' ')"
+if [[ "$bridge_count" != 1 || "$manifest_count" != 1 ]]; then
+    echo "Expected exactly one macOS biometric bridge and manifest; found $bridge_count bridge(s) and $manifest_count manifest(s)." >&2
+    exit 1
+fi
+bridge_path="$(find "$app_path" -type f -name 'libpassvault_biometric.dylib' -print)"
+bridge_manifest="$(find "$app_path" -type f -name 'bridge.properties' -print)"
+if [[ "$(dirname "$bridge_path")" != "$(dirname "$bridge_manifest")" ]]; then
+    echo "The macOS biometric bridge and manifest are not co-located." >&2
+    exit 1
+fi
+case "$(uname -m)" in
+    arm64) biometric_platform="macos-arm64" ;;
+    x86_64) biometric_platform="macos-x64" ;;
+    *)
+        echo "Unsupported macOS release architecture: $(uname -m)" >&2
+        exit 1
+        ;;
+esac
+expected_bridge_directory="$app_path/Contents/app/resources/native/$biometric_platform"
+if [[ "$(dirname "$bridge_path")" != "$expected_bridge_directory" ]]; then
+    echo "The macOS biometric bridge is outside its reviewed platform resource directory." >&2
+    exit 1
+fi
+if [[ "$(find "$expected_bridge_directory" -mindepth 1 -maxdepth 1 -print | wc -l | tr -d ' ')" != 2 ]]; then
+    echo "The macOS biometric bridge resource directory contains unexpected entries." >&2
+    exit 1
+fi
+if [[ "$(wc -l < "$bridge_manifest" | tr -d ' ')" != 5 ]] ||
+    ! grep -Fqx 'abi=1' "$bridge_manifest" ||
+    ! grep -Fqx "platform=$biometric_platform" "$bridge_manifest" ||
+    ! grep -Fqx 'library=libpassvault_biometric.dylib' "$bridge_manifest" ||
+    ! grep -Fqx 'integrity=sha256-or-developer-id' "$bridge_manifest" ||
+    ! grep -Eq '^sha256=[0-9a-f]{64}$' "$bridge_manifest"; then
+    echo "The macOS biometric bridge manifest violates release policy." >&2
+    exit 1
+fi
+if ! otool -D "$bridge_path" | tail -n +2 | grep -Fqx '@loader_path/libpassvault_biometric.dylib'; then
+    echo "The macOS biometric bridge has an unsafe install name." >&2
+    exit 1
+fi
+manifest_checksum="$(sed -n 's/^sha256=//p' "$bridge_manifest")"
+actual_checksum="$(shasum -a 256 "$bridge_path" | awk '{print $1}')"
+if [[ "$actual_checksum" != "$manifest_checksum" ]]; then
+    # Signing changes Mach-O bytes after the unsigned staging checksum is
+    # emitted. The mandatory nested Developer ID verification below is the
+    # authenticated release binding in this case.
+    verify_signature_details "$bridge_path"
+fi
 
 signed_macho_count=0
 while IFS= read -r -d '' candidate; do

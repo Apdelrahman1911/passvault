@@ -3,7 +3,9 @@ package com.passvault.desktop
 import androidx.compose.ui.window.application
 import com.passvault.desktop.di.desktopModule
 import com.passvault.shared.PassVaultApp
-import org.koin.core.context.GlobalContext.startKoin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import org.koin.core.context.GlobalContext
 import org.koin.core.logger.Level
 import java.awt.GraphicsEnvironment
 import java.awt.SplashScreen
@@ -25,11 +27,28 @@ fun main() {
     // Setup desktop environment
     setupDesktopEnvironment()
 
+    val exitCode = runDesktopApplication()
+    System.exit(exitCode)
+}
+
+// The process boundary must still perform terminal cleanup after startup failures.
+@Suppress("TooGenericExceptionCaught")
+private fun runDesktopApplication(): Int = try {
     // Initialize Koin DI
     initializeKoin()
+    val shutdownCoordinator = createDesktopShutdownCoordinator(GlobalContext.get())
 
-    // Launch the application
-    launchApplication()
+    try {
+        // Launch the application
+        launchApplication(shutdownCoordinator)
+    } finally {
+        shutdownCoordinator.requestShutdown()
+        finishDesktopRuntime(shutdownCoordinator)
+    }
+    0
+} catch (_: Exception) {
+    System.err.println("PassVault Desktop terminated after an application failure.")
+    1
 }
 
 /**
@@ -67,7 +86,7 @@ private fun setupDesktopEnvironment() {
  * Initialize Koin dependency injection.
  */
 private fun initializeKoin() {
-    startKoin {
+    GlobalContext.startKoin {
         printLogger(Level.ERROR) // Reduce logging noise
         modules(
             com.passvault.shared.di.AppModule.getAllModules(desktopModule)
@@ -78,14 +97,30 @@ private fun initializeKoin() {
 /**
  * Launch the desktop application window.
  */
-private fun launchApplication() {
+private fun launchApplication(shutdownCoordinator: DesktopShutdownCoordinator) {
     application {
         PassVaultDesktopWindow(
+            shutdownCoordinator = shutdownCoordinator,
             onCloseRequest = { exitApplication() },
         ) {
             PassVaultApp()
         }
     }
+}
+
+private fun finishDesktopRuntime(shutdownCoordinator: DesktopShutdownCoordinator) {
+    val report = shutdownCoordinator.awaitCleanup(DESKTOP_SHUTDOWN_TIMEOUT_MILLIS)
+    if (!report.completed) {
+        System.err.println(
+            "PassVault security cleanup exceeded the Desktop shutdown deadline; terminating the process fail-closed.",
+        )
+        return
+    }
+    if (report.failureCount > 0) {
+        System.err.println("PassVault Desktop shutdown completed with ${report.failureCount} cleanup failure(s).")
+    }
+    runCatching { GlobalContext.get().get<CoroutineScope>().cancel() }
+    runCatching { GlobalContext.stopKoin() }
 }
 
 /**
@@ -198,3 +233,5 @@ object AppInfo {
 
     fun getVersionString(): String = "$NAME v$VERSION"
 }
+
+private const val DESKTOP_SHUTDOWN_TIMEOUT_MILLIS = 2_500L

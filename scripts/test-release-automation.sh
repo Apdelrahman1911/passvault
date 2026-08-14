@@ -1784,6 +1784,7 @@ if command -v pwsh >/dev/null 2>&1; then
         scripts/prepare-signpath-windows-request.ps1 \
         scripts/prepare-windows-runtime-signing.ps1 \
         scripts/sign-windows-artifacts.ps1 \
+        scripts/update-desktop-biometric-checksum.ps1 \
         scripts/verify-windows-release-artifacts.ps1; do
         # PowerShell source is intentionally single-quoted so Bash cannot expand it.
         # shellcheck disable=SC2016
@@ -1815,6 +1816,23 @@ grep -Fq 'create-windows-signing-catalog.ps1' .github/workflows/release.yml
 grep -Fq 'prepare-windows-runtime-signing.ps1' .github/workflows/release.yml
 grep -Fq 'package-signed-windows-installers.ps1' .github/workflows/release.yml
 grep -Fq 'verify-windows-release-artifacts.ps1' .github/workflows/release.yml
+grep -Fq 'update-desktop-biometric-checksum.ps1' .github/workflows/release.yml
+grep -Fq ':app-desktop:desktopTest --stacktrace' .github/workflows/ci.yml
+grep -Fq 'verifyDesktopInstalledBiometricBridge' app-desktop/build.gradle.kts
+grep -Fq 'passvault.requireInstalledMacOsBiometric' app-desktop/build.gradle.kts
+grep -Fq 'timestamped Developer ID Application signatures with Hardened Runtime' \
+    app-desktop/build.gradle.kts
+grep -Fq 'Packaged macOS biometric code lacks the owning app' \
+    app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt
+grep -Fq 'testDesktopBiometricBridge' app-desktop/build.gradle.kts
+grep -Fq 'passvault_biometric_windows_security_test' \
+    app-desktop/native/biometric-bridge/CMakeLists.txt
+grep -Fq 'passvault_biometric_macos_security_test' \
+    app-desktop/native/biometric-bridge/CMakeLists.txt
+grep -Fq 'passvault_biometric\.dll' scripts/prepare-windows-runtime-signing.ps1
+grep -Fq 'passvault_biometric.dll' scripts/package-signed-windows-installers.ps1
+grep -Fq 'passvault_biometric.dll' scripts/verify-windows-release-artifacts.ps1
+grep -Fq 'libpassvault_biometric.dylib' scripts/verify-macos-release-artifact.sh
 grep -Fq 'prevent_self_review: true' scripts/configure-github-mobile-release.sh
 grep -Fq 'Required reviewer exists and self-review is prevented' \
     scripts/configure-github-mobile-release.sh
@@ -1852,14 +1870,20 @@ namespace = { "s" => "http://signpath.io/artifact-configuration/v1" }
 parameters = REXML::XPath.match(document, "/s:artifact-configuration/s:parameters/s:parameter", namespace)
 abort("Unexpected SignPath request parameters") unless
   parameters.map { |parameter| parameter.attributes["name"] }.sort == %w[publisher version]
-pe = REXML::XPath.first(document, "/s:artifact-configuration/s:zip-file/s:pe-file", namespace)
+pes = REXML::XPath.match(document, "/s:artifact-configuration/s:zip-file/s:pe-file", namespace)
+pe = pes.find { |element| element.attributes["path"] == "files/**/PassVault*.exe" }
+bridge = pes.find do |element|
+  element.attributes["path"] ==
+    "files/**/app/resources/native/windows-x64/passvault_biometric.dll"
+end
 msi = REXML::XPath.first(document, "/s:artifact-configuration/s:zip-file/s:msi-file", namespace)
 abort("Missing bounded SignPath PE/MSI patterns") unless
-  pe && %w[path min-matches max-matches].map { |name| pe.attributes[name] } ==
+  pes.length == 2 && pe && %w[path min-matches max-matches].map { |name| pe.attributes[name] } ==
     ["files/**/PassVault*.exe", "1", "1"] &&
+  bridge && %w[min-matches max-matches].map { |name| bridge.attributes[name] } == ["0", "1"] &&
   msi && %w[path min-matches max-matches].map { |name| msi.attributes[name] } ==
     ["files/**/PassVault-*.msi", "0", "1"]
-[pe, msi].each do |element|
+[pe, bridge, msi].each do |element|
   directive = REXML::XPath.first(element, "s:authenticode-sign", namespace)
   abort("SignPath must use SHA-256 Authenticode") unless
     directive && directive.attributes["hash-algorithm"] == "sha256"

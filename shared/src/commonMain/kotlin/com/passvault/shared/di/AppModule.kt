@@ -79,6 +79,9 @@ object AppModule {
     val databaseModule = module {
         // Database
         single { createDatabase(get()) }
+        single<AppDatabaseLifecycle> {
+            AppDatabaseLifecycle { get<VaultDatabase>().close() }
+        }
         single { createAttachmentBlobStore(get()) }
 
         // DAOs
@@ -144,6 +147,7 @@ object AppModule {
                 vaultMetadataDao = get(),
                 cryptoEngine = get(),
                 keyHierarchy = get(),
+                biometricPromptController = get(),
             )
         }
         single<VaultRepository> { get<VaultRepositoryImpl>() }

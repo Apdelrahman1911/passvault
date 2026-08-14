@@ -1,6 +1,6 @@
 # Threat model
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-14
 
 ## Assets
 
@@ -33,8 +33,10 @@ this codebase.
 | Newer clipboard data erased | ownership token/value check before expiration clear |
 | Background/manual exposure | centralized session lock and best-effort VEK wipe |
 | Screenshot capture on Android | `FLAG_SECURE` on sensitive host windows |
-| Copied mobile device with biometric enabled | Android Keystore auth-per-use key or device-only iOS Keychain item; candidate VEK is verified before session publication |
-| Biometric enrollment changes | Android key invalidation and iOS `biometryCurrentSet`; failed release removes app enrollment state |
+| Copied device with biometric enabled | Android Keystore, device-only Apple Keychain, or Windows Hello WebAuthn PRF; candidate VEK is verified before session publication |
+| Biometric/credential changes | Android key invalidation, Apple `biometryCurrentSet`, and Windows credential/key-loss failure; failed release removes app enrollment state |
+| Prompt-only authorization bypass | macOS Keychain and Windows WebAuthn PRF cryptographically gate VEK/wrapping-key release; UI consent alone is insufficient |
+| Native bridge replacement | fixed resource path, strict manifest/checksum, production signature validation, nested signing, and release artifact inspection |
 | Malformed TOTP enrollment | strict local URI/Base32 parsing, bounded parameters, and QR image limits |
 | Dependency replacement | committed SHA-256 Gradle verification metadata |
 
@@ -59,6 +61,11 @@ this codebase.
   common code.
 - Biometric prompts and enrollment invalidation depend on OS behavior and require physical-device testing. A
   compromised unlocked process can still copy the active VEK before platform enrollment.
+- Windows Hello does not expose an equivalent to Apple's per-biometric-set invalidation. Its platform credential can
+  remain valid after a new face/fingerprint is added; device/account credential reset or key loss invalidates it.
+- Windows cannot atomically replace its platform credential and PassVault's local authenticated envelope. The new
+  envelope is committed first; failed cleanup can leave an unusable old credential without the current envelope.
+  Cleanup and deletion are always scoped by the trusted RP plus vault hash, never by an unauthenticated local ID.
 - Publisher signing/notarization, secure update delivery, an independent penetration test, and a disclosure channel
   are external release dependencies.
 
