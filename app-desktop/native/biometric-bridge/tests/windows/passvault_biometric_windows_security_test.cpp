@@ -10,6 +10,24 @@
   } while (false)
 
 int main() {
+  const std::wstring context_suffix = random_suffix();
+  PV_TEST_CHECK(!context_suffix.empty());
+  const std::filesystem::path context_root =
+      std::filesystem::temp_directory_path() /
+      (std::wstring(L"passvault-biometric-context-") + context_suffix);
+  std::error_code filesystem_error;
+  PV_TEST_CHECK(
+      std::filesystem::create_directory(context_root, filesystem_error));
+  const std::u8string context_root_utf8 = context_root.u8string();
+  pv_bio_context *context = nullptr;
+  PV_TEST_CHECK(
+      pv_bio_create(reinterpret_cast<const char *>(context_root_utf8.data()),
+                    context_root_utf8.size(), &context) == PV_BIO_OK);
+  PV_TEST_CHECK(context != nullptr);
+  pv_bio_destroy(context);
+  std::filesystem::remove_all(context_root, filesystem_error);
+  PV_TEST_CHECK(!filesystem_error);
+
   PV_TEST_CHECK(credential_inventory_is_authoritative(PV_BIO_AVAILABLE));
   PV_TEST_CHECK(
       !credential_inventory_is_authoritative(PV_BIO_AVAILABILITY_NOT_ENROLLED));
