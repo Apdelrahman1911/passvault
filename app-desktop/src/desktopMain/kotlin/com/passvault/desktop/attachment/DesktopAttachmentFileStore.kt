@@ -330,10 +330,24 @@ internal fun cleanupAbandonedDesktopAttachmentPreviews(
     temporaryRoot: Path = Path.of(System.getProperty("java.io.tmpdir")),
 ) {
     val root = temporaryRoot.toRealPath(LinkOption.NOFOLLOW_LINKS)
-    val currentUserHome = Path.of(System.getProperty("user.home")).toRealPath()
-    val currentOwner = Files.getOwner(currentUserHome, LinkOption.NOFOLLOW_LINKS)
+    val currentOwner = currentProcessOwnerFor(root)
     Files.newDirectoryStream(root).use { entries ->
         entries.forEach { candidate -> cleanupDesktopPreviewCandidate(candidate, currentOwner) }
+    }
+}
+
+/**
+ * Resolve the process's effective file owner on the same filesystem as the
+ * preview root. On Windows, an administrator token can give the user profile
+ * and newly-created temporary files different owners, so using user.home as
+ * the identity oracle incorrectly leaves abandoned plaintext previews behind.
+ */
+private fun currentProcessOwnerFor(root: Path): UserPrincipal {
+    val probe = Files.createTempFile(root, ".passvault-owner-probe-", ".tmp")
+    return try {
+        Files.getOwner(probe, LinkOption.NOFOLLOW_LINKS)
+    } finally {
+        Files.deleteIfExists(probe)
     }
 }
 

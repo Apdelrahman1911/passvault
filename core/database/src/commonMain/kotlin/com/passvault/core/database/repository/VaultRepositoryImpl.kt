@@ -17,6 +17,8 @@ import com.passvault.core.domain.model.VaultMetadata
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.repository.LockReason
 import com.passvault.core.domain.repository.VaultRepository
+import com.passvault.core.security.BiometricPromptController
+import com.passvault.core.security.NoOpBiometricPromptController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +40,7 @@ class VaultRepositoryImpl(
     private val vaultMetadataDao: VaultMetadataDao,
     private val cryptoEngine: CryptoEngine,
     private val keyHierarchy: VaultKeyHierarchy,
+    private val biometricPromptController: BiometricPromptController = NoOpBiometricPromptController,
 ) : VaultRepository, VaultSessionManager {
 
     private val sessionMutex = Mutex()
@@ -252,8 +255,9 @@ class VaultRepositoryImpl(
             }
         }
 
-    override suspend fun lock(reason: LockReason): Result<Unit> =
-        sessionMutex.withLock {
+    override suspend fun lock(reason: LockReason): Result<Unit> {
+        cancelBiometricPromptBeforeLock()
+        return sessionMutex.withLock {
             try {
                 clearSessionLocked(reason)
                 Result.success(Unit)
@@ -263,6 +267,7 @@ class VaultRepositoryImpl(
                 Result.failure(IllegalStateException("Unable to lock vault"))
             }
         }
+    }
 
     override suspend fun changeMasterPassword(
         currentPassword: SensitiveText,
@@ -391,12 +396,22 @@ class VaultRepositoryImpl(
     override suspend fun <T> lockAndRun(
         reason: LockReason,
         block: suspend () -> T,
-    ): T = sessionMutex.withLock {
-        if (_sessionState.value !is VaultSessionState.Unlocked || currentVek == null) {
-            throw VaultSessionLockedException()
+    ): T {
+        cancelBiometricPromptBeforeLock()
+        return sessionMutex.withLock {
+            if (_sessionState.value !is VaultSessionState.Unlocked || currentVek == null) {
+                throw VaultSessionLockedException()
+            }
+            clearSessionLocked(reason)
+            block()
         }
-        clearSessionLocked(reason)
-        block()
+    }
+
+    private fun cancelBiometricPromptBeforeLock() {
+        // Locking must remain fail-closed even if a platform cancellation API
+        // itself fails. The session transition still proceeds and wipes the
+        // repository-owned key as soon as any active lease settles.
+        runCatching { biometricPromptController.cancelActive() }
     }
 
     internal fun isUnlocked(): Boolean = _sessionState.value is VaultSessionState.Unlocked && currentVek != null

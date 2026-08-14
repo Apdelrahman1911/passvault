@@ -413,6 +413,7 @@ class SettingsViewModel(
                     isBiometricLoading = false,
                     biometricAvailability = when (result.reason) {
                         BiometricFailureReason.NOT_ENROLLED -> BiometricAvailability.NOT_ENROLLED
+                        BiometricFailureReason.LOCKED_OUT -> BiometricAvailability.LOCKED_OUT
                         BiometricFailureReason.NOT_AVAILABLE -> BiometricAvailability.UNAVAILABLE
                         else -> current.biometricAvailability
                     },
@@ -654,6 +655,7 @@ private fun SettingsViewModel.SettingsState.beginPasswordChange(): SettingsViewM
 private fun BiometricFailureReason.toSettingsMessage(): UiText = when (this) {
     BiometricFailureReason.NOT_AVAILABLE -> uiText(Res.string.error_biometric_unavailable)
     BiometricFailureReason.NOT_ENROLLED -> uiText(Res.string.error_biometric_not_enrolled)
+    BiometricFailureReason.LOCKED_OUT -> uiText(Res.string.error_biometric_locked_out)
     BiometricFailureReason.NOT_ENABLED -> uiText(Res.string.error_biometric_not_enabled)
     BiometricFailureReason.INVALIDATED -> uiText(Res.string.error_biometric_invalidated)
     BiometricFailureReason.VAULT_LOCKED -> uiText(Res.string.error_biometric_vault_locked)

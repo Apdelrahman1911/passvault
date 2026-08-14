@@ -21,6 +21,7 @@ INTENTIONALLY_LANGUAGE_NEUTRAL = Set.new(
     ui_passvault
     ui_percent
     ui_touch_id
+    ui_windows_hello
   ]
 ).freeze
 FORMAT_TOKEN = /%(?:\d+\$[a-zA-Z]|%)/

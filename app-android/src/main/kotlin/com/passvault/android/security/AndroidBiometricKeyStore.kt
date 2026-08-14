@@ -95,8 +95,17 @@ class AndroidBiometricKeyStore(
                 if (vaultKey.size != VAULT_KEY_BYTES) {
                     return@withContext Result.failure(BiometricKeyStoreException.AuthenticationFailed())
                 }
-                if (getCapability().availability != BiometricAvailability.AVAILABLE) {
-                    return@withContext Result.failure(BiometricKeyStoreException.NotAvailable())
+                when (getCapability().availability) {
+                    BiometricAvailability.AVAILABLE -> Unit
+                    BiometricAvailability.NOT_ENROLLED -> {
+                        return@withContext Result.failure(BiometricKeyStoreException.NotEnrolled())
+                    }
+                    BiometricAvailability.LOCKED_OUT -> {
+                        return@withContext Result.failure(BiometricKeyStoreException.LockedOut())
+                    }
+                    BiometricAvailability.UNAVAILABLE -> {
+                        return@withContext Result.failure(BiometricKeyStoreException.NotAvailable())
+                    }
                 }
 
                 val suffix = vaultSuffix(vaultId)
@@ -307,6 +316,9 @@ private fun Int.toBiometricException(): BiometricKeyStoreException = when (this)
     BiometricPrompt.ERROR_USER_CANCELED,
     -> BiometricKeyStoreException.Cancelled()
     BiometricPrompt.ERROR_NO_BIOMETRICS -> BiometricKeyStoreException.NotEnrolled()
+    BiometricPrompt.ERROR_LOCKOUT,
+    BiometricPrompt.ERROR_LOCKOUT_PERMANENT,
+    -> BiometricKeyStoreException.LockedOut()
     BiometricPrompt.ERROR_HW_NOT_PRESENT,
     BiometricPrompt.ERROR_HW_UNAVAILABLE,
     -> BiometricKeyStoreException.NotAvailable()

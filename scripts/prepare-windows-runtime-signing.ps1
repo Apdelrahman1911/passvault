@@ -62,8 +62,12 @@ foreach ($nativeFile in $nativeFiles) {
         }
         $preserved++
     } elseif ($signature.Status -eq [Management.Automation.SignatureStatus]::NotSigned) {
-        if ($nativeFile.Name -cne "PassVault.exe" -or
-            $nativeFile.VersionInfo.ProductName -cne "PassVault") {
+        $relative = [IO.Path]::GetRelativePath($root.FullName, $nativeFile.FullName).Replace('\', '/')
+        $isPassVaultLauncher = $nativeFile.Name -ceq "PassVault.exe" -and
+            $nativeFile.VersionInfo.ProductName -ceq "PassVault"
+        $isBiometricBridge = $relative -cmatch
+            '^(?:[^/]+/)?app/resources/native/windows-x64/passvault_biometric\.dll$'
+        if (-not $isPassVaultLauncher -and -not $isBiometricBridge) {
             throw "Refusing to claim an unsigned third-party native file as PassVault: $($nativeFile.FullName)"
         }
         $unsigned.Add($nativeFile.FullName)

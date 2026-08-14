@@ -68,6 +68,10 @@ fun UnlockScreen(
     val focusManager = LocalFocusManager.current
     val passwordFocusRequester = remember { FocusRequester() }
 
+    LaunchedEffect(Unit) {
+        onEvent(UnlockViewModel.UnlockEvent.OnUnlockScreenReady)
+    }
+
     LaunchedEffect(state.isBiometricStatusLoaded, state.canUseBiometrics) {
         if (state.isBiometricStatusLoaded && !state.canUseBiometrics) {
             passwordFocusRequester.requestFocus()
@@ -354,8 +358,9 @@ private fun BiometricUnlockButton(
 ) {
     val biometricLabel = stringResource(
         when (state.biometricType) {
-            BiometricType.FACE -> Res.string.ui_unlock_with_face_id
-            BiometricType.FINGERPRINT -> Res.string.ui_unlock_with_touch_id
+            BiometricType.FACE_ID -> Res.string.ui_unlock_with_face_id
+            BiometricType.TOUCH_ID -> Res.string.ui_unlock_with_touch_id
+            BiometricType.WINDOWS_HELLO -> Res.string.ui_unlock_with_windows_hello
             BiometricType.GENERIC -> Res.string.ui_unlock_with_biometrics
         },
     )
@@ -369,10 +374,12 @@ private fun BiometricUnlockButton(
             CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
         } else {
             Icon(
-                imageVector = if (state.biometricType == BiometricType.FACE) {
-                    Icons.Default.Face
-                } else {
-                    Icons.Default.Fingerprint
+                imageVector = when (state.biometricType) {
+                    BiometricType.FACE_ID -> Icons.Default.Face
+                    BiometricType.TOUCH_ID -> Icons.Default.Fingerprint
+                    BiometricType.WINDOWS_HELLO,
+                    BiometricType.GENERIC,
+                    -> Icons.Default.Lock
                 },
                 contentDescription = biometricLabel,
             )

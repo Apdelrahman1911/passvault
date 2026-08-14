@@ -33,10 +33,11 @@ internal class NavigationBackCoordinator(
 
     private fun activeRegistration(): BackRegistration? =
         registrations[navigator.state.currentRoute()]?.takeIf { candidate ->
-            navigator.isCurrent(candidate.token, requireResumed = false)
+            navigator.isCurrentEntry(candidate.token)
         }
 
-    fun effectiveDisposition(): BackDisposition {
+    fun effectiveDisposition(hostResumed: Boolean = navigator.isHostResumed()): BackDisposition {
+        if (!hostResumed) return BackDisposition.Blocked
         val current = activeRegistration()
         val disposition = current?.disposition ?: navigator.defaultBackDisposition(conservativeGuard = true)
         return if (disposition == BackDisposition.PopNow && !navigator.canPop()) {
@@ -47,12 +48,13 @@ internal class NavigationBackCoordinator(
     }
 
     fun requestBack(): Boolean {
+        if (!navigator.isHostResumed()) return true
         val active = activeRegistration()
         return when (active?.disposition ?: navigator.defaultBackDisposition(conservativeGuard = true)) {
             BackDisposition.PopNow -> {
                 val token = active?.token ?: navigator.currentToken()
                 active?.beforePop?.invoke()
-                navigator.pop(token) is NavigationMutation.Applied
+                navigator.popAfterGuard(token) is NavigationMutation.Applied
             }
             BackDisposition.HandleInPlace -> {
                 if (active != null) {
@@ -68,22 +70,40 @@ internal class NavigationBackCoordinator(
     }
 
     fun canLeaveForForwardNavigation(): Boolean {
-        val active = activeRegistration()
-        if (active == null) {
-            return navigator.defaultBackDisposition(conservativeGuard = true) != BackDisposition.Blocked
+        return if (!navigator.isHostResumed()) {
+            false
+        } else {
+            val active = activeRegistration()
+            if (active == null) {
+                navigator.defaultBackDisposition(conservativeGuard = true) != BackDisposition.Blocked
+            } else {
+                active.disposition != BackDisposition.Blocked && !active.blocksForwardNavigation
+            }
         }
-        return active.disposition != BackDisposition.Blocked && !active.blocksForwardNavigation
     }
 
     fun completeInteractivePop(): NavigationMutation {
-        val active = activeRegistration()?.takeIf { candidate ->
-            candidate.disposition == BackDisposition.PopNow &&
-                navigator.isCurrent(candidate.token, requireResumed = false)
-        } ?: return NavigationMutation.Rejected(
-            com.passvault.core.navigation.NavigationRejection.EntryInactive,
-        )
-        active.beforePop()
-        return navigator.pop(active.token)
+        val hostResumed = navigator.isHostResumed()
+        val active = if (hostResumed) {
+            activeRegistration()?.takeIf { candidate ->
+                candidate.disposition == BackDisposition.PopNow &&
+                    navigator.isCurrentEntry(candidate.token)
+            }
+        } else {
+            null
+        }
+        return when {
+            !hostResumed -> NavigationMutation.Rejected(
+                com.passvault.core.navigation.NavigationRejection.HostInactive,
+            )
+            active == null -> NavigationMutation.Rejected(
+                com.passvault.core.navigation.NavigationRejection.EntryInactive,
+            )
+            else -> {
+                active.beforePop()
+                navigator.popAfterGuard(active.token)
+            }
+        }
     }
 
     internal fun register(value: BackRegistration) {
