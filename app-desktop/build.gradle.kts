@@ -1,19 +1,27 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.desktop.application.tasks.AbstractJLinkTask
+import org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.testing.Test
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 import java.util.Properties
+import java.util.concurrent.TimeUnit
 import java.util.zip.ZipFile
 
 abstract class ValidateDesktopPublisherMetadata : DefaultTask() {
@@ -52,6 +60,331 @@ abstract class ValidateDesktopPublisherMetadata : DefaultTask() {
         const val MAX_EMAIL_LENGTH = 254
         const val MAX_LOCAL_PART_LENGTH = 64
         const val MAX_DOMAIN_LENGTH = 253
+    }
+}
+
+abstract class StageDesktopBiometricBridge : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sourceLibrary: RegularFileProperty
+
+    @get:Input
+    abstract val platform: Property<String>
+
+    @get:Input
+    abstract val libraryName: Property<String>
+
+    @get:Input
+    abstract val integrityPolicy: Property<String>
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun stage() {
+        val source = sourceLibrary.get().asFile
+        check(source.isFile && !Files.isSymbolicLink(source.toPath())) {
+            "The expected native biometric bridge was not produced."
+        }
+        val platformDirectory = outputDirectory.get().dir(platform.get()).asFile
+        if (platformDirectory.exists()) {
+            check(platformDirectory.deleteRecursively()) {
+                "Unable to clear the staged native biometric directory."
+            }
+        }
+        check(platformDirectory.mkdirs()) {
+            "Unable to create the staged native biometric directory."
+        }
+        val destination = platformDirectory.resolve(libraryName.get())
+        Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        val digest = MessageDigest.getInstance("SHA-256")
+        destination.inputStream().use { input ->
+            val buffer = ByteArray(8192)
+            while (true) {
+                val count = input.read(buffer)
+                if (count < 0) break
+                digest.update(buffer, 0, count)
+            }
+            buffer.fill(0)
+        }
+        val checksum = digest.digest().joinToString(separator = "") { byte ->
+            "%02x".format(byte.toInt() and 0xff)
+        }
+        platformDirectory.resolve("bridge.properties").writeText(
+            "abi=1\n" +
+            "platform=${platform.get()}\n" +
+                "library=${libraryName.get()}\n" +
+                "integrity=${integrityPolicy.get()}\n" +
+                "sha256=$checksum\n",
+        )
+    }
+}
+
+abstract class VerifyDesktopInstalledBiometricBridge : DefaultTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val distributableDirectory: DirectoryProperty
+
+    @get:Input
+    abstract val platform: Property<String>
+
+    @get:Input
+    abstract val libraryName: Property<String>
+
+    @get:Input
+    abstract val integrityPolicy: Property<String>
+
+    @get:Input
+    abstract val requireMacOsDeveloperId: Property<Boolean>
+
+    @TaskAction
+    fun verify() {
+        val root = distributableDirectory.get().asFile
+        check(root.isDirectory && !Files.isSymbolicLink(root.toPath())) {
+            "The Desktop distributable is missing or unsafe."
+        }
+        val bridgeFiles = findBridgeFiles(root)
+        if (platform.get() == UNSUPPORTED_PLATFORM) {
+            check(bridgeFiles.isEmpty()) {
+                "Unsupported Desktop targets must not package a biometric bridge."
+            }
+            return
+        }
+
+        val (manifestFile, library) = resolveBridgeResources(bridgeFiles)
+        verifyReviewedLocation(library)
+        val entries = readBridgeManifest(manifestFile)
+        verifyManifestPolicy(entries)
+        verifyBridgeIntegrity(root, library, entries.getValue("sha256"))
+    }
+
+    private fun findBridgeFiles(root: File): List<File> = root.walkTopDown()
+        .filter { candidate ->
+            candidate.isFile && (
+                candidate.name == "bridge.properties" ||
+                    candidate.name == "libpassvault_biometric.dylib" ||
+                    candidate.name == "passvault_biometric.dll"
+                )
+        }
+        .toList()
+
+    private fun resolveBridgeResources(bridgeFiles: List<File>): Pair<File, File> {
+        check(bridgeFiles.size == 2 && bridgeFiles.none { Files.isSymbolicLink(it.toPath()) }) {
+            "The Desktop image must contain exactly one biometric bridge and one manifest."
+        }
+        val manifestFile = bridgeFiles.singleOrNull { it.name == "bridge.properties" }
+            ?: error("The Desktop biometric bridge manifest is missing.")
+        val library = bridgeFiles.singleOrNull { it.name == libraryName.get() }
+            ?: error("The Desktop biometric bridge library is missing.")
+        check(manifestFile.parentFile == library.parentFile) {
+            "The Desktop biometric bridge and manifest must be co-located."
+        }
+        return manifestFile to library
+    }
+
+    private fun verifyReviewedLocation(library: File) {
+        val normalizedPath = library.parentFile.toPath().toAbsolutePath().normalize()
+        val suffix = listOf("resources", "native", platform.get())
+        check(normalizedPath.nameCount >= suffix.size && suffix.indices.all { index ->
+            normalizedPath.getName(normalizedPath.nameCount - suffix.size + index).toString() == suffix[index]
+        }) {
+            "The Desktop biometric bridge is outside the reviewed resource path."
+        }
+    }
+
+    private fun readBridgeManifest(manifestFile: File): Map<String, String> {
+        val entries = linkedMapOf<String, String>()
+        manifestFile.readLines(Charsets.UTF_8).forEach { line ->
+            val match = MANIFEST_LINE.matchEntire(line)
+                ?: error("The Desktop biometric bridge manifest is malformed.")
+            check(entries.put(match.groupValues[1], match.groupValues[2]) == null) {
+                "The Desktop biometric bridge manifest has duplicate keys."
+            }
+        }
+        return entries
+    }
+
+    private fun verifyManifestPolicy(entries: Map<String, String>) {
+        check(entries.keys == MANIFEST_KEYS) {
+            "The Desktop biometric bridge manifest has missing or extra keys."
+        }
+        check(
+            entries.getValue("abi") == "1" &&
+                entries.getValue("platform") == platform.get() &&
+                entries.getValue("library") == libraryName.get() &&
+                entries.getValue("integrity") == integrityPolicy.get() &&
+                SHA256.matches(entries.getValue("sha256")),
+        ) {
+            "The Desktop biometric bridge manifest violates package policy."
+        }
+    }
+
+    private fun verifyBridgeIntegrity(root: File, library: File, expectedChecksum: String) {
+        val checksumMatches = sha256(library).equals(expectedChecksum, ignoreCase = true)
+        if (platform.get().startsWith("macos-")) {
+            verifyMacOsBridgeIntegrity(root, library, checksumMatches)
+        } else {
+            check(checksumMatches) {
+                "The packaged Desktop biometric bridge is not checksum-bound."
+            }
+        }
+    }
+
+    private fun verifyMacOsBridgeIntegrity(root: File, library: File, checksumMatches: Boolean) {
+        check(integrityPolicy.get() == "sha256-or-developer-id") {
+            "The packaged macOS biometric bridge has an invalid integrity policy."
+        }
+        val appBundle = findSafeMacOsAppBundle(root)
+        val hasDeveloperIdProtection = hasMatchingDeveloperIdProtection(library, appBundle)
+        if (requireMacOsDeveloperId.get()) {
+            check(hasDeveloperIdProtection) {
+                "Installed macOS biometric support requires the bridge and owning app to share valid " +
+                    "timestamped Developer ID Application signatures with Hardened Runtime."
+            }
+        } else {
+            check(checksumMatches || hasValidAdHocPackageSignature(library, appBundle)) {
+                "The unsigned macOS candidate bridge is neither checksum-bound nor validly ad-hoc packaged."
+            }
+        }
+    }
+
+    private fun findSafeMacOsAppBundle(root: File): File =
+        root.listFiles().orEmpty().filter { candidate ->
+            candidate.isDirectory &&
+                candidate.extension == "app" &&
+                !Files.isSymbolicLink(candidate.toPath())
+        }.singleOrNull() ?: error("The Desktop image must contain exactly one safe macOS app bundle.")
+
+    private fun hasMatchingDeveloperIdProtection(library: File, appBundle: File): Boolean {
+        val libraryDetails = codeSigningDetails(library)
+        val appDetails = codeSigningDetails(appBundle)
+        return libraryDetails != null &&
+            appDetails != null &&
+            libraryDetails.teamIdentifier == appDetails.teamIdentifier &&
+            libraryDetails.isDeveloperId &&
+            appDetails.isDeveloperId &&
+            libraryDetails.hasHardenedRuntime &&
+            appDetails.hasHardenedRuntime &&
+            libraryDetails.hasTimestamp &&
+            appDetails.hasTimestamp &&
+            verifyCodeSignature(library) &&
+            verifyCodeSignature(appBundle)
+    }
+
+    private fun hasValidAdHocPackageSignature(library: File, appBundle: File): Boolean =
+        hasAdHocSignature(library) &&
+            hasAdHocSignature(appBundle) &&
+            verifyCodeSignature(library) &&
+            verifyCodeSignature(appBundle)
+
+    private fun hasAdHocSignature(file: File): Boolean {
+        val result = runCodeSign("--display", "--verbose=4", file.absolutePath)
+            ?.takeIf { value -> value.exitCode == 0 && value.output.length <= MAX_CODESIGN_OUTPUT_CHARS }
+            ?: return false
+        val pairs = result.output.lineSequence().mapNotNull { line ->
+            val separator = line.indexOf('=')
+            if (separator <= 0 || separator == line.lastIndex) null
+            else line.substring(0, separator) to line.substring(separator + 1)
+        }.toMap()
+        return pairs["Signature"] == "adhoc" && pairs["TeamIdentifier"] == "not set"
+    }
+
+    private fun sha256(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buffer = ByteArray(8192)
+            try {
+                while (true) {
+                    val count = input.read(buffer)
+                    if (count < 0) break
+                    digest.update(buffer, 0, count)
+                }
+            } finally {
+                buffer.fill(0)
+            }
+        }
+        return digest.digest().joinToString(separator = "") { byte ->
+            "%02x".format(byte.toInt() and 0xff)
+        }
+    }
+
+    private fun verifyCodeSignature(file: File): Boolean {
+        val result = runCodeSign("--verify", "--strict", file.absolutePath)
+        return result?.exitCode == 0
+    }
+
+    private fun codeSigningDetails(file: File): CodeSigningDetails? {
+        return runCodeSign("--display", "--verbose=4", file.absolutePath)
+            ?.takeIf { value -> value.exitCode == 0 && value.output.length <= MAX_CODESIGN_OUTPUT_CHARS }
+            ?.let { result -> codeSigningDetails(result) }
+    }
+
+    private fun codeSigningDetails(result: CodeSignResult): CodeSigningDetails? {
+        val pairs = result.output.lineSequence().mapNotNull(::parseCodeSignPair).toList()
+        return pairs.firstOrNull { it.first == "TeamIdentifier" }
+            ?.second
+            ?.takeIf(TEAM_ID::matches)
+            ?.let { teamIdentifier ->
+                val authority = pairs.firstOrNull { it.first == "Authority" }?.second.orEmpty()
+                val codeDirectory = result.output.lineSequence()
+                    .firstOrNull { it.startsWith("CodeDirectory ") }
+                    .orEmpty()
+                val timestamp = pairs.firstOrNull { it.first == "Timestamp" }?.second.orEmpty()
+                CodeSigningDetails(
+                    teamIdentifier = teamIdentifier,
+                    isDeveloperId = authority.startsWith("Developer ID Application:") &&
+                        authority.endsWith("($teamIdentifier)"),
+                    hasHardenedRuntime = codeDirectory.contains("(runtime)"),
+                    hasTimestamp = timestamp.isNotBlank() && timestamp != "none",
+                )
+            }
+    }
+
+    private fun parseCodeSignPair(line: String): Pair<String, String>? {
+        val separator = line.indexOf('=')
+        return if (separator <= 0 || separator == line.lastIndex) null
+        else line.substring(0, separator) to line.substring(separator + 1)
+    }
+
+    private fun runCodeSign(vararg arguments: String): CodeSignResult? {
+        return File("/usr/bin/codesign").takeIf(File::isFile)?.let { codesign ->
+            val process = runCatching {
+                ProcessBuilder(listOf(codesign.absolutePath) + arguments)
+                    .redirectErrorStream(true)
+                    .start()
+            }.getOrNull() ?: return@let null
+            if (process.waitFor(CODESIGN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                val output = process.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
+                    val buffer = CharArray(MAX_CODESIGN_OUTPUT_CHARS + 1)
+                    val count = reader.read(buffer)
+                    if (count < 0) "" else String(buffer, 0, count)
+                }
+                CodeSignResult(process.exitValue(), output)
+            } else {
+                process.destroyForcibly()
+                process.waitFor()
+                null
+            }
+        }
+    }
+
+    private data class CodeSigningDetails(
+        val teamIdentifier: String,
+        val isDeveloperId: Boolean,
+        val hasHardenedRuntime: Boolean,
+        val hasTimestamp: Boolean,
+    )
+
+    private data class CodeSignResult(val exitCode: Int, val output: String)
+
+    private companion object {
+        const val UNSUPPORTED_PLATFORM = "unsupported"
+        val MANIFEST_KEYS = setOf("abi", "platform", "library", "integrity", "sha256")
+        val MANIFEST_LINE = Regex("([a-z][a-z0-9_]{0,31})=([A-Za-z0-9._-]{1,256})")
+        val SHA256 = Regex("[0-9a-f]{64}")
+        val TEAM_ID = Regex("[A-Z0-9]{10}")
+        const val CODESIGN_TIMEOUT_SECONDS = 10L
+        const val MAX_CODESIGN_OUTPUT_CHARS = 16 * 1024
     }
 }
 
@@ -398,6 +731,112 @@ val publisherSupportEmail = configuredPublisherValue("SUPPORT_EMAIL").orEmpty()
 val resourcesDirectory = project.layout.projectDirectory.dir("resources")
 val generatedDesktopAppResources =
     project.layout.buildDirectory.dir("generated/desktopAppResources")
+val configuredMacJPackageJavaHome =
+    System.getenv("MACOS_JPACKAGE_JAVA_HOME")
+        ?.takeUnless(String::isBlank)
+        ?.let(::file)
+val nativeBiometricSourceDirectory = project.layout.projectDirectory.dir("native/biometric-bridge")
+val nativeBiometricBuildDirectory = project.layout.buildDirectory.dir("native-biometric/current")
+val nativeBiometricStagingDirectory = project.layout.buildDirectory.dir("native-biometric/staged")
+val hostOperatingSystem = System.getProperty("os.name").lowercase()
+val hostArchitecture = System.getProperty("os.arch").lowercase()
+val nativeBiometricPlatform = when {
+    hostOperatingSystem.contains("mac") && hostArchitecture in setOf("aarch64", "arm64") -> "macos-arm64"
+    hostOperatingSystem.contains("mac") && hostArchitecture in setOf("amd64", "x86_64") -> "macos-x64"
+    hostOperatingSystem.contains("win") && hostArchitecture in setOf("amd64", "x86_64") -> "windows-x64"
+    else -> null
+}
+val nativeBiometricLibraryName = when {
+    nativeBiometricPlatform?.startsWith("macos-") == true -> "libpassvault_biometric.dylib"
+    nativeBiometricPlatform == "windows-x64" -> "passvault_biometric.dll"
+    else -> null
+}
+val configureDesktopBiometricBridge = nativeBiometricPlatform?.let { platform ->
+    tasks.register<Exec>("configureDesktopBiometricBridge") {
+        group = "build setup"
+        description = "Configures the reviewed native biometric bridge for $platform."
+        inputs.dir(nativeBiometricSourceDirectory)
+        outputs.file(nativeBiometricBuildDirectory.map { directory ->
+            directory.file("CMakeCache.txt")
+        })
+        val command = mutableListOf(
+            "cmake",
+            "-S",
+            nativeBiometricSourceDirectory.asFile.absolutePath,
+            "-B",
+            nativeBiometricBuildDirectory.get().asFile.absolutePath,
+            "-DCMAKE_BUILD_TYPE=Release",
+        )
+        if (platform.startsWith("macos-")) {
+            command += "-DCMAKE_OSX_ARCHITECTURES=${if (platform.endsWith("arm64")) "arm64" else "x86_64"}"
+        }
+        commandLine(command)
+    }
+}
+val buildDesktopBiometricBridge = configureDesktopBiometricBridge?.let { configureTask ->
+    tasks.register<Exec>("buildDesktopBiometricBridge") {
+        group = "build"
+        description = "Builds the reviewed native biometric bridge."
+        dependsOn(configureTask)
+        inputs.dir(nativeBiometricSourceDirectory)
+        outputs.files(
+            nativeBiometricBuildDirectory.map { directory ->
+                if (nativeBiometricPlatform == "windows-x64") {
+                    directory.file("Release/$nativeBiometricLibraryName")
+                } else {
+                    directory.file(requireNotNull(nativeBiometricLibraryName))
+                }
+            },
+        )
+        commandLine(
+            "cmake",
+            "--build",
+            nativeBiometricBuildDirectory.get().asFile.absolutePath,
+            "--config",
+            "Release",
+            "--parallel",
+        )
+    }
+}
+val testDesktopBiometricBridge = buildDesktopBiometricBridge?.let { buildTask ->
+    tasks.register<Exec>("testDesktopBiometricBridge") {
+        group = "verification"
+        description = "Runs native biometric ABI and platform security tests."
+        dependsOn(buildTask)
+        commandLine(
+            "ctest",
+            "--test-dir",
+            nativeBiometricBuildDirectory.get().asFile.absolutePath,
+            "--build-config",
+            "Release",
+            "--output-on-failure",
+        )
+    }
+}
+val stageDesktopBiometricBridge = buildDesktopBiometricBridge?.let { buildTask ->
+    tasks.register<StageDesktopBiometricBridge>("stageDesktopBiometricBridge") {
+        group = "build setup"
+        description = "Stages the native biometric bridge with a strict checksum manifest."
+        dependsOn(buildTask)
+        sourceLibrary.set(nativeBiometricBuildDirectory.map { directory ->
+            if (nativeBiometricPlatform == "windows-x64") {
+                directory.file("Release/$nativeBiometricLibraryName")
+            } else {
+                directory.file(requireNotNull(nativeBiometricLibraryName))
+            }
+        })
+        platform.set(requireNotNull(nativeBiometricPlatform))
+        libraryName.set(requireNotNull(nativeBiometricLibraryName))
+        integrityPolicy.set(
+            if (nativeBiometricPlatform.startsWith("macos-")) {
+                "sha256-or-developer-id"
+            } else {
+                "sha256"
+            },
+        )
+        outputDirectory.set(nativeBiometricStagingDirectory)
+    }
+}
 val prepareDesktopAppResources =
     tasks.register<Sync>("prepareDesktopAppResources") {
         group = "build setup"
@@ -415,6 +854,12 @@ val prepareDesktopAppResources =
         }
         from(rootProject.file("THIRD_PARTY_LICENSES")) {
             into("common/legal/THIRD_PARTY_LICENSES")
+        }
+        if (stageDesktopBiometricBridge != null) {
+            dependsOn(stageDesktopBiometricBridge)
+            from(nativeBiometricStagingDirectory) {
+                into("common/native")
+            }
         }
         into(generatedDesktopAppResources)
     }
@@ -437,6 +882,26 @@ tasks.configureEach {
     if (name.startsWith("package") || name == "createDistributable" || name == "createReleaseDistributable") {
         dependsOn(validateDesktopPublisherMetadata)
         dependsOn(prepareDesktopAppResources)
+    }
+}
+
+if (stageDesktopBiometricBridge != null) {
+    tasks.withType<JavaExec>().configureEach {
+        if (name == "run" || name == "desktopRun") {
+            dependsOn(stageDesktopBiometricBridge)
+            systemProperty(
+                "passvault.biometric.bridge.dir",
+                nativeBiometricStagingDirectory.get().asFile.absolutePath,
+            )
+        }
+    }
+    tasks.withType<Test>().configureEach {
+        dependsOn(stageDesktopBiometricBridge)
+        if (testDesktopBiometricBridge != null) dependsOn(testDesktopBiometricBridge)
+        systemProperty(
+            "passvault.biometric.testBridgeDirectory",
+            nativeBiometricStagingDirectory.get().asFile.absolutePath,
+        )
     }
 }
 
@@ -479,6 +944,7 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.jna)
             }
         }
 
@@ -592,6 +1058,16 @@ compose.desktop {
                 val macKeychain =
                     System.getenv("MACOS_KEYCHAIN_PATH").orEmpty()
 
+                val macProvisioningProfile =
+                    System.getenv("MACOS_PROVISIONING_PROFILE_PATH")
+                        ?.takeUnless(String::isBlank)
+                        ?.let(::file)
+
+                val macJPackageJavaHome = configuredMacJPackageJavaHome
+
+                val macEntitlementsFile =
+                    resourcesDirectory.asFile.resolve("macos/PassVault.entitlements")
+
                 if (macSign) {
                     require(macIdentity.isNotBlank()) {
                         "MACOS_IDENTITY is required when MACOS_SIGN=true"
@@ -599,6 +1075,40 @@ compose.desktop {
                     require(macKeychain.isNotBlank()) {
                         "MACOS_KEYCHAIN_PATH is required when MACOS_SIGN=true"
                     }
+                    require(
+                        macProvisioningProfile?.isFile == true &&
+                            !Files.isSymbolicLink(macProvisioningProfile.toPath()) &&
+                            macProvisioningProfile.name == "embedded.provisionprofile"
+                    ) {
+                        "MACOS_PROVISIONING_PROFILE_PATH must name a real, non-symlink " +
+                            "embedded.provisionprofile when MACOS_SIGN=true"
+                    }
+                    require(macEntitlementsFile.isFile) {
+                        "The PassVault macOS production entitlements file is missing"
+                    }
+                    require(
+                        macJPackageJavaHome?.resolve("bin/jpackage")?.isFile == true &&
+                            macJPackageJavaHome.resolve("release").isFile
+                    ) {
+                        "MACOS_JPACKAGE_JAVA_HOME must point to a JDK 21+ home with jpackage " +
+                            "when MACOS_SIGN=true"
+                    }
+                    val jPackageJavaVersion =
+                        macJPackageJavaHome.resolve("release")
+                            .useLines { lines ->
+                                lines.firstOrNull { line -> line.startsWith("JAVA_VERSION=") }
+                            }
+                            ?.substringAfter('=')
+                            ?.trim('"')
+                            ?.substringBefore('.')
+                            ?.toIntOrNull()
+                    require(jPackageJavaVersion != null && jPackageJavaVersion >= 21) {
+                        "MACOS_JPACKAGE_JAVA_HOME must provide JDK 21+ because older jpackage " +
+                            "versions cannot embed the Developer ID provisioning profile"
+                    }
+
+                    provisioningProfile.set(requireNotNull(macProvisioningProfile))
+                    entitlementsFile.set(macEntitlementsFile)
 
                     signing {
                         sign.set(true)
@@ -663,6 +1173,25 @@ compose.desktop {
     }
 }
 
+if (System.getenv("MACOS_SIGN")?.toBooleanStrictOrNull() == true) {
+    val macJPackageJavaHome = requireNotNull(configuredMacJPackageJavaHome)
+    afterEvaluate {
+        tasks.withType<AbstractJPackageTask>().configureEach {
+            javaHome.set(macJPackageJavaHome.absolutePath)
+            if (targetFormat == TargetFormat.Dmg) {
+                // Compose 1.11 appends "<packageName>.app" for jpackage 18+.
+                // Point at the containing image directory so JDK 21 receives
+                // the real PassVault.app instead of a duplicated nested path.
+                appImage.set(
+                    project.layout.buildDirectory.dir(
+                        "compose/binaries/main-release/app",
+                    ),
+                )
+            }
+        }
+    }
+}
+
 val verifyDesktopInstalledLegalNotices =
     tasks.register<VerifyDesktopInstalledLegalNotices>("verifyDesktopInstalledLegalNotices") {
         group = "verification"
@@ -688,6 +1217,34 @@ val verifyDesktopInstalledRuntime =
         sqliteVersion.set(libs.versions.sqlite.bundled)
     }
 
+val verifyDesktopInstalledBiometricBridge =
+    tasks.register<VerifyDesktopInstalledBiometricBridge>("verifyDesktopInstalledBiometricBridge") {
+        group = "verification"
+        description = "Verifies the native biometric bridge set in the installed Desktop image."
+        dependsOn("createReleaseDistributable")
+        distributableDirectory.set(
+            project.layout.buildDirectory.dir("compose/binaries/main-release/app"),
+        )
+        platform.set(nativeBiometricPlatform ?: "unsupported")
+        libraryName.set(nativeBiometricLibraryName.orEmpty())
+        integrityPolicy.set(
+            when {
+                nativeBiometricPlatform?.startsWith("macos-") == true -> "sha256-or-developer-id"
+                nativeBiometricPlatform == "windows-x64" -> "sha256"
+                else -> "unsupported"
+            },
+        )
+        requireMacOsDeveloperId.set(
+            providers.gradleProperty("passvault.requireInstalledMacOsBiometric")
+                .map { value -> value.toBooleanStrict() }
+                .orElse(
+                    providers.environmentVariable("MACOS_SIGN")
+                        .map { value -> value.toBooleanStrict() }
+                        .orElse(false),
+                ),
+        )
+    }
+
 tasks.configureEach {
     if (
         name.matches(Regex("""packageRelease(Dmg|Msi|Exe|Deb|Rpm)""")) ||
@@ -696,6 +1253,7 @@ tasks.configureEach {
     ) {
         dependsOn(verifyDesktopInstalledLegalNotices)
         dependsOn(verifyDesktopInstalledRuntime)
+        dependsOn(verifyDesktopInstalledBiometricBridge)
     }
 }
 

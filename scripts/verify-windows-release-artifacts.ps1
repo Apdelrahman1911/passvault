@@ -117,8 +117,42 @@ function Assert-ValidTimestampedSignature([IO.FileInfo]$File, [bool]$RequirePubl
     }
 }
 
+function Assert-BiometricBridgeBinding([string]$ImageRoot) {
+    $libraries = @(Get-ChildItem -LiteralPath $ImageRoot -Recurse -File |
+        Where-Object { $_.Name -ceq "passvault_biometric.dll" })
+    $manifests = @(Get-ChildItem -LiteralPath $ImageRoot -Recurse -File |
+        Where-Object { $_.Name -ceq "bridge.properties" -and
+            $_.Directory.Name -ceq "windows-x64" })
+    if ($libraries.Count -ne 1 -or $manifests.Count -ne 1 -or
+        $libraries[0].Directory.FullName -cne $manifests[0].Directory.FullName) {
+        throw "The app image must contain exactly one co-located Windows biometric bridge and manifest."
+    }
+    $entries = @{}
+    foreach ($line in [IO.File]::ReadAllLines($manifests[0].FullName, [Text.Encoding]::UTF8)) {
+        if ($line -notmatch '^(?<key>[a-z][a-z0-9_]{0,31})=(?<value>[A-Za-z0-9._-]{1,256})$' -or
+            $entries.ContainsKey($Matches.key)) {
+            throw "The packaged biometric bridge manifest is malformed."
+        }
+        $entries[$Matches.key] = $Matches.value
+    }
+    $expectedKeys = @("abi", "integrity", "library", "platform", "sha256") | Sort-Object
+    if ((($entries.Keys | Sort-Object) -join "`n") -cne ($expectedKeys -join "`n") -or
+        $entries["abi"] -cne "1" -or $entries["integrity"] -cne "sha256" -or
+        $entries["library"] -cne "passvault_biometric.dll" -or
+        $entries["platform"] -cne "windows-x64" -or
+        $entries["sha256"] -notmatch '^[0-9a-f]{64}$') {
+        throw "The packaged Windows biometric bridge manifest violates release policy."
+    }
+    $actual = (Get-FileHash -LiteralPath $libraries[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($actual -cne $entries["sha256"]) {
+        throw "The packaged Windows biometric bridge checksum does not match its signed bytes."
+    }
+}
+
 foreach ($nativeFile in $nativeFiles) {
-    Assert-ValidTimestampedSignature $nativeFile ($nativeFile.Name -eq "PassVault.exe")
+    $isPassVaultCode = $nativeFile.Name -eq "PassVault.exe" -or
+        $nativeFile.Name -ceq "passvault_biometric.dll"
+    Assert-ValidTimestampedSignature $nativeFile $isPassVaultCode
 }
 foreach ($installer in $installers) {
     Assert-ValidTimestampedSignature $installer $true
@@ -129,6 +163,7 @@ $runnerTemporaryRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
 $extractionRoot = Join-Path $runnerTemporaryRoot "passvault-msi-$([Guid]::NewGuid().ToString('N'))"
 $extractionLog = "$extractionRoot.log"
 try {
+    Assert-BiometricBridgeBinding $launchers[0].Directory.FullName
     [IO.Directory]::CreateDirectory($extractionRoot) | Out-Null
     $msiArguments = "/a `"$($msi.FullName)`" /qn TARGETDIR=`"$extractionRoot`" /l*v `"$extractionLog`""
     $process = Start-Process -FilePath msiexec.exe -ArgumentList $msiArguments -Wait -PassThru
@@ -175,8 +210,11 @@ try {
         if ($sourceHash -ne $extractedHash) {
             throw "The MSI changed signed native bytes: $relative"
         }
-        Assert-ValidTimestampedSignature $extractedNative[$relative] ($relative -eq "PassVault.exe")
+        $isPassVaultCode = $relative -eq "PassVault.exe" -or
+            $extractedNative[$relative].Name -ceq "passvault_biometric.dll"
+        Assert-ValidTimestampedSignature $extractedNative[$relative] $isPassVaultCode
     }
+    Assert-BiometricBridgeBinding $extractedImageRoot
 } finally {
     if (Test-Path -LiteralPath $extractionRoot) {
         Remove-Item -LiteralPath $extractionRoot -Recurse -Force -ErrorAction SilentlyContinue

@@ -2,10 +2,12 @@ package com.passvault.desktop.di
 
 import com.passvault.core.security.ClipboardService
 import com.passvault.core.security.BiometricKeyStore
-import com.passvault.core.security.UnavailableBiometricKeyStore
+import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.domain.repository.AppSettingsStore
 import com.passvault.desktop.security.DesktopClipboardService
 import com.passvault.desktop.security.DesktopWindowProtection
+import com.passvault.desktop.security.biometric.DesktopBiometricHost
+import com.passvault.desktop.security.biometric.DesktopBiometricRuntime
 import com.passvault.desktop.backup.DesktopBackupFileStore
 import com.passvault.desktop.attachment.DesktopAttachmentFileStore
 import com.passvault.desktop.settings.DesktopAppSettingsStore
@@ -27,7 +29,10 @@ val desktopModule = module {
 
     // Security services - Desktop implementations
     single<ClipboardService> { DesktopClipboardService(scope = get()) }
-    single<BiometricKeyStore> { UnavailableBiometricKeyStore() }
+    single { DesktopBiometricRuntime.create() }
+    single<BiometricKeyStore> { get<DesktopBiometricRuntime>().keyStore }
+    single<DesktopBiometricHost> { get<DesktopBiometricRuntime>().host }
+    single<BiometricPromptController> { get<DesktopBiometricHost>() }
     single { DesktopWindowProtection() }
 
     // Desktop-specific services

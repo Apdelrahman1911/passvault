@@ -6,9 +6,10 @@ production validation gates; it does not imply an independent security audit.
 
 ## Signed artifacts
 
-- Windows: the PassVault launcher and final EXE/MSI installers receive a public-trust Authenticode signature and a
-  trusted timestamp. Third-party runtime files retain their valid vendor signatures and are not re-signed as
-  PassVault.
+- Windows: the PassVault launcher, repository-built Windows Hello bridge, and final EXE/MSI installers receive a
+  public-trust Authenticode signature and a trusted timestamp. The signed bridge checksum is rebound into the exact
+  app image before installer creation. Third-party runtime files retain their valid vendor signatures and are not
+  re-signed as PassVault.
 - macOS: the application and every nested native component receive the expected Developer ID signature, Hardened
   Runtime, and secure timestamp. Final DMGs must receive an `Accepted` Apple notarization result and a verified staple.
 - Android and iOS use their platform-store signing and distribution identities. Linux packages are not code-signed;

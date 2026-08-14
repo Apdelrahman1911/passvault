@@ -74,6 +74,19 @@ class AppNavigatorTest {
     }
 
     @Test
+    fun `temporary host inactivity does not become a destination Back policy`() {
+        val navigator = unlockedNavigator()
+
+        navigator.setHostResumed(false)
+
+        assertEquals(BackDisposition.ExitApplication, navigator.defaultBackDisposition())
+        assertEquals(
+            NavigationMutation.Rejected(NavigationRejection.HostInactive),
+            navigator.push(VaultRoute.CredentialCreate(), navigator.currentToken()),
+        )
+    }
+
+    @Test
     fun `tab stacks are isolated and reselect pops only the selected tab to root`() {
         val navigator = unlockedNavigator()
         val homeDetail = VaultRoute.CredentialDetail(CREDENTIAL_ID)

@@ -252,13 +252,14 @@ class UnlockViewModelTest {
         biometricService.setStatus(
             availability = BiometricAvailability.AVAILABLE,
             enabled = true,
-            type = BiometricType.FACE,
+            type = BiometricType.FACE_ID,
         )
         val viewModel = existingVaultViewModel()
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockScreenReady)
 
         runCurrent()
 
-        assertEquals(BiometricType.FACE, viewModel.state.value.biometricType)
+        assertEquals(BiometricType.FACE_ID, viewModel.state.value.biometricType)
         assertEquals(BiometricAvailability.AVAILABLE, viewModel.state.value.biometricAvailability)
         assertTrue(viewModel.state.value.isBiometricEnabled)
     }
@@ -268,6 +269,7 @@ class UnlockViewModelTest {
         biometricService.setStatus(BiometricAvailability.AVAILABLE, enabled = true)
         biometricService.setUnlockResult(BiometricOperationResult.Cancelled)
         val viewModel = existingVaultViewModel()
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockScreenReady)
         runCurrent()
 
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick)
@@ -286,6 +288,7 @@ class UnlockViewModelTest {
             BiometricOperationResult.Failure(BiometricFailureReason.INVALIDATED),
         )
         val viewModel = existingVaultViewModel()
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockScreenReady)
         runCurrent()
 
         viewModel.onEvent(UnlockViewModel.UnlockEvent.OnBiometricUnlockClick)
@@ -296,6 +299,28 @@ class UnlockViewModelTest {
             Res.string.error_biometric_invalidated,
             (viewModel.state.value.errorMessage as UiText.Resource).resource,
         )
+    }
+
+    @Test
+    fun `cold start confirms an ambiguous disabled biometric status after screen presentation`() = runTest(dispatcher) {
+        biometricService.setStatus(BiometricAvailability.AVAILABLE, enabled = false, type = BiometricType.TOUCH_ID)
+        val viewModel = existingVaultViewModel()
+
+        runCurrent()
+        assertFalse(viewModel.state.value.isBiometricStatusLoaded)
+
+        viewModel.onEvent(UnlockViewModel.UnlockEvent.OnUnlockScreenReady)
+        runCurrent()
+
+        assertTrue(viewModel.state.value.isBiometricStatusLoaded)
+        assertFalse(viewModel.state.value.canUseBiometrics)
+
+        biometricService.setStatus(BiometricAvailability.AVAILABLE, enabled = true, type = BiometricType.TOUCH_ID)
+        advanceTimeBy(150)
+        runCurrent()
+
+        assertTrue(viewModel.state.value.canUseBiometrics)
+        assertEquals(BiometricType.TOUCH_ID, viewModel.state.value.biometricType)
     }
 
     @Test

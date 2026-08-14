@@ -1,11 +1,14 @@
 package com.passvault.desktop.security
 
+import java.awt.Color
+import java.awt.Component
 import java.awt.Frame
 import java.awt.Window
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.event.WindowStateListener
 import javax.swing.JFrame
+import javax.swing.JPanel
 import javax.swing.Timer
 
 /**
@@ -21,6 +24,8 @@ class DesktopWindowProtection {
     private var autoLockOnMinimize = false
     private var autoLockOnFocusLost = false
     private var autoLockDelayMs = 0L
+    /** True only while an app-owned OS prompt is allowed to defer focus-loss locking. */
+    var focusLossAutoLockSuppressed: () -> Boolean = { false }
     private var lockTimer: Timer? = null
         set(value) {
             field?.stop()
@@ -30,6 +35,8 @@ class DesktopWindowProtection {
     private var contentSecured = false
     private var restoreRequested = false
     private var contentSecurityInProgress = false
+    private var shutdownCurtain: JPanel? = null
+    private var previousGlassPane: Component? = null
 
     private var windowListeners: DesktopWindowListeners? = null
     private var lockListener: (() -> Unit)? = null
@@ -75,15 +82,7 @@ class DesktopWindowProtection {
             },
             onFocusLost = { event ->
                 if (!event?.oppositeWindow.isOwnedBy(window) && autoLockOnFocusLost) {
-                    if (autoLockDelayMs == 0L) {
-                        lock()
-                    } else {
-                        val delay = autoLockDelayMs.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-                        lockTimer = Timer(delay) { lock() }.apply {
-                            isRepeats = false
-                            start()
-                        }
-                    }
+                    scheduleFocusLossLock()
                 }
             },
             onFocusGained = { lockTimer = null },
@@ -92,25 +91,7 @@ class DesktopWindowProtection {
     }
 
     fun lock() {
-        prepareForShutdown()
-        requestContentSecurity()
-    }
-
-    /**
-     * Conceals the native window immediately while the shutdown owner performs
-     * its own non-cancellable repository and clipboard cleanup.
-     *
-     * Unlike [lock], this does not notify the normal lock listener; doing so
-     * would start a duplicate cleanup job and delay process termination behind
-     * two serialized repository locks.
-     */
-    fun prepareForShutdown() {
-        if (locked) return
-        lockTimer = null
-        locked = true
-        contentSecured = false
-        restoreRequested = false
-        contentSecurityInProgress = false
+        if (!enterLockedState()) return
         frame?.let { current ->
             val state = current.extendedState
             if (state and Frame.ICONIFIED == 0) {
@@ -118,10 +99,41 @@ class DesktopWindowProtection {
             }
             current.extendedState = state or Frame.ICONIFIED
         }
+        requestContentSecurity()
+    }
+
+    /**
+     * Conceals the native content immediately while the shutdown owner performs
+     * its own non-cancellable repository and clipboard cleanup. Terminal
+     * shutdown deliberately does not iconify or change full-screen placement:
+     * doing so races Compose window disposal against AppKit's asynchronous
+     * full-screen transition and can prevent the JVM from terminating.
+     *
+     * Unlike [lock], this does not notify the normal lock listener; doing so
+     * would start a duplicate cleanup job and delay process termination behind
+     * two serialized repository locks.
+     */
+    fun prepareForShutdown() {
+        enterLockedState()
+        frame?.let { current ->
+            if (shutdownCurtain == null) {
+                previousGlassPane = current.glassPane
+                shutdownCurtain = JPanel().apply {
+                    isOpaque = true
+                    background = Color.BLACK
+                    isFocusable = false
+                }.also { curtain ->
+                    current.glassPane = curtain
+                    curtain.isVisible = true
+                    curtain.repaint()
+                }
+            }
+        }
     }
 
     fun unlock() {
         if (!locked) return
+        removeShutdownCurtain()
         locked = false
         contentSecured = false
         restoreRequested = false
@@ -181,7 +193,28 @@ class DesktopWindowProtection {
         lockListener = listener
     }
 
+    /** Rearms focus-loss locking when the app-owned OS prompt terminates. */
+    fun onFocusLossSuppressionEnded() {
+        if (autoLockOnFocusLost && frame?.isFocused == false) scheduleFocusLossLock()
+    }
+
+    private fun scheduleFocusLossLock() {
+        if (focusLossAutoLockSuppressed()) return
+        if (autoLockDelayMs == 0L) {
+            lock()
+        } else {
+            val delay = autoLockDelayMs.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+            lockTimer = Timer(delay) {
+                if (!focusLossAutoLockSuppressed()) lock()
+            }.apply {
+                isRepeats = false
+                start()
+            }
+        }
+    }
+
     fun cleanup() {
+        removeShutdownCurtain()
         lockTimer = null
         windowListeners?.detach()
         windowListeners = null
@@ -191,10 +224,33 @@ class DesktopWindowProtection {
         autoLockOnMinimize = false
         autoLockOnFocusLost = false
         autoLockDelayMs = 0L
+        focusLossAutoLockSuppressed = { false }
         previousNonIconifiedState = Frame.NORMAL
         contentSecured = false
         restoreRequested = false
         contentSecurityInProgress = false
+    }
+
+    private fun enterLockedState(): Boolean {
+        if (locked) return false
+        lockTimer = null
+        locked = true
+        contentSecured = false
+        restoreRequested = false
+        contentSecurityInProgress = false
+        return true
+    }
+
+    private fun removeShutdownCurtain() {
+        val curtain = shutdownCurtain ?: return
+        curtain.isVisible = false
+        frame?.let { current ->
+            if (current.glassPane === curtain) {
+                previousGlassPane?.let { current.glassPane = it }
+            }
+        }
+        shutdownCurtain = null
+        previousGlassPane = null
     }
 
 }

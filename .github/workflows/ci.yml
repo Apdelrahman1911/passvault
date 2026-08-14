@@ -113,7 +113,7 @@ jobs:
           cache-cleanup: always
 
       - name: Build Desktop
-        run: ./gradlew :app-desktop:compileKotlinDesktop --stacktrace
+        run: ./gradlew :app-desktop:desktopTest --stacktrace
 
   test:
     name: Run Tests

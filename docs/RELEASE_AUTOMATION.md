@@ -217,3 +217,9 @@ The repository cannot truthfully automate these owner/legal decisions:
 Everything after these inputs—building, signing, notarizing, uploading,
 promoting exact builds, provenance validation, checksums, and GitHub Release
 creation—is performed by GitHub Actions.
+
+Desktop biometric support does not add another private credential. macOS uses the existing Developer ID identity to
+sign the Touch ID bridge as nested Hardened Runtime code. Windows signs the repository-built Windows Hello bridge
+with the same selected PassVault Authenticode backend as the launcher, refreshes its strict runtime checksum only
+after signature verification, and packages installers from that unchanged signed image. See
+[`DESKTOP_BIOMETRIC_UNLOCK.md`](DESKTOP_BIOMETRIC_UNLOCK.md).

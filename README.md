@@ -6,7 +6,8 @@ ships the shared Compose application on iPhone and iPad.
 
 ## Shipped capabilities
 
-- Local vault creation, password unlock, mobile biometric unlock, manual lock, background/inactivity lock, and
+- Local vault creation, password unlock, mobile and supported Desktop biometric unlock, manual lock,
+  background/inactivity lock, and
   failed-attempt throttling.
 - Authenticated XChaCha20-Poly1305 encryption with Argon2id-derived key-encryption keys and per-purpose subkeys.
 - Credential creation, editing, deletion, favorites, folders, tags, search, filters, and password history.
@@ -22,8 +23,8 @@ ships the shared Compose application on iPhone and iPad.
 ## Deliberate limitations
 
 - PassVault has no cloud service or cross-device synchronization.
-- Biometric unlock is opt-in per vault on Android and iOS; Desktop and devices without an
-  enrolled supported biometric continue to use the master password.
+- Biometric unlock is opt-in per vault on Android, iOS, Touch ID Macs, and supported Windows Hello systems. Linux and
+  devices without a supported enrolled authenticator continue to use the master password.
 - Saved TOTP authenticators protect the external accounts they belong to; they do not add a second factor to
   PassVault vault unlock.
 - CSV/plaintext import and export are not shipped.
@@ -40,6 +41,8 @@ The detailed, evidence-backed status is maintained in
 The implemented Navigation 3 design and its iOS hardware release gate are documented in
 [`docs/NAVIGATION_ARCHITECTURE.md`](docs/NAVIGATION_ARCHITECTURE.md) and
 [`docs/NAVIGATION_IOS_PHYSICAL_TEST_MATRIX.md`](docs/NAVIGATION_IOS_PHYSICAL_TEST_MATRIX.md).
+Desktop biometric architecture and hardware release checks are documented in
+[`docs/DESKTOP_BIOMETRIC_UNLOCK.md`](docs/DESKTOP_BIOMETRIC_UNLOCK.md).
 
 ## Project structure
 
