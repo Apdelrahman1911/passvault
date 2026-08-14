@@ -412,6 +412,33 @@ private:
   HANDLE value_;
 };
 
+bool owner_matches_token_sid(HANDLE token, TOKEN_INFORMATION_CLASS kind,
+                             PSID owner) {
+  if (token == nullptr || token == INVALID_HANDLE_VALUE || owner == nullptr) {
+    return false;
+  }
+  DWORD token_length = 0;
+  static_cast<void>(
+      GetTokenInformation(token, kind, nullptr, 0, &token_length));
+  std::vector<uint8_t> token_data(token_length);
+  if (token_length == 0 ||
+      !GetTokenInformation(token, kind, token_data.data(), token_length,
+                           &token_length)) {
+    secure_wipe(token_data);
+    return false;
+  }
+  PSID token_sid = nullptr;
+  if (kind == TokenUser && token_length >= sizeof(TOKEN_USER)) {
+    token_sid = reinterpret_cast<TOKEN_USER *>(token_data.data())->User.Sid;
+  } else if (kind == TokenOwner && token_length >= sizeof(TOKEN_OWNER)) {
+    token_sid = reinterpret_cast<TOKEN_OWNER *>(token_data.data())->Owner;
+  }
+  const bool matches = token_sid != nullptr && IsValidSid(token_sid) &&
+                       EqualSid(owner, token_sid);
+  secure_wipe(token_data);
+  return matches;
+}
+
 bool owned_by_current_user(HANDLE handle) {
   if (handle == nullptr || handle == INVALID_HANDLE_VALUE) {
     return false;
@@ -433,17 +460,12 @@ bool owned_by_current_user(HANDLE handle) {
     return false;
   }
   WindowsHandle token(raw_token);
-  DWORD token_length = 0;
-  static_cast<void>(
-      GetTokenInformation(token.get(), TokenUser, nullptr, 0, &token_length));
-  std::vector<uint8_t> token_data(token_length);
-  const bool success =
-      token_length >= sizeof(TOKEN_USER) &&
-      GetTokenInformation(token.get(), TokenUser, token_data.data(),
-                          token_length, &token_length) &&
-      EqualSid(owner,
-               reinterpret_cast<TOKEN_USER *>(token_data.data())->User.Sid);
-  secure_wipe(token_data);
+  // Windows may assign new files to TokenOwner (for example the local
+  // Administrators SID for an elevated account) instead of TokenUser. Both
+  // identify ownership by the current process token; the biometric child
+  // directory/file DACL is still replaced with a current-TokenUser-only ACL.
+  const bool success = owner_matches_token_sid(token.get(), TokenUser, owner) ||
+                       owner_matches_token_sid(token.get(), TokenOwner, owner);
   LocalFree(descriptor);
   return success;
 }
