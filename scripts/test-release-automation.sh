@@ -1822,6 +1822,7 @@ grep -Fq 'package-desktop-macos:' .github/workflows/ci.yml
 grep -Fq 'runner: macos-15-intel' .github/workflows/ci.yml
 grep -Fq 'verifyDesktopInstalledBiometricBridge' app-desktop/build.gradle.kts
 grep -Fq 'adHocSignUnsignedMacOsApp' app-desktop/build.gradle.kts
+grep -Fq 'adHocSignUnsignedMacOsApp ?: "createReleaseDistributable"' app-desktop/build.gradle.kts
 grep -Fq '"--options",' app-desktop/build.gradle.kts
 grep -Fq 'flag.trim() == "runtime"' app-desktop/build.gradle.kts
 grep -Fq 'readNBytes(MAX_CODESIGN_OUTPUT_BYTES + 1)' app-desktop/build.gradle.kts

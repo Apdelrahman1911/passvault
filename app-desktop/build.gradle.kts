@@ -1333,8 +1333,8 @@ val adHocSignUnsignedMacOsApp =
         null
     }
 
-val desktopDistributableVerificationPrerequisite =
-    adHocSignUnsignedMacOsApp ?: tasks.named("createReleaseDistributable")
+val desktopDistributableVerificationPrerequisite: Any =
+    adHocSignUnsignedMacOsApp ?: "createReleaseDistributable"
 
 val verifyDesktopInstalledLegalNotices =
     tasks.register<VerifyDesktopInstalledLegalNotices>("verifyDesktopInstalledLegalNotices") {
