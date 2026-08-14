@@ -115,6 +115,41 @@ jobs:
       - name: Build Desktop
         run: ./gradlew :app-desktop:desktopTest --stacktrace
 
+  package-desktop-macos:
+    name: Package Desktop macOS (${{ matrix.architecture }})
+    runs-on: ${{ matrix.runner }}
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            architecture: arm64
+          - runner: macos-15-intel
+            architecture: x64
+    env:
+      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
+      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+
+      - name: Build and verify unsigned macOS package
+        run: >
+          ./gradlew :app-desktop:createReleaseDistributable
+          :app-desktop:packageReleaseDmg
+          --stacktrace
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -213,6 +248,7 @@ jobs:
       - dependency-verification
       - build-android
       - build-desktop
+      - package-desktop-macos
       - test
       - shared-compile
       - ios-simulator-compile
@@ -223,13 +259,15 @@ jobs:
           DEPENDENCY_RESULT: ${{ needs.dependency-verification.result }}
           ANDROID_RESULT: ${{ needs.build-android.result }}
           DESKTOP_RESULT: ${{ needs.build-desktop.result }}
+          MACOS_PACKAGE_RESULT: ${{ needs.package-desktop-macos.result }}
           TEST_RESULT: ${{ needs.test.result }}
           SHARED_RESULT: ${{ needs.shared-compile.result }}
           IOS_RESULT: ${{ needs.ios-simulator-compile.result }}
         run: |
           for result in \
             "$VALIDATE_RESULT" "$DEPENDENCY_RESULT" "$ANDROID_RESULT" \
-            "$DESKTOP_RESULT" "$TEST_RESULT" "$SHARED_RESULT" "$IOS_RESULT"; do
+            "$DESKTOP_RESULT" "$MACOS_PACKAGE_RESULT" "$TEST_RESULT" \
+            "$SHARED_RESULT" "$IOS_RESULT"; do
             if [[ "$result" != success ]]; then
               echo "A required CI job did not pass (result: $result)." >&2
               exit 1
