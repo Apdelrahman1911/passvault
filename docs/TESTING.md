@@ -1,6 +1,6 @@
 # Testing
 
-Last reviewed: 2026-08-13
+Last reviewed: 2026-08-14
 
 Use JDK 17 and the checked-in Gradle wrapper. `gradlew test` is a repository-owned aggregate task that depends on all
 Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's ambiguous unqualified selector.
@@ -19,6 +19,7 @@ Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's amb
 ./gradlew :app-android:assembleRelease
 ./gradlew :app-android:lintRelease
 ./gradlew :app-desktop:compileKotlinDesktop
+./gradlew :app-desktop:stageDesktopBiometricBridge :app-desktop:desktopTest
 ./gradlew :app-desktop:createReleaseDistributable
 ./gradlew :app-desktop:packageReleaseDistributionForCurrentOS
 ./gradlew :core:designsystem:compileKotlinIosSimulatorArm64 :shared:compileKotlinIosSimulatorArm64
@@ -41,12 +42,20 @@ On Windows, verify the packaged runtime after creating the release image:
 .\scripts\smoke-test-desktop-release.ps1 -TimeoutSeconds 30
 ```
 
+During the protected production-signing flow only, bind the signed bridge bytes before packaging installers:
+
+```powershell
+.\scripts\update-desktop-biometric-checksum.ps1 `
+  -RuntimePath app-desktop/build/compose/binaries/main-release/app
+```
+
 Run focused suites while editing, for example:
 
 ```bash
 ./gradlew :core:crypto:desktopTest
 ./gradlew :core:database:desktopTest
 ./gradlew :feature:unlock:desktopTest
+./gradlew :app-desktop:testDesktopBiometricBridge
 ```
 
 ## Coverage intent
@@ -56,16 +65,19 @@ Run focused suites while editing, for example:
   transactions, counts, and corrupt rows.
 - Backup: round trip, wrong password, tamper/truncation/version/limits, referential integrity, preview, and rollback.
 - Presentation: validation, rapid submit, cancellation, errors, lock cleanup, filters/sort, and settings persistence.
-- Platform: clipboard ownership, lifecycle lock, screenshot flag, file pickers, focus/IME, and graphical behavior.
+- Platform: clipboard ownership, lifecycle lock, screenshot flag, file pickers, focus/IME, graphical behavior, native
+  biometric ABI/integrity loading, macOS metadata/path/error invariants, Windows envelope crypto/tamper,
+  credential-identity and temporary-inventory invariants, prompt serialization, cancellation, and focus-lock
+  coordination.
 
 Shared fakes must deep-copy sensitive arrays/models and represent failure/lock behavior. Tests should assert domain
 behavior rather than private implementation detail.
 
 ## Evidence limits
 
-The repository-owned `test` aggregate currently contains 1,143 tests: 625 Desktop/JVM and 518 Android tests (497
-shared Android-host tests plus 21 application tests). The complete clean `check` result set adds 497 iOS simulator
-tests, for 1,640 tests total with no failures, errors, or skips.
+The repository-owned `test` aggregate currently contains 1,277 tests: 702 Desktop/JVM and 575 Android tests (554
+shared Android-host tests plus 21 application tests). The complete clean `check` result set adds 554 iOS simulator
+tests, for 1,831 tests total with no failures, errors, or skips.
 
 Android host tests exercise portable and Android-compilation behavior on the JVM, but do not prove lifecycle,
 IME, screenshot, file-picker, accessibility, or native device integration. Those need an emulator/device. The iOS
@@ -75,6 +87,12 @@ startup-verified by `:app-desktop:run`: build
 `:app-desktop:createReleaseDistributable` and run the packaged-release smoke script. The release workflow uses this
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.
+
+Touch ID and Windows Hello cannot be security-validated by an unauthenticated CI runner. Follow the physical matrix
+in `DESKTOP_BIOMETRIC_UNLOCK.md` on installed signed packages. At minimum validate enable, restart unlock,
+cancellation, lockout/recovery, invalidation/reset, disable/re-enable, password change, restore, focus loss, minimize,
+shutdown during a prompt, and update/install behavior. Confirm the candidate key is rejected after protected platform
+material is removed or replaced.
 
 Android `check` depends on `:app-android:verifyDebugComposeResources` and application-identity validation. The
 package check opens the generated APK and

@@ -1,6 +1,6 @@
 # PassVault security model
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-14
 
 ## Scope and assumptions
 
@@ -37,10 +37,10 @@ unwraps the VEK, authenticates the verification record, and only then publishes 
 Changing the master password rewraps the same VEK, so record data does not need re-encryption. Vault session
 transitions are serialized. Lock immediately removes and wipes the repository-owned VEK buffer best-effort.
 
-Mobile biometric unlock is an optional second route to the same VEK. It never stores the master password or KEK:
+Biometric unlock is an optional second route to the same VEK. It never stores the master password or KEK:
 
 ```text
-Face ID / Touch ID / strong Android biometric
+Face ID / Touch ID / strong Android biometric / Windows Hello
                     |
        OS-protected key operation
                     |
@@ -57,6 +57,14 @@ every decrypt. The key is invalidated when biometric enrollment changes. iOS sto
 to another device and becomes inaccessible after enrollment changes. In both cases the released candidate VEK must
 authenticate the existing vault verification record before the repository publishes a session. The master password
 remains the recovery and fallback path.
+
+On macOS, Touch ID directly guards a device-only Keychain item using `biometryCurrentSet`. On Windows, an exact
+platform WebAuthn credential and its authenticated PRF output derive the AES-GCM key that wraps the VEK; Windows
+Hello is not used as a cosmetic prompt before reading a separately accessible secret. The bridge additionally
+verifies fresh challenge/assertion ownership, ES256 signatures, the resident credential's RP/vault ownership, and
+device-bound/removable state. Unauthenticated local envelope IDs are never credential-deletion authority. Linux
+remains master-password-only. See
+[`DESKTOP_BIOMETRIC_UNLOCK.md`](DESKTOP_BIOMETRIC_UNLOCK.md) for the platform threat boundaries and release gates.
 
 ## Persisted data boundary
 
@@ -103,10 +111,13 @@ the prior VEK. The OS key store and Room still cannot share one transaction. See
 - Clipboard expiration verifies a random ownership token/value before clearing, so newer unrelated clipboard data is
   preserved.
 - Copying a TOTP code uses the same ownership-aware clipboard path as other credential values.
-- Desktop ships no keyring or biometric unlock path; master-password unlock remains the only Desktop authentication
-  route, and window/clipboard protection is independent of vault-key storage.
-- Android and iOS expose explicit biometric enrollment in Security settings and a biometric action beside the
-  password field. Unsupported platforms and devices fail closed to master-password unlock.
+- Android, iOS, macOS, and supported Windows systems expose explicit biometric/platform enrollment in Security
+  settings and an unlock action beside the password field. Unsupported systems, including Linux, fail closed to
+  master-password unlock.
+- Desktop focus-loss locking is suppressed only while the app-owned native biometric prompt is active. Prompt end
+  re-evaluates focus and rearms the normal delay; minimize, timeout, explicit lock, and shutdown remain effective.
+- Any repository lock/restore transition first requests cancellation of the platform biometric prompt, then proceeds
+  fail-closed even if the platform cancellation API reports an error.
 
 ## Error and memory policy
 
@@ -143,8 +154,9 @@ security certification.
   record can still require roughly 130–195 MiB of transient managed memory; ordinary repository-created rows are far
   smaller. Format-1 compatibility import retains its older high-amplification JSON/Base64 path.
 - Android device lifecycle and Desktop graphical/window-protection behavior need platform smoke tests.
-- Face ID/Touch ID and Android biometric prompts, cancellation, lockout, process recreation, and enrollment-change
-  invalidation still require physical-device smoke tests; compilation and common/repository tests cannot prove OS UI
-  behavior.
+- Face ID, Touch ID, Android biometrics, and Windows Hello prompts, cancellation, lockout, process restart, and
+  enrollment/credential invalidation require physical-device smoke tests; compilation and common/repository tests
+  cannot prove OS UI behavior. Windows Hello credentials represent the Windows Hello account and do not guarantee
+  Apple's exact biometric-current-set invalidation semantic.
 - Publisher signing, notarization, update security, disclosure contacts, and external review are outside this
   checkout.

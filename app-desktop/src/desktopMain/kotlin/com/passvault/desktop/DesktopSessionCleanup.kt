@@ -16,19 +16,35 @@ internal suspend fun lockAndClear(
     vaultRepository: VaultRepository,
     clipboardService: ClipboardService,
 ): Boolean = withContext(NonCancellable) {
-    val lockSucceeded = try {
-        vaultRepository.lockWithBoundedRetry()
-    } catch (_: Exception) {
-        false
-    } finally {
+    val lockSucceeded = lockVaultForShutdown(vaultRepository)
+    clearClipboardForShutdown(clipboardService)
+    lockSucceeded
+}
+
+/**
+ * Crosses the repository's normal lock boundary without allowing caller
+ * cancellation to skip key wiping. Desktop process shutdown races this work
+ * against a separate terminal deadline; this function deliberately keeps the
+ * stronger non-cancellable semantics used by ordinary background locking.
+ */
+internal suspend fun lockVaultForShutdown(vaultRepository: VaultRepository): Boolean =
+    withContext(NonCancellable) {
+        try {
+            vaultRepository.lockWithBoundedRetry()
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+/** Clears only clipboard content still owned by PassVault. */
+internal suspend fun clearClipboardForShutdown(clipboardService: ClipboardService) =
+    withContext(NonCancellable) {
         try {
             clipboardService.clear()
         } catch (_: Exception) {
-            // Clipboard cleanup is best effort when the provider is unavailable.
+            // Clipboard cleanup is best effort when the native provider is unavailable.
         }
     }
-    lockSucceeded
-}
 
 internal suspend fun lockClearAndAwaitUiSecurity(
     vaultRepository: VaultRepository,

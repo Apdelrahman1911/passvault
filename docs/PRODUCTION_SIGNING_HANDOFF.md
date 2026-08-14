@@ -250,6 +250,11 @@ EKU, exact publisher, and derives the certificate SHA-256 pin before uploading a
 review. Do not put any of these secrets at repository scope. The configuration script deletes and verifies the absence
 of stale repository-level copies.
 
+Desktop Touch ID and Windows Hello introduce no additional secret, certificate, entitlement, relying-party server,
+or cloud credential. Their repository-built native bridges consume the existing `MACOS_*` Developer ID/notarization
+inputs and the selected existing `WINDOWS_*` Authenticode backend above. Do not create a biometric secret or place a
+VEK/PRF value in GitHub configuration.
+
 ## Safe direct-upload commands (fallback only)
 
 The configuration script is preferred. If GitHub UI entry is unavoidable, encode locally as a single Base64 line.

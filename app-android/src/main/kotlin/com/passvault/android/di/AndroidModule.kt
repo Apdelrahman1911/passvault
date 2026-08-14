@@ -13,6 +13,8 @@ import com.passvault.feature.backup.BackupFileStore
 import com.passvault.feature.credential.AttachmentFileStore
 import com.passvault.core.security.ClipboardService
 import com.passvault.core.security.BiometricKeyStore
+import com.passvault.core.security.BiometricPromptController
+import com.passvault.core.security.NoOpBiometricPromptController
 import com.passvault.core.security.ScreenshotProtection
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -47,6 +49,7 @@ val androidModule = module {
     single<ScreenshotProtection> { get<AndroidScreenshotProtection>() }
     single<AndroidBiometricKeyStore> { AndroidBiometricKeyStore(androidContext()) }
     single<BiometricKeyStore> { get<AndroidBiometricKeyStore>() }
+    single<BiometricPromptController> { NoOpBiometricPromptController }
 
     /**
      * Clipboard service implementation.

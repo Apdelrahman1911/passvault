@@ -50,6 +50,7 @@ import platform.LocalAuthentication.LABiometryTypeFaceID
 import platform.LocalAuthentication.LABiometryTypeTouchID
 import platform.LocalAuthentication.LAErrorAppCancel
 import platform.LocalAuthentication.LAErrorBiometryNotEnrolled
+import platform.LocalAuthentication.LAErrorBiometryLockout
 import platform.LocalAuthentication.LAErrorSystemCancel
 import platform.LocalAuthentication.LAErrorUserCancel
 import platform.LocalAuthentication.LAErrorUserFallback
@@ -100,13 +101,14 @@ class IosBiometricKeyStore : BiometricKeyStore {
                 error.ptr,
             )
             val type = when (context.biometryType) {
-                LABiometryTypeFaceID -> BiometricType.FACE
-                LABiometryTypeTouchID -> BiometricType.FINGERPRINT
+                LABiometryTypeFaceID -> BiometricType.FACE_ID
+                LABiometryTypeTouchID -> BiometricType.TOUCH_ID
                 else -> BiometricType.GENERIC
             }
             val availability = when {
                 available -> BiometricAvailability.AVAILABLE
                 error.value?.code == LAErrorBiometryNotEnrolled -> BiometricAvailability.NOT_ENROLLED
+                error.value?.code == LAErrorBiometryLockout -> BiometricAvailability.LOCKED_OUT
                 else -> BiometricAvailability.UNAVAILABLE
             }
             BiometricCapability(type, availability)
@@ -375,6 +377,7 @@ private fun enrollmentFailure(
 ): BiometricKeyStoreException? = when {
     vaultKeySize != VAULT_KEY_BYTES -> BiometricKeyStoreException.AuthenticationFailed()
     availability == BiometricAvailability.NOT_ENROLLED -> BiometricKeyStoreException.NotEnrolled()
+    availability == BiometricAvailability.LOCKED_OUT -> BiometricKeyStoreException.LockedOut()
     availability == BiometricAvailability.UNAVAILABLE -> BiometricKeyStoreException.NotAvailable()
     else -> null
 }
@@ -395,6 +398,7 @@ private fun NSError?.toBiometricException(): BiometricKeyStoreException = when (
     LAErrorAppCancel,
     -> BiometricKeyStoreException.Cancelled()
     LAErrorBiometryNotEnrolled -> BiometricKeyStoreException.NotEnrolled()
+    LAErrorBiometryLockout -> BiometricKeyStoreException.LockedOut()
     else -> BiometricKeyStoreException.AuthenticationFailed()
 }
 

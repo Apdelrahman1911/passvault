@@ -32,6 +32,7 @@ import com.passvault.core.security.VaultUiSecurityCoordinator
 import com.passvault.desktop.components.DesktopMenuBar
 import com.passvault.desktop.components.KeyboardShortcuts
 import com.passvault.desktop.security.DesktopWindowProtection
+import com.passvault.desktop.security.biometric.DesktopBiometricHost
 import com.passvault.desktop.tray.DesktopSystemTray
 import com.passvault.desktop.tray.DesktopTrayStrings
 import kotlinx.coroutines.CoroutineScope
@@ -43,15 +44,16 @@ import org.koin.core.context.GlobalContext
 import java.awt.Dimension
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.prefs.Preferences
+import javax.swing.SwingUtilities
 
 /**
  * Main desktop window for PassVault.
  * Provides window management, keyboard shortcuts, menu bar, and security features.
  */
 @Composable
-fun PassVaultDesktopWindow(
+internal fun PassVaultDesktopWindow(
+    shutdownCoordinator: DesktopShutdownCoordinator,
     onCloseRequest: () -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -62,24 +64,17 @@ fun PassVaultDesktopWindow(
     val vaultUiSecurityCoordinator = remember { GlobalContext.get().get<VaultUiSecurityCoordinator>() }
     val sessionState by vaultRepository.getSessionState()
         .collectAsState(initial = VaultSessionState.Uninitialized)
-
     val windowState = rememberPersistentWindowState()
     val windowProtection = remember { GlobalContext.get().get<DesktopWindowProtection>() }
     val systemTray = remember { GlobalContext.get().get<DesktopSystemTray>() }
-    val trayStrings = DesktopTrayStrings(
-        tooltip = stringResource(Res.string.desktop_tray_tooltip),
-        showApp = stringResource(Res.string.desktop_tray_show),
-        lockVault = stringResource(Res.string.desktop_tray_lock),
-        exit = stringResource(Res.string.desktop_tray_exit),
-    )
+    val biometricHost = remember { GlobalContext.get().get<DesktopBiometricHost>() }
+    val trayStrings = desktopTrayStrings()
     val focusRequester = remember { FocusRequester() }
     val requestClose = rememberCloseHandler(
         windowState,
         systemTray,
         windowProtection,
-        securityScope,
-        vaultRepository,
-        clipboardService,
+        shutdownCoordinator,
         onCloseRequest,
     )
     val keyboardShortcuts = rememberKeyboardShortcuts(
@@ -98,6 +93,7 @@ fun PassVaultDesktopWindow(
         vaultRepository,
         clipboardService,
         vaultUiSecurityCoordinator,
+        biometricHost,
         requestClose,
     )
     DesktopApplicationWindow(
@@ -108,10 +104,19 @@ fun PassVaultDesktopWindow(
         commandDispatcher,
         windowProtection,
         systemTray,
+        biometricHost,
         requestClose,
         content,
     )
 }
+
+@Composable
+private fun desktopTrayStrings(): DesktopTrayStrings = DesktopTrayStrings(
+    tooltip = stringResource(Res.string.desktop_tray_tooltip),
+    showApp = stringResource(Res.string.desktop_tray_show),
+    lockVault = stringResource(Res.string.desktop_tray_lock),
+    exit = stringResource(Res.string.desktop_tray_exit),
+)
 
 @Composable
 private fun DesktopApplicationWindow(
@@ -122,6 +127,7 @@ private fun DesktopApplicationWindow(
     commandDispatcher: AppCommandDispatcher,
     windowProtection: DesktopWindowProtection,
     systemTray: DesktopSystemTray,
+    biometricHost: DesktopBiometricHost,
     requestClose: () -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -139,7 +145,7 @@ private fun DesktopApplicationWindow(
             keyboardShortcuts.handleKeyEvent(event)
         },
     ) {
-        BindDesktopNativeWindow(windowProtection, systemTray)
+        BindDesktopNativeWindow(windowProtection, systemTray, biometricHost)
         UpdateDesktopWindowTitle(sessionState, windowProtection)
         DesktopWindowMenu(
             commandDispatcher,
@@ -157,31 +163,25 @@ private fun rememberCloseHandler(
     windowState: WindowState,
     systemTray: DesktopSystemTray,
     windowProtection: DesktopWindowProtection,
-    securityScope: CoroutineScope,
-    vaultRepository: VaultRepository,
-    clipboardService: ClipboardService,
+    shutdownCoordinator: DesktopShutdownCoordinator,
     onCloseRequest: () -> Unit,
 ): () -> Unit {
-    val closeRequested = remember { AtomicBoolean(false) }
     return remember(
         windowState,
         systemTray,
         windowProtection,
-        securityScope,
-        vaultRepository,
-        clipboardService,
+        shutdownCoordinator,
         onCloseRequest,
     ) {
         {
-            if (closeRequested.compareAndSet(false, true)) {
-                windowProtection.prepareForShutdown()
-                saveWindowState(windowState)
-                systemTray.hide()
-                securityScope.launch {
-                    lockAndClear(vaultRepository, clipboardService)
-                    withContext(Dispatchers.Main.immediate) { onCloseRequest() }
-                }
-            }
+            shutdownCoordinator.requestClose(
+                prepareWindowForExit = {
+                    windowProtection.prepareForShutdown()
+                    saveWindowState(windowState)
+                    systemTray.hide()
+                },
+                exitApplication = onCloseRequest,
+            )
         }
     }
 }
@@ -219,9 +219,11 @@ private fun DesktopWindowEffects(
     vaultRepository: VaultRepository,
     clipboardService: ClipboardService,
     vaultUiSecurityCoordinator: VaultUiSecurityCoordinator,
+    biometricHost: DesktopBiometricHost,
     requestClose: () -> Unit,
 ) {
     val currentSessionState by rememberUpdatedState(sessionState)
+    BindBiometricPromptFocusPolicy(windowProtection, biometricHost)
     LaunchedEffect(focusRequester, trayStrings, systemTray, windowProtection, requestClose) {
         focusRequester.requestFocus()
         systemTray.setup(
@@ -249,8 +251,10 @@ private fun DesktopWindowEffects(
         vaultRepository,
         clipboardService,
         vaultUiSecurityCoordinator,
+        biometricHost,
     ) {
         val lockListener = {
+            biometricHost.cancelActive()
             securityScope.launch {
                 val contentSecured = lockClearAndAwaitUiSecurity(
                     vaultRepository,
@@ -268,7 +272,26 @@ private fun DesktopWindowEffects(
             Unit
         }
         windowProtection.setLockListener(lockListener)
-        onDispose { windowProtection.setLockListener(null) }
+        onDispose {
+            windowProtection.setLockListener(null)
+        }
+    }
+}
+
+@Composable
+private fun BindBiometricPromptFocusPolicy(
+    windowProtection: DesktopWindowProtection,
+    biometricHost: DesktopBiometricHost,
+) {
+    DisposableEffect(windowProtection, biometricHost) {
+        windowProtection.focusLossAutoLockSuppressed = { biometricHost.isPromptActive }
+        biometricHost.setPromptFinishedListener {
+            SwingUtilities.invokeLater(windowProtection::onFocusLossSuppressionEnded)
+        }
+        onDispose {
+            biometricHost.setPromptFinishedListener(null)
+            windowProtection.focusLossAutoLockSuppressed = { false }
+        }
     }
 }
 
@@ -276,15 +299,18 @@ private fun DesktopWindowEffects(
 private fun FrameWindowScope.BindDesktopNativeWindow(
     windowProtection: DesktopWindowProtection,
     systemTray: DesktopSystemTray,
+    biometricHost: DesktopBiometricHost,
 ) {
-    DisposableEffect(window, windowProtection, systemTray) {
+    DisposableEffect(window, windowProtection, systemTray, biometricHost) {
         windowProtection.attachWindow(window)
+        biometricHost.attach(window)
         val usableBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().maximumWindowBounds
         window.minimumSize = Dimension(
             MIN_WINDOW_WIDTH.coerceAtMost(usableBounds.width.coerceAtLeast(1)),
             MIN_WINDOW_HEIGHT.coerceAtMost(usableBounds.height.coerceAtLeast(1)),
         )
         onDispose {
+            biometricHost.detach(window)
             systemTray.cleanup()
             windowProtection.cleanup()
         }

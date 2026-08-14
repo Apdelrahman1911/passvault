@@ -54,6 +54,9 @@ class DefaultBiometricUnlockService(
             capability.availability == BiometricAvailability.NOT_ENROLLED -> {
                 BiometricOperationResult.Failure(BiometricFailureReason.NOT_ENROLLED)
             }
+            capability.availability == BiometricAvailability.LOCKED_OUT -> {
+                BiometricOperationResult.Failure(BiometricFailureReason.LOCKED_OUT)
+            }
             capability.availability == BiometricAvailability.UNAVAILABLE -> {
                 BiometricOperationResult.Failure(BiometricFailureReason.NOT_AVAILABLE)
             }
@@ -88,7 +91,8 @@ class DefaultBiometricUnlockService(
         val enabledResult = vaultId?.let { id -> valueCall { keyStore.contains(id) } }
         return when {
             vaultId == null || enabledResult == null || enabledResult.isFailure -> {
-                BiometricOperationResult.Failure(BiometricFailureReason.INTERNAL_ERROR)
+                enabledResult?.exceptionOrNull()?.toOperationResult()
+                    ?: BiometricOperationResult.Failure(BiometricFailureReason.INTERNAL_ERROR)
             }
             enabledResult.getOrNull() != true -> {
                 BiometricOperationResult.Failure(BiometricFailureReason.NOT_ENABLED)
@@ -135,6 +139,9 @@ class DefaultBiometricUnlockService(
         }
         is BiometricKeyStoreException.NotEnrolled -> {
             BiometricOperationResult.Failure(BiometricFailureReason.NOT_ENROLLED)
+        }
+        is BiometricKeyStoreException.LockedOut -> {
+            BiometricOperationResult.Failure(BiometricFailureReason.LOCKED_OUT)
         }
         is BiometricKeyStoreException.NotEnabled -> {
             BiometricOperationResult.Failure(BiometricFailureReason.NOT_ENABLED)

@@ -119,13 +119,7 @@ private fun SecuritySettingsContent(
             title = stringResource(Res.string.ui_security_settings),
         )
         MasterPasswordCard(onEvent)
-        if (
-            state.isBiometricLoading ||
-            state.biometricAvailability != BiometricAvailability.UNAVAILABLE ||
-            state.isBiometricEnabled
-        ) {
-            BiometricCard(state, onEvent)
-        }
+        BiometricCard(state, onEvent)
         AutoLockCard(state.autoLockTimeoutMinutes, onEvent)
         ClipboardCard(state.clipboardClearSeconds, onEvent)
         SecurityTips()
@@ -162,10 +156,12 @@ private fun BiometricCard(
         stringResource(Res.string.ui_biometric_unlock_off, biometricName)
     }
     SecurityCard(
-        icon = if (state.biometricType == BiometricType.FACE) {
-            Icons.Default.Face
-        } else {
-            Icons.Default.Fingerprint
+        icon = when (state.biometricType) {
+            BiometricType.FACE_ID -> Icons.Default.Face
+            BiometricType.TOUCH_ID -> Icons.Default.Fingerprint
+            BiometricType.WINDOWS_HELLO,
+            BiometricType.GENERIC,
+            -> Icons.Default.Lock
         },
         title = stringResource(Res.string.ui_biometric_unlock),
         description = stringResource(Res.string.ui_biometric_unlock_description, biometricName),
@@ -177,13 +173,7 @@ private fun BiometricCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(status, style = MaterialTheme.typography.bodyMedium)
-                if (state.biometricAvailability == BiometricAvailability.NOT_ENROLLED) {
-                    Text(
-                        stringResource(Res.string.error_biometric_not_enrolled),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
+                BiometricAvailabilityMessage(state.biometricAvailability)
             }
             if (state.isBiometricLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 2.dp)
@@ -193,7 +183,8 @@ private fun BiometricCard(
                     onCheckedChange = {
                         onEvent(SettingsViewModel.SettingsEvent.OnBiometricUnlockChanged(it))
                     },
-                    enabled = state.biometricAvailability == BiometricAvailability.AVAILABLE,
+                    enabled = state.isBiometricEnabled ||
+                        state.biometricAvailability == BiometricAvailability.AVAILABLE,
                     modifier = Modifier.semantics { stateDescription = status },
                 )
             }
@@ -202,9 +193,31 @@ private fun BiometricCard(
 }
 
 @Composable
+private fun BiometricAvailabilityMessage(availability: BiometricAvailability) {
+    val message = when (availability) {
+        BiometricAvailability.NOT_ENROLLED -> Res.string.error_biometric_not_enrolled
+        BiometricAvailability.LOCKED_OUT -> Res.string.error_biometric_locked_out
+        BiometricAvailability.UNAVAILABLE -> Res.string.error_biometric_unavailable
+        BiometricAvailability.AVAILABLE -> null
+    }
+    message?.let { resource ->
+        Text(
+            stringResource(resource),
+            style = MaterialTheme.typography.bodySmall,
+            color = if (availability == BiometricAvailability.UNAVAILABLE) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.error
+            },
+        )
+    }
+}
+
+@Composable
 private fun biometricName(type: BiometricType): String = when (type) {
-    BiometricType.FACE -> stringResource(Res.string.ui_face_id)
-    BiometricType.FINGERPRINT -> stringResource(Res.string.ui_touch_id)
+    BiometricType.FACE_ID -> stringResource(Res.string.ui_face_id)
+    BiometricType.TOUCH_ID -> stringResource(Res.string.ui_touch_id)
+    BiometricType.WINDOWS_HELLO -> stringResource(Res.string.ui_windows_hello)
     BiometricType.GENERIC -> stringResource(Res.string.ui_biometrics)
 }
 

@@ -421,9 +421,15 @@ jobs:
               Get-Content `
                   -LiteralPath app-desktop/build/compose/binaries/main-release/app/passvault-unsigned-files.txt
           )
-          if ($catalog.Count -ne 1 -or
-              $catalog[0] -notmatch '^\./(?:[^/]+/)*PassVault\.exe$') {
-              throw "Only the PassVault launcher may receive the PassVault publisher signature."
+          $launcher = @($catalog | Where-Object {
+              $_ -match '^\./(?:[^/]+/)*PassVault\.exe$'
+          })
+          $biometricBridge = @($catalog | Where-Object {
+              $_ -match '^\./(?:[^/]+/)?app/resources/native/windows-x64/passvault_biometric\.dll$'
+          })
+          if ($catalog.Count -ne 2 -or $launcher.Count -ne 1 -or
+              $biometricBridge.Count -ne 1) {
+              throw "Only the PassVault launcher and reviewed biometric bridge may receive the publisher signature."
           }
 
       - name: Authenticate to Azure Artifact Signing with OIDC
@@ -528,6 +534,12 @@ jobs:
                   throw "Failed to delete the transient unsigned SignPath runtime artifact."
               }
           }
+
+      - name: Bind the signed biometric bridge bytes to the packaged runtime
+        shell: pwsh
+        run: >
+          ./scripts/update-desktop-biometric-checksum.ps1
+          -RuntimePath app-desktop/build/compose/binaries/main-release/app
 
       - name: Package installers from the exact signed Windows app image
         env:

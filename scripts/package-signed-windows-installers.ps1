@@ -68,7 +68,8 @@ foreach ($nativeFile in $nativeFiles) {
         -not $signature.SignerCertificate -or -not $signature.TimeStamperCertificate) {
         throw "The app image is not fully signed and timestamped: $($nativeFile.FullName)"
     }
-    if ($nativeFile.Name -eq "PassVault.exe") {
+    if ($nativeFile.Name -eq "PassVault.exe" -or
+        $nativeFile.Name -ceq "passvault_biometric.dll") {
         $publisherName = $signature.SignerCertificate.GetNameInfo(
             [Security.Cryptography.X509Certificates.X509NameType]::SimpleName,
             $false

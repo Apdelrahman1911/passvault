@@ -16,6 +16,15 @@
         description="PassVault"
         description-url="https://github.com/Apdelrahman1911/passvault" />
     </pe-file>
+    <pe-file
+      path="files/**/app/resources/native/windows-x64/passvault_biometric.dll"
+      min-matches="0"
+      max-matches="1">
+      <authenticode-sign
+        hash-algorithm="sha256"
+        description="PassVault biometric bridge"
+        description-url="https://github.com/Apdelrahman1911/passvault" />
+    </pe-file>
     <msi-file
       path="files/**/PassVault-*.msi"
       min-matches="0"
