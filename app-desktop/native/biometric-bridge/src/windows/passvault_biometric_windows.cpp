@@ -4,7 +4,9 @@
 #include <aclapi.h>
 #include <bcrypt.h>
 #include <ncrypt.h>
+#include <objbase.h>
 #include <webauthn.h>
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Security.Credentials.UI.h>
 #include <winrt/base.h>
 
