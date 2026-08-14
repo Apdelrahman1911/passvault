@@ -11,6 +11,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -279,7 +280,7 @@ abstract class VerifyDesktopInstalledBiometricBridge : DefaultTask() {
 
     private fun hasAdHocSignature(file: File): Boolean {
         val result = runCodeSign("--display", "--verbose=4", file.absolutePath)
-            ?.takeIf { value -> value.exitCode == 0 && value.output.length <= MAX_CODESIGN_OUTPUT_CHARS }
+            ?.takeIf { value -> value.exitCode == 0 }
             ?: return false
         val pairs = result.output.lineSequence().mapNotNull { line ->
             val separator = line.indexOf('=')
@@ -315,7 +316,7 @@ abstract class VerifyDesktopInstalledBiometricBridge : DefaultTask() {
 
     private fun codeSigningDetails(file: File): CodeSigningDetails? {
         return runCodeSign("--display", "--verbose=4", file.absolutePath)
-            ?.takeIf { value -> value.exitCode == 0 && value.output.length <= MAX_CODESIGN_OUTPUT_CHARS }
+            ?.takeIf { value -> value.exitCode == 0 }
             ?.let { result -> codeSigningDetails(result) }
     }
 
@@ -334,7 +335,10 @@ abstract class VerifyDesktopInstalledBiometricBridge : DefaultTask() {
                     teamIdentifier = teamIdentifier,
                     isDeveloperId = authority.startsWith("Developer ID Application:") &&
                         authority.endsWith("($teamIdentifier)"),
-                    hasHardenedRuntime = codeDirectory.contains("(runtime)"),
+                    hasHardenedRuntime = codeDirectory.substringAfter('(', "")
+                        .substringBefore(')', "")
+                        .split(',')
+                        .any { flag -> flag.trim() == "runtime" },
                     hasTimestamp = timestamp.isNotBlank() && timestamp != "none",
                 )
             }
@@ -354,12 +358,17 @@ abstract class VerifyDesktopInstalledBiometricBridge : DefaultTask() {
                     .start()
             }.getOrNull() ?: return@let null
             if (process.waitFor(CODESIGN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                val output = process.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
-                    val buffer = CharArray(MAX_CODESIGN_OUTPUT_CHARS + 1)
-                    val count = reader.read(buffer)
-                    if (count < 0) "" else String(buffer, 0, count)
+                val outputBytes = process.inputStream.use { input ->
+                    input.readNBytes(MAX_CODESIGN_OUTPUT_BYTES + 1)
                 }
-                CodeSignResult(process.exitValue(), output)
+                if (outputBytes.size > MAX_CODESIGN_OUTPUT_BYTES) {
+                    outputBytes.fill(0)
+                    null
+                } else {
+                    val output = outputBytes.toString(Charsets.UTF_8)
+                    outputBytes.fill(0)
+                    CodeSignResult(process.exitValue(), output)
+                }
             } else {
                 process.destroyForcibly()
                 process.waitFor()
@@ -384,7 +393,121 @@ abstract class VerifyDesktopInstalledBiometricBridge : DefaultTask() {
         val SHA256 = Regex("[0-9a-f]{64}")
         val TEAM_ID = Regex("[A-Z0-9]{10}")
         const val CODESIGN_TIMEOUT_SECONDS = 10L
-        const val MAX_CODESIGN_OUTPUT_CHARS = 16 * 1024
+        const val MAX_CODESIGN_OUTPUT_BYTES = 16 * 1024
+    }
+}
+
+/**
+ * Normalizes unsigned macOS app images across host architectures.
+ *
+ * Apple Silicon launchers receive an ad-hoc signature as part of normal Mach-O
+ * linking, while Intel launchers can remain completely unsigned. jpackage
+ * signs bundled native libraries in both cases, so without this normalization
+ * the x64 candidate has a signed bridge inside an unsigned owning app. This
+ * task signs only an otherwise unsigned testing app. Production Developer ID
+ * builds never register it.
+ */
+abstract class AdHocSignUnsignedMacOsApp : DefaultTask() {
+    @get:Internal
+    abstract val distributableDirectory: DirectoryProperty
+
+    @TaskAction
+    fun sign() {
+        val codesign = File(CODESIGN)
+        check(codesign.isFile) { "macOS candidate normalization requires /usr/bin/codesign." }
+        val root = distributableDirectory.get().asFile
+        check(root.isDirectory && !Files.isSymbolicLink(root.toPath())) {
+            "The Desktop distributable is missing or unsafe."
+        }
+        val appBundle = root.listFiles().orEmpty().filter { candidate ->
+            candidate.isDirectory &&
+                candidate.extension == "app" &&
+                !Files.isSymbolicLink(candidate.toPath())
+        }.singleOrNull() ?: error("The Desktop image must contain exactly one safe macOS app bundle.")
+
+        val existing = runCodeSign("--display", "--verbose=4", appBundle.absolutePath)
+        if (existing.exitCode == 0) {
+            val hasExpectedSignature = isAdHocSignature(existing.output)
+            val isValidBundle = verifyAdHocBundle(appBundle)
+            check(hasExpectedSignature && isValidBundle) {
+                "An unsigned macOS candidate unexpectedly contains a non-ad-hoc or invalid app signature " +
+                    "(adHocRuntime=$hasExpectedSignature, deepStrict=$isValidBundle)."
+            }
+            return
+        }
+        check(existing.output.contains(UNSIGNED_CODE_OBJECT_MESSAGE)) {
+            "Refusing to replace an unrecognized or invalid macOS app signature."
+        }
+
+        val signed = runCodeSign(
+            "--force",
+            "--sign",
+            "-",
+            "--options",
+            "runtime",
+            appBundle.absolutePath,
+        )
+        check(signed.exitCode == 0) { "Unable to apply the macOS candidate ad-hoc app signature." }
+        val normalized = runCodeSign("--display", "--verbose=4", appBundle.absolutePath)
+        val hasExpectedSignature = normalized.exitCode == 0 && isAdHocSignature(normalized.output)
+        val isValidBundle = verifyAdHocBundle(appBundle)
+        check(hasExpectedSignature && isValidBundle) {
+            "The normalized macOS candidate app does not have a valid deep ad-hoc signature " +
+                "(displayExit=${normalized.exitCode}, adHocRuntime=$hasExpectedSignature, deepStrict=$isValidBundle)."
+        }
+    }
+
+    private fun verifyAdHocBundle(appBundle: File): Boolean =
+        runCodeSign("--verify", "--deep", "--strict", appBundle.absolutePath).exitCode == 0
+
+    private fun isAdHocSignature(output: String): Boolean {
+        val pairs = output.lineSequence().mapNotNull { line ->
+            val separator = line.indexOf('=')
+            if (separator <= 0 || separator == line.lastIndex) null
+            else line.substring(0, separator) to line.substring(separator + 1)
+        }.toMap()
+        val hasHardenedRuntime = output.lineSequence()
+            .filter { line -> line.startsWith("CodeDirectory ") }
+            .flatMap { line ->
+                line.substringAfter('(', "")
+                    .substringBefore(')', "")
+                    .split(',')
+                    .asSequence()
+            }
+            .any { flag -> flag.trim() == "runtime" }
+        return pairs["Signature"] == "adhoc" &&
+            pairs["TeamIdentifier"] == "not set" &&
+            hasHardenedRuntime
+    }
+
+    private fun runCodeSign(vararg arguments: String): CodeSignResult {
+        val process = ProcessBuilder(listOf(CODESIGN) + arguments)
+            .redirectErrorStream(true)
+            .start()
+        check(process.waitFor(CODESIGN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+            process.destroyForcibly()
+            process.waitFor()
+            "codesign timed out while normalizing the macOS candidate."
+        }
+        val outputBytes = process.inputStream.use { input ->
+            input.readNBytes(MAX_CODESIGN_OUTPUT_BYTES + 1)
+        }
+        if (outputBytes.size > MAX_CODESIGN_OUTPUT_BYTES) {
+            outputBytes.fill(0)
+            error("codesign returned unexpectedly large output while normalizing the macOS candidate.")
+        }
+        val output = outputBytes.toString(Charsets.UTF_8)
+        outputBytes.fill(0)
+        return CodeSignResult(process.exitValue(), output)
+    }
+
+    private data class CodeSignResult(val exitCode: Int, val output: String)
+
+    private companion object {
+        const val CODESIGN = "/usr/bin/codesign"
+        const val CODESIGN_TIMEOUT_SECONDS = 10L
+        const val MAX_CODESIGN_OUTPUT_BYTES = 16 * 1024
+        const val UNSIGNED_CODE_OBJECT_MESSAGE = "code object is not signed at all"
     }
 }
 
@@ -1192,11 +1315,32 @@ if (System.getenv("MACOS_SIGN")?.toBooleanStrictOrNull() == true) {
     }
 }
 
+val adHocSignUnsignedMacOsApp =
+    if (
+        nativeBiometricPlatform?.startsWith("macos-") == true &&
+        System.getenv("MACOS_SIGN")?.toBooleanStrictOrNull() != true
+    ) {
+        tasks.register<AdHocSignUnsignedMacOsApp>("adHocSignUnsignedMacOsApp") {
+            group = "build setup"
+            description = "Applies and verifies a hardened-runtime ad-hoc signature on an unsigned macOS app image."
+            dependsOn("createReleaseDistributable")
+            distributableDirectory.set(
+                project.layout.buildDirectory.dir("compose/binaries/main-release/app"),
+            )
+            outputs.upToDateWhen { false }
+        }
+    } else {
+        null
+    }
+
+val desktopDistributableVerificationPrerequisite =
+    adHocSignUnsignedMacOsApp ?: tasks.named("createReleaseDistributable")
+
 val verifyDesktopInstalledLegalNotices =
     tasks.register<VerifyDesktopInstalledLegalNotices>("verifyDesktopInstalledLegalNotices") {
         group = "verification"
         description = "Verifies app-added notices and the separate OpenJDK legal set in the installed image."
-        dependsOn("createReleaseDistributable")
+        dependsOn(desktopDistributableVerificationPrerequisite)
         distributableDirectory.set(
             project.layout.buildDirectory.dir("compose/binaries/main-release/app"),
         )
@@ -1210,7 +1354,7 @@ val verifyDesktopInstalledRuntime =
     tasks.register<VerifyDesktopInstalledRuntime>("verifyDesktopInstalledRuntime") {
         group = "verification"
         description = "Verifies the bundled SQLite target matrix in the installed Desktop image."
-        dependsOn("createReleaseDistributable")
+        dependsOn(desktopDistributableVerificationPrerequisite)
         distributableDirectory.set(
             project.layout.buildDirectory.dir("compose/binaries/main-release/app"),
         )
@@ -1221,7 +1365,7 @@ val verifyDesktopInstalledBiometricBridge =
     tasks.register<VerifyDesktopInstalledBiometricBridge>("verifyDesktopInstalledBiometricBridge") {
         group = "verification"
         description = "Verifies the native biometric bridge set in the installed Desktop image."
-        dependsOn("createReleaseDistributable")
+        dependsOn(desktopDistributableVerificationPrerequisite)
         distributableDirectory.set(
             project.layout.buildDirectory.dir("compose/binaries/main-release/app"),
         )

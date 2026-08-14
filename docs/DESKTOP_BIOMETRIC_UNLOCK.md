@@ -65,8 +65,11 @@ requires the owning app and bridge to have matching timestamped Developer ID App
 Runtime; an ad-hoc package is intentionally insufficient for installed Touch ID testing.
 
 Unsigned testing-candidate DMGs remain intentionally buildable, and their packaging gate accepts only the exact staged
-checksum or the valid ad-hoc signatures produced by `jpackage`. The runtime still keeps Touch ID unavailable in those
-installed candidates. A build requested with `MACOS_SIGN=true`, or a local validation requested with
+checksum or the valid ad-hoc signatures produced during packaging. Because macOS can leave an Intel app launcher
+unsigned while Apple Silicon launchers are linker-signed, the unsigned packaging path explicitly ad-hoc signs and
+deep-verifies the completed owning `.app` before its bridge gate runs. It refuses to replace any existing invalid or
+non-ad-hoc signature. The runtime still keeps Touch ID unavailable in those installed candidates. A build requested
+with `MACOS_SIGN=true`, or a local validation requested with
 `-Ppassvault.requireInstalledMacOsBiometric=true`, must pass the full Developer ID gate before packaging can succeed.
 
 Production signing changes native-library bytes:
