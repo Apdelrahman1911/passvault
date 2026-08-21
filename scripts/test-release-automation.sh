@@ -962,6 +962,20 @@ test -s "$mobile_output/ios/en-US/support_url.txt"
 test -s "$mobile_output/ios/copyright.txt"
 test -s "$mobile_output/testflight/en-US/what_to_test.txt"
 
+for source_locale in en ar; do
+    competitor_metadata_fixture="$temporary_root/competitor-mobile-store-$source_locale"
+    cp -R "$mobile_fixture" "$competitor_metadata_fixture"
+    printf '\nAvailable on Android too.\n' >> \
+        "$competitor_metadata_fixture/store-description-$source_locale.md"
+    if ./scripts/prepare-mobile-store-metadata.sh \
+        "$competitor_metadata_fixture" \
+        "$temporary_root/competitor-mobile-output-$source_locale" "123" \
+        >/dev/null 2>&1; then
+        echo "An $source_locale App Store description that mentions Android was accepted." >&2
+        exit 1
+    fi
+done
+
 legacy_metadata_fixture="$temporary_root/legacy-mobile-store"
 cp -R "$mobile_fixture" "$legacy_metadata_fixture"
 printf '\nFULL_DESCRIPTION_FILE=release/private/store-description-en.md\n' \
