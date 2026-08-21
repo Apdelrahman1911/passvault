@@ -87,24 +87,69 @@ validate_configuration() {
         exit 1
     fi
 
-    local bundle_id display_name product_name effective_configuration
+    local bundle_id display_name product_name effective_configuration code_sign_style development_team
     bundle_id="$(setting_value "$settings_file" PRODUCT_BUNDLE_IDENTIFIER)"
     display_name="$(setting_value "$settings_file" INFOPLIST_KEY_CFBundleDisplayName)"
     product_name="$(setting_value "$settings_file" PRODUCT_NAME)"
     effective_configuration="$(setting_value "$settings_file" CONFIGURATION)"
+    code_sign_style="$(setting_value "$settings_file" CODE_SIGN_STYLE)"
+    development_team="$(setting_value "$settings_file" DEVELOPMENT_TEAM)"
 
     if [[ "$bundle_id" != "$expected_bundle_id" ||
           "$display_name" != "$expected_display_name" ||
           "$product_name" != PassVault ||
-          "$effective_configuration" != "$configuration" ]]; then
+          "$effective_configuration" != "$configuration" ||
+          "$code_sign_style" != Automatic ||
+          "$development_team" != 7CGZ2343AA ]]; then
         echo "Unexpected $configuration iOS identity settings." >&2
-        echo "Bundle: $bundle_id; display name: $display_name; product: $product_name." >&2
+        echo "Bundle: $bundle_id; display name: $display_name; product: $product_name; signing style: $code_sign_style; team: $development_team." >&2
         exit 1
     fi
 }
 
 validate_configuration Debug com.passvault.ios.debug "PassVault Dev"
 validate_configuration Release com.passvault.ios PassVault
+
+validate_shared_release_signing_mapping() {
+    local settings_file="$temporary_root/Release-shared-signing.settings"
+    local expected_identity="Apple Distribution"
+    local expected_style="Manual"
+    local expected_team="ABCDE12345"
+    local expected_profile="Mobile Release Validation Profile"
+
+    if ! xcodebuild \
+          -project "$project" \
+          -scheme PassVault \
+          -configuration Release \
+          -sdk iphoneos \
+          -derivedDataPath "$temporary_root/DerivedData-Release-shared-signing" \
+          -showBuildSettings \
+          CODE_SIGNING_ALLOWED=NO \
+          "MOBILE_RELEASE_IOS_CODE_SIGN_IDENTITY=$expected_identity" \
+          "MOBILE_RELEASE_IOS_CODE_SIGN_STYLE=$expected_style" \
+          "MOBILE_RELEASE_IOS_DEVELOPMENT_TEAM=$expected_team" \
+          "MOBILE_RELEASE_IOS_PROVISIONING_PROFILE_SPECIFIER=$expected_profile" \
+          > "$settings_file" \
+          2> "$temporary_root/Release-shared-signing.xcodebuild.log"; then
+        cat "$temporary_root/Release-shared-signing.xcodebuild.log" >&2
+        exit 1
+    fi
+
+    local actual_identity actual_style actual_team actual_profile
+    actual_identity="$(setting_value "$settings_file" CODE_SIGN_IDENTITY)"
+    actual_style="$(setting_value "$settings_file" CODE_SIGN_STYLE)"
+    actual_team="$(setting_value "$settings_file" DEVELOPMENT_TEAM)"
+    actual_profile="$(setting_value "$settings_file" PROVISIONING_PROFILE_SPECIFIER)"
+    if [[ "$actual_identity" != "$expected_identity" ||
+          "$actual_style" != "$expected_style" ||
+          "$actual_team" != "$expected_team" ||
+          "$actual_profile" != "$expected_profile" ]]; then
+        echo "The Release target does not map Mobile Release Kit signing inputs correctly." >&2
+        exit 1
+    fi
+}
+
+validate_shared_release_signing_mapping
 
 ruby -rrexml/document -e '
   document = REXML::Document.new(File.read(ARGV.fetch(0), encoding: "UTF-8"))

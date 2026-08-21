@@ -400,21 +400,25 @@ val appVersionName =
 
 val releaseKeystorePath =
     System.getenv("KEYSTORE_PATH")?.takeUnless(String::isBlank)
+        ?: System.getenv("MOBILE_RELEASE_ANDROID_KEYSTORE_PATH")?.takeUnless(String::isBlank)
         ?: (findProperty("KEYSTORE_PATH") as? String)?.takeUnless(String::isBlank)
         ?: "release.keystore"
 
 val releaseKeystorePassword =
     System.getenv("KEYSTORE_PASSWORD")
+        ?: System.getenv("MOBILE_RELEASE_ANDROID_KEYSTORE_PASSWORD")?.takeUnless(String::isBlank)
         ?: findProperty("KEYSTORE_PASSWORD") as? String
         ?: ""
 
 val releaseKeyAlias =
     System.getenv("KEY_ALIAS")
+        ?: System.getenv("MOBILE_RELEASE_ANDROID_KEY_ALIAS")?.takeUnless(String::isBlank)
         ?: findProperty("KEY_ALIAS") as? String
         ?: ""
 
 val releaseKeyPassword =
     System.getenv("KEY_PASSWORD")
+        ?: System.getenv("MOBILE_RELEASE_ANDROID_KEY_PASSWORD")?.takeUnless(String::isBlank)
         ?: findProperty("KEY_PASSWORD") as? String
         ?: ""
 
@@ -425,9 +429,12 @@ val canonicalReleaseKeyAlias =
         .trim()
 
 val requireReleaseSigning =
-    providers.gradleProperty("passvault.requireReleaseSigning")
-        .map { value -> value.toBooleanStrict() }
-        .getOrElse(false)
+    System.getenv("MOBILE_RELEASE_REQUIRE_SIGNING")
+        ?.takeUnless(String::isBlank)
+        ?.toBooleanStrict()
+        ?: providers.gradleProperty("passvault.requireReleaseSigning")
+            .map { value -> value.toBooleanStrict() }
+            .getOrElse(false)
 
 val supportedAndroidAbis =
     listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")

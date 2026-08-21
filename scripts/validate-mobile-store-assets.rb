@@ -19,6 +19,11 @@ begin
   Find.find(assets_root) do |path|
     next if path == assets_root
 
+    basename = File.basename(path)
+    if basename == ".DS_Store" || basename == ".AppleDouble" || basename.start_with?("._")
+      raise "operating-system metadata is forbidden: #{path.delete_prefix(assets_root + "/")}"
+    end
+
     entry = File.lstat(path)
     raise "symlink or special filesystem entry" unless entry.file? || entry.directory?
   end

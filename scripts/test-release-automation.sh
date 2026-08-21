@@ -54,6 +54,19 @@ cleanup() {
 }
 trap cleanup EXIT
 
+if find release/store-assets -name .DS_Store -type f -print -quit | grep -q .; then
+    echo "Store assets contain forbidden .DS_Store metadata." >&2
+    exit 1
+fi
+git check-ignore -q release/store-assets/.DS_Store
+hidden_store_assets="$temporary_root/hidden-store-assets"
+mkdir -p "$hidden_store_assets"
+: > "$hidden_store_assets/.DS_Store"
+if ruby scripts/validate-mobile-store-assets.rb "$hidden_store_assets" >/dev/null 2>&1; then
+    echo "The Store asset validator accepted .DS_Store metadata." >&2
+    exit 1
+fi
+
 candidate_source_repository="$temporary_root/candidate-source"
 git init -q "$candidate_source_repository"
 git -C "$candidate_source_repository" config user.name "PassVault release test"
@@ -1130,6 +1143,17 @@ if grep -Fq './scripts/validate-private-release-config.sh' scripts/verify-ios-re
   exit 1
 fi
 bash -n scripts/verify-android-signatures.sh
+for shared_android_input in \
+    MOBILE_RELEASE_ANDROID_KEYSTORE_PATH \
+    MOBILE_RELEASE_ANDROID_KEYSTORE_PASSWORD \
+    MOBILE_RELEASE_ANDROID_KEY_ALIAS \
+    MOBILE_RELEASE_ANDROID_KEY_PASSWORD \
+    MOBILE_RELEASE_REQUIRE_SIGNING; do
+    if ! grep -Fq "$shared_android_input" app-android/build.gradle.kts; then
+        echo "The Android build does not accept $shared_android_input." >&2
+        exit 1
+    fi
+done
 android_build_script_fixture="$temporary_root/android-build-script"
 mkdir -p \
     "$android_build_script_fixture/scripts" \
@@ -1451,6 +1475,24 @@ Dir[".github/workflows/*.{yml,yaml}"].each do |path|
 end
 
 reusable_call_permissions = {
+  ".github/workflows/mobile-release-candidate.yml" => {
+    "candidate" => {
+      "actions" => "read",
+      "artifact-metadata" => "write",
+      "attestations" => "write",
+      "contents" => "read",
+      "id-token" => "write",
+    },
+  },
+  ".github/workflows/mobile-release-external-testing.yml" => {
+    "external-testing" => {
+      "actions" => "read",
+      "artifact-metadata" => "write",
+      "attestations" => "write",
+      "contents" => "read",
+      "id-token" => "write",
+    },
+  },
   ".github/workflows/testing-release.yml" => {
     "mobile-internal" => { "artifact-metadata" => "write", "attestations" => "write" },
     "mobile-external" => {
@@ -1484,14 +1526,39 @@ reusable_call_permissions.each do |path, jobs|
   end
 end
 RUBY
+mobile_release_kit_sha="7eebb2656d28df33e4d8e5135f1f8fb64404e2bd"
+for workflow in \
+    .github/workflows/mobile-release-preflight.yml \
+    .github/workflows/mobile-release-candidate.yml \
+    .github/workflows/mobile-release-external-testing.yml; do
+    test "$(grep -Fc "@${mobile_release_kit_sha}" "$workflow")" -eq 1
+    test "$(grep -Fc "tooling_sha: ${mobile_release_kit_sha}" "$workflow")" -eq 1
+    if grep -Eq '@(main|master|v[0-9])([[:space:]]|$)' "$workflow"; then
+        echo "$workflow uses a mutable mobile-release-kit reference." >&2
+        exit 1
+    fi
+done
+grep -Fq \
+    "https://raw.githubusercontent.com/Apdelrahman1911/mobile-release-kit/${mobile_release_kit_sha}/schemas/project.schema.json" \
+    release/mobile-release.json
+if rg -q 'reusable-production-submit|mobile-production' \
+    .github/workflows/mobile-release-{preflight,candidate,external-testing}.yml; then
+    echo "The PassVault pilot callers must not expose a Production path." >&2
+    exit 1
+fi
 test "$(grep -Fc '      id-token: write' .github/workflows/production-release.yml)" -eq 1
 grep -Fq "10#\$VERSION_CODE > 2100000000" .github/workflows/mobile-store-release.yml
-# Workflow shell expressions must be matched literally.
-# shellcheck disable=SC2016
-grep -Fq '10#$VERSION_CODE <= 10#$CANONICAL_BUILD_FLOOR' \
+grep -Fq 'BUILD_NUMBER="$(awk -F= '\''$1 == "VERSION_CODE" { print $2 }'\'' version.properties)"' \
+    .github/workflows/testing-release.yml
+grep -Fq "vars.LEGACY_TESTING_RELEASE_ON_PUSH == 'true'" \
+    .github/workflows/testing-release.yml
+if grep -Fq 'GITHUB_RUN_NUMBER * 1000' .github/workflows/testing-release.yml; then
+    echo "The legacy testing workflow still allocates a CI-generated Store build number." >&2
+    exit 1
+fi
+grep -Fq 'COMMITTED_BUILD_NUMBER="$(awk -F= '\''$1 == "VERSION_CODE" { print $2 }'\'' version.properties)"' \
     .github/workflows/mobile-store-release.yml
-# shellcheck disable=SC2016
-grep -Fq '10#$VERSION_CODE < 10#$CANONICAL_BUILD_FLOOR' \
+grep -Fq '[[ "$VERSION_CODE" != "$COMMITTED_BUILD_NUMBER" ]]' \
     .github/workflows/mobile-store-release.yml
 grep -Fq 'Ruby is required to select the newest compatible Android build-tools version.' \
     scripts/verify-android-signatures.sh
@@ -1594,6 +1661,17 @@ grep -Fq 'Unexpected iOS Store identity' fastlane/Fastfile
 bash -n scripts/validate-ios-build-identities.sh
 grep -Fq 'com.passvault.ios.debug' scripts/validate-ios-build-identities.sh
 grep -Fq 'com.passvault.ios' scripts/validate-ios-build-identities.sh
+for shared_ios_input in \
+    MOBILE_RELEASE_IOS_CODE_SIGN_IDENTITY \
+    MOBILE_RELEASE_IOS_CODE_SIGN_STYLE \
+    MOBILE_RELEASE_IOS_DEVELOPMENT_TEAM \
+    MOBILE_RELEASE_IOS_PROVISIONING_PROFILE_SPECIFIER; do
+    if ! grep -Fq "$shared_ios_input" scripts/validate-ios-build-identities.sh; then
+        echo "The iOS identity validator does not cover $shared_ios_input." >&2
+        exit 1
+    fi
+done
+grep -Fq 'validate_shared_release_signing_mapping' scripts/validate-ios-build-identities.sh
 if grep -Eq '^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=' \
     iosApp/Configuration/Config.xcconfig; then
     echo "The common Xcode configuration overrides the two application identities." >&2
