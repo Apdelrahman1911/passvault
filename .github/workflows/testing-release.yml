@@ -20,7 +20,11 @@ env:
 
 jobs:
   prepare:
-    if: github.event_name == 'workflow_dispatch' || github.event.created == false
+    # Keep the proven legacy path available during the shared-tooling pilot,
+    # but never let a testing-branch sync upload the same committed build via
+    # both systems. Manual dispatch remains available; automatic push uploads
+    # require an explicit repository policy opt-in.
+    if: github.event_name == 'workflow_dispatch' || (github.event.created == false && vars.LEGACY_TESTING_RELEASE_ON_PUSH == 'true')
     runs-on: ubuntu-latest
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
@@ -62,18 +66,11 @@ jobs:
           MAIN_SHA="$(git rev-parse FETCH_HEAD)"
           ./scripts/validate-testing-candidate-source.sh "$GITHUB_SHA" "$MAIN_SHA"
           VERSION="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' version.properties)"
-          CURRENT_CODE="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
-          if (( GITHUB_RUN_ATTEMPT > 999 )); then
-            echo "The workflow attempt exceeds the collision-free build-number range." >&2
-            exit 1
-          fi
-          BUILD_NUMBER=$((1000000 + GITHUB_RUN_NUMBER * 1000 + GITHUB_RUN_ATTEMPT))
-          if (( BUILD_NUMBER <= CURRENT_CODE )); then
-            echo "Generated build number $BUILD_NUMBER must exceed $CURRENT_CODE." >&2
-            exit 1
-          fi
-          if (( BUILD_NUMBER > 2100000000 )); then
-            echo "Generated build number $BUILD_NUMBER exceeds Android's supported range." >&2
+          BUILD_NUMBER="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          if [[ ! "$BUILD_NUMBER" =~ ^[1-9][0-9]*$ ]] ||
+             (( ${#BUILD_NUMBER} > 10 )) ||
+             (( 10#$BUILD_NUMBER > 2100000000 )); then
+            echo "VERSION_CODE must be the exact canonical Store build number from 1 through 2100000000." >&2
             exit 1
           fi
           ./scripts/validate-release-metadata.sh "$VERSION"

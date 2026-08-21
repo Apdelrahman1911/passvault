@@ -1,0 +1,40 @@
+name: Mobile external testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform whose exact internal build should be promoted
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+      candidate_run_id:
+        description: Successful candidate workflow run ID
+        required: true
+        type: string
+      confirmation:
+        description: external-testing:<platform>:<version>:<build>
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  external-testing:
+    permissions:
+      actions: read
+      artifact-metadata: write
+      attestations: write
+      contents: read
+      id-token: write
+    uses: Apdelrahman1911/mobile-release-kit/.github/workflows/reusable-external-testing.yml@7eebb2656d28df33e4d8e5135f1f8fb64404e2bd
+    with:
+      tooling_sha: 7eebb2656d28df33e4d8e5135f1f8fb64404e2bd
+      source_sha: ${{ github.sha }}
+      platform: ${{ inputs.platform }}
+      candidate_run_id: ${{ inputs.candidate_run_id }}
+      confirmation: ${{ inputs.confirmation }}
