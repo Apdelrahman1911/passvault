@@ -52,11 +52,16 @@ fingerprints used by candidate provenance.
 
 ## Candidate release
 
-Choose the marketing version in `version.properties` on `main`, then open and
-merge a reviewed `main` to `testing` PR. `Testing Candidate` automatically:
+Choose the marketing version and exact unused Store build number in
+`version.properties` on `main`, then open and merge a reviewed `main` to
+`testing` PR. During the Mobile Release Kit pilot, run either the shared caller
+or manually dispatch the retained legacy `Testing Candidate`; do not run both
+for the same build. Automatic legacy uploads on a `testing` push remain disabled
+unless repository variable `LEGACY_TESTING_RELEASE_ON_PUSH` is explicitly set to
+`true`. The legacy path:
 
-1. Allocates `1,000,000 + run_number × 1,000 + run_attempt` as the store build
-   and rejects attempts or results outside the reserved range.
+1. Reads the exact committed `VERSION_CODE`, validates the supported range, and
+   rejects a Store collision before upload.
 2. Signs and uploads Android and iOS once to internal testing.
 3. Attests SHA-256 receipts for the exact signed AAB/APK, IPA/archive, mapping,
    and link-map files; binaries remain private Actions artifacts for 90 days.
@@ -202,8 +207,9 @@ The repository cannot truthfully automate these owner/legal decisions:
   a Developer ID Application certificate.
 - Google Play: complete App Content/Data Safety, default language, contact
   details, pricing/countries, confirm Play App Signing, satisfy production
-  eligibility, and attach the real closed-test email list to `internal` and
-  `beta`.
+  eligibility, retain the real closed-test email list for the legacy path, and
+  attach at least one owned Google Group to `beta` so the shared path can prove
+  tester assignment through the Publisher API.
 - Signing vendors: obtain an approved HSM-backed Windows Authenticode identity
   (SignPath is the documented starting point; Azure is available only when the
   publisher is eligible), and an Apple Developer ID certificate. Use local PFX
