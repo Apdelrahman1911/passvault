@@ -13,8 +13,8 @@ Do not publish an artifact while any required item is unchecked. Command evidenc
   `com.passvault.android`. No testing-track flavor or F-Droid identity exists.
 - [x] The Xcode scheme runs Debug as `PassVault Dev` / `com.passvault.ios.debug` and archives Release as
   `PassVault` / `com.passvault.ios`.
-- [x] The next Google Play/App Store candidate uses a canonical floor of `1000034`; the Testing Candidate workflow
-  allocates a unique `VERSION_CODE` / `CURRENT_PROJECT_VERSION` above that floor and the previously distributed
+- [x] The next Google Play/App Store candidate uses the exact committed build `1013002`; both the legacy Testing Candidate workflow
+  and Mobile Release Kit use that same `VERSION_CODE` / `CURRENT_PROJECT_VERSION`, which is above the previously distributed
   `1000033` build.
 - [ ] The release APK/AAB is signed with publisher-owned credentials and signature verification passes.
 - [x] The current-host Desktop package task and exact packaged-launch startup smoke pass after the final source edit.

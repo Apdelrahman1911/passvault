@@ -1,0 +1,35 @@
+name: Mobile internal candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build once and upload to internal testing
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+      confirmation:
+        description: candidate:<platform>:<version>:<build>
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  candidate:
+    permissions:
+      actions: read
+      artifact-metadata: write
+      attestations: write
+      contents: read
+      id-token: write
+    uses: Apdelrahman1911/mobile-release-kit/.github/workflows/reusable-candidate.yml@7eebb2656d28df33e4d8e5135f1f8fb64404e2bd
+    with:
+      tooling_sha: 7eebb2656d28df33e4d8e5135f1f8fb64404e2bd
+      source_sha: ${{ github.sha }}
+      platform: ${{ inputs.platform }}
+      confirmation: ${{ inputs.confirmation }}

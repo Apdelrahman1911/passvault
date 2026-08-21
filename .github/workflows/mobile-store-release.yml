@@ -77,7 +77,7 @@ on:
         required: false
         type: string
       build_number:
-        description: Exact store build number; uploads must exceed the canonical published-build floor
+        description: Exact committed Store build number from version.properties
         required: true
         type: string
       candidate_tag:
@@ -223,14 +223,9 @@ jobs:
             exit 1
           fi
           ./scripts/validate-release-metadata.sh "$VERSION"
-          CANONICAL_BUILD_FLOOR="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
-          if [[ "$REQUEST_OPERATION" == "upload" ]]; then
-            if (( 10#$VERSION_CODE <= 10#$CANONICAL_BUILD_FLOOR )); then
-              echo "A new store upload must use a build above the canonical floor $CANONICAL_BUILD_FLOOR." >&2
-              exit 1
-            fi
-          elif (( 10#$VERSION_CODE < 10#$CANONICAL_BUILD_FLOOR )); then
-            echo "A store promotion cannot target a build below the canonical floor $CANONICAL_BUILD_FLOOR." >&2
+          COMMITTED_BUILD_NUMBER="$(awk -F= '$1 == "VERSION_CODE" { print $2 }' version.properties)"
+          if [[ "$VERSION_CODE" != "$COMMITTED_BUILD_NUMBER" ]]; then
+            echo "The requested Store build must exactly match committed VERSION_CODE=$COMMITTED_BUILD_NUMBER." >&2
             exit 1
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"

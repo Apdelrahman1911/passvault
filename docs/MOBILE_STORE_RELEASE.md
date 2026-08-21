@@ -62,8 +62,11 @@ Complete these items in Play Console:
    access, ads, category, contacts, privacy policy, pricing, and countries.
 3. Invite the OIDC beta and production service accounts with the documented
    PassVault-only permissions.
-4. Populate a real Play email list and attach it to both `internal` and `beta`.
-5. Confirm the account's production eligibility.
+4. Populate a real Play email list for the legacy path and attach it to the
+   required testing tracks.
+5. Attach at least one owned Google Group to `beta`; Mobile Release Kit requires
+   the Publisher API to read back that assignment before external promotion.
+6. Confirm the account's production eligibility.
 
 The Publishing API cannot configure or prove email-list membership or legal
 questionnaire answers. Those remain explicit Console checks. See
@@ -97,9 +100,12 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
 
 ## Operating the release
 
-1. Merge a reviewed `main` → `testing` PR. `Testing Candidate` performs the
-   internal uploads, waits for the external environment approval, promotes the
-   exact builds, and publishes the unsigned desktop prerelease.
+1. Commit an exact unused `VERSION_CODE` and merge a reviewed `main` →
+   `testing` PR. During the shared-tooling pilot, choose one candidate path:
+   dispatch Mobile Release Kit or manually dispatch the retained legacy
+   `Testing Candidate`. Never run both for the same build. Legacy push uploads
+   require the explicit `LEGACY_TESTING_RELEASE_ON_PUSH=true` repository policy
+   opt-in and stay disabled during the pilot.
 2. After Apple reports Beta App Review approved, run `Candidate Readiness` from
    the `testing` branch for that candidate tag. It verifies Apple and Google,
    advances `release` to the exact tested SHA, and starts no-publication

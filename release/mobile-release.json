@@ -1,0 +1,77 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Apdelrahman1911/mobile-release-kit/7eebb2656d28df33e4d8e5135f1f8fb64404e2bd/schemas/project.schema.json",
+  "schemaVersion": 1,
+  "version": {
+    "source": "version.properties",
+    "nameKey": "VERSION_NAME",
+    "buildKey": "VERSION_CODE"
+  },
+  "source": {
+    "candidateBranch": "testing",
+    "productionBranch": "release"
+  },
+  "android": {
+    "enabled": true,
+    "applicationId": "com.passvault.android",
+    "identityStatus": "approved",
+    "module": ":app-android",
+    "variant": "release",
+    "externalTrack": {
+      "name": "beta",
+      "kind": "closed"
+    },
+    "uploadCertificateSha256": "7D4D1120B1D19F5BB942E06C600F2B6481E5E682475223FA4E7DC7B27CDB1037"
+  },
+  "ios": {
+    "enabled": true,
+    "bundleId": "com.passvault.ios",
+    "identityStatus": "unverified",
+    "teamId": "7CGZ2343AA",
+    "project": "iosApp/iosApp.xcodeproj",
+    "scheme": "PassVault",
+    "archiveConfiguration": "Release",
+    "symbols": {
+      "policy": "retain"
+    },
+    "review": {
+      "usesNonExemptEncryption": false,
+      "demoAccountRequired": false
+    }
+  },
+  "metadata": {
+    "root": "release/store-assets",
+    "androidLocales": [
+      "ar",
+      "en-US"
+    ],
+    "iosLocales": [
+      "ar-SA",
+      "en-US"
+    ]
+  },
+  "services": {
+    "androidFirebase": "disabled",
+    "iosFirebase": "disabled"
+  },
+  "projectChecks": {
+    "preflight": [
+      [
+        "./scripts/test-release-automation.sh"
+      ],
+      [
+        "./gradlew",
+        "verifyReleaseVersion",
+        "--no-configuration-cache"
+      ],
+      [
+        "./scripts/validate-mobile-store-assets.rb"
+      ]
+    ],
+    "androidArtifact": [],
+    "iosArtifact": [
+      [
+        "./scripts/validate-ios-build-identities.sh"
+      ]
+    ]
+  }
+}
