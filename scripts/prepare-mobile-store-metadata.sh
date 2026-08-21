@@ -141,6 +141,14 @@ write_markdown_field() {
     printf '%s\n' "$value" > "$target"
 }
 
+validate_app_store_description() {
+    local target="$1"
+    if LC_ALL=C grep -Eiq 'Android|Google[[:space:]]+Play' "$target"; then
+        echo "App Store description must not mention another mobile platform: $(basename "$target")" >&2
+        exit 1
+    fi
+}
+
 mkdir -p \
     "$output_root/android/en-US/changelogs" "$output_root/android/ar/changelogs" \
     "$output_root/ios/en-US" "$output_root/ios/ar-SA" \
@@ -178,7 +186,9 @@ for locale_spec in "en:en-US:en-US" "ar:ar:ar-SA"; do
     write_field "$PROJECT_URL" 255 "$output_root/ios/$apple_locale/marketing_url.txt"
     write_field "$PRIVACY_POLICY_URL" 255 "$output_root/ios/$apple_locale/privacy_url.txt"
     write_field "$SUPPORT_URL" 255 "$output_root/ios/$apple_locale/support_url.txt"
-    write_markdown_field "$description_file" 4000 "$output_root/ios/$apple_locale/description.txt"
+    apple_description="$output_root/ios/$apple_locale/description.txt"
+    write_markdown_field "$description_file" 4000 "$apple_description"
+    validate_app_store_description "$apple_description"
     write_markdown_field "$notes_file" 4000 "$output_root/ios/$apple_locale/release_notes.txt"
 
     write_field "$beta_description" 4000 "$output_root/testflight/$apple_locale/description.txt"
