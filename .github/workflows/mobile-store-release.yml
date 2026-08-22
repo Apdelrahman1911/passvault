@@ -845,7 +845,7 @@ jobs:
           if [[ "$REQUEST_CHANNEL" == "external" ]]; then
             source_track=internal
           else
-            source_track=beta
+            source_track=alpha
           fi
           ./scripts/check-play-track-build.sh \
             "$source_track" "${{ needs.validate.outputs.version_code }}"

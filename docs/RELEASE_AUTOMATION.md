@@ -66,8 +66,9 @@ unless repository variable `LEGACY_TESTING_RELEASE_ON_PUSH` is explicitly set to
 3. Attests SHA-256 receipts for the exact signed AAB/APK, IPA/archive, mapping,
    and link-map files; binaries remain private Actions artifacts for 90 days.
 4. Waits for the `mobile-external-beta` environment approval.
-5. Promotes the exact Android build to the Play `beta` track and distributes
-   the exact iOS build to the configured external TestFlight group.
+5. Promotes the exact Android build to the Play `alpha` closed-testing track
+   and distributes the exact iOS build to the configured external TestFlight
+   group.
 6. Builds unsigned Windows x64 EXE/MSI, macOS arm64/x64 DMGs, and Linux x64
    DEB/RPM packages.
 7. Publishes `vVERSION-rc.BUILD` as a GitHub prerelease with checksums,
@@ -97,7 +98,7 @@ change either store. A manually started validation defaults to stopping here.
 When Candidate Readiness requested automatic continuation, successful signing
 validation starts the protected `Production Store Release`. That workflow first
 requires the matching unexpired validation artifact, then promotes the same Play
-build from `beta` to `production` with a completed 100% rollout and submits the
+build from `alpha` to `production` with a completed 100% rollout and submits the
 same TestFlight build to App Review with automatic release enabled. Reruns target
 the same unique version/build and never compile a new mobile binary.
 
@@ -208,7 +209,7 @@ The repository cannot truthfully automate these owner/legal decisions:
 - Google Play: complete App Content/Data Safety, default language, contact
   details, pricing/countries, confirm Play App Signing, satisfy production
   eligibility, retain the real closed-test email list for the legacy path, and
-  attach at least one owned Google Group to `beta` so the shared path can prove
+  attach at least one owned Google Group to `alpha` so the shared path can prove
   tester assignment through the Publisher API.
 - Signing vendors: obtain an approved HSM-backed Windows Authenticode identity
   (SignPath is the documented starting point; Azure is available only when the

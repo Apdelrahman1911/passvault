@@ -7,9 +7,9 @@ build_number="${2:-}"
 package_name="${ANDROID_PACKAGE_NAME:-}"
 access_token="${GOOGLE_OAUTH_ACCESS_TOKEN:-}"
 
-if [[ ! "$track" =~ ^(internal|beta|production)$ || ! "$build_number" =~ ^[1-9][0-9]*$ ]] ||
+if [[ ! "$track" =~ ^(internal|alpha|beta|production)$ || ! "$build_number" =~ ^[1-9][0-9]*$ ]] ||
     (( ${#build_number} > 10 )) || (( 10#$build_number > 2100000000 )); then
-    echo "Usage: $0 internal|beta|production <build-number>" >&2
+    echo "Usage: $0 internal|alpha|beta|production <build-number>" >&2
     exit 2
 fi
 if [[ "$package_name" != "com.passvault.android" || -z "$access_token" ]]; then

@@ -4,7 +4,7 @@ require "json"
 
 module PassVault
   module PlayTrackResponse
-    VALID_TRACKS = %w[internal beta production].freeze
+    VALID_TRACKS = %w[internal alpha beta production].freeze
 
     module_function
 
@@ -49,7 +49,7 @@ end
 if $PROGRAM_NAME == __FILE__
   path, track, build_number = ARGV
   unless ARGV.length == 3
-    warn "Usage: #{File.basename($PROGRAM_NAME)} <track-response.json> internal|beta|production <build-number>"
+    warn "Usage: #{File.basename($PROGRAM_NAME)} <track-response.json> internal|alpha|beta|production <build-number>"
     exit 2
   end
 
