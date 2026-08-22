@@ -219,7 +219,7 @@ platform :android do
 
   desc "Promote the exact internal build to closed testing"
   lane :promote_external do
-    play_promote(from: "internal", to: "beta", release_status: "completed")
+    play_promote(from: "internal", to: "alpha", release_status: "completed")
   end
 
   desc "Reject Play open testing until a reviewed open-test plan is enabled"
@@ -231,7 +231,7 @@ platform :android do
   lane :promote_production do
     UI.user_error!("Production approval is missing") unless ENV["PASSVAULT_PRODUCTION_APPROVED"] == "I_APPROVE_PRODUCTION"
     UI.user_error!("Required store testing is not confirmed") unless ENV["PASSVAULT_REQUIRED_TESTING_CONFIRMED"] == "I_CONFIRM_REQUIRED_TESTING_COMPLETED"
-    play_promote(from: "beta", to: "production", release_status: "completed")
+    play_promote(from: "alpha", to: "production", release_status: "completed")
   end
 end
 

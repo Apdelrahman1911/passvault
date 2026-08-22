@@ -64,7 +64,7 @@ Complete these items in Play Console:
    PassVault-only permissions.
 4. Populate a real Play email list for the legacy path and attach it to the
    required testing tracks.
-5. Attach at least one owned Google Group to `beta`; Mobile Release Kit requires
+5. Attach at least one owned Google Group to `alpha`; Mobile Release Kit requires
    the Publisher API to read back that assignment before external promotion.
 6. Confirm the account's production eligibility.
 
