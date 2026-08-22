@@ -10,7 +10,7 @@ an internal upload and exact-build external promotion.
 ## Pilot scope
 
 Android is the first pilot platform. Its Store identity, `release` variant,
-Play `beta` closed-testing track, and public upload-certificate SHA-256 are all
+Play `alpha` closed-testing track, and public upload-certificate SHA-256 are all
 committed and approved. `VERSION_CODE=1013002` and iOS
 `CURRENT_PROJECT_VERSION=1013002` are the exact committed candidate build;
 both shared and legacy workflows consume that value. CI run numbers are no
@@ -72,14 +72,16 @@ assets. Private tester identities and account credentials remain outside Git.
 The shared configuration intentionally preserves the repository's existing
 closed-testing policy. It does not inspect, copy, or infer the private tester
 list, and it must not enable Play open testing without a separately reviewed
-product decision. Before activation, the `beta` track must expose at least one
+product decision. Before activation, the `alpha` track must expose at least one
 assigned Google Group through the Android Publisher API. Mobile Release Kit
 records only the boolean proof that an assignment exists; it never records the
 group name or tester identities. An email-list-only closed track cannot be
 proved by the supported API and therefore remains an explicit activation
-blocker. Non-publishing Play access run `32483130370` verified package access,
-the `internal` and `beta` tracks, both listing locales and image sets, and a
-disposable edit, but read back zero Google Groups on both tracks.
+blocker. Play Console accepted the owned tester Group for the `alpha` track on
+22 August 2026 and submitted that tester change for Google review. The shared
+pilot stays blocked until the non-publishing API check reads back at least one
+Google Group on `alpha`; `beta` is the open-testing track and is deliberately
+not used by this pilot.
 
 Owner/legal Console work remains manual, including agreements, pricing and
 territories, privacy/content declarations, tester membership, production
@@ -109,11 +111,11 @@ evidence for comparing a shared candidate.
    its push trigger stays gated by `LEGACY_TESTING_RELEASE_ON_PUSH`; keep that
    variable unset during the shared pilot so one branch sync cannot upload the
    same build through both systems.
-3. Add an owned Google Group to the Play `beta` track and rerun the read-only
+3. Add an owned Google Group to the Play `alpha` track and rerun the read-only
    Store preflight until it records API-visible assignment proof.
 4. Run one protected Android testing candidate and verify the Play read-back
    receipt for the exact signed AAB. Do not promote it to production.
-5. Promote the exact successful internal build to `beta` without rebuilding,
+5. Promote the exact successful internal build to `alpha` without rebuilding,
    after validating the candidate receipt and required environment review.
 6. Validate iOS independently, then run one protected TestFlight candidate and
    verify the exact Store build read-back.

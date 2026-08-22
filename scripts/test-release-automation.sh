@@ -844,6 +844,10 @@ ruby -rjson -e '
 ' "$play_track_response"
 ruby scripts/verify-play-track-response.rb \
     "$play_track_response" production 1000123 >/dev/null
+alpha_play_track_response="$temporary_root/play-alpha-track.json"
+jq '.track = "alpha"' "$play_track_response" > "$alpha_play_track_response"
+ruby scripts/verify-play-track-response.rb \
+    "$alpha_play_track_response" alpha 1000123 >/dev/null
 jq '.releases += [{ versionCodes: { forged: "1000123" }, status: "completed" }]' \
     "$play_track_response" > "$temporary_root/play-malformed-release.json"
 if ruby scripts/verify-play-track-response.rb \
@@ -1334,6 +1338,7 @@ grep -Fq "gh variable get \"\$variable_name\"" scripts/configure-google-oidc.sh
 grep -Fq 'verify_exclusive_workload_bindings "$production_service_account"' \
     scripts/configure-google-oidc.sh
 grep -Fq 'PLAY_EDIT_DELETED=PASS' scripts/verify-play-oidc-access.sh
+grep -Fq 'PLAY_ALPHA_GOOGLE_GROUP_COUNT=' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_PRODUCTION_ACCESS_ELIGIBILITY_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_EMAIL_LIST_TESTERS_API=UNSUPPORTED' scripts/verify-play-oidc-access.sh
 grep -Fq 'PLAY_EMPTY_EDIT_VALIDATION=' scripts/verify-play-oidc-access.sh
@@ -1360,6 +1365,14 @@ ruby -c scripts/create-desktop-release-provenance.rb >/dev/null
 ruby -c scripts/validate-desktop-release-provenance.rb >/dev/null
 bash -n scripts/check-play-track-build.sh
 grep -Fq 'track_promote_to' fastlane/Fastfile
+grep -Fq 'play_promote(from: "internal", to: "alpha", release_status: "completed")' \
+    fastlane/Fastfile
+grep -Fq 'play_promote(from: "alpha", to: "production", release_status: "completed")' \
+    fastlane/Fastfile
+grep -Fq 'check-play-track-build.sh alpha' .github/workflows/candidate-readiness.yml
+grep -Fq 'source_track=alpha' .github/workflows/mobile-store-release.yml
+jq -e '.android.externalTrack == {"name": "alpha", "kind": "closed"}' \
+    release/mobile-release.json >/dev/null
 test "$(grep -Fc 'skip_upload_metadata: !upload_store_assets' fastlane/Fastfile)" -eq 2
 test "$(grep -Fc 'skip_upload_changelogs: false' fastlane/Fastfile)" -eq 2
 grep -Fq 'mapping = required_env("ANDROID_MAPPING_PATH")' fastlane/Fastfile

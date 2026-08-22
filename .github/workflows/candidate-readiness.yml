@@ -139,7 +139,7 @@ jobs:
         env:
           ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
           GOOGLE_OAUTH_ACCESS_TOKEN: ${{ steps.google-auth.outputs.access_token }}
-        run: ./scripts/check-play-track-build.sh beta "${{ needs.candidate.outputs.build_number }}"
+        run: ./scripts/check-play-track-build.sh alpha "${{ needs.candidate.outputs.build_number }}"
 
   testflight:
     needs: candidate
