@@ -476,7 +476,7 @@ jobs:
 
       - name: Sign runtime request with SignPath HSM
         if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
-        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2
         with:
           api-token: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
@@ -643,7 +643,7 @@ jobs:
 
       - name: Sign installer request with SignPath HSM
         if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
-        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2
         with:
           api-token: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
