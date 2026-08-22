@@ -2234,7 +2234,7 @@ reusable_call_permissions.each do |path, jobs|
   end
 end
 RUBY
-mobile_release_kit_sha="7eebb2656d28df33e4d8e5135f1f8fb64404e2bd"
+mobile_release_kit_sha="c3a5a0fedce2695f9e5ff520bc15c48aa0af268c"
 for workflow in \
     .github/workflows/mobile-release-preflight.yml \
     .github/workflows/mobile-release-candidate.yml \
