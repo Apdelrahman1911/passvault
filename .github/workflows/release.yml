@@ -823,6 +823,7 @@ jobs:
           MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
           EXPECTED_MACOS_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
         run: |
+          set -euo pipefail
           certificate_path="$RUNNER_TEMP/passvault-developer-id.p12"
           keychain_path="$RUNNER_TEMP/passvault-signing.keychain-db"
           original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
@@ -918,6 +919,7 @@ jobs:
       - name: Remove temporary macOS keychain
         if: always()
         run: |
+          set -euo pipefail
           source scripts/lib/macos-keychain.sh
           rm -f -- "$RUNNER_TEMP/passvault-developer-id.p12"
           original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"

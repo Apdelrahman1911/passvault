@@ -9,6 +9,7 @@ cd "$repository_root"
 ./scripts/validate-workflow-action-pins.sh >/dev/null
 ./scripts/verify-pentest-scope.sh >/dev/null
 ./scripts/verify-dependabot-coverage.sh >/dev/null
+./scripts/verify-shell-library-contract.sh >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
@@ -55,6 +56,23 @@ cleanup() {
     esac
 }
 trap cleanup EXIT
+
+fake_security_bin="$temporary_root/fake-security-bin"
+mkdir -p "$fake_security_bin"
+cat > "$fake_security_bin/security" <<'FAKE_SECURITY'
+#!/usr/bin/env bash
+exit 1
+FAKE_SECURITY
+chmod 700 "$fake_security_bin/security"
+failed_keychain_capture="$temporary_root/original-user-keychains.txt"
+if PATH="$fake_security_bin:$PATH" bash -euo pipefail -c '
+    source scripts/lib/macos-keychain.sh
+    passvault_capture_user_keychains "$1"
+' -- "$failed_keychain_capture" >/dev/null 2>&1; then
+    echo "A failed keychain-list command was accepted." >&2
+    exit 1
+fi
+test ! -s "$failed_keychain_capture"
 
 if find release/store-assets -name .DS_Store -type f -print -quit | grep -q .; then
     echo "Store assets contain forbidden .DS_Store metadata." >&2

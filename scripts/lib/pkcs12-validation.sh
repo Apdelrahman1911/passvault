@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# This file is a sourced library, never a standalone script. It intentionally
+# omits `set -euo pipefail`: shell options would leak into the caller. Callers
+# must enable strict mode before sourcing this library.
+
 # PKCS#12 validation helpers. Passwords are provided only through a named
 # environment variable and are never printed or included in diagnostics.
 # Output variables in this library are consumed by scripts that source it.
