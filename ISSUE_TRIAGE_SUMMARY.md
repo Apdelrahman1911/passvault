@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (63 still open; #36, #37, #40, #47, #88, #95, #96, #100, #104, and #106 resolved and closed)
+- **FIX: 73** (62 still open; #36, #37, #40, #47, #88, #92, #95, #96, #100, #104, and #106 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -26,6 +26,7 @@
 - **Resolved FIX:** #40 — failed auto-lock attempts now re-enter on a bounded timer without waiting for user activity; virtual-time tests cover unattended retries and eventual success.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
+- **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
 - **Resolved FIX:** #95 — the fixed Argon2 parallelism value, binding limitation, and fail-closed reader behavior are now documented consistently and covered by a vault-metadata regression test.
 - **Resolved FIX:** #96 — V2 length-prefixed attachment IDs now decode UTF-8 strictly and wipe the intermediate bytes; malformed sequences have direct regression coverage.
 - **Resolved FIX:** #100 — import source ownership is centralized in one non-cancellable outer `finally`, preventing a throwing close from triggering a second close and preserving completed encrypted imports.
