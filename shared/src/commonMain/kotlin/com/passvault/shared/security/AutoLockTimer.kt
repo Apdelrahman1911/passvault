@@ -14,11 +14,13 @@ internal class AutoLockTimer(
     private val activitySignal: UserActivitySignal,
     private val clock: AutoLockClock = SystemAutoLockClock,
     private val timeoutMillis: Long,
+    private val retryDelayMillis: Long = AUTO_LOCK_RETRY_DELAY_MILLIS,
     private val lock: suspend () -> Boolean,
     private val onLockFailed: () -> Unit,
 ) {
     init {
         require(timeoutMillis > 0L) { "Auto-lock timeout must be positive" }
+        require(retryDelayMillis > 0L) { "Auto-lock retry delay must be positive" }
     }
 
     suspend fun run() {
@@ -40,8 +42,12 @@ internal class AutoLockTimer(
                     if (lock()) return
                     onLockFailed()
 
-                    val nextActivity = latestActivity ?: activitySignal.receiveActivity()
-                    deadline = deadlineAfter(nextActivity)
+                    // A failed auto-lock must not wait for the activity that
+                    // auto-lock is intended to protect against. Activity that
+                    // arrived during the lock attempt still earns a normal
+                    // inactivity interval; otherwise retry on our own timer.
+                    deadline = latestActivity?.let(::deadlineAfter)
+                        ?: retryDeadlineAfter(clock.nowMillis())
                 }
             }
         } catch (_: ClosedReceiveChannelException) {
@@ -59,4 +65,11 @@ internal class AutoLockTimer(
 
     private fun remainingUntil(deadlineMillis: Long, nowMillis: Long): Long =
         if (nowMillis >= deadlineMillis) 0L else deadlineMillis - nowMillis
+
+    private fun retryDeadlineAfter(nowMillis: Long): Long =
+        if (nowMillis > Long.MAX_VALUE - retryDelayMillis) Long.MAX_VALUE else nowMillis + retryDelayMillis
+
+    private companion object {
+        const val AUTO_LOCK_RETRY_DELAY_MILLIS = 5_000L
+    }
 }
