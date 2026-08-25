@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (52 still open; #36, #37, #38, #40, #42, #43, #44, #47, #49, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
+- **FIX: 73** (51 still open; #36, #37, #38, #39, #40, #42, #43, #44, #47, #49, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
 - **DIG: 22**
 - **CLOSE/ACCEPT: 17**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -25,6 +25,7 @@
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
 - **Resolved FIX:** #38 — legacy v1 envelopes are now structurally validated and Base64-decoded from an 8 KiB stream instead of being copied through a whole-file buffer and UTF-16 JSON document; its ceiling is derived from the shipped 64 MiB plaintext limit and AEAD/Base64 overhead.
+- **Resolved FIX:** #39 — Desktop sensitive writes now publish all three Windows history/cloud-monitor opt-outs with zero DWORD payloads and the macOS concealed/transient pasteboard types in the same AWT transfer; ordinary clipboard writes remain unmarked and ownership-aware expiration is unchanged.
 - **Resolved FIX:** #40 — failed auto-lock attempts now re-enter on a bounded timer without waiting for user activity; virtual-time tests cover unattended retries and eventual success.
 - **Resolved FIX:** #42 — Desktop startup obtains a process-lifetime, owner-only file lock before Koin can open the vault; a losing launch exits before constructing any vault, biometric, or session component, and lease tests cover contention and release.
 - **Resolved FIX:** #43 — Desktop lock now synchronously installs the same opaque concealment curtain used at shutdown before iconifying the native window; it stays in place through asynchronous UI cleanup and is restored only on unlock or disposal.
