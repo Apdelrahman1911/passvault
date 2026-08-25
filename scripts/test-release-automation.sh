@@ -1704,6 +1704,10 @@ grep -Fq 'NSFileProtectionComplete' iosApp/iosApp/iosApp.entitlements
 grep -Fq 'keychain-access-groups' iosApp/iosApp/iosApp.entitlements
 test "$(grep -Fc 'CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;' \
     iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 2
+grep -Fq 'attributes = IOS_BACKUP_PROTECTION' \
+    shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
+grep -Fq 'protectIosBackupPath(fileManager, path)' \
+    shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
 grep -Fq ':app-android:verifyReleasePackageContents' \
     .github/workflows/mobile-store-release.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/build-signed-android.ps1
