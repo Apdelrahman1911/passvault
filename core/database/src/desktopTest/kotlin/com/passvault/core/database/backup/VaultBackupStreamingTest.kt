@@ -47,6 +47,7 @@ class VaultBackupStreamingTest {
     private lateinit var credentialRepository: CredentialRepositoryImpl
     private lateinit var attachmentRepository: AttachmentRepositoryImpl
     private lateinit var backupService: VaultBackupService
+    private lateinit var blobStore: LocalAttachmentBlobStore
     private lateinit var storageRoot: Path
     private lateinit var backupPath: Path
     private val cryptoEngine = DesktopCryptoEngine()
@@ -65,7 +66,7 @@ class VaultBackupStreamingTest {
             cryptoEngine = cryptoEngine,
             keyHierarchy = VaultKeyHierarchy(cryptoEngine),
         )
-        val blobStore = LocalAttachmentBlobStore(storageRoot.resolve("vault-files").toString())
+        blobStore = LocalAttachmentBlobStore(storageRoot.resolve("vault-files").toString())
         attachmentRepository = AttachmentRepositoryImpl(
             attachmentDao = database.attachmentDao(),
             credentialDao = database.credentialDao(),
@@ -259,6 +260,47 @@ class VaultBackupStreamingTest {
     }
 
     @Test
+    fun `post commit cancellation keeps every restored attachment object`() = runTest {
+        createBackup()
+        credentialRepository.delete(credentialId).getOrThrow()
+        assertTrue(objectPaths().isEmpty())
+        val transactionCommitted = CompletableDeferred<Unit>()
+        val source = PathBackupSource(backupPath)
+        val magic = readMagic(source)
+        val service = VaultBackupV2Service(
+            backupDao = database.vaultBackupDao(),
+            database = database,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+            blobStore = blobStore,
+            attachmentLifecycleManager = attachmentRepository,
+            newValidator = backupService::newStreamValidator,
+            activateRestore = { replaceVault ->
+                replaceVault()
+                transactionCommitted.complete(Unit)
+                awaitCancellation()
+            },
+        )
+
+        val restore = async {
+            withBackupPassword { password ->
+                service.restoreAfterMagic(source, password, magic) {}
+            }
+        }
+        transactionCommitted.await()
+        val committedAttachment = database.attachmentDao().getByCredential(credentialId.value).single()
+        assertTrue(blobStore.exists(committedAttachment.storagePath))
+
+        restore.cancelAndJoin()
+
+        assertTrue(source.closed)
+        val restoredAttachment = database.attachmentDao().getByCredential(credentialId.value).single()
+        assertEquals(committedAttachment.storagePath, restoredAttachment.storagePath)
+        assertTrue(blobStore.exists(restoredAttachment.storagePath))
+        assertEquals(setOf(restoredAttachment.storagePath.substringAfterLast('/')), objectPaths())
+    }
+
+    @Test
     fun `output failure aborts the candidate and oversized declared input is closed`() = runTest {
         val failingSink = FailingBackupSink()
         withBackupPassword { password ->
@@ -291,6 +333,20 @@ class VaultBackupStreamingTest {
                 ),
             )
         }
+    }
+
+    private suspend fun readMagic(source: BackupContentSource): ByteArray {
+        val magic = ByteArray(BACKUP_V2_MAGIC.size)
+        var offset = 0
+        while (offset < magic.size) {
+            val buffer = ByteArray(magic.size - offset)
+            val count = source.read(buffer)
+            require(count in 1..buffer.size)
+            buffer.copyInto(magic, destinationOffset = offset, endIndex = count)
+            offset += count
+        }
+        assertContentEquals(BACKUP_V2_MAGIC, magic)
+        return magic
     }
 
     private suspend fun createBackup() {

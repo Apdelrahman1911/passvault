@@ -166,20 +166,12 @@ internal class VaultBackupV2Service(
                 val replayManifest = readManifest(replayReader)
                 require(replayManifest == firstPass.validated.manifest)
 
-                activateRestore {
-                    database.useWriterConnection { connection ->
-                        connection.immediateTransaction {
-                            clearVaultTables()
-                            replayMetadataIntoRoom(
-                                reader = replayReader,
-                                manifest = replayManifest,
-                                expectedTranscript = requireNotNull(firstTranscript),
-                                stagedPaths = stagedPaths,
-                            )
-                        }
-                    }
-                }
-                committed = true
+                activateRestoredVault(
+                    replayReader = replayReader,
+                    replayManifest = replayManifest,
+                    expectedTranscript = requireNotNull(firstTranscript),
+                    stagedPaths = stagedPaths,
+                ) { committed = true }
                 cleanupUnreferencedObjects(stagedPaths)
                 onProgress(100)
                 Result.success(firstPass.validated.manifest.toInspection())
@@ -195,7 +187,7 @@ internal class VaultBackupV2Service(
                     if (activeReader == null) source.close() else activeReader.close()
                 }
                 if (!committed) {
-                    stagedPaths.values.forEach { path -> runCatching { blobStore.delete(path) } }
+                    removeAbandonedStagedObjects(stagedPaths.values)
                 }
                 firstTranscript?.let(cryptoEngine::secureWipe)
             }
@@ -209,8 +201,44 @@ internal class VaultBackupV2Service(
         return Result.failure(IllegalArgumentException("Backup password length is invalid"))
     }
 
+    private suspend fun activateRestoredVault(
+        replayReader: BackupV2Reader,
+        replayManifest: BackupStreamManifest,
+        expectedTranscript: ByteArray,
+        stagedPaths: Map<String, String>,
+        onCommitted: () -> Unit,
+    ) {
+        activateRestore {
+            database.useWriterConnection { connection ->
+                withContext(NonCancellable) {
+                    connection.immediateTransaction {
+                        clearVaultTables()
+                        replayMetadataIntoRoom(
+                            reader = replayReader,
+                            manifest = replayManifest,
+                            expectedTranscript = expectedTranscript,
+                            stagedPaths = stagedPaths,
+                        )
+                    }
+                    onCommitted()
+                }
+            }
+        }
+    }
+
     private suspend fun cleanupUnreferencedObjects(stagedPaths: Map<String, String>) {
         runCatching { blobStore.removeUnreferencedObjects(stagedPaths.values.toSet()) }
+    }
+
+    private suspend fun removeAbandonedStagedObjects(stagedPaths: Collection<String>) {
+        // Cleanup must not rely only on an in-memory flag. Treat Room as the
+        // source of truth and never delete a path that a committed row can reach.
+        val referencedPaths = runCatching {
+            backupDao.getAttachmentStoragePaths().toHashSet()
+        }.getOrNull() ?: return
+        stagedPaths.forEach { path ->
+            if (path !in referencedPaths) runCatching { blobStore.delete(path) }
+        }
     }
 
     private suspend fun writeMetadataStream(

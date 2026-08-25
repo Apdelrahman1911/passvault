@@ -44,6 +44,9 @@ interface VaultBackupDao {
     @Query("SELECT * FROM attachment_records ORDER BY created_at ASC")
     suspend fun getAttachments(): List<AttachmentRecordEntity>
 
+    @Query("SELECT storage_path FROM attachment_records")
+    suspend fun getAttachmentStoragePaths(): List<String>
+
     @Query("SELECT * FROM password_history_records ORDER BY changed_at DESC, id DESC")
     suspend fun getPasswordHistory(): List<PasswordHistoryRecordEntity>
 
