@@ -5,6 +5,7 @@ import com.passvault.desktop.getOperatingSystem
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.security.MessageDigest
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -149,6 +150,55 @@ class DesktopBiometricNativeLoaderTest {
                 ).load()
             }
         } finally {
+            temporaryRoot.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `coordinated Windows bridge and manifest tampering fails before native loading`() {
+        val temporaryRoot = createTempDirectory("passvault-windows-authenticode-test")
+        val javaHome = temporaryRoot.resolve("PassVault/runtime")
+        val bridgeDirectory = temporaryRoot.resolve("PassVault/app/resources/native/windows-x64")
+        val dataDirectory = temporaryRoot.resolve("data")
+        Files.createDirectories(javaHome)
+        Files.createDirectories(bridgeDirectory)
+        Files.createDirectory(dataDirectory)
+        Files.write(temporaryRoot.resolve("PassVault/PassVault.exe"), byteArrayOf(0x4d, 0x5a))
+        val attackerLibrary = byteArrayOf(0x4d, 0x5a, 1, 2, 3, 4)
+        Files.write(bridgeDirectory.resolve("passvault_biometric.dll"), attackerLibrary)
+        val attackerChecksum = MessageDigest.getInstance("SHA-256")
+            .digest(attackerLibrary)
+            .joinToString("") { byte -> "%02x".format(byte.toInt() and 0xff) }
+        Files.writeString(
+            bridgeDirectory.resolve("bridge.properties"),
+            "abi=1\n" +
+                "platform=windows-x64\n" +
+                "library=passvault_biometric.dll\n" +
+                "integrity=sha256-and-authenticode\n" +
+                "sha256=$attackerChecksum\n",
+        )
+        var verifierCalled = false
+
+        try {
+            val error = assertFailsWith<IllegalArgumentException> {
+                DesktopBiometricNativeLoader(
+                    operatingSystem = OperatingSystem.WINDOWS,
+                    architectureName = "amd64",
+                    dataDirectoryOverride = dataDirectory,
+                    javaHomeDirectory = javaHome,
+                    windowsAuthenticodeVerifier = { library, launcher ->
+                        verifierCalled = true
+                        assertEquals(bridgeDirectory.resolve("passvault_biometric.dll"), library)
+                        assertEquals(temporaryRoot.resolve("PassVault/PassVault.exe"), launcher)
+                        false
+                    },
+                ).load()
+            }
+
+            assertTrue(verifierCalled)
+            assertTrue(error.message.orEmpty().contains("Authenticode"))
+        } finally {
+            attackerLibrary.fill(0)
             temporaryRoot.toFile().deleteRecursively()
         }
     }

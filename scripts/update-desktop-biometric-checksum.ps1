@@ -38,6 +38,13 @@ if ($signature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
     -not $signature.SignerCertificate -or -not $signature.TimeStamperCertificate) {
     throw "The Windows biometric bridge must be signed and timestamped before refreshing its checksum."
 }
+$launcher = Join-Path $runtime.FullName "PassVault.exe"
+$launcherSignature = Get-AuthenticodeSignature -LiteralPath $launcher
+if ($launcherSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
+    -not $launcherSignature.SignerCertificate -or -not $launcherSignature.TimeStamperCertificate -or
+    $signature.SignerCertificate.Thumbprint -cne $launcherSignature.SignerCertificate.Thumbprint) {
+    throw "The Windows biometric bridge and PassVault launcher must share one valid timestamped signer."
+}
 
 $entries = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
 foreach ($line in [IO.File]::ReadAllLines($manifest.FullName, [Text.Encoding]::UTF8)) {
@@ -50,7 +57,7 @@ $expectedKeys = @("abi", "integrity", "library", "platform", "sha256") | Sort-Ob
 $actualKeys = (($entries.Keys | Sort-Object) -join "`n")
 $expectedKeyText = ($expectedKeys -join "`n")
 if ($actualKeys -cne $expectedKeyText -or
-    $entries["abi"] -cne "1" -or $entries["integrity"] -cne "sha256" -or
+    $entries["abi"] -cne "1" -or $entries["integrity"] -cne "sha256-and-authenticode" -or
     $entries["library"] -cne "passvault_biometric.dll" -or
     $entries["platform"] -cne "windows-x64" -or
     $entries["sha256"] -notmatch '^[0-9a-f]{64}$') {
@@ -62,7 +69,7 @@ $content = @(
     "abi=1",
     "platform=windows-x64",
     "library=passvault_biometric.dll",
-    "integrity=sha256",
+    "integrity=sha256-and-authenticode",
     "sha256=$checksum"
 )
 [IO.File]::WriteAllLines($manifest.FullName, $content, [Text.UTF8Encoding]::new($false))

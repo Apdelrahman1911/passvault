@@ -18,6 +18,7 @@ internal class DesktopBiometricNativeLoader(
     private val developmentBridgeDirectory: String? = System.getProperty(DEVELOPMENT_BRIDGE_PROPERTY),
     private val dataDirectoryOverride: Path? = null,
     private val javaHomeDirectory: Path = Paths.get(System.getProperty("java.home").orEmpty()),
+    private val windowsAuthenticodeVerifier: ((Path, Path) -> Boolean)? = null,
 ) {
     fun load(): DesktopBiometricBridge {
         val platform = nativePlatform(operatingSystem, architectureName)
@@ -48,6 +49,15 @@ internal class DesktopBiometricNativeLoader(
         if (location.isPackaged && operatingSystem == OperatingSystem.MACOS) {
             require(verifyMacOsDeveloperIdBundle(library)) {
                 "Packaged macOS biometric code lacks the owning app's Developer ID protection"
+            }
+        }
+        if (location.isPackaged && operatingSystem == OperatingSystem.WINDOWS) {
+            val launcher = windowsPackagedLauncher()
+                ?: throw IllegalArgumentException("Packaged Windows launcher is missing or unsafe")
+            val hasAuthenticodeProtection = windowsAuthenticodeVerifier?.invoke(library, launcher)
+                ?: verifyWindowsAuthenticodeBundle(library, launcher)
+            require(hasAuthenticodeProtection) {
+                "Packaged Windows biometric code lacks the owning app's Authenticode protection"
             }
         }
         val api = Native.load(
@@ -116,6 +126,15 @@ internal class DesktopBiometricNativeLoader(
         .takeIf { path -> path.fileName.toString().equals("runtime", ignoreCase = true) }
         ?.parent
         ?.resolve("app/resources")
+
+    private fun windowsPackagedLauncher(): Path? = javaHomeDirectory.toAbsolutePath().normalize()
+        .takeIf { javaHome -> javaHome.fileName.toString().equals("runtime", ignoreCase = true) }
+        ?.parent
+        ?.resolve(WINDOWS_LAUNCHER)
+        ?.normalize()
+        ?.takeIf { path ->
+            Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(path)
+        }
 
     private fun ensureSecureDataDirectory(): Path {
         dataDirectoryOverride?.let { override ->
@@ -239,6 +258,56 @@ internal class DesktopBiometricNativeLoader(
     private fun verifyCodeSignature(path: Path): Boolean =
         runCodeSign("--verify", "--strict", "--verbose=0", path.toString())?.exitCode == 0
 
+    /**
+     * Authenticode is the Windows trust root; the adjacent checksum remains an
+     * accidental-corruption check only. Both files must be valid, timestamped,
+     * and signed by the exact same certificate. The per-machine installer then
+     * protects the already-authenticated launcher from same-user replacement.
+     */
+    private fun verifyWindowsAuthenticodeBundle(library: Path, launcher: Path): Boolean =
+        operatingSystem == OperatingSystem.WINDOWS &&
+            windowsPowerShellExecutable()?.let { powershell ->
+                startWindowsSignatureCheck(powershell, library, launcher)?.let { process ->
+                    if (!process.waitFor(AUTHENTICODE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                        process.destroyForcibly()
+                        process.waitFor()
+                        false
+                    } else {
+                        val boundedOutput = process.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
+                            val buffer = CharArray(MAX_SIGNATURE_OUTPUT_CHARS + 1)
+                            reader.read(buffer)
+                        }
+                        process.exitValue() == 0 && boundedOutput <= MAX_SIGNATURE_OUTPUT_CHARS
+                    }
+                } ?: false
+            } == true
+
+    private fun windowsPowerShellExecutable(): Path? = System.getenv(WINDOWS_SYSTEM_ROOT_ENV)
+        ?.takeIf(String::isNotBlank)
+        ?.let { systemRoot ->
+            runCatching {
+                Paths.get(systemRoot).resolve(WINDOWS_POWERSHELL_RELATIVE_PATH).toAbsolutePath().normalize()
+            }.getOrNull()
+        }
+        ?.takeIf { path ->
+            Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(path)
+        }
+
+    private fun startWindowsSignatureCheck(powershell: Path, library: Path, launcher: Path): Process? = runCatching {
+        ProcessBuilder(
+            powershell.toString(),
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            WINDOWS_AUTHENTICODE_SCRIPT,
+        ).apply {
+            redirectErrorStream(true)
+            environment()[WINDOWS_BRIDGE_ENV] = library.toString()
+            environment()[WINDOWS_LAUNCHER_ENV] = launcher.toString()
+        }.start()
+    }.getOrNull()
+
     private fun runCodeSign(vararg arguments: String): ProcessResult? {
         val process = runCatching {
             ProcessBuilder(listOf(CODESIGN) + arguments)
@@ -267,11 +336,31 @@ internal class DesktopBiometricNativeLoader(
         const val MANIFEST_FILE = "bridge.properties"
         const val INTEGRITY_SHA256 = "sha256"
         const val INTEGRITY_SHA256_OR_DEVELOPER_ID = "sha256-or-developer-id"
+        const val INTEGRITY_SHA256_AND_AUTHENTICODE = "sha256-and-authenticode"
         const val MAX_LIBRARY_BYTES = 32L * 1024L * 1024L
         const val HASH_BUFFER_BYTES = 8192
         const val CODESIGN = "/usr/bin/codesign"
         const val CODESIGN_TIMEOUT_SECONDS = 10L
         const val MAX_CODESIGN_OUTPUT_CHARS = 16 * 1024
+        const val WINDOWS_LAUNCHER = "PassVault.exe"
+        const val WINDOWS_SYSTEM_ROOT_ENV = "SystemRoot"
+        const val WINDOWS_BRIDGE_ENV = "PASSVAULT_AUTHENTICODE_BRIDGE"
+        const val WINDOWS_LAUNCHER_ENV = "PASSVAULT_AUTHENTICODE_LAUNCHER"
+        const val WINDOWS_POWERSHELL_RELATIVE_PATH = "System32/WindowsPowerShell/v1.0/powershell.exe"
+        const val AUTHENTICODE_TIMEOUT_SECONDS = 15L
+        const val MAX_SIGNATURE_OUTPUT_CHARS = 4096
+        val WINDOWS_AUTHENTICODE_SCRIPT = """
+            ${'$'}ErrorActionPreference = 'Stop'
+            ${'$'}bridge = Get-AuthenticodeSignature -LiteralPath ${'$'}env:$WINDOWS_BRIDGE_ENV
+            ${'$'}launcher = Get-AuthenticodeSignature -LiteralPath ${'$'}env:$WINDOWS_LAUNCHER_ENV
+            if (${ '$' }bridge.Status -ne 'Valid' -or ${ '$' }launcher.Status -ne 'Valid' -or
+                ${'$'}null -eq ${'$'}bridge.SignerCertificate -or ${'$'}null -eq ${'$'}launcher.SignerCertificate -or
+                ${'$'}null -eq ${'$'}bridge.TimeStamperCertificate -or
+                ${'$'}null -eq ${'$'}launcher.TimeStamperCertificate) { exit 2 }
+            if (${ '$' }bridge.SignerCertificate.Thumbprint -cne
+                ${'$'}launcher.SignerCertificate.Thumbprint) { exit 3 }
+            exit 0
+        """.trimIndent()
         val TEAM_ID = Regex("[A-Z0-9]{10}")
     }
 }
@@ -320,7 +409,7 @@ private fun nativePlatform(operatingSystem: OperatingSystem, architectureName: S
                 id = "windows-x64",
                 libraryName = "passvault_biometric.dll",
                 biometricType = BiometricType.WINDOWS_HELLO,
-                integrityPolicy = "sha256",
+                integrityPolicy = "sha256-and-authenticode",
             )
             else -> null
         }
