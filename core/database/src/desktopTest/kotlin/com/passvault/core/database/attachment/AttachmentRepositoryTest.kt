@@ -23,11 +23,14 @@ import com.passvault.core.domain.repository.AttachmentInvalidFileNameException
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.repository.AttachmentTotalSizeLimitException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okio.BufferedSink
 import okio.BufferedSource
 import java.nio.file.Files
@@ -39,6 +42,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -286,6 +290,53 @@ class AttachmentRepositoryTest {
             AttachmentRepositoryImpl::class.java.methods.any { method ->
                 method.name.startsWith("recoverInterruptedOperations")
             },
+        )
+    }
+
+    @Test
+    fun `nested attachment operations fail fast and release the operation lock`() = runTest {
+        val source = ByteArraySource("nested.txt", null, byteArrayOf(1, 2, 3))
+        attachmentRepository.withStableAttachments { }
+
+        val error = assertFailsWith<IllegalStateException> {
+            withTimeout(10_000) {
+                attachmentRepository.withStableAttachments {
+                    attachmentRepository.import(credentialId, source).getOrThrow()
+                }
+            }
+        }
+
+        assertTrue(error.message.orEmpty().contains("withStableAttachments"))
+        assertTrue(source.closed)
+
+        // The failed nested call must not leave the sole repository mutex held.
+        assertTrue(
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("after-nested.txt", null, byteArrayOf(4)),
+            ).isSuccess,
+        )
+    }
+
+    @Test
+    fun `nested credential deletion returns a bounded failure instead of deadlocking`() = runTest {
+        attachmentRepository.withStableAttachments { }
+
+        val result = withContext(Dispatchers.Default) {
+            withTimeout(2_000) {
+                attachmentRepository.withStableAttachments {
+                    credentialRepository.delete(credentialId)
+                }
+            }
+        }
+
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("credential-attachments", credentialRepository.getById(credentialId).getOrNull()?.id?.value)
+        assertTrue(
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("after-delete.txt", null, byteArrayOf(5)),
+            ).isSuccess,
         )
     }
 

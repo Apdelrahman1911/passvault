@@ -23,12 +23,19 @@ import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.repository.AttachmentRepository
 import com.passvault.core.domain.repository.AttachmentTotalSizeLimitException
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+
+private object StableAttachmentOperationKey : CoroutineContext.Key<StableAttachmentOperation>
+
+private object StableAttachmentOperation : AbstractCoroutineContextElement(StableAttachmentOperationKey)
 
 class AttachmentRepositoryImpl(
     private val attachmentDao: AttachmentDao,
@@ -42,18 +49,31 @@ class AttachmentRepositoryImpl(
     private val codec = AttachmentContainerCodec(blobStore, cryptoEngine)
     private var recoveryCompleted = false
 
-    override suspend fun <T> withStableAttachments(block: suspend () -> T): T =
-        operationMutex.withLock {
+    override suspend fun <T> withStableAttachments(block: suspend () -> T): T {
+        checkNoNestedAttachmentOperation()
+        return operationMutex.withLock {
             recoverInterruptedOperations()
-            block()
+            withContext(StableAttachmentOperation) { block() }
         }
+    }
+
+    private suspend fun <T> withAttachmentOperation(block: suspend () -> T): T {
+        checkNoNestedAttachmentOperation()
+        return operationMutex.withLock { block() }
+    }
+
+    private suspend fun checkNoNestedAttachmentOperation() {
+        if (currentCoroutineContext()[StableAttachmentOperationKey] != null) {
+            throw IllegalStateException("Attachment repository operations cannot run inside withStableAttachments")
+        }
+    }
 
     override suspend fun import(
         credentialId: CredentialId,
         source: AttachmentContentSource,
     ): Result<AttachmentMetadata> {
         return try {
-            operationMutex.withLock {
+            withAttachmentOperation {
                 repositoryResult {
                     recoverInterruptedOperations()
                     sessionManager.withUnlockedSession { vek ->
@@ -165,7 +185,7 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
         newFileName: String,
-    ): Result<AttachmentMetadata> = operationMutex.withLock {
+    ): Result<AttachmentMetadata> = withAttachmentOperation {
         repositoryResult {
             recoverInterruptedOperations()
             sessionManager.withUnlockedSession { vek ->
@@ -195,7 +215,7 @@ class AttachmentRepositoryImpl(
     override suspend fun delete(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
-    ): Result<Unit> = operationMutex.withLock {
+    ): Result<Unit> = withAttachmentOperation {
         repositoryResult {
             recoverInterruptedOperations()
             val entity = requireAttachment(credentialId, attachmentId)
@@ -221,7 +241,7 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
         sink: AttachmentContentSink,
-    ): Result<Unit> = operationMutex.withLock {
+    ): Result<Unit> = withAttachmentOperation {
         var committed = false
         try {
             repositoryResult {
@@ -252,7 +272,7 @@ class AttachmentRepositoryImpl(
     override suspend fun verify(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
-    ): Result<Unit> = operationMutex.withLock {
+    ): Result<Unit> = withAttachmentOperation {
         repositoryResult {
             recoverInterruptedOperations()
             sessionManager.withUnlockedSession { vek ->
@@ -276,7 +296,7 @@ class AttachmentRepositoryImpl(
     override suspend fun deleteCredentialAndAttachments(
         credentialId: String,
         deleteCredential: suspend () -> Unit,
-    ) = operationMutex.withLock {
+    ) = withAttachmentOperation {
         recoverInterruptedOperations()
         val attachments = attachmentDao.getByCredential(credentialId)
         val managedPaths = attachments

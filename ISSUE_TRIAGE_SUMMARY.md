@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (57 still open; #36, #37, #40, #44, #47, #78, #88, #92, #95, #96, #100, #104, #106, #119, #134, and #136 resolved and closed)
+- **FIX: 73** (56 still open; #36, #37, #40, #44, #47, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -33,6 +33,7 @@
 - **Resolved FIX:** #96 — V2 length-prefixed attachment IDs now decode UTF-8 strictly and wipe the intermediate bytes; malformed sequences have direct regression coverage.
 - **Resolved FIX:** #100 — import source ownership is centralized in one non-cancellable outer `finally`, preventing a throwing close from triggering a second close and preserving completed encrypted imports.
 - **Resolved FIX:** #104 — MIME sniffing now accumulates a bounded replayed prefix before binding the authenticated type, so short reads cannot permanently downgrade known content.
+- **Resolved FIX:** #105 — attachment operations now detect a stability-scope re-entry through coroutine context and fail immediately instead of waiting on their own non-reentrant mutex; direct and credential-delete regressions verify the lock is released.
 - **Resolved FIX:** #106 — QR enrollment now parses independently of manual controls, preserving URI-provided parameters and closing the scanner on every terminal result.
 - **Resolved FIX:** #119 — production screenshot protection no longer exposes a runtime disable operation; the enabled state is one-way and a regression test guards the public API.
 - **Resolved FIX:** #134 — sourced shell-library contracts are documented and enforced, inline workflow callers enable strict mode, and macOS keychain capture now checks the `security` command directly instead of losing its status through process substitution.
