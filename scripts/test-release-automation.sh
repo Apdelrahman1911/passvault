@@ -1698,6 +1698,12 @@ grep -Fq 'verifyDesktopInstalledLegalNotices' app-desktop/build.gradle.kts
 grep -Fq 'THIRD_PARTY_LICENSES in Resources' iosApp/iosApp.xcodeproj/project.pbxproj
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-release-signing.sh
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-exported-artifact.sh
+test -f iosApp/iosApp/iosApp.entitlements
+grep -Fq 'com.apple.developer.default-data-protection' iosApp/iosApp/iosApp.entitlements
+grep -Fq 'NSFileProtectionComplete' iosApp/iosApp/iosApp.entitlements
+grep -Fq 'keychain-access-groups' iosApp/iosApp/iosApp.entitlements
+test "$(grep -Fc 'CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 2
 grep -Fq ':app-android:verifyReleasePackageContents' \
     .github/workflows/mobile-store-release.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/build-signed-android.ps1
@@ -1708,6 +1714,8 @@ grep -Fq 'Unexpected iOS Store identity' fastlane/Fastfile
 bash -n scripts/validate-ios-build-identities.sh
 grep -Fq 'com.passvault.ios.debug' scripts/validate-ios-build-identities.sh
 grep -Fq 'com.passvault.ios' scripts/validate-ios-build-identities.sh
+grep -Fq 'com.apple.developer.default-data-protection' scripts/validate-ios-build-identities.sh
+grep -Fq 'CODE_SIGN_ENTITLEMENTS' scripts/validate-ios-build-identities.sh
 for shared_ios_input in \
     MOBILE_RELEASE_IOS_CODE_SIGN_IDENTITY \
     MOBILE_RELEASE_IOS_CODE_SIGN_STYLE \
@@ -2036,6 +2044,8 @@ grep -Fq 'PROFILE_GET_TASK_ALLOW' .github/workflows/mobile-store-release.yml
 grep -Fq 'PROFILE_BETA_REPORTS' .github/workflows/mobile-store-release.yml
 grep -Fq 'Entitlements:get-task-allow' scripts/verify-ios-exported-artifact.sh
 grep -Fq 'Entitlements:beta-reports-active' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'com.apple.developer.default-data-protection' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'keychain-access-groups:0' scripts/verify-ios-exported-artifact.sh
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
 grep -Fq 'NON_EXEMPT_APPROVED) expected_encryption=true' \
     scripts/verify-ios-exported-artifact.sh

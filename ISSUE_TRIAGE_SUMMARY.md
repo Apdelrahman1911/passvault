@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (54 still open; #36, #37, #40, #42, #43, #44, #47, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
+- **FIX: 73** (53 still open; #36, #37, #40, #42, #43, #44, #47, #49, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
 - **DIG: 22**
 - **CLOSE/ACCEPT: 17**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -29,6 +29,7 @@
 - **Resolved FIX:** #43 — Desktop lock now synchronously installs the same opaque concealment curtain used at shutdown before iconifying the native window; it stays in place through asynchronous UI cleanup and is restored only on unlock or disposal.
 - **Resolved FIX:** #44 — the V2 restore transfers staged-object ownership in the same non-cancellable region as the Room commit, and abort cleanup cross-checks durable attachment references before deleting; deterministic post-commit cancellation coverage preserves every live object.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
+- **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
