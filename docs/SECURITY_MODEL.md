@@ -74,8 +74,8 @@ remains master-password-only. See
 Credential summary and secret payloads, TOTP setup keys and parameters, folder/tag payloads, passwords in history,
 and attachment filenames use XChaCha20-Poly1305 with unique random nonces. Associated data and derived keys
 bind each encrypted payload to its record identity and purpose. They do not bind the record's structural routing
-columns. Keyed deterministic blind indexes support exact normalized title/folder/tag comparisons without plaintext
-values.
+columns. Keyed deterministic blind indexes support exact normalized folder/tag comparisons without plaintext values;
+credential titles are searched only after decrypting records in memory.
 
 TOTP codes are derived in memory from the encrypted setup key and authoritative device time. Codes and countdowns
 are not written to Room or backups. QR payloads are handled locally, parsed with strict size/type/Base32/parameter
