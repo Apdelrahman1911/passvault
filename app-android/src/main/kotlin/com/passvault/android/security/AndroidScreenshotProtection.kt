@@ -7,7 +7,6 @@ import com.passvault.android.BuildConfig
 import com.passvault.core.security.ScreenshotProtection
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Android implementation of screenshot protection using FLAG_SECURE.
@@ -22,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger
 class AndroidScreenshotProtection : ScreenshotProtection {
 
     private val isProtectionEnabled = AtomicBoolean(false)
-    private val protectionCount = AtomicInteger(0)
     private val protectedActivities = CopyOnWriteArrayList<Activity>()
     private val lock = Any()
 
@@ -40,16 +38,6 @@ class AndroidScreenshotProtection : ScreenshotProtection {
             }
         }
 
-        /**
-         * Remove protection from a specific activity.
-         */
-        fun removeFromActivity(activity: Activity) {
-            activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                activity.setRecentsScreenshotEnabled(true)
-            }
-        }
     }
 
     /**
@@ -57,27 +45,14 @@ class AndroidScreenshotProtection : ScreenshotProtection {
      * This will apply FLAG_SECURE to all registered activities.
      */
     override fun enableProtection() {
-        if (isProtectionEnabled.getAndSet(true)) {
-            // Already enabled, just increment count
-            protectionCount.incrementAndGet()
-            return
-        }
-
-        protectionCount.set(1)
-        applyToAllActivities()
-    }
-
-    /**
-     * Disable screenshot protection globally.
-     * Only actually disables when protection count reaches zero.
-     */
-    override fun disableProtection() {
-        val count = protectionCount.decrementAndGet()
-
-        if (count <= 0) {
-            isProtectionEnabled.set(false)
-            protectionCount.set(0)
-            removeFromAllActivities()
+        synchronized(lock) {
+            if (isProtectionEnabled.get()) return
+            isProtectionEnabled.set(true)
+            protectedActivities.forEach { activity ->
+                if (!activity.isFinishing && !activity.isDestroyed) {
+                    applyToActivity(activity)
+                }
+            }
         }
     }
 
@@ -114,8 +89,8 @@ class AndroidScreenshotProtection : ScreenshotProtection {
             protectedActivities.remove(activity)
             // Destruction is not an authorization to expose the final window
             // buffer. Leave FLAG_SECURE on the retiring window until Android
-            // releases it; disableProtection() is the explicit path that may
-            // remove protection from a live Activity.
+            // releases it. Release builds have no runtime API that removes
+            // protection from a live Activity.
         }
     }
 
@@ -127,32 +102,6 @@ class AndroidScreenshotProtection : ScreenshotProtection {
         synchronized(lock) {
             if (isProtectionEnabled.get() && protectedActivities.contains(activity)) {
                 applyToActivity(activity)
-            }
-        }
-    }
-
-    /**
-     * Apply protection to all registered activities.
-     */
-    private fun applyToAllActivities() {
-        synchronized(lock) {
-            protectedActivities.forEach { activity ->
-                if (!activity.isFinishing && !activity.isDestroyed) {
-                    applyToActivity(activity)
-                }
-            }
-        }
-    }
-
-    /**
-     * Remove protection from all registered activities.
-     */
-    private fun removeFromAllActivities() {
-        synchronized(lock) {
-            protectedActivities.forEach { activity ->
-                if (!activity.isFinishing && !activity.isDestroyed) {
-                    removeFromActivity(activity)
-                }
             }
         }
     }
