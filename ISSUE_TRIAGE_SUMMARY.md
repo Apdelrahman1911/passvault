@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (72 still open; #36 resolved and awaiting issue closure)
+- **FIX: 73** (72 still open; #36 resolved and closed in `5f00ce1`)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
