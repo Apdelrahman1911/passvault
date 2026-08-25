@@ -368,7 +368,7 @@ class AttachmentRepositoryImpl(
                 key = key,
                 associatedData = filenameAssociatedData(entity.id, entity.credentialId),
             ).getOrThrow()
-            AttachmentPolicy.validateFileName(plaintext.decodeToString(throwOnInvalidSequence = true))
+            AttachmentPolicy.validateStoredFileName(plaintext.decodeToString(throwOnInvalidSequence = true))
         } finally {
             plaintext?.let(cryptoEngine::secureWipe)
             cryptoEngine.secureWipe(key)
@@ -376,8 +376,8 @@ class AttachmentRepositoryImpl(
     }
 
     private fun uniqueFileName(requested: String, existing: List<String>): String {
-        val normalized = existing.mapTo(mutableSetOf()) { it.lowercase() }
-        if (requested.lowercase() !in normalized) return requested
+        val normalized = existing.mapTo(mutableSetOf(), AttachmentPolicy::canonicalFileNameKey)
+        if (AttachmentPolicy.canonicalFileNameKey(requested) !in normalized) return requested
         val dot = requested.lastIndexOf('.').takeIf { it in 1 until requested.lastIndex }
         val stem = if (dot == null) requested else requested.substring(0, dot)
         val extension = if (dot == null) "" else requested.substring(dot)
@@ -387,7 +387,7 @@ class AttachmentRepositoryImpl(
                 extension.codePointLength() - suffix.codePointLength()
             require(allowedStemCodePoints > 0)
             val candidate = stem.takeCodePoints(allowedStemCodePoints) + suffix + extension
-            if (candidate.lowercase() !in normalized) return candidate
+            if (AttachmentPolicy.canonicalFileNameKey(candidate) !in normalized) return candidate
         }
         error("A unique attachment filename could not be allocated")
     }

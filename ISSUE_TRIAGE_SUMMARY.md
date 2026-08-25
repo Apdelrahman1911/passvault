@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (70 still open; #36, #37, and #40 resolved and closed)
+- **FIX: 73** (69 still open; #36, #37, #40, and #47 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -24,6 +24,7 @@
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
 - **Resolved FIX:** #40 — failed auto-lock attempts now re-enter on a bounded timer without waiting for user activity; virtual-time tests cover unattended retries and eventual success.
+- **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 

@@ -89,16 +89,44 @@ object AttachmentPolicy {
     fun validateFileName(value: String): String {
         val fileName = value.trim()
         val isValid = fileName.isNotEmpty() &&
-            fileName != "." &&
-            fileName != ".." &&
+            fileName.any { character -> character != '.' } &&
+            !fileName.endsWith('.') &&
             fileName.codePointLength() <= MAX_FILE_NAME_CODE_POINTS &&
             fileName.hasOnlySafeSingleLineCodePoints() &&
-            fileName.none { character -> character == '/' || character == '\\' || character == ':' }
+            fileName.none { character -> character in WINDOWS_INVALID_FILE_NAME_CHARACTERS } &&
+            !fileName.substringBefore('.').uppercase().let(WINDOWS_RESERVED_FILE_STEMS::contains)
         if (!isValid) throw AttachmentInvalidFileNameException()
         return fileName
     }
 
+    /**
+     * Older vaults can contain names admitted by earlier releases. Keep those
+     * rows readable so one historical name cannot block the whole credential;
+     * output paths still use [validateFileName] and reject unsafe values.
+     */
+    fun validateStoredFileName(value: String): String {
+        val isValid = value.isNotEmpty() &&
+            value.codePointLength() <= MAX_FILE_NAME_CODE_POINTS &&
+            value.hasOnlySafeSingleLineCodePoints() &&
+            value.none { character -> character == '/' || character == '\\' || character == ':' }
+        if (!isValid) throw AttachmentInvalidFileNameException()
+        return value
+    }
+
+    /** Key shared by duplicate detection and Windows filename equivalence. */
+    fun canonicalFileNameKey(value: String): String =
+        value.trimEnd { character -> character.isWhitespace() || character == '.' }.lowercase()
+
     fun validateFileSize(sizeBytes: Long) {
         if (sizeBytes !in 0..MAX_FILE_SIZE_BYTES) throw AttachmentFileTooLargeException()
+    }
+
+    private val WINDOWS_INVALID_FILE_NAME_CHARACTERS = setOf('/', '\\', ':', '*', '?', '"', '<', '>', '|')
+    private val WINDOWS_RESERVED_FILE_STEMS = buildSet {
+        addAll(listOf("CON", "PRN", "AUX", "NUL"))
+        for (number in 1..9) {
+            add("COM$number")
+            add("LPT$number")
+        }
     }
 }
