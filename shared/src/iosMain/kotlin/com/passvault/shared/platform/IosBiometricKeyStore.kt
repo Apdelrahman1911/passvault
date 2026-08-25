@@ -91,9 +91,8 @@ class IosBiometricKeyStore : BiometricKeyStore {
     private val defaults: NSUserDefaults
         get() = NSUserDefaults.standardUserDefaults
 
-    override suspend fun getCapability(): BiometricCapability {
-        val context = LAContext()
-        return memScoped {
+    override suspend fun getCapability(): BiometricCapability = withNewLAContext { context ->
+        memScoped {
             val error = alloc<kotlinx.cinterop.ObjCObjectVar<NSError?>>()
             error.value = null
             val available = context.canEvaluatePolicy(
@@ -188,17 +187,17 @@ class IosBiometricKeyStore : BiometricKeyStore {
     }
 
     private suspend fun authenticateForEnrollment(): Result<Unit> = withContext(Dispatchers.Main) {
-        val context = LAContext()
-        suspendCancellableCoroutine { continuation ->
-            continuation.invokeOnCancellation { context.invalidate() }
-            context.evaluatePolicy(
-                LAPolicyDeviceOwnerAuthenticationWithBiometrics,
-                localizedReason = ENROLLMENT_REASON,
-            ) { success, error ->
-                if (continuation.isActive) {
-                    continuation.resume(
-                        if (success) Result.success(Unit) else Result.failure(error.toBiometricException()),
-                    )
+        withNewLAContext { context ->
+            suspendCancellableCoroutine { continuation ->
+                context.evaluatePolicy(
+                    LAPolicyDeviceOwnerAuthenticationWithBiometrics,
+                    localizedReason = ENROLLMENT_REASON,
+                ) { success, error ->
+                    if (continuation.isActive) {
+                        continuation.resume(
+                            if (success) Result.success(Unit) else Result.failure(error.toBiometricException()),
+                        )
+                    }
                 }
             }
         }
@@ -263,17 +262,13 @@ class IosBiometricKeyStore : BiometricKeyStore {
         var transferred = false
         return try {
             val result = coroutineScope {
-                val context = LAContext().apply { localizedReason = UNLOCK_REASON }
-                val read = async(Dispatchers.Default) {
-                    readKeychainItem(vaultId, context).onSuccess { producedKey = it }
-                }
-                try {
+                withNewLAContext({ localizedReason = UNLOCK_REASON }) { context ->
+                    val read = async(Dispatchers.Default) {
+                        readKeychainItem(vaultId, context).onSuccess { producedKey = it }
+                    }
+                    // When the caller is cancelled, the context is invalidated before
+                    // coroutineScope waits for the synchronous Keychain child to finish.
                     read.await()
-                } finally {
-                    // This runs promptly when the awaiting parent is cancelled.
-                    // coroutineScope then waits until the synchronous Keychain
-                    // call returns before the outer finally checks ownership.
-                    context.invalidate()
                 }
             }
             currentCoroutineContext().ensureActive()
@@ -369,6 +364,21 @@ class IosBiometricKeyStore : BiometricKeyStore {
         CFDictionarySetValue(query, kSecAttrSynchronizable, kCFBooleanFalse)
         return query
     }
+}
+
+private suspend fun <T> withNewLAContext(
+    configure: LAContext.() -> Unit = {},
+    block: suspend (LAContext) -> T,
+): T = withInvalidatedResource(LAContext().apply(configure), LAContext::invalidate, block)
+
+internal suspend fun <Resource, Result> withInvalidatedResource(
+    resource: Resource,
+    invalidate: (Resource) -> Unit,
+    block: suspend (Resource) -> Result,
+): Result = try {
+    block(resource)
+} finally {
+    invalidate(resource)
 }
 
 private fun enrollmentFailure(

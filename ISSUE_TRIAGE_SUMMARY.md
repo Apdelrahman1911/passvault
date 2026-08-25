@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (61 still open; #36, #37, #40, #47, #88, #92, #95, #96, #100, #104, #106, and #119 resolved and closed)
+- **FIX: 73** (60 still open; #36, #37, #40, #47, #88, #92, #95, #96, #100, #104, #106, #119, and #136 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -33,6 +33,7 @@
 - **Resolved FIX:** #104 — MIME sniffing now accumulates a bounded replayed prefix before binding the authenticated type, so short reads cannot permanently downgrade known content.
 - **Resolved FIX:** #106 — QR enrollment now parses independently of manual controls, preserving URI-provided parameters and closing the scanner on every terminal result.
 - **Resolved FIX:** #119 — production screenshot protection no longer exposes a runtime disable operation; the enabled state is one-way and a regression test guards the public API.
+- **Resolved FIX:** #136 — every iOS `LAContext` now passes through a suspending, `finally`-backed lifecycle helper, including capability probing, enrollment, and Keychain reads; simulator tests cover success, failure, and cancellation invalidation.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 
