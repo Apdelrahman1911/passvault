@@ -11,6 +11,10 @@ import kotlinx.serialization.encoding.Encoder
 
 /**
  * Sensitive text wrapper that prevents accidental logging and serialization.
+ *
+ * Instances are never cleared automatically. The owner must call [clear] when
+ * it no longer needs the value. Use [withExposed] for short-lived character
+ * copies; it clears that copy on every exit path.
  */
 @Serializable(with = SensitiveTextSerializer::class)
 @Suppress("TooManyFunctions") // Secret lifecycle, validation, and redacted value semantics belong together.
@@ -40,6 +44,20 @@ class SensitiveText private constructor(
      */
     fun expose(): CharArray {
         return characters.copyOf()
+    }
+
+    /**
+     * Provides a temporary character copy and clears it when [block] returns
+     * or throws. The caller still owns this instance and must call [clear]
+     * when its backing value is no longer needed.
+     */
+    inline fun <T> withExposed(block: (CharArray) -> T): T {
+        val exposed = expose()
+        return try {
+            block(exposed)
+        } finally {
+            exposed.fill('\u0000')
+        }
     }
 
     /**
@@ -118,9 +136,6 @@ class SensitiveText private constructor(
     // secrets may deliberately collide; equality remains the authority.
     override fun hashCode(): Int = REDACTED_HASH_CODE
 
-    protected fun finalize() {
-        clear()
-    }
 }
 
 /**

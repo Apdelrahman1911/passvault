@@ -97,7 +97,51 @@ class SensitiveTextTest {
         val sensitive = SensitiveText.from("secret")
         val exposed = sensitive.expose()
 
-        assertThat(exposed.concatToString()).isEqualTo("secret")
+        try {
+            assertThat(exposed.concatToString()).isEqualTo("secret")
+        } finally {
+            exposed.fill('\u0000')
+            sensitive.clear()
+        }
+    }
+
+    @Test
+    fun `with exposed clears its temporary copy after completion`() {
+        val sensitive = SensitiveText.from("secret")
+        var exposed: CharArray? = null
+
+        try {
+            val result = sensitive.withExposed { characters ->
+                exposed = characters
+                characters.concatToString()
+            }
+
+            assertThat(result).isEqualTo("secret")
+            assertTrue(exposed?.all { it == '\u0000' } == true)
+            assertThat(sensitive.toStringUnsafe()).isEqualTo("secret")
+        } finally {
+            sensitive.clear()
+        }
+    }
+
+    @Test
+    fun `with exposed clears its temporary copy when the block throws`() {
+        val sensitive = SensitiveText.from("secret")
+        var exposed: CharArray? = null
+
+        try {
+            assertFailsWith<IllegalStateException> {
+                sensitive.withExposed { characters ->
+                    exposed = characters
+                    throw IllegalStateException("expected")
+                }
+            }
+
+            assertTrue(exposed?.all { it == '\u0000' } == true)
+            assertThat(sensitive.toStringUnsafe()).isEqualTo("secret")
+        } finally {
+            sensitive.clear()
+        }
     }
 
     @Test
