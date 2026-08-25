@@ -41,6 +41,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -571,7 +572,6 @@ class VaultBackupService(
     private fun validateCredentials(credentials: List<CredentialRecordEntity>, folderIds: Set<String>) {
         credentials.forEach { credential ->
             require(credential.type.isSupportedCredentialType())
-            require(credential.titleHash.size == BLIND_INDEX_BYTES)
             requirePayload(
                 credential.summaryPayload,
                 credential.summaryNonce,
@@ -821,7 +821,6 @@ class VaultBackupService(
             require(value.id.isValidIdentifier())
             require(credentialIds.add(value.id))
             require(value.type.isSupportedCredentialType())
-            require(value.titleHash.size == BLIND_INDEX_BYTES)
             requirePayload(
                 value.summaryPayload,
                 value.summaryNonce,
@@ -1184,7 +1183,8 @@ class VaultBackupService(
     private data class CredentialDto(
         val id: String,
         val type: String,
-        val titleHash: String,
+        @EncodeDefault(EncodeDefault.Mode.NEVER)
+        val titleHash: String? = null,
         val summaryPayload: String,
         val summaryNonce: String,
         val secretPayload: String,
@@ -1195,26 +1195,33 @@ class VaultBackupService(
         val updatedAt: Long,
         val lastUsedAt: Long?,
     ) {
-        fun toEntity() = CredentialRecordEntity(
-            id = id,
-            type = type,
-            titleHash = titleHash.decodeBase64(BLIND_INDEX_BYTES),
-            summaryPayload = summaryPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
-            summaryNonce = summaryNonce.decodeBase64(MAX_NONCE_BYTES),
-            secretPayload = secretPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
-            secretNonce = secretNonce.decodeBase64(MAX_NONCE_BYTES),
-            folderId = folderId,
-            isFavorite = isFavorite,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
-            lastUsedAt = lastUsedAt,
-        )
+        fun toEntity(): CredentialRecordEntity {
+            titleHash?.decodeBase64(BLIND_INDEX_BYTES)?.let { legacyHash ->
+                try {
+                    require(legacyHash.size == BLIND_INDEX_BYTES)
+                } finally {
+                    legacyHash.fill(0)
+                }
+            }
+            return CredentialRecordEntity(
+                id = id,
+                type = type,
+                summaryPayload = summaryPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                summaryNonce = summaryNonce.decodeBase64(MAX_NONCE_BYTES),
+                secretPayload = secretPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                secretNonce = secretNonce.decodeBase64(MAX_NONCE_BYTES),
+                folderId = folderId,
+                isFavorite = isFavorite,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+                lastUsedAt = lastUsedAt,
+            )
+        }
 
         companion object {
             fun from(value: CredentialRecordEntity) = CredentialDto(
                 id = value.id,
                 type = value.type,
-                titleHash = value.titleHash.toBase64(),
                 summaryPayload = value.summaryPayload.toBase64(),
                 summaryNonce = value.summaryNonce.toBase64(),
                 secretPayload = value.secretPayload.toBase64(),

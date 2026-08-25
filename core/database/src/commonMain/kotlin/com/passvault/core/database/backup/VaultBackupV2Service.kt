@@ -308,7 +308,7 @@ internal class VaultBackupV2Service(
         var encoded: ByteArray? = null
         try {
             validator.accept(value)
-            encoded = BackupEntityBinaryCodec.encode(value)
+            encoded = BackupEntityBinaryCodec.encode(value, validator.manifest.metadataSchemaVersion)
             writer.writeRecord(value.recordType, encoded)
         } finally {
             encoded?.let(cryptoEngine::secureWipe)
@@ -443,7 +443,11 @@ internal class VaultBackupV2Service(
             require(record.type == type)
             var value: BackupMetadataValue? = null
             try {
-                value = BackupEntityBinaryCodec.decode(type, record.plaintext)
+                value = BackupEntityBinaryCodec.decode(
+                    type,
+                    record.plaintext,
+                    validator.manifest.metadataSchemaVersion,
+                )
                 validator.accept(value)
                 consumer?.invoke(value)
             } finally {

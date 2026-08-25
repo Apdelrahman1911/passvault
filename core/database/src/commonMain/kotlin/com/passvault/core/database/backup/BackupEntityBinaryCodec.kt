@@ -25,6 +25,7 @@ internal data class BackupStreamManifest(
     val attachmentCount: Int,
     val managedAttachmentCount: Int,
     val passwordHistoryCount: Int,
+    val metadataSchemaVersion: Int = CURRENT_BACKUP_METADATA_SCHEMA_VERSION,
 )
 
 /** One typed Room value. Only encrypted payload bytes cross this boundary. */
@@ -86,7 +87,7 @@ internal sealed interface BackupMetadataValue {
  */
 internal object BackupEntityBinaryCodec {
     fun encodeManifest(value: BackupStreamManifest): ByteArray = Buffer()
-        .writeInt(STREAM_SCHEMA_VERSION)
+        .writeInt(value.metadataSchemaVersion.also(::requireSupportedMetadataSchema))
         .writeCount(value.credentialCount)
         .writeCount(value.folderCount)
         .writeCount(value.tagCount)
@@ -98,7 +99,7 @@ internal object BackupEntityBinaryCodec {
         .readByteArray()
 
     fun decodeManifest(bytes: ByteArray): BackupStreamManifest = Buffer().write(bytes).let { source ->
-        require(source.readInt() == STREAM_SCHEMA_VERSION)
+        val metadataSchemaVersion = source.readInt().also(::requireSupportedMetadataSchema)
         BackupStreamManifest(
             credentialCount = source.readCount(),
             folderCount = source.readCount(),
@@ -108,10 +109,15 @@ internal object BackupEntityBinaryCodec {
             attachmentCount = source.readCount(),
             managedAttachmentCount = source.readCount(),
             passwordHistoryCount = source.readCount(),
+            metadataSchemaVersion = metadataSchemaVersion,
         ).also { require(source.exhausted()) }
     }
 
-    fun encode(value: BackupMetadataValue): ByteArray {
+    fun encode(
+        value: BackupMetadataValue,
+        metadataSchemaVersion: Int = CURRENT_BACKUP_METADATA_SCHEMA_VERSION,
+    ): ByteArray {
+        require(metadataSchemaVersion == CURRENT_BACKUP_METADATA_SCHEMA_VERSION)
         val sink = Buffer()
         when (value) {
             is BackupMetadataValue.Metadata -> sink.writeMetadata(value.value)
@@ -128,14 +134,21 @@ internal object BackupEntityBinaryCodec {
         }
     }
 
-    fun decode(recordType: Int, bytes: ByteArray): BackupMetadataValue {
+    fun decode(
+        recordType: Int,
+        bytes: ByteArray,
+        metadataSchemaVersion: Int = CURRENT_BACKUP_METADATA_SCHEMA_VERSION,
+    ): BackupMetadataValue {
+        requireSupportedMetadataSchema(metadataSchemaVersion)
         require(bytes.size <= maximumPlaintextBytes(recordType))
         val source = Buffer().write(bytes)
         val value = when (recordType) {
             BackupRecordType.METADATA -> BackupMetadataValue.Metadata(source.readMetadata())
             BackupRecordType.FOLDER -> BackupMetadataValue.Folder(source.readFolder())
             BackupRecordType.TAG -> BackupMetadataValue.Tag(source.readTag())
-            BackupRecordType.CREDENTIAL -> BackupMetadataValue.Credential(source.readCredential())
+            BackupRecordType.CREDENTIAL -> BackupMetadataValue.Credential(
+                source.readCredential(metadataSchemaVersion),
+            )
             BackupRecordType.CREDENTIAL_FOLDER_REFERENCE ->
                 BackupMetadataValue.CredentialFolderReference(source.readFolderReference())
             BackupRecordType.CREDENTIAL_TAG_REFERENCE ->
@@ -249,7 +262,6 @@ internal object BackupEntityBinaryCodec {
     private fun Buffer.writeCredential(value: CredentialRecordEntity) {
         writeString(value.id, MAX_IDENTIFIER_UTF8_BYTES)
         writeString(value.type, MAX_CREDENTIAL_TYPE_UTF8_BYTES)
-        writeBytes(value.titleHash, BLIND_INDEX_BYTES)
         writeBytes(value.summaryPayload, MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
         writeBytes(value.summaryNonce, MAX_NONCE_BYTES)
         writeBytes(value.secretPayload, MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
@@ -261,20 +273,37 @@ internal object BackupEntityBinaryCodec {
         writeNullableLong(value.lastUsedAt)
     }
 
-    private fun Buffer.readCredential() = CredentialRecordEntity(
-        id = readString(MAX_IDENTIFIER_UTF8_BYTES),
-        type = readString(MAX_CREDENTIAL_TYPE_UTF8_BYTES),
-        titleHash = readBytes(BLIND_INDEX_BYTES),
-        summaryPayload = readBytes(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
-        summaryNonce = readBytes(MAX_NONCE_BYTES),
-        secretPayload = readBytes(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
-        secretNonce = readBytes(MAX_NONCE_BYTES),
-        folderId = readNullableString(MAX_IDENTIFIER_UTF8_BYTES),
-        isFavorite = readBoolean(),
-        createdAt = readLong(),
-        updatedAt = readLong(),
-        lastUsedAt = readNullableLong(),
-    )
+    private fun Buffer.readCredential(metadataSchemaVersion: Int): CredentialRecordEntity {
+        val id = readString(MAX_IDENTIFIER_UTF8_BYTES)
+        val type = readString(MAX_CREDENTIAL_TYPE_UTF8_BYTES)
+        val legacyTitleHash = if (metadataSchemaVersion == LEGACY_BACKUP_METADATA_SCHEMA_VERSION) {
+            readBytes(BLIND_INDEX_BYTES).also { bytes ->
+                if (bytes.size != BLIND_INDEX_BYTES) {
+                    bytes.fill(0)
+                    error("Invalid legacy title blind index")
+                }
+            }
+        } else {
+            null
+        }
+        return try {
+            CredentialRecordEntity(
+                id = id,
+                type = type,
+                summaryPayload = readBytes(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                summaryNonce = readBytes(MAX_NONCE_BYTES),
+                secretPayload = readBytes(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                secretNonce = readBytes(MAX_NONCE_BYTES),
+                folderId = readNullableString(MAX_IDENTIFIER_UTF8_BYTES),
+                isFavorite = readBoolean(),
+                createdAt = readLong(),
+                updatedAt = readLong(),
+                lastUsedAt = readNullableLong(),
+            )
+        } finally {
+            legacyTitleHash?.fill(0)
+        }
+    }
 
     private fun Buffer.writeFolderReference(value: CredentialFolderCrossRef) {
         writeString(value.credentialId, MAX_IDENTIFIER_UTF8_BYTES)
@@ -410,7 +439,10 @@ internal object BackupEntityBinaryCodec {
         return readByteArray(size.toLong())
     }
 
-    private const val STREAM_SCHEMA_VERSION = 1
+    private fun requireSupportedMetadataSchema(version: Int) {
+        require(version in LEGACY_BACKUP_METADATA_SCHEMA_VERSION..CURRENT_BACKUP_METADATA_SCHEMA_VERSION)
+    }
+
     private const val MAX_IDENTIFIER_UTF8_BYTES = 256 * 4
     private const val MAX_CREDENTIAL_TYPE_UTF8_BYTES = MAX_IDENTIFIER_UTF8_BYTES + 16
     private const val MAX_METADATA_TEXT_UTF8_BYTES = 16 * 1024 * 4
@@ -448,12 +480,14 @@ private fun TagRecordEntity.clearBinaryFields() {
 }
 
 private fun CredentialRecordEntity.clearBinaryFields() {
-    titleHash.fill(0)
     summaryPayload.fill(0)
     summaryNonce.fill(0)
     secretPayload.fill(0)
     secretNonce.fill(0)
 }
+
+internal const val LEGACY_BACKUP_METADATA_SCHEMA_VERSION = 1
+internal const val CURRENT_BACKUP_METADATA_SCHEMA_VERSION = 2
 
 private fun AttachmentRecordEntity.clearBinaryFields() {
     encryptedFilename.fill(0)

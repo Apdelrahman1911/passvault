@@ -216,7 +216,6 @@ abstract class CredentialDaoFixture {
     ): CredentialRecordEntity = CredentialRecordEntity(
         id = id,
         type = type,
-        titleHash = ByteArray(32) { 1 },
         summaryPayload = byteArrayOf(1, 2),
         summaryNonce = ByteArray(24) { 2 },
         secretPayload = byteArrayOf(3, 4),

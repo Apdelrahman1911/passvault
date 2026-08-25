@@ -565,7 +565,6 @@ class CredentialRepositoryImpl(
         var secretJson: ByteArray? = null
         var encryptedSummary: EncryptedData? = null
         var encryptedSecret: EncryptedData? = null
-        var titleHash: ByteArray? = null
         try {
             summaryJson = json.encodeToString(credential.toSummaryPayload()).encodeToByteArray()
             require(summaryJson.size <= MAX_CREDENTIAL_PLAINTEXT_BYTES)
@@ -591,10 +590,7 @@ class CredentialRepositoryImpl(
             ).getOrThrow()
             encryptedSecret = secret
 
-            val blindIndex = deriveBlindIndex(vek, "title", credential.title)
-            titleHash = blindIndex
             return credential.toRecordEntity(
-                titleHash = blindIndex,
                 encryptedSummary = summary,
                 encryptedSecret = secret,
                 updatedAt = now,
@@ -604,7 +600,6 @@ class CredentialRepositoryImpl(
             secretJson?.let { cryptoEngine.secureWipe(it) }
             encryptedSummary?.clear()
             encryptedSecret?.clear()
-            titleHash?.let { cryptoEngine.secureWipe(it) }
             cryptoEngine.secureWipe(recordKey)
         }
     }
@@ -649,14 +644,12 @@ class CredentialRepositoryImpl(
     )
 
     private fun Credential.toRecordEntity(
-        titleHash: ByteArray,
         encryptedSummary: EncryptedData,
         encryptedSecret: EncryptedData,
         updatedAt: Instant,
     ): CredentialRecordEntity = CredentialRecordEntity(
         id = id.value,
         type = type.toSerializedString(),
-        titleHash = titleHash.copyOf(),
         summaryPayload = CryptoEnvelope.encode(encryptedSummary),
         summaryNonce = encryptedSummary.nonce.copyOf(),
         secretPayload = CryptoEnvelope.encode(encryptedSecret),
@@ -1295,20 +1288,6 @@ class CredentialRepositoryImpl(
 
     private fun credentialAssociatedData(id: String, purpose: String): ByteArray =
         "passvault:credential:$id:$purpose:v1".encodeToByteArray()
-
-    private suspend fun deriveBlindIndex(
-        vek: ByteArray,
-        purpose: String,
-        value: String,
-    ): ByteArray {
-        val normalized = value.trim().lowercase()
-        require(normalized.isNotEmpty()) { "Indexed value must not be empty" }
-        return cryptoEngine.deriveSubkey(
-            vek,
-            "blind-index:$purpose:$normalized",
-            32,
-        ).getOrThrow()
-    }
 
     private fun historyAssociatedData(historyId: String, credentialId: String): ByteArray =
         "passvault:history:$historyId:$credentialId:v2".encodeToByteArray()

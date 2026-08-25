@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (47 still open; #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved)
+- **FIX: 73** (46 still open; #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved)
 - **DIG: 22**
 - **CLOSE/ACCEPT: 17**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -19,7 +19,7 @@
 ### Final verification dispositions
 
 - **Closed with an evidence comment:** #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
-- **Reclassified to FIX (open):** #50 (low privacy/data minimization), #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
+- **Reclassified to FIX (open):** #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
 - **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
 - **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
@@ -36,6 +36,7 @@
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
 - **Resolved FIX:** #48 — credential summaries/secrets, password history, and attachment filenames now use an authenticated versioned padding format with power-of-two buckets; v2 records remain readable and are rewritten on ordinary updates.
 - **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
+- **Resolved FIX:** #50 — Room v4 removes the unused credential-title blind index without losing dependent rows; new JSON and streaming backups omit it, while authenticated legacy backup readers validate and discard the old field.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.

@@ -2,7 +2,9 @@ package com.passvault.core.database.backup
 
 import com.passvault.core.database.entity.CredentialRecordEntity
 import com.passvault.core.database.repository.MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES
+import okio.Buffer
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertIs
@@ -26,6 +28,36 @@ class BackupEntityBinaryCodecTest {
         assertEquals(manifest, BackupEntityBinaryCodec.decodeManifest(encoded))
         assertTrue(encoded.size <= BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.MANIFEST))
         encoded.fill(0)
+    }
+
+    @Test
+    fun `legacy metadata schema decodes and discards the title blind index`() {
+        val entity = credential(summaryBytes = 20, secretBytes = 20)
+        val legacyHash = ByteArray(32) { index -> (index + 1).toByte() }
+        val legacyBytes = encodeLegacyCredential(entity, legacyHash)
+
+        val decoded = assertIs<BackupMetadataValue.Credential>(
+            BackupEntityBinaryCodec.decode(
+                BackupRecordType.CREDENTIAL,
+                legacyBytes,
+                LEGACY_BACKUP_METADATA_SCHEMA_VERSION,
+            ),
+        )
+        val currentBytes = BackupEntityBinaryCodec.encode(BackupMetadataValue.Credential(entity))
+        try {
+            assertEquals(entity, decoded.value)
+            assertEquals(legacyBytes.size - Int.SIZE_BYTES - legacyHash.size, currentBytes.size)
+            assertContentEquals(
+                currentBytes,
+                BackupEntityBinaryCodec.encode(decoded),
+            )
+        } finally {
+            entity.clearArrays()
+            decoded.clear()
+            legacyHash.fill(0)
+            legacyBytes.fill(0)
+            currentBytes.fill(0)
+        }
     }
 
     @Test
@@ -88,7 +120,6 @@ class BackupEntityBinaryCodecTest {
     private fun credential(summaryBytes: Int, secretBytes: Int) = CredentialRecordEntity(
         id = "00000000-0000-4000-8000-000000000001",
         type = "Login",
-        titleHash = ByteArray(32),
         summaryPayload = ByteArray(summaryBytes),
         summaryNonce = ByteArray(24),
         secretPayload = ByteArray(secretBytes),
@@ -99,6 +130,32 @@ class BackupEntityBinaryCodecTest {
         updatedAt = 1,
         lastUsedAt = null,
     )
+
+    private fun encodeLegacyCredential(entity: CredentialRecordEntity, titleHash: ByteArray): ByteArray = Buffer()
+        .writeString(entity.id)
+        .writeString(entity.type)
+        .writeByteArray(titleHash)
+        .writeByteArray(entity.summaryPayload)
+        .writeByteArray(entity.summaryNonce)
+        .writeByteArray(entity.secretPayload)
+        .writeByteArray(entity.secretNonce)
+        .writeByte(0)
+        .writeByte(0)
+        .writeLong(entity.createdAt)
+        .writeLong(entity.updatedAt)
+        .writeByte(0)
+        .readByteArray()
+
+    private fun Buffer.writeString(value: String): Buffer = writeByteArray(value.encodeToByteArray())
+
+    private fun Buffer.writeByteArray(value: ByteArray): Buffer = writeInt(value.size).write(value)
+
+    private fun CredentialRecordEntity.clearArrays() {
+        summaryPayload.fill(0)
+        summaryNonce.fill(0)
+        secretPayload.fill(0)
+        secretNonce.fill(0)
+    }
 
     private companion object {
         const val MINIMUM_ENVELOPE_BYTES = 20
