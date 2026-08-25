@@ -40,9 +40,13 @@ import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
 import kotlinx.coroutines.test.runTest
 import kotlin.time.Instant
@@ -820,6 +824,51 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
     }
 
     @Test
+    fun `lock cancels biometric enrollment that is holding a vault key lease`() = runTest {
+        createAndUnlockVault()
+        val enrollmentEntered = CompletableDeferred<Unit>()
+        var enrollmentKey: ByteArray? = null
+        val keyStore = object : BiometricKeyStore {
+            override suspend fun getCapability(): BiometricCapability = BiometricCapability(
+                type = BiometricType.GENERIC,
+                availability = BiometricAvailability.AVAILABLE,
+            )
+
+            override suspend fun contains(vaultId: String): Boolean = false
+
+            override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> {
+                enrollmentKey = vaultKey
+                enrollmentEntered.complete(Unit)
+                awaitCancellation()
+            }
+
+            override suspend fun retrieve(vaultId: String): Result<ByteArray> =
+                Result.failure(BiometricKeyStoreException.NotEnabled())
+
+            override suspend fun delete(vaultId: String): Result<Unit> = Result.success(Unit)
+        }
+        val service = DefaultBiometricUnlockService(
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            keyStore = keyStore,
+            cryptoEngine = cryptoEngine,
+        )
+
+        val enrollment = async(Dispatchers.Default) { service.enable() }
+        enrollmentEntered.await()
+
+        assertTrue(
+            withContext(Dispatchers.Default) {
+                withTimeout(1_000) { vaultRepository.lock(LockReason.AutoLock) }
+            }.isSuccess,
+        )
+        enrollment.join()
+        assertTrue(enrollment.isCancelled)
+        assertTrue(requireNotNull(enrollmentKey).all { it == 0.toByte() })
+        assertFalse(vaultRepository.isUnlocked())
+    }
+
+    @Test
     fun `invalid biometric key fails closed and leaves vault locked`() = runTest {
         createAndUnlockVault()
         assertTrue(vaultRepository.lock().isSuccess)
@@ -970,7 +1019,7 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
     }
 
     @Test
-    fun `lock waits for an active session lease and wipes its key`() = runTest {
+    fun `lock cancels an active session lease and wipes its key without waiting for caller work`() = runTest {
         createAndUnlockVault()
         val leaseEntered = CompletableDeferred<Unit>()
         val releaseLease = CompletableDeferred<Unit>()
@@ -985,27 +1034,53 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
         }
         leaseEntered.await()
 
-        val lockStarted = CompletableDeferred<Unit>()
-        val lockOperation = async(Dispatchers.Default) {
-            lockStarted.complete(Unit)
-            vaultRepository.lock()
+        val lockResult = withContext(Dispatchers.Default) {
+            withTimeout(1_000) { vaultRepository.lock() }
         }
-        lockStarted.await()
-        yield()
-        assertFalse(lockOperation.isCompleted, "Lock must wait for the active lease")
-
-        releaseLease.complete(Unit)
-        operation.await()
-        assertTrue(lockOperation.await().isSuccess)
+        operation.join()
+        assertTrue(lockResult.isSuccess)
+        assertTrue(operation.isCancelled)
         assertTrue(requireNotNull(leasedKey).all { it == 0.toByte() })
         assertFalse(vaultRepository.isUnlocked())
+        releaseLease.complete(Unit)
+    }
+
+    @Test
+    fun `lock and run revokes an active lease before running protected work`() = runTest {
+        createAndUnlockVault()
+        val leaseEntered = CompletableDeferred<Unit>()
+        var leasedKey: ByteArray? = null
+        val operation = async(Dispatchers.Default) {
+            vaultRepository.withUnlockedSession { key ->
+                leasedKey = key
+                leaseEntered.complete(Unit)
+                awaitCancellation()
+            }
+        }
+        leaseEntered.await()
+
+        var blockObservedLocked = false
+        val blockResult = withContext(Dispatchers.Default) {
+            withTimeout(1_000) {
+                vaultRepository.lockAndRun(LockReason.Restore) {
+                    blockObservedLocked = !vaultRepository.isUnlocked()
+                    "restored"
+                }
+            }
+        }
+
+        operation.join()
+        assertEquals("restored", blockResult)
+        assertTrue(blockObservedLocked)
+        assertTrue(operation.isCancelled)
+        assertTrue(requireNotNull(leasedKey).all { it == 0.toByte() })
     }
 }
 
 class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
-    fun `lock cancels a platform prompt before waiting for an active session lease`() = runTest {
+    fun `lock cancels a platform prompt and its active session lease`() = runTest {
         val cancellationObserved = CompletableDeferred<Unit>()
         val repository = VaultRepositoryImpl(
             vaultMetadataDao = database.vaultMetadataDao(),
@@ -1030,14 +1105,63 @@ class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
             }
             leaseEntered.await()
 
-            val locking = async(Dispatchers.Default) { repository.lock(LockReason.AutoLock) }
-            cancellationObserved.await()
-            assertFalse(locking.isCompleted, "Lock must still wait for key-lease cleanup")
+            val lockResult = withContext(Dispatchers.Default) {
+                withTimeout(1_000) { repository.lock(LockReason.AutoLock) }
+            }
+            assertTrue(cancellationObserved.isCompleted)
+            lease.join()
+            assertTrue(lease.isCancelled)
+            assertTrue(lockResult.isSuccess)
+            assertFalse(repository.isUnlocked())
+        } finally {
+            releaseLease.complete(Unit)
+            password.clear()
+        }
+    }
+
+    @Test
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    fun `lock reaches locked state after the hard deadline when lease code suppresses cancellation`() = runTest {
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = cryptoEngine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(cryptoEngine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val leaseEntered = CompletableDeferred<Unit>()
+        val releaseLease = CompletableDeferred<Unit>()
+        var leasedKey: ByteArray? = null
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            val lease = async {
+                repository.withUnlockedSession { key ->
+                    leasedKey = key
+                    leaseEntered.complete(Unit)
+                    withContext(NonCancellable) { releaseLease.await() }
+                }
+            }
+            leaseEntered.await()
+
+            val locking = async { repository.lock(LockReason.Background) }
+            yield()
+            assertEquals(
+                VaultSessionState.Locking(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+
+            testScheduler.advanceTimeBy(2_001)
+            assertTrue(locking.await().isSuccess)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+            assertTrue(requireNotNull(leasedKey).all { it == 0.toByte() })
 
             releaseLease.complete(Unit)
-            lease.await()
-            assertTrue(locking.await().isSuccess)
-            assertFalse(repository.isUnlocked())
+            lease.join()
+            assertTrue(lease.isCancelled)
         } finally {
             releaseLease.complete(Unit)
             password.clear()
