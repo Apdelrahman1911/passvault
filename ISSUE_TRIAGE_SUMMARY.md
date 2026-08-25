@@ -12,15 +12,16 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 73** (56 still open; #36, #37, #40, #44, #47, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
-- **DIG: 23**
-- **CLOSE/ACCEPT: 16**
+- **DIG: 22**
+- **CLOSE/ACCEPT: 17**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
 
-- **Closed with an evidence comment:** #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145.
+- **Closed with an evidence comment:** #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
 - **Reclassified to FIX (open):** #50 (low privacy/data minimization), #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
 - **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
+- **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
 - **Resolved FIX:** #40 — failed auto-lock attempts now re-enter on a bounded timer without waiting for user activity; virtual-time tests cover unattended retries and eventual success.
@@ -131,7 +132,6 @@ The detailed tables below retain the original recommendations for traceability; 
 | [139](https://github.com/Apdelrahman1911/passvault/issues/139) | Informational | 60-second SAF grace period keeps the vault unlocked in background | The 60-second grace has no screen-off/device-lock fast path and uptime timers can exceed wall time; add lifecycle revocation and device tests. |
 | [141](https://github.com/Apdelrahman1911/passvault/issues/141) | Informational | `CODE_SIGN_STYLE = Automatic` in iOS Release | Automatic signing is overridden in production, but local Release remains non-reproducible; pin/fail-fast locally and verify normalized entitlements. |
 | [144](https://github.com/Apdelrahman1911/passvault/issues/144) | Informational | `DesktopSystemTray` uses `invokeAndWait` from paths that may not be on the EDT | Blocking invokeAndWait plus unsynchronized tray state can deadlock/race; use nonblocking EDT dispatch or prove callers. |
-| [146](https://github.com/Apdelrahman1911/passvault/issues/146) | Informational | foojay toolchain resolver adds an external JDK-resolution surface | Unused foojay resolver is a dormant but real supply-chain surface; remove it or add an explicit activation guard. |
 
 ## DIG — evidence or product decision required
 | Issue | Severity | Short summary | Recommended next step |
