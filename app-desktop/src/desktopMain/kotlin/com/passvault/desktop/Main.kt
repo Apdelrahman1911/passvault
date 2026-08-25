@@ -33,13 +33,30 @@ fun main() {
 
 // The process boundary must still perform terminal cleanup after startup failures.
 @Suppress("TooGenericExceptionCaught")
-private fun runDesktopApplication(): Int = try {
-    // Initialize Koin DI
+private fun runDesktopApplication(): Int = runCatching { DesktopInstanceLock.acquire() }.fold(
+    onSuccess = { instanceLock ->
+        if (instanceLock == null) {
+            System.err.println("PassVault is already running for this user.")
+            0
+        } else {
+            instanceLock.use {
+                runOwnedDesktopApplication()
+            }
+        }
+    },
+    onFailure = {
+        System.err.println("PassVault Desktop could not secure its private data directory.")
+        1
+    },
+)
+
+// Koin and every vault-backed component are created only inside an owned instance.
+@Suppress("TooGenericExceptionCaught")
+private fun runOwnedDesktopApplication(): Int = try {
     initializeKoin()
     val shutdownCoordinator = createDesktopShutdownCoordinator(GlobalContext.get())
 
     try {
-        // Launch the application
         launchApplication(shutdownCoordinator)
     } finally {
         shutdownCoordinator.requestShutdown()

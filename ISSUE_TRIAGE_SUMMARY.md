@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (56 still open; #36, #37, #40, #44, #47, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
+- **FIX: 73** (55 still open; #36, #37, #40, #42, #44, #47, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
 - **DIG: 22**
 - **CLOSE/ACCEPT: 17**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -25,6 +25,7 @@
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
 - **Resolved FIX:** #40 — failed auto-lock attempts now re-enter on a bounded timer without waiting for user activity; virtual-time tests cover unattended retries and eventual success.
+- **Resolved FIX:** #42 — Desktop startup obtains a process-lifetime, owner-only file lock before Koin can open the vault; a losing launch exits before constructing any vault, biometric, or session component, and lease tests cover contention and release.
 - **Resolved FIX:** #44 — the V2 restore transfers staged-object ownership in the same non-cancellable region as the Room commit, and abort cleanup cross-checks durable attachment references before deleting; deterministic post-commit cancellation coverage preserves every live object.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
