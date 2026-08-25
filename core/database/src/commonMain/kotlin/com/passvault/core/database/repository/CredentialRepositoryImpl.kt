@@ -3,6 +3,7 @@ package com.passvault.core.database.repository
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.EncryptedData
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.database.dao.AttachmentDao
 import com.passvault.core.database.dao.CredentialDao
 import com.passvault.core.database.dao.FolderDao
@@ -325,10 +326,12 @@ class CredentialRepositoryImpl(
         return try {
             val encodedPassword = password.toUtf8ByteArray()
             passwordBytes = encodedPassword
-            val encrypted = cryptoEngine.encrypt(
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = encodedPassword,
                 key = recordKey,
                 associatedData = historyAssociatedData(historyId, id.value),
+                maxPlaintextBytes = MAX_SENSITIVE_UTF8_BYTES,
             ).getOrThrow()
             encryptedPassword = encrypted
             PasswordHistoryRecordEntity(
@@ -420,10 +423,12 @@ class CredentialRepositoryImpl(
             updatedJson = json.encodeToString(
                 summary.copy(passwordHealth = health.toSerialized()),
             ).encodeToByteArray()
-            val encrypted = cryptoEngine.encrypt(
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = updatedJson,
                 key = recordKey,
                 associatedData = credentialAssociatedData(entity.id, "summary"),
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
             ).getOrThrow()
             encryptedSummary = encrypted
             credentialDao.updateEncryptedSummary(
@@ -563,22 +568,26 @@ class CredentialRepositoryImpl(
         var titleHash: ByteArray? = null
         try {
             summaryJson = json.encodeToString(credential.toSummaryPayload()).encodeToByteArray()
-            require(summaryJson.size <= MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
-            val summary = cryptoEngine.encrypt(
+            require(summaryJson.size <= MAX_CREDENTIAL_PLAINTEXT_BYTES)
+            val summary = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = summaryJson,
                 key = recordKey,
                 associatedData = credentialAssociatedData(credential.id.value, "summary"),
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
             ).getOrThrow()
             encryptedSummary = summary
 
             secretJson = json.encodeToString(
                 credential.toSecretPayload(passwordChangedAtEpochMillis),
             ).encodeToByteArray()
-            require(secretJson.size <= MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
-            val secret = cryptoEngine.encrypt(
+            require(secretJson.size <= MAX_CREDENTIAL_PLAINTEXT_BYTES)
+            val secret = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = secretJson,
                 key = recordKey,
                 associatedData = credentialAssociatedData(credential.id.value, "secret"),
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
             ).getOrThrow()
             encryptedSecret = secret
 
@@ -1274,11 +1283,13 @@ class CredentialRepositoryImpl(
         associatedData: ByteArray,
     ): ByteArray {
         require(ciphertext.size <= MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
-        return cryptoEngine.decrypt(
-            CryptoEnvelope.normalize(ciphertext),
-            nonce,
-            key,
-            associatedData,
+        return PaddedPayload.decrypt(
+            cryptoEngine = cryptoEngine,
+            storedCiphertext = ciphertext,
+            nonce = nonce,
+            key = key,
+            associatedData = associatedData,
+            maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
         ).getOrThrow()
     }
 

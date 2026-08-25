@@ -5,6 +5,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.backup.VaultBackupService
 import com.passvault.core.database.dao.VaultMetadataDao
@@ -67,6 +68,7 @@ private const val TEST_TOTP_SECRET = "JBSWY3DPEHPK3PXP"
  * prove that encrypted records survive a lock, reject tampering, or preserve
  * all fields through serialization.
  */
+@Suppress("TooManyFunctions") // Cohesive real-Room and real-libsodium security integration fixture.
 class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
@@ -222,6 +224,174 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
         } finally {
             credential.clearSensitiveValuesForTest()
             changedCredential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `credential and password history payloads hide exact plaintext length in buckets`() = runTest {
+        createAndUnlockVault()
+        val shortCredential = sampleCredential().copy(
+            id = CredentialId("credential-short-secret"),
+            username = SensitiveText.from("a"),
+            email = null,
+            password = SensitiveText.from("1234"),
+            urls = emptyList(),
+            notes = null,
+            recoveryCodes = emptyList(),
+            apiKeys = emptyList(),
+            licenseKeys = emptyList(),
+            customFields = emptyList(),
+        )
+        val longerCredential = shortCredential.copy(
+            id = CredentialId("credential-longer-secret"),
+            password = SensitiveText.from("123456789012"),
+        )
+        val changedShort = shortCredential.copy(password = SensitiveText.from("different"))
+        val changedLonger = longerCredential.copy(password = SensitiveText.from("different"))
+
+        try {
+            assertTrue(credentialRepository.save(shortCredential).isSuccess)
+            assertTrue(credentialRepository.save(longerCredential).isSuccess)
+            val shortStored = requireNotNull(database.credentialDao().getById(shortCredential.id.value))
+            val longerStored = requireNotNull(database.credentialDao().getById(longerCredential.id.value))
+            assertTrue(CryptoEnvelope.isPaddedPayload(shortStored.summaryPayload))
+            assertTrue(CryptoEnvelope.isPaddedPayload(shortStored.secretPayload))
+            assertEquals(shortStored.summaryPayload.size, longerStored.summaryPayload.size)
+            assertEquals(shortStored.secretPayload.size, longerStored.secretPayload.size)
+
+            assertTrue(credentialRepository.save(changedShort).isSuccess)
+            assertTrue(credentialRepository.save(changedLonger).isSuccess)
+            val shortHistory = database.passwordHistoryDao().getByCredential(shortCredential.id.value).single()
+            val longerHistory = database.passwordHistoryDao().getByCredential(longerCredential.id.value).single()
+            assertTrue(CryptoEnvelope.isPaddedPayload(shortHistory.encryptedPassword))
+            assertEquals(shortHistory.encryptedPassword.size, longerHistory.encryptedPassword.size)
+        } finally {
+            shortCredential.clearSensitiveValuesForTest()
+            longerCredential.clearSensitiveValuesForTest()
+            changedShort.clearSensitiveValuesForTest()
+            changedLonger.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `legacy credential payloads decrypt and are padded on the next save`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential()
+        val replacement = credential.copy(password = SensitiveText.from("replacement-password"))
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            val stored = requireNotNull(database.credentialDao().getById(credential.id.value))
+            val legacySummary = reencryptAsLegacy(
+                stored.summaryPayload,
+                stored.summaryNonce,
+                "record:${stored.id}",
+                "passvault:credential:${stored.id}:summary:v1",
+            )
+            val legacySecret = reencryptAsLegacy(
+                stored.secretPayload,
+                stored.secretNonce,
+                "record:${stored.id}",
+                "passvault:credential:${stored.id}:secret:v1",
+            )
+            database.credentialDao().update(
+                stored.copy(
+                    summaryPayload = legacySummary.first,
+                    summaryNonce = legacySummary.second,
+                    secretPayload = legacySecret.first,
+                    secretNonce = legacySecret.second,
+                ),
+            )
+
+            val legacyRead = credentialRepository.getById(credential.id).getOrThrow()
+            assertEquals("hunter2", legacyRead?.password?.toStringUnsafe())
+            legacyRead?.clearSensitiveValuesForTest()
+            assertTrue(credentialRepository.save(replacement).isSuccess)
+            val rewritten = requireNotNull(database.credentialDao().getById(credential.id.value))
+            assertTrue(CryptoEnvelope.isPaddedPayload(rewritten.summaryPayload))
+            assertTrue(CryptoEnvelope.isPaddedPayload(rewritten.secretPayload))
+            assertTrue(
+                CryptoEnvelope.isPaddedPayload(
+                    database.passwordHistoryDao().getByCredential(credential.id.value).single().encryptedPassword,
+                ),
+            )
+        } finally {
+            credential.clearSensitiveValuesForTest()
+            replacement.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `padded credential framing tamper fails closed`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential()
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            val stored = requireNotNull(database.credentialDao().getById(credential.id.value))
+            val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+            var key: ByteArray? = null
+            var decrypted: ByteArray? = null
+            var tampered: com.passvault.core.crypto.EncryptedData? = null
+            val versionedAad =
+                "passvault:padded-payload:v1\u0000passvault:credential:${stored.id}:secret:v1".encodeToByteArray()
+            try {
+                key = cryptoEngine.deriveSubkey(vek, "record:${stored.id}", 32).getOrThrow()
+                decrypted = cryptoEngine.decrypt(
+                    CryptoEnvelope.normalize(stored.secretPayload),
+                    stored.secretNonce,
+                    key,
+                    versionedAad,
+                ).getOrThrow()
+                decrypted[decrypted.lastIndex] = 1
+                tampered = cryptoEngine.encrypt(decrypted, key, versionedAad).getOrThrow()
+                database.credentialDao().update(
+                    stored.copy(
+                        secretPayload = CryptoEnvelope.markPadded(CryptoEnvelope.encode(tampered)),
+                        secretNonce = tampered.nonce.copyOf(),
+                    ),
+                )
+            } finally {
+                tampered?.clear()
+                decrypted?.let(cryptoEngine::secureWipe)
+                key?.let(cryptoEngine::secureWipe)
+                cryptoEngine.secureWipe(versionedAad)
+                cryptoEngine.secureWipe(vek)
+            }
+
+            assertTrue(credentialRepository.getById(credential.id).isFailure)
+        } finally {
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `legacy password history remains readable`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential()
+        val changed = credential.copy(password = SensitiveText.from("changed-password"))
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            assertTrue(credentialRepository.save(changed).isSuccess)
+            val history = database.passwordHistoryDao().getByCredential(credential.id.value).single()
+            val legacy = reencryptAsLegacy(
+                history.encryptedPassword,
+                history.passwordNonce,
+                "history:${history.id}",
+                "passvault:history:${history.id}:${credential.id.value}:v2",
+            )
+            database.vaultBackupDao().deletePasswordHistory()
+            database.passwordHistoryDao().insert(
+                history.copy(encryptedPassword = legacy.first, passwordNonce = legacy.second),
+            )
+
+            val restored = requireNotNull(credentialRepository.getById(credential.id).getOrThrow())
+            try {
+                assertEquals("hunter2", restored.passwordHistory.single().password.toStringUnsafe())
+            } finally {
+                restored.clearSensitiveValuesForTest()
+            }
+        } finally {
+            credential.clearSensitiveValuesForTest()
+            changed.clearSensitiveValuesForTest()
         }
     }
 
@@ -1365,6 +1535,40 @@ abstract class RepositorySecurityIntegrationFixture {
         } finally {
             cryptoEngine.secureWipe(filename)
             attachmentKey?.let { cryptoEngine.secureWipe(it) }
+            cryptoEngine.secureWipe(vek)
+        }
+    }
+
+    protected suspend fun reencryptAsLegacy(
+        paddedCiphertext: ByteArray,
+        nonce: ByteArray,
+        keyContext: String,
+        associatedDataValue: String,
+    ): Pair<ByteArray, ByteArray> {
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        var plaintext: ByteArray? = null
+        val associatedData = associatedDataValue.encodeToByteArray()
+        return try {
+            key = cryptoEngine.deriveSubkey(vek, keyContext, 32).getOrThrow()
+            plaintext = PaddedPayload.decrypt(
+                cryptoEngine = cryptoEngine,
+                storedCiphertext = paddedCiphertext,
+                nonce = nonce,
+                key = key,
+                associatedData = associatedData,
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
+            ).getOrThrow()
+            val encrypted = cryptoEngine.encrypt(plaintext, key, associatedData).getOrThrow()
+            try {
+                CryptoEnvelope.encode(encrypted) to encrypted.nonce.copyOf()
+            } finally {
+                encrypted.clear()
+            }
+        } finally {
+            plaintext?.let(cryptoEngine::secureWipe)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(associatedData)
             cryptoEngine.secureWipe(vek)
         }
     }

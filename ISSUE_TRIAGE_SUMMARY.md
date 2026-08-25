@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (48 still open; #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #49, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved and closed)
+- **FIX: 73** (47 still open; #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved)
 - **DIG: 22**
 - **CLOSE/ACCEPT: 17**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -34,6 +34,7 @@
 - **Resolved FIX:** #45 — session operations now use tracked, revocable VEK leases rather than holding the state mutex across arbitrary suspending work. Lock publishes `Locking`, cancels the lease operation, wipes the repository key, and force-revokes any non-cooperative lease after a hard deadline; `lockAndRun` additionally refuses protected work unless lease cleanup settled.
 - **Resolved FIX:** #46 — iOS backup staging directories and files now receive checked `NSFileProtectionComplete` attributes before any export write; picker copies are immediately re-protected and rejected/deleted if protection cannot be applied. Simulator regression coverage verifies ordering and fail-closed behavior; physical locked-device verification remains tracked by #35/#128.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
+- **Resolved FIX:** #48 — credential summaries/secrets, password history, and attachment filenames now use an authenticated versioned padding format with power-of-two buckets; v2 records remain readable and are rewritten on ordinary updates.
 - **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.

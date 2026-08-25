@@ -3,6 +3,8 @@ package com.passvault.core.database.attachment
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.CryptoEnvelope
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.entity.AttachmentRecordEntity
@@ -126,6 +128,72 @@ class AttachmentRepositoryTest {
         assertContentEquals(pdf, sink.bytes())
         assertTrue(sink.committed)
         assertFalse(sink.aborted)
+    }
+
+    @Test
+    fun `attachment filenames use padded buckets and remain readable after rename`() = runTest {
+        val first = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("a.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val second = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("twelve12.txt", null, byteArrayOf(2)),
+        ).getOrThrow()
+        val firstEntity = requireEntity(first.id)
+        val secondEntity = requireEntity(second.id)
+
+        assertTrue(CryptoEnvelope.isPaddedPayload(firstEntity.encryptedFilename))
+        assertTrue(CryptoEnvelope.isPaddedPayload(secondEntity.encryptedFilename))
+        assertEquals(firstEntity.encryptedFilename.size, secondEntity.encryptedFilename.size)
+
+        val renamed = attachmentRepository.rename(credentialId, first.id, "renamed.txt").getOrThrow()
+        assertEquals("renamed.txt", renamed.fileName)
+        assertTrue(CryptoEnvelope.isPaddedPayload(requireEntity(first.id).encryptedFilename))
+    }
+
+    @Test
+    fun `legacy attachment filename remains readable and is padded on rename`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("legacy.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        var plaintext: ByteArray? = null
+        val aad = "passvault:attachment:${stored.id}:${stored.credentialId}:filename:v1".encodeToByteArray()
+        try {
+            key = cryptoEngine.deriveSubkey(vek, "attachment:${stored.keyDerivationContext}", 32).getOrThrow()
+            plaintext = PaddedPayload.decrypt(
+                cryptoEngine,
+                stored.encryptedFilename,
+                stored.filenameNonce,
+                key,
+                aad,
+                AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
+            ).getOrThrow()
+            val legacy = cryptoEngine.encrypt(plaintext, key, aad).getOrThrow()
+            try {
+                database.attachmentDao().update(
+                    stored.copy(
+                        encryptedFilename = CryptoEnvelope.encode(legacy),
+                        filenameNonce = legacy.nonce.copyOf(),
+                    ),
+                )
+            } finally {
+                legacy.clear()
+            }
+        } finally {
+            plaintext?.let(cryptoEngine::secureWipe)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(aad)
+            cryptoEngine.secureWipe(vek)
+        }
+
+        val renamed = attachmentRepository.rename(credentialId, attachment.id, "modern.txt").getOrThrow()
+        assertEquals("modern.txt", renamed.fileName)
+        assertTrue(CryptoEnvelope.isPaddedPayload(requireEntity(attachment.id).encryptedFilename))
     }
 
     @Test

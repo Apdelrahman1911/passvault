@@ -4,6 +4,7 @@ package com.passvault.core.database.attachment
 
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.CryptoEnvelope
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.database.dao.AttachmentDao
 import com.passvault.core.database.dao.CredentialDao
 import com.passvault.core.database.entity.AttachmentRecordEntity
@@ -170,8 +171,8 @@ class AttachmentRepositoryImpl(
     ) = AttachmentRecordEntity(
         id = attachmentId,
         credentialId = credentialId,
-        encryptedFilename = encryptedFilename.ciphertext,
-        filenameNonce = encryptedFilename.nonce,
+        encryptedFilename = CryptoEnvelope.encode(encryptedFilename),
+        filenameNonce = encryptedFilename.nonce.copyOf(),
         mimeType = DEFAULT_MIME_TYPE,
         sizeBytes = declaredSize ?: 0,
         storagePath = storagePath,
@@ -199,8 +200,8 @@ class AttachmentRepositoryImpl(
                 try {
                     attachmentDao.update(
                         entity.copy(
-                            encryptedFilename = encrypted.ciphertext,
-                            filenameNonce = encrypted.nonce,
+                            encryptedFilename = CryptoEnvelope.encode(encrypted),
+                            filenameNonce = encrypted.nonce.copyOf(),
                         ),
                     )
                     entity.toMetadata(fileName)
@@ -364,10 +365,12 @@ class AttachmentRepositoryImpl(
         val plaintext = fileName.encodeToByteArray(throwOnInvalidSequence = true)
         val associatedData = filenameAssociatedData(attachmentId, credentialId)
         return try {
-            cryptoEngine.encrypt(
+            PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = plaintext,
                 key = key,
                 associatedData = associatedData,
+                maxPlaintextBytes = MAX_FILENAME_UTF8_BYTES,
             ).getOrThrow()
         } finally {
             cryptoEngine.secureWipe(plaintext)
@@ -377,17 +380,19 @@ class AttachmentRepositoryImpl(
 
     private suspend fun decryptFilename(entity: AttachmentRecordEntity, vek: ByteArray): String {
         val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
-        var plaintext: ByteArray? = null
+        var decrypted: ByteArray? = null
         return try {
-            plaintext = cryptoEngine.decrypt(
-                ciphertext = CryptoEnvelope.normalize(entity.encryptedFilename),
+            decrypted = PaddedPayload.decrypt(
+                cryptoEngine = cryptoEngine,
+                storedCiphertext = entity.encryptedFilename,
                 nonce = entity.filenameNonce,
                 key = key,
                 associatedData = filenameAssociatedData(entity.id, entity.credentialId),
+                maxPlaintextBytes = MAX_FILENAME_UTF8_BYTES,
             ).getOrThrow()
-            AttachmentPolicy.validateStoredFileName(plaintext.decodeToString(throwOnInvalidSequence = true))
+            AttachmentPolicy.validateStoredFileName(decrypted.decodeToString(throwOnInvalidSequence = true))
         } finally {
-            plaintext?.let(cryptoEngine::secureWipe)
+            decrypted?.let(cryptoEngine::secureWipe)
             cryptoEngine.secureWipe(key)
         }
     }
@@ -434,6 +439,7 @@ class AttachmentRepositoryImpl(
 
     private companion object {
         const val KEY_BYTES = 32
+        const val MAX_FILENAME_UTF8_BYTES = AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4
         const val DEFAULT_MIME_TYPE = "application/octet-stream"
         val DISCARDING_SINK = object : AttachmentContentSink {
             override suspend fun write(buffer: ByteArray, byteCount: Int) = Unit
