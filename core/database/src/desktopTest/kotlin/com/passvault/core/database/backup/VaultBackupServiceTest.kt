@@ -97,6 +97,60 @@ class VaultBackupServiceTest {
     }
 
     @Test
+    fun `streaming legacy backup remains compatible without whole document buffering`() = runTest {
+        insertSnapshot(validSnapshot("legacy-stream-vault", "credential-one"))
+        val password = SensitiveText.from("legacy streaming compatibility password")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            val source = TrackingBackupSource(backup, maximumChunkBytes = 17)
+
+            val inspection = service.inspectBackup(source, password).getOrThrow()
+
+            assertEquals(1, inspection.credentialCount)
+            assertTrue(source.closed)
+            assertEquals(backup.size.toLong(), source.bytesRead)
+            assertTrue(source.maximumRequestedBytes <= 8 * 1024)
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `non backup input is rejected after a bounded prefix instead of being drained`() = runTest {
+        val hostile = ByteArray(1024 * 1024) { 'x'.code.toByte() }
+        val source = TrackingBackupSource(hostile, declaredSizeBytes = null)
+        val password = SensitiveText.from("bounded legacy parser password")
+
+        try {
+            assertTrue(service.inspectBackup(source, password).isFailure)
+            assertTrue(source.closed)
+            assertEquals(8, source.bytesRead)
+        } finally {
+            password.clear()
+            hostile.fill(0)
+        }
+    }
+
+    @Test
+    fun `legacy size admission is derived from the largest compatible v1 payload`() = runTest {
+        val source = TrackingBackupSource(
+            bytes = ByteArray(16) { 'x'.code.toByte() },
+            declaredSizeBytes = 128L * 1024L * 1024L,
+        )
+        val password = SensitiveText.from("legacy compatibility ceiling password")
+
+        try {
+            assertTrue(BackupLimits.LEGACY_MAX_BACKUP_BYTES < 128L * 1024L * 1024L)
+            assertTrue(service.inspectBackup(source, password).isFailure)
+            assertTrue(source.closed)
+            assertEquals(8, source.bytesRead)
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
     fun `wrong backup password does not modify current data`() = runTest {
         val original = validSnapshot("original-vault", "credential-one")
         insertSnapshot(original)
@@ -725,6 +779,39 @@ class VaultBackupServiceTest {
         val payload: ByteArray,
         val nonce: ByteArray,
     )
+
+    private class TrackingBackupSource(
+        private val bytes: ByteArray,
+        override val declaredSizeBytes: Long? = bytes.size.toLong(),
+        private val maximumChunkBytes: Int = Int.MAX_VALUE,
+    ) : BackupContentSource {
+        private var offset = 0
+        var bytesRead = 0L
+            private set
+        var maximumRequestedBytes = 0
+            private set
+        var closed = false
+            private set
+
+        override suspend fun read(buffer: ByteArray): Int {
+            maximumRequestedBytes = maxOf(maximumRequestedBytes, buffer.size)
+            if (offset == bytes.size) return -1
+            val count = minOf(buffer.size, maximumChunkBytes, bytes.size - offset)
+            bytes.copyInto(buffer, destinationOffset = 0, startIndex = offset, endIndex = offset + count)
+            offset += count
+            bytesRead += count
+            return count
+        }
+
+        override suspend fun rewind() {
+            offset = 0
+            closed = false
+        }
+
+        override suspend fun close() {
+            closed = true
+        }
+    }
 
     private class TestVaultSessionManager(
         private val vaultRepository: FakeVaultRepository,
