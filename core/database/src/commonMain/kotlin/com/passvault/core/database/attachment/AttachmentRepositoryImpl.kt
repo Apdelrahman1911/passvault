@@ -297,7 +297,7 @@ class AttachmentRepositoryImpl(
     }
 
     /** Deletes only objects whose database state proves an interrupted operation. */
-    suspend fun recoverInterruptedOperations() {
+    private suspend fun recoverInterruptedOperations() {
         if (recoveryCompleted) return
         attachmentDao.getPendingOperations().forEach { entity ->
             require(entity.storageState != AttachmentRecordEntity.STORAGE_STATE_LEGACY)

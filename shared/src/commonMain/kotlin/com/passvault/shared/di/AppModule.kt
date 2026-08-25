@@ -98,7 +98,9 @@ object AppModule {
      * Repository module.
      */
     val repositoryModule = module {
-        single {
+        // Publish only the interfaces. Keeping one interface-owned singleton
+        // prevents consumers from bypassing AttachmentRepositoryImpl's mutex.
+        single<AttachmentRepository> {
             AttachmentRepositoryImpl(
                 attachmentDao = get(),
                 credentialDao = get(),
@@ -107,8 +109,7 @@ object AppModule {
                 sessionManager = get(),
             )
         }
-        single<AttachmentRepository> { get<AttachmentRepositoryImpl>() }
-        single<AttachmentLifecycleManager> { get<AttachmentRepositoryImpl>() }
+        single<AttachmentLifecycleManager> { get<AttachmentRepository>() as AttachmentLifecycleManager }
 
         // Repositories
         single<CredentialRepositoryImpl> {

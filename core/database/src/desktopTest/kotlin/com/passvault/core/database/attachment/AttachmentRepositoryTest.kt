@@ -250,10 +250,19 @@ class AttachmentRepositoryTest {
         )
         Files.write(abandoned, byteArrayOf(1, 2, 3))
 
-        attachmentRepository.recoverInterruptedOperations()
+        attachmentRepository.withStableAttachments { }
 
         assertFalse(Files.exists(abandoned))
         assertDirectoryEmpty(storageRoot.resolve("staging"))
+    }
+
+    @Test
+    fun `recovery implementation is not exposed as a public repository operation`() {
+        assertFalse(
+            AttachmentRepositoryImpl::class.java.methods.any { method ->
+                method.name.startsWith("recoverInterruptedOperations")
+            },
+        )
     }
 
     @Test
@@ -338,7 +347,7 @@ class AttachmentRepositoryTest {
 
         assertNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
         assertTrue(Files.exists(path))
-        attachmentRepository.recoverInterruptedOperations()
+        attachmentRepository.withStableAttachments { }
         assertFalse(Files.exists(path))
     }
 
@@ -356,7 +365,7 @@ class AttachmentRepositoryTest {
         assertNull(database.credentialDao().getById(credentialId.value))
         assertNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
         assertTrue(Files.exists(path))
-        attachmentRepository.recoverInterruptedOperations()
+        attachmentRepository.withStableAttachments { }
         assertFalse(Files.exists(path))
     }
 

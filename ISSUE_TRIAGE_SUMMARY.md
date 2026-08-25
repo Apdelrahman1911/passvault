@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (72 still open; #36 resolved and closed in `5f00ce1`)
+- **FIX: 73** (71 still open; #36 and #37 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -22,6 +22,7 @@
 - **Reclassified to FIX (open):** #50 (low privacy/data minimization), #88 (misleading finalizer), #95 (KDF documentation), #117 (unsigned-local-release verification), #119 (screenshot-protection API), #122 (pre-service temp-file ownership gap).
 - **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
+- **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 
