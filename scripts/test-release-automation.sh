@@ -8,6 +8,7 @@ cd "$repository_root"
 ./scripts/test-private-release-validator.sh >/dev/null
 ./scripts/validate-workflow-action-pins.sh >/dev/null
 ./scripts/verify-pentest-scope.sh >/dev/null
+./scripts/verify-dependabot-coverage.sh >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
