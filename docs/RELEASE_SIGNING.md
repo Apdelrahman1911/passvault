@@ -104,6 +104,7 @@ GitHub `mobile-production` environment secrets:
 
 - `MACOS_CERTIFICATE_BASE64`
 - `MACOS_CERTIFICATE_PASSWORD`
+- `MACOS_PROVISIONING_PROFILE_BASE64`
 - `MACOS_NOTARIZATION_APPLE_ID`
 - `MACOS_NOTARIZATION_PASSWORD` (an Apple app-specific password)
 

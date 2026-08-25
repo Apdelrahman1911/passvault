@@ -1708,6 +1708,21 @@ grep -Fq 'attributes = IOS_BACKUP_PROTECTION' \
     shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
 grep -Fq 'protectIosBackupPath(fileManager, path)' \
     shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
+test -f app-desktop/resources/macos/PassVault.runtime.entitlements
+for entitlement_file in \
+    app-desktop/resources/macos/PassVault.entitlements \
+    app-desktop/resources/macos/PassVault.runtime.entitlements; do
+    grep -Fq 'com.apple.security.cs.allow-jit' "$entitlement_file"
+    if grep -Eq 'allow-unsigned-executable-memory|disable-library-validation' "$entitlement_file"; then
+        echo "Forbidden macOS hardened-runtime exception in $entitlement_file." >&2
+        exit 1
+    fi
+done
+grep -Fq 'runtimeEntitlementsFile.set(macRuntimeEntitlementsFile)' app-desktop/build.gradle.kts
+grep -Fq 'Forbidden macOS hardened-runtime exception on:' scripts/verify-macos-release-artifact.sh
+grep -Fq 'MACOS_PROVISIONING_PROFILE_BASE64' .github/workflows/release.yml
+grep -Fq 'MACOS_JPACKAGE_JAVA_HOME=$JAVA_HOME' .github/workflows/release.yml
+grep -Fq 'MACOS_PROVISIONING_PROFILE_BASE64' scripts/configure-github-mobile-release.sh
 grep -Fq ':app-android:verifyReleasePackageContents' \
     .github/workflows/mobile-store-release.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/build-signed-android.ps1

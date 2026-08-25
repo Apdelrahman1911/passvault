@@ -1192,6 +1192,16 @@ compose.desktop {
 
                 val macEntitlementsFile =
                     resourcesDirectory.asFile.resolve("macos/PassVault.entitlements")
+                val macRuntimeEntitlementsFile =
+                    resourcesDirectory.asFile.resolve("macos/PassVault.runtime.entitlements")
+                // Keep the bundled JVM on the narrow JIT exception even for
+                // unsigned/ad-hoc development images. The production branch
+                // below additionally supplies the app's Developer ID
+                // entitlements and provisioning profile.
+                runtimeEntitlementsFile.set(macRuntimeEntitlementsFile)
+                require(macRuntimeEntitlementsFile.isFile) {
+                    "The PassVault macOS runtime entitlements file is missing"
+                }
 
                 if (macSign) {
                     require(macIdentity.isNotBlank()) {

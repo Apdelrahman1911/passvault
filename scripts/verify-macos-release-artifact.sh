@@ -104,6 +104,16 @@ verify_signature_details() {
             echo "Forbidden get-task-allow entitlement on: $candidate" >&2
             exit 1
         fi
+        for entitlement in \
+            com.apple.security.cs.allow-unsigned-executable-memory \
+            com.apple.security.cs.disable-library-validation; do
+            if plutil -extract "$entitlement" raw -o - "$entitlements_path" 2>/dev/null | grep -Fqx true; then
+                rm -f -- "$entitlements_path"
+                entitlements_path=""
+                echo "Forbidden macOS hardened-runtime exception on: $candidate ($entitlement)" >&2
+                exit 1
+            fi
+        done
     fi
     rm -f -- "$entitlements_path"
     entitlements_path=""
