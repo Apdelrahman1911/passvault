@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (66 still open; #36, #37, #40, #47, #96, #100, and #104 resolved and closed)
+- **FIX: 73** (65 still open; #36, #37, #40, #47, #96, #100, #104, and #106 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -28,6 +28,7 @@
 - **Resolved FIX:** #96 — V2 length-prefixed attachment IDs now decode UTF-8 strictly and wipe the intermediate bytes; malformed sequences have direct regression coverage.
 - **Resolved FIX:** #100 — import source ownership is centralized in one non-cancellable outer `finally`, preventing a throwing close from triggering a second close and preserving completed encrypted imports.
 - **Resolved FIX:** #104 — MIME sniffing now accumulates a bounded replayed prefix before binding the authenticated type, so short reads cannot permanently downgrade known content.
+- **Resolved FIX:** #106 — QR enrollment now parses independently of manual controls, preserving URI-provided parameters and closing the scanner on every terminal result.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 
