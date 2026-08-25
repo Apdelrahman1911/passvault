@@ -125,6 +125,20 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `short first reads are accumulated before MIME detection`() = runTest {
+        val source = TrickleSource(
+            name = "short-read.pdf",
+            content = "%PDF-1.7\nattachment".encodeToByteArray(),
+            maximumReadBytes = 2,
+        )
+
+        val attachment = attachmentRepository.import(credentialId, source).getOrThrow()
+
+        assertEquals("application/pdf", attachment.mimeType)
+        assertTrue(attachmentRepository.verify(credentialId, attachment.id).isSuccess)
+    }
+
+    @Test
     fun `concurrent duplicate imports are serialized and remain independently decryptable`() = runTest {
         val first = async {
             attachmentRepository.import(credentialId, ByteArraySource("same.txt", null, byteArrayOf(1)))
@@ -468,6 +482,27 @@ class AttachmentRepositoryTest {
         override suspend fun close() {
             closed = true
         }
+    }
+
+    private class TrickleSource(
+        name: String,
+        private val content: ByteArray,
+        private val maximumReadBytes: Int,
+    ) : AttachmentContentSource {
+        override val displayName = name
+        override val claimedMimeType: String? = null
+        override val declaredSizeBytes: Long = content.size.toLong()
+        private var offset = 0
+
+        override suspend fun read(buffer: ByteArray): Int {
+            if (offset == content.size) return -1
+            val count = minOf(buffer.size, maximumReadBytes, content.size - offset)
+            content.copyInto(buffer, endIndex = offset + count, startIndex = offset)
+            offset += count
+            return count
+        }
+
+        override suspend fun close() = Unit
     }
 
     private class FailingSource : AttachmentContentSource {
