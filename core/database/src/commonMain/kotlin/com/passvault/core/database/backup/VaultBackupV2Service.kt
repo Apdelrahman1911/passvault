@@ -783,10 +783,15 @@ private fun Buffer.writeLengthPrefixedUtf8(value: String): Buffer {
     }
 }
 
-private fun Buffer.readLengthPrefixedUtf8(): String {
+internal fun Buffer.readLengthPrefixedUtf8(): String {
     val size = readInt()
     require(size in 1..512)
-    return readUtf8(size.toLong())
+    val encoded = readByteArray(size.toLong())
+    return try {
+        encoded.decodeToString(throwOnInvalidSequence = true)
+    } finally {
+        encoded.fill(0)
+    }
 }
 
 private const val BACKUP_INVALID_MESSAGE = "The backup password is incorrect or the backup is corrupt."
