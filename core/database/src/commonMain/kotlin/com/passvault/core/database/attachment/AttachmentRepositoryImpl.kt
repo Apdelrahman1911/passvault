@@ -52,20 +52,20 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         source: AttachmentContentSource,
     ): Result<AttachmentMetadata> {
-        var sourceClosed = false
         return try {
             operationMutex.withLock {
                 repositoryResult {
                     recoverInterruptedOperations()
                     sessionManager.withUnlockedSession { vek ->
-                        importUnlocked(credentialId, source, vek) { sourceClosed = true }
+                        importUnlocked(credentialId, source, vek)
                     }
                 }
             }
         } finally {
-            if (!sourceClosed) {
-                withContext(NonCancellable) { runCatching { source.close() } }
-            }
+            // The repository owns the picker handle for the complete import.
+            // Closing in one outer finally avoids split ownership and a
+            // second close when a platform close operation throws.
+            withContext(NonCancellable) { runCatching { source.close() } }
         }
     }
 
@@ -73,7 +73,6 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         source: AttachmentContentSource,
         vek: ByteArray,
-        markSourceClosed: () -> Unit,
     ): AttachmentMetadata {
         require(credentialDao.exists(credentialId.value)) { "The credential does not exist" }
         val managedBytes = validateImportBounds(credentialId, source.declaredSizeBytes)
@@ -104,8 +103,6 @@ class AttachmentRepositoryImpl(
                 bindingWithoutMime = staging.toBinding(),
                 existingCredentialBytes = managedBytes,
             )
-            source.close()
-            markSourceClosed()
             val ready = staging.copy(
                 mimeType = stored.mimeType,
                 sizeBytes = stored.sizeBytes,

@@ -224,6 +224,16 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `teardown failure does not close an import source twice`() = runTest {
+        val source = ThrowingCloseSource()
+
+        assertTrue(attachmentRepository.import(credentialId, source).isSuccess)
+
+        assertEquals(1, source.closeCalls)
+        assertEquals(1, database.attachmentDao().getByCredential(credentialId.value).size)
+    }
+
+    @Test
     fun `cancelled import closes input and removes partial state`() = runTest {
         val readStarted = CompletableDeferred<Unit>()
         val source = SuspendingSource(readStarted)
@@ -496,6 +506,25 @@ class AttachmentRepositoryTest {
 
         override suspend fun close() {
             closed = true
+        }
+    }
+
+    private class ThrowingCloseSource : AttachmentContentSource {
+        override val displayName = "close-failure.bin"
+        override val claimedMimeType: String? = null
+        override val declaredSizeBytes: Long? = 1
+        var closeCalls = 0
+        private var read = false
+
+        override suspend fun read(buffer: ByteArray): Int = if (read) -1 else {
+            read = true
+            buffer[0] = 7
+            1
+        }
+
+        override suspend fun close() {
+            closeCalls++
+            error("simulated teardown failure")
         }
     }
 
