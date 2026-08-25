@@ -1,6 +1,6 @@
 # PassVault security model
 
-Last reviewed: 2026-08-14
+Last reviewed: 2026-08-25
 
 ## Scope and assumptions
 
@@ -30,9 +30,12 @@ master password bytes + 16-byte random salt
 ```
 
 The master password is converted to a byte array only for derivation and wiped best-effort afterward. The KEK is
-not persisted. Room stores the salt, bounded Argon2 parameters, wrapped VEK, nonces, and an authenticated
-verification record. Unlock validates metadata bounds before doing expensive cryptographic work, derives the KEK,
-unwraps the VEK, authenticates the verification record, and only then publishes the unlocked session.
+not persisted. Room stores the salt, Argon2id operations (2–10), memory (32–256 MiB), a fixed serialized
+parallelism value of `1`, the wrapped VEK, nonces, and an authenticated verification record. The current libsodium
+binding exposes no lanes argument, so unlock rejects a persisted parallelism value other than `1` before derivation.
+Unlock validates metadata bounds before doing expensive cryptographic work, derives the KEK, unwraps the VEK,
+authenticates the verification record, and only then publishes the unlocked session. See
+[`VAULT_FORMAT.md`](VAULT_FORMAT.md) for the complete parameter contract.
 
 Changing the master password rewraps the same VEK, so record data does not need re-encryption. Vault session
 transitions are serialized. Lock immediately removes and wipes the repository-owned VEK buffer best-effort.

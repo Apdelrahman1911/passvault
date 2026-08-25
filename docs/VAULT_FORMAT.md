@@ -1,6 +1,6 @@
 # Local vault format
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-25
 
 This document describes the live local-vault format. It is not a claim that a standalone protobuf or portable
 directory format exists.
@@ -26,6 +26,17 @@ VEK + purpose/record context -> keyed BLAKE2b subkeys
 
 The KEK is never persisted. `vault_metadata` stores bounded Argon2 parameters, the wrapped VEK, and an encrypted
 verification record. Unlock publishes the VEK only after both unwrap and verification authentication succeed.
+
+### Argon2id parameters
+
+| Parameter | Accepted value | Format behavior |
+|---|---:|---|
+| operations | 2–10 | Stored per vault and passed to the KDF. |
+| memory | 32–256 MiB | Stored per vault and passed to the KDF. |
+| parallelism | `1` | Stored for format compatibility and rejected on unlock if different. |
+
+The current libsodium `crypto_pwhash` binding exposes operations and memory but no lanes/parallelism argument.
+PassVault therefore writes and requires `1`; persisting another value would claim KDF work the binding cannot perform.
 
 ## Record envelopes
 

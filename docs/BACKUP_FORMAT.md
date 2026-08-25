@@ -1,6 +1,6 @@
 # PassVault encrypted backup format
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-25
 
 The `.pvault` extension is used for both supported encrypted containers. New exports use binary **format 2**.
 Strict read compatibility with legacy JSON **format 1** is retained.
@@ -23,6 +23,8 @@ Every format-2 file starts with this 44-byte binary header:
 
 The backup password is independent of the vault master password. Argon2id derives one 32-byte backup key from the
 password and fresh salt. The device benchmark selects parameters and the writer clamps them to the accepted range.
+The serialized parallelism value is fixed at `1`: the current libsodium `crypto_pwhash` binding exposes no lanes
+argument, so writers must not claim a parallelism value they cannot apply. Readers reject any other value.
 
 ### Authenticated records
 

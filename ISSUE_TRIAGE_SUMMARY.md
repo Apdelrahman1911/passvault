@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed 2026-08-25 against GitHub issues 35–146 and repository HEAD `5ed3d9d`. Every issue originally marked CLOSE/ACCEPT was re-read with all comments and re-checked against current code. **17 issues were closed on GitHub with an evidence comment; 6 were reclassified and remain open.**
+> Reply-aware review and final close verification performed 2026-08-25 against GitHub issues 35–146 and repository HEAD `5ed3d9d`. Every issue originally marked CLOSE/ACCEPT was re-read with all comments and re-checked against current code. **18 issues were closed on GitHub with an evidence comment; 5 were reclassified and remain open.**
 
 ## Triage legend
 
@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (64 still open; #36, #37, #40, #47, #88, #96, #100, #104, and #106 resolved and closed)
+- **FIX: 73** (63 still open; #36, #37, #40, #47, #88, #95, #96, #100, #104, and #106 resolved and closed)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 16**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -19,17 +19,18 @@
 ### Final verification dispositions
 
 - **Closed with an evidence comment:** #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145.
-- **Reclassified to FIX (open):** #50 (low privacy/data minimization), #95 (KDF documentation), #117 (unsigned-local-release verification), #119 (screenshot-protection API), #122 (pre-service temp-file ownership gap).
+- **Reclassified to FIX (open):** #50 (low privacy/data minimization), #117 (unsigned-local-release verification), #119 (screenshot-protection API), #122 (pre-service temp-file ownership gap).
 - **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
 - **Resolved FIX:** #40 — failed auto-lock attempts now re-enter on a bounded timer without waiting for user activity; virtual-time tests cover unattended retries and eventual success.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
+- **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
+- **Resolved FIX:** #95 — the fixed Argon2 parallelism value, binding limitation, and fail-closed reader behavior are now documented consistently and covered by a vault-metadata regression test.
 - **Resolved FIX:** #96 — V2 length-prefixed attachment IDs now decode UTF-8 strictly and wipe the intermediate bytes; malformed sequences have direct regression coverage.
 - **Resolved FIX:** #100 — import source ownership is centralized in one non-cancellable outer `finally`, preventing a throwing close from triggering a second close and preserving completed encrypted imports.
 - **Resolved FIX:** #104 — MIME sniffing now accumulates a bounded replayed prefix before binding the authenticated type, so short reads cannot permanently downgrade known content.
 - **Resolved FIX:** #106 — QR enrollment now parses independently of manual controls, preserving URI-provided parameters and closing the scanner on every terminal result.
-- **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 

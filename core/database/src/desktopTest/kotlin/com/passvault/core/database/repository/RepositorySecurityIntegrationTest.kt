@@ -502,6 +502,25 @@ class RepositoryMutationIntegrityIntegrationTest : RepositorySecurityIntegration
 class RepositoryMetadataSecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
+    fun `vault metadata fixes Argon2 parallelism at one and rejects another value`() = runTest {
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(vaultRepository.create(password).isSuccess)
+            assertEquals(1, requireNotNull(database.vaultMetadataDao().get()).argon2Parallelism)
+            assertTrue(vaultRepository.lock().isSuccess)
+
+            val metadata = requireNotNull(database.vaultMetadataDao().get())
+            database.vaultMetadataDao().update(metadata.copy(argon2Parallelism = 2))
+
+            assertTrue(vaultRepository.unlock(password).isFailure)
+            assertFalse(vaultRepository.isUnlocked())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
     fun `folder read rejects an oversized encrypted payload before authentication`() = runTest {
         createAndUnlockVault()
         database.folderDao().insertOrUpdate(
