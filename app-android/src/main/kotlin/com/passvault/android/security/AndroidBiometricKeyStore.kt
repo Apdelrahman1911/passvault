@@ -261,7 +261,7 @@ class AndroidBiometricKeyStore(
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         val authenticatedCipher = result.cryptoObject?.cipher
-                        if (promptCoordinator.finishPrompt(operation)) {
+                        promptCoordinator.finishPrompt(operation) {
                             continuation.resumeIfPending(
                                 authenticatedCipher?.let(Result.Companion::success)
                                     ?: Result.failure(BiometricKeyStoreException.AuthenticationFailed()),
@@ -270,7 +270,7 @@ class AndroidBiometricKeyStore(
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        if (promptCoordinator.finishPrompt(operation)) {
+                        promptCoordinator.finishPrompt(operation) {
                             continuation.resumeIfPending(Result.failure(errorCode.toBiometricException()))
                         }
                     }
@@ -289,7 +289,7 @@ class AndroidBiometricKeyStore(
                 try {
                     prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
                 } catch (error: Exception) {
-                    if (promptCoordinator.finishPrompt(operation)) {
+                    promptCoordinator.finishPrompt(operation) {
                         continuation.resumeIfPending(Result.failure(error.toBiometricException()))
                     }
                 }

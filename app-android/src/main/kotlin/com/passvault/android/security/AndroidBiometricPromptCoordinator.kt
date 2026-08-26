@@ -62,15 +62,16 @@ internal class AndroidBiometricPromptCoordinator(
                 true
             }
         }
-        if (!accepted) cancellation.cancel()
+        if (!accepted) cancellation.reportCancelled()
         return accepted
     }
 
-    /** Claims a terminal prompt callback. False means the callback is stale. */
-    fun finishPrompt(operation: Operation): Boolean = synchronized(stateLock) {
+    /** Runs a terminal callback only while this prompt is still authoritative. */
+    fun finishPrompt(operation: Operation, complete: () -> Unit): Boolean = synchronized(stateLock) {
         val current = currentOperation
         if (current?.operation?.identity === operation.identity && current.activeCancellation != null) {
             current.activeCancellation = null
+            complete()
             true
         } else {
             false

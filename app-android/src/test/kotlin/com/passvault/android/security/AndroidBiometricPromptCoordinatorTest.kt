@@ -36,7 +36,7 @@ class AndroidBiometricPromptCoordinatorTest {
         assertEquals(1, reportedCancellations.get())
         assertEquals(1, dispatched.size)
         assertEquals(0, platformCancellations.get())
-        assertFalse(coordinator.finishPrompt(operation))
+        assertFalse(coordinator.finishPrompt(operation, complete = {}))
 
         dispatched.remove().invoke()
         assertEquals(1, platformCancellations.get())
@@ -58,9 +58,9 @@ class AndroidBiometricPromptCoordinatorTest {
                 reportCancelled = { reportedCancellations.incrementAndGet() },
             ),
         )
-        assertEquals(1, platformCancellations.get())
+        assertEquals(0, platformCancellations.get())
         assertEquals(1, reportedCancellations.get())
-        assertFalse(coordinator.finishPrompt(operation))
+        assertFalse(coordinator.finishPrompt(operation, complete = {}))
     }
 
     @Test
@@ -87,9 +87,9 @@ class AndroidBiometricPromptCoordinatorTest {
             ),
         )
 
-        assertFalse(coordinator.finishPrompt(first))
+        assertFalse(coordinator.finishPrompt(first, complete = {}))
         coordinator.cancel(first)
-        assertTrue(coordinator.finishPrompt(second))
+        assertTrue(coordinator.finishPrompt(second, complete = {}))
         coordinator.cancelActive()
         assertEquals(1, firstPlatformCancellations.get())
         assertEquals(0, secondPlatformCancellations.get())
@@ -114,7 +114,7 @@ class AndroidBiometricPromptCoordinatorTest {
 
         assertEquals(1, platformCancellations.get())
         assertEquals(1, reportedCancellations.get())
-        assertFalse(coordinator.finishPrompt(operation))
+        assertFalse(coordinator.finishPrompt(operation, complete = {}))
     }
 
     @Test
@@ -147,7 +147,7 @@ class AndroidBiometricPromptCoordinatorTest {
             coordinator.withOperation(onBusy = { "busy" }) { operation ->
                 firstEntered.complete(Unit)
                 assertTrue(coordinator.activate(operation, cancelAuthentication = {}, reportCancelled = {}))
-                assertTrue(coordinator.finishPrompt(operation))
+                assertTrue(coordinator.finishPrompt(operation, complete = {}))
                 releaseFirst.await()
                 "first"
             }
