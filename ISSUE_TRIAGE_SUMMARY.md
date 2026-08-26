@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `175eb31`. Every close decision was checked against the issue, its comments, and the code. **54 issues are closed on GitHub; 58 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `8e61a9d`. Every close decision was checked against the issue, its comments, and the code. **55 issues are closed on GitHub; 57 remain open.**
 
 ## Triage legend
 
@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 71** (36 resolved as listed below; 35 still open)
+- **FIX: 71** (37 resolved as listed below; 34 still open)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 18**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -46,6 +46,7 @@
 - **Resolved FIX:** #59 — lock intent is registered independently of the serialized session transition and checked atomically at the unlock commit point, so password and biometric unlocks cannot publish a session after `lock()` or `lockAndRun()` is requested.
 - **Resolved FIX:** #60 — one lifecycle-owned Android biometric coordinator now provides the key-store and prompt-controller bindings, rejects queued operations, cancels on lock or host loss, and makes late or superseded callbacks inert.
 - **Resolved FIX:** #63 — the shared master-password policy now applies the corrected strength floor at repository and UI boundaries without changing legacy unlock acceptance, and its sensitive-buffer path avoids immutable plaintext string materialization.
+- **Resolved FIX:** #65 — iOS lock transitions now invalidate the lifecycle-owned active `LAContext`; one non-queuing key-store/controller instance rejects stale callbacks and wipes late Keychain results without changing protected-item policy or format.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
