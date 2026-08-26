@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `dcf8bc4`. Every close decision was checked against the issue, its comments, and the code. **51 issues are closed on GitHub; 61 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `9ebe2f0`. Every close decision was checked against the issue, its comments, and the code. **53 issues are closed on GitHub; 59 remain open.**
 
 ## Triage legend
 
@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 71** (33 resolved as listed below; 38 still open)
+- **FIX: 71** (35 resolved as listed below; 36 still open)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 18**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -43,6 +43,8 @@
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
 - **Resolved FIX:** #57 — password-strength bands are now length-dominant with bounded variety credit and explicit common-pattern, sequence, year, and repetition penalties; corpus regressions prevent short composed passwords from outranking substantially longer unpredictable ones.
 - **Resolved FIX:** #58 — Android preview plaintext now has a short lease backed by path-safe persistent `JobScheduler` deletion registered before URI disclosure, with reboot, foreground, and memory-pressure cleanup and synchronized Play permission records.
+- **Resolved FIX:** #59 — lock intent is registered independently of the serialized session transition and checked atomically at the unlock commit point, so password and biometric unlocks cannot publish a session after `lock()` or `lockAndRun()` is requested.
+- **Resolved FIX:** #60 — one lifecycle-owned Android biometric coordinator now provides the key-store and prompt-controller bindings, rejects queued operations, cancels on lock or host loss, and makes late or superseded callbacks inert.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
