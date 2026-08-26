@@ -1,6 +1,6 @@
 # Backup capacity and memory
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-27
 
 This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, repository validation, and
 `AttachmentPolicy`. MiB/GiB use binary units.
@@ -58,7 +58,7 @@ Format 2 never holds the complete backup, all Room rows, or all attachment bytes
 
 | Operation | Simultaneous materialization |
 |---|---|
-| password KDF | Argon2id working memory, 32–256 MiB; released before row streaming |
+| password KDF | Argon2id working memory, exactly 64 MiB; released before row streaming |
 | metadata export | one large Room row, its compact binary encoding, and its encrypted record; about 3× one row in the worst case |
 | metadata inspect/restore | ciphertext + plaintext during AEAD, then plaintext + decoded row arrays; about 2× the single-record size |
 | folder/tag export paging | at most 64 rows, each capped at 64 KiB payload |
@@ -68,8 +68,8 @@ Format 2 never holds the complete backup, all Room rows, or all attachment bytes
 
 The deliberately conservative theoretical metadata peak is therefore about **195 MiB on export** (three 65 MiB
 representations) or **130 MiB on import** (two representations), plus runtime overhead. A repository-created normal
-credential is far smaller; the 65 MiB cap exists to read bounded legacy encrypted fields. Argon2id's maximum 256 MiB
-workspace is not intentionally concurrent with that row peak.
+credential is far smaller; the 65 MiB cap exists to read bounded legacy encrypted fields. Format 2 admits only the
+64 MiB Argon2id profile emitted by its writer, and the KDF workspace is released before that row peak.
 
 Format 1 is different: the input bytes, UTF-8/UTF-16 JSON, Base64 fields, decoded ciphertext, decrypted snapshot, DTO
 graph, and decoded entity arrays can overlap until garbage collection. Its worst peak is runtime-dependent and can

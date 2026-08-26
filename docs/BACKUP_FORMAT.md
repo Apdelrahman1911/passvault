@@ -1,6 +1,6 @@
 # PassVault encrypted backup format
 
-Last reviewed: 2026-08-25
+Last reviewed: 2026-08-27
 
 The `.pvault` extension is used for both supported encrypted containers. New exports use binary **format 2**.
 Strict read compatibility with legacy JSON **format 1** is retained.
@@ -15,8 +15,8 @@ Every format-2 file starts with this 44-byte binary header:
 |---|---:|---|
 | magic | 8 | `50 56 42 41 43 4b 02 00` |
 | format version | 4 | `2` |
-| Argon2id operations | 4 | 2–10 |
-| Argon2id memory bytes | 4 | 32–256 MiB |
+| Argon2id operations | 4 | 3–4 |
+| Argon2id memory bytes | 4 | exactly 64 MiB |
 | parallelism | 4 | `1` |
 | attachment/record chunk bytes | 4 | 256 KiB |
 | random salt | 16 | exactly 16 bytes |
@@ -24,9 +24,11 @@ Every format-2 file starts with this 44-byte binary header:
 The backup password is independent of the vault master password. PassVault strictly UTF-8 encodes it and then uses
 the lowercase ASCII hexadecimal bytes as the compatibility-critical Argon2id input; changing to raw UTF-8 would make
 existing backups unreadable. Mutable UTF-8 and hexadecimal buffers are cleared best-effort after deriving the
-32-byte backup key. The device benchmark selects parameters and the writer clamps them to the accepted range. The
-serialized parallelism value is fixed at `1`: the current libsodium `crypto_pwhash` binding exposes no lanes argument,
-so writers must not claim a parallelism value they cannot apply. Readers reject any other value.
+32-byte backup key. The device benchmark selects one of the two profiles format 2 has emitted: 64 MiB with either
+three or four operations. Writers and readers reject every other profile before deriving a key; future KDF profiles
+require a new backup format version. The serialized parallelism value is fixed at `1`: the current libsodium
+`crypto_pwhash` binding exposes no lanes argument, so writers must not claim a parallelism value they cannot apply.
+Readers reject any other value.
 
 ### Authenticated records
 

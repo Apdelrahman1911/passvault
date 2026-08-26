@@ -1,6 +1,6 @@
 # PassVault security model
 
-Last reviewed: 2026-08-25
+Last reviewed: 2026-08-27
 
 ## Scope and assumptions
 
@@ -102,9 +102,10 @@ row's object. Version-1/2 metadata-only rows remain explicit unavailable `LEGACY
 ## Backup boundary
 
 New `.pvault` version 2 exports use a separate backup password, fresh salt, Argon2id, and ordered authenticated
-XChaCha20-Poly1305 records. Room metadata is encoded and validated one row at a time; attachment objects are carried
-in 256 KiB outer records. Restore authenticates the entire stream and stages objects, then rewinds and replays only
-metadata in one Room transaction. A SHA-256 transcript over authenticated header/record proofs binds both passes.
+XChaCha20-Poly1305 records. Before deriving a key, the reader admits only the two historical writer profiles: 64 MiB
+with three or four operations. Room metadata is encoded and validated one row at a time; attachment objects are
+carried in 256 KiB outer records. Restore authenticates the entire stream and stages objects, then rewinds and replays
+only metadata in one Room transaction. A SHA-256 transcript over authenticated header/record proofs binds both passes.
 Legacy version 1 remains readable at its historical in-memory bounds and omits attachment rows/bytes. Restore locks
 the vault and deletes the previous OS biometric enrollment; a Room rollback triggers a best-effort re-enrollment of
 the prior VEK. The OS key store and Room still cannot share one transaction. See
