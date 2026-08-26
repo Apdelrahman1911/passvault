@@ -4,10 +4,10 @@ package com.passvault.core.domain.model
  * One deterministic password-strength policy shared by onboarding, editors,
  * backup passwords, settings, and health analysis.
  *
- * This is a local heuristic, not a password cracker or breach lookup. It
- * deliberately penalizes common words, keyboard sequences, leetspeak variants,
- * and repeated characters so visual feedback never treats "P@ssw0rd!" as a
- * strong password.
+ * This is a conservative local heuristic, not an entropy measurement, password
+ * cracker, or breach lookup. Length determines the baseline score. Character
+ * variety can improve it by at most one band, while common words, dates,
+ * keyboard sequences, leetspeak variants, and repeated patterns lower it.
  */
 object PasswordStrengthEvaluator {
     fun score(password: CharSequence): PasswordScore {
@@ -17,11 +17,20 @@ object PasswordStrengthEvaluator {
 
         val normalized = normalizeLeetspeak(value.lowercase())
         val characterClasses = characterClassCount(value)
-        val points = lengthPoints(codePoints.size) +
-            (characterClasses - 1).coerceAtLeast(0) +
-            diversityBonus(codePoints) -
-            weaknessPenalty(normalized, characterClasses)
-        return points.toPasswordScore()
+        return if (hasExcessiveRepetition(normalized)) {
+            PasswordScore.VERY_WEAK
+        } else {
+            val varietyBonus = if (characterClasses >= MIN_CLASSES_FOR_VARIETY_BONUS && hasHighDiversity(codePoints)) {
+                1
+            } else {
+                0
+            }
+            val penaltyBands =
+                (if (COMMON_WEAK_TERMS.any(normalized::contains)) COMMON_TERM_PENALTY_BANDS else 0) +
+                    (if (hasSequence(normalized)) SEQUENCE_PENALTY_BANDS else 0) +
+                    (if (hasLikelyWordAndYear(value)) DATE_PATTERN_PENALTY_BANDS else 0)
+            baselineScore(codePoints.size).shiftBy(varietyBonus - penaltyBands)
+        }
     }
 
     private fun characterClassCount(value: String): Int = listOf(
@@ -31,29 +40,21 @@ object PasswordStrengthEvaluator {
         value.any { !it.isLetterOrDigit() },
     ).count { it }
 
-    private fun lengthPoints(codePointCount: Int): Int = when {
-        codePointCount >= 20 -> 4
-        codePointCount >= 16 -> 3
-        codePointCount >= 12 -> 2
-        else -> 1
+    private fun baselineScore(codePointCount: Int): PasswordScore = when {
+        codePointCount >= VERY_STRONG_LENGTH -> PasswordScore.VERY_STRONG
+        codePointCount >= STRONG_LENGTH -> PasswordScore.STRONG
+        codePointCount >= GOOD_LENGTH -> PasswordScore.GOOD
+        codePointCount >= FAIR_LENGTH -> PasswordScore.FAIR
+        else -> PasswordScore.WEAK
     }
 
-    private fun diversityBonus(codePoints: List<String>): Int =
-        if (codePoints.toSet().size.toDouble() / codePoints.size >= 0.65) 1 else 0
+    private fun hasHighDiversity(codePoints: List<String>): Boolean =
+        codePoints.toSet().size.toDouble() / codePoints.size >= MIN_DIVERSITY_RATIO
 
-    private fun weaknessPenalty(normalized: String, characterClasses: Int): Int =
-        (if (COMMON_TOKENS.any(normalized::contains)) 3 else 0) +
-            (if (hasSequence(normalized)) 2 else 0) +
-            (if (hasExcessiveRepetition(normalized)) 3 else 0) +
-            (if (characterClasses == 1) 1 else 0)
-
-    private fun Int.toPasswordScore(): PasswordScore = when {
-        this <= 0 -> PasswordScore.VERY_WEAK
-        this <= 2 -> PasswordScore.WEAK
-        this == 3 -> PasswordScore.FAIR
-        this == 4 -> PasswordScore.GOOD
-        this <= 6 -> PasswordScore.STRONG
-        else -> PasswordScore.VERY_STRONG
+    private fun PasswordScore.shiftBy(bands: Int): PasswordScore {
+        val currentIndex = STRENGTH_SCALE.indexOf(this)
+        check(currentIndex >= 0) { "Cannot adjust an unknown password score" }
+        return STRENGTH_SCALE[(currentIndex + bands).coerceIn(STRENGTH_SCALE.indices)]
     }
 
     private fun normalizeLeetspeak(value: String): String = buildString(value.length) {
@@ -82,16 +83,86 @@ object PasswordStrengthEvaluator {
 
     private fun hasExcessiveRepetition(value: String): Boolean {
         val codePoints = value.toCodePointStrings()
-        return codePoints.isNotEmpty() &&
-            (
-                codePoints.toSet().size <= (codePoints.size / 3).coerceAtLeast(1) ||
-                    codePoints.windowed(3).any { chunk -> chunk.toSet().size == 1 }
-            )
+        if (codePoints.windowed(REPEATED_RUN_LENGTH).any { chunk -> chunk.distinct().size == 1 }) return true
+
+        val maximumPatternLength = minOf(MAX_REPEATED_PATTERN_LENGTH, codePoints.size / 2)
+        return (1..maximumPatternLength).any { patternLength ->
+            (0..codePoints.size - patternLength * 2).any { startIndex ->
+                var matchedLength = patternLength
+                while (
+                    startIndex + matchedLength < codePoints.size &&
+                    codePoints[startIndex + matchedLength] == codePoints[startIndex + matchedLength % patternLength]
+                ) {
+                    matchedLength++
+                }
+                matchedLength >= maxOf(MIN_REPEATED_PATTERN_SPAN, patternLength * 2)
+            }
+        }
+    }
+
+    private fun hasLikelyWordAndYear(value: String): Boolean =
+        hasLetterRun(value, MIN_WORD_RUN_LENGTH) && hasLikelyYear(value)
+
+    private fun hasLetterRun(value: String, minimumLength: Int): Boolean {
+        var runLength = 0
+        value.forEach { character ->
+            runLength = if (character.isLetter()) runLength + 1 else 0
+            if (runLength >= minimumLength) return true
+        }
+        return false
+    }
+
+    private fun hasLikelyYear(value: String): Boolean {
+        var found = false
+        if (value.length >= YEAR_LENGTH) {
+            for (startIndex in 0..value.length - YEAR_LENGTH) {
+                var year = 0
+                var isAsciiNumber = true
+                for (offset in 0 until YEAR_LENGTH) {
+                    val character = value[startIndex + offset]
+                    if (character !in '0'..'9') {
+                        isAsciiNumber = false
+                        break
+                    }
+                    year = year * DECIMAL_RADIX + (character - '0')
+                }
+                if (isAsciiNumber && year in MIN_LIKELY_YEAR..MAX_LIKELY_YEAR) {
+                    found = true
+                    break
+                }
+            }
+        }
+        return found
     }
 
     private const val MIN_PASSWORD_CODE_POINTS = 8
+    private const val FAIR_LENGTH = 12
+    private const val GOOD_LENGTH = 16
+    private const val STRONG_LENGTH = 20
+    private const val VERY_STRONG_LENGTH = 24
+    private const val MIN_CLASSES_FOR_VARIETY_BONUS = 3
+    private const val MIN_DIVERSITY_RATIO = 0.65
     private const val SEQUENCE_LENGTH = 4
-    private val COMMON_TOKENS = listOf(
+    private const val REPEATED_RUN_LENGTH = 3
+    private const val MAX_REPEATED_PATTERN_LENGTH = 8
+    private const val MIN_REPEATED_PATTERN_SPAN = 8
+    private const val MIN_WORD_RUN_LENGTH = 4
+    private const val YEAR_LENGTH = 4
+    private const val MIN_LIKELY_YEAR = 1900
+    private const val MAX_LIKELY_YEAR = 2099
+    private const val DECIMAL_RADIX = 10
+    private const val COMMON_TERM_PENALTY_BANDS = 2
+    private const val SEQUENCE_PENALTY_BANDS = 1
+    private const val DATE_PATTERN_PENALTY_BANDS = 2
+    private val STRENGTH_SCALE = listOf(
+        PasswordScore.VERY_WEAK,
+        PasswordScore.WEAK,
+        PasswordScore.FAIR,
+        PasswordScore.GOOD,
+        PasswordScore.STRONG,
+        PasswordScore.VERY_STRONG,
+    )
+    private val COMMON_WEAK_TERMS = listOf(
         "password",
         "passvault",
         "letmein",
@@ -101,6 +172,41 @@ object PasswordStrengthEvaluator {
         "secret",
         "monkey",
         "dragon",
+        "qwerty",
+        "iloveyou",
+        "troubador",
+        "trustno",
+        "sunshine",
+        "princess",
+        "football",
+        "baseball",
+        "shadow",
+        "master",
+        "freedom",
+        "whatever",
+        "michael",
+        "jessica",
+        "charlie",
+        "jordan",
+        "daniel",
+        "ferrari",
+        "mustang",
+        "samsung",
+        "winter",
+        "spring",
+        "summer",
+        "autumn",
+        "january",
+        "february",
+        "march",
+        "april",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
     )
     private val SEQUENCES = listOf(
         "abcdefghijklmnopqrstuvwxyz",
