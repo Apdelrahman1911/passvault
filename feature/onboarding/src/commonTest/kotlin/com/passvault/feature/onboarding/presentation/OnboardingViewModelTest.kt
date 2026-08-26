@@ -3,6 +3,7 @@ package com.passvault.feature.onboarding.presentation
 import app.cash.turbine.test
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.error_master_password_invalid
+import com.passvault.core.designsystem.generated.resources.error_master_password_predictable
 import com.passvault.core.designsystem.generated.resources.error_vault_setup_exists
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.domain.model.MasterPasswordPolicy
@@ -89,6 +90,21 @@ class OnboardingViewModelTest {
             (viewModel.state.value.errorMessage as UiText.Resource).resource,
         )
         assertFalse(viewModel.state.value.canContinueToConfirmation)
+    }
+
+    @Test
+    fun `predictable policy-length password is rejected before vault creation`() = runTest(dispatcher) {
+        val viewModel = OnboardingViewModel(repository)
+
+        viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnPasswordChanged("Summer2024!!"))
+        viewModel.onEvent(OnboardingViewModel.OnboardingEvent.OnCreateVaultClick)
+
+        assertEquals(
+            Res.string.error_master_password_predictable,
+            (viewModel.state.value.errorMessage as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canContinueToConfirmation)
+        assertFalse(repository.exists().getOrThrow())
     }
 
     @Test

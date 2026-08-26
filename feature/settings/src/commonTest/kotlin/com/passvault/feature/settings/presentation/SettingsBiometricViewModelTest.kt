@@ -3,6 +3,7 @@ package com.passvault.feature.settings.presentation
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.error_master_password_mismatch
 import com.passvault.core.designsystem.generated.resources.error_master_password_too_long
+import com.passvault.core.designsystem.generated.resources.error_new_password_weak
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.domain.model.MasterPasswordPolicy
 import com.passvault.core.domain.model.codePointLength
@@ -145,6 +146,25 @@ class SettingsBiometricViewModelTest {
             (viewModel.state.value.passwordError as UiText.Resource).resource,
         )
         assertFalse(viewModel.state.value.canChangePassword)
+    }
+
+    @Test
+    fun `predictable policy-length password is rejected before password change`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        runCurrent()
+        val predictablePassword = "Summer2024!!"
+
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnCurrentPasswordChanged("legacy-current-password"))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnNewPasswordChanged(predictablePassword))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnConfirmPasswordChanged(predictablePassword))
+        viewModel.onEvent(SettingsViewModel.SettingsEvent.OnChangePasswordConfirm)
+
+        assertEquals(
+            Res.string.error_new_password_weak,
+            (viewModel.state.value.passwordError as UiText.Resource).resource,
+        )
+        assertFalse(viewModel.state.value.canChangePassword)
+        assertFalse(viewModel.state.value.isChangingPassword)
     }
 
     @Test

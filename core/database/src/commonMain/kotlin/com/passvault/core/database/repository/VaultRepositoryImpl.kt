@@ -112,7 +112,7 @@ class VaultRepositoryImpl(
         withExclusiveSessionTransition {
             if (!MasterPasswordPolicy.accepts(masterPassword)) {
                 return@withExclusiveSessionTransition Result.failure(
-                    IllegalArgumentException("Master password length is invalid"),
+                    IllegalArgumentException("Master password does not meet policy"),
                 )
             }
             if (vaultMetadataDao.exists()) {
@@ -335,7 +335,7 @@ class VaultRepositoryImpl(
     ): Result<Unit> = withExclusiveSessionTransition {
         if (!MasterPasswordPolicy.accepts(newPassword)) {
             return@withExclusiveSessionTransition Result.failure(
-                IllegalArgumentException("New master password length is invalid"),
+                IllegalArgumentException("New master password does not meet policy"),
             )
         }
         if (!MasterPasswordPolicy.acceptsExisting(currentPassword)) {

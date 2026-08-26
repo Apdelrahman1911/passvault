@@ -554,7 +554,6 @@ class SettingsViewModel(
             get() = currentPassword.codePointLength() in 1..MasterPasswordPolicy.MAX_LENGTH &&
                 currentPassword.hasWellFormedUnicode() &&
                 MasterPasswordPolicy.accepts(newPassword) &&
-                PasswordStrengthEvaluator.score(newPassword) >= PasswordScore.FAIR &&
                 passwordsMatch &&
                 !isChangingPassword
 
@@ -685,7 +684,7 @@ private fun passwordChangeValidationError(state: SettingsViewModel.SettingsState
     state.newPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
         uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
     !state.newPassword.hasWellFormedUnicode() -> uiText(Res.string.error_master_password_invalid)
-    PasswordStrengthEvaluator.score(state.newPassword) < PasswordScore.FAIR ->
+    !MasterPasswordPolicy.accepts(state.newPassword) ->
         uiText(Res.string.error_new_password_weak)
     state.confirmPassword.codePointLength() > MasterPasswordPolicy.MAX_LENGTH ->
         uiText(Res.string.error_master_confirmation_too_long)

@@ -7,6 +7,7 @@ import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.DerivedKey
 import com.passvault.core.crypto.DesktopCryptoEngine
 import com.passvault.core.crypto.PaddedPayload
+import com.passvault.core.crypto.WrappedKey
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.backup.VaultBackupService
 import com.passvault.core.database.dao.VaultMetadataDao
@@ -93,10 +94,22 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
     }
 
     @Test
-    fun `master password change rejects a weak replacement without changing the vault`() = runTest {
+    fun `vault creation rejects a predictable policy-length password without persistence`() = runTest {
+        val password = SensitiveText.from("passwordpass")
+
+        try {
+            assertTrue(vaultRepository.create(password).isFailure)
+            assertFalse(database.vaultMetadataDao().exists())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `master password change rejects a predictable replacement without changing the vault`() = runTest {
         createAndUnlockVault()
         val current = SensitiveText.from(TEST_MASTER_PASSWORD)
-        val weak = SensitiveText.from("too-short")
+        val weak = SensitiveText.from("Summer2024!!")
 
         try {
             assertTrue(vaultRepository.changeMasterPassword(current, weak).isFailure)
@@ -105,6 +118,54 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
         } finally {
             current.clear()
             weak.clear()
+        }
+    }
+
+    @Test
+    fun `vault created by an older version with a weak password remains unlockable`() = runTest {
+        val originalPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val legacyPassword = SensitiveText.from("passwordpass")
+        var passwordBytes: ByteArray? = null
+        var vaultKey: ByteArray? = null
+        var derivedKey: DerivedKey? = null
+        var wrappedKey: WrappedKey? = null
+
+        try {
+            assertTrue(vaultRepository.create(originalPassword).isSuccess)
+            assertTrue(vaultRepository.unlock(originalPassword).isSuccess)
+            val activeVaultKey = vaultRepository.withUnlockedSession { it.copyOf() }
+            vaultKey = activeVaultKey
+            assertTrue(vaultRepository.lock().isSuccess)
+
+            val metadata = requireNotNull(database.vaultMetadataDao().get())
+            val encodedPassword = legacyPassword.toUtf8ByteArray()
+            passwordBytes = encodedPassword
+            val derived = cryptoEngine.deriveKey(
+                password = encodedPassword,
+                salt = metadata.argon2Salt,
+                opsLimit = metadata.argon2OpsLimit,
+                memLimit = metadata.argon2MemLimit,
+            ).getOrThrow()
+            derivedKey = derived
+            val wrapped = com.passvault.core.crypto.VaultKeyHierarchy(cryptoEngine)
+                .wrapVEK(activeVaultKey, derived.key)
+                .getOrThrow()
+            wrappedKey = wrapped
+            database.vaultMetadataDao().update(
+                metadata.copy(
+                    wrappedVek = wrapped.ciphertext.copyOf(),
+                    vekNonce = wrapped.nonce.copyOf(),
+                ),
+            )
+
+            assertTrue(vaultRepository.unlock(legacyPassword).isSuccess)
+        } finally {
+            passwordBytes?.let(cryptoEngine::secureWipe)
+            vaultKey?.let(cryptoEngine::secureWipe)
+            derivedKey?.clear()
+            wrappedKey?.clear()
+            originalPassword.clear()
+            legacyPassword.clear()
         }
     }
 
