@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.CryptoEngine
+import com.passvault.core.crypto.DerivedKey
 import com.passvault.core.crypto.DesktopCryptoEngine
 import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.database.VaultDatabase
@@ -42,14 +43,21 @@ import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.time.Instant
 import kotlin.test.AfterTest
@@ -981,6 +989,292 @@ class RepositoryTotpSecurityIntegrationTest : RepositorySecurityIntegrationFixtu
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
+class VaultUnlockPreemptionIntegrationTest : RepositorySecurityIntegrationFixture() {
+
+    @Test
+    fun `lock intent during last-access write is linearized before session publication`() = runTest {
+        val metadataDao = GatedLastAccessVaultMetadataDao(database.vaultMetadataDao())
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = metadataDao,
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val observedStates = mutableListOf<VaultSessionState>()
+        val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.getSessionState().collect(observedStates::add)
+        }
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            observedStates.clear()
+            val unlock = async { repository.unlock(password) }
+            metadataDao.updateStarted.await()
+
+            val locking = async { repository.lock(LockReason.Background) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            metadataDao.allowUpdate.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+            assertTrue(requireNotNull(engine.lastUnwrappedVaultKey).all { it == 0.toByte() })
+        } finally {
+            metadataDao.allowUpdate.complete(Unit)
+            collector.cancel()
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `password unlock cannot publish a session after lock intent is registered`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val observedStates = mutableListOf<VaultSessionState>()
+        val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.getSessionState().collect(observedStates::add)
+        }
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            observedStates.clear()
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(password) }
+            gate.started.await()
+
+            val locking = async { repository.lock(LockReason.Background) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(repository.isUnlocked())
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+            assertTrue(requireNotNull(engine.lastUnwrappedVaultKey).all { it == 0.toByte() })
+        } finally {
+            collector.cancel()
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `biometric unlock cannot publish a session after lock intent is registered`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        var vaultKey: ByteArray? = null
+        val observedStates = mutableListOf<VaultSessionState>()
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            vaultKey = repository.withUnlockedSession { it.copyOf() }
+            assertTrue(repository.lock().isSuccess)
+            val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.getSessionState().collect(observedStates::add)
+            }
+            observedStates.clear()
+
+            val gate = engine.gateNextVerification()
+            val unlock = async {
+                repository.unlockWithBiometricKey(requireNotNull(vaultKey))
+            }
+            gate.started.await()
+            val locking = async { repository.lock(LockReason.AutoLock) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(repository.isUnlocked())
+            assertEquals(
+                VaultSessionState.Locked(LockReason.AutoLock),
+                repository.getSessionState().first(),
+            )
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+            assertTrue(requireNotNull(engine.lastVerificationKey).all { it == 0.toByte() })
+            collector.cancel()
+        } finally {
+            vaultKey?.let(cryptoEngine::secureWipe)
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `lock and run preempts an in-flight unlock before protected work`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        var protectedWorkRan = false
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(password) }
+            gate.started.await()
+            val lockAndRun = async {
+                runCatching {
+                    repository.lockAndRun(LockReason.Restore) {
+                        protectedWorkRan = true
+                    }
+                }
+            }
+            runCurrent()
+            assertFalse(lockAndRun.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(lockAndRun.await().isFailure)
+            assertFalse(protectedWorkRan)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Restore),
+                repository.getSessionState().first(),
+            )
+        } finally {
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `overlapping lock intents both preempt unlock and are fully released`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(password) }
+            gate.started.await()
+            val backgroundLock = async { repository.lock(LockReason.Background) }
+            val autoLock = async { repository.lock(LockReason.AutoLock) }
+            runCurrent()
+            assertFalse(backgroundLock.isCompleted)
+            assertFalse(autoLock.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(backgroundLock.await().isSuccess)
+            assertTrue(autoLock.await().isSuccess)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.AutoLock),
+                repository.getSessionState().first(),
+            )
+            assertTrue(repository.unlock(password).isSuccess)
+        } finally {
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `lock reason remains authoritative when the preempted unlock also fails authentication`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val correctPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val wrongPassword = SensitiveText.from("wrong password value")
+        try {
+            assertTrue(repository.create(correctPassword).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(wrongPassword) }
+            gate.started.await()
+            val locking = async { repository.lock(LockReason.Background) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+        } finally {
+            repository.lock()
+            correctPassword.clear()
+            wrongPassword.clear()
+        }
+    }
+
+    @Test
+    fun `lock during password throttle preempts unlock without adding a failed attempt`() = runTest {
+        val wrongPassword = SensitiveText.from("wrong password value")
+        val correctPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val observedStates = mutableListOf<VaultSessionState>()
+        try {
+            assertTrue(vaultRepository.create(correctPassword).isSuccess)
+            repeat(3) {
+                assertTrue(vaultRepository.unlock(wrongPassword).isFailure)
+            }
+            val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                vaultRepository.getSessionState().collect(observedStates::add)
+            }
+            observedStates.clear()
+
+            val unlock = async { vaultRepository.unlock(correctPassword) }
+            runCurrent()
+            assertFalse(unlock.isCompleted)
+            val locking = async { vaultRepository.lock(LockReason.AutoLock) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+
+            advanceTimeBy(501)
+            advanceUntilIdle()
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+
+            val nextUnlock = async { vaultRepository.unlock(correctPassword) }
+            runCurrent()
+            assertFalse(nextUnlock.isCompleted)
+            advanceTimeBy(501)
+            runCurrent()
+            assertTrue(
+                nextUnlock.isCompleted || vaultRepository.getSessionState().first() is VaultSessionState.Unlocking,
+                "A preempted unlock must not add another failed-attempt delay",
+            )
+            assertTrue(nextUnlock.await().isSuccess)
+            collector.cancel()
+        } finally {
+            vaultRepository.lock()
+            wrongPassword.clear()
+            correctPassword.clear()
+        }
+    }
+
+}
+
 class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
     @Test
     fun `biometric key opens a session only after vault verification succeeds`() = runTest {
@@ -1388,6 +1682,82 @@ class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
         } finally {
             password.clear()
         }
+    }
+}
+
+private class GatedUnlockCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    private var derivedKeyCalls = 0
+    private var passwordGate: UnlockGate? = null
+    private var verificationGate: UnlockGate? = null
+
+    var lastUnwrappedVaultKey: ByteArray? = null
+        private set
+    var lastVerificationKey: ByteArray? = null
+        private set
+
+    fun gateNextPasswordDerivation(): UnlockGate = UnlockGate().also { passwordGate = it }
+
+    fun gateNextVerification(): UnlockGate = UnlockGate().also { verificationGate = it }
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        derivedKeyCalls++
+        passwordGate?.takeIf { derivedKeyCalls > 1 }?.let { gate ->
+            passwordGate = null
+            gate.started.complete(Unit)
+            gate.release.await()
+        }
+        return delegate.deriveKey(password, salt, opsLimit, memLimit)
+    }
+
+    override suspend fun decrypt(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): Result<ByteArray> {
+        if (associatedData?.contentEquals(VERIFICATION_ASSOCIATED_DATA) == true) {
+            lastVerificationKey = key
+            verificationGate?.let { gate ->
+                verificationGate = null
+                gate.started.complete(Unit)
+                gate.release.await()
+            }
+        }
+        val result = delegate.decrypt(ciphertext, nonce, key, associatedData)
+        if (associatedData?.contentEquals(VEK_WRAP_ASSOCIATED_DATA) == true) {
+            lastUnwrappedVaultKey = result.getOrNull()
+        }
+        return result
+    }
+
+    class UnlockGate {
+        val started = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+    }
+
+    private companion object {
+        val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
+        val VERIFICATION_ASSOCIATED_DATA = "verification".encodeToByteArray()
+    }
+}
+
+private class GatedLastAccessVaultMetadataDao(
+    private val delegate: VaultMetadataDao,
+) : VaultMetadataDao by delegate {
+    val updateStarted = CompletableDeferred<Unit>()
+    val allowUpdate = CompletableDeferred<Unit>()
+
+    override suspend fun updateLastAccessed(timestamp: Long) {
+        updateStarted.complete(Unit)
+        allowUpdate.await()
+        delegate.updateLastAccessed(timestamp)
     }
 }
 

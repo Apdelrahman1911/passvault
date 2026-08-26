@@ -57,6 +57,7 @@ class VaultRepositoryImpl(
     private val transitionMutex = Mutex()
     private val sessionMutex = Mutex()
     private val operationMutex = Mutex()
+    private val lockIntents = LockIntentTracker()
     private val _sessionState = MutableStateFlow<VaultSessionState>(VaultSessionState.Uninitialized)
 
     private var currentVek: ByteArray? = null
@@ -210,6 +211,12 @@ class VaultRepositoryImpl(
             if (_sessionState.value is VaultSessionState.Unlocked && currentVek != null) {
                 return@withExclusiveSessionTransition Result.failure(IllegalStateException("Vault already unlocked"))
             }
+            val unlockGeneration = try {
+                lockIntents.snapshotGeneration()
+            } catch (preempted: UnlockPreemptedException) {
+                _sessionState.value = VaultSessionState.Locked(preempted.reason)
+                return@withExclusiveSessionTransition preemptedUnlockResult()
+            }
 
             currentVek?.let { cryptoEngine.secureWipe(it) }
             currentVek = null
@@ -226,12 +233,15 @@ class VaultRepositoryImpl(
                 validateMetadataForUnlock(metadata)
                 candidateVek = unwrapVaultKey(metadata, masterPassword)
                 verifyVaultKey(metadata, candidateVek)
-                val sessionId = openSession(candidateVek)
+                val sessionId = openSession(candidateVek, unlockGeneration)
                 failedAttempts = 0
                 Result.success(sessionId)
             } catch (cancel: CancellationException) {
                 _sessionState.value = VaultSessionState.Locked()
                 throw cancel
+            } catch (preempted: UnlockPreemptedException) {
+                _sessionState.value = VaultSessionState.Locked(preempted.reason)
+                preemptedUnlockResult()
             } catch (_: Exception) {
                 failedAttempts = (failedAttempts + 1).coerceAtMost(MAX_FAILED_ATTEMPTS)
                 _sessionState.value = VaultSessionState.Locked()
@@ -263,6 +273,12 @@ class VaultRepositoryImpl(
                 // mistakes the still-valid biometric key for an invalid one.
                 return@withExclusiveSessionTransition Result.success(activeSession.sessionId)
             }
+            val unlockGeneration = try {
+                lockIntents.snapshotGeneration()
+            } catch (preempted: UnlockPreemptedException) {
+                _sessionState.value = VaultSessionState.Locked(preempted.reason)
+                return@withExclusiveSessionTransition preemptedUnlockResult()
+            }
 
             currentVek?.let { cryptoEngine.secureWipe(it) }
             currentVek = null
@@ -274,12 +290,15 @@ class VaultRepositoryImpl(
                 validateMetadataForUnlock(metadata)
                 candidateVek = vaultKey.copyOf()
                 verifyBiometricVaultKey(metadata, candidateVek)
-                val sessionId = openSession(candidateVek)
+                val sessionId = openSession(candidateVek, unlockGeneration)
                 failedAttempts = 0
                 Result.success(sessionId)
             } catch (cancel: CancellationException) {
                 _sessionState.value = VaultSessionState.Locked()
                 throw cancel
+            } catch (preempted: UnlockPreemptedException) {
+                _sessionState.value = VaultSessionState.Locked(preempted.reason)
+                preemptedUnlockResult()
             } catch (rejected: BiometricVaultKeyRejectedException) {
                 _sessionState.value = VaultSessionState.Locked()
                 Result.failure(rejected)
@@ -296,11 +315,16 @@ class VaultRepositoryImpl(
         // Once the transition starts, caller cancellation must not leave the
         // repository-owned key or a tracked lease live in memory.
         return withContext(NonCancellable) {
-            val snapshot = requestLock(reason, requireUnlocked = false)
-                ?: return@withContext Result.success(Unit)
-            cancelLeaseOperations(snapshot)
-            transitionMutex.withLock {
-                completeLock(snapshot, reason, requireLeaseSettlement = false)
+            val intent = lockIntents.register(reason)
+            try {
+                val snapshot = requestLock(reason, requireUnlocked = false)
+                    ?: return@withContext Result.success(Unit)
+                cancelLeaseOperations(snapshot)
+                transitionMutex.withLock {
+                    completeLock(snapshot, reason, requireLeaseSettlement = false)
+                }
+            } finally {
+                lockIntents.release(intent)
             }
         }
     }
@@ -442,8 +466,10 @@ class VaultRepositoryImpl(
     ): T {
         cancelBiometricPromptBeforeLock()
         var transitionAcquired = false
+        var lockIntent: LockIntentTracker.Intent? = null
         try {
             withContext(NonCancellable) {
+                lockIntent = lockIntents.register(reason)
                 val snapshot = requestLock(reason, requireUnlocked = true)
                     ?: throw VaultSessionLockedException()
                 cancelLeaseOperations(snapshot)
@@ -453,7 +479,13 @@ class VaultRepositoryImpl(
             }
             return operationMutex.withLock { block() }
         } finally {
-            if (transitionAcquired) transitionMutex.unlock()
+            try {
+                lockIntent?.let { intent ->
+                    withContext(NonCancellable) { lockIntents.release(intent) }
+                }
+            } finally {
+                if (transitionAcquired) transitionMutex.unlock()
+            }
         }
     }
 
@@ -510,6 +542,7 @@ class VaultRepositoryImpl(
             throw VaultSessionLockedException()
         }
         if (!requireUnlocked && currentVek == null && _sessionState.value is VaultSessionState.Locked) {
+            _sessionState.value = VaultSessionState.Locked(reason)
             return@withLock null
         }
         _sessionState.value = VaultSessionState.Locking(reason)
@@ -571,6 +604,9 @@ class VaultRepositoryImpl(
         val leases: List<SessionLease>,
         var wipeFailure: Throwable?,
     )
+
+    private fun preemptedUnlockResult(): Result<SessionId> =
+        Result.failure(IllegalStateException("Unlock was superseded by a lock request"))
 
     private suspend fun <T> withExclusiveSessionTransition(block: suspend () -> T): T =
         transitionMutex.withLock {
@@ -642,13 +678,16 @@ class VaultRepositoryImpl(
         }
     }
 
-    private suspend fun openSession(vaultKey: ByteArray): SessionId {
+    private suspend fun openSession(vaultKey: ByteArray, expectedLockGeneration: Long): SessionId {
         require(vaultKey.size == VEK_BYTES)
+        lockIntents.verify(expectedLockGeneration)
         vaultMetadataDao.updateLastAccessed(Clock.System.now().toEpochMilliseconds())
-        val sessionId = SessionId("session-${kotlin.uuid.Uuid.random()}")
-        currentVek = vaultKey.copyOf()
-        _sessionState.value = VaultSessionState.Unlocked(sessionId)
-        return sessionId
+        return lockIntents.commit(expectedLockGeneration) {
+            val sessionId = SessionId("session-${kotlin.uuid.Uuid.random()}")
+            currentVek = vaultKey.copyOf()
+            _sessionState.value = VaultSessionState.Unlocked(sessionId)
+            sessionId
+        }
     }
 
     private fun validateMetadataForUnlock(metadata: VaultMetadataEntity) {
@@ -701,3 +740,43 @@ interface VaultSessionManager {
 internal class VaultSessionLockedException : IllegalStateException("Vault not unlocked")
 
 internal class BiometricVaultKeyRejectedException : IllegalStateException("Biometric vault key was rejected")
+
+private class LockIntentTracker {
+    private val mutex = Mutex()
+    private var generation = 0L
+    private var nextIntentId = 0L
+    private val pending = linkedMapOf<Long, LockReason>()
+
+    data class Intent(val id: Long)
+
+    suspend fun register(reason: LockReason): Intent = mutex.withLock {
+        generation++
+        Intent(id = ++nextIntentId).also { pending[it.id] = reason }
+    }
+
+    suspend fun release(intent: Intent) = mutex.withLock {
+        check(pending.remove(intent.id) != null) { "Lock intent was already released" }
+    }
+
+    suspend fun snapshotGeneration(): Long = mutex.withLock {
+        pending.values.lastOrNull()?.let { throw UnlockPreemptedException(it) }
+        generation
+    }
+
+    suspend fun verify(expectedGeneration: Long) = mutex.withLock {
+        requireCurrentGeneration(expectedGeneration)
+    }
+
+    suspend fun <T> commit(expectedGeneration: Long, block: () -> T): T = mutex.withLock {
+        requireCurrentGeneration(expectedGeneration)
+        block()
+    }
+
+    private fun requireCurrentGeneration(expectedGeneration: Long) {
+        if (generation != expectedGeneration || pending.isNotEmpty()) {
+            throw UnlockPreemptedException(pending.values.lastOrNull())
+        }
+    }
+}
+
+private class UnlockPreemptedException(val reason: LockReason?) : IllegalStateException("Unlock preempted")
