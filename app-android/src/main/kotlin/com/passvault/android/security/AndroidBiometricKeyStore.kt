@@ -14,7 +14,9 @@ import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricCapability
 import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.BiometricKeyStoreException
+import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -30,7 +32,6 @@ import javax.crypto.AEADBadTagException
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import kotlin.coroutines.resume
 
 /**
  * Protects the VEK with a non-exportable Android Keystore key whose every use
@@ -41,20 +42,40 @@ import kotlin.coroutines.resume
  */
 class AndroidBiometricKeyStore(
     private val context: Context,
-) : BiometricKeyStore {
+) : BiometricKeyStore, BiometricPromptController {
     private val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     private val mutex = Mutex()
+    private val activityLock = Any()
+    private val mainExecutor by lazy { ContextCompat.getMainExecutor(context) }
+    private val promptCoordinator = AndroidBiometricPromptCoordinator { action ->
+        mainExecutor.execute { action() }
+    }
 
     @Volatile
     private var attachedActivity: FragmentActivity? = null
 
     fun attach(activity: FragmentActivity) {
-        attachedActivity = activity
+        val replacedCurrentHost = synchronized(activityLock) {
+            val replaced = attachedActivity != null && attachedActivity !== activity
+            attachedActivity = activity
+            replaced
+        }
+        if (replacedCurrentHost) cancelActive()
     }
 
     fun detach(activity: FragmentActivity) {
-        if (attachedActivity === activity) attachedActivity = null
+        val detachedCurrentHost = synchronized(activityLock) {
+            if (attachedActivity === activity) {
+                attachedActivity = null
+                true
+            } else {
+                false
+            }
+        }
+        if (detachedCurrentHost) cancelActive()
     }
+
+    override fun cancelActive() = promptCoordinator.cancelActive()
 
     override suspend fun getCapability(): BiometricCapability {
         val availability = failClosedBiometricBoundary(
@@ -90,53 +111,73 @@ class AndroidBiometricKeyStore(
     }
 
     override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> =
-        mutex.withLock {
-            withContext(Dispatchers.IO) {
-                if (vaultKey.size != VAULT_KEY_BYTES) {
-                    return@withContext Result.failure(BiometricKeyStoreException.AuthenticationFailed())
-                }
-                when (getCapability().availability) {
-                    BiometricAvailability.AVAILABLE -> Unit
-                    BiometricAvailability.NOT_ENROLLED -> {
-                        return@withContext Result.failure(BiometricKeyStoreException.NotEnrolled())
-                    }
-                    BiometricAvailability.LOCKED_OUT -> {
-                        return@withContext Result.failure(BiometricKeyStoreException.LockedOut())
-                    }
-                    BiometricAvailability.UNAVAILABLE -> {
-                        return@withContext Result.failure(BiometricKeyStoreException.NotAvailable())
-                    }
-                }
-
-                val suffix = vaultSuffix(vaultId)
-                failClosedBiometricBoundary(
-                    operation = {
-                        deleteLocked(suffix)
-                        val secretKey = generateKey(alias(suffix))
-                        val cipher = Cipher.getInstance(TRANSFORMATION).apply {
-                            init(Cipher.ENCRYPT_MODE, secretKey)
-                        }
-                        val authenticatedCipher = authenticate(cipher).getOrThrow()
-                        val ciphertext = authenticatedCipher.doFinal(vaultKey)
-                        val iv = authenticatedCipher.iv
-                        check(iv.isNotEmpty() && ciphertext.isNotEmpty())
-                        val preferencesCommitted = preferences.edit()
-                            .putString(ciphertextKey(suffix), ciphertext.toBase64())
-                            .putString(ivKey(suffix), iv.toBase64())
-                            .commit()
-                        check(preferencesCommitted) { "Biometric preferences could not be persisted" }
-                        Result.success(Unit)
-                    },
-                    onFailure = { error ->
-                        deleteBestEffortLocked(suffix)
-                        Result.failure(error.toBiometricException())
-                    },
-                    onCancellation = { deleteBestEffortLocked(suffix) },
-                )
-            }
+        promptCoordinator.withOperation(
+            onBusy = { Result.failure(BiometricKeyStoreException.Cancelled()) },
+        ) { promptOperation ->
+            enrollReserved(vaultId, vaultKey, promptOperation)
         }
 
-    override suspend fun retrieve(vaultId: String): Result<ByteArray> {
+    private suspend fun enrollReserved(
+        vaultId: String,
+        vaultKey: ByteArray,
+        promptOperation: AndroidBiometricPromptCoordinator.Operation,
+    ): Result<Unit> = mutex.withLock {
+        withContext(Dispatchers.IO) {
+            if (vaultKey.size != VAULT_KEY_BYTES) {
+                return@withContext Result.failure(BiometricKeyStoreException.AuthenticationFailed())
+            }
+            when (getCapability().availability) {
+                BiometricAvailability.AVAILABLE -> Unit
+                BiometricAvailability.NOT_ENROLLED -> {
+                    return@withContext Result.failure(BiometricKeyStoreException.NotEnrolled())
+                }
+                BiometricAvailability.LOCKED_OUT -> {
+                    return@withContext Result.failure(BiometricKeyStoreException.LockedOut())
+                }
+                BiometricAvailability.UNAVAILABLE -> {
+                    return@withContext Result.failure(BiometricKeyStoreException.NotAvailable())
+                }
+            }
+
+            val suffix = vaultSuffix(vaultId)
+            failClosedBiometricBoundary(
+                operation = {
+                    deleteLocked(suffix)
+                    val secretKey = generateKey(alias(suffix))
+                    val cipher = Cipher.getInstance(TRANSFORMATION).apply {
+                        init(Cipher.ENCRYPT_MODE, secretKey)
+                    }
+                    val authenticatedCipher = authenticate(cipher, promptOperation).getOrThrow()
+                    val ciphertext = authenticatedCipher.doFinal(vaultKey)
+                    val iv = authenticatedCipher.iv
+                    check(iv.isNotEmpty() && ciphertext.isNotEmpty())
+                    val preferencesCommitted = preferences.edit()
+                        .putString(ciphertextKey(suffix), ciphertext.toBase64())
+                        .putString(ivKey(suffix), iv.toBase64())
+                        .commit()
+                    check(preferencesCommitted) { "Biometric preferences could not be persisted" }
+                    Result.success(Unit)
+                },
+                onFailure = { error ->
+                    deleteBestEffortLocked(suffix)
+                    Result.failure(error.toBiometricException())
+                },
+                onCancellation = { deleteBestEffortLocked(suffix) },
+            )
+        }
+    }
+
+    override suspend fun retrieve(vaultId: String): Result<ByteArray> =
+        promptCoordinator.withOperation(
+            onBusy = { Result.failure(BiometricKeyStoreException.Cancelled()) },
+        ) { promptOperation ->
+            retrieveReserved(vaultId, promptOperation)
+        }
+
+    private suspend fun retrieveReserved(
+        vaultId: String,
+        promptOperation: AndroidBiometricPromptCoordinator.Operation,
+    ): Result<ByteArray> {
         var producedKey: ByteArray? = null
         var transferredToCaller = false
         return try {
@@ -157,7 +198,7 @@ class AndroidBiometricKeyStore(
                             val cipher = Cipher.getInstance(TRANSFORMATION).apply {
                                 init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(GCM_TAG_BITS, iv))
                             }
-                            val authenticatedCipher = authenticate(cipher).getOrThrow()
+                            val authenticatedCipher = authenticate(cipher, promptOperation).getOrThrow()
                             val vaultKey = authenticatedCipher.doFinal(ciphertext)
                             if (vaultKey.size == VAULT_KEY_BYTES) {
                                 producedKey = vaultKey
@@ -200,18 +241,28 @@ class AndroidBiometricKeyStore(
         }
     }
 
-    private suspend fun authenticate(cipher: Cipher): Result<Cipher> = withContext(Dispatchers.Main) {
+    @Suppress("TooGenericExceptionCaught") // Provider-specific prompt launch failures must clear the active operation.
+    private suspend fun authenticate(
+        cipher: Cipher,
+        operation: AndroidBiometricPromptCoordinator.Operation,
+    ): Result<Cipher> = withContext(Dispatchers.Main) {
         val activity = attachedActivity
             ?: return@withContext Result.failure(BiometricKeyStoreException.NotAvailable())
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(context.getString(com.passvault.android.R.string.app_name))
+            .setSubtitle(context.getString(com.passvault.android.R.string.biometric_prompt_subtitle))
+            .setAllowedAuthenticators(AUTHENTICATORS)
+            .setNegativeButtonText(context.getString(android.R.string.cancel))
+            .build()
         suspendCancellableCoroutine { continuation ->
             val prompt = BiometricPrompt(
                 activity,
-                ContextCompat.getMainExecutor(context),
+                mainExecutor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         val authenticatedCipher = result.cryptoObject?.cipher
-                        if (continuation.isActive) {
-                            continuation.resume(
+                        if (promptCoordinator.finishPrompt(operation)) {
+                            continuation.resumeIfPending(
                                 authenticatedCipher?.let(Result.Companion::success)
                                     ?: Result.failure(BiometricKeyStoreException.AuthenticationFailed()),
                             )
@@ -219,20 +270,30 @@ class AndroidBiometricKeyStore(
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        if (continuation.isActive) {
-                            continuation.resume(Result.failure(errorCode.toBiometricException()))
+                        if (promptCoordinator.finishPrompt(operation)) {
+                            continuation.resumeIfPending(Result.failure(errorCode.toBiometricException()))
                         }
                     }
                 },
             )
-            continuation.invokeOnCancellation { prompt.cancelAuthentication() }
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle(context.getString(com.passvault.android.R.string.app_name))
-                .setSubtitle(context.getString(com.passvault.android.R.string.biometric_prompt_subtitle))
-                .setAllowedAuthenticators(AUTHENTICATORS)
-                .setNegativeButtonText(context.getString(android.R.string.cancel))
-                .build()
-            prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+            continuation.invokeOnCancellation { promptCoordinator.cancel(operation) }
+            if (
+                promptCoordinator.activate(
+                    operation = operation,
+                    cancelAuthentication = prompt::cancelAuthentication,
+                    reportCancelled = {
+                        continuation.resumeIfPending(Result.failure(BiometricKeyStoreException.Cancelled()))
+                    },
+                )
+            ) {
+                try {
+                    prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+                } catch (error: Exception) {
+                    if (promptCoordinator.finishPrompt(operation)) {
+                        continuation.resumeIfPending(Result.failure(error.toBiometricException()))
+                    }
+                }
+            }
         }
     }
 
@@ -258,6 +319,10 @@ class AndroidBiometricKeyStore(
             // SharedPreferences can report an unsuccessful synchronous commit.
         }
     }
+}
+
+private fun <T> CancellableContinuation<T>.resumeIfPending(value: T) {
+    resume(value) { _, _, _ -> }
 }
 
 private fun generateKey(keyAlias: String): SecretKey {
