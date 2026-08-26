@@ -8,7 +8,6 @@ import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.domain.model.hasOnlySafeSingleLineCodePoints
 import kotlin.text.CharacterCodingException
 import kotlin.time.Instant
-import okio.ByteString.Companion.toByteString
 
 interface TotpService {
     fun parse(
@@ -52,7 +51,7 @@ class StandardTotpService : TotpService {
         val counterBytes = ByteArray(COUNTER_BYTES)
         var digestBytes: ByteArray? = null
         try {
-            val decodedSecret = Base32Codec.decode(secretCharacters.concatToString())
+            val decodedSecret = Base32Codec.decode(secretCharacters)
                 ?: throw IllegalArgumentException("Invalid TOTP configuration")
             secretBytes = decodedSecret
             require(decodedSecret.size in MIN_SECRET_BYTES..MAX_SECRET_BYTES) {
@@ -69,14 +68,7 @@ class StandardTotpService : TotpService {
                 remainingCounter = remainingCounter ushr BITS_PER_BYTE
             }
 
-            val message = counterBytes.toByteString()
-            val key = decodedSecret.toByteString()
-            val digest = when (configuration.algorithm) {
-                TotpAlgorithm.SHA1 -> message.hmacSha1(key)
-                TotpAlgorithm.SHA256 -> message.hmacSha256(key)
-                TotpAlgorithm.SHA512 -> message.hmacSha512(key)
-            }
-            digestBytes = digest.toByteArray()
+            digestBytes = calculateTotpHmac(configuration.algorithm, decodedSecret, counterBytes)
             val offset = digestBytes.last().toInt() and DYNAMIC_TRUNCATION_MASK
             require(offset + DYNAMIC_TRUNCATION_BYTES <= digestBytes.size) {
                 "Invalid TOTP digest"
@@ -238,11 +230,13 @@ private class TotpEnrollmentParser {
     ): TotpConfiguration {
         val normalizedSecret = Base32Codec.normalize(rawSecret)
             ?: rejectEnrollment(TotpParseError.INVALID_SECRET)
-        val decoded = Base32Codec.decode(normalizedSecret)
-            ?: rejectEnrollment(TotpParseError.INVALID_SECRET)
+        var decoded: ByteArray? = null
         return try {
+            val decodedSecret = Base32Codec.decode(normalizedSecret)
+                ?: rejectEnrollment(TotpParseError.INVALID_SECRET)
+            decoded = decodedSecret
             ensureEnrollment(
-                decoded.size in MIN_SECRET_BYTES..MAX_SECRET_BYTES,
+                decodedSecret.size in MIN_SECRET_BYTES..MAX_SECRET_BYTES,
                 TotpParseError.INVALID_SECRET,
             )
             TotpConfiguration(
@@ -254,7 +248,8 @@ private class TotpEnrollmentParser {
                 periodSeconds = periodSeconds,
             )
         } finally {
-            decoded.fill(0)
+            normalizedSecret.fill('\u0000')
+            decoded?.fill(0)
         }
     }
 
@@ -279,48 +274,28 @@ private class TotpEnrollmentParser {
     }
 }
 
-private object Base32Codec {
-    fun normalize(input: String): String? {
-        val withoutWhitespace = buildString(input.length) {
-            input.forEach { character ->
-                when {
-                    character.isWhitespace() -> Unit
-                    character in 'a'..'z' -> append(character.uppercaseChar())
-                    else -> append(character)
-                }
-            }
+internal object Base32Codec {
+    fun normalize(input: String): CharArray? {
+        val shape = analyze(input.length, input::get) ?: return null
+        val normalized = CharArray(shape.dataCharacters)
+        var outputIndex = 0
+        input.forEach { character ->
+            val value = character.base32Value()
+            if (value >= 0) normalized[outputIndex++] = BASE32_ALPHABET[value]
         }
-        val firstPadding = withoutWhitespace.indexOf('=')
-        val normalized = if (firstPadding >= 0) {
-            withoutWhitespace.substring(0, firstPadding)
-        } else {
-            withoutWhitespace
-        }
-        val hasOnlyTrailingPadding = firstPadding < 0 ||
-            withoutWhitespace.drop(firstPadding).all { it == '=' }
-        val hasCanonicalPadding = firstPadding < 0 || run {
-            val paddingLength = withoutWhitespace.length - firstPadding
-            val expectedPadding = (BASE32_BLOCK_CHARACTERS - normalized.length % BASE32_BLOCK_CHARACTERS) %
-                BASE32_BLOCK_CHARACTERS
-            paddingLength == expectedPadding && withoutWhitespace.length % BASE32_BLOCK_CHARACTERS == 0
-        }
-        return normalized.takeIf { value ->
-            value.isNotEmpty() &&
-                value.length % BASE32_BLOCK_CHARACTERS in VALID_BASE32_REMAINDERS &&
-                value.all { it in BASE32_ALPHABET } &&
-                hasOnlyTrailingPadding &&
-                hasCanonicalPadding
-        }
+        return normalized
     }
 
-    fun decode(input: String): ByteArray? {
-        val normalized = normalize(input) ?: return null
-        val output = ByteArray((normalized.length * BASE32_BITS_PER_CHARACTER) / BITS_PER_BYTE)
+    fun decode(input: CharArray): ByteArray? {
+        val shape = analyze(input.size, input::get) ?: return null
+        val output = ByteArray((shape.dataCharacters * BASE32_BITS_PER_CHARACTER) / BITS_PER_BYTE)
         var outputIndex = 0
         var buffer = 0
         var bitsInBuffer = 0
-        normalized.forEach { character ->
-            buffer = (buffer shl BASE32_BITS_PER_CHARACTER) or BASE32_ALPHABET.indexOf(character)
+        input.forEach { character ->
+            val value = character.base32Value()
+            if (value < 0) return@forEach
+            buffer = (buffer shl BASE32_BITS_PER_CHARACTER) or value
             bitsInBuffer += BASE32_BITS_PER_CHARACTER
             while (bitsInBuffer >= BITS_PER_BYTE) {
                 bitsInBuffer -= BITS_PER_BYTE
@@ -334,6 +309,53 @@ private object Base32Codec {
             output.fill(0)
             null
         }
+    }
+
+    private inline fun analyze(length: Int, characterAt: (Int) -> Char): Base32Shape? {
+        val shape = scan(length, characterAt) ?: return null
+        return shape.takeIf { it.hasValidLength() && it.hasCanonicalPadding() }
+    }
+
+    private inline fun scan(length: Int, characterAt: (Int) -> Char): Base32Shape? {
+        var dataCharacters = 0
+        var paddingCharacters = 0
+        var paddingStarted = false
+        for (index in 0 until length) {
+            val character = characterAt(index)
+            when {
+                character.isWhitespace() -> Unit
+                character == '=' -> {
+                    paddingStarted = true
+                    paddingCharacters++
+                }
+                paddingStarted || character.base32Value() < 0 -> return null
+                else -> dataCharacters++
+            }
+        }
+        return Base32Shape(dataCharacters, paddingCharacters)
+    }
+
+    private fun Char.base32Value(): Int = when (this) {
+        in 'A'..'Z' -> code - 'A'.code
+        in 'a'..'z' -> code - 'a'.code
+        in '2'..'7' -> code - '2'.code + BASE32_LETTER_VALUES
+        else -> -1
+    }
+}
+
+private data class Base32Shape(
+    val dataCharacters: Int,
+    val paddingCharacters: Int,
+) {
+    fun hasValidLength(): Boolean = dataCharacters > 0 &&
+        dataCharacters % BASE32_BLOCK_CHARACTERS in VALID_BASE32_REMAINDERS
+
+    fun hasCanonicalPadding(): Boolean = paddingCharacters == 0 || run {
+        val expectedPadding =
+            (BASE32_BLOCK_CHARACTERS - dataCharacters % BASE32_BLOCK_CHARACTERS) %
+                BASE32_BLOCK_CHARACTERS
+        val compactLength = dataCharacters + paddingCharacters
+        paddingCharacters == expectedPadding && compactLength % BASE32_BLOCK_CHARACTERS == 0
     }
 }
 
@@ -465,6 +487,7 @@ private const val COUNTER_BYTES = 8
 private const val BITS_PER_BYTE = 8
 private const val BASE32_BITS_PER_CHARACTER = 5
 private const val BASE32_BLOCK_CHARACTERS = 8
+private const val BASE32_LETTER_VALUES = 26
 private const val PERCENT_ENCODED_LENGTH = 3
 private const val HEX_RADIX = 16
 private const val BYTE_MASK = 0xffL

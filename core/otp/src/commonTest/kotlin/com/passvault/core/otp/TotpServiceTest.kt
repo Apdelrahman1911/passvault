@@ -4,8 +4,10 @@ import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.TotpAlgorithm
 import com.passvault.core.domain.model.TotpConfiguration
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -196,6 +198,79 @@ class TotpServiceTest {
         }
     }
 
+    @Test
+    fun `mutable Base32 decoder preserves supported normalization and padding`() {
+        val cases = listOf(
+            "MY======" to "f",
+            "MZXQ====" to "fo",
+            "MZXW6===" to "foo",
+            "MZXW6YQ=" to "foob",
+            "MZXW6YTB" to "fooba",
+            " mzxw 6ytb oi====== " to "foobar",
+        )
+
+        cases.forEach { (encoded, expected) ->
+            val input = encoded.toCharArray()
+            val decoded = requireNotNull(Base32Codec.decode(input))
+            try {
+                assertContentEquals(expected.encodeToByteArray(), decoded)
+            } finally {
+                input.fill('\u0000')
+                decoded.fill(0)
+            }
+        }
+
+        listOf("A", "AB", "M=Y=====", "MY=====", "MY======A").forEach { encoded ->
+            val input = encoded.toCharArray()
+            try {
+                assertNull(Base32Codec.decode(input))
+            } finally {
+                input.fill('\u0000')
+            }
+        }
+    }
+
+    @Test
+    fun `platform byte HMAC matches long-key RFC vectors`() {
+        val data = "Test Using Larger Than Block-Size Key - Hash Key First".encodeToByteArray()
+        val cases = listOf(
+            HmacVector(
+                algorithm = TotpAlgorithm.SHA1,
+                keySize = 80,
+                expectedHex = "aa4ae5e15272d00e95705637ce8a3b55ed402112",
+            ),
+            HmacVector(
+                algorithm = TotpAlgorithm.SHA256,
+                keySize = 131,
+                expectedHex = "60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54",
+            ),
+            HmacVector(
+                algorithm = TotpAlgorithm.SHA512,
+                keySize = 131,
+                expectedHex =
+                    "80b24263c7c1a3ebb71493c1dd7be8b49b46d1f41b4aeec1121b013783f8f352" +
+                        "6b56d037e05f2598bd0fd2215d6a1e5295e64f73f63f0aec8b915a985d786598",
+            ),
+        )
+
+        try {
+            cases.forEach { vector ->
+                val key = ByteArray(vector.keySize) { 0xaa.toByte() }
+                val digest = calculateTotpHmac(vector.algorithm, key, data)
+                val expected = vector.expectedHex.hexBytes()
+                try {
+                    assertContentEquals(expected, digest)
+                } finally {
+                    key.fill(0)
+                    digest.fill(0)
+                    expected.fill(0)
+                }
+            }
+        } finally {
+            data.fill(0)
+        }
+    }
+
     private fun base32Encode(bytes: ByteArray): String {
         val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
         val result = StringBuilder()
@@ -220,4 +295,14 @@ class TotpServiceTest {
         val sha256: String,
         val sha512: String,
     )
+
+    private data class HmacVector(
+        val algorithm: TotpAlgorithm,
+        val keySize: Int,
+        val expectedHex: String,
+    )
+}
+
+private fun String.hexBytes(): ByteArray = ByteArray(length / 2) { index ->
+    substring(index * 2, index * 2 + 2).toInt(16).toByte()
 }

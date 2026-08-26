@@ -30,7 +30,6 @@ kotlin {
         val commonMain = getByName("commonMain") {
             dependencies {
                 api(project(":core:domain"))
-                implementation(libs.okio)
             }
         }
 
