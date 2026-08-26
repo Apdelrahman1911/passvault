@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed 2026-08-25 against GitHub issues 35–146 and repository HEAD `5ed3d9d`. Every issue originally marked CLOSE/ACCEPT was re-read with all comments and re-checked against current code. **19 issues were closed on GitHub with an evidence comment; 4 were reclassified and remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `2e89072`. Every close decision was checked against the issue, its comments, and the code. **48 issues are closed on GitHub; 64 remain open.**
 
 ## Triage legend
 
@@ -11,14 +11,14 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (46 still open; #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47, #48, #49, #50, #78, #88, #92, #95, #96, #100, #104, #105, #106, #119, #134, and #136 resolved)
-- **DIG: 22**
-- **CLOSE/ACCEPT: 17**
+- **FIX: 71** (41 still open; #36–#51 as individually listed below, plus #54, #78, #88, #92, #95, #96, #100, #102, #104, #105, #106, #119, #134, and #136 resolved)
+- **DIG: 23**
+- **CLOSE/ACCEPT: 18**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
 
-- **Closed with an evidence comment:** #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
+- **Closed with an evidence comment:** #55, #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
 - **Reclassified to FIX (open):** #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
 - **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
 - **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
@@ -37,6 +37,9 @@
 - **Resolved FIX:** #48 — credential summaries/secrets, password history, and attachment filenames now use an authenticated versioned padding format with power-of-two buckets; v2 records remain readable and are rewritten on ordinary updates.
 - **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
 - **Resolved FIX:** #50 — Room v4 removes the unused credential-title blind index without losing dependent rows; new JSON and streaming backups omit it, while authenticated legacy backup readers validate and discard the old field.
+- **Resolved FIX:** #51 — contradictory attachment state/format combinations are quarantined, current-format paths remain protected and quota-accounted despite state tampering, and recovery cannot use a mutable state marker as authority to destroy a published object.
+- **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
+- **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
@@ -54,6 +57,7 @@ The detailed tables below retain the original recommendations for traceability; 
 
 ## Genuinely false or disproved claims
 
+- **#55** — KDF parameter changes already fail the authenticated VEK unwrap; count metadata is redundant with the accepted plaintext schema, and exported vault IDs are encrypted.
 - **#56** — Compose already supplies password semantics/content type and Android `FLAG_SECURE` disables capture.
 - **#66** — only 6- and 8-digit TOTP configurations are accepted; the branch is exhaustive and tested.
 - **#103** — the local GOOD bucket intentionally includes domain FAIR, so UI and execution thresholds match.
@@ -198,8 +202,8 @@ The detailed tables below retain the original recommendations for traceability; 
 
 ## Suggested execution order
 
-1. Fix attachment/restore data-loss and session-boundary paths first (#37, #44, #40–#45, #51, #53).
-2. Address backup resource/integrity and secret-lifetime issues (#38, #54, #58, #64, #68–#75, #86, #96, #99–#107, #112–#114, #118, #125).
+1. Fix the remaining attachment/restore and session-boundary paths first (#53, #58–#60, #65, #71, #74–#75, #84).
+2. Address the remaining backup resource/integrity and secret-lifetime issues (#64, #68–#69, #72–#73, #76–#77, #86, #99, #101, #107, #112–#114, #118, #125).
 3. Review and harden CI/release provenance and signing (#67, #72, #73, #76, #78, #81–#82, #126–#127, #141, #146).
 4. Complete Apple/Windows/Android runtime evidence for DIG items (#35, #61, #81, #85, #108, #120, #123, #128, #132–#133, #140, #143).
 5. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
