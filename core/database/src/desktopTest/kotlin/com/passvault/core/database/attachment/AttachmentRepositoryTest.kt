@@ -273,6 +273,120 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `state downgrade is quarantined without deleting an intact object`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("state-tamper.bin", null, byteArrayOf(1, 2, 3)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val path = objectPath(stored)
+        database.attachmentDao().update(
+            stored.copy(storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY),
+        )
+        val restarted = AttachmentRepositoryImpl(
+            attachmentDao = database.attachmentDao(),
+            credentialDao = database.credentialDao(),
+            blobStore = blobStore,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+        )
+
+        assertIs<AttachmentCorruptedException>(
+            restarted.copyContentTo(credentialId, attachment.id, RecordingSink()).exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            restarted.verify(credentialId, attachment.id).exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            restarted.delete(credentialId, attachment.id).exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            restarted.rename(credentialId, attachment.id, "must-not-change.bin").exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            credentialRepository.getById(credentialId).exceptionOrNull(),
+        )
+        assertContentEquals(stored.encryptedFilename, requireEntity(attachment.id).encryptedFilename)
+        assertTrue(Files.exists(path))
+    }
+
+    @Test
+    fun `format downgrade is quarantined and remains protected and quota accounted`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("format-tamper.bin", null, byteArrayOf(1, 2, 3, 4)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val path = objectPath(stored)
+        database.attachmentDao().update(stored.copy(contentFormatVersion = 0))
+        val restarted = AttachmentRepositoryImpl(
+            attachmentDao = database.attachmentDao(),
+            credentialDao = database.credentialDao(),
+            blobStore = blobStore,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+        )
+
+        assertIs<AttachmentCorruptedException>(
+            restarted.copyContentTo(credentialId, attachment.id, RecordingSink()).exceptionOrNull(),
+        )
+        assertEquals(1, database.attachmentDao().getManagedCount(credentialId.value))
+        assertEquals(4, database.attachmentDao().getManagedSizeBytes(credentialId.value))
+        assertEquals(1, database.vaultBackupDao().getManagedAttachmentCount())
+        assertEquals(
+            listOf(attachment.id.value),
+            database.vaultBackupDao().getManagedAttachmentPage("", 10).map { it.id },
+        )
+        assertNotNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
+        assertTrue(Files.exists(path))
+    }
+
+    @Test
+    fun `pending-state tamper cannot authorize deletion of a published object`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("pending-tamper.bin", null, byteArrayOf(4, 5, 6)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val path = objectPath(stored)
+        database.attachmentDao().update(
+            stored.copy(storageState = AttachmentRecordEntity.STORAGE_STATE_STAGING),
+        )
+        val restarted = AttachmentRepositoryImpl(
+            attachmentDao = database.attachmentDao(),
+            credentialDao = database.credentialDao(),
+            blobStore = blobStore,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+        )
+
+        assertFailsWith<AttachmentCorruptedException> {
+            restarted.withStableAttachments { }
+        }
+        assertNotNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
+        assertTrue(Files.exists(path))
+    }
+
+    @Test
+    fun `genuine legacy metadata remains deletable without a managed object`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("legacy-metadata.bin", null, byteArrayOf(7)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        blobStore.delete(stored.storagePath)
+        database.attachmentDao().update(
+            stored.copy(
+                contentFormatVersion = 0,
+                storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+            ),
+        )
+
+        assertTrue(attachmentRepository.delete(credentialId, attachment.id).isSuccess)
+        assertNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
+    }
+
+    @Test
     fun `truncated containers and swapped attachment objects fail authentication`() = runTest {
         val first = attachmentRepository.import(
             credentialId,

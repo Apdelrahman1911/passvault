@@ -18,6 +18,7 @@ import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.AttachmentContentSink
 import com.passvault.core.domain.repository.AttachmentContentSource
+import com.passvault.core.domain.repository.AttachmentCorruptedException
 import com.passvault.core.domain.repository.AttachmentCountLimitException
 import com.passvault.core.domain.repository.AttachmentLegacyContentUnavailableException
 import com.passvault.core.domain.repository.AttachmentPolicy
@@ -104,7 +105,6 @@ class AttachmentRepositoryImpl(
         val storagePath = "objects/${Uuid.random()}.pva"
         val key = deriveAttachmentKey(vek, keyContext)
         val encryptedFilename = encryptFilename(fileName, attachmentId, credentialId.value, key)
-        var stagingInserted = false
         var completed = false
         try {
             val staging = newStagingEntity(
@@ -115,8 +115,6 @@ class AttachmentRepositoryImpl(
                 encryptedFilename = encryptedFilename,
                 declaredSize = source.declaredSizeBytes,
             )
-            attachmentDao.insert(staging)
-            stagingInserted = true
             val stored = codec.encryptToObject(
                 relativePath = storagePath,
                 source = source,
@@ -129,11 +127,14 @@ class AttachmentRepositoryImpl(
                 sizeBytes = stored.sizeBytes,
                 storageState = AttachmentRecordEntity.STORAGE_STATE_READY,
             )
-            attachmentDao.update(ready)
+            // Publish the row only after the object has been atomically
+            // completed. A crash before this insert leaves an unreferenced
+            // object for conservative recovery, never a live partial row.
+            attachmentDao.insert(ready)
             completed = true
             return ready.toMetadata(fileName)
         } finally {
-            if (!completed) cleanupFailedImport(attachmentId, storagePath, stagingInserted)
+            if (!completed) cleanupFailedImport(storagePath)
             encryptedFilename.clear()
             cryptoEngine.secureWipe(key)
         }
@@ -191,6 +192,7 @@ class AttachmentRepositoryImpl(
             recoverInterruptedOperations()
             sessionManager.withUnlockedSession { vek ->
                 val entity = requireAttachment(credentialId, attachmentId)
+                entity.requireStableStorageKind()
                 val existingNames = attachmentDao.getByCredential(credentialId.value)
                     .filterNot { it.id == attachmentId.value }
                     .map { decryptFilename(it, vek) }
@@ -220,19 +222,14 @@ class AttachmentRepositoryImpl(
         repositoryResult {
             recoverInterruptedOperations()
             val entity = requireAttachment(credentialId, attachmentId)
-            if (entity.storageState == AttachmentRecordEntity.STORAGE_STATE_LEGACY) {
-                attachmentDao.deleteById(entity.id)
-            } else {
-                requireManagedEntity(entity)
-                // The Room delete is the commit point. If it fails, the row
-                // still references an intact object. If cleanup fails after a
-                // committed delete, startup recovery removes the now-orphaned
-                // encrypted object without risking user-data loss.
-                attachmentDao.deleteById(entity.id)
+            val storageKind = entity.requireStableStorageKind()
+            // The Room delete is the commit point. If it fails, the row still
+            // references an intact object. Only a validated managed row grants
+            // authority to delete a filesystem object.
+            attachmentDao.deleteById(entity.id)
+            if (storageKind == AttachmentStorageKind.MANAGED) {
                 recoveryCompleted = false
-                withContext(NonCancellable) {
-                    runCatching { blobStore.delete(entity.storagePath) }
-                }
+                withContext(NonCancellable) { runCatching { blobStore.delete(entity.storagePath) } }
             }
             Unit
         }
@@ -300,9 +297,12 @@ class AttachmentRepositoryImpl(
     ) = withAttachmentOperation {
         recoverInterruptedOperations()
         val attachments = attachmentDao.getByCredential(credentialId)
-        val managedPaths = attachments
-            .filter { it.storageState == AttachmentRecordEntity.STORAGE_STATE_READY }
-            .map { entity -> requireManagedEntity(entity).storagePath }
+        val managedPaths = attachments.mapNotNull { entity ->
+            when (entity.requireStableStorageKind()) {
+                AttachmentStorageKind.LEGACY -> null
+                AttachmentStorageKind.MANAGED -> entity.storagePath
+            }
+        }
 
         // Credential deletion (including Room's attachment-row cascade) is
         // the commit point. Objects are deleted only afterwards, so a failed
@@ -314,27 +314,35 @@ class AttachmentRepositoryImpl(
         }
     }
 
-    /** Deletes only objects whose database state proves an interrupted operation. */
+    /**
+     * Reclaims only rows that cannot own a published object. A persisted state
+     * marker is not sufficient authority to delete an object: contradictory
+     * rows are quarantined by failing closed, and every current-format path is
+     * protected from the orphan sweep regardless of its mutable state value.
+     */
     private suspend fun recoverInterruptedOperations() {
         if (recoveryCompleted) return
+        var quarantinedRowFound = false
         attachmentDao.getPendingOperations().forEach { entity ->
-            require(entity.storageState != AttachmentRecordEntity.STORAGE_STATE_LEGACY)
-            require(entity.storageState != AttachmentRecordEntity.STORAGE_STATE_READY)
-            blobStore.delete(entity.storagePath)
-            attachmentDao.deleteById(entity.id)
+            if (!entity.referencesManagedObject() || blobStore.exists(entity.storagePath)) {
+                quarantinedRowFound = true
+            } else {
+                // Atomic object publication guarantees that a missing final
+                // path has no usable content. Removing this incomplete row is
+                // safe; any temporary file is reclaimed by the sweep below.
+                attachmentDao.deleteById(entity.id)
+            }
         }
-        blobStore.removeUnreferencedObjects(attachmentDao.getReadyStoragePaths().toSet())
+        blobStore.removeUnreferencedObjects(attachmentDao.getManagedStoragePaths().toSet())
+        if (quarantinedRowFound) throw AttachmentCorruptedException()
         recoveryCompleted = true
     }
 
     private suspend fun cleanupFailedImport(
-        attachmentId: String,
         storagePath: String,
-        stagingInserted: Boolean,
     ) = withContext(NonCancellable) {
         recoveryCompleted = false
-        val objectRemoved = runCatching { blobStore.delete(storagePath) }.isSuccess
-        if (stagingInserted && objectRemoved) runCatching { attachmentDao.deleteById(attachmentId) }
+        runCatching { blobStore.delete(storagePath) }
     }
 
     private suspend fun requireAttachment(
@@ -345,10 +353,9 @@ class AttachmentRepositoryImpl(
     ) { "The attachment does not exist" }
 
     private fun requireManagedEntity(entity: AttachmentRecordEntity): AttachmentRecordEntity {
-        if (entity.storageState != AttachmentRecordEntity.STORAGE_STATE_READY) {
+        if (entity.requireStableStorageKind() != AttachmentStorageKind.MANAGED) {
             throw AttachmentLegacyContentUnavailableException()
         }
-        require(entity.contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
         require(entity.sizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
         return entity
     }
@@ -379,6 +386,7 @@ class AttachmentRepositoryImpl(
     }
 
     private suspend fun decryptFilename(entity: AttachmentRecordEntity, vek: ByteArray): String {
+        entity.requireStableStorageKind()
         val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
         var decrypted: ByteArray? = null
         return try {
@@ -427,10 +435,9 @@ class AttachmentRepositoryImpl(
         mimeType = mimeType,
         sizeBytes = sizeBytes,
         createdAt = Instant.fromEpochMilliseconds(createdAt),
-        availability = if (storageState == AttachmentRecordEntity.STORAGE_STATE_READY) {
-            AttachmentAvailability.AVAILABLE
-        } else {
-            AttachmentAvailability.LEGACY_METADATA_ONLY
+        availability = when (requireStableStorageKind()) {
+            AttachmentStorageKind.MANAGED -> AttachmentAvailability.AVAILABLE
+            AttachmentStorageKind.LEGACY -> AttachmentAvailability.LEGACY_METADATA_ONLY
         },
     )
 

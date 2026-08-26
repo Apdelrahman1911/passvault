@@ -12,6 +12,8 @@ import com.passvault.core.database.dao.PasswordHistoryDao
 import com.passvault.core.database.dao.TagDao
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.DatabaseOnlyAttachmentLifecycleManager
+import com.passvault.core.database.attachment.AttachmentStorageKind
+import com.passvault.core.database.attachment.requireStableStorageKind
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.entity.CredentialRecordEntity
 import com.passvault.core.database.entity.CredentialSummaryProjection
@@ -1010,16 +1012,10 @@ class CredentialRepositoryImpl(
         require(mimeType.isNotBlank() && mimeType.hasAtMostCodePoints(MAX_ATTACHMENT_MIME_TYPE_LENGTH))
         require(mimeType.hasOnlySafeTextCodePoints())
         require(sizeBytes in 0..MAX_ATTACHMENT_SIZE_BYTES)
-        require(
-            storageState == AttachmentRecordEntity.STORAGE_STATE_READY ||
-                storageState == AttachmentRecordEntity.STORAGE_STATE_LEGACY,
-        )
-        if (storageState == AttachmentRecordEntity.STORAGE_STATE_READY) {
-            require(contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
+        val storageKind = requireStableStorageKind()
+        if (storageKind == AttachmentStorageKind.MANAGED) {
             require(sizeBytes <= AttachmentPolicy.MAX_FILE_SIZE_BYTES)
             require(storagePath.isManagedAttachmentObjectPath())
-        } else {
-            require(contentFormatVersion == 0)
         }
         val attachmentKey = deriveRecordKey(vek, "attachment:$keyDerivationContext")
         var filenameBytes: ByteArray? = null
@@ -1049,10 +1045,9 @@ class CredentialRepositoryImpl(
                 mimeType = mimeType,
                 sizeBytes = sizeBytes,
                 createdAt = Instant.fromEpochMilliseconds(createdAt),
-                availability = if (storageState == AttachmentRecordEntity.STORAGE_STATE_READY) {
-                    AttachmentAvailability.AVAILABLE
-                } else {
-                    AttachmentAvailability.LEGACY_METADATA_ONLY
+                availability = when (storageKind) {
+                    AttachmentStorageKind.MANAGED -> AttachmentAvailability.AVAILABLE
+                    AttachmentStorageKind.LEGACY -> AttachmentAvailability.LEGACY_METADATA_ONLY
                 },
             )
         } finally {

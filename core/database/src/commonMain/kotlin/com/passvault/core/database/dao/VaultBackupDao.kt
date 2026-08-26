@@ -68,7 +68,12 @@ interface VaultBackupDao {
     @Query("SELECT COUNT(*) FROM attachment_records")
     suspend fun getAttachmentCount(): Int
 
-    @Query("SELECT COUNT(*) FROM attachment_records WHERE storage_state = 'READY'")
+    @Query(
+        """
+        SELECT COUNT(*) FROM attachment_records
+        WHERE storage_state != 'LEGACY' OR content_format_version != 0
+        """,
+    )
     suspend fun getManagedAttachmentCount(): Int
 
     @Query("SELECT COUNT(*) FROM password_history_records")
@@ -118,7 +123,8 @@ interface VaultBackupDao {
     @Query(
         """
         SELECT * FROM attachment_records
-        WHERE storage_state = 'READY' AND id > :afterId
+        WHERE (storage_state != 'LEGACY' OR content_format_version != 0)
+          AND id > :afterId
         ORDER BY id
         LIMIT :limit
         """,

@@ -12,6 +12,8 @@ import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.DatabaseOnlyAttachmentLifecycleManager
+import com.passvault.core.database.attachment.AttachmentStorageKind
+import com.passvault.core.database.attachment.requireStableStorageKind
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.database.entity.CredentialFolderCrossRef
@@ -644,9 +646,8 @@ class VaultBackupService(
             require(attachment.mimeType.isSafeMetadataText())
             require(attachment.storagePath.isSafeRelativePath())
             require(attachment.keyDerivationContext.isValidIdentifier())
-            when (attachment.storageState) {
-                AttachmentRecordEntity.STORAGE_STATE_READY -> {
-                    require(attachment.contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
+            when (attachment.requireStableStorageKind()) {
+                AttachmentStorageKind.MANAGED -> {
                     require(attachment.sizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
                     require(attachment.storagePath.matches(MANAGED_ATTACHMENT_PATH_REGEX))
                     val count = readyCounts.getOrElse(attachment.credentialId) { 0 } + 1
@@ -656,11 +657,9 @@ class VaultBackupService(
                     require(totalBytes <= AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES)
                     readyBytes[attachment.credentialId] = totalBytes
                 }
-                AttachmentRecordEntity.STORAGE_STATE_LEGACY -> {
-                    require(attachment.contentFormatVersion == 0)
+                AttachmentStorageKind.LEGACY -> {
                     require(attachment.sizeBytes in 0..MAX_ATTACHMENT_SIZE_BYTES)
                 }
-                else -> error("Pending attachment operations cannot be backed up")
             }
             attachment.id
         }
@@ -866,9 +865,8 @@ class VaultBackupService(
             require(value.mimeType.isSafeMetadataText())
             require(value.storagePath.isSafeRelativePath())
             require(value.keyDerivationContext.isValidIdentifier())
-            when (value.storageState) {
-                AttachmentRecordEntity.STORAGE_STATE_READY -> {
-                    require(value.contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
+            when (value.requireStableStorageKind()) {
+                AttachmentStorageKind.MANAGED -> {
                     require(value.sizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
                     require(value.storagePath.matches(MANAGED_ATTACHMENT_PATH_REGEX))
                     val count = readyAttachmentCounts.getOrElse(value.credentialId) { 0 } + 1
@@ -879,11 +877,9 @@ class VaultBackupService(
                     readyAttachmentBytes[value.credentialId] = bytes
                     managedAttachmentIds += value.id
                 }
-                AttachmentRecordEntity.STORAGE_STATE_LEGACY -> {
-                    require(value.contentFormatVersion == 0)
+                AttachmentStorageKind.LEGACY -> {
                     require(value.sizeBytes in 0..MAX_ATTACHMENT_SIZE_BYTES)
                 }
-                else -> error("Pending attachment operations cannot be backed up")
             }
         }
 
