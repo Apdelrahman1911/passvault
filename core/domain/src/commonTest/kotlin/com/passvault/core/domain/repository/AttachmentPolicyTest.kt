@@ -35,8 +35,13 @@ class AttachmentPolicyTest {
     @Test
     fun `historical Windows-invalid name remains readable but cannot become a new output name`() {
         assertEquals("report.pdf.", AttachmentPolicy.validateStoredFileName("report.pdf."))
+        assertEquals("historical:name.txt", AttachmentPolicy.validateStoredFileName("historical:name.txt"))
+        assertEquals("historical\\name.txt", AttachmentPolicy.validateStoredFileName("historical\\name.txt"))
         assertFailsWith<AttachmentInvalidFileNameException> {
             AttachmentPolicy.validateFileName("report.pdf.")
+        }
+        assertFailsWith<AttachmentInvalidFileNameException> {
+            AttachmentPolicy.validateFileName("historical:name.txt")
         }
     }
 }

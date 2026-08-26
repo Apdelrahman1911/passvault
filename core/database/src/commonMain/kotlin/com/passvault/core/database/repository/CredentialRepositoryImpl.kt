@@ -10,9 +10,11 @@ import com.passvault.core.database.dao.FolderDao
 import com.passvault.core.database.entity.CredentialTagCrossRef
 import com.passvault.core.database.dao.PasswordHistoryDao
 import com.passvault.core.database.dao.TagDao
+import com.passvault.core.database.attachment.AttachmentFilenameRead
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.DatabaseOnlyAttachmentLifecycleManager
 import com.passvault.core.database.attachment.AttachmentStorageKind
+import com.passvault.core.database.attachment.readAttachmentFilename
 import com.passvault.core.database.attachment.requireStableStorageKind
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.entity.CredentialRecordEntity
@@ -1017,43 +1019,22 @@ class CredentialRepositoryImpl(
             require(sizeBytes <= AttachmentPolicy.MAX_FILE_SIZE_BYTES)
             require(storagePath.isManagedAttachmentObjectPath())
         }
-        val attachmentKey = deriveRecordKey(vek, "attachment:$keyDerivationContext")
-        var filenameBytes: ByteArray? = null
-        return try {
-            filenameBytes = decryptPayload(
-                ciphertext = encryptedFilename,
-                nonce = filenameNonce,
-                key = attachmentKey,
-                associatedData = attachmentAssociatedData(id, credentialId),
-            )
-            val filename = filenameBytes.decodeUtf8Strict()
-            require(filename.isNotBlank() && filename.hasAtMostCodePoints(MAX_ATTACHMENT_FILENAME_LENGTH)) {
-                "Attachment filename is invalid"
-            }
-            require(
-                filename != "." &&
-                    filename != ".." &&
-                    filename.hasOnlySafeTextCodePoints() &&
-                    filename.none { it == '/' || it == '\\' },
-            ) {
-                "Attachment filename contains unsafe characters"
-            }
-
-            AttachmentMetadata(
-                id = AttachmentId(id),
-                fileName = filename,
-                mimeType = mimeType,
-                sizeBytes = sizeBytes,
-                createdAt = Instant.fromEpochMilliseconds(createdAt),
-                availability = when (storageKind) {
-                    AttachmentStorageKind.MANAGED -> AttachmentAvailability.AVAILABLE
-                    AttachmentStorageKind.LEGACY -> AttachmentAvailability.LEGACY_METADATA_ONLY
-                },
-            )
-        } finally {
-            filenameBytes?.let { cryptoEngine.secureWipe(it) }
-            cryptoEngine.secureWipe(attachmentKey)
-        }
+        val filename = readAttachmentFilename(expectedCredentialId, vek, cryptoEngine)
+        return AttachmentMetadata(
+            id = AttachmentId(id),
+            fileName = filename.collisionName,
+            mimeType = mimeType,
+            sizeBytes = sizeBytes,
+            createdAt = Instant.fromEpochMilliseconds(createdAt),
+            availability = when (filename) {
+                is AttachmentFilenameRead.Corrupted -> AttachmentAvailability.CORRUPTED_FILENAME
+                is AttachmentFilenameRead.Readable -> when {
+                    filename.requiresRename -> AttachmentAvailability.FILENAME_REQUIRES_RENAME
+                    storageKind == AttachmentStorageKind.MANAGED -> AttachmentAvailability.AVAILABLE
+                    else -> AttachmentAvailability.LEGACY_METADATA_ONLY
+                }
+            },
+        )
     }
 
     private fun PasswordHealth.toSerialized() = SerializedPasswordHealth(
@@ -1287,9 +1268,6 @@ class CredentialRepositoryImpl(
     private fun historyAssociatedData(historyId: String, credentialId: String): ByteArray =
         "passvault:history:$historyId:$credentialId:v2".encodeToByteArray()
 
-    private fun attachmentAssociatedData(attachmentId: String, credentialId: String): ByteArray =
-        "passvault:attachment:$attachmentId:$credentialId:filename:v1".encodeToByteArray()
-
     private fun String.isManagedAttachmentObjectPath(): Boolean {
         val objectId = removePrefix("objects/").removeSuffix(".pva")
         return startsWith("objects/") &&
@@ -1305,7 +1283,6 @@ class CredentialRepositoryImpl(
     }
 
     private companion object {
-        const val MAX_ATTACHMENT_FILENAME_LENGTH = 255
         const val MAX_ATTACHMENT_MIME_TYPE_LENGTH = 255
         const val MAX_ATTACHMENT_SIZE_BYTES = 4L * 1024L * 1024L * 1024L
         val UUID_HYPHEN_INDICES = setOf(8, 13, 18, 23)

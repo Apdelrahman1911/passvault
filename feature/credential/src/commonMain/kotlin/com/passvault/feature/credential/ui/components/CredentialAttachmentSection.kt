@@ -89,6 +89,7 @@ private fun AttachmentItem(
     enabled: Boolean,
     onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
 ) {
+    val displayName = attachment.displayName()
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -99,7 +100,7 @@ private fun AttachmentItem(
             Text(
                 text = stringResource(
                     Res.string.ui_attachment_file_size,
-                    attachment.fileName,
+                    displayName,
                     attachment.sizeBytes,
                 ),
                 modifier = Modifier.weight(1f),
@@ -107,9 +108,15 @@ private fun AttachmentItem(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        if (attachment.availability == AttachmentAvailability.LEGACY_METADATA_ONLY) {
+        val warning = when (attachment.availability) {
+            AttachmentAvailability.AVAILABLE -> null
+            AttachmentAvailability.LEGACY_METADATA_ONLY -> Res.string.ui_attachment_legacy_unavailable
+            AttachmentAvailability.FILENAME_REQUIRES_RENAME -> Res.string.ui_attachment_filename_requires_rename
+            AttachmentAvailability.CORRUPTED_FILENAME -> Res.string.ui_attachment_filename_corrupted
+        }
+        if (warning != null) {
             Text(
-                text = stringResource(Res.string.ui_attachment_legacy_unavailable),
+                text = stringResource(warning),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -272,7 +279,7 @@ private fun AttachmentDeleteDialog(
             onEvent(CredentialViewModel.CredentialEvent.OnAttachmentDeleteCancel)
         },
         title = {
-            Text(stringResource(Res.string.ui_attachment_delete_title, attachment.fileName))
+            Text(stringResource(Res.string.ui_attachment_delete_title, attachment.displayName()))
         },
         text = { Text(stringResource(Res.string.ui_attachment_delete_message)) },
         confirmButton = {
@@ -303,3 +310,11 @@ private fun AttachmentDeleteDialog(
 
 private fun CredentialViewModel.CredentialState.attachmentFor(id: AttachmentId): AttachmentMetadata? =
     attachments.firstOrNull { it.id == id }
+
+@Composable
+private fun AttachmentMetadata.displayName(): String =
+    if (availability == AttachmentAvailability.CORRUPTED_FILENAME) {
+        stringResource(Res.string.ui_attachment_corrupted_name, id.value)
+    } else {
+        fileName
+    }

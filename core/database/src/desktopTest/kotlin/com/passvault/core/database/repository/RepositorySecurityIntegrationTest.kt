@@ -14,6 +14,7 @@ import com.passvault.core.database.entity.CredentialTagCrossRef
 import com.passvault.core.database.entity.FolderRecordEntity
 import com.passvault.core.database.entity.PasswordHistoryRecordEntity
 import com.passvault.core.database.entity.TagRecordEntity
+import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
@@ -746,14 +747,16 @@ class RepositoryMetadataSecurityIntegrationTest : RepositorySecurityIntegrationF
     }
 
     @Test
-    fun `credential read rejects an authenticated attachment filename with bidi controls`() = runTest {
+    fun `credential read quarantines an authenticated attachment filename with bidi controls`() = runTest {
         createAndUnlockVault()
         val credential = sampleCredential()
         try {
             assertTrue(credentialRepository.save(credential).isSuccess)
             insertEncryptedAttachment(credential.id, "invoice\u202Efdp.exe")
 
-            assertTrue(credentialRepository.getById(credential.id).isFailure)
+            val loaded = assertNotNull(credentialRepository.getById(credential.id).getOrThrow())
+            assertEquals(AttachmentAvailability.CORRUPTED_FILENAME, loaded.attachments.single().availability)
+            assertEquals("attachment-one", loaded.attachments.single().id.value)
         } finally {
             credential.clearSensitiveValuesForTest()
         }

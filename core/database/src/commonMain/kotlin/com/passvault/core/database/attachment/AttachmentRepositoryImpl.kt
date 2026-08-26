@@ -98,7 +98,9 @@ class AttachmentRepositoryImpl(
     ): AttachmentMetadata {
         require(credentialDao.exists(credentialId.value)) { "The credential does not exist" }
         val managedBytes = validateImportBounds(credentialId, source.declaredSizeBytes)
-        val existingNames = attachmentDao.getByCredential(credentialId.value).map { decryptFilename(it, vek) }
+        val existingNames = attachmentDao.getByCredential(credentialId.value).map { entity ->
+            entity.readAttachmentFilename(credentialId.value, vek, cryptoEngine)
+        }
         val fileName = uniqueFileName(AttachmentPolicy.validateFileName(source.displayName), existingNames)
         val attachmentId = Uuid.random().toString()
         val keyContext = Uuid.random().toString()
@@ -195,7 +197,7 @@ class AttachmentRepositoryImpl(
                 entity.requireStableStorageKind()
                 val existingNames = attachmentDao.getByCredential(credentialId.value)
                     .filterNot { it.id == attachmentId.value }
-                    .map { decryptFilename(it, vek) }
+                    .map { sibling -> sibling.readAttachmentFilename(credentialId.value, vek, cryptoEngine) }
                 val fileName = uniqueFileName(AttachmentPolicy.validateFileName(newFileName), existingNames)
                 val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
                 val encrypted = encryptFilename(fileName, entity.id, entity.credentialId, key)
@@ -370,7 +372,7 @@ class AttachmentRepositoryImpl(
         key: ByteArray,
     ): com.passvault.core.crypto.EncryptedData {
         val plaintext = fileName.encodeToByteArray(throwOnInvalidSequence = true)
-        val associatedData = filenameAssociatedData(attachmentId, credentialId)
+        val associatedData = attachmentFilenameAssociatedData(attachmentId, credentialId)
         return try {
             PaddedPayload.encrypt(
                 cryptoEngine = cryptoEngine,
@@ -385,28 +387,10 @@ class AttachmentRepositoryImpl(
         }
     }
 
-    private suspend fun decryptFilename(entity: AttachmentRecordEntity, vek: ByteArray): String {
-        entity.requireStableStorageKind()
-        val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
-        var decrypted: ByteArray? = null
-        return try {
-            decrypted = PaddedPayload.decrypt(
-                cryptoEngine = cryptoEngine,
-                storedCiphertext = entity.encryptedFilename,
-                nonce = entity.filenameNonce,
-                key = key,
-                associatedData = filenameAssociatedData(entity.id, entity.credentialId),
-                maxPlaintextBytes = MAX_FILENAME_UTF8_BYTES,
-            ).getOrThrow()
-            AttachmentPolicy.validateStoredFileName(decrypted.decodeToString(throwOnInvalidSequence = true))
-        } finally {
-            decrypted?.let(cryptoEngine::secureWipe)
-            cryptoEngine.secureWipe(key)
+    private fun uniqueFileName(requested: String, existing: List<AttachmentFilenameRead>): String {
+        val normalized = existing.mapTo(mutableSetOf()) { filename ->
+            AttachmentPolicy.canonicalFileNameKey(filename.collisionName)
         }
-    }
-
-    private fun uniqueFileName(requested: String, existing: List<String>): String {
-        val normalized = existing.mapTo(mutableSetOf(), AttachmentPolicy::canonicalFileNameKey)
         if (AttachmentPolicy.canonicalFileNameKey(requested) !in normalized) return requested
         val dot = requested.lastIndexOf('.').takeIf { it in 1 until requested.lastIndex }
         val stem = if (dot == null) requested else requested.substring(0, dot)
@@ -440,9 +424,6 @@ class AttachmentRepositoryImpl(
             AttachmentStorageKind.LEGACY -> AttachmentAvailability.LEGACY_METADATA_ONLY
         },
     )
-
-    private fun filenameAssociatedData(attachmentId: String, credentialId: String): ByteArray =
-        "passvault:attachment:$attachmentId:$credentialId:filename:v1".encodeToByteArray()
 
     private companion object {
         const val KEY_BYTES = 32

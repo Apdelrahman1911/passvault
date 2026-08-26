@@ -101,14 +101,14 @@ object AttachmentPolicy {
 
     /**
      * Older vaults can contain names admitted by earlier releases. Keep those
-     * rows readable so one historical name cannot block the whole credential;
-     * output paths still use [validateFileName] and reject unsafe values.
+     * rows readable so one historical name cannot block the whole credential.
+     * Callers must apply [validateFileName] before using a stored value as an
+     * output filename; historical names outside that policy require a rename.
      */
     fun validateStoredFileName(value: String): String {
         val isValid = value.isNotEmpty() &&
             value.codePointLength() <= MAX_FILE_NAME_CODE_POINTS &&
-            value.hasOnlySafeSingleLineCodePoints() &&
-            value.none { character -> character == '/' || character == '\\' || character == ':' }
+            value.hasOnlySafeSingleLineCodePoints()
         if (!isValid) throw AttachmentInvalidFileNameException()
         return value
     }

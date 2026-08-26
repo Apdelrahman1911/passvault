@@ -9,6 +9,7 @@ import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
+import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
@@ -155,6 +156,38 @@ class VaultBackupStreamingTest {
             val restoredEntity = database.attachmentDao().getByCredential(credentialId.value).single()
             assertEquals(originalEntity.id, restoredEntity.id)
             assertNotEquals(originalEntity.storagePath, restoredEntity.storagePath)
+            val output = RecordingAttachmentSink()
+            attachmentRepository.copyContentTo(credentialId, restoredAttachment.id, output).getOrThrow()
+            assertContentEquals(attachmentContent, output.bytes())
+            assertTrue(output.committed)
+        } finally {
+            restoredCredential.clearSensitiveValues()
+        }
+    }
+
+    @Test
+    fun `v2 backup preserves a quarantined filename and usable authenticated content`() = runTest {
+        val original = database.attachmentDao().getByCredential(credentialId.value).single()
+        val corruptedFilename = original.encryptedFilename.copyOf().also { bytes ->
+            bytes[bytes.lastIndex] = (bytes.last().toInt() xor 1).toByte()
+        }
+        database.attachmentDao().update(original.copy(encryptedFilename = corruptedFilename))
+
+        createBackup()
+        credentialRepository.delete(credentialId).getOrThrow()
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+        unlockExistingVault()
+
+        val restoredCredential = assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+        try {
+            val restoredAttachment = restoredCredential.attachments.single()
+            assertEquals(AttachmentAvailability.CORRUPTED_FILENAME, restoredAttachment.availability)
+            assertContentEquals(
+                corruptedFilename,
+                database.attachmentDao().getByCredential(credentialId.value).single().encryptedFilename,
+            )
             val output = RecordingAttachmentSink()
             attachmentRepository.copyContentTo(credentialId, restoredAttachment.id, output).getOrThrow()
             assertContentEquals(attachmentContent, output.bytes())

@@ -4,6 +4,7 @@ import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.designsystem.text.uiText
+import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.AttachmentId
 import com.passvault.core.domain.model.AttachmentMetadata
 import com.passvault.core.domain.model.CredentialId
@@ -93,7 +94,11 @@ internal class CredentialAttachmentController(
         val current = state.value
         val credentialId = current.credentialId
         val attachment = current.attachments.firstOrNull { it.id == attachmentId }
-        if (credentialId != null && attachment != null && beginOperation()) {
+        if (
+            credentialId != null &&
+            attachment?.availability == AttachmentAvailability.AVAILABLE &&
+            beginOperation()
+        ) {
             launchOperation(action.toOperation()) {
                 val output = fileStore.createOutput(attachment, action)
                 val outputFailure = output.exceptionOrNull()
@@ -112,7 +117,13 @@ internal class CredentialAttachmentController(
         state.update {
             it.copy(
                 attachmentRenameTarget = attachmentId,
-                attachmentRenameInput = attachment.fileName,
+                attachmentRenameInput = if (
+                    attachment.availability == AttachmentAvailability.CORRUPTED_FILENAME
+                ) {
+                    ""
+                } else {
+                    attachment.fileName
+                },
             )
         }
     }
