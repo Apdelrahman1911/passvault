@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `2e89072`. Every close decision was checked against the issue, its comments, and the code. **48 issues are closed on GitHub; 64 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `dcf8bc4`. Every close decision was checked against the issue, its comments, and the code. **51 issues are closed on GitHub; 61 remain open.**
 
 ## Triage legend
 
@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 71** (41 still open; #36–#51 as individually listed below, plus #54, #78, #88, #92, #95, #96, #100, #102, #104, #105, #106, #119, #134, and #136 resolved)
+- **FIX: 71** (33 resolved as listed below; 38 still open)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 18**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -40,6 +40,9 @@
 - **Resolved FIX:** #51 — contradictory attachment state/format combinations are quarantined, current-format paths remain protected and quota-accounted despite state tampering, and recovery cannot use a mutable state marker as authority to destroy a published object.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
+- **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
+- **Resolved FIX:** #57 — password-strength bands are now length-dominant with bounded variety credit and explicit common-pattern, sequence, year, and repetition penalties; corpus regressions prevent short composed passwords from outranking substantially longer unpredictable ones.
+- **Resolved FIX:** #58 — Android preview plaintext now has a short lease backed by path-safe persistent `JobScheduler` deletion registered before URI disclosure, with reboot, foreground, and memory-pressure cleanup and synchronized Play permission records.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
