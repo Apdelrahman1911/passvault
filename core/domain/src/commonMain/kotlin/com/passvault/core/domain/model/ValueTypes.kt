@@ -8,6 +8,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlin.text.CharacterCodingException
 
 /**
  * Sensitive text wrapper that prevents accidental logging and serialization.
@@ -72,7 +73,7 @@ class SensitiveText private constructor(
      * bytes remain sensitive and must be cleared by the caller.
      */
     fun toUtf8ByteArray(): ByteArray {
-        return characters.concatToString().encodeToByteArray(throwOnInvalidSequence = true)
+        return characters.encodeToUtf8ByteArrayStrict()
     }
 
     /** Returns false when the value contains an unpaired UTF-16 surrogate. */
@@ -137,6 +138,108 @@ class SensitiveText private constructor(
     override fun hashCode(): Int = REDACTED_HASH_CODE
 
 }
+
+/**
+ * Encodes UTF-16 code units directly so sensitive callers do not first create
+ * an immutable [String]. This intentionally matches strict Kotlin UTF-8
+ * encoding: valid surrogate pairs become one scalar and unpaired surrogates
+ * fail rather than being replaced.
+ */
+private fun CharArray.encodeToUtf8ByteArrayStrict(): ByteArray {
+    val encoded = ByteArray(utf8ByteCount())
+    writeUtf8To(encoded)
+    return encoded
+}
+
+private fun CharArray.utf8ByteCount(): Int {
+    var byteCount = 0L
+    var index = 0
+    while (index < size) {
+        val character = this[index]
+        byteCount += when {
+            character.code <= UTF8_ONE_BYTE_MAX -> 1
+            character.code <= UTF8_TWO_BYTE_MAX -> 2
+            character.isHighSurrogate() -> {
+                if (index + 1 >= size || !this[index + 1].isLowSurrogate()) {
+                    malformedUtf16()
+                }
+                index++
+                4
+            }
+            character.isLowSurrogate() -> malformedUtf16()
+            else -> 3
+        }
+        if (byteCount > Int.MAX_VALUE) {
+            throw IllegalArgumentException("UTF-8 value is too large")
+        }
+        index++
+    }
+    return byteCount.toInt()
+}
+
+private fun CharArray.writeUtf8To(encoded: ByteArray) {
+    var index = 0
+    var outputIndex = 0
+    while (index < size) {
+        val character = this[index]
+        val codeUnit = character.code
+        when {
+            codeUnit <= UTF8_ONE_BYTE_MAX -> {
+                encoded[outputIndex++] = codeUnit.toByte()
+            }
+            codeUnit <= UTF8_TWO_BYTE_MAX -> {
+                encoded[outputIndex++] = (UTF8_TWO_BYTE_PREFIX or (codeUnit shr 6)).toByte()
+                encoded[outputIndex++] = (UTF8_CONTINUATION_PREFIX or (codeUnit and UTF8_CONTINUATION_MASK)).toByte()
+            }
+            character.isHighSurrogate() -> {
+                val lowSurrogate = this[index + 1].code
+                val codePoint = UTF16_SUPPLEMENTARY_OFFSET +
+                    ((codeUnit - UTF16_HIGH_SURROGATE_START) shl UTF16_SURROGATE_SHIFT) +
+                    (lowSurrogate - UTF16_LOW_SURROGATE_START)
+                encoded[outputIndex++] = (UTF8_FOUR_BYTE_PREFIX or (codePoint shr 18)).toByte()
+                encoded[outputIndex++] = (
+                    UTF8_CONTINUATION_PREFIX or
+                        ((codePoint shr 12) and UTF8_CONTINUATION_MASK)
+                    ).toByte()
+                encoded[outputIndex++] = (
+                    UTF8_CONTINUATION_PREFIX or
+                        ((codePoint shr 6) and UTF8_CONTINUATION_MASK)
+                    ).toByte()
+                encoded[outputIndex++] = (
+                    UTF8_CONTINUATION_PREFIX or
+                        (codePoint and UTF8_CONTINUATION_MASK)
+                    ).toByte()
+                index++
+            }
+            else -> {
+                encoded[outputIndex++] = (UTF8_THREE_BYTE_PREFIX or (codeUnit shr 12)).toByte()
+                encoded[outputIndex++] = (
+                    UTF8_CONTINUATION_PREFIX or
+                        ((codeUnit shr 6) and UTF8_CONTINUATION_MASK)
+                    ).toByte()
+                encoded[outputIndex++] = (
+                    UTF8_CONTINUATION_PREFIX or
+                        (codeUnit and UTF8_CONTINUATION_MASK)
+                    ).toByte()
+            }
+        }
+        index++
+    }
+}
+
+private fun malformedUtf16(): Nothing = throw CharacterCodingException()
+
+private const val UTF8_ONE_BYTE_MAX = 0x7F
+private const val UTF8_TWO_BYTE_MAX = 0x7FF
+private const val UTF8_CONTINUATION_MASK = 0x3F
+private const val UTF8_CONTINUATION_PREFIX = 0x80
+private const val UTF8_TWO_BYTE_PREFIX = 0xC0
+private const val UTF8_THREE_BYTE_PREFIX = 0xE0
+private const val UTF8_FOUR_BYTE_PREFIX = 0xF0
+private const val UTF16_HIGH_SURROGATE_START = 0xD800
+private const val UTF16_LOW_SURROGATE_START = 0xDC00
+private const val UTF16_SUPPLEMENTARY_OFFSET = 0x10000
+private const val UTF16_SURROGATE_SHIFT = 10
 
 /**
  * Serializer that prevents accidental serialization of sensitive data.

@@ -14,11 +14,13 @@ There is no server, account, network sync, telemetry, or analytics boundary in t
 ## Key hierarchy
 
 ```text
-master password bytes + 16-byte random salt
-                 |
-              Argon2id
-                 |
-                KEK
+master password characters
+          | strict UTF-8, then lowercase ASCII hex
+historical KDF input bytes + 16-byte random salt
+          |
+       Argon2id
+          |
+         KEK
                  |
  XChaCha20-Poly1305, AAD "VEK_WRAP"
                  |
@@ -29,13 +31,15 @@ master password bytes + 16-byte random salt
  record/folder/tag/history/blind-index subkeys
 ```
 
-The master password is converted to a byte array only for derivation and wiped best-effort afterward. The KEK is
-not persisted. Room stores the salt, Argon2id operations (2–10), memory (32–256 MiB), a fixed serialized
-parallelism value of `1`, the wrapped VEK, nonces, and an authenticated verification record. The current libsodium
-binding exposes no lanes argument, so unlock rejects a persisted parallelism value other than `1` before derivation.
-Unlock validates metadata bounds before doing expensive cryptographic work, derives the KEK, unwraps the VEK,
-authenticates the verification record, and only then publishes the unlocked session. See
-[`VAULT_FORMAT.md`](VAULT_FORMAT.md) for the complete parameter contract.
+The repository encodes the master password directly from mutable characters to mutable UTF-8 bytes, then converts
+those bytes to mutable lowercase hexadecimal bytes to preserve the original KDF format. Both buffers are wiped
+best-effort after derivation; managed UI/IME strings remain outside that guarantee. The KEK is not persisted. Room
+stores the salt, Argon2id operations (2–10), memory (32–256 MiB), a fixed serialized parallelism value of `1`, the
+wrapped VEK, nonces, and an authenticated verification record. The current libsodium binding exposes no lanes
+argument, so unlock rejects a persisted parallelism value other than `1` before derivation. Unlock validates metadata
+bounds before doing expensive cryptographic work, derives the KEK, unwraps the VEK, authenticates the verification
+record, and only then publishes the unlocked session. See [`VAULT_FORMAT.md`](VAULT_FORMAT.md) for the complete
+parameter contract.
 
 Changing the master password rewraps the same VEK, so record data does not need re-encryption. Vault session
 transitions are serialized. Lock immediately removes and wipes the repository-owned VEK buffer best-effort.

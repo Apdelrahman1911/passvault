@@ -6,7 +6,6 @@ import com.ionspin.kotlin.crypto.LibsodiumInitializer
 import com.ionspin.kotlin.crypto.generichash.GenericHash
 import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MAX
 import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_BYTES_MIN
-import com.ionspin.kotlin.crypto.pwhash.PasswordHash
 import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_OPSLIMIT_INTERACTIVE
 import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_MEMLIMIT_INTERACTIVE
 import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_ALG_DEFAULT
@@ -56,16 +55,16 @@ class LibsodiumCryptoEngine : CryptoEngine {
         var ownedSalt: ByteArray? = null
         var ownershipTransferred = false
         try {
-            val passwordHex = password.toHexString()
-            val nativeDerived = PasswordHash.pwhash(
-                outputLength = 32,
-                password = passwordHex,
-                salt = nativeSalt.asUByteArray(),
-                opsLimit = opsLimit.toULong(),
-                memLimit = memLimit,
-                algorithm = crypto_pwhash_ALG_DEFAULT,
-            )
-            val nativeDerivedBytes = nativeDerived.asByteArray()
+            val nativeDerivedBytes = password.withLowercaseHexBytes { encodedPassword ->
+                rawPasswordHash(
+                    outputLength = 32,
+                    password = encodedPassword,
+                    salt = nativeSalt,
+                    opsLimit = opsLimit,
+                    memLimit = memLimit,
+                    algorithm = crypto_pwhash_ALG_DEFAULT,
+                )
+            }
             val keyCopy = try {
                 nativeDerivedBytes.copyOf()
             } finally {
@@ -249,23 +248,24 @@ class LibsodiumCryptoEngine : CryptoEngine {
 
     override suspend fun benchmarkArgon2(): Argon2Parameters = cryptoOperation({}) {
         ensureInitialized()
-        val testPassword = "passvault-benchmark"
+        val testPassword = "passvault-benchmark".encodeToByteArray()
         val testSalt = LibsodiumRandom.buf(16).asByteArray()
         var benchmarkOutput: ByteArray? = null
         try {
             val start = TimeSource.Monotonic.markNow()
-            benchmarkOutput = PasswordHash.pwhash(
+            benchmarkOutput = rawPasswordHash(
                 outputLength = 32,
                 password = testPassword,
-                salt = testSalt.asUByteArray(),
-                opsLimit = crypto_pwhash_OPSLIMIT_INTERACTIVE.toULong(),
+                salt = testSalt,
+                opsLimit = crypto_pwhash_OPSLIMIT_INTERACTIVE,
                 memLimit = crypto_pwhash_MEMLIMIT_INTERACTIVE,
                 algorithm = crypto_pwhash_ALG_DEFAULT,
-            ).asByteArray()
+            )
             val duration = start.elapsedNow().inWholeMilliseconds
             selectArgon2Parameters(duration)
         } finally {
             benchmarkOutput?.fill(0)
+            testPassword.fill(0)
             testSalt.fill(0)
         }
     }.getOrElse { error ->
@@ -330,6 +330,3 @@ private val AEAD_ENVELOPE_MAGIC = byteArrayOf(0x50, 0x56, 0x02, 0x00)
 private fun ByteArray.hasAeadEnvelopeMagic(): Boolean =
     size >= AEAD_ENVELOPE_MAGIC.size &&
         AEAD_ENVELOPE_MAGIC.indices.all { index -> this[index] == AEAD_ENVELOPE_MAGIC[index] }
-
-private fun ByteArray.toHexString(): String =
-    joinToString(separator = "") { byte -> byte.toUByte().toString(16).padStart(2, '0') }

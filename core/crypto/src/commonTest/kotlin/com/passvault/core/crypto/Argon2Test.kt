@@ -1,12 +1,83 @@
 package com.passvault.core.crypto
 
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class Argon2Test {
+    @Test
+    fun `lowercase hexadecimal KDF input is byte exact and always cleared`() {
+        val password = byteArrayOf(0x00, 0x0F, 0x10, 0xFF.toByte())
+        var successfulTemporary: ByteArray? = null
+        var failedTemporary: ByteArray? = null
+
+        val marker = password.withLowercaseHexBytes { encoded ->
+            successfulTemporary = encoded
+            assertContentEquals("000f10ff".encodeToByteArray(), encoded)
+            42
+        }
+        assertEquals(42, marker)
+        assertTrue(successfulTemporary?.all { it == 0.toByte() } == true)
+
+        assertFailsWith<IllegalStateException> {
+            password.withLowercaseHexBytes { encoded ->
+                failedTemporary = encoded
+                throw IllegalStateException("expected")
+            }
+        }
+        assertTrue(failedTemporary?.all { it == 0.toByte() } == true)
+    }
+
+    @Test
+    fun `production Argon2 preserves the historical lowercase hex input`() = runTest {
+        val password = byteArrayOf(0x00, 0xFF.toByte(), 0x01)
+        val salt = ByteArray(16) { it.toByte() }
+        val expected = decodeHex("2bc5a714c8397bb9e89e70c957231bd3cd4f0b4ffe32bb6ca1f5067196b60b15")
+        var derived: DerivedKey? = null
+        try {
+            derived = LibsodiumCryptoEngine().deriveKey(
+                password = password,
+                salt = salt,
+                opsLimit = 1,
+                memLimit = 8 * 1024,
+            ).getOrThrow()
+
+            assertContentEquals(expected, derived.key)
+        } finally {
+            derived?.clear()
+            password.fill(0)
+            salt.fill(0)
+            expected.fill(0)
+        }
+    }
+
+    @Test
+    fun `production Argon2 matches the established text password vector`() = runTest {
+        val password = "TestPassword123!".encodeToByteArray()
+        val salt = ByteArray(16) { it.toByte() }
+        val expected = decodeHex("4c1422bcf6ea79ca8b843170ffbaf713f854f1b97e4fd0df07d741a650cacab7")
+        var derived: DerivedKey? = null
+        try {
+            derived = LibsodiumCryptoEngine().deriveKey(
+                password = password,
+                salt = salt,
+                opsLimit = 1,
+                memLimit = 8 * 1024,
+            ).getOrThrow()
+
+            assertContentEquals(expected, derived.key)
+        } finally {
+            derived?.clear()
+            password.fill(0)
+            salt.fill(0)
+            expected.fill(0)
+        }
+    }
+
     @Test
     fun `built-in profiles meet the supported minimum and increase monotonically`() {
         val profiles = listOf(
@@ -82,5 +153,12 @@ class Argon2Test {
         assertEquals(first.hashCode(), second.hashCode())
         assertContentEquals(ciphertext, first.ciphertext)
         assertContentEquals(nonce, first.nonce)
+    }
+}
+
+private fun decodeHex(value: String): ByteArray {
+    require(value.length % 2 == 0)
+    return ByteArray(value.length / 2) { index ->
+        value.substring(index * 2, index * 2 + 2).toInt(16).toByte()
     }
 }

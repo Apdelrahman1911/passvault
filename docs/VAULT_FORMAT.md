@@ -18,14 +18,16 @@ blind-index lookup indexes and attachment object state/version columns through e
 ## Key material
 
 ```text
-master password bytes + random Argon2 salt
-                  -> Argon2id KEK
+master password characters -> strict UTF-8 -> lowercase ASCII hex bytes
+lowercase hex bytes + random Argon2 salt -> Argon2id KEK
 random 32-byte VEK -> XChaCha20-Poly1305 wrapped with KEK
 VEK + purpose/record context -> keyed BLAKE2b subkeys
 ```
 
 The KEK is never persisted. `vault_metadata` stores bounded Argon2 parameters, the wrapped VEK, and an encrypted
-verification record. Unlock publishes the VEK only after both unwrap and verification authentication succeed.
+verification record. Lowercase hexadecimal encoding is a historical, compatibility-critical part of the KDF input;
+changing it to raw UTF-8 would change every KEK. The UTF-8 and hexadecimal buffers are mutable and cleared
+best-effort after use. Unlock publishes the VEK only after both unwrap and verification authentication succeed.
 
 ### Argon2id parameters
 
