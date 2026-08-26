@@ -58,7 +58,9 @@ kotlin {
 
         getByName("androidMain") {
             dependencies {
-                implementation(libs.jna)
+                // The libsodium Android artifact already supplies JNA as an AAR at runtime.
+                // Keep only the compile-time API here so the plain JVM JAR is not packaged too.
+                compileOnly(libs.jna)
             }
         }
 
