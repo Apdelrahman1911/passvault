@@ -6,6 +6,7 @@ import com.passvault.core.security.BiometricAvailability
 import com.passvault.core.security.BiometricCapability
 import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.BiometricKeyStoreException
+import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointed
@@ -20,12 +21,10 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -79,17 +78,19 @@ import platform.Security.kSecMatchLimitOne
 import platform.Security.kSecReturnData
 import platform.Security.kSecUseAuthenticationContext
 import platform.Security.kSecValueData
-import kotlin.coroutines.resume
 
 /**
  * Stores the VEK in a device-only Keychain item protected by the current Face
  * ID or Touch ID enrollment. The item is not synchronizable or transferable.
  */
-class IosBiometricKeyStore : BiometricKeyStore {
+class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
     private val mutex = Mutex()
+    private val promptCoordinator = IosBiometricPromptCoordinator<LAContext>(LAContext::invalidate)
 
     private val defaults: NSUserDefaults
         get() = NSUserDefaults.standardUserDefaults
+
+    override fun cancelActive() = promptCoordinator.cancelActive()
 
     override suspend fun getCapability(): BiometricCapability = withNewLAContext { context ->
         memScoped {
@@ -118,60 +119,68 @@ class IosBiometricKeyStore : BiometricKeyStore {
         defaults.boolForKey(markerKey(vaultId))
     }
 
-    override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> = mutex.withLock {
-        val capability = getCapability()
-        val prerequisiteFailure = enrollmentFailure(vaultKey.size, capability.availability)
-        val authentication = if (prerequisiteFailure == null) {
-            authenticateForEnrollment()
-        } else {
-            Result.failure(prerequisiteFailure)
-        }
-        authentication.fold(
-            onSuccess = {
-                withContext(Dispatchers.Default) {
-                    // Clear the marker before replacement so a failed add cannot advertise
-                    // a Keychain item that no longer exists.
-                    defaults.removeObjectForKey(markerKey(vaultId))
-                    val deleteResult = deleteKeychainItem(vaultId)
-                    val result = deleteResult.exceptionOrNull()?.let { error -> Result.failure<Unit>(error) }
-                        ?: addKeychainItem(vaultId, vaultKey)
-                    if (result.isSuccess) {
-                        defaults.setBool(true, markerKey(vaultId))
-                    }
-                    result
+    override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> =
+        promptCoordinator.withOperation(
+            onBusy = { Result.failure(BiometricKeyStoreException.Cancelled()) },
+        ) { promptOperation ->
+            mutex.withLock {
+                val capability = getCapability()
+                val prerequisiteFailure = enrollmentFailure(vaultKey.size, capability.availability)
+                val authentication = if (prerequisiteFailure == null) {
+                    authenticateForEnrollment(promptOperation)
+                } else {
+                    Result.failure(prerequisiteFailure)
                 }
-            },
-            onFailure = { error ->
-                Result.failure(error)
-            },
-        )
-    }
-
-    override suspend fun retrieve(vaultId: String): Result<ByteArray> {
-        var producedKey: ByteArray? = null
-        var transferredToCaller = false
-        return try {
-            val result = mutex.withLock {
-                if (!defaults.boolForKey(markerKey(vaultId))) {
-                    return@withLock Result.failure(BiometricKeyStoreException.NotEnabled())
-                }
-                readKeychainItemCancellable(vaultId)
-                    .onSuccess { producedKey = it }
-                    .onFailure { error ->
-                        if (error is BiometricKeyStoreException.Invalidated ||
-                            error is BiometricKeyStoreException.NotEnabled
-                        ) {
+                authentication.fold(
+                    onSuccess = {
+                        withContext(Dispatchers.Default) {
+                            // Clear the marker before replacement so a failed add cannot advertise
+                            // a Keychain item that no longer exists.
                             defaults.removeObjectForKey(markerKey(vaultId))
-                            deleteKeychainItem(vaultId)
+                            val deleteResult = deleteKeychainItem(vaultId)
+                            val result = deleteResult.exceptionOrNull()?.let { error -> Result.failure<Unit>(error) }
+                                ?: addKeychainItem(vaultId, vaultKey)
+                            if (result.isSuccess) {
+                                defaults.setBool(true, markerKey(vaultId))
+                            }
+                            result
                         }
-                    }
+                    },
+                    onFailure = { error ->
+                        Result.failure(error)
+                    },
+                )
             }
-            transferredToCaller = true
-            result
-        } finally {
-            if (!transferredToCaller) producedKey?.fill(0)
         }
-    }
+
+    override suspend fun retrieve(vaultId: String): Result<ByteArray> =
+        promptCoordinator.withOperation(
+            onBusy = { Result.failure(BiometricKeyStoreException.Cancelled()) },
+        ) { promptOperation ->
+            var producedKey: ByteArray? = null
+            var transferredToCaller = false
+            try {
+                val result = mutex.withLock {
+                    if (!defaults.boolForKey(markerKey(vaultId))) {
+                        return@withLock Result.failure(BiometricKeyStoreException.NotEnabled())
+                    }
+                    readKeychainItemCancellable(vaultId, promptOperation)
+                        .onSuccess { producedKey = it }
+                        .onFailure { error ->
+                            if (error is BiometricKeyStoreException.Invalidated ||
+                                error is BiometricKeyStoreException.NotEnabled
+                            ) {
+                                defaults.removeObjectForKey(markerKey(vaultId))
+                                deleteKeychainItem(vaultId)
+                            }
+                        }
+                }
+                transferredToCaller = true
+                result
+            } finally {
+                if (!transferredToCaller) producedKey?.fill(0)
+            }
+        }
 
     override suspend fun delete(vaultId: String): Result<Unit> = mutex.withLock {
         withContext(Dispatchers.Default) {
@@ -186,15 +195,27 @@ class IosBiometricKeyStore : BiometricKeyStore {
         }
     }
 
-    private suspend fun authenticateForEnrollment(): Result<Unit> = withContext(Dispatchers.Main) {
-        withNewLAContext { context ->
-            suspendCancellableCoroutine { continuation ->
+    private suspend fun authenticateForEnrollment(
+        operation: IosBiometricPromptCoordinator.Operation,
+    ): Result<Unit> = withContext(Dispatchers.Main) {
+        suspendCancellableCoroutine { continuation ->
+            val context = LAContext()
+            continuation.invokeOnCancellation { promptCoordinator.cancel(operation) }
+            if (
+                promptCoordinator.activate(
+                    operation = operation,
+                    context = context,
+                    reportCancelled = {
+                        continuation.resumeIfPending(Result.failure(BiometricKeyStoreException.Cancelled()))
+                    },
+                )
+            ) {
                 context.evaluatePolicy(
                     LAPolicyDeviceOwnerAuthenticationWithBiometrics,
                     localizedReason = ENROLLMENT_REASON,
                 ) { success, error ->
-                    if (continuation.isActive) {
-                        continuation.resume(
+                    promptCoordinator.finishPrompt(operation, context) {
+                        continuation.resumeIfPending(
                             if (success) Result.success(Unit) else Result.failure(error.toBiometricException()),
                         )
                     }
@@ -254,28 +275,42 @@ class IosBiometricKeyStore : BiometricKeyStore {
 
     /**
      * SecItemCopyMatching is synchronous while iOS presents authentication.
-     * Run it as a child so cancellation can invalidate the supplied LAContext
-     * immediately, then wipe any key produced after the caller was cancelled.
+     * Dispatch it outside the caller job so cancellation can invalidate the
+     * LAContext without waiting for the blocking call. Any late key is wiped.
      */
-    private suspend fun readKeychainItemCancellable(vaultId: String): Result<ByteArray> {
-        var producedKey: ByteArray? = null
-        var transferred = false
-        return try {
-            val result = coroutineScope {
-                withNewLAContext({ localizedReason = UNLOCK_REASON }) { context ->
-                    val read = async(Dispatchers.Default) {
-                        readKeychainItem(vaultId, context).onSuccess { producedKey = it }
-                    }
-                    // When the caller is cancelled, the context is invalidated before
-                    // coroutineScope waits for the synchronous Keychain child to finish.
-                    read.await()
+    private suspend fun readKeychainItemCancellable(
+        vaultId: String,
+        operation: IosBiometricPromptCoordinator.Operation,
+    ): Result<ByteArray> = suspendCancellableCoroutine { continuation ->
+        val context = LAContext().apply { localizedReason = UNLOCK_REASON }
+        continuation.invokeOnCancellation { promptCoordinator.cancel(operation) }
+        if (
+            promptCoordinator.activate(
+                operation = operation,
+                context = context,
+                reportCancelled = {
+                    continuation.resumeKeyResult(Result.failure(BiometricKeyStoreException.Cancelled()))
+                },
+            )
+        ) {
+            val read = Runnable {
+                val result = try {
+                    readKeychainItem(vaultId, context)
+                } catch (_: Exception) {
+                    Result.failure(BiometricKeyStoreException.AuthenticationFailed())
+                }
+                val accepted = promptCoordinator.finishPrompt(operation, context) {
+                    continuation.resumeKeyResult(result)
+                }
+                if (!accepted) result.getOrNull()?.fill(0)
+            }
+            try {
+                Dispatchers.Default.dispatch(continuation.context, read)
+            } catch (_: Exception) {
+                promptCoordinator.finishPrompt(operation, context) {
+                    continuation.resumeKeyResult(Result.failure(BiometricKeyStoreException.AuthenticationFailed()))
                 }
             }
-            currentCoroutineContext().ensureActive()
-            transferred = true
-            result
-        } finally {
-            if (!transferred) producedKey?.fill(0)
         }
     }
 
@@ -363,6 +398,16 @@ class IosBiometricKeyStore : BiometricKeyStore {
         CFDictionarySetValue(query, kSecAttrAccount, account)
         CFDictionarySetValue(query, kSecAttrSynchronizable, kCFBooleanFalse)
         return query
+    }
+}
+
+private fun <T> CancellableContinuation<T>.resumeIfPending(value: T) {
+    resume(value) { _, _, _ -> }
+}
+
+private fun CancellableContinuation<Result<ByteArray>>.resumeKeyResult(value: Result<ByteArray>) {
+    resume(value) { _, undelivered, _ ->
+        undelivered.getOrNull()?.fill(0)
     }
 }
 
