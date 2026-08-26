@@ -2,6 +2,7 @@ package com.passvault.android
 
 import android.app.Application
 import android.os.StrictMode
+import com.passvault.android.attachment.AndroidAttachmentFileStore
 import com.passvault.android.di.androidModule
 import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
 import com.passvault.android.security.AndroidScreenshotProtection
@@ -22,6 +23,7 @@ import org.koin.core.logger.Level
 class PassVaultApplication : Application() {
     private val screenshotProtection: AndroidScreenshotProtection by inject()
     private val lifecycleLockCoordinator: AndroidLifecycleLockCoordinator by inject()
+    private val attachmentFileStore: AndroidAttachmentFileStore by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -61,6 +63,7 @@ class PassVaultApplication : Application() {
 
     private fun lockAndReleaseSensitiveResources() {
         screenshotProtection.cleanup()
+        runCatching { attachmentFileStore.cleanupForMemoryPressure() }
         lifecycleLockCoordinator.onMemoryPressure()
     }
 
