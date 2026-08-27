@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `f46455a`. Every close decision was checked against the issue, its comments, and the code. **58 issues are closed on GitHub; 54 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `b6d80a2`. Every close decision was checked against the issue, its comments, and the code. **61 issues are closed on GitHub; 51 remain open.**
 
 ## Triage legend
 
@@ -11,16 +11,17 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 71** (40 resolved as listed below; 31 still open)
-- **DIG: 23**
-- **CLOSE/ACCEPT: 18**
+- **FIX: 70** (41 resolved as listed below; 29 still open)
+- **DIG: 22**
+- **CLOSE/ACCEPT: 20**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
 
-- **Closed with an evidence comment:** #55, #56, #66, #70, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
+- **Closed with an evidence comment:** #55, #56, #66, #70, #80–#81, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
 - **Reclassified to FIX (open):** #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
 - **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
+- **Reclassified to CLOSE/ACCEPT:** #80 (the user-writable Windows install premise was removed by #36), #81 (the pinned Gradle action makes PR, testing, and release refs read-only and does not cache configuration state without an encryption key).
 - **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
@@ -49,6 +50,7 @@
 - **Resolved FIX:** #65 — iOS lock transitions now invalidate the lifecycle-owned active `LAContext`; one non-queuing key-store/controller instance rejects stale callbacks and wipes late Keychain results without changing protected-item policy or format.
 - **Resolved FIX:** #68 — TOTP generation now decodes Base32 directly from mutable character buffers and uses byte-array HMAC implementations on every platform, clearing every application-owned seed and digest intermediate without introducing a long-lived decoded-key cache.
 - **Resolved FIX:** #69 — format-2 backup readers and writers now admit only the two historical 64 MiB Argon2 profiles (three or four operations), rejecting attacker-only profiles before derivation while leaving legacy format-1 compatibility unchanged.
+- **Resolved FIX:** #71 — format-2 restore now authenticates actual encrypted attachment bytes in metadata schema 3, preflights and rechecks attachment-volume capacity with bounded reserve, preserves schema-1/2 compatibility, maps real storage-full failures to an actionable localized error, and cleans objects published immediately before cancellation.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
@@ -125,7 +127,6 @@ The detailed tables below retain the original recommendations for traceability; 
 | [77](https://github.com/Apdelrahman1911/passvault/issues/77) | Medium | Sensitive clipboard destroyed on every `willResignActive`, breaking paste-to-other-app | Clearing iOS clipboard on resign-active breaks copy-to-other-app; clear on lock/expiry/overwrite instead. |
 | [78](https://github.com/Apdelrahman1911/passvault/issues/78) | Medium | Dependabot covers only GitHub Actions; Gradle and Ruby dependencies are never updated | The missing Gradle/Bundler update PRs are real; repository alerts may still be graph-driven, so retitle away from “no alerts”. |
 | [79](https://github.com/Apdelrahman1911/passvault/issues/79) | Medium | Keychain VEK orphaned when the `NSUserDefaults` marker is lost | NSUserDefaults and Keychain enrollment can diverge; reconcile/probe both stores and make deletion idempotent. |
-| [80](https://github.com/Apdelrahman1911/passvault/issues/80) | Medium | Windows bridge resolves imports via default DLL search order from a user-writable directory | Windows static imports lack a proven restricted search policy; harden linker/load configuration and inspect the PE artifact. |
 | [83](https://github.com/Apdelrahman1911/passvault/issues/83) | Medium | Decrypted attachment previews persist in the shared temp directory across crashes | Desktop plaintext previews have crash residue despite timers/startup sweep; add private directories, restart cleanup, and shortest practical leases. |
 | [84](https://github.com/Apdelrahman1911/passvault/issues/84) | Medium | Permanent opaque-cover lockout after two consecutive cleanup failures | Two cleanup failures can leave the iOS privacy cover until restart; retain fail-closed behavior but add bounded recovery. |
 | [86](https://github.com/Apdelrahman1911/passvault/issues/86) | Medium | Restored attachment objects are never verified against the vault key | Restore authenticates the outer backup but not attachment objects under the vault key; verify/quarantine before committing rows. |
@@ -164,7 +165,6 @@ The detailed tables below retain the original recommendations for traceability; 
 | [61](https://github.com/Apdelrahman1911/passvault/issues/61) | Medium | Biometric key does not request StrongBox and relies on an implicit GCM-IV default | StrongBox omission is optional capability hardening and the GCM-IV concern is false under Android defaults; keep for device/product decision, not as a Medium bypass. |
 | [62](https://github.com/Apdelrahman1911/passvault/issues/62) | Medium | Failed-attempt throttle is volatile, trivially reset, and capped at 5 seconds | Volatile five-second backoff is a policy weakness, but persistence needs an authenticated/device-bound design and an attack-rate decision. |
 | [67](https://github.com/Apdelrahman1911/passvault/issues/67) | Medium | Dependency verification is checksum-only, and the repo's own gate forbids enabling signatures | SHA-256 verification provides artifact integrity; the remaining provenance/signature/SBOM choice needs an explicit supply-chain policy and curated keys. |
-| [81](https://github.com/Apdelrahman1911/passvault/issues/81) | Medium | Gradle caching enabled in code-signing jobs with no read-only or encryption settings | PR cache poisoning is largely prevented by setup-gradle defaults, but signing dispatches are not covered; make signing caches explicitly read-only/disabled. |
 | [82](https://github.com/Apdelrahman1911/passvault/issues/82) | Medium | `ENABLE_USER_SCRIPT_SANDBOXING = NO` with an unpinned Gradle shell phase in Release | Unsandboxed/untracked Release Gradle phase is confirmed, but impact depends on the build trust boundary; validate inputs/outputs and sandbox compatibility before gating. |
 | [85](https://github.com/Apdelrahman1911/passvault/issues/85) | Medium | `~/.passvault` creation has a permission TOCTOU window; Windows gets no explicit ACL | The create-then-chmod window and missing explicit Windows ACL are code facts, but cross-user exposure is unproven; verify OS behavior before hardening. |
 | [87](https://github.com/Apdelrahman1911/passvault/issues/87) | Low | Filename AAD uses unprefixed concatenation | AAD concatenation is ambiguous in theory, but UUID-derived keys prevent the claimed swap; retain as next-format cryptographic hardening/design review. |
@@ -189,6 +189,8 @@ The detailed tables below retain the original recommendations for traceability; 
 | [56](https://github.com/Apdelrahman1911/passvault/issues/56) | Medium | `SecureTextField` lacks password semantics and autofill/content-capture opt-out | The claimed semantics/autofill gap is false: Compose derives password semantics/content type and Android FLAG_SECURE disables capture. Close or merge the remaining String-churn concern with #112/#54. |
 | [66](https://github.com/Apdelrahman1911/passvault/issues/66) | Medium | Digit-to-modulus mapping is a hard-coded branch, not derived from `digits` | False positive: only 6- and 8-digit TOTP configurations pass validation, and tests reject 7; the modulus branch is exhaustive. Close as maintainability. |
 | [70](https://github.com/Apdelrahman1911/passvault/issues/70) | Medium | `clearVaultTables()` destroys version/migration/corruption bookkeeping that is never restored | The tables are legacy schema-only and Room bookkeeping is untouched; no current data-loss defect. Close or rewrite as future schema hygiene. |
+| [80](https://github.com/Apdelrahman1911/passvault/issues/80) | Medium | Windows bridge resolves imports via default DLL search order from a user-writable directory | Already mitigated by #36: machine-wide fixed installation ACLs remove the stated write primitive, and matching timestamped Authenticode protects the launcher/bridge. The linker flag remains defense-in-depth. |
+| [81](https://github.com/Apdelrahman1911/passvault/issues/81) | Medium | Gradle caching enabled in code-signing jobs with no read-only or encryption settings | False positive: pinned setup-gradle v6 defaults every non-default ref to read-only, release jobs require `release`, PR jobs use merge refs, and configuration cache is disabled without an encryption key. |
 | [88](https://github.com/Apdelrahman1911/passvault/issues/88) | Low | `finalize()` on `SensitiveText` is a false assurance | finalize() is not a reliable wipe mechanism; remove the false assurance and rely on explicit clear (non-security cleanup). |
 | [95](https://github.com/Apdelrahman1911/passvault/issues/95) | Low | Argon2 parallelism forced to 1, undocumented | parallelism=1 is intentional and required by the current libsodium binding; document and close. |
 | [97](https://github.com/Apdelrahman1911/passvault/issues/97) | Low | Dead `DELETING` state and `updateStorageState` | DELETING/updateStorageState are dead schema/API scaffolding, not an independent tamper vulnerability; remove or implement and close as hygiene. |
@@ -211,9 +213,9 @@ The detailed tables below retain the original recommendations for traceability; 
 
 ## Suggested execution order
 
-1. Fix the remaining attachment/restore and session-boundary paths first (#71, #74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
-2. Address the remaining CI, release, and platform defects (#72–#73, #76, #80, #94, #117, #126–#127, #139, #141, #144).
+1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
+2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #52, #61–#62, #67, #81–#82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
+   #35, #52, #61–#62, #67, #82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
