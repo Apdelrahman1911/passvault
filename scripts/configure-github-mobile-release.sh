@@ -207,6 +207,7 @@ configure_environment() {
             wait_timer: 0,
             reviewers: [{ type: "User", id: $reviewer_id }],
             prevent_self_review: true,
+            can_admins_bypass: false,
             deployment_branch_policy: {
                 protected_branches: false,
                 custom_branch_policies: true
@@ -217,6 +218,7 @@ configure_environment() {
             "wait_timer": 0,
             "reviewers": [],
             "prevent_self_review": false,
+            "can_admins_bypass": false,
             "deployment_branch_policy": {
                 "protected_branches": false,
                 "custom_branch_policies": true

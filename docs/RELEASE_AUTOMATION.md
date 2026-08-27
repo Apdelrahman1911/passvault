@@ -205,9 +205,9 @@ The `release-promotion` environment contains no secrets or variables. It allows
 only `testing`, requires the configured reviewer, and prevents the actor who
 dispatched Candidate Readiness from approving the release-branch mutation.
 GitHub enables administrator bypass by default and its public environment API
-does not expose that setting. Disable administrator bypass manually for both
-`release-promotion` and `mobile-production`. The configuration report fails
-while either environment remains bypassable, and the promotion job independently
+must explicitly receive the non-bypassable setting. The configuration script
+disables administrator bypass for every managed environment and verifies both
+`release-promotion` and `mobile-production`; the promotion job independently
 fails closed while `release-promotion` remains bypassable.
 
 See `docs/RELEASE_SIGNING.md` for certificate requirements and rotation. Use

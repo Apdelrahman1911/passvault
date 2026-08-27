@@ -100,6 +100,21 @@ cp .github/workflows/production-signing-validation.yml \
 ruby -e '
   path = ARGV.fetch(0)
   source = File.read(path, encoding: "UTF-8")
+  abort("missing administrator-bypass configuration fixture") unless
+    source.sub!("can_admins_bypass: false", "can_admins_bypass: true")
+  File.write(path, source)
+' "$authority_policy_fixture/configure.sh"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted bypassable environment configuration." >&2
+    exit 1
+fi
+
+cp scripts/configure-github-mobile-release.sh "$authority_policy_fixture/configure.sh"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
   needle = "          (cd validated-release && sha256sum --check SHA256SUMS.txt)\n"
   replacement = needle + "          gh workflow run production-release.yml --ref release\n"
   abort("missing signing-validation fixture") unless source.sub!(needle, replacement)
@@ -2091,7 +2106,8 @@ abort("Azure production-variable cleanup is missing") unless
   script.include?('expected_production_variables+=("${selected_remote_variable_names[@]}")')
 abort("Production review configuration does not prevent self-review") unless
   script.scan("prevent_self_review: true").length == 1 &&
-  script.scan('"prevent_self_review": false').length == 1
+  script.scan('"prevent_self_review": false').length == 1 &&
+  script.scan(/"?can_admins_bypass"?: false/).length == 2
 RUBY
 # REXML parses the complete document before the structural assertions below,
 # so malformed XML fails without relying on runner-specific xmllint packages.

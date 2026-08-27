@@ -256,10 +256,9 @@ review. It is an authorization boundary only: it must contain no secrets or vari
 `release` only through this environment, and signing validation contains no automatic production continuation. The
 documented production path then requires a separate `Production Store Release` dispatch.
 
-After the configuration script creates or updates the environments, open the GitHub settings for `release-promotion`
-and `mobile-production` and deselect **Allow administrators to bypass configured protection rules**. GitHub's public
-environment API cannot change this UI-only control. Rerun the configuration script afterward; its final report must
-show that administrator bypass is disabled before any production workflow is dispatched.
+The configuration script explicitly disables administrator bypass for every managed environment. Its final report
+must show that both `release-promotion` and `mobile-production` are non-bypassable before any production workflow is
+dispatched. Verify the same setting in GitHub's environment UI after any manual environment change.
 
 Desktop Touch ID and Windows Hello introduce no additional secret, certificate, entitlement, relying-party server,
 or cloud credential. Their repository-built native bridges consume the existing `MACOS_*` Developer ID/notarization

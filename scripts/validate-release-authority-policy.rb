@@ -109,6 +109,8 @@ configuration = File.read(options.fetch(:configuration_path), encoding: "UTF-8")
 unless configuration.scan(/^configure_environment release-promotion true testing$/).length == 1
   abort("Release promotion environment is not configured exactly once for protected testing approval")
 end
+abort("Environment configuration does not disable administrator bypass in both payloads") unless
+  configuration.scan(/"?can_admins_bypass"?: false/).length == 2
 required_configuration_evidence = [
   'gh secret delete "$secret_name" --env release-promotion',
   'gh variable delete "$variable_name" --env release-promotion',
