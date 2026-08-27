@@ -1,6 +1,6 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `8e61a9d`. Every close decision was checked against the issue, its comments, and the code. **55 issues are closed on GitHub; 57 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `f46455a`. Every close decision was checked against the issue, its comments, and the code. **58 issues are closed on GitHub; 54 remain open.**
 
 ## Triage legend
 
@@ -11,7 +11,7 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 71** (37 resolved as listed below; 34 still open)
+- **FIX: 71** (40 resolved as listed below; 31 still open)
 - **DIG: 23**
 - **CLOSE/ACCEPT: 18**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
@@ -47,6 +47,8 @@
 - **Resolved FIX:** #60 — one lifecycle-owned Android biometric coordinator now provides the key-store and prompt-controller bindings, rejects queued operations, cancels on lock or host loss, and makes late or superseded callbacks inert.
 - **Resolved FIX:** #63 — the shared master-password policy now applies the corrected strength floor at repository and UI boundaries without changing legacy unlock acceptance, and its sensitive-buffer path avoids immutable plaintext string materialization.
 - **Resolved FIX:** #65 — iOS lock transitions now invalidate the lifecycle-owned active `LAContext`; one non-queuing key-store/controller instance rejects stale callbacks and wipes late Keychain results without changing protected-item policy or format.
+- **Resolved FIX:** #68 — TOTP generation now decodes Base32 directly from mutable character buffers and uses byte-array HMAC implementations on every platform, clearing every application-owned seed and digest intermediate without introducing a long-lived decoded-key cache.
+- **Resolved FIX:** #69 — format-2 backup readers and writers now admit only the two historical 64 MiB Argon2 profiles (three or four operations), rejecting attacker-only profiles before derivation while leaving legacy format-1 compatibility unchanged.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
@@ -209,8 +211,9 @@ The detailed tables below retain the original recommendations for traceability; 
 
 ## Suggested execution order
 
-1. Fix the remaining attachment/restore and session-boundary paths first (#53, #58–#60, #65, #71, #74–#75, #84).
-2. Address the remaining backup resource/integrity and secret-lifetime issues (#64, #68–#69, #72–#73, #76–#77, #86, #99, #101, #107, #112–#114, #118, #125).
-3. Review and harden CI/release provenance and signing (#67, #72, #73, #76, #78, #81–#82, #126–#127, #141, #146).
-4. Complete Apple/Windows/Android runtime evidence for DIG items (#35, #61, #81, #85, #108, #120, #123, #128, #132–#133, #140, #143).
-5. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
+1. Fix the remaining attachment/restore and session-boundary paths first (#71, #74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
+2. Address the remaining CI, release, and platform defects (#72–#73, #76, #80, #94, #117, #126–#127, #139, #141, #144).
+3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
+   #35, #52, #61–#62, #67, #81–#82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
+   #132–#133, #135, #140, and #143.
+4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
