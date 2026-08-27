@@ -7,11 +7,6 @@ on:
         description: Readiness-approved candidate tag to sign without publishing
         required: true
         type: string
-      start_production_after_validation:
-        description: Start the protected mobile production workflow only after validation passes
-        required: true
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -134,13 +129,3 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           path: validated-release/
-      - name: Start protected mobile production only after signing validation
-        if: inputs.start_production_after_validation
-        env:
-          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run production-release.yml \
-            --ref release \
-            -f candidate_tag="$CANDIDATE_TAG" \
-            -f platform=both

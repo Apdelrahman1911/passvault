@@ -57,6 +57,75 @@ cleanup() {
 }
 trap cleanup EXIT
 
+ruby scripts/validate-release-authority-policy.rb >/dev/null
+authority_policy_fixture="$temporary_root/release-authority-policy"
+mkdir -p "$authority_policy_fixture/workflows"
+cp .github/workflows/*.yml "$authority_policy_fixture/workflows/"
+cp scripts/configure-github-mobile-release.sh "$authority_policy_fixture/configure.sh"
+
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing promotion environment fixture") unless
+    source.sub!("    environment: release-promotion\n", "")
+  File.write(path, source)
+' "$authority_policy_fixture/workflows/candidate-readiness.yml"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted an ungated branch promotion." >&2
+    exit 1
+fi
+
+cp .github/workflows/candidate-readiness.yml \
+    "$authority_policy_fixture/workflows/candidate-readiness.yml"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing administrator-bypass assertion fixture") unless
+    source.sub!(".can_admins_bypass == false", ".can_admins_bypass == true")
+  File.write(path, source)
+' "$authority_policy_fixture/workflows/candidate-readiness.yml"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted bypassable environment protection." >&2
+    exit 1
+fi
+
+cp .github/workflows/candidate-readiness.yml \
+    "$authority_policy_fixture/workflows/candidate-readiness.yml"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "          (cd validated-release && sha256sum --check SHA256SUMS.txt)\n"
+  replacement = needle + "          gh workflow run production-release.yml --ref release\n"
+  abort("missing signing-validation fixture") unless source.sub!(needle, replacement)
+  File.write(path, source)
+' "$authority_policy_fixture/workflows/production-signing-validation.yml"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted signing-validation auto-production." >&2
+    exit 1
+fi
+
+cp .github/workflows/candidate-readiness.yml \
+    "$authority_policy_fixture/workflows/candidate-readiness.yml"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing environment configuration fixture") unless
+    source.sub!("configure_environment release-promotion true testing\n", "")
+  File.write(path, source)
+' "$authority_policy_fixture/configure.sh"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted missing environment configuration." >&2
+    exit 1
+fi
+
 fake_security_bin="$temporary_root/fake-security-bin"
 mkdir -p "$fake_security_bin"
 cat > "$fake_security_bin/security" <<'FAKE_SECURITY'

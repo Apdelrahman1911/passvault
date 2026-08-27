@@ -247,9 +247,26 @@ configure_environment() {
 
 configure_environment mobile-beta false testing
 configure_environment mobile-external-beta true testing
+configure_environment release-promotion true testing
 configure_environment mobile-production true release
 configure_environment play-access-beta false main
 configure_environment play-access-production true main
+
+# Branch promotion is an authorization boundary, not a credential boundary.
+# Keep this environment empty even if a stale environment with the same name
+# existed before the protected promotion workflow was installed.
+while IFS= read -r secret_name; do
+    [[ -z "$secret_name" ]] && continue
+    gh secret delete "$secret_name" --env release-promotion \
+        --repo "$GITHUB_REPOSITORY"
+done < <(gh secret list --env release-promotion --repo "$GITHUB_REPOSITORY" \
+    --json name --jq '.[].name')
+while IFS= read -r variable_name; do
+    [[ -z "$variable_name" ]] && continue
+    gh variable delete "$variable_name" --env release-promotion \
+        --repo "$GITHUB_REPOSITORY"
+done < <(gh variable list --env release-promotion --repo "$GITHUB_REPOSITORY" \
+    --json name --jq '.[].name')
 
 # These values are consumed through the source-name indirection below.
 # shellcheck disable=SC2034
@@ -585,8 +602,10 @@ repository_secrets="$(gh secret list --repo "$GITHUB_REPOSITORY" --json name --j
 mobile_beta_secrets="$(gh secret list --env mobile-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 external_secrets="$(gh secret list --env mobile-external-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 production_secrets="$(gh secret list --env mobile-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
+release_promotion_secrets="$(gh secret list --env release-promotion --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 external_variables="$(gh variable list --env mobile-external-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 production_variables="$(gh variable list --env mobile-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
+release_promotion_variables="$(gh variable list --env release-promotion --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 beta_variables="$(gh variable list --env mobile-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 play_beta_secrets="$(gh secret list --env play-access-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 play_production_secrets="$(gh secret list --env play-access-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
@@ -859,7 +878,7 @@ if [[ "$WINDOWS_SIGNING_BACKEND" == signpath ]]; then
     fi
 fi
 
-for environment_name in mobile-beta mobile-external-beta mobile-production; do
+for environment_name in mobile-beta mobile-external-beta release-promotion mobile-production; do
     if gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" >/dev/null 2>&1; then
         append_github_row "$environment_name" "GitHub environment" "Yes" \
             "GitHub API" "Environment exists" "None"
@@ -891,10 +910,10 @@ append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual
     "Add real App Store Connect users before assigning internal testers."
 
 for environment_name in \
-    mobile-beta mobile-external-beta mobile-production \
+    mobile-beta mobile-external-beta release-promotion mobile-production \
     play-access-beta play-access-production; do
     case "$environment_name" in
-    mobile-beta | mobile-external-beta)
+    mobile-beta | mobile-external-beta | release-promotion)
         expected_branch=testing
         ;;
     mobile-production)
@@ -926,7 +945,8 @@ for environment_name in \
     fi
 done
 
-for environment_name in mobile-external-beta mobile-production play-access-production; do
+for environment_name in \
+    mobile-external-beta release-promotion mobile-production play-access-production; do
     reviewers="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
         --jq '.protection_rules[] | select(.type == "required_reviewers") | .reviewers[].reviewer.login')"
     reviewer_count="$(grep -c . <<< "$reviewers" || true)"
@@ -945,6 +965,32 @@ for environment_name in mobile-external-beta mobile-production play-access-produ
             "Rerun environment configuration and verify the repository plan supports reviewers."
     fi
 done
+
+for environment_name in release-promotion mobile-production; do
+    can_admins_bypass="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
+        --jq '.can_admins_bypass')"
+    if [[ "$can_admins_bypass" == "false" ]]; then
+        append_github_row "$environment_name administrator bypass" \
+            "GitHub environment protection" "Yes" \
+            "GitHub environment settings" "Administrators cannot bypass deployment protection" "None"
+    else
+        verification_failures=$((verification_failures + 1))
+        append_github_row "$environment_name administrator bypass" \
+            "GitHub environment protection" "No" \
+            "GitHub environment settings" "Administrators can bypass deployment protection" \
+            "Disable administrator bypass in the environment settings, then rerun verification."
+    fi
+done
+
+if [[ -z "$release_promotion_secrets" && -z "$release_promotion_variables" ]]; then
+    append_github_row "release-promotion credential scope" "GitHub environment" "Yes" \
+        "GitHub API" "No secrets or variables are present" "None"
+else
+    verification_failures=$((verification_failures + 1))
+    append_github_row "release-promotion credential scope" "GitHub environment" "No" \
+        "GitHub API" "Unexpected secrets or variables are present" \
+        "Rerun environment configuration to remove every value."
+fi
 
 append_github_row "Google OIDC providers" "Environment variables" "No" \
     "Google Cloud project" "Not configured by this script" \

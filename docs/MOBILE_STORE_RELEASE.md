@@ -107,14 +107,17 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
    require the explicit `LEGACY_TESTING_RELEASE_ON_PUSH=true` repository policy
    opt-in and stay disabled during the pilot.
 2. After Apple reports Beta App Review approved, run `Candidate Readiness` from
-   the `testing` branch for that candidate tag. It verifies Apple and Google,
-   advances `release` to the exact tested SHA, and starts no-publication
-   production signing validation.
+   the `testing` branch for that candidate tag. It verifies Apple and Google and
+   then waits for a separate `release-promotion` reviewer. Approval advances
+   `release` to the exact tested SHA and starts no-publication production signing
+   validation, which has no production-continuation capability.
 3. Approve `mobile-production`. The workflow signs/verifies Windows, notarizes
-   and verifies macOS, freezes exact desktop artifacts, and only then starts the
-   protected mobile-production promotion. Direct promotion is rejected without
-   that matching validation result.
-4. After both stores show the version live, run `Publish Stable Release` with
+   and verifies macOS, freezes exact desktop artifacts, and stops without
+   changing either store.
+4. Review the validation result, manually run `Production Store Release` from
+   `release` for the same candidate, and approve its `mobile-production` jobs.
+   Direct promotion is rejected without the matching validation result.
+5. After both stores show the version live, run `Publish Stable Release` with
    the same tag. It verifies both store builds and publishes the previously
    frozen signed/notarized desktop bundle without rebuilding it.
 

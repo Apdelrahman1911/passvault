@@ -251,6 +251,16 @@ EKU, exact publisher, and derives the certificate SHA-256 pin before uploading a
 review. Do not put any of these secrets at repository scope. The configuration script deletes and verifies the absence
 of stale repository-level copies.
 
+`release-promotion` must allow deployments only from `testing`, require the configured reviewer, and prevent self
+review. It is an authorization boundary only: it must contain no secrets or variables. Candidate Readiness may advance
+`release` only through this environment, and signing validation contains no automatic production continuation. The
+documented production path then requires a separate `Production Store Release` dispatch.
+
+After the configuration script creates or updates the environments, open the GitHub settings for `release-promotion`
+and `mobile-production` and deselect **Allow administrators to bypass configured protection rules**. GitHub's public
+environment API cannot change this UI-only control. Rerun the configuration script afterward; its final report must
+show that administrator bypass is disabled before any production workflow is dispatched.
+
 Desktop Touch ID and Windows Hello introduce no additional secret, certificate, entitlement, relying-party server,
 or cloud credential. Their repository-built native bridges consume the existing `MACOS_*` Developer ID/notarization
 inputs and the selected existing `WINDOWS_*` Authenticode backend above. Do not create a biometric secret or place a

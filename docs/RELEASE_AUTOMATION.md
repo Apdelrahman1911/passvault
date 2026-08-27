@@ -15,14 +15,15 @@ main
        ├─ mobile-external-beta approval → closed testing / external TestFlight
        ├─ unsigned Windows/macOS/Linux GitHub prerelease
        └─ Candidate Readiness after Apple Beta Review approval
-            └─ fast-forward exact SHA → release
+            └─ release-promotion approval → fast-forward exact SHA → release
                  └─ mobile-production approval → validation only
                       ├─ signed/timestamped Windows bundle
                       ├─ signed/notarized/stapled macOS bundle
                       └─ frozen attested desktop artifact (no publication)
-                           └─ protected production promotion
-                                ├─ exact Play build → production (100%)
-                                └─ exact TestFlight build → App Review (automatic release)
+                           └─ explicit Production Store Release dispatch
+                                └─ mobile-production approval → protected promotion
+                                     ├─ exact Play build → production (100%)
+                                     └─ exact TestFlight build → App Review (automatic release)
 ```
 
 CI runs on `main`, `testing`, and `release`. `main` and `testing` require a PR,
@@ -39,11 +40,13 @@ receipt is then bound to the resulting exact `testing` commit and tree.
 
 Run `scripts/configure-release-branches.sh --apply` once to create and protect
 the branches. Run `scripts/configure-github-mobile-release.sh --apply` when rotating
-mobile credentials; it scopes beta environments to `testing`, production to
-`release`, and keyless Play access-check environments to `main`. The production
-access check requires the deployment approver because it federates the same
-publisher identity as a production promotion. The access-check environments
-expose only the keyless Google identity variables;
+mobile credentials or release protections; it scopes beta environments to
+`testing`, the secret-free `release-promotion` approval to `testing`, production
+to `release`, and keyless Play access-check environments to `main`. Release
+promotion and production require a reviewer other than the dispatching actor.
+The production access check requires the deployment approver because it
+federates the same publisher identity as a production promotion. The
+access-check environments expose only the keyless Google identity variables;
 mobile signing and store-upload secrets remain confined to their release
 environments, and stale repository-level copies of those mobile secrets are
 removed and verified absent. Google federation is bound to both the repository name and its
@@ -81,9 +84,11 @@ are unsigned. Mobile IPA/AAB files are never attached to a public release.
 Apple review is asynchronous and App Store Connect has no GitHub event hook.
 After Apple emails that Beta App Review is approved, manually run `Candidate
 Readiness` from the `testing` branch for the candidate tag. That workflow
-verifies both stores using their APIs, writes `readiness-manifest.json`,
-fast-forwards `release` to the exact candidate commit, and starts `Production
-Signing Validation`. This is the only unavoidable post-review manual start.
+verifies both stores using their APIs and then waits at the secret-free
+`release-promotion` environment. A separate reviewer authorizes the immutable
+`readiness-manifest.json`, fast-forward of `release` to the exact candidate
+commit, and start of `Production Signing Validation`. Signing validation is
+explicitly unable to dispatch production.
 
 ## Production release
 
@@ -93,14 +98,16 @@ Authenticode signs/timestamps Windows native code and installers, signs every
 macOS nested native component with Developer ID and Hardened Runtime, requires
 `Accepted` notarization, staples/verifies the ticket, checks Gatekeeper, and
 freezes an attested Actions artifact. It does not publish a GitHub release or
-change either store. A manually started validation defaults to stopping here.
+change either store. Validation started by Candidate Readiness stops after
+freezing the bundle.
 
-When Candidate Readiness requested automatic continuation, successful signing
-validation starts the protected `Production Store Release`. That workflow first
-requires the matching unexpired validation artifact, then promotes the same Play
-build from `alpha` to `production` with a completed 100% rollout and submits the
-same TestFlight build to App Review with automatic release enabled. Reruns target
-the same unique version/build and never compile a new mobile binary.
+After reviewing the validation result, deliberately run `Production Store
+Release` from `release` for the same candidate and approve its
+`mobile-production` deployment. That workflow first requires the matching
+unexpired validation artifact, then promotes the same Play build from `alpha`
+to `production` with a completed 100% rollout and submits the same TestFlight
+build to App Review with automatic release enabled. Reruns target the same
+unique version/build and never compile a new mobile binary.
 
 Stores cannot become live atomically: Google may publish before Apple finishes
 review. After both consoles show the version live, run `Publish Stable Release`
@@ -193,6 +200,15 @@ releases their inputs only for the protected `release` branch after production
 deployment approval. Self-review is disabled. SignPath Foundation may require
 one additional manual approval inside SignPath; the workflow waits for the
 decision and fails closed on rejection or timeout.
+
+The `release-promotion` environment contains no secrets or variables. It allows
+only `testing`, requires the configured reviewer, and prevents the actor who
+dispatched Candidate Readiness from approving the release-branch mutation.
+GitHub enables administrator bypass by default and its public environment API
+does not expose that setting. Disable administrator bypass manually for both
+`release-promotion` and `mobile-production`. The configuration report fails
+while either environment remains bypassable, and the promotion job independently
+fails closed while `release-promotion` remains bypassable.
 
 See `docs/RELEASE_SIGNING.md` for certificate requirements and rotation. Use
 `docs/PRODUCTION_SIGNING_HANDOFF.md` as the single field-by-field private input
