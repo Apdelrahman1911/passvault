@@ -26,6 +26,7 @@ internal data class BackupStreamManifest(
     val managedAttachmentCount: Int,
     val passwordHistoryCount: Int,
     val metadataSchemaVersion: Int = CURRENT_BACKUP_METADATA_SCHEMA_VERSION,
+    val managedAttachmentObjectBytes: Long?,
 )
 
 /** One typed Room value. Only encrypted payload bytes cross this boundary. */
@@ -86,21 +87,31 @@ internal sealed interface BackupMetadataValue {
  * bounded independently and can be released before the next row is queried.
  */
 internal object BackupEntityBinaryCodec {
-    fun encodeManifest(value: BackupStreamManifest): ByteArray = Buffer()
-        .writeInt(value.metadataSchemaVersion.also(::requireSupportedMetadataSchema))
-        .writeCount(value.credentialCount)
-        .writeCount(value.folderCount)
-        .writeCount(value.tagCount)
-        .writeCount(value.credentialFolderReferenceCount)
-        .writeCount(value.credentialTagReferenceCount)
-        .writeCount(value.attachmentCount)
-        .writeCount(value.managedAttachmentCount)
-        .writeCount(value.passwordHistoryCount)
-        .readByteArray()
+    fun encodeManifest(value: BackupStreamManifest): ByteArray {
+        val version = value.metadataSchemaVersion.also(::requireSupportedMetadataSchema)
+        return Buffer()
+            .writeInt(version)
+            .writeCount(value.credentialCount)
+            .writeCount(value.folderCount)
+            .writeCount(value.tagCount)
+            .writeCount(value.credentialFolderReferenceCount)
+            .writeCount(value.credentialTagReferenceCount)
+            .writeCount(value.attachmentCount)
+            .writeCount(value.managedAttachmentCount)
+            .writeCount(value.passwordHistoryCount)
+            .apply {
+                if (version >= STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION) {
+                    val objectBytes = requireNotNull(value.managedAttachmentObjectBytes)
+                    require(objectBytes in 0..BackupLimits.MAX_BACKUP_BYTES)
+                    writeLong(objectBytes)
+                }
+            }
+            .readByteArray()
+    }
 
     fun decodeManifest(bytes: ByteArray): BackupStreamManifest = Buffer().write(bytes).let { source ->
         val metadataSchemaVersion = source.readInt().also(::requireSupportedMetadataSchema)
-        BackupStreamManifest(
+        val manifest = BackupStreamManifest(
             credentialCount = source.readCount(),
             folderCount = source.readCount(),
             tagCount = source.readCount(),
@@ -110,7 +121,16 @@ internal object BackupEntityBinaryCodec {
             managedAttachmentCount = source.readCount(),
             passwordHistoryCount = source.readCount(),
             metadataSchemaVersion = metadataSchemaVersion,
-        ).also { require(source.exhausted()) }
+            managedAttachmentObjectBytes = if (
+                metadataSchemaVersion >= STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION
+            ) {
+                source.readLong().also { require(it in 0..BackupLimits.MAX_BACKUP_BYTES) }
+            } else {
+                null
+            },
+        )
+        require(source.exhausted())
+        manifest
     }
 
     fun encode(
@@ -487,7 +507,9 @@ private fun CredentialRecordEntity.clearBinaryFields() {
 }
 
 internal const val LEGACY_BACKUP_METADATA_SCHEMA_VERSION = 1
-internal const val CURRENT_BACKUP_METADATA_SCHEMA_VERSION = 2
+internal const val PRE_STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION = 2
+internal const val STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION = 3
+internal const val CURRENT_BACKUP_METADATA_SCHEMA_VERSION = STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION
 
 private fun AttachmentRecordEntity.clearBinaryFields() {
     encryptedFilename.fill(0)

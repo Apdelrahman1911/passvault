@@ -1,8 +1,14 @@
 package com.passvault.feature.backup.presentation
 
+import com.passvault.core.database.backup.BackupInsufficientStorageException
+import com.passvault.core.designsystem.generated.resources.Res
+import com.passvault.core.designsystem.generated.resources.error_backup_insufficient_storage
+import com.passvault.core.designsystem.generated.resources.error_backup_invalid
+import com.passvault.core.designsystem.text.UiText
 import com.passvault.core.domain.model.BackupPasswordPolicy
 import com.passvault.feature.backup.BackupFile
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -109,5 +115,17 @@ class BackupPasswordUnicodeTest {
                 restoreCompleted = true,
             ),
         )
+    }
+
+    @Test
+    fun `restore capacity failures have an actionable localized message`() {
+        val capacityError = backupRestoreError(BackupInsufficientStorageException(20, 10))
+        val otherError = backupRestoreError(IllegalStateException("restore failed"))
+
+        assertEquals(
+            Res.string.error_backup_insufficient_storage,
+            (capacityError as UiText.Resource).resource,
+        )
+        assertEquals(Res.string.error_backup_invalid, (otherError as UiText.Resource).resource)
     }
 }

@@ -48,6 +48,13 @@ limits, attachment size/count/aggregate limits, and exact EOF rule. Export also 
 container with the active VEK before packaging it. Import authenticates every outer record, stages complete encrypted
 objects atomically, and restores only after all records and EOF validate.
 
+Before staging, restore reads the exact encrypted-object total from the authenticated manifest and compares it with
+free space on the attachment volume. Android uses `StatFs`, Desktop uses the target `FileStore`, and iOS uses
+filesystem attributes. The check is repeated before every object and retains one maximum-size encrypted object as a
+reserve for allocation overhead and concurrent capacity changes. Existing vault objects are already reflected in the
+reported free-space value. If capacity reporting is unavailable, restore retains its bounded writes and cleanup
+behavior rather than rejecting a valid backup solely because the platform query failed.
+
 Legacy format 1 is intentionally asymmetric: it remains readable with its historical 128 MiB/64 MiB bounds, omits
 attachments, and is not the default export route. The old in-memory byte-array creation API exists only for legacy
 compatibility/tests; user-facing file export uses format 2.
@@ -116,6 +123,8 @@ credentials are roughly 220 MiB typical or 1.53 GiB conservative and stream succ
   rejected.
 - Declared attachment size/count/aggregate failures happen before reading plaintext. Unknown-size input that crosses
   100 MiB or 512 MiB aborts its atomic object write and removes staging metadata/files.
+- Insufficient attachment-volume capacity is rejected before staging starts, or before the next object if capacity
+  shrinks during restore, and is reported separately from password/corruption failures.
 - Export overflow or sink failure aborts the candidate output. Restore limit, authentication, transcript, relation,
   constraint, I/O, or cancellation failure leaves Room unchanged and removes newly staged objects.
 - Android document providers cannot guarantee atomic replacement of the external selected URI; a provider failure may

@@ -22,12 +22,80 @@ class BackupEntityBinaryCodecTest {
             attachmentCount = 75_000,
             managedAttachmentCount = 74_000,
             passwordHistoryCount = 250_000,
+            managedAttachmentObjectBytes = 7_654_321,
         )
         val encoded = BackupEntityBinaryCodec.encodeManifest(manifest)
 
         assertEquals(manifest, BackupEntityBinaryCodec.decodeManifest(encoded))
         assertTrue(encoded.size <= BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.MANIFEST))
         encoded.fill(0)
+    }
+
+    @Test
+    fun `pre storage accounting manifest remains readable without an object byte total`() {
+        val manifest = BackupStreamManifest(
+            credentialCount = 1,
+            folderCount = 0,
+            tagCount = 0,
+            credentialFolderReferenceCount = 0,
+            credentialTagReferenceCount = 0,
+            attachmentCount = 1,
+            managedAttachmentCount = 1,
+            passwordHistoryCount = 0,
+            metadataSchemaVersion = PRE_STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION,
+            managedAttachmentObjectBytes = null,
+        )
+
+        val encoded = BackupEntityBinaryCodec.encodeManifest(manifest)
+
+        assertEquals(manifest, BackupEntityBinaryCodec.decodeManifest(encoded))
+    }
+
+    @Test
+    fun `fixed legacy manifest fixtures retain their original wire layout`() {
+        listOf(
+            LEGACY_BACKUP_METADATA_SCHEMA_VERSION,
+            PRE_STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION,
+        ).forEach { version ->
+            val fixture = manifestFixture(version)
+            val decoded = BackupEntityBinaryCodec.decodeManifest(fixture)
+
+            assertEquals(version, decoded.metadataSchemaVersion)
+            assertEquals(null, decoded.managedAttachmentObjectBytes)
+            assertContentEquals(fixture, BackupEntityBinaryCodec.encodeManifest(decoded))
+        }
+    }
+
+    @Test
+    fun `fixed current manifest fixture authenticates object storage bytes`() {
+        val fixture = manifestFixture(
+            version = STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION,
+            objectBytes = 9L,
+        )
+        val decoded = BackupEntityBinaryCodec.decodeManifest(fixture)
+
+        assertEquals(9L, decoded.managedAttachmentObjectBytes)
+        assertContentEquals(fixture, BackupEntityBinaryCodec.encodeManifest(decoded))
+    }
+
+    @Test
+    fun `current manifest rejects malformed object byte totals`() {
+        val valid = manifestFixture(
+            version = STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION,
+            objectBytes = 9L,
+        )
+        val negative = valid.copyOf().also { bytes ->
+            repeat(Long.SIZE_BYTES) { offset -> bytes[bytes.lastIndex - offset] = -1 }
+        }
+        val oversized = manifestFixture(
+            version = STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION,
+            objectBytes = BackupLimits.MAX_BACKUP_BYTES + 1L,
+        )
+
+        assertFails { BackupEntityBinaryCodec.decodeManifest(valid.copyOf(valid.size - 1)) }
+        assertFails { BackupEntityBinaryCodec.decodeManifest(valid + 0) }
+        assertFails { BackupEntityBinaryCodec.decodeManifest(negative) }
+        assertFails { BackupEntityBinaryCodec.decodeManifest(oversized) }
     }
 
     @Test
@@ -149,6 +217,19 @@ class BackupEntityBinaryCodecTest {
     private fun Buffer.writeString(value: String): Buffer = writeByteArray(value.encodeToByteArray())
 
     private fun Buffer.writeByteArray(value: ByteArray): Buffer = writeInt(value.size).write(value)
+
+    private fun manifestFixture(version: Int, objectBytes: Long? = null): ByteArray = Buffer()
+        .writeInt(version)
+        .writeInt(1)
+        .writeInt(2)
+        .writeInt(3)
+        .writeInt(4)
+        .writeInt(5)
+        .writeInt(6)
+        .writeInt(7)
+        .writeInt(8)
+        .apply { objectBytes?.let { writeLong(it) } }
+        .readByteArray()
 
     private fun CredentialRecordEntity.clearArrays() {
         summaryPayload.fill(0)

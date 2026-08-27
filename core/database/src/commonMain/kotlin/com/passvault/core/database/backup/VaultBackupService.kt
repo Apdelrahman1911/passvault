@@ -758,6 +758,13 @@ class VaultBackupService(
                 manifest.passwordHistoryCount.toLong() <=
                     manifest.credentialCount.toLong() * MAX_PASSWORD_HISTORY_PER_CREDENTIAL,
             )
+            if (manifest.metadataSchemaVersion >= STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION) {
+                val objectBytes = requireNotNull(manifest.managedAttachmentObjectBytes)
+                require(objectBytes in 0..BackupLimits.MAX_BACKUP_BYTES)
+                require((manifest.managedAttachmentCount == 0) == (objectBytes == 0L))
+            } else {
+                require(manifest.managedAttachmentObjectBytes == null)
+            }
         }
 
         override fun accept(value: BackupMetadataValue) {

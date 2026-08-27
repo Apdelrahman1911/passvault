@@ -5,6 +5,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.DesktopCryptoEngine
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
+import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
 import com.passvault.core.database.repository.CredentialRepositoryImpl
@@ -23,6 +24,9 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import okio.BufferedSink
+import okio.BufferedSource
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
@@ -38,19 +42,25 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertFails
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
-@Suppress("TooManyFunctions") // One fixture exercises the complete streaming backup transaction boundary.
+@Suppress("LargeClass", "TooManyFunctions") // One fixture exercises the complete streaming backup transaction boundary.
 class VaultBackupStreamingTest {
     private lateinit var database: VaultDatabase
     private lateinit var vaultRepository: VaultRepositoryImpl
     private lateinit var credentialRepository: CredentialRepositoryImpl
     private lateinit var attachmentRepository: AttachmentRepositoryImpl
     private lateinit var backupService: VaultBackupService
-    private lateinit var blobStore: LocalAttachmentBlobStore
+    private lateinit var blobStore: TrackingAttachmentBlobStore
     private lateinit var storageRoot: Path
     private lateinit var backupPath: Path
+    private var reportedAvailableBytes: Long? = null
+    private val queuedAvailableBytes = ArrayDeque<Long?>()
+    private var capacityChecks = 0
+    private var capacityFailure: Exception? = null
     private val cryptoEngine = DesktopCryptoEngine()
     private val credentialId = CredentialId("streaming-backup-credential")
     private val attachmentContent = ByteArray(700_123) { index -> (index % 251).toByte() }
@@ -67,7 +77,7 @@ class VaultBackupStreamingTest {
             cryptoEngine = cryptoEngine,
             keyHierarchy = VaultKeyHierarchy(cryptoEngine),
         )
-        blobStore = LocalAttachmentBlobStore(storageRoot.resolve("vault-files").toString())
+        blobStore = createTrackingBlobStore()
         attachmentRepository = AttachmentRepositoryImpl(
             attachmentDao = database.attachmentDao(),
             credentialDao = database.credentialDao(),
@@ -163,6 +173,261 @@ class VaultBackupStreamingTest {
         } finally {
             restoredCredential.clearSensitiveValues()
         }
+    }
+
+    @Test
+    fun `restore rejects insufficient capacity before staging any attachment`() = runTest {
+        createBackup()
+        val originalObjectPaths = objectPaths()
+        val encryptedBytes = storedObjectBytesOnDisk()
+        reportedAvailableBytes = minimumRestoreAvailableBytes(encryptedBytes) - 1L
+        blobStore.resetWriteTracking()
+
+        val result = withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password)
+        }
+
+        val failure = assertIs<BackupInsufficientStorageException>(result.exceptionOrNull())
+        assertEquals(reportedAvailableBytes, failure.availableBytes)
+        assertEquals(minimumRestoreAvailableBytes(encryptedBytes), failure.requiredBytes)
+        assertEquals(0, blobStore.writeCalls)
+        assertActiveVaultUnchanged(originalObjectPaths)
+        assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+    }
+
+    @Test
+    fun `restore accepts the exact capacity boundary`() = runTest {
+        createBackup()
+        val encryptedBytes = storedObjectBytesOnDisk()
+        reportedAvailableBytes = minimumRestoreAvailableBytes(encryptedBytes)
+        blobStore.resetWriteTracking()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        assertEquals(1, blobStore.writeCalls)
+        unlockExistingVault()
+        assertNotNull(credentialRepository.getById(credentialId).getOrThrow()).clearSensitiveValues()
+    }
+
+    @Test
+    fun `restore continues when filesystem capacity is unavailable`() = runTest {
+        createBackup()
+        credentialRepository.delete(credentialId).getOrThrow()
+        reportedAvailableBytes = null
+        blobStore.resetWriteTracking()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        assertTrue(capacityChecks >= 2)
+        assertEquals(1, blobStore.writeCalls)
+    }
+
+    @Test
+    fun `restore continues when capacity query fails or reports an invalid value`() = runTest {
+        createBackup()
+        credentialRepository.delete(credentialId).getOrThrow()
+        capacityFailure = IOException("simulated capacity query failure")
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        unlockExistingVault()
+        credentialRepository.delete(credentialId).getOrThrow()
+        capacityFailure = null
+        reportedAvailableBytes = -1L
+        blobStore.resetWriteTracking()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        assertTrue(capacityChecks >= 4)
+        assertEquals(1, blobStore.writeCalls)
+    }
+
+    @Test
+    fun `capacity accounting preserves variable chunk attachment compatibility`() = runTest {
+        val shortReadContent = ByteArray(4_097) { index -> (index % 197).toByte() }
+        attachmentRepository.import(
+            credentialId,
+            TrickleAttachmentSource("short-reads.bin", shortReadContent, maximumReadBytes = 2),
+        ).getOrThrow()
+        createBackup()
+        reportedAvailableBytes = minimumRestoreAvailableBytes(storedObjectBytesOnDisk())
+        credentialRepository.delete(credentialId).getOrThrow()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        unlockExistingVault()
+        val attachments = database.attachmentDao().getByCredential(credentialId.value)
+        assertEquals(2, attachments.size)
+        attachments.forEach { attachment ->
+            assertTrue(
+                attachmentRepository.verify(
+                    credentialId,
+                    com.passvault.core.domain.model.AttachmentId(attachment.id),
+                ).isSuccess,
+            )
+        }
+    }
+
+    @Test
+    fun `restore remains compatible with metadata schema 2 attachment backups`() = runTest {
+        createBackup()
+        rewriteBackupManifest { manifest ->
+            manifest.copy(
+                metadataSchemaVersion = PRE_STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION,
+                managedAttachmentObjectBytes = null,
+            )
+        }
+        credentialRepository.delete(credentialId).getOrThrow()
+        reportedAvailableBytes = Long.MAX_VALUE
+        blobStore.resetWriteTracking()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        assertEquals(1, blobStore.writeCalls)
+        assertTrue(capacityChecks >= 1)
+        unlockExistingVault()
+        assertNotNull(credentialRepository.getById(credentialId).getOrThrow()).clearSensitiveValues()
+    }
+
+    @Test
+    fun `restore rejects an authenticated underreported object total before staging`() = runTest {
+        createBackup()
+        rewriteBackupManifest { manifest ->
+            manifest.copy(managedAttachmentObjectBytes = requireNotNull(manifest.managedAttachmentObjectBytes) - 1L)
+        }
+        val originalObjectPaths = objectPaths()
+        blobStore.resetWriteTracking()
+
+        val result = withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password)
+        }
+
+        assertTrue(result.isFailure)
+        assertEquals(0, blobStore.writeCalls)
+        assertActiveVaultUnchanged(originalObjectPaths)
+        assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+    }
+
+    @Test
+    fun `restore rejects an authenticated overreported object total and removes staged data`() = runTest {
+        createBackup()
+        rewriteBackupManifest { manifest ->
+            manifest.copy(managedAttachmentObjectBytes = requireNotNull(manifest.managedAttachmentObjectBytes) + 1L)
+        }
+        val originalObjectPaths = objectPaths()
+        blobStore.resetWriteTracking()
+
+        val result = withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password)
+        }
+
+        assertTrue(result.isFailure)
+        assertEquals(1, blobStore.writeCalls)
+        assertActiveVaultUnchanged(originalObjectPaths)
+        assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+    }
+
+    @Test
+    fun `export aborts if an object changes after the manifest size scan`() = runTest {
+        val sink = PathBackupSink(backupPath)
+        blobStore.resetWriteTracking()
+        blobStore.adjustSizeOnReadCall = 1
+        blobStore.reportedSizeAdjustment = -1L
+
+        val result = withBackupPassword { password -> backupService.createBackup(password, sink) }
+
+        assertTrue(result.isFailure)
+        assertFalse(sink.committed)
+        assertTrue(sink.aborted)
+        assertFalse(Files.exists(backupPath))
+    }
+
+    @Test
+    fun `shrinking capacity aborts before the next object and cleans staged data`() = runTest {
+        val secondContent = ByteArray(17_321) { index -> (index % 199).toByte() }
+        attachmentRepository.import(
+            credentialId,
+            ByteArrayAttachmentSource("second.bin", secondContent),
+        ).getOrThrow()
+        createBackup()
+        val originalObjectPaths = objectPaths()
+        val objectSizes = database.attachmentDao().getByCredential(credentialId.value)
+            .sortedBy { it.id }
+            .map { attachment ->
+                Files.size(storageRoot.resolve("vault-files").resolve(attachment.storagePath))
+            }
+        val totalBytes = objectSizes.sum()
+        queuedAvailableBytes.addLast(minimumRestoreAvailableBytes(totalBytes))
+        queuedAvailableBytes.addLast(minimumRestoreAvailableBytes(totalBytes))
+        queuedAvailableBytes.addLast(minimumRestoreAvailableBytes(objectSizes.last()) - 1L)
+        blobStore.resetWriteTracking()
+
+        val result = withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password)
+        }
+
+        assertIs<BackupInsufficientStorageException>(result.exceptionOrNull())
+        assertEquals(1, blobStore.writeCalls)
+        assertActiveVaultUnchanged(originalObjectPaths)
+        assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+    }
+
+    @Test
+    fun `storage full during staging is actionable and cleans every staged object`() = runTest {
+        attachmentRepository.import(
+            credentialId,
+            ByteArrayAttachmentSource("second.bin", byteArrayOf(7, 8, 9)),
+        ).getOrThrow()
+        createBackup()
+        val originalObjectPaths = objectPaths()
+        listOf("No space left on device", "Disc quota exceeded").forEach { message ->
+            blobStore.resetWriteTracking()
+            blobStore.storageFullOnWriteCall = 2
+            blobStore.storageFullMessage = message
+
+            val result = withBackupPassword { password ->
+                backupService.restoreBackup(PathBackupSource(backupPath), password)
+            }
+
+            val failure = assertIs<BackupInsufficientStorageException>(result.exceptionOrNull())
+            assertNull(failure.requiredBytes)
+            assertEquals(2, blobStore.writeCalls)
+            assertActiveVaultUnchanged(originalObjectPaths)
+            assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+        }
+    }
+
+    @Test
+    fun `cancellation after object publication removes the registered staged object`() = runTest {
+        createBackup()
+        val originalObjectPaths = objectPaths()
+        val published = CompletableDeferred<Unit>()
+        blobStore.resetWriteTracking()
+        blobStore.suspendAfterWriteCall = 1
+        blobStore.publishedWrite = published
+        val source = PathBackupSource(backupPath)
+
+        val restore = async {
+            withBackupPassword { password -> backupService.restoreBackup(source, password) }
+        }
+        published.await()
+        restore.cancelAndJoin()
+
+        assertTrue(source.closed)
+        assertActiveVaultUnchanged(originalObjectPaths)
+        assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
     }
 
     @Test
@@ -363,6 +628,26 @@ class VaultBackupStreamingTest {
                     attachmentCount = 0,
                     managedAttachmentCount = 0,
                     passwordHistoryCount = 0,
+                    managedAttachmentObjectBytes = 0L,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `stream manifest rejects a managed attachment without object bytes`() {
+        assertFails {
+            backupService.newStreamValidator(
+                BackupStreamManifest(
+                    credentialCount = 1,
+                    folderCount = 0,
+                    tagCount = 0,
+                    credentialFolderReferenceCount = 0,
+                    credentialTagReferenceCount = 0,
+                    attachmentCount = 1,
+                    managedAttachmentCount = 1,
+                    passwordHistoryCount = 0,
+                    managedAttachmentObjectBytes = 0L,
                 ),
             )
         }
@@ -388,6 +673,67 @@ class VaultBackupStreamingTest {
         }
     }
 
+    private suspend fun rewriteBackupManifest(
+        transform: (BackupStreamManifest) -> BackupStreamManifest,
+    ) {
+        val rewrittenPath = storageRoot.resolve("rewritten.pvault")
+        withBackupPassword { password ->
+            val source = PathBackupSource(backupPath)
+            val magic = readMagic(source)
+            val reader = BackupV2Reader.createAfterMagic(source, password, cryptoEngine, magic)
+            val sink = PathBackupSink(rewrittenPath)
+            val writer = BackupV2Writer.create(sink, password, cryptoEngine)
+            var committed = false
+            try {
+                val manifestRecord = reader.readRecord(
+                    BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.MANIFEST),
+                )
+                require(manifestRecord.type == BackupRecordType.MANIFEST)
+                val rewrittenManifest = BackupEntityBinaryCodec.encodeManifest(
+                    transform(BackupEntityBinaryCodec.decodeManifest(manifestRecord.plaintext)),
+                )
+                try {
+                    writer.writeRecord(BackupRecordType.MANIFEST, rewrittenManifest)
+                } finally {
+                    cryptoEngine.secureWipe(manifestRecord.plaintext)
+                    cryptoEngine.secureWipe(rewrittenManifest)
+                }
+                while (true) {
+                    val record = reader.readRecord(BackupLimits.MAX_ENTITY_RECORD_BYTES)
+                    try {
+                        writer.writeRecord(record.type, record.plaintext)
+                    } finally {
+                        cryptoEngine.secureWipe(record.plaintext)
+                    }
+                    if (record.type == BackupRecordType.FINAL) break
+                }
+                reader.requireExhausted()
+                sink.commit()
+                committed = true
+            } finally {
+                reader.close()
+                writer.clear()
+                if (!committed) sink.abort()
+            }
+        }
+        Files.move(rewrittenPath, backupPath, StandardCopyOption.REPLACE_EXISTING)
+    }
+
+    private fun createTrackingBlobStore() = TrackingAttachmentBlobStore(
+        LocalAttachmentBlobStore(
+            rootPath = storageRoot.resolve("vault-files").toString(),
+            availableBytesProvider = {
+                capacityChecks++
+                capacityFailure?.let { throw it }
+                if (queuedAvailableBytes.isEmpty()) {
+                    reportedAvailableBytes
+                } else {
+                    queuedAvailableBytes.removeFirst()
+                }
+            },
+        ),
+    )
+
     private suspend fun saveCredential(title: String) {
         val credential = sampleCredential(title)
         try {
@@ -400,13 +746,16 @@ class VaultBackupStreamingTest {
     private suspend fun assertActiveVaultUnchanged(expectedObjectPaths: Set<String>) {
         assertNotNull(credentialRepository.getById(credentialId).getOrThrow()).clearSensitiveValues()
         assertEquals(expectedObjectPaths, objectPaths())
-        val attachment = database.attachmentDao().getByCredential(credentialId.value).single()
-        assertTrue(
-            attachmentRepository.verify(
-                credentialId,
-                com.passvault.core.domain.model.AttachmentId(attachment.id),
-            ).isSuccess,
-        )
+        val attachments = database.attachmentDao().getByCredential(credentialId.value)
+        assertTrue(attachments.isNotEmpty())
+        attachments.forEach { attachment ->
+            assertTrue(
+                attachmentRepository.verify(
+                    credentialId,
+                    com.passvault.core.domain.model.AttachmentId(attachment.id),
+                ).isSuccess,
+            )
+        }
     }
 
     private suspend fun unlockNewVault() {
@@ -470,6 +819,12 @@ class VaultBackupStreamingTest {
         return Files.list(directory).use { paths -> paths.map { it.fileName.toString() }.toList().toSet() }
     }
 
+    private fun storedObjectBytesOnDisk(): Long {
+        val directory = storageRoot.resolve("vault-files/objects")
+        if (!Files.exists(directory)) return 0L
+        return Files.list(directory).use { paths -> paths.mapToLong(Files::size).sum() }
+    }
+
     private fun assertDirectoryEmpty(path: Path) {
         if (!Files.exists(path)) return
         Files.list(path).use { assertEquals(0, it.count()) }
@@ -486,6 +841,26 @@ class VaultBackupStreamingTest {
         override suspend fun read(buffer: ByteArray): Int {
             if (offset == content.size) return -1
             val count = minOf(buffer.size, content.size - offset)
+            content.copyInto(buffer, destinationOffset = 0, startIndex = offset, endIndex = offset + count)
+            offset += count
+            return count
+        }
+
+        override suspend fun close() = Unit
+    }
+
+    private class TrickleAttachmentSource(
+        override val displayName: String,
+        private val content: ByteArray,
+        private val maximumReadBytes: Int,
+    ) : AttachmentContentSource {
+        override val claimedMimeType: String? = "application/octet-stream"
+        override val declaredSizeBytes = content.size.toLong()
+        private var offset = 0
+
+        override suspend fun read(buffer: ByteArray): Int {
+            if (offset == content.size) return -1
+            val count = minOf(buffer.size, maximumReadBytes, content.size - offset)
             content.copyInto(buffer, destinationOffset = 0, startIndex = offset, endIndex = offset + count)
             offset += count
             return count
@@ -656,6 +1031,73 @@ class VaultBackupStreamingTest {
 
         override suspend fun close() {
             closed = true
+        }
+    }
+
+    private class TrackingAttachmentBlobStore(
+        private val delegate: AttachmentBlobStore,
+    ) : AttachmentBlobStore {
+        var writeCalls = 0
+            private set
+        var storageFullOnWriteCall: Int? = null
+        var storageFullMessage = "No space left on device"
+        var suspendAfterWriteCall: Int? = null
+        var publishedWrite: CompletableDeferred<Unit>? = null
+        var adjustSizeOnReadCall: Int? = null
+        var reportedSizeAdjustment = 0L
+        private var readCalls = 0
+
+        override suspend fun availableBytes(): Long? = delegate.availableBytes()
+
+        override suspend fun <T> writeAtomically(
+            relativePath: String,
+            writer: suspend (BufferedSink) -> T,
+        ): T {
+            writeCalls++
+            val call = writeCalls
+            val result = if (call == storageFullOnWriteCall) {
+                delegate.writeAtomically(relativePath) {
+                    throw IOException(storageFullMessage)
+                }
+            } else {
+                delegate.writeAtomically(relativePath, writer)
+            }
+            if (call == suspendAfterWriteCall) {
+                publishedWrite?.complete(Unit)
+                awaitCancellation()
+            }
+            return result
+        }
+
+        override suspend fun <T> read(
+            relativePath: String,
+            maxBytes: Long,
+            reader: suspend (BufferedSource, Long) -> T,
+        ): T {
+            readCalls++
+            val call = readCalls
+            return delegate.read(relativePath, maxBytes) { source, size ->
+                val reportedSize = if (call == adjustSizeOnReadCall) size + reportedSizeAdjustment else size
+                reader(source, reportedSize)
+            }
+        }
+
+        override suspend fun delete(relativePath: String) = delegate.delete(relativePath)
+
+        override suspend fun exists(relativePath: String): Boolean = delegate.exists(relativePath)
+
+        override suspend fun removeUnreferencedObjects(referencedPaths: Set<String>) =
+            delegate.removeUnreferencedObjects(referencedPaths)
+
+        fun resetWriteTracking() {
+            writeCalls = 0
+            storageFullOnWriteCall = null
+            storageFullMessage = "No space left on device"
+            suspendAfterWriteCall = null
+            publishedWrite = null
+            adjustSizeOnReadCall = null
+            reportedSizeAdjustment = 0L
+            readCalls = 0
         }
     }
 

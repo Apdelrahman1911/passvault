@@ -67,6 +67,11 @@ authenticates its ID, total bytes, and chunk count. A final record authenticates
 attachment count, and total encrypted-object bytes. Attachment content therefore has two independent authenticated
 layers: its per-attachment vault-key container and the backup-password record layer.
 
+The current metadata schema authenticates the aggregate encrypted-object byte total in the manifest. Restore requires
+free space for the remaining objects plus one maximum-size object of reserve when the platform can report capacity,
+and repeats the check before each object write. Older format-2 metadata schemas did not carry the aggregate; they
+remain readable and receive the per-object running reserve check as each authenticated start record is decoded.
+
 ## Validation and two-pass restore
 
 Inspection performs one pass and writes nothing. Restore deliberately performs two passes over the same selected
