@@ -95,6 +95,8 @@ fi
 
 cp .github/workflows/candidate-readiness.yml \
     "$authority_policy_fixture/workflows/candidate-readiness.yml"
+cp .github/workflows/production-signing-validation.yml \
+    "$authority_policy_fixture/workflows/production-signing-validation.yml"
 ruby -e '
   path = ARGV.fetch(0)
   source = File.read(path, encoding: "UTF-8")
@@ -112,6 +114,8 @@ fi
 
 cp .github/workflows/candidate-readiness.yml \
     "$authority_policy_fixture/workflows/candidate-readiness.yml"
+cp .github/workflows/production-signing-validation.yml \
+    "$authority_policy_fixture/workflows/production-signing-validation.yml"
 ruby -e '
   path = ARGV.fetch(0)
   source = File.read(path, encoding: "UTF-8")
