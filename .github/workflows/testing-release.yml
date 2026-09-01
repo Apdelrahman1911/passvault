@@ -187,6 +187,12 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           path: ${{ runner.temp }}/resumed-mobile-receipts/ios-artifact-receipt.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-receipt-resume-${{ needs.prepare.outputs.build_number }}
+          if-no-files-found: error
+          retention-days: 90
+          path: ${{ runner.temp }}/resumed-mobile-receipts/resume-receipt-sources.json
 
   mobile-external:
     needs: [ prepare, mobile-internal, resume-internal-receipts, desktop-linux, desktop-windows, desktop-macos ]
@@ -371,6 +377,7 @@ jobs:
           APP_VERSION: ${{ needs.prepare.outputs.version }}
           BUILD_NUMBER: ${{ needs.prepare.outputs.build_number }}
           SOURCE_COMMIT: ${{ github.sha }}
+          RESUME_EXISTING_INTERNAL_UPLOADS: ${{ needs.prepare.outputs.resume_existing_internal_uploads }}
           CANDIDATE_TAG: ${{ needs.prepare.outputs.candidate_tag }}
           ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
           ANDROID_SIGNING_SHA256: ${{ vars.ANDROID_UPLOAD_CERTIFICATE_SHA256 }}
@@ -382,22 +389,42 @@ jobs:
           IOS_INTERNAL_STATE: completed
           IOS_EXTERNAL_STATE: submitted_for_review
         run: |
-          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          source_commit="$SOURCE_COMMIT"
+          source_tree="$(git rev-parse "$source_commit^{tree}")"
+          if [[ "$RESUME_EXISTING_INTERNAL_UPLOADS" == "true" ]]; then
+            resume_summary="mobile-receipts/resume-receipt-sources.json"
+            [[ -f "$resume_summary" ]] || {
+              echo "Resume publication requires resume-receipt-sources.json." >&2
+              exit 1
+            }
+            source_commit="$(jq -r .sourceCommit "$resume_summary")"
+            source_tree="$(jq -r .sourceTree "$resume_summary")"
+            recorded_tree="$(git rev-parse "$source_commit^{tree}")"
+            if [[ "$source_tree" != "$recorded_tree" ]]; then
+              echo "Resume publication must keep the original candidate tree." >&2
+              exit 1
+            fi
+            git merge-base --is-ancestor "$source_commit" "$GITHUB_SHA" || {
+              echo "Resume publication requires the original candidate commit to remain an ancestor of testing." >&2
+              exit 1
+            }
+            export SOURCE_COMMIT="$source_commit"
+          fi
           export SOURCE_TREE="$source_tree"
           android_receipt="mobile-receipts/android-artifact-receipt.json"
           ios_receipt="mobile-receipts/ios-artifact-receipt.json"
           ruby scripts/validate-mobile-artifact-receipt.rb \
             "$android_receipt" android "$APP_VERSION" "$BUILD_NUMBER" \
-            "$GITHUB_SHA" "$source_tree"
+            "$source_commit" "$source_tree"
           ruby scripts/validate-mobile-artifact-receipt.rb \
             "$ios_receipt" ios "$APP_VERSION" "$BUILD_NUMBER" \
-            "$GITHUB_SHA" "$source_tree"
+            "$source_commit" "$source_tree"
           ANDROID_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$android_receipt" | awk '{ print $1 }')"
           IOS_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$ios_receipt" | awk '{ print $1 }')"
           export ANDROID_ARTIFACT_RECEIPT_SHA256 IOS_ARTIFACT_RECEIPT_SHA256
           ruby scripts/create-candidate-manifest.rb > candidate-manifest.json
           ruby scripts/validate-candidate-manifest.rb \
-            --allow-pending candidate-manifest.json "$GITHUB_SHA" "$source_tree"
+            --allow-pending candidate-manifest.json "$source_commit" "$source_tree"
           ./scripts/prepare-release-assets.sh \
             downloaded-artifacts release-assets "${{ needs.prepare.outputs.version }}" test
           cp candidate-manifest.json release-assets/
@@ -416,8 +443,12 @@ jobs:
           TAG: ${{ needs.prepare.outputs.candidate_tag }}
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
+          target_commit="$GITHUB_SHA"
+          if [[ -f mobile-receipts/resume-receipt-sources.json ]]; then
+            target_commit="$(jq -r .sourceCommit mobile-receipts/resume-receipt-sources.json)"
+          fi
           gh release create "$TAG" release-assets/* \
-            --target "$GITHUB_SHA" \
+            --target "$target_commit" \
             --prerelease \
             --latest=false \
             --title "PassVault $VERSION testing candidate" \
