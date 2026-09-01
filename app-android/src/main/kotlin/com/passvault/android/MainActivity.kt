@@ -111,6 +111,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
+        attachmentFileStore.onActivityResumed()
         lifecycleLockCoordinator.onActivityResumed()
         screenshotProtection.onActivityResumed(this)
         if (screenshotProtection.isEnabled()) {

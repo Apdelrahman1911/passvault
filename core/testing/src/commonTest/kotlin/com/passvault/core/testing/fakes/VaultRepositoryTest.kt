@@ -187,7 +187,7 @@ class VaultRepositoryTest {
     @Test
     fun `change password succeeds`() = runTest {
         val currentPassword = SensitiveText.from("OldPassword123!")
-        val newPassword = SensitiveText.from("NewPassword123!")
+        val newPassword = SensitiveText.from("Cedar-Lantern_92!Orbit")
         repository.setupExistingVault()
         repository.unlock(currentPassword).getOrThrow()
 
@@ -201,13 +201,13 @@ class VaultRepositoryTest {
         repository.setupExistingVault()
         val invalidCurrent = SensitiveText.from("")
         val invalidNew = SensitiveText.from("short")
-        val validNew = SensitiveText.from("NewPassword123!")
+        val validNew = SensitiveText.from("Cedar-Lantern_92!Orbit")
 
         val newPasswordFailure = repository.changeMasterPassword(invalidCurrent, invalidNew)
         val currentPasswordFailure = repository.changeMasterPassword(invalidCurrent, validNew)
 
         assertEquals(
-            "New master password length is invalid",
+            "New master password does not meet policy",
             newPasswordFailure.exceptionOrNull()?.message,
         )
         assertEquals(

@@ -169,7 +169,7 @@ class OnboardingViewModel(
                     it.copy(errorMessage = uiText(Res.string.error_master_password_invalid))
                 }
             }
-            currentState.passwordStrength < PasswordStrength.FAIR -> {
+            !MasterPasswordPolicy.accepts(currentState.masterPassword) -> {
                 _state.update {
                     it.copy(errorMessage = uiText(Res.string.error_master_password_predictable))
                 }
@@ -192,7 +192,7 @@ class OnboardingViewModel(
             !currentState.masterPassword.hasWellFormedUnicode() ||
                 !currentState.confirmPassword.hasWellFormedUnicode() ->
                 uiText(Res.string.error_master_password_invalid)
-            currentState.passwordStrength < PasswordStrength.FAIR ->
+            !MasterPasswordPolicy.accepts(currentState.masterPassword) ->
                 uiText(Res.string.error_master_password_predictable)
             currentState.confirmPassword.isEmpty() ->
                 uiText(Res.string.error_master_confirmation_required)
@@ -308,9 +308,7 @@ class OnboardingViewModel(
         val errorMessage: UiText? = null,
     ) {
         val canContinueToConfirmation: Boolean
-            get() = MasterPasswordPolicy.accepts(masterPassword) &&
-                passwordStrength >= PasswordStrength.FAIR &&
-                !isLoading
+            get() = MasterPasswordPolicy.accepts(masterPassword) && !isLoading
 
         val canCreateVault: Boolean
             get() = canContinueToConfirmation &&

@@ -44,38 +44,32 @@ internal fun buildHealthAnalysis(
 }
 
 /**
- * SensitiveText deliberately has one redacted hash code for every value. A
- * hash-based groupBy would therefore compare every password with almost every
- * other password. Sort temporary, wipeable character copies instead, then
- * return groups that retain only the original credential references.
+ * SensitiveText deliberately has one redacted hash code for every value. Sort
+ * with short-lived, wipeable character copies rather than retaining one extra
+ * plaintext buffer for every credential throughout the operation.
  */
 private fun groupCredentialsByPassword(
     credentials: List<CredentialHealthInput>,
 ): List<List<CredentialHealthInput>> {
-    val exposed = credentials.map { credential ->
-        ExposedCredentialPassword(
-            credential = credential,
-            characters = requireNotNull(credential.password).expose(),
-        )
-    }
-    return try {
-        val sorted = exposed.sortedWith { left, right ->
-            comparePasswordCharacters(left.characters, right.characters)
-        }
-        val groups = mutableListOf<MutableList<CredentialHealthInput>>()
-        var previousCharacters: CharArray? = null
-        sorted.forEach { entry ->
-            if (previousCharacters?.contentEquals(entry.characters) != true) {
-                groups += mutableListOf(entry.credential)
-            } else {
-                groups.last() += entry.credential
+    val sorted = credentials.sortedWith { left, right ->
+        requireNotNull(left.password).withExposed { leftCharacters ->
+            requireNotNull(right.password).withExposed { rightCharacters ->
+                comparePasswordCharacters(leftCharacters, rightCharacters)
             }
-            previousCharacters = entry.characters
         }
-        groups
-    } finally {
-        exposed.forEach { it.characters.fill('\u0000') }
     }
+    val groups = mutableListOf<MutableList<CredentialHealthInput>>()
+    var previousPassword: SensitiveText? = null
+    sorted.forEach { credential ->
+        val password = requireNotNull(credential.password)
+        if (previousPassword != password) {
+            groups += mutableListOf(credential)
+        } else {
+            groups.last() += credential
+        }
+        previousPassword = password
+    }
+    return groups
 }
 
 private fun comparePasswordCharacters(left: CharArray, right: CharArray): Int {
@@ -89,11 +83,6 @@ private fun comparePasswordCharacters(left: CharArray, right: CharArray): Int {
     if (comparison == 0) comparison = left.size.compareTo(right.size)
     return comparison
 }
-
-private class ExposedCredentialPassword(
-    val credential: CredentialHealthInput,
-    val characters: CharArray,
-)
 
 private val PasswordHealth.isHealthy: Boolean
     get() = !isWeak && !isOld && !isDuplicate
@@ -124,14 +113,8 @@ private fun passwordAgeDays(now: Instant, changedAt: Instant): Int =
         .coerceIn(0L, Int.MAX_VALUE.toLong())
         .toInt()
 
-private fun calculatePasswordScore(password: SensitiveText): PasswordScore {
-    val chars = password.expose()
-    return try {
-        PasswordStrengthEvaluator.score(chars.concatToString())
-    } finally {
-        chars.fill('\u0000')
-    }
-}
+private fun calculatePasswordScore(password: SensitiveText): PasswordScore =
+    password.withExposed { characters -> PasswordStrengthEvaluator.score(characters) }
 
 private fun CredentialHealthInput.weakItem(
     maskedUsername: String?,
@@ -154,8 +137,7 @@ private fun CredentialHealthInput.oldItem(
 )
 
 private fun determineWeakness(password: SensitiveText): HealthViewModel.WeakPasswordReason {
-    val chars = password.expose()
-    return try {
+    return password.withExposed { chars ->
         when {
             password.length < RECOMMENDED_MIN_PASSWORD_LENGTH -> HealthViewModel.WeakPasswordReason.TOO_SHORT
             chars.none(Char::isLowerCase) -> HealthViewModel.WeakPasswordReason.NO_LOWERCASE
@@ -164,8 +146,6 @@ private fun determineWeakness(password: SensitiveText): HealthViewModel.WeakPass
             chars.none { !it.isLetterOrDigit() } -> HealthViewModel.WeakPasswordReason.NO_SYMBOLS
             else -> HealthViewModel.WeakPasswordReason.COMMON_OR_PREDICTABLE
         }
-    } finally {
-        chars.fill('\u0000')
     }
 }
 

@@ -4,6 +4,7 @@ package com.passvault.core.database.attachment
 
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.CryptoEnvelope
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.database.dao.AttachmentDao
 import com.passvault.core.database.dao.CredentialDao
 import com.passvault.core.database.entity.AttachmentRecordEntity
@@ -17,18 +18,26 @@ import com.passvault.core.domain.model.codePointLength
 import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.core.domain.repository.AttachmentContentSink
 import com.passvault.core.domain.repository.AttachmentContentSource
+import com.passvault.core.domain.repository.AttachmentCorruptedException
 import com.passvault.core.domain.repository.AttachmentCountLimitException
 import com.passvault.core.domain.repository.AttachmentLegacyContentUnavailableException
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.repository.AttachmentRepository
 import com.passvault.core.domain.repository.AttachmentTotalSizeLimitException
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+
+private object StableAttachmentOperationKey : CoroutineContext.Key<StableAttachmentOperation>
+
+private object StableAttachmentOperation : AbstractCoroutineContextElement(StableAttachmentOperationKey)
 
 class AttachmentRepositoryImpl(
     private val attachmentDao: AttachmentDao,
@@ -42,30 +51,43 @@ class AttachmentRepositoryImpl(
     private val codec = AttachmentContainerCodec(blobStore, cryptoEngine)
     private var recoveryCompleted = false
 
-    override suspend fun <T> withStableAttachments(block: suspend () -> T): T =
-        operationMutex.withLock {
+    override suspend fun <T> withStableAttachments(block: suspend () -> T): T {
+        checkNoNestedAttachmentOperation()
+        return operationMutex.withLock {
             recoverInterruptedOperations()
-            block()
+            withContext(StableAttachmentOperation) { block() }
         }
+    }
+
+    private suspend fun <T> withAttachmentOperation(block: suspend () -> T): T {
+        checkNoNestedAttachmentOperation()
+        return operationMutex.withLock { block() }
+    }
+
+    private suspend fun checkNoNestedAttachmentOperation() {
+        if (currentCoroutineContext()[StableAttachmentOperationKey] != null) {
+            throw IllegalStateException("Attachment repository operations cannot run inside withStableAttachments")
+        }
+    }
 
     override suspend fun import(
         credentialId: CredentialId,
         source: AttachmentContentSource,
     ): Result<AttachmentMetadata> {
-        var sourceClosed = false
         return try {
-            operationMutex.withLock {
+            withAttachmentOperation {
                 repositoryResult {
                     recoverInterruptedOperations()
                     sessionManager.withUnlockedSession { vek ->
-                        importUnlocked(credentialId, source, vek) { sourceClosed = true }
+                        importUnlocked(credentialId, source, vek)
                     }
                 }
             }
         } finally {
-            if (!sourceClosed) {
-                withContext(NonCancellable) { runCatching { source.close() } }
-            }
+            // The repository owns the picker handle for the complete import.
+            // Closing in one outer finally avoids split ownership and a
+            // second close when a platform close operation throws.
+            withContext(NonCancellable) { runCatching { source.close() } }
         }
     }
 
@@ -73,18 +95,18 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         source: AttachmentContentSource,
         vek: ByteArray,
-        markSourceClosed: () -> Unit,
     ): AttachmentMetadata {
         require(credentialDao.exists(credentialId.value)) { "The credential does not exist" }
         val managedBytes = validateImportBounds(credentialId, source.declaredSizeBytes)
-        val existingNames = attachmentDao.getByCredential(credentialId.value).map { decryptFilename(it, vek) }
+        val existingNames = attachmentDao.getByCredential(credentialId.value).map { entity ->
+            entity.readAttachmentFilename(credentialId.value, vek, cryptoEngine)
+        }
         val fileName = uniqueFileName(AttachmentPolicy.validateFileName(source.displayName), existingNames)
         val attachmentId = Uuid.random().toString()
         val keyContext = Uuid.random().toString()
         val storagePath = "objects/${Uuid.random()}.pva"
         val key = deriveAttachmentKey(vek, keyContext)
         val encryptedFilename = encryptFilename(fileName, attachmentId, credentialId.value, key)
-        var stagingInserted = false
         var completed = false
         try {
             val staging = newStagingEntity(
@@ -95,8 +117,6 @@ class AttachmentRepositoryImpl(
                 encryptedFilename = encryptedFilename,
                 declaredSize = source.declaredSizeBytes,
             )
-            attachmentDao.insert(staging)
-            stagingInserted = true
             val stored = codec.encryptToObject(
                 relativePath = storagePath,
                 source = source,
@@ -104,18 +124,19 @@ class AttachmentRepositoryImpl(
                 bindingWithoutMime = staging.toBinding(),
                 existingCredentialBytes = managedBytes,
             )
-            source.close()
-            markSourceClosed()
             val ready = staging.copy(
                 mimeType = stored.mimeType,
                 sizeBytes = stored.sizeBytes,
                 storageState = AttachmentRecordEntity.STORAGE_STATE_READY,
             )
-            attachmentDao.update(ready)
+            // Publish the row only after the object has been atomically
+            // completed. A crash before this insert leaves an unreferenced
+            // object for conservative recovery, never a live partial row.
+            attachmentDao.insert(ready)
             completed = true
             return ready.toMetadata(fileName)
         } finally {
-            if (!completed) cleanupFailedImport(attachmentId, storagePath, stagingInserted)
+            if (!completed) cleanupFailedImport(storagePath)
             encryptedFilename.clear()
             cryptoEngine.secureWipe(key)
         }
@@ -153,8 +174,8 @@ class AttachmentRepositoryImpl(
     ) = AttachmentRecordEntity(
         id = attachmentId,
         credentialId = credentialId,
-        encryptedFilename = encryptedFilename.ciphertext,
-        filenameNonce = encryptedFilename.nonce,
+        encryptedFilename = CryptoEnvelope.encode(encryptedFilename),
+        filenameNonce = encryptedFilename.nonce.copyOf(),
         mimeType = DEFAULT_MIME_TYPE,
         sizeBytes = declaredSize ?: 0,
         storagePath = storagePath,
@@ -168,22 +189,23 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
         newFileName: String,
-    ): Result<AttachmentMetadata> = operationMutex.withLock {
+    ): Result<AttachmentMetadata> = withAttachmentOperation {
         repositoryResult {
             recoverInterruptedOperations()
             sessionManager.withUnlockedSession { vek ->
                 val entity = requireAttachment(credentialId, attachmentId)
+                entity.requireStableStorageKind()
                 val existingNames = attachmentDao.getByCredential(credentialId.value)
                     .filterNot { it.id == attachmentId.value }
-                    .map { decryptFilename(it, vek) }
+                    .map { sibling -> sibling.readAttachmentFilename(credentialId.value, vek, cryptoEngine) }
                 val fileName = uniqueFileName(AttachmentPolicy.validateFileName(newFileName), existingNames)
                 val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
                 val encrypted = encryptFilename(fileName, entity.id, entity.credentialId, key)
                 try {
                     attachmentDao.update(
                         entity.copy(
-                            encryptedFilename = encrypted.ciphertext,
-                            filenameNonce = encrypted.nonce,
+                            encryptedFilename = CryptoEnvelope.encode(encrypted),
+                            filenameNonce = encrypted.nonce.copyOf(),
                         ),
                     )
                     entity.toMetadata(fileName)
@@ -198,23 +220,18 @@ class AttachmentRepositoryImpl(
     override suspend fun delete(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
-    ): Result<Unit> = operationMutex.withLock {
+    ): Result<Unit> = withAttachmentOperation {
         repositoryResult {
             recoverInterruptedOperations()
             val entity = requireAttachment(credentialId, attachmentId)
-            if (entity.storageState == AttachmentRecordEntity.STORAGE_STATE_LEGACY) {
-                attachmentDao.deleteById(entity.id)
-            } else {
-                requireManagedEntity(entity)
-                // The Room delete is the commit point. If it fails, the row
-                // still references an intact object. If cleanup fails after a
-                // committed delete, startup recovery removes the now-orphaned
-                // encrypted object without risking user-data loss.
-                attachmentDao.deleteById(entity.id)
+            val storageKind = entity.requireStableStorageKind()
+            // The Room delete is the commit point. If it fails, the row still
+            // references an intact object. Only a validated managed row grants
+            // authority to delete a filesystem object.
+            attachmentDao.deleteById(entity.id)
+            if (storageKind == AttachmentStorageKind.MANAGED) {
                 recoveryCompleted = false
-                withContext(NonCancellable) {
-                    runCatching { blobStore.delete(entity.storagePath) }
-                }
+                withContext(NonCancellable) { runCatching { blobStore.delete(entity.storagePath) } }
             }
             Unit
         }
@@ -224,7 +241,7 @@ class AttachmentRepositoryImpl(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
         sink: AttachmentContentSink,
-    ): Result<Unit> = operationMutex.withLock {
+    ): Result<Unit> = withAttachmentOperation {
         var committed = false
         try {
             repositoryResult {
@@ -255,7 +272,7 @@ class AttachmentRepositoryImpl(
     override suspend fun verify(
         credentialId: CredentialId,
         attachmentId: AttachmentId,
-    ): Result<Unit> = operationMutex.withLock {
+    ): Result<Unit> = withAttachmentOperation {
         repositoryResult {
             recoverInterruptedOperations()
             sessionManager.withUnlockedSession { vek ->
@@ -279,12 +296,15 @@ class AttachmentRepositoryImpl(
     override suspend fun deleteCredentialAndAttachments(
         credentialId: String,
         deleteCredential: suspend () -> Unit,
-    ) = operationMutex.withLock {
+    ) = withAttachmentOperation {
         recoverInterruptedOperations()
         val attachments = attachmentDao.getByCredential(credentialId)
-        val managedPaths = attachments
-            .filter { it.storageState == AttachmentRecordEntity.STORAGE_STATE_READY }
-            .map { entity -> requireManagedEntity(entity).storagePath }
+        val managedPaths = attachments.mapNotNull { entity ->
+            when (entity.requireStableStorageKind()) {
+                AttachmentStorageKind.LEGACY -> null
+                AttachmentStorageKind.MANAGED -> entity.storagePath
+            }
+        }
 
         // Credential deletion (including Room's attachment-row cascade) is
         // the commit point. Objects are deleted only afterwards, so a failed
@@ -296,27 +316,35 @@ class AttachmentRepositoryImpl(
         }
     }
 
-    /** Deletes only objects whose database state proves an interrupted operation. */
-    suspend fun recoverInterruptedOperations() {
+    /**
+     * Reclaims only rows that cannot own a published object. A persisted state
+     * marker is not sufficient authority to delete an object: contradictory
+     * rows are quarantined by failing closed, and every current-format path is
+     * protected from the orphan sweep regardless of its mutable state value.
+     */
+    private suspend fun recoverInterruptedOperations() {
         if (recoveryCompleted) return
+        var quarantinedRowFound = false
         attachmentDao.getPendingOperations().forEach { entity ->
-            require(entity.storageState != AttachmentRecordEntity.STORAGE_STATE_LEGACY)
-            require(entity.storageState != AttachmentRecordEntity.STORAGE_STATE_READY)
-            blobStore.delete(entity.storagePath)
-            attachmentDao.deleteById(entity.id)
+            if (!entity.referencesManagedObject() || blobStore.exists(entity.storagePath)) {
+                quarantinedRowFound = true
+            } else {
+                // Atomic object publication guarantees that a missing final
+                // path has no usable content. Removing this incomplete row is
+                // safe; any temporary file is reclaimed by the sweep below.
+                attachmentDao.deleteById(entity.id)
+            }
         }
-        blobStore.removeUnreferencedObjects(attachmentDao.getReadyStoragePaths().toSet())
+        blobStore.removeUnreferencedObjects(attachmentDao.getManagedStoragePaths().toSet())
+        if (quarantinedRowFound) throw AttachmentCorruptedException()
         recoveryCompleted = true
     }
 
     private suspend fun cleanupFailedImport(
-        attachmentId: String,
         storagePath: String,
-        stagingInserted: Boolean,
     ) = withContext(NonCancellable) {
         recoveryCompleted = false
-        val objectRemoved = runCatching { blobStore.delete(storagePath) }.isSuccess
-        if (stagingInserted && objectRemoved) runCatching { attachmentDao.deleteById(attachmentId) }
+        runCatching { blobStore.delete(storagePath) }
     }
 
     private suspend fun requireAttachment(
@@ -327,10 +355,9 @@ class AttachmentRepositoryImpl(
     ) { "The attachment does not exist" }
 
     private fun requireManagedEntity(entity: AttachmentRecordEntity): AttachmentRecordEntity {
-        if (entity.storageState != AttachmentRecordEntity.STORAGE_STATE_READY) {
+        if (entity.requireStableStorageKind() != AttachmentStorageKind.MANAGED) {
             throw AttachmentLegacyContentUnavailableException()
         }
-        require(entity.contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
         require(entity.sizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
         return entity
     }
@@ -345,12 +372,14 @@ class AttachmentRepositoryImpl(
         key: ByteArray,
     ): com.passvault.core.crypto.EncryptedData {
         val plaintext = fileName.encodeToByteArray(throwOnInvalidSequence = true)
-        val associatedData = filenameAssociatedData(attachmentId, credentialId)
+        val associatedData = attachmentFilenameAssociatedData(attachmentId, credentialId)
         return try {
-            cryptoEngine.encrypt(
+            PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = plaintext,
                 key = key,
                 associatedData = associatedData,
+                maxPlaintextBytes = MAX_FILENAME_UTF8_BYTES,
             ).getOrThrow()
         } finally {
             cryptoEngine.secureWipe(plaintext)
@@ -358,26 +387,11 @@ class AttachmentRepositoryImpl(
         }
     }
 
-    private suspend fun decryptFilename(entity: AttachmentRecordEntity, vek: ByteArray): String {
-        val key = deriveAttachmentKey(vek, entity.keyDerivationContext)
-        var plaintext: ByteArray? = null
-        return try {
-            plaintext = cryptoEngine.decrypt(
-                ciphertext = CryptoEnvelope.normalize(entity.encryptedFilename),
-                nonce = entity.filenameNonce,
-                key = key,
-                associatedData = filenameAssociatedData(entity.id, entity.credentialId),
-            ).getOrThrow()
-            AttachmentPolicy.validateFileName(plaintext.decodeToString(throwOnInvalidSequence = true))
-        } finally {
-            plaintext?.let(cryptoEngine::secureWipe)
-            cryptoEngine.secureWipe(key)
+    private fun uniqueFileName(requested: String, existing: List<AttachmentFilenameRead>): String {
+        val normalized = existing.mapTo(mutableSetOf()) { filename ->
+            AttachmentPolicy.canonicalFileNameKey(filename.collisionName)
         }
-    }
-
-    private fun uniqueFileName(requested: String, existing: List<String>): String {
-        val normalized = existing.mapTo(mutableSetOf()) { it.lowercase() }
-        if (requested.lowercase() !in normalized) return requested
+        if (AttachmentPolicy.canonicalFileNameKey(requested) !in normalized) return requested
         val dot = requested.lastIndexOf('.').takeIf { it in 1 until requested.lastIndex }
         val stem = if (dot == null) requested else requested.substring(0, dot)
         val extension = if (dot == null) "" else requested.substring(dot)
@@ -387,7 +401,7 @@ class AttachmentRepositoryImpl(
                 extension.codePointLength() - suffix.codePointLength()
             require(allowedStemCodePoints > 0)
             val candidate = stem.takeCodePoints(allowedStemCodePoints) + suffix + extension
-            if (candidate.lowercase() !in normalized) return candidate
+            if (AttachmentPolicy.canonicalFileNameKey(candidate) !in normalized) return candidate
         }
         error("A unique attachment filename could not be allocated")
     }
@@ -405,18 +419,15 @@ class AttachmentRepositoryImpl(
         mimeType = mimeType,
         sizeBytes = sizeBytes,
         createdAt = Instant.fromEpochMilliseconds(createdAt),
-        availability = if (storageState == AttachmentRecordEntity.STORAGE_STATE_READY) {
-            AttachmentAvailability.AVAILABLE
-        } else {
-            AttachmentAvailability.LEGACY_METADATA_ONLY
+        availability = when (requireStableStorageKind()) {
+            AttachmentStorageKind.MANAGED -> AttachmentAvailability.AVAILABLE
+            AttachmentStorageKind.LEGACY -> AttachmentAvailability.LEGACY_METADATA_ONLY
         },
     )
 
-    private fun filenameAssociatedData(attachmentId: String, credentialId: String): ByteArray =
-        "passvault:attachment:$attachmentId:$credentialId:filename:v1".encodeToByteArray()
-
     private companion object {
         const val KEY_BYTES = 32
+        const val MAX_FILENAME_UTF8_BYTES = AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4
         const val DEFAULT_MIME_TYPE = "application/octet-stream"
         val DISCARDING_SINK = object : AttachmentContentSink {
             override suspend fun write(buffer: ByteArray, byteCount: Int) = Unit

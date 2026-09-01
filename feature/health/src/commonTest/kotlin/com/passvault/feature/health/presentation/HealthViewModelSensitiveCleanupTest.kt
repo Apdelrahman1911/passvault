@@ -5,20 +5,27 @@ import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.PasswordHealth
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.model.TotpConfiguration
+import com.passvault.core.domain.repository.CredentialHealthInput
 import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.testing.TestData
 import com.passvault.core.testing.fakes.FakeCredentialRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -63,6 +70,70 @@ class HealthViewModelSensitiveCleanupTest {
             source.username?.clear()
             source.totp?.clear()
             repository.reset()
+        }
+    }
+
+    @Test
+    fun `health inputs are cleared before persistence suspends and remain clear after cancellation`() =
+        runTest(dispatcher) {
+            val backingRepository = FakeCredentialRepository()
+            val source = TestData.loginCredential(password = "weak")
+            backingRepository.setupCredentials(source)
+            val updateStarted = CompletableDeferred<Unit>()
+            val repository = object : CredentialRepository by backingRepository {
+                override suspend fun updateHealth(id: CredentialId, health: PasswordHealth): Result<Unit> {
+                    updateStarted.complete(Unit)
+                    awaitCancellation()
+                }
+            }
+            val viewModel = HealthViewModel(repository)
+
+            try {
+                viewModel.onEvent(HealthViewModel.HealthEvent.OnRefreshScan)
+                runCurrent()
+                assertTrue(updateStarted.isCompleted)
+
+                val scannedCredential = backingRepository.getLastHealthInputsForTest().single()
+                assertHealthInputCleared(scannedCredential)
+
+                viewModel.clearForLock()
+                runCurrent()
+                assertHealthInputCleared(scannedCredential)
+                assertFalse(viewModel.state.value.isLoading)
+            } finally {
+                viewModel.clearForLock()
+                source.password?.clear()
+                source.username?.clear()
+                backingRepository.reset()
+            }
+        }
+
+    @Test
+    fun `cancellation after repository success still clears the returned health inputs`() = runTest(dispatcher) {
+        val backingRepository = FakeCredentialRepository()
+        val source = TestData.loginCredential(password = "weak")
+        backingRepository.setupCredentials(source)
+        val returnedInputs = CompletableDeferred<List<CredentialHealthInput>>()
+        val repository = object : CredentialRepository by backingRepository {
+            override suspend fun getCredentialsForHealthAnalysis(): Result<List<CredentialHealthInput>> {
+                val result = backingRepository.getCredentialsForHealthAnalysis()
+                returnedInputs.complete(result.getOrThrow())
+                currentCoroutineContext().cancel()
+                return result
+            }
+        }
+        val viewModel = HealthViewModel(repository)
+
+        try {
+            viewModel.onEvent(HealthViewModel.HealthEvent.OnRefreshScan)
+            runCurrent()
+
+            assertHealthInputCleared(returnedInputs.await().single())
+        } finally {
+            viewModel.clearForLock()
+            source.password?.clear()
+            source.username?.clear()
+            backingRepository.reset()
         }
     }
 
@@ -149,5 +220,18 @@ class HealthViewModelSensitiveCleanupTest {
         assertNull(viewModel.state.value.transientMessage)
         assertTrue(viewModel.state.value.errorMessage != null)
         backingRepository.reset()
+    }
+}
+
+private fun assertHealthInputCleared(input: CredentialHealthInput) {
+    val exposedValues = listOfNotNull(
+        input.username?.expose(),
+        input.email?.expose(),
+        input.password?.expose(),
+    )
+    try {
+        assertTrue(exposedValues.all { value -> value.all { it == '\u0000' } })
+    } finally {
+        exposedValues.forEach { it.fill('\u0000') }
     }
 }

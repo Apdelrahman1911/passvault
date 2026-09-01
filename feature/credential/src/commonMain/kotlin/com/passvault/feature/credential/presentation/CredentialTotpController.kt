@@ -24,33 +24,44 @@ internal class CredentialTotpController(
 ) {
     private var tickerJob: Job? = null
 
-    fun parseEnrollment(input: String) {
+    fun parseManualEnrollment(input: String) {
         val current = state.value
         val periodSeconds = current.totpPeriodInput.toIntOrNull()
         if (periodSeconds == null) {
-            state.update { it.copy(totpSetupError = uiText(Res.string.error_totp_invalid_setup)) }
+            showSetupError()
             return
         }
-        val result = runCatching {
-            service.parse(
-                input,
-                TotpManualOptions(
-                    algorithm = current.totpAlgorithm,
-                    digits = current.totpDigits,
-                    periodSeconds = periodSeconds,
-                ),
-            )
-        }.getOrNull()
+        parseEnrollment(
+            input = input,
+            manualOptions = TotpManualOptions(
+                algorithm = current.totpAlgorithm,
+                digits = current.totpDigits,
+                periodSeconds = periodSeconds,
+            ),
+        )
+    }
+
+    fun parseScannedEnrollment(payload: String) {
+        // URI parameters are authoritative for a scanned otpauth payload. Defaults
+        // only apply if a scanner deliberately supplies a manual secret instead.
+        parseEnrollment(payload, TotpManualOptions())
+    }
+
+    private fun parseEnrollment(input: String, manualOptions: TotpManualOptions) {
+        val result = runCatching { service.parse(input, manualOptions) }.getOrNull()
         when (result) {
             is TotpParseResult.Success -> stage(result.configuration)
             is TotpParseResult.Error,
-            null,
-            -> state.update {
-                it.copy(
-                    showTotpScanner = false,
-                    totpSetupError = uiText(Res.string.error_totp_invalid_setup),
-                )
-            }
+            null, -> showSetupError()
+        }
+    }
+
+    private fun showSetupError() {
+        state.update {
+            it.copy(
+                showTotpScanner = false,
+                totpSetupError = uiText(Res.string.error_totp_invalid_setup),
+            )
         }
     }
 

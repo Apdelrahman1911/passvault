@@ -4,7 +4,10 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.CryptoEngine
+import com.passvault.core.crypto.DerivedKey
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.PaddedPayload
+import com.passvault.core.crypto.WrappedKey
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.backup.VaultBackupService
 import com.passvault.core.database.dao.VaultMetadataDao
@@ -13,6 +16,7 @@ import com.passvault.core.database.entity.CredentialTagCrossRef
 import com.passvault.core.database.entity.FolderRecordEntity
 import com.passvault.core.database.entity.PasswordHistoryRecordEntity
 import com.passvault.core.database.entity.TagRecordEntity
+import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
@@ -40,10 +44,21 @@ import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.time.Instant
 import kotlin.test.AfterTest
@@ -63,6 +78,7 @@ private const val TEST_TOTP_SECRET = "JBSWY3DPEHPK3PXP"
  * prove that encrypted records survive a lock, reject tampering, or preserve
  * all fields through serialization.
  */
+@Suppress("TooManyFunctions") // Cohesive real-Room and real-libsodium security integration fixture.
 class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
@@ -78,10 +94,22 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
     }
 
     @Test
-    fun `master password change rejects a weak replacement without changing the vault`() = runTest {
+    fun `vault creation rejects a predictable policy-length password without persistence`() = runTest {
+        val password = SensitiveText.from("passwordpass")
+
+        try {
+            assertTrue(vaultRepository.create(password).isFailure)
+            assertFalse(database.vaultMetadataDao().exists())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `master password change rejects a predictable replacement without changing the vault`() = runTest {
         createAndUnlockVault()
         val current = SensitiveText.from(TEST_MASTER_PASSWORD)
-        val weak = SensitiveText.from("too-short")
+        val weak = SensitiveText.from("Summer2024!!")
 
         try {
             assertTrue(vaultRepository.changeMasterPassword(current, weak).isFailure)
@@ -90,6 +118,54 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
         } finally {
             current.clear()
             weak.clear()
+        }
+    }
+
+    @Test
+    fun `vault created by an older version with a weak password remains unlockable`() = runTest {
+        val originalPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val legacyPassword = SensitiveText.from("passwordpass")
+        var passwordBytes: ByteArray? = null
+        var vaultKey: ByteArray? = null
+        var derivedKey: DerivedKey? = null
+        var wrappedKey: WrappedKey? = null
+
+        try {
+            assertTrue(vaultRepository.create(originalPassword).isSuccess)
+            assertTrue(vaultRepository.unlock(originalPassword).isSuccess)
+            val activeVaultKey = vaultRepository.withUnlockedSession { it.copyOf() }
+            vaultKey = activeVaultKey
+            assertTrue(vaultRepository.lock().isSuccess)
+
+            val metadata = requireNotNull(database.vaultMetadataDao().get())
+            val encodedPassword = legacyPassword.toUtf8ByteArray()
+            passwordBytes = encodedPassword
+            val derived = cryptoEngine.deriveKey(
+                password = encodedPassword,
+                salt = metadata.argon2Salt,
+                opsLimit = metadata.argon2OpsLimit,
+                memLimit = metadata.argon2MemLimit,
+            ).getOrThrow()
+            derivedKey = derived
+            val wrapped = com.passvault.core.crypto.VaultKeyHierarchy(cryptoEngine)
+                .wrapVEK(activeVaultKey, derived.key)
+                .getOrThrow()
+            wrappedKey = wrapped
+            database.vaultMetadataDao().update(
+                metadata.copy(
+                    wrappedVek = wrapped.ciphertext.copyOf(),
+                    vekNonce = wrapped.nonce.copyOf(),
+                ),
+            )
+
+            assertTrue(vaultRepository.unlock(legacyPassword).isSuccess)
+        } finally {
+            passwordBytes?.let(cryptoEngine::secureWipe)
+            vaultKey?.let(cryptoEngine::secureWipe)
+            derivedKey?.clear()
+            wrappedKey?.clear()
+            originalPassword.clear()
+            legacyPassword.clear()
         }
     }
 
@@ -218,6 +294,174 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
         } finally {
             credential.clearSensitiveValuesForTest()
             changedCredential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `credential and password history payloads hide exact plaintext length in buckets`() = runTest {
+        createAndUnlockVault()
+        val shortCredential = sampleCredential().copy(
+            id = CredentialId("credential-short-secret"),
+            username = SensitiveText.from("a"),
+            email = null,
+            password = SensitiveText.from("1234"),
+            urls = emptyList(),
+            notes = null,
+            recoveryCodes = emptyList(),
+            apiKeys = emptyList(),
+            licenseKeys = emptyList(),
+            customFields = emptyList(),
+        )
+        val longerCredential = shortCredential.copy(
+            id = CredentialId("credential-longer-secret"),
+            password = SensitiveText.from("123456789012"),
+        )
+        val changedShort = shortCredential.copy(password = SensitiveText.from("different"))
+        val changedLonger = longerCredential.copy(password = SensitiveText.from("different"))
+
+        try {
+            assertTrue(credentialRepository.save(shortCredential).isSuccess)
+            assertTrue(credentialRepository.save(longerCredential).isSuccess)
+            val shortStored = requireNotNull(database.credentialDao().getById(shortCredential.id.value))
+            val longerStored = requireNotNull(database.credentialDao().getById(longerCredential.id.value))
+            assertTrue(CryptoEnvelope.isPaddedPayload(shortStored.summaryPayload))
+            assertTrue(CryptoEnvelope.isPaddedPayload(shortStored.secretPayload))
+            assertEquals(shortStored.summaryPayload.size, longerStored.summaryPayload.size)
+            assertEquals(shortStored.secretPayload.size, longerStored.secretPayload.size)
+
+            assertTrue(credentialRepository.save(changedShort).isSuccess)
+            assertTrue(credentialRepository.save(changedLonger).isSuccess)
+            val shortHistory = database.passwordHistoryDao().getByCredential(shortCredential.id.value).single()
+            val longerHistory = database.passwordHistoryDao().getByCredential(longerCredential.id.value).single()
+            assertTrue(CryptoEnvelope.isPaddedPayload(shortHistory.encryptedPassword))
+            assertEquals(shortHistory.encryptedPassword.size, longerHistory.encryptedPassword.size)
+        } finally {
+            shortCredential.clearSensitiveValuesForTest()
+            longerCredential.clearSensitiveValuesForTest()
+            changedShort.clearSensitiveValuesForTest()
+            changedLonger.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `legacy credential payloads decrypt and are padded on the next save`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential()
+        val replacement = credential.copy(password = SensitiveText.from("replacement-password"))
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            val stored = requireNotNull(database.credentialDao().getById(credential.id.value))
+            val legacySummary = reencryptAsLegacy(
+                stored.summaryPayload,
+                stored.summaryNonce,
+                "record:${stored.id}",
+                "passvault:credential:${stored.id}:summary:v1",
+            )
+            val legacySecret = reencryptAsLegacy(
+                stored.secretPayload,
+                stored.secretNonce,
+                "record:${stored.id}",
+                "passvault:credential:${stored.id}:secret:v1",
+            )
+            database.credentialDao().update(
+                stored.copy(
+                    summaryPayload = legacySummary.first,
+                    summaryNonce = legacySummary.second,
+                    secretPayload = legacySecret.first,
+                    secretNonce = legacySecret.second,
+                ),
+            )
+
+            val legacyRead = credentialRepository.getById(credential.id).getOrThrow()
+            assertEquals("hunter2", legacyRead?.password?.toStringUnsafe())
+            legacyRead?.clearSensitiveValuesForTest()
+            assertTrue(credentialRepository.save(replacement).isSuccess)
+            val rewritten = requireNotNull(database.credentialDao().getById(credential.id.value))
+            assertTrue(CryptoEnvelope.isPaddedPayload(rewritten.summaryPayload))
+            assertTrue(CryptoEnvelope.isPaddedPayload(rewritten.secretPayload))
+            assertTrue(
+                CryptoEnvelope.isPaddedPayload(
+                    database.passwordHistoryDao().getByCredential(credential.id.value).single().encryptedPassword,
+                ),
+            )
+        } finally {
+            credential.clearSensitiveValuesForTest()
+            replacement.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `padded credential framing tamper fails closed`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential()
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            val stored = requireNotNull(database.credentialDao().getById(credential.id.value))
+            val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+            var key: ByteArray? = null
+            var decrypted: ByteArray? = null
+            var tampered: com.passvault.core.crypto.EncryptedData? = null
+            val versionedAad =
+                "passvault:padded-payload:v1\u0000passvault:credential:${stored.id}:secret:v1".encodeToByteArray()
+            try {
+                key = cryptoEngine.deriveSubkey(vek, "record:${stored.id}", 32).getOrThrow()
+                decrypted = cryptoEngine.decrypt(
+                    CryptoEnvelope.normalize(stored.secretPayload),
+                    stored.secretNonce,
+                    key,
+                    versionedAad,
+                ).getOrThrow()
+                decrypted[decrypted.lastIndex] = 1
+                tampered = cryptoEngine.encrypt(decrypted, key, versionedAad).getOrThrow()
+                database.credentialDao().update(
+                    stored.copy(
+                        secretPayload = CryptoEnvelope.markPadded(CryptoEnvelope.encode(tampered)),
+                        secretNonce = tampered.nonce.copyOf(),
+                    ),
+                )
+            } finally {
+                tampered?.clear()
+                decrypted?.let(cryptoEngine::secureWipe)
+                key?.let(cryptoEngine::secureWipe)
+                cryptoEngine.secureWipe(versionedAad)
+                cryptoEngine.secureWipe(vek)
+            }
+
+            assertTrue(credentialRepository.getById(credential.id).isFailure)
+        } finally {
+            credential.clearSensitiveValuesForTest()
+        }
+    }
+
+    @Test
+    fun `legacy password history remains readable`() = runTest {
+        createAndUnlockVault()
+        val credential = sampleCredential()
+        val changed = credential.copy(password = SensitiveText.from("changed-password"))
+        try {
+            assertTrue(credentialRepository.save(credential).isSuccess)
+            assertTrue(credentialRepository.save(changed).isSuccess)
+            val history = database.passwordHistoryDao().getByCredential(credential.id.value).single()
+            val legacy = reencryptAsLegacy(
+                history.encryptedPassword,
+                history.passwordNonce,
+                "history:${history.id}",
+                "passvault:history:${history.id}:${credential.id.value}:v2",
+            )
+            database.vaultBackupDao().deletePasswordHistory()
+            database.passwordHistoryDao().insert(
+                history.copy(encryptedPassword = legacy.first, passwordNonce = legacy.second),
+            )
+
+            val restored = requireNotNull(credentialRepository.getById(credential.id).getOrThrow())
+            try {
+                assertEquals("hunter2", restored.passwordHistory.single().password.toStringUnsafe())
+            } finally {
+                restored.clearSensitiveValuesForTest()
+            }
+        } finally {
+            credential.clearSensitiveValuesForTest()
+            changed.clearSensitiveValuesForTest()
         }
     }
 
@@ -502,6 +746,25 @@ class RepositoryMutationIntegrityIntegrationTest : RepositorySecurityIntegration
 class RepositoryMetadataSecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
+    fun `vault metadata fixes Argon2 parallelism at one and rejects another value`() = runTest {
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(vaultRepository.create(password).isSuccess)
+            assertEquals(1, requireNotNull(database.vaultMetadataDao().get()).argon2Parallelism)
+            assertTrue(vaultRepository.lock().isSuccess)
+
+            val metadata = requireNotNull(database.vaultMetadataDao().get())
+            database.vaultMetadataDao().update(metadata.copy(argon2Parallelism = 2))
+
+            assertTrue(vaultRepository.unlock(password).isFailure)
+            assertFalse(vaultRepository.isUnlocked())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
     fun `folder read rejects an oversized encrypted payload before authentication`() = runTest {
         createAndUnlockVault()
         database.folderDao().insertOrUpdate(
@@ -553,14 +816,16 @@ class RepositoryMetadataSecurityIntegrationTest : RepositorySecurityIntegrationF
     }
 
     @Test
-    fun `credential read rejects an authenticated attachment filename with bidi controls`() = runTest {
+    fun `credential read quarantines an authenticated attachment filename with bidi controls`() = runTest {
         createAndUnlockVault()
         val credential = sampleCredential()
         try {
             assertTrue(credentialRepository.save(credential).isSuccess)
             insertEncryptedAttachment(credential.id, "invoice\u202Efdp.exe")
 
-            assertTrue(credentialRepository.getById(credential.id).isFailure)
+            val loaded = assertNotNull(credentialRepository.getById(credential.id).getOrThrow())
+            assertEquals(AttachmentAvailability.CORRUPTED_FILENAME, loaded.attachments.single().availability)
+            assertEquals("attachment-one", loaded.attachments.single().id.value)
         } finally {
             credential.clearSensitiveValuesForTest()
         }
@@ -785,6 +1050,292 @@ class RepositoryTotpSecurityIntegrationTest : RepositorySecurityIntegrationFixtu
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
+class VaultUnlockPreemptionIntegrationTest : RepositorySecurityIntegrationFixture() {
+
+    @Test
+    fun `lock intent during last-access write is linearized before session publication`() = runTest {
+        val metadataDao = GatedLastAccessVaultMetadataDao(database.vaultMetadataDao())
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = metadataDao,
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val observedStates = mutableListOf<VaultSessionState>()
+        val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.getSessionState().collect(observedStates::add)
+        }
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            observedStates.clear()
+            val unlock = async { repository.unlock(password) }
+            metadataDao.updateStarted.await()
+
+            val locking = async { repository.lock(LockReason.Background) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            metadataDao.allowUpdate.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+            assertTrue(requireNotNull(engine.lastUnwrappedVaultKey).all { it == 0.toByte() })
+        } finally {
+            metadataDao.allowUpdate.complete(Unit)
+            collector.cancel()
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `password unlock cannot publish a session after lock intent is registered`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val observedStates = mutableListOf<VaultSessionState>()
+        val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.getSessionState().collect(observedStates::add)
+        }
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            observedStates.clear()
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(password) }
+            gate.started.await()
+
+            val locking = async { repository.lock(LockReason.Background) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(repository.isUnlocked())
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+            assertTrue(requireNotNull(engine.lastUnwrappedVaultKey).all { it == 0.toByte() })
+        } finally {
+            collector.cancel()
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `biometric unlock cannot publish a session after lock intent is registered`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        var vaultKey: ByteArray? = null
+        val observedStates = mutableListOf<VaultSessionState>()
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            vaultKey = repository.withUnlockedSession { it.copyOf() }
+            assertTrue(repository.lock().isSuccess)
+            val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.getSessionState().collect(observedStates::add)
+            }
+            observedStates.clear()
+
+            val gate = engine.gateNextVerification()
+            val unlock = async {
+                repository.unlockWithBiometricKey(requireNotNull(vaultKey))
+            }
+            gate.started.await()
+            val locking = async { repository.lock(LockReason.AutoLock) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(repository.isUnlocked())
+            assertEquals(
+                VaultSessionState.Locked(LockReason.AutoLock),
+                repository.getSessionState().first(),
+            )
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+            assertTrue(requireNotNull(engine.lastVerificationKey).all { it == 0.toByte() })
+            collector.cancel()
+        } finally {
+            vaultKey?.let(cryptoEngine::secureWipe)
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `lock and run preempts an in-flight unlock before protected work`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        var protectedWorkRan = false
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(password) }
+            gate.started.await()
+            val lockAndRun = async {
+                runCatching {
+                    repository.lockAndRun(LockReason.Restore) {
+                        protectedWorkRan = true
+                    }
+                }
+            }
+            runCurrent()
+            assertFalse(lockAndRun.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(lockAndRun.await().isFailure)
+            assertFalse(protectedWorkRan)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Restore),
+                repository.getSessionState().first(),
+            )
+        } finally {
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `overlapping lock intents both preempt unlock and are fully released`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(password) }
+            gate.started.await()
+            val backgroundLock = async { repository.lock(LockReason.Background) }
+            val autoLock = async { repository.lock(LockReason.AutoLock) }
+            runCurrent()
+            assertFalse(backgroundLock.isCompleted)
+            assertFalse(autoLock.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(backgroundLock.await().isSuccess)
+            assertTrue(autoLock.await().isSuccess)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.AutoLock),
+                repository.getSessionState().first(),
+            )
+            assertTrue(repository.unlock(password).isSuccess)
+        } finally {
+            repository.lock()
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `lock reason remains authoritative when the preempted unlock also fails authentication`() = runTest {
+        val engine = GatedUnlockCryptoEngine(cryptoEngine)
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val correctPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val wrongPassword = SensitiveText.from("wrong password value")
+        try {
+            assertTrue(repository.create(correctPassword).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val unlock = async { repository.unlock(wrongPassword) }
+            gate.started.await()
+            val locking = async { repository.lock(LockReason.Background) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+            gate.release.complete(Unit)
+
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+        } finally {
+            repository.lock()
+            correctPassword.clear()
+            wrongPassword.clear()
+        }
+    }
+
+    @Test
+    fun `lock during password throttle preempts unlock without adding a failed attempt`() = runTest {
+        val wrongPassword = SensitiveText.from("wrong password value")
+        val correctPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val observedStates = mutableListOf<VaultSessionState>()
+        try {
+            assertTrue(vaultRepository.create(correctPassword).isSuccess)
+            repeat(3) {
+                assertTrue(vaultRepository.unlock(wrongPassword).isFailure)
+            }
+            val collector = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                vaultRepository.getSessionState().collect(observedStates::add)
+            }
+            observedStates.clear()
+
+            val unlock = async { vaultRepository.unlock(correctPassword) }
+            runCurrent()
+            assertFalse(unlock.isCompleted)
+            val locking = async { vaultRepository.lock(LockReason.AutoLock) }
+            runCurrent()
+            assertFalse(locking.isCompleted)
+
+            advanceTimeBy(501)
+            advanceUntilIdle()
+            assertTrue(unlock.await().isFailure)
+            assertTrue(locking.await().isSuccess)
+            assertFalse(observedStates.any { it is VaultSessionState.Unlocked })
+
+            val nextUnlock = async { vaultRepository.unlock(correctPassword) }
+            runCurrent()
+            assertFalse(nextUnlock.isCompleted)
+            advanceTimeBy(501)
+            runCurrent()
+            assertTrue(
+                nextUnlock.isCompleted || vaultRepository.getSessionState().first() is VaultSessionState.Unlocking,
+                "A preempted unlock must not add another failed-attempt delay",
+            )
+            assertTrue(nextUnlock.await().isSuccess)
+            collector.cancel()
+        } finally {
+            vaultRepository.lock()
+            wrongPassword.clear()
+            correctPassword.clear()
+        }
+    }
+
+}
+
 class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
     @Test
     fun `biometric key opens a session only after vault verification succeeds`() = runTest {
@@ -798,6 +1349,51 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
         } finally {
             cryptoEngine.secureWipe(vaultKey)
         }
+    }
+
+    @Test
+    fun `lock cancels biometric enrollment that is holding a vault key lease`() = runTest {
+        createAndUnlockVault()
+        val enrollmentEntered = CompletableDeferred<Unit>()
+        var enrollmentKey: ByteArray? = null
+        val keyStore = object : BiometricKeyStore {
+            override suspend fun getCapability(): BiometricCapability = BiometricCapability(
+                type = BiometricType.GENERIC,
+                availability = BiometricAvailability.AVAILABLE,
+            )
+
+            override suspend fun contains(vaultId: String): Boolean = false
+
+            override suspend fun enroll(vaultId: String, vaultKey: ByteArray): Result<Unit> {
+                enrollmentKey = vaultKey
+                enrollmentEntered.complete(Unit)
+                awaitCancellation()
+            }
+
+            override suspend fun retrieve(vaultId: String): Result<ByteArray> =
+                Result.failure(BiometricKeyStoreException.NotEnabled())
+
+            override suspend fun delete(vaultId: String): Result<Unit> = Result.success(Unit)
+        }
+        val service = DefaultBiometricUnlockService(
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            keyStore = keyStore,
+            cryptoEngine = cryptoEngine,
+        )
+
+        val enrollment = async(Dispatchers.Default) { service.enable() }
+        enrollmentEntered.await()
+
+        assertTrue(
+            withContext(Dispatchers.Default) {
+                withTimeout(1_000) { vaultRepository.lock(LockReason.AutoLock) }
+            }.isSuccess,
+        )
+        enrollment.join()
+        assertTrue(enrollment.isCancelled)
+        assertTrue(requireNotNull(enrollmentKey).all { it == 0.toByte() })
+        assertFalse(vaultRepository.isUnlocked())
     }
 
     @Test
@@ -951,7 +1547,7 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
     }
 
     @Test
-    fun `lock waits for an active session lease and wipes its key`() = runTest {
+    fun `lock cancels an active session lease and wipes its key without waiting for caller work`() = runTest {
         createAndUnlockVault()
         val leaseEntered = CompletableDeferred<Unit>()
         val releaseLease = CompletableDeferred<Unit>()
@@ -966,27 +1562,53 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
         }
         leaseEntered.await()
 
-        val lockStarted = CompletableDeferred<Unit>()
-        val lockOperation = async(Dispatchers.Default) {
-            lockStarted.complete(Unit)
-            vaultRepository.lock()
+        val lockResult = withContext(Dispatchers.Default) {
+            withTimeout(1_000) { vaultRepository.lock() }
         }
-        lockStarted.await()
-        yield()
-        assertFalse(lockOperation.isCompleted, "Lock must wait for the active lease")
-
-        releaseLease.complete(Unit)
-        operation.await()
-        assertTrue(lockOperation.await().isSuccess)
+        operation.join()
+        assertTrue(lockResult.isSuccess)
+        assertTrue(operation.isCancelled)
         assertTrue(requireNotNull(leasedKey).all { it == 0.toByte() })
         assertFalse(vaultRepository.isUnlocked())
+        releaseLease.complete(Unit)
+    }
+
+    @Test
+    fun `lock and run revokes an active lease before running protected work`() = runTest {
+        createAndUnlockVault()
+        val leaseEntered = CompletableDeferred<Unit>()
+        var leasedKey: ByteArray? = null
+        val operation = async(Dispatchers.Default) {
+            vaultRepository.withUnlockedSession { key ->
+                leasedKey = key
+                leaseEntered.complete(Unit)
+                awaitCancellation()
+            }
+        }
+        leaseEntered.await()
+
+        var blockObservedLocked = false
+        val blockResult = withContext(Dispatchers.Default) {
+            withTimeout(1_000) {
+                vaultRepository.lockAndRun(LockReason.Restore) {
+                    blockObservedLocked = !vaultRepository.isUnlocked()
+                    "restored"
+                }
+            }
+        }
+
+        operation.join()
+        assertEquals("restored", blockResult)
+        assertTrue(blockObservedLocked)
+        assertTrue(operation.isCancelled)
+        assertTrue(requireNotNull(leasedKey).all { it == 0.toByte() })
     }
 }
 
 class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
-    fun `lock cancels a platform prompt before waiting for an active session lease`() = runTest {
+    fun `lock cancels a platform prompt and its active session lease`() = runTest {
         val cancellationObserved = CompletableDeferred<Unit>()
         val repository = VaultRepositoryImpl(
             vaultMetadataDao = database.vaultMetadataDao(),
@@ -1011,14 +1633,63 @@ class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
             }
             leaseEntered.await()
 
-            val locking = async(Dispatchers.Default) { repository.lock(LockReason.AutoLock) }
-            cancellationObserved.await()
-            assertFalse(locking.isCompleted, "Lock must still wait for key-lease cleanup")
+            val lockResult = withContext(Dispatchers.Default) {
+                withTimeout(1_000) { repository.lock(LockReason.AutoLock) }
+            }
+            assertTrue(cancellationObserved.isCompleted)
+            lease.join()
+            assertTrue(lease.isCancelled)
+            assertTrue(lockResult.isSuccess)
+            assertFalse(repository.isUnlocked())
+        } finally {
+            releaseLease.complete(Unit)
+            password.clear()
+        }
+    }
+
+    @Test
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    fun `lock reaches locked state after the hard deadline when lease code suppresses cancellation`() = runTest {
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = cryptoEngine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(cryptoEngine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val leaseEntered = CompletableDeferred<Unit>()
+        val releaseLease = CompletableDeferred<Unit>()
+        var leasedKey: ByteArray? = null
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            val lease = async {
+                repository.withUnlockedSession { key ->
+                    leasedKey = key
+                    leaseEntered.complete(Unit)
+                    withContext(NonCancellable) { releaseLease.await() }
+                }
+            }
+            leaseEntered.await()
+
+            val locking = async { repository.lock(LockReason.Background) }
+            yield()
+            assertEquals(
+                VaultSessionState.Locking(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+
+            testScheduler.advanceTimeBy(2_001)
+            assertTrue(locking.await().isSuccess)
+            assertEquals(
+                VaultSessionState.Locked(LockReason.Background),
+                repository.getSessionState().first(),
+            )
+            assertTrue(requireNotNull(leasedKey).all { it == 0.toByte() })
 
             releaseLease.complete(Unit)
-            lease.await()
-            assertTrue(locking.await().isSuccess)
-            assertFalse(repository.isUnlocked())
+            lease.join()
+            assertTrue(lease.isCancelled)
         } finally {
             releaseLease.complete(Unit)
             password.clear()
@@ -1072,6 +1743,82 @@ class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
         } finally {
             password.clear()
         }
+    }
+}
+
+private class GatedUnlockCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    private var derivedKeyCalls = 0
+    private var passwordGate: UnlockGate? = null
+    private var verificationGate: UnlockGate? = null
+
+    var lastUnwrappedVaultKey: ByteArray? = null
+        private set
+    var lastVerificationKey: ByteArray? = null
+        private set
+
+    fun gateNextPasswordDerivation(): UnlockGate = UnlockGate().also { passwordGate = it }
+
+    fun gateNextVerification(): UnlockGate = UnlockGate().also { verificationGate = it }
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        derivedKeyCalls++
+        passwordGate?.takeIf { derivedKeyCalls > 1 }?.let { gate ->
+            passwordGate = null
+            gate.started.complete(Unit)
+            gate.release.await()
+        }
+        return delegate.deriveKey(password, salt, opsLimit, memLimit)
+    }
+
+    override suspend fun decrypt(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): Result<ByteArray> {
+        if (associatedData?.contentEquals(VERIFICATION_ASSOCIATED_DATA) == true) {
+            lastVerificationKey = key
+            verificationGate?.let { gate ->
+                verificationGate = null
+                gate.started.complete(Unit)
+                gate.release.await()
+            }
+        }
+        val result = delegate.decrypt(ciphertext, nonce, key, associatedData)
+        if (associatedData?.contentEquals(VEK_WRAP_ASSOCIATED_DATA) == true) {
+            lastUnwrappedVaultKey = result.getOrNull()
+        }
+        return result
+    }
+
+    class UnlockGate {
+        val started = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+    }
+
+    private companion object {
+        val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
+        val VERIFICATION_ASSOCIATED_DATA = "verification".encodeToByteArray()
+    }
+}
+
+private class GatedLastAccessVaultMetadataDao(
+    private val delegate: VaultMetadataDao,
+) : VaultMetadataDao by delegate {
+    val updateStarted = CompletableDeferred<Unit>()
+    val allowUpdate = CompletableDeferred<Unit>()
+
+    override suspend fun updateLastAccessed(timestamp: Long) {
+        updateStarted.complete(Unit)
+        allowUpdate.await()
+        delegate.updateLastAccessed(timestamp)
     }
 }
 
@@ -1222,6 +1969,40 @@ abstract class RepositorySecurityIntegrationFixture {
         } finally {
             cryptoEngine.secureWipe(filename)
             attachmentKey?.let { cryptoEngine.secureWipe(it) }
+            cryptoEngine.secureWipe(vek)
+        }
+    }
+
+    protected suspend fun reencryptAsLegacy(
+        paddedCiphertext: ByteArray,
+        nonce: ByteArray,
+        keyContext: String,
+        associatedDataValue: String,
+    ): Pair<ByteArray, ByteArray> {
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        var plaintext: ByteArray? = null
+        val associatedData = associatedDataValue.encodeToByteArray()
+        return try {
+            key = cryptoEngine.deriveSubkey(vek, keyContext, 32).getOrThrow()
+            plaintext = PaddedPayload.decrypt(
+                cryptoEngine = cryptoEngine,
+                storedCiphertext = paddedCiphertext,
+                nonce = nonce,
+                key = key,
+                associatedData = associatedData,
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
+            ).getOrThrow()
+            val encrypted = cryptoEngine.encrypt(plaintext, key, associatedData).getOrThrow()
+            try {
+                CryptoEnvelope.encode(encrypted) to encrypted.nonce.copyOf()
+            } finally {
+                encrypted.clear()
+            }
+        } finally {
+            plaintext?.let(cryptoEngine::secureWipe)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(associatedData)
             cryptoEngine.secureWipe(vek)
         }
     }

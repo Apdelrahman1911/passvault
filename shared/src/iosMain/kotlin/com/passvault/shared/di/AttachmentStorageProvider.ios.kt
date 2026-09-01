@@ -7,7 +7,9 @@ import com.passvault.core.database.attachment.LocalAttachmentBlobStore
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileProtectionComplete
 import platform.Foundation.NSFileProtectionKey
+import platform.Foundation.NSFileSystemFreeSize
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSNumber
 import platform.Foundation.NSURL
 import platform.Foundation.NSURLIsExcludedFromBackupKey
 import platform.Foundation.NSUserDomainMask
@@ -38,5 +40,11 @@ actual fun createAttachmentBlobStore(context: Any): AttachmentBlobStore {
     check(url.setResourceValue(true, forKey = NSURLIsExcludedFromBackupKey, error = null)) {
         "The iOS attachment directory could not be excluded from device backups"
     }
-    return LocalAttachmentBlobStore(root)
+    return LocalAttachmentBlobStore(
+        rootPath = root,
+        availableBytesProvider = {
+            val attributes = fileManager.attributesOfFileSystemForPath(root, error = null)
+            (attributes?.get(NSFileSystemFreeSize) as? NSNumber)?.longLongValue
+        },
+    )
 }

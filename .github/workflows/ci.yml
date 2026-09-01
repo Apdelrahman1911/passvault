@@ -113,7 +113,7 @@ jobs:
           cache-cleanup: always
 
       - name: Build Desktop
-        run: ./gradlew :app-desktop:desktopTest --stacktrace
+        run: ./gradlew :core:security:desktopTest :app-desktop:desktopTest --stacktrace
 
   package-desktop-macos:
     name: Package Desktop macOS (${{ matrix.architecture }})

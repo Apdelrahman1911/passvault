@@ -11,8 +11,8 @@ an internal upload and exact-build external promotion.
 
 Android is the first pilot platform. Its Store identity, `release` variant,
 Play `alpha` closed-testing track, and public upload-certificate SHA-256 are all
-committed and approved. `VERSION_CODE=1013002` and iOS
-`CURRENT_PROJECT_VERSION=1013002` are the exact committed candidate build;
+committed and approved. `VERSION_CODE=1015001` and iOS
+`CURRENT_PROJECT_VERSION=1015001` are the exact committed candidate build;
 both shared and legacy workflows consume that value. CI run numbers are no
 longer Store build allocators. The online Store gate must still prove that this
 exact build is unused before an upload begins.

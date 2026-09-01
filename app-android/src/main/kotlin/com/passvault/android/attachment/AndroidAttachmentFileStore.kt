@@ -30,6 +30,7 @@ import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
@@ -45,13 +46,17 @@ class AndroidAttachmentFileStore(
 ) : AttachmentFileStore {
     private val appContext = context.applicationContext
     private val cleanupScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val startupCleanup = cleanupScope.async {
-        cleanupAttachmentPlaintextCache(appContext.cacheDir)
-    }
+    private val previewCleanupScheduler = AndroidAttachmentPreviewCleanupScheduler(appContext)
+    @Volatile
+    private var pendingCleanup: Deferred<Unit>? = null
     private var attachedActivity: ComponentActivity? = null
     private var importLauncher: ActivityResultLauncher<Array<String>>? = null
     private var exportLauncher: ActivityResultLauncher<String>? = null
     private var pending: PendingPicker? = null
+
+    init {
+        schedulePlaintextCleanup()
+    }
 
     fun attach(activity: ComponentActivity) {
         if (attachedActivity === activity) return
@@ -67,6 +72,20 @@ class AndroidAttachmentFileStore(
         ) { uri ->
             completePicker(uri, PickerKind.EXPORT)
         }
+    }
+
+    /** Removes plaintext left by a viewer as soon as PassVault regains the foreground. */
+    fun onActivityResumed() {
+        schedulePlaintextCleanup()
+    }
+
+    /**
+     * Synchronous because memory-pressure callbacks can be the process's last
+     * opportunity to remove plaintext. A previously scheduled durable job is
+     * retained if deletion fails.
+     */
+    fun cleanupForMemoryPressure() {
+        cleanupPlaintextCacheAndJobs()
     }
 
     fun detach(activity: ComponentActivity, isChangingConfigurations: Boolean = false) {
@@ -92,7 +111,7 @@ class AndroidAttachmentFileStore(
         attachment: AttachmentMetadata,
         action: AttachmentOutputAction,
     ): Result<PreparedAttachmentOutput> = try {
-        startupCleanup.await()
+        pendingCleanup?.await()
         val safeName = AttachmentPolicy.validateFileName(attachment.fileName)
         val destination = if (action == AttachmentOutputAction.EXPORT) {
             val launcher = exportLauncher
@@ -108,6 +127,7 @@ class AndroidAttachmentFileStore(
                 attachment = attachment.copy(fileName = safeName),
                 action = action,
                 cleanupScope = cleanupScope,
+                previewCleanupScheduler = previewCleanupScheduler,
             ),
         )
     } catch (cancel: CancellationException) {
@@ -180,6 +200,22 @@ class AndroidAttachmentFileStore(
         if (continuation.isActive) continuation.resume(result)
     }
 
+    @Synchronized
+    private fun schedulePlaintextCleanup() {
+        val previous = pendingCleanup
+        pendingCleanup = cleanupScope.async {
+            previous?.let { prior -> runCatching { prior.await() } }
+            cleanupPlaintextCacheAndJobs()
+        }
+    }
+
+    private fun cleanupPlaintextCacheAndJobs() {
+        cleanupAttachmentPlaintextCache(appContext.cacheDir)
+        // Cancel only after successful deletion. If cleanup fails, the
+        // persisted jobs remain the recovery authority.
+        previewCleanupScheduler.cancelAll()
+    }
+
     private data class PendingPicker(
         val kind: PickerKind,
         val continuation: CancellableContinuation<Result<Uri>>,
@@ -225,6 +261,7 @@ private class AndroidPreparedAttachmentOutput(
     private val attachment: AttachmentMetadata,
     private val action: AttachmentOutputAction,
     private val cleanupScope: CoroutineScope,
+    private val previewCleanupScheduler: AndroidAttachmentPreviewCleanupScheduler,
 ) : PreparedAttachmentOutput, AttachmentContentSink {
     private val directory = File(
         appContext.cacheDir,
@@ -235,6 +272,7 @@ private class AndroidPreparedAttachmentOutput(
     private var bytesWritten = 0L
     private var sinkCommitted = false
     private var handedOff = false
+    private var previewCleanupJobId: Int? = null
 
     override val sink: AttachmentContentSink
         get() = this
@@ -303,6 +341,7 @@ private class AndroidPreparedAttachmentOutput(
     }
 
     private fun openWithExternalViewer() {
+        val operationId = directory.name
         val contentUri = FileProvider.getUriForFile(
             appContext,
             "${appContext.packageName}.attachment-files",
@@ -311,6 +350,11 @@ private class AndroidPreparedAttachmentOutput(
         val intent = Intent(Intent.ACTION_VIEW)
             .setDataAndType(contentUri, attachment.mimeType)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        // Persist the cleanup obligation before disclosing the URI. If Android
+        // cannot accept the job, fail closed and let abort remove the file.
+        previewCleanupJobId = checkNotNull(previewCleanupScheduler.schedule(operationId)) {
+            "The attachment preview cleanup could not be scheduled"
+        }
         appContext.startActivity(Intent.createChooser(intent, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         cleanupScope.launch {
             delay(PREVIEW_LIFETIME_MILLISECONDS)
@@ -319,14 +363,17 @@ private class AndroidPreparedAttachmentOutput(
     }
 
     private fun deleteTemporary() {
-        temporary.delete()
-        directory.delete()
-    }
-
-    private companion object {
-        const val PREVIEW_LIFETIME_MILLISECONDS = 10L * 60L * 1000L
+        if (action == AttachmentOutputAction.OPEN) {
+            cleanupAttachmentPreviewOperation(appContext.cacheDir, directory.name)
+            previewCleanupJobId?.let(previewCleanupScheduler::cancel)
+            previewCleanupJobId = null
+        } else {
+            deleteOwnedCacheTree(directory)
+        }
     }
 }
+
+internal const val PREVIEW_LIFETIME_MILLISECONDS = 60_000L
 
 /** Removes only PassVault-owned plaintext cache trees and never follows a symbolic-link boundary. */
 internal fun cleanupAttachmentPlaintextCache(cacheDirectory: File) {
@@ -338,7 +385,27 @@ internal fun cleanupAttachmentPlaintextCache(cacheDirectory: File) {
     }
 }
 
+/** Deletes one UUID-named preview lease without accepting an arbitrary path. */
+internal fun cleanupAttachmentPreviewOperation(cacheDirectory: File, operationId: String) {
+    require(UUID.fromString(operationId).toString() == operationId) { "Invalid preview operation identifier" }
+    val canonicalCache = cacheDirectory.canonicalFile
+    require(canonicalCache.isDirectory) { "The application cache directory is unavailable" }
+    val previewRoot = File(canonicalCache, "attachment-previews").absoluteFile
+    if (!previewRoot.exists()) return
+    if (previewRoot.canonicalFile != previewRoot) {
+        check(previewRoot.delete()) { "A symbolic link in the attachment cache could not be removed" }
+        return
+    }
+    val operation = File(previewRoot, operationId).absoluteFile
+    check(operation.parentFile == previewRoot) { "The preview operation escaped its cache root" }
+    if (operation.exists()) deleteOwnedCacheTree(operation)
+    if (previewRoot.listFiles()?.isEmpty() == true) {
+        check(previewRoot.delete()) { "The empty attachment preview root could not be removed" }
+    }
+}
+
 private fun deleteOwnedCacheTree(path: File) {
+    if (!path.exists()) return
     val absolutePath = path.absoluteFile
     val canonicalPath = path.canonicalFile
     if (canonicalPath != absolutePath) {
@@ -349,7 +416,9 @@ private fun deleteOwnedCacheTree(path: File) {
         path.listFiles()?.forEach(::deleteOwnedCacheTree)
             ?: error("The attachment cache directory could not be read")
     }
-    check(path.delete()) { "The attachment cache path could not be removed" }
+    if (path.exists()) {
+        check(path.delete()) { "The attachment cache path could not be removed" }
+    }
 }
 
 private fun queryMetadata(context: Context, uri: Uri): Pair<String, Long?> {

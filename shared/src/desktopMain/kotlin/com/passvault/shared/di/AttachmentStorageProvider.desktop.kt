@@ -23,5 +23,8 @@ actual fun createAttachmentBlobStore(context: Any): AttachmentBlobStore {
                 PosixFilePermission.OWNER_EXECUTE,
             ),
         )
-    return LocalAttachmentBlobStore(root.toString())
+    return LocalAttachmentBlobStore(
+        rootPath = root.toString(),
+        availableBytesProvider = { Files.getFileStore(root).usableSpace },
+    )
 }

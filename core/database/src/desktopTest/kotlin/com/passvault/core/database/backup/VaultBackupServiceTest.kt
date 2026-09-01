@@ -1,3 +1,5 @@
+@file:OptIn(kotlin.io.encoding.ExperimentalEncodingApi::class)
+
 package com.passvault.core.database.backup
 
 import androidx.room.Room
@@ -25,6 +27,14 @@ import com.passvault.core.security.BiometricKeyStoreException
 import com.passvault.core.security.BiometricType
 import com.passvault.core.testing.fakes.FakeVaultRepository
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlin.io.encoding.Base64
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -91,6 +101,83 @@ class VaultBackupServiceTest {
 
             assertEquals(1, restored.credentialCount)
             assertSnapshotEquals(original, backupDao.readSnapshot())
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `new legacy backup omits title hash while an old backup still restores`() = runTest {
+        insertSnapshot(validSnapshot("legacy-title-index-vault", "credential-one"))
+        val password = SensitiveText.from("legacy title index compatibility password")
+        var plaintext: ByteArray? = null
+        var oldBackup: ByteArray? = null
+        try {
+            val newBackup = service.createBackup(password).getOrThrow()
+            plaintext = decryptLegacyPayload(newBackup, password)
+            assertFalse(plaintext.decodeToString().contains("\"titleHash\""))
+
+            oldBackup = addLegacyTitleHash(newBackup, plaintext, password)
+            replaceWithEmptyVault("sentinel-vault")
+
+            service.restoreBackup(oldBackup, password).getOrThrow()
+            assertEquals("credential-one", backupDao.readSnapshot().credentials.single().id)
+        } finally {
+            plaintext?.let(cryptoEngine::secureWipe)
+            oldBackup?.let(cryptoEngine::secureWipe)
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `streaming legacy backup remains compatible without whole document buffering`() = runTest {
+        insertSnapshot(validSnapshot("legacy-stream-vault", "credential-one"))
+        val password = SensitiveText.from("legacy streaming compatibility password")
+
+        try {
+            val backup = service.createBackup(password).getOrThrow()
+            val source = TrackingBackupSource(backup, maximumChunkBytes = 17)
+
+            val inspection = service.inspectBackup(source, password).getOrThrow()
+
+            assertEquals(1, inspection.credentialCount)
+            assertTrue(source.closed)
+            assertEquals(backup.size.toLong(), source.bytesRead)
+            assertTrue(source.maximumRequestedBytes <= 8 * 1024)
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `non backup input is rejected after a bounded prefix instead of being drained`() = runTest {
+        val hostile = ByteArray(1024 * 1024) { 'x'.code.toByte() }
+        val source = TrackingBackupSource(hostile, declaredSizeBytes = null)
+        val password = SensitiveText.from("bounded legacy parser password")
+
+        try {
+            assertTrue(service.inspectBackup(source, password).isFailure)
+            assertTrue(source.closed)
+            assertEquals(8, source.bytesRead)
+        } finally {
+            password.clear()
+            hostile.fill(0)
+        }
+    }
+
+    @Test
+    fun `legacy size admission is derived from the largest compatible v1 payload`() = runTest {
+        val source = TrackingBackupSource(
+            bytes = ByteArray(16) { 'x'.code.toByte() },
+            declaredSizeBytes = 128L * 1024L * 1024L,
+        )
+        val password = SensitiveText.from("legacy compatibility ceiling password")
+
+        try {
+            assertTrue(BackupLimits.LEGACY_MAX_BACKUP_BYTES < 128L * 1024L * 1024L)
+            assertTrue(service.inspectBackup(source, password).isFailure)
+            assertTrue(source.closed)
+            assertEquals(8, source.bytesRead)
         } finally {
             password.clear()
         }
@@ -412,19 +499,6 @@ class VaultBackupServiceTest {
     }
 
     @Test
-    fun `snapshot validation requires canonical blind index sizes`() = runTest {
-        val snapshot = validSnapshot("index-vault", "credential-one")
-
-        assertFailsWith<IllegalArgumentException> {
-            service.validateSnapshot(
-                snapshot.copy(
-                    credentials = snapshot.credentials.map { it.copy(titleHash = ByteArray(31)) },
-                ),
-            )
-        }
-    }
-
-    @Test
     fun `snapshot validation rejects encrypted metadata payloads repositories cannot read`() = runTest {
         val snapshot = validSnapshot("payload-vault", "credential-one")
         val credential = snapshot.credentials.single()
@@ -612,7 +686,6 @@ class VaultBackupServiceTest {
                     CredentialRecordEntity(
                         id = credentialId,
                         type = "Login",
-                        titleHash = ByteArray(32) { 9 },
                         summaryPayload = summary.payload,
                         summaryNonce = summary.nonce,
                         secretPayload = secret.payload,
@@ -672,6 +745,79 @@ class VaultBackupServiceTest {
         if (snapshot.passwordHistory.isNotEmpty()) backupDao.insertPasswordHistory(snapshot.passwordHistory)
     }
 
+    private suspend fun decryptLegacyPayload(backup: ByteArray, password: SensitiveText): ByteArray {
+        val envelope = Json.parseToJsonElement(backup.decodeToString()).jsonObject
+        val salt = Base64.decode(envelope.getValue("salt").jsonPrimitive.content)
+        val nonce = Base64.decode(envelope.getValue("nonce").jsonPrimitive.content)
+        val ciphertext = Base64.decode(envelope.getValue("ciphertext").jsonPrimitive.content)
+        val passwordBytes = password.toUtf8ByteArray()
+        val key = cryptoEngine.deriveKey(
+            passwordBytes,
+            salt,
+            envelope.getValue("argon2OpsLimit").jsonPrimitive.content.toInt(),
+            envelope.getValue("argon2MemLimit").jsonPrimitive.content.toInt(),
+        ).getOrThrow()
+        return try {
+            cryptoEngine.decrypt(
+                ciphertext,
+                nonce,
+                key.key,
+                "passvault:backup:v1".encodeToByteArray(),
+            ).getOrThrow()
+        } finally {
+            passwordBytes.fill(0)
+            salt.fill(0)
+            nonce.fill(0)
+            ciphertext.fill(0)
+            key.clear()
+        }
+    }
+
+    private suspend fun addLegacyTitleHash(
+        backup: ByteArray,
+        plaintext: ByteArray,
+        password: SensitiveText,
+    ): ByteArray {
+        val envelope = Json.parseToJsonElement(backup.decodeToString()).jsonObject
+        val snapshot = Json.parseToJsonElement(plaintext.decodeToString()).jsonObject
+        val credentials = snapshot.getValue("credentials").jsonArray
+        val legacyCredential = JsonObject(
+            credentials.single().jsonObject.toMutableMap().apply {
+                put("titleHash", JsonPrimitive(Base64.encode(ByteArray(32) { 9 })))
+            },
+        )
+        val legacyPlaintext = JsonObject(
+            snapshot.toMutableMap().apply { put("credentials", JsonArray(listOf(legacyCredential))) },
+        ).toString().encodeToByteArray()
+        val salt = Base64.decode(envelope.getValue("salt").jsonPrimitive.content)
+        val passwordBytes = password.toUtf8ByteArray()
+        val key = cryptoEngine.deriveKey(
+            passwordBytes,
+            salt,
+            envelope.getValue("argon2OpsLimit").jsonPrimitive.content.toInt(),
+            envelope.getValue("argon2MemLimit").jsonPrimitive.content.toInt(),
+        ).getOrThrow()
+        val encrypted = cryptoEngine.encrypt(
+            legacyPlaintext,
+            key.key,
+            "passvault:backup:v1".encodeToByteArray(),
+        ).getOrThrow()
+        return try {
+            JsonObject(
+                envelope.toMutableMap().apply {
+                    put("nonce", JsonPrimitive(Base64.encode(encrypted.nonce)))
+                    put("ciphertext", JsonPrimitive(Base64.encode(CryptoEnvelope.encode(encrypted))))
+                },
+            ).toString().encodeToByteArray()
+        } finally {
+            legacyPlaintext.fill(0)
+            salt.fill(0)
+            passwordBytes.fill(0)
+            key.clear()
+            encrypted.clear()
+        }
+    }
+
     private suspend fun validAttachment(credentialId: String): AttachmentRecordEntity {
         val key = ByteArray(32) { 5 }
         return try {
@@ -725,6 +871,39 @@ class VaultBackupServiceTest {
         val payload: ByteArray,
         val nonce: ByteArray,
     )
+
+    private class TrackingBackupSource(
+        private val bytes: ByteArray,
+        override val declaredSizeBytes: Long? = bytes.size.toLong(),
+        private val maximumChunkBytes: Int = Int.MAX_VALUE,
+    ) : BackupContentSource {
+        private var offset = 0
+        var bytesRead = 0L
+            private set
+        var maximumRequestedBytes = 0
+            private set
+        var closed = false
+            private set
+
+        override suspend fun read(buffer: ByteArray): Int {
+            maximumRequestedBytes = maxOf(maximumRequestedBytes, buffer.size)
+            if (offset == bytes.size) return -1
+            val count = minOf(buffer.size, maximumChunkBytes, bytes.size - offset)
+            bytes.copyInto(buffer, destinationOffset = 0, startIndex = offset, endIndex = offset + count)
+            offset += count
+            bytesRead += count
+            return count
+        }
+
+        override suspend fun rewind() {
+            offset = 0
+            closed = false
+        }
+
+        override suspend fun close() {
+            closed = true
+        }
+    }
 
     private class TestVaultSessionManager(
         private val vaultRepository: FakeVaultRepository,

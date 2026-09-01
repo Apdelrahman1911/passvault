@@ -28,7 +28,16 @@ interface BackupContentSink {
 object BackupLimits {
     const val FORMAT_VERSION = 2
     const val MAX_ENTITY_COUNT = 1_000_000
-    const val LEGACY_MAX_BACKUP_BYTES = 128L * 1024L * 1024L
+    /** Maximum plaintext accepted by the legacy v1 snapshot decoder. */
+    const val LEGACY_MAX_SNAPSHOT_BYTES = 64 * 1024 * 1024
+    /**
+     * A shipped v1 snapshot plus the versioned AEAD prefix and both the canonical and
+     * legacy duplicated authentication-tag representations.
+     */
+    const val LEGACY_MAX_CIPHERTEXT_BYTES = LEGACY_MAX_SNAPSHOT_BYTES + 4 + (2 * 16)
+    /** Base64 ciphertext plus a bounded allowance for the fixed v1 JSON header. */
+    const val LEGACY_MAX_BACKUP_BYTES =
+        (((LEGACY_MAX_CIPHERTEXT_BYTES.toLong() + 2L) / 3L) * 4L) + 4_096L
     /** Largest independently materialized metadata row (one maximum-size credential). */
     const val MAX_ENTITY_RECORD_BYTES = 65 * 1024 * 1024
     const val RECORD_PLAINTEXT_BYTES = 256 * 1024

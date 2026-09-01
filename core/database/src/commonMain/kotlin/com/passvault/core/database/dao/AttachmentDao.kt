@@ -24,7 +24,6 @@ interface AttachmentDao {
         """
         SELECT * FROM attachment_records
         WHERE credential_id = :credentialId
-          AND storage_state IN ('READY', 'LEGACY')
         ORDER BY created_at ASC, id ASC
         """,
     )
@@ -33,14 +32,14 @@ interface AttachmentDao {
     @Query("SELECT * FROM attachment_records WHERE id = :id AND credential_id = :credentialId LIMIT 1")
     suspend fun getById(id: String, credentialId: String): AttachmentRecordEntity?
 
-    @Query("SELECT * FROM attachment_records WHERE storage_state IN ('STAGING', 'DELETING')")
+    @Query("SELECT * FROM attachment_records WHERE storage_state NOT IN ('READY', 'LEGACY')")
     suspend fun getPendingOperations(): List<AttachmentRecordEntity>
 
     @Query(
         """
         SELECT COUNT(*) FROM attachment_records
         WHERE credential_id = :credentialId
-          AND storage_state IN ('READY', 'STAGING')
+          AND (storage_state != 'LEGACY' OR content_format_version != 0)
         """,
     )
     suspend fun getManagedCount(credentialId: String): Int
@@ -49,7 +48,7 @@ interface AttachmentDao {
         """
         SELECT COALESCE(SUM(size_bytes), 0) FROM attachment_records
         WHERE credential_id = :credentialId
-          AND storage_state IN ('READY', 'STAGING')
+          AND (storage_state != 'LEGACY' OR content_format_version != 0)
         """,
     )
     suspend fun getManagedSizeBytes(credentialId: String): Long
@@ -60,6 +59,11 @@ interface AttachmentDao {
     @Query("DELETE FROM attachment_records WHERE id = :id")
     suspend fun deleteById(id: String)
 
-    @Query("SELECT storage_path FROM attachment_records WHERE storage_state = 'READY'")
-    suspend fun getReadyStoragePaths(): List<String>
+    @Query(
+        """
+        SELECT storage_path FROM attachment_records
+        WHERE storage_state != 'LEGACY' OR content_format_version != 0
+        """,
+    )
+    suspend fun getManagedStoragePaths(): List<String>
 }

@@ -7,6 +7,9 @@ cd "$repository_root"
 
 ./scripts/test-private-release-validator.sh >/dev/null
 ./scripts/validate-workflow-action-pins.sh >/dev/null
+./scripts/verify-pentest-scope.sh >/dev/null
+./scripts/verify-dependabot-coverage.sh >/dev/null
+./scripts/verify-shell-library-contract.sh >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
@@ -53,6 +56,111 @@ cleanup() {
     esac
 }
 trap cleanup EXIT
+
+ruby scripts/validate-release-authority-policy.rb >/dev/null
+authority_policy_fixture="$temporary_root/release-authority-policy"
+mkdir -p "$authority_policy_fixture/workflows"
+cp .github/workflows/*.yml "$authority_policy_fixture/workflows/"
+cp scripts/configure-github-mobile-release.sh "$authority_policy_fixture/configure.sh"
+
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing promotion environment fixture") unless
+    source.sub!("    environment: release-promotion\n", "")
+  File.write(path, source)
+' "$authority_policy_fixture/workflows/candidate-readiness.yml"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted an ungated branch promotion." >&2
+    exit 1
+fi
+
+cp .github/workflows/candidate-readiness.yml \
+    "$authority_policy_fixture/workflows/candidate-readiness.yml"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing administrator-bypass assertion fixture") unless
+    source.sub!(".can_admins_bypass == false", ".can_admins_bypass == true")
+  File.write(path, source)
+' "$authority_policy_fixture/workflows/candidate-readiness.yml"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted bypassable environment protection." >&2
+    exit 1
+fi
+
+cp .github/workflows/candidate-readiness.yml \
+    "$authority_policy_fixture/workflows/candidate-readiness.yml"
+cp .github/workflows/production-signing-validation.yml \
+    "$authority_policy_fixture/workflows/production-signing-validation.yml"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing administrator-bypass configuration fixture") unless
+    source.sub!("can_admins_bypass: false", "can_admins_bypass: true")
+  File.write(path, source)
+' "$authority_policy_fixture/configure.sh"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted bypassable environment configuration." >&2
+    exit 1
+fi
+
+cp scripts/configure-github-mobile-release.sh "$authority_policy_fixture/configure.sh"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "          (cd validated-release && sha256sum --check SHA256SUMS.txt)\n"
+  replacement = needle + "          gh workflow run production-release.yml --ref release\n"
+  abort("missing signing-validation fixture") unless source.sub!(needle, replacement)
+  File.write(path, source)
+' "$authority_policy_fixture/workflows/production-signing-validation.yml"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted signing-validation auto-production." >&2
+    exit 1
+fi
+
+cp .github/workflows/candidate-readiness.yml \
+    "$authority_policy_fixture/workflows/candidate-readiness.yml"
+cp .github/workflows/production-signing-validation.yml \
+    "$authority_policy_fixture/workflows/production-signing-validation.yml"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing environment configuration fixture") unless
+    source.sub!("configure_environment release-promotion true testing\n", "")
+  File.write(path, source)
+' "$authority_policy_fixture/configure.sh"
+if ruby scripts/validate-release-authority-policy.rb \
+    --workflow-directory "$authority_policy_fixture/workflows" \
+    --configuration "$authority_policy_fixture/configure.sh" >/dev/null 2>&1; then
+    echo "Release authority policy accepted missing environment configuration." >&2
+    exit 1
+fi
+
+fake_security_bin="$temporary_root/fake-security-bin"
+mkdir -p "$fake_security_bin"
+cat > "$fake_security_bin/security" <<'FAKE_SECURITY'
+#!/usr/bin/env bash
+exit 1
+FAKE_SECURITY
+chmod 700 "$fake_security_bin/security"
+failed_keychain_capture="$temporary_root/original-user-keychains.txt"
+if PATH="$fake_security_bin:$PATH" bash -euo pipefail -c '
+    source scripts/lib/macos-keychain.sh
+    passvault_capture_user_keychains "$1"
+' -- "$failed_keychain_capture" >/dev/null 2>&1; then
+    echo "A failed keychain-list command was accepted." >&2
+    exit 1
+fi
+test ! -s "$failed_keychain_capture"
 
 if find release/store-assets -name .DS_Store -type f -print -quit | grep -q .; then
     echo "Store assets contain forbidden .DS_Store metadata." >&2
@@ -1678,6 +1786,31 @@ grep -Fq 'verifyDesktopInstalledLegalNotices' app-desktop/build.gradle.kts
 grep -Fq 'THIRD_PARTY_LICENSES in Resources' iosApp/iosApp.xcodeproj/project.pbxproj
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-release-signing.sh
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-exported-artifact.sh
+test -f iosApp/iosApp/iosApp.entitlements
+grep -Fq 'com.apple.developer.default-data-protection' iosApp/iosApp/iosApp.entitlements
+grep -Fq 'NSFileProtectionComplete' iosApp/iosApp/iosApp.entitlements
+grep -Fq 'keychain-access-groups' iosApp/iosApp/iosApp.entitlements
+test "$(grep -Fc 'CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 2
+grep -Fq 'attributes = IOS_BACKUP_PROTECTION' \
+    shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
+grep -Fq 'protectIosBackupPath(fileManager, path)' \
+    shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
+test -f app-desktop/resources/macos/PassVault.runtime.entitlements
+for entitlement_file in \
+    app-desktop/resources/macos/PassVault.entitlements \
+    app-desktop/resources/macos/PassVault.runtime.entitlements; do
+    grep -Fq 'com.apple.security.cs.allow-jit' "$entitlement_file"
+    if grep -Eq 'allow-unsigned-executable-memory|disable-library-validation' "$entitlement_file"; then
+        echo "Forbidden macOS hardened-runtime exception in $entitlement_file." >&2
+        exit 1
+    fi
+done
+grep -Fq 'runtimeEntitlementsFile.set(macRuntimeEntitlementsFile)' app-desktop/build.gradle.kts
+grep -Fq 'Forbidden macOS hardened-runtime exception on:' scripts/verify-macos-release-artifact.sh
+grep -Fq 'MACOS_PROVISIONING_PROFILE_BASE64' .github/workflows/release.yml
+grep -Fq 'MACOS_JPACKAGE_JAVA_HOME=$JAVA_HOME' .github/workflows/release.yml
+grep -Fq 'MACOS_PROVISIONING_PROFILE_BASE64' scripts/configure-github-mobile-release.sh
 grep -Fq ':app-android:verifyReleasePackageContents' \
     .github/workflows/mobile-store-release.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/build-signed-android.ps1
@@ -1688,6 +1821,8 @@ grep -Fq 'Unexpected iOS Store identity' fastlane/Fastfile
 bash -n scripts/validate-ios-build-identities.sh
 grep -Fq 'com.passvault.ios.debug' scripts/validate-ios-build-identities.sh
 grep -Fq 'com.passvault.ios' scripts/validate-ios-build-identities.sh
+grep -Fq 'com.apple.developer.default-data-protection' scripts/validate-ios-build-identities.sh
+grep -Fq 'CODE_SIGN_ENTITLEMENTS' scripts/validate-ios-build-identities.sh
 for shared_ios_input in \
     MOBILE_RELEASE_IOS_CODE_SIGN_IDENTITY \
     MOBILE_RELEASE_IOS_CODE_SIGN_STYLE \
@@ -1971,7 +2106,8 @@ abort("Azure production-variable cleanup is missing") unless
   script.include?('expected_production_variables+=("${selected_remote_variable_names[@]}")')
 abort("Production review configuration does not prevent self-review") unless
   script.scan("prevent_self_review: true").length == 1 &&
-  script.scan('"prevent_self_review": false').length == 1
+  script.scan('"prevent_self_review": false').length == 1 &&
+  script.scan(/"?can_admins_bypass"?: false/).length == 2
 RUBY
 # REXML parses the complete document before the structural assertions below,
 # so malformed XML fails without relying on runner-specific xmllint packages.
@@ -2016,6 +2152,8 @@ grep -Fq 'PROFILE_GET_TASK_ALLOW' .github/workflows/mobile-store-release.yml
 grep -Fq 'PROFILE_BETA_REPORTS' .github/workflows/mobile-store-release.yml
 grep -Fq 'Entitlements:get-task-allow' scripts/verify-ios-exported-artifact.sh
 grep -Fq 'Entitlements:beta-reports-active' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'com.apple.developer.default-data-protection' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'keychain-access-groups:0' scripts/verify-ios-exported-artifact.sh
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
 grep -Fq 'NON_EXEMPT_APPROVED) expected_encryption=true' \
     scripts/verify-ios-exported-artifact.sh

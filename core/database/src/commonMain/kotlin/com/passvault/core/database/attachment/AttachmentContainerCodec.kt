@@ -24,6 +24,11 @@ internal data class StoredAttachmentContent(
     val mimeType: String,
 )
 
+private data class InitialChunk(
+    val count: Int,
+    val reachedEndOfFile: Boolean,
+)
+
 /** Versioned, chunked XChaCha20-Poly1305 attachment container. */
 internal class AttachmentContainerCodec(
     private val blobStore: AttachmentBlobStore,
@@ -39,16 +44,15 @@ internal class AttachmentContainerCodec(
         require(key.size == KEY_BYTES)
         require(existingCredentialBytes in 0..AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES)
         val plaintext = ByteArray(AttachmentPolicy.CONTENT_CHUNK_BYTES)
-        var firstCount = 0
         return try {
-            firstCount = source.read(plaintext).validatedReadCount(plaintext.size)
-            val mimeType = detectMimeType(plaintext, firstCount.coerceAtLeast(0))
+            val initialChunk = readInitialChunk(source, plaintext)
+            val mimeType = detectMimeType(plaintext, initialChunk.count)
             val binding = bindingWithoutMime.copy(mimeType = mimeType)
             val size = blobStore.writeAtomically(relativePath) { sink ->
                 writeHeader(sink)
                 var totalBytes = 0L
                 var chunkIndex = 0L
-                var count = firstCount
+                var count = initialChunk.count
                 while (count >= 0) {
                     if (count > 0) {
                         totalBytes += count
@@ -72,7 +76,11 @@ internal class AttachmentContainerCodec(
                         )
                         chunkIndex++
                     }
-                    count = source.read(plaintext).validatedReadCount(plaintext.size)
+                    count = if (initialChunk.reachedEndOfFile) {
+                        -1
+                    } else {
+                        source.read(plaintext).validatedReadCount(plaintext.size)
+                    }
                 }
                 writeFinalRecord(sink, key, binding, totalBytes, chunkIndex)
                 totalBytes
@@ -81,6 +89,31 @@ internal class AttachmentContainerCodec(
         } finally {
             plaintext.fill(0)
         }
+    }
+
+    private suspend fun readInitialChunk(
+        source: AttachmentContentSource,
+        plaintext: ByteArray,
+    ): InitialChunk {
+        val firstRead = source.read(plaintext).validatedReadCount(plaintext.size)
+        if (firstRead < 0) return InitialChunk(count = 0, reachedEndOfFile = true)
+        var count = firstRead
+        var reachedEndOfFile = false
+        while (count < MIME_SNIFF_BYTES && !reachedEndOfFile) {
+            val prefixRemainder = ByteArray(MIME_SNIFF_BYTES - count)
+            try {
+                val read = source.read(prefixRemainder).validatedReadCount(prefixRemainder.size)
+                if (read < 0) {
+                    reachedEndOfFile = true
+                } else {
+                    prefixRemainder.copyInto(plaintext, destinationOffset = count, endIndex = read)
+                    count += read
+                }
+            } finally {
+                prefixRemainder.fill(0)
+            }
+        }
+        return InitialChunk(count, reachedEndOfFile)
     }
 
     @Suppress("TooGenericExceptionCaught") // Normalize arbitrary filesystem/crypto failures at this trust boundary.
@@ -361,6 +394,7 @@ internal class AttachmentContainerCodec(
             WEBP_MAGIC.indices.all { index -> this[WEBP_OFFSET + index] == WEBP_MAGIC[index] }
 
     companion object {
+        private const val MIME_SNIFF_BYTES = 12
         private const val KEY_BYTES = 32
         private const val NONCE_BYTES = 24
         private const val ENCRYPTION_OVERHEAD_BYTES = 20

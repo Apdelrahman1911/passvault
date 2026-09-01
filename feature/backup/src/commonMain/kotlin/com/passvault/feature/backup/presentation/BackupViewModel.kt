@@ -3,6 +3,7 @@ package com.passvault.feature.backup.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.passvault.core.database.backup.VaultBackupService
+import com.passvault.core.database.backup.BackupInsufficientStorageException
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
@@ -346,6 +347,7 @@ class BackupViewModel(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught") // Normalize provider failures while preserving actionable storage errors.
     private fun launchImport(file: BackupFile, password: String) {
         importJob?.cancel()
         _state.update { it.restoreStarted() }
@@ -380,13 +382,13 @@ class BackupViewModel(
                     refresh()
                 } catch (cancel: CancellationException) {
                     throw cancel
-                } catch (_: Exception) {
+                } catch (error: Exception) {
                     currentCoroutineContext().ensureActive()
                     _state.update {
                         it.copy(
                             isImporting = false,
                             importProgress = 0,
-                            importError = uiText(Res.string.error_backup_invalid),
+                            importError = backupRestoreError(error),
                         )
                     }
                 } finally {
@@ -629,6 +631,13 @@ private val String.backupPasswordInputError: UiText?
     }
 
 private const val IMPORT_PREVIEW_DEBOUNCE_MS = 300L
+
+internal fun backupRestoreError(error: Exception): UiText =
+    if (error is BackupInsufficientStorageException) {
+        uiText(Res.string.error_backup_insufficient_storage)
+    } else {
+        uiText(Res.string.error_backup_invalid)
+    }
 
 private fun VaultBackupService.BackupInspection.toImportPreview(): BackupViewModel.ImportPreview =
     BackupViewModel.ImportPreview(

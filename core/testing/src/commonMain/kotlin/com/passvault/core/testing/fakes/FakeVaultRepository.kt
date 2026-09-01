@@ -97,7 +97,7 @@ class FakeVaultRepository : VaultRepository {
         return checkFailure {
             if (!MasterPasswordPolicy.accepts(masterPassword)) {
                 return@checkFailure Result.failure(
-                    IllegalArgumentException("Master password length is invalid"),
+                    IllegalArgumentException("Master password does not meet policy"),
                 )
             }
             if (vaultExists) {
@@ -162,7 +162,7 @@ class FakeVaultRepository : VaultRepository {
         return checkFailure {
             when {
                 !MasterPasswordPolicy.accepts(newPassword) -> {
-                    Result.failure(IllegalArgumentException("New master password length is invalid"))
+                    Result.failure(IllegalArgumentException("New master password does not meet policy"))
                 }
                 !MasterPasswordPolicy.acceptsExisting(currentPassword) -> {
                     Result.failure(IllegalArgumentException("Current master password length is invalid"))

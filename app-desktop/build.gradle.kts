@@ -953,6 +953,8 @@ val stageDesktopBiometricBridge = buildDesktopBiometricBridge?.let { buildTask -
         integrityPolicy.set(
             if (nativeBiometricPlatform.startsWith("macos-")) {
                 "sha256-or-developer-id"
+            } else if (nativeBiometricPlatform == "windows-x64") {
+                "sha256-and-authenticode"
             } else {
                 "sha256"
             },
@@ -1190,6 +1192,16 @@ compose.desktop {
 
                 val macEntitlementsFile =
                     resourcesDirectory.asFile.resolve("macos/PassVault.entitlements")
+                val macRuntimeEntitlementsFile =
+                    resourcesDirectory.asFile.resolve("macos/PassVault.runtime.entitlements")
+                // Keep the bundled JVM on the narrow JIT exception even for
+                // unsigned/ad-hoc development images. The production branch
+                // below additionally supplies the app's Developer ID
+                // entitlements and provisioning profile.
+                runtimeEntitlementsFile.set(macRuntimeEntitlementsFile)
+                require(macRuntimeEntitlementsFile.isFile) {
+                    "The PassVault macOS runtime entitlements file is missing"
+                }
 
                 if (macSign) {
                     require(macIdentity.isNotBlank()) {
@@ -1256,8 +1268,9 @@ compose.desktop {
 
                 shortcut = true
                 console = false
-                perUserInstall = true
-                dirChooser = true
+                // Program Files ACLs are part of the Windows native-code trust boundary.
+                perUserInstall = false
+                dirChooser = false
 
                 /*
                  * Keep this UUID constant between releases.
@@ -1374,7 +1387,7 @@ val verifyDesktopInstalledBiometricBridge =
         integrityPolicy.set(
             when {
                 nativeBiometricPlatform?.startsWith("macos-") == true -> "sha256-or-developer-id"
-                nativeBiometricPlatform == "windows-x64" -> "sha256"
+                nativeBiometricPlatform == "windows-x64" -> "sha256-and-authenticode"
                 else -> "unsupported"
             },
         )

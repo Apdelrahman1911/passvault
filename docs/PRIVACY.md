@@ -45,9 +45,9 @@ owned cache entries are cleaned on startup, but another application, document pr
 backup product, or interrupted storage device may retain a copy outside PassVault's control.
 
 Copied credentials and TOTP codes enter the operating-system clipboard and may be observable by the OS or other
-software. The app
-can clear its own still-current value after the configured timeout but cannot revoke content another process has
-already read.
+software. On Desktop, PassVault requests the Windows history/cloud opt-outs and the macOS concealed/transient
+pasteboard conventions. These hints are advisory to third-party software. The app can clear its own still-current
+value after the configured timeout but cannot revoke content another process has already read.
 
 ## Platform notes
 

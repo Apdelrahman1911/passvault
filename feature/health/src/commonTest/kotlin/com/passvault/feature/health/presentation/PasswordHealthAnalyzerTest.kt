@@ -3,6 +3,7 @@ package com.passvault.feature.health.presentation
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.model.PasswordHealth
+import com.passvault.core.domain.model.PasswordScore
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.repository.CredentialHealthInput
 import kotlin.test.Test
@@ -10,6 +11,20 @@ import kotlin.test.assertEquals
 import kotlin.time.Instant
 
 class PasswordHealthAnalyzerTest {
+
+    @Test
+    fun `predictable password is scored through the buffer-native evaluator`() {
+        val credential = healthInput("predictable", "Summer2024!!")
+
+        try {
+            val analysis = buildHealthAnalysis(listOf(credential), TEST_NOW)
+
+            assertEquals(PasswordScore.VERY_WEAK, analysis.healthByCredential.getValue(credential.id).score)
+            assertEquals(listOf(credential.id), analysis.weakPasswords.map { it.credentialId })
+        } finally {
+            credential.password?.clear()
+        }
+    }
 
     @Test
     fun `duplicate scan groups equal passwords without a plaintext hash`() {

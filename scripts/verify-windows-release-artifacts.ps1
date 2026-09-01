@@ -127,6 +127,16 @@ function Assert-BiometricBridgeBinding([string]$ImageRoot) {
         $libraries[0].Directory.FullName -cne $manifests[0].Directory.FullName) {
         throw "The app image must contain exactly one co-located Windows biometric bridge and manifest."
     }
+    $launcher = Join-Path $ImageRoot "PassVault.exe"
+    $bridgeSignature = Get-AuthenticodeSignature -LiteralPath $libraries[0].FullName
+    $launcherSignature = Get-AuthenticodeSignature -LiteralPath $launcher
+    if ($bridgeSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
+        $launcherSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
+        -not $bridgeSignature.SignerCertificate -or -not $launcherSignature.SignerCertificate -or
+        -not $bridgeSignature.TimeStamperCertificate -or -not $launcherSignature.TimeStamperCertificate -or
+        $bridgeSignature.SignerCertificate.Thumbprint -cne $launcherSignature.SignerCertificate.Thumbprint) {
+        throw "The biometric bridge and PassVault launcher must share one valid timestamped Authenticode signer."
+    }
     $entries = @{}
     foreach ($line in [IO.File]::ReadAllLines($manifests[0].FullName, [Text.Encoding]::UTF8)) {
         if ($line -notmatch '^(?<key>[a-z][a-z0-9_]{0,31})=(?<value>[A-Za-z0-9._-]{1,256})$' -or
@@ -137,7 +147,7 @@ function Assert-BiometricBridgeBinding([string]$ImageRoot) {
     }
     $expectedKeys = @("abi", "integrity", "library", "platform", "sha256") | Sort-Object
     if ((($entries.Keys | Sort-Object) -join "`n") -cne ($expectedKeys -join "`n") -or
-        $entries["abi"] -cne "1" -or $entries["integrity"] -cne "sha256" -or
+        $entries["abi"] -cne "1" -or $entries["integrity"] -cne "sha256-and-authenticode" -or
         $entries["library"] -cne "passvault_biometric.dll" -or
         $entries["platform"] -cne "windows-x64" -or
         $entries["sha256"] -notmatch '^[0-9a-f]{64}$') {

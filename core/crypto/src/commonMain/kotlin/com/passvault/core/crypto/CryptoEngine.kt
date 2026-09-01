@@ -314,11 +314,12 @@ data class WrappedKey(
 object CryptoEnvelope {
     private const val MAGIC_SIZE = 4
     private val MAGIC = byteArrayOf(0x50, 0x56, 0x02, 0x00)
+    private val PADDED_MAGIC = byteArrayOf(0x50, 0x56, 0x03, 0x00)
     private const val TAG_SIZE = 16
 
     fun encode(encrypted: EncryptedData): ByteArray {
         require(encrypted.tag.size == TAG_SIZE) { "AEAD tags must be exactly $TAG_SIZE bytes" }
-        return if (encrypted.ciphertext.startsWithMagic()) {
+        return if (encrypted.ciphertext.startsWithSupportedMagic()) {
             require(
                 encrypted.ciphertext.size >= MAGIC_SIZE + TAG_SIZE &&
                     encrypted.ciphertext.endsWith(encrypted.tag),
@@ -336,11 +337,14 @@ object CryptoEnvelope {
      * before they can replace a healthy vault.
      */
     fun isSupportedPayload(stored: ByteArray): Boolean {
-        if (!stored.startsWithMagic()) return false
+        if (!stored.startsWithSupportedMagic()) return false
         val normalizedSize =
             if (stored.hasDuplicatedTrailingTag()) stored.size - TAG_SIZE else stored.size
         return normalizedSize >= MAGIC_SIZE + TAG_SIZE
     }
+
+    /** Returns true when [stored] carries the padded variable-payload marker. */
+    fun isPaddedPayload(stored: ByteArray): Boolean = stored.startsWith(PADDED_MAGIC)
 
     /**
      * Normalizes a stored payload before passing it to `CryptoEngine.decrypt`.
@@ -351,8 +355,8 @@ object CryptoEnvelope {
      * Fake/test engines use an unversioned ciphertext plus a trailing tag.
      */
     fun normalize(stored: ByteArray): ByteArray {
-        val isVersioned = stored.startsWithMagic()
-        return when {
+        val isVersioned = stored.startsWithSupportedMagic()
+        val normalized = when {
             isVersioned && stored.hasDuplicatedTrailingTag() -> {
                 stored.copyOfRange(0, stored.size - TAG_SIZE)
             }
@@ -360,10 +364,21 @@ object CryptoEnvelope {
             stored.size >= TAG_SIZE -> stored.copyOfRange(0, stored.size - TAG_SIZE)
             else -> stored.copyOf()
         }
+        if (normalized.startsWith(PADDED_MAGIC)) MAGIC.copyInto(normalized)
+        return normalized
     }
 
-    private fun ByteArray.startsWithMagic(): Boolean =
-        size >= MAGIC_SIZE && copyOfRange(0, MAGIC_SIZE).contentEquals(MAGIC)
+    /** Converts a canonical v2 payload into the padded v3 marker. */
+    fun markPadded(stored: ByteArray): ByteArray {
+        require(stored.startsWith(MAGIC)) { "Expected a canonical v2 ciphertext" }
+        require(!stored.hasDuplicatedTrailingTag()) { "Expected exactly one authentication tag" }
+        return stored.copyOf().also { padded -> PADDED_MAGIC.copyInto(padded) }
+    }
+
+    private fun ByteArray.startsWithSupportedMagic(): Boolean = startsWith(MAGIC) || startsWith(PADDED_MAGIC)
+
+    private fun ByteArray.startsWith(prefix: ByteArray): Boolean =
+        size >= prefix.size && prefix.indices.all { index -> this[index] == prefix[index] }
 
     private fun ByteArray.endsWith(suffix: ByteArray): Boolean =
         size >= suffix.size && suffix.indices.all { index ->

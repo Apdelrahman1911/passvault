@@ -35,7 +35,7 @@ class DesktopWindowProtection {
     private var contentSecured = false
     private var restoreRequested = false
     private var contentSecurityInProgress = false
-    private var shutdownCurtain: JPanel? = null
+    private var concealmentCurtain: JPanel? = null
     private var previousGlassPane: Component? = null
 
     private var windowListeners: DesktopWindowListeners? = null
@@ -92,6 +92,7 @@ class DesktopWindowProtection {
 
     fun lock() {
         if (!enterLockedState()) return
+        installConcealmentCurtain()
         frame?.let { current ->
             val state = current.extendedState
             if (state and Frame.ICONIFIED == 0) {
@@ -115,25 +116,12 @@ class DesktopWindowProtection {
      */
     fun prepareForShutdown() {
         enterLockedState()
-        frame?.let { current ->
-            if (shutdownCurtain == null) {
-                previousGlassPane = current.glassPane
-                shutdownCurtain = JPanel().apply {
-                    isOpaque = true
-                    background = Color.BLACK
-                    isFocusable = false
-                }.also { curtain ->
-                    current.glassPane = curtain
-                    curtain.isVisible = true
-                    curtain.repaint()
-                }
-            }
-        }
+        installConcealmentCurtain()
     }
 
     fun unlock() {
         if (!locked) return
-        removeShutdownCurtain()
+        removeConcealmentCurtain()
         locked = false
         contentSecured = false
         restoreRequested = false
@@ -214,7 +202,7 @@ class DesktopWindowProtection {
     }
 
     fun cleanup() {
-        removeShutdownCurtain()
+        removeConcealmentCurtain()
         lockTimer = null
         windowListeners?.detach()
         windowListeners = null
@@ -241,15 +229,33 @@ class DesktopWindowProtection {
         return true
     }
 
-    private fun removeShutdownCurtain() {
-        val curtain = shutdownCurtain ?: return
+    private fun installConcealmentCurtain() {
+        frame?.let { current ->
+            if (concealmentCurtain == null) {
+                previousGlassPane = current.glassPane
+                concealmentCurtain = JPanel().apply {
+                    isOpaque = true
+                    background = Color.BLACK
+                    isFocusable = false
+                }.also { curtain ->
+                    current.glassPane = curtain
+                    curtain.isVisible = true
+                    curtain.revalidate()
+                    curtain.repaint()
+                }
+            }
+        }
+    }
+
+    private fun removeConcealmentCurtain() {
+        val curtain = concealmentCurtain ?: return
         curtain.isVisible = false
         frame?.let { current ->
             if (current.glassPane === curtain) {
                 previousGlassPane?.let { current.glassPane = it }
             }
         }
-        shutdownCurtain = null
+        concealmentCurtain = null
         previousGlassPane = null
     }
 

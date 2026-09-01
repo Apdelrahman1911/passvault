@@ -77,6 +77,7 @@ WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG=<slug created from the tracked Sign
 
 MACOS_CERTIFICATE_FILE=release/private/files/macos-developer-id-application.p12
 MACOS_CERTIFICATE_PASSWORD=<P12 export password>
+MACOS_PROVISIONING_PROFILE_FILE=release/private/files/embedded.provisionprofile
 MACOS_NOTARIZATION_APPLE_ID=<Apple ID email used for notarization>
 MACOS_NOTARIZATION_PASSWORD=<Apple app-specific password, not the Apple ID password>
 
@@ -236,7 +237,7 @@ EKU, exact publisher, and derives the certificate SHA-256 pin before uploading a
 | `WINDOWS_SIGNPATH_ORGANIZATION_ID`, `WINDOWS_SIGNPATH_PROJECT_SLUG`, `WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG`, `WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG` | Environment variables, `mobile-production` (SignPath only) | `release.yml` SignPath request binding | production only |
 | `WINDOWS_AZURE_CLIENT_ID`, `WINDOWS_AZURE_TENANT_ID`, `WINDOWS_AZURE_SUBSCRIPTION_ID`, `WINDOWS_ARTIFACT_SIGNING_ENDPOINT`, `WINDOWS_ARTIFACT_SIGNING_ACCOUNT`, `WINDOWS_ARTIFACT_SIGNING_PROFILE` | Environment variables, `mobile-production` (Azure only) | `release.yml` OIDC/Azure Artifact Signing | production only |
 | `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` | Environment secrets, `mobile-production` (local-PFX only) | `release.yml` ephemeral PFX import/signing | production only |
-| `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_NOTARIZATION_APPLE_ID`, `MACOS_NOTARIZATION_PASSWORD` | Environment secrets, `mobile-production` | `release.yml` Developer ID signing/notarization | production only |
+| `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_PROVISIONING_PROFILE_BASE64`, `MACOS_NOTARIZATION_APPLE_ID`, `MACOS_NOTARIZATION_PASSWORD` | Environment secrets, `mobile-production` | `release.yml` Developer ID signing/notarization | production only |
 | `PUBLISHER_NAME`, `COPYRIGHT_HOLDER` | Repository variables derived from `PUBLISHER_NAME_EN` and `COPYRIGHT_HOLDER_EN` | Candidate, mobile, desktop, Pages, and stable-release workflows | non-secret; testing and production |
 | `ANDROID_UPLOAD_CERTIFICATE_SHA256` | Repository variable derived from the validated Android upload certificate in the supplied keystore | Candidate and mobile workflows bind an Android candidate to the registered upload identity | non-secret fingerprint; testing and production provenance |
 | `IOS_DISTRIBUTION_CERTIFICATE_SHA1` | Repository variable derived from the validated Apple Distribution P12 | Candidate and mobile workflows bind an iOS candidate to the validated distribution identity | non-secret fingerprint; testing and production provenance |
@@ -249,6 +250,15 @@ EKU, exact publisher, and derives the certificate SHA-256 pin before uploading a
 `mobile-production` must allow deployments only from `release`, require the configured reviewer, and prevent self
 review. Do not put any of these secrets at repository scope. The configuration script deletes and verifies the absence
 of stale repository-level copies.
+
+`release-promotion` must allow deployments only from `testing`, require the configured reviewer, and prevent self
+review. It is an authorization boundary only: it must contain no secrets or variables. Candidate Readiness may advance
+`release` only through this environment, and signing validation contains no automatic production continuation. The
+documented production path then requires a separate `Production Store Release` dispatch.
+
+The configuration script explicitly disables administrator bypass for every managed environment. Its final report
+must show that both `release-promotion` and `mobile-production` are non-bypassable before any production workflow is
+dispatched. Verify the same setting in GitHub's environment UI after any manual environment change.
 
 Desktop Touch ID and Windows Hello introduce no additional secret, certificate, entitlement, relying-party server,
 or cloud credential. Their repository-built native bridges consume the existing `MACOS_*` Developer ID/notarization
@@ -266,6 +276,7 @@ openssl base64 -A -in release/private/files/ios-distribution-certificate.p12 | g
 openssl base64 -A -in release/private/files/ios-provisioning-profile.mobileprovision | gh secret set IOS_PROVISIONING_PROFILE_BASE64 --env mobile-beta --repo Apdelrahman1911/passvault
 openssl base64 -A -in release/private/files/app-store-connect-key.p8 | gh secret set ASC_PRIVATE_KEY_BASE64 --env mobile-production --repo Apdelrahman1911/passvault
 openssl base64 -A -in release/private/files/macos-developer-id-application.p12 | gh secret set MACOS_CERTIFICATE_BASE64 --env mobile-production --repo Apdelrahman1911/passvault
+openssl base64 -A -in release/private/files/embedded.provisionprofile | gh secret set MACOS_PROVISIONING_PROFILE_BASE64 --env mobile-production --repo Apdelrahman1911/passvault
 ```
 
 For the local-PFX backend only, the safe direct-upload fallback is:

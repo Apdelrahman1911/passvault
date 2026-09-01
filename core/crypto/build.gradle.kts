@@ -23,8 +23,22 @@ kotlin {
         }
     }
 
-    iosArm64()
-    iosSimulatorArm64()
+    iosArm64 {
+        compilations.getByName("main") {
+            cinterops.create("rawSodium") {
+                definitionFile.set(project.file("src/nativeInterop/cinterop/rawSodium.def"))
+                includeDirs(project.file("src/nativeInterop/cinterop"))
+            }
+        }
+    }
+    iosSimulatorArm64 {
+        compilations.getByName("main") {
+            cinterops.create("rawSodium") {
+                definitionFile.set(project.file("src/nativeInterop/cinterop/rawSodium.def"))
+                includeDirs(project.file("src/nativeInterop/cinterop"))
+            }
+        }
+    }
 
     sourceSets {
         val commonMain = getByName("commonMain") {
@@ -39,6 +53,20 @@ kotlin {
                 implementation(project(":core:testing"))
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
+            }
+        }
+
+        getByName("androidMain") {
+            dependencies {
+                // The libsodium Android artifact already supplies JNA as an AAR at runtime.
+                // Keep only the compile-time API here so the plain JVM JAR is not packaged too.
+                compileOnly(libs.jna)
+            }
+        }
+
+        getByName("desktopMain") {
+            dependencies {
+                implementation(libs.jna)
             }
         }
 

@@ -1,5 +1,6 @@
 package com.passvault.core.database.attachment
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.BufferedSink
@@ -11,6 +12,9 @@ import okio.buffer
 
 /** App-private storage for encrypted attachment objects. */
 interface AttachmentBlobStore {
+    /** Free bytes on the volume that owns attachment storage, or null when unavailable. */
+    suspend fun availableBytes(): Long? = null
+
     suspend fun <T> writeAtomically(
         relativePath: String,
         writer: suspend (BufferedSink) -> T,
@@ -34,34 +38,58 @@ interface AttachmentBlobStore {
 class LocalAttachmentBlobStore(
     rootPath: String,
     private val fileSystem: FileSystem = FileSystem.SYSTEM,
+    private val availableBytesProvider: () -> Long? = { null },
+    private val isInsufficientStorageFailure: (Throwable) -> Boolean = { false },
 ) : AttachmentBlobStore {
     private val root = rootPath.toPath(normalize = true)
     private val objects = root / OBJECTS_DIRECTORY
     private val staging = root / STAGING_DIRECTORY
 
+    @Suppress("TooGenericExceptionCaught") // Platform capacity APIs have no shared failure type.
+    override suspend fun availableBytes(): Long? = withContext(Dispatchers.Default) {
+        try {
+            initializeAndVerifyDirectories()
+            availableBytesProvider()?.takeIf { it >= 0L }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught") // Normalize platform filesystem failures after cleanup.
     override suspend fun <T> writeAtomically(
         relativePath: String,
         writer: suspend (BufferedSink) -> T,
     ): T = withContext(Dispatchers.Default) {
-        initializeAndVerifyDirectories()
-        val target = resolveObjectPath(relativePath)
-        check(fileSystem.metadataOrNull(target) == null) { "The attachment object already exists" }
-        val temporary = staging / (target.name + TEMPORARY_SUFFIX)
-        fileSystem.delete(temporary, mustExist = false)
         try {
-            val sink = fileSystem.sink(temporary, mustCreate = true).buffer()
-            val result = try {
-                writer(sink).also { sink.flush() }
-            } finally {
-                sink.close()
-            }
-            requireRegularFile(temporary)
+            initializeAndVerifyDirectories()
+            val target = resolveObjectPath(relativePath)
             check(fileSystem.metadataOrNull(target) == null) { "The attachment object already exists" }
-            fileSystem.atomicMove(temporary, target)
-            requireRegularFile(target)
-            result
-        } finally {
+            val temporary = staging / (target.name + TEMPORARY_SUFFIX)
             fileSystem.delete(temporary, mustExist = false)
+            try {
+                val sink = fileSystem.sink(temporary, mustCreate = true).buffer()
+                val result = try {
+                    writer(sink).also { sink.flush() }
+                } finally {
+                    sink.close()
+                }
+                requireRegularFile(temporary)
+                check(fileSystem.metadataOrNull(target) == null) { "The attachment object already exists" }
+                fileSystem.atomicMove(temporary, target)
+                requireRegularFile(target)
+                result
+            } finally {
+                fileSystem.delete(temporary, mustExist = false)
+            }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (error: Exception) {
+            if (error.hasInsufficientStorageSignal() || isInsufficientStorageFailure(error)) {
+                throw AttachmentStorageFullException(error)
+            }
+            throw error
         }
     }
 
@@ -187,3 +215,27 @@ class LocalAttachmentBlobStore(
         val UUID_HYPHEN_INDICES = setOf(8, 13, 18, 23)
     }
 }
+
+internal class AttachmentStorageFullException(cause: Throwable) : Exception("Attachment storage is full", cause)
+
+private fun Throwable.hasInsufficientStorageSignal(): Boolean {
+    var current: Throwable? = this
+    var depth = 0
+    while (current != null && depth < MAX_CAUSE_DEPTH) {
+        val message = current.message?.lowercase().orEmpty()
+        if (NO_SPACE_MESSAGES.any(message::contains)) return true
+        current = current.cause.takeUnless { cause -> cause === current }
+        depth++
+    }
+    return false
+}
+
+private const val MAX_CAUSE_DEPTH = 16
+private val NO_SPACE_MESSAGES = listOf(
+    "enospc",
+    "no space left",
+    "not enough space",
+    "disk full",
+    "disk quota exceeded",
+    "disc quota exceeded",
+)

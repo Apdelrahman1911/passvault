@@ -16,7 +16,9 @@ import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.SystemFlavorMap
 import java.awt.datatransfer.Transferable
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
@@ -26,12 +28,16 @@ import java.util.concurrent.atomic.AtomicReference
  * Timers never blindly replace the user's later clipboard contents.  The
  * secret carries a JVM-local ownership flavor. Expiry verifies that
  * unforgeable token before clearing, and releases the local reference when the
- * clip changes or is cleared.
+ * clip changes or is cleared. Sensitive writes also publish platform-native
+ * retention opt-out hints. Those hints are advisory for third-party clipboard
+ * managers, so timed clearing and the documented clipboard threat boundary
+ * remain necessary.
  */
 class DesktopClipboardService internal constructor(
     private val scope: CoroutineScope,
     private val clipboardProvider: () -> Clipboard,
     registerShutdownHook: Boolean,
+    private val securityHints: List<NativeClipboardHint> = nativeClipboardHints(),
 ) : ClipboardService {
 
     constructor(
@@ -58,7 +64,7 @@ class DesktopClipboardService internal constructor(
     override suspend fun copySensitive(text: String, timeoutMs: Long) {
         clipboardMutex.withLock {
             val timeout = timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS)
-            val selection = OwnedSensitiveSelection(text)
+            val selection = OwnedSensitiveSelection(text, securityHints)
             // withContext has a prompt-cancellation boundary when returning
             // from the dispatcher used by setClipboard(). Once the OS accepts
             // a secret, ownership and its expiry job must therefore be
@@ -184,18 +190,26 @@ class DesktopClipboardService internal constructor(
             throw checkNotNull(lastFailure)
         }
 
-    private class OwnedSensitiveSelection(text: String) : Transferable {
+    private class OwnedSensitiveSelection(
+        text: String,
+        private val securityHints: List<NativeClipboardHint>,
+    ) : Transferable {
         val token: String = UUID.randomUUID().toString()
         private val textSelection = StringSelection(text)
 
         override fun getTransferDataFlavors(): Array<DataFlavor> =
-            arrayOf(DataFlavor.stringFlavor, OWNERSHIP_FLAVOR)
+            arrayOf(DataFlavor.stringFlavor, OWNERSHIP_FLAVOR) + securityHints.map { it.flavor }
 
         override fun isDataFlavorSupported(flavor: DataFlavor): Boolean =
-            flavor == OWNERSHIP_FLAVOR || textSelection.isDataFlavorSupported(flavor)
+            flavor == OWNERSHIP_FLAVOR ||
+                securityHints.any { it.flavor == flavor } ||
+                textSelection.isDataFlavorSupported(flavor)
 
-        override fun getTransferData(flavor: DataFlavor): Any =
-            if (flavor == OWNERSHIP_FLAVOR) token else textSelection.getTransferData(flavor)
+        override fun getTransferData(flavor: DataFlavor): Any = when {
+            flavor == OWNERSHIP_FLAVOR -> token
+            else -> securityHints.firstOrNull { it.flavor == flavor }?.payload?.copyOf()
+                ?: textSelection.getTransferData(flavor)
+        }
     }
 
     companion object {
@@ -210,3 +224,54 @@ class DesktopClipboardService internal constructor(
         )
     }
 }
+
+internal data class NativeClipboardHint(
+    val nativeFormat: String,
+    val flavor: DataFlavor,
+    val payload: ByteArray,
+)
+
+internal fun nativeClipboardHints(
+    osName: String = System.getProperty("os.name").orEmpty(),
+    register: (DataFlavor, String) -> Unit = ::registerNativeClipboardFlavor,
+): List<NativeClipboardHint> {
+    val definitions = when {
+        osName.startsWith("Windows", ignoreCase = true) -> WINDOWS_CLIPBOARD_HINTS
+        osName.startsWith("Mac", ignoreCase = true) -> MACOS_CLIPBOARD_HINTS
+        else -> emptyList()
+    }
+    return definitions.mapIndexed { index, definition ->
+        val flavorName = definition.nativeFormat
+            .lowercase(Locale.ROOT)
+            .replace(NON_MIME_TOKEN_CHARACTER, "-")
+        val flavor = DataFlavor(
+            "application/x-passvault-$flavorName-$index;class=\"[B\"",
+            "PassVault sensitive clipboard hint: ${definition.nativeFormat}",
+        )
+        register(flavor, definition.nativeFormat)
+        NativeClipboardHint(definition.nativeFormat, flavor, definition.payload.copyOf())
+    }
+}
+
+private fun registerNativeClipboardFlavor(flavor: DataFlavor, nativeFormat: String) {
+    val flavorMap = SystemFlavorMap.getDefaultFlavorMap() as SystemFlavorMap
+    // A one-way explicit mapping makes the platform data transferer register the exact
+    // Win32 clipboard-format name or macOS pasteboard UTI and write this flavor's raw bytes.
+    flavorMap.setNativesForFlavor(flavor, arrayOf(nativeFormat))
+}
+
+private data class NativeClipboardHintDefinition(
+    val nativeFormat: String,
+    val payload: ByteArray,
+)
+
+private val WINDOWS_CLIPBOARD_HINTS = listOf(
+    NativeClipboardHintDefinition("ExcludeClipboardContentFromMonitorProcessing", ByteArray(Int.SIZE_BYTES)),
+    NativeClipboardHintDefinition("CanIncludeInClipboardHistory", ByteArray(Int.SIZE_BYTES)),
+    NativeClipboardHintDefinition("CanUploadToCloudClipboard", ByteArray(Int.SIZE_BYTES)),
+)
+private val MACOS_CLIPBOARD_HINTS = listOf(
+    NativeClipboardHintDefinition("org.nspasteboard.ConcealedType", byteArrayOf(0)),
+    NativeClipboardHintDefinition("org.nspasteboard.TransientType", byteArrayOf(0)),
+)
+private val NON_MIME_TOKEN_CHARACTER = Regex("[^a-z0-9.-]")
