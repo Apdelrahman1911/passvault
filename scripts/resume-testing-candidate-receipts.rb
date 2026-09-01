@@ -48,9 +48,14 @@ if ENV["GH_TOKEN"].to_s.strip.empty? && ENV["GITHUB_TOKEN"].to_s.strip.empty?
   abort("GH_TOKEN or GITHUB_TOKEN is required")
 end
 
-def gh_json(*args)
-  stdout, stderr, status = Open3.capture3("gh", "api", "--paginate", *args)
-  abort(stderr.empty? ? "gh api #{args.join(' ')} failed" : stderr) unless status.success?
+def gh_json(path, query = {})
+  args = ["gh", "api", "--paginate"]
+  unless query.empty?
+    encoded = query.map { |key, value| "#{key}=#{value}" }.join("&")
+    path = "#{path}?#{encoded}"
+  end
+  stdout, stderr, status = Open3.capture3(*args, path)
+  abort(stderr.empty? ? "gh api #{path} failed" : stderr) unless status.success?
 
   JSON.parse(stdout)
 end
@@ -79,8 +84,8 @@ abort("Resume output directory must be a real directory") unless output_dir.dire
 
 runs_payload = gh_json(
   "repos/#{repository}/actions/workflows/testing-release.yml/runs",
-  "-f", "branch=testing",
-  "-f", "per_page=100",
+  "branch" => "testing",
+  "per_page" => "100",
 )
 workflow_runs = runs_payload.is_a?(Hash) ? runs_payload.fetch("workflow_runs") : runs_payload
 
@@ -88,9 +93,9 @@ jobs_by_run_id = {}
 artifacts_by_run_id = {}
 workflow_runs.each do |run|
   run_id = run.fetch("id").to_s
-  jobs_payload = gh_json("repos/#{repository}/actions/runs/#{run_id}/jobs", "-f", "per_page=100")
+  jobs_payload = gh_json("repos/#{repository}/actions/runs/#{run_id}/jobs", "per_page" => "100")
   jobs_by_run_id[run_id] = jobs_payload.is_a?(Hash) ? jobs_payload.fetch("jobs") : jobs_payload
-  artifacts_payload = gh_json("repos/#{repository}/actions/runs/#{run_id}/artifacts", "-f", "per_page=100")
+  artifacts_payload = gh_json("repos/#{repository}/actions/runs/#{run_id}/artifacts", "per_page" => "100")
   artifacts_by_run_id[run_id] = if artifacts_payload.is_a?(Hash)
     artifacts_payload.fetch("artifacts")
   else
