@@ -78,6 +78,18 @@ unless repository variable `LEGACY_TESTING_RELEASE_ON_PUSH` is explicitly set to
    `candidate-manifest.json`, safe mobile hash receipts, the project license,
    and third-party notices.
 
+If internal Android or iOS upload already succeeded for the exact
+`testing` commit, tree, version, and `VERSION_CODE`, dispatch
+`Testing Candidate` with `resume_existing_internal_uploads=true` and
+confirmation `resume:<version>:<build>`. That path reuses only
+attested signed Android/iOS artifacts and their matching receipts from
+successful `mobile-internal` jobs, still promotes those exact store
+builds, and still creates the candidate tag inside `publish-candidate`.
+It refuses another commit, another build, an unattested binary, a
+receipt whose hashes do not match the signed files, or two successful
+receipts whose artifact hashes differ. It never uploads Android or iOS
+again.
+
 The prerelease notes explicitly warn that Windows and macOS test installers
 are unsigned. Mobile IPA/AAB files are never attached to a public release.
 
