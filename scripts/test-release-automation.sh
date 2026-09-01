@@ -1530,6 +1530,11 @@ grep -Fq 'needs: [ prepare, mobile-internal, resume-internal-receipts, desktop-l
 grep -Fq 'resume_existing_internal_uploads' .github/workflows/testing-release.yml
 grep -Fq 'resume-internal-receipts' .github/workflows/testing-release.yml
 grep -Fq 'scripts/resume-testing-candidate-receipts.rb' .github/workflows/testing-release.yml
+grep -Fq 'resume-receipt-sources.json' .github/workflows/testing-release.yml
+grep -Fq 'Resume publication must keep the original candidate tree.' \
+    .github/workflows/testing-release.yml
+grep -Fq 'exact candidate commit or its exact protected tree' \
+    .github/workflows/candidate-readiness.yml
 grep -Fq 'require_relative "lib/testing_candidate_resume"' scripts/resume-testing-candidate-receipts.rb
 ruby -c scripts/lib/testing_candidate_resume.rb >/dev/null
 ruby -c scripts/resume-testing-candidate-receipts.rb >/dev/null

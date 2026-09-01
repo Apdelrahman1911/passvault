@@ -79,16 +79,19 @@ unless repository variable `LEGACY_TESTING_RELEASE_ON_PUSH` is explicitly set to
    and third-party notices.
 
 If internal Android or iOS upload already succeeded for the exact
-`testing` commit, tree, version, and `VERSION_CODE`, dispatch
-`Testing Candidate` with `resume_existing_internal_uploads=true` and
-confirmation `resume:<version>:<build>`. That path reuses only
-attested signed Android/iOS artifacts and their matching receipts from
-successful `mobile-internal` jobs, still promotes those exact store
-builds, and still creates the candidate tag inside `publish-candidate`.
-It refuses another commit, another build, an unattested binary, a
-receipt whose hashes do not match the signed files, or two successful
-receipts whose artifact hashes differ. It never uploads Android or iOS
-again.
+candidate tree, version, and `VERSION_CODE`, dispatch `Testing
+Candidate` from `testing` with `resume_existing_internal_uploads=true`
+and confirmation `resume:<version>:<build>`. The live `testing` tree
+must still be that original candidate tree. Resume may run from a
+later `testing` SHA only to load the workflow; it still binds
+`vVERSION-rc.BUILD`, the candidate manifest, and later readiness to
+the original receipt commit and tree. It reuses only attested signed
+Android/iOS artifacts and their matching receipts from successful
+`mobile-internal` jobs, still promotes those exact store builds, and
+still creates the candidate tag inside `publish-candidate`. It refuses
+another tree, another build, an unattested binary, a receipt whose
+hashes do not match the signed files, or two successful receipts whose
+artifact hashes differ. It never uploads Android or iOS again.
 
 The prerelease notes explicitly warn that Windows and macOS test installers
 are unsigned. Mobile IPA/AAB files are never attached to a public release.
