@@ -2062,6 +2062,15 @@ grep -Fq 'needs: [ prepare, mobile-internal, resume-internal-receipts, desktop-l
 grep -Fq 'resume_existing_internal_uploads' .github/workflows/testing-release.yml
 grep -Fq 'resume-internal-receipts' .github/workflows/testing-release.yml
 grep -Fq 'scripts/resume-testing-candidate-receipts.rb' .github/workflows/testing-release.yml
+# Resume must see the original candidate commit, not only the later testing SHA.
+python3 - <<'PY'
+from pathlib import Path
+text = Path(".github/workflows/testing-release.yml").read_text()
+start = text.index("resume-internal-receipts:")
+chunk = text[start:text.index("mobile-external:", start)]
+if "fetch-depth: 0" not in chunk:
+    raise SystemExit("resume-internal-receipts must fetch full Git history")
+PY
 grep -Fq 'resume-receipt-sources.json' .github/workflows/testing-release.yml
 grep -Fq 'Resume publication must keep the original candidate tree.' \
     .github/workflows/testing-release.yml
