@@ -4,6 +4,17 @@ on:
   push:
     branches: [ testing ]
   workflow_dispatch:
+    inputs:
+      resume_existing_internal_uploads:
+        description: Reuse attested internal receipts instead of uploading Android/iOS again
+        required: true
+        type: boolean
+        default: false
+      resume_confirmation:
+        description: Required as resume:<version>:<build> when resuming existing internal uploads
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -38,6 +49,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
       build_number: ${{ steps.release.outputs.build_number }}
       candidate_tag: ${{ steps.release.outputs.candidate_tag }}
+      resume_existing_internal_uploads: ${{ steps.release.outputs.resume_existing_internal_uploads }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -57,6 +69,8 @@ jobs:
         env:
           ANDROID_SIGNING_SHA256: ${{ vars.ANDROID_UPLOAD_CERTIFICATE_SHA256 }}
           IOS_SIGNING_SHA1: ${{ vars.IOS_DISTRIBUTION_CERTIFICATE_SHA1 }}
+          RESUME_EXISTING_INTERNAL_UPLOADS: ${{ inputs.resume_existing_internal_uploads }}
+          RESUME_CONFIRMATION: ${{ inputs.resume_confirmation }}
         run: |
           if [[ "$GITHUB_REF" != refs/heads/testing ]]; then
             echo "Testing candidates must run from the testing branch." >&2
@@ -86,10 +100,24 @@ jobs:
             echo "ANDROID_UPLOAD_CERTIFICATE_SHA256 differs from the pinned upload certificate." >&2
             exit 1
           fi
+          RESUME_EXISTING=false
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" &&
+                "$RESUME_EXISTING_INTERNAL_UPLOADS" == "true" ]]; then
+            RESUME_EXISTING=true
+            ruby -e 'require_relative "scripts/lib/testing_candidate_resume";
+              PassVault::TestingCandidateResume.validate_confirmation!(
+                ARGV.fetch(0), version: ARGV.fetch(1), build_number: ARGV.fetch(2)
+              )' \
+              "$RESUME_CONFIRMATION" "$VERSION" "$BUILD_NUMBER"
+          elif [[ -n "$RESUME_CONFIRMATION" ]]; then
+            echo "Resume confirmation is only valid with resume_existing_internal_uploads." >&2
+            exit 1
+          fi
           {
             printf 'version=%s\n' "$VERSION"
             printf 'build_number=%s\n' "$BUILD_NUMBER"
             printf 'candidate_tag=v%s-rc.%s\n' "$VERSION" "$BUILD_NUMBER"
+            printf 'resume_existing_internal_uploads=%s\n' "$RESUME_EXISTING"
           } >> "$GITHUB_OUTPUT"
 
       - name: Test release automation
@@ -99,6 +127,7 @@ jobs:
         run: ./gradlew test detekt verifyDependencies --continue --stacktrace
 
   mobile-internal:
+    if: needs.prepare.outputs.resume_existing_internal_uploads != 'true'
     needs: prepare
     permissions:
       actions: read
@@ -117,8 +146,60 @@ jobs:
       pipeline_lock_held: true
     secrets: inherit
 
+  resume-internal-receipts:
+    if: needs.prepare.outputs.resume_existing_internal_uploads == 'true'
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      artifact-metadata: write
+      attestations: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
+        with:
+          ruby-version: '3.3'
+      - name: Resume attested internal receipts for this exact candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESUME_CONFIRMATION: ${{ inputs.resume_confirmation }}
+          RESUME_VERSION: ${{ needs.prepare.outputs.version }}
+          RESUME_BUILD_NUMBER: ${{ needs.prepare.outputs.build_number }}
+        run: |
+          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          ruby scripts/resume-testing-candidate-receipts.rb \
+            --version "$RESUME_VERSION" \
+            --build-number "$RESUME_BUILD_NUMBER" \
+            --source-commit "$GITHUB_SHA" \
+            --source-tree "$source_tree" \
+            --confirmation "$RESUME_CONFIRMATION" \
+            --output-dir "$RUNNER_TEMP/resumed-mobile-receipts"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-receipt-android-${{ needs.prepare.outputs.build_number }}
+          if-no-files-found: error
+          retention-days: 90
+          path: ${{ runner.temp }}/resumed-mobile-receipts/android-artifact-receipt.json
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mobile-receipt-ios-${{ needs.prepare.outputs.build_number }}
+          if-no-files-found: error
+          retention-days: 90
+          path: ${{ runner.temp }}/resumed-mobile-receipts/ios-artifact-receipt.json
+
   mobile-external:
-    needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]
+    needs: [ prepare, mobile-internal, resume-internal-receipts, desktop-linux, desktop-windows, desktop-macos ]
+    if: >-
+      always() &&
+      needs.prepare.result == 'success' &&
+      needs.desktop-linux.result == 'success' &&
+      needs.desktop-windows.result == 'success' &&
+      needs.desktop-macos.result == 'success' &&
+      (needs.mobile-internal.result == 'success' ||
+        needs.resume-internal-receipts.result == 'success') &&
+      (needs.mobile-internal.result == 'skipped' ||
+        needs.resume-internal-receipts.result == 'skipped')
     # A reusable workflow cannot elevate above its caller. Pass the union of
     # its statically declared job permissions; the selected promotion jobs
     # immediately downgrade to their narrower per-job permissions.
@@ -250,10 +331,23 @@ jobs:
   publish-candidate:
     needs:
       - prepare
+      - mobile-internal
+      - resume-internal-receipts
       - mobile-external
       - desktop-linux
       - desktop-windows
       - desktop-macos
+    if: >-
+      always() &&
+      needs.prepare.result == 'success' &&
+      needs.mobile-external.result == 'success' &&
+      needs.desktop-linux.result == 'success' &&
+      needs.desktop-windows.result == 'success' &&
+      needs.desktop-macos.result == 'success' &&
+      (needs.mobile-internal.result == 'success' ||
+        needs.resume-internal-receipts.result == 'success') &&
+      (needs.mobile-internal.result == 'skipped' ||
+        needs.resume-internal-receipts.result == 'skipped')
     runs-on: ubuntu-latest
     permissions:
       artifact-metadata: write
