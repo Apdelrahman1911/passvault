@@ -192,6 +192,7 @@ jobs:
   promote-release-branch:
     needs: [ candidate, google-play, testflight ]
     runs-on: ubuntu-latest
+    environment: release-promotion
     permissions:
       actions: write
       artifact-metadata: write
@@ -199,6 +200,45 @@ jobs:
       contents: write
       id-token: write
     steps:
+      - name: Require the live release-promotion approval policy
+        env:
+          DEPLOYMENT_APPROVER: ${{ vars.DEPLOYMENT_APPROVER }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ ! "$DEPLOYMENT_APPROVER" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$ ]]; then
+            echo "DEPLOYMENT_APPROVER is missing or invalid." >&2
+            exit 1
+          fi
+          environment_json="$RUNNER_TEMP/release-promotion-environment.json"
+          branch_policy_json="$RUNNER_TEMP/release-promotion-branches.json"
+          gh api "repos/$GITHUB_REPOSITORY/environments/release-promotion" > "$environment_json"
+          gh api \
+            "repos/$GITHUB_REPOSITORY/environments/release-promotion/deployment-branch-policies" \
+            > "$branch_policy_json"
+          jq -e --arg reviewer "$DEPLOYMENT_APPROVER" '
+            .can_admins_bypass == false and
+            .deployment_branch_policy.protected_branches == false and
+            .deployment_branch_policy.custom_branch_policies == true and
+            ([.protection_rules[] | select(.type == "required_reviewers")] | length) == 1 and
+            ([.protection_rules[] | select(.type == "required_reviewers")][0] |
+              .prevent_self_review == true and
+              (.reviewers | length) == 1 and
+              .reviewers[0].type == "User" and
+              .reviewers[0].reviewer.login == $reviewer)
+          ' "$environment_json" >/dev/null || {
+            echo "release-promotion lacks the required non-bypassable independent approval." >&2
+            exit 1
+          }
+          jq -e '
+            .total_count == 1 and
+            (.branch_policies | length) == 1 and
+            .branch_policies[0].type == "branch" and
+            .branch_policies[0].name == "testing"
+          ' "$branch_policy_json" >/dev/null || {
+            echo "release-promotion is not restricted exactly to testing." >&2
+            exit 1
+          }
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
@@ -270,5 +310,4 @@ jobs:
         run: |
           gh workflow run production-signing-validation.yml \
             --ref release \
-            -f candidate_tag="$CANDIDATE_TAG" \
-            -f start_production_after_validation=true
+            -f candidate_tag="$CANDIDATE_TAG"

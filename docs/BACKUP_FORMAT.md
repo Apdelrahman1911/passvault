@@ -1,6 +1,6 @@
 # PassVault encrypted backup format
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-27
 
 The `.pvault` extension is used for both supported encrypted containers. New exports use binary **format 2**.
 Strict read compatibility with legacy JSON **format 1** is retained.
@@ -15,14 +15,20 @@ Every format-2 file starts with this 44-byte binary header:
 |---|---:|---|
 | magic | 8 | `50 56 42 41 43 4b 02 00` |
 | format version | 4 | `2` |
-| Argon2id operations | 4 | 2–10 |
-| Argon2id memory bytes | 4 | 32–256 MiB |
+| Argon2id operations | 4 | 3–4 |
+| Argon2id memory bytes | 4 | exactly 64 MiB |
 | parallelism | 4 | `1` |
 | attachment/record chunk bytes | 4 | 256 KiB |
 | random salt | 16 | exactly 16 bytes |
 
-The backup password is independent of the vault master password. Argon2id derives one 32-byte backup key from the
-password and fresh salt. The device benchmark selects parameters and the writer clamps them to the accepted range.
+The backup password is independent of the vault master password. PassVault strictly UTF-8 encodes it and then uses
+the lowercase ASCII hexadecimal bytes as the compatibility-critical Argon2id input; changing to raw UTF-8 would make
+existing backups unreadable. Mutable UTF-8 and hexadecimal buffers are cleared best-effort after deriving the
+32-byte backup key. The device benchmark selects one of the two profiles format 2 has emitted: 64 MiB with either
+three or four operations. Writers and readers reject every other profile before deriving a key; future KDF profiles
+require a new backup format version. The serialized parallelism value is fixed at `1`: the current libsodium
+`crypto_pwhash` binding exposes no lanes argument, so writers must not claim a parallelism value they cannot apply.
+Readers reject any other value.
 
 ### Authenticated records
 
@@ -60,6 +66,11 @@ encrypted object size, 256 KiB content records carry the already encrypted objec
 authenticates its ID, total bytes, and chunk count. A final record authenticates the total record count, managed
 attachment count, and total encrypted-object bytes. Attachment content therefore has two independent authenticated
 layers: its per-attachment vault-key container and the backup-password record layer.
+
+The current metadata schema authenticates the aggregate encrypted-object byte total in the manifest. Restore requires
+free space for the remaining objects plus one maximum-size object of reserve when the platform can report capacity,
+and repeats the check before each object write. Older format-2 metadata schemas did not carry the aggregate; they
+remain readable and receive the per-object running reserve check as each authenticated start record is decoded.
 
 ## Validation and two-pass restore
 

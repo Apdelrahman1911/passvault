@@ -108,7 +108,7 @@ internal class BackupV2Writer private constructor(
             var derivedKey: DerivedKey? = null
             var header: ByteArray? = null
             return try {
-                val parameters = cryptoEngine.benchmarkArgon2().safeForBackup()
+                val parameters = cryptoEngine.benchmarkArgon2().requireSupportedV2Profile()
                 salt = cryptoEngine.generateRandom(SALT_BYTES).getOrThrow()
                 passwordBytes = password.toUtf8ByteArray()
                 derivedKey = cryptoEngine.deriveKey(
@@ -326,8 +326,7 @@ internal class BackupV2Reader private constructor(
                 salt = headerReader.readByteArray(SALT_BYTES.toLong())
                 require(headerReader.exhausted())
                 require(version == BackupLimits.FORMAT_VERSION)
-                require(opsLimit in MIN_ARGON2_OPS..MAX_ARGON2_OPS)
-                require(memLimit in MIN_ARGON2_MEM..MAX_ARGON2_MEM)
+                require(isSupportedV2KdfProfile(opsLimit, memLimit))
                 require(parallelism == PARALLELISM)
                 require(chunkBytes == BackupLimits.RECORD_PLAINTEXT_BYTES)
                 passwordBytes = password.toUtf8ByteArray()
@@ -380,10 +379,12 @@ internal class BackupV2Reader private constructor(
 internal val BACKUP_V2_MAGIC: ByteArray
     get() = MAGIC.copyOf()
 
-private fun Argon2Parameters.safeForBackup(): Argon2Parameters = copy(
-    opsLimit = opsLimit.coerceIn(MIN_ARGON2_OPS, MAX_ARGON2_OPS),
-    memLimit = memLimit.coerceIn(MIN_ARGON2_MEM, MAX_ARGON2_MEM),
-)
+private fun Argon2Parameters.requireSupportedV2Profile(): Argon2Parameters = apply {
+    require(isSupportedV2KdfProfile(opsLimit, memLimit))
+}
+
+private fun isSupportedV2KdfProfile(opsLimit: Int, memLimit: Int): Boolean =
+    opsLimit in V2_MIN_ARGON2_OPS..V2_MAX_ARGON2_OPS && memLimit == V2_ARGON2_MEM
 
 private const val RECORD_AAD_DOMAIN = "passvault:backup-record:v2"
 private const val SALT_BYTES = 16
@@ -392,9 +393,8 @@ private const val ENCRYPTION_OVERHEAD_BYTES = 20
 private const val TRANSCRIPT_TAG_BYTES = 16
 private const val READ_BUFFER_BYTES = 64 * 1024
 private const val PARALLELISM = 1
-private const val MIN_ARGON2_OPS = 2
-private const val MAX_ARGON2_OPS = 10
-private const val MIN_ARGON2_MEM = 32 * 1024 * 1024
-private const val MAX_ARGON2_MEM = 256 * 1024 * 1024
+private const val V2_MIN_ARGON2_OPS = 3
+private const val V2_MAX_ARGON2_OPS = 4
+private const val V2_ARGON2_MEM = 64 * 1024 * 1024
 private val MAGIC = byteArrayOf(0x50, 0x56, 0x42, 0x41, 0x43, 0x4b, 0x02, 0x00)
 private val HEADER_BYTES = MAGIC.size + Int.SIZE_BYTES * 5 + SALT_BYTES

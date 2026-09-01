@@ -6,6 +6,7 @@ repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 project="$repository_root/iosApp/iosApp.xcodeproj"
 scheme="$repository_root/iosApp/iosApp.xcodeproj/xcshareddata/xcschemes/PassVault.xcscheme"
 shared_configuration="$repository_root/iosApp/Configuration/Config.xcconfig"
+entitlements="$repository_root/iosApp/iosApp/iosApp.entitlements"
 localized_info_plists=(
     "$repository_root/iosApp/iosApp/en.lproj/InfoPlist.strings"
     "$repository_root/iosApp/iosApp/ar.lproj/InfoPlist.strings"
@@ -18,8 +19,18 @@ for command in xcodebuild ruby; do
     }
 done
 if [[ ! -d "$project" || -L "$project" || ! -f "$scheme" || -L "$scheme" ||
-      ! -f "$shared_configuration" || -L "$shared_configuration" ]]; then
+      ! -f "$shared_configuration" || -L "$shared_configuration" ||
+      ! -f "$entitlements" || -L "$entitlements" ]]; then
     echo "The PassVault Xcode project or shared scheme is missing or unsafe." >&2
+    exit 1
+fi
+plutil -lint "$entitlements" >/dev/null
+if [[ "$(/usr/libexec/PlistBuddy -c \
+        'Print :com.apple.developer.default-data-protection' "$entitlements")" != \
+      NSFileProtectionComplete ||
+      "$(/usr/libexec/PlistBuddy -c 'Print :keychain-access-groups:0' "$entitlements")" != \
+      '$(AppIdentifierPrefix)$(CFBundleIdentifier)' ]]; then
+    echo "The iOS entitlements do not enforce complete default data protection and the app Keychain group." >&2
     exit 1
 fi
 if grep -Eq '^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=' "$shared_configuration"; then
@@ -88,19 +99,22 @@ validate_configuration() {
     fi
 
     local bundle_id display_name product_name effective_configuration code_sign_style development_team
+    local code_sign_entitlements
     bundle_id="$(setting_value "$settings_file" PRODUCT_BUNDLE_IDENTIFIER)"
     display_name="$(setting_value "$settings_file" INFOPLIST_KEY_CFBundleDisplayName)"
     product_name="$(setting_value "$settings_file" PRODUCT_NAME)"
     effective_configuration="$(setting_value "$settings_file" CONFIGURATION)"
     code_sign_style="$(setting_value "$settings_file" CODE_SIGN_STYLE)"
     development_team="$(setting_value "$settings_file" DEVELOPMENT_TEAM)"
+    code_sign_entitlements="$(setting_value "$settings_file" CODE_SIGN_ENTITLEMENTS)"
 
     if [[ "$bundle_id" != "$expected_bundle_id" ||
           "$display_name" != "$expected_display_name" ||
           "$product_name" != PassVault ||
           "$effective_configuration" != "$configuration" ||
           "$code_sign_style" != Automatic ||
-          "$development_team" != 7CGZ2343AA ]]; then
+          "$development_team" != 7CGZ2343AA ||
+          "$code_sign_entitlements" != iosApp/iosApp.entitlements ]]; then
         echo "Unexpected $configuration iOS identity settings." >&2
         echo "Bundle: $bundle_id; display name: $display_name; product: $product_name; signing style: $code_sign_style; team: $development_team." >&2
         exit 1

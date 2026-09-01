@@ -3,14 +3,19 @@ package com.passvault.core.database.repository
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.EncryptedData
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.database.dao.AttachmentDao
 import com.passvault.core.database.dao.CredentialDao
 import com.passvault.core.database.dao.FolderDao
 import com.passvault.core.database.entity.CredentialTagCrossRef
 import com.passvault.core.database.dao.PasswordHistoryDao
 import com.passvault.core.database.dao.TagDao
+import com.passvault.core.database.attachment.AttachmentFilenameRead
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.DatabaseOnlyAttachmentLifecycleManager
+import com.passvault.core.database.attachment.AttachmentStorageKind
+import com.passvault.core.database.attachment.readAttachmentFilename
+import com.passvault.core.database.attachment.requireStableStorageKind
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.entity.CredentialRecordEntity
 import com.passvault.core.database.entity.CredentialSummaryProjection
@@ -325,10 +330,12 @@ class CredentialRepositoryImpl(
         return try {
             val encodedPassword = password.toUtf8ByteArray()
             passwordBytes = encodedPassword
-            val encrypted = cryptoEngine.encrypt(
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = encodedPassword,
                 key = recordKey,
                 associatedData = historyAssociatedData(historyId, id.value),
+                maxPlaintextBytes = MAX_SENSITIVE_UTF8_BYTES,
             ).getOrThrow()
             encryptedPassword = encrypted
             PasswordHistoryRecordEntity(
@@ -420,10 +427,12 @@ class CredentialRepositoryImpl(
             updatedJson = json.encodeToString(
                 summary.copy(passwordHealth = health.toSerialized()),
             ).encodeToByteArray()
-            val encrypted = cryptoEngine.encrypt(
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = updatedJson,
                 key = recordKey,
                 associatedData = credentialAssociatedData(entity.id, "summary"),
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
             ).getOrThrow()
             encryptedSummary = encrypted
             credentialDao.updateEncryptedSummary(
@@ -560,32 +569,32 @@ class CredentialRepositoryImpl(
         var secretJson: ByteArray? = null
         var encryptedSummary: EncryptedData? = null
         var encryptedSecret: EncryptedData? = null
-        var titleHash: ByteArray? = null
         try {
             summaryJson = json.encodeToString(credential.toSummaryPayload()).encodeToByteArray()
-            require(summaryJson.size <= MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
-            val summary = cryptoEngine.encrypt(
+            require(summaryJson.size <= MAX_CREDENTIAL_PLAINTEXT_BYTES)
+            val summary = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = summaryJson,
                 key = recordKey,
                 associatedData = credentialAssociatedData(credential.id.value, "summary"),
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
             ).getOrThrow()
             encryptedSummary = summary
 
             secretJson = json.encodeToString(
                 credential.toSecretPayload(passwordChangedAtEpochMillis),
             ).encodeToByteArray()
-            require(secretJson.size <= MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
-            val secret = cryptoEngine.encrypt(
+            require(secretJson.size <= MAX_CREDENTIAL_PLAINTEXT_BYTES)
+            val secret = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
                 plaintext = secretJson,
                 key = recordKey,
                 associatedData = credentialAssociatedData(credential.id.value, "secret"),
+                maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
             ).getOrThrow()
             encryptedSecret = secret
 
-            val blindIndex = deriveBlindIndex(vek, "title", credential.title)
-            titleHash = blindIndex
             return credential.toRecordEntity(
-                titleHash = blindIndex,
                 encryptedSummary = summary,
                 encryptedSecret = secret,
                 updatedAt = now,
@@ -595,7 +604,6 @@ class CredentialRepositoryImpl(
             secretJson?.let { cryptoEngine.secureWipe(it) }
             encryptedSummary?.clear()
             encryptedSecret?.clear()
-            titleHash?.let { cryptoEngine.secureWipe(it) }
             cryptoEngine.secureWipe(recordKey)
         }
     }
@@ -640,14 +648,12 @@ class CredentialRepositoryImpl(
     )
 
     private fun Credential.toRecordEntity(
-        titleHash: ByteArray,
         encryptedSummary: EncryptedData,
         encryptedSecret: EncryptedData,
         updatedAt: Instant,
     ): CredentialRecordEntity = CredentialRecordEntity(
         id = id.value,
         type = type.toSerializedString(),
-        titleHash = titleHash.copyOf(),
         summaryPayload = CryptoEnvelope.encode(encryptedSummary),
         summaryNonce = encryptedSummary.nonce.copyOf(),
         secretPayload = CryptoEnvelope.encode(encryptedSecret),
@@ -1008,55 +1014,27 @@ class CredentialRepositoryImpl(
         require(mimeType.isNotBlank() && mimeType.hasAtMostCodePoints(MAX_ATTACHMENT_MIME_TYPE_LENGTH))
         require(mimeType.hasOnlySafeTextCodePoints())
         require(sizeBytes in 0..MAX_ATTACHMENT_SIZE_BYTES)
-        require(
-            storageState == AttachmentRecordEntity.STORAGE_STATE_READY ||
-                storageState == AttachmentRecordEntity.STORAGE_STATE_LEGACY,
-        )
-        if (storageState == AttachmentRecordEntity.STORAGE_STATE_READY) {
-            require(contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
+        val storageKind = requireStableStorageKind()
+        if (storageKind == AttachmentStorageKind.MANAGED) {
             require(sizeBytes <= AttachmentPolicy.MAX_FILE_SIZE_BYTES)
             require(storagePath.isManagedAttachmentObjectPath())
-        } else {
-            require(contentFormatVersion == 0)
         }
-        val attachmentKey = deriveRecordKey(vek, "attachment:$keyDerivationContext")
-        var filenameBytes: ByteArray? = null
-        return try {
-            filenameBytes = decryptPayload(
-                ciphertext = encryptedFilename,
-                nonce = filenameNonce,
-                key = attachmentKey,
-                associatedData = attachmentAssociatedData(id, credentialId),
-            )
-            val filename = filenameBytes.decodeUtf8Strict()
-            require(filename.isNotBlank() && filename.hasAtMostCodePoints(MAX_ATTACHMENT_FILENAME_LENGTH)) {
-                "Attachment filename is invalid"
-            }
-            require(
-                filename != "." &&
-                    filename != ".." &&
-                    filename.hasOnlySafeTextCodePoints() &&
-                    filename.none { it == '/' || it == '\\' },
-            ) {
-                "Attachment filename contains unsafe characters"
-            }
-
-            AttachmentMetadata(
-                id = AttachmentId(id),
-                fileName = filename,
-                mimeType = mimeType,
-                sizeBytes = sizeBytes,
-                createdAt = Instant.fromEpochMilliseconds(createdAt),
-                availability = if (storageState == AttachmentRecordEntity.STORAGE_STATE_READY) {
-                    AttachmentAvailability.AVAILABLE
-                } else {
-                    AttachmentAvailability.LEGACY_METADATA_ONLY
-                },
-            )
-        } finally {
-            filenameBytes?.let { cryptoEngine.secureWipe(it) }
-            cryptoEngine.secureWipe(attachmentKey)
-        }
+        val filename = readAttachmentFilename(expectedCredentialId, vek, cryptoEngine)
+        return AttachmentMetadata(
+            id = AttachmentId(id),
+            fileName = filename.collisionName,
+            mimeType = mimeType,
+            sizeBytes = sizeBytes,
+            createdAt = Instant.fromEpochMilliseconds(createdAt),
+            availability = when (filename) {
+                is AttachmentFilenameRead.Corrupted -> AttachmentAvailability.CORRUPTED_FILENAME
+                is AttachmentFilenameRead.Readable -> when {
+                    filename.requiresRename -> AttachmentAvailability.FILENAME_REQUIRES_RENAME
+                    storageKind == AttachmentStorageKind.MANAGED -> AttachmentAvailability.AVAILABLE
+                    else -> AttachmentAvailability.LEGACY_METADATA_ONLY
+                }
+            },
+        )
     }
 
     private fun PasswordHealth.toSerialized() = SerializedPasswordHealth(
@@ -1274,36 +1252,21 @@ class CredentialRepositoryImpl(
         associatedData: ByteArray,
     ): ByteArray {
         require(ciphertext.size <= MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
-        return cryptoEngine.decrypt(
-            CryptoEnvelope.normalize(ciphertext),
-            nonce,
-            key,
-            associatedData,
+        return PaddedPayload.decrypt(
+            cryptoEngine = cryptoEngine,
+            storedCiphertext = ciphertext,
+            nonce = nonce,
+            key = key,
+            associatedData = associatedData,
+            maxPlaintextBytes = MAX_CREDENTIAL_PLAINTEXT_BYTES,
         ).getOrThrow()
     }
 
     private fun credentialAssociatedData(id: String, purpose: String): ByteArray =
         "passvault:credential:$id:$purpose:v1".encodeToByteArray()
 
-    private suspend fun deriveBlindIndex(
-        vek: ByteArray,
-        purpose: String,
-        value: String,
-    ): ByteArray {
-        val normalized = value.trim().lowercase()
-        require(normalized.isNotEmpty()) { "Indexed value must not be empty" }
-        return cryptoEngine.deriveSubkey(
-            vek,
-            "blind-index:$purpose:$normalized",
-            32,
-        ).getOrThrow()
-    }
-
     private fun historyAssociatedData(historyId: String, credentialId: String): ByteArray =
         "passvault:history:$historyId:$credentialId:v2".encodeToByteArray()
-
-    private fun attachmentAssociatedData(attachmentId: String, credentialId: String): ByteArray =
-        "passvault:attachment:$attachmentId:$credentialId:filename:v1".encodeToByteArray()
 
     private fun String.isManagedAttachmentObjectPath(): Boolean {
         val objectId = removePrefix("objects/").removeSuffix(".pva")
@@ -1320,7 +1283,6 @@ class CredentialRepositoryImpl(
     }
 
     private companion object {
-        const val MAX_ATTACHMENT_FILENAME_LENGTH = 255
         const val MAX_ATTACHMENT_MIME_TYPE_LENGTH = 255
         const val MAX_ATTACHMENT_SIZE_BYTES = 4L * 1024L * 1024L * 1024L
         val UUID_HYPHEN_INDICES = setOf(8, 13, 18, 23)

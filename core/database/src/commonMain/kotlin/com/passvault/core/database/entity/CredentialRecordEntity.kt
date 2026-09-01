@@ -12,7 +12,6 @@ import androidx.room.Index
 @Entity(
     tableName = "credential_records",
     indices = [
-        Index(value = ["title_hash"]),
         Index(value = ["folder_id"]),
         Index(value = ["is_favorite"]),
         Index(value = ["type"]),
@@ -28,12 +27,6 @@ data class CredentialRecordEntity(
 
     @ColumnInfo(name = "type")
     val type: String,
-
-    /**
-     * Keyed BLAKE2b blind index of the normalized title.
-     */
-    @ColumnInfo(name = "title_hash", typeAffinity = ColumnInfo.BLOB)
-    val titleHash: ByteArray,
 
     /**
      * Encrypted summary payload containing privacy-sensitive list metadata
@@ -77,8 +70,7 @@ data class CredentialRecordEntity(
                 hasSameRecordMetadata(other))
 
     private fun hasSameEncryptedValues(other: CredentialRecordEntity): Boolean =
-        titleHash.contentEquals(other.titleHash) &&
-            summaryPayload.contentEquals(other.summaryPayload) &&
+        summaryPayload.contentEquals(other.summaryPayload) &&
             summaryNonce.contentEquals(other.summaryNonce) &&
             secretPayload.contentEquals(other.secretPayload) &&
             secretNonce.contentEquals(other.secretNonce)
@@ -95,7 +87,6 @@ data class CredentialRecordEntity(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + type.hashCode()
-        result = 31 * result + titleHash.contentHashCode()
         result = 31 * result + summaryPayload.contentHashCode()
         result = 31 * result + summaryNonce.contentHashCode()
         result = 31 * result + secretPayload.contentHashCode()

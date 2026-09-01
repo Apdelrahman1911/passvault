@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
+    <!-- Required only so persisted plaintext-cleanup jobs survive device reboot. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <!-- CameraX currently brings Media3's network-state permission transitively,
          but PassVault performs no network I/O and QR capture does not need it. -->
@@ -50,5 +52,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/attachment_file_paths" />
         </provider>
+        <service
+            android:name=".attachment.AndroidAttachmentPreviewCleanupJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 </manifest>

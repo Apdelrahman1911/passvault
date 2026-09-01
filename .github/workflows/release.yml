@@ -767,6 +767,12 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
+      - name: Setup macOS packaging JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
@@ -776,6 +782,7 @@ jobs:
         env:
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.MACOS_PROVISIONING_PROFILE_BASE64 }}
           MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
           MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
           MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
@@ -785,6 +792,7 @@ jobs:
             "$MACOS_IDENTITY"
             "$MACOS_CERTIFICATE_BASE64"
             "$MACOS_CERTIFICATE_PASSWORD"
+            "$MACOS_PROVISIONING_PROFILE_BASE64"
             "$MACOS_NOTARIZATION_APPLE_ID"
             "$MACOS_NOTARIZATION_PASSWORD"
             "$MACOS_NOTARIZATION_TEAM_ID"
@@ -823,6 +831,7 @@ jobs:
           MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
           EXPECTED_MACOS_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
         run: |
+          set -euo pipefail
           certificate_path="$RUNNER_TEMP/passvault-developer-id.p12"
           keychain_path="$RUNNER_TEMP/passvault-signing.keychain-db"
           original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
@@ -876,6 +885,25 @@ jobs:
           echo "MACOS_KEYCHAIN_PATH=$keychain_path" >> "$GITHUB_ENV"
           echo "MACOS_NOTARY_PROFILE=$notary_profile" >> "$GITHUB_ENV"
 
+      - name: Prepare and validate macOS provisioning profile
+        env:
+          MACOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.MACOS_PROVISIONING_PROFILE_BASE64 }}
+          MACOS_DEVELOPER_ID_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
+        run: |
+          set -euo pipefail
+          profile_path="$RUNNER_TEMP/embedded.provisionprofile"
+          printf '%s' "$MACOS_PROVISIONING_PROFILE_BASE64" |
+            openssl base64 -d -A -out "$profile_path"
+          chmod 600 "$profile_path"
+          ./scripts/validate-macos-provisioning-profile.sh \
+            "$profile_path" \
+            app-desktop/resources/macos/PassVault.entitlements \
+            "$MACOS_TEAM_ID" \
+            com.passvault.desktop \
+            "$MACOS_DEVELOPER_ID_CERTIFICATE_SHA256"
+          echo "MACOS_PROVISIONING_PROFILE_PATH=$profile_path" >> "$GITHUB_ENV"
+          echo "MACOS_JPACKAGE_JAVA_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+
       - name: Build macOS Package
         run: >
           ./gradlew :app-desktop:packageReleaseDmg
@@ -918,8 +946,10 @@ jobs:
       - name: Remove temporary macOS keychain
         if: always()
         run: |
+          set -euo pipefail
           source scripts/lib/macos-keychain.sh
           rm -f -- "$RUNNER_TEMP/passvault-developer-id.p12"
+          rm -f -- "$RUNNER_TEMP/embedded.provisionprofile"
           original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
           passvault_restore_user_keychains "$original_keychains_path" || true
           keychain_path="${MACOS_KEYCHAIN_PATH:-$RUNNER_TEMP/passvault-signing.keychain-db}"

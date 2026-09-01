@@ -141,7 +141,7 @@ class AutoLockTimerTest {
     }
 
     @Test
-    fun `lock failure is reported once and rearms only after new activity`() = runTest {
+    fun `lock failure retries without new activity`() = runTest {
         val signal = UserActivitySignal(SchedulerClock(testScheduler))
         var lockCalls = 0
         var failures = 0
@@ -163,17 +163,41 @@ class AutoLockTimerTest {
         assertEquals(1, lockCalls)
         assertEquals(1, failures)
 
-        advanceTimeBy(TIMEOUT_MILLIS * 2L)
+        advanceTimeBy(RETRY_DELAY_MILLIS - 1L)
         runCurrent()
         assertEquals(1, lockCalls)
 
-        assertTrue(signal.recordActivity())
-        runCurrent()
-        advanceTimeBy(TIMEOUT_MILLIS)
+        advanceTimeBy(1L)
         runCurrent()
         assertEquals(2, lockCalls)
         assertEquals(1, failures)
         assertTrue(timer.isCompleted)
+    }
+
+    @Test
+    fun `repeated lock failures remain timer driven while unattended`() = runTest {
+        val signal = UserActivitySignal(SchedulerClock(testScheduler))
+        var lockCalls = 0
+        var failures = 0
+        val timer = launch {
+            timer(
+                signal = signal,
+                scheduler = testScheduler,
+                lock = {
+                    lockCalls++
+                    false
+                },
+                onLockFailed = { failures++ },
+            ).run()
+        }
+        runCurrent()
+
+        advanceTimeBy(TIMEOUT_MILLIS + RETRY_DELAY_MILLIS * 2L)
+        runCurrent()
+
+        assertEquals(3, lockCalls)
+        assertEquals(3, failures)
+        timer.cancelAndJoin()
     }
 
     @Test
@@ -248,12 +272,14 @@ class AutoLockTimerTest {
         activitySignal = signal,
         clock = SchedulerClock(scheduler),
         timeoutMillis = TIMEOUT_MILLIS,
+        retryDelayMillis = RETRY_DELAY_MILLIS,
         lock = lock,
         onLockFailed = onLockFailed,
     )
 
     private companion object {
         const val TIMEOUT_MILLIS = 1_000L
+        const val RETRY_DELAY_MILLIS = 100L
         const val ACTIVITY_BURST_SIZE = 100_000
     }
 }

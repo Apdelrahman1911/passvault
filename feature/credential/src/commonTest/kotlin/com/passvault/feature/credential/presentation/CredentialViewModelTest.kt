@@ -584,6 +584,49 @@ class CredentialViewModelTest {
         }
 
     @Test
+    fun `scanned TOTP URI ignores empty and conflicting manual setup values`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpAlgorithmChanged(TotpAlgorithm.SHA512))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpDigitsChanged(8))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpPeriodChanged(""))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpScanClick)
+
+        viewModel.onEvent(
+            CredentialViewModel.CredentialEvent.OnTotpQrScanned(
+                "otpauth://totp/Example:alice?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" +
+                    "&algorithm=SHA256&digits=6&period=60",
+            ),
+        )
+
+        val configuration = viewModel.state.value.totpConfiguration
+        assertEquals(TotpAlgorithm.SHA256, configuration?.algorithm)
+        assertEquals(6, configuration?.digits)
+        assertEquals(60, configuration?.periodSeconds)
+        assertFalse(viewModel.state.value.showTotpScanner)
+        assertEquals(null, viewModel.state.value.totpSetupError)
+        viewModel.clearForLock()
+    }
+
+    @Test
+    fun `manual TOTP setup rejects an empty period`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+        viewModel.createNewCredential(CredentialType.Login)
+        viewModel.onEvent(
+            CredentialViewModel.CredentialEvent.OnTotpSetupInputChanged("JBSWY3DPEHPK3PXP"),
+        )
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpPeriodChanged(""))
+        viewModel.onEvent(CredentialViewModel.CredentialEvent.OnTotpAddClick)
+
+        assertEquals(null, viewModel.state.value.totpConfiguration)
+        assertEquals(
+            Res.string.error_totp_invalid_setup,
+            (viewModel.state.value.totpSetupError as UiText.Resource).resource,
+        )
+        viewModel.clearForLock()
+    }
+
+    @Test
     fun `replacing and removing TOTP require confirmation`() = runTest(dispatcher) {
         val viewModel = createViewModel()
         viewModel.createNewCredential(CredentialType.Login)

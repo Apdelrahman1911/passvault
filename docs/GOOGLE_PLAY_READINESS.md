@@ -1,6 +1,6 @@
 # Google Play Readiness Record
 
-Last technical review: 8 August 2026
+Last technical review: 26 August 2026
 
 This is the source-backed preparation record for `com.passvault.android`. It is
 not a legal certification and does not authorize an upload, review submission,
@@ -19,8 +19,10 @@ authentication to Android and protects unlock material with Android Keystore.
 The source manifest requests:
 
 - `CAMERA`, after a user chooses TOTP QR scanning; images are processed locally;
-- `USE_BIOMETRIC`, for optional local vault unlock; and
-- `HIDE_OVERLAY_WINDOWS`, for supported sensitive-screen protection.
+- `USE_BIOMETRIC`, for optional local vault unlock;
+- `HIDE_OVERLAY_WINDOWS`, for supported sensitive-screen protection; and
+- `RECEIVE_BOOT_COMPLETED`, solely to resume persisted deletion of temporary
+  plaintext attachment previews after a reboot.
 
 The final merged release also contains `USE_FINGERPRINT` from AndroidX
 Biometric for legacy compatibility and AndroidX Core’s app-specific,

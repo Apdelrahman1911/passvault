@@ -115,6 +115,36 @@ class CredentialAttachmentControllerTest {
     }
 
     @Test
+    fun `corrupted filename can be renamed or deleted but cannot create plaintext output`() = runTest {
+        val attachment = metadata().copy(
+            fileName = "unreadable-attachment-${metadata().id.value}",
+            availability = AttachmentAvailability.CORRUPTED_FILENAME,
+        )
+        val state = loadedState(attachments = listOf(attachment))
+        val repository = RecordingAttachmentRepository()
+        val files = RecordingAttachmentFileStore()
+        val controller = CredentialAttachmentController(state, this, repository, files)
+
+        controller.handle(CredentialViewModel.CredentialEvent.OnAttachmentOpenClick(attachment.id))
+        runCurrent()
+        assertEquals(null, files.lastOutputAction)
+
+        controller.handle(CredentialViewModel.CredentialEvent.OnAttachmentRenameClick(attachment.id))
+        assertEquals(attachment.id, state.value.attachmentRenameTarget)
+        assertEquals("", state.value.attachmentRenameInput)
+
+        controller.handle(CredentialViewModel.CredentialEvent.OnAttachmentRenameChanged("repaired.txt"))
+        controller.handle(CredentialViewModel.CredentialEvent.OnAttachmentRenameConfirm)
+        runCurrent()
+        assertEquals("repaired.txt", state.value.attachments.single().fileName)
+
+        controller.handle(CredentialViewModel.CredentialEvent.OnAttachmentDeleteClick(attachment.id))
+        controller.handle(CredentialViewModel.CredentialEvent.OnAttachmentDeleteConfirm)
+        runCurrent()
+        assertTrue(state.value.attachments.isEmpty())
+    }
+
+    @Test
     fun `controller cancellation cancels an active picker without mutating attachment state`() = runTest {
         val pickerStarted = CompletableDeferred<Unit>()
         val state = loadedState()

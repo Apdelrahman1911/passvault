@@ -120,12 +120,12 @@ internal class CredentialEventRouter(
                     totpSetupError = null,
                 )
             }
-            CredentialEvent.OnTotpAddClick -> totp.parseEnrollment(state.value.totpSetupInput)
+            CredentialEvent.OnTotpAddClick -> totp.parseManualEnrollment(state.value.totpSetupInput)
             CredentialEvent.OnTotpScanClick -> state.update {
                 it.copy(showTotpScanner = true, totpSetupError = null)
             }
             CredentialEvent.OnTotpScanCancel -> state.update { it.copy(showTotpScanner = false) }
-            is CredentialEvent.OnTotpQrScanned -> totp.parseEnrollment(event.payload)
+            is CredentialEvent.OnTotpQrScanned -> totp.parseScannedEnrollment(event.payload)
             CredentialEvent.OnTotpScanError -> state.update {
                 it.copy(showTotpScanner = false, totpSetupError = uiText(Res.string.error_totp_scan))
             }

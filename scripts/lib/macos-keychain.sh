@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
 
+# This file is a sourced library, never a standalone script. It intentionally
+# omits `set -euo pipefail`: shell options would leak into the caller. Callers
+# must enable strict mode before sourcing this library.
+
 # Preserve the hosted runner's user keychain search list while a release-only
 # keychain is active. Paths are passed as array elements and are never eval'd.
 
 passvault_capture_user_keychains() {
     local output_path="$1"
-    local line keychain_path
+    local keychain_list line keychain_path captured_count=0
+
+    if ! keychain_list="$(security list-keychains -d user)"; then
+        echo "Unable to read the current user keychain search list." >&2
+        return 1
+    fi
+    if [[ -z "$keychain_list" ]]; then
+        echo "The current user keychain search list is unexpectedly empty." >&2
+        return 1
+    fi
 
     : > "$output_path"
     chmod 600 "$output_path"
-    while IFS= read -r line; do
+    while IFS= read -r line || [[ -n "$line" ]]; do
         line="${line#"${line%%[![:space:]]*}"}"
         line="${line%"${line##*[![:space:]]}"}"
         if [[ "$line" != \"*\" ]]; then
@@ -23,7 +36,12 @@ passvault_capture_user_keychains() {
             return 1
         fi
         printf '%s\n' "$keychain_path" >> "$output_path"
-    done < <(security list-keychains -d user)
+        captured_count=$((captured_count + 1))
+    done <<< "$keychain_list"
+    if (( captured_count == 0 )); then
+        echo "The current user keychain search list is unexpectedly empty." >&2
+        return 1
+    fi
 }
 
 passvault_activate_release_keychain() {

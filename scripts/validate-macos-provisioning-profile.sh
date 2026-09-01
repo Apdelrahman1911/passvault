@@ -121,14 +121,19 @@ fi
     echo "The signed-app entitlements have the wrong Keychain access group." >&2
     exit 1
 }
-for entitlement in \
-    com.apple.security.cs.allow-jit \
-    com.apple.security.cs.allow-unsigned-executable-memory \
-    com.apple.security.cs.disable-library-validation; do
+for entitlement in com.apple.security.cs.allow-jit; do
     [[ "$(entitlement_value "$entitlement")" == true ]] || {
         echo "Required JVM entitlement is missing: $entitlement" >&2
         exit 1
     }
+done
+for entitlement in \
+    com.apple.security.cs.allow-unsigned-executable-memory \
+    com.apple.security.cs.disable-library-validation; do
+    if entitlement_value "$entitlement" | grep -Fqx true; then
+        echo "Forbidden macOS hardened-runtime exception: $entitlement" >&2
+        exit 1
+    fi
 done
 if entitlement_value com.apple.security.get-task-allow 2>/dev/null | grep -Fqx true; then
     echo "The PassVault macOS entitlements must not permit debugging." >&2

@@ -522,6 +522,7 @@ jobs:
           PROJECT_URL: ${{ vars.PROJECT_URL }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
         run: |
+          set -euo pipefail
           install -d -m 700 "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$PRIVATE_RUNTIME/export"
           printf '%s' "$IOS_CERTIFICATE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
           printf '%s' "$IOS_PROFILE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/profile.mobileprovision"
@@ -759,6 +760,7 @@ jobs:
       - name: Remove private runtime inputs and keychain
         if: always()
         run: |
+          set -euo pipefail
           source scripts/lib/macos-keychain.sh
           profile_uuid="${PROFILE_UUID:-}"
           if [[ -z "$profile_uuid" && -f "$PRIVATE_RUNTIME/profile.plist" ]]; then

@@ -1,6 +1,6 @@
 # Backup capacity and memory
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-27
 
 This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, repository validation, and
 `AttachmentPolicy`. MiB/GiB use binary units.
@@ -48,6 +48,13 @@ limits, attachment size/count/aggregate limits, and exact EOF rule. Export also 
 container with the active VEK before packaging it. Import authenticates every outer record, stages complete encrypted
 objects atomically, and restores only after all records and EOF validate.
 
+Before staging, restore reads the exact encrypted-object total from the authenticated manifest and compares it with
+free space on the attachment volume. Android uses `StatFs`, Desktop uses the target `FileStore`, and iOS uses
+filesystem attributes. The check is repeated before every object and retains one maximum-size encrypted object as a
+reserve for allocation overhead and concurrent capacity changes. Existing vault objects are already reflected in the
+reported free-space value. If capacity reporting is unavailable, restore retains its bounded writes and cleanup
+behavior rather than rejecting a valid backup solely because the platform query failed.
+
 Legacy format 1 is intentionally asymmetric: it remains readable with its historical 128 MiB/64 MiB bounds, omits
 attachments, and is not the default export route. The old in-memory byte-array creation API exists only for legacy
 compatibility/tests; user-facing file export uses format 2.
@@ -58,7 +65,7 @@ Format 2 never holds the complete backup, all Room rows, or all attachment bytes
 
 | Operation | Simultaneous materialization |
 |---|---|
-| password KDF | Argon2id working memory, 32–256 MiB; released before row streaming |
+| password KDF | Argon2id working memory, exactly 64 MiB; released before row streaming |
 | metadata export | one large Room row, its compact binary encoding, and its encrypted record; about 3× one row in the worst case |
 | metadata inspect/restore | ciphertext + plaintext during AEAD, then plaintext + decoded row arrays; about 2× the single-record size |
 | folder/tag export paging | at most 64 rows, each capped at 64 KiB payload |
@@ -68,8 +75,8 @@ Format 2 never holds the complete backup, all Room rows, or all attachment bytes
 
 The deliberately conservative theoretical metadata peak is therefore about **195 MiB on export** (three 65 MiB
 representations) or **130 MiB on import** (two representations), plus runtime overhead. A repository-created normal
-credential is far smaller; the 65 MiB cap exists to read bounded legacy encrypted fields. Argon2id's maximum 256 MiB
-workspace is not intentionally concurrent with that row peak.
+credential is far smaller; the 65 MiB cap exists to read bounded legacy encrypted fields. Format 2 admits only the
+64 MiB Argon2id profile emitted by its writer, and the KDF workspace is released before that row peak.
 
 Format 1 is different: the input bytes, UTF-8/UTF-16 JSON, Base64 fields, decoded ciphertext, decrypted snapshot, DTO
 graph, and decoded entity arrays can overlap until garbage collection. Its worst peak is runtime-dependent and can
@@ -116,6 +123,8 @@ credentials are roughly 220 MiB typical or 1.53 GiB conservative and stream succ
   rejected.
 - Declared attachment size/count/aggregate failures happen before reading plaintext. Unknown-size input that crosses
   100 MiB or 512 MiB aborts its atomic object write and removes staging metadata/files.
+- Insufficient attachment-volume capacity is rejected before staging starts, or before the next object if capacity
+  shrinks during restore, and is reported separately from password/corruption failures.
 - Export overflow or sink failure aborts the candidate output. Restore limit, authentication, transcript, relation,
   constraint, I/O, or cancellation failure leaves Room unchanged and removes newly staged objects.
 - Android document providers cannot guarantee atomic replacement of the external selected URI; a provider failure may

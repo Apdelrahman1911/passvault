@@ -1,6 +1,6 @@
 # Architecture
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-25
 
 PassVault is a local-only Kotlin Multiplatform application with Android, JVM Desktop, and SwiftUI-hosted iOS targets.
 The iOS target embeds the shared Compose framework and has protected store archive/upload automation; publisher
@@ -92,7 +92,8 @@ and constrain readable/form widths instead of stretching a phone layout across a
 
 ## Deliberate non-features
 
-There is no cloud/account/network service, Desktop biometric unlock, or plaintext/CSV export. Attachment contents
-use independently authenticated, app-private encrypted objects outside Room; Room retains encrypted filenames and
+There is no cloud/account/network service or plaintext/CSV export. Desktop biometric unlock ships on supported macOS
+and Windows systems; Linux and unsupported architectures remain master-password-only. Attachment contents use
+independently authenticated, app-private encrypted objects outside Room; Room retains encrypted filenames and
 transaction/recovery metadata. Versioned encrypted backups include both managed attachment metadata and object
 contents while retaining read compatibility with legacy version-1 backups that omitted them.

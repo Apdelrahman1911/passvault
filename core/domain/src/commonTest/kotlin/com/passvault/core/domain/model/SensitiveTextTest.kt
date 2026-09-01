@@ -8,6 +8,7 @@ import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isTrue
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import kotlin.text.CharacterCodingException
@@ -53,15 +54,50 @@ class SensitiveTextTest {
     }
 
     @Test
-    fun `strict UTF-8 encoding rejects malformed UTF-16`() {
-        val sensitive = SensitiveText.from("secret\uD800")
-        try {
-            assertThat(sensitive.hasWellFormedUnicode()).isFalse()
-            assertFailsWith<CharacterCodingException> {
-                sensitive.toUtf8ByteArray()
+    fun `strict UTF-8 encoding matches Kotlin for every scalar width`() {
+        val values = listOf(
+            "",
+            "ASCII\u0000\u007F",
+            "\u0080\u07FF",
+            "\u0800\uFFFF",
+            "العربية",
+            "🔐\uDBFF\uDFFF",
+            "🔐".repeat(MasterPasswordPolicy.MAX_LENGTH),
+        )
+
+        values.forEach { value ->
+            val sensitive = SensitiveText.from(value.toCharArray())
+            val encoded = sensitive.toUtf8ByteArray()
+            try {
+                assertContentEquals(
+                    value.encodeToByteArray(throwOnInvalidSequence = true),
+                    encoded,
+                    "Unexpected UTF-8 encoding for ${value.length} UTF-16 code units",
+                )
+            } finally {
+                encoded.fill(0)
+                sensitive.clear()
             }
-        } finally {
-            sensitive.clear()
+        }
+    }
+
+    @Test
+    fun `strict UTF-8 encoding rejects malformed UTF-16`() {
+        listOf(
+            charArrayOf('\uD800'),
+            charArrayOf('\uDC00'),
+            charArrayOf('a', '\uD800', 'b'),
+            charArrayOf('a', '\uDC00', 'b'),
+        ).forEach { malformed ->
+            val sensitive = SensitiveText.from(malformed)
+            try {
+                assertThat(sensitive.hasWellFormedUnicode()).isFalse()
+                assertFailsWith<CharacterCodingException> {
+                    sensitive.toUtf8ByteArray()
+                }
+            } finally {
+                sensitive.clear()
+            }
         }
     }
 
@@ -97,7 +133,51 @@ class SensitiveTextTest {
         val sensitive = SensitiveText.from("secret")
         val exposed = sensitive.expose()
 
-        assertThat(exposed.concatToString()).isEqualTo("secret")
+        try {
+            assertThat(exposed.concatToString()).isEqualTo("secret")
+        } finally {
+            exposed.fill('\u0000')
+            sensitive.clear()
+        }
+    }
+
+    @Test
+    fun `with exposed clears its temporary copy after completion`() {
+        val sensitive = SensitiveText.from("secret")
+        var exposed: CharArray? = null
+
+        try {
+            val result = sensitive.withExposed { characters ->
+                exposed = characters
+                characters.concatToString()
+            }
+
+            assertThat(result).isEqualTo("secret")
+            assertTrue(exposed?.all { it == '\u0000' } == true)
+            assertThat(sensitive.toStringUnsafe()).isEqualTo("secret")
+        } finally {
+            sensitive.clear()
+        }
+    }
+
+    @Test
+    fun `with exposed clears its temporary copy when the block throws`() {
+        val sensitive = SensitiveText.from("secret")
+        var exposed: CharArray? = null
+
+        try {
+            assertFailsWith<IllegalStateException> {
+                sensitive.withExposed { characters ->
+                    exposed = characters
+                    throw IllegalStateException("expected")
+                }
+            }
+
+            assertTrue(exposed?.all { it == '\u0000' } == true)
+            assertThat(sensitive.toStringUnsafe()).isEqualTo("secret")
+        } finally {
+            sensitive.clear()
+        }
     }
 
     @Test

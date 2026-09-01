@@ -106,7 +106,7 @@ required_values=(
     ANDROID_UPLOAD_KEYSTORE_FILE IOS_DISTRIBUTION_CERTIFICATE_FILE
     IOS_PROVISIONING_PROFILE_FILE ASC_PRIVATE_KEY_FILE STORE_METADATA_EN_FILE
     STORE_METADATA_AR_FILE STORE_DESCRIPTION_EN_FILE STORE_DESCRIPTION_AR_FILE
-    MACOS_CERTIFICATE_FILE
+    MACOS_CERTIFICATE_FILE MACOS_PROVISIONING_PROFILE_FILE
 )
 optional_values=(
     GOOGLE_CLOSED_TEST_GROUP TESTFLIGHT_INTERNAL_EMAILS
@@ -581,6 +581,7 @@ if [[ "${WINDOWS_SIGNING_BACKEND:-}" == local-pfx ]]; then
 fi
 check_private_file MACOS_CERTIFICATE_FILE || true
 macos_certificate="$checked_private_file"
+check_private_file MACOS_PROVISIONING_PROFILE_FILE || true
 
 if [[ -n "$android_keystore" && -n "${KEYSTORE_PASSWORD:-}" && -n "${KEY_ALIAS:-}" && -n "${KEY_PASSWORD:-}" ]]; then
     expected_android_alias="$(tr -d '\r\n' < release/android/passvault-upload-alias.txt)"

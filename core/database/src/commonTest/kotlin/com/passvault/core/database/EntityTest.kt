@@ -22,7 +22,6 @@ class EntityTest {
         val entity1 = CredentialRecordEntity(
             id = "test-id",
             type = "Login",
-            titleHash = byteArrayOf(1, 2, 3),
             summaryPayload = byteArrayOf(4, 5, 6),
             summaryNonce = byteArrayOf(7, 8, 9),
             secretPayload = byteArrayOf(10, 11, 12),
@@ -37,7 +36,6 @@ class EntityTest {
         val entity2 = CredentialRecordEntity(
             id = "test-id",
             type = "Login",
-            titleHash = byteArrayOf(1, 2, 3),
             summaryPayload = byteArrayOf(4, 5, 6),
             summaryNonce = byteArrayOf(7, 8, 9),
             secretPayload = byteArrayOf(10, 11, 12),
@@ -58,7 +56,6 @@ class EntityTest {
         val entity1 = CredentialRecordEntity(
             id = "test-id-1",
             type = "Login",
-            titleHash = byteArrayOf(1, 2, 3),
             summaryPayload = byteArrayOf(4, 5, 6),
             summaryNonce = byteArrayOf(7, 8, 9),
             secretPayload = byteArrayOf(10, 11, 12),
@@ -73,7 +70,6 @@ class EntityTest {
         val entity2 = CredentialRecordEntity(
             id = "test-id-2",
             type = "Login",
-            titleHash = byteArrayOf(1, 2, 3),
             summaryPayload = byteArrayOf(4, 5, 6),
             summaryNonce = byteArrayOf(7, 8, 9),
             secretPayload = byteArrayOf(10, 11, 12),

@@ -25,6 +25,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileProtectionComplete
+import platform.Foundation.NSFileProtectionKey
 import platform.Foundation.NSInputStream
 import platform.Foundation.NSOutputStream
 import platform.Foundation.NSURL
@@ -48,6 +50,7 @@ import kotlin.coroutines.resume
 /** Native Files/iCloud import and export for the encrypted `.pvault` format. */
 class IosBackupFileStore(
     private val fileManager: NSFileManager = NSFileManager.defaultManager,
+    private val protectPath: (String) -> Unit = { path -> protectIosBackupPath(fileManager, path) },
 ) : BackupFileStore {
     // UIDocumentPickerViewController retains its delegate weakly.
     private var activeDelegate: NSObject? = null
@@ -77,6 +80,7 @@ class IosBackupFileStore(
                 sink = IosBackupSink(
                     path = path,
                     fileManager = fileManager,
+                    protectPath = protectPath,
                     present = {
                         presentPicker(exportPath = path, suggestedName = safeName).getOrThrow()
                     },
@@ -98,6 +102,7 @@ class IosBackupFileStore(
         withContext(Dispatchers.Default) {
             try {
                 val path = normalizedPath(file.path)
+                protectPath(path)
                 val attributes = fileManager.attributesOfItemAtPath(path, error = null)
                     ?: error("Missing backup file")
                 val size = (attributes["NSFileSize"] as? Number)?.toLong()
@@ -235,6 +240,12 @@ class IosBackupFileStore(
                 Result.failure(IllegalStateException("No backup file was selected"))
             } else {
                 val normalized = normalizedPath(path)
+                try {
+                    protectPath(normalized)
+                } catch (error: IllegalStateException) {
+                    deleteExactPath(normalized)
+                    throw error
+                }
                 Result.success(
                     BackupFile(
                         normalized,
@@ -312,6 +323,7 @@ private class IosBackupSource(
 private class IosBackupSink(
     private val path: String,
     private val fileManager: NSFileManager,
+    private val protectPath: (String) -> Unit,
     private val present: suspend () -> Unit,
     private val cleanup: () -> Unit,
 ) : BackupContentSink {
@@ -367,10 +379,15 @@ private class IosBackupSink(
             fileManager.createDirectoryAtPath(
                 path = directory,
                 withIntermediateDirectories = true,
-                attributes = null,
+                attributes = IOS_BACKUP_PROTECTION,
                 error = null,
             ),
         ) { "The temporary export directory could not be created" }
+        protectPath(directory)
+        check(fileManager.createFileAtPath(path, contents = null, attributes = IOS_BACKUP_PROTECTION)) {
+            "The temporary export file could not be created"
+        }
+        protectPath(path)
         return NSOutputStream.outputStreamToFileAtPath(path, append = false).also {
             it.open()
             stream = it
@@ -419,7 +436,16 @@ private fun safeImportedDisplayName(name: String): String = name.takeIf {
         it.hasOnlySafeSingleLineCodePoints()
 } ?: "backup"
 
+internal fun protectIosBackupPath(fileManager: NSFileManager, path: String) {
+    check(fileManager.setAttributes(IOS_BACKUP_PROTECTION, ofItemAtPath = path, error = null)) {
+        "The temporary backup file could not be protected"
+    }
+}
+
+internal fun iosBackupProtectionAttributes(): Map<Any?, Any?> = IOS_BACKUP_PROTECTION
+
 private fun randomToken(): String = platform.Foundation.NSUUID.UUID().UUIDString.lowercase()
 
 private const val MAX_DISPLAY_NAME_CODE_POINTS = 160
 private const val MAX_EXPORT_FILE_NAME_CODE_POINTS = 64
+private val IOS_BACKUP_PROTECTION = mapOf<Any?, Any?>(NSFileProtectionKey to NSFileProtectionComplete)

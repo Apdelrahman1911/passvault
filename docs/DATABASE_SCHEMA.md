@@ -1,6 +1,6 @@
 # Database schema
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-25
 
 The authoritative Room declaration is `core/database/.../VaultDatabase.kt`. Current database version: **3**.
 Schema export is enabled and generated schemas belong under the configured schema directory.
@@ -9,7 +9,7 @@ Schema export is enabled and generated schemas belong under the configured schem
 
 | Table | Purpose | Sensitive boundary |
 |---|---|---|
-| `vault_metadata` | vault/crypto versions, vault ID, Argon2id parameters, wrapped VEK, verification record, counts | salts/parameters are public; VEK and verification record are authenticated ciphertext |
+| `vault_metadata` | vault/crypto versions, vault ID, Argon2id parameters, wrapped VEK, verification record, counts | salts/parameters are public; `argon2_parallelism` is fixed at `1` because the binding has no lanes parameter; VEK and verification record are authenticated ciphertext |
 | `credential_records` | credential type, blind title index, summary/secret payloads, folder, favorite, timestamps | summary and secret are encrypted separately |
 | `folder_records` | hierarchy/order plus folder payload | name is represented by a keyed blind index; payload is encrypted |
 | `tag_records` | tag payload and visual color | name uses a keyed blind index; payload is encrypted |

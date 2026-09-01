@@ -12,6 +12,7 @@ import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.AttachmentContainerCodec
 import com.passvault.core.database.attachment.AttachmentContentBinding
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
+import com.passvault.core.database.attachment.AttachmentStorageFullException
 import com.passvault.core.database.dao.VaultBackupDao
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.domain.model.BackupPasswordPolicy
@@ -61,14 +62,8 @@ internal class VaultBackupV2Service(
                     var totalObjectBytes = 0L
                     var managedIndex = 0
                     forEachManagedAttachment { attachment ->
-                        require(managedIndex < validated.managedAttachmentIds.size)
-                        require(attachment.id == validated.managedAttachmentIds[managedIndex])
-                        try {
-                            verifyManagedAttachment(attachment, vek)
-                            totalObjectBytes += writeAttachment(activeWriter, attachment)
-                        } finally {
-                            BackupMetadataValue.Attachment(attachment).clear()
-                        }
+                        val expectedId = requireNotNull(validated.managedAttachmentIds.getOrNull(managedIndex))
+                        totalObjectBytes += writeValidatedAttachment(activeWriter, attachment, expectedId, vek)
                         managedIndex++
                         onProgress(
                             20 + managedIndex * 75 /
@@ -76,6 +71,9 @@ internal class VaultBackupV2Service(
                         )
                     }
                     require(managedIndex == validated.manifest.managedAttachmentCount)
+                    validated.manifest.managedAttachmentObjectBytes?.let { expectedBytes ->
+                        require(totalObjectBytes == expectedBytes)
+                    }
                     val finalPayload = finalPayload(
                         recordCountBeforeFinal = activeWriter.nextRecordIndex(),
                         managedAttachmentCount = managedIndex,
@@ -166,26 +164,22 @@ internal class VaultBackupV2Service(
                 val replayManifest = readManifest(replayReader)
                 require(replayManifest == firstPass.validated.manifest)
 
-                activateRestore {
-                    database.useWriterConnection { connection ->
-                        connection.immediateTransaction {
-                            clearVaultTables()
-                            replayMetadataIntoRoom(
-                                reader = replayReader,
-                                manifest = replayManifest,
-                                expectedTranscript = requireNotNull(firstTranscript),
-                                stagedPaths = stagedPaths,
-                            )
-                        }
-                    }
-                }
-                committed = true
+                activateRestoredVault(
+                    replayReader = replayReader,
+                    replayManifest = replayManifest,
+                    expectedTranscript = requireNotNull(firstTranscript),
+                    stagedPaths = stagedPaths,
+                ) { committed = true }
                 cleanupUnreferencedObjects(stagedPaths)
                 onProgress(100)
                 Result.success(firstPass.validated.manifest.toInspection())
             }
         } catch (cancel: CancellationException) {
             throw cancel
+        } catch (error: BackupInsufficientStorageException) {
+            Result.failure(error)
+        } catch (error: AttachmentStorageFullException) {
+            Result.failure(insufficientStorageFailure(error))
         } catch (_: Exception) {
             Result.failure(IllegalStateException(BACKUP_RESTORE_FAILED_MESSAGE))
         } finally {
@@ -195,7 +189,7 @@ internal class VaultBackupV2Service(
                     if (activeReader == null) source.close() else activeReader.close()
                 }
                 if (!committed) {
-                    stagedPaths.values.forEach { path -> runCatching { blobStore.delete(path) } }
+                    removeAbandonedStagedObjects(stagedPaths.values)
                 }
                 firstTranscript?.let(cryptoEngine::secureWipe)
             }
@@ -209,8 +203,44 @@ internal class VaultBackupV2Service(
         return Result.failure(IllegalArgumentException("Backup password length is invalid"))
     }
 
+    private suspend fun activateRestoredVault(
+        replayReader: BackupV2Reader,
+        replayManifest: BackupStreamManifest,
+        expectedTranscript: ByteArray,
+        stagedPaths: Map<String, String>,
+        onCommitted: () -> Unit,
+    ) {
+        activateRestore {
+            database.useWriterConnection { connection ->
+                withContext(NonCancellable) {
+                    connection.immediateTransaction {
+                        clearVaultTables()
+                        replayMetadataIntoRoom(
+                            reader = replayReader,
+                            manifest = replayManifest,
+                            expectedTranscript = expectedTranscript,
+                            stagedPaths = stagedPaths,
+                        )
+                    }
+                    onCommitted()
+                }
+            }
+        }
+    }
+
     private suspend fun cleanupUnreferencedObjects(stagedPaths: Map<String, String>) {
         runCatching { blobStore.removeUnreferencedObjects(stagedPaths.values.toSet()) }
+    }
+
+    private suspend fun removeAbandonedStagedObjects(stagedPaths: Collection<String>) {
+        // Cleanup must not rely only on an in-memory flag. Treat Room as the
+        // source of truth and never delete a path that a committed row can reach.
+        val referencedPaths = runCatching {
+            backupDao.getAttachmentStoragePaths().toHashSet()
+        }.getOrNull() ?: return
+        stagedPaths.forEach { path ->
+            if (path !in referencedPaths) runCatching { blobStore.delete(path) }
+        }
     }
 
     private suspend fun writeMetadataStream(
@@ -280,7 +310,7 @@ internal class VaultBackupV2Service(
         var encoded: ByteArray? = null
         try {
             validator.accept(value)
-            encoded = BackupEntityBinaryCodec.encode(value)
+            encoded = BackupEntityBinaryCodec.encode(value, validator.manifest.metadataSchemaVersion)
             writer.writeRecord(value.recordType, encoded)
         } finally {
             encoded?.let(cryptoEngine::secureWipe)
@@ -304,15 +334,29 @@ internal class VaultBackupV2Service(
         try {
             onProgress(20)
             var totalObjectBytes = 0L
+            var remainingObjectBytes = validated.manifest.managedAttachmentObjectBytes
+            if (stageObjects && remainingObjectBytes != null && validated.managedAttachmentIds.isNotEmpty()) {
+                // Reject before the first object write, then repeat immediately before each object
+                // because filesystem capacity can change while a restore is in progress.
+                requireRestoreCapacity(remainingObjectBytes)
+            }
             validated.managedAttachmentIds.forEachIndexed { index, attachmentId ->
                 val newPath = if (stageObjects) randomObjectPath() else null
-                totalObjectBytes += readAttachment(reader, attachmentId, newPath)
                 if (newPath != null) stagedPaths[attachmentId] = newPath
+                val objectBytes = readAttachment(reader, attachmentId, newPath) { declaredBytes ->
+                    val requiredObjectBytes = remainingObjectBytes?.also { remaining ->
+                        require(declaredBytes <= remaining)
+                    } ?: declaredBytes
+                    requireRestoreCapacity(requiredObjectBytes)
+                }
+                totalObjectBytes += objectBytes
+                remainingObjectBytes = remainingObjectBytes?.minus(objectBytes)
                 onProgress(
                     20 + (index + 1) * 75 /
                         validated.manifest.managedAttachmentCount.coerceAtLeast(1),
                 )
             }
+            remainingObjectBytes?.let { require(it == 0L) }
             val finalRecord = reader.readRecord(FINAL_PAYLOAD_MAX_BYTES)
             require(finalRecord.type == BackupRecordType.FINAL)
             try {
@@ -415,7 +459,11 @@ internal class VaultBackupV2Service(
             require(record.type == type)
             var value: BackupMetadataValue? = null
             try {
-                value = BackupEntityBinaryCodec.decode(type, record.plaintext)
+                value = BackupEntityBinaryCodec.decode(
+                    type,
+                    record.plaintext,
+                    validator.manifest.metadataSchemaVersion,
+                )
                 validator.accept(value)
                 consumer?.invoke(value)
             } finally {
@@ -488,7 +536,25 @@ internal class VaultBackupV2Service(
         attachmentCount = backupDao.getAttachmentCount(),
         managedAttachmentCount = backupDao.getManagedAttachmentCount(),
         passwordHistoryCount = backupDao.getPasswordHistoryCount(),
+        managedAttachmentObjectBytes = readManagedAttachmentObjectBytes(),
     )
+
+    private suspend fun readManagedAttachmentObjectBytes(): Long {
+        var totalBytes = 0L
+        forEachManagedAttachment { attachment ->
+            try {
+                val objectBytes = blobStore.read(
+                    attachment.storagePath,
+                    AttachmentContainerCodec.MAX_ENCRYPTED_OBJECT_BYTES,
+                ) { _, fileSize -> fileSize }
+                require(totalBytes <= BackupLimits.MAX_BACKUP_BYTES - objectBytes)
+                totalBytes += objectBytes
+            } finally {
+                BackupMetadataValue.Attachment(attachment).clear()
+            }
+        }
+        return totalBytes
+    }
 
     private suspend fun forEachManagedAttachment(block: suspend (AttachmentRecordEntity) -> Unit) {
         emitSingleKeyPages(
@@ -586,10 +652,26 @@ internal class VaultBackupV2Service(
         }
     }
 
+    private suspend fun writeValidatedAttachment(
+        writer: BackupV2Writer,
+        attachment: AttachmentRecordEntity,
+        expectedId: String,
+        vek: ByteArray,
+    ): Long {
+        require(attachment.id == expectedId)
+        return try {
+            verifyManagedAttachment(attachment, vek)
+            writeAttachment(writer, attachment)
+        } finally {
+            BackupMetadataValue.Attachment(attachment).clear()
+        }
+    }
+
     private suspend fun readAttachment(
         reader: BackupV2Reader,
         attachmentId: String,
         stagedPath: String?,
+        beforeStaging: suspend (Long) -> Unit = {},
     ): Long {
         val startRecord = reader.readRecord(ATTACHMENT_CONTROL_MAX_BYTES)
         require(startRecord.type == BackupRecordType.ATTACHMENT_START)
@@ -602,6 +684,7 @@ internal class VaultBackupV2Service(
         return if (stagedPath == null) {
             consumeAttachmentContent(reader, attachmentId, encryptedObjectBytes, sink = null)
         } else {
+            beforeStaging(encryptedObjectBytes)
             blobStore.writeAtomically(stagedPath) { sink ->
                 consumeAttachmentContent(reader, attachmentId, encryptedObjectBytes, sink)
             }
@@ -663,6 +746,29 @@ internal class VaultBackupV2Service(
         }
     }
 
+    private suspend fun requireRestoreCapacity(remainingObjectBytes: Long) {
+        val availableBytes = readAvailableBytes() ?: return
+        val requiredBytes = minimumRestoreAvailableBytes(remainingObjectBytes)
+        if (availableBytes < requiredBytes) {
+            throw BackupInsufficientStorageException(requiredBytes, availableBytes)
+        }
+    }
+
+    private suspend fun insufficientStorageFailure(cause: Throwable) = BackupInsufficientStorageException(
+        requiredBytes = null,
+        availableBytes = readAvailableBytes(),
+        cause = cause,
+    )
+
+    @Suppress("TooGenericExceptionCaught") // Capacity reporting is optional and platform-specific.
+    private suspend fun readAvailableBytes(): Long? = try {
+        blobStore.availableBytes()?.takeIf { it >= 0L }
+    } catch (cancel: CancellationException) {
+        throw cancel
+    } catch (_: Exception) {
+        null
+    }
+
     private suspend fun readMagic(source: BackupContentSource): ByteArray {
         val expectedSize = BACKUP_V2_MAGIC.size
         val result = ByteArray(expectedSize)
@@ -709,6 +815,14 @@ internal class VaultBackupV2Service(
             override suspend fun abort() = Unit
         }
     }
+}
+
+internal fun minimumRestoreAvailableBytes(remainingObjectBytes: Long): Long {
+    require(remainingObjectBytes >= 0L)
+    require(remainingObjectBytes <= Long.MAX_VALUE - AttachmentContainerCodec.MAX_ENCRYPTED_OBJECT_BYTES)
+    // The free-space value already reflects live objects. Preserve one maximum-size object as
+    // headroom for allocation granularity and capacity changes during the next atomic write.
+    return remainingObjectBytes + AttachmentContainerCodec.MAX_ENCRYPTED_OBJECT_BYTES
 }
 
 private fun BackupStreamManifest.toInspection() = VaultBackupService.BackupInspection(
@@ -783,10 +897,15 @@ private fun Buffer.writeLengthPrefixedUtf8(value: String): Buffer {
     }
 }
 
-private fun Buffer.readLengthPrefixedUtf8(): String {
+internal fun Buffer.readLengthPrefixedUtf8(): String {
     val size = readInt()
     require(size in 1..512)
-    return readUtf8(size.toLong())
+    val encoded = readByteArray(size.toLong())
+    return try {
+        encoded.decodeToString(throwOnInvalidSequence = true)
+    } finally {
+        encoded.fill(0)
+    }
 }
 
 private const val BACKUP_INVALID_MESSAGE = "The backup password is incorrect or the backup is corrupt."

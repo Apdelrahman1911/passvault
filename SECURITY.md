@@ -24,9 +24,12 @@ but no independent audit, penetration-test certification, MASVS certification, o
 - Database, cryptographic, parser, and file details are mapped to non-sensitive user errors at UI boundaries.
 - Gradle dependencies are checked against committed SHA-256 verification metadata.
 
-Managed Kotlin/JVM strings and garbage-collected copies cannot be guaranteed wipeable. The Room database file is not
-SQLCipher; sensitive record payloads are encrypted by the repository layer, while timestamps, identifiers, types,
-favorite flags, and relationship metadata remain visible to someone who obtains the database.
+Managed UI/IME strings and garbage-collected copies cannot be guaranteed wipeable. Inside the KDF boundary,
+PassVault encodes `SensitiveText` directly into mutable UTF-8 and compatibility-preserving hexadecimal buffers and
+clears those buffers after derivation; this narrows exposure but cannot guarantee erasure on a managed runtime. The
+Room database file is not SQLCipher; sensitive record payloads are encrypted by the repository layer, while
+timestamps, identifiers, types, favorite flags, and relationship metadata remain visible to someone who obtains the
+database.
 
 ## Unsupported security claims
 

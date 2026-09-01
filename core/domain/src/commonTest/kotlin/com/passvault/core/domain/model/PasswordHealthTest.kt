@@ -215,26 +215,39 @@ class PasswordStrengthCalculatorTest {
     }
 
     @Test
-    fun `long lowercase phrase is at least fair`() {
-        val result = PasswordStrengthEvaluator.score("correcthorsebatterystaple")
+    fun `length outweighs character classes for otherwise unpredictable passwords`() {
+        val longLowercase = PasswordStrengthEvaluator.score("qjvzmxncbalskweurtyp")
+        val shortAllClasses = PasswordStrengthEvaluator.score("qA7!vN2@kR9#sT4")
+        val decoratedWordAndYear = PasswordStrengthEvaluator.score("Ferrari2019!")
 
-        assertThat(result).isGreaterThanOrEqualTo(PasswordScore.FAIR)
+        assertThat(longLowercase).isGreaterThan(shortAllClasses)
+        assertThat(longLowercase).isGreaterThan(decoratedWordAndYear)
+        assertThat(longLowercase).isGreaterThanOrEqualTo(PasswordScore.STRONG)
     }
 
     @Test
-    fun `password with mixed case is better`() {
-        val mixed = PasswordStrengthEvaluator.score("UniqueMixedCasePhrase")
-        val lowercase = PasswordStrengthEvaluator.score("uniquemixedcasephrase")
+    fun `long passwords can reach the top band without composition rules`() {
+        val result = PasswordStrengthEvaluator.score("qjvzmxncbalskweurtypdfig")
 
-        assertThat(mixed).isGreaterThan(lowercase)
+        assertThat(result).isEqualTo(PasswordScore.VERY_STRONG)
     }
 
     @Test
-    fun `numbers improve an otherwise unique password`() {
-        val withNumbers = PasswordStrengthEvaluator.score("UniquePhrase4826")
-        val lettersOnly = PasswordStrengthEvaluator.score("UniquePhraseOnly")
+    fun `adding distinct unpredictable characters does not reduce strength`() {
+        val randomLowercase = "qjvzmxncbalskweurtypdfigoh"
+        val scores = listOf(8, 12, 16, 20, 24, randomLowercase.length)
+            .map { length -> PasswordStrengthEvaluator.score(randomLowercase.take(length)) }
 
-        assertThat(withNumbers).isGreaterThanOrEqualTo(lettersOnly)
+        scores.zipWithNext().forEach { (shorter, longer) ->
+            assertThat(longer).isGreaterThanOrEqualTo(shorter)
+        }
+    }
+
+    @Test
+    fun `short passwords cannot reach the top band through character variety`() {
+        val result = PasswordStrengthEvaluator.score("qA7!vN2@kR9#sT4")
+
+        assertThat(result).isLessThan(PasswordScore.VERY_STRONG)
     }
 
     @Test
@@ -242,6 +255,23 @@ class PasswordStrengthCalculatorTest {
         val result = PasswordStrengthEvaluator.score("P@ssw0rd!")
 
         assertThat(result).isLessThanOrEqualTo(PasswordScore.WEAK)
+    }
+
+    @Test
+    fun `common human password patterns remain below acceptance gates`() {
+        val weakPasswords = listOf(
+            "Ferrari2019!",
+            "Summer2024!!",
+            "Michael2024!",
+            "Qwerty123456!",
+            "Tr0ub4dor&3",
+            "Welcome2024!",
+            "Xylophone2019!",
+        )
+
+        weakPasswords.forEach { password ->
+            assertThat(PasswordStrengthEvaluator.score(password)).isLessThanOrEqualTo(PasswordScore.WEAK)
+        }
     }
 
     @Test
@@ -259,10 +289,17 @@ class PasswordStrengthCalculatorTest {
     }
 
     @Test
-    fun `repeated characters are weak`() {
-        val result = PasswordStrengthEvaluator.score("aaaaaaaaaa")
+    fun `repeated characters and short blocks are very weak`() {
+        val repeatedPasswords = listOf(
+            "aaaaaaaaaa",
+            "abababababab",
+            "abcabcabcabc",
+            "Abababababab1!",
+        )
 
-        assertThat(result).isEqualTo(PasswordScore.VERY_WEAK)
+        repeatedPasswords.forEach { password ->
+            assertThat(PasswordStrengthEvaluator.score(password)).isEqualTo(PasswordScore.VERY_WEAK)
+        }
     }
 
     @Test

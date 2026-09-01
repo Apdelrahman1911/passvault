@@ -1,6 +1,6 @@
 # PassVault security model
 
-Last reviewed: 2026-08-14
+Last reviewed: 2026-08-27
 
 ## Scope and assumptions
 
@@ -14,11 +14,13 @@ There is no server, account, network sync, telemetry, or analytics boundary in t
 ## Key hierarchy
 
 ```text
-master password bytes + 16-byte random salt
-                 |
-              Argon2id
-                 |
-                KEK
+master password characters
+          | strict UTF-8, then lowercase ASCII hex
+historical KDF input bytes + 16-byte random salt
+          |
+       Argon2id
+          |
+         KEK
                  |
  XChaCha20-Poly1305, AAD "VEK_WRAP"
                  |
@@ -29,10 +31,15 @@ master password bytes + 16-byte random salt
  record/folder/tag/history/blind-index subkeys
 ```
 
-The master password is converted to a byte array only for derivation and wiped best-effort afterward. The KEK is
-not persisted. Room stores the salt, bounded Argon2 parameters, wrapped VEK, nonces, and an authenticated
-verification record. Unlock validates metadata bounds before doing expensive cryptographic work, derives the KEK,
-unwraps the VEK, authenticates the verification record, and only then publishes the unlocked session.
+The repository encodes the master password directly from mutable characters to mutable UTF-8 bytes, then converts
+those bytes to mutable lowercase hexadecimal bytes to preserve the original KDF format. Both buffers are wiped
+best-effort after derivation; managed UI/IME strings remain outside that guarantee. The KEK is not persisted. Room
+stores the salt, Argon2id operations (2–10), memory (32–256 MiB), a fixed serialized parallelism value of `1`, the
+wrapped VEK, nonces, and an authenticated verification record. The current libsodium binding exposes no lanes
+argument, so unlock rejects a persisted parallelism value other than `1` before derivation. Unlock validates metadata
+bounds before doing expensive cryptographic work, derives the KEK, unwraps the VEK, authenticates the verification
+record, and only then publishes the unlocked session. See [`VAULT_FORMAT.md`](VAULT_FORMAT.md) for the complete
+parameter contract.
 
 Changing the master password rewraps the same VEK, so record data does not need re-encryption. Vault session
 transitions are serialized. Lock immediately removes and wipes the repository-owned VEK buffer best-effort.
@@ -71,8 +78,8 @@ remains master-password-only. See
 Credential summary and secret payloads, TOTP setup keys and parameters, folder/tag payloads, passwords in history,
 and attachment filenames use XChaCha20-Poly1305 with unique random nonces. Associated data and derived keys
 bind each encrypted payload to its record identity and purpose. They do not bind the record's structural routing
-columns. Keyed deterministic blind indexes support exact normalized title/folder/tag comparisons without plaintext
-values.
+columns. Keyed deterministic blind indexes support exact normalized folder/tag comparisons without plaintext values;
+credential titles are searched only after decrypting records in memory.
 
 TOTP codes are derived in memory from the encrypted setup key and authoritative device time. Codes and countdowns
 are not written to Room or backups. QR payloads are handled locally, parsed with strict size/type/Base32/parameter
@@ -95,9 +102,10 @@ row's object. Version-1/2 metadata-only rows remain explicit unavailable `LEGACY
 ## Backup boundary
 
 New `.pvault` version 2 exports use a separate backup password, fresh salt, Argon2id, and ordered authenticated
-XChaCha20-Poly1305 records. Room metadata is encoded and validated one row at a time; attachment objects are carried
-in 256 KiB outer records. Restore authenticates the entire stream and stages objects, then rewinds and replays only
-metadata in one Room transaction. A SHA-256 transcript over authenticated header/record proofs binds both passes.
+XChaCha20-Poly1305 records. Before deriving a key, the reader admits only the two historical writer profiles: 64 MiB
+with three or four operations. Room metadata is encoded and validated one row at a time; attachment objects are
+carried in 256 KiB outer records. Restore authenticates the entire stream and stages objects, then rewinds and replays
+only metadata in one Room transaction. A SHA-256 transcript over authenticated header/record proofs binds both passes.
 Legacy version 1 remains readable at its historical in-memory bounds and omits attachment rows/bytes. Restore locks
 the vault and deletes the previous OS biometric enrollment; a Room rollback triggers a best-effort re-enrollment of
 the prior VEK. The OS key store and Room still cannot share one transaction. See
@@ -110,6 +118,8 @@ the prior VEK. The OS key store and Room still cannot share one transaction. See
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
 - Clipboard expiration verifies a random ownership token/value before clearing, so newer unrelated clipboard data is
   preserved.
+- Desktop sensitive writes also request Windows Clipboard History/Cloud Clipboard exclusion and publish the macOS
+  concealed/transient pasteboard conventions. These platform hints cannot bind malicious or non-cooperating readers.
 - Copying a TOTP code uses the same ownership-aware clipboard path as other credential values.
 - Android, iOS, macOS, and supported Windows systems expose explicit biometric/platform enrollment in Security
   settings and an unlock action beside the password field. Unsupported systems, including Linux, fail closed to

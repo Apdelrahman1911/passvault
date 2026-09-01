@@ -30,9 +30,10 @@ import kotlin.time.Instant
 /**
  * Performs a local-only password health scan.
  *
- * Password values never leave the process and are cleared as soon as the scan
- * finishes. This feature intentionally makes no breach-database claim: without
- * an explicit privacy-preserving breach service, it reports only strength,
+ * Password values never leave the process. Mutable buffers owned by the scan
+ * are cleared as soon as analysis finishes; this does not claim that a managed
+ * runtime can erase copies made below this boundary. Without an explicit
+ * privacy-preserving breach service, this feature reports only strength,
  * duplicate use, and local password age.
  */
 class HealthViewModel(
@@ -108,20 +109,23 @@ class HealthViewModel(
             var credentials = emptyList<CredentialHealthInput>()
             try {
                 val result = credentialRepository.getCredentialsForHealthAnalysis()
-                currentCoroutineContext().ensureActive()
                 if (result.isFailure) {
                     showScanError(Res.string.error_health_scan_locked)
                     return@launch
                 }
 
                 credentials = result.getOrThrow()
+                currentCoroutineContext().ensureActive()
                 val analysis = analyzePasswordHealth(credentials)
                 val summaries = credentials.map { credential ->
                     credential.toHealthSummary(
                         analysis.healthByCredential[credential.id] ?: PasswordHealth.UNKNOWN,
                     )
                 }
-                val persistenceFailures = persistChangedHealth(credentials, analysis.healthByCredential)
+                val previousHealth = credentials.associate { it.id to it.passwordHealth }
+                credentials.forEach(CredentialHealthInput::clearSensitiveHealthValues)
+                credentials = emptyList()
+                val persistenceFailures = persistChangedHealth(previousHealth, analysis.healthByCredential)
                 currentCoroutineContext().ensureActive()
                 _state.value = _state.value.withAnalysis(
                     analysis = analysis,
@@ -144,10 +148,9 @@ class HealthViewModel(
         buildHealthAnalysis(credentials, clock.now())
 
     private suspend fun persistChangedHealth(
-        credentials: List<CredentialHealthInput>,
+        previousHealth: Map<CredentialId, PasswordHealth>,
         healthByCredential: Map<CredentialId, PasswordHealth>,
     ): Int {
-        val previousHealth = credentials.associate { it.id to it.passwordHealth }
         return healthByCredential.count { (id, health) ->
             previousHealth[id] != health && credentialRepository.updateHealth(id, health).isFailure
         }

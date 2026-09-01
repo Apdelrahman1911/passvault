@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# This file is a sourced library, never a standalone script. It intentionally
+# omits `set -euo pipefail`: shell options would leak into the caller. Callers
+# must enable strict mode before sourcing this library.
+
 # Parse dotenv files as data. Never source or evaluate them as shell code.
 
 PASSVAULT_DOTENV_KIND=""

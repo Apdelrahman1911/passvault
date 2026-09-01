@@ -1,7 +1,13 @@
 package com.passvault.desktop.security
 
 import java.awt.Frame
+import java.awt.GraphicsEnvironment
+import java.awt.Color
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.SwingUtilities
 import kotlin.test.Test
+import kotlin.test.assertIs
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -39,6 +45,35 @@ class DesktopWindowProtectionTest {
 
         assertTrue(protection.isLocked)
         assertEquals(0, locks)
+    }
+
+    @Test
+    fun `lock installs an opaque curtain before unlock restores the original glass pane`() {
+        if (GraphicsEnvironment.isHeadless()) return
+
+        val protection = DesktopWindowProtection()
+        val frame = JFrame()
+        val originalGlassPane = JPanel()
+        try {
+            SwingUtilities.invokeAndWait {
+                frame.glassPane = originalGlassPane
+                protection.attachWindow(frame)
+                protection.lock()
+
+                val curtain = assertIs<JPanel>(frame.glassPane)
+                assertTrue(curtain.isVisible)
+                assertTrue(curtain.isOpaque)
+                assertEquals(Color.BLACK, curtain.background)
+
+                protection.unlock()
+                assertEquals(originalGlassPane, frame.glassPane)
+            }
+        } finally {
+            SwingUtilities.invokeAndWait {
+                protection.cleanup()
+                frame.dispose()
+            }
+        }
     }
 
     @Test

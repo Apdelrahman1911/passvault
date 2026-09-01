@@ -3,11 +3,14 @@ package com.passvault.core.database.attachment
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.CryptoEnvelope
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
+import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.AttachmentId
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
@@ -23,11 +26,14 @@ import com.passvault.core.domain.repository.AttachmentInvalidFileNameException
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.repository.AttachmentTotalSizeLimitException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okio.BufferedSink
 import okio.BufferedSource
 import java.nio.file.Files
@@ -39,13 +45,17 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@Suppress("TooManyFunctions") // Cohesive filesystem/database security fixture shares one expensive vault setup.
+@Suppress(
+    "LargeClass",
+    "TooManyFunctions",
+) // Cohesive filesystem/database security fixture shares one expensive vault setup.
 class AttachmentRepositoryTest {
     private lateinit var database: VaultDatabase
     private lateinit var cryptoEngine: DesktopCryptoEngine
@@ -125,6 +135,86 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `attachment filenames use padded buckets and remain readable after rename`() = runTest {
+        val first = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("a.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val second = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("twelve12.txt", null, byteArrayOf(2)),
+        ).getOrThrow()
+        val firstEntity = requireEntity(first.id)
+        val secondEntity = requireEntity(second.id)
+
+        assertTrue(CryptoEnvelope.isPaddedPayload(firstEntity.encryptedFilename))
+        assertTrue(CryptoEnvelope.isPaddedPayload(secondEntity.encryptedFilename))
+        assertEquals(firstEntity.encryptedFilename.size, secondEntity.encryptedFilename.size)
+
+        val renamed = attachmentRepository.rename(credentialId, first.id, "renamed.txt").getOrThrow()
+        assertEquals("renamed.txt", renamed.fileName)
+        assertTrue(CryptoEnvelope.isPaddedPayload(requireEntity(first.id).encryptedFilename))
+    }
+
+    @Test
+    fun `legacy attachment filename remains readable and is padded on rename`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("legacy.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        var plaintext: ByteArray? = null
+        val aad = "passvault:attachment:${stored.id}:${stored.credentialId}:filename:v1".encodeToByteArray()
+        try {
+            key = cryptoEngine.deriveSubkey(vek, "attachment:${stored.keyDerivationContext}", 32).getOrThrow()
+            plaintext = PaddedPayload.decrypt(
+                cryptoEngine,
+                stored.encryptedFilename,
+                stored.filenameNonce,
+                key,
+                aad,
+                AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
+            ).getOrThrow()
+            val legacy = cryptoEngine.encrypt(plaintext, key, aad).getOrThrow()
+            try {
+                database.attachmentDao().update(
+                    stored.copy(
+                        encryptedFilename = CryptoEnvelope.encode(legacy),
+                        filenameNonce = legacy.nonce.copyOf(),
+                    ),
+                )
+            } finally {
+                legacy.clear()
+            }
+        } finally {
+            plaintext?.let(cryptoEngine::secureWipe)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(aad)
+            cryptoEngine.secureWipe(vek)
+        }
+
+        val renamed = attachmentRepository.rename(credentialId, attachment.id, "modern.txt").getOrThrow()
+        assertEquals("modern.txt", renamed.fileName)
+        assertTrue(CryptoEnvelope.isPaddedPayload(requireEntity(attachment.id).encryptedFilename))
+    }
+
+    @Test
+    fun `short first reads are accumulated before MIME detection`() = runTest {
+        val source = TrickleSource(
+            name = "short-read.pdf",
+            content = "%PDF-1.7\nattachment".encodeToByteArray(),
+            maximumReadBytes = 2,
+        )
+
+        val attachment = attachmentRepository.import(credentialId, source).getOrThrow()
+
+        assertEquals("application/pdf", attachment.mimeType)
+        assertTrue(attachmentRepository.verify(credentialId, attachment.id).isSuccess)
+    }
+
+    @Test
     fun `concurrent duplicate imports are serialized and remain independently decryptable`() = runTest {
         val first = async {
             attachmentRepository.import(credentialId, ByteArraySource("same.txt", null, byteArrayOf(1)))
@@ -166,6 +256,114 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `corrupt filename is quarantined without blocking sibling import rename repair or delete`() = runTest {
+        val healthy = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("healthy.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val corrupted = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("corrupted.txt", null, byteArrayOf(2)),
+        ).getOrThrow()
+        corruptFilenameCiphertext(corrupted.id)
+
+        val loaded = assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+        val quarantined = assertNotNull(loaded.attachments.firstOrNull { it.id == corrupted.id })
+        assertEquals(AttachmentAvailability.CORRUPTED_FILENAME, quarantined.availability)
+        assertTrue(quarantined.fileName.contains(corrupted.id.value))
+
+        val imported = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("healthy.txt", null, byteArrayOf(3)),
+        ).getOrThrow()
+        assertEquals("healthy (2).txt", imported.fileName)
+
+        val renamed = attachmentRepository.rename(credentialId, healthy.id, "renamed.txt").getOrThrow()
+        assertEquals("renamed.txt", renamed.fileName)
+
+        val repaired = attachmentRepository.rename(credentialId, corrupted.id, "repaired.txt").getOrThrow()
+        assertEquals("repaired.txt", repaired.fileName)
+        assertEquals(
+            AttachmentAvailability.AVAILABLE,
+            assertNotNull(credentialRepository.getById(credentialId).getOrThrow()).attachments
+                .first { it.id == corrupted.id }
+                .availability,
+        )
+
+        corruptFilenameNonce(corrupted.id)
+        assertTrue(attachmentRepository.delete(credentialId, corrupted.id).isSuccess)
+        assertNull(database.attachmentDao().getById(corrupted.id.value, credentialId.value))
+    }
+
+    @Test
+    fun `corrupt legacy filename is quarantined and does not block import or rename`() = runTest {
+        val legacy = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("legacy.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val healthy = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("healthy.txt", null, byteArrayOf(2)),
+        ).getOrThrow()
+        val stored = requireEntity(legacy.id)
+        val corruptedCiphertext = stored.encryptedFilename.copyOf().also { bytes ->
+            bytes[bytes.lastIndex] = (bytes.last().toInt() xor 1).toByte()
+        }
+        database.attachmentDao().update(
+            stored.copy(
+                encryptedFilename = corruptedCiphertext,
+                contentFormatVersion = 0,
+                storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+            ),
+        )
+
+        assertTrue(
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("new.txt", null, byteArrayOf(3)),
+            ).isSuccess,
+        )
+        assertEquals(
+            "renamed.txt",
+            attachmentRepository.rename(credentialId, healthy.id, "renamed.txt").getOrThrow().fileName,
+        )
+        assertEquals(
+            AttachmentAvailability.CORRUPTED_FILENAME,
+            assertNotNull(credentialRepository.getById(credentialId).getOrThrow()).attachments
+                .first { it.id == legacy.id }
+                .availability,
+        )
+    }
+
+    @Test
+    fun `historical unsafe filename remains visible for collision checks but requires rename`() = runTest {
+        val historical = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("historical.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        replaceFilename(historical.id, "historical:name.txt")
+
+        val loaded = assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+        val attachment = loaded.attachments.first { it.id == historical.id }
+        assertEquals("historical:name.txt", attachment.fileName)
+        assertEquals(AttachmentAvailability.FILENAME_REQUIRES_RENAME, attachment.availability)
+
+        val imported = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("historical:name.txt", null, byteArrayOf(2)),
+        )
+        assertIs<AttachmentInvalidFileNameException>(imported.exceptionOrNull())
+
+        val repaired = attachmentRepository.rename(credentialId, historical.id, "historical-name.txt").getOrThrow()
+        assertEquals("historical-name.txt", repaired.fileName)
+        assertEquals(
+            AttachmentAvailability.AVAILABLE,
+            assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+                .attachments.single().availability,
+        )
+    }
+
+    @Test
     fun `ciphertext tampering is rejected and aborts partial plaintext output`() = runTest {
         val content = ByteArray(AttachmentPolicy.CONTENT_CHUNK_BYTES + 17) { (it % 251).toByte() }
         val attachment = attachmentRepository.import(
@@ -184,6 +382,120 @@ class AttachmentRepositoryTest {
         assertFalse(sink.committed)
         assertTrue(sink.aborted)
         assertEquals(0, sink.bytes().size)
+    }
+
+    @Test
+    fun `state downgrade is quarantined without deleting an intact object`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("state-tamper.bin", null, byteArrayOf(1, 2, 3)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val path = objectPath(stored)
+        database.attachmentDao().update(
+            stored.copy(storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY),
+        )
+        val restarted = AttachmentRepositoryImpl(
+            attachmentDao = database.attachmentDao(),
+            credentialDao = database.credentialDao(),
+            blobStore = blobStore,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+        )
+
+        assertIs<AttachmentCorruptedException>(
+            restarted.copyContentTo(credentialId, attachment.id, RecordingSink()).exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            restarted.verify(credentialId, attachment.id).exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            restarted.delete(credentialId, attachment.id).exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            restarted.rename(credentialId, attachment.id, "must-not-change.bin").exceptionOrNull(),
+        )
+        assertIs<AttachmentCorruptedException>(
+            credentialRepository.getById(credentialId).exceptionOrNull(),
+        )
+        assertContentEquals(stored.encryptedFilename, requireEntity(attachment.id).encryptedFilename)
+        assertTrue(Files.exists(path))
+    }
+
+    @Test
+    fun `format downgrade is quarantined and remains protected and quota accounted`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("format-tamper.bin", null, byteArrayOf(1, 2, 3, 4)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val path = objectPath(stored)
+        database.attachmentDao().update(stored.copy(contentFormatVersion = 0))
+        val restarted = AttachmentRepositoryImpl(
+            attachmentDao = database.attachmentDao(),
+            credentialDao = database.credentialDao(),
+            blobStore = blobStore,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+        )
+
+        assertIs<AttachmentCorruptedException>(
+            restarted.copyContentTo(credentialId, attachment.id, RecordingSink()).exceptionOrNull(),
+        )
+        assertEquals(1, database.attachmentDao().getManagedCount(credentialId.value))
+        assertEquals(4, database.attachmentDao().getManagedSizeBytes(credentialId.value))
+        assertEquals(1, database.vaultBackupDao().getManagedAttachmentCount())
+        assertEquals(
+            listOf(attachment.id.value),
+            database.vaultBackupDao().getManagedAttachmentPage("", 10).map { it.id },
+        )
+        assertNotNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
+        assertTrue(Files.exists(path))
+    }
+
+    @Test
+    fun `pending-state tamper cannot authorize deletion of a published object`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("pending-tamper.bin", null, byteArrayOf(4, 5, 6)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        val path = objectPath(stored)
+        database.attachmentDao().update(
+            stored.copy(storageState = AttachmentRecordEntity.STORAGE_STATE_STAGING),
+        )
+        val restarted = AttachmentRepositoryImpl(
+            attachmentDao = database.attachmentDao(),
+            credentialDao = database.credentialDao(),
+            blobStore = blobStore,
+            cryptoEngine = cryptoEngine,
+            sessionManager = vaultRepository,
+        )
+
+        assertFailsWith<AttachmentCorruptedException> {
+            restarted.withStableAttachments { }
+        }
+        assertNotNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
+        assertTrue(Files.exists(path))
+    }
+
+    @Test
+    fun `genuine legacy metadata remains deletable without a managed object`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("legacy-metadata.bin", null, byteArrayOf(7)),
+        ).getOrThrow()
+        val stored = requireEntity(attachment.id)
+        blobStore.delete(stored.storagePath)
+        database.attachmentDao().update(
+            stored.copy(
+                contentFormatVersion = 0,
+                storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+            ),
+        )
+
+        assertTrue(attachmentRepository.delete(credentialId, attachment.id).isSuccess)
+        assertNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
     }
 
     @Test
@@ -224,6 +536,16 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `teardown failure does not close an import source twice`() = runTest {
+        val source = ThrowingCloseSource()
+
+        assertTrue(attachmentRepository.import(credentialId, source).isSuccess)
+
+        assertEquals(1, source.closeCalls)
+        assertEquals(1, database.attachmentDao().getByCredential(credentialId.value).size)
+    }
+
+    @Test
     fun `cancelled import closes input and removes partial state`() = runTest {
         val readStarted = CompletableDeferred<Unit>()
         val source = SuspendingSource(readStarted)
@@ -250,10 +572,66 @@ class AttachmentRepositoryTest {
         )
         Files.write(abandoned, byteArrayOf(1, 2, 3))
 
-        attachmentRepository.recoverInterruptedOperations()
+        attachmentRepository.withStableAttachments { }
 
         assertFalse(Files.exists(abandoned))
         assertDirectoryEmpty(storageRoot.resolve("staging"))
+    }
+
+    @Test
+    fun `recovery implementation is not exposed as a public repository operation`() {
+        assertFalse(
+            AttachmentRepositoryImpl::class.java.methods.any { method ->
+                method.name.startsWith("recoverInterruptedOperations")
+            },
+        )
+    }
+
+    @Test
+    fun `nested attachment operations fail fast and release the operation lock`() = runTest {
+        val source = ByteArraySource("nested.txt", null, byteArrayOf(1, 2, 3))
+        attachmentRepository.withStableAttachments { }
+
+        val error = assertFailsWith<IllegalStateException> {
+            withTimeout(10_000) {
+                attachmentRepository.withStableAttachments {
+                    attachmentRepository.import(credentialId, source).getOrThrow()
+                }
+            }
+        }
+
+        assertTrue(error.message.orEmpty().contains("withStableAttachments"))
+        assertTrue(source.closed)
+
+        // The failed nested call must not leave the sole repository mutex held.
+        assertTrue(
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("after-nested.txt", null, byteArrayOf(4)),
+            ).isSuccess,
+        )
+    }
+
+    @Test
+    fun `nested credential deletion returns a bounded failure instead of deadlocking`() = runTest {
+        attachmentRepository.withStableAttachments { }
+
+        val result = withContext(Dispatchers.Default) {
+            withTimeout(2_000) {
+                attachmentRepository.withStableAttachments {
+                    credentialRepository.delete(credentialId)
+                }
+            }
+        }
+
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("credential-attachments", credentialRepository.getById(credentialId).getOrNull()?.id?.value)
+        assertTrue(
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("after-delete.txt", null, byteArrayOf(5)),
+            ).isSuccess,
+        )
     }
 
     @Test
@@ -338,7 +716,7 @@ class AttachmentRepositoryTest {
 
         assertNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
         assertTrue(Files.exists(path))
-        attachmentRepository.recoverInterruptedOperations()
+        attachmentRepository.withStableAttachments { }
         assertFalse(Files.exists(path))
     }
 
@@ -356,7 +734,7 @@ class AttachmentRepositoryTest {
         assertNull(database.credentialDao().getById(credentialId.value))
         assertNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
         assertTrue(Files.exists(path))
-        attachmentRepository.recoverInterruptedOperations()
+        attachmentRepository.withStableAttachments { }
         assertFalse(Files.exists(path))
     }
 
@@ -399,6 +777,56 @@ class AttachmentRepositoryTest {
     )
 
     private fun objectPath(entity: AttachmentRecordEntity): Path = storageRoot.resolve(entity.storagePath)
+
+    private suspend fun corruptFilenameCiphertext(id: AttachmentId) {
+        val stored = requireEntity(id)
+        val ciphertext = stored.encryptedFilename.copyOf().also { bytes ->
+            bytes[bytes.lastIndex] = (bytes.last().toInt() xor 1).toByte()
+        }
+        database.attachmentDao().update(stored.copy(encryptedFilename = ciphertext))
+    }
+
+    private suspend fun corruptFilenameNonce(id: AttachmentId) {
+        val stored = requireEntity(id)
+        val nonce = stored.filenameNonce.copyOf().also { bytes ->
+            bytes[bytes.lastIndex] = (bytes.last().toInt() xor 1).toByte()
+        }
+        database.attachmentDao().update(stored.copy(filenameNonce = nonce))
+    }
+
+    private suspend fun replaceFilename(id: AttachmentId, fileName: String) {
+        val stored = requireEntity(id)
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        var plaintext: ByteArray? = null
+        val aad = "passvault:attachment:${stored.id}:${stored.credentialId}:filename:v1".encodeToByteArray()
+        try {
+            key = cryptoEngine.deriveSubkey(vek, "attachment:${stored.keyDerivationContext}", 32).getOrThrow()
+            plaintext = fileName.encodeToByteArray(throwOnInvalidSequence = true)
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine,
+                plaintext,
+                key,
+                aad,
+                AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
+            ).getOrThrow()
+            try {
+                database.attachmentDao().update(
+                    stored.copy(
+                        encryptedFilename = CryptoEnvelope.encode(encrypted),
+                        filenameNonce = encrypted.nonce.copyOf(),
+                    ),
+                )
+            } finally {
+                encrypted.clear()
+            }
+        } finally {
+            plaintext?.let(cryptoEngine::secureWipe)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(aad)
+            cryptoEngine.secureWipe(vek)
+        }
+    }
 
     private suspend fun insertAggregateLimitRow(index: Int) {
         val objectId = "00000000-0000-0000-0000-${index.toString().padStart(12, '0')}"
@@ -451,6 +879,27 @@ class AttachmentRepositoryTest {
         }
     }
 
+    private class TrickleSource(
+        name: String,
+        private val content: ByteArray,
+        private val maximumReadBytes: Int,
+    ) : AttachmentContentSource {
+        override val displayName = name
+        override val claimedMimeType: String? = null
+        override val declaredSizeBytes: Long = content.size.toLong()
+        private var offset = 0
+
+        override suspend fun read(buffer: ByteArray): Int {
+            if (offset == content.size) return -1
+            val count = minOf(buffer.size, maximumReadBytes, content.size - offset)
+            content.copyInto(buffer, endIndex = offset + count, startIndex = offset)
+            offset += count
+            return count
+        }
+
+        override suspend fun close() = Unit
+    }
+
     private class FailingSource : AttachmentContentSource {
         override val displayName = "disappearing.bin"
         override val claimedMimeType: String? = null
@@ -487,6 +936,25 @@ class AttachmentRepositoryTest {
 
         override suspend fun close() {
             closed = true
+        }
+    }
+
+    private class ThrowingCloseSource : AttachmentContentSource {
+        override val displayName = "close-failure.bin"
+        override val claimedMimeType: String? = null
+        override val declaredSizeBytes: Long? = 1
+        var closeCalls = 0
+        private var read = false
+
+        override suspend fun read(buffer: ByteArray): Int = if (read) -1 else {
+            read = true
+            buffer[0] = 7
+            1
+        }
+
+        override suspend fun close() {
+            closeCalls++
+            error("simulated teardown failure")
         }
     }
 

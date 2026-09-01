@@ -110,6 +110,8 @@ data class AttachmentMetadata(
 enum class AttachmentAvailability {
     AVAILABLE,
     LEGACY_METADATA_ONLY,
+    FILENAME_REQUIRES_RENAME,
+    CORRUPTED_FILENAME,
 }
 
 @Serializable

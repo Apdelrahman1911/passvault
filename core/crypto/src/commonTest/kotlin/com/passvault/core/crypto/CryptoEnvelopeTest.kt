@@ -18,6 +18,7 @@ class CryptoEnvelopeTest {
 
         assertContentEquals(ciphertext, stored)
         assertTrue(CryptoEnvelope.isSupportedPayload(stored))
+        assertFalse(CryptoEnvelope.isPaddedPayload(stored))
     }
 
     @Test
@@ -43,6 +44,17 @@ class CryptoEnvelopeTest {
         assertContentEquals(canonical, CryptoEnvelope.normalize(canonical + tag))
         assertContentEquals(canonical, CryptoEnvelope.normalize(canonical))
         assertFalse(CryptoEnvelope.isSupportedPayload(byteArrayOf(1, 2, 3)))
+    }
+
+    @Test
+    fun `padded marker is accepted and normalizes to the engine envelope`() {
+        val tag = ByteArray(TAG_BYTES) { (it + 2).toByte() }
+        val canonical = MAGIC + byteArrayOf(4, 5, 6) + tag
+        val padded = CryptoEnvelope.markPadded(canonical)
+
+        assertTrue(CryptoEnvelope.isSupportedPayload(padded))
+        assertTrue(CryptoEnvelope.isPaddedPayload(padded))
+        assertContentEquals(canonical, CryptoEnvelope.normalize(padded))
     }
 
     private companion object {

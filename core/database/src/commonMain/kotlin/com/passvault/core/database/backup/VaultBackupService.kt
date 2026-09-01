@@ -12,6 +12,8 @@ import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.DatabaseOnlyAttachmentLifecycleManager
+import com.passvault.core.database.attachment.AttachmentStorageKind
+import com.passvault.core.database.attachment.requireStableStorageKind
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.database.entity.CredentialFolderCrossRef
@@ -41,6 +43,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -53,9 +56,7 @@ private const val SUPPORTED_CRYPTO_FORMAT_VERSION = 2
 private const val ARGON2_SALT_BYTES = 16
 private const val XCHACHA_NONCE_BYTES = 24
 private const val BACKUP_AAD = "passvault:backup:v1"
-private const val MAX_BACKUP_BYTES = 128 * 1024 * 1024
-private const val MAX_CIPHERTEXT_BYTES = MAX_BACKUP_BYTES
-private const val MAX_SNAPSHOT_BYTES = 64 * 1024 * 1024
+private const val MAX_SNAPSHOT_BYTES = BackupLimits.LEGACY_MAX_SNAPSHOT_BYTES
 private const val BLIND_INDEX_BYTES = 32
 private const val MAX_SALT_BYTES = 64
 private const val MAX_NONCE_BYTES = 64
@@ -242,16 +243,23 @@ class VaultBackupService(
         bytes: ByteArray,
         password: SensitiveText,
     ): Result<BackupInspection> = operationMutex.withLock {
-        inspectLegacyBackup(bytes, password)
+        val source = ByteArrayBackupContentSource(bytes)
+        try {
+            inspectLegacyBackup(LegacyBackupEnvelopeReader(source, ByteArray(0)).read(), password)
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (_: Exception) {
+            Result.failure(IllegalArgumentException(BACKUP_INVALID_MESSAGE))
+        }
     }
 
     private suspend fun inspectLegacyBackup(
-        bytes: ByteArray,
+        envelope: LegacyBackupEnvelope,
         password: SensitiveText,
     ): Result<BackupInspection> =
         try {
             sessionManager.withUnlockedSession {
-                val snapshot = decryptPayload(bytes, password)
+                val snapshot = decryptPayload(envelope, password)
                 snapshot.validateAttachmentAccounting()
                 validateSnapshot(snapshot.validationEntities())
                 Result.success(
@@ -272,6 +280,8 @@ class VaultBackupService(
             throw cancel
         } catch (_: Exception) {
             Result.failure(IllegalArgumentException(BACKUP_INVALID_MESSAGE))
+        } finally {
+            envelope.clear()
         }
 
     /**
@@ -283,15 +293,22 @@ class VaultBackupService(
         bytes: ByteArray,
         password: SensitiveText,
     ): Result<BackupInspection> = operationMutex.withLock {
-        restoreLegacyBackup(bytes, password)
+        val source = ByteArrayBackupContentSource(bytes)
+        try {
+            restoreLegacyBackup(LegacyBackupEnvelopeReader(source, ByteArray(0)).read(), password)
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (_: Exception) {
+            Result.failure(IllegalArgumentException(BACKUP_INVALID_MESSAGE))
+        }
     }
 
     private suspend fun restoreLegacyBackup(
-        bytes: ByteArray,
+        envelope: LegacyBackupEnvelope,
         password: SensitiveText,
     ): Result<BackupInspection> {
         val (snapshot, entities) = try {
-            val snapshot = decryptPayload(bytes, password)
+            val snapshot = decryptPayload(envelope, password)
             snapshot.validateAttachmentAccounting()
             validateSnapshot(snapshot.validationEntities())
             val rawEntities = snapshot.restorableEntities()
@@ -304,6 +321,8 @@ class VaultBackupService(
             throw cancel
         } catch (_: Exception) {
             return Result.failure(IllegalArgumentException(BACKUP_INVALID_MESSAGE))
+        } finally {
+            envelope.clear()
         }
 
         return try {
@@ -342,12 +361,11 @@ class VaultBackupService(
             if (prefix.contentEquals(BACKUP_V2_MAGIC)) {
                 v2Service.inspectAfterMagic(source, password, prefix).also { prefix = null }
             } else {
-                val legacy = source.readLegacyBackup(prefix)
+                val legacy = LegacyBackupEnvelopeReader(source, prefix).read()
                 prefix = null
                 try {
                     inspectLegacyBackup(legacy, password)
                 } finally {
-                    cryptoEngine.secureWipe(legacy)
                     source.close()
                 }
             }
@@ -372,12 +390,11 @@ class VaultBackupService(
             if (prefix.contentEquals(BACKUP_V2_MAGIC)) {
                 v2Service.restoreAfterMagic(source, password, prefix, onProgress).also { prefix = null }
             } else {
-                val legacy = source.readLegacyBackup(prefix)
+                val legacy = LegacyBackupEnvelopeReader(source, prefix).read()
                 prefix = null
                 try {
                     restoreLegacyBackup(legacy, password)
                 } finally {
-                    cryptoEngine.secureWipe(legacy)
                     source.close()
                 }
             }
@@ -407,28 +424,6 @@ class VaultBackupService(
             }
         }
         return prefix
-    }
-
-    private suspend fun BackupContentSource.readLegacyBackup(prefix: ByteArray): ByteArray {
-        declaredSizeBytes?.let { require(it in 1..BackupLimits.LEGACY_MAX_BACKUP_BYTES) }
-        val output = okio.Buffer().write(prefix)
-        val buffer = ByteArray(DEFAULT_STREAM_BUFFER_BYTES)
-        var total = prefix.size.toLong()
-        return try {
-            while (true) {
-                val count = read(buffer)
-                if (count == -1) break
-                require(count in 1..buffer.size)
-                total += count
-                require(total <= BackupLimits.LEGACY_MAX_BACKUP_BYTES)
-                output.write(buffer, 0, count)
-            }
-            output.readByteArray()
-        } finally {
-            cryptoEngine.secureWipe(prefix)
-            cryptoEngine.secureWipe(buffer)
-            output.clear()
-        }
     }
 
     @Suppress("TooGenericExceptionCaught") // Convert arbitrary crypto/encoding failures while preserving cancellation.
@@ -481,21 +476,19 @@ class VaultBackupService(
     }
 
     private suspend fun decryptPayload(
-        bytes: ByteArray,
+        envelope: LegacyBackupEnvelope,
         password: SensitiveText,
     ): SnapshotDto {
         require(BackupPasswordPolicy.acceptsExisting(password))
-        require(bytes.isNotEmpty() && bytes.size <= MAX_BACKUP_BYTES)
-        val envelope = json.decodeFromString<BackupEnvelope>(bytes.decodeUtf8Strict())
         require(envelope.formatVersion == BACKUP_FORMAT_VERSION)
         require(envelope.kdfAlgorithm == KDF_ALGORITHM)
         require(envelope.argon2OpsLimit in MIN_ARGON2_OPS..MAX_ARGON2_OPS)
         require(envelope.argon2MemLimit in MIN_ARGON2_MEM..MAX_ARGON2_MEM)
         require(envelope.argon2Parallelism == SUPPORTED_ARGON2_PARALLELISM)
 
-        val salt = envelope.salt.decodeBase64(MAX_SALT_BYTES)
-        val nonce = envelope.nonce.decodeBase64(MAX_NONCE_BYTES)
-        val ciphertext = envelope.ciphertext.decodeBase64(MAX_CIPHERTEXT_BYTES)
+        val salt = envelope.salt
+        val nonce = envelope.nonce
+        val ciphertext = envelope.ciphertext
         require(salt.size == ARGON2_SALT_BYTES)
         require(nonce.size == XCHACHA_NONCE_BYTES)
         require(ciphertext.size >= MIN_ENCRYPTED_BYTES)
@@ -520,9 +513,6 @@ class VaultBackupService(
             require(plaintext.size <= MAX_SNAPSHOT_BYTES)
             return json.decodeFromString<SnapshotDto>(plaintext.decodeUtf8Strict())
         } finally {
-            cryptoEngine.secureWipe(salt)
-            cryptoEngine.secureWipe(nonce)
-            cryptoEngine.secureWipe(ciphertext)
             passwordBytes?.let { cryptoEngine.secureWipe(it) }
             derivedKey?.clear()
             plaintext?.let { cryptoEngine.secureWipe(it) }
@@ -584,7 +574,6 @@ class VaultBackupService(
     private fun validateCredentials(credentials: List<CredentialRecordEntity>, folderIds: Set<String>) {
         credentials.forEach { credential ->
             require(credential.type.isSupportedCredentialType())
-            require(credential.titleHash.size == BLIND_INDEX_BYTES)
             requirePayload(
                 credential.summaryPayload,
                 credential.summaryNonce,
@@ -657,9 +646,8 @@ class VaultBackupService(
             require(attachment.mimeType.isSafeMetadataText())
             require(attachment.storagePath.isSafeRelativePath())
             require(attachment.keyDerivationContext.isValidIdentifier())
-            when (attachment.storageState) {
-                AttachmentRecordEntity.STORAGE_STATE_READY -> {
-                    require(attachment.contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
+            when (attachment.requireStableStorageKind()) {
+                AttachmentStorageKind.MANAGED -> {
                     require(attachment.sizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
                     require(attachment.storagePath.matches(MANAGED_ATTACHMENT_PATH_REGEX))
                     val count = readyCounts.getOrElse(attachment.credentialId) { 0 } + 1
@@ -669,11 +657,9 @@ class VaultBackupService(
                     require(totalBytes <= AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES)
                     readyBytes[attachment.credentialId] = totalBytes
                 }
-                AttachmentRecordEntity.STORAGE_STATE_LEGACY -> {
-                    require(attachment.contentFormatVersion == 0)
+                AttachmentStorageKind.LEGACY -> {
                     require(attachment.sizeBytes in 0..MAX_ATTACHMENT_SIZE_BYTES)
                 }
-                else -> error("Pending attachment operations cannot be backed up")
             }
             attachment.id
         }
@@ -772,6 +758,13 @@ class VaultBackupService(
                 manifest.passwordHistoryCount.toLong() <=
                     manifest.credentialCount.toLong() * MAX_PASSWORD_HISTORY_PER_CREDENTIAL,
             )
+            if (manifest.metadataSchemaVersion >= STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION) {
+                val objectBytes = requireNotNull(manifest.managedAttachmentObjectBytes)
+                require(objectBytes in 0..BackupLimits.MAX_BACKUP_BYTES)
+                require((manifest.managedAttachmentCount == 0) == (objectBytes == 0L))
+            } else {
+                require(manifest.managedAttachmentObjectBytes == null)
+            }
         }
 
         override fun accept(value: BackupMetadataValue) {
@@ -834,7 +827,6 @@ class VaultBackupService(
             require(value.id.isValidIdentifier())
             require(credentialIds.add(value.id))
             require(value.type.isSupportedCredentialType())
-            require(value.titleHash.size == BLIND_INDEX_BYTES)
             requirePayload(
                 value.summaryPayload,
                 value.summaryNonce,
@@ -880,9 +872,8 @@ class VaultBackupService(
             require(value.mimeType.isSafeMetadataText())
             require(value.storagePath.isSafeRelativePath())
             require(value.keyDerivationContext.isValidIdentifier())
-            when (value.storageState) {
-                AttachmentRecordEntity.STORAGE_STATE_READY -> {
-                    require(value.contentFormatVersion == AttachmentPolicy.CONTENT_FORMAT_VERSION)
+            when (value.requireStableStorageKind()) {
+                AttachmentStorageKind.MANAGED -> {
                     require(value.sizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
                     require(value.storagePath.matches(MANAGED_ATTACHMENT_PATH_REGEX))
                     val count = readyAttachmentCounts.getOrElse(value.credentialId) { 0 } + 1
@@ -893,11 +884,9 @@ class VaultBackupService(
                     readyAttachmentBytes[value.credentialId] = bytes
                     managedAttachmentIds += value.id
                 }
-                AttachmentRecordEntity.STORAGE_STATE_LEGACY -> {
-                    require(value.contentFormatVersion == 0)
+                AttachmentStorageKind.LEGACY -> {
                     require(value.sizeBytes in 0..MAX_ATTACHMENT_SIZE_BYTES)
                 }
-                else -> error("Pending attachment operations cannot be backed up")
             }
         }
 
@@ -1003,6 +992,25 @@ class VaultBackupService(
             opsLimit = opsLimit.coerceIn(MIN_ARGON2_OPS, MAX_ARGON2_OPS),
             memLimit = memLimit.coerceIn(MIN_ARGON2_MEM, MAX_ARGON2_MEM),
         )
+
+    private class ByteArrayBackupContentSource(private val bytes: ByteArray) : BackupContentSource {
+        override val declaredSizeBytes: Long = bytes.size.toLong()
+        private var offset = 0
+
+        override suspend fun read(buffer: ByteArray): Int {
+            if (offset == bytes.size) return -1
+            val count = minOf(buffer.size, bytes.size - offset)
+            bytes.copyInto(buffer, destinationOffset = 0, startIndex = offset, endIndex = offset + count)
+            offset += count
+            return count
+        }
+
+        override suspend fun rewind() {
+            offset = 0
+        }
+
+        override suspend fun close() = Unit
+    }
 
     private fun String.isSafeRelativePath(): Boolean =
         isNotBlank() &&
@@ -1178,7 +1186,8 @@ class VaultBackupService(
     private data class CredentialDto(
         val id: String,
         val type: String,
-        val titleHash: String,
+        @EncodeDefault(EncodeDefault.Mode.NEVER)
+        val titleHash: String? = null,
         val summaryPayload: String,
         val summaryNonce: String,
         val secretPayload: String,
@@ -1189,26 +1198,33 @@ class VaultBackupService(
         val updatedAt: Long,
         val lastUsedAt: Long?,
     ) {
-        fun toEntity() = CredentialRecordEntity(
-            id = id,
-            type = type,
-            titleHash = titleHash.decodeBase64(BLIND_INDEX_BYTES),
-            summaryPayload = summaryPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
-            summaryNonce = summaryNonce.decodeBase64(MAX_NONCE_BYTES),
-            secretPayload = secretPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
-            secretNonce = secretNonce.decodeBase64(MAX_NONCE_BYTES),
-            folderId = folderId,
-            isFavorite = isFavorite,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
-            lastUsedAt = lastUsedAt,
-        )
+        fun toEntity(): CredentialRecordEntity {
+            titleHash?.decodeBase64(BLIND_INDEX_BYTES)?.let { legacyHash ->
+                try {
+                    require(legacyHash.size == BLIND_INDEX_BYTES)
+                } finally {
+                    legacyHash.fill(0)
+                }
+            }
+            return CredentialRecordEntity(
+                id = id,
+                type = type,
+                summaryPayload = summaryPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                summaryNonce = summaryNonce.decodeBase64(MAX_NONCE_BYTES),
+                secretPayload = secretPayload.decodeBase64(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                secretNonce = secretNonce.decodeBase64(MAX_NONCE_BYTES),
+                folderId = folderId,
+                isFavorite = isFavorite,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+                lastUsedAt = lastUsedAt,
+            )
+        }
 
         companion object {
             fun from(value: CredentialRecordEntity) = CredentialDto(
                 id = value.id,
                 type = value.type,
-                titleHash = value.titleHash.toBase64(),
                 summaryPayload = value.summaryPayload.toBase64(),
                 summaryNonce = value.summaryNonce.toBase64(),
                 secretPayload = value.secretPayload.toBase64(),
