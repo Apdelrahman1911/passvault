@@ -1525,8 +1525,29 @@ missing_options = required_asset_options.reject { |option| asset_lane.include?(o
 abort("Unsafe iOS store asset lane: missing #{missing_options.join(', ')}") unless missing_options.empty?
 abort("iOS store asset maintenance must not submit for review") if asset_lane.include?("submit_for_review: true")
 RUBY
-grep -Fq 'needs: [ prepare, mobile-internal, desktop-linux, desktop-windows, desktop-macos ]' \
+grep -Fq 'needs: [ prepare, mobile-internal, resume-internal-receipts, desktop-linux, desktop-windows, desktop-macos ]' \
     .github/workflows/testing-release.yml
+grep -Fq 'resume_existing_internal_uploads' .github/workflows/testing-release.yml
+grep -Fq 'resume-internal-receipts' .github/workflows/testing-release.yml
+grep -Fq 'scripts/resume-testing-candidate-receipts.rb' .github/workflows/testing-release.yml
+grep -Fq 'require_relative "lib/testing_candidate_resume"' scripts/resume-testing-candidate-receipts.rb
+ruby -c scripts/lib/testing_candidate_resume.rb >/dev/null
+ruby -c scripts/resume-testing-candidate-receipts.rb >/dev/null
+ruby scripts/test-testing-candidate-resume.rb >/dev/null
+if grep -Fq 'bundle exec fastlane android internal' \
+    .github/workflows/testing-release.yml; then
+    echo "Testing Candidate still uploads Android from the parent workflow." >&2
+    exit 1
+fi
+if ! grep -Fq 'operation: upload' .github/workflows/testing-release.yml; then
+    echo "Fresh Testing Candidate uploads must remain available." >&2
+    exit 1
+fi
+grep -Fq 'default: false' .github/workflows/testing-release.yml
+if grep -Fq 'resume_existing_internal_uploads: true' .github/workflows/testing-release.yml; then
+    echo "Testing Candidate resume must stay opt-in." >&2
+    exit 1
+fi
 bash -n scripts/validate-testing-candidate-source.sh
 grep -Fq 'git rev-parse FETCH_HEAD' .github/workflows/testing-release.yml
 # Workflow variables must be matched literally.
@@ -1566,6 +1587,12 @@ expected_permissions = {
     "attestations" => "write",
     "contents" => "read",
     "id-token" => "write",
+  },
+  "resume-internal-receipts" => {
+    "actions" => "read",
+    "artifact-metadata" => "write",
+    "attestations" => "read",
+    "contents" => "read",
   },
   "publish-candidate" => {
     "artifact-metadata" => "write",
