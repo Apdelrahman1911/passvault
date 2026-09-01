@@ -62,6 +62,16 @@ def run!(*args)
   stdout
 end
 
+def git_commit_has_tree?(commit, tree)
+  stdout, _stderr, status = Open3.capture3("git", "rev-parse", "#{commit}^{tree}")
+  status.success? && stdout.strip == tree
+end
+
+def git_is_ancestor?(ancestor, descendant)
+  _stdout, _stderr, status = Open3.capture3("git", "merge-base", "--is-ancestor", ancestor, descendant)
+  status.success?
+end
+
 output_dir = Pathname.new(options[:output_dir]).expand_path
 abort("Resume output directory is unsafe") if output_dir.symlink?
 FileUtils.mkdir_p(output_dir)
@@ -70,7 +80,6 @@ abort("Resume output directory must be a real directory") unless output_dir.dire
 runs_payload = gh_json(
   "repos/#{repository}/actions/workflows/testing-release.yml/runs",
   "-f", "branch=testing",
-  "-f", "head_sha=#{options[:source_commit]}",
   "-f", "per_page=100",
 )
 workflow_runs = runs_payload.is_a?(Hash) ? runs_payload.fetch("workflow_runs") : runs_payload
@@ -98,7 +107,6 @@ candidates = PassVault::TestingCandidateResume.select_receipt_sources(
   runs,
   version: options[:version],
   build_number: options[:build_number],
-  source_commit: options[:source_commit],
 )
 
 validator = Pathname.new(__dir__).join("validate-mobile-artifact-receipt.rb")
@@ -125,6 +133,8 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
       )
       receipt_path = destination.join("#{platform}-artifact-receipt.json")
       abort("Resumed #{platform} receipt is missing from #{candidate.fetch('artifact_name')}") unless receipt_path.file?
+      receipt = JSON.parse(receipt_path.read(encoding: "UTF-8"))
+      original = PassVault::TestingCandidateResume.resolve_original_candidate([receipt])
       validated = system(
         RbConfig.ruby,
         validator.to_s,
@@ -132,20 +142,25 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
         platform,
         options[:version],
         options[:build_number].to_s,
-        options[:source_commit],
-        options[:source_tree],
+        original.fetch("sourceCommit"),
+        original.fetch("sourceTree"),
         signed_dir.to_s,
         out: File::NULL,
       )
       abort("Resumed #{platform} receipt failed structural validation") unless validated
-      receipt = JSON.parse(receipt_path.read(encoding: "UTF-8"))
+      unless git_commit_has_tree?(original.fetch("sourceCommit"), original.fetch("sourceTree"))
+        abort("Resumed #{platform} receipt commit does not have its recorded tree")
+      end
+      unless git_is_ancestor?(original.fetch("sourceCommit"), options[:source_commit])
+        abort("Resumed #{platform} receipt commit is not an ancestor of the current testing commit")
+      end
       PassVault::TestingCandidateResume.bind_receipt!(
         receipt,
         platform: platform,
         version: options[:version],
         build_number: options[:build_number],
-        source_commit: options[:source_commit],
-        source_tree: options[:source_tree],
+        source_commit: original.fetch("sourceCommit"),
+        source_tree: original.fetch("sourceTree"),
       )
       receipt.fetch("artifacts").each do |artifact|
         artifact_path = signed_dir.join(artifact.fetch("fileName"))
@@ -155,7 +170,7 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
           "--repo", repository,
           "--signer-workflow", "#{repository}/.github/workflows/testing-release.yml",
           "--source-ref", "refs/heads/testing",
-          "--source-digest", options[:source_commit],
+          "--source-digest", original.fetch("sourceCommit"),
           "--deny-self-hosted-runners",
         )
         unless attestation_status.success?
@@ -168,6 +183,10 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
   end
 
   chosen = PassVault::TestingCandidateResume.choose_unique_sources(candidates, receipts_by_source)
+  original = PassVault::TestingCandidateResume.resolve_original_candidate(receipts_by_source.values_at(*chosen.values.map { |candidate| PassVault::TestingCandidateResume.source_key(candidate) }))
+  unless git_is_ancestor?(original.fetch("sourceCommit"), options[:source_commit])
+    abort("Resumed receipts are not from an ancestor of the current testing commit")
+  end
   chosen.each do |platform, candidate|
     FileUtils.install(
       candidate.fetch("receipt_path"),
@@ -178,8 +197,8 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
   summary = {
     "version" => options[:version],
     "buildNumber" => Integer(options[:build_number], 10),
-    "sourceCommit" => options[:source_commit],
-    "sourceTree" => options[:source_tree],
+    "sourceCommit" => original.fetch("sourceCommit"),
+    "sourceTree" => original.fetch("sourceTree"),
     "androidRunId" => chosen.fetch("android").fetch("run_id"),
     "iosRunId" => chosen.fetch("ios").fetch("run_id"),
   }

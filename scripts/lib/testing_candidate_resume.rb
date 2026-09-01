@@ -20,15 +20,26 @@ module PassVault
       raise "Resume confirmation must be exactly #{expected}" unless confirmation == expected
     end
 
-    def select_receipt_sources(runs, version:, build_number:, source_commit:)
-      validate_identity!(version: version, build_number: build_number, source_commit: source_commit)
+    def select_receipt_sources(runs, version:, build_number:, source_commit: nil, source_tree: nil)
+      if source_commit
+        validate_identity!(version: version, build_number: build_number, source_commit: source_commit)
+      else
+        unless version.match?(/\A(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\z/)
+          raise "Invalid marketing version"
+        end
+        unless build_number.to_s.match?(/\A[1-9]\d*\z/) &&
+               build_number.to_s.length <= 10 &&
+               Integer(build_number, 10) <= 2_100_000_000
+          raise "Invalid Store build number"
+        end
+      end
+      source_tree = canonical_sha(source_tree) if source_tree
       android_candidates = []
       ios_candidates = []
 
       Array(runs).each do |run|
         run_id = canonical_run_id(run)
-        head_sha = canonical_sha(run["head_sha"] || run[:head_sha])
-        next unless head_sha == source_commit
+        next unless accepted_run_head?(run, source_commit: source_commit, source_tree: source_tree)
 
         jobs = Array(run["jobs"] || run[:jobs])
         artifacts = Array(run["artifacts"] || run[:artifacts])
@@ -78,11 +89,32 @@ module PassVault
         raise "Resume receipt build number does not match #{build_number}"
       end
       unless receipt["sourceCommit"] == source_commit
-        raise "Resume receipt source commit does not match the current testing commit"
+        raise "Resume receipt source commit does not match the original candidate commit"
       end
       unless receipt["sourceTree"] == source_tree
-        raise "Resume receipt source tree does not match the current testing tree"
+        raise "Resume receipt source tree does not match the original candidate tree"
       end
+    end
+
+    def resolve_original_candidate(receipts)
+      commits = Array(receipts).map { |receipt| canonical_sha(receipt.fetch("sourceCommit")) }.uniq
+      trees = Array(receipts).map { |receipt| canonical_sha(receipt.fetch("sourceTree")) }.uniq
+      raise "Resumed receipts do not share one original candidate commit" unless commits.one?
+      raise "Resumed receipts do not share one original candidate tree" unless trees.one?
+
+      { "sourceCommit" => commits.first, "sourceTree" => trees.first }
+    end
+
+    def accepted_run_head?(run, source_commit:, source_tree:)
+      head_sha = canonical_sha(run["head_sha"] || run[:head_sha])
+      return true if source_commit.nil? && source_tree.nil?
+      return true if source_commit && head_sha == source_commit
+      return false if source_tree.nil?
+
+      head_tree = run["head_tree"] || run[:head_tree]
+      return false if head_tree.to_s.strip.empty?
+
+      canonical_sha(head_tree) == source_tree
     end
 
     def parse_github_runs(workflow_runs, jobs_by_run_id, artifacts_by_run_id)
@@ -94,6 +126,7 @@ module PassVault
         {
           "id" => run_id,
           "head_sha" => canonical_sha(run.fetch("head_sha")),
+          "head_tree" => run["head_tree"] || run[:head_tree],
           "jobs" => Array(jobs_by_run_id[run_id] || jobs_by_run_id[run_id.to_s]),
           "artifacts" => Array(artifacts_by_run_id[run_id] || artifacts_by_run_id[run_id.to_s]),
         }
