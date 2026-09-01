@@ -1536,6 +1536,12 @@ grep -Fq 'Resume publication must keep the original candidate tree.' \
 grep -Fq 'exact candidate commit or its exact protected tree' \
     .github/workflows/candidate-readiness.yml
 grep -Fq 'require_relative "lib/testing_candidate_resume"' scripts/resume-testing-candidate-receipts.rb
+if grep -Fq -- '-f", "branch=testing"' scripts/resume-testing-candidate-receipts.rb ||
+   grep -Fq -- '-f branch=testing' scripts/resume-testing-candidate-receipts.rb; then
+    echo "Resume must query workflow runs with GET parameters, not -f fields." >&2
+    exit 1
+fi
+grep -Fq '"branch" => "testing"' scripts/resume-testing-candidate-receipts.rb
 ruby -c scripts/lib/testing_candidate_resume.rb >/dev/null
 ruby -c scripts/resume-testing-candidate-receipts.rb >/dev/null
 ruby scripts/test-testing-candidate-resume.rb >/dev/null
