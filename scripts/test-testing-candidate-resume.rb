@@ -145,6 +145,30 @@ rescue RuntimeError => error
   end
 end
 
+older_build_run = {
+  "id" => 31_825_750_974,
+  "head_sha" => "c109a33b0123456789abcdef0123456789abcdef",
+  "jobs" => [
+    { "name" => "mobile-internal / Android internal", "conclusion" => "success" },
+    { "name" => "mobile-internal / iOS internal", "conclusion" => "success" },
+  ],
+  "artifacts" => [
+    { "id" => 61, "name" => "mobile-receipt-android-1013001" },
+    { "id" => 62, "name" => "mobile-signed-android-1013001" },
+    { "id" => 63, "name" => "mobile-receipt-ios-1013001" },
+    { "id" => 64, "name" => "mobile-signed-ios-1013001" },
+  ],
+}
+older = PassVault::TestingCandidateResume.select_receipt_sources(
+  [older_build_run, successful_android_run, successful_ios_run],
+  version: version,
+  build_number: build,
+)
+check(failures, "successful jobs from another VERSION_CODE must be ignored") do
+  older.fetch("android").map { |candidate| candidate.fetch("run_id") } == ["33463801066"] &&
+    older.fetch("ios").map { |candidate| candidate.fetch("run_id") } == ["33465901191"]
+end
+
 wrong_commit_run = successful_android_run.merge("head_sha" => commit_b)
 ignored = PassVault::TestingCandidateResume.select_receipt_sources(
   [wrong_commit_run],

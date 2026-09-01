@@ -1545,6 +1545,8 @@ grep -Fq '"branch" => "testing"' scripts/resume-testing-candidate-receipts.rb
 ruby -c scripts/lib/testing_candidate_resume.rb >/dev/null
 ruby -c scripts/resume-testing-candidate-receipts.rb >/dev/null
 ruby scripts/test-testing-candidate-resume.rb >/dev/null
+grep -Fq 'record_successful_job(android_candidates, run_id, artifacts, "android", build_number)' \
+    scripts/lib/testing_candidate_resume.rb
 if grep -Fq 'bundle exec fastlane android internal' \
     .github/workflows/testing-release.yml; then
     echo "Testing Candidate still uploads Android from the parent workflow." >&2

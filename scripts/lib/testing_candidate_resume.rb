@@ -44,10 +44,10 @@ module PassVault
         jobs = Array(run["jobs"] || run[:jobs])
         artifacts = Array(run["artifacts"] || run[:artifacts])
         if job_succeeded?(jobs, ANDROID_JOB)
-          android_candidates << source_record(run_id, artifacts, "android", build_number)
+          record_successful_job(android_candidates, run_id, artifacts, "android", build_number)
         end
         if job_succeeded?(jobs, IOS_JOB)
-          ios_candidates << source_record(run_id, artifacts, "ios", build_number)
+          record_successful_job(ios_candidates, run_id, artifacts, "ios", build_number)
         end
       end
 
@@ -149,6 +149,16 @@ module PassVault
 
     def source_key(candidate)
       "#{candidate.fetch('platform')}:#{candidate.fetch('run_id')}:#{candidate.fetch('artifact_name')}"
+    end
+
+    def record_successful_job(candidates, run_id, artifacts, platform, build_number)
+      receipt = named_artifact(artifacts, "mobile-receipt-#{platform}-#{build_number}")
+      signed = named_artifact(artifacts, "mobile-signed-#{platform}-#{build_number}")
+      return if receipt.nil? && signed.nil?
+      raise "Successful #{platform} job is missing its receipt artifact" if receipt.nil?
+      raise "Successful #{platform} job is missing its signed artifact bundle" if signed.nil?
+
+      candidates << source_record(run_id, artifacts, platform, build_number)
     end
 
     def source_record(run_id, artifacts, platform, build_number)
