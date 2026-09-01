@@ -156,6 +156,59 @@ check(failures, "receipts from another commit must be ignored") do
   ignored.fetch("android").empty? && ignored.fetch("ios").empty?
 end
 
+same_tree_later_run = {
+  "id" => 55,
+  "head_sha" => "f814e567a249926b7e7ce1d2f7acddaa551735e4",
+  "head_tree" => tree,
+  "jobs" => [
+    { "name" => "mobile-internal / Android internal", "conclusion" => "success" },
+  ],
+  "artifacts" => [
+    { "id" => 41, "name" => "mobile-receipt-android-1015001" },
+    { "id" => 42, "name" => "mobile-signed-android-1015001" },
+  ],
+}
+same_tree_selected = PassVault::TestingCandidateResume.select_receipt_sources(
+  [same_tree_later_run],
+  version: version,
+  build_number: build,
+  source_commit: commit_a,
+  source_tree: tree,
+)
+check(failures, "a later testing SHA with the original tree may be searched") do
+  same_tree_selected.fetch("android").map { |candidate| candidate.fetch("run_id") } == ["55"]
+end
+
+different_tree_run = successful_android_run.merge(
+  "id" => 56,
+  "head_sha" => "f814e567a249926b7e7ce1d2f7acddaa551735e4",
+  "head_tree" => "71819213325c80ab76af594a83d50aba4bcf3385",
+)
+different_tree_selected = PassVault::TestingCandidateResume.select_receipt_sources(
+  [different_tree_run],
+  version: version,
+  build_number: build,
+  source_commit: commit_a,
+  source_tree: tree,
+)
+check(failures, "a later testing SHA with a different tree must be ignored") do
+  different_tree_selected.fetch("android").empty?
+end
+
+resolved = PassVault::TestingCandidateResume.resolve_original_candidate([android_receipt, ios_receipt])
+check(failures, "resumed receipts must resolve to the original candidate commit and tree") do
+  resolved == { "sourceCommit" => commit_a, "sourceTree" => tree }
+end
+
+begin
+  PassVault::TestingCandidateResume.resolve_original_candidate(
+    [android_receipt, ios_receipt.merge("sourceCommit" => commit_b)],
+  )
+  failures << "receipts from two original commits must be rejected"
+rescue RuntimeError
+  true
+end
+
 chosen = PassVault::TestingCandidateResume.choose_unique_sources(
   selected,
   {

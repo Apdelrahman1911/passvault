@@ -63,9 +63,14 @@ jobs:
           manifest="$RUNNER_TEMP/candidate/candidate-manifest.json"
           [[ "$(jq -r .candidateTag "$manifest")" == "$CANDIDATE_TAG" ]]
           source_commit="$(jq -r .sourceCommit "$manifest")"
+          source_tree="$(jq -r .sourceTree "$manifest")"
           if [[ "$source_commit" != "$GITHUB_SHA" ]]; then
-            echo "Candidate Readiness must run while testing still points to the exact candidate commit." >&2
-            exit 1
+            current_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+            if [[ "$current_tree" != "$source_tree" ]] ||
+               ! git merge-base --is-ancestor "$source_commit" "$GITHUB_SHA"; then
+              echo "Candidate Readiness must run from the exact candidate commit or its exact protected tree." >&2
+              exit 1
+            fi
           fi
           gh attestation verify "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
