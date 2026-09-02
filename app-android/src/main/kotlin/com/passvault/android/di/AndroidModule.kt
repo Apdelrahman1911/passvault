@@ -35,7 +35,7 @@ val androidModule = module {
     single<AppSettingsStore> { AndroidAppSettingsStore(androidContext()) }
     single<AndroidBackupFileStore> { AndroidBackupFileStore(androidContext(), get()) }
     single<BackupFileStore> { get<AndroidBackupFileStore>() }
-    single<AndroidAttachmentFileStore> { AndroidAttachmentFileStore(androidContext(), get()) }
+    single<AndroidAttachmentFileStore> { AndroidAttachmentFileStore(androidContext(), get(), get()) }
     single<AttachmentFileStore> { get<AndroidAttachmentFileStore>() }
 
     // ============================================================================

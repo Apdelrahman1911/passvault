@@ -40,9 +40,10 @@ operating system.
 
 Opening or exporting an attachment is also an explicit user action. The app decrypts only the selected attachment to
 an owned, protected temporary location or user-selected destination and then hands it to the operating system. A
-chosen export becomes user-controlled plaintext. Preview plaintext is deleted after the handoff/lifetime and stale
-owned cache entries are cleaned on startup, but another application, document provider, operating-system cache,
-backup product, or interrupted storage device may retain a copy outside PassVault's control.
+chosen export becomes user-controlled plaintext. Android registers a short-deadline, reboot-persistent cleanup lease
+before creating private preview or export staging files and also requests cleanup on lock, foreground return, memory
+pressure, abort, and startup. Another application, document provider, operating-system cache, backup product, or
+interrupted storage device may still retain a copy outside PassVault's control.
 
 Copied credentials and TOTP codes enter the operating-system clipboard and may be observable by the OS or other
 software. On Desktop, PassVault requests the Windows history/cloud opt-outs and the macOS concealed/transient

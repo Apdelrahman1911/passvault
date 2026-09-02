@@ -97,7 +97,9 @@ encrypted with XChaCha20-Poly1305 under a per-attachment subkey derived from the
 attachment ID, owning credential ID, independent key context, detected MIME type, record type/index, and plaintext
 length. An authenticated final record binds total bytes and chunks. Atomic staging, Room operation states, startup
 recovery, and post-commit orphan cleanup keep partial imports/deletes from becoming visible or silently losing a live
-row's object. Version-1/2 metadata-only rows remain explicit unavailable `LEGACY` records.
+row's object. Android registers a short-deadline, reboot-persistent cleanup lease before creating any plaintext preview
+or export staging file and also requests a sweep when the vault leaves its unlocked state. Version-1/2 metadata-only
+rows remain explicit unavailable `LEGACY` records.
 
 ## Backup boundary
 
