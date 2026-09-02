@@ -28,6 +28,15 @@ interface BackupContentSink {
 object BackupLimits {
     const val FORMAT_VERSION = 2
     const val MAX_ENTITY_COUNT = 1_000_000
+    /**
+     * Maximum number of identifier occurrences that the streaming validator
+     * may need to retain across its sets and maps. This is intentionally lower
+     * than applying [MAX_ENTITY_COUNT] independently to every record type.
+     */
+    const val MAX_RETAINED_IDENTIFIER_COUNT = 1_000_000L
+
+    /** Maximum aggregate UTF-8 bytes accepted for retained validator identifiers. */
+    const val MAX_RETAINED_IDENTIFIER_BYTES = 64L * 1024L * 1024L
     /** Maximum plaintext accepted by the legacy v1 snapshot decoder. */
     const val LEGACY_MAX_SNAPSHOT_BYTES = 64 * 1024 * 1024
     /**

@@ -8,6 +8,7 @@ import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
+import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
 import com.passvault.core.domain.model.AttachmentAvailability
@@ -44,6 +45,7 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -629,6 +631,39 @@ class VaultBackupStreamingTest {
                     managedAttachmentCount = 0,
                     passwordHistoryCount = 0,
                     managedAttachmentObjectBytes = 0L,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `stream validator rejects identifier text beyond its retained byte budget`() {
+        val validator = backupService.newStreamValidator(
+            manifest = BackupStreamManifest(
+                credentialCount = 0,
+                folderCount = 0,
+                tagCount = 1,
+                credentialFolderReferenceCount = 0,
+                credentialTagReferenceCount = 0,
+                attachmentCount = 0,
+                managedAttachmentCount = 0,
+                passwordHistoryCount = 0,
+                managedAttachmentObjectBytes = 0L,
+            ),
+            retainedIdentifierBytes = 3L,
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validator.accept(
+                BackupMetadataValue.Tag(
+                    TagRecordEntity(
+                        id = "four",
+                        nameHash = ByteArray(0),
+                        encryptedPayload = ByteArray(0),
+                        payloadNonce = ByteArray(0),
+                        color = null,
+                        createdAt = 0L,
+                    ),
                 ),
             )
         }

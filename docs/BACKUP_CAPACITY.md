@@ -20,13 +20,17 @@ This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, rep
 | attachment plaintext file | 100 MiB | not supported |
 | attachment encrypted object at the 100 MiB boundary | 104,882,093 bytes | not supported |
 | attachment total per credential | 512 MiB | not supported |
+| retained validator identifier occurrences | 1,000,000 across all row types | not applicable |
+| retained validator identifier UTF-8 bytes | 64 MiB across all row types | not applicable |
 
 The 100 MiB attachment produces exactly 400 data chunks. Its independently encrypted object adds 24,493 bytes:
 16 bytes of container header, 61 bytes per chunk, and a 77-byte authenticated final record. The format-2 backup then
 streams that object through a second 256 KiB authenticated record layer.
 
-Each manifest category accepts at most **1,000,000 rows**, subject to the smaller 16 GiB complete-container limit.
-Limits that materially affect growth are:
+Each manifest category accepts at most **1,000,000 rows**, subject to the smaller 16 GiB complete-container limit and
+the aggregate validator limits above. Identifier occurrences count every identifier field that must survive for a
+later uniqueness, relationship, or per-owner check; this prevents independently maximal categories from multiplying
+into unbounded heap retention. Limits that materially affect growth are:
 
 - one folder per credential and at most 100 tags per credential;
 - at most 10 password-history rows per credential;
@@ -71,7 +75,7 @@ Format 2 never holds the complete backup, all Room rows, or all attachment bytes
 | folder/tag export paging | at most 64 rows, each capped at 64 KiB payload |
 | relationship export paging | at most 512 pairs of bounded identifiers |
 | attachment verify/package/restore | 256 KiB chunks and their owned/encrypted copies; normally under 1 MiB plus I/O buffers |
-| referential validation | identifier sets/maps and counters only; proportional to row count, not payload or attachment bytes |
+| referential validation | exact identifier sets/maps and counters, capped at 1,000,000 retained occurrences and 64 MiB of identifier UTF-8 |
 
 The deliberately conservative theoretical metadata peak is therefore about **195 MiB on export** (three 65 MiB
 representations) or **130 MiB on import** (two representations), plus runtime overhead. A repository-created normal

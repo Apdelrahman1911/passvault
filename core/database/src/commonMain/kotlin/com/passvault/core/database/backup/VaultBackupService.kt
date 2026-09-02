@@ -699,8 +699,13 @@ class VaultBackupService(
         return snapshot.copy(credentialFolderReferences = canonicalReferences)
     }
 
-    internal fun newStreamValidator(manifest: BackupStreamManifest): BackupStreamValidator =
-        StreamingValidator(manifest)
+    internal fun newStreamValidator(
+        manifest: BackupStreamManifest,
+        retainedIdentifierBytes: Long = BackupLimits.MAX_RETAINED_IDENTIFIER_BYTES,
+    ): BackupStreamValidator = StreamingValidator(
+        manifest = manifest,
+        identifierBudget = RetainedIdentifierBudget(retainedIdentifierBytes),
+    )
 
     /**
      * Validates one encrypted Room row at a time. Only identifiers, relationship
@@ -709,6 +714,7 @@ class VaultBackupService(
      */
     private inner class StreamingValidator(
         override val manifest: BackupStreamManifest,
+        private val identifierBudget: RetainedIdentifierBudget,
     ) : BackupStreamValidator {
         private var metadataCount = 0
         private var credentialCount = 0
@@ -758,6 +764,7 @@ class VaultBackupService(
                 manifest.passwordHistoryCount.toLong() <=
                     manifest.credentialCount.toLong() * MAX_PASSWORD_HISTORY_PER_CREDENTIAL,
             )
+            manifest.requireRetentionBound()
             if (manifest.metadataSchemaVersion >= STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION) {
                 val objectBytes = requireNotNull(manifest.managedAttachmentObjectBytes)
                 require(objectBytes in 0..BackupLimits.MAX_BACKUP_BYTES)
@@ -804,6 +811,7 @@ class VaultBackupService(
         private fun acceptFolder(value: FolderRecordEntity) {
             require(++folderCount <= manifest.folderCount)
             require(value.id.isValidIdentifier())
+            identifierBudget.retain(value.id, value.parentId)
             require(folderIds.add(value.id))
             require(value.parentId == null || value.parentId.isValidIdentifier())
             require(value.nameHash.size == BLIND_INDEX_BYTES)
@@ -816,6 +824,7 @@ class VaultBackupService(
         private fun acceptTag(value: TagRecordEntity) {
             require(++tagCount <= manifest.tagCount)
             require(value.id.isValidIdentifier())
+            identifierBudget.retain(value.id)
             require(tagIds.add(value.id))
             require(value.nameHash.size == BLIND_INDEX_BYTES)
             requirePayload(value.encryptedPayload, value.payloadNonce, MAX_TAG_ENCRYPTED_PAYLOAD_BYTES)
@@ -825,6 +834,7 @@ class VaultBackupService(
         private fun acceptCredential(value: CredentialRecordEntity) {
             require(++credentialCount <= manifest.credentialCount)
             require(value.id.isValidIdentifier())
+            identifierBudget.retain(value.id, value.folderId)
             require(credentialIds.add(value.id))
             require(value.type.isSupportedCredentialType())
             requirePayload(
@@ -843,6 +853,7 @@ class VaultBackupService(
 
         private fun acceptFolderReference(value: CredentialFolderCrossRef) {
             require(++folderReferenceCount <= manifest.credentialFolderReferenceCount)
+            identifierBudget.retain(value.credentialId, value.folderId)
             require(value.credentialId in credentialIds)
             require(value.folderId in folderIds)
             require(credentialFolders[value.credentialId] == value.folderId)
@@ -851,6 +862,7 @@ class VaultBackupService(
 
         private fun acceptTagReference(value: CredentialTagCrossRef) {
             require(++tagReferenceCount <= manifest.credentialTagReferenceCount)
+            identifierBudget.retain(value.credentialId, value.tagId)
             require(value.credentialId in credentialIds)
             require(value.tagId in tagIds)
             require(tagReferences.add(value.credentialId to value.tagId))
@@ -861,6 +873,7 @@ class VaultBackupService(
 
         private fun acceptAttachment(value: AttachmentRecordEntity) {
             require(++attachmentCount <= manifest.attachmentCount)
+            identifierBudget.retain(value.id, value.credentialId)
             require(value.credentialId in credentialIds)
             require(value.id.isValidIdentifier())
             require(attachmentIds.add(value.id))
@@ -892,6 +905,7 @@ class VaultBackupService(
 
         private fun acceptPasswordHistory(value: PasswordHistoryRecordEntity) {
             require(++passwordHistoryCount <= manifest.passwordHistoryCount)
+            identifierBudget.retain(value.id, value.credentialId)
             require(value.credentialId in credentialIds)
             require(value.id.isValidIdentifier())
             require(passwordHistoryIds.add(value.id))
