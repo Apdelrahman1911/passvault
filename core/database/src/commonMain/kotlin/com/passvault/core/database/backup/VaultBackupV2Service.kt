@@ -23,6 +23,8 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import okio.Buffer
 import okio.BufferedSink
+import okio.HashingSource
+import okio.buffer
 import kotlin.uuid.Uuid
 
 /** Authenticated, row-streaming backup implementation for format version 2. */
@@ -603,10 +605,12 @@ internal class VaultBackupV2Service(
     private suspend fun writeAttachment(
         writer: BackupV2Writer,
         attachment: AttachmentRecordEntity,
-    ): Long = blobStore.read(
+    ): WrittenAttachment = blobStore.read(
         attachment.storagePath,
         AttachmentContainerCodec.MAX_ENCRYPTED_OBJECT_BYTES,
     ) { source, fileSize ->
+        val hashingSource = HashingSource.sha256(source)
+        val copiedSource = hashingSource.buffer()
         val start = attachmentStartPayload(attachment.id, fileSize)
         try {
             writer.writeRecord(BackupRecordType.ATTACHMENT_START, start)
@@ -619,7 +623,7 @@ internal class VaultBackupV2Service(
             while (!budget.isComplete) {
                 budget.requireRecordAvailable()
                 val requested = minOf(chunk.size.toLong(), fileSize - budget.consumedBytes).toInt()
-                val count = source.read(chunk, 0, requested)
+                val count = copiedSource.read(chunk, 0, requested)
                 require(count in 1..requested)
                 budget.accept(count)
                 val ownedChunk = chunk.copyOf(count)
@@ -629,7 +633,7 @@ internal class VaultBackupV2Service(
                     cryptoEngine.secureWipe(ownedChunk)
                 }
             }
-            require(source.exhausted())
+            require(copiedSource.exhausted())
             val end = attachmentEndPayload(
                 attachmentId = attachment.id,
                 totalBytes = budget.consumedBytes,
@@ -640,7 +644,10 @@ internal class VaultBackupV2Service(
             } finally {
                 cryptoEngine.secureWipe(end)
             }
-            budget.consumedBytes
+            WrittenAttachment(
+                byteCount = budget.consumedBytes,
+                fingerprint = hashingSource.hash.toByteArray(),
+            )
         } finally {
             cryptoEngine.secureWipe(chunk)
         }
@@ -653,10 +660,21 @@ internal class VaultBackupV2Service(
         vek: ByteArray,
     ): Long {
         require(attachment.id == expectedId)
+        var authenticatedFingerprint: ByteArray? = null
+        var writtenAttachment: WrittenAttachment? = null
         return try {
-            verifyManagedAttachment(attachment, vek)
-            writeAttachment(writer, attachment)
+            authenticatedFingerprint = verifyManagedAttachment(attachment, vek)
+            writtenAttachment = writeAttachment(writer, attachment)
+            require(
+                cryptoEngine.constantTimeEquals(
+                    requireNotNull(authenticatedFingerprint),
+                    requireNotNull(writtenAttachment).fingerprint,
+                ),
+            ) { "The attachment object changed while the backup was created" }
+            requireNotNull(writtenAttachment).byteCount
         } finally {
+            authenticatedFingerprint?.let(cryptoEngine::secureWipe)
+            writtenAttachment?.fingerprint?.let(cryptoEngine::secureWipe)
             BackupMetadataValue.Attachment(attachment).clear()
         }
     }
@@ -715,14 +733,14 @@ internal class VaultBackupV2Service(
         return budget.consumedBytes
     }
 
-    private suspend fun verifyManagedAttachment(entity: AttachmentRecordEntity, vek: ByteArray) {
+    private suspend fun verifyManagedAttachment(entity: AttachmentRecordEntity, vek: ByteArray): ByteArray {
         val key = cryptoEngine.deriveSubkey(
             masterKey = vek,
             context = "attachment:${entity.keyDerivationContext}",
             size = ATTACHMENT_KEY_BYTES,
         ).getOrThrow()
         try {
-            attachmentCodec.decryptObject(
+            return attachmentCodec.decryptObjectAndFingerprint(
                 relativePath = entity.storagePath,
                 expectedSizeBytes = entity.sizeBytes,
                 key = key,
@@ -792,6 +810,11 @@ internal class VaultBackupV2Service(
     private data class FirstPass(
         val validated: ValidatedBackupStream,
         val metadataTranscript: ByteArray,
+    )
+
+    private data class WrittenAttachment(
+        val byteCount: Long,
+        val fingerprint: ByteArray,
     )
 
     private companion object {

@@ -552,6 +552,38 @@ class VaultBackupStreamingTest {
     }
 
     @Test
+    fun `export aborts if object bytes change after inner verification`() = runTest {
+        val entity = database.attachmentDao().getByCredential(credentialId.value).single()
+        val objectPath = storageRoot.resolve("vault-files").resolve(entity.storagePath)
+        val sink = PathBackupSink(backupPath)
+        var mutationApplied = false
+        blobStore.resetWriteTracking()
+        blobStore.afterReadCall = 2
+        blobStore.onAfterRead = {
+            Files.newByteChannel(objectPath, StandardOpenOption.READ, StandardOpenOption.WRITE).use { channel ->
+                channel.position(16)
+                val value = java.nio.ByteBuffer.allocate(1)
+                channel.read(value)
+                value.flip()
+                value.put(0, (value.get(0).toInt() xor 1).toByte())
+                channel.position(16)
+                channel.write(value)
+            }
+            mutationApplied = true
+        }
+
+        val result = withBackupPassword { password ->
+            backupService.createBackup(password, sink)
+        }
+
+        assertTrue(mutationApplied)
+        assertTrue(result.isFailure)
+        assertFalse(sink.committed)
+        assertTrue(sink.aborted)
+        assertFalse(Files.exists(backupPath))
+    }
+
+    @Test
     fun `shrinking capacity aborts before the next object and cleans staged data`() = runTest {
         val secondContent = ByteArray(17_321) { index -> (index % 199).toByte() }
         attachmentRepository.import(
@@ -1435,6 +1467,8 @@ class VaultBackupStreamingTest {
         var publishedWrite: CompletableDeferred<Unit>? = null
         var adjustSizeOnReadCall: Int? = null
         var reportedSizeAdjustment = 0L
+        var afterReadCall: Int? = null
+        var onAfterRead: (() -> Unit)? = null
         var cleanupCalls = 0
             private set
         var cleanupFailure: Exception? = null
@@ -1472,10 +1506,12 @@ class VaultBackupStreamingTest {
         ): T {
             readCalls++
             val call = readCalls
-            return delegate.read(relativePath, maxBytes) { source, size ->
+            val result = delegate.read(relativePath, maxBytes) { source, size ->
                 val reportedSize = if (call == adjustSizeOnReadCall) size + reportedSizeAdjustment else size
                 reader(source, reportedSize)
             }
+            if (call == afterReadCall) onAfterRead?.invoke()
+            return result
         }
 
         override suspend fun delete(relativePath: String) = delegate.delete(relativePath)
@@ -1507,6 +1543,8 @@ class VaultBackupStreamingTest {
             publishedWrite = null
             adjustSizeOnReadCall = null
             reportedSizeAdjustment = 0L
+            afterReadCall = null
+            onAfterRead = null
             readCalls = 0
         }
     }

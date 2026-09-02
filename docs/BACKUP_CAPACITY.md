@@ -59,8 +59,9 @@ rows. Control and attachment-content records have separate 64-byte, 1 KiB, and 2
 
 Format-2 create, inspect, and restore use the same 16 GiB byte counter, record lengths, entity counts, relationship
 limits, attachment size/count/aggregate limits, and exact EOF rule. Export also verifies every inner attachment
-container with the active VEK before packaging it. Import authenticates every outer record, stages complete encrypted
-objects atomically, and restores only after all records and EOF validate.
+container with the active VEK and requires the authenticated and packaged byte streams to have the same SHA-256
+fingerprint. Import authenticates every outer record, stages complete encrypted objects atomically, and restores only
+after all records and EOF validate.
 
 Before staging, restore reads the exact encrypted-object total from the authenticated manifest and compares it with
 free space on the attachment volume. Android uses `StatFs`, Desktop uses the target `FileStore`, and iOS uses

@@ -1,6 +1,6 @@
 # PassVault encrypted backup format
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-09-03
 
 The `.pvault` extension is used for both supported encrypted containers. New exports use binary **format 2**.
 Strict read compatibility with legacy JSON **format 1** is retained.
@@ -65,7 +65,9 @@ Managed attachments follow the metadata section in attachment-ID order. An attac
 encrypted object size, 256 KiB content records carry the already encrypted object, and an attachment-end record
 authenticates its ID, total bytes, and chunk count. A final record authenticates the total record count, managed
 attachment count, and total encrypted-object bytes. Attachment content therefore has two independent authenticated
-layers: its per-attachment vault-key container and the backup-password record layer.
+layers: its per-attachment vault-key container and the backup-password record layer. During export, PassVault compares
+SHA-256 fingerprints of the exact inner-container bytes it authenticated and packaged, aborting if an object changes
+between those streaming reads.
 
 The current metadata schema authenticates the aggregate encrypted-object byte total in the manifest. Restore requires
 free space for the remaining objects plus one maximum-size object of reserve when the platform can report capacity,

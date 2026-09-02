@@ -11,6 +11,8 @@ import kotlinx.coroutines.CancellationException
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
+import okio.HashingSource
+import okio.buffer
 
 internal data class AttachmentContentBinding(
     val attachmentId: String,
@@ -116,7 +118,6 @@ internal class AttachmentContainerCodec(
         return InitialChunk(count, reachedEndOfFile)
     }
 
-    @Suppress("TooGenericExceptionCaught") // Normalize arbitrary filesystem/crypto failures at this trust boundary.
     suspend fun decryptObject(
         relativePath: String,
         expectedSizeBytes: Long,
@@ -124,11 +125,29 @@ internal class AttachmentContainerCodec(
         binding: AttachmentContentBinding,
         sink: AttachmentContentSink,
     ) {
+        val fingerprint = decryptObjectAndFingerprint(relativePath, expectedSizeBytes, key, binding, sink)
+        cryptoEngine.secureWipe(fingerprint)
+    }
+
+    /**
+     * Authenticates the complete container and returns a SHA-256 fingerprint of
+     * the exact encrypted bytes that were authenticated.
+     */
+    @Suppress("TooGenericExceptionCaught") // Normalize arbitrary filesystem/crypto failures at this trust boundary.
+    suspend fun decryptObjectAndFingerprint(
+        relativePath: String,
+        expectedSizeBytes: Long,
+        key: ByteArray,
+        binding: AttachmentContentBinding,
+        sink: AttachmentContentSink,
+    ): ByteArray {
         require(expectedSizeBytes in 0..AttachmentPolicy.MAX_FILE_SIZE_BYTES)
         require(key.size == KEY_BYTES)
-        try {
+        return try {
             blobStore.read(relativePath, MAX_ENCRYPTED_OBJECT_BYTES) { source, fileSize ->
-                readObject(source, fileSize, expectedSizeBytes, key, binding, sink)
+                val hashingSource = HashingSource.sha256(source)
+                readObject(hashingSource.buffer(), fileSize, expectedSizeBytes, key, binding, sink)
+                hashingSource.hash.toByteArray()
             }
         } catch (error: Exception) {
             throw when (error) {
