@@ -1,19 +1,21 @@
 # Local vault format
 
-Last reviewed: 2026-08-25
+Last reviewed: 2026-09-03
 
 This document describes the live local-vault format. It is not a claim that a standalone protobuf or portable
 directory format exists.
 
 ## Container
 
-The local vault is a Room/SQLite database at the platform-managed application path. Database schema version 3 stores
+The local vault is a Room/SQLite database at the platform-managed application path. Database schema version 5 stores
 structural metadata and application-encrypted records. The SQLite file itself is not SQLCipher-encrypted.
 
 The application-level vault format starts at version 1. Saving the first credential with a TOTP authenticator
 atomically raises the metadata marker to version 2; it is never lowered. This reader accepts versions 1 and 2. The
-TOTP fields remain inside the encrypted credential payload. Room versions 2 and 3 independently add justified
-blind-index lookup indexes and attachment object state/version columns through explicit non-destructive migrations.
+TOTP fields remain inside the encrypted credential payload. Room versions 2 and 3 add justified blind-index lookup
+indexes and attachment object state/version columns. Version 4 removes the unused credential title index; version 5
+enforces the credential-to-folder pointer and repairs legacy orphans. Every change uses an explicit non-destructive
+migration.
 
 ## Key material
 

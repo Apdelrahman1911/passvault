@@ -78,7 +78,7 @@ fallback and is never stored for biometric use.
 
 ## Persistence boundary
 
-Room schema version is 3 and schema export is enabled. Explicit non-destructive migrations cover every exported
+Room schema version is 5 and schema export is enabled. Explicit non-destructive migrations cover every exported
 version starting at version 1. Record payloads are encrypted before DAO writes; the database
 file itself is not SQLCipher. Identifiers, record types, timestamps, favorites, relationships, and selected visual or
 attachment metadata remain structural plaintext. See [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md) and

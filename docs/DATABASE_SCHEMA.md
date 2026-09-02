@@ -1,8 +1,8 @@
 # Database schema
 
-Last reviewed: 2026-08-25
+Last reviewed: 2026-09-03
 
-The authoritative Room declaration is `core/database/.../VaultDatabase.kt`. Current database version: **3**.
+The authoritative Room declaration is `core/database/.../VaultDatabase.kt`. Current database version: **5**.
 Schema export is enabled and generated schemas belong under the configured schema directory.
 
 ## Tables
@@ -10,7 +10,7 @@ Schema export is enabled and generated schemas belong under the configured schem
 | Table | Purpose | Sensitive boundary |
 |---|---|---|
 | `vault_metadata` | vault/crypto versions, vault ID, Argon2id parameters, wrapped VEK, verification record, counts | salts/parameters are public; `argon2_parallelism` is fixed at `1` because the binding has no lanes parameter; VEK and verification record are authenticated ciphertext |
-| `credential_records` | credential type, blind title index, summary/secret payloads, folder, favorite, timestamps | summary and secret are encrypted separately |
+| `credential_records` | credential type, summary/secret payloads, folder, favorite, timestamps | summary and secret are encrypted separately |
 | `folder_records` | hierarchy/order plus folder payload | name is represented by a keyed blind index; payload is encrypted |
 | `tag_records` | tag payload and visual color | name uses a keyed blind index; payload is encrypted |
 | `credential_folder_cross_ref` | compatibility relationship row | identifiers are structural plaintext |
@@ -31,11 +31,13 @@ the explicit `LEGACY` state and remain visible as unavailable legacy metadata in
 
 - Attachment and password-history rows cascade when their credential is deleted.
 - Credential/tag and credential/folder cross-references use composite primary keys and foreign-key cascades.
-- Credential queries index blind title, folder, favorite, type, and relevant timestamps.
+- `credential_records.folder_id` references `folder_records.id`; direct folder deletion sets the canonical pointer to
+  `NULL`, while the compatibility cross-reference cascades.
+- Credential queries index folder, favorite, type, and relevant timestamps.
 - Folder hierarchy and ordering, tag visual grouping, and relationship reverse lookups are indexed.
 - Version 2 adds indexes for the actual exact-name lookup predicates on `folder_records.name_hash` and
   `tag_records.name_hash`. The values are keyed BLAKE2b blind indexes rather than plaintext names. Migration tests
-  demonstrate that these queries change from full table scans in version 1 to the named indexes in version 2/3.
+  demonstrate that these queries change from full table scans in version 1 to the named indexes in later versions.
 - Repositories validate folder/tag existence and synchronize `credential_records.folder_id` with the compatibility
   folder cross-reference inside a transaction.
 
@@ -59,7 +61,12 @@ The non-destructive migration chain is:
 - **1 → 2:** add the two justified folder/tag blind-index lookup indexes; no row is rewritten.
 - **2 → 3:** add `content_format_version` and `storage_state` to attachment metadata. Existing rows receive
   `0`/`LEGACY`, preserving their metadata while distinguishing them from managed encrypted objects.
+- **3 → 4:** remove the unused credential title blind index while retaining credential ciphertext and every dependent
+  relationship row.
+- **4 → 5:** add `credential_records.folder_id → folder_records.id ON DELETE SET NULL`; orphaned pointers are healed
+  to `NULL`, and the compatibility cross-reference is rebuilt from the canonical column.
 
-Android, iOS, and Desktop database builders register both migrations explicitly. Exported schemas 1, 2, and 3 are
-kept as test fixtures. Migration tests cover 1 → 3, 2 → 3, a fresh version-3 schema, query-plan use, and transactional
-rollback after an injected migration failure. Destructive fallback is not configured.
+Android, iOS, and Desktop database builders register every migration explicitly. Exported schemas 1 through 5 are
+kept as test fixtures. Migration tests cover every supported source version through version 5, fresh-schema foreign
+key enforcement, query-plan use, dependent-row and ciphertext preservation, orphan repair, and transactional rollback
+after injected migration failures. Destructive fallback is not configured.
