@@ -651,6 +651,8 @@ private fun VaultBackupService.BackupInspection.toImportPreview(): BackupViewMod
                     uiText(Res.string.warning_backup_attachment_preview)
                 VaultBackupService.BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE ->
                     uiText(Res.string.warning_backup_attachment_restored)
+                VaultBackupService.BackupWarning.OBSOLETE_ATTACHMENT_CLEANUP_FAILED ->
+                    uiText(Res.string.warning_backup_attachment_cleanup_failed)
             }
         },
     )

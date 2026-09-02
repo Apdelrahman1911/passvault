@@ -6,8 +6,11 @@ import com.passvault.core.crypto.DesktopCryptoEngine
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.attachment.AttachmentBlobStore
+import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
+import com.passvault.core.database.dao.VaultBackupDao
+import com.passvault.core.database.dao.VaultBackupEntities
 import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
@@ -196,6 +199,143 @@ class VaultBackupStreamingTest {
         assertEquals(0, blobStore.writeCalls)
         assertActiveVaultUnchanged(originalObjectPaths)
         assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+    }
+
+    @Test
+    fun `repeated legacy restores remove retired objects inside the attachment stability scope`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val lifecycleManager = TrackingAttachmentLifecycleManager(attachmentRepository)
+        val scopedService = createBackupService(attachmentLifecycleManager = lifecycleManager)
+        val cleanupScopes = mutableListOf<Boolean>()
+        blobStore.onCleanup = { cleanupScopes += lifecycleManager.inStableScope }
+        try {
+            repeat(3) { restoreIndex ->
+                if (restoreIndex > 0) {
+                    unlockExistingVault()
+                    attachmentRepository.import(
+                        credentialId,
+                        ByteArrayAttachmentSource("evidence-$restoreIndex.bin", attachmentContent),
+                    ).getOrThrow()
+                }
+                assertTrue(database.attachmentDao().getByCredential(credentialId.value).isNotEmpty())
+                assertTrue(objectPaths().isNotEmpty())
+
+                withBackupPassword { password ->
+                    scopedService.restoreBackup(legacyBackup, password).getOrThrow()
+                }
+
+                assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+                assertTrue(objectPaths().isEmpty())
+                assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+            }
+            assertEquals(listOf(true, true, true), cleanupScopes)
+        } finally {
+            blobStore.onCleanup = null
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `failed legacy Room replacement preserves attachment rows and objects`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val expectedObjectPaths = objectPaths()
+        val failingService = createBackupService(
+            backupDao = TransactionFailingBackupDao(database.vaultBackupDao()),
+        )
+        blobStore.resetCleanupTracking()
+        try {
+            withBackupPassword { password ->
+                assertTrue(failingService.restoreBackup(legacyBackup, password).isFailure)
+            }
+
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isNotEmpty())
+            assertEquals(expectedObjectPaths, objectPaths())
+            assertEquals(0, blobStore.cleanupCalls)
+        } finally {
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `cancellation after legacy commit cannot skip object cleanup`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val cleanupStarted = CompletableDeferred<Unit>()
+        val allowCleanup = CompletableDeferred<Unit>()
+        blobStore.resetCleanupTracking()
+        blobStore.cleanupStarted = cleanupStarted
+        blobStore.allowCleanup = allowCleanup
+        val restore = async {
+            withBackupPassword { password ->
+                backupService.restoreBackup(legacyBackup, password)
+            }
+        }
+        try {
+            cleanupStarted.await()
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+            assertTrue(objectPaths().isNotEmpty())
+
+            restore.cancel()
+            allowCleanup.complete(Unit)
+            restore.join()
+
+            assertTrue(restore.isCancelled)
+            assertEquals(1, blobStore.cleanupCalls)
+            assertTrue(objectPaths().isEmpty())
+            assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+        } finally {
+            allowCleanup.complete(Unit)
+            restore.cancelAndJoin()
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `legacy cleanup failure preserves restore success and surfaces a warning`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val expectedObjectPaths = objectPaths()
+        blobStore.resetCleanupTracking()
+        blobStore.cleanupFailure = IOException("simulated cleanup failure")
+        try {
+            val restored = withBackupPassword { password ->
+                backupService.restoreBackup(legacyBackup, password).getOrThrow()
+            }
+
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+            assertEquals(expectedObjectPaths, objectPaths())
+            assertEquals(1, blobStore.cleanupCalls)
+            assertTrue(
+                VaultBackupService.BackupWarning.OBSOLETE_ATTACHMENT_CLEANUP_FAILED in restored.warnings,
+            )
+        } finally {
+            blobStore.cleanupFailure = null
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `v2 restore retains only objects referenced by committed rows`() = runTest {
+        createBackup()
+        val originalPath = database.attachmentDao().getByCredential(credentialId.value).single().storagePath
+        blobStore.resetCleanupTracking()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        val restoredPath = database.attachmentDao().getByCredential(credentialId.value).single().storagePath
+        assertNotEquals(originalPath, restoredPath)
+        assertFalse(blobStore.exists(originalPath))
+        assertTrue(blobStore.exists(restoredPath))
+        assertEquals(setOf(restoredPath.substringAfterLast('/')), objectPaths())
+        assertEquals(1, blobStore.cleanupCalls)
     }
 
     @Test
@@ -576,7 +716,7 @@ class VaultBackupStreamingTest {
             blobStore = blobStore,
             attachmentLifecycleManager = attachmentRepository,
             newValidator = backupService::newStreamValidator,
-            activateRestore = { replaceVault ->
+            activateRestore = { _, replaceVault ->
                 replaceVault()
                 transactionCommitted.complete(Unit)
                 awaitCancellation()
@@ -708,6 +848,19 @@ class VaultBackupStreamingTest {
             backupService.createBackup(password, PathBackupSink(backupPath)).getOrThrow()
         }
     }
+
+    private fun createBackupService(
+        backupDao: VaultBackupDao = database.vaultBackupDao(),
+        attachmentLifecycleManager: AttachmentLifecycleManager = attachmentRepository,
+    ) = VaultBackupService(
+        backupDao = backupDao,
+        database = database,
+        cryptoEngine = cryptoEngine,
+        vaultRepository = vaultRepository,
+        sessionManager = vaultRepository,
+        attachmentBlobStore = blobStore,
+        attachmentLifecycleManager = attachmentLifecycleManager,
+    )
 
     private suspend fun rewriteBackupManifest(
         transform: (BackupStreamManifest) -> BackupStreamManifest,
@@ -1136,6 +1289,34 @@ class VaultBackupStreamingTest {
         }
     }
 
+    private class TransactionFailingBackupDao(
+        private val delegate: VaultBackupDao,
+    ) : VaultBackupDao by delegate {
+        override suspend fun replaceVault(snapshot: VaultBackupEntities) {
+            delegate.replaceVault(
+                snapshot.copy(credentials = snapshot.credentials + snapshot.credentials.single()),
+            )
+        }
+    }
+
+    private class TrackingAttachmentLifecycleManager(
+        private val delegate: AttachmentLifecycleManager,
+    ) : AttachmentLifecycleManager by delegate {
+        var inStableScope = false
+            private set
+
+        override suspend fun <T> withStableAttachments(block: suspend () -> T): T =
+            delegate.withStableAttachments {
+                check(!inStableScope)
+                inStableScope = true
+                try {
+                    block()
+                } finally {
+                    inStableScope = false
+                }
+            }
+    }
+
     private class TrackingAttachmentBlobStore(
         private val delegate: AttachmentBlobStore,
     ) : AttachmentBlobStore {
@@ -1147,6 +1328,12 @@ class VaultBackupStreamingTest {
         var publishedWrite: CompletableDeferred<Unit>? = null
         var adjustSizeOnReadCall: Int? = null
         var reportedSizeAdjustment = 0L
+        var cleanupCalls = 0
+            private set
+        var cleanupFailure: Exception? = null
+        var cleanupStarted: CompletableDeferred<Unit>? = null
+        var allowCleanup: CompletableDeferred<Unit>? = null
+        var onCleanup: (() -> Unit)? = null
         private var readCalls = 0
 
         override suspend fun availableBytes(): Long? = delegate.availableBytes()
@@ -1188,8 +1375,22 @@ class VaultBackupStreamingTest {
 
         override suspend fun exists(relativePath: String): Boolean = delegate.exists(relativePath)
 
-        override suspend fun removeUnreferencedObjects(referencedPaths: Set<String>) =
+        override suspend fun removeUnreferencedObjects(referencedPaths: Set<String>) {
+            cleanupCalls++
+            cleanupStarted?.complete(Unit)
+            allowCleanup?.await()
+            onCleanup?.invoke()
+            cleanupFailure?.let { throw it }
             delegate.removeUnreferencedObjects(referencedPaths)
+        }
+
+        fun resetCleanupTracking() {
+            cleanupCalls = 0
+            cleanupFailure = null
+            cleanupStarted = null
+            allowCleanup = null
+            onCleanup = null
+        }
 
         fun resetWriteTracking() {
             writeCalls = 0

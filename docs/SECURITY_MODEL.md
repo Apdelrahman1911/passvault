@@ -107,8 +107,10 @@ with three or four operations. Room metadata is encoded and validated one row at
 carried in 256 KiB outer records. Restore authenticates the entire stream and stages objects, then rewinds and replays
 only metadata in one Room transaction. A SHA-256 transcript over authenticated header/record proofs binds both passes.
 Legacy version 1 remains readable at its historical in-memory bounds and omits attachment rows/bytes. Restore locks
-the vault and deletes the previous OS biometric enrollment; a Room rollback triggers a best-effort re-enrollment of
-the prior VEK. The OS key store and Room still cannot share one transaction. See
+the vault and deletes the previous OS biometric enrollment. Every restore format reconciles encrypted attachment
+objects only after the Room replacement commits and while attachment mutation is serialized; cleanup failure does not
+misreport the committed restore as failed and is shown as a warning. A Room rollback triggers a best-effort
+re-enrollment of the prior VEK. The OS key store and Room still cannot share one transaction. See
 [`BACKUP_FORMAT.md`](BACKUP_FORMAT.md) and [`BACKUP_CAPACITY.md`](BACKUP_CAPACITY.md).
 
 ## Session and platform controls

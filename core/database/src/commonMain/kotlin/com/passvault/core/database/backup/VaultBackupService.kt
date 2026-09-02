@@ -326,7 +326,7 @@ class VaultBackupService(
         }
 
         return try {
-            activateSnapshot(entities)
+            val attachmentCleanupSucceeded = activateSnapshot(entities)
 
             Result.success(
                 BackupInspection(
@@ -337,6 +337,9 @@ class VaultBackupService(
                     warnings = buildList {
                         if (!snapshot.attachmentsIncluded && snapshot.reportedAttachmentCount > 0) {
                             add(BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE)
+                        }
+                        if (!attachmentCleanupSucceeded) {
+                            add(BackupWarning.OBSOLETE_ATTACHMENT_CLEANUP_FAILED)
                         }
                     },
                 ),
@@ -935,16 +938,26 @@ class VaultBackupService(
     }
 
     /**
-     * Retires biometric material and atomically replaces Room data. If Room
-     * rolls back after biometric deletion, make one authenticated best-effort
-     * attempt to restore the former enrollment with the leased old VEK.
+     * Retires biometric material and atomically replaces Room data, then reconciles the separate
+     * attachment object store before cancellation can resume. A null store means this service has
+     * no external attachment storage to reconcile. If Room rolls back after biometric deletion,
+     * make one authenticated best-effort attempt to restore the former enrollment with the leased old VEK.
      */
-    private suspend fun activateSnapshot(entities: VaultBackupEntities) {
-        activateStreamingRestore { backupDao.replaceVault(entities) }
+    private suspend fun activateSnapshot(entities: VaultBackupEntities): Boolean {
+        require(entities.attachments.isEmpty()) { "Legacy restore cannot publish attachment rows" }
+        return attachmentLifecycleManager.withStableAttachments {
+            activateStreamingRestore(
+                referencedAttachmentPaths = emptySet(),
+                replaceVault = { backupDao.replaceVault(entities) },
+            )
+        }
     }
 
     @Suppress("TooGenericExceptionCaught") // Preserve any transaction failure while attaching key-store rollback.
-    private suspend fun activateStreamingRestore(replaceVault: suspend () -> Unit) {
+    private suspend fun activateStreamingRestore(
+        referencedAttachmentPaths: Set<String>,
+        replaceVault: suspend () -> Unit,
+    ): Boolean {
         val previousVaultId = vaultRepository.getMetadata().getOrThrow().id.value
         val biometricWasEnabled = biometricKeyStore.contains(previousVaultId)
         val rollbackVek = if (biometricWasEnabled) {
@@ -954,12 +967,20 @@ class VaultBackupService(
         }
         var biometricDeleteAttempted = false
         var databaseCommitted = false
+        var attachmentCleanupSucceeded = true
         try {
             sessionManager.lockAndRun(LockReason.Restore) {
                 biometricDeleteAttempted = true
                 biometricKeyStore.delete(previousVaultId).getOrThrow()
-                replaceVault()
-                databaseCommitted = true
+                withContext(kotlinx.coroutines.NonCancellable) {
+                    replaceVault()
+                    databaseCommitted = true
+                    attachmentCleanupSucceeded = attachmentBlobStore?.let { blobStore ->
+                        runCatching {
+                            blobStore.removeUnreferencedObjects(referencedAttachmentPaths)
+                        }.isSuccess
+                    } ?: true
+                }
             }
         } catch (error: Exception) {
             if (biometricDeleteAttempted && !databaseCommitted && rollbackVek != null) {
@@ -973,6 +994,7 @@ class VaultBackupService(
         } finally {
             rollbackVek?.let(cryptoEngine::secureWipe)
         }
+        return attachmentCleanupSucceeded
     }
 
     private fun requirePayload(payload: ByteArray, nonce: ByteArray, maxPayloadBytes: Int) {
@@ -1059,6 +1081,7 @@ class VaultBackupService(
     enum class BackupWarning {
         ATTACHMENT_FILES_NOT_INCLUDED_IN_PREVIEW,
         ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE,
+        OBSOLETE_ATTACHMENT_CLEANUP_FAILED,
     }
 
     @Serializable

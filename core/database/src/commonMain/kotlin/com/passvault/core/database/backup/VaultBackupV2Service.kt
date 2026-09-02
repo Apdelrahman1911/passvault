@@ -35,7 +35,10 @@ internal class VaultBackupV2Service(
     private val blobStore: AttachmentBlobStore,
     private val attachmentLifecycleManager: AttachmentLifecycleManager,
     private val newValidator: (BackupStreamManifest) -> BackupStreamValidator,
-    private val activateRestore: suspend (suspend () -> Unit) -> Unit,
+    private val activateRestore: suspend (
+        referencedAttachmentPaths: Set<String>,
+        replaceVault: suspend () -> Unit,
+    ) -> Boolean,
 ) {
     private val attachmentCodec = AttachmentContainerCodec(blobStore, cryptoEngine)
 
@@ -164,15 +167,14 @@ internal class VaultBackupV2Service(
                 val replayManifest = readManifest(replayReader)
                 require(replayManifest == firstPass.validated.manifest)
 
-                activateRestoredVault(
+                val attachmentCleanupSucceeded = activateRestoredVault(
                     replayReader = replayReader,
                     replayManifest = replayManifest,
                     expectedTranscript = requireNotNull(firstTranscript),
                     stagedPaths = stagedPaths,
                 ) { committed = true }
-                cleanupUnreferencedObjects(stagedPaths)
                 onProgress(100)
-                Result.success(firstPass.validated.manifest.toInspection())
+                Result.success(firstPass.validated.manifest.toRestoreInspection(attachmentCleanupSucceeded))
             }
         } catch (cancel: CancellationException) {
             throw cancel
@@ -209,8 +211,8 @@ internal class VaultBackupV2Service(
         expectedTranscript: ByteArray,
         stagedPaths: Map<String, String>,
         onCommitted: () -> Unit,
-    ) {
-        activateRestore {
+    ): Boolean {
+        return activateRestore(stagedPaths.values.toSet()) {
             database.useWriterConnection { connection ->
                 withContext(NonCancellable) {
                     connection.immediateTransaction {
@@ -226,10 +228,6 @@ internal class VaultBackupV2Service(
                 }
             }
         }
-    }
-
-    private suspend fun cleanupUnreferencedObjects(stagedPaths: Map<String, String>) {
-        runCatching { blobStore.removeUnreferencedObjects(stagedPaths.values.toSet()) }
     }
 
     private suspend fun removeAbandonedStagedObjects(stagedPaths: Collection<String>) {
@@ -818,12 +816,24 @@ internal fun minimumRestoreAvailableBytes(remainingObjectBytes: Long): Long {
     return remainingObjectBytes + AttachmentContainerCodec.MAX_ENCRYPTED_OBJECT_BYTES
 }
 
-private fun BackupStreamManifest.toInspection() = VaultBackupService.BackupInspection(
+private fun BackupStreamManifest.toInspection(
+    warnings: List<VaultBackupService.BackupWarning> = emptyList(),
+) = VaultBackupService.BackupInspection(
     credentialCount = credentialCount,
     folderCount = folderCount,
     tagCount = tagCount,
     attachmentCount = attachmentCount,
-    warnings = emptyList(),
+    warnings = warnings,
+)
+
+private fun BackupStreamManifest.toRestoreInspection(
+    attachmentCleanupSucceeded: Boolean,
+) = toInspection(
+    warnings = if (attachmentCleanupSucceeded) {
+        emptyList()
+    } else {
+        listOf(VaultBackupService.BackupWarning.OBSOLETE_ATTACHMENT_CLEANUP_FAILED)
+    },
 )
 
 private fun attachmentStartPayload(attachmentId: String, encryptedObjectBytes: Long): ByteArray =

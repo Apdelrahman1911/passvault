@@ -103,7 +103,8 @@ snapshot contains raw encrypted Room rows.
 Format 1 has a 128 MiB container limit and a 64 MiB decrypted-snapshot limit. It predates attachment-file support:
 accepted version-1 backups must declare `attachmentsIncluded = false`, contain no attachment rows, and may report an
 omitted attachment count. Preview/restore warns about those omitted legacy files. Format-1 restore remains one
-validated whole-snapshot Room transaction for compatibility; new exports do not use it.
+validated whole-snapshot Room transaction for compatibility; after it commits, object storage is reconciled against
+the format's guaranteed empty attachment set. New exports do not use format 1.
 
 ## Platform file semantics
 
