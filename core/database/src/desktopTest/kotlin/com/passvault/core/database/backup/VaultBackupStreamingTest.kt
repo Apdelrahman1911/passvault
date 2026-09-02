@@ -25,6 +25,7 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
 import java.io.IOException
@@ -720,28 +721,17 @@ class VaultBackupStreamingTest {
             val writer = BackupV2Writer.create(sink, password, cryptoEngine)
             var committed = false
             try {
-                val manifestRecord = reader.readRecord(
-                    BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.MANIFEST),
-                )
-                require(manifestRecord.type == BackupRecordType.MANIFEST)
-                val rewrittenManifest = BackupEntityBinaryCodec.encodeManifest(
-                    transform(BackupEntityBinaryCodec.decodeManifest(manifestRecord.plaintext)),
-                )
+                val manifestRecord = reader.readRecord(BackupRecordType.MANIFEST)
+                val originalManifest = BackupEntityBinaryCodec.decodeManifest(manifestRecord.plaintext)
+                val rewrittenManifest = BackupEntityBinaryCodec.encodeManifest(transform(originalManifest))
                 try {
                     writer.writeRecord(BackupRecordType.MANIFEST, rewrittenManifest)
                 } finally {
                     cryptoEngine.secureWipe(manifestRecord.plaintext)
                     cryptoEngine.secureWipe(rewrittenManifest)
                 }
-                while (true) {
-                    val record = reader.readRecord(BackupLimits.MAX_ENTITY_RECORD_BYTES)
-                    try {
-                        writer.writeRecord(record.type, record.plaintext)
-                    } finally {
-                        cryptoEngine.secureWipe(record.plaintext)
-                    }
-                    if (record.type == BackupRecordType.FINAL) break
-                }
+
+                copyBackupBody(reader, writer, originalManifest)
                 reader.requireExhausted()
                 sink.commit()
                 committed = true
@@ -752,6 +742,83 @@ class VaultBackupStreamingTest {
             }
         }
         Files.move(rewrittenPath, backupPath, StandardCopyOption.REPLACE_EXISTING)
+    }
+
+    private suspend fun copyBackupBody(
+        reader: BackupV2Reader,
+        writer: BackupV2Writer,
+        manifest: BackupStreamManifest,
+    ) {
+        copyRecords(reader, writer, BackupRecordType.METADATA, 1)
+        copyRecords(reader, writer, BackupRecordType.FOLDER, manifest.folderCount)
+        copyRecords(reader, writer, BackupRecordType.TAG, manifest.tagCount)
+        copyRecords(reader, writer, BackupRecordType.CREDENTIAL, manifest.credentialCount)
+        copyRecords(
+            reader,
+            writer,
+            BackupRecordType.CREDENTIAL_FOLDER_REFERENCE,
+            manifest.credentialFolderReferenceCount,
+        )
+        copyRecords(
+            reader,
+            writer,
+            BackupRecordType.CREDENTIAL_TAG_REFERENCE,
+            manifest.credentialTagReferenceCount,
+        )
+        copyRecords(reader, writer, BackupRecordType.ATTACHMENT, manifest.attachmentCount)
+        copyRecords(reader, writer, BackupRecordType.PASSWORD_HISTORY, manifest.passwordHistoryCount)
+        copyRecord(reader, writer, BackupRecordType.METADATA_END)
+        repeat(manifest.managedAttachmentCount) { copyAttachmentRecords(reader, writer) }
+        copyRecord(reader, writer, BackupRecordType.FINAL)
+    }
+
+    private suspend fun copyAttachmentRecords(reader: BackupV2Reader, writer: BackupV2Writer) {
+        var encryptedObjectBytes = 0L
+        copyRecord(reader, writer, BackupRecordType.ATTACHMENT_START) { plaintext ->
+            encryptedObjectBytes = readAttachmentObjectBytes(plaintext)
+        }
+        val budget = AttachmentContentRecordBudget(encryptedObjectBytes)
+        while (!budget.isComplete) {
+            budget.requireRecordAvailable()
+            copyRecord(reader, writer, BackupRecordType.ATTACHMENT_CONTENT) { plaintext ->
+                budget.accept(plaintext.size)
+            }
+        }
+        copyRecord(reader, writer, BackupRecordType.ATTACHMENT_END)
+    }
+
+    private suspend fun copyRecords(
+        reader: BackupV2Reader,
+        writer: BackupV2Writer,
+        type: Int,
+        count: Int,
+    ) {
+        repeat(count) { copyRecord(reader, writer, type) }
+    }
+
+    private suspend fun copyRecord(
+        reader: BackupV2Reader,
+        writer: BackupV2Writer,
+        type: Int,
+        inspect: (ByteArray) -> Unit = {},
+    ) {
+        val record = reader.readRecord(type)
+        try {
+            inspect(record.plaintext)
+            writer.writeRecord(type, record.plaintext)
+        } finally {
+            cryptoEngine.secureWipe(record.plaintext)
+        }
+    }
+
+    private fun readAttachmentObjectBytes(plaintext: ByteArray): Long {
+        val source = Buffer().write(plaintext)
+        val identifierBytes = source.readInt()
+        require(identifierBytes in 1..MAX_BACKUP_IDENTIFIER_UTF8_BYTES)
+        source.skip(identifierBytes.toLong())
+        val objectBytes = source.readLong()
+        require(objectBytes > 0L && source.exhausted())
+        return objectBytes
     }
 
     private fun createTrackingBlobStore() = TrackingAttachmentBlobStore(
@@ -1137,6 +1204,7 @@ class VaultBackupStreamingTest {
     }
 
     private companion object {
+        const val MAX_BACKUP_IDENTIFIER_UTF8_BYTES = 256 * 4
         const val MASTER_PASSWORD = "correct horse battery staple"
         const val BACKUP_PASSWORD = "independent streaming backup password"
         const val STREAM_READ_BUFFER_BYTES = 64 * 1024

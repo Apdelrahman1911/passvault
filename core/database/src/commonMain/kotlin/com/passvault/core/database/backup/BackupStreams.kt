@@ -55,8 +55,8 @@ object BackupLimits {
     /** Base64 ciphertext plus a bounded allowance for the fixed v1 JSON header. */
     const val LEGACY_MAX_BACKUP_BYTES =
         (((LEGACY_MAX_CIPHERTEXT_BYTES.toLong() + 2L) / 3L) * 4L) + 4_096L
-    /** Largest independently materialized metadata row (one maximum-size credential). */
-    const val MAX_ENTITY_RECORD_BYTES = 65 * 1024 * 1024
     const val RECORD_PLAINTEXT_BYTES = 256 * 1024
+    const val ATTACHMENT_CONTROL_PLAINTEXT_BYTES = 1024
+    const val FINAL_RECORD_PLAINTEXT_BYTES = 64
     const val MAX_BACKUP_BYTES = 16L * 1024L * 1024L * 1024L
 }

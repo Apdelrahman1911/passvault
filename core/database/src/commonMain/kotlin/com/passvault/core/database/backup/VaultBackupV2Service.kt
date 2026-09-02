@@ -357,8 +357,7 @@ internal class VaultBackupV2Service(
                 )
             }
             remainingObjectBytes?.let { require(it == 0L) }
-            val finalRecord = reader.readRecord(FINAL_PAYLOAD_MAX_BYTES)
-            require(finalRecord.type == BackupRecordType.FINAL)
+            val finalRecord = reader.readRecord(BackupRecordType.FINAL)
             try {
                 validateFinalPayload(
                     bytes = finalRecord.plaintext,
@@ -399,10 +398,9 @@ internal class VaultBackupV2Service(
 
     private suspend fun readManifest(reader: BackupV2Reader): BackupStreamManifest {
         val record = reader.readRecord(
-            BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.MANIFEST),
+            BackupRecordType.MANIFEST,
             includeInMetadataTranscript = true,
         )
-        require(record.type == BackupRecordType.MANIFEST)
         return try {
             BackupEntityBinaryCodec.decodeManifest(record.plaintext)
         } finally {
@@ -452,11 +450,7 @@ internal class VaultBackupV2Service(
         consumer: (suspend (BackupMetadataValue) -> Unit)?,
     ) {
         repeat(count) {
-            val record = reader.readRecord(
-                BackupEntityBinaryCodec.maximumPlaintextBytes(type),
-                includeInMetadataTranscript = true,
-            )
-            require(record.type == type)
+            val record = reader.readRecord(type, includeInMetadataTranscript = true)
             var value: BackupMetadataValue? = null
             try {
                 value = BackupEntityBinaryCodec.decode(
@@ -474,9 +468,8 @@ internal class VaultBackupV2Service(
     }
 
     private suspend fun readMetadataEnd(reader: BackupV2Reader) {
-        val record = reader.readRecord(0, includeInMetadataTranscript = true)
+        val record = reader.readRecord(BackupRecordType.METADATA_END, includeInMetadataTranscript = true)
         try {
-            require(record.type == BackupRecordType.METADATA_END)
             require(record.plaintext.isEmpty())
         } finally {
             cryptoEngine.secureWipe(record.plaintext)
@@ -676,8 +669,7 @@ internal class VaultBackupV2Service(
         stagedPath: String?,
         beforeStaging: suspend (Long) -> Unit = {},
     ): Long {
-        val startRecord = reader.readRecord(ATTACHMENT_CONTROL_MAX_BYTES)
-        require(startRecord.type == BackupRecordType.ATTACHMENT_START)
+        val startRecord = reader.readRecord(BackupRecordType.ATTACHMENT_START)
         val encryptedObjectBytes = try {
             parseAttachmentStart(startRecord.plaintext, attachmentId)
         } finally {
@@ -703,8 +695,7 @@ internal class VaultBackupV2Service(
         val budget = AttachmentContentRecordBudget(encryptedObjectBytes)
         while (!budget.isComplete) {
             budget.requireRecordAvailable()
-            val record = reader.readRecord(BackupLimits.RECORD_PLAINTEXT_BYTES)
-            require(record.type == BackupRecordType.ATTACHMENT_CONTENT)
+            val record = reader.readRecord(BackupRecordType.ATTACHMENT_CONTENT)
             try {
                 budget.accept(record.plaintext.size)
                 sink?.write(record.plaintext)
@@ -712,8 +703,7 @@ internal class VaultBackupV2Service(
                 cryptoEngine.secureWipe(record.plaintext)
             }
         }
-        val endRecord = reader.readRecord(ATTACHMENT_CONTROL_MAX_BYTES)
-        require(endRecord.type == BackupRecordType.ATTACHMENT_END)
+        val endRecord = reader.readRecord(BackupRecordType.ATTACHMENT_END)
         try {
             validateAttachmentEnd(
                 bytes = endRecord.plaintext,
@@ -808,8 +798,6 @@ internal class VaultBackupV2Service(
 
     private companion object {
         const val ATTACHMENT_KEY_BYTES = 32
-        const val ATTACHMENT_CONTROL_MAX_BYTES = 1024
-        const val FINAL_PAYLOAD_MAX_BYTES = 64
         const val LARGE_VALUE_PAGE_ROWS = 1
         const val SMALL_PAGE_ROWS = 64
         const val REFERENCE_PAGE_ROWS = 512

@@ -1,6 +1,6 @@
 # Backup capacity and memory
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-09-03
 
 This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, repository validation, and
 `AttachmentPolicy`. MiB/GiB use binary units.
@@ -11,11 +11,11 @@ This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, rep
 |---|---:|---:|
 | complete encrypted backup | 16 GiB | 128 MiB |
 | aggregate decrypted metadata snapshot | none; row streamed | 64 MiB |
-| largest independently materialized metadata record | 65 MiB | entire snapshot, up to 64 MiB |
-| credential summary encrypted payload | 32 MiB | 32 MiB |
+| largest independently materialized metadata record | 33,688,811 bytes (~32.128 MiB) | entire snapshot, up to 64 MiB |
+| credential summary encrypted payload | 128 KiB | 32 MiB |
 | credential secret encrypted payload | 32 MiB | 32 MiB |
 | folder/tag encrypted payload | 64 KiB each | 64 KiB each |
-| attachment filename/password-history encrypted payload | 32 MiB each | 32 MiB each |
+| attachment filename/password-history encrypted payload | 128 KiB each | 32 MiB each |
 | attachment outer backup chunk | 256 KiB | not supported |
 | attachment outer content records | 65,536 per object | not supported |
 | attachment plaintext file | 100 MiB | not supported |
@@ -45,6 +45,11 @@ into unbounded heap retention. Limits that materially affect growth are:
 
 Backup validation enforces these relationship/history/managed-attachment limits again; an authenticated but
 policy-violating input cannot bypass the ordinary repository limits.
+
+Format-2 metadata ceilings are derived from each field's length prefix, marker, scalar, and accepted payload limit:
+44 bytes for manifests, 1,681 for vault metadata, 67,982 for folders, 66,941 for tags, 2,056 for relationship rows,
+33,688,811 for legacy-compatible credentials, 265,588 for attachment rows, and 133,208 for password-history
+rows. Control and attachment-content records have separate 64-byte, 1 KiB, and 256 KiB limits.
 
 ## Import and export symmetry
 
@@ -78,10 +83,13 @@ Format 2 never holds the complete backup, all Room rows, or all attachment bytes
 | attachment verify/package/restore | 256 KiB chunks and their owned/encrypted copies; normally under 1 MiB plus I/O buffers |
 | referential validation | exact identifier sets/maps and counters, capped at 1,000,000 retained occurrences and 64 MiB of identifier UTF-8 |
 
-The deliberately conservative theoretical metadata peak is therefore about **195 MiB on export** (three 65 MiB
-representations) or **130 MiB on import** (two representations), plus runtime overhead. A repository-created normal
-credential is far smaller; the 65 MiB cap exists to read bounded legacy encrypted fields. Format 2 admits only the
-64 MiB Argon2id profile emitted by its writer, and the KDF workspace is released before that row peak.
+The deliberately conservative theoretical metadata peak is therefore about **97 MiB on export** (three ~32.13 MiB
+representations). Import normally holds two representations (~65 MiB at the exact ceiling). For ciphertext above
+256 KiB, however, the reader first collects bytes in 64 KiB chunks before creating the contiguous AEAD input; a
+runtime that has not reclaimed those wiped chunks can transiently approach three representations (~97 MiB). This
+tradeoff prevents a short or size-misreporting source from triggering a large allocation. Repository-created normal
+credentials are far smaller. Format 2 admits only the 64 MiB Argon2id profile emitted by its writer, and the KDF
+workspace is released before that row peak.
 
 Format 1 is different: the input bytes, UTF-8/UTF-16 JSON, Base64 fields, decoded ciphertext, decrypted snapshot, DTO
 graph, and decoded entity arrays can overlap until garbage collection. Its worst peak is runtime-dependent and can
@@ -124,8 +132,11 @@ credentials are roughly 220 MiB typical or 1.53 GiB conservative and stream succ
 
 - A declared format-2 size above 16 GiB is rejected before expensive KDF/record processing; unknown-size sources are
   stopped by the same running byte counter.
-- A record length is checked before allocating its nonce/ciphertext; a value above its exact type-specific maximum is
-  rejected.
+- A record type is checked against the expected stream position before its remaining framing is read. Its length is
+  checked against the exact type-specific maximum. Ciphertext through one 256 KiB content record is allocated
+  directly; larger ciphertext is accumulated from actual input in wiped 64 KiB chunks before the contiguous AEAD
+  input is allocated. A short, unknown-size, or size-misreporting provider therefore cannot trigger the full declared
+  allocation. Reported file size remains an additional early bound, never the sole defense.
 - One attachment may use at most 65,536 non-empty outer content records, additionally bounded by its declared
   encrypted-object byte count; export applies the same limit before publishing a backup.
 - Declared attachment size/count/aggregate failures happen before reading plaintext. Unknown-size input that crosses
@@ -137,7 +148,8 @@ credentials are roughly 220 MiB typical or 1.53 GiB conservative and stream succ
 - Android document providers cannot guarantee atomic replacement of the external selected URI; a provider failure may
   leave a partial destination, but never a committed PassVault backup result or retained private plaintext staging file.
 
-Automated evidence covers the exact 100 MiB attachment, one-byte-over attachment/count limits, the 65 MiB maximum
-credential record with two 32 MiB fields, a one-byte-over field rejection, 50,000 independently encoded representative
-rows, fragmented reads, 16 GiB declared-size rejection, tamper/truncation, source changes between passes, transaction
-rollback, cancellation, and staging cleanup.
+Automated evidence covers the exact 100 MiB attachment, one-byte-over attachment/count limits, the field-derived
+maximum credential record, exact/max+1 record limits, pre-allocation truncated-source rejection,
+unknown and overstated source lengths, 50,000 independently encoded representative rows, fragmented reads, 16 GiB
+declared-size rejection, tamper/truncation, source changes between passes, transaction rollback, cancellation, and
+staging cleanup.
