@@ -72,6 +72,7 @@ jobs:
           REQUEST_PLATFORM: ${{ inputs.platform }}
         run: |
           gh workflow run production-release.yml \
+            --repo "$GITHUB_REPOSITORY" \
             --ref main \
             -f candidate_tag="$CANDIDATE_TAG" \
             -f platform="$REQUEST_PLATFORM" \

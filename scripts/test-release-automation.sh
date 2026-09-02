@@ -1912,6 +1912,8 @@ grep -Fq '.display_title == ("Request mobile production " + $candidate + " (" + 
     .github/workflows/production-release.yml
 grep -Fq 'gh workflow run production-release.yml' \
     .github/workflows/request-mobile-production.yml
+grep -Fq -- '--repo "$GITHUB_REPOSITORY"' \
+    .github/workflows/request-mobile-production.yml
 grep -Fq -- '--ref main' .github/workflows/request-mobile-production.yml
 grep -Fq 'I_APPROVE_MOBILE_PRODUCTION' \
     .github/workflows/request-mobile-production.yml

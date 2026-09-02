@@ -79,6 +79,7 @@ required_request_evidence = [
   '"$GITHUB_ACTOR" != "$DEPLOYMENT_APPROVER"',
   "I_APPROVE_MOBILE_PRODUCTION",
   "gh workflow run production-release.yml",
+  '--repo "$GITHUB_REPOSITORY"',
   "--ref main",
   'authorization_run_id="$GITHUB_RUN_ID"',
   'authorization_sha="$GITHUB_SHA"',
