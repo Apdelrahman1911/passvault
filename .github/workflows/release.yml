@@ -173,7 +173,7 @@ jobs:
     name: Build Desktop packages (Windows)
     runs-on: windows-latest
     needs: prepare
-    environment: mobile-production
+    environment: desktop-production
     permissions:
       actions: write
       contents: read
@@ -749,7 +749,7 @@ jobs:
             architecture: x64
     runs-on: ${{ matrix.runner }}
     needs: prepare
-    environment: mobile-production
+    environment: desktop-production
     env:
       MACOS_SIGN: 'true'
       MACOS_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}

@@ -161,7 +161,7 @@ jobs:
   publish-exact-validated-github-release:
     needs: [ candidate, stores-live ]
     runs-on: ubuntu-latest
-    environment: mobile-production
+    environment: desktop-production
     permissions:
       actions: read
       attestations: read

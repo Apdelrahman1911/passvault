@@ -16,6 +16,14 @@ on:
           - both
           - android
           - ios
+      authorization_run_id:
+        description: Successful Request Mobile Production Release run ID
+        required: true
+        type: string
+      authorization_sha:
+        description: Exact protected-main SHA that authorized this child run
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -35,22 +43,69 @@ jobs:
     outputs:
       version: ${{ steps.manifest.outputs.version }}
       build_number: ${{ steps.manifest.outputs.build_number }}
+      source_commit: ${{ steps.manifest.outputs.source_commit }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
+      - name: Verify the protected request handoff
+        env:
+          AUTHORIZATION_RUN_ID: ${{ inputs.authorization_run_id }}
+          AUTHORIZATION_SHA: ${{ inputs.authorization_sha }}
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          DEPLOYMENT_APPROVER: ${{ vars.DEPLOYMENT_APPROVER }}
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_PLATFORM: ${{ inputs.platform }}
+        run: |
+          if [[ "$GITHUB_REF" != refs/heads/main || "$GITHUB_ACTOR" != github-actions[bot] ]]; then
+            echo "Production Store Release must be dispatched by the protected request workflow on main." >&2
+            exit 1
+          fi
+          if [[ ! "$AUTHORIZATION_RUN_ID" =~ ^[1-9][0-9]*$ ||
+                ! "$AUTHORIZATION_SHA" =~ ^[0-9a-f]{40}$ ||
+                "$AUTHORIZATION_SHA" != "$GITHUB_SHA" ]]; then
+            echo "The production authorization handoff is invalid or stale." >&2
+            exit 1
+          fi
+          if [[ ! "$DEPLOYMENT_APPROVER" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$ ]]; then
+            echo "DEPLOYMENT_APPROVER is missing or invalid." >&2
+            exit 1
+          fi
+          authorization_json="$RUNNER_TEMP/mobile-production-authorization.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$AUTHORIZATION_RUN_ID" \
+            > "$authorization_json"
+          jq -e \
+            --arg approver "$DEPLOYMENT_APPROVER" \
+            --arg candidate "$CANDIDATE_TAG" \
+            --arg platform "$REQUEST_PLATFORM" \
+            --arg sha "$AUTHORIZATION_SHA" '
+              .conclusion == "success" and
+              .event == "workflow_dispatch" and
+              .head_branch == "main" and
+              .head_sha == $sha and
+              .path == ".github/workflows/request-mobile-production.yml" and
+              .display_title == ("Request mobile production " + $candidate + " (" + $platform + ")") and
+              .actor.login == $approver
+            ' "$authorization_json" >/dev/null || {
+              echo "The production request was not an approved protected-main handoff." >&2
+              exit 1
+            }
       - name: Validate exact release-branch candidate
         id: manifest
         env:
           CANDIDATE_TAG: ${{ inputs.candidate_tag }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [[ "$GITHUB_REF" != refs/heads/release ]]; then
-            echo "Production must run from release." >&2
-            exit 1
-          fi
           if [[ ! "$CANDIDATE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc\.[1-9][0-9]*$ ]]; then
             echo "The candidate tag is invalid." >&2
+            exit 1
+          fi
+          git fetch origin release --no-tags
+          git fetch origin "refs/tags/$CANDIDATE_TAG:refs/tags/$CANDIDATE_TAG" --force --no-tags
+          source_commit="$(git rev-parse refs/remotes/origin/release)"
+          tag_commit="$(git rev-list -n 1 "$CANDIDATE_TAG")"
+          if [[ "$tag_commit" != "$source_commit" ]]; then
+            echo "release and the requested candidate tag do not identify the same commit." >&2
             exit 1
           fi
           gh release download "$CANDIDATE_TAG" \
@@ -62,29 +117,33 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$GITHUB_SHA" \
+            --source-digest "$source_commit" \
             --deny-self-hosted-runners >/dev/null
-          source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
-          ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
+          source_tree="$(git rev-parse "$source_commit^{tree}")"
+          ruby scripts/validate-candidate-manifest.rb "$manifest" "$source_commit" "$source_tree"
           for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
             gh attestation verify "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --source-digest "$source_commit" \
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \
-            "$manifest" "$RUNNER_TEMP/candidate" "$GITHUB_SHA" "$source_tree"
-          ./scripts/require-production-signing-validation.sh "$CANDIDATE_TAG"
+            "$manifest" "$RUNNER_TEMP/candidate" "$source_commit" "$source_tree"
           if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
             echo "Readiness provenance does not match the requested candidate tag." >&2
             exit 1
           fi
-          echo "version=$(jq -r .marketingVersion "$manifest")" >> "$GITHUB_OUTPUT"
-          echo "build_number=$(jq -r .buildNumber "$manifest")" >> "$GITHUB_OUTPUT"
-      - name: Require production store assets
-        run: ./scripts/validate-mobile-store-assets.rb
+          candidate_source="$RUNNER_TEMP/mobile-production-candidate-source"
+          git worktree add --detach "$candidate_source" "$source_commit"
+          (cd "$candidate_source" && ruby scripts/validate-mobile-store-assets.rb)
+          git worktree remove --force "$candidate_source"
+          {
+            echo "version=$(jq -r .marketingVersion "$manifest")"
+            echo "build_number=$(jq -r .buildNumber "$manifest")"
+            echo "source_commit=$source_commit"
+          } >> "$GITHUB_OUTPUT"
 
   promote-mobile-production:
     needs: candidate
@@ -104,6 +163,7 @@ jobs:
       version: ${{ needs.candidate.outputs.version }}
       build_number: ${{ needs.candidate.outputs.build_number }}
       candidate_tag: ${{ inputs.candidate_tag }}
+      candidate_commit: ${{ needs.candidate.outputs.source_commit }}
       testflight_distribution: email-list
       production_confirmation: I_APPROVE_PRODUCTION
       testing_confirmation: I_CONFIRM_REQUIRED_TESTING_COMPLETED
@@ -125,5 +185,5 @@ jobs:
             # shellcheck disable=SC2016
             printf 'Requested platform: `%s`.\n' "$REQUEST_PLATFORM"
             echo 'The selected store workflow received the exact tested build.'
-            echo 'After both stores report the version live, run **Publish Stable Release** for the same candidate tag.'
+            echo 'Desktop signing and publication remain separate and are not prerequisites for this mobile promotion.'
           } >> "$GITHUB_STEP_SUMMARY"

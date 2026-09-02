@@ -1570,6 +1570,7 @@ grep -Fq 'validate-testing-candidate-source.sh "$GITHUB_SHA" "$MAIN_SHA"' \
 for workflow_path in \
     .github/workflows/testing-release.yml \
     .github/workflows/candidate-readiness.yml \
+    .github/workflows/request-mobile-production.yml \
     .github/workflows/production-release.yml \
     .github/workflows/production-signing-validation.yml \
     .github/workflows/publish-stable-release.yml; do
@@ -1738,7 +1739,7 @@ grep -Fq '[[ "$VERSION_CODE" != "$COMMITTED_BUILD_NUMBER" ]]' \
 grep -Fq 'Ruby is required to select the newest compatible Android build-tools version.' \
     scripts/verify-android-signatures.sh
 grep -Fq 'contains an unsafe symlink' scripts/prepare-mobile-store-metadata.sh
-test "$(grep -Fc '    environment: mobile-production' .github/workflows/release.yml)" -eq 2
+test "$(grep -Fc '    environment: desktop-production' .github/workflows/release.yml)" -eq 2
 ruby -ryaml <<'RUBY'
 release_workflow = YAML.safe_load(File.read(".github/workflows/release.yml", encoding: "UTF-8"), aliases: true)
 %w[build-desktop-linux build-desktop-windows build-desktop-macos].each do |job_name|
@@ -1882,9 +1883,12 @@ fi
 grep -Fq -- '-configuration Release' .github/workflows/store-screenshots.yml
 grep -Fq 'readiness-manifest.json' .github/workflows/production-release.yml
 grep -Fq 'Candidate Readiness must run from testing.' .github/workflows/candidate-readiness.yml
-grep -Fq 'production-signing-validation.yml' .github/workflows/candidate-readiness.yml
+if grep -Fq 'production-signing-validation.yml' .github/workflows/candidate-readiness.yml; then
+    echo "Candidate Readiness still auto-starts the independent Desktop signing workflow." >&2
+    exit 1
+fi
 if grep -Fq 'gh workflow run production-release.yml' .github/workflows/candidate-readiness.yml; then
-    echo "Candidate Readiness bypasses production signing validation." >&2
+    echo "Candidate Readiness bypasses the protected mobile production request." >&2
     exit 1
 fi
 grep -Fq "git rev-parse \"\$source_commit^{tree}\"" .github/workflows/candidate-readiness.yml
@@ -1897,17 +1901,32 @@ grep -Fq 'access_token_scopes: https://www.googleapis.com/auth/androidpublisher'
     .github/workflows/candidate-readiness.yml
 grep -Fq 'access_token_lifetime: 600s' .github/workflows/candidate-readiness.yml
 grep -Fq "printf '%s\\n' \"\$status\"" .github/workflows/candidate-readiness.yml
-grep -Fq 'refs/heads/release' .github/workflows/production-release.yml
+grep -Fq 'git fetch origin release --no-tags' .github/workflows/production-release.yml
+grep -Fq 'refs/heads/main' .github/workflows/production-release.yml
+grep -Fq 'github-actions[bot]' .github/workflows/production-release.yml
+grep -Fq '.path == ".github/workflows/request-mobile-production.yml"' \
+    .github/workflows/production-release.yml
+# Workflow jq variables must be matched literally.
+# shellcheck disable=SC2016
+grep -Fq '.display_title == ("Request mobile production " + $candidate + " (" + $platform + ")")' \
+    .github/workflows/production-release.yml
+grep -Fq 'gh workflow run production-release.yml' \
+    .github/workflows/request-mobile-production.yml
+grep -Fq -- '--ref main' .github/workflows/request-mobile-production.yml
+grep -Fq 'I_APPROVE_MOBILE_PRODUCTION' \
+    .github/workflows/request-mobile-production.yml
 # Workflow expressions must be matched literally.
 # shellcheck disable=SC2016
 grep -Fq 'candidate_tag: ${{ inputs.candidate_tag }}' \
     .github/workflows/production-release.yml
 grep -Fq 'Bind production to the readiness-approved candidate' \
     .github/workflows/mobile-store-release.yml
-grep -Fq 'require-production-signing-validation.sh' \
-    .github/workflows/mobile-store-release.yml
-grep -Fq 'require-production-signing-validation.sh' \
-    .github/workflows/production-release.yml
+if grep -Fq 'require-production-signing-validation.sh' \
+    .github/workflows/mobile-store-release.yml \
+    .github/workflows/production-release.yml; then
+    echo "Mobile production still depends on Desktop signing validation." >&2
+    exit 1
+fi
 if grep -Fq 'workflow_dispatch:' .github/workflows/release.yml; then
     echo "The low-level desktop publisher is still directly dispatchable around store-live checks." >&2
     exit 1
@@ -1917,6 +1936,7 @@ if grep -Fq 'I_CONFIRM_BOTH_STORES_LIVE' .github/workflows/publish-stable-releas
     exit 1
 fi
 grep -Fq 'environment: mobile-production' .github/workflows/publish-stable-release.yml
+grep -Fq 'environment: desktop-production' .github/workflows/publish-stable-release.yml
 # Workflow expressions must be matched literally.
 # shellcheck disable=SC2016
 grep -Fq 'production-signed-${{ inputs.candidate_tag }}' \
@@ -2123,13 +2143,27 @@ grep -Fq 'passvault_biometric.dll' scripts/verify-windows-release-artifacts.ps1
 grep -Fq 'libpassvault_biometric.dylib' scripts/verify-macos-release-artifact.sh
 grep -Fq 'configure_environment release-promotion true testing false' \
     scripts/configure-github-mobile-release.sh
-grep -Fq 'configure_environment mobile-production true release true' \
+if grep -Fq 'configure_environment mobile-production true release true' \
+    scripts/configure-github-mobile-release.sh; then
+    echo "mobile-production is still restricted to release instead of the protected request on main." >&2
+    exit 1
+fi
+grep -Fq 'configure_environment mobile-production true main true' \
     scripts/configure-github-mobile-release.sh
+grep -Fq 'configure_environment desktop-production true release true' \
+    scripts/configure-github-mobile-release.sh
+bash -n scripts/configure-github-release-environments.sh
+grep -Fq 'configure_environment release-promotion testing false' \
+    scripts/configure-github-release-environments.sh
+grep -Fq 'configure_environment mobile-production main true' \
+    scripts/configure-github-release-environments.sh
+grep -Fq 'configure_environment desktop-production release true' \
+    scripts/configure-github-release-environments.sh
 grep -Fq 'Required reviewer exists and prevent-self-review matches policy' \
     scripts/configure-github-mobile-release.sh
 # Indirect Bash expansions must be matched literally.
 # shellcheck disable=SC2016
-grep -Fq 'set_environment_variable mobile-production "$variable_name" "${!variable_name}"' \
+grep -Fq 'set_environment_variable desktop-production "$variable_name" "${!variable_name}"' \
     scripts/configure-github-mobile-release.sh
 grep -Fq 'http://timestamp.acs.microsoft.com' scripts/validate-private-release-config.sh
 ruby <<'RUBY'
@@ -2146,11 +2180,12 @@ azure_names.each do |name|
 end
 abort("Azure production-variable cleanup is missing") unless
   script.include?('gh variable delete "$variable_name" --repo "$GITHUB_REPOSITORY"') &&
-  script.include?('expected_production_variables+=("${selected_remote_variable_names[@]}")')
+  script.include?('verify_environment_variables desktop-production "$desktop_production_variables"')
 abort("Release review self-review policies are not scoped correctly") unless
   script.scan('prevent_self_review: $prevent_self_review').length == 1 &&
   script.scan(/^configure_environment release-promotion true testing false$/).length == 1 &&
-  script.scan(/^configure_environment mobile-production true release true$/).length == 1 &&
+  script.scan(/^configure_environment mobile-production true main true$/).length == 1 &&
+  script.scan(/^configure_environment desktop-production true release true$/).length == 1 &&
   script.scan(/^configure_environment mobile-external-beta true testing true$/).length == 1 &&
   script.scan(/^configure_environment play-access-production true main true$/).length == 1 &&
   script.scan('"prevent_self_review": false').length == 1 &&

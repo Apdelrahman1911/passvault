@@ -1,0 +1,90 @@
+name: Request Mobile Production Release
+run-name: Request mobile production ${{ inputs.candidate_tag }} (${{ inputs.platform }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_tag:
+        description: Readiness-approved mobile candidate tag
+        required: true
+        type: string
+      platform:
+        description: Store to promote; choose one only when retrying a partial failure
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+      confirmation:
+        description: Type I_APPROVE_MOBILE_PRODUCTION
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-release-pipeline
+  cancel-in-progress: false
+
+jobs:
+  dispatch-protected-promotion:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Require an explicit request from the configured approver
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+          DEPLOYMENT_APPROVER: ${{ vars.DEPLOYMENT_APPROVER }}
+          REQUEST_PLATFORM: ${{ inputs.platform }}
+        run: |
+          if [[ "$GITHUB_REF" != refs/heads/main ]]; then
+            echo "Mobile production requests must run from protected main." >&2
+            exit 1
+          fi
+          if [[ "$GITHUB_ACTOR" != "$DEPLOYMENT_APPROVER" ]]; then
+            echo "Only the configured deployment approver may request mobile production." >&2
+            exit 1
+          fi
+          if [[ "$CONFIRMATION" != I_APPROVE_MOBILE_PRODUCTION ]]; then
+            echo "Type I_APPROVE_MOBILE_PRODUCTION to authorize Store promotion." >&2
+            exit 1
+          fi
+          if [[ ! "$CANDIDATE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc\.[1-9][0-9]*$ ]]; then
+            echo "The candidate tag is invalid." >&2
+            exit 1
+          fi
+          case "$REQUEST_PLATFORM" in both|android|ios) ;; *)
+            echo "Platform must be both, android, or ios." >&2
+            exit 1
+            ;;
+          esac
+
+      - name: Dispatch the protected mobile-only production workflow
+        env:
+          CANDIDATE_TAG: ${{ inputs.candidate_tag }}
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_PLATFORM: ${{ inputs.platform }}
+        run: |
+          gh workflow run production-release.yml \
+            --ref main \
+            -f candidate_tag="$CANDIDATE_TAG" \
+            -f platform="$REQUEST_PLATFORM" \
+            -f authorization_run_id="$GITHUB_RUN_ID" \
+            -f authorization_sha="$GITHUB_SHA"
+
+          {
+            echo '## Mobile production requested'
+            echo
+            echo "Candidate: \`$CANDIDATE_TAG\`"
+            echo "Platform: \`$REQUEST_PLATFORM\`"
+            echo
+            # Backticks are intentional Markdown.
+            # shellcheck disable=SC2016
+            echo 'The child workflow still requires explicit `mobile-production` approval.'
+          } >> "$GITHUB_STEP_SUMMARY"

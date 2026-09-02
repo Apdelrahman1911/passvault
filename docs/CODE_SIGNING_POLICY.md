@@ -23,8 +23,9 @@ as production assets.
 - Committers prepare changes through reviewed pull requests. Protected `main`, `testing`, and `release` branches and
   required CI checks constrain the source that can enter a release.
 - Release automation may advance only the exact candidate commit whose store build receipts and readiness manifest
-  validate. The `mobile-production` GitHub environment requires a human reviewer and prevents the workflow initiator
-  from approving their own deployment.
+  validate. Mobile production uses the `mobile-production` reviewer gate through a protected bot handoff; Desktop
+  signing uses the separate `desktop-production` reviewer gate. Both prevent their workflow initiator from approving
+  the deployment.
 - The Windows signing provider token is a submitter credential only. Signing-policy approvers and provider
   administrators must use separate named accounts with MFA. A provider-mandated approval cannot be bypassed by CI.
 - GitHub repository/environment role membership and signing-provider role membership are reviewed whenever access
