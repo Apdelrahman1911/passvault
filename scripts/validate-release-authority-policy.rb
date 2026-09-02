@@ -47,7 +47,7 @@ required_live_policy_evidence = [
   "environments/release-promotion",
   "deployment-branch-policies",
   ".can_admins_bypass == false",
-  ".prevent_self_review == true",
+  ".prevent_self_review == false",
   '.reviewers[0].reviewer.login == $reviewer',
   '.branch_policies[0].name == "testing"',
 ]
@@ -106,8 +106,11 @@ workflow_run_commands.each do |path, job_name, command|
 end
 
 configuration = File.read(options.fetch(:configuration_path), encoding: "UTF-8")
-unless configuration.scan(/^configure_environment release-promotion true testing$/).length == 1
+unless configuration.scan(/^configure_environment release-promotion true testing false$/).length == 1
   abort("Release promotion environment is not configured exactly once for protected testing approval")
+end
+unless configuration.scan(/^configure_environment mobile-production true release true$/).length == 1
+  abort("Production environment no longer prevents self-review")
 end
 abort("Environment configuration does not disable administrator bypass in both payloads") unless
   configuration.scan(/"?can_admins_bypass"?: false/).length == 2

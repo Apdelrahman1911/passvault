@@ -135,7 +135,7 @@ ruby -e '
   path = ARGV.fetch(0)
   source = File.read(path, encoding: "UTF-8")
   abort("missing environment configuration fixture") unless
-    source.sub!("configure_environment release-promotion true testing\n", "")
+    source.sub!("configure_environment release-promotion true testing false\n", "")
   File.write(path, source)
 ' "$authority_policy_fixture/configure.sh"
 if ruby scripts/validate-release-authority-policy.rb \
@@ -2121,8 +2121,11 @@ grep -Fq 'passvault_biometric\.dll' scripts/prepare-windows-runtime-signing.ps1
 grep -Fq 'passvault_biometric.dll' scripts/package-signed-windows-installers.ps1
 grep -Fq 'passvault_biometric.dll' scripts/verify-windows-release-artifacts.ps1
 grep -Fq 'libpassvault_biometric.dylib' scripts/verify-macos-release-artifact.sh
-grep -Fq 'prevent_self_review: true' scripts/configure-github-mobile-release.sh
-grep -Fq 'Required reviewer exists and self-review is prevented' \
+grep -Fq 'configure_environment release-promotion true testing false' \
+    scripts/configure-github-mobile-release.sh
+grep -Fq 'configure_environment mobile-production true release true' \
+    scripts/configure-github-mobile-release.sh
+grep -Fq 'Required reviewer exists and prevent-self-review matches policy' \
     scripts/configure-github-mobile-release.sh
 # Indirect Bash expansions must be matched literally.
 # shellcheck disable=SC2016
@@ -2144,8 +2147,12 @@ end
 abort("Azure production-variable cleanup is missing") unless
   script.include?('gh variable delete "$variable_name" --repo "$GITHUB_REPOSITORY"') &&
   script.include?('expected_production_variables+=("${selected_remote_variable_names[@]}")')
-abort("Production review configuration does not prevent self-review") unless
-  script.scan("prevent_self_review: true").length == 1 &&
+abort("Release review self-review policies are not scoped correctly") unless
+  script.scan('prevent_self_review: $prevent_self_review').length == 1 &&
+  script.scan(/^configure_environment release-promotion true testing false$/).length == 1 &&
+  script.scan(/^configure_environment mobile-production true release true$/).length == 1 &&
+  script.scan(/^configure_environment mobile-external-beta true testing true$/).length == 1 &&
+  script.scan(/^configure_environment play-access-production true main true$/).length == 1 &&
   script.scan('"prevent_self_review": false').length == 1 &&
   script.scan(/"?can_admins_bypass"?: false/).length == 2
 RUBY
