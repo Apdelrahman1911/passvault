@@ -1903,7 +1903,7 @@ grep -Fq 'access_token_lifetime: 600s' .github/workflows/candidate-readiness.yml
 grep -Fq "printf '%s\\n' \"\$status\"" .github/workflows/candidate-readiness.yml
 grep -Fq 'git fetch origin release --no-tags' .github/workflows/production-release.yml
 grep -Fq 'refs/heads/main' .github/workflows/production-release.yml
-grep -Fq 'github-actions[bot]' .github/workflows/production-release.yml
+grep -Fq '"$GITHUB_ACTOR" != "github-actions[bot]"' .github/workflows/production-release.yml
 grep -Fq '.path == ".github/workflows/request-mobile-production.yml"' \
     .github/workflows/production-release.yml
 # Workflow jq variables must be matched literally.

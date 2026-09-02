@@ -96,7 +96,7 @@ production_candidate = production.fetch("jobs").fetch("candidate")
 production_commands = production_candidate.fetch("steps").map { |step| step["run"].to_s }.join("\n")
 required_handoff_evidence = [
   '"$GITHUB_REF" != refs/heads/main',
-  '"$GITHUB_ACTOR" != github-actions[bot]',
+  '"$GITHUB_ACTOR" != "github-actions[bot]"',
   "actions/runs/$AUTHORIZATION_RUN_ID",
   '.path == ".github/workflows/request-mobile-production.yml"',
   '.display_title == ("Request mobile production " + $candidate + " (" + $platform + ")")',

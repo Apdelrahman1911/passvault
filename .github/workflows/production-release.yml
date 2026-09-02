@@ -57,7 +57,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REQUEST_PLATFORM: ${{ inputs.platform }}
         run: |
-          if [[ "$GITHUB_REF" != refs/heads/main || "$GITHUB_ACTOR" != github-actions[bot] ]]; then
+          if [[ "$GITHUB_REF" != refs/heads/main || "$GITHUB_ACTOR" != "github-actions[bot]" ]]; then
             echo "Production Store Release must be dispatched by the protected request workflow on main." >&2
             exit 1
           fi
