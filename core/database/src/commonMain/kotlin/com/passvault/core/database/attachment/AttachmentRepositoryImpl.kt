@@ -147,15 +147,17 @@ class AttachmentRepositoryImpl(
         declaredSize: Long?,
     ): Long {
         declaredSize?.let(AttachmentPolicy::validateFileSize)
-        requireAttachmentSlot(attachmentDao.getManagedCount(credentialId.value))
+        requireAttachmentSlot(attachmentDao.getOccupiedSlotCount(credentialId.value))
         val managedBytes = attachmentDao.getManagedSizeBytes(credentialId.value)
         require(managedBytes in 0..AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES)
         declaredSize?.let { requireAggregateCapacity(managedBytes, it) }
         return managedBytes
     }
 
-    private fun requireAttachmentSlot(managedCount: Int) {
-        if (managedCount >= AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL) throw AttachmentCountLimitException()
+    private fun requireAttachmentSlot(occupiedSlotCount: Int) {
+        if (occupiedSlotCount >= AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL) {
+            throw AttachmentCountLimitException()
+        }
     }
 
     private fun requireAggregateCapacity(existingBytes: Long, incomingBytes: Long) {

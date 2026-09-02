@@ -442,7 +442,7 @@ class AttachmentRepositoryTest {
         assertIs<AttachmentCorruptedException>(
             restarted.copyContentTo(credentialId, attachment.id, RecordingSink()).exceptionOrNull(),
         )
-        assertEquals(1, database.attachmentDao().getManagedCount(credentialId.value))
+        assertEquals(1, database.attachmentDao().getOccupiedSlotCount(credentialId.value))
         assertEquals(4, database.attachmentDao().getManagedSizeBytes(credentialId.value))
         assertEquals(1, database.vaultBackupDao().getManagedAttachmentCount())
         assertEquals(
@@ -661,6 +661,52 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `legacy and managed metadata share the visible attachment slot limit`() = runTest {
+        repeat(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL) { index ->
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("legacy-$index.bin", null, byteArrayOf(index.toByte())),
+            ).getOrThrow()
+        }
+        database.attachmentDao().getByCredential(credentialId.value).dropLast(1).forEach { entity ->
+            convertToLegacyMetadata(entity)
+        }
+        val source = ByteArraySource("one-too-many.bin", null, byteArrayOf(1))
+
+        assertEquals(
+            database.attachmentDao().getByCredential(credentialId.value).size,
+            database.attachmentDao().getOccupiedSlotCount(credentialId.value),
+        )
+        assertIs<AttachmentCountLimitException>(
+            attachmentRepository.import(credentialId, source).exceptionOrNull(),
+        )
+        assertEquals(0, source.readCalls)
+    }
+
+    @Test
+    fun `legacy declared size does not consume managed object byte quota`() = runTest {
+        val legacy = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("legacy-large.bin", null, byteArrayOf(1)),
+        ).getOrThrow()
+        convertToLegacyMetadata(
+            entity = requireEntity(legacy.id),
+            reportedSizeBytes = AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES,
+        )
+
+        assertEquals(1, database.attachmentDao().getOccupiedSlotCount(credentialId.value))
+        assertEquals(0, database.attachmentDao().getManagedSizeBytes(credentialId.value))
+        assertTrue(
+            attachmentRepository.import(
+                credentialId,
+                ByteArraySource("managed.bin", null, byteArrayOf(2)),
+            ).isSuccess,
+        )
+        assertEquals(2, database.attachmentDao().getOccupiedSlotCount(credentialId.value))
+        assertEquals(1, database.attachmentDao().getManagedSizeBytes(credentialId.value))
+    }
+
+    @Test
     fun `credential aggregate limit fails before opening the selected source`() = runTest {
         repeat(5) { index -> insertAggregateLimitRow(index) }
         val source = ByteArraySource(
@@ -843,6 +889,20 @@ class AttachmentRepositoryTest {
                 createdAt = index.toLong(),
                 contentFormatVersion = AttachmentPolicy.CONTENT_FORMAT_VERSION,
                 storageState = AttachmentRecordEntity.STORAGE_STATE_READY,
+            ),
+        )
+    }
+
+    private suspend fun convertToLegacyMetadata(
+        entity: AttachmentRecordEntity,
+        reportedSizeBytes: Long = entity.sizeBytes,
+    ) {
+        blobStore.delete(entity.storagePath)
+        database.attachmentDao().update(
+            entity.copy(
+                sizeBytes = reportedSizeBytes,
+                contentFormatVersion = 0,
+                storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
             ),
         )
     }

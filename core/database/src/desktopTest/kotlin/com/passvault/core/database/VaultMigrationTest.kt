@@ -97,6 +97,8 @@ class VaultMigrationTest {
                 assertEquals(0, attachment.contentFormatVersion)
                 assertEquals("LEGACY", attachment.storageState)
                 assertEquals("attachments/legacy.enc", attachment.storagePath)
+                assertEquals(1, database.attachmentDao().getOccupiedSlotCount("credential-existing"))
+                assertEquals(0, database.attachmentDao().getManagedSizeBytes("credential-existing"))
             } finally {
                 database.close()
             }

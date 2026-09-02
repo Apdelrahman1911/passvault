@@ -20,7 +20,7 @@ This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, rep
 | attachment outer content records | 65,536 per object | not supported |
 | attachment plaintext file | 100 MiB | not supported |
 | attachment encrypted object at the 100 MiB boundary | 104,882,093 bytes | not supported |
-| attachment total per credential | 512 MiB | not supported |
+| managed attachment plaintext per credential | 512 MiB | not supported |
 | retained validator identifier occurrences | 1,000,000 across all row types | not applicable |
 | retained validator identifier UTF-8 bytes | 64 MiB across all row types | not applicable |
 
@@ -35,7 +35,8 @@ into unbounded heap retention. Limits that materially affect growth are:
 
 - one folder per credential and at most 100 tags per credential;
 - at most 10 password-history rows per credential;
-- at most 20 managed attachments and 512 MiB of attachment plaintext per credential;
+- at most 20 visible attachment rows per credential, including metadata-only legacy rows, and 512 MiB of managed
+  attachment plaintext per credential;
 - at most 50 custom fields per credential, each name up to 200 code points and value up to 20,000 code points;
 - at most 100 URLs, 100 recovery codes, 100 API keys, and 100 license keys per credential;
 - notes up to 100,000 code points and common sensitive values up to 4,096 code points;
@@ -44,7 +45,10 @@ into unbounded heap retention. Limits that materially affect growth are:
 - up to 1,000,000 folders and 1,000,000 tags globally, although storage/container bounds normally win first.
 
 Backup validation enforces these relationship/history/managed-attachment limits again; an authenticated but
-policy-violating input cannot bypass the ordinary repository limits.
+policy-violating input cannot bypass the ordinary repository limits. Legacy attachment rows consume visible slots
+for new imports but have no current-store object, so their historical declared sizes do not consume the 512 MiB
+managed-object quota. Existing migrated vaults above the slot limit remain readable and exportable; the write path
+rejects additional attachments instead of making those vaults unavailable.
 
 Format-2 metadata ceilings are derived from each field's length prefix, marker, scalar, and accepted payload limit:
 44 bytes for manifests, 1,681 for vault metadata, 67,982 for folders, 66,941 for tags, 2,056 for relationship rows,

@@ -2,15 +2,19 @@ package com.passvault.core.database.backup
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
+import com.passvault.core.database.attachment.attachmentFilenameAssociatedData
 import com.passvault.core.database.dao.VaultBackupDao
 import com.passvault.core.database.dao.VaultBackupEntities
+import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
@@ -22,6 +26,8 @@ import com.passvault.core.domain.model.PasswordHealth
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.repository.AttachmentContentSink
 import com.passvault.core.domain.repository.AttachmentContentSource
+import com.passvault.core.domain.repository.AttachmentCountLimitException
+import com.passvault.core.domain.repository.AttachmentPolicy
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
@@ -179,6 +185,54 @@ class VaultBackupStreamingTest {
         } finally {
             restoredCredential.clearSensitiveValues()
         }
+    }
+
+    @Test
+    fun `over quota legacy vault remains loadable and exportable while new imports stay blocked`() = runTest {
+        val attachmentDao = database.attachmentDao()
+        val original = attachmentDao.getByCredential(credentialId.value).single()
+        blobStore.delete(original.storagePath)
+        attachmentDao.update(
+            original.copy(
+                sizeBytes = AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES,
+                contentFormatVersion = 0,
+                storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+            ),
+        )
+        repeat(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL) { index ->
+            insertLegacyAttachment(index + 1)
+        }
+
+        assertEquals(
+            AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1,
+            attachmentDao.getOccupiedSlotCount(credentialId.value),
+        )
+        assertEquals(0, attachmentDao.getManagedSizeBytes(credentialId.value))
+        assertLegacyAttachmentCount(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1)
+        assertIs<AttachmentCountLimitException>(
+            attachmentRepository.import(
+                credentialId,
+                ByteArrayAttachmentSource("blocked.bin", byteArrayOf(1)),
+            ).exceptionOrNull(),
+        )
+
+        withBackupPassword { password ->
+            val created = backupService.createBackup(password, PathBackupSink(backupPath)).getOrThrow()
+            assertEquals(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1, created.attachmentCount)
+            val inspected = backupService.inspectBackup(PathBackupSource(backupPath), password).getOrThrow()
+            assertEquals(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1, inspected.attachmentCount)
+            val restored = backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+            assertEquals(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1, restored.attachmentCount)
+        }
+
+        unlockExistingVault()
+        assertLegacyAttachmentCount(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1)
+        assertIs<AttachmentCountLimitException>(
+            attachmentRepository.import(
+                credentialId,
+                ByteArrayAttachmentSource("still-blocked.bin", byteArrayOf(2)),
+            ).exceptionOrNull(),
+        )
     }
 
     @Test
@@ -993,6 +1047,59 @@ class VaultBackupStreamingTest {
         val credential = sampleCredential(title)
         try {
             credentialRepository.save(credential).getOrThrow()
+        } finally {
+            credential.clearSensitiveValues()
+        }
+    }
+
+    private suspend fun insertLegacyAttachment(index: Int) {
+        val attachmentId = "legacy-attachment-$index"
+        val keyContext = "legacy-context-$index"
+        val plaintext = "legacy-$index.bin".encodeToByteArray()
+        val associatedData = attachmentFilenameAssociatedData(attachmentId, credentialId.value)
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        try {
+            key = cryptoEngine.deriveSubkey(vek, "attachment:$keyContext", 32).getOrThrow()
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
+                plaintext = plaintext,
+                key = key,
+                associatedData = associatedData,
+                maxPlaintextBytes = AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
+            ).getOrThrow()
+            try {
+                database.attachmentDao().insert(
+                    AttachmentRecordEntity(
+                        id = attachmentId,
+                        credentialId = credentialId.value,
+                        encryptedFilename = CryptoEnvelope.encode(encrypted),
+                        filenameNonce = encrypted.nonce.copyOf(),
+                        mimeType = "application/octet-stream",
+                        sizeBytes = 1,
+                        storagePath = "attachments/legacy-$index.enc",
+                        keyDerivationContext = keyContext,
+                        createdAt = index.toLong(),
+                        contentFormatVersion = 0,
+                        storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+                    ),
+                )
+            } finally {
+                encrypted.clear()
+            }
+        } finally {
+            cryptoEngine.secureWipe(plaintext)
+            cryptoEngine.secureWipe(associatedData)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(vek)
+        }
+    }
+
+    private suspend fun assertLegacyAttachmentCount(expected: Int) {
+        val credential = assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+        try {
+            assertEquals(expected, credential.attachments.size)
+            assertTrue(credential.attachments.all { it.availability == AttachmentAvailability.LEGACY_METADATA_ONLY })
         } finally {
             credential.clearSensitiveValues()
         }
