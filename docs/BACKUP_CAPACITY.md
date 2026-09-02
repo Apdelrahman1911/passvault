@@ -17,6 +17,7 @@ This document derives limits from `BackupLimits`, `BackupEntityBinaryCodec`, rep
 | folder/tag encrypted payload | 64 KiB each | 64 KiB each |
 | attachment filename/password-history encrypted payload | 32 MiB each | 32 MiB each |
 | attachment outer backup chunk | 256 KiB | not supported |
+| attachment outer content records | 65,536 per object | not supported |
 | attachment plaintext file | 100 MiB | not supported |
 | attachment encrypted object at the 100 MiB boundary | 104,882,093 bytes | not supported |
 | attachment total per credential | 512 MiB | not supported |
@@ -125,6 +126,8 @@ credentials are roughly 220 MiB typical or 1.53 GiB conservative and stream succ
   stopped by the same running byte counter.
 - A record length is checked before allocating its nonce/ciphertext; a value above its exact type-specific maximum is
   rejected.
+- One attachment may use at most 65,536 non-empty outer content records, additionally bounded by its declared
+  encrypted-object byte count; export applies the same limit before publishing a backup.
 - Declared attachment size/count/aggregate failures happen before reading plaintext. Unknown-size input that crosses
   100 MiB or 512 MiB aborts its atomic object write and removes staging metadata/files.
 - Insufficient attachment-volume capacity is rejected before staging starts, or before the next object if capacity

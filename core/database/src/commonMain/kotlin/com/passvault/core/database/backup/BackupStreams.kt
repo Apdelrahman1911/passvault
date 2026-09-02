@@ -37,6 +37,14 @@ object BackupLimits {
 
     /** Maximum aggregate UTF-8 bytes accepted for retained validator identifiers. */
     const val MAX_RETAINED_IDENTIFIER_BYTES = 64L * 1024L * 1024L
+    /**
+     * Maximum outer content records accepted for one encrypted attachment object.
+     *
+     * Older writers inherited short-read boundaries from buffered filesystem sources, so this
+     * deliberately permits substantially more records than ideal 256 KiB chunking while still
+     * reducing a one-byte-record attack from roughly 100 million AEAD operations to 65,536.
+     */
+    const val MAX_ATTACHMENT_CONTENT_RECORDS = 65_536L
     /** Maximum plaintext accepted by the legacy v1 snapshot decoder. */
     const val LEGACY_MAX_SNAPSHOT_BYTES = 64 * 1024 * 1024
     /**

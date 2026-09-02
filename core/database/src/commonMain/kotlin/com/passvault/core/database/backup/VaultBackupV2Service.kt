@@ -623,30 +623,33 @@ internal class VaultBackupV2Service(
             cryptoEngine.secureWipe(start)
         }
         val chunk = ByteArray(BackupLimits.RECORD_PLAINTEXT_BYTES)
-        var totalBytes = 0L
-        var chunkCount = 0L
+        val budget = AttachmentContentRecordBudget(fileSize)
         try {
-            while (totalBytes < fileSize) {
-                val requested = minOf(chunk.size.toLong(), fileSize - totalBytes).toInt()
+            while (!budget.isComplete) {
+                budget.requireRecordAvailable()
+                val requested = minOf(chunk.size.toLong(), fileSize - budget.consumedBytes).toInt()
                 val count = source.read(chunk, 0, requested)
                 require(count in 1..requested)
+                budget.accept(count)
                 val ownedChunk = chunk.copyOf(count)
                 try {
                     writer.writeRecord(BackupRecordType.ATTACHMENT_CONTENT, ownedChunk)
                 } finally {
                     cryptoEngine.secureWipe(ownedChunk)
                 }
-                totalBytes += count
-                chunkCount++
             }
             require(source.exhausted())
-            val end = attachmentEndPayload(attachment.id, totalBytes, chunkCount)
+            val end = attachmentEndPayload(
+                attachmentId = attachment.id,
+                totalBytes = budget.consumedBytes,
+                chunkCount = budget.consumedRecords,
+            )
             try {
                 writer.writeRecord(BackupRecordType.ATTACHMENT_END, end)
             } finally {
                 cryptoEngine.secureWipe(end)
             }
-            totalBytes
+            budget.consumedBytes
         } finally {
             cryptoEngine.secureWipe(chunk)
         }
@@ -697,17 +700,14 @@ internal class VaultBackupV2Service(
         encryptedObjectBytes: Long,
         sink: BufferedSink?,
     ): Long {
-        var totalBytes = 0L
-        var chunkCount = 0L
-        while (totalBytes < encryptedObjectBytes) {
+        val budget = AttachmentContentRecordBudget(encryptedObjectBytes)
+        while (!budget.isComplete) {
+            budget.requireRecordAvailable()
             val record = reader.readRecord(BackupLimits.RECORD_PLAINTEXT_BYTES)
             require(record.type == BackupRecordType.ATTACHMENT_CONTENT)
             try {
-                require(record.plaintext.isNotEmpty())
-                require(totalBytes + record.plaintext.size <= encryptedObjectBytes)
+                budget.accept(record.plaintext.size)
                 sink?.write(record.plaintext)
-                totalBytes += record.plaintext.size
-                chunkCount++
             } finally {
                 cryptoEngine.secureWipe(record.plaintext)
             }
@@ -715,11 +715,16 @@ internal class VaultBackupV2Service(
         val endRecord = reader.readRecord(ATTACHMENT_CONTROL_MAX_BYTES)
         require(endRecord.type == BackupRecordType.ATTACHMENT_END)
         try {
-            validateAttachmentEnd(endRecord.plaintext, attachmentId, totalBytes, chunkCount)
+            validateAttachmentEnd(
+                bytes = endRecord.plaintext,
+                expectedAttachmentId = attachmentId,
+                expectedBytes = budget.consumedBytes,
+                expectedChunks = budget.consumedRecords,
+            )
         } finally {
             cryptoEngine.secureWipe(endRecord.plaintext)
         }
-        return totalBytes
+        return budget.consumedBytes
     }
 
     private suspend fun verifyManagedAttachment(entity: AttachmentRecordEntity, vek: ByteArray) {
