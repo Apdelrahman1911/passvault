@@ -100,7 +100,7 @@ Direct macOS distribution requires an Apple Developer Program membership and a
 `Developer ID Application` certificate. Export that certificate and its private
 key as a password-protected PKCS #12 file, then configure:
 
-GitHub `mobile-production` environment secrets:
+GitHub `desktop-production` environment secrets:
 
 - `MACOS_CERTIFICATE_BASE64`
 - `MACOS_CERTIFICATE_PASSWORD`
@@ -116,7 +116,7 @@ GitHub repository variables:
 
 Delete any repository-level copies of all Windows/macOS secret values after the
 environment secrets are present. Remote Windows resource identifiers also live
-only as `mobile-production` environment variables. The selected backend and
+only as `desktop-production` environment variables. The selected backend and
 expected publisher may remain repository variables because neither is a
 credential.
 

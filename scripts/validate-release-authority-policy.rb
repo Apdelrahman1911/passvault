@@ -32,8 +32,8 @@ abort("Release branch promotion is not protected by release-promotion") unless
   promotion["environment"] == "release-promotion"
 
 promotion_permissions = promotion.fetch("permissions")
-abort("Release branch promotion lost its bounded actions permission") unless
-  promotion_permissions["actions"] == "write"
+abort("Release branch promotion retained unnecessary workflow-dispatch authority") unless
+  promotion_permissions["actions"] == "read"
 abort("Release branch promotion lost its bounded contents permission") unless
   promotion_permissions["contents"] == "write"
 
@@ -60,10 +60,56 @@ abort("Release branch live-policy verification is incomplete: #{missing_live_pol
 promotion_commands = promotion_steps.map { |step| step["run"] }.compact.join("\n")
 abort("Release promotion no longer performs the explicit fast-forward push") unless
   promotion_commands.include?('git push origin "$SOURCE_COMMIT:refs/heads/release"')
-abort("Release promotion no longer starts signing validation") unless
+abort("Release promotion still couples mobile readiness to desktop signing") if
   promotion_commands.include?("gh workflow run production-signing-validation.yml")
 abort("Release promotion still exposes an automatic production continuation") if
   promotion_commands.include?("start_production_after_validation")
+
+request_path = File.join(options.fetch(:workflow_directory), "request-mobile-production.yml")
+request = workflows.fetch(request_path) { abort("Protected mobile production request workflow is missing") }
+expected_request_title = "Request mobile production ${{ inputs.candidate_tag }} (${{ inputs.platform }})"
+abort("Mobile production request title no longer binds candidate and platform") unless
+  request["run-name"] == expected_request_title
+request_job = request.fetch("jobs").fetch("dispatch-protected-promotion")
+abort("Mobile production request lacks bounded workflow-dispatch authority") unless
+  request_job.fetch("permissions")["actions"] == "write"
+request_commands = request_job.fetch("steps").map { |step| step["run"].to_s }.join("\n")
+required_request_evidence = [
+  '"$GITHUB_REF" != refs/heads/main',
+  '"$GITHUB_ACTOR" != "$DEPLOYMENT_APPROVER"',
+  "I_APPROVE_MOBILE_PRODUCTION",
+  "gh workflow run production-release.yml",
+  "--ref main",
+  'authorization_run_id="$GITHUB_RUN_ID"',
+  'authorization_sha="$GITHUB_SHA"',
+]
+missing_request_evidence = required_request_evidence.reject do |evidence|
+  request_commands.include?(evidence)
+end
+abort("Mobile production request handoff is incomplete: #{missing_request_evidence.join(', ')}") unless
+  missing_request_evidence.empty?
+
+production_path = File.join(options.fetch(:workflow_directory), "production-release.yml")
+production = workflows.fetch(production_path) { abort("Production Store Release workflow is missing") }
+production_candidate = production.fetch("jobs").fetch("candidate")
+production_commands = production_candidate.fetch("steps").map { |step| step["run"].to_s }.join("\n")
+required_handoff_evidence = [
+  '"$GITHUB_REF" != refs/heads/main',
+  '"$GITHUB_ACTOR" != github-actions[bot]',
+  "actions/runs/$AUTHORIZATION_RUN_ID",
+  '.path == ".github/workflows/request-mobile-production.yml"',
+  '.display_title == ("Request mobile production " + $candidate + " (" + $platform + ")")',
+  ".actor.login == $approver",
+  'git fetch origin release --no-tags',
+  'tag_commit" != "$source_commit',
+]
+missing_handoff_evidence = required_handoff_evidence.reject do |evidence|
+  production_commands.include?(evidence)
+end
+abort("Mobile production authorization/provenance handoff is incomplete: #{missing_handoff_evidence.join(', ')}") unless
+  missing_handoff_evidence.empty?
+abort("Mobile production is still blocked on desktop signing validation") if
+  production_commands.include?("require-production-signing-validation.sh")
 
 signing_path = File.join(options.fetch(:workflow_directory), "production-signing-validation.yml")
 signing = workflows.fetch(signing_path) { abort("Production Signing Validation workflow is missing") }
@@ -109,8 +155,11 @@ configuration = File.read(options.fetch(:configuration_path), encoding: "UTF-8")
 unless configuration.scan(/^configure_environment release-promotion true testing false$/).length == 1
   abort("Release promotion environment is not configured exactly once for protected testing approval")
 end
-unless configuration.scan(/^configure_environment mobile-production true release true$/).length == 1
-  abort("Production environment no longer prevents self-review")
+unless configuration.scan(/^configure_environment mobile-production true main true$/).length == 1
+  abort("Mobile production environment is not restricted to the protected request branch")
+end
+unless configuration.scan(/^configure_environment desktop-production true release true$/).length == 1
+  abort("Desktop production does not have an independent protected environment")
 end
 abort("Environment configuration does not disable administrator bypass in both payloads") unless
   configuration.scan(/"?can_admins_bypass"?: false/).length == 2
@@ -119,7 +168,7 @@ required_configuration_evidence = [
   'gh variable delete "$variable_name" --env release-promotion',
   "release_promotion_secrets=",
   "release_promotion_variables=",
-  "mobile-external-beta release-promotion mobile-production play-access-production",
+  "desktop-production",
   'can_admins_bypass="$(gh api',
   "Administrators cannot bypass deployment protection",
 ]
@@ -127,4 +176,11 @@ missing_evidence = required_configuration_evidence.reject { |evidence| configura
 abort("Release promotion configuration verification is incomplete: #{missing_evidence.join(', ')}") unless
   missing_evidence.empty?
 
-puts "Release authority policy keeps branch promotion reviewed and signing validation non-publishing."
+release_path = File.join(options.fetch(:workflow_directory), "release.yml")
+release_workflow = workflows.fetch(release_path) { abort("Desktop signing workflow is missing") }
+%w[build-desktop-windows build-desktop-macos].each do |job_name|
+  abort("#{job_name} is not isolated behind desktop-production") unless
+    release_workflow.fetch("jobs").fetch(job_name)["environment"] == "desktop-production"
+end
+
+puts "Release authority keeps mobile promotion reviewed and independent from Desktop signing/publication."

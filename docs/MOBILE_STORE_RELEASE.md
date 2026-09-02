@@ -25,9 +25,12 @@ The first script validates the JKS alias, passwords, pinned Android certificate,
 Apple distribution certificate/profile/team/bundle, App Store Connect P8 key,
 metadata, tester files, contact details, and export-compliance constraints. The
 configuration scripts upload secrets without printing them, configure keyless
-Google OIDC, scope beta environments to `testing`, scope production to
-`release`, delete stale repository-level copies of mobile secrets, verify their
-absence, and protect the release branches.
+Google OIDC, scope beta environments to `testing`, scope mobile production to
+protected `main`, delete stale repository-level copies of mobile secrets,
+verify their absence, and protect the release branches. Desktop credentials
+are scoped separately to `desktop-production` on `release`. If Desktop inputs
+are intentionally unavailable, apply only the release environment policy with
+`./scripts/configure-github-release-environments.sh --apply`.
 
 Keep `release/private/` untracked and back it up to encrypted offline storage.
 Never place mobile IPA/AAB files, tester identities, private keys, or store
@@ -47,7 +50,8 @@ Complete these items in Apple Developer and App Store Connect:
    contact, encryption, and all legal declarations.
 8. Keep France excluded while `EXPORT_COMPLIANCE_STATUS=EXEMPT_APPROVED`; do
    not change that constraint without completing the required French process.
-9. Create a Developer ID Application certificate for production desktop DMGs.
+9. When Desktop publication is planned, separately create a Developer ID
+   Application certificate for production Desktop DMGs.
 
 The iOS store archive runs on `macos-26` and requires Xcode 26 or newer because
 of the linked Compose/UIKit SDK symbols.
@@ -110,17 +114,17 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
    the `testing` branch for that candidate tag. It verifies Apple and Google and
    then waits for the configured `release-promotion` reviewer. The dispatcher
    may provide this explicit approval. Approval advances
-   `release` to the exact tested SHA and starts no-publication production signing
-   validation, which has no production-continuation capability.
-3. Approve `mobile-production`. The workflow signs/verifies Windows, notarizes
-   and verifies macOS, freezes exact desktop artifacts, and stops without
-   changing either store.
-4. Review the validation result, manually run `Production Store Release` from
-   `release` for the same candidate, and approve its `mobile-production` jobs.
-   Direct promotion is rejected without the matching validation result.
-5. After both stores show the version live, run `Publish Stable Release` with
-   the same tag. It verifies both store builds and publishes the previously
-   frozen signed/notarized desktop bundle without rebuilding it.
+   `release` to the exact tested SHA. It does not start Desktop signing.
+3. Run `Request Mobile Production Release` from `main` for the same candidate,
+   choose `both`, and type `I_APPROVE_MOBILE_PRODUCTION`.
+4. Open the child `Production Store Release` run and approve its
+   `mobile-production` deployment. The owner can approve because the protected
+   parent dispatches the child as `github-actions[bot]`; the manual gate and
+   self-review prevention remain enabled. The child promotes the exact existing
+   Play/TestFlight build and never rebuilds or uploads it.
+5. Desktop is optional and independent. Only when it is wanted, manually run
+   `Production Signing Validation` from `release`, approve
+   `desktop-production`, and later publish the frozen Desktop bundle.
 
 Never reuse a store build number, move an existing tag, replace signing keys
 without a recorded rotation, or manually upload a different binary under the

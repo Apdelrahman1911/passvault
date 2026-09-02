@@ -199,7 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: release-promotion
     permissions:
-      actions: write
+      actions: read
       artifact-metadata: write
       attestations: write
       contents: write
@@ -307,12 +307,3 @@ jobs:
             }
           fi
           git push origin "$SOURCE_COMMIT:refs/heads/release"
-
-      - name: Start protected no-publication signing validation
-        env:
-          CANDIDATE_TAG: ${{ needs.candidate.outputs.candidate_tag }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run production-signing-validation.yml \
-            --ref release \
-            -f candidate_tag="$CANDIDATE_TAG"

@@ -257,7 +257,8 @@ configure_environment() {
 configure_environment mobile-beta false testing false
 configure_environment mobile-external-beta true testing true
 configure_environment release-promotion true testing false
-configure_environment mobile-production true release true
+configure_environment mobile-production true main true
+configure_environment desktop-production true release true
 configure_environment play-access-beta false main false
 configure_environment play-access-production true main true
 
@@ -324,7 +325,7 @@ if [[ "$WINDOWS_SIGNING_BACKEND" == signpath ]]; then
     gh variable delete WINDOWS_TIMESTAMP_URL \
         --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
     for environment_name in \
-        mobile-beta mobile-external-beta mobile-production \
+        mobile-beta mobile-external-beta mobile-production desktop-production \
         play-access-beta play-access-production; do
         gh variable delete WINDOWS_TIMESTAMP_URL --env "$environment_name" \
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
@@ -363,7 +364,7 @@ done
 
 # Repository-owned values must not be shadowed by stale environment copies.
 for environment_name in \
-    mobile-beta mobile-external-beta mobile-production \
+    mobile-beta mobile-external-beta mobile-production desktop-production \
     play-access-beta play-access-production; do
     environment_variable_names="$(gh variable list --env "$environment_name" \
         --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
@@ -430,42 +431,49 @@ desktop_production_secret_names=(
 )
 if [[ "$WINDOWS_SIGNING_BACKEND" == local-pfx ]]; then
     desktop_production_secret_names+=(WINDOWS_CERTIFICATE_BASE64 WINDOWS_CERTIFICATE_PASSWORD)
-    set_binary_secret WINDOWS_CERTIFICATE_BASE64 mobile-production "$WINDOWS_CERTIFICATE_FILE"
-    set_text_secret WINDOWS_CERTIFICATE_PASSWORD mobile-production "$WINDOWS_CERTIFICATE_PASSWORD"
-    gh secret delete WINDOWS_SIGNPATH_API_TOKEN --env mobile-production \
+    set_binary_secret WINDOWS_CERTIFICATE_BASE64 desktop-production "$WINDOWS_CERTIFICATE_FILE"
+    set_text_secret WINDOWS_CERTIFICATE_PASSWORD desktop-production "$WINDOWS_CERTIFICATE_PASSWORD"
+    gh secret delete WINDOWS_SIGNPATH_API_TOKEN --env desktop-production \
         --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
 elif [[ "$WINDOWS_SIGNING_BACKEND" == signpath ]]; then
     desktop_production_secret_names+=(WINDOWS_SIGNPATH_API_TOKEN)
-    set_text_secret WINDOWS_SIGNPATH_API_TOKEN mobile-production "$WINDOWS_SIGNPATH_API_TOKEN"
+    set_text_secret WINDOWS_SIGNPATH_API_TOKEN desktop-production "$WINDOWS_SIGNPATH_API_TOKEN"
     for secret_name in WINDOWS_CERTIFICATE_BASE64 WINDOWS_CERTIFICATE_PASSWORD; do
-        gh secret delete "$secret_name" --env mobile-production \
+        gh secret delete "$secret_name" --env desktop-production \
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
     done
 else
     for secret_name in \
         WINDOWS_CERTIFICATE_BASE64 WINDOWS_CERTIFICATE_PASSWORD WINDOWS_SIGNPATH_API_TOKEN; do
-        gh secret delete "$secret_name" --env mobile-production \
+        gh secret delete "$secret_name" --env desktop-production \
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
     done
 fi
-set_binary_secret MACOS_CERTIFICATE_BASE64 mobile-production "$MACOS_CERTIFICATE_FILE"
-set_text_secret MACOS_CERTIFICATE_PASSWORD mobile-production "$MACOS_CERTIFICATE_PASSWORD"
-set_binary_secret MACOS_PROVISIONING_PROFILE_BASE64 mobile-production \
+set_binary_secret MACOS_CERTIFICATE_BASE64 desktop-production "$MACOS_CERTIFICATE_FILE"
+set_text_secret MACOS_CERTIFICATE_PASSWORD desktop-production "$MACOS_CERTIFICATE_PASSWORD"
+set_binary_secret MACOS_PROVISIONING_PROFILE_BASE64 desktop-production \
     "$MACOS_PROVISIONING_PROFILE_FILE"
-set_text_secret MACOS_NOTARIZATION_APPLE_ID mobile-production "$MACOS_NOTARIZATION_APPLE_ID"
-set_text_secret MACOS_NOTARIZATION_PASSWORD mobile-production "$MACOS_NOTARIZATION_PASSWORD"
+set_text_secret MACOS_NOTARIZATION_APPLE_ID desktop-production "$MACOS_NOTARIZATION_APPLE_ID"
+set_text_secret MACOS_NOTARIZATION_PASSWORD desktop-production "$MACOS_NOTARIZATION_PASSWORD"
 
-mobile_scoped_secret_names=(
+all_mobile_secret_names=(
     KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
     IOS_DISTRIBUTION_CERTIFICATE_BASE64 IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
     IOS_PROVISIONING_PROFILE_BASE64 ASC_PRIVATE_KEY_BASE64 STORE_METADATA_ARCHIVE_BASE64
     APP_REVIEW_PHONE TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64
+)
+mobile_scoped_secret_names=(
+    "${all_mobile_secret_names[@]}"
     "${all_desktop_production_secret_names[@]}"
 )
 
 for environment_name in mobile-beta mobile-external-beta mobile-production; do
     set_binary_secret ASC_PRIVATE_KEY_BASE64 "$environment_name" "$ASC_PRIVATE_KEY_FILE"
     set_metadata_archive_secret "$environment_name"
+done
+for secret_name in "${all_mobile_secret_names[@]}"; do
+    gh secret delete "$secret_name" --env desktop-production \
+        --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
 done
 
 upload_only_secret_names=(
@@ -479,7 +487,17 @@ for environment_name in mobile-external-beta mobile-production; do
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
     done
 done
-for environment_name in mobile-beta mobile-external-beta; do
+
+mobile_environment_variable_names=(
+    GOOGLE_CLOSED_TEST_GROUP TESTFLIGHT_EXTERNAL_GROUP EXPORT_COMPLIANCE_STATUS
+    IOS_FRANCE_AVAILABLE APP_REVIEW_CONTACT_NAME APP_REVIEW_EMAIL
+    GOOGLE_WORKLOAD_IDENTITY_PROVIDER GOOGLE_SERVICE_ACCOUNT
+)
+for variable_name in "${mobile_environment_variable_names[@]}"; do
+    gh variable delete "$variable_name" --env desktop-production \
+        --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+done
+for environment_name in mobile-beta mobile-external-beta mobile-production; do
     for secret_name in "${all_desktop_production_secret_names[@]}"; do
         gh secret delete "$secret_name" --env "$environment_name" \
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
@@ -532,11 +550,11 @@ set_environment_variable() {
 
 if [[ "$WINDOWS_SIGNING_BACKEND" == azure-artifact-signing ]]; then
     for variable_name in "${windows_azure_variable_names[@]}"; do
-        set_environment_variable mobile-production "$variable_name" "${!variable_name}"
+        set_environment_variable desktop-production "$variable_name" "${!variable_name}"
     done
 elif [[ "$WINDOWS_SIGNING_BACKEND" == signpath ]]; then
     for variable_name in "${windows_signpath_variable_names[@]}"; do
-        set_environment_variable mobile-production "$variable_name" "${!variable_name}"
+        set_environment_variable desktop-production "$variable_name" "${!variable_name}"
     done
 fi
 for variable_name in "${windows_remote_variable_names[@]}"; do
@@ -549,12 +567,12 @@ for variable_name in "${windows_remote_variable_names[@]}"; do
         selected=true
     fi
     if [[ "$selected" != true ]]; then
-        gh variable delete "$variable_name" --env mobile-production \
+        gh variable delete "$variable_name" --env desktop-production \
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
     fi
 done
 for environment_name in \
-    mobile-beta mobile-external-beta play-access-beta play-access-production; do
+    mobile-beta mobile-external-beta mobile-production play-access-beta play-access-production; do
     for variable_name in "${windows_remote_variable_names[@]}"; do
         gh variable delete "$variable_name" --env "$environment_name" \
             --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
@@ -604,16 +622,18 @@ if [[ "$play_testers_ready" == "true" ]]; then
     expected_external_secrets+=(PLAY_CLOSED_TESTERS_BASE64)
 fi
 expected_production_secrets=(ASC_PRIVATE_KEY_BASE64 STORE_METADATA_ARCHIVE_BASE64 APP_REVIEW_PHONE)
-expected_production_secrets+=("${desktop_production_secret_names[@]}")
+expected_desktop_production_secrets=("${desktop_production_secret_names[@]}")
 
 repository_variables="$(gh variable list --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 repository_secrets="$(gh secret list --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 mobile_beta_secrets="$(gh secret list --env mobile-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 external_secrets="$(gh secret list --env mobile-external-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 production_secrets="$(gh secret list --env mobile-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
+desktop_production_secrets="$(gh secret list --env desktop-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 release_promotion_secrets="$(gh secret list --env release-promotion --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 external_variables="$(gh variable list --env mobile-external-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 production_variables="$(gh variable list --env mobile-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
+desktop_production_variables="$(gh variable list --env desktop-production --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 release_promotion_variables="$(gh variable list --env release-promotion --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 beta_variables="$(gh variable list --env mobile-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
 play_beta_secrets="$(gh secret list --env play-access-beta --repo "$GITHUB_REPOSITORY" --json name --jq '.[].name')"
@@ -706,6 +726,8 @@ verify_environment_secrets() {
 verify_environment_secrets mobile-beta "$mobile_beta_secrets" "${expected_mobile_beta_secrets[@]}"
 verify_environment_secrets mobile-external-beta "$external_secrets" "${expected_external_secrets[@]}"
 verify_environment_secrets mobile-production "$production_secrets" "${expected_production_secrets[@]}"
+verify_environment_secrets desktop-production "$desktop_production_secrets" \
+    "${expected_desktop_production_secrets[@]}"
 
 verify_absent_environment_secrets() {
     local environment_name="$1"
@@ -732,7 +754,8 @@ verify_absent_environment_secrets mobile-external-beta "$external_secrets" \
     "${upload_only_secret_names[@]}" "${all_desktop_production_secret_names[@]}"
 verify_absent_environment_secrets mobile-production "$production_secrets" \
     "${upload_only_secret_names[@]}" \
-    TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64
+    TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64 \
+    "${all_desktop_production_secret_names[@]}"
 case "$WINDOWS_SIGNING_BACKEND" in
 local-pfx)
     inactive_windows_secret_names=(WINDOWS_SIGNPATH_API_TOKEN)
@@ -746,8 +769,10 @@ signpath)
     )
     ;;
 esac
-verify_absent_environment_secrets mobile-production "$production_secrets" \
+verify_absent_environment_secrets desktop-production "$desktop_production_secrets" \
     "${inactive_windows_secret_names[@]}"
+verify_absent_environment_secrets desktop-production "$desktop_production_secrets" \
+    "${all_mobile_secret_names[@]}"
 verify_absent_environment_secrets play-access-beta "$play_beta_secrets" \
     "${mobile_scoped_secret_names[@]}"
 verify_absent_environment_secrets play-access-production "$play_production_secrets" \
@@ -812,9 +837,10 @@ signpath)
     inactive_remote_variable_names=("${windows_remote_variable_names[@]}")
     ;;
 esac
-expected_production_variables+=("${selected_remote_variable_names[@]}")
 verify_environment_variables mobile-production "$production_variables" \
     "${expected_production_variables[@]}"
+verify_environment_variables desktop-production "$desktop_production_variables" \
+    "${selected_remote_variable_names[@]}"
 verify_environment_variables mobile-beta "$beta_variables" \
     TESTFLIGHT_EXTERNAL_GROUP EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
 
@@ -841,6 +867,10 @@ verify_absent_environment_variables mobile-external-beta "$external_variables" \
     "${repo_variable_names[@]}"
 verify_absent_environment_variables mobile-production "$production_variables" \
     "${repo_variable_names[@]}"
+verify_absent_environment_variables desktop-production "$desktop_production_variables" \
+    "${repo_variable_names[@]}"
+verify_absent_environment_variables desktop-production "$desktop_production_variables" \
+    "${mobile_environment_variable_names[@]}"
 verify_absent_environment_variables play-access-beta "$play_beta_variables" \
     "${repo_variable_names[@]}"
 verify_absent_environment_variables play-access-production "$play_production_variables" \
@@ -850,12 +880,14 @@ verify_absent_environment_variables mobile-beta "$beta_variables" \
     "${windows_remote_variable_names[@]}"
 verify_absent_environment_variables mobile-external-beta "$external_variables" \
     "${windows_remote_variable_names[@]}"
+verify_absent_environment_variables mobile-production "$production_variables" \
+    "${windows_remote_variable_names[@]}"
 verify_absent_environment_variables play-access-beta "$play_beta_variables" \
     "${windows_remote_variable_names[@]}"
 verify_absent_environment_variables play-access-production "$play_production_variables" \
     "${windows_remote_variable_names[@]}"
 if ((${#inactive_remote_variable_names[@]} > 0)); then
-    verify_absent_environment_variables mobile-production "$production_variables" \
+    verify_absent_environment_variables desktop-production "$desktop_production_variables" \
         "${inactive_remote_variable_names[@]}"
 fi
 
@@ -864,7 +896,7 @@ for variable_name in "${windows_remote_variable_names[@]}"; do
         verification_failures=$((verification_failures + 1))
         append_github_row "$variable_name duplicate" "Repository variable" "Yes" \
             "values.env:$variable_name" "Broader-scope remote-signing value still exists" \
-            "Delete it and retain it only in mobile-production."
+            "Delete it and retain it only in desktop-production."
     else
         append_github_row "$variable_name duplicate" "Repository variable" "No" \
             "values.env:$variable_name" "Absent as required" "None"
@@ -875,6 +907,7 @@ if [[ "$WINDOWS_SIGNING_BACKEND" == signpath ]]; then
         grep -Fxq WINDOWS_TIMESTAMP_URL <<< "$beta_variables" ||
         grep -Fxq WINDOWS_TIMESTAMP_URL <<< "$external_variables" ||
         grep -Fxq WINDOWS_TIMESTAMP_URL <<< "$production_variables" ||
+        grep -Fxq WINDOWS_TIMESTAMP_URL <<< "$desktop_production_variables" ||
         grep -Fxq WINDOWS_TIMESTAMP_URL <<< "$play_beta_variables" ||
         grep -Fxq WINDOWS_TIMESTAMP_URL <<< "$play_production_variables"; then
         verification_failures=$((verification_failures + 1))
@@ -887,7 +920,8 @@ if [[ "$WINDOWS_SIGNING_BACKEND" == signpath ]]; then
     fi
 fi
 
-for environment_name in mobile-beta mobile-external-beta release-promotion mobile-production; do
+for environment_name in \
+    mobile-beta mobile-external-beta release-promotion mobile-production desktop-production; do
     if gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" >/dev/null 2>&1; then
         append_github_row "$environment_name" "GitHub environment" "Yes" \
             "GitHub API" "Environment exists" "None"
@@ -919,13 +953,16 @@ append_github_row "TESTFLIGHT_INTERNAL_EMAILS" "App Store Connect users" "Manual
     "Add real App Store Connect users before assigning internal testers."
 
 for environment_name in \
-    mobile-beta mobile-external-beta release-promotion mobile-production \
+    mobile-beta mobile-external-beta release-promotion mobile-production desktop-production \
     play-access-beta play-access-production; do
     case "$environment_name" in
     mobile-beta | mobile-external-beta | release-promotion)
         expected_branch=testing
         ;;
     mobile-production)
+        expected_branch=main
+        ;;
+    desktop-production)
         expected_branch=release
         ;;
     play-access-beta | play-access-production)
@@ -955,7 +992,8 @@ for environment_name in \
 done
 
 for environment_name in \
-    mobile-external-beta release-promotion mobile-production play-access-production; do
+    mobile-external-beta release-promotion mobile-production desktop-production \
+    play-access-production; do
     reviewers="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
         --jq '.protection_rules[] | select(.type == "required_reviewers") | .reviewers[].reviewer.login')"
     reviewer_count="$(grep -c . <<< "$reviewers" || true)"
@@ -980,7 +1018,7 @@ for environment_name in \
     fi
 done
 
-for environment_name in release-promotion mobile-production; do
+for environment_name in release-promotion mobile-production desktop-production; do
     can_admins_bypass="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
         --jq '.can_admins_bypass')"
     if [[ "$can_admins_bypass" == "false" ]]; then

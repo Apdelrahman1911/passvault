@@ -2,9 +2,8 @@
 
 PassVault promotes one tested mobile build and one tested Git commit through
 testing and production. Mobile binaries are never rebuilt after the internal
-upload. Desktop testing packages are public and intentionally unsigned;
-production Windows and macOS packages cannot publish unless signing and
-notarization succeed.
+upload. Desktop signing and publication are a separate, optional lifecycle;
+missing Desktop credentials never block Android or iOS production.
 
 ## Branch and approval flow
 
@@ -16,14 +15,18 @@ main
        ├─ unsigned Windows/macOS/Linux GitHub prerelease
        └─ Candidate Readiness after Apple Beta Review approval
             └─ release-promotion approval → fast-forward exact SHA → release
-                 └─ mobile-production approval → validation only
-                      ├─ signed/timestamped Windows bundle
-                      ├─ signed/notarized/stapled macOS bundle
-                      └─ frozen attested desktop artifact (no publication)
-                           └─ explicit Production Store Release dispatch
-                                └─ mobile-production approval → protected promotion
-                                     ├─ exact Play build → production (100%)
-                                     └─ exact TestFlight build → App Review (automatic release)
+
+main
+  └─ Request Mobile Production Release (owner + typed confirmation)
+       └─ protected bot handoff
+            └─ mobile-production approval
+                 ├─ exact Play build → production (100%)
+                 └─ exact TestFlight build → App Review (automatic release)
+
+release (optional, later)
+  └─ Production Signing Validation
+       └─ desktop-production approval → frozen signed Desktop bundle
+            └─ Publish Stable Release → desktop-production approval
 ```
 
 CI runs on `main`, `testing`, and `release`. `main` and `testing` require a PR,
@@ -42,11 +45,16 @@ Run `scripts/configure-release-branches.sh --apply` once to create and protect
 the branches. Run `scripts/configure-github-mobile-release.sh --apply` when rotating
 mobile credentials or release protections; it scopes beta environments to
 `testing`, the secret-free `release-promotion` approval to `testing`, production
-to `release`, and keyless Play access-check environments to `main`. Release
+mobile promotion to `main`, Desktop production to `release`, and keyless Play
+access-check environments to `main`. To apply only these three release
+environment policies while Desktop credentials are intentionally deferred, run
+`scripts/configure-github-release-environments.sh --apply` instead. Release
 promotion requires an explicit approval by the configured reviewer and permits
 that reviewer to be the dispatching actor so a single-owner repository can
-operate the gate. Production approvals still require a reviewer other than the
-dispatching actor.
+operate the gate. `mobile-production` still prevents approval by its initiating
+actor: the protected request workflow dispatches the child as
+`github-actions[bot]`, so the configured owner can approve without a second
+human account. Administrator bypass remains disabled.
 The production access check requires the deployment approver because it
 federates the same publisher identity as a production promotion. The
 access-check environments expose only the keyless Google identity variables;
@@ -105,28 +113,28 @@ Readiness` from the `testing` branch for the candidate tag. That workflow
 verifies both stores using their APIs and then waits at the secret-free
 `release-promotion` environment. The configured reviewer explicitly authorizes
 the immutable `readiness-manifest.json`, fast-forward of `release` to the exact
-candidate commit, and start of `Production Signing Validation`. The dispatcher
-may approve this gate; the manual approval itself remains required. Signing
-validation is explicitly unable to dispatch production.
+candidate commit. The dispatcher may approve this gate; the manual approval
+itself remains required. Candidate Readiness does not start Desktop signing or
+mobile production.
 
 ## Production release
 
-Approve the pending `mobile-production` deployment in GitHub. The first
-protected run is validation-only: it builds the exact release commit,
-Authenticode signs/timestamps Windows native code and installers, signs every
-macOS nested native component with Developer ID and Hardened Runtime, requires
-`Accepted` notarization, staples/verifies the ticket, checks Gatekeeper, and
-freezes an attested Actions artifact. It does not publish a GitHub release or
-change either store. Validation started by Candidate Readiness stops after
-freezing the bundle.
+Run `Request Mobile Production Release` from protected `main`, enter the exact
+candidate tag, choose the platform(s), and type
+`I_APPROVE_MOBILE_PRODUCTION`. The request must be made by
+`DEPLOYMENT_APPROVER`. It dispatches `Production Store Release` as
+`github-actions[bot]`; approve that child's pending `mobile-production`
+deployment. The child verifies the successful request run, exact `release`
+commit, immutable candidate tag, attested readiness manifest, mobile receipts,
+version, build number, and candidate Store assets. It then promotes the
+candidate's recorded build from Play `alpha` to production and submits the same
+processed TestFlight build to App Review. It does not compile, sign, or upload
+a mobile binary.
 
-After reviewing the validation result, deliberately run `Production Store
-Release` from `release` for the same candidate and approve its
-`mobile-production` deployment. That workflow first requires the matching
-unexpired validation artifact, then promotes the same Play build from `alpha`
-to `production` with a completed 100% rollout and submits the same TestFlight
-build to App Review with automatic release enabled. Reruns target the same
-unique version/build and never compile a new mobile binary.
+Desktop is optional. When a Desktop release is wanted later, manually run
+`Production Signing Validation` from `release` for the same candidate and
+approve `desktop-production`. It signs/verifies Windows, signs/notarizes macOS,
+and freezes the attested Desktop bundle without changing either mobile Store.
 
 Stores cannot become live atomically: Google may publish before Apple finishes
 review. After both consoles show the version live, run `Publish Stable Release`
@@ -165,7 +173,7 @@ and must be checked for localization, cropping, status-bar content, and store
 quality. Production is blocked until `validate-mobile-store-assets.rb` passes.
 
 To replace iOS screenshots after a version has been submitted, run `Mobile
-Store Release` from `release` with platform `ios`, channel `production`, and
+Store Release` from `main` with platform `ios`, channel `production`, and
 operation `store-assets`. Enter `I_APPROVE_PRODUCTION` and
 `I_APPROVE_REVIEW_WITHDRAWAL` in their confirmation fields. The protected job
 withdraws the version when Apple permits it, replaces the screenshots, uploads
@@ -197,7 +205,7 @@ Production desktop variables:
 - `MACOS_NOTARIZATION_TEAM_ID`
 - `MACOS_DEVELOPER_ID_CERTIFICATE_SHA256`
 
-Production desktop secrets in the release-only `mobile-production` environment:
+Production desktop secrets in the release-only `desktop-production` environment:
 
 - `WINDOWS_SIGNPATH_API_TOKEN` for SignPath; or
 - `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` for local-PFX
@@ -214,22 +222,25 @@ variables are `WINDOWS_AZURE_CLIENT_ID`, `WINDOWS_AZURE_TENANT_ID`,
 Only the selected backend's inputs may exist; the configuration script removes
 and verifies the absence of inactive and broader-scope copies.
 
-The Windows and macOS signing jobs declare `mobile-production`, so GitHub
+The Windows and macOS signing jobs declare `desktop-production`, so GitHub
 releases their inputs only for the protected `release` branch after production
-deployment approval. Self-review is disabled. SignPath Foundation may require
+deployment approval. Self-review is prevented. SignPath Foundation may require
 one additional manual approval inside SignPath; the workflow waits for the
 decision and fails closed on rejection or timeout.
 
 The `release-promotion` environment contains no secrets or variables. It allows
 only `testing` and requires the configured reviewer. Self-review is permitted
-for this environment only so the repository owner can explicitly approve a run
-they dispatched. Other protected release environments retain their existing
-self-review policy.
+there so the repository owner can explicitly approve a run they dispatched.
+`mobile-production` allows only `main` and retains self-review prevention
+because its normal caller is the bot handoff. `desktop-production` allows only
+`release` and retains its independent reviewer policy for any future Desktop
+release.
 GitHub enables administrator bypass by default and its public environment API
 must explicitly receive the non-bypassable setting. The configuration script
-disables administrator bypass for every managed environment and verifies both
-`release-promotion` and `mobile-production`; the promotion job independently
-fails closed while `release-promotion` remains bypassable.
+disables administrator bypass for every managed environment and verifies
+`release-promotion`, `mobile-production`, and `desktop-production`; the
+promotion job independently fails closed if `release-promotion` is ever made
+bypassable.
 
 See `docs/RELEASE_SIGNING.md` for certificate requirements and rotation. Use
 `docs/PRODUCTION_SIGNING_HANDOFF.md` as the single field-by-field private input
