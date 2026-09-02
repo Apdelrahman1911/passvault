@@ -18,7 +18,13 @@ interface BackupContentSource {
     suspend fun close()
 }
 
-/** Atomic or best-effort transactional output for an encrypted backup file. */
+/**
+ * Atomic or best-effort transactional output for an encrypted backup file.
+ *
+ * An outer ownership guard may call [abort] from non-cancellable cleanup even
+ * after [commit]. Implementations must therefore treat [abort] after a
+ * successful [commit] as a no-op.
+ */
 interface BackupContentSink {
     suspend fun write(buffer: ByteArray, byteCount: Int)
     suspend fun commit()

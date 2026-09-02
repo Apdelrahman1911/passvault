@@ -665,15 +665,17 @@ private suspend fun createBackupFile(
 ): BackupFile {
     val sensitivePassword = SensitiveText.from(password)
     try {
-        val output = fileStore.create(
-            "passvault-${Clock.System.now().epochSeconds}.pvault",
-        ).getOrThrow()
-        backupService.createBackup(
-            password = sensitivePassword,
-            sink = output.sink,
-            onProgress = onProgress,
-        ).getOrThrow()
-        return output.file
+        return withOwnedBackupOutput(
+            fileStore = fileStore,
+            suggestedName = "passvault-${Clock.System.now().epochSeconds}.pvault",
+        ) { output ->
+            backupService.createBackup(
+                password = sensitivePassword,
+                sink = output.sink,
+                onProgress = onProgress,
+            ).getOrThrow()
+            output.file
+        }
     } finally {
         sensitivePassword.clear()
     }
