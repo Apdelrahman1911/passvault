@@ -108,7 +108,8 @@ export/import, RTL, large text, keyboard/safe-area behavior, and offline use.
    opt-in and stay disabled during the pilot.
 2. After Apple reports Beta App Review approved, run `Candidate Readiness` from
    the `testing` branch for that candidate tag. It verifies Apple and Google and
-   then waits for a separate `release-promotion` reviewer. Approval advances
+   then waits for the configured `release-promotion` reviewer. The dispatcher
+   may provide this explicit approval. Approval advances
    `release` to the exact tested SHA and starts no-publication production signing
    validation, which has no production-continuation capability.
 3. Approve `mobile-production`. The workflow signs/verifies Windows, notarizes

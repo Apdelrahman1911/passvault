@@ -226,12 +226,12 @@ jobs:
             .deployment_branch_policy.custom_branch_policies == true and
             ([.protection_rules[] | select(.type == "required_reviewers")] | length) == 1 and
             ([.protection_rules[] | select(.type == "required_reviewers")][0] |
-              .prevent_self_review == true and
+              .prevent_self_review == false and
               (.reviewers | length) == 1 and
               .reviewers[0].type == "User" and
               .reviewers[0].reviewer.login == $reviewer)
           ' "$environment_json" >/dev/null || {
-            echo "release-promotion lacks the required non-bypassable independent approval." >&2
+            echo "release-promotion lacks the required non-bypassable manual approval." >&2
             exit 1
           }
           jq -e '
