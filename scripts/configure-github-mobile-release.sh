@@ -201,12 +201,19 @@ configure_environment() {
     local environment_name="$1"
     local require_review="$2"
     local allowed_branch="$3"
+    local prevent_self_review="${4:-true}"
     local payload
     if [[ "$require_review" == "true" ]]; then
-        payload="$(jq -n --argjson reviewer_id "$reviewer_id" '{
+        if [[ "$prevent_self_review" != "true" && "$prevent_self_review" != "false" ]]; then
+            echo "Invalid prevent-self-review policy for $environment_name." >&2
+            exit 1
+        fi
+        payload="$(jq -n \
+            --argjson reviewer_id "$reviewer_id" \
+            --argjson prevent_self_review "$prevent_self_review" '{
             wait_timer: 0,
             reviewers: [{ type: "User", id: $reviewer_id }],
-            prevent_self_review: true,
+            prevent_self_review: $prevent_self_review,
             can_admins_bypass: false,
             deployment_branch_policy: {
                 protected_branches: false,
@@ -247,12 +254,12 @@ configure_environment() {
     fi
 }
 
-configure_environment mobile-beta false testing
-configure_environment mobile-external-beta true testing
-configure_environment release-promotion true testing
-configure_environment mobile-production true release
-configure_environment play-access-beta false main
-configure_environment play-access-production true main
+configure_environment mobile-beta false testing false
+configure_environment mobile-external-beta true testing true
+configure_environment release-promotion true testing false
+configure_environment mobile-production true release true
+configure_environment play-access-beta false main false
+configure_environment play-access-production true main true
 
 # Branch promotion is an authorization boundary, not a credential boundary.
 # Keep this environment empty even if a stale environment with the same name
@@ -954,17 +961,22 @@ for environment_name in \
     reviewer_count="$(grep -c . <<< "$reviewers" || true)"
     prevent_self_review="$(gh api "repos/$GITHUB_REPOSITORY/environments/$environment_name" \
         --jq '.protection_rules[] | select(.type == "required_reviewers") | .prevent_self_review')"
-    if [[ "$reviewer_count" == 1 && "$prevent_self_review" == "true" ]] && \
+    expected_prevent_self_review=true
+    if [[ "$environment_name" == "release-promotion" ]]; then
+        expected_prevent_self_review=false
+    fi
+    if [[ "$reviewer_count" == 1 && \
+        "$prevent_self_review" == "$expected_prevent_self_review" ]] && \
         grep -Fxiq "$GITHUB_DEPLOYMENT_APPROVER" <<< "$reviewers"; then
         append_github_row "$environment_name reviewer" "GitHub environment protection" "Yes" \
             "values.env:GITHUB_DEPLOYMENT_APPROVER" \
-            "Required reviewer exists and self-review is prevented" "None"
+            "Required reviewer exists and prevent-self-review matches policy" "None"
     else
         verification_failures=$((verification_failures + 1))
         append_github_row "$environment_name reviewer" "GitHub environment protection" "No" \
             "values.env:GITHUB_DEPLOYMENT_APPROVER" \
-            "Required reviewer or prevent-self-review protection missing" \
-            "Rerun environment configuration and verify the repository plan supports reviewers."
+            "Required reviewer or prevent-self-review policy mismatch" \
+            "Rerun environment configuration and verify the intended reviewer policy."
     fi
 done
 
