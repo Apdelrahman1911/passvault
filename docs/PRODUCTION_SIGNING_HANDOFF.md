@@ -251,8 +251,9 @@ EKU, exact publisher, and derives the certificate SHA-256 pin before uploading a
 review. Do not put any of these secrets at repository scope. The configuration script deletes and verifies the absence
 of stale repository-level copies.
 
-`release-promotion` must allow deployments only from `testing`, require the configured reviewer, and prevent self
-review. It is an authorization boundary only: it must contain no secrets or variables. Candidate Readiness may advance
+`release-promotion` must allow deployments only from `testing` and require the configured reviewer. It permits self
+review so a single repository owner can explicitly approve a run they dispatched; this exception does not apply to
+other release environments. It is an authorization boundary only: it must contain no secrets or variables. Candidate Readiness may advance
 `release` only through this environment, and signing validation contains no automatic production continuation. The
 documented production path then requires a separate `Production Store Release` dispatch.
 

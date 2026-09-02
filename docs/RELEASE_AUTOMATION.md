@@ -43,7 +43,10 @@ the branches. Run `scripts/configure-github-mobile-release.sh --apply` when rota
 mobile credentials or release protections; it scopes beta environments to
 `testing`, the secret-free `release-promotion` approval to `testing`, production
 to `release`, and keyless Play access-check environments to `main`. Release
-promotion and production require a reviewer other than the dispatching actor.
+promotion requires an explicit approval by the configured reviewer and permits
+that reviewer to be the dispatching actor so a single-owner repository can
+operate the gate. Production approvals still require a reviewer other than the
+dispatching actor.
 The production access check requires the deployment approver because it
 federates the same publisher identity as a production promotion. The
 access-check environments expose only the keyless Google identity variables;
@@ -100,10 +103,11 @@ Apple review is asynchronous and App Store Connect has no GitHub event hook.
 After Apple emails that Beta App Review is approved, manually run `Candidate
 Readiness` from the `testing` branch for the candidate tag. That workflow
 verifies both stores using their APIs and then waits at the secret-free
-`release-promotion` environment. A separate reviewer authorizes the immutable
-`readiness-manifest.json`, fast-forward of `release` to the exact candidate
-commit, and start of `Production Signing Validation`. Signing validation is
-explicitly unable to dispatch production.
+`release-promotion` environment. The configured reviewer explicitly authorizes
+the immutable `readiness-manifest.json`, fast-forward of `release` to the exact
+candidate commit, and start of `Production Signing Validation`. The dispatcher
+may approve this gate; the manual approval itself remains required. Signing
+validation is explicitly unable to dispatch production.
 
 ## Production release
 
@@ -217,8 +221,10 @@ one additional manual approval inside SignPath; the workflow waits for the
 decision and fails closed on rejection or timeout.
 
 The `release-promotion` environment contains no secrets or variables. It allows
-only `testing`, requires the configured reviewer, and prevents the actor who
-dispatched Candidate Readiness from approving the release-branch mutation.
+only `testing` and requires the configured reviewer. Self-review is permitted
+for this environment only so the repository owner can explicitly approve a run
+they dispatched. Other protected release environments retain their existing
+self-review policy.
 GitHub enables administrator bypass by default and its public environment API
 must explicitly receive the non-bypassable setting. The configuration script
 disables administrator bypass for every managed environment and verifies both
