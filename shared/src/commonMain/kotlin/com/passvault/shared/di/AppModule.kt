@@ -6,6 +6,7 @@ import com.passvault.core.crypto.PasswordGenerator
 import com.passvault.core.crypto.SecurePasswordGenerator
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
+import com.passvault.core.database.VaultDatabaseBootstrap
 import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.backup.VaultBackupService
@@ -78,9 +79,10 @@ object AppModule {
      */
     val databaseModule = module {
         // Database
-        single { createDatabase(get()) }
+        single { createDatabaseBootstrap(get()) }
+        single<VaultDatabase> { get<VaultDatabaseBootstrap>().database() }
         single<AppDatabaseLifecycle> {
-            AppDatabaseLifecycle { get<VaultDatabase>().close() }
+            AppDatabaseLifecycle { get<VaultDatabaseBootstrap>().close() }
         }
         single { createAttachmentBlobStore(get()) }
 

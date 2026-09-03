@@ -10,6 +10,12 @@ directory format exists.
 The local vault is a Room/SQLite database at the platform-managed application path. Database schema version 5 stores
 structural metadata and application-encrypted records. The SQLite file itself is not SQLCipher-encrypted.
 
+An existing database must pass a bounded, read-only SQLite `quick_check` before Room opens and a second check after
+Room validates or migrates it. A failed check does not change the file. With explicit confirmation, PassVault moves
+the unopened database bundle and encrypted attachment directory into protected recovery storage before creating a
+new empty vault. Those preserved files are salvage material, not a supported backup container; portable recovery uses
+a fully authenticated `.pvault` backup.
+
 The application-level vault format starts at version 1. Saving the first credential with a TOTP authenticator
 atomically raises the metadata marker to version 2; it is never lowered. This reader accepts versions 1 and 2. The
 TOTP fields remain inside the encrypted credential payload. Room versions 2 and 3 add justified blind-index lookup

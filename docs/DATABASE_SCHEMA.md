@@ -70,3 +70,17 @@ Android, iOS, and Desktop database builders register every migration explicitly.
 kept as test fixtures. Migration tests cover every supported source version through version 5, fresh-schema foreign
 key enforcement, query-plan use, dependent-row and ciphertext preservation, orphan repair, and transactional rollback
 after injected migration failures. Destructive fallback is not configured.
+
+## Startup integrity and recovery
+
+The application owns one lazy Room instance behind `VaultDatabaseBootstrap`. Existing files receive a read-only,
+no-follow `PRAGMA quick_check(1)` before Room opens; a second check runs through Room after schema validation and any
+migration. SQLite corruption/not-a-database results are distinct from permission, storage, and migration failures.
+
+Corruption never triggers `fallbackToDestructiveMigration`, `VACUUM`, or automatic repair. Before Room has opened a
+damaged bundle, the user can explicitly move the database, `-wal`/`-shm`/`-journal` sidecars, and encrypted attachment
+directory into app-private recovery storage, then create a fresh vault and restore a verified `.pvault` backup. Moves
+are rolled back on failure and the main database moves last as the commit marker. On restart, a recovery directory
+without that marker is rolled back before SQLite can open; orphan sidecars also block fresh-database creation. Bounded enum-only health events live
+outside the database because a damaged database is not a reliable or safe diagnostic sink; `corruption_logs` remains
+DAO-less and must not receive raw exceptions.

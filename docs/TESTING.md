@@ -62,7 +62,8 @@ Run focused suites while editing, for example:
 
 - Crypto: round trip, wrong key, tamper, nonce uniqueness, KDF bounds, domain separation, cancellation, and sizes.
 - Database/repositories: real Room plus real crypto, raw-row confidentiality, locked access, relationships,
-  transactions, counts, and corrupt rows.
+  transactions, counts, corrupt rows, startup `quick_check`, WAL handling, migration failure, and byte-exact
+  non-destructive recovery with rollback.
 - Backup: round trip, wrong password, tamper/truncation/version/limits, referential integrity, preview, and rollback.
 - Presentation: validation, rapid submit, cancellation, errors, lock cleanup, filters/sort, and settings persistence.
 - Platform: clipboard ownership, lifecycle lock, screenshot flag, file pickers, focus/IME, graphical behavior, native

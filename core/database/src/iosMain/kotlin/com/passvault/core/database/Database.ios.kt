@@ -19,7 +19,7 @@ import platform.Foundation.NSUserDomainMask
 /**
  * iOS-specific database builder using one private, backup-excluded location.
  */
-fun getDatabaseBuilder(): RoomDatabase.Builder<VaultDatabase> {
+private fun getDatabaseBuilder(): RoomDatabase.Builder<VaultDatabase> {
     val dbFilePath = secureDatabasePath()
     return Room.databaseBuilder<VaultDatabase>(
         name = dbFilePath,
@@ -34,7 +34,8 @@ private fun secureDatabasePath(): String {
         appropriateForURL = null,
         create = true,
         error = null,
-    )?.path ?: error("The iOS Application Support directory is unavailable")
+    )?.URLByResolvingSymlinksInPath?.path
+        ?: error("The iOS Application Support directory is unavailable")
     val databaseDirectory = "$applicationSupport/PassVault"
     check(
         fileManager.createDirectoryAtPath(
@@ -136,7 +137,7 @@ private fun excludeFromBackup(path: String) {
 /**
  * Creates the database instance for iOS.
  */
-fun createDatabase(): VaultDatabase {
+private fun createDatabase(): VaultDatabase {
     return getDatabaseBuilder()
         .addVaultMigrations()
         .setDriver(BundledSQLiteDriver())
@@ -144,4 +145,33 @@ fun createDatabase(): VaultDatabase {
         .build()
 }
 
+/** Creates the process-wide health gate and its lazily-opened Room database. */
+fun createDatabaseBootstrap(): VaultDatabaseBootstrap {
+    val databasePath = secureDatabasePath()
+    val appDataPath = databasePath.substringBeforeLast('/')
+    val recoveryRoot = "$appDataPath/$RECOVERY_DIRECTORY"
+    return VaultDatabaseBootstrap(
+        storage = LocalVaultDatabaseStorage(
+            databasePath = databasePath,
+            attachmentRootPath = "$appDataPath/$ATTACHMENT_DIRECTORY",
+            databaseRecoveryRootPath = recoveryRoot,
+            attachmentRecoveryRootPath = recoveryRoot,
+            diagnosticPath = "$appDataPath/$DATABASE_DIAGNOSTIC_FILE",
+            protectPath = ::protectRecoveryPath,
+        ),
+        databaseFactory = ::createDatabase,
+    )
+}
+
+private fun protectRecoveryPath(path: String) {
+    val fileManager = NSFileManager.defaultManager
+    check(fileManager.setAttributes(protectionAttributes(), ofItemAtPath = path, error = null)) {
+        "The iOS recovery data could not be protected"
+    }
+    excludeFromBackup(path)
+}
+
 private val DATABASE_SUFFIXES = listOf("-wal", "-shm", "-journal", "")
+private const val ATTACHMENT_DIRECTORY = "attachments"
+private const val RECOVERY_DIRECTORY = "recovery"
+private const val DATABASE_DIAGNOSTIC_FILE = "database-health.events"

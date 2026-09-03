@@ -1,6 +1,6 @@
 # PassVault security model
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-09-03
 
 ## Scope and assumptions
 
@@ -96,6 +96,13 @@ row counts. That metadata is neither confidential nor cryptographically bound to
 database tampering can alter routing or availability without an AEAD failure. Search results are produced from
 decrypted in-memory records while unlocked; there is no plaintext search index on disk.
 
+At process startup, an existing database first passes a read-only `PRAGMA quick_check(1)` before Room can migrate or
+query it. The real Room connection is checked again after open/migration. Corruption fails closed to recovery UI;
+PassVault never repairs or destructively recreates the damaged vault automatically. A confirmed pre-open failure may
+be moved together with SQLite sidecars and encrypted attachments into protected recovery storage before a fresh vault
+is created; mobile recovery data is also excluded from device backups. Diagnostics are stored outside SQLite as a
+bounded timestamp plus enumerated code; paths, driver messages, stack traces, and vault data are never recorded.
+
 Attachment bytes live outside Room in random app-private object names. Every object is chunked and independently
 encrypted with XChaCha20-Poly1305 under a per-attachment subkey derived from the VEK. Associated data binds the
 attachment ID, owning credential ID, independent key context, detected MIME type, record type/index, and plaintext
@@ -169,6 +176,8 @@ security certification.
 - A compromised unlocked endpoint can read displayed/decrypted values.
 - Incorrect device time produces invalid TOTP codes; PassVault does not synchronize the clock.
 - Structural database metadata remains observable.
+- `quick_check` detects SQLite structural damage, not authenticated payload tampering or the logical loss of a
+  committed WAL that is no longer present; encrypted-record authentication and verified backups remain necessary.
 - Structural routing metadata is not authenticated by record-payload AAD; a format/schema migration is needed to
   bind credential type/folder/favorite/timestamps and relationship rows without breaking existing records.
 - Biometric-key deletion and Room restore cannot be atomic together. A failed Room replacement after successful

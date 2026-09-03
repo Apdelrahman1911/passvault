@@ -1,6 +1,7 @@
 package com.passvault.shared.di
 
-import com.passvault.core.database.VaultDatabase
+import com.passvault.core.database.VaultDatabaseBootstrap
 
 @Suppress("UNUSED_PARAMETER")
-actual fun createDatabase(context: Any): VaultDatabase = com.passvault.core.database.createDatabase()
+actual fun createDatabaseBootstrap(context: Any): VaultDatabaseBootstrap =
+    com.passvault.core.database.createDatabaseBootstrap()
