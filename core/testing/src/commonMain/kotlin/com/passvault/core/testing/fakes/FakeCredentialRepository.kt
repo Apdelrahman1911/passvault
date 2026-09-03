@@ -12,6 +12,7 @@ import com.passvault.core.domain.model.TagId
 import com.passvault.core.domain.repository.CredentialHealthInput
 import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.domain.repository.CredentialTotpInput
+import com.passvault.core.domain.repository.CredentialTotpInputLease
 import com.passvault.core.domain.repository.CredentialTotpRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Mutex
@@ -32,6 +33,7 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
     private val credentials = mutableMapOf<CredentialId, Credential>()
     private val passwordChangedAtByCredential = mutableMapOf<CredentialId, Instant>()
     private var lastHealthInputs = emptyList<CredentialHealthInput>()
+    private var lastTotpInputs = emptyList<CredentialTotpInput>()
     private val operationMutex = Mutex()
 
     private var shouldFailNext = false
@@ -43,6 +45,7 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
      */
     fun setupCredentials(vararg creds: Credential) {
         clearLastHealthInputs()
+        clearLastTotpInputs()
         creds.forEach { credential ->
             credentials.put(credential.id, credential.deepCopy())?.clearSensitiveValues()
             val inferredPasswordChangedAt = credential.password
@@ -83,6 +86,7 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
         credentials.clear()
         passwordChangedAtByCredential.clear()
         clearLastHealthInputs()
+        clearLastTotpInputs()
         shouldFailNext = false
         failWith = null
         operationDelayMs = 0
@@ -214,7 +218,7 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
         }
     }
 
-    override suspend fun getCredentialsForTotpDisplay(): Result<List<CredentialTotpInput>> {
+    override suspend fun getCredentialsForTotpDisplay(): Result<CredentialTotpInputLease> {
         return checkFailure {
             delayIfNeeded()
             val inputs = credentials.values
@@ -230,7 +234,8 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
                     }
                 }
                 .sortedBy { it.title.lowercase() }
-            Result.success(inputs)
+            lastTotpInputs = inputs
+            Result.success(CredentialTotpInputLease.ownedByCurrentCoroutine(inputs))
         }
     }
 
@@ -293,6 +298,8 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
 
     fun getLastHealthInputsForTest(): List<CredentialHealthInput> = lastHealthInputs
 
+    fun getLastTotpInputsForTest(): List<CredentialTotpInput> = lastTotpInputs
+
     private fun clearLastHealthInputs() {
         lastHealthInputs.forEach { input ->
             input.username?.clear()
@@ -300,6 +307,11 @@ class FakeCredentialRepository : CredentialRepository, CredentialTotpRepository 
             input.password?.clear()
         }
         lastHealthInputs = emptyList()
+    }
+
+    private fun clearLastTotpInputs() {
+        lastTotpInputs.forEach(CredentialTotpInput::clear)
+        lastTotpInputs = emptyList()
     }
 
     private fun Credential.deepCopy(): Credential = copy(

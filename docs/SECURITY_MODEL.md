@@ -90,9 +90,11 @@ columns. Keyed deterministic blind indexes support exact normalized folder/tag c
 credential titles are searched only after decrypting records in memory.
 
 TOTP codes are derived in memory from the encrypted setup key and authoritative device time. Codes and countdowns
-are not written to Room or backups. QR payloads are handled locally, parsed with strict size/type/Base32/parameter
-bounds, and never sent to a service. Android and iOS camera capture and Desktop-selected image decoding remain OS
-and process trust boundaries.
+are not written to Room or backups. Decrypted setup-key batches remain producer-owned through a cancellation-bound
+lease until the authenticator ViewModel atomically takes them; cancellation before transfer wipes the batch, and
+screen teardown wipes transferred inputs. QR payloads are handled locally, parsed with strict
+size/type/Base32/parameter bounds, and never sent to a service. Android and iOS camera capture and Desktop-selected
+image decoding remain OS and process trust boundaries.
 
 The database intentionally exposes structural metadata needed for queries: record identifiers, credential type,
 favorite state, timestamps, folder/tag relationship identifiers, attachment MIME/size/opaque-path metadata, and

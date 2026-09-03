@@ -73,7 +73,8 @@ class TwoFactorCodesViewModel(
         loadJob = viewModelScope.launch {
             var loaded = emptyList<CredentialTotpInput>()
             try {
-                loaded = credentialRepository.getCredentialsForTotpDisplay().getOrThrow()
+                val lease = credentialRepository.getCredentialsForTotpDisplay().getOrThrow()
+                loaded = lease.take() ?: error("TOTP input ownership is no longer available")
                 currentCoroutineContext().ensureActive()
                 if (revision != screenRevision) return@launch
                 accounts = loaded

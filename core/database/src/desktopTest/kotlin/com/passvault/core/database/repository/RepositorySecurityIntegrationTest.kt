@@ -916,15 +916,19 @@ class RepositoryTotpSecurityIntegrationTest : RepositorySecurityIntegrationFixtu
             assertTrue(credentialRepository.save(withTotp).isSuccess)
             assertTrue(credentialRepository.save(withoutTotp).isSuccess)
 
-            val input = credentialRepository.getCredentialsForTotpDisplay().getOrThrow().single()
-            assertEquals(withTotp.id, input.id)
-            assertEquals("GitHub", input.title)
-            assertEquals("alice@example.com", input.displayUsername)
-            assertEquals(TEST_TOTP_SECRET, input.configuration.secret.toStringUnsafe())
-            assertEquals("Example", input.configuration.issuer)
-
-            input.clear()
-            assertTrue(input.configuration.secret.toStringUnsafe().all { it == '\u0000' })
+            val lease = credentialRepository.getCredentialsForTotpDisplay().getOrThrow()
+            val inputs = assertNotNull(lease.take())
+            try {
+                val input = inputs.single()
+                assertEquals(withTotp.id, input.id)
+                assertEquals("GitHub", input.title)
+                assertEquals("alice@example.com", input.displayUsername)
+                assertEquals(TEST_TOTP_SECRET, input.configuration.secret.toStringUnsafe())
+                assertEquals("Example", input.configuration.issuer)
+            } finally {
+                inputs.forEach { it.clear() }
+            }
+            assertTrue(inputs.single().configuration.secret.toStringUnsafe().all { it == '\u0000' })
         } finally {
             withTotp.clearSensitiveValuesForTest()
             withoutTotp.clearSensitiveValuesForTest()

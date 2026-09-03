@@ -29,6 +29,7 @@ import com.passvault.core.domain.model.CredentialSummary
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.repository.CredentialHealthInput
 import com.passvault.core.domain.repository.CredentialTotpInput
+import com.passvault.core.domain.repository.CredentialTotpInputLease
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.model.CustomField
 import com.passvault.core.domain.model.CustomFieldId
@@ -43,6 +44,8 @@ import com.passvault.core.domain.model.TotpConfiguration
 import com.passvault.core.domain.model.UrlValue
 import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.domain.repository.CredentialTotpRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
@@ -371,20 +374,33 @@ class CredentialRepositoryImpl(
     }
 
     @Suppress("TooGenericExceptionCaught") // Every copied TOTP secret is cleared if the batch fails.
-    override suspend fun getCredentialsForTotpDisplay(): Result<List<CredentialTotpInput>> {
-        return repositoryResult {
-            sessionManager.withUnlockedSession { vek ->
-                val inputs = mutableListOf<CredentialTotpInput>()
-                try {
-                    credentialDao.getLoginsForTotpDisplay().forEach { entity ->
-                        decryptTotpDisplayInput(entity, vek)?.let(inputs::add)
+    override suspend fun getCredentialsForTotpDisplay(): Result<CredentialTotpInputLease> {
+        val callerJob = currentCoroutineContext()[Job]
+            ?: return Result.failure(IllegalStateException("A TOTP input lease requires a coroutine Job"))
+        var lease: CredentialTotpInputLease? = null
+        var returnedSuccessfully = false
+        try {
+            val result = repositoryResult {
+                sessionManager.withUnlockedSession { vek ->
+                    val inputs = mutableListOf<CredentialTotpInput>()
+                    try {
+                        credentialDao.getLoginsForTotpDisplay().forEach { entity ->
+                            decryptTotpDisplayInput(entity, vek)?.let(inputs::add)
+                        }
+                        CredentialTotpInputLease.ownedByCoroutine(
+                            inputs.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title }),
+                            callerJob,
+                        ).also { lease = it }
+                    } catch (error: Exception) {
+                        inputs.forEach(CredentialTotpInput::clear)
+                        throw error
                     }
-                    inputs.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })
-                } catch (error: Exception) {
-                    inputs.forEach(CredentialTotpInput::clear)
-                    throw error
                 }
             }
+            returnedSuccessfully = result.isSuccess
+            return result
+        } finally {
+            if (!returnedSuccessfully) lease?.clear()
         }
     }
 
