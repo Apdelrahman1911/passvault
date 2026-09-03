@@ -502,6 +502,13 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - name: Require isolated GitHub-hosted macOS runner
+        run: |
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" ]]; then
+            echo "Production Apple signing is restricted to an ephemeral GitHub-hosted runner." >&2
+            exit 1
+          fi
+
       - name: Initialize private runtime paths
         run: |
           echo "PRIVATE_RUNTIME=$RUNNER_TEMP/passvault-release" >> "$GITHUB_ENV"
@@ -551,7 +558,12 @@ jobs:
         run: |
           set -euo pipefail
           install -d -m 700 "$PRIVATE_RUNTIME/store-input" "$PRIVATE_RUNTIME/store" "$PRIVATE_RUNTIME/export"
-          printf '%s' "$IOS_CERTIFICATE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
+          ios_certificate_base64="$IOS_CERTIFICATE_BASE64"
+          ios_certificate_password="$IOS_CERTIFICATE_PASSWORD"
+          unset IOS_CERTIFICATE_BASE64 IOS_CERTIFICATE_PASSWORD
+          printf '%s' "$ios_certificate_base64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/distribution.p12"
+          ios_certificate_base64=""
+          unset ios_certificate_base64
           printf '%s' "$IOS_PROFILE_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/profile.mobileprovision"
           printf '%s' "$ASC_PRIVATE_KEY_BASE64" | openssl base64 -d -A > "$PRIVATE_RUNTIME/app-store-connect-key.p8"
           printf '%s' "$STORE_METADATA_ARCHIVE_BASE64" |
@@ -568,9 +580,12 @@ jobs:
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security import "$PRIVATE_RUNTIME/distribution.p12" -k "$KEYCHAIN_PATH" \
-            -P "$IOS_CERTIFICATE_PASSWORD" -t cert -f pkcs12 \
-            -T /usr/bin/codesign -T /usr/bin/security >/dev/null
+          printf '%s\n' "$ios_certificate_password" |
+            scripts/import-apple-signing-certificate.sh \
+              "$PRIVATE_RUNTIME/distribution.p12" "$KEYCHAIN_PATH" >/dev/null
+          ios_certificate_password=""
+          unset ios_certificate_password
+          rm -f -- "$PRIVATE_RUNTIME/distribution.p12"
           security set-key-partition-list -S apple-tool:,apple: -s \
             -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
           passvault_activate_release_keychain "$KEYCHAIN_PATH" "$ORIGINAL_KEYCHAINS_PATH"

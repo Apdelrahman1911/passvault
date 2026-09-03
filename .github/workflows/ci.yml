@@ -154,6 +154,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
 
+      - name: Test Apple signing secret handling
+        run: ./scripts/test-apple-signing-secret-handling.sh
+
       - name: Build and verify unsigned macOS package
         run: >
           ./gradlew :app-desktop:createReleaseDistributable

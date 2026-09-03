@@ -427,7 +427,7 @@ all_desktop_production_secret_names=(
 )
 desktop_production_secret_names=(
     MACOS_CERTIFICATE_BASE64 MACOS_CERTIFICATE_PASSWORD MACOS_PROVISIONING_PROFILE_BASE64
-    MACOS_NOTARIZATION_APPLE_ID MACOS_NOTARIZATION_PASSWORD
+    ASC_PRIVATE_KEY_BASE64
 )
 if [[ "$WINDOWS_SIGNING_BACKEND" == local-pfx ]]; then
     desktop_production_secret_names+=(WINDOWS_CERTIFICATE_BASE64 WINDOWS_CERTIFICATE_PASSWORD)
@@ -453,13 +453,22 @@ set_binary_secret MACOS_CERTIFICATE_BASE64 desktop-production "$MACOS_CERTIFICAT
 set_text_secret MACOS_CERTIFICATE_PASSWORD desktop-production "$MACOS_CERTIFICATE_PASSWORD"
 set_binary_secret MACOS_PROVISIONING_PROFILE_BASE64 desktop-production \
     "$MACOS_PROVISIONING_PROFILE_FILE"
-set_text_secret MACOS_NOTARIZATION_APPLE_ID desktop-production "$MACOS_NOTARIZATION_APPLE_ID"
-set_text_secret MACOS_NOTARIZATION_PASSWORD desktop-production "$MACOS_NOTARIZATION_PASSWORD"
+set_binary_secret ASC_PRIVATE_KEY_BASE64 desktop-production "$ASC_PRIVATE_KEY_FILE"
+for secret_name in MACOS_NOTARIZATION_APPLE_ID MACOS_NOTARIZATION_PASSWORD; do
+    gh secret delete "$secret_name" --env desktop-production \
+        --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+done
 
 all_mobile_secret_names=(
     KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
     IOS_DISTRIBUTION_CERTIFICATE_BASE64 IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
     IOS_PROVISIONING_PROFILE_BASE64 ASC_PRIVATE_KEY_BASE64 STORE_METADATA_ARCHIVE_BASE64
+    APP_REVIEW_PHONE TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64
+)
+mobile_only_secret_names=(
+    KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+    IOS_DISTRIBUTION_CERTIFICATE_BASE64 IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
+    IOS_PROVISIONING_PROFILE_BASE64 STORE_METADATA_ARCHIVE_BASE64
     APP_REVIEW_PHONE TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64
 )
 mobile_scoped_secret_names=(
@@ -471,7 +480,7 @@ for environment_name in mobile-beta mobile-external-beta mobile-production; do
     set_binary_secret ASC_PRIVATE_KEY_BASE64 "$environment_name" "$ASC_PRIVATE_KEY_FILE"
     set_metadata_archive_secret "$environment_name"
 done
-for secret_name in "${all_mobile_secret_names[@]}"; do
+for secret_name in "${mobile_only_secret_names[@]}"; do
     gh secret delete "$secret_name" --env desktop-production \
         --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
 done
@@ -668,8 +677,8 @@ secret_source() {
         MACOS_CERTIFICATE_BASE64) echo "values.env:MACOS_CERTIFICATE_FILE" ;;
         MACOS_CERTIFICATE_PASSWORD) echo "values.env:MACOS_CERTIFICATE_PASSWORD" ;;
         MACOS_PROVISIONING_PROFILE_BASE64) echo "values.env:MACOS_PROVISIONING_PROFILE_FILE" ;;
-        MACOS_NOTARIZATION_APPLE_ID) echo "values.env:MACOS_NOTARIZATION_APPLE_ID" ;;
-        MACOS_NOTARIZATION_PASSWORD) echo "values.env:MACOS_NOTARIZATION_PASSWORD" ;;
+        MACOS_NOTARIZATION_APPLE_ID | MACOS_NOTARIZATION_PASSWORD) \
+            echo "retired Apple-ID notarization credential" ;;
         *) echo "documented private input" ;;
     esac
 }
@@ -772,7 +781,8 @@ esac
 verify_absent_environment_secrets desktop-production "$desktop_production_secrets" \
     "${inactive_windows_secret_names[@]}"
 verify_absent_environment_secrets desktop-production "$desktop_production_secrets" \
-    "${all_mobile_secret_names[@]}"
+    "${mobile_only_secret_names[@]}" \
+    MACOS_NOTARIZATION_APPLE_ID MACOS_NOTARIZATION_PASSWORD
 verify_absent_environment_secrets play-access-beta "$play_beta_secrets" \
     "${mobile_scoped_secret_names[@]}"
 verify_absent_environment_secrets play-access-production "$play_production_secrets" \

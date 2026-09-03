@@ -126,11 +126,12 @@ GitHub `desktop-production` environment secrets:
 - `MACOS_CERTIFICATE_BASE64`
 - `MACOS_CERTIFICATE_PASSWORD`
 - `MACOS_PROVISIONING_PROFILE_BASE64`
-- `MACOS_NOTARIZATION_APPLE_ID`
-- `MACOS_NOTARIZATION_PASSWORD` (an Apple app-specific password)
+- `ASC_PRIVATE_KEY_BASE64` (the same App Store Connect team API key used by
+  the mobile release environments)
 
 GitHub repository variables:
 
+- `ASC_KEY_ID` and `ASC_ISSUER_ID` for the team API key
 - `MACOS_SIGNING_IDENTITY` (the full `Developer ID Application: ...` identity)
 - `MACOS_NOTARIZATION_TEAM_ID` (the 10-character Apple Developer Team ID)
 - `MACOS_DEVELOPER_ID_CERTIFICATE_SHA256` (derived from the supplied P12)
@@ -145,7 +146,10 @@ CI first verifies the attested, architecture-specific candidate app-image ZIP
 and restores it without following escaping links. It creates no new application
 payload. CI then creates a temporary keychain, validates the certificate
 identity, Team ID, expiry, private-key pairing, and pinned SHA-256 fingerprint,
-stores notarization credentials in that keychain, and removes it after the job.
+and stores App Store Connect API-key notarization credentials in that keychain.
+The PKCS#12 password crosses only a private pipe to OpenSSL; its private key is
+streamed into Keychain as non-extractable material and is never passed on argv.
+The transient P8 and keychain are removed after use.
 JDK 21 `jpackage` signs the predefined image; CI restores the narrow runtime
 entitlements before sealing the outer bundle and creating the DMG. Every Mach-O
 object must have the expected Developer ID signer/Team ID, a secure timestamp,

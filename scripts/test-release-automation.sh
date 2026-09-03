@@ -11,6 +11,8 @@ cd "$repository_root"
 ./scripts/verify-dependabot-coverage.sh >/dev/null
 ./scripts/verify-shell-library-contract.sh >/dev/null
 ruby scripts/validate-ci-workflow-security.rb >/dev/null
+ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
+./scripts/test-apple-signing-secret-handling.sh >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
@@ -96,6 +98,68 @@ ruby -e '
 ' "$ci_security_fixture"
 if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
     echo "CI security policy accepted a missing failure-path test report artifact." >&2
+    exit 1
+fi
+
+apple_release_fixture="$temporary_root/apple-release.yml"
+apple_mobile_fixture="$temporary_root/apple-mobile-store-release.yml"
+apple_importer_fixture="$temporary_root/import-apple-signing-certificate.sh"
+apple_verifier_fixture="$temporary_root/verify-ios-release-signing.sh"
+cp .github/workflows/release.yml "$apple_release_fixture"
+cp .github/workflows/mobile-store-release.yml "$apple_mobile_fixture"
+cp scripts/import-apple-signing-certificate.sh "$apple_importer_fixture"
+cp scripts/verify-ios-release-signing.sh "$apple_verifier_fixture"
+# Workflow expressions below are intentional literal hostile fixtures.
+# shellcheck disable=SC2016
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  start_marker = "          printf \x27%s\\n\x27 \"$certificate_password\" |\n"
+  end_marker = "          certificate_password=\"\"\n"
+  start_index = source.index(start_marker)
+  end_index = source.index(end_marker, start_index || 0)
+  abort("missing certificate-import fixture") unless start_index && end_index
+  source[start_index...end_index] =
+    "          security import \"$certificate_path\" -k \"$keychain_path\" " \
+    "-P \"$certificate_password\"\n"
+  File.write(path, source)
+' "$apple_release_fixture"
+if ruby scripts/validate-apple-signing-secret-boundary.rb \
+    "$apple_release_fixture" "$apple_mobile_fixture" "$apple_importer_fixture" \
+    "$apple_verifier_fixture" >/dev/null 2>&1; then
+    echo "Apple signing policy accepted a certificate password argument." >&2
+    exit 1
+fi
+
+cp .github/workflows/release.yml "$apple_release_fixture"
+# shellcheck disable=SC2016
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing notary API-key fixture") unless
+    source.sub!("            --key \"$notary_key_path\" \\\n",
+      "            --password \"$certificate_password\" \\\n")
+  File.write(path, source)
+' "$apple_release_fixture"
+if ruby scripts/validate-apple-signing-secret-boundary.rb \
+    "$apple_release_fixture" "$apple_mobile_fixture" "$apple_importer_fixture" \
+    "$apple_verifier_fixture" >/dev/null 2>&1; then
+    echo "Apple signing policy accepted a notarization password argument." >&2
+    exit 1
+fi
+
+cp .github/workflows/release.yml "$apple_release_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Require isolated GitHub-hosted macOS runner\n.*?\n(?=      - name: Checkout)/m
+  abort("missing hosted-runner guard fixture") unless source.sub!(block, "\\n")
+  File.write(path, source)
+' "$apple_release_fixture"
+if ruby scripts/validate-apple-signing-secret-boundary.rb \
+    "$apple_release_fixture" "$apple_mobile_fixture" "$apple_importer_fixture" \
+    "$apple_verifier_fixture" >/dev/null 2>&1; then
+    echo "Apple signing policy accepted a missing hosted-runner guard." >&2
     exit 1
 fi
 
@@ -2456,6 +2520,13 @@ if command -v pwsh >/dev/null 2>&1; then
     done
 fi
 grep -Fq 'MACOS_DEVELOPER_ID_CERTIFICATE_SHA256' .github/workflows/release.yml
+grep -Fq 'set_binary_secret ASC_PRIVATE_KEY_BASE64 desktop-production' \
+    scripts/configure-github-mobile-release.sh
+if grep -Eq '^set_text_secret MACOS_NOTARIZATION_(APPLE_ID|PASSWORD)' \
+    scripts/configure-github-mobile-release.sh; then
+    echo "The release configurator still uploads retired Apple-ID notarization credentials." >&2
+    exit 1
+fi
 grep -Fq 'WINDOWS_SIGNING_CERTIFICATE_SHA256' .github/workflows/release.yml
 grep -Fq 'azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0' \
     .github/workflows/release.yml

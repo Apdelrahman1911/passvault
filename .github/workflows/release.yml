@@ -847,6 +847,13 @@ jobs:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
     steps:
+      - name: Require isolated GitHub-hosted macOS runner
+        run: |
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" ]]; then
+            echo "Production Apple signing is restricted to an ephemeral GitHub-hosted runner." >&2
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -893,8 +900,9 @@ jobs:
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
           MACOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.MACOS_PROVISIONING_PROFILE_BASE64 }}
-          MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
-          MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
           MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
           MACOS_DEVELOPER_ID_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
         run: |
@@ -903,8 +911,9 @@ jobs:
             "$MACOS_CERTIFICATE_BASE64"
             "$MACOS_CERTIFICATE_PASSWORD"
             "$MACOS_PROVISIONING_PROFILE_BASE64"
-            "$MACOS_NOTARIZATION_APPLE_ID"
-            "$MACOS_NOTARIZATION_PASSWORD"
+            "$ASC_PRIVATE_KEY_BASE64"
+            "$ASC_KEY_ID"
+            "$ASC_ISSUER_ID"
             "$MACOS_NOTARIZATION_TEAM_ID"
             "$MACOS_DEVELOPER_ID_CERTIFICATE_SHA256"
           )
@@ -922,6 +931,14 @@ jobs:
             echo "MACOS_NOTARIZATION_TEAM_ID must be a 10-character Apple Team ID." >&2
             exit 1
           fi
+          if [[ ! "$ASC_KEY_ID" =~ ^[A-Z0-9]{10}$ ]]; then
+            echo "ASC_KEY_ID must be a 10-character App Store Connect API key ID." >&2
+            exit 1
+          fi
+          if [[ ! "$ASC_ISSUER_ID" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$ ]]; then
+            echo "ASC_ISSUER_ID must be an App Store Connect issuer UUID." >&2
+            exit 1
+          fi
           normalized_macos_sha256="$(printf '%s' "$MACOS_DEVELOPER_ID_CERTIFICATE_SHA256" | tr -cd '0-9A-Fa-f' | tr '[:lower:]' '[:upper:]')"
           if [[ ! "$normalized_macos_sha256" =~ ^[0-9A-F]{64}$ ]]; then
             echo "MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 is invalid." >&2
@@ -936,34 +953,55 @@ jobs:
         env:
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
-          MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
-          MACOS_NOTARIZATION_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
           EXPECTED_MACOS_CERTIFICATE_SHA256: ${{ vars.MACOS_DEVELOPER_ID_CERTIFICATE_SHA256 }}
         run: |
           set -euo pipefail
           certificate_path="$RUNNER_TEMP/passvault-developer-id.p12"
+          notary_key_path="$RUNNER_TEMP/passvault-notary-key.p8"
           keychain_path="$RUNNER_TEMP/passvault-signing.keychain-db"
           original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
           keychain_password="$(openssl rand -base64 32)"
           notary_profile="passvault-notary-${GITHUB_RUN_ID}"
+          certificate_base64="$MACOS_CERTIFICATE_BASE64"
+          certificate_password="$MACOS_CERTIFICATE_PASSWORD"
+          notary_key_base64="$ASC_PRIVATE_KEY_BASE64"
+          unset MACOS_CERTIFICATE_BASE64 MACOS_CERTIFICATE_PASSWORD ASC_PRIVATE_KEY_BASE64
+
+          cleanup_sensitive_inputs() {
+            certificate_base64=""
+            certificate_password=""
+            notary_key_base64=""
+            unset certificate_base64 certificate_password notary_key_base64
+            rm -f -- "$certificate_path" "$notary_key_path"
+          }
+          trap cleanup_sensitive_inputs EXIT
 
           echo "::add-mask::$keychain_password"
           source scripts/lib/macos-keychain.sh
           passvault_capture_user_keychains "$original_keychains_path"
-          printf '%s' "$MACOS_CERTIFICATE_BASE64" |
+          printf '%s' "$certificate_base64" |
             openssl base64 -d -A -out "$certificate_path"
+          certificate_base64=""
+          unset certificate_base64
+          printf '%s' "$notary_key_base64" |
+            openssl base64 -d -A -out "$notary_key_path"
+          notary_key_base64=""
+          unset notary_key_base64
           chmod 600 "$certificate_path"
+          chmod 600 "$notary_key_path"
 
           security create-keychain -p "$keychain_password" "$keychain_path"
           security set-keychain-settings -lut 21600 "$keychain_path"
           security unlock-keychain -p "$keychain_password" "$keychain_path"
-          security import "$certificate_path" \
-            -k "$keychain_path" \
-            -P "$MACOS_CERTIFICATE_PASSWORD" \
-            -T /usr/bin/codesign \
-            -T /usr/bin/security
-          rm -f "$certificate_path"
+          printf '%s\n' "$certificate_password" |
+            scripts/import-apple-signing-certificate.sh \
+              "$certificate_path" "$keychain_path"
+          certificate_password=""
+          unset certificate_password
+          rm -f -- "$certificate_path"
 
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign: \
@@ -987,10 +1025,11 @@ jobs:
           fi
 
           xcrun notarytool store-credentials "$notary_profile" \
-            --apple-id "$MACOS_NOTARIZATION_APPLE_ID" \
-            --team-id "$MACOS_NOTARIZATION_TEAM_ID" \
-            --password "$MACOS_NOTARIZATION_PASSWORD" \
+            --key "$notary_key_path" \
+            --key-id "$ASC_KEY_ID" \
+            --issuer "$ASC_ISSUER_ID" \
             --keychain "$keychain_path"
+          rm -f -- "$notary_key_path"
 
           echo "MACOS_KEYCHAIN_PATH=$keychain_path" >> "$GITHUB_ENV"
           echo "MACOS_NOTARY_PROFILE=$notary_profile" >> "$GITHUB_ENV"
@@ -1061,6 +1100,7 @@ jobs:
           set -euo pipefail
           source scripts/lib/macos-keychain.sh
           rm -f -- "$RUNNER_TEMP/passvault-developer-id.p12"
+          rm -f -- "$RUNNER_TEMP/passvault-notary-key.p8"
           rm -f -- "$RUNNER_TEMP/embedded.provisionprofile"
           original_keychains_path="$RUNNER_TEMP/passvault-original-user-keychains.txt"
           passvault_restore_user_keychains "$original_keychains_path" || true

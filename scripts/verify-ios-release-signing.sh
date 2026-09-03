@@ -70,6 +70,7 @@ done < <(security list-keychains -d user)
 
 cleanup() {
     IOS_DISTRIBUTION_CERTIFICATE_PASSWORD=""
+    certificate_import_password=""
     keychain_password=""
     if [[ "$installed_profile_by_script" == true &&
         "$installed_profile" == "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision ]]; then
@@ -100,6 +101,9 @@ mkdir -m 700 "$p12_validation_root"
 passvault_validate_pkcs12 "$openssl_binary" "$certificate_path" \
     IOS_DISTRIBUTION_CERTIFICATE_PASSWORD "$p12_validation_root"
 cp "$PASSVAULT_P12_CERTIFICATE_FILE" "$verification_root/distribution.pem"
+certificate_import_password="$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD"
+IOS_DISTRIBUTION_CERTIFICATE_PASSWORD=""
+unset IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
 
 expected_sha1="$("$openssl_binary" x509 -in "$verification_root/distribution.pem" \
     -fingerprint -sha1 -noout | sed 's/^[^=]*=//' | tr '[:lower:]' '[:upper:]')"
@@ -134,8 +138,11 @@ keychain_password="$("$openssl_binary" rand -hex 32)"
 security create-keychain -p "$keychain_password" "$keychain_path"
 security set-keychain-settings -lut 21600 "$keychain_path"
 security unlock-keychain -p "$keychain_password" "$keychain_path"
-security import "$certificate_path" -k "$keychain_path" \
-    -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 >/dev/null 2>&1
+printf '%s\n' "$certificate_import_password" |
+    "$repository_root/scripts/import-apple-signing-certificate.sh" \
+        "$certificate_path" "$keychain_path" >/dev/null
+certificate_import_password=""
+unset certificate_import_password
 security set-key-partition-list -S apple-tool:,apple: -s \
     -k "$keychain_password" "$keychain_path" >/dev/null 2>&1
 security list-keychains -d user -s "$keychain_path"
@@ -144,8 +151,6 @@ if ! security find-identity -v -p codesigning "$keychain_path" |
     echo "The expected Apple Distribution identity is not usable in the temporary keychain." >&2
     exit 1
 fi
-IOS_DISTRIBUTION_CERTIFICATE_PASSWORD=""
-unset IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
 keychain_password=""
 
 JAVA_HOME="$(/usr/libexec/java_home -v 17)"
