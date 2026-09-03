@@ -99,6 +99,25 @@ Android `check` depends on `:app-android:verifyDebugComposeResources` and applic
 package check opens the generated APK and
 fails if the shared design-system Compose string bundle was not merged into Android assets.
 
+## CI trust boundary
+
+Pull-request jobs have read-only repository permissions, and every CI checkout
+uses `persist-credentials: false` before repository-controlled Gradle or scripts
+execute. Tests publish their raw HTML/JUnit output only as an `always()` artifact;
+CI does not grant a build job `checks: write` or feed PR-controlled XML to a
+privileged reporting workflow. The `Run Tests` result remains an input to the
+fail-closed `CI Gate` status. Validate this policy with
+`ruby scripts/validate-ci-workflow-security.rb`.
+
+Repository settings were inspected through the GitHub API on 2026-09-03.
+`main` and `testing` required strict, GitHub-Actions-owned
+`Validate Gradle Wrapper` and `Run Tests` checks plus one approving review;
+`release` required neither status checks nor reviews. This differs from
+`scripts/configure-release-branches.sh`, which declares `CI Gate` as the
+intended required check. Treat that difference as externally managed
+configuration drift; reviewing this file does not prove that the settings
+still match, and changing them requires repository-owner authorization.
+
 These limits must remain explicit in the audit ledger.
 
 Do not disable tests, add `|| true`, accept flaky retries as success, or use a static-analysis baseline to hide new

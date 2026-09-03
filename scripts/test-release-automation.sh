@@ -10,6 +10,7 @@ cd "$repository_root"
 ./scripts/verify-pentest-scope.sh >/dev/null
 ./scripts/verify-dependabot-coverage.sh >/dev/null
 ./scripts/verify-shell-library-contract.sh >/dev/null
+ruby scripts/validate-ci-workflow-security.rb >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
@@ -56,6 +57,47 @@ cleanup() {
     esac
 }
 trap cleanup EXIT
+
+ci_security_fixture="$temporary_root/ci-security.yml"
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "    permissions:\n      contents: read\n    steps:\n"
+  replacement = "    permissions:\n      checks: write\n      contents: read\n    steps:\n"
+  abort("missing test permission fixture") unless source.sub!(needle, replacement)
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted a write-capable test job." >&2
+    exit 1
+fi
+
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing persisted-credential fixture") unless
+    source.sub!("persist-credentials: false", "persist-credentials: true")
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted persisted checkout credentials." >&2
+    exit 1
+fi
+
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Upload Test Reports\n.*?\n(?=  shared-compile:)/m
+  abort("missing test-report artifact fixture") unless source.sub!(block, "\n")
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted a missing failure-path test report artifact." >&2
+    exit 1
+fi
 
 ruby scripts/validate-release-authority-policy.rb >/dev/null
 authority_policy_fixture="$temporary_root/release-authority-policy"
