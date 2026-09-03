@@ -124,9 +124,11 @@ resolution, lifecycle-bound effect collection, navigation callbacks, and Back re
 screens receive state and callbacks and do not receive `AppNavigator` or a stack.
 
 Credential, generator, health, and two-factor ViewModels are entry scoped through Navigation 3's
-`ViewModelStoreNavEntryDecorator` and Koin `viewModel` definitions. Popping an entry destroys its
-owner and calls sensitive cleanup. Vault, settings, backup, onboarding, and unlock state remain
-application/session scoped because they coordinate root flows and centralized lock cleanup.
+`ViewModelStoreNavEntryDecorator`. Their Koin definitions also register each live instance with the
+UI security coordinator. A lock clears every registered owner synchronously before clipboard cleanup
+and root replacement; ViewModel teardown unregisters the owner and performs cleanup again as a
+defence-in-depth path. Vault, settings, backup, onboarding, and unlock state remain application/session
+scoped because they coordinate root flows and centralized lock cleanup.
 
 Effect collectors start before initial load/create actions and validate the current navigation
 token before navigation or sensitive clipboard/URL side effects. Leaving an entry cancels its
@@ -149,8 +151,8 @@ restored route-only stacks
 
 The maximum restored depth is 32 entries per stack. Repository errors fail closed. Deleted,
 malformed, cross-tab, or unauthorized destinations fall back to the owning root. Lock/session-reset
-increments the session generation, quarantines routes, resets live stacks, destroys entry-scoped
-state, and invokes centralized sensitive-state cleanup plus the platform clipboard lock policy. On
+synchronously clears live entry state, increments the session generation, quarantines routes, resets
+live stacks, and invokes application-scoped cleanup plus the platform clipboard lock policy. On
 iOS only, a background lock preserves an owned expiring/local-only copy for cross-app paste; stronger
 lock reasons still clear it. Onboarding discards protected restoration entirely.
 

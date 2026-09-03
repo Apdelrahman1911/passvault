@@ -34,6 +34,7 @@ kotlin {
                 // Core modules
                 implementation(project(":core:domain"))
                 implementation(project(":core:designsystem"))
+                implementation(project(":core:security"))
 
                 // Compose
                 implementation(libs.compose.runtime)

@@ -378,7 +378,12 @@ private fun ObserveSessionSecurity(
             val preserveRestore = cleanup.preserveBackupRestore ||
                 ((sessionState as? VaultSessionState.Locked)?.reason == LockReason.Restore &&
                     context.backupViewModel.state.value.isImporting)
-            clearApplicationSensitiveState(context, cleanup.clearUnlockUiState || hasPendingRequest, preserveRestore)
+            clearApplicationSensitiveState(
+                context = context,
+                vaultUiSecurityCoordinator = vaultUiSecurityCoordinator,
+                clearUnlock = cleanup.clearUnlockUiState || hasPendingRequest,
+                preserveRestore = preserveRestore,
+            )
         }
         if (cleanup.clearClipboard) context.clipboardService.clearForLockTransition()
 
@@ -407,9 +412,11 @@ private fun ObserveSessionSecurity(
 
 private fun clearApplicationSensitiveState(
     context: RouteAdapterContext,
+    vaultUiSecurityCoordinator: VaultUiSecurityCoordinator,
     clearUnlock: Boolean,
     preserveRestore: Boolean,
 ) {
+    vaultUiSecurityCoordinator.clearEntrySensitiveStateForLock()
     context.vaultViewModel.clearForLock()
     context.settingsViewModel.clearForLock()
     if (clearUnlock) context.unlockViewModel.clearForLock()

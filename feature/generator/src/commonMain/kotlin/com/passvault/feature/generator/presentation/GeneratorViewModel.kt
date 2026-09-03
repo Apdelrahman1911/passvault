@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.PasswordGenerationOptions
 import com.passvault.core.crypto.SecurePasswordGenerator
+import com.passvault.core.security.EntrySensitiveStateOwner
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
@@ -27,7 +28,7 @@ import kotlinx.coroutines.launch
 
 class GeneratorViewModel(
     private val cryptoEngine: CryptoEngine,
-) : ViewModel() {
+) : ViewModel(), EntrySensitiveStateOwner {
 
     private val passwordGenerator = SecurePasswordGenerator(cryptoEngine)
 
@@ -217,7 +218,7 @@ class GeneratorViewModel(
         }
     }
 
-    fun clearForLock() {
+    override fun clearForLock() {
         generationJob?.cancel()
         generationJob = null
         _state.update {

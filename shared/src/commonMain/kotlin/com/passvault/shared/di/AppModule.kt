@@ -1,5 +1,6 @@
 package com.passvault.shared.di
 
+import androidx.lifecycle.ViewModel
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.LibsodiumCryptoEngine
 import com.passvault.core.crypto.PasswordGenerator
@@ -27,6 +28,7 @@ import com.passvault.core.navigation.ExternalNavigationDispatcher
 import com.passvault.core.otp.StandardTotpService
 import com.passvault.core.otp.TotpService
 import com.passvault.core.security.BiometricUnlockService
+import com.passvault.core.security.EntrySensitiveStateOwner
 import com.passvault.core.security.VaultUiSecurityCoordinator
 import com.passvault.feature.onboarding.presentation.OnboardingViewModel
 import com.passvault.feature.unlock.presentation.UnlockViewModel
@@ -41,6 +43,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
+import org.koin.core.definition.Definition
+import org.koin.core.definition.KoinDefinition
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -197,8 +201,8 @@ object AppModule {
 
         // Navigation-entry-scoped state. Nav3's ViewModelStore decorator owns
         // these instances, so a popped entry cannot retain sensitive UI state.
-        viewModel { TwoFactorCodesViewModel(get(), get()) }
-        viewModel {
+        lockSensitiveViewModel { TwoFactorCodesViewModel(get(), get()) }
+        lockSensitiveViewModel {
             CredentialViewModel(
                 credentialRepository = get(),
                 folderRepository = get(),
@@ -210,7 +214,20 @@ object AppModule {
         }
 
         // Generator
-        viewModel { GeneratorViewModel(get()) }
-        viewModel { HealthViewModel(get()) }
+        lockSensitiveViewModel { GeneratorViewModel(get()) }
+        lockSensitiveViewModel { HealthViewModel(get()) }
     }
+}
+
+private inline fun <reified T> Module.lockSensitiveViewModel(
+    noinline definition: Definition<T>,
+): KoinDefinition<T> where T : ViewModel, T : EntrySensitiveStateOwner = viewModel {
+    definition(this, it).attachToLockSensitiveStateRegistry(get())
+}
+
+internal fun <T> T.attachToLockSensitiveStateRegistry(
+    coordinator: VaultUiSecurityCoordinator,
+): T where T : ViewModel, T : EntrySensitiveStateOwner {
+    addCloseable(coordinator.registerEntrySensitiveState(this))
+    return this
 }

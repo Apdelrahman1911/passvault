@@ -10,6 +10,7 @@ import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.repository.CredentialTotpInput
 import com.passvault.core.domain.repository.CredentialTotpRepository
 import com.passvault.core.otp.TotpService
+import com.passvault.core.security.EntrySensitiveStateOwner
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -30,7 +31,7 @@ class TwoFactorCodesViewModel(
     private val credentialRepository: CredentialTotpRepository,
     private val totpService: TotpService,
     private val clock: Clock = Clock.System,
-) : ViewModel() {
+) : ViewModel(), EntrySensitiveStateOwner {
     private val _state = MutableStateFlow(TwoFactorCodesState())
     val state: StateFlow<TwoFactorCodesState> = _state.asStateFlow()
 
@@ -162,7 +163,7 @@ class TwoFactorCodesViewModel(
         _state.value = TwoFactorCodesState()
     }
 
-    fun clearForLock() = clearForHiddenScreen()
+    override fun clearForLock() = clearForHiddenScreen()
 
     override fun onCleared() {
         clearForHiddenScreen()
