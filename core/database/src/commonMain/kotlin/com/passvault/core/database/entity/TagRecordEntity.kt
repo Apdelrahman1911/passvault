@@ -38,10 +38,7 @@ data class TagRecordEntity(
     @ColumnInfo(name = "payload_nonce", typeAffinity = ColumnInfo.BLOB)
     val payloadNonce: ByteArray,
 
-    /**
-     * Color for visual identification (hex code).
-     * Not encrypted as it's just visual metadata.
-     */
+    /** Reviewed plaintext display metadata retained for schema and backup compatibility. */
     @ColumnInfo(name = "color")
     val color: String?,
 

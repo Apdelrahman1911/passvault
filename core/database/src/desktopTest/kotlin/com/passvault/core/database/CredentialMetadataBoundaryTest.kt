@@ -15,18 +15,52 @@ class CredentialMetadataBoundaryTest {
         val database = openDatabase()
         try {
             database.useReaderConnection { connection ->
-                val columns = connection.columnNames("credential_records")
+                connection.assertBoundary(
+                    tableName = "credential_records",
+                    protectedColumns = CREDENTIAL_PROTECTED_COLUMNS,
+                    visibleColumns = CREDENTIAL_VISIBLE_COLUMNS,
+                    indexes = CREDENTIAL_INDEXES,
+                )
+            }
+        } finally {
+            database.close()
+        }
+    }
 
-                assertEquals(
-                    ENCRYPTED_CONTAINER_COLUMNS,
-                    columns.intersect(ENCRYPTED_CONTAINER_COLUMNS),
+    @Test
+    fun `folder and tag schemas classify every persisted column`() = runTest {
+        val database = openDatabase()
+        try {
+            database.useReaderConnection { connection ->
+                connection.assertBoundary(
+                    tableName = "folder_records",
+                    protectedColumns = FOLDER_PROTECTED_COLUMNS,
+                    visibleColumns = FOLDER_VISIBLE_COLUMNS,
+                    indexes = FOLDER_INDEXES,
                 )
-                assertEquals(
-                    REVIEWED_STRUCTURAL_COLUMNS,
-                    columns - ENCRYPTED_CONTAINER_COLUMNS,
-                    "A credential column was added outside the reviewed plaintext-metadata boundary",
+                connection.assertBoundary(
+                    tableName = "tag_records",
+                    protectedColumns = TAG_PROTECTED_COLUMNS,
+                    visibleColumns = TAG_VISIBLE_COLUMNS,
+                    indexes = TAG_INDEXES,
                 )
-                assertEquals(REVIEWED_CREDENTIAL_INDEXES, connection.explicitIndexNames("credential_records"))
+            }
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
+    fun `attachment schema classifies every persisted column`() = runTest {
+        val database = openDatabase()
+        try {
+            database.useReaderConnection { connection ->
+                connection.assertBoundary(
+                    tableName = "attachment_records",
+                    protectedColumns = ATTACHMENT_PROTECTED_COLUMNS,
+                    visibleColumns = ATTACHMENT_VISIBLE_COLUMNS,
+                    indexes = ATTACHMENT_INDEXES,
+                )
             }
         } finally {
             database.close()
@@ -72,14 +106,30 @@ class CredentialMetadataBoundaryTest {
         }
     }
 
+    private suspend fun PooledConnection.assertBoundary(
+        tableName: String,
+        protectedColumns: Set<String>,
+        visibleColumns: Set<String>,
+        indexes: Set<String>,
+    ) {
+        val columns = columnNames(tableName)
+        assertEquals(protectedColumns, columns.intersect(protectedColumns))
+        assertEquals(
+            visibleColumns,
+            columns - protectedColumns,
+            "A $tableName column was added outside the reviewed plaintext-metadata boundary",
+        )
+        assertEquals(indexes, explicitIndexNames(tableName))
+    }
+
     private companion object {
-        val ENCRYPTED_CONTAINER_COLUMNS = setOf(
+        val CREDENTIAL_PROTECTED_COLUMNS = setOf(
             "summary_payload",
             "summary_nonce",
             "secret_payload",
             "secret_nonce",
         )
-        val REVIEWED_STRUCTURAL_COLUMNS = setOf(
+        val CREDENTIAL_VISIBLE_COLUMNS = setOf(
             "id",
             "type",
             "folder_id",
@@ -88,13 +138,51 @@ class CredentialMetadataBoundaryTest {
             "updated_at",
             "last_used_at",
         )
-        val REVIEWED_CREDENTIAL_INDEXES = setOf(
+        val CREDENTIAL_INDEXES = setOf(
             "index_credential_records_folder_id",
             "index_credential_records_is_favorite",
             "index_credential_records_type",
             "index_credential_records_created_at",
             "index_credential_records_updated_at",
             "index_credential_records_last_used_at",
+        )
+        val FOLDER_PROTECTED_COLUMNS = setOf("name_hash", "encrypted_payload", "payload_nonce")
+        val FOLDER_VISIBLE_COLUMNS = setOf(
+            "id",
+            "parent_id",
+            "icon",
+            "sort_order",
+            "created_at",
+            "updated_at",
+        )
+        val FOLDER_INDEXES = setOf(
+            "index_folder_records_parent_id",
+            "index_folder_records_name_hash",
+            "index_folder_records_sort_order",
+            "index_folder_records_created_at",
+        )
+        val TAG_PROTECTED_COLUMNS = setOf("name_hash", "encrypted_payload", "payload_nonce")
+        val TAG_VISIBLE_COLUMNS = setOf("id", "color", "created_at")
+        val TAG_INDEXES = setOf(
+            "index_tag_records_name_hash",
+            "index_tag_records_color",
+            "index_tag_records_created_at",
+        )
+        val ATTACHMENT_PROTECTED_COLUMNS = setOf("encrypted_filename", "filename_nonce")
+        val ATTACHMENT_VISIBLE_COLUMNS = setOf(
+            "id",
+            "credential_id",
+            "mime_type",
+            "size_bytes",
+            "storage_path",
+            "key_derivation_context",
+            "created_at",
+            "content_format_version",
+            "storage_state",
+        )
+        val ATTACHMENT_INDEXES = setOf(
+            "index_attachment_records_credential_id",
+            "index_attachment_records_created_at",
         )
     }
 }

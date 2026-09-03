@@ -118,6 +118,13 @@ row counts. That metadata is neither confidential nor cryptographically bound to
 database tampering can alter routing or availability without an AEAD failure. Search results are produced from
 decrypted in-memory records while unlocked; there is no plaintext search index on disk.
 
+Folder icons and tag colors are schema-retained visible metadata; the current folder-creation UI writes no icon and
+there is no tag-creation editor, but compatible imports can contain both. New attachment MIME values come from a small
+fixed detector set. Exact attachment size supports SQL quota accounting and authenticated length checks and
+is also inferable from the unpadded encrypted-object framing, so bucketing only the Room column would not hide it.
+Moving any of these fields requires an explicit database/payload/backup migration rather than silently changing the
+deployed format. Current-schema tests enumerate every protected and reviewed-visible column and index.
+
 At process startup, an existing database first passes a read-only `PRAGMA quick_check(1)` before Room can migrate or
 query it. The real Room connection is checked again after open/migration. Corruption fails closed to recovery UI;
 PassVault never repairs or destructively recreates the damaged vault automatically. A confirmed pre-open failure may

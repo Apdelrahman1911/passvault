@@ -79,6 +79,12 @@ hierarchy IDs, visual colors/icons, and attachment MIME/size/opaque-path metadat
 titles, usernames, URLs, passwords, notes, custom-field values, tag/folder names, history passwords, or attachment
 filenames or TOTP setup keys from protected payloads.
 
+Visual and attachment fields remain an accepted compatibility boundary, not a claim that they are secret. Current
+folder creation writes no custom icon and no tag editor creates colors; imports may retain historical values. Managed
+attachments expose a small detected MIME category and their unpadded object framing also reveals exact content length,
+which Room uses for quotas and authenticated length verification. Hiding these values would require coordinated
+database, encrypted-payload, object-format, and backup versioning.
+
 ## Backup compatibility
 
 The portable format is the separately encrypted `.pvault` container documented in

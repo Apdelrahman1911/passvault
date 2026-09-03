@@ -34,7 +34,8 @@ the explicit `LEGACY` state and remain visible as unavailable legacy metadata in
 - `credential_records.folder_id` references `folder_records.id`; direct folder deletion sets the canonical pointer to
   `NULL`, while the compatibility cross-reference cascades.
 - Credential queries index folder, favorite, type, and relevant timestamps.
-- Folder hierarchy and ordering, tag visual grouping, and relationship reverse lookups are indexed.
+- Folder hierarchy and ordering plus relationship reverse lookups are indexed. The schema-retained tag-color index is
+  not used by a current DAO query and does not provide confidentiality; changing it requires an explicit migration.
 - Version 2 adds indexes for the actual exact-name lookup predicates on `folder_records.name_hash` and
   `tag_records.name_hash`. The values are keyed BLAKE2b blind indexes rather than plaintext names. Migration tests
   demonstrate that these queries change from full table scans in version 1 to the named indexes in later versions.
