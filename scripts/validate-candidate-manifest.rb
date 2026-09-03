@@ -30,14 +30,15 @@ def require_string(document, *keys)
   value
 end
 
-abort("Unsupported candidate manifest schema") unless document["schemaVersion"] == 2
+abort("Unsupported candidate manifest schema") unless document["schemaVersion"] == 3
 expected_root_keys = %w[
-  schemaVersion marketingVersion buildNumber sourceCommit sourceTree candidateTag createdAt android ios
+  schemaVersion marketingVersion buildNumber sourceCommit sourceTree candidateTag createdAt android ios desktop
 ]
 abort("Candidate manifest has unexpected or missing fields") unless document.keys.sort == expected_root_keys.sort
 expected_platform_keys = {
   "android" => %w[packageName signingCertificateSha256 artifactReceiptSha256 internal external],
   "ios" => %w[bundleId appStoreAppId signingIdentitySha1 artifactReceiptSha256 internal external],
+  "desktop" => %w[artifactReceiptSha256],
 }
 expected_platform_keys.each do |platform, expected_keys|
   section = document[platform]
@@ -91,6 +92,8 @@ ios_fingerprint = require_string(document, "ios", "signingIdentitySha1")
 abort("Invalid iOS signing fingerprint") unless ios_fingerprint.match?(/\A[0-9A-F]{40}\z/)
 ios_receipt = require_string(document, "ios", "artifactReceiptSha256")
 abort("Invalid iOS artifact-receipt digest") unless ios_receipt.match?(/\A[0-9a-f]{64}\z/)
+desktop_receipt = require_string(document, "desktop", "artifactReceiptSha256")
+abort("Invalid Desktop artifact-receipt digest") unless desktop_receipt.match?(/\A[0-9a-f]{64}\z/)
 
 required_states = {
   ["android", "internal"] => %w[completed],

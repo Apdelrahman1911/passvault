@@ -275,7 +275,27 @@ jobs:
           ./gradlew :app-desktop:createReleaseDistributable
           :app-desktop:packageReleaseMsi :app-desktop:packageReleaseExe
           "-Ppassvault.versionName=${{ needs.prepare.outputs.version }}"
-      - name: Smoke test unsigned Windows candidate runtime
+      - name: Freeze the Windows candidate app image for production signing
+        shell: pwsh
+        run: |
+          $appImage = Get-Item `
+              -LiteralPath app-desktop/build/compose/binaries/main-release/app/PassVault `
+              -ErrorAction Stop
+          if (-not $appImage.PSIsContainer -or
+              ($appImage.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+              throw "The tested Windows app image is missing or unsafe."
+          }
+          $archive = "PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip"
+          Compress-Archive -LiteralPath $appImage.FullName -DestinationPath $archive
+          if (-not (Test-Path -LiteralPath $archive -PathType Leaf) -or
+              (Get-Item -LiteralPath $archive).Length -le 0) {
+              throw "The tested Windows app image was not archived."
+          }
+          Remove-Item -LiteralPath $appImage.FullName -Recurse -Force
+          ./scripts/restore-promoted-windows-app-image.ps1 `
+              -ArchivePath $archive `
+              -OutputRoot app-desktop/build/compose/binaries/main-release/app
+      - name: Smoke test the frozen Windows candidate app image
         shell: pwsh
         run: ./scripts/smoke-test-desktop-release.ps1 -TimeoutSeconds 30
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -286,6 +306,7 @@ jobs:
           path: |
             app-desktop/build/compose/binaries/main-release/msi/*.msi
             app-desktop/build/compose/binaries/main-release/exe/*.exe
+            PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip
 
   desktop-macos:
     needs: prepare
@@ -314,8 +335,6 @@ jobs:
           ./gradlew :app-desktop:createReleaseDistributable
           :app-desktop:packageReleaseDmg
           -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
-      - name: Smoke test unsigned macOS candidate runtime
-        run: ./scripts/smoke-test-desktop-release.sh 30
       - name: Give the architecture an unambiguous asset name
         run: |
           dmg_count="$(find app-desktop/build/compose/binaries/main-release/dmg \
@@ -327,12 +346,33 @@ jobs:
           dmg="$(find app-desktop/build/compose/binaries/main-release/dmg \
             -type f -name '*.dmg' -print)"
           cp "$dmg" "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg"
+      - name: Freeze the macOS candidate app image for production signing
+        run: |
+          app_path="app-desktop/build/compose/binaries/main-release/app/PassVault.app"
+          if [[ ! -d "$app_path" || -L "$app_path" ]]; then
+            echo "The tested macOS app image is missing or unsafe." >&2
+            exit 1
+          fi
+          ditto -c -k --sequesterRsrc --keepParent "$app_path" \
+            "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip"
+          rm -rf -- "$app_path"
+          ditto -x -k \
+            "PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip" \
+            "$(dirname "$app_path")"
+          if [[ ! -d "$app_path" || -L "$app_path" ]]; then
+            echo "The frozen macOS candidate app image could not be restored safely." >&2
+            exit 1
+          fi
+      - name: Smoke test the frozen macOS candidate app image
+        run: ./scripts/smoke-test-desktop-release.sh 30
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: candidate-desktop-macos-${{ matrix.architecture }}
           if-no-files-found: error
           retention-days: 30
-          path: PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg
+          path: |
+            PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}.dmg
+            PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip
 
   publish-candidate:
     needs:
@@ -388,6 +428,10 @@ jobs:
           ANDROID_EXTERNAL_STATE: completed
           IOS_INTERNAL_STATE: completed
           IOS_EXTERNAL_STATE: submitted_for_review
+          RECEIPT_SOURCE_REPOSITORY: ${{ github.repository }}
+          RECEIPT_SOURCE_WORKFLOW: .github/workflows/testing-release.yml
+          RECEIPT_SOURCE_RUN_ID: ${{ github.run_id }}
+          RECEIPT_SOURCE_RUN_ATTEMPT: ${{ github.run_attempt }}
         run: |
           source_commit="$SOURCE_COMMIT"
           source_tree="$(git rev-parse "$source_commit^{tree}")"
@@ -411,6 +455,11 @@ jobs:
             export SOURCE_COMMIT="$source_commit"
           fi
           export SOURCE_TREE="$source_tree"
+          desktop_build_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
+          if [[ "$desktop_build_tree" != "$source_tree" ]]; then
+            echo "Desktop promotion inputs must come from the candidate source tree." >&2
+            exit 1
+          fi
           android_receipt="mobile-receipts/android-artifact-receipt.json"
           ios_receipt="mobile-receipts/ios-artifact-receipt.json"
           ruby scripts/validate-mobile-artifact-receipt.rb \
@@ -419,19 +468,61 @@ jobs:
           ruby scripts/validate-mobile-artifact-receipt.rb \
             "$ios_receipt" ios "$APP_VERSION" "$BUILD_NUMBER" \
             "$source_commit" "$source_tree"
+          ./scripts/prepare-release-assets.sh \
+            downloaded-artifacts release-assets "${{ needs.prepare.outputs.version }}" test
+          for promotion_name in \
+            "PassVault-$APP_VERSION-windows-x64-app-image.zip" \
+            "PassVault-$APP_VERSION-macos-arm64-app-image.zip" \
+            "PassVault-$APP_VERSION-macos-x64-app-image.zip"; do
+            mapfile -d '' promotion_matches < <(
+              find downloaded-artifacts -type f -name "$promotion_name" -print0
+            )
+            if (( ${#promotion_matches[@]} != 1 )); then
+              echo "Expected exactly one candidate promotion input named $promotion_name." >&2
+              exit 1
+            fi
+            install -m 0600 "${promotion_matches[0]}" "release-assets/$promotion_name"
+          done
+          mapfile -d '' linux_debs < <(find release-assets -maxdepth 1 -type f -name '*.deb' -print0)
+          mapfile -d '' linux_rpms < <(find release-assets -maxdepth 1 -type f -name '*.rpm' -print0)
+          if (( ${#linux_debs[@]} != 1 || ${#linux_rpms[@]} != 1 )); then
+            echo "The Desktop candidate must contain exactly one Linux DEB and RPM." >&2
+            exit 1
+          fi
+          RECEIPT_VERSION="$APP_VERSION" \
+          RECEIPT_BUILD_NUMBER="$BUILD_NUMBER" \
+          RECEIPT_SOURCE_COMMIT="$source_commit" \
+          RECEIPT_SOURCE_TREE="$source_tree" \
+          RECEIPT_CANDIDATE_TAG="$CANDIDATE_TAG" \
+          DESKTOP_LINUX_DEB_PATH="${linux_debs[0]}" \
+          DESKTOP_LINUX_RPM_PATH="${linux_rpms[0]}" \
+          DESKTOP_WINDOWS_X64_APP_IMAGE_PATH="release-assets/PassVault-$APP_VERSION-windows-x64-app-image.zip" \
+          DESKTOP_MACOS_ARM64_APP_IMAGE_PATH="release-assets/PassVault-$APP_VERSION-macos-arm64-app-image.zip" \
+          DESKTOP_MACOS_X64_APP_IMAGE_PATH="release-assets/PassVault-$APP_VERSION-macos-x64-app-image.zip" \
+            ruby scripts/create-desktop-artifact-receipt.rb \
+              > release-assets/desktop-artifact-receipt.json
+          ruby scripts/validate-desktop-artifact-receipt.rb \
+            release-assets/desktop-artifact-receipt.json "$APP_VERSION" "$BUILD_NUMBER" \
+            "$source_commit" "$source_tree" release-assets
           ANDROID_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$android_receipt" | awk '{ print $1 }')"
           IOS_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$ios_receipt" | awk '{ print $1 }')"
-          export ANDROID_ARTIFACT_RECEIPT_SHA256 IOS_ARTIFACT_RECEIPT_SHA256
+          DESKTOP_ARTIFACT_RECEIPT_SHA256="$(sha256sum release-assets/desktop-artifact-receipt.json | awk '{ print $1 }')"
+          export ANDROID_ARTIFACT_RECEIPT_SHA256 IOS_ARTIFACT_RECEIPT_SHA256 \
+            DESKTOP_ARTIFACT_RECEIPT_SHA256
           ruby scripts/create-candidate-manifest.rb > candidate-manifest.json
           ruby scripts/validate-candidate-manifest.rb \
             --allow-pending candidate-manifest.json "$source_commit" "$source_tree"
-          ./scripts/prepare-release-assets.sh \
-            downloaded-artifacts release-assets "${{ needs.prepare.outputs.version }}" test
           cp candidate-manifest.json release-assets/
           cp "$android_receipt" "$ios_receipt" release-assets/
-          (cd release-assets && sha256sum \
-            android-artifact-receipt.json candidate-manifest.json \
-            ios-artifact-receipt.json >> SHA256SUMS.txt)
+          ruby scripts/validate-candidate-artifact-provenance.rb \
+            release-assets/candidate-manifest.json release-assets \
+            "$source_commit" "$source_tree" release-assets
+          checksum_manifest="$RUNNER_TEMP/candidate-SHA256SUMS.txt"
+          (cd release-assets && find . -maxdepth 1 -type f ! -name SHA256SUMS.txt \
+            -print | sed 's#^./##' | LC_ALL=C sort | xargs sha256sum) \
+              > "$checksum_manifest"
+          install -m 0644 "$checksum_manifest" release-assets/SHA256SUMS.txt
+          rm -f -- "$checksum_manifest"
           (cd release-assets && sha256sum --check SHA256SUMS.txt)
       - name: Attest the candidate manifest and desktop artifacts
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
@@ -452,4 +543,4 @@ jobs:
             --prerelease \
             --latest=false \
             --title "PassVault $VERSION testing candidate" \
-            --notes "WARNING: Windows and macOS desktop packages in this testing prerelease are intentionally unsigned. Mobile build ${{ needs.prepare.outputs.build_number }} was promoted from internal to external testing without rebuilding. Do not treat this as a production release."
+            --notes "WARNING: Windows and macOS desktop packages in this testing prerelease are intentionally unsigned. The attested Desktop receipt freezes the tested Linux packages and Windows/macOS app images used by production signing. Mobile build ${{ needs.prepare.outputs.build_number }} was promoted from internal to external testing without rebuilding. Do not treat this as a production release."

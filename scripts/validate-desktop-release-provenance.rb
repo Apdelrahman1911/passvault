@@ -3,6 +3,7 @@
 require "digest"
 require "json"
 require "pathname"
+require "rbconfig"
 require "time"
 
 MAX_MANIFEST_BYTES = 128 * 1024
@@ -14,6 +15,7 @@ FIXED_ASSETS = %w[
   THIRD_PARTY_LICENSES.zip
   THIRD_PARTY_NOTICES.md
   android-artifact-receipt.json
+  desktop-artifact-receipt.json
   ios-artifact-receipt.json
   readiness-manifest.json
 ].freeze
@@ -42,10 +44,10 @@ unless manifest_path.file? && !manifest_path.symlink? &&
 end
 document = JSON.parse(manifest_path.read(encoding: "UTF-8"))
 expected_keys = %w[
-  schemaVersion candidateTag marketingVersion buildNumber sourceCommit sourceTree createdAt files
+  schemaVersion candidateTag marketingVersion buildNumber sourceCommit sourceTree createdAt candidateDesktop files
 ]
 abort("Release provenance fields are unexpected or incomplete") unless document.keys.sort == expected_keys.sort
-abort("Unsupported release provenance schema") unless document.fetch("schemaVersion") == 1
+abort("Unsupported release provenance schema") unless document.fetch("schemaVersion") == 2
 abort("Candidate tag does not match") unless required_string(document, "candidateTag") == expected_tag
 abort("Marketing version does not match") unless required_string(document, "marketingVersion") == expected_version
 abort("Build number does not match") unless document.fetch("buildNumber") == expected_build
@@ -60,6 +62,54 @@ rescue ArgumentError
 end
 unless created_at.match?(/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\z/) && parsed_time.utc_offset.zero?
   abort("Release provenance creation time must be canonical UTC")
+end
+
+desktop_receipt_path = root.join("desktop-artifact-receipt.json")
+readiness_manifest_path = root.join("readiness-manifest.json")
+unless desktop_receipt_path.file? && !desktop_receipt_path.symlink? &&
+       readiness_manifest_path.file? && !readiness_manifest_path.symlink?
+  abort("Desktop candidate provenance sidecars are missing or unsafe")
+end
+desktop_validator = Pathname.new(__dir__).join("validate-desktop-artifact-receipt.rb")
+unless system(
+  RbConfig.ruby,
+  desktop_validator.to_s,
+  desktop_receipt_path.to_s,
+  expected_version,
+  expected_build.to_s,
+  expected_commit,
+  expected_tree,
+  out: File::NULL,
+)
+  abort("Desktop artifact receipt failed structural validation")
+end
+candidate_validator = Pathname.new(__dir__).join("validate-candidate-manifest.rb")
+unless system(
+  RbConfig.ruby,
+  candidate_validator.to_s,
+  readiness_manifest_path.to_s,
+  expected_commit,
+  expected_tree,
+  out: File::NULL,
+)
+  abort("Readiness manifest failed structural validation")
+end
+desktop_receipt = JSON.parse(desktop_receipt_path.read(encoding: "UTF-8"))
+candidate_desktop = document.fetch("candidateDesktop")
+expected_candidate_desktop_keys = %w[artifactReceiptSha256 sourceArtifactRun promotionInputs]
+unless candidate_desktop.is_a?(Hash) &&
+       candidate_desktop.keys.sort == expected_candidate_desktop_keys.sort
+  abort("Candidate Desktop provenance is malformed")
+end
+receipt_digest = Digest::SHA256.file(desktop_receipt_path).hexdigest
+unless required_string(candidate_desktop, "artifactReceiptSha256") == receipt_digest &&
+       candidate_desktop.fetch("sourceArtifactRun") == desktop_receipt.fetch("sourceArtifactRun") &&
+       candidate_desktop.fetch("promotionInputs") == desktop_receipt.fetch("artifacts")
+  abort("Release provenance does not preserve the exact candidate Desktop inputs")
+end
+readiness_manifest = JSON.parse(readiness_manifest_path.read(encoding: "UTF-8"))
+unless readiness_manifest.fetch("desktop").fetch("artifactReceiptSha256") == receipt_digest
+  abort("Readiness provenance does not bind the Desktop artifact receipt")
 end
 
 files = document.fetch("files")
@@ -102,5 +152,14 @@ end
 end
 all_dmgs = manifest_file_names.grep(/\.dmg\z/i)
 abort("Expected exactly two macOS DMG release assets") unless all_dmgs.length == 2
+
+%w[linuxDeb linuxRpm].each do |key|
+  promoted = desktop_receipt.fetch("artifacts").fetch(key)
+  released = files.find { |entry| entry.fetch("fileName") == promoted.fetch("fileName") }
+  unless released && released.fetch("sizeBytes") == promoted.fetch("sizeBytes") &&
+         released.fetch("sha256") == promoted.fetch("sha256")
+    abort("Released Linux package differs from the tested candidate: #{key}")
+  end
+end
 
 puts "Validated exact signed desktop release assets for #{expected_tag}."

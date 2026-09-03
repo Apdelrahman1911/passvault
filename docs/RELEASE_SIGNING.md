@@ -79,12 +79,14 @@ exactly one `WINDOWS_SIGNING_BACKEND`; validators reject mixed configuration:
   pin, imports the PFX into the ephemeral current-user store, and removes every
   imported identity on success or failure.
 
-All backends preserve valid timestamped vendor signatures and allow the
-PassVault publisher identity to sign only `PassVault.exe` plus the final
-PassVault EXE/MSI installers. They verify every nested EXE/DLL and both
-installers with Windows policy and require a timestamp. The MSI is extracted
-after signing to prove that its native payload is byte-for-byte identical to
-the already-signed app image.
+Production first verifies the attested Desktop receipt and exact candidate
+app-image ZIP, restores it with traversal/symlink limits, and repeats its startup
+smoke test. It does not rebuild the application with Gradle. All backends then
+preserve valid timestamped vendor signatures and allow the PassVault publisher
+identity to sign only `PassVault.exe` plus the final PassVault EXE/MSI
+installers. They verify every nested EXE/DLL and both installers with Windows
+policy and require a timestamp. The MSI is extracted after signing to prove that
+its native payload is byte-for-byte identical to the already-signed app image.
 
 The MSI upgrade UUID is permanently fixed as
 `B3B60257-BA42-4233-AF33-5CECFA171EB0`. It must not change between releases.
@@ -120,16 +122,21 @@ only as `desktop-production` environment variables. The selected backend and
 expected publisher may remain repository variables because neither is a
 credential.
 
-CI creates a temporary keychain, validates the certificate identity, Team ID,
-expiry, private-key pairing, and pinned SHA-256 fingerprint, stores notarization
-credentials in that keychain, and removes it after the job. Every Mach-O object
-inside the app must have the expected Developer ID signer/Team ID, a secure
-timestamp, Hardened Runtime, strict `codesign` validity, and no
-`get-task-allow`. The DMG must receive an `Accepted` result from `notarytool`,
-have its ticket stapled and validated, and pass Gatekeeper checks for both the
-DMG and mounted app. The complete notarization log is retained privately.
+CI first verifies the attested, architecture-specific candidate app-image ZIP
+and restores it without following escaping links. It creates no new application
+payload. CI then creates a temporary keychain, validates the certificate
+identity, Team ID, expiry, private-key pairing, and pinned SHA-256 fingerprint,
+stores notarization credentials in that keychain, and removes it after the job.
+JDK 21 `jpackage` signs the predefined image; CI restores the narrow runtime
+entitlements before sealing the outer bundle and creating the DMG. Every Mach-O
+object must have the expected Developer ID signer/Team ID, a secure timestamp,
+Hardened Runtime, strict `codesign` validity, and no `get-task-allow`. The DMG
+must receive an `Accepted` result from `notarytool`, have its ticket stapled and
+validated, and pass Gatekeeper checks for both the DMG and mounted app. The
+complete notarization log is retained privately.
 
-The protected validation workflow freezes these signed artifacts without
-publishing them. Stable publication later consumes that exact attested bundle
-and does not rebuild. See `PRODUCTION_SIGNING_HANDOFF.md` for every private input,
-safe upload command, exact GitHub scope, and credential source.
+The protected validation workflow records the candidate Desktop receipt, source
+workflow run, promotion-input hashes, and final signed hashes, then freezes the
+bundle without publishing it. Stable publication consumes that exact attested
+bundle and does not rebuild. See `PRODUCTION_SIGNING_HANDOFF.md` for every
+private input, safe upload command, exact GitHub scope, and credential source.

@@ -6,12 +6,16 @@ require "pathname"
 require "rbconfig"
 
 manifest_path = Pathname.new(ARGV.fetch(0) do
-  abort("Usage: #{$PROGRAM_NAME} <candidate-manifest.json> <receipt-directory> <commit> <tree>")
+  abort(
+    "Usage: #{$PROGRAM_NAME} <candidate-manifest.json> <receipt-directory> <commit> <tree> " \
+      "[desktop-artifact-directory]",
+  )
 end).expand_path
 receipt_root = Pathname.new(ARGV.fetch(1)).expand_path
 expected_commit = ARGV.fetch(2).downcase
 expected_tree = ARGV.fetch(3).downcase
-abort("Too many arguments") if ARGV.length > 4
+desktop_artifact_root = ARGV[4]&.then { |path| Pathname.new(path).expand_path }
+abort("Too many arguments") if ARGV.length > 5
 
 unless manifest_path.file? && !manifest_path.symlink? &&
        receipt_root.directory? && !receipt_root.symlink?
@@ -25,6 +29,7 @@ build_number = manifest.fetch("buildNumber")
 receipts = {
   "android" => receipt_root.join("android-artifact-receipt.json"),
   "ios" => receipt_root.join("ios-artifact-receipt.json"),
+  "desktop" => receipt_root.join("desktop-artifact-receipt.json"),
 }
 
 receipts.each do |platform, path|
@@ -35,19 +40,39 @@ receipts.each do |platform, path|
   actual_digest = Digest::SHA256.file(path).hexdigest
   abort("#{platform} artifact-receipt digest does not match candidate manifest") unless actual_digest == expected_digest
 
-  validator = Pathname.new(__dir__).join("validate-mobile-artifact-receipt.rb")
-  validated = system(
-    RbConfig.ruby,
-    validator.to_s,
-    path.to_s,
-    platform,
-    version,
-    build_number.to_s,
-    expected_commit,
-    expected_tree,
-    out: File::NULL,
-  )
+  if platform == "desktop"
+    validator = Pathname.new(__dir__).join("validate-desktop-artifact-receipt.rb")
+    validator_arguments = [
+      path.to_s,
+      version,
+      build_number.to_s,
+      expected_commit,
+      expected_tree,
+    ]
+    validator_arguments << desktop_artifact_root.to_s if desktop_artifact_root
+    validated = system(
+      RbConfig.ruby,
+      validator.to_s,
+      *validator_arguments,
+      out: File::NULL,
+    )
+  else
+    validator = Pathname.new(__dir__).join("validate-mobile-artifact-receipt.rb")
+    validated = system(
+      RbConfig.ruby,
+      validator.to_s,
+      path.to_s,
+      platform,
+      version,
+      build_number.to_s,
+      expected_commit,
+      expected_tree,
+      out: File::NULL,
+    )
+  end
   abort("#{platform} artifact receipt failed structural validation") unless validated
+
+  next if platform == "desktop"
 
   receipt = JSON.parse(path.read(encoding: "UTF-8"))
   expected_identifier = platform == "android" ?
@@ -62,4 +87,4 @@ receipts.each do |platform, path|
   end
 end
 
-puts "Candidate mobile artifact provenance is bound to commit #{expected_commit}."
+puts "Candidate artifact provenance is bound to commit #{expected_commit}."

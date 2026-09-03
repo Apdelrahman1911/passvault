@@ -30,7 +30,7 @@ abort("Unexpected Android Store identity") unless android_package_name == "com.p
 abort("Unexpected iOS Store identity") unless ios_bundle_id == "com.passvault.ios"
 
 manifest = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   marketingVersion: version,
   buildNumber: build_number,
   sourceCommit: source_commit,
@@ -51,6 +51,9 @@ manifest = {
     artifactReceiptSha256: required("IOS_ARTIFACT_RECEIPT_SHA256").downcase,
     internal: required("IOS_INTERNAL_STATE"),
     external: required("IOS_EXTERNAL_STATE"),
+  },
+  desktop: {
+    artifactReceiptSha256: required("DESKTOP_ARTIFACT_RECEIPT_SHA256").downcase,
   },
 }
 

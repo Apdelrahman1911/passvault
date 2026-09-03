@@ -241,4 +241,4 @@ jobs:
             --target "$GITHUB_SHA" \
             --generate-notes \
             --title "PassVault $RELEASE_VERSION" \
-            --notes "Exact production-validated desktop packages for Windows x64, macOS arm64/x64, and Linux x64. Windows native code/installers are Authenticode verified; macOS packages are Developer ID signed, notarized, stapled, and Gatekeeper verified. SHA256SUMS.txt and release-provenance.json bind every asset to the tested candidate commit and mobile build receipts."
+            --notes "Exact production-validated desktop packages for Windows x64, macOS arm64/x64, and Linux x64. Windows/macOS packages derive from the receipt-verified candidate app images; Linux packages are the byte-identical tested candidates. Windows native code/installers are Authenticode verified; macOS packages are Developer ID signed, notarized, stapled, and Gatekeeper verified. SHA256SUMS.txt and release-provenance.json bind every asset to the tested candidate commit, Desktop promotion inputs, and mobile build receipts."

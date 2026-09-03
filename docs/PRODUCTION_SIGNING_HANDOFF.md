@@ -138,6 +138,16 @@ on every output. Do not type or maintain local certificate fingerprints by hand.
 Select exactly one backend. The validator rejects mixed inputs and the configuration script removes stale values and
 secrets from every broader or inactive scope.
 
+The protected signing workflow never asks an operator for an unsigned Desktop
+binary. `Testing Candidate` publishes an attested receipt for the exact Linux
+packages and Windows/macOS app-image archives it smoke-tested. Production
+downloads those public candidate assets itself, verifies the receipt digest,
+source commit/tree, GitHub attestations, size, and SHA-256 before a signing
+credential is used, and revalidates each staged input in its platform job.
+Linux packages are passed through unchanged. Windows and macOS installers are
+created only from the verified app images; Gradle is not run during production
+Desktop signing.
+
 ### SignPath (recommended starting point for this repository)
 
 This route keeps the private key in the signing provider and sends only the two exact unsigned request sets generated
@@ -302,11 +312,15 @@ copies, variables, fingerprints, environment branch policies, and absence checks
 ## Release sequence after configuration
 
 1. `Testing Candidate` builds each mobile binary once, validates it, records SHA-256 receipts, retains the exact signed
-   artifacts privately for 90 days, uploads to internal testing, and promotes the same store build externally.
-2. `Candidate Readiness` requires the exact testing commit and approved store state, then fast-forwards `release`.
+   artifacts privately for 90 days, uploads to internal testing, and promotes the same store build externally. It also
+   smoke-tests Desktop packages, freezes the Linux packages and Windows/macOS app images, and publishes their attested
+   receipt and hashes with the candidate.
+2. `Candidate Readiness` requires the exact testing commit, Desktop receipt binding, and approved store state, then
+   fast-forwards `release`.
 3. `Request Mobile Production Release` runs from `main`, validates the owner request, and hands off to the protected
    `Production Store Release` child. Approve `mobile-production`; it promotes the exact existing Store build without
    building or uploading another binary.
 4. Only when Desktop publishing is wanted, run `Production Signing Validation` from `release` and approve
-   `desktop-production`. It signs, notarizes, verifies, and freezes Desktop artifacts without affecting mobile.
+   `desktop-production`. It verifies and promotes the receipt-bound candidate inputs, signs/packages Windows and macOS,
+   passes Linux through byte-identically, and freezes the final attested bundle without affecting mobile.
 5. `Publish Stable Release` downloads and re-verifies that frozen signed Desktop bundle. It never rebuilds packages.

@@ -19,7 +19,6 @@ concurrency:
 
 env:
   JAVA_VERSION: '17'
-  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=2 -Xmx4096m'
 
 jobs:
   prepare:
@@ -44,6 +43,7 @@ jobs:
       prerelease: ${{ steps.version.outputs.prerelease }}
       build_number: ${{ steps.candidate.outputs.build_number }}
       source_tree: ${{ steps.candidate.outputs.source_tree }}
+      desktop_receipt_sha256: ${{ steps.candidate.outputs.desktop_receipt_sha256 }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -93,6 +93,9 @@ jobs:
           gh release download "$CANDIDATE_TAG" \
             --pattern readiness-manifest.json \
             --pattern '*-artifact-receipt.json' \
+            --pattern '*.deb' \
+            --pattern '*.rpm' \
+            --pattern '*-app-image.zip' \
             --dir "$RUNNER_TEMP/candidate"
           manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
           gh attestation verify "$manifest" \
@@ -112,7 +115,17 @@ jobs:
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \
-            "$manifest" "$RUNNER_TEMP/candidate" "$GITHUB_SHA" "$source_tree"
+            "$manifest" "$RUNNER_TEMP/candidate" "$GITHUB_SHA" "$source_tree" \
+            "$RUNNER_TEMP/candidate"
+          while IFS= read -r input_name; do
+            gh attestation verify "$RUNNER_TEMP/candidate/$input_name" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
+              --source-ref refs/heads/testing \
+              --source-digest "$GITHUB_SHA" \
+              --deny-self-hosted-runners >/dev/null
+          done < <(jq -r '.artifacts | to_entries[] | .value.fileName' \
+            "$RUNNER_TEMP/candidate/desktop-artifact-receipt.json")
           if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
             echo "Readiness provenance does not match the requested candidate tag." >&2
             exit 1
@@ -125,39 +138,94 @@ jobs:
           {
             printf 'build_number=%s\n' "$(jq -r .buildNumber "$manifest")"
             printf 'source_tree=%s\n' "$source_tree"
+            printf 'desktop_receipt_sha256=%s\n' \
+              "$(jq -r .desktop.artifactReceiptSha256 "$manifest")"
           } >> "$GITHUB_OUTPUT"
 
+          stage_input() {
+            local key="$1"
+            local destination="$2"
+            local name
+            name="$(jq -er --arg key "$key" '.artifacts[$key].fileName' \
+              "$RUNNER_TEMP/candidate/desktop-artifact-receipt.json")"
+            install -d -m 0700 "$destination"
+            install -m 0600 "$RUNNER_TEMP/candidate/$name" "$destination/$name"
+            install -m 0600 "$RUNNER_TEMP/candidate/desktop-artifact-receipt.json" \
+              "$destination/desktop-artifact-receipt.json"
+          }
+          stage_input linuxDeb "$RUNNER_TEMP/verified-candidate/linux"
+          stage_input linuxRpm "$RUNNER_TEMP/verified-candidate/linux"
+          stage_input windowsX64AppImage "$RUNNER_TEMP/verified-candidate/windows-x64"
+          stage_input macosArm64AppImage "$RUNNER_TEMP/verified-candidate/macos-arm64"
+          stage_input macosX64AppImage "$RUNNER_TEMP/verified-candidate/macos-x64"
+
+      - name: Freeze verified Linux candidate inputs for this signing run
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: candidate-input-linux-${{ inputs.candidate_tag }}
+          if-no-files-found: error
+          retention-days: 1
+          path: ${{ runner.temp }}/verified-candidate/linux/
+
+      - name: Freeze verified Windows candidate input for this signing run
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: candidate-input-windows-x64-${{ inputs.candidate_tag }}
+          if-no-files-found: error
+          retention-days: 1
+          path: ${{ runner.temp }}/verified-candidate/windows-x64/
+
+      - name: Freeze verified macOS arm64 candidate input for this signing run
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: candidate-input-macos-arm64-${{ inputs.candidate_tag }}
+          if-no-files-found: error
+          retention-days: 1
+          path: ${{ runner.temp }}/verified-candidate/macos-arm64/
+
+      - name: Freeze verified macOS x64 candidate input for this signing run
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: candidate-input-macos-x64-${{ inputs.candidate_tag }}
+          if-no-files-found: error
+          retention-days: 1
+          path: ${{ runner.temp }}/verified-candidate/macos-x64/
+
   build-desktop-linux:
-    name: Build Desktop packages (Linux)
+    name: Promote tested Desktop packages (Linux)
     runs-on: ubuntu-latest
     needs: prepare
-    env:
-      PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
-      COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
-      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+    permissions:
+      actions: read
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Setup JDK
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+      - name: Download receipt-verified Linux candidate packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
+          name: candidate-input-linux-${{ inputs.candidate_tag }}
+          path: candidate-input
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
-        with:
-          cache-cleanup: always
-
-      - name: Build Linux Packages
-        run: >
-          ./gradlew :app-desktop:createReleaseDistributable
-          :app-desktop:packageReleaseDeb :app-desktop:packageReleaseRpm
-          -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
-
-      - name: Smoke test packaged Linux runtime
-        run: ./scripts/smoke-test-desktop-release.sh 30
+      - name: Verify and stage exact tested Linux packages
+        env:
+          EXPECTED_RECEIPT_SHA256: ${{ needs.prepare.outputs.desktop_receipt_sha256 }}
+        run: |
+          actual_receipt_sha256="$(sha256sum candidate-input/desktop-artifact-receipt.json | awk '{ print $1 }')"
+          if [[ "$actual_receipt_sha256" != "$EXPECTED_RECEIPT_SHA256" ]]; then
+            echo "The Linux promotion receipt differs from the readiness-approved receipt." >&2
+            exit 1
+          fi
+          ruby scripts/validate-desktop-artifact-receipt.rb \
+            candidate-input/desktop-artifact-receipt.json \
+            "${{ needs.prepare.outputs.version }}" \
+            "${{ needs.prepare.outputs.build_number }}" \
+            "$GITHUB_SHA" "${{ needs.prepare.outputs.source_tree }}" \
+            candidate-input linuxDeb linuxRpm
+          install -d promoted-linux
+          find candidate-input -maxdepth 1 -type f \( -name '*.deb' -o -name '*.rpm' \) \
+            -exec install -m 0644 '{}' promoted-linux/ \;
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -166,11 +234,11 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           path: |
-            app-desktop/build/compose/binaries/main-release/deb/*.deb
-            app-desktop/build/compose/binaries/main-release/rpm/*.rpm
+            promoted-linux/*.deb
+            promoted-linux/*.rpm
 
   build-desktop-windows:
-    name: Build Desktop packages (Windows)
+    name: Sign promoted Desktop app image (Windows)
     runs-on: windows-latest
     needs: prepare
     environment: desktop-production
@@ -181,10 +249,14 @@ jobs:
     env:
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
-      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
+        with:
+          ruby-version: '3.3'
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -192,18 +264,37 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+      - name: Download receipt-verified Windows candidate app image
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          cache-cleanup: always
+          name: candidate-input-windows-x64-${{ inputs.candidate_tag }}
+          path: candidate-input
 
-      - name: Build Windows distributable
-        run: >
-          ./gradlew :app-desktop:createReleaseDistributable
-          "-Ppassvault.versionName=${{ needs.prepare.outputs.version }}"
+      - name: Verify and restore the exact tested Windows app image
+        env:
+          EXPECTED_RECEIPT_SHA256: ${{ needs.prepare.outputs.desktop_receipt_sha256 }}
         shell: pwsh
+        run: |
+          $receipt = "candidate-input/desktop-artifact-receipt.json"
+          $actualReceiptSha256 = (Get-FileHash -LiteralPath $receipt -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualReceiptSha256 -cne $env:EXPECTED_RECEIPT_SHA256) {
+              throw "The Windows promotion receipt differs from the readiness-approved receipt."
+          }
+          ruby scripts/validate-desktop-artifact-receipt.rb `
+              $receipt `
+              "${{ needs.prepare.outputs.version }}" `
+              "${{ needs.prepare.outputs.build_number }}" `
+              $env:GITHUB_SHA `
+              "${{ needs.prepare.outputs.source_tree }}" `
+              candidate-input windowsX64AppImage
+          if ($LASTEXITCODE -ne 0) {
+              throw "The promoted Windows app image does not match its receipt."
+          }
+          ./scripts/restore-promoted-windows-app-image.ps1 `
+              -ArchivePath "candidate-input/PassVault-${{ needs.prepare.outputs.version }}-windows-x64-app-image.zip" `
+              -OutputRoot app-desktop/build/compose/binaries/main-release/app
 
-      - name: Smoke test packaged Windows runtime
+      - name: Smoke test promoted Windows runtime
         run: >
           ./scripts/smoke-test-desktop-release.ps1
           -TimeoutSeconds 30
@@ -738,7 +829,7 @@ jobs:
             app-desktop/build/compose/binaries/main-release/exe/*.exe
 
   build-desktop-macos:
-    name: Build Desktop package (macOS ${{ matrix.architecture }})
+    name: Sign promoted Desktop app image (macOS ${{ matrix.architecture }})
     strategy:
       fail-fast: false
       matrix:
@@ -751,21 +842,18 @@ jobs:
     needs: prepare
     environment: desktop-production
     env:
-      MACOS_SIGN: 'true'
       MACOS_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
       MACOS_TEAM_ID: ${{ vars.MACOS_NOTARIZATION_TEAM_ID }}
       PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
       COPYRIGHT_HOLDER: ${{ vars.COPYRIGHT_HOLDER }}
-      SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Setup JDK
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1
         with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: 'temurin'
+          ruby-version: '3.3'
 
       - name: Setup macOS packaging JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -773,10 +861,32 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+      - name: Download receipt-verified macOS candidate app image
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          cache-cleanup: always
+          name: candidate-input-macos-${{ matrix.architecture }}-${{ inputs.candidate_tag }}
+          path: candidate-input
+
+      - name: Verify the exact tested macOS app image
+        env:
+          EXPECTED_RECEIPT_SHA256: ${{ needs.prepare.outputs.desktop_receipt_sha256 }}
+        run: |
+          actual_receipt_sha256="$(shasum -a 256 candidate-input/desktop-artifact-receipt.json | awk '{ print $1 }')"
+          if [[ "$actual_receipt_sha256" != "$EXPECTED_RECEIPT_SHA256" ]]; then
+            echo "The macOS promotion receipt differs from the readiness-approved receipt." >&2
+            exit 1
+          fi
+          case "${{ matrix.architecture }}" in
+            arm64) receipt_key=macosArm64AppImage ;;
+            x64) receipt_key=macosX64AppImage ;;
+            *) echo "Unsupported macOS architecture." >&2; exit 1 ;;
+          esac
+          ruby scripts/validate-desktop-artifact-receipt.rb \
+            candidate-input/desktop-artifact-receipt.json \
+            "${{ needs.prepare.outputs.version }}" \
+            "${{ needs.prepare.outputs.build_number }}" \
+            "$GITHUB_SHA" "${{ needs.prepare.outputs.source_tree }}" \
+            candidate-input "$receipt_key"
 
       - name: Require macOS signing and notarization
         env:
@@ -904,12 +1014,14 @@ jobs:
           echo "MACOS_PROVISIONING_PROFILE_PATH=$profile_path" >> "$GITHUB_ENV"
           echo "MACOS_JPACKAGE_JAVA_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
 
-      - name: Build macOS Package
-        run: >
-          ./gradlew :app-desktop:packageReleaseDmg
-          -Ppassvault.versionName=${{ needs.prepare.outputs.version }}
+      - name: Sign and package the promoted macOS app image
+        run: |
+          ./scripts/package-promoted-macos-app.sh \
+            "candidate-input/PassVault-${{ needs.prepare.outputs.version }}-macos-${{ matrix.architecture }}-app-image.zip" \
+            app-desktop/build/compose/binaries/main-release \
+            "${{ needs.prepare.outputs.version }}"
 
-      - name: Smoke test packaged macOS runtime
+      - name: Smoke test promoted macOS runtime
         run: ./scripts/smoke-test-desktop-release.sh 30
 
       - name: Verify and notarize macOS package
@@ -996,6 +1108,7 @@ jobs:
       - name: Download verified platform artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
+          pattern: desktop-*
           path: downloaded-artifacts
 
       - name: Prepare and verify release assets
@@ -1036,8 +1149,12 @@ jobs:
           RELEASE_SOURCE_TREE="${{ needs.prepare.outputs.source_tree }}" \
             ruby scripts/create-desktop-release-provenance.rb release-assets \
               > release-assets/release-provenance.json
+          checksum_manifest="$RUNNER_TEMP/release-SHA256SUMS.txt"
           (cd release-assets && find . -maxdepth 1 -type f ! -name 'SHA256SUMS.txt' \
-            -print | sed 's#^./##' | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.txt)
+            -print | sed 's#^./##' | LC_ALL=C sort | xargs sha256sum) \
+              > "$checksum_manifest"
+          install -m 0644 "$checksum_manifest" release-assets/SHA256SUMS.txt
+          rm -f -- "$checksum_manifest"
           (cd release-assets && sha256sum --check SHA256SUMS.txt)
           ruby scripts/validate-desktop-release-provenance.rb \
             release-assets "$CANDIDATE_TAG" "${{ needs.prepare.outputs.version }}" \
@@ -1062,6 +1179,6 @@ jobs:
           {
             echo '## Production signing validation passed'
             echo
-            echo 'The exact candidate source produced signed Windows packages, accepted/stapled macOS packages, and verified Linux packages.'
+            echo 'The exact tested candidate app images produced signed Windows and accepted/stapled macOS packages; the exact tested Linux packages were promoted unchanged.'
             echo 'Nothing was published. The immutable Actions artifact is the only bundle eligible for stable publication.'
           } >> "$GITHUB_STEP_SUMMARY"

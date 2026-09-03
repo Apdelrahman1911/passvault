@@ -771,6 +771,55 @@ if ruby scripts/validate-mobile-artifact-receipt.rb \
     exit 1
 fi
 
+desktop_receipt_root="$temporary_root/desktop-receipts"
+mkdir "$desktop_receipt_root"
+cp "$output_directory/PassVault-$version.deb" \
+    "$output_directory/PassVault-$version.rpm" \
+    "$desktop_receipt_root/"
+printf 'tested Windows app image\n' \
+    > "$desktop_receipt_root/PassVault-$version-windows-x64-app-image.zip"
+printf 'tested macOS arm64 app image\n' \
+    > "$desktop_receipt_root/PassVault-$version-macos-arm64-app-image.zip"
+printf 'tested macOS x64 app image\n' \
+    > "$desktop_receipt_root/PassVault-$version-macos-x64-app-image.zip"
+RECEIPT_VERSION="$version" \
+RECEIPT_BUILD_NUMBER=1000123 \
+RECEIPT_SOURCE_COMMIT=0123456789abcdef0123456789abcdef01234567 \
+RECEIPT_SOURCE_TREE=89abcdef0123456789abcdef0123456789abcdef \
+RECEIPT_CANDIDATE_TAG="v$version-rc.1000123" \
+RECEIPT_SOURCE_REPOSITORY=Apdelrahman1911/passvault \
+RECEIPT_SOURCE_WORKFLOW=.github/workflows/testing-release.yml \
+RECEIPT_SOURCE_RUN_ID=123456789 \
+RECEIPT_SOURCE_RUN_ATTEMPT=2 \
+DESKTOP_LINUX_DEB_PATH="$desktop_receipt_root/PassVault-$version.deb" \
+DESKTOP_LINUX_RPM_PATH="$desktop_receipt_root/PassVault-$version.rpm" \
+DESKTOP_WINDOWS_X64_APP_IMAGE_PATH="$desktop_receipt_root/PassVault-$version-windows-x64-app-image.zip" \
+DESKTOP_MACOS_ARM64_APP_IMAGE_PATH="$desktop_receipt_root/PassVault-$version-macos-arm64-app-image.zip" \
+DESKTOP_MACOS_X64_APP_IMAGE_PATH="$desktop_receipt_root/PassVault-$version-macos-x64-app-image.zip" \
+    ruby scripts/create-desktop-artifact-receipt.rb \
+      > "$desktop_receipt_root/desktop-artifact-receipt.json"
+ruby scripts/validate-desktop-artifact-receipt.rb \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef "$desktop_receipt_root" >/dev/null
+EXPECTED_SOURCE_REPOSITORY=Apdelrahman1911/passvault \
+    ruby scripts/validate-desktop-artifact-receipt.rb \
+      "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+      0123456789abcdef0123456789abcdef01234567 \
+      89abcdef0123456789abcdef0123456789abcdef >/dev/null
+wrong_desktop_repository_receipt="$temporary_root/wrong-desktop-repository-receipt.json"
+jq '.sourceArtifactRun.repository = "attacker/fork"' \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" > "$wrong_desktop_repository_receipt"
+if EXPECTED_SOURCE_REPOSITORY=Apdelrahman1911/passvault \
+    ruby scripts/validate-desktop-artifact-receipt.rb \
+      "$wrong_desktop_repository_receipt" "$version" 1000123 \
+      0123456789abcdef0123456789abcdef01234567 \
+      89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "A Desktop receipt from another repository was accepted." >&2
+    exit 1
+fi
+cp "$desktop_receipt_root/desktop-artifact-receipt.json" "$mobile_receipt_root/"
+
 printf 'signed-ipa\n' > "$mobile_receipt_root/PassVault-$version-1000123.ipa"
 printf 'signed-archive\n' > "$mobile_receipt_root/PassVault-$version-1000123.xcarchive.zip"
 printf 'link-map\n' > "$mobile_receipt_root/PassVault-LinkMap.txt"
@@ -818,8 +867,12 @@ IOS_SIGNING_SHA1=0123456789ABCDEF0123456789ABCDEF01234567 \
 IOS_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$mobile_receipt_root/ios-artifact-receipt.json" | awk '{ print $1 }')" \
 IOS_INTERNAL_STATE=completed \
 IOS_EXTERNAL_STATE=submitted_for_review \
+DESKTOP_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$mobile_receipt_root/desktop-artifact-receipt.json" | awk '{ print $1 }')" \
     ruby scripts/create-candidate-manifest.rb > "$candidate_manifest"
 jq -e '.sourceTree == "89abcdef0123456789abcdef0123456789abcdef"' \
+    "$candidate_manifest" >/dev/null
+jq -e --arg digest "$(sha256sum "$mobile_receipt_root/desktop-artifact-receipt.json" | awk '{ print $1 }')" \
+    '.schemaVersion == 3 and .desktop.artifactReceiptSha256 == $digest' \
     "$candidate_manifest" >/dev/null
 ruby scripts/validate-candidate-manifest.rb --allow-pending "$candidate_manifest" \
     0123456789abcdef0123456789abcdef01234567 \
@@ -839,12 +892,52 @@ ruby scripts/validate-candidate-manifest.rb "$temporary_root/readiness-manifest.
 ruby scripts/validate-candidate-artifact-provenance.rb \
     "$temporary_root/readiness-manifest.json" "$mobile_receipt_root" \
     0123456789abcdef0123456789abcdef01234567 \
-    89abcdef0123456789abcdef0123456789abcdef >/dev/null
+    89abcdef0123456789abcdef0123456789abcdef "$desktop_receipt_root" >/dev/null
+
+missing_desktop_receipt_root="$temporary_root/missing-desktop-receipt"
+mkdir "$missing_desktop_receipt_root"
+cp "$mobile_receipt_root/android-artifact-receipt.json" \
+    "$mobile_receipt_root/ios-artifact-receipt.json" \
+    "$missing_desktop_receipt_root/"
+if ruby scripts/validate-candidate-artifact-provenance.rb \
+    "$temporary_root/readiness-manifest.json" "$missing_desktop_receipt_root" \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Candidate provenance accepted a missing Desktop receipt." >&2
+    exit 1
+fi
+
+desktop_archive="$desktop_receipt_root/PassVault-$version-windows-x64-app-image.zip"
+cp "$desktop_archive" "$desktop_archive.original"
+printf 'tampered\n' >> "$desktop_archive"
+if ruby scripts/validate-desktop-artifact-receipt.rb \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef \
+    "$desktop_receipt_root" windowsX64AppImage >/dev/null 2>&1; then
+    echo "A tampered Desktop promotion input was accepted." >&2
+    exit 1
+fi
+mv "$desktop_archive.original" "$desktop_archive"
+
+mv "$desktop_archive" "$desktop_archive.regular"
+ln -s "$(basename "$desktop_archive.regular")" "$desktop_archive"
+if ruby scripts/validate-desktop-artifact-receipt.rb \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef \
+    "$desktop_receipt_root" windowsX64AppImage >/dev/null 2>&1; then
+    echo "A symlinked Desktop promotion input was accepted." >&2
+    exit 1
+fi
+rm "$desktop_archive"
+mv "$desktop_archive.regular" "$desktop_archive"
 
 desktop_provenance_root="$temporary_root/desktop-provenance"
 cp -R "$output_directory" "$desktop_provenance_root"
 cp "$temporary_root/readiness-manifest.json" \
     "$mobile_receipt_root/android-artifact-receipt.json" \
+    "$mobile_receipt_root/desktop-artifact-receipt.json" \
     "$mobile_receipt_root/ios-artifact-receipt.json" \
     "$desktop_provenance_root/"
 RELEASE_VERSION="$version" \
@@ -865,6 +958,44 @@ ruby scripts/validate-desktop-release-provenance.rb \
     "$desktop_provenance_root" "v$version-rc.1000123" "$version" 1000123 \
     0123456789abcdef0123456789abcdef01234567 \
     89abcdef0123456789abcdef0123456789abcdef >/dev/null
+tampered_candidate_input_root="$temporary_root/desktop-provenance-tampered-input"
+cp -R "$desktop_provenance_root" "$tampered_candidate_input_root"
+jq '.candidateDesktop.sourceArtifactRun.runId += 1' \
+    "$desktop_provenance_root/release-provenance.json" \
+    > "$tampered_candidate_input_root/release-provenance.json"
+if ruby scripts/validate-desktop-release-provenance.rb \
+    "$tampered_candidate_input_root" "v$version-rc.1000123" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Release provenance accepted a substituted Desktop source run." >&2
+    exit 1
+fi
+substituted_linux_root="$temporary_root/desktop-provenance-substituted-linux"
+cp -R "$desktop_provenance_root" "$substituted_linux_root"
+linux_candidate_name="$(jq -r '.artifacts.linuxDeb.fileName' \
+    "$substituted_linux_root/desktop-artifact-receipt.json")"
+printf '\nsubstituted Linux package\n' >> "$substituted_linux_root/$linux_candidate_name"
+RELEASE_VERSION="$version" \
+RELEASE_BUILD_NUMBER=1000123 \
+RELEASE_CANDIDATE_TAG="v$version-rc.1000123" \
+RELEASE_SOURCE_COMMIT=0123456789abcdef0123456789abcdef01234567 \
+RELEASE_SOURCE_TREE=89abcdef0123456789abcdef0123456789abcdef \
+    ruby scripts/create-desktop-release-provenance.rb "$substituted_linux_root" \
+      > "$substituted_linux_root/release-provenance.json"
+(
+    cd "$substituted_linux_root"
+    # SHA256SUMS.txt is explicitly excluded from the input file set.
+    # shellcheck disable=SC2094
+    find . -maxdepth 1 -type f ! -name SHA256SUMS.txt -print |
+        sed 's#^./##' | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.txt
+)
+if ruby scripts/validate-desktop-release-provenance.rb \
+    "$substituted_linux_root" "v$version-rc.1000123" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Release provenance accepted a rebuilt Linux package." >&2
+    exit 1
+fi
 extra_dmg_root="$temporary_root/desktop-provenance-extra-dmg"
 cp -R "$desktop_provenance_root" "$extra_dmg_root"
 printf 'unexpected DMG\n' > "$extra_dmg_root/PassVault-$version-macos-debug.dmg"
@@ -923,6 +1054,16 @@ jq '.android.packageName = "com.passvault.android\nforged-output=value"' \
     "$temporary_root/readiness-manifest.json" > "$invalid_candidate_manifest"
 if ruby scripts/validate-candidate-manifest.rb "$invalid_candidate_manifest" >/dev/null 2>&1; then
     echo "A candidate manifest with an unsafe package identifier was accepted." >&2
+    exit 1
+fi
+invalid_desktop_receipt_manifest="$temporary_root/invalid-desktop-receipt-manifest.json"
+jq '.desktop.artifactReceiptSha256 = ("0" * 64)' \
+    "$temporary_root/readiness-manifest.json" > "$invalid_desktop_receipt_manifest"
+if ruby scripts/validate-candidate-artifact-provenance.rb \
+    "$invalid_desktop_receipt_manifest" "$mobile_receipt_root" \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Candidate provenance accepted an unbound Desktop receipt." >&2
     exit 1
 fi
 debug_candidate_manifest="$temporary_root/debug-candidate-manifest.json"
@@ -1468,10 +1609,13 @@ ruby -c scripts/create-candidate-manifest.rb >/dev/null
 ruby -c scripts/validate-candidate-manifest.rb >/dev/null
 ruby -c scripts/create-mobile-artifact-receipt.rb >/dev/null
 ruby -c scripts/validate-mobile-artifact-receipt.rb >/dev/null
+ruby -c scripts/create-desktop-artifact-receipt.rb >/dev/null
+ruby -c scripts/validate-desktop-artifact-receipt.rb >/dev/null
 ruby -c scripts/validate-candidate-artifact-provenance.rb >/dev/null
 ruby -c scripts/create-desktop-release-provenance.rb >/dev/null
 ruby -c scripts/validate-desktop-release-provenance.rb >/dev/null
 bash -n scripts/check-play-track-build.sh
+bash -n scripts/package-promoted-macos-app.sh
 grep -Fq 'track_promote_to' fastlane/Fastfile
 grep -Fq 'play_promote(from: "internal", to: "alpha", release_status: "completed")' \
     fastlane/Fastfile
@@ -1742,11 +1886,75 @@ grep -Fq 'contains an unsafe symlink' scripts/prepare-mobile-store-metadata.sh
 test "$(grep -Fc '    environment: desktop-production' .github/workflows/release.yml)" -eq 2
 ruby -ryaml <<'RUBY'
 release_workflow = YAML.safe_load(File.read(".github/workflows/release.yml", encoding: "UTF-8"), aliases: true)
-%w[build-desktop-linux build-desktop-windows build-desktop-macos].each do |job_name|
-  support_email = release_workflow.fetch("jobs").fetch(job_name).fetch("env")["SUPPORT_EMAIL"]
-  abort("#{job_name} does not receive the validated publisher support address") unless
-    support_email == "${{ vars.SUPPORT_EMAIL }}"
+jobs = release_workflow.fetch("jobs")
+runs = jobs.values.flat_map { |job| Array(job["steps"]) }.map { |step| step["run"].to_s }
+forbidden = runs.grep(%r{(?:\./gradlew|:app-desktop:(?:packageRelease|createReleaseDistributable))})
+abort("Production Desktop signing must not invoke Gradle or rebuild an app image") unless forbidden.empty?
+
+expected_order = {
+  "build-desktop-linux" => [
+    "Download receipt-verified Linux candidate packages",
+    "Verify and stage exact tested Linux packages",
+    "Upload Linux Artifacts",
+  ],
+  "build-desktop-windows" => [
+    "Download receipt-verified Windows candidate app image",
+    "Verify and restore the exact tested Windows app image",
+    "Require Windows signing",
+    "Package installers from the exact signed Windows app image",
+  ],
+  "build-desktop-macos" => [
+    "Download receipt-verified macOS candidate app image",
+    "Verify the exact tested macOS app image",
+    "Require macOS signing and notarization",
+    "Sign and package the promoted macOS app image",
+  ],
+}
+expected_order.each do |job_name, step_names|
+  actual_names = jobs.fetch(job_name).fetch("steps").map { |step| step["name"] }.compact
+  positions = step_names.map { |name| actual_names.index(name) }
+  abort("#{job_name} does not verify promotion inputs before signing or packaging") unless
+    positions.none?(&:nil?) && positions == positions.sort && positions.uniq.length == positions.length
 end
+
+final_download = jobs.fetch("assemble-release").fetch("steps").find do |step|
+  step["name"] == "Download verified platform artifacts"
+end
+abort("Final release assembly must download only production Desktop outputs") unless
+  final_download&.dig("with", "pattern") == "desktop-*"
+
+prepare_run = jobs.fetch("prepare").fetch("steps").map { |step| step["run"].to_s }.join("\n")
+verify_position = prepare_run.index('gh attestation verify "$RUNNER_TEMP/candidate/$input_name"')
+stage_position = prepare_run.index("stage_input linuxDeb")
+abort("Candidate Desktop inputs are staged before their attestations are verified") unless
+  verify_position && stage_position && verify_position < stage_position
+
+candidate_workflow = YAML.safe_load(
+  File.read(".github/workflows/testing-release.yml", encoding: "UTF-8"),
+  aliases: true,
+)
+candidate_jobs = candidate_workflow.fetch("jobs")
+{
+  "desktop-windows" => [
+    "Freeze the Windows candidate app image for production signing",
+    "Smoke test the frozen Windows candidate app image",
+  ],
+  "desktop-macos" => [
+    "Freeze the macOS candidate app image for production signing",
+    "Smoke test the frozen macOS candidate app image",
+  ],
+}.each do |job_name, step_names|
+  actual_names = candidate_jobs.fetch(job_name).fetch("steps").map { |step| step["name"] }.compact
+  positions = step_names.map { |name| actual_names.index(name) }
+  abort("#{job_name} does not smoke-test the frozen promotion input") unless
+    positions.none?(&:nil?) && positions == positions.sort
+end
+candidate_publish_run = candidate_jobs.fetch("publish-candidate").fetch("steps")
+  .map { |step| step["run"].to_s }.join("\n")
+receipt_position = candidate_publish_run.index("create-desktop-artifact-receipt.rb")
+manifest_position = candidate_publish_run.index("create-candidate-manifest.rb")
+abort("Candidate manifest is created before the Desktop receipt") unless
+  receipt_position && manifest_position && receipt_position < manifest_position
 RUBY
 grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
 grep -Fq 'applicationIdSuffix = ".debug"' app-android/build.gradle.kts
@@ -2085,6 +2293,7 @@ if command -v pwsh >/dev/null 2>&1; then
         scripts/package-signed-windows-installers.ps1 \
         scripts/prepare-signpath-windows-request.ps1 \
         scripts/prepare-windows-runtime-signing.ps1 \
+        scripts/restore-promoted-windows-app-image.ps1 \
         scripts/sign-windows-artifacts.ps1 \
         scripts/update-desktop-biometric-checksum.ps1 \
         scripts/verify-windows-release-artifacts.ps1; do
