@@ -9,6 +9,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
+import com.passvault.android.picker.AndroidPickerHostState
+import com.passvault.android.picker.assertAndroidMainThread
 import com.passvault.core.domain.model.AttachmentMetadata
 import com.passvault.core.domain.model.VaultSessionState
 import com.passvault.core.domain.repository.AttachmentContentSink
@@ -56,9 +58,11 @@ class AndroidAttachmentFileStore(
     private val plaintextCleanupScheduler = AndroidAttachmentPlaintextCleanupScheduler(appContext)
     @Volatile
     private var pendingCleanup: Deferred<Unit>? = null
-    private var attachedActivity: ComponentActivity? = null
-    private var importLauncher: ActivityResultLauncher<Array<String>>? = null
-    private var exportLauncher: ActivityResultLauncher<String>? = null
+    private val pickerHost = AndroidPickerHostState<ComponentActivity, PickerLaunchers>(
+        description = "attachment file store",
+        isFinishing = ComponentActivity::isFinishing,
+        assertOwnerThread = ::assertAndroidMainThread,
+    )
     private var pending: PendingPicker? = null
 
     init {
@@ -74,18 +78,16 @@ class AndroidAttachmentFileStore(
     }
 
     fun attach(activity: ComponentActivity) {
-        if (attachedActivity === activity) return
-        check(attachedActivity == null || attachedActivity?.isFinishing == true) {
-            "Another activity is already attached to the attachment file store"
-        }
-        attachedActivity = activity
-        importLauncher = activity.registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            completePicker(uri, PickerKind.IMPORT)
-        }
-        exportLauncher = activity.registerForActivityResult(
-            ActivityResultContracts.CreateDocument(DEFAULT_MIME_TYPE),
-        ) { uri ->
-            completePicker(uri, PickerKind.EXPORT)
+        pickerHost.attach(activity) {
+            val importLauncher = activity.registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                completePicker(uri, PickerKind.IMPORT)
+            }
+            val exportLauncher = activity.registerForActivityResult(
+                ActivityResultContracts.CreateDocument(DEFAULT_MIME_TYPE),
+            ) { uri ->
+                completePicker(uri, PickerKind.EXPORT)
+            }
+            PickerLaunchers(importLauncher, exportLauncher)
         }
     }
 
@@ -104,21 +106,20 @@ class AndroidAttachmentFileStore(
     }
 
     fun detach(activity: ComponentActivity, isChangingConfigurations: Boolean = false) {
-        val request = synchronized(this) {
-            if (attachedActivity !== activity) return
-            attachedActivity = null
-            importLauncher = null
-            exportLauncher = null
-            if (isChangingConfigurations) null else pending.also { pending = null }
-        }
+        val decision = pickerHost.detach(activity, isChangingConfigurations)
+        if (!decision.cancelPending) return
+        val request = synchronized(this) { pending.also { pending = null } }
         request?.token?.close()
         request?.continuation?.let { resumeSafely(it, Result.failure(AttachmentFileSelectionCancelled())) }
     }
 
     override suspend fun selectForImport(): Result<AttachmentContentSource> {
-        val launcher = importLauncher
-            ?: return Result.failure(IllegalStateException("The attachment picker is not ready"))
-        return request(PickerKind.IMPORT) { launcher.launch(arrayOf("*/*")) }
+        val selected = withContext(Dispatchers.Main.immediate) {
+            val launcher = pickerHost.launchersOrNull()?.import
+                ?: return@withContext Result.failure(IllegalStateException("The attachment picker is not ready"))
+            request(PickerKind.IMPORT) { launcher.launch(arrayOf("*/*")) }
+        }
+        return selected
             .mapCatching { uri -> AndroidAttachmentSource(appContext, uri) }
     }
 
@@ -129,9 +130,13 @@ class AndroidAttachmentFileStore(
         pendingCleanup?.await()
         val safeName = AttachmentPolicy.validateFileName(attachment.fileName)
         val destination = if (action == AttachmentOutputAction.EXPORT) {
-            val launcher = exportLauncher
-                ?: return Result.failure(IllegalStateException("The attachment picker is not ready"))
-            request(PickerKind.EXPORT) { launcher.launch(safeName) }.getOrElse { return Result.failure(it) }
+            withContext(Dispatchers.Main.immediate) {
+                val launcher = pickerHost.launchersOrNull()?.export
+                    ?: return@withContext Result.failure(
+                        IllegalStateException("The attachment picker is not ready"),
+                    )
+                request(PickerKind.EXPORT) { launcher.launch(safeName) }
+            }.getOrElse { return Result.failure(it) }
         } else {
             null
         }
@@ -154,46 +159,57 @@ class AndroidAttachmentFileStore(
     }
 
     @Suppress("TooGenericExceptionCaught") // Every launcher failure must release the lifecycle lock and pending slot.
-    private suspend fun request(kind: PickerKind, launch: () -> Unit): Result<Uri> =
-        withContext(Dispatchers.Main.immediate) {
-            suspendCancellableCoroutine { continuation ->
-                val request = PendingPicker(
-                    kind = kind,
-                    continuation = continuation,
-                    token = lifecycleLockCoordinator.beginSystemFlow(),
-                )
-                synchronized(this@AndroidAttachmentFileStore) {
-                    if (pending != null) {
-                        request.token.close()
-                        continuation.resume(
-                            Result.failure(IllegalStateException("Another attachment picker is active")),
-                        )
-                        return@suspendCancellableCoroutine
-                    }
+    private suspend fun request(kind: PickerKind, launch: () -> Unit): Result<Uri> {
+        assertAndroidMainThread()
+        return suspendCancellableCoroutine { continuation ->
+            val request = PendingPicker(
+                kind = kind,
+                continuation = continuation,
+                token = lifecycleLockCoordinator.beginSystemFlow(),
+            )
+            val accepted = synchronized(this@AndroidAttachmentFileStore) {
+                if (pending == null) {
                     pending = request
-                    continuation.invokeOnCancellation {
-                        synchronized(this@AndroidAttachmentFileStore) {
-                            if (pending?.continuation === continuation) {
-                                pending?.token?.close()
-                                pending = null
-                            }
-                        }
-                    }
-                    try {
-                        launch()
-                    } catch (error: RuntimeException) {
-                        failPickerLaunch(request, continuation, error)
-                    }
+                    true
+                } else {
+                    false
                 }
             }
+            if (!accepted) {
+                request.token.close()
+                continuation.resume(
+                    Result.failure(IllegalStateException("Another attachment picker is active")),
+                )
+                return@suspendCancellableCoroutine
+            }
+            continuation.invokeOnCancellation {
+                val cancelledRequest = synchronized(this@AndroidAttachmentFileStore) {
+                    pending
+                        ?.takeIf { it.continuation === continuation }
+                        ?.also { pending = null }
+                }
+                cancelledRequest?.token?.close()
+            }
+
+            // Never hold the pending-request monitor across a framework call.
+            if (!continuation.isActive) return@suspendCancellableCoroutine
+            try {
+                launch()
+            } catch (error: RuntimeException) {
+                failPickerLaunch(request, continuation, error)
+            }
         }
+    }
 
     private fun failPickerLaunch(
         request: PendingPicker,
         continuation: CancellableContinuation<Result<Uri>>,
         error: RuntimeException,
     ) {
-        pending = null
+        val ownedRequest = synchronized(this) {
+            (pending === request).also { owned -> if (owned) pending = null }
+        }
+        if (!ownedRequest) return
         request.token.close()
         resumeSafely(continuation, Result.failure(error))
     }
@@ -228,6 +244,11 @@ class AndroidAttachmentFileStore(
         val kind: PickerKind,
         val continuation: CancellableContinuation<Result<Uri>>,
         val token: AndroidLifecycleLockCoordinator.SystemFlowToken,
+    )
+
+    private data class PickerLaunchers(
+        val import: ActivityResultLauncher<Array<String>>,
+        val export: ActivityResultLauncher<String>,
     )
 
     private enum class PickerKind { IMPORT, EXPORT }
