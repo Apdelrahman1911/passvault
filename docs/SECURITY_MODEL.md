@@ -139,8 +139,10 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 - Android, iOS, macOS, and supported Windows systems expose explicit biometric/platform enrollment in Security
   settings and an unlock action beside the password field. Unsupported systems, including Linux, fail closed to
   master-password unlock.
-- Desktop focus-loss locking is suppressed only while the app-owned native biometric prompt is active. Prompt end
-  re-evaluates focus and rearms the normal delay; minimize, timeout, explicit lock, and shutdown remain effective.
+- Desktop focus-loss locking uses an independent 30-second budget, stricter than the minimum one-minute inactivity
+  preference. Only time outside PassVault accumulates, and focus changes do not replenish the budget. An app-owned
+  native biometric prompt may defer a due focus lock, but only until an absolute 60-second focus-loss deadline; prompt
+  end immediately re-evaluates the budget. Minimize, inactivity, explicit lock, and shutdown remain effective.
 - Any repository lock/restore transition first requests cancellation of the platform biometric prompt, then proceeds
   fail-closed even if the platform cancellation API reports an error.
 

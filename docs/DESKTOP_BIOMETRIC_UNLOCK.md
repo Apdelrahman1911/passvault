@@ -181,11 +181,13 @@ Not enrolled, temporarily locked, unavailable, cancelled, invalidated, and disab
 offers the master password as the recovery path. Enabling requires an already authenticated unlocked vault session.
 Disabling deletes the platform material and its relationship metadata.
 
-An owned OS prompt can temporarily take focus from the application. During exactly that prompt lifetime, focus-loss
-auto-lock is deferred so enrollment does not cancel itself. Minimize, explicit lock, inactivity lock, and shutdown
-remain armed. When the prompt finishes, PassVault rechecks window focus on the Swing event thread; if the app remains
-unfocused, the normal bounded focus-loss delay is scheduled. This suppression must never be widened to arbitrary file
-dialogs or background activity.
+An owned OS prompt can temporarily take focus from the application. During that prompt, a due focus-loss lock may be
+deferred so enrollment does not cancel itself, but never beyond 60 seconds from the first external focus loss.
+Minimize, explicit lock, inactivity lock, and shutdown remain armed. The independent focus-loss policy allows 30
+seconds per unlocked session and accumulates only time spent outside PassVault across focus changes; briefly returning
+to the app does not replenish that budget. When the prompt finishes, PassVault immediately re-evaluates the cumulative
+budget on the Swing event thread. This suppression must never be widened to arbitrary file dialogs or background
+activity.
 
 Desktop shutdown is terminal and bounded. The first close request immediately protects the window, removes the tray
 surface, cancels an active biometric prompt, and asks Compose to exit. Vault locking/database closure, owned-clipboard
