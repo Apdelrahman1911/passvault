@@ -1,5 +1,6 @@
 package com.passvault.desktop
 
+import com.passvault.desktop.security.createOrHardenPrivateDesktopDirectory
 import java.nio.channels.FileChannel
 import java.nio.channels.FileLock
 import java.nio.channels.OverlappingFileLockException
@@ -28,8 +29,8 @@ internal class DesktopInstanceLock private constructor(
     internal companion object {
         @Suppress("TooGenericExceptionCaught") // Release the channel before propagating any setup or lock error.
         fun acquire(dataDirectory: Path = defaultDataDirectory()): DesktopInstanceLock? {
-            prepareDataDirectory(dataDirectory)
-            val lockPath = dataDirectory.resolve(INSTANCE_LOCK_FILE)
+            val privateDataDirectory = createOrHardenPrivateDesktopDirectory(dataDirectory)
+            val lockPath = privateDataDirectory.resolve(INSTANCE_LOCK_FILE)
             check(!Files.isSymbolicLink(lockPath)) {
                 "PassVault's instance lock must not be a symbolic link"
             }
@@ -62,18 +63,6 @@ internal class DesktopInstanceLock private constructor(
         private fun defaultDataDirectory(): Path =
             Path.of(System.getProperty("user.home"), PASSVAULT_DATA_DIRECTORY)
 
-        private fun prepareDataDirectory(directory: Path) {
-            check(!Files.isSymbolicLink(directory)) {
-                "PassVault's private data path must not be a symbolic link"
-            }
-            Files.createDirectories(directory)
-            check(Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
-                "PassVault's private data path is not a directory"
-            }
-            Files.getFileAttributeView(directory, PosixFileAttributeView::class.java)
-                ?.setPermissions(OWNER_ONLY_DIRECTORY_PERMISSIONS)
-        }
-
         private fun protectLockFile(lockPath: Path) {
             Files.getFileAttributeView(lockPath, PosixFileAttributeView::class.java)
                 ?.setPermissions(OWNER_ONLY_FILE_PERMISSIONS)
@@ -83,12 +72,6 @@ internal class DesktopInstanceLock private constructor(
 
 private const val PASSVAULT_DATA_DIRECTORY = ".passvault"
 private const val INSTANCE_LOCK_FILE = ".instance.lock"
-
-private val OWNER_ONLY_DIRECTORY_PERMISSIONS = setOf(
-    PosixFilePermission.OWNER_READ,
-    PosixFilePermission.OWNER_WRITE,
-    PosixFilePermission.OWNER_EXECUTE,
-)
 
 private val OWNER_ONLY_FILE_PERMISSIONS = setOf(
     PosixFilePermission.OWNER_READ,

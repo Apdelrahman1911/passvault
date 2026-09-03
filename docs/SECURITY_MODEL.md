@@ -114,6 +114,13 @@ be moved together with SQLite sidecars and encrypted attachments into protected 
 is created; mobile recovery data is also excluded from device backups. Diagnostics are stored outside SQLite as a
 bounded timestamp plus enumerated code; paths, driver messages, stack traces, and vault data are never recorded.
 
+Desktop acquires its process lock and secures `~/.passvault` before constructing the dependency graph or opening
+SQLite. Missing POSIX directories are created with owner-only `0700` permissions in the creation operation, and
+pre-existing directories are repaired and verified before use. Missing Windows directories atomically inherit their
+parent DACL; PassVault verifies that an ACL is present rather than replacing system-managed SYSTEM and
+administrator entries. A deliberately broadened profile policy and privileged local administrators remain operating
+system trust decisions, not controls the application can safely override.
+
 Attachment bytes live outside Room in random app-private object names. Every object is chunked and independently
 encrypted with XChaCha20-Poly1305 under a per-attachment subkey derived from the VEK. Associated data binds the
 attachment ID, owning credential ID, independent key context, detected MIME type, record type/index, and plaintext

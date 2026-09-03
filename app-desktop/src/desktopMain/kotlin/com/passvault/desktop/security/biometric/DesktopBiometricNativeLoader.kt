@@ -2,6 +2,7 @@ package com.passvault.desktop.security.biometric
 
 import com.passvault.core.security.BiometricType
 import com.passvault.desktop.OperatingSystem
+import com.passvault.desktop.security.createOrHardenPrivateDesktopDirectory
 import com.sun.jna.Library
 import com.sun.jna.Native
 import java.nio.file.Files
@@ -138,12 +139,7 @@ internal class DesktopBiometricNativeLoader(
 
     private fun ensureSecureDataDirectory(): Path {
         dataDirectoryOverride?.let { override ->
-            val normalized = override.toAbsolutePath().normalize()
-            if (!Files.exists(normalized, LinkOption.NOFOLLOW_LINKS)) Files.createDirectory(normalized)
-            require(Files.isDirectory(normalized, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(normalized)) {
-                "Desktop biometric test data directory is not safe"
-            }
-            return normalized.toRealPath(LinkOption.NOFOLLOW_LINKS)
+            return createOrHardenPrivateDesktopDirectory(override)
         }
         val userHome = System.getProperty("user.home").takeUnless { it.isNullOrBlank() }
             ?: throw DesktopBiometricBridgeException.NotAvailable
@@ -151,22 +147,7 @@ internal class DesktopBiometricNativeLoader(
         require(Files.isDirectory(home, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(home)) {
             "Desktop user home is not a safe directory"
         }
-        val root = home.resolve(".passvault")
-        if (!Files.exists(root, LinkOption.NOFOLLOW_LINKS)) Files.createDirectory(root)
-        require(Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(root)) {
-            "PassVault data directory is not a safe directory"
-        }
-        runCatching {
-            Files.setPosixFilePermissions(
-                root,
-                setOf(
-                    java.nio.file.attribute.PosixFilePermission.OWNER_READ,
-                    java.nio.file.attribute.PosixFilePermission.OWNER_WRITE,
-                    java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE,
-                ),
-            )
-        }
-        return root.toRealPath(LinkOption.NOFOLLOW_LINKS)
+        return createOrHardenPrivateDesktopDirectory(home.resolve(".passvault"))
     }
 
     private fun requireSecureRegularFile(path: Path) {

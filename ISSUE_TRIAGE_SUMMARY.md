@@ -15,8 +15,8 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 70** (41 resolved as listed below; 29 still open)
-- **DIG: 17**
-- **CLOSE/ACCEPT: 25**
+- **DIG: 16**
+- **CLOSE/ACCEPT: 26**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
@@ -27,6 +27,8 @@
 - **Reclassified to CLOSE/ACCEPT:** #80 (the user-writable Windows install premise was removed by #36), #81 (the pinned Gradle action makes PR, testing, and release refs read-only and does not cache configuration state without an encryption key).
 - **Reclassified to CLOSE/ACCEPT:** #82 (Kotlin's supported Xcode integration requires this sandbox setting; the
   adjacent wrapper-validation gap is hardened and regression-tested).
+- **Reclassified to CLOSE/ACCEPT:** #85 (the claimed durable POSIX file access and unprotected stock-Windows profile
+  premises do not hold; atomic POSIX creation and explicit ACL-presence checks were added as defense in depth).
 - **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
@@ -67,6 +69,14 @@
   that the phase exists to produce. The real adjacent gap is closed: Xcode checks the exact wrapper JAR SHA-256 before
   invoking Gradle, the iOS archive job runs Gradle's pinned wrapper-validation action, and adversarial tests reject a
   changed JAR, a missing phase check, a missing release action, or the incompatible sandbox setting.
+- **CLOSE/ACCEPT:** #85 — create-then-chmod was present, but production creates and hardens an empty data root before
+  Koin or SQLite can create sensitive children. On macOS, a directory descriptor opened before a later `chmod(0700)`
+  could still enumerate names but `openat` was denied after search permission was revoked, disproving the claimed
+  durable read path; the observed home was `0750`, not world-traversable. Windows atomically inherits the user-profile
+  DACL, while administrators and policy-authorized agents remain inside the OS trust boundary. As defense in depth,
+  all four current Desktop initializers now share atomic `0700` POSIX creation, repair existing modes, reject missing
+  access-control support, and preserve rather than overwrite Windows SYSTEM/administrator policy; host tests cover
+  new nested directories, repair, inherited ACL presence, and symlink rejection.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -198,7 +208,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [85](https://github.com/Apdelrahman1911/passvault/issues/85) | Medium | `~/.passvault` creation has a permission TOCTOU window; Windows gets no explicit ACL | The create-then-chmod window and missing explicit Windows ACL are code facts, but cross-user exposure is unproven; verify OS behavior before hardening. |
 | [87](https://github.com/Apdelrahman1911/passvault/issues/87) | Low | Filename AAD uses unprefixed concatenation | AAD concatenation is ambiguous in theory, but UUID-derived keys prevent the claimed swap; retain as next-format cryptographic hardening/design review. |
 | [89](https://github.com/Apdelrahman1911/passvault/issues/89) | Medium | Backup password may equal the vault master password; no check exists | Backup/master equality check is absent and can be derived by trial unwrap, but enforcing it is a product policy; decide whether compartmentalization outweighs weaker-user-password risk. |
 | [91](https://github.com/Apdelrahman1911/passvault/issues/91) | Low | `benchmarkArgon2` can only *lower* cost on fast devices | The “only lower” title is imprecise, but memory remains fixed at 64 MiB; decide whether calibration should vary memory and preserve compatibility. |
@@ -248,6 +257,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
+   #35, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

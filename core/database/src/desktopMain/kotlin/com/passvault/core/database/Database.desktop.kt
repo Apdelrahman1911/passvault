@@ -3,6 +3,7 @@ package com.passvault.core.database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.passvault.desktop.security.createOrHardenPrivateDesktopDirectory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import java.io.File
@@ -28,28 +29,7 @@ private fun getDatabaseBuilder(): RoomDatabase.Builder<VaultDatabase> {
  */
 private fun getDatabaseFile(): File {
     val appDataPath = Path.of(System.getProperty("user.home"), ".passvault")
-    check(!Files.isSymbolicLink(appDataPath)) {
-        "PassVault's private data path must not be a symbolic link"
-    }
-    Files.createDirectories(appDataPath)
-    check(Files.isDirectory(appDataPath, LinkOption.NOFOLLOW_LINKS)) {
-        "PassVault's private data path is not a directory"
-    }
-
-    // macOS and Linux commonly create application directories as 0755 under
-    // the user's default umask. The database fields are encrypted, but the
-    // directory still contains vault metadata and SQLite sidecars, so remove
-    // all group/other access where POSIX permissions are available. Windows
-    // inherits the user's profile ACL and does not expose this attribute view.
-    val resolvedAppDataPath = appDataPath.toRealPath()
-    Files.getFileAttributeView(resolvedAppDataPath, PosixFileAttributeView::class.java)
-        ?.setPermissions(
-            setOf(
-                PosixFilePermission.OWNER_READ,
-                PosixFilePermission.OWNER_WRITE,
-                PosixFilePermission.OWNER_EXECUTE,
-            ),
-    )
+    val resolvedAppDataPath = createOrHardenPrivateDesktopDirectory(appDataPath)
 
     // SQLite's NOFOLLOW open mode rejects a path when any component is a symbolic link. Resolve
     // trusted ancestors after proving the application directory itself is not a link.
