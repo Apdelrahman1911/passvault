@@ -15,8 +15,8 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 71** (42 resolved as listed below; 29 still open)
-- **DIG: 13**
-- **CLOSE/ACCEPT: 28**
+- **DIG: 12**
+- **CLOSE/ACCEPT: 29**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
@@ -96,6 +96,11 @@
   the 32–256 MiB vault reader range is not a writer target, and format-2 backups deliberately admit only the two
   64 MiB profiles. Raising memory remains a future enhancement requiring mobile OOM/latency evidence and a new backup
   format version, while #94 already supplies independent known-answer tests for both shipped profiles.
+- **CLOSE/ACCEPT:** #108 — the latency difference is real: a Desktop probe measured about 96 ms for a wrong password
+  versus less than 1 ms for malformed or missing metadata. It is not an authentication oracle: all passwords take the
+  same KDF path when metadata is valid, startup already exposes vault existence, and a database attacker can inspect
+  the structural state being inferred. Pre-KDF validation deliberately bounds attacker-controlled parameters and
+  avoids resource amplification; a regression test now locks that ordering and the shared generic error contract.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -135,6 +140,8 @@ The detailed tables below retain the original recommendations for traceability; 
 - **#66** — only 6- and 8-digit TOTP configurations are accepted; the branch is exhaustive and tested.
 - **#91** — the benchmark raises the libsodium probe's operation count from two to three or four; the fixed 64 MiB
   memory target is a tested portability policy, while a 256 MiB tier has no required mobile availability evidence.
+- **#108** — the measured difference identifies only already-observable vault structure, never partial password
+  correctness; pre-KDF validation is an intentional resource-safety boundary rather than a defect.
 - **#103** — the local GOOD bucket intentionally includes domain FAIR, so UI and execution thresholds match.
 - **#109** — biometric success is cryptographically verified; resetting a ≤5-second process-local delay is not an authentication bypass.
 - **#110** — `lastNavigatedSession` is intentional deduplication for a non-replayed effect.
@@ -229,7 +236,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [108](https://github.com/Apdelrahman1911/passvault/issues/108) | Low | Unlock failure timing distinguishes corrupt/missing vault from wrong password | Timing differs for corrupt/missing metadata versus wrong password, but the observer needs local DB write access; treat as informational latency-floor decision. |
 | [115](https://github.com/Apdelrahman1911/passvault/issues/115) | Low | Plaintext folder `icon`, tag `color`, attachment `mime_type` and exact `size_bytes` | Plain icon/color/MIME/size metadata is deliberately exposed for UI/quota/handoff; decide privacy value versus migration/query cost. |
 | [120](https://github.com/Apdelrahman1911/passvault/issues/120) | Low | Attachment `objects/` and `staging/` created world-readable-mode | Default child permissions are not checked, but the hardened parent blocks normal traversal; verify ACL/umask behavior before treating this as disclosure. |
 | [121](https://github.com/Apdelrahman1911/passvault/issues/121) | Low | `pv_bio_destroy` waits without a timeout while an OS prompt is pending | Native destroy can wait forever for a direct consumer, while the JVM wrapper bounds/avoids the path; add ABI robustness tests before elevating impact. |
@@ -275,6 +281,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #108, #115, #120–#121, #123, #128, #130,
+   #35, #115, #120–#121, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

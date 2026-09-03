@@ -46,6 +46,12 @@ record, and only then publishes the unlocked session. See [`VAULT_FORMAT.md`](VA
 parameter contract. The shared crypto suite pins both production KDF profiles byte-for-byte to independently generated
 Argon2id v1.3 reference vectors on Desktop, Android host, and iOS simulator targets.
 
+This ordering is deliberate because persisted KDF parameters are attacker-controlled. Missing or malformed metadata
+and a wrong password return the same generic error, but their latency is not normalized: vault existence is already
+exposed by startup routing, and a database attacker can inspect the structural state directly. The difference reveals
+no password content. Performing a dummy KDF or holding every failure to an arbitrary device-dependent floor would add
+CPU, memory, battery, and lock-transition cost without protecting a secret in the stated local threat model.
+
 Changing the master password rewraps the same VEK, so record data does not need re-encryption. Vault session
 transitions are serialized. Lock immediately removes and wipes the repository-owned VEK buffer best-effort.
 

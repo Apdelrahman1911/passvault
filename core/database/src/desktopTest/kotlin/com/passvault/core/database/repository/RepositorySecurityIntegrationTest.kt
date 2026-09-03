@@ -875,6 +875,44 @@ class RepositoryMetadataSecurityIntegrationTest : RepositorySecurityIntegrationF
     }
 
     @Test
+    fun `unlock validates untrusted metadata before password derivation and keeps failures opaque`() = runTest {
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val wrongPassword = SensitiveText.from("definitely not the master password")
+
+        try {
+            assertTrue(vaultRepository.create(password).isSuccess)
+            val metadata = requireNotNull(database.vaultMetadataDao().get())
+            val countingEngine = DerivationCountingCryptoEngine(cryptoEngine)
+            val repository = VaultRepositoryImpl(
+                vaultMetadataDao = database.vaultMetadataDao(),
+                cryptoEngine = countingEngine,
+                keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(countingEngine),
+            )
+
+            database.vaultMetadataDao().update(metadata.copy(argon2MemLimit = Int.MAX_VALUE))
+            val malformedResult = repository.unlock(password)
+            assertTrue(malformedResult.isFailure)
+            assertEquals("Unable to unlock vault", malformedResult.exceptionOrNull()?.message)
+            assertEquals(0, countingEngine.deriveKeyCalls)
+
+            database.vaultMetadataDao().update(metadata)
+            val wrongPasswordResult = repository.unlock(wrongPassword)
+            assertTrue(wrongPasswordResult.isFailure)
+            assertEquals("Unable to unlock vault", wrongPasswordResult.exceptionOrNull()?.message)
+            assertEquals(1, countingEngine.deriveKeyCalls)
+
+            database.vaultBackupDao().deleteVaultMetadata()
+            val missingResult = repository.unlock(password)
+            assertTrue(missingResult.isFailure)
+            assertEquals("Unable to unlock vault", missingResult.exceptionOrNull()?.message)
+            assertEquals(1, countingEngine.deriveKeyCalls)
+        } finally {
+            password.clear()
+            wrongPassword.clear()
+        }
+    }
+
+    @Test
     fun `folder read rejects an oversized encrypted payload before authentication`() = runTest {
         createAndUnlockVault()
         database.folderDao().insertOrUpdate(
@@ -1988,6 +2026,23 @@ private class PasswordMatchFailureCryptoEngine(
 
     private companion object {
         val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
+    }
+}
+
+private class DerivationCountingCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    var deriveKeyCalls = 0
+        private set
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        deriveKeyCalls++
+        return delegate.deriveKey(password, salt, opsLimit, memLimit)
     }
 }
 

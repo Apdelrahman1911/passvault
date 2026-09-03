@@ -255,6 +255,7 @@ class VaultRepositoryImpl(
             try {
                 val metadata = vaultMetadataDao.get()
                     ?: throw IllegalStateException("Vault does not exist")
+                // Persisted KDF parameters are untrusted; reject malformed metadata before allocating KDF resources.
                 validateMetadataForUnlock(metadata)
                 candidateVek = unwrapVaultKey(metadata, masterPassword)
                 verifyVaultKey(metadata, candidateVek)
