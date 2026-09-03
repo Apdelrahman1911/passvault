@@ -2,11 +2,13 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
@@ -360,6 +362,35 @@ abstract class VerifyAndroidApplicationIdentity : DefaultTask() {
     }
 }
 
+abstract class VerifyAndroidR8Policy : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val rulesFile: RegularFileProperty
+
+    @TaskAction
+    fun verify() {
+        val activeDirectives = rulesFile.get().asFile
+            .readLines()
+            .map { line -> line.substringBefore('#').trim().replace(WHITESPACE, " ") }
+            .filter { line -> line.isNotEmpty() }
+        val keepDirectives = activeDirectives.filter { directive -> directive.startsWith("-keep") }
+        val normalizedPolicy = activeDirectives.joinToString(" ")
+
+        check(keepDirectives == listOf(EXPECTED_LIBSODIUM_KEEP)) {
+            "PassVault-specific R8 keeps must remain limited to the reviewed libsodium boundary: $keepDirectives"
+        }
+        check(BLANKET_LIBSODIUM_DONTWARN !in normalizedPolicy) {
+            "Do not suppress every libsodium binding warning; investigate and scope any required suppression."
+        }
+    }
+
+    private companion object {
+        val WHITESPACE = Regex("""\s+""")
+        const val EXPECTED_LIBSODIUM_KEEP = "-keep class com.ionspin.kotlin.crypto.** { *; }"
+        const val BLANKET_LIBSODIUM_DONTWARN = "-dontwarn com.ionspin.kotlin.crypto.**"
+    }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
@@ -623,6 +654,13 @@ val verifyAndroidApplicationIdentities =
         description = "Verifies that local and Store Android variants use only the approved identities."
     }
 
+val verifyAndroidR8Policy =
+    tasks.register<VerifyAndroidR8Policy>("verifyAndroidR8Policy") {
+        group = "verification"
+        description = "Verifies the scope and diagnostics policy of PassVault-specific R8 rules."
+        rulesFile.set(layout.projectDirectory.file("proguard-rules.pro"))
+    }
+
 androidComponents {
     onVariants(selector().all()) { variant ->
         checkNotNull(variant.sources.assets) {
@@ -766,6 +804,7 @@ tasks.register("verifyReleasePackageContents") {
 tasks.named("check") {
     dependsOn(verifyDebugComposeResources)
     dependsOn(verifyAndroidApplicationIdentities)
+    dependsOn(verifyAndroidR8Policy)
 }
 
 dependencies {

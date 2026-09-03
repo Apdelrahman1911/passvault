@@ -11,6 +11,13 @@ access can defeat application-layer protections.
 
 There is no server, account, network sync, telemetry, or analytics boundary in this repository.
 
+Android Release uses R8, but identifier obfuscation is not a confidentiality control. The pinned IonSpin Android
+artifact loads libsodium through JNA and publishes no consumer rules. JNA resolves `JnaLibsodiumInterface` method names
+and `Structure` field names at runtime, while the ordinary Kotlin wrappers are directly referenced. PassVault therefore
+keeps the complete binding package as a conservative reliability policy until a minified Release device matrix covers
+every production crypto path. The project rule does not suppress binding warnings, and `verifyAndroidR8Policy` rejects
+additional PassVault-specific keep rules or a package-wide libsodium `-dontwarn`.
+
 ## Key hierarchy
 
 ```text

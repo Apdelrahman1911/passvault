@@ -62,6 +62,10 @@ component.
   enrollment, but an OS key-store failure can still require biometric re-enrollment.
 - Android overlay/accessibility behavior and Desktop capture/window behavior require platform hardening beyond
   common code.
+- Android R8 keeps the complete IonSpin binding package because its JNA runtime boundary lacks upstream consumer
+  rules and has no minified-device regression suite. This retains unused wrapper bytecode but does not enlarge
+  libsodium's native exported-symbol surface or form a confidentiality control. Narrowing requires minified Release
+  tests of every production crypto path rather than compile or mapping evidence alone.
 - Biometric prompts and enrollment invalidation depend on OS behavior and require physical-device testing. A
   compromised unlocked process can still copy the active VEK before platform enrollment.
 - Windows Hello does not expose an equivalent to Apple's per-biometric-set invalidation. Its platform credential can

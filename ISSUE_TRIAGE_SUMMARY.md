@@ -140,6 +140,13 @@
   browser boundary is expected after an explicit user tap, and local/private hosts remain useful supported targets
   rather than an SSRF surface because PassVault never fetches the URL. Tests pin accepted and rejected effect payloads;
   security and privacy documentation now record what the receiving browser, DNS, and network may observe.
+- **CLOSE/ACCEPT:** #140 — the package-wide keep is confirmed, but the claim that every wrapper name is required by JNI
+  is false. The pinned AAR uses a 152-method JNA interface plus five `Structure` types as reflective boundaries; its
+  other wrappers use direct references. R8 retained all 82 binding classes, while a scratch-only narrowed build retained
+  11 and reduced DEX by 61,252 bytes, but compilation cannot prove runtime JNA correctness. The conservative keep stays
+  until minified Release device coverage exists. The unrelated blanket `-dontwarn` was removed after a warning-clean R8
+  build, and `verifyAndroidR8Policy` now rejects extra project keeps or restoring that suppression. This is a size and
+  reliability trade-off, not a cryptographic weakness.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.

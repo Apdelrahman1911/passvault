@@ -1,6 +1,6 @@
 # Testing
 
-Last reviewed: 2026-08-14
+Last reviewed: 2026-09-03
 
 Use JDK 17 and the checked-in Gradle wrapper. `gradlew test` is a repository-owned aggregate task that depends on all
 Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's ambiguous unqualified selector.
@@ -18,6 +18,7 @@ Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's amb
 ./gradlew :app-android:assembleDebug
 ./gradlew :app-android:verifyDebugComposeResources
 ./gradlew :app-android:verifyAndroidApplicationIdentities
+./gradlew :app-android:verifyAndroidR8Policy
 ./gradlew :app-android:assembleRelease
 ./gradlew :app-android:lintRelease
 ./gradlew :app-desktop:compileKotlinDesktop
@@ -104,6 +105,12 @@ startup-verified by `:app-desktop:run`: build
 `:app-desktop:createReleaseDistributable` and run the packaged-release smoke script. The release workflow uses this
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.
+
+`verifyAndroidR8Policy` ensures that the IonSpin package is the only PassVault-specific keep boundary and rejects its
+former package-wide warning suppression. It does not prove JNA linkage. Before narrowing that conservative rule, run
+the production engine's Argon2id known-answer, randomness, BLAKE2b, AEAD round-trip/tamper, vault, attachment, and backup
+paths from an installed minified Release artifact on the supported Android ABIs. A successful R8 compile or mapping
+inspection alone is not runtime evidence.
 
 Issue #132 cannot be fully runtime-verified in the simulator. On a passcode-enabled physical iPhone, exercise at
 least 20 lock/unlock cycles, including a committed write immediately before lock and forced database activity while
