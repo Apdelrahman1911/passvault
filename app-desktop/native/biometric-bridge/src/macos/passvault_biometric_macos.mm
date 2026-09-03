@@ -7,6 +7,7 @@
 #include <array>
 #include <atomic>
 #include <cerrno>
+#include <chrono>
 #include <condition_variable>
 #include <cstdint>
 #include <cstring>
@@ -26,6 +27,7 @@ constexpr size_t kNonceBytes = 16;
 constexpr size_t kMetadataBytes =
     kMetadataMagic.size() + PV_BIO_VAULT_HASH_BYTES + kNonceBytes;
 constexpr char kService[] = "com.passvault.desktop.biometric-unlock.v1";
+constexpr auto kDestroyDrainTimeout = std::chrono::milliseconds(250);
 
 struct Metadata {
   std::array<uint8_t, PV_BIO_VAULT_HASH_BYTES> vault_hash{};
@@ -338,6 +340,7 @@ struct pv_bio_context {
   bool cancellation_requested = false;
   bool operation_committed = false;
   bool closing = false;
+  bool destroy_when_operation_finishes = false;
 };
 
 namespace {
@@ -376,14 +379,22 @@ bool commit_operation(pv_bio_context *context, uint64_t operation_id) {
   return true;
 }
 
-void finish_operation(pv_bio_context *context, uint64_t operation_id) {
-  std::lock_guard lock(context->operation_mutex);
-  if (context->active_operation == operation_id) {
-    context->active_context = nil;
-    context->active_operation = 0;
-    context->cancellation_requested = false;
-    context->operation_committed = false;
-    context->operation_finished.notify_all();
+void finish_operation_and_release(pv_bio_context *context,
+                                  uint64_t operation_id) {
+  bool destroy_context = false;
+  {
+    std::lock_guard lock(context->operation_mutex);
+    if (context->active_operation == operation_id) {
+      context->active_context = nil;
+      context->active_operation = 0;
+      context->cancellation_requested = false;
+      context->operation_committed = false;
+      destroy_context = context->destroy_when_operation_finishes;
+      context->operation_finished.notify_all();
+    }
+  }
+  if (destroy_context) {
+    delete context;
   }
 }
 
@@ -391,7 +402,7 @@ class OperationGuard final {
 public:
   OperationGuard(pv_bio_context *context, uint64_t operation_id)
       : context_(context), operation_id_(operation_id) {}
-  ~OperationGuard() { finish_operation(context_, operation_id_); }
+  ~OperationGuard() { finish_operation_and_release(context_, operation_id_); }
   OperationGuard(const OperationGuard &) = delete;
   OperationGuard &operator=(const OperationGuard &) = delete;
 
@@ -561,8 +572,16 @@ void PV_BIO_CALL pv_bio_destroy(pv_bio_context *context) {
       if (context->active_context != nil && !context->operation_committed) {
         [context->active_context invalidate];
       }
-      context->operation_finished.wait(
-          lock, [context] { return context->active_operation == 0; });
+      const bool operation_finished = context->operation_finished.wait_for(
+          lock, kDestroyDrainTimeout,
+          [context] { return context->active_operation == 0; });
+      if (!operation_finished) {
+        // Destruction is logically complete for the caller. The active call is
+        // the only remaining owner and releases the context when its guard
+        // unwinds, avoiding both an unbounded wait and a use-after-free.
+        context->destroy_when_operation_finishes = true;
+        return;
+      }
       context->active_context = nil;
       lock.unlock();
       delete context;
@@ -676,14 +695,12 @@ pv_bio_status PV_BIO_CALL pv_bio_enroll(pv_bio_context *context,
       }
       OperationGuard operation(context, operation_id);
       if (operation_was_cancelled(context, operation_id)) {
-        finish_operation(context, operation_id);
         return PV_BIO_CANCELLED;
       }
       const pv_bio_status authentication =
           authenticate_for_enrollment(auth_context);
       if (authentication != PV_BIO_OK ||
           operation_was_cancelled(context, operation_id)) {
-        finish_operation(context, operation_id);
         return authentication == PV_BIO_OK ? PV_BIO_CANCELLED : authentication;
       }
 
@@ -694,7 +711,6 @@ pv_bio_status PV_BIO_CALL pv_bio_enroll(pv_bio_context *context,
         const pv_bio_status cleanup =
             remove_metadata_and_service_items(context);
         if (cleanup != PV_BIO_OK) {
-          finish_operation(context, operation_id);
           secure_wipe(&previous, sizeof(previous));
           return cleanup;
         }
@@ -705,7 +721,6 @@ pv_bio_status PV_BIO_CALL pv_bio_enroll(pv_bio_context *context,
                   replacement.vault_hash.size());
       if (SecRandomCopyBytes(kSecRandomDefault, replacement.nonce.size(),
                              replacement.nonce.data()) != errSecSuccess) {
-        finish_operation(context, operation_id);
         secure_wipe(&previous, sizeof(previous));
         secure_wipe(&replacement, sizeof(replacement));
         return PV_BIO_INTERNAL_ERROR;
@@ -752,7 +767,6 @@ pv_bio_status PV_BIO_CALL pv_bio_enroll(pv_bio_context *context,
           status = PV_BIO_INTERNAL_ERROR;
         }
       }
-      finish_operation(context, operation_id);
       secure_wipe(&previous, sizeof(previous));
       secure_wipe(&replacement, sizeof(replacement));
       return status;
@@ -801,7 +815,6 @@ pv_bio_status PV_BIO_CALL pv_bio_retrieve(pv_bio_context *context,
       }
       OperationGuard operation(context, operation_id);
       if (operation_was_cancelled(context, operation_id)) {
-        finish_operation(context, operation_id);
         secure_wipe(&metadata, sizeof(metadata));
         return PV_BIO_CANCELLED;
       }
@@ -840,7 +853,6 @@ pv_bio_status PV_BIO_CALL pv_bio_retrieve(pv_bio_context *context,
           !commit_operation(context, operation_id)) {
         result_status = PV_BIO_CANCELLED;
       }
-      finish_operation(context, operation_id);
       if (result_status != PV_BIO_OK) {
         secure_wipe(out_vault_key, out_vault_key_length);
       }

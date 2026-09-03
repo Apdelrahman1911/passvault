@@ -3,6 +3,7 @@ package com.passvault.core.database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.passvault.desktop.security.createOrHardenPrivateDesktopDirectory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import java.io.File
@@ -15,7 +16,7 @@ import java.nio.file.attribute.PosixFilePermission
 /**
  * Desktop-specific database builder.
  */
-fun getDatabaseBuilder(): RoomDatabase.Builder<VaultDatabase> {
+private fun getDatabaseBuilder(): RoomDatabase.Builder<VaultDatabase> {
     val dbFile = getDatabaseFile()
     return Room.databaseBuilder<VaultDatabase>(
         name = dbFile.absolutePath,
@@ -28,29 +29,11 @@ fun getDatabaseBuilder(): RoomDatabase.Builder<VaultDatabase> {
  */
 private fun getDatabaseFile(): File {
     val appDataPath = Path.of(System.getProperty("user.home"), ".passvault")
-    check(!Files.isSymbolicLink(appDataPath)) {
-        "PassVault's private data path must not be a symbolic link"
-    }
-    Files.createDirectories(appDataPath)
-    check(Files.isDirectory(appDataPath, LinkOption.NOFOLLOW_LINKS)) {
-        "PassVault's private data path is not a directory"
-    }
+    val resolvedAppDataPath = createOrHardenPrivateDesktopDirectory(appDataPath)
 
-    // macOS and Linux commonly create application directories as 0755 under
-    // the user's default umask. The database fields are encrypted, but the
-    // directory still contains vault metadata and SQLite sidecars, so remove
-    // all group/other access where POSIX permissions are available. Windows
-    // inherits the user's profile ACL and does not expose this attribute view.
-    Files.getFileAttributeView(appDataPath, PosixFileAttributeView::class.java)
-        ?.setPermissions(
-            setOf(
-                PosixFilePermission.OWNER_READ,
-                PosixFilePermission.OWNER_WRITE,
-                PosixFilePermission.OWNER_EXECUTE,
-            ),
-    )
-
-    val databasePath = appDataPath.resolve("vault.db")
+    // SQLite's NOFOLLOW open mode rejects a path when any component is a symbolic link. Resolve
+    // trusted ancestors after proving the application directory itself is not a link.
+    val databasePath = resolvedAppDataPath.resolve("vault.db")
     DATABASE_FILE_SUFFIXES.forEach { suffix ->
         check(!Files.isSymbolicLink(Path.of(databasePath.toString() + suffix))) {
             "PassVault's database files must not be symbolic links"
@@ -62,7 +45,7 @@ private fun getDatabaseFile(): File {
 /**
  * Creates the database instance for Desktop.
  */
-fun createDatabase(): VaultDatabase {
+private fun createDatabase(): VaultDatabase {
     return getDatabaseBuilder()
         .addVaultMigrations()
         .setDriver(BundledSQLiteDriver())
@@ -70,4 +53,43 @@ fun createDatabase(): VaultDatabase {
         .build()
 }
 
+/** Creates the process-wide health gate and its lazily-opened Room database. */
+fun createDatabaseBootstrap(): VaultDatabaseBootstrap {
+    val database = getDatabaseFile().toPath()
+    val appDataPath = requireNotNull(database.parent)
+    val recoveryRoot = appDataPath.resolve(RECOVERY_DIRECTORY)
+    return VaultDatabaseBootstrap(
+        storage = LocalVaultDatabaseStorage(
+            databasePath = database.toString(),
+            attachmentRootPath = appDataPath.resolve(ATTACHMENT_DIRECTORY).toString(),
+            databaseRecoveryRootPath = recoveryRoot.toString(),
+            attachmentRecoveryRootPath = recoveryRoot.toString(),
+            diagnosticPath = appDataPath.resolve(DATABASE_DIAGNOSTIC_FILE).toString(),
+            protectPath = ::hardenRecoveryPath,
+        ),
+        databaseFactory = ::createDatabase,
+    )
+}
+
+private fun hardenRecoveryPath(rawPath: String) {
+    val path = Path.of(rawPath)
+    val permissions = if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+        setOf(
+            PosixFilePermission.OWNER_READ,
+            PosixFilePermission.OWNER_WRITE,
+            PosixFilePermission.OWNER_EXECUTE,
+        )
+    } else {
+        setOf(
+            PosixFilePermission.OWNER_READ,
+            PosixFilePermission.OWNER_WRITE,
+        )
+    }
+    Files.getFileAttributeView(path, PosixFileAttributeView::class.java)
+        ?.setPermissions(permissions)
+}
+
 private val DATABASE_FILE_SUFFIXES = listOf("", "-wal", "-shm", "-journal")
+private const val ATTACHMENT_DIRECTORY = "attachments"
+private const val RECOVERY_DIRECTORY = "recovery"
+private const val DATABASE_DIAGNOSTIC_FILE = "database-health.events"

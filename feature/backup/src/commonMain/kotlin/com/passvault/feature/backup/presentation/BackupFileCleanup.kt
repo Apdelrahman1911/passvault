@@ -2,9 +2,29 @@ package com.passvault.feature.backup.presentation
 
 import com.passvault.feature.backup.BackupFile
 import com.passvault.feature.backup.BackupFileStore
+import com.passvault.feature.backup.BackupOutput
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+internal suspend fun <T> withOwnedBackupOutput(
+    fileStore: BackupFileStore,
+    suggestedName: String,
+    action: suspend (BackupOutput) -> T,
+): T {
+    var ownedOutput: BackupOutput? = null
+    return try {
+        val output = fileStore.create(suggestedName).getOrThrow()
+        ownedOutput = output
+        action(output)
+    } finally {
+        ownedOutput?.sink?.let { sink ->
+            withContext(NonCancellable) { runCatching { sink.abort() } }
+        }
+    }
+}
 
 internal fun discardSelectedImportFile(
     scope: CoroutineScope,

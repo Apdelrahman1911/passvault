@@ -181,6 +181,84 @@ class AndroidLifecycleLockPolicyTest {
     }
 
     @Test
+    fun firstAndLastSystemFlowsOwnScreenOffObservation() {
+        val policy = AndroidLifecycleLockPolicy()
+
+        val firstStarted = policy.onSystemFlowStarted()
+        val nestedStarted = policy.onSystemFlowStarted()
+        val nestedEnded = policy.onSystemFlowEnded(returningToActivity = false)
+        val lastEnded = policy.onSystemFlowEnded(returningToActivity = false)
+
+        assertTrue(firstStarted.startScreenOffObservation)
+        assertFalse(nestedStarted.startScreenOffObservation)
+        assertFalse(nestedEnded.stopScreenOffObservation)
+        assertTrue(lastEnded.stopScreenOffObservation)
+    }
+
+    @Test
+    fun screenOffImmediatelyLocksAStoppedSystemFlow() {
+        val policy = AndroidLifecycleLockPolicy()
+        policy.onSystemFlowStarted()
+        policy.onActivityStopped(isChangingConfigurations = false)
+
+        val screenOff = policy.onScreenOff()
+
+        assertTrue(screenOff.cancelGracePeriod)
+        assertTrue(screenOff.startLock)
+        assertEquals(LockReason.Background, screenOff.lockReason)
+        assertTrue(policy.privacyCoverVisible)
+    }
+
+    @Test
+    fun screenOffBeforeStopIsRememberedWithoutLockingInForeground() {
+        val policy = AndroidLifecycleLockPolicy()
+        policy.onSystemFlowStarted()
+
+        val screenOff = policy.onScreenOff()
+        val stopped = policy.onActivityStopped(isChangingConfigurations = false)
+
+        assertEquals(AndroidLifecycleLockDecision(), screenOff)
+        assertFalse(stopped.scheduleGracePeriod)
+        assertTrue(stopped.cancelGracePeriod)
+        assertTrue(stopped.startLock)
+        assertEquals(LockReason.Background, stopped.lockReason)
+    }
+
+    @Test
+    fun resumeClearsAnUnconsumedForegroundScreenOffSignal() {
+        val policy = AndroidLifecycleLockPolicy()
+        policy.onSystemFlowStarted()
+        policy.onScreenOff()
+        policy.onActivityResumed()
+
+        val stopped = policy.onActivityStopped(isChangingConfigurations = false)
+
+        assertTrue(stopped.scheduleGracePeriod)
+        assertFalse(stopped.startLock)
+    }
+
+    @Test
+    fun screenOffWithoutAnActiveSystemFlowIsInert() {
+        val policy = AndroidLifecycleLockPolicy()
+
+        assertEquals(AndroidLifecycleLockDecision(), policy.onScreenOff())
+    }
+
+    @Test
+    fun unavailableScreenOffObservationMakesTheNextStopFailClosed() {
+        val policy = AndroidLifecycleLockPolicy()
+        policy.onSystemFlowStarted()
+
+        assertEquals(AndroidLifecycleLockDecision(), policy.onScreenOffObservationUnavailable())
+        policy.onActivityResumed()
+
+        val stopped = policy.onActivityStopped(isChangingConfigurations = false)
+        assertFalse(stopped.scheduleGracePeriod)
+        assertTrue(stopped.startLock)
+        assertEquals(LockReason.Background, stopped.lockReason)
+    }
+
+    @Test
     fun graceExpiryLocksWhileSystemFlowRemainsInBackground() {
         val policy = AndroidLifecycleLockPolicy()
         policy.onSystemFlowStarted()

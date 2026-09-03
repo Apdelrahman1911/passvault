@@ -37,6 +37,7 @@ interface CryptoEngine {
 
     /**
      * Decrypt data with XChaCha20-Poly1305.
+     * Authentication failures are reported as [CiphertextAuthenticationException].
      */
     suspend fun decrypt(
         ciphertext: ByteArray,
@@ -75,6 +76,9 @@ interface CryptoEngine {
      */
     suspend fun benchmarkArgon2(): Argon2Parameters
 }
+
+/** The supplied key, nonce, associated data, or ciphertext did not authenticate. */
+class CiphertextAuthenticationException : IllegalArgumentException("Ciphertext authentication failed")
 
 data class DerivedKey(
     val key: ByteArray,

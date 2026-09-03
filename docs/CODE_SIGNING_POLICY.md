@@ -1,8 +1,8 @@
 # PassVault Code-Signing Policy
 
 PassVault signs public production artifacts only from the repository's protected release automation. A signature
-means that the artifact was produced from the exact readiness-approved source commit and passed the repository's
-production validation gates; it does not imply an independent security audit.
+means that the artifact was produced from a receipt-verified payload built from the exact readiness-approved source
+tree and passed the repository's production validation gates; it does not imply an independent security audit.
 
 ## Signed artifacts
 
@@ -15,8 +15,9 @@ production validation gates; it does not imply an independent security audit.
 - Android and iOS use their platform-store signing and distribution identities. Linux packages are not code-signed;
   their hashes are covered by the signed GitHub workflow attestation and release checksum manifest.
 
-Test-candidate Windows/macOS packages are intentionally unsigned and are labelled as such. They are never promoted
-as production assets.
+Test-candidate Windows/macOS installers are intentionally unsigned and are never promoted as production assets. Their
+smoke-tested app images are the immutable inputs to production signing and packaging. Candidate Linux packages are
+promoted byte-for-byte and remain unsigned; their attestation and published hashes provide integrity.
 
 ## Authorization and separation of duties
 
@@ -50,7 +51,8 @@ publish private contact details or invent identities that have not been supplied
 ## Reproducibility, verification, and publication
 
 Production signing runs in validation-only mode first. It binds candidate tag, version, build number, commit SHA, Git
-tree, mobile receipts, and desktop artifact hashes. Windows signatures are independently checked with `signtool`;
+tree, mobile receipts, the Desktop receipt and source run, exact promotion-input hashes, and final asset hashes. Windows
+signatures are independently checked with `signtool`;
 macOS signatures, Hardened Runtime, notarization ticket, and Gatekeeper state are independently checked with Apple
 tools. The validated bundle is frozen and attested. Stable publication downloads that exact bundle and never rebuilds
 it.

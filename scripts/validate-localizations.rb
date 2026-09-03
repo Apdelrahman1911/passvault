@@ -13,6 +13,8 @@ ARABIC_PATH = File.join(
   ROOT,
   "core/designsystem/src/commonMain/composeResources/values-ar/strings.xml"
 )
+IOS_BASE_PATH = File.join(ROOT, "iosApp/iosApp/en.lproj/Localizable.strings")
+IOS_ARABIC_PATH = File.join(ROOT, "iosApp/iosApp/ar.lproj/Localizable.strings")
 ARABIC_QUANTITIES = Set.new(%w[zero one two few many other]).freeze
 INTENTIONALLY_LANGUAGE_NEUTRAL = Set.new(
   %w[
@@ -36,6 +38,8 @@ FORBIDDEN_ABSOLUTE_DIRECTION_PATTERNS = [
   /TextAlign\.(?:Left|Right)/,
   /padding\(\s*(?:left|right)\s*=/,
 ].freeze
+IOS_LOCALIZED_VIEW_PATTERN = /\b(?:Text|Button)\(\s*"([^"]+)"/
+APPLE_STRING_PATTERN = /\A\s*"((?:\\.|[^"])*)"\s*=\s*"((?:\\.|[^"])*)";\s*\z/
 
 def fail_validation(message)
   warn("Localization validation failed: #{message}")
@@ -78,8 +82,28 @@ def tokens(value)
   value.scan(FORMAT_TOKEN).sort
 end
 
+def apple_strings(path)
+  fail_validation("missing #{path}") unless File.file?(path)
+
+  values = {}
+  File.readlines(path, chomp: true).each_with_index do |line, index|
+    stripped = line.strip
+    next if stripped.empty? || stripped.start_with?("//")
+
+    match = APPLE_STRING_PATTERN.match(line)
+    fail_validation("invalid Apple string at #{path}:#{index + 1}") if match.nil?
+
+    key, value = match.captures
+    fail_validation("duplicate Apple string #{key} in #{path}") if values.key?(key)
+    values[key] = value
+  end
+  values
+end
+
 base_strings, base_plurals = resources(BASE_PATH)
 arabic_strings, arabic_plurals = resources(ARABIC_PATH)
+ios_base_strings = apple_strings(IOS_BASE_PATH)
+ios_arabic_strings = apple_strings(IOS_ARABIC_PATH)
 
 missing_strings = base_strings.keys - arabic_strings.keys
 extra_strings = arabic_strings.keys - base_strings.keys
@@ -90,6 +114,11 @@ fail_validation("unknown Arabic strings: #{extra_strings.sort.join(', ')}") unle
 fail_validation("missing Arabic plurals: #{missing_plurals.sort.join(', ')}") unless missing_plurals.empty?
 fail_validation("unknown Arabic plurals: #{extra_plurals.sort.join(', ')}") unless extra_plurals.empty?
 
+missing_ios_strings = ios_base_strings.keys - ios_arabic_strings.keys
+extra_ios_strings = ios_arabic_strings.keys - ios_base_strings.keys
+fail_validation("missing Arabic iOS strings: #{missing_ios_strings.sort.join(', ')}") unless missing_ios_strings.empty?
+fail_validation("unknown Arabic iOS strings: #{extra_ios_strings.sort.join(', ')}") unless extra_ios_strings.empty?
+
 base_strings.each do |name, english|
   arabic = arabic_strings.fetch(name)
   fail_validation("Arabic string #{name} is blank") if arabic.strip.empty?
@@ -99,6 +128,13 @@ base_strings.each do |name, english|
   if english == arabic && !INTENTIONALLY_LANGUAGE_NEUTRAL.include?(name)
     fail_validation("#{name} is unchanged but is not explicitly allowlisted")
   end
+end
+
+ios_base_strings.each do |name, english|
+  arabic = ios_arabic_strings.fetch(name)
+  fail_validation("English iOS string #{name} is blank") if english.strip.empty?
+  fail_validation("Arabic iOS string #{name} is blank") if arabic.strip.empty?
+  fail_validation("iOS string #{name} is untranslated") if english == arabic
 end
 
 base_plurals.each do |name, english_items|
@@ -136,6 +172,14 @@ production_sources.each do |path|
   end
 end
 
+Dir.glob(File.join(ROOT, "iosApp/iosApp/**/*.swift")).each do |path|
+  File.binread(path).scan(IOS_LOCALIZED_VIEW_PATTERN).flatten.each do |key|
+    next if ios_base_strings.key?(key)
+
+    fail_validation("unlocalized SwiftUI text #{key.inspect} in #{path.delete_prefix(ROOT + '/')}")
+  end
+end
+
 android_manifest = File.binread(File.join(ROOT, "app-android/src/main/AndroidManifest.xml"))
 fail_validation("Android manifest must declare supportsRtl=true") unless android_manifest.include?(
   'android:supportsRtl="true"'
@@ -147,5 +191,6 @@ fail_validation("the iOS project must declare Arabic as a known region") unless 
 
 puts(
   "Validated complete Arabic localization: " \
-  "#{arabic_strings.size} strings and #{arabic_plurals.size} plurals."
+  "#{arabic_strings.size} strings, #{arabic_plurals.size} plurals, and " \
+  "#{ios_arabic_strings.size} native iOS strings."
 )

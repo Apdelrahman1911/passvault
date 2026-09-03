@@ -435,12 +435,12 @@ class SettingsViewModel(
 
         val currentPassword = currentState.currentPassword
         val newPassword = currentState.newPassword
+        val currentSensitive = SensitiveText.from(currentPassword)
+        val newSensitive = SensitiveText.from(newPassword)
         _state.update { it.beginPasswordChange() }
 
         masterPasswordChangeJob?.cancel()
-        masterPasswordChangeJob = viewModelScope.launch {
-            val currentSensitive = SensitiveText.from(currentPassword)
-            val newSensitive = SensitiveText.from(newPassword)
+        val job = viewModelScope.launch {
             try {
                 val result = vaultRepository.changeMasterPassword(currentSensitive, newSensitive)
                 currentCoroutineContext().ensureActive()
@@ -477,11 +477,14 @@ class SettingsViewModel(
                     )
                 }
             } finally {
-                currentSensitive.clear()
-                newSensitive.clear()
                 _state.update { it.copy(isChangingPassword = false) }
             }
         }
+        job.invokeOnCompletion {
+            currentSensitive.clear()
+            newSensitive.clear()
+        }
+        masterPasswordChangeJob = job
     }
 
     private fun clearPasswordDialog() {

@@ -100,7 +100,6 @@ required_values=(
     IOS_DISTRIBUTION_CERTIFICATE_PASSWORD TESTFLIGHT_EXTERNAL_GROUP
     WINDOWS_SIGNING_BACKEND WINDOWS_EXPECTED_PUBLISHER_NAME
     MACOS_CERTIFICATE_PASSWORD
-    MACOS_NOTARIZATION_APPLE_ID MACOS_NOTARIZATION_PASSWORD
     EXPORT_COMPLIANCE_STATUS IOS_FRANCE_AVAILABLE
     RELEASE_NOTES_EN_FILE RELEASE_NOTES_AR_FILE PRIVACY_TEXT_EN_FILE PRIVACY_TEXT_AR_FILE
     ANDROID_UPLOAD_KEYSTORE_FILE IOS_DISTRIBUTION_CERTIFICATE_FILE
@@ -168,7 +167,7 @@ for name in "${required_values[@]}"; do
 done
 
 email_pattern='^[^[:space:]@,]+@[^[:space:]@,]+\.[^[:space:]@,]+$'
-for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL MACOS_NOTARIZATION_APPLE_ID; do
+for name in SUPPORT_EMAIL SECURITY_EMAIL APP_REVIEW_EMAIL; do
     value="${!name:-}"
     if [[ -n "$value" && ( ! "$value" =~ $email_pattern || "$value" == *.invalid ) ]]; then
         fail_result "$name" "Input validation" "No" "values.env:$name" "Invalid email" \

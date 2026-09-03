@@ -1,9 +1,11 @@
 # Release Automation
 
-PassVault promotes one tested mobile build and one tested Git commit through
-testing and production. Mobile binaries are never rebuilt after the internal
-upload. Desktop signing and publication are a separate, optional lifecycle;
-missing Desktop credentials never block Android or iOS production.
+PassVault promotes one tested mobile build and receipt-bound Desktop payloads
+through testing and production. Mobile binaries are never rebuilt after the
+internal upload. Linux packages are promoted byte-for-byte; Windows and macOS
+promote the tested app images into platform signing and packaging. Desktop
+signing and publication remain a separate, optional lifecycle, so missing
+Desktop credentials never block Android or iOS production.
 
 ## Branch and approval flow
 
@@ -12,7 +14,7 @@ main
   └─ reviewed PR → testing
        ├─ exact Android/iOS build → internal testing
        ├─ mobile-external-beta approval → closed testing / external TestFlight
-       ├─ unsigned Windows/macOS/Linux GitHub prerelease
+       ├─ smoke-tested Desktop packages and frozen app images
        └─ Candidate Readiness after Apple Beta Review approval
             └─ release-promotion approval → fast-forward exact SHA → release
 
@@ -83,11 +85,14 @@ unless repository variable `LEGACY_TESTING_RELEASE_ON_PUSH` is explicitly set to
 5. Promotes the exact Android build to the Play `alpha` closed-testing track
    and distributes the exact iOS build to the configured external TestFlight
    group.
-6. Builds unsigned Windows x64 EXE/MSI, macOS arm64/x64 DMGs, and Linux x64
-   DEB/RPM packages.
-7. Publishes `vVERSION-rc.BUILD` as a GitHub prerelease with checksums,
-   `candidate-manifest.json`, safe mobile hash receipts, the project license,
-   and third-party notices.
+6. Builds and smoke-tests unsigned Windows x64 EXE/MSI, macOS arm64/x64 DMGs,
+   and Linux x64 DEB/RPM packages. It archives and restores each Windows/macOS
+   app image before the smoke test so production consumes the tested archive.
+7. Creates an attested `desktop-artifact-receipt.json` with the exact Linux
+   package and Windows/macOS app-image hashes, source tree, and workflow run.
+   Its digest is bound into schema-3 `candidate-manifest.json`.
+8. Publishes `vVERSION-rc.BUILD` with the receipts, promotion inputs, test
+   installers, checksums, licenses, and third-party notices.
 
 If internal Android or iOS upload already succeeded for the exact
 candidate tree, version, and `VERSION_CODE`, dispatch `Testing
@@ -105,7 +110,9 @@ hashes do not match the signed files, or two successful receipts whose
 artifact hashes differ. It never uploads Android or iOS again.
 
 The prerelease notes explicitly warn that Windows and macOS test installers
-are unsigned. Mobile IPA/AAB files are never attached to a public release.
+and app-image archives are unsigned. The app-image archives are production
+signing inputs, not end-user installers. Mobile IPA/AAB files are never attached
+to a public release.
 
 Apple review is asynchronous and App Store Connect has no GitHub event hook.
 After Apple emails that Beta App Review is approved, manually run `Candidate
@@ -133,8 +140,15 @@ a mobile binary.
 
 Desktop is optional. When a Desktop release is wanted later, manually run
 `Production Signing Validation` from `release` for the same candidate and
-approve `desktop-production`. It signs/verifies Windows, signs/notarizes macOS,
-and freezes the attested Desktop bundle without changing either mobile Store.
+approve `desktop-production`. Before any signing, it downloads the candidate
+receipt and promotion inputs, verifies their attestations and hashes, and stages
+them as short-lived workflow artifacts. It promotes Linux packages unchanged,
+signs the restored Windows app image before creating EXE/MSI installers, and
+signs the restored macOS app image before creating and notarizing each DMG. The
+production workflow does not invoke Gradle or rebuild application payloads. It
+revalidates the reviewed attribution metadata from the candidate tree, whose
+resolved graph was gated before candidate creation, then freezes the attested
+Desktop bundle without changing either mobile Store.
 
 Stores cannot become live atomically: Google may publish before Apple finishes
 review. After both consoles show the version live, run `Publish Stable Release`
@@ -143,16 +157,38 @@ requires that exact Android build on Play production and that exact iOS
 version/build publicly downloadable. It then locates and validates the exact
 frozen signing bundle instead of rebuilding:
 
-- Windows x64 EXE and MSI, with mandatory Authenticode signing.
-- macOS arm64 and x64 DMGs, with mandatory Developer ID signing and notarization.
-- Linux x64 DEB and RPM, covered by the release SHA-256 manifest.
+- Windows x64 EXE and MSI, packaged from the receipt-verified candidate app
+  image with mandatory Authenticode signing.
+- macOS arm64 and x64 DMGs, packaged from receipt-verified candidate app images
+  with mandatory Developer ID signing and notarization.
+- The byte-identical candidate Linux x64 DEB and RPM, covered by the release
+  SHA-256 manifest.
 - `LICENSE.txt`, `NOTICE.txt`, and `THIRD_PARTY_NOTICES.md`, copied from the
   tested source tree and covered by the same checksum manifest.
 
-It then creates immutable `vVERSION` release provenance from the exact tested
-commit. Missing/partial credentials, an expired validation artifact, a different
-SHA, or a failed signature/notarization gate fail closed; production never falls
-back to rebuilding or unsigned Windows/macOS output.
+Schema-2 `release-provenance.json` records the Desktop receipt digest, candidate
+workflow run, and every promotion-input digest alongside the final asset hashes.
+Missing/partial credentials, an expired validation artifact, a different SHA,
+or a failed signature/notarization gate fail closed; production never falls back
+to rebuilding or unsigned Windows/macOS output.
+
+## Third-party attribution gate
+
+`./gradlew checkThirdPartyAttribution` resolves the Android release runtime,
+Desktop runtime, and iOS Arm64 KLIB inputs and compares them with
+`legal/third-party-dependencies.lock`. It also validates every coordinate
+against `legal/third-party-attribution.tsv`, checks the documented versions and
+native-carrier exceptions, and rejects missing or orphaned files in
+`THIRD_PARTY_LICENSES/`. The host-selected Skiko Desktop runtime artifact is
+normalized to `skiko-awt-runtime-current-os`; its version remains exact.
+
+After an intentional production dependency change, run
+`./gradlew generateThirdPartyDependencyInventory`, review the report under
+`build/reports/legal/`, then update the lock, attribution map, notices, and
+license texts together. Do not copy the generated lock without reviewing new,
+removed, or relicensed components. CI and candidate/mobile release preparation
+run the resolved-graph check. No-build Desktop promotion revalidates the same
+reviewed metadata from the attested candidate tree.
 
 ## Automated store screenshots
 
@@ -198,6 +234,7 @@ Production desktop variables:
 
 - `PUBLISHER_NAME`, `COPYRIGHT_HOLDER`, `SUPPORT_EMAIL`, `SECURITY_EMAIL`
 - `PRIVACY_POLICY_URL`, `SUPPORT_URL`, `PROJECT_URL`
+- `ASC_KEY_ID`, `ASC_ISSUER_ID`
 - `WINDOWS_SIGNING_BACKEND`, `WINDOWS_EXPECTED_PUBLISHER_NAME`
 - `WINDOWS_TIMESTAMP_URL` for Azure Artifact Signing or local-PFX only
 - `WINDOWS_SIGNING_CERTIFICATE_SHA256` for local-PFX only
@@ -210,7 +247,7 @@ Production desktop secrets in the release-only `desktop-production` environment:
 - `WINDOWS_SIGNPATH_API_TOKEN` for SignPath; or
 - `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` for local-PFX
 - `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_PROVISIONING_PROFILE_BASE64`
-- `MACOS_NOTARIZATION_APPLE_ID`, `MACOS_NOTARIZATION_PASSWORD`
+- `ASC_PRIVATE_KEY_BASE64` for App Store Connect API-key notarization
 
 SignPath production environment variables are
 `WINDOWS_SIGNPATH_ORGANIZATION_ID`, `WINDOWS_SIGNPATH_PROJECT_SLUG`,

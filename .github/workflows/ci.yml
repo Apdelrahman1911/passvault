@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
@@ -31,6 +33,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -43,8 +47,8 @@ jobs:
         with:
           cache-cleanup: always
 
-      - name: Verify dependency integrity
-        run: ./gradlew verifyDependencies --stacktrace
+      - name: Verify dependency integrity and attribution
+        run: ./gradlew verifyDependencies checkThirdPartyAttribution --stacktrace
 
   build-android:
     name: Build Android
@@ -53,6 +57,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -78,13 +84,42 @@ jobs:
           name: android-debug-apk
           path: app-android/build/outputs/apk/debug/*.apk
 
-      - name: Build Android Release (unsigned)
+      - name: Build Android Release with ephemeral validation signing
+        shell: bash
         run: |
+          set -euo pipefail
+          keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"
+          keystore_password="$(openssl rand -hex 32)"
+          key_alias="$(tr -d '\r\n' < release/android/passvault-upload-alias.txt)"
+          cleanup() {
+            rm -f -- "$keystore_path"
+            unset KEYSTORE_PATH KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+            keystore_password=""
+          }
+          trap cleanup EXIT
+          export KEYSTORE_PATH="$keystore_path"
+          export KEYSTORE_PASSWORD="$keystore_password"
+          export KEY_ALIAS="$key_alias"
+          export KEY_PASSWORD="$keystore_password"
+          keytool -genkeypair \
+            -keystore "$KEYSTORE_PATH" \
+            -storetype PKCS12 \
+            -storepass:env KEYSTORE_PASSWORD \
+            -keypass:env KEY_PASSWORD \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA \
+            -keysize 3072 \
+            -sigalg SHA256withRSA \
+            -validity 2 \
+            -dname "CN=PassVault CI Validation, O=Non-Publishing Test" \
+            -noprompt
           ./gradlew \
+            :app-android:verifyReleaseSigningConfiguration \
             :app-android:assembleRelease \
             :app-android:bundleRelease \
             :app-android:lintRelease \
             :app-android:verifyReleasePackageContents \
+            -Ppassvault.requireReleaseSigning=true \
             --no-configuration-cache \
             --stacktrace
           ruby scripts/validate-google-play-readiness.rb
@@ -100,6 +135,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -134,6 +171,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -143,6 +182,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
+
+      - name: Test Apple signing secret handling
+        run: ./scripts/test-apple-signing-secret-handling.sh
 
       - name: Build and verify unsigned macOS package
         run: >
@@ -155,11 +197,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate
     permissions:
-      checks: write
       contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -172,21 +215,14 @@ jobs:
         with:
           cache-cleanup: always
 
+      - name: Run KMP and native security analysis
+        run: ./scripts/run-security-analysis.sh
+
       - name: Run Unit Tests
         run: ./gradlew test detekt verifyDependencies --continue --stacktrace
 
       - name: Test release automation scripts
         run: ./scripts/test-release-automation.sh
-
-      - name: Generate Test Report
-        if: always()
-        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
-        with:
-          name: Test Results
-          path: '**/build/test-results/*Test/*.xml'
-          reporter: java-junit
-          fail-on-error: false
-          fail-on-empty: false
 
       - name: Upload Test Reports
         if: always()
@@ -204,6 +240,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup JDK
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -225,6 +263,8 @@ jobs:
     needs: validate
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:

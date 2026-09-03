@@ -24,6 +24,12 @@ class DefaultBiometricUnlockService(
 ) : BiometricUnlockService {
 
     override suspend fun getStatus(): BiometricUnlockStatus {
+        val metadataResult = vaultRepository.getMetadata()
+        val vaultId = metadataResult.getOrNull()?.id?.value
+        val repositoryHasNoVault = vaultId == null && vaultRepository.exists().getOrNull() == false
+        if (vaultId != null || repositoryHasNoVault) {
+            resultCall { keyStore.reconcile(vaultId) }.rethrowCancellationFailure()
+        }
         val capability = valueCall { keyStore.getCapability() }
             .getOrElse {
                 return BiometricUnlockStatus(
@@ -35,7 +41,6 @@ class DefaultBiometricUnlockService(
                 )
             }
 
-        val vaultId = vaultRepository.getMetadata().getOrNull()?.id?.value
         val enabled = if (vaultId == null) {
             false
         } else {

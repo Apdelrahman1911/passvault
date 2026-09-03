@@ -124,9 +124,14 @@ private fun String.isValidIdentifier(): Boolean =
         hasOnlySafeTextCodePoints() &&
         all { it != '/' && it != '\\' }
 
+class BackupPasswordReusesMasterPasswordException : IllegalArgumentException(
+    "Backup password must differ from the current master password",
+)
+
 /**
  * Creates and restores an authenticated, versioned backup of the encrypted
- * vault records. The backup password is independent from the vault password.
+ * vault records. New exports require a password distinct from the current
+ * vault master password and derive an independent backup key from it.
  *
  * No decrypted credential value crosses this boundary. The database already
  * stores authenticated encrypted payloads, so the complete raw snapshot is
@@ -178,6 +183,16 @@ class VaultBackupService(
         sink: BackupContentSink,
         onProgress: (Int) -> Unit = {},
     ): Result<BackupInspection> = operationMutex.withLock {
+        val validationError = try {
+            newBackupPasswordValidationError(password)
+        } catch (cancel: CancellationException) {
+            withContext(kotlinx.coroutines.NonCancellable) { runCatching { sink.abort() } }
+            throw cancel
+        }
+        if (validationError != null) {
+            withContext(kotlinx.coroutines.NonCancellable) { runCatching { sink.abort() } }
+            return@withLock Result.failure(validationError)
+        }
         v2Service.create(password, sink, onProgress)
     }
 
@@ -200,11 +215,6 @@ class VaultBackupService(
         password: SensitiveText,
         includeAttachments: Boolean = false,
     ): Result<ByteArray> = operationMutex.withLock {
-        if (!BackupPasswordPolicy.acceptsNew(password)) {
-            return@withLock Result.failure(
-                IllegalArgumentException("Backup password length is invalid"),
-            )
-        }
         if (includeAttachments) {
             return@withLock Result.failure(
                 IllegalArgumentException(
@@ -213,12 +223,18 @@ class VaultBackupService(
                 ),
             )
         }
+        newBackupPasswordValidationError(password)?.let { validationError ->
+            return@withLock Result.failure(validationError)
+        }
 
         return try {
             sessionManager.withUnlockedSession {
                 val rawSnapshot = backupDao.readSnapshot()
-                validateSnapshot(rawSnapshot)
-                val snapshot = canonicalizeFolderRelationships(rawSnapshot)
+                val snapshotWithDerivedCount = rawSnapshot.copy(
+                    metadata = rawSnapshot.metadata.copy(entryCount = rawSnapshot.credentials.size),
+                )
+                validateSnapshot(snapshotWithDerivedCount)
+                val snapshot = canonicalizeFolderRelationships(snapshotWithDerivedCount)
                 val payload = SnapshotDto.from(snapshot, attachmentsIncluded = false)
                 val plaintext = json.encodeToString(payload).encodeToByteArray()
                 try {
@@ -232,6 +248,23 @@ class VaultBackupService(
             throw cancel
         } catch (_: Exception) {
             Result.failure(IllegalStateException("The encrypted backup could not be created"))
+        }
+    }
+
+    private suspend fun newBackupPasswordValidationError(password: SensitiveText): Exception? {
+        if (!BackupPasswordPolicy.acceptsNew(password)) {
+            return IllegalArgumentException("Backup password length is invalid")
+        }
+        return try {
+            if (sessionManager.matchesMasterPassword(password)) {
+                BackupPasswordReusesMasterPasswordException()
+            } else {
+                null
+            }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (_: Exception) {
+            IllegalStateException("The encrypted backup could not be created")
         }
     }
 
@@ -326,7 +359,7 @@ class VaultBackupService(
         }
 
         return try {
-            activateSnapshot(entities)
+            val attachmentCleanupSucceeded = activateSnapshot(entities)
 
             Result.success(
                 BackupInspection(
@@ -337,6 +370,9 @@ class VaultBackupService(
                     warnings = buildList {
                         if (!snapshot.attachmentsIncluded && snapshot.reportedAttachmentCount > 0) {
                             add(BackupWarning.ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE)
+                        }
+                        if (!attachmentCleanupSucceeded) {
+                            add(BackupWarning.OBSOLETE_ATTACHMENT_CLEANUP_FAILED)
                         }
                     },
                 ),
@@ -699,8 +735,13 @@ class VaultBackupService(
         return snapshot.copy(credentialFolderReferences = canonicalReferences)
     }
 
-    internal fun newStreamValidator(manifest: BackupStreamManifest): BackupStreamValidator =
-        StreamingValidator(manifest)
+    internal fun newStreamValidator(
+        manifest: BackupStreamManifest,
+        retainedIdentifierBytes: Long = BackupLimits.MAX_RETAINED_IDENTIFIER_BYTES,
+    ): BackupStreamValidator = StreamingValidator(
+        manifest = manifest,
+        identifierBudget = RetainedIdentifierBudget(retainedIdentifierBytes),
+    )
 
     /**
      * Validates one encrypted Room row at a time. Only identifiers, relationship
@@ -709,6 +750,7 @@ class VaultBackupService(
      */
     private inner class StreamingValidator(
         override val manifest: BackupStreamManifest,
+        private val identifierBudget: RetainedIdentifierBudget,
     ) : BackupStreamValidator {
         private var metadataCount = 0
         private var credentialCount = 0
@@ -758,6 +800,7 @@ class VaultBackupService(
                 manifest.passwordHistoryCount.toLong() <=
                     manifest.credentialCount.toLong() * MAX_PASSWORD_HISTORY_PER_CREDENTIAL,
             )
+            manifest.requireRetentionBound()
             if (manifest.metadataSchemaVersion >= STORAGE_ACCOUNTING_METADATA_SCHEMA_VERSION) {
                 val objectBytes = requireNotNull(manifest.managedAttachmentObjectBytes)
                 require(objectBytes in 0..BackupLimits.MAX_BACKUP_BYTES)
@@ -804,6 +847,7 @@ class VaultBackupService(
         private fun acceptFolder(value: FolderRecordEntity) {
             require(++folderCount <= manifest.folderCount)
             require(value.id.isValidIdentifier())
+            identifierBudget.retain(value.id, value.parentId)
             require(folderIds.add(value.id))
             require(value.parentId == null || value.parentId.isValidIdentifier())
             require(value.nameHash.size == BLIND_INDEX_BYTES)
@@ -816,6 +860,7 @@ class VaultBackupService(
         private fun acceptTag(value: TagRecordEntity) {
             require(++tagCount <= manifest.tagCount)
             require(value.id.isValidIdentifier())
+            identifierBudget.retain(value.id)
             require(tagIds.add(value.id))
             require(value.nameHash.size == BLIND_INDEX_BYTES)
             requirePayload(value.encryptedPayload, value.payloadNonce, MAX_TAG_ENCRYPTED_PAYLOAD_BYTES)
@@ -825,6 +870,7 @@ class VaultBackupService(
         private fun acceptCredential(value: CredentialRecordEntity) {
             require(++credentialCount <= manifest.credentialCount)
             require(value.id.isValidIdentifier())
+            identifierBudget.retain(value.id, value.folderId)
             require(credentialIds.add(value.id))
             require(value.type.isSupportedCredentialType())
             requirePayload(
@@ -843,6 +889,7 @@ class VaultBackupService(
 
         private fun acceptFolderReference(value: CredentialFolderCrossRef) {
             require(++folderReferenceCount <= manifest.credentialFolderReferenceCount)
+            identifierBudget.retain(value.credentialId, value.folderId)
             require(value.credentialId in credentialIds)
             require(value.folderId in folderIds)
             require(credentialFolders[value.credentialId] == value.folderId)
@@ -851,6 +898,7 @@ class VaultBackupService(
 
         private fun acceptTagReference(value: CredentialTagCrossRef) {
             require(++tagReferenceCount <= manifest.credentialTagReferenceCount)
+            identifierBudget.retain(value.credentialId, value.tagId)
             require(value.credentialId in credentialIds)
             require(value.tagId in tagIds)
             require(tagReferences.add(value.credentialId to value.tagId))
@@ -861,6 +909,7 @@ class VaultBackupService(
 
         private fun acceptAttachment(value: AttachmentRecordEntity) {
             require(++attachmentCount <= manifest.attachmentCount)
+            identifierBudget.retain(value.id, value.credentialId)
             require(value.credentialId in credentialIds)
             require(value.id.isValidIdentifier())
             require(attachmentIds.add(value.id))
@@ -892,6 +941,7 @@ class VaultBackupService(
 
         private fun acceptPasswordHistory(value: PasswordHistoryRecordEntity) {
             require(++passwordHistoryCount <= manifest.passwordHistoryCount)
+            identifierBudget.retain(value.id, value.credentialId)
             require(value.credentialId in credentialIds)
             require(value.id.isValidIdentifier())
             require(passwordHistoryIds.add(value.id))
@@ -921,16 +971,26 @@ class VaultBackupService(
     }
 
     /**
-     * Retires biometric material and atomically replaces Room data. If Room
-     * rolls back after biometric deletion, make one authenticated best-effort
-     * attempt to restore the former enrollment with the leased old VEK.
+     * Retires biometric material and atomically replaces Room data, then reconciles the separate
+     * attachment object store before cancellation can resume. A null store means this service has
+     * no external attachment storage to reconcile. If Room rolls back after biometric deletion,
+     * make one authenticated best-effort attempt to restore the former enrollment with the leased old VEK.
      */
-    private suspend fun activateSnapshot(entities: VaultBackupEntities) {
-        activateStreamingRestore { backupDao.replaceVault(entities) }
+    private suspend fun activateSnapshot(entities: VaultBackupEntities): Boolean {
+        require(entities.attachments.isEmpty()) { "Legacy restore cannot publish attachment rows" }
+        return attachmentLifecycleManager.withStableAttachments {
+            activateStreamingRestore(
+                referencedAttachmentPaths = emptySet(),
+                replaceVault = { backupDao.replaceVault(entities) },
+            )
+        }
     }
 
     @Suppress("TooGenericExceptionCaught") // Preserve any transaction failure while attaching key-store rollback.
-    private suspend fun activateStreamingRestore(replaceVault: suspend () -> Unit) {
+    private suspend fun activateStreamingRestore(
+        referencedAttachmentPaths: Set<String>,
+        replaceVault: suspend () -> Unit,
+    ): Boolean {
         val previousVaultId = vaultRepository.getMetadata().getOrThrow().id.value
         val biometricWasEnabled = biometricKeyStore.contains(previousVaultId)
         val rollbackVek = if (biometricWasEnabled) {
@@ -940,12 +1000,20 @@ class VaultBackupService(
         }
         var biometricDeleteAttempted = false
         var databaseCommitted = false
+        var attachmentCleanupSucceeded = true
         try {
             sessionManager.lockAndRun(LockReason.Restore) {
                 biometricDeleteAttempted = true
                 biometricKeyStore.delete(previousVaultId).getOrThrow()
-                replaceVault()
-                databaseCommitted = true
+                withContext(kotlinx.coroutines.NonCancellable) {
+                    replaceVault()
+                    databaseCommitted = true
+                    attachmentCleanupSucceeded = attachmentBlobStore?.let { blobStore ->
+                        runCatching {
+                            blobStore.removeUnreferencedObjects(referencedAttachmentPaths)
+                        }.isSuccess
+                    } ?: true
+                }
             }
         } catch (error: Exception) {
             if (biometricDeleteAttempted && !databaseCommitted && rollbackVek != null) {
@@ -959,6 +1027,7 @@ class VaultBackupService(
         } finally {
             rollbackVek?.let(cryptoEngine::secureWipe)
         }
+        return attachmentCleanupSucceeded
     }
 
     private fun requirePayload(payload: ByteArray, nonce: ByteArray, maxPayloadBytes: Int) {
@@ -1045,6 +1114,7 @@ class VaultBackupService(
     enum class BackupWarning {
         ATTACHMENT_FILES_NOT_INCLUDED_IN_PREVIEW,
         ATTACHMENT_FILES_NOT_INCLUDED_AFTER_RESTORE,
+        OBSOLETE_ATTACHMENT_CLEANUP_FAILED,
     }
 
     @Serializable

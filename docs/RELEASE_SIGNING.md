@@ -42,6 +42,15 @@ keystore passwords from the configuration environment in its local cache.
 `scripts/build-android.sh` enforces this automatically whenever any Android
 signing variable is nonblank.
 
+Release APK/AAB packaging fails before producing an archive unless all four
+signing inputs are present and `KEY_ALIAS` matches the pinned upload alias.
+Unsigned local builds must use the `debug` build type; `lintRelease` remains
+available without publisher credentials because it does not create a release
+artifact. Pull-request CI creates a unique, short-lived self-signed validation
+key in the runner's temporary directory so it can exercise Release packaging,
+R8, lint, and package inspection without exposing or impersonating the publisher
+key. CI never uploads that validation Release and deletes the key on every exit.
+
 The build script reads the canonical ignored `values.env`, requires the pinned
 alias, runs release lint and final-manifest checks, and verifies both signatures.
 Upload these four secrets only through `scripts/configure-mobile-release.sh`.
@@ -55,6 +64,35 @@ the exact existing build and must not receive upload-key material:
 
 Never regenerate the key. Use the store-specific key upgrade or rotation
 process if compromise is suspected.
+
+## iOS
+
+The Release configuration defaults to manual signing and therefore fails closed
+when a local archive does not provide the approved distribution identity and
+profile. Debug retains automatic development signing. The canonical Store
+workflow supplies the Release inputs explicitly and exports with manual signing.
+
+`iosApp/iosApp/iosApp.entitlements` is the reviewed capability declaration.
+Final archive and IPA verification expands its bundle/team placeholders, permits
+only the expected Xcode-generated distribution keys, and rejects missing,
+modified, or additional signed entitlements. Keep capability changes and their
+artifact-verifier coverage in the same reviewed commit.
+
+The `Compile Kotlin Framework` phase intentionally disables Xcode User Script
+Sandboxing and runs on every build. Kotlin's supported direct-integration setup
+requires both settings for `embedAndSignAppleFrameworkForXcode`; forcing the
+sandbox on fails in `:shared:checkSandboxAndWriteProtection` before the framework
+can be produced. See the
+[Kotlin framework integration guidance](https://kotlinlang.org/docs/multiplatform/multiplatform-integrate-in-existing-app.html).
+
+Before that phase invokes Gradle, `scripts/verify-gradle-wrapper.sh` checks the
+wrapper JAR against the reviewed SHA-256 in `gradle/wrapper/`; the distribution
+ZIP has its own `distributionSha256Sum`. The iOS archive job also runs Gradle's
+immutable, pinned `wrapper-validation` action. These controls detect wrapper
+substitution; they do not make arbitrary Gradle build logic safe or prevent it
+from changing the framework it is intended to produce. Reviewed source,
+dependency verification, runner isolation, signing, and final artifact
+verification remain the release trust boundary.
 
 ## Windows
 
@@ -79,12 +117,14 @@ exactly one `WINDOWS_SIGNING_BACKEND`; validators reject mixed configuration:
   pin, imports the PFX into the ephemeral current-user store, and removes every
   imported identity on success or failure.
 
-All backends preserve valid timestamped vendor signatures and allow the
-PassVault publisher identity to sign only `PassVault.exe` plus the final
-PassVault EXE/MSI installers. They verify every nested EXE/DLL and both
-installers with Windows policy and require a timestamp. The MSI is extracted
-after signing to prove that its native payload is byte-for-byte identical to
-the already-signed app image.
+Production first verifies the attested Desktop receipt and exact candidate
+app-image ZIP, restores it with traversal/symlink limits, and repeats its startup
+smoke test. It does not rebuild the application with Gradle. All backends then
+preserve valid timestamped vendor signatures and allow the PassVault publisher
+identity to sign only `PassVault.exe` plus the final PassVault EXE/MSI
+installers. They verify every nested EXE/DLL and both installers with Windows
+policy and require a timestamp. The MSI is extracted after signing to prove that
+its native payload is byte-for-byte identical to the already-signed app image.
 
 The MSI upgrade UUID is permanently fixed as
 `B3B60257-BA42-4233-AF33-5CECFA171EB0`. It must not change between releases.
@@ -105,11 +145,12 @@ GitHub `desktop-production` environment secrets:
 - `MACOS_CERTIFICATE_BASE64`
 - `MACOS_CERTIFICATE_PASSWORD`
 - `MACOS_PROVISIONING_PROFILE_BASE64`
-- `MACOS_NOTARIZATION_APPLE_ID`
-- `MACOS_NOTARIZATION_PASSWORD` (an Apple app-specific password)
+- `ASC_PRIVATE_KEY_BASE64` (the same App Store Connect team API key used by
+  the mobile release environments)
 
 GitHub repository variables:
 
+- `ASC_KEY_ID` and `ASC_ISSUER_ID` for the team API key
 - `MACOS_SIGNING_IDENTITY` (the full `Developer ID Application: ...` identity)
 - `MACOS_NOTARIZATION_TEAM_ID` (the 10-character Apple Developer Team ID)
 - `MACOS_DEVELOPER_ID_CERTIFICATE_SHA256` (derived from the supplied P12)
@@ -120,16 +161,24 @@ only as `desktop-production` environment variables. The selected backend and
 expected publisher may remain repository variables because neither is a
 credential.
 
-CI creates a temporary keychain, validates the certificate identity, Team ID,
-expiry, private-key pairing, and pinned SHA-256 fingerprint, stores notarization
-credentials in that keychain, and removes it after the job. Every Mach-O object
-inside the app must have the expected Developer ID signer/Team ID, a secure
-timestamp, Hardened Runtime, strict `codesign` validity, and no
-`get-task-allow`. The DMG must receive an `Accepted` result from `notarytool`,
-have its ticket stapled and validated, and pass Gatekeeper checks for both the
-DMG and mounted app. The complete notarization log is retained privately.
+CI first verifies the attested, architecture-specific candidate app-image ZIP
+and restores it without following escaping links. It creates no new application
+payload. CI then creates a temporary keychain, validates the certificate
+identity, Team ID, expiry, private-key pairing, and pinned SHA-256 fingerprint,
+and stores App Store Connect API-key notarization credentials in that keychain.
+The PKCS#12 password crosses only a private pipe to OpenSSL; its private key is
+streamed into Keychain as non-extractable material and is never passed on argv.
+The transient P8 and keychain are removed after use.
+JDK 21 `jpackage` signs the predefined image; CI restores the narrow runtime
+entitlements before sealing the outer bundle and creating the DMG. Every Mach-O
+object must have the expected Developer ID signer/Team ID, a secure timestamp,
+Hardened Runtime, strict `codesign` validity, and no `get-task-allow`. The DMG
+must receive an `Accepted` result from `notarytool`, have its ticket stapled and
+validated, and pass Gatekeeper checks for both the DMG and mounted app. The
+complete notarization log is retained privately.
 
-The protected validation workflow freezes these signed artifacts without
-publishing them. Stable publication later consumes that exact attested bundle
-and does not rebuild. See `PRODUCTION_SIGNING_HANDOFF.md` for every private input,
-safe upload command, exact GitHub scope, and credential source.
+The protected validation workflow records the candidate Desktop receipt, source
+workflow run, promotion-input hashes, and final signed hashes, then freezes the
+bundle without publishing it. Stable publication consumes that exact attested
+bundle and does not rebuild. See `PRODUCTION_SIGNING_HANDOFF.md` for every
+private input, safe upload command, exact GitHub scope, and credential source.

@@ -83,8 +83,6 @@ WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG=<slug created from the tracked Sign
 MACOS_CERTIFICATE_FILE=release/private/files/macos-developer-id-application.p12
 MACOS_CERTIFICATE_PASSWORD=<P12 export password>
 MACOS_PROVISIONING_PROFILE_FILE=release/private/files/embedded.provisionprofile
-MACOS_NOTARIZATION_APPLE_ID=<Apple ID email used for notarization>
-MACOS_NOTARIZATION_PASSWORD=<Apple app-specific password, not the Apple ID password>
 
 RELEASE_NOTES_EN_FILE=release/private/release-notes-en.md
 RELEASE_NOTES_AR_FILE=release/private/release-notes-ar.md
@@ -114,7 +112,7 @@ availability to the reviewed value.
 | Android JKS + three passwords/alias | Existing Play upload private key; JKS/PKCS12 accepted; alias must be `passvault-upload` | The encrypted backup of the key already registered in Google Play; use Play's upload-key reset process if lost | `mobile-beta`; testing upload only |
 | Apple Distribution P12/password | Current Apple Distribution certificate plus matching private key, password-protected PKCS#12 | Keychain Access after creating/downloading the distribution certificate in Apple Developer | `mobile-beta`; iOS internal build/upload only |
 | App Store provisioning profile | Current App Store distribution `.mobileprovision` for team and `com.passvault.ios`, with the supplied certificate | Apple Developer Certificates, Identifiers & Profiles | `mobile-beta`; iOS internal build/upload only |
-| App Store Connect P8/key ID/issuer | One PKCS#8 `AuthKey_*.p8`; 10-character key ID; issuer UUID | App Store Connect → Users and Access → Integrations; App Manager access | P8 secret in all three mobile environments; identifiers are repository variables; testing and production |
+| App Store Connect P8/key ID/issuer | One PKCS#8 `AuthKey_*.p8`; 10-character key ID; issuer UUID | App Store Connect → Users and Access → Integrations; App Manager access with notarization access | P8 secret in all three mobile environments and `desktop-production`; identifiers are repository variables; testing, production, and macOS notarization |
 | App review phone | Real review-contact telephone number | Publisher/review contact | Secret in `mobile-external-beta` and `mobile-production` |
 | TestFlight tester CSV | UTF-8 `first_name,last_name,email` rows with real testers | Approved tester list | `mobile-external-beta`; testing only |
 | Play closed-test list | UTF-8 file with one real email per line | Approved tester list and Play Console email list | `mobile-external-beta`; testing only |
@@ -124,7 +122,6 @@ availability to the reviewed value.
 | Windows expected publisher | Exact certificate Simple Name returned by the selected production certificate; case-sensitive, one line, at most 200 characters | The SignPath signing-policy certificate details (or the Azure/PFX certificate subject for another backend) | Repository variable; production verification only |
 | Windows PFX/password (local-PFX alternative only) | Existing publicly trusted Authenticode certificate, matching private key, Code Signing EKU `1.3.6.1.5.5.7.3.3`, password-protected PFX whose CA contract explicitly permits export and CI import | Existing trusted code-signing CA/provider; do not manufacture an exportable key for a certificate that must be HSM-backed | `desktop-production` environment secrets; production desktop validation only |
 | Developer ID P12/password | `Developer ID Application: … (TEAMID)` certificate plus matching private key, password-protected P12 | Apple Developer certificate portal and Keychain Access | `desktop-production`; production desktop validation only |
-| Notarization Apple ID/app-specific password | Apple ID email and an app-specific password | Apple ID account → Sign-In and Security → App-Specific Passwords | `desktop-production`; production desktop validation only |
 | Google project ID/number | Existing Google Cloud project with Workload Identity Federation | Google Cloud Console | Used to derive environment-scoped OIDC provider/service-account variables; no JSON key is stored |
 
 The local-PFX Windows and macOS certificate SHA-256 fingerprints, full Developer ID identity, Apple notarization
@@ -137,6 +134,16 @@ on every output. Do not type or maintain local certificate fingerprints by hand.
 
 Select exactly one backend. The validator rejects mixed inputs and the configuration script removes stale values and
 secrets from every broader or inactive scope.
+
+The protected signing workflow never asks an operator for an unsigned Desktop
+binary. `Testing Candidate` publishes an attested receipt for the exact Linux
+packages and Windows/macOS app-image archives it smoke-tested. Production
+downloads those public candidate assets itself, verifies the receipt digest,
+source commit/tree, GitHub attestations, size, and SHA-256 before a signing
+credential is used, and revalidates each staged input in its platform job.
+Linux packages are passed through unchanged. Windows and macOS installers are
+created only from the verified app images; Gradle is not run during production
+Desktop signing.
 
 ### SignPath (recommended starting point for this repository)
 
@@ -235,14 +242,15 @@ EKU, exact publisher, and derives the certificate SHA-256 pin before uploading a
 |---|---|---|---|
 | `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` | Environment secrets, `mobile-beta` | `mobile-store-release.yml` Android internal upload | testing only |
 | `IOS_DISTRIBUTION_CERTIFICATE_BASE64`, `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD`, `IOS_PROVISIONING_PROFILE_BASE64` | Environment secrets, `mobile-beta` | `mobile-store-release.yml` iOS archive/export/internal upload | testing only |
-| `ASC_PRIVATE_KEY_BASE64`, `STORE_METADATA_ARCHIVE_BASE64` | Environment secrets in `mobile-beta`, `mobile-external-beta`, and `mobile-production` | Mobile upload/promotion, readiness, live checks | testing and production |
+| `ASC_PRIVATE_KEY_BASE64` | Environment secret in `mobile-beta`, `mobile-external-beta`, `mobile-production`, and `desktop-production` | Mobile upload/promotion/live checks and API-key-based macOS notarization | testing and production |
+| `STORE_METADATA_ARCHIVE_BASE64` | Environment secret in `mobile-beta`, `mobile-external-beta`, and `mobile-production` | Mobile upload/promotion, readiness, live checks | testing and production |
 | `TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64`, `PLAY_CLOSED_TESTERS_BASE64` | Environment secrets, `mobile-external-beta` | External TestFlight/Play closed testing | testing only |
 | `APP_REVIEW_PHONE` | Environment secrets, `mobile-external-beta` and `mobile-production` | Beta review and App Store production review | testing and production |
 | `WINDOWS_SIGNPATH_API_TOKEN` | Environment secret, `desktop-production` (SignPath only) | `release.yml` SignPath request submission | production only |
 | `WINDOWS_SIGNPATH_ORGANIZATION_ID`, `WINDOWS_SIGNPATH_PROJECT_SLUG`, `WINDOWS_SIGNPATH_SIGNING_POLICY_SLUG`, `WINDOWS_SIGNPATH_ARTIFACT_CONFIGURATION_SLUG` | Environment variables, `desktop-production` (SignPath only) | `release.yml` SignPath request binding | production only |
 | `WINDOWS_AZURE_CLIENT_ID`, `WINDOWS_AZURE_TENANT_ID`, `WINDOWS_AZURE_SUBSCRIPTION_ID`, `WINDOWS_ARTIFACT_SIGNING_ENDPOINT`, `WINDOWS_ARTIFACT_SIGNING_ACCOUNT`, `WINDOWS_ARTIFACT_SIGNING_PROFILE` | Environment variables, `desktop-production` (Azure only) | `release.yml` OIDC/Azure Artifact Signing | production only |
 | `WINDOWS_CERTIFICATE_BASE64`, `WINDOWS_CERTIFICATE_PASSWORD` | Environment secrets, `desktop-production` (local-PFX only) | `release.yml` ephemeral PFX import/signing | production only |
-| `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_PROVISIONING_PROFILE_BASE64`, `MACOS_NOTARIZATION_APPLE_ID`, `MACOS_NOTARIZATION_PASSWORD` | Environment secrets, `desktop-production` | `release.yml` Developer ID signing/notarization | production only |
+| `MACOS_CERTIFICATE_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `MACOS_PROVISIONING_PROFILE_BASE64` | Environment secrets, `desktop-production` | `release.yml` Developer ID signing | production only |
 | `PUBLISHER_NAME`, `COPYRIGHT_HOLDER` | Repository variables derived from `PUBLISHER_NAME_EN` and `COPYRIGHT_HOLDER_EN` | Candidate, mobile, desktop, Pages, and stable-release workflows | non-secret; testing and production |
 | `ANDROID_UPLOAD_CERTIFICATE_SHA256` | Repository variable derived from the validated Android upload certificate in the supplied keystore | Candidate and mobile workflows bind an Android candidate to the registered upload identity | non-secret fingerprint; testing and production provenance |
 | `IOS_DISTRIBUTION_CERTIFICATE_SHA1` | Repository variable derived from the validated Apple Distribution P12 | Candidate and mobile workflows bind an iOS candidate to the validated distribution identity | non-secret fingerprint; testing and production provenance |
@@ -284,6 +292,7 @@ openssl base64 -A -in release/private/files/android-upload-keystore.jks | gh sec
 openssl base64 -A -in release/private/files/ios-distribution-certificate.p12 | gh secret set IOS_DISTRIBUTION_CERTIFICATE_BASE64 --env mobile-beta --repo Apdelrahman1911/passvault
 openssl base64 -A -in release/private/files/ios-provisioning-profile.mobileprovision | gh secret set IOS_PROVISIONING_PROFILE_BASE64 --env mobile-beta --repo Apdelrahman1911/passvault
 openssl base64 -A -in release/private/files/app-store-connect-key.p8 | gh secret set ASC_PRIVATE_KEY_BASE64 --env mobile-production --repo Apdelrahman1911/passvault
+openssl base64 -A -in release/private/files/app-store-connect-key.p8 | gh secret set ASC_PRIVATE_KEY_BASE64 --env desktop-production --repo Apdelrahman1911/passvault
 openssl base64 -A -in release/private/files/macos-developer-id-application.p12 | gh secret set MACOS_CERTIFICATE_BASE64 --env desktop-production --repo Apdelrahman1911/passvault
 openssl base64 -A -in release/private/files/embedded.provisionprofile | gh secret set MACOS_PROVISIONING_PROFILE_BASE64 --env desktop-production --repo Apdelrahman1911/passvault
 ```
@@ -296,17 +305,22 @@ openssl base64 -A -in release/private/files/windows-code-signing.pfx | gh secret
 
 SignPath tokens are already text; never Base64-encode them. Stream the token only through the configuration script,
 or enter it directly as the `WINDOWS_SIGNPATH_API_TOKEN` secret in Settings → Environments → `desktop-production`.
-The P8 and generated metadata archive are also needed in the beta environments; use the automated script so all
-copies, variables, fingerprints, environment branch policies, and absence checks remain consistent.
+The P8 is also needed in every mobile environment and `desktop-production`; the generated metadata archive is needed
+only in the mobile environments. Use the automated script so all copies, variables, fingerprints, environment branch
+policies, removal of retired Apple-ID notarization secrets, and absence checks remain consistent.
 
 ## Release sequence after configuration
 
 1. `Testing Candidate` builds each mobile binary once, validates it, records SHA-256 receipts, retains the exact signed
-   artifacts privately for 90 days, uploads to internal testing, and promotes the same store build externally.
-2. `Candidate Readiness` requires the exact testing commit and approved store state, then fast-forwards `release`.
+   artifacts privately for 90 days, uploads to internal testing, and promotes the same store build externally. It also
+   smoke-tests Desktop packages, freezes the Linux packages and Windows/macOS app images, and publishes their attested
+   receipt and hashes with the candidate.
+2. `Candidate Readiness` requires the exact testing commit, Desktop receipt binding, and approved store state, then
+   fast-forwards `release`.
 3. `Request Mobile Production Release` runs from `main`, validates the owner request, and hands off to the protected
    `Production Store Release` child. Approve `mobile-production`; it promotes the exact existing Store build without
    building or uploading another binary.
 4. Only when Desktop publishing is wanted, run `Production Signing Validation` from `release` and approve
-   `desktop-production`. It signs, notarizes, verifies, and freezes Desktop artifacts without affecting mobile.
+   `desktop-production`. It verifies and promotes the receipt-bound candidate inputs, signs/packages Windows and macOS,
+   passes Linux through byte-identically, and freezes the final attested bundle without affecting mobile.
 5. `Publish Stable Release` downloads and re-verifies that frozen signed Desktop bundle. It never rebuilds packages.

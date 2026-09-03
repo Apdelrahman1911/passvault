@@ -1,6 +1,6 @@
 # Testing
 
-Last reviewed: 2026-08-14
+Last reviewed: 2026-09-03
 
 Use JDK 17 and the checked-in Gradle wrapper. `gradlew test` is a repository-owned aggregate task that depends on all
 Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's ambiguous unqualified selector.
@@ -10,12 +10,15 @@ Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's amb
 ```bash
 ./gradlew test
 ./gradlew detekt
+./gradlew verifyStaticAnalysisCoverage
+./scripts/run-security-analysis.sh
 ./gradlew check
 ./gradlew check -x detekt
 ./gradlew verifyDependencies
 ./gradlew :app-android:assembleDebug
 ./gradlew :app-android:verifyDebugComposeResources
 ./gradlew :app-android:verifyAndroidApplicationIdentities
+./gradlew :app-android:verifyAndroidR8Policy
 ./gradlew :app-android:assembleRelease
 ./gradlew :app-android:lintRelease
 ./gradlew :app-desktop:compileKotlinDesktop
@@ -58,17 +61,32 @@ Run focused suites while editing, for example:
 ./gradlew :app-desktop:testDesktopBiometricBridge
 ```
 
+## Static security analysis
+
+Every aggregate Detekt task depends on `verifyStaticAnalysisCoverage`. The verifier inventories each included
+project's `src/` tree and the root Gradle scripts, enforces the reviewed per-module floors in
+`.github/security-analysis/coverage-baseline.json`, and rejects Kotlin files outside those configured roots.
+
+`scripts/run-security-analysis.sh` downloads OpenGrep 1.29.0 for the current supported host, verifies the pinned
+SHA-256 before execution, validates the local rules and their synthetic fixtures, and requires a known-bad canary to
+be detected. It then scans the exact inventoried Kotlin, Swift, native, and automation source set. Findings, analyzer
+errors, missing targets, and new parser failures all fail closed. Five current Kotlin parser limitations are accepted
+only while the affected file hashes remain unchanged; review the file and analyzer output before changing that list
+or lowering any coverage floor.
+
 ## Coverage intent
 
 - Crypto: round trip, wrong key, tamper, nonce uniqueness, KDF bounds, domain separation, cancellation, and sizes.
 - Database/repositories: real Room plus real crypto, raw-row confidentiality, locked access, relationships,
-  transactions, counts, and corrupt rows.
+  transactions, counts, corrupt rows, startup `quick_check`, WAL handling, migration failure, and byte-exact
+  non-destructive recovery with rollback.
 - Backup: round trip, wrong password, tamper/truncation/version/limits, referential integrity, preview, and rollback.
 - Presentation: validation, rapid submit, cancellation, errors, lock cleanup, filters/sort, and settings persistence.
 - Platform: clipboard ownership, lifecycle lock, screenshot flag, file pickers, focus/IME, graphical behavior, native
   biometric ABI/integrity loading, macOS metadata/path/error invariants, Windows envelope crypto/tamper,
   credential-identity and temporary-inventory invariants, prompt serialization, cancellation, and focus-lock
-  coordination.
+  coordination. iOS simulator tests also cover protected-data notification deduplication, fail-closed recovery,
+  runtime teardown ordering, Room WAL checkpoint/close, and preservation of `NSFileProtectionComplete`.
 
 Shared fakes must deep-copy sensitive arrays/models and represent failure/lock behavior. Tests should assert domain
 behavior rather than private implementation detail.
@@ -88,6 +106,17 @@ startup-verified by `:app-desktop:run`: build
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.
 
+`verifyAndroidR8Policy` ensures that the IonSpin package is the only PassVault-specific keep boundary and rejects its
+former package-wide warning suppression. It does not prove JNA linkage. Before narrowing that conservative rule, run
+the production engine's Argon2id known-answer, randomness, BLAKE2b, AEAD round-trip/tamper, vault, attachment, and backup
+paths from an installed minified Release artifact on the supported Android ABIs. A successful R8 compile or mapping
+inspection alone is not runtime evidence.
+
+Issue #132 cannot be fully runtime-verified in the simulator. On a passcode-enabled physical iPhone, exercise at
+least 20 lock/unlock cycles, including a committed write immediately before lock and forced database activity while
+locked. Confirm the privacy cover never reveals content, the app resumes without restart, the write remains durable,
+WAL growth is bounded, and Instruments shows no leaked controllers, observers, or database handles.
+
 Touch ID and Windows Hello cannot be security-validated by an unauthenticated CI runner. Follow the physical matrix
 in `DESKTOP_BIOMETRIC_UNLOCK.md` on installed signed packages. At minimum validate enable, restart unlock,
 cancellation, lockout/recovery, invalidation/reset, disable/re-enable, password change, restore, focus loss, minimize,
@@ -97,6 +126,29 @@ material is removed or replaced.
 Android `check` depends on `:app-android:verifyDebugComposeResources` and application-identity validation. The
 package check opens the generated APK and
 fails if the shared design-system Compose string bundle was not merged into Android assets.
+
+## CI trust boundary
+
+Pull-request jobs have read-only repository permissions, and every CI checkout
+uses `persist-credentials: false` before repository-controlled Gradle or scripts
+execute. Tests publish their raw HTML/JUnit output only as an `always()` artifact;
+CI does not grant a build job `checks: write` or feed PR-controlled XML to a
+privileged reporting workflow. The `Run Tests` result remains an input to the
+fail-closed `CI Gate` status. Validate this policy with
+`ruby scripts/validate-ci-workflow-security.rb`.
+
+Repository settings were inspected through the GitHub API on 2026-09-03.
+`main` and `testing` required strict, GitHub-Actions-owned
+`Validate Gradle Wrapper` and `Run Tests` checks plus one approving review;
+`release` required neither status checks nor reviews. This differs from
+`scripts/configure-release-branches.sh`, which declares `CI Gate` as the
+intended required check. Treat that difference as externally managed
+configuration drift; reviewing this file does not prove that the settings
+still match, and changing them requires repository-owner authorization.
+
+Dependabot vulnerability alerts are enabled, but GitHub secret scanning, push protection, and Dependabot security
+updates were disabled at that inspection. The in-repository OpenGrep gate is complementary and does not substitute
+for enabling those repository controls.
 
 These limits must remain explicit in the audit ledger.
 

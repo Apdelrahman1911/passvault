@@ -48,6 +48,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -66,6 +67,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -671,6 +673,114 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
 
 }
 
+class VaultMasterPasswordMatcherIntegrationTest : RepositorySecurityIntegrationFixture() {
+
+    @Test
+    fun `master password matcher is exact and unavailable while locked`() = runTest {
+        createAndUnlockVault()
+        val currentPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val distinctPassword = SensitiveText.from(TEST_MASTER_PASSWORD.dropLast(1) + "!")
+
+        try {
+            assertTrue(vaultRepository.matchesMasterPassword(currentPassword))
+            assertFalse(vaultRepository.matchesMasterPassword(distinctPassword))
+            assertTrue(vaultRepository.lock().isSuccess)
+            assertFailsWith<VaultSessionLockedException> {
+                vaultRepository.matchesMasterPassword(currentPassword)
+            }
+        } finally {
+            currentPassword.clear()
+            distinctPassword.clear()
+        }
+    }
+
+    @Test
+    fun `master password matcher clears candidate derivation material`() = runTest {
+        val engine = PasswordMatchWipeRecordingCryptoEngine(DesktopCryptoEngine())
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val currentPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val wrongPassword = SensitiveText.from(TEST_MASTER_PASSWORD.dropLast(1) + "!")
+
+        try {
+            assertTrue(repository.create(currentPassword).isSuccess)
+            assertTrue(repository.unlock(currentPassword).isSuccess)
+
+            engine.captureNextMatch()
+            assertTrue(repository.matchesMasterPassword(currentPassword))
+            engine.assertCapturedMaterialCleared(expectUnwrappedKey = true)
+            assertEquals(1, engine.constantTimeComparisonCount)
+
+            engine.captureNextMatch()
+            assertFalse(repository.matchesMasterPassword(wrongPassword))
+            engine.assertCapturedMaterialCleared(expectUnwrappedKey = false)
+        } finally {
+            repository.lock()
+            currentPassword.clear()
+            wrongPassword.clear()
+        }
+    }
+
+    @Test
+    fun `cancelling master password matching releases its session lease`() = runTest {
+        val engine = GatedUnlockCryptoEngine(DesktopCryptoEngine())
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val matching = async { repository.matchesMasterPassword(password) }
+            gate.started.await()
+
+            matching.cancelAndJoin()
+
+            assertTrue(matching.isCancelled)
+            assertTrue(repository.isUnlocked())
+            assertTrue(repository.lock().isSuccess)
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `master password matcher propagates non authentication crypto failures`() = runTest {
+        val engine = PasswordMatchFailureCryptoEngine(DesktopCryptoEngine())
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            engine.failNextPasswordDerivation()
+
+            assertFailsWith<IllegalStateException> {
+                repository.matchesMasterPassword(password)
+            }
+            engine.failNextVaultKeyUnwrap()
+            assertFailsWith<IllegalStateException> {
+                repository.matchesMasterPassword(password)
+            }
+            assertTrue(repository.isUnlocked())
+        } finally {
+            repository.lock()
+            password.clear()
+        }
+    }
+}
+
 class RepositoryMutationIntegrityIntegrationTest : RepositorySecurityIntegrationFixture() {
 
     @Test
@@ -761,6 +871,44 @@ class RepositoryMetadataSecurityIntegrationTest : RepositorySecurityIntegrationF
             assertFalse(vaultRepository.isUnlocked())
         } finally {
             password.clear()
+        }
+    }
+
+    @Test
+    fun `unlock validates untrusted metadata before password derivation and keeps failures opaque`() = runTest {
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val wrongPassword = SensitiveText.from("definitely not the master password")
+
+        try {
+            assertTrue(vaultRepository.create(password).isSuccess)
+            val metadata = requireNotNull(database.vaultMetadataDao().get())
+            val countingEngine = DerivationCountingCryptoEngine(cryptoEngine)
+            val repository = VaultRepositoryImpl(
+                vaultMetadataDao = database.vaultMetadataDao(),
+                cryptoEngine = countingEngine,
+                keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(countingEngine),
+            )
+
+            database.vaultMetadataDao().update(metadata.copy(argon2MemLimit = Int.MAX_VALUE))
+            val malformedResult = repository.unlock(password)
+            assertTrue(malformedResult.isFailure)
+            assertEquals("Unable to unlock vault", malformedResult.exceptionOrNull()?.message)
+            assertEquals(0, countingEngine.deriveKeyCalls)
+
+            database.vaultMetadataDao().update(metadata)
+            val wrongPasswordResult = repository.unlock(wrongPassword)
+            assertTrue(wrongPasswordResult.isFailure)
+            assertEquals("Unable to unlock vault", wrongPasswordResult.exceptionOrNull()?.message)
+            assertEquals(1, countingEngine.deriveKeyCalls)
+
+            database.vaultBackupDao().deleteVaultMetadata()
+            val missingResult = repository.unlock(password)
+            assertTrue(missingResult.isFailure)
+            assertEquals("Unable to unlock vault", missingResult.exceptionOrNull()?.message)
+            assertEquals(1, countingEngine.deriveKeyCalls)
+        } finally {
+            password.clear()
+            wrongPassword.clear()
         }
     }
 
@@ -916,15 +1064,19 @@ class RepositoryTotpSecurityIntegrationTest : RepositorySecurityIntegrationFixtu
             assertTrue(credentialRepository.save(withTotp).isSuccess)
             assertTrue(credentialRepository.save(withoutTotp).isSuccess)
 
-            val input = credentialRepository.getCredentialsForTotpDisplay().getOrThrow().single()
-            assertEquals(withTotp.id, input.id)
-            assertEquals("GitHub", input.title)
-            assertEquals("alice@example.com", input.displayUsername)
-            assertEquals(TEST_TOTP_SECRET, input.configuration.secret.toStringUnsafe())
-            assertEquals("Example", input.configuration.issuer)
-
-            input.clear()
-            assertTrue(input.configuration.secret.toStringUnsafe().all { it == '\u0000' })
+            val lease = credentialRepository.getCredentialsForTotpDisplay().getOrThrow()
+            val inputs = assertNotNull(lease.take())
+            try {
+                val input = inputs.single()
+                assertEquals(withTotp.id, input.id)
+                assertEquals("GitHub", input.title)
+                assertEquals("alice@example.com", input.displayUsername)
+                assertEquals(TEST_TOTP_SECRET, input.configuration.secret.toStringUnsafe())
+                assertEquals("Example", input.configuration.issuer)
+            } finally {
+                inputs.forEach { it.clear() }
+            }
+            assertTrue(inputs.single().configuration.secret.toStringUnsafe().all { it == '\u0000' })
         } finally {
             withTotp.clearSensitiveValuesForTest()
             withoutTotp.clearSensitiveValuesForTest()
@@ -1338,6 +1490,22 @@ class VaultUnlockPreemptionIntegrationTest : RepositorySecurityIntegrationFixtur
 
 class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
     @Test
+    fun `biometric status reconciles surviving platform items when no vault exists`() = runTest {
+        val keyStore = InMemoryBiometricKeyStore()
+        val service = DefaultBiometricUnlockService(
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            keyStore = keyStore,
+            cryptoEngine = cryptoEngine,
+        )
+
+        val status = service.getStatus()
+
+        assertFalse(status.isEnabled)
+        assertEquals(listOf<String?>(null), keyStore.reconciledVaultIds)
+    }
+
+    @Test
     fun `biometric key opens a session only after vault verification succeeds`() = runTest {
         createAndUnlockVault()
         val vaultKey = vaultRepository.withUnlockedSession { it.copyOf() }
@@ -1746,6 +1914,138 @@ class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
     }
 }
 
+private class PasswordMatchWipeRecordingCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    private var captureMatch = false
+    private var passwordBytes: ByteArray? = null
+    private var derivedKeyBytes: ByteArray? = null
+    private var derivedSaltBytes: ByteArray? = null
+    private var unwrappedVek: ByteArray? = null
+    var constantTimeComparisonCount = 0
+        private set
+
+    fun captureNextMatch() {
+        captureMatch = true
+        passwordBytes = null
+        derivedKeyBytes = null
+        derivedSaltBytes = null
+        unwrappedVek = null
+        constantTimeComparisonCount = 0
+    }
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        if (captureMatch) passwordBytes = password
+        return delegate.deriveKey(password, salt, opsLimit, memLimit).also { result ->
+            if (captureMatch) {
+                result.getOrNull()?.let { derived ->
+                    derivedKeyBytes = derived.key
+                    derivedSaltBytes = derived.salt
+                }
+            }
+        }
+    }
+
+    override suspend fun decrypt(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): Result<ByteArray> = delegate.decrypt(ciphertext, nonce, key, associatedData).also { result ->
+        if (captureMatch && associatedData?.contentEquals(VEK_WRAP_ASSOCIATED_DATA) == true) {
+            unwrappedVek = result.getOrNull()
+            captureMatch = false
+        }
+    }
+
+    override suspend fun constantTimeEquals(a: ByteArray, b: ByteArray): Boolean {
+        constantTimeComparisonCount++
+        return delegate.constantTimeEquals(a, b)
+    }
+
+    fun assertCapturedMaterialCleared(expectUnwrappedKey: Boolean) {
+        assertTrue(requireNotNull(passwordBytes).all { it == 0.toByte() })
+        assertTrue(requireNotNull(derivedKeyBytes).all { it == 0.toByte() })
+        assertTrue(requireNotNull(derivedSaltBytes).all { it == 0.toByte() })
+        if (expectUnwrappedKey) {
+            assertTrue(requireNotNull(unwrappedVek).all { it == 0.toByte() })
+        } else {
+            assertNull(unwrappedVek)
+        }
+    }
+
+    private companion object {
+        val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
+    }
+}
+
+private class PasswordMatchFailureCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    private var failNextDerivation = false
+    private var failNextUnwrap = false
+
+    fun failNextPasswordDerivation() {
+        failNextDerivation = true
+    }
+
+    fun failNextVaultKeyUnwrap() {
+        failNextUnwrap = true
+    }
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        if (failNextDerivation) {
+            failNextDerivation = false
+            return Result.failure(IllegalStateException("simulated KDF failure"))
+        }
+        return delegate.deriveKey(password, salt, opsLimit, memLimit)
+    }
+
+    override suspend fun decrypt(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): Result<ByteArray> {
+        if (failNextUnwrap && associatedData?.contentEquals(VEK_WRAP_ASSOCIATED_DATA) == true) {
+            failNextUnwrap = false
+            return Result.failure(IllegalStateException("simulated VEK unwrap failure"))
+        }
+        return delegate.decrypt(ciphertext, nonce, key, associatedData)
+    }
+
+    private companion object {
+        val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
+    }
+}
+
+private class DerivationCountingCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    var deriveKeyCalls = 0
+        private set
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        deriveKeyCalls++
+        return delegate.deriveKey(password, salt, opsLimit, memLimit)
+    }
+}
+
 private class GatedUnlockCryptoEngine(
     private val delegate: CryptoEngine,
 ) : CryptoEngine by delegate {
@@ -2022,6 +2322,7 @@ abstract class RepositorySecurityIntegrationFixture {
 
     protected class InMemoryBiometricKeyStore : BiometricKeyStore {
         private var key: ByteArray? = null
+        val reconciledVaultIds = mutableListOf<String?>()
 
         override suspend fun getCapability(): BiometricCapability = BiometricCapability(
             type = BiometricType.GENERIC,
@@ -2042,6 +2343,11 @@ abstract class RepositorySecurityIntegrationFixture {
 
         override suspend fun delete(vaultId: String): Result<Unit> {
             clear()
+            return Result.success(Unit)
+        }
+
+        override suspend fun reconcile(activeVaultId: String?): Result<Unit> {
+            reconciledVaultIds += activeVaultId
             return Result.success(Unit)
         }
 

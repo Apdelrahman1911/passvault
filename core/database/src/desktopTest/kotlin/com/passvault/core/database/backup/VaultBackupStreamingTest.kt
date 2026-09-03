@@ -2,28 +2,41 @@ package com.passvault.core.database.backup
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
 import com.passvault.core.database.attachment.AttachmentBlobStore
+import com.passvault.core.database.attachment.AttachmentLifecycleManager
 import com.passvault.core.database.attachment.AttachmentRepositoryImpl
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
+import com.passvault.core.database.attachment.attachmentFilenameAssociatedData
+import com.passvault.core.database.dao.VaultBackupDao
+import com.passvault.core.database.dao.VaultBackupEntities
+import com.passvault.core.database.entity.AttachmentRecordEntity
+import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
+import com.passvault.core.database.repository.VaultSessionManager
 import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.model.PasswordHealth
+import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.repository.AttachmentContentSink
 import com.passvault.core.domain.repository.AttachmentContentSource
+import com.passvault.core.domain.repository.AttachmentCountLimitException
+import com.passvault.core.domain.repository.AttachmentPolicy
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
 import java.io.IOException
@@ -44,6 +57,7 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -176,6 +190,143 @@ class VaultBackupStreamingTest {
     }
 
     @Test
+    fun `backup creation rejects the current master password before writing`() = runTest {
+        val reusedPasswordPath = storageRoot.resolve("reused-master-password.pvault")
+        val sink = PathBackupSink(reusedPasswordPath)
+
+        val result = withMasterPassword { password ->
+            backupService.createBackup(password, sink)
+        }
+        val legacyResult = withMasterPassword { password ->
+            backupService.createBackup(password)
+        }
+
+        assertIs<BackupPasswordReusesMasterPasswordException>(result.exceptionOrNull())
+        assertIs<BackupPasswordReusesMasterPasswordException>(legacyResult.exceptionOrNull())
+        assertTrue(sink.aborted)
+        assertFalse(sink.committed)
+        assertFalse(Files.exists(reusedPasswordPath))
+    }
+
+    @Test
+    fun `backup creation accepts a distinct password with the same length`() = runTest {
+        val distinctPassword = MASTER_PASSWORD.dropLast(1) + "!"
+        assertEquals(MASTER_PASSWORD.length, distinctPassword.length)
+        assertEquals(
+            PasswordStrengthEvaluator.score(MASTER_PASSWORD),
+            PasswordStrengthEvaluator.score(distinctPassword),
+        )
+        val sink = PathBackupSink(backupPath)
+
+        withPassword(distinctPassword) { password ->
+            backupService.createBackup(password, sink).getOrThrow()
+        }
+
+        assertTrue(sink.committed)
+        assertFalse(sink.aborted)
+        assertTrue(Files.size(backupPath) > attachmentContent.size)
+    }
+
+    @Test
+    fun `backup creation fails closed when master password verification is unavailable`() = runTest {
+        val unavailableSessionManager = object : VaultSessionManager by vaultRepository {
+            override suspend fun matchesMasterPassword(candidate: SensitiveText): Boolean {
+                throw IllegalStateException("master password verification unavailable")
+            }
+        }
+        val unavailableService = VaultBackupService(
+            backupDao = database.vaultBackupDao(),
+            database = database,
+            cryptoEngine = cryptoEngine,
+            vaultRepository = vaultRepository,
+            sessionManager = unavailableSessionManager,
+            attachmentBlobStore = blobStore,
+            attachmentLifecycleManager = attachmentRepository,
+        )
+        val failedPath = storageRoot.resolve("unavailable-password-verification.pvault")
+        val sink = PathBackupSink(failedPath)
+
+        val result = withBackupPassword { password ->
+            unavailableService.createBackup(password, sink)
+        }
+        val legacyResult = withBackupPassword { password ->
+            unavailableService.createBackup(password)
+        }
+
+        assertTrue(result.isFailure)
+        assertTrue(legacyResult.isFailure)
+        assertTrue(sink.aborted)
+        assertFalse(sink.committed)
+        assertFalse(Files.exists(failedPath))
+    }
+
+    @Test
+    fun `v2 export derives entry count from its transactional manifest`() = runTest {
+        val metadataDao = database.vaultMetadataDao()
+        metadataDao.update(requireNotNull(metadataDao.get()).copy(entryCount = 7))
+        val sink = PathBackupSink(backupPath)
+
+        withBackupPassword { password ->
+            val created = backupService.createBackup(password, sink).getOrThrow()
+            val inspected = backupService.inspectBackup(PathBackupSource(backupPath), password).getOrThrow()
+
+            assertEquals(1, created.credentialCount)
+            assertEquals(1, inspected.credentialCount)
+        }
+        assertTrue(sink.committed)
+        assertFalse(sink.aborted)
+        assertEquals(7, metadataDao.get()?.entryCount)
+    }
+
+    @Test
+    fun `over quota legacy vault remains loadable and exportable while new imports stay blocked`() = runTest {
+        val attachmentDao = database.attachmentDao()
+        val original = attachmentDao.getByCredential(credentialId.value).single()
+        blobStore.delete(original.storagePath)
+        attachmentDao.update(
+            original.copy(
+                sizeBytes = AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES,
+                contentFormatVersion = 0,
+                storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+            ),
+        )
+        repeat(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL) { index ->
+            insertLegacyAttachment(index + 1)
+        }
+
+        assertEquals(
+            AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1,
+            attachmentDao.getOccupiedSlotCount(credentialId.value),
+        )
+        assertEquals(0, attachmentDao.getManagedSizeBytes(credentialId.value))
+        assertLegacyAttachmentCount(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1)
+        assertIs<AttachmentCountLimitException>(
+            attachmentRepository.import(
+                credentialId,
+                ByteArrayAttachmentSource("blocked.bin", byteArrayOf(1)),
+            ).exceptionOrNull(),
+        )
+
+        withBackupPassword { password ->
+            val created = backupService.createBackup(password, PathBackupSink(backupPath)).getOrThrow()
+            assertEquals(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1, created.attachmentCount)
+            val inspected = backupService.inspectBackup(PathBackupSource(backupPath), password).getOrThrow()
+            assertEquals(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1, inspected.attachmentCount)
+            val restored = backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+            assertEquals(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1, restored.attachmentCount)
+        }
+
+        unlockExistingVault()
+        assertLegacyAttachmentCount(AttachmentPolicy.MAX_ATTACHMENTS_PER_CREDENTIAL + 1)
+        assertIs<AttachmentCountLimitException>(
+            attachmentRepository.import(
+                credentialId,
+                ByteArrayAttachmentSource("still-blocked.bin", byteArrayOf(2)),
+            ).exceptionOrNull(),
+        )
+    }
+
+    @Test
     fun `restore rejects insufficient capacity before staging any attachment`() = runTest {
         createBackup()
         val originalObjectPaths = objectPaths()
@@ -193,6 +344,143 @@ class VaultBackupStreamingTest {
         assertEquals(0, blobStore.writeCalls)
         assertActiveVaultUnchanged(originalObjectPaths)
         assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+    }
+
+    @Test
+    fun `repeated legacy restores remove retired objects inside the attachment stability scope`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val lifecycleManager = TrackingAttachmentLifecycleManager(attachmentRepository)
+        val scopedService = createBackupService(attachmentLifecycleManager = lifecycleManager)
+        val cleanupScopes = mutableListOf<Boolean>()
+        blobStore.onCleanup = { cleanupScopes += lifecycleManager.inStableScope }
+        try {
+            repeat(3) { restoreIndex ->
+                if (restoreIndex > 0) {
+                    unlockExistingVault()
+                    attachmentRepository.import(
+                        credentialId,
+                        ByteArrayAttachmentSource("evidence-$restoreIndex.bin", attachmentContent),
+                    ).getOrThrow()
+                }
+                assertTrue(database.attachmentDao().getByCredential(credentialId.value).isNotEmpty())
+                assertTrue(objectPaths().isNotEmpty())
+
+                withBackupPassword { password ->
+                    scopedService.restoreBackup(legacyBackup, password).getOrThrow()
+                }
+
+                assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+                assertTrue(objectPaths().isEmpty())
+                assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+            }
+            assertEquals(listOf(true, true, true), cleanupScopes)
+        } finally {
+            blobStore.onCleanup = null
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `failed legacy Room replacement preserves attachment rows and objects`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val expectedObjectPaths = objectPaths()
+        val failingService = createBackupService(
+            backupDao = TransactionFailingBackupDao(database.vaultBackupDao()),
+        )
+        blobStore.resetCleanupTracking()
+        try {
+            withBackupPassword { password ->
+                assertTrue(failingService.restoreBackup(legacyBackup, password).isFailure)
+            }
+
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isNotEmpty())
+            assertEquals(expectedObjectPaths, objectPaths())
+            assertEquals(0, blobStore.cleanupCalls)
+        } finally {
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `cancellation after legacy commit cannot skip object cleanup`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val cleanupStarted = CompletableDeferred<Unit>()
+        val allowCleanup = CompletableDeferred<Unit>()
+        blobStore.resetCleanupTracking()
+        blobStore.cleanupStarted = cleanupStarted
+        blobStore.allowCleanup = allowCleanup
+        val restore = async {
+            withBackupPassword { password ->
+                backupService.restoreBackup(legacyBackup, password)
+            }
+        }
+        try {
+            cleanupStarted.await()
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+            assertTrue(objectPaths().isNotEmpty())
+
+            restore.cancel()
+            allowCleanup.complete(Unit)
+            restore.join()
+
+            assertTrue(restore.isCancelled)
+            assertEquals(1, blobStore.cleanupCalls)
+            assertTrue(objectPaths().isEmpty())
+            assertDirectoryEmpty(storageRoot.resolve("vault-files/staging"))
+        } finally {
+            allowCleanup.complete(Unit)
+            restore.cancelAndJoin()
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `legacy cleanup failure preserves restore success and surfaces a warning`() = runTest {
+        val legacyBackup = withBackupPassword { password ->
+            backupService.createBackup(password).getOrThrow()
+        }
+        val expectedObjectPaths = objectPaths()
+        blobStore.resetCleanupTracking()
+        blobStore.cleanupFailure = IOException("simulated cleanup failure")
+        try {
+            val restored = withBackupPassword { password ->
+                backupService.restoreBackup(legacyBackup, password).getOrThrow()
+            }
+
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+            assertEquals(expectedObjectPaths, objectPaths())
+            assertEquals(1, blobStore.cleanupCalls)
+            assertTrue(
+                VaultBackupService.BackupWarning.OBSOLETE_ATTACHMENT_CLEANUP_FAILED in restored.warnings,
+            )
+        } finally {
+            blobStore.cleanupFailure = null
+            cryptoEngine.secureWipe(legacyBackup)
+        }
+    }
+
+    @Test
+    fun `v2 restore retains only objects referenced by committed rows`() = runTest {
+        createBackup()
+        val originalPath = database.attachmentDao().getByCredential(credentialId.value).single().storagePath
+        blobStore.resetCleanupTracking()
+
+        withBackupPassword { password ->
+            backupService.restoreBackup(PathBackupSource(backupPath), password).getOrThrow()
+        }
+
+        val restoredPath = database.attachmentDao().getByCredential(credentialId.value).single().storagePath
+        assertNotEquals(originalPath, restoredPath)
+        assertFalse(blobStore.exists(originalPath))
+        assertTrue(blobStore.exists(restoredPath))
+        assertEquals(setOf(restoredPath.substringAfterLast('/')), objectPaths())
+        assertEquals(1, blobStore.cleanupCalls)
     }
 
     @Test
@@ -348,6 +636,38 @@ class VaultBackupStreamingTest {
 
         val result = withBackupPassword { password -> backupService.createBackup(password, sink) }
 
+        assertTrue(result.isFailure)
+        assertFalse(sink.committed)
+        assertTrue(sink.aborted)
+        assertFalse(Files.exists(backupPath))
+    }
+
+    @Test
+    fun `export aborts if object bytes change after inner verification`() = runTest {
+        val entity = database.attachmentDao().getByCredential(credentialId.value).single()
+        val objectPath = storageRoot.resolve("vault-files").resolve(entity.storagePath)
+        val sink = PathBackupSink(backupPath)
+        var mutationApplied = false
+        blobStore.resetWriteTracking()
+        blobStore.afterReadCall = 2
+        blobStore.onAfterRead = {
+            Files.newByteChannel(objectPath, StandardOpenOption.READ, StandardOpenOption.WRITE).use { channel ->
+                channel.position(16)
+                val value = java.nio.ByteBuffer.allocate(1)
+                channel.read(value)
+                value.flip()
+                value.put(0, (value.get(0).toInt() xor 1).toByte())
+                channel.position(16)
+                channel.write(value)
+            }
+            mutationApplied = true
+        }
+
+        val result = withBackupPassword { password ->
+            backupService.createBackup(password, sink)
+        }
+
+        assertTrue(mutationApplied)
         assertTrue(result.isFailure)
         assertFalse(sink.committed)
         assertTrue(sink.aborted)
@@ -573,7 +893,7 @@ class VaultBackupStreamingTest {
             blobStore = blobStore,
             attachmentLifecycleManager = attachmentRepository,
             newValidator = backupService::newStreamValidator,
-            activateRestore = { replaceVault ->
+            activateRestore = { _, replaceVault ->
                 replaceVault()
                 transactionCommitted.complete(Unit)
                 awaitCancellation()
@@ -635,6 +955,61 @@ class VaultBackupStreamingTest {
     }
 
     @Test
+    fun `stream validator still rejects a mismatched imported entry count`() = runTest {
+        val metadata = requireNotNull(database.vaultMetadataDao().get())
+        val validator = backupService.newStreamValidator(
+            BackupStreamManifest(
+                credentialCount = 0,
+                folderCount = 0,
+                tagCount = 0,
+                credentialFolderReferenceCount = 0,
+                credentialTagReferenceCount = 0,
+                attachmentCount = 0,
+                managedAttachmentCount = 0,
+                passwordHistoryCount = 0,
+                managedAttachmentObjectBytes = 0L,
+            ),
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validator.accept(BackupMetadataValue.Metadata(metadata))
+        }
+    }
+
+    @Test
+    fun `stream validator rejects identifier text beyond its retained byte budget`() {
+        val validator = backupService.newStreamValidator(
+            manifest = BackupStreamManifest(
+                credentialCount = 0,
+                folderCount = 0,
+                tagCount = 1,
+                credentialFolderReferenceCount = 0,
+                credentialTagReferenceCount = 0,
+                attachmentCount = 0,
+                managedAttachmentCount = 0,
+                passwordHistoryCount = 0,
+                managedAttachmentObjectBytes = 0L,
+            ),
+            retainedIdentifierBytes = 3L,
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validator.accept(
+                BackupMetadataValue.Tag(
+                    TagRecordEntity(
+                        id = "four",
+                        nameHash = ByteArray(0),
+                        encryptedPayload = ByteArray(0),
+                        payloadNonce = ByteArray(0),
+                        color = null,
+                        createdAt = 0L,
+                    ),
+                ),
+            )
+        }
+    }
+
+    @Test
     fun `stream manifest rejects a managed attachment without object bytes`() {
         assertFails {
             backupService.newStreamValidator(
@@ -673,6 +1048,19 @@ class VaultBackupStreamingTest {
         }
     }
 
+    private fun createBackupService(
+        backupDao: VaultBackupDao = database.vaultBackupDao(),
+        attachmentLifecycleManager: AttachmentLifecycleManager = attachmentRepository,
+    ) = VaultBackupService(
+        backupDao = backupDao,
+        database = database,
+        cryptoEngine = cryptoEngine,
+        vaultRepository = vaultRepository,
+        sessionManager = vaultRepository,
+        attachmentBlobStore = blobStore,
+        attachmentLifecycleManager = attachmentLifecycleManager,
+    )
+
     private suspend fun rewriteBackupManifest(
         transform: (BackupStreamManifest) -> BackupStreamManifest,
     ) {
@@ -685,28 +1073,17 @@ class VaultBackupStreamingTest {
             val writer = BackupV2Writer.create(sink, password, cryptoEngine)
             var committed = false
             try {
-                val manifestRecord = reader.readRecord(
-                    BackupEntityBinaryCodec.maximumPlaintextBytes(BackupRecordType.MANIFEST),
-                )
-                require(manifestRecord.type == BackupRecordType.MANIFEST)
-                val rewrittenManifest = BackupEntityBinaryCodec.encodeManifest(
-                    transform(BackupEntityBinaryCodec.decodeManifest(manifestRecord.plaintext)),
-                )
+                val manifestRecord = reader.readRecord(BackupRecordType.MANIFEST)
+                val originalManifest = BackupEntityBinaryCodec.decodeManifest(manifestRecord.plaintext)
+                val rewrittenManifest = BackupEntityBinaryCodec.encodeManifest(transform(originalManifest))
                 try {
                     writer.writeRecord(BackupRecordType.MANIFEST, rewrittenManifest)
                 } finally {
                     cryptoEngine.secureWipe(manifestRecord.plaintext)
                     cryptoEngine.secureWipe(rewrittenManifest)
                 }
-                while (true) {
-                    val record = reader.readRecord(BackupLimits.MAX_ENTITY_RECORD_BYTES)
-                    try {
-                        writer.writeRecord(record.type, record.plaintext)
-                    } finally {
-                        cryptoEngine.secureWipe(record.plaintext)
-                    }
-                    if (record.type == BackupRecordType.FINAL) break
-                }
+
+                copyBackupBody(reader, writer, originalManifest)
                 reader.requireExhausted()
                 sink.commit()
                 committed = true
@@ -717,6 +1094,83 @@ class VaultBackupStreamingTest {
             }
         }
         Files.move(rewrittenPath, backupPath, StandardCopyOption.REPLACE_EXISTING)
+    }
+
+    private suspend fun copyBackupBody(
+        reader: BackupV2Reader,
+        writer: BackupV2Writer,
+        manifest: BackupStreamManifest,
+    ) {
+        copyRecords(reader, writer, BackupRecordType.METADATA, 1)
+        copyRecords(reader, writer, BackupRecordType.FOLDER, manifest.folderCount)
+        copyRecords(reader, writer, BackupRecordType.TAG, manifest.tagCount)
+        copyRecords(reader, writer, BackupRecordType.CREDENTIAL, manifest.credentialCount)
+        copyRecords(
+            reader,
+            writer,
+            BackupRecordType.CREDENTIAL_FOLDER_REFERENCE,
+            manifest.credentialFolderReferenceCount,
+        )
+        copyRecords(
+            reader,
+            writer,
+            BackupRecordType.CREDENTIAL_TAG_REFERENCE,
+            manifest.credentialTagReferenceCount,
+        )
+        copyRecords(reader, writer, BackupRecordType.ATTACHMENT, manifest.attachmentCount)
+        copyRecords(reader, writer, BackupRecordType.PASSWORD_HISTORY, manifest.passwordHistoryCount)
+        copyRecord(reader, writer, BackupRecordType.METADATA_END)
+        repeat(manifest.managedAttachmentCount) { copyAttachmentRecords(reader, writer) }
+        copyRecord(reader, writer, BackupRecordType.FINAL)
+    }
+
+    private suspend fun copyAttachmentRecords(reader: BackupV2Reader, writer: BackupV2Writer) {
+        var encryptedObjectBytes = 0L
+        copyRecord(reader, writer, BackupRecordType.ATTACHMENT_START) { plaintext ->
+            encryptedObjectBytes = readAttachmentObjectBytes(plaintext)
+        }
+        val budget = AttachmentContentRecordBudget(encryptedObjectBytes)
+        while (!budget.isComplete) {
+            budget.requireRecordAvailable()
+            copyRecord(reader, writer, BackupRecordType.ATTACHMENT_CONTENT) { plaintext ->
+                budget.accept(plaintext.size)
+            }
+        }
+        copyRecord(reader, writer, BackupRecordType.ATTACHMENT_END)
+    }
+
+    private suspend fun copyRecords(
+        reader: BackupV2Reader,
+        writer: BackupV2Writer,
+        type: Int,
+        count: Int,
+    ) {
+        repeat(count) { copyRecord(reader, writer, type) }
+    }
+
+    private suspend fun copyRecord(
+        reader: BackupV2Reader,
+        writer: BackupV2Writer,
+        type: Int,
+        inspect: (ByteArray) -> Unit = {},
+    ) {
+        val record = reader.readRecord(type)
+        try {
+            inspect(record.plaintext)
+            writer.writeRecord(type, record.plaintext)
+        } finally {
+            cryptoEngine.secureWipe(record.plaintext)
+        }
+    }
+
+    private fun readAttachmentObjectBytes(plaintext: ByteArray): Long {
+        val source = Buffer().write(plaintext)
+        val identifierBytes = source.readInt()
+        require(identifierBytes in 1..MAX_BACKUP_IDENTIFIER_UTF8_BYTES)
+        source.skip(identifierBytes.toLong())
+        val objectBytes = source.readLong()
+        require(objectBytes > 0L && source.exhausted())
+        return objectBytes
     }
 
     private fun createTrackingBlobStore() = TrackingAttachmentBlobStore(
@@ -738,6 +1192,59 @@ class VaultBackupStreamingTest {
         val credential = sampleCredential(title)
         try {
             credentialRepository.save(credential).getOrThrow()
+        } finally {
+            credential.clearSensitiveValues()
+        }
+    }
+
+    private suspend fun insertLegacyAttachment(index: Int) {
+        val attachmentId = "legacy-attachment-$index"
+        val keyContext = "legacy-context-$index"
+        val plaintext = "legacy-$index.bin".encodeToByteArray()
+        val associatedData = attachmentFilenameAssociatedData(attachmentId, credentialId.value)
+        val vek = vaultRepository.withUnlockedSession { it.copyOf() }
+        var key: ByteArray? = null
+        try {
+            key = cryptoEngine.deriveSubkey(vek, "attachment:$keyContext", 32).getOrThrow()
+            val encrypted = PaddedPayload.encrypt(
+                cryptoEngine = cryptoEngine,
+                plaintext = plaintext,
+                key = key,
+                associatedData = associatedData,
+                maxPlaintextBytes = AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
+            ).getOrThrow()
+            try {
+                database.attachmentDao().insert(
+                    AttachmentRecordEntity(
+                        id = attachmentId,
+                        credentialId = credentialId.value,
+                        encryptedFilename = CryptoEnvelope.encode(encrypted),
+                        filenameNonce = encrypted.nonce.copyOf(),
+                        mimeType = "application/octet-stream",
+                        sizeBytes = 1,
+                        storagePath = "attachments/legacy-$index.enc",
+                        keyDerivationContext = keyContext,
+                        createdAt = index.toLong(),
+                        contentFormatVersion = 0,
+                        storageState = AttachmentRecordEntity.STORAGE_STATE_LEGACY,
+                    ),
+                )
+            } finally {
+                encrypted.clear()
+            }
+        } finally {
+            cryptoEngine.secureWipe(plaintext)
+            cryptoEngine.secureWipe(associatedData)
+            key?.let(cryptoEngine::secureWipe)
+            cryptoEngine.secureWipe(vek)
+        }
+    }
+
+    private suspend fun assertLegacyAttachmentCount(expected: Int) {
+        val credential = assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+        try {
+            assertEquals(expected, credential.attachments.size)
+            assertTrue(credential.attachments.all { it.availability == AttachmentAvailability.LEGACY_METADATA_ONLY })
         } finally {
             credential.clearSensitiveValues()
         }
@@ -1034,6 +1541,34 @@ class VaultBackupStreamingTest {
         }
     }
 
+    private class TransactionFailingBackupDao(
+        private val delegate: VaultBackupDao,
+    ) : VaultBackupDao by delegate {
+        override suspend fun replaceVault(snapshot: VaultBackupEntities) {
+            delegate.replaceVault(
+                snapshot.copy(credentials = snapshot.credentials + snapshot.credentials.single()),
+            )
+        }
+    }
+
+    private class TrackingAttachmentLifecycleManager(
+        private val delegate: AttachmentLifecycleManager,
+    ) : AttachmentLifecycleManager by delegate {
+        var inStableScope = false
+            private set
+
+        override suspend fun <T> withStableAttachments(block: suspend () -> T): T =
+            delegate.withStableAttachments {
+                check(!inStableScope)
+                inStableScope = true
+                try {
+                    block()
+                } finally {
+                    inStableScope = false
+                }
+            }
+    }
+
     private class TrackingAttachmentBlobStore(
         private val delegate: AttachmentBlobStore,
     ) : AttachmentBlobStore {
@@ -1045,6 +1580,14 @@ class VaultBackupStreamingTest {
         var publishedWrite: CompletableDeferred<Unit>? = null
         var adjustSizeOnReadCall: Int? = null
         var reportedSizeAdjustment = 0L
+        var afterReadCall: Int? = null
+        var onAfterRead: (() -> Unit)? = null
+        var cleanupCalls = 0
+            private set
+        var cleanupFailure: Exception? = null
+        var cleanupStarted: CompletableDeferred<Unit>? = null
+        var allowCleanup: CompletableDeferred<Unit>? = null
+        var onCleanup: (() -> Unit)? = null
         private var readCalls = 0
 
         override suspend fun availableBytes(): Long? = delegate.availableBytes()
@@ -1076,18 +1619,34 @@ class VaultBackupStreamingTest {
         ): T {
             readCalls++
             val call = readCalls
-            return delegate.read(relativePath, maxBytes) { source, size ->
+            val result = delegate.read(relativePath, maxBytes) { source, size ->
                 val reportedSize = if (call == adjustSizeOnReadCall) size + reportedSizeAdjustment else size
                 reader(source, reportedSize)
             }
+            if (call == afterReadCall) onAfterRead?.invoke()
+            return result
         }
 
         override suspend fun delete(relativePath: String) = delegate.delete(relativePath)
 
         override suspend fun exists(relativePath: String): Boolean = delegate.exists(relativePath)
 
-        override suspend fun removeUnreferencedObjects(referencedPaths: Set<String>) =
+        override suspend fun removeUnreferencedObjects(referencedPaths: Set<String>) {
+            cleanupCalls++
+            cleanupStarted?.complete(Unit)
+            allowCleanup?.await()
+            onCleanup?.invoke()
+            cleanupFailure?.let { throw it }
             delegate.removeUnreferencedObjects(referencedPaths)
+        }
+
+        fun resetCleanupTracking() {
+            cleanupCalls = 0
+            cleanupFailure = null
+            cleanupStarted = null
+            allowCleanup = null
+            onCleanup = null
+        }
 
         fun resetWriteTracking() {
             writeCalls = 0
@@ -1097,11 +1656,14 @@ class VaultBackupStreamingTest {
             publishedWrite = null
             adjustSizeOnReadCall = null
             reportedSizeAdjustment = 0L
+            afterReadCall = null
+            onAfterRead = null
             readCalls = 0
         }
     }
 
     private companion object {
+        const val MAX_BACKUP_IDENTIFIER_UTF8_BYTES = 256 * 4
         const val MASTER_PASSWORD = "correct horse battery staple"
         const val BACKUP_PASSWORD = "independent streaming backup password"
         const val STREAM_READ_BUFFER_BYTES = 64 * 1024

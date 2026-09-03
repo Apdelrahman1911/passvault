@@ -477,6 +477,9 @@ private const val DIGITS_PARAMETER = "digits"
 private const val PERIOD_PARAMETER = "period"
 private const val MAX_ENROLLMENT_LENGTH = 8 * 1024
 private const val MAX_LABEL_LENGTH = 200
+// Deliberate interoperability exception to RFC 4226 R6's 16-byte minimum.
+// PassVault imports issuer-owned keys and the published Google Authenticator
+// Key URI example is 10 bytes. Keep this and MIN_SECRET_CHARACTERS coupled.
 private const val MIN_SECRET_BYTES = 10
 private const val MAX_SECRET_BYTES = 128
 private const val MIN_SECRET_CHARACTERS = 16

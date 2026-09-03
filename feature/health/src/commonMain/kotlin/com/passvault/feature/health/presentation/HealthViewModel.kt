@@ -11,6 +11,7 @@ import com.passvault.core.domain.model.CredentialSummary
 import com.passvault.core.domain.model.PasswordHealth
 import com.passvault.core.domain.repository.CredentialRepository
 import com.passvault.core.domain.repository.CredentialHealthInput
+import com.passvault.core.security.EntrySensitiveStateOwner
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -39,7 +40,7 @@ import kotlin.time.Instant
 class HealthViewModel(
     private val credentialRepository: CredentialRepository,
     private val clock: Clock = Clock.System,
-) : ViewModel() {
+) : ViewModel(), EntrySensitiveStateOwner {
 
     private val _state = MutableStateFlow(HealthState())
     val state: StateFlow<HealthState> = _state.asStateFlow()
@@ -186,7 +187,7 @@ class HealthViewModel(
         _effect.tryEmit(HealthEffect.CopySummary(report))
     }
 
-    fun clearForLock() {
+    override fun clearForLock() {
         scanJob?.cancel()
         scanJob = null
         _state.value = HealthState()

@@ -180,7 +180,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation because Android Studio is building the Kotlin framework\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation because Android Studio is building the Kotlin framework\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./scripts/verify-gradle-wrapper.sh\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -275,7 +275,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.passvault.ios;
 				PROVISIONING_PROFILE_SPECIFIER = "$(MOBILE_RELEASE_IOS_PROVISIONING_PROFILE_SPECIFIER)";
 				MOBILE_RELEASE_IOS_CODE_SIGN_IDENTITY = "";
-				MOBILE_RELEASE_IOS_CODE_SIGN_STYLE = Automatic;
+				MOBILE_RELEASE_IOS_CODE_SIGN_STYLE = Manual;
 				MOBILE_RELEASE_IOS_DEVELOPMENT_TEAM = 7CGZ2343AA;
 				MOBILE_RELEASE_IOS_PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

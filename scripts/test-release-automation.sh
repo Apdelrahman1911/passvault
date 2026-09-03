@@ -10,6 +10,12 @@ cd "$repository_root"
 ./scripts/verify-pentest-scope.sh >/dev/null
 ./scripts/verify-dependabot-coverage.sh >/dev/null
 ./scripts/verify-shell-library-contract.sh >/dev/null
+ruby scripts/verify-static-analysis-coverage.rb >/dev/null
+ruby scripts/validate-ci-workflow-security.rb >/dev/null
+ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
+ruby scripts/validate-ios-gradle-build-boundary.rb >/dev/null
+./scripts/test-apple-signing-secret-handling.sh >/dev/null
+./scripts/verify-gradle-wrapper.sh >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
@@ -56,6 +62,296 @@ cleanup() {
     esac
 }
 trap cleanup EXIT
+
+wrapper_fixture="$temporary_root/wrapper-project"
+mkdir -p "$wrapper_fixture/scripts" "$wrapper_fixture/gradle/wrapper"
+cp scripts/verify-gradle-wrapper.sh "$wrapper_fixture/scripts/"
+cp gradle/wrapper/gradle-wrapper.jar gradle/wrapper/gradle-wrapper.jar.sha256 \
+    "$wrapper_fixture/gradle/wrapper/"
+"$wrapper_fixture/scripts/verify-gradle-wrapper.sh" >/dev/null
+printf 'tampered' >> "$wrapper_fixture/gradle/wrapper/gradle-wrapper.jar"
+if "$wrapper_fixture/scripts/verify-gradle-wrapper.sh" >/dev/null 2>&1; then
+    echo "Gradle wrapper verification accepted a tampered wrapper JAR." >&2
+    exit 1
+fi
+
+ios_gradle_workflow_fixture="$temporary_root/mobile-store-release.yml"
+cp .github/workflows/mobile-store-release.yml "$ios_gradle_workflow_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Validate Gradle wrapper\n        uses: gradle\/actions\/wrapper-validation@[^\n]+\n/
+  abort("missing iOS wrapper-validation fixture") unless source.sub!(block, "\n")
+  File.write(path, source)
+' "$ios_gradle_workflow_fixture"
+if ruby scripts/validate-ios-gradle-build-boundary.rb \
+    iosApp/iosApp.xcodeproj/project.pbxproj \
+    "$ios_gradle_workflow_fixture" >/dev/null 2>&1; then
+    echo "iOS release validation accepted an archive job without wrapper validation." >&2
+    exit 1
+fi
+
+ios_gradle_project_fixture="$temporary_root/project.pbxproj"
+cp iosApp/iosApp.xcodeproj/project.pbxproj "$ios_gradle_project_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "./scripts/verify-gradle-wrapper.sh\\n"
+  abort("missing Xcode wrapper-verification fixture") unless source.sub!(needle, "")
+  File.write(path, source)
+' "$ios_gradle_project_fixture"
+if ruby scripts/validate-ios-gradle-build-boundary.rb \
+    "$ios_gradle_project_fixture" \
+    .github/workflows/mobile-store-release.yml >/dev/null 2>&1; then
+    echo "iOS build validation accepted Gradle execution without local wrapper verification." >&2
+    exit 1
+fi
+
+cp iosApp/iosApp.xcodeproj/project.pbxproj "$ios_gradle_project_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "ENABLE_USER_SCRIPT_SANDBOXING = NO;"
+  abort("missing Xcode sandbox fixture") unless source.sub!(needle, "ENABLE_USER_SCRIPT_SANDBOXING = YES;")
+  File.write(path, source)
+' "$ios_gradle_project_fixture"
+if ruby scripts/validate-ios-gradle-build-boundary.rb \
+    "$ios_gradle_project_fixture" \
+    .github/workflows/mobile-store-release.yml >/dev/null 2>&1; then
+    echo "iOS build validation accepted the Kotlin-incompatible sandbox setting." >&2
+    exit 1
+fi
+
+ci_security_fixture="$temporary_root/ci-security.yml"
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "    permissions:\n      contents: read\n    steps:\n"
+  replacement = "    permissions:\n      checks: write\n      contents: read\n    steps:\n"
+  abort("missing test permission fixture") unless source.sub!(needle, replacement)
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted a write-capable test job." >&2
+    exit 1
+fi
+
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing persisted-credential fixture") unless
+    source.sub!("persist-credentials: false", "persist-credentials: true")
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted persisted checkout credentials." >&2
+    exit 1
+fi
+
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Upload Test Reports\n.*?\n(?=  shared-compile:)/m
+  abort("missing test-report artifact fixture") unless source.sub!(block, "\n")
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted a missing failure-path test report artifact." >&2
+    exit 1
+fi
+
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Run KMP and native security analysis\n        run: \.\/scripts\/run-security-analysis\.sh\n/
+  abort("missing security-analysis fixture") unless source.sub!(block, "\n")
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted a missing security-analysis gate." >&2
+    exit 1
+fi
+
+coverage_fixture="$temporary_root/static-analysis-baseline.json"
+cp .github/security-analysis/coverage-baseline.json "$coverage_fixture"
+ruby -rjson -e '
+  path = ARGV.fetch(0)
+  baseline = JSON.parse(File.read(path, encoding: "UTF-8"))
+  baseline.fetch("detekt")["minimumFileCount"] = 1_000_000
+  File.write(path, JSON.pretty_generate(baseline) + "\n")
+' "$coverage_fixture"
+if ruby scripts/verify-static-analysis-coverage.rb \
+    --baseline "$coverage_fixture" >/dev/null 2>&1; then
+    echo "Static-analysis coverage accepted an impossible Detekt floor." >&2
+    exit 1
+fi
+
+coverage_root="$temporary_root/static-analysis-project"
+mkdir -p "$coverage_root/module/src/commonMain/kotlin"
+cat > "$coverage_root/settings.gradle.kts" <<'COVERAGE_SETTINGS'
+rootProject.name = "coverage-fixture"
+include(":module")
+COVERAGE_SETTINGS
+cat > "$coverage_root/module/src/commonMain/kotlin/Main.kt" <<'COVERAGE_SOURCE'
+fun coveredSource() = Unit
+COVERAGE_SOURCE
+cat > "$coverage_root/baseline.json" <<'COVERAGE_BASELINE'
+{
+  "schemaVersion": 1,
+  "detekt": {
+    "minimumFileCount": 2,
+    "minimumGradleScriptCount": 1,
+    "minimumProjectSourceCounts": { ":module": 1 }
+  },
+  "securityAnalysis": {
+    "minimumFileCount": 2,
+    "minimumGroupCounts": {
+      "automation": 0,
+      "apple": 0,
+      "kotlin": 2,
+      "native": 0
+    },
+    "allowedPartialParsing": {}
+  }
+}
+COVERAGE_BASELINE
+git -C "$coverage_root" init --quiet
+git -C "$coverage_root" add settings.gradle.kts module/src/commonMain/kotlin/Main.kt
+ruby scripts/verify-static-analysis-coverage.rb \
+    --root "$coverage_root" \
+    --baseline "$coverage_root/baseline.json" >/dev/null
+mkdir -p "$coverage_root/module/code"
+mv "$coverage_root/module/src/commonMain/kotlin/Main.kt" "$coverage_root/module/code/Main.kt"
+git -C "$coverage_root" add --all
+if ruby scripts/verify-static-analysis-coverage.rb \
+    --root "$coverage_root" \
+    --baseline "$coverage_root/baseline.json" >/dev/null 2>&1; then
+    echo "Static-analysis coverage accepted a Kotlin source outside Detekt's configured roots." >&2
+    exit 1
+fi
+
+fake_opengrep="$temporary_root/fake-opengrep"
+cat > "$fake_opengrep" <<'FAKE_OPENGREP'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "show" && "${2:-}" == "version" ]]; then
+    printf '%s\n' '1.29.0'
+    exit 0
+fi
+case "${1:-}" in
+    validate|test)
+        exit 0
+        ;;
+    scan)
+        printf '%s\n' '{"version":"1.29.0","results":[],"errors":[],"paths":{"scanned":[]}}'
+        exit 0
+        ;;
+esac
+exit 125
+FAKE_OPENGREP
+chmod 700 "$fake_opengrep"
+if OPENGREP_BIN="$fake_opengrep" ./scripts/run-security-analysis.sh >/dev/null 2>&1; then
+    echo "Security-analysis wrapper accepted a canary that was not detected." >&2
+    exit 1
+fi
+
+cat > "$fake_opengrep" <<'FAILING_OPENGREP'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "show" && "${2:-}" == "version" ]]; then
+    printf '%s\n' '1.29.0'
+    exit 0
+fi
+case "${1:-}" in
+    validate|test)
+        exit 0
+        ;;
+    scan)
+        last_argument="${!#}"
+        if [[ "$last_argument" == */scripts/testdata/security-analysis/Canary.kt ]]; then
+            printf '{"version":"1.29.0","results":[{"check_id":"passvault.kotlin.insecure-cipher-transformation","path":"%s","start":{"line":4}}],"errors":[],"paths":{"scanned":["%s"]}}\n' \
+                "$last_argument" "$last_argument"
+            exit 1
+        fi
+        exit 125
+        ;;
+esac
+exit 125
+FAILING_OPENGREP
+chmod 700 "$fake_opengrep"
+analyzer_failure_log="$temporary_root/analyzer-failure.log"
+if OPENGREP_BIN="$fake_opengrep" ./scripts/run-security-analysis.sh \
+    >"$analyzer_failure_log" 2>&1; then
+    echo "Security-analysis wrapper accepted an analyzer engine failure." >&2
+    exit 1
+fi
+grep -Fq "OpenGrep failed with status 125." "$analyzer_failure_log"
+
+apple_release_fixture="$temporary_root/apple-release.yml"
+apple_mobile_fixture="$temporary_root/apple-mobile-store-release.yml"
+apple_importer_fixture="$temporary_root/import-apple-signing-certificate.sh"
+apple_verifier_fixture="$temporary_root/verify-ios-release-signing.sh"
+cp .github/workflows/release.yml "$apple_release_fixture"
+cp .github/workflows/mobile-store-release.yml "$apple_mobile_fixture"
+cp scripts/import-apple-signing-certificate.sh "$apple_importer_fixture"
+cp scripts/verify-ios-release-signing.sh "$apple_verifier_fixture"
+# Workflow expressions below are intentional literal hostile fixtures.
+# shellcheck disable=SC2016
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  start_marker = "          printf \x27%s\\n\x27 \"$certificate_password\" |\n"
+  end_marker = "          certificate_password=\"\"\n"
+  start_index = source.index(start_marker)
+  end_index = source.index(end_marker, start_index || 0)
+  abort("missing certificate-import fixture") unless start_index && end_index
+  source[start_index...end_index] =
+    "          security import \"$certificate_path\" -k \"$keychain_path\" " \
+    "-P \"$certificate_password\"\n"
+  File.write(path, source)
+' "$apple_release_fixture"
+if ruby scripts/validate-apple-signing-secret-boundary.rb \
+    "$apple_release_fixture" "$apple_mobile_fixture" "$apple_importer_fixture" \
+    "$apple_verifier_fixture" >/dev/null 2>&1; then
+    echo "Apple signing policy accepted a certificate password argument." >&2
+    exit 1
+fi
+
+cp .github/workflows/release.yml "$apple_release_fixture"
+# shellcheck disable=SC2016
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  abort("missing notary API-key fixture") unless
+    source.sub!("            --key \"$notary_key_path\" \\\n",
+      "            --password \"$certificate_password\" \\\n")
+  File.write(path, source)
+' "$apple_release_fixture"
+if ruby scripts/validate-apple-signing-secret-boundary.rb \
+    "$apple_release_fixture" "$apple_mobile_fixture" "$apple_importer_fixture" \
+    "$apple_verifier_fixture" >/dev/null 2>&1; then
+    echo "Apple signing policy accepted a notarization password argument." >&2
+    exit 1
+fi
+
+cp .github/workflows/release.yml "$apple_release_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Require isolated GitHub-hosted macOS runner\n.*?\n(?=      - name: Checkout)/m
+  abort("missing hosted-runner guard fixture") unless source.sub!(block, "\\n")
+  File.write(path, source)
+' "$apple_release_fixture"
+if ruby scripts/validate-apple-signing-secret-boundary.rb \
+    "$apple_release_fixture" "$apple_mobile_fixture" "$apple_importer_fixture" \
+    "$apple_verifier_fixture" >/dev/null 2>&1; then
+    echo "Apple signing policy accepted a missing hosted-runner guard." >&2
+    exit 1
+fi
 
 ruby scripts/validate-release-authority-policy.rb >/dev/null
 authority_policy_fixture="$temporary_root/release-authority-policy"
@@ -604,6 +900,74 @@ if [[ "$(find THIRD_PARTY_LICENSES -mindepth 1 -maxdepth 1 -type f | wc -l | tr 
     echo "The canonical third-party license set has an unexpected file count." >&2
     exit 1
 fi
+
+attribution_arguments=(
+    legal/third-party-dependencies.lock
+    legal/third-party-dependencies.lock
+    legal/third-party-attribution.tsv
+    THIRD_PARTY_NOTICES.md
+    THIRD_PARTY_LICENSES
+)
+ruby scripts/verify-third-party-attribution.rb "${attribution_arguments[@]}" >/dev/null
+
+unattributed_inventory="$temporary_root/unattributed-dependency.lock"
+ruby -e '
+  lines = File.readlines(ARGV.fetch(0), chomp: true)
+  headers, entries = lines.partition { |line| line.start_with?("#") || line.empty? }
+  entries << "android\tcom.example:unattributed-runtime:1.0.0"
+  File.write(ARGV.fetch(1), (headers + entries.sort).join("\n") + "\n")
+' legal/third-party-dependencies.lock "$unattributed_inventory"
+unattributed_error="$temporary_root/unattributed-dependency.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "$unattributed_inventory" "${attribution_arguments[@]:1}" \
+    >/dev/null 2>"$unattributed_error"; then
+    echo "An unattributed production dependency was accepted." >&2
+    exit 1
+fi
+grep -Fq 'com.example:unattributed-runtime:1.0.0' "$unattributed_error"
+
+drifted_inventory="$temporary_root/drifted-dependency.lock"
+ruby -e '
+  source = File.read(ARGV.fetch(0), encoding: "UTF-8")
+  old = "desktop\torg.jetbrains.skiko:skiko-awt:0.144.6"
+  replacement = "desktop\torg.jetbrains.skiko:skiko-awt:0.144.7"
+  abort("missing transitive-version fixture") unless source.sub!(old, replacement)
+  File.write(ARGV.fetch(1), source)
+' legal/third-party-dependencies.lock "$drifted_inventory"
+drifted_error="$temporary_root/drifted-dependency.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "$drifted_inventory" "${attribution_arguments[@]:1}" \
+    >/dev/null 2>"$drifted_error"; then
+    echo "A drifted transitive dependency version was accepted." >&2
+    exit 1
+fi
+grep -Fq 'org.jetbrains.skiko:skiko-awt:0.144.7' "$drifted_error"
+
+orphaned_license_directory="$temporary_root/orphaned-third-party-licenses"
+cp -R THIRD_PARTY_LICENSES "$orphaned_license_directory"
+printf 'fixture\n' >"$orphaned_license_directory/orphaned-LICENSE.txt"
+orphaned_error="$temporary_root/orphaned-third-party-license.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "${attribution_arguments[@]:0:4}" "$orphaned_license_directory" \
+    >/dev/null 2>"$orphaned_error"; then
+    echo "An orphaned third-party license file was accepted." >&2
+    exit 1
+fi
+grep -Fq 'Orphaned third-party license file: orphaned-LICENSE.txt' "$orphaned_error"
+
+missing_license_directory="$temporary_root/missing-third-party-license"
+cp -R THIRD_PARTY_LICENSES "$missing_license_directory"
+rm "$missing_license_directory/libsodium-1.0.19-LICENSE.txt"
+missing_license_error="$temporary_root/missing-third-party-license.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "${attribution_arguments[@]:0:4}" "$missing_license_directory" \
+    >/dev/null 2>"$missing_license_error"; then
+    echo "A missing mapped third-party license file was accepted." >&2
+    exit 1
+fi
+grep -Fq 'Mapped third-party license file is missing: libsodium-1.0.19-LICENSE.txt' \
+    "$missing_license_error"
+
 ./scripts/verify-third-party-license-archive.sh \
     "$output_directory/THIRD_PARTY_LICENSES.zip" >/dev/null
 license_archive_entries="$(unzip -Z1 "$output_directory/THIRD_PARTY_LICENSES.zip")"
@@ -771,6 +1135,55 @@ if ruby scripts/validate-mobile-artifact-receipt.rb \
     exit 1
 fi
 
+desktop_receipt_root="$temporary_root/desktop-receipts"
+mkdir "$desktop_receipt_root"
+cp "$output_directory/PassVault-$version.deb" \
+    "$output_directory/PassVault-$version.rpm" \
+    "$desktop_receipt_root/"
+printf 'tested Windows app image\n' \
+    > "$desktop_receipt_root/PassVault-$version-windows-x64-app-image.zip"
+printf 'tested macOS arm64 app image\n' \
+    > "$desktop_receipt_root/PassVault-$version-macos-arm64-app-image.zip"
+printf 'tested macOS x64 app image\n' \
+    > "$desktop_receipt_root/PassVault-$version-macos-x64-app-image.zip"
+RECEIPT_VERSION="$version" \
+RECEIPT_BUILD_NUMBER=1000123 \
+RECEIPT_SOURCE_COMMIT=0123456789abcdef0123456789abcdef01234567 \
+RECEIPT_SOURCE_TREE=89abcdef0123456789abcdef0123456789abcdef \
+RECEIPT_CANDIDATE_TAG="v$version-rc.1000123" \
+RECEIPT_SOURCE_REPOSITORY=Apdelrahman1911/passvault \
+RECEIPT_SOURCE_WORKFLOW=.github/workflows/testing-release.yml \
+RECEIPT_SOURCE_RUN_ID=123456789 \
+RECEIPT_SOURCE_RUN_ATTEMPT=2 \
+DESKTOP_LINUX_DEB_PATH="$desktop_receipt_root/PassVault-$version.deb" \
+DESKTOP_LINUX_RPM_PATH="$desktop_receipt_root/PassVault-$version.rpm" \
+DESKTOP_WINDOWS_X64_APP_IMAGE_PATH="$desktop_receipt_root/PassVault-$version-windows-x64-app-image.zip" \
+DESKTOP_MACOS_ARM64_APP_IMAGE_PATH="$desktop_receipt_root/PassVault-$version-macos-arm64-app-image.zip" \
+DESKTOP_MACOS_X64_APP_IMAGE_PATH="$desktop_receipt_root/PassVault-$version-macos-x64-app-image.zip" \
+    ruby scripts/create-desktop-artifact-receipt.rb \
+      > "$desktop_receipt_root/desktop-artifact-receipt.json"
+ruby scripts/validate-desktop-artifact-receipt.rb \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef "$desktop_receipt_root" >/dev/null
+EXPECTED_SOURCE_REPOSITORY=Apdelrahman1911/passvault \
+    ruby scripts/validate-desktop-artifact-receipt.rb \
+      "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+      0123456789abcdef0123456789abcdef01234567 \
+      89abcdef0123456789abcdef0123456789abcdef >/dev/null
+wrong_desktop_repository_receipt="$temporary_root/wrong-desktop-repository-receipt.json"
+jq '.sourceArtifactRun.repository = "attacker/fork"' \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" > "$wrong_desktop_repository_receipt"
+if EXPECTED_SOURCE_REPOSITORY=Apdelrahman1911/passvault \
+    ruby scripts/validate-desktop-artifact-receipt.rb \
+      "$wrong_desktop_repository_receipt" "$version" 1000123 \
+      0123456789abcdef0123456789abcdef01234567 \
+      89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "A Desktop receipt from another repository was accepted." >&2
+    exit 1
+fi
+cp "$desktop_receipt_root/desktop-artifact-receipt.json" "$mobile_receipt_root/"
+
 printf 'signed-ipa\n' > "$mobile_receipt_root/PassVault-$version-1000123.ipa"
 printf 'signed-archive\n' > "$mobile_receipt_root/PassVault-$version-1000123.xcarchive.zip"
 printf 'link-map\n' > "$mobile_receipt_root/PassVault-LinkMap.txt"
@@ -818,8 +1231,12 @@ IOS_SIGNING_SHA1=0123456789ABCDEF0123456789ABCDEF01234567 \
 IOS_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$mobile_receipt_root/ios-artifact-receipt.json" | awk '{ print $1 }')" \
 IOS_INTERNAL_STATE=completed \
 IOS_EXTERNAL_STATE=submitted_for_review \
+DESKTOP_ARTIFACT_RECEIPT_SHA256="$(sha256sum "$mobile_receipt_root/desktop-artifact-receipt.json" | awk '{ print $1 }')" \
     ruby scripts/create-candidate-manifest.rb > "$candidate_manifest"
 jq -e '.sourceTree == "89abcdef0123456789abcdef0123456789abcdef"' \
+    "$candidate_manifest" >/dev/null
+jq -e --arg digest "$(sha256sum "$mobile_receipt_root/desktop-artifact-receipt.json" | awk '{ print $1 }')" \
+    '.schemaVersion == 3 and .desktop.artifactReceiptSha256 == $digest' \
     "$candidate_manifest" >/dev/null
 ruby scripts/validate-candidate-manifest.rb --allow-pending "$candidate_manifest" \
     0123456789abcdef0123456789abcdef01234567 \
@@ -839,12 +1256,52 @@ ruby scripts/validate-candidate-manifest.rb "$temporary_root/readiness-manifest.
 ruby scripts/validate-candidate-artifact-provenance.rb \
     "$temporary_root/readiness-manifest.json" "$mobile_receipt_root" \
     0123456789abcdef0123456789abcdef01234567 \
-    89abcdef0123456789abcdef0123456789abcdef >/dev/null
+    89abcdef0123456789abcdef0123456789abcdef "$desktop_receipt_root" >/dev/null
+
+missing_desktop_receipt_root="$temporary_root/missing-desktop-receipt"
+mkdir "$missing_desktop_receipt_root"
+cp "$mobile_receipt_root/android-artifact-receipt.json" \
+    "$mobile_receipt_root/ios-artifact-receipt.json" \
+    "$missing_desktop_receipt_root/"
+if ruby scripts/validate-candidate-artifact-provenance.rb \
+    "$temporary_root/readiness-manifest.json" "$missing_desktop_receipt_root" \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Candidate provenance accepted a missing Desktop receipt." >&2
+    exit 1
+fi
+
+desktop_archive="$desktop_receipt_root/PassVault-$version-windows-x64-app-image.zip"
+cp "$desktop_archive" "$desktop_archive.original"
+printf 'tampered\n' >> "$desktop_archive"
+if ruby scripts/validate-desktop-artifact-receipt.rb \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef \
+    "$desktop_receipt_root" windowsX64AppImage >/dev/null 2>&1; then
+    echo "A tampered Desktop promotion input was accepted." >&2
+    exit 1
+fi
+mv "$desktop_archive.original" "$desktop_archive"
+
+mv "$desktop_archive" "$desktop_archive.regular"
+ln -s "$(basename "$desktop_archive.regular")" "$desktop_archive"
+if ruby scripts/validate-desktop-artifact-receipt.rb \
+    "$desktop_receipt_root/desktop-artifact-receipt.json" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef \
+    "$desktop_receipt_root" windowsX64AppImage >/dev/null 2>&1; then
+    echo "A symlinked Desktop promotion input was accepted." >&2
+    exit 1
+fi
+rm "$desktop_archive"
+mv "$desktop_archive.regular" "$desktop_archive"
 
 desktop_provenance_root="$temporary_root/desktop-provenance"
 cp -R "$output_directory" "$desktop_provenance_root"
 cp "$temporary_root/readiness-manifest.json" \
     "$mobile_receipt_root/android-artifact-receipt.json" \
+    "$mobile_receipt_root/desktop-artifact-receipt.json" \
     "$mobile_receipt_root/ios-artifact-receipt.json" \
     "$desktop_provenance_root/"
 RELEASE_VERSION="$version" \
@@ -865,6 +1322,44 @@ ruby scripts/validate-desktop-release-provenance.rb \
     "$desktop_provenance_root" "v$version-rc.1000123" "$version" 1000123 \
     0123456789abcdef0123456789abcdef01234567 \
     89abcdef0123456789abcdef0123456789abcdef >/dev/null
+tampered_candidate_input_root="$temporary_root/desktop-provenance-tampered-input"
+cp -R "$desktop_provenance_root" "$tampered_candidate_input_root"
+jq '.candidateDesktop.sourceArtifactRun.runId += 1' \
+    "$desktop_provenance_root/release-provenance.json" \
+    > "$tampered_candidate_input_root/release-provenance.json"
+if ruby scripts/validate-desktop-release-provenance.rb \
+    "$tampered_candidate_input_root" "v$version-rc.1000123" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Release provenance accepted a substituted Desktop source run." >&2
+    exit 1
+fi
+substituted_linux_root="$temporary_root/desktop-provenance-substituted-linux"
+cp -R "$desktop_provenance_root" "$substituted_linux_root"
+linux_candidate_name="$(jq -r '.artifacts.linuxDeb.fileName' \
+    "$substituted_linux_root/desktop-artifact-receipt.json")"
+printf '\nsubstituted Linux package\n' >> "$substituted_linux_root/$linux_candidate_name"
+RELEASE_VERSION="$version" \
+RELEASE_BUILD_NUMBER=1000123 \
+RELEASE_CANDIDATE_TAG="v$version-rc.1000123" \
+RELEASE_SOURCE_COMMIT=0123456789abcdef0123456789abcdef01234567 \
+RELEASE_SOURCE_TREE=89abcdef0123456789abcdef0123456789abcdef \
+    ruby scripts/create-desktop-release-provenance.rb "$substituted_linux_root" \
+      > "$substituted_linux_root/release-provenance.json"
+(
+    cd "$substituted_linux_root"
+    # SHA256SUMS.txt is explicitly excluded from the input file set.
+    # shellcheck disable=SC2094
+    find . -maxdepth 1 -type f ! -name SHA256SUMS.txt -print |
+        sed 's#^./##' | LC_ALL=C sort | xargs sha256sum > SHA256SUMS.txt
+)
+if ruby scripts/validate-desktop-release-provenance.rb \
+    "$substituted_linux_root" "v$version-rc.1000123" "$version" 1000123 \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Release provenance accepted a rebuilt Linux package." >&2
+    exit 1
+fi
 extra_dmg_root="$temporary_root/desktop-provenance-extra-dmg"
 cp -R "$desktop_provenance_root" "$extra_dmg_root"
 printf 'unexpected DMG\n' > "$extra_dmg_root/PassVault-$version-macos-debug.dmg"
@@ -923,6 +1418,16 @@ jq '.android.packageName = "com.passvault.android\nforged-output=value"' \
     "$temporary_root/readiness-manifest.json" > "$invalid_candidate_manifest"
 if ruby scripts/validate-candidate-manifest.rb "$invalid_candidate_manifest" >/dev/null 2>&1; then
     echo "A candidate manifest with an unsafe package identifier was accepted." >&2
+    exit 1
+fi
+invalid_desktop_receipt_manifest="$temporary_root/invalid-desktop-receipt-manifest.json"
+jq '.desktop.artifactReceiptSha256 = ("0" * 64)' \
+    "$temporary_root/readiness-manifest.json" > "$invalid_desktop_receipt_manifest"
+if ruby scripts/validate-candidate-artifact-provenance.rb \
+    "$invalid_desktop_receipt_manifest" "$mobile_receipt_root" \
+    0123456789abcdef0123456789abcdef01234567 \
+    89abcdef0123456789abcdef0123456789abcdef >/dev/null 2>&1; then
+    echo "Candidate provenance accepted an unbound Desktop receipt." >&2
     exit 1
 fi
 debug_candidate_manifest="$temporary_root/debug-candidate-manifest.json"
@@ -1280,6 +1785,23 @@ for shared_android_input in \
         exit 1
     fi
 done
+for gated_android_task in \
+    packageRelease \
+    packageReleaseBundle \
+    assembleRelease \
+    bundleRelease; do
+    grep -Fq "\"$gated_android_task\"" app-android/build.gradle.kts || {
+        echo "Android $gated_android_task is not explicitly signing-gated." >&2
+        exit 1
+    }
+done
+grep -Fq 'tasks.matching { task -> task.name in signedReleaseArchiveTasks }.configureEach' \
+    app-android/build.gradle.kts
+grep -Fq 'dependsOn(verifyReleaseSigningConfiguration)' app-android/build.gradle.kts
+if grep -Fq '?: "release.keystore"' app-android/build.gradle.kts; then
+    echo "Android release signing still accepts an implicit keystore path." >&2
+    exit 1
+fi
 android_build_script_fixture="$temporary_root/android-build-script"
 mkdir -p \
     "$android_build_script_fixture/scripts" \
@@ -1308,6 +1830,13 @@ if ! grep -Fqx -- '--no-configuration-cache' "$android_gradle_arguments"; then
     echo "A debug build could cache signing credentials from its environment." >&2
     exit 1
 fi
+env -u KEYSTORE_PATH -u KEYSTORE_PASSWORD -u KEY_ALIAS -u KEY_PASSWORD \
+    PASSVAULT_GRADLE_ARGS_FILE="$android_gradle_arguments" \
+    "$android_build_script_fixture/scripts/build-android.sh" --release >/dev/null
+grep -Fqx ':app-android:verifyReleaseSigningConfiguration' "$android_gradle_arguments"
+grep -Fqx ':app-android:assembleRelease' "$android_gradle_arguments"
+grep -Fqx ':app-android:bundleRelease' "$android_gradle_arguments"
+grep -Fqx -- '--no-configuration-cache' "$android_gradle_arguments"
 if command -v pwsh >/dev/null 2>&1; then
     android_build_tools_fixture="$temporary_root/android-build-tools"
     for build_tools_version in \
@@ -1468,10 +1997,13 @@ ruby -c scripts/create-candidate-manifest.rb >/dev/null
 ruby -c scripts/validate-candidate-manifest.rb >/dev/null
 ruby -c scripts/create-mobile-artifact-receipt.rb >/dev/null
 ruby -c scripts/validate-mobile-artifact-receipt.rb >/dev/null
+ruby -c scripts/create-desktop-artifact-receipt.rb >/dev/null
+ruby -c scripts/validate-desktop-artifact-receipt.rb >/dev/null
 ruby -c scripts/validate-candidate-artifact-provenance.rb >/dev/null
 ruby -c scripts/create-desktop-release-provenance.rb >/dev/null
 ruby -c scripts/validate-desktop-release-provenance.rb >/dev/null
 bash -n scripts/check-play-track-build.sh
+bash -n scripts/package-promoted-macos-app.sh
 grep -Fq 'track_promote_to' fastlane/Fastfile
 grep -Fq 'play_promote(from: "internal", to: "alpha", release_status: "completed")' \
     fastlane/Fastfile
@@ -1742,11 +2274,75 @@ grep -Fq 'contains an unsafe symlink' scripts/prepare-mobile-store-metadata.sh
 test "$(grep -Fc '    environment: desktop-production' .github/workflows/release.yml)" -eq 2
 ruby -ryaml <<'RUBY'
 release_workflow = YAML.safe_load(File.read(".github/workflows/release.yml", encoding: "UTF-8"), aliases: true)
-%w[build-desktop-linux build-desktop-windows build-desktop-macos].each do |job_name|
-  support_email = release_workflow.fetch("jobs").fetch(job_name).fetch("env")["SUPPORT_EMAIL"]
-  abort("#{job_name} does not receive the validated publisher support address") unless
-    support_email == "${{ vars.SUPPORT_EMAIL }}"
+jobs = release_workflow.fetch("jobs")
+runs = jobs.values.flat_map { |job| Array(job["steps"]) }.map { |step| step["run"].to_s }
+forbidden = runs.grep(%r{(?:\./gradlew|:app-desktop:(?:packageRelease|createReleaseDistributable))})
+abort("Production Desktop signing must not invoke Gradle or rebuild an app image") unless forbidden.empty?
+
+expected_order = {
+  "build-desktop-linux" => [
+    "Download receipt-verified Linux candidate packages",
+    "Verify and stage exact tested Linux packages",
+    "Upload Linux Artifacts",
+  ],
+  "build-desktop-windows" => [
+    "Download receipt-verified Windows candidate app image",
+    "Verify and restore the exact tested Windows app image",
+    "Require Windows signing",
+    "Package installers from the exact signed Windows app image",
+  ],
+  "build-desktop-macos" => [
+    "Download receipt-verified macOS candidate app image",
+    "Verify the exact tested macOS app image",
+    "Require macOS signing and notarization",
+    "Sign and package the promoted macOS app image",
+  ],
+}
+expected_order.each do |job_name, step_names|
+  actual_names = jobs.fetch(job_name).fetch("steps").map { |step| step["name"] }.compact
+  positions = step_names.map { |name| actual_names.index(name) }
+  abort("#{job_name} does not verify promotion inputs before signing or packaging") unless
+    positions.none?(&:nil?) && positions == positions.sort && positions.uniq.length == positions.length
 end
+
+final_download = jobs.fetch("assemble-release").fetch("steps").find do |step|
+  step["name"] == "Download verified platform artifacts"
+end
+abort("Final release assembly must download only production Desktop outputs") unless
+  final_download&.dig("with", "pattern") == "desktop-*"
+
+prepare_run = jobs.fetch("prepare").fetch("steps").map { |step| step["run"].to_s }.join("\n")
+verify_position = prepare_run.index('gh attestation verify "$RUNNER_TEMP/candidate/$input_name"')
+stage_position = prepare_run.index("stage_input linuxDeb")
+abort("Candidate Desktop inputs are staged before their attestations are verified") unless
+  verify_position && stage_position && verify_position < stage_position
+
+candidate_workflow = YAML.safe_load(
+  File.read(".github/workflows/testing-release.yml", encoding: "UTF-8"),
+  aliases: true,
+)
+candidate_jobs = candidate_workflow.fetch("jobs")
+{
+  "desktop-windows" => [
+    "Freeze the Windows candidate app image for production signing",
+    "Smoke test the frozen Windows candidate app image",
+  ],
+  "desktop-macos" => [
+    "Freeze the macOS candidate app image for production signing",
+    "Smoke test the frozen macOS candidate app image",
+  ],
+}.each do |job_name, step_names|
+  actual_names = candidate_jobs.fetch(job_name).fetch("steps").map { |step| step["name"] }.compact
+  positions = step_names.map { |name| actual_names.index(name) }
+  abort("#{job_name} does not smoke-test the frozen promotion input") unless
+    positions.none?(&:nil?) && positions == positions.sort
+end
+candidate_publish_run = candidate_jobs.fetch("publish-candidate").fetch("steps")
+  .map { |step| step["run"].to_s }.join("\n")
+receipt_position = candidate_publish_run.index("create-desktop-artifact-receipt.rb")
+manifest_position = candidate_publish_run.index("create-candidate-manifest.rb")
+abort("Candidate manifest is created before the Desktop receipt") unless
+  receipt_position && manifest_position && receipt_position < manifest_position
 RUBY
 grep -Fq 'STORE_SCREENSHOT_MODE' app-android/build.gradle.kts
 grep -Fq 'applicationIdSuffix = ".debug"' app-android/build.gradle.kts
@@ -1776,6 +2372,23 @@ grep -Fq ':app-android:verifyDebugComposeResources' scripts/build-android.sh
 grep -Fq ':app-android:verifyDebugComposeResources' .github/workflows/ci.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/verify-release.sh
 grep -Fq ':app-android:verifyReleasePackageContents' .github/workflows/ci.yml
+if grep -Fq 'Build Android Release (unsigned)' .github/workflows/ci.yml; then
+    echo "CI still describes a forbidden unsigned Android Release archive." >&2
+    exit 1
+fi
+for ci_release_signing_control in \
+    'Build Android Release with ephemeral validation signing' \
+    'keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"' \
+    'keytool -genkeypair' \
+    '-storepass:env KEYSTORE_PASSWORD' \
+    'trap cleanup EXIT' \
+    ':app-android:verifyReleaseSigningConfiguration' \
+    '-Ppassvault.requireReleaseSigning=true'; do
+    grep -Fq -- "$ci_release_signing_control" .github/workflows/ci.yml || {
+        echo "Android CI release validation lacks: $ci_release_signing_control" >&2
+        exit 1
+    }
+done
 grep -Fq 'listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")' \
     app-android/build.gradle.kts
 for native_library in \
@@ -1824,6 +2437,11 @@ fi
 test "$(grep -Fc 'legalEntryPrefix.set(' app-android/build.gradle.kts)" -eq 3
 grep -Fq 'Duplicate entries are present' app-android/build.gradle.kts
 grep -Fq 'verifyDesktopInstalledLegalNotices' app-desktop/build.gradle.kts
+grep -Fq 'checkThirdPartyAttribution' build.gradle.kts
+grep -Fq 'checkThirdPartyAttribution' .github/workflows/ci.yml
+grep -Fq 'checkThirdPartyAttribution' .github/workflows/testing-release.yml
+grep -Fq 'verify-third-party-attribution.rb' .github/workflows/release.yml
+grep -Fq 'checkThirdPartyAttribution' .github/workflows/mobile-store-release.yml
 grep -Fq 'THIRD_PARTY_LICENSES in Resources' iosApp/iosApp.xcodeproj/project.pbxproj
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-release-signing.sh
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-exported-artifact.sh
@@ -1833,6 +2451,10 @@ grep -Fq 'NSFileProtectionComplete' iosApp/iosApp/iosApp.entitlements
 grep -Fq 'keychain-access-groups' iosApp/iosApp/iosApp.entitlements
 test "$(grep -Fc 'CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;' \
     iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 2
+test "$(grep -Fc 'CODE_SIGN_STYLE = Automatic;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 1
+test "$(grep -Fc 'MOBILE_RELEASE_IOS_CODE_SIGN_STYLE = Manual;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 1
 grep -Fq 'attributes = IOS_BACKUP_PROTECTION' \
     shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
 grep -Fq 'protectIosBackupPath(fileManager, path)' \
@@ -1875,6 +2497,10 @@ for shared_ios_input in \
     fi
 done
 grep -Fq 'validate_shared_release_signing_mapping' scripts/validate-ios-build-identities.sh
+grep -Fq 'validate_configuration Debug com.passvault.ios.debug "PassVault Dev" Automatic' \
+    scripts/validate-ios-build-identities.sh
+grep -Fq 'validate_configuration Release com.passvault.ios PassVault Manual' \
+    scripts/validate-ios-build-identities.sh
 if grep -Eq '^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=' \
     iosApp/Configuration/Config.xcconfig; then
     echo "The common Xcode configuration overrides the two application identities." >&2
@@ -1972,6 +2598,72 @@ grep -Fq 'CI Gate' .github/workflows/ci.yml
 grep -Fq 'contexts: ["CI Gate"]' scripts/configure-release-branches.sh
 grep -Fq 'Verify the exact candidate source' .github/workflows/testing-release.yml
 bash -n scripts/verify-ios-exported-artifact.sh
+python3 scripts/test-ios-entitlements.py
+grep -Fq 'verify-ios-entitlements.py' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'archive-normalized-entitlements.json' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'Signed artifact contains unreviewed entitlements:' \
+    scripts/verify-ios-entitlements.py
+grep -Fq 'com.apple.developer.associated-domains' scripts/test-ios-entitlements.py
+
+ruby -ryaml <<'RUBY'
+def each_run_script(value, &block)
+  case value
+  when Hash
+    value.each do |key, child|
+      block.call(child) if key == "run" && child.is_a?(String)
+      each_run_script(child, &block)
+    end
+  when Array
+    value.each { |child| each_run_script(child, &block) }
+  end
+end
+
+def logical_commands(script)
+  commands = []
+  current = +""
+  script.each_line do |line|
+    stripped = line.strip
+    next if current.empty? && (stripped.empty? || stripped.start_with?("#"))
+    current << " " unless current.empty?
+    current << stripped.delete_suffix("\\").rstrip
+    next if stripped.end_with?("\\")
+    commands << current
+    current = +""
+  end
+  commands << current unless current.empty?
+  commands
+end
+
+archive_count = 0
+export_count = 0
+Dir[".github/workflows/*.{yml,yaml}"].sort.each do |path|
+  document = YAML.safe_load(File.read(path, encoding: "UTF-8"), aliases: true)
+  each_run_script(document) do |script|
+    logical_commands(script).each do |command|
+      if command.match?(/\bxcodebuild\s+archive\b/)
+        archive_count += 1
+        required = %w[
+          CODE_SIGN_STYLE=Manual
+          CODE_SIGN_IDENTITY=
+          DEVELOPMENT_TEAM=
+          PROVISIONING_PROFILE_SPECIFIER=
+        ]
+        missing = required.reject { |setting| command.include?(setting) }
+        abort("iOS archive is not explicitly manual-signed in #{path}: #{missing.join(', ')}") \
+          unless missing.empty?
+      elsif command.match?(/\bxcodebuild\s+-exportArchive\b/)
+        export_count += 1
+        unless command.include?("-exportOptionsPlist") &&
+               script.include?("Add :signingStyle string manual")
+          abort("iOS export is not explicitly manual-signed in #{path}")
+        end
+      end
+    end
+  end
+end
+abort("No iOS archive workflow was checked") if archive_count.zero?
+abort("No iOS export workflow was checked") if export_count.zero?
+RUBY
 grep -Fq 'TESTFLIGHT_DISTRIBUTION_MODE' fastlane/Fastfile
 if grep -Eq '(^[[:space:]]*-[[:space:]]+public-link[[:space:]]*$|default:[[:space:]]*public-link|TESTFLIGHT_DISTRIBUTION_MODE:[[:space:]]*public-link)' \
     .github/workflows/mobile-store-release.yml; then
@@ -2085,6 +2777,7 @@ if command -v pwsh >/dev/null 2>&1; then
         scripts/package-signed-windows-installers.ps1 \
         scripts/prepare-signpath-windows-request.ps1 \
         scripts/prepare-windows-runtime-signing.ps1 \
+        scripts/restore-promoted-windows-app-image.ps1 \
         scripts/sign-windows-artifacts.ps1 \
         scripts/update-desktop-biometric-checksum.ps1 \
         scripts/verify-windows-release-artifacts.ps1; do
@@ -2107,6 +2800,13 @@ if command -v pwsh >/dev/null 2>&1; then
     done
 fi
 grep -Fq 'MACOS_DEVELOPER_ID_CERTIFICATE_SHA256' .github/workflows/release.yml
+grep -Fq 'set_binary_secret ASC_PRIVATE_KEY_BASE64 desktop-production' \
+    scripts/configure-github-mobile-release.sh
+if grep -Eq '^set_text_secret MACOS_NOTARIZATION_(APPLE_ID|PASSWORD)' \
+    scripts/configure-github-mobile-release.sh; then
+    echo "The release configurator still uploads retired Apple-ID notarization credentials." >&2
+    exit 1
+fi
 grep -Fq 'WINDOWS_SIGNING_CERTIFICATE_SHA256' .github/workflows/release.yml
 grep -Fq 'azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0' \
     .github/workflows/release.yml
@@ -2236,8 +2936,8 @@ grep -Fq 'PROFILE_GET_TASK_ALLOW' .github/workflows/mobile-store-release.yml
 grep -Fq 'PROFILE_BETA_REPORTS' .github/workflows/mobile-store-release.yml
 grep -Fq 'Entitlements:get-task-allow' scripts/verify-ios-exported-artifact.sh
 grep -Fq 'Entitlements:beta-reports-active' scripts/verify-ios-exported-artifact.sh
-grep -Fq 'com.apple.developer.default-data-protection' scripts/verify-ios-exported-artifact.sh
-grep -Fq 'keychain-access-groups:0' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'com.apple.developer.default-data-protection' scripts/test-ios-entitlements.py
+grep -Fq 'keychain-access-groups' scripts/test-ios-entitlements.py
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
 grep -Fq 'NON_EXEMPT_APPROVED) expected_encryption=true' \
     scripts/verify-ios-exported-artifact.sh

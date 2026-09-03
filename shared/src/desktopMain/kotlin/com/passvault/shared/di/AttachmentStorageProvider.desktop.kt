@@ -2,29 +2,26 @@ package com.passvault.shared.di
 
 import com.passvault.core.database.attachment.AttachmentBlobStore
 import com.passvault.core.database.attachment.LocalAttachmentBlobStore
+import com.passvault.desktop.security.createOrHardenPrivateDesktopDirectory
 import java.nio.file.Files
-import java.nio.file.LinkOption
 import java.nio.file.Path
-import java.nio.file.attribute.PosixFileAttributeView
-import java.nio.file.attribute.PosixFilePermission
 
 actual fun createAttachmentBlobStore(context: Any): AttachmentBlobStore {
-    val root = Path.of(System.getProperty("user.home"), ".passvault", "attachments")
-    check(!Files.isSymbolicLink(root)) { "PassVault's attachment directory must not be a symbolic link" }
-    Files.createDirectories(root)
-    check(Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS)) {
-        "PassVault's attachment storage path is not a directory"
+    return createDesktopAttachmentBlobStore(
+        Path.of(System.getProperty("user.home"), ".passvault"),
+    )
+}
+
+internal fun createDesktopAttachmentBlobStore(dataRoot: Path): AttachmentBlobStore {
+    val privateDataRoot = createOrHardenPrivateDesktopDirectory(dataRoot)
+    val root = createOrHardenPrivateDesktopDirectory(privateDataRoot.resolve("attachments"))
+    ATTACHMENT_STORAGE_CHILDREN.forEach { child ->
+        createOrHardenPrivateDesktopDirectory(root.resolve(child))
     }
-    Files.getFileAttributeView(root, PosixFileAttributeView::class.java)
-        ?.setPermissions(
-            setOf(
-                PosixFilePermission.OWNER_READ,
-                PosixFilePermission.OWNER_WRITE,
-                PosixFilePermission.OWNER_EXECUTE,
-            ),
-        )
     return LocalAttachmentBlobStore(
         rootPath = root.toString(),
         availableBytesProvider = { Files.getFileStore(root).usableSpace },
     )
 }
+
+private val ATTACHMENT_STORAGE_CHILDREN = listOf("objects", "staging")

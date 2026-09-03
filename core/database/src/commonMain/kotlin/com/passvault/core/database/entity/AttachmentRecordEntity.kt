@@ -40,16 +40,11 @@ data class AttachmentRecordEntity(
     @ColumnInfo(name = "filename_nonce", typeAffinity = ColumnInfo.BLOB)
     val filenameNonce: ByteArray,
 
-    /**
-     * MIME type (e.g., "application/pdf", "image/png").
-     * Not encrypted as it's needed for file handling.
-     */
+    /** Detected MIME used for handling and authenticated as part of the managed-object binding. */
     @ColumnInfo(name = "mime_type")
     val mimeType: String,
 
-    /**
-     * File size in bytes.
-     */
+    /** Exact size used for quota accounting and authenticated object-length verification. */
     @ColumnInfo(name = "size_bytes")
     val sizeBytes: Long,
 

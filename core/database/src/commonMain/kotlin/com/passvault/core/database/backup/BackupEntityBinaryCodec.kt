@@ -8,10 +8,8 @@ import com.passvault.core.database.entity.FolderRecordEntity
 import com.passvault.core.database.entity.PasswordHistoryRecordEntity
 import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.entity.VaultMetadataEntity
-import com.passvault.core.database.repository.MAX_ATTACHMENT_FILENAME_ENCRYPTED_PAYLOAD_BYTES
 import com.passvault.core.database.repository.MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES
 import com.passvault.core.database.repository.MAX_FOLDER_ENCRYPTED_PAYLOAD_BYTES
-import com.passvault.core.database.repository.MAX_PASSWORD_HISTORY_ENCRYPTED_PAYLOAD_BYTES
 import com.passvault.core.database.repository.MAX_TAG_ENCRYPTED_PAYLOAD_BYTES
 import okio.Buffer
 
@@ -185,16 +183,14 @@ internal object BackupEntityBinaryCodec {
     fun maximumPlaintextBytes(recordType: Int): Int = when (recordType) {
         BackupRecordType.MANIFEST -> MANIFEST_MAX_BYTES
         BackupRecordType.METADATA -> METADATA_MAX_BYTES
-        BackupRecordType.FOLDER,
-        BackupRecordType.TAG,
-        -> SMALL_ENTITY_MAX_BYTES
+        BackupRecordType.FOLDER -> FOLDER_MAX_BYTES
+        BackupRecordType.TAG -> TAG_MAX_BYTES
         BackupRecordType.CREDENTIAL -> CREDENTIAL_MAX_BYTES
         BackupRecordType.CREDENTIAL_FOLDER_REFERENCE,
         BackupRecordType.CREDENTIAL_TAG_REFERENCE,
         -> REFERENCE_MAX_BYTES
-        BackupRecordType.ATTACHMENT,
-        BackupRecordType.PASSWORD_HISTORY,
-        -> LARGE_ENTITY_MAX_BYTES
+        BackupRecordType.ATTACHMENT -> ATTACHMENT_MAX_BYTES
+        BackupRecordType.PASSWORD_HISTORY -> PASSWORD_HISTORY_MAX_BYTES
         BackupRecordType.METADATA_END -> 0
         else -> error("Not a metadata record type")
     }
@@ -282,7 +278,7 @@ internal object BackupEntityBinaryCodec {
     private fun Buffer.writeCredential(value: CredentialRecordEntity) {
         writeString(value.id, MAX_IDENTIFIER_UTF8_BYTES)
         writeString(value.type, MAX_CREDENTIAL_TYPE_UTF8_BYTES)
-        writeBytes(value.summaryPayload, MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
+        writeBytes(value.summaryPayload, MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES)
         writeBytes(value.summaryNonce, MAX_NONCE_BYTES)
         writeBytes(value.secretPayload, MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES)
         writeBytes(value.secretNonce, MAX_NONCE_BYTES)
@@ -310,7 +306,7 @@ internal object BackupEntityBinaryCodec {
             CredentialRecordEntity(
                 id = id,
                 type = type,
-                summaryPayload = readBytes(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
+                summaryPayload = readBytes(MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES),
                 summaryNonce = readBytes(MAX_NONCE_BYTES),
                 secretPayload = readBytes(MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES),
                 secretNonce = readBytes(MAX_NONCE_BYTES),
@@ -348,7 +344,7 @@ internal object BackupEntityBinaryCodec {
     private fun Buffer.writeAttachment(value: AttachmentRecordEntity) {
         writeString(value.id, MAX_IDENTIFIER_UTF8_BYTES)
         writeString(value.credentialId, MAX_IDENTIFIER_UTF8_BYTES)
-        writeBytes(value.encryptedFilename, MAX_ATTACHMENT_FILENAME_ENCRYPTED_PAYLOAD_BYTES)
+        writeBytes(value.encryptedFilename, MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES)
         writeBytes(value.filenameNonce, MAX_NONCE_BYTES)
         writeString(value.mimeType, MAX_METADATA_TEXT_UTF8_BYTES)
         writeLong(value.sizeBytes)
@@ -362,7 +358,7 @@ internal object BackupEntityBinaryCodec {
     private fun Buffer.readAttachment() = AttachmentRecordEntity(
         id = readString(MAX_IDENTIFIER_UTF8_BYTES),
         credentialId = readString(MAX_IDENTIFIER_UTF8_BYTES),
-        encryptedFilename = readBytes(MAX_ATTACHMENT_FILENAME_ENCRYPTED_PAYLOAD_BYTES),
+        encryptedFilename = readBytes(MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES),
         filenameNonce = readBytes(MAX_NONCE_BYTES),
         mimeType = readString(MAX_METADATA_TEXT_UTF8_BYTES),
         sizeBytes = readLong(),
@@ -376,7 +372,7 @@ internal object BackupEntityBinaryCodec {
     private fun Buffer.writePasswordHistory(value: PasswordHistoryRecordEntity) {
         writeString(value.id, MAX_IDENTIFIER_UTF8_BYTES)
         writeString(value.credentialId, MAX_IDENTIFIER_UTF8_BYTES)
-        writeBytes(value.encryptedPassword, MAX_PASSWORD_HISTORY_ENCRYPTED_PAYLOAD_BYTES)
+        writeBytes(value.encryptedPassword, MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES)
         writeBytes(value.passwordNonce, MAX_NONCE_BYTES)
         writeLong(value.changedAt)
     }
@@ -384,7 +380,7 @@ internal object BackupEntityBinaryCodec {
     private fun Buffer.readPasswordHistory() = PasswordHistoryRecordEntity(
         id = readString(MAX_IDENTIFIER_UTF8_BYTES),
         credentialId = readString(MAX_IDENTIFIER_UTF8_BYTES),
-        encryptedPassword = readBytes(MAX_PASSWORD_HISTORY_ENCRYPTED_PAYLOAD_BYTES),
+        encryptedPassword = readBytes(MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES),
         passwordNonce = readBytes(MAX_NONCE_BYTES),
         changedAt = readLong(),
     )
@@ -471,12 +467,87 @@ internal object BackupEntityBinaryCodec {
     private const val MAX_NONCE_BYTES = 64
     private const val MAX_FIXED_SECRET_BYTES = 68
     private const val BLIND_INDEX_BYTES = 32
-    private const val MANIFEST_MAX_BYTES = 64
-    private const val METADATA_MAX_BYTES = 4 * 1024
-    private const val SMALL_ENTITY_MAX_BYTES = 128 * 1024
-    private const val REFERENCE_MAX_BYTES = 8 * 1024
-    private const val LARGE_ENTITY_MAX_BYTES = 33 * 1024 * 1024
-    private const val CREDENTIAL_MAX_BYTES = 65 * 1024 * 1024
+    /**
+     * Format-2 writers have always emitted summary, filename, and history envelopes using at most
+     * one 64 KiB padded bucket plus AEAD framing. Keep the next power-of-two bound for compatibility.
+     */
+    internal const val MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES = 128 * 1024
+    private const val INT_BYTES = 4
+    private const val LONG_BYTES = 8
+    private const val MARKER_BYTES = 1
+    private const val IDENTIFIER_FIELD_MAX_BYTES = INT_BYTES + MAX_IDENTIFIER_UTF8_BYTES
+    private const val CREDENTIAL_TYPE_FIELD_MAX_BYTES = INT_BYTES + MAX_CREDENTIAL_TYPE_UTF8_BYTES
+    private const val METADATA_TEXT_FIELD_MAX_BYTES = INT_BYTES + MAX_METADATA_TEXT_UTF8_BYTES
+    private const val SHORT_TEXT_FIELD_MAX_BYTES = INT_BYTES + MAX_SHORT_TEXT_UTF8_BYTES
+    private const val NONCE_FIELD_MAX_BYTES = INT_BYTES + MAX_NONCE_BYTES
+    private const val BLIND_INDEX_FIELD_MAX_BYTES = INT_BYTES + BLIND_INDEX_BYTES
+    private const val FIXED_SECRET_FIELD_MAX_BYTES = INT_BYTES + MAX_FIXED_SECRET_BYTES
+    private const val COMPACT_PAYLOAD_FIELD_MAX_BYTES = INT_BYTES + MAX_COMPACT_ENCRYPTED_PAYLOAD_BYTES
+    private const val CREDENTIAL_PAYLOAD_FIELD_MAX_BYTES = INT_BYTES + MAX_CREDENTIAL_ENCRYPTED_PAYLOAD_BYTES
+    private const val FOLDER_PAYLOAD_FIELD_MAX_BYTES = INT_BYTES + MAX_FOLDER_ENCRYPTED_PAYLOAD_BYTES
+    private const val TAG_PAYLOAD_FIELD_MAX_BYTES = INT_BYTES + MAX_TAG_ENCRYPTED_PAYLOAD_BYTES
+    private const val NULLABLE_IDENTIFIER_FIELD_MAX_BYTES = MARKER_BYTES + IDENTIFIER_FIELD_MAX_BYTES
+    private const val NULLABLE_SHORT_TEXT_FIELD_MAX_BYTES = MARKER_BYTES + SHORT_TEXT_FIELD_MAX_BYTES
+    private const val NULLABLE_LONG_MAX_BYTES = MARKER_BYTES + LONG_BYTES
+
+    // Keep these sums aligned with the write/read methods above. The credential ceiling includes
+    // the retired schema-1 title blind-index field because existing format-2 backups remain readable.
+    private const val MANIFEST_MAX_BYTES = INT_BYTES + 8 * INT_BYTES + LONG_BYTES
+    private const val METADATA_MAX_BYTES =
+        3 * INT_BYTES +
+            IDENTIFIER_FIELD_MAX_BYTES +
+            SHORT_TEXT_FIELD_MAX_BYTES +
+            (INT_BYTES + MAX_SALT_BYTES) +
+            3 * INT_BYTES +
+            FIXED_SECRET_FIELD_MAX_BYTES +
+            NONCE_FIELD_MAX_BYTES +
+            FIXED_SECRET_FIELD_MAX_BYTES +
+            NONCE_FIELD_MAX_BYTES +
+            LONG_BYTES +
+            NULLABLE_LONG_MAX_BYTES +
+            INT_BYTES
+    private const val FOLDER_MAX_BYTES =
+        IDENTIFIER_FIELD_MAX_BYTES +
+            NULLABLE_IDENTIFIER_FIELD_MAX_BYTES +
+            BLIND_INDEX_FIELD_MAX_BYTES +
+            FOLDER_PAYLOAD_FIELD_MAX_BYTES +
+            NONCE_FIELD_MAX_BYTES +
+            NULLABLE_SHORT_TEXT_FIELD_MAX_BYTES +
+            INT_BYTES +
+            2 * LONG_BYTES
+    private const val TAG_MAX_BYTES =
+        IDENTIFIER_FIELD_MAX_BYTES +
+            BLIND_INDEX_FIELD_MAX_BYTES +
+            TAG_PAYLOAD_FIELD_MAX_BYTES +
+            NONCE_FIELD_MAX_BYTES +
+            NULLABLE_SHORT_TEXT_FIELD_MAX_BYTES +
+            LONG_BYTES
+    private const val REFERENCE_MAX_BYTES = 2 * IDENTIFIER_FIELD_MAX_BYTES
+    private const val ATTACHMENT_MAX_BYTES =
+        2 * IDENTIFIER_FIELD_MAX_BYTES +
+            COMPACT_PAYLOAD_FIELD_MAX_BYTES +
+            NONCE_FIELD_MAX_BYTES +
+            2 * METADATA_TEXT_FIELD_MAX_BYTES +
+            IDENTIFIER_FIELD_MAX_BYTES +
+            2 * LONG_BYTES +
+            INT_BYTES +
+            SHORT_TEXT_FIELD_MAX_BYTES
+    private const val PASSWORD_HISTORY_MAX_BYTES =
+        2 * IDENTIFIER_FIELD_MAX_BYTES +
+            COMPACT_PAYLOAD_FIELD_MAX_BYTES +
+            NONCE_FIELD_MAX_BYTES +
+            LONG_BYTES
+    private const val CREDENTIAL_MAX_BYTES =
+        IDENTIFIER_FIELD_MAX_BYTES +
+            CREDENTIAL_TYPE_FIELD_MAX_BYTES +
+            BLIND_INDEX_FIELD_MAX_BYTES +
+            COMPACT_PAYLOAD_FIELD_MAX_BYTES +
+            CREDENTIAL_PAYLOAD_FIELD_MAX_BYTES +
+            2 * NONCE_FIELD_MAX_BYTES +
+            NULLABLE_IDENTIFIER_FIELD_MAX_BYTES +
+            MARKER_BYTES +
+            2 * LONG_BYTES +
+            NULLABLE_LONG_MAX_BYTES
 }
 
 private fun VaultMetadataEntity.clearBinaryFields() {

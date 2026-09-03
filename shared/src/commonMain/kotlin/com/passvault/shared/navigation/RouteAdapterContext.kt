@@ -14,6 +14,7 @@ import com.passvault.feature.onboarding.presentation.OnboardingViewModel
 import com.passvault.feature.settings.presentation.SettingsViewModel
 import com.passvault.feature.unlock.presentation.UnlockViewModel
 import com.passvault.feature.vault.presentation.VaultViewModel
+import com.passvault.shared.platform.preservesSensitiveClipboardOnBackgroundLock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 
@@ -52,6 +53,7 @@ internal class RouteAdapterContext(
             clipboardService = clipboardService,
             text = text,
             timeoutMs = settingsViewModel.state.value.clipboardClearSeconds * 1_000L,
+            preserveClipboardOnBackgroundLock = preservesSensitiveClipboardOnBackgroundLock(),
         )
         true
     } catch (cancelled: CancellationException) {

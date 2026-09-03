@@ -1,6 +1,6 @@
 # PassVault privacy behavior
 
-Last source review: 2026-08-11
+Last source review: 2026-09-03
 
 This is a technical description of the current application, not legal advice or a claim of GDPR/CCPA/PIPEDA
 certification. The repository contains no verified company, website, privacy email, or policy owner.
@@ -33,21 +33,29 @@ needs them, and managed-runtime copies cannot be guaranteed wipeable.
 
 ## User-controlled exports and clipboard
 
-Backups are created only after a user action and are encrypted with a separate backup password. PassVault does not
-ship CSV or plaintext credential export. Android and iOS use system document interfaces; Desktop uses a native file
-dialog. Once a backup is saved to a user-selected location, retention and sharing are controlled by the user and
-operating system.
+Backups are created only after a user action and are encrypted with a separate backup password; new exports reject
+an exact match with the current vault master password. PassVault does not ship CSV or plaintext credential export.
+Android and iOS use system document interfaces; Desktop uses a native file dialog. Once a backup is saved to a
+user-selected location, retention and sharing are controlled by the user and operating system.
 
 Opening or exporting an attachment is also an explicit user action. The app decrypts only the selected attachment to
 an owned, protected temporary location or user-selected destination and then hands it to the operating system. A
-chosen export becomes user-controlled plaintext. Preview plaintext is deleted after the handoff/lifetime and stale
-owned cache entries are cleaned on startup, but another application, document provider, operating-system cache,
-backup product, or interrupted storage device may retain a copy outside PassVault's control.
+chosen export becomes user-controlled plaintext. Android registers a short-deadline, reboot-persistent cleanup lease
+before creating private preview or export staging files and also requests cleanup on lock, foreground return, memory
+pressure, abort, and startup. Another application, document provider, operating-system cache, backup product, or
+interrupted storage device may still retain a copy outside PassVault's control.
 
 Copied credentials and TOTP codes enter the operating-system clipboard and may be observable by the OS or other
 software. On Desktop, PassVault requests the Windows history/cloud opt-outs and the macOS concealed/transient
 pasteboard conventions. These hints are advisory to third-party software. The app can clear its own still-current
 value after the configured timeout but cannot revoke content another process has already read.
+
+Opening a stored credential URL is also an explicit user action. PassVault accepts only `http` or `https` with a
+syntactically valid DNS, IPv4, or bracketed IPv6 authority, and a missing scheme defaults to `https`. It intentionally
+allows local and private destinations because the app does not resolve or fetch the URL itself. Only the validated URL
+field is handed to the operating system; PassVault does not append a username, password, TOTP setup key, note, or
+custom field. After that handoff, the selected browser or handler and its extensions, history, synchronization, system
+DNS, and network path may observe or retain the URL according to the user's platform and browser settings.
 
 ## Platform notes
 
@@ -64,9 +72,10 @@ Users can view and edit records and their attachments while the vault is unlocke
 backup. Deleting an attachment or its owning credential removes both its database relationship and managed encrypted
 object; crash cleanup handles transaction/file-system boundary leftovers. Deleting the application through the
 operating system removes app-private files subject to platform behavior. The operating system controls whether an
-app's Keystore/Keychain item survives uninstall; a surviving mobile biometric item is device-only and is unusable
-without matching local enrollment metadata and vault verification. PassVault currently has no remote copy to delete
-and no operator capable of recovering a forgotten master password.
+app's Keystore/Keychain item survives uninstall. iOS deletes every item under PassVault's biometric service when no
+vault exists, otherwise enumerates non-secret account metadata and retries deletion outside the active vault. Any item
+retained after an OS deletion failure remains device-only and biometric-protected. PassVault currently has no remote
+copy to delete and no operator capable of recovering a forgotten master password.
 
 The publisher must perform a legal/privacy review and add verified ownership, jurisdiction, retention, contact, and
 store-disclosure information before public distribution.

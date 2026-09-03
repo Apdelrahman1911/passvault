@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "detekt": {
+    "minimumFileCount": 393,
+    "minimumGradleScriptCount": 21,
+    "minimumProjectSourceCounts": {
+      ":app-android": 22,
+      ":app-desktop": 30,
+      ":core:crypto": 17,
+      ":core:database": 63,
+      ":core:designsystem": 19,
+      ":core:domain": 25,
+      ":core:navigation": 13,
+      ":core:otp": 6,
+      ":core:security": 12,
+      ":core:testing": 8,
+      ":feature:backup": 11,
+      ":feature:credential": 18,
+      ":feature:generator": 6,
+      ":feature:health": 9,
+      ":feature:onboarding": 7,
+      ":feature:settings": 10,
+      ":feature:unlock": 3,
+      ":feature:vault": 14,
+      ":shared": 79
+    }
+  },
+  "securityAnalysis": {
+    "minimumFileCount": 516,
+    "minimumGroupCounts": {
+      "automation": 114,
+      "apple": 4,
+      "kotlin": 393,
+      "native": 5
+    },
+    "allowedPartialParsing": {
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt": "d5874bcb858caed3da8a12018299a3a5f799ab3664110f497939e58802c7381d",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopSystemTray.kt": "8df57de16495c20b7df682368819aeee7cd889be3b4919f6d373f911f95da1ca",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/VaultBackupV2Service.kt": "a9e9ad731cb7a285fe32c84e961ca21f416c4b6b85657c9bb6035c32d4e1451f",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/entity/MigrationStateEntity.kt": "afd890fe44c4ab8fe4357e2d84144e3a350737c620b2deaaff25fd73148494fb",
+      "shared/src/commonMain/kotlin/com/passvault/shared/platform/PlatformNavigationTransitions.kt": "129cc88e64d376b3a48136d0beb23d253901f65ef9e1b974e6ac3591b9b6b1a8"
+    }
+  }
+}

@@ -49,6 +49,16 @@ class FakeVaultRepository : VaultRepository {
             field = value
         }
 
+    /** Caller-owned password references retained only so tests can verify lifecycle cleanup. */
+    var lastCreatePassword: SensitiveText? = null
+        private set
+    var lastUnlockPassword: SensitiveText? = null
+        private set
+    var lastCurrentPasswordChange: SensitiveText? = null
+        private set
+    var lastNewPasswordChange: SensitiveText? = null
+        private set
+
     /**
      * Pre-configure a vault to exist.
      */
@@ -87,6 +97,10 @@ class FakeVaultRepository : VaultRepository {
         shouldFailNext = false
         failWith = null
         unlockDelayMillis = 0
+        lastCreatePassword = null
+        lastUnlockPassword = null
+        lastCurrentPasswordChange = null
+        lastNewPasswordChange = null
     }
 
     override suspend fun exists(): Result<Boolean> {
@@ -94,6 +108,7 @@ class FakeVaultRepository : VaultRepository {
     }
 
     override suspend fun create(masterPassword: SensitiveText): Result<VaultId> {
+        lastCreatePassword = masterPassword
         return checkFailure {
             if (!MasterPasswordPolicy.accepts(masterPassword)) {
                 return@checkFailure Result.failure(
@@ -119,6 +134,7 @@ class FakeVaultRepository : VaultRepository {
     }
 
     override suspend fun unlock(masterPassword: SensitiveText): Result<SessionId> {
+        lastUnlockPassword = masterPassword
         return checkFailure {
             if (!MasterPasswordPolicy.acceptsExisting(masterPassword)) {
                 return@checkFailure Result.failure(
@@ -159,6 +175,8 @@ class FakeVaultRepository : VaultRepository {
         currentPassword: SensitiveText,
         newPassword: SensitiveText,
     ): Result<Unit> {
+        lastCurrentPasswordChange = currentPassword
+        lastNewPasswordChange = newPassword
         return checkFailure {
             when {
                 !MasterPasswordPolicy.accepts(newPassword) -> {
