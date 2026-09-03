@@ -2065,6 +2065,10 @@ grep -Fq 'NSFileProtectionComplete' iosApp/iosApp/iosApp.entitlements
 grep -Fq 'keychain-access-groups' iosApp/iosApp/iosApp.entitlements
 test "$(grep -Fc 'CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;' \
     iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 2
+test "$(grep -Fc 'CODE_SIGN_STYLE = Automatic;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 1
+test "$(grep -Fc 'MOBILE_RELEASE_IOS_CODE_SIGN_STYLE = Manual;' \
+    iosApp/iosApp.xcodeproj/project.pbxproj)" -eq 1
 grep -Fq 'attributes = IOS_BACKUP_PROTECTION' \
     shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBackupFileStore.kt
 grep -Fq 'protectIosBackupPath(fileManager, path)' \
@@ -2107,6 +2111,10 @@ for shared_ios_input in \
     fi
 done
 grep -Fq 'validate_shared_release_signing_mapping' scripts/validate-ios-build-identities.sh
+grep -Fq 'validate_configuration Debug com.passvault.ios.debug "PassVault Dev" Automatic' \
+    scripts/validate-ios-build-identities.sh
+grep -Fq 'validate_configuration Release com.passvault.ios PassVault Manual' \
+    scripts/validate-ios-build-identities.sh
 if grep -Eq '^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=' \
     iosApp/Configuration/Config.xcconfig; then
     echo "The common Xcode configuration overrides the two application identities." >&2
@@ -2204,6 +2212,72 @@ grep -Fq 'CI Gate' .github/workflows/ci.yml
 grep -Fq 'contexts: ["CI Gate"]' scripts/configure-release-branches.sh
 grep -Fq 'Verify the exact candidate source' .github/workflows/testing-release.yml
 bash -n scripts/verify-ios-exported-artifact.sh
+python3 scripts/test-ios-entitlements.py
+grep -Fq 'verify-ios-entitlements.py' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'archive-normalized-entitlements.json' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'Signed artifact contains unreviewed entitlements:' \
+    scripts/verify-ios-entitlements.py
+grep -Fq 'com.apple.developer.associated-domains' scripts/test-ios-entitlements.py
+
+ruby -ryaml <<'RUBY'
+def each_run_script(value, &block)
+  case value
+  when Hash
+    value.each do |key, child|
+      block.call(child) if key == "run" && child.is_a?(String)
+      each_run_script(child, &block)
+    end
+  when Array
+    value.each { |child| each_run_script(child, &block) }
+  end
+end
+
+def logical_commands(script)
+  commands = []
+  current = +""
+  script.each_line do |line|
+    stripped = line.strip
+    next if current.empty? && (stripped.empty? || stripped.start_with?("#"))
+    current << " " unless current.empty?
+    current << stripped.delete_suffix("\\").rstrip
+    next if stripped.end_with?("\\")
+    commands << current
+    current = +""
+  end
+  commands << current unless current.empty?
+  commands
+end
+
+archive_count = 0
+export_count = 0
+Dir[".github/workflows/*.{yml,yaml}"].sort.each do |path|
+  document = YAML.safe_load(File.read(path, encoding: "UTF-8"), aliases: true)
+  each_run_script(document) do |script|
+    logical_commands(script).each do |command|
+      if command.match?(/\bxcodebuild\s+archive\b/)
+        archive_count += 1
+        required = %w[
+          CODE_SIGN_STYLE=Manual
+          CODE_SIGN_IDENTITY=
+          DEVELOPMENT_TEAM=
+          PROVISIONING_PROFILE_SPECIFIER=
+        ]
+        missing = required.reject { |setting| command.include?(setting) }
+        abort("iOS archive is not explicitly manual-signed in #{path}: #{missing.join(', ')}") \
+          unless missing.empty?
+      elsif command.match?(/\bxcodebuild\s+-exportArchive\b/)
+        export_count += 1
+        unless command.include?("-exportOptionsPlist") &&
+               script.include?("Add :signingStyle string manual")
+          abort("iOS export is not explicitly manual-signed in #{path}")
+        end
+      end
+    end
+  end
+end
+abort("No iOS archive workflow was checked") if archive_count.zero?
+abort("No iOS export workflow was checked") if export_count.zero?
+RUBY
 grep -Fq 'TESTFLIGHT_DISTRIBUTION_MODE' fastlane/Fastfile
 if grep -Eq '(^[[:space:]]*-[[:space:]]+public-link[[:space:]]*$|default:[[:space:]]*public-link|TESTFLIGHT_DISTRIBUTION_MODE:[[:space:]]*public-link)' \
     .github/workflows/mobile-store-release.yml; then
@@ -2469,8 +2543,8 @@ grep -Fq 'PROFILE_GET_TASK_ALLOW' .github/workflows/mobile-store-release.yml
 grep -Fq 'PROFILE_BETA_REPORTS' .github/workflows/mobile-store-release.yml
 grep -Fq 'Entitlements:get-task-allow' scripts/verify-ios-exported-artifact.sh
 grep -Fq 'Entitlements:beta-reports-active' scripts/verify-ios-exported-artifact.sh
-grep -Fq 'com.apple.developer.default-data-protection' scripts/verify-ios-exported-artifact.sh
-grep -Fq 'keychain-access-groups:0' scripts/verify-ios-exported-artifact.sh
+grep -Fq 'com.apple.developer.default-data-protection' scripts/test-ios-entitlements.py
+grep -Fq 'keychain-access-groups' scripts/test-ios-entitlements.py
 grep -Fq 'INFO_PLIST_NON_EXEMPT_ENCRYPTION=%s' scripts/verify-ios-release-signing.sh
 grep -Fq 'NON_EXEMPT_APPROVED) expected_encryption=true' \
     scripts/verify-ios-exported-artifact.sh

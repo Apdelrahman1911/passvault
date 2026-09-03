@@ -62,6 +62,19 @@ the exact existing build and must not receive upload-key material:
 Never regenerate the key. Use the store-specific key upgrade or rotation
 process if compromise is suspected.
 
+## iOS
+
+The Release configuration defaults to manual signing and therefore fails closed
+when a local archive does not provide the approved distribution identity and
+profile. Debug retains automatic development signing. The canonical Store
+workflow supplies the Release inputs explicitly and exports with manual signing.
+
+`iosApp/iosApp/iosApp.entitlements` is the reviewed capability declaration.
+Final archive and IPA verification expands its bundle/team placeholders, permits
+only the expected Xcode-generated distribution keys, and rejects missing,
+modified, or additional signed entitlements. Keep capability changes and their
+artifact-verifier coverage in the same reviewed commit.
+
 ## Windows
 
 Public Windows releases require a public-trust Authenticode identity and trusted
