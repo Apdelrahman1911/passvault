@@ -3,6 +3,7 @@ package com.passvault.core.database
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.room.useReaderConnection
+import androidx.room.useWriterConnection
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
@@ -170,6 +171,46 @@ class VaultDatabaseBootstrapTest {
             val bootstrap = bootstrap(path) { openDatabase(path) }
             assertEquals(VaultDatabaseBootstrapResult.Ready, bootstrap.openAndVerify())
             bootstrap.close()
+        }
+    }
+
+    @Test
+    fun `terminal close checkpoints committed WAL frames before releasing Room`() = runTest {
+        withTempDirectory { directory ->
+            val path = directory.resolve("vault.db")
+            val bootstrap = bootstrap(path) { openDatabase(path) }
+            assertEquals(VaultDatabaseBootstrapResult.Ready, bootstrap.openAndVerify())
+
+            bootstrap.database().useWriterConnection { connection ->
+                connection.usePrepared("PRAGMA wal_autocheckpoint = 0") { statement ->
+                    while (statement.step()) {
+                        // Consume any pragma status rows.
+                    }
+                }
+                connection.usePrepared(
+                    sql = """
+                    INSERT INTO migration_state(
+                        from_version,
+                        to_version,
+                        migration_name,
+                        is_successful,
+                        started_at,
+                        is_rolled_back
+                    ) VALUES (4, 5, 'checkpoint-probe', 1, 1, 0)
+                    """.trimIndent(),
+                ) { statement ->
+                    assertFalse(statement.step())
+                }
+            }
+            val walPath = Path.of(path.toString() + "-wal")
+            assertTrue(Files.size(walPath) > 0L)
+
+            assertTrue(bootstrap.checkpointAndClose().isSuccess)
+            assertTrue(!Files.exists(walPath) || Files.size(walPath) == 0L)
+            assertEquals(
+                1L,
+                queryLong(path, "SELECT COUNT(*) FROM migration_state WHERE migration_name = 'checkpoint-probe'"),
+            )
         }
     }
 

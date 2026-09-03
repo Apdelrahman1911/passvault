@@ -41,11 +41,17 @@ private fun secureDatabasePath(): String {
         fileManager.createDirectoryAtPath(
             path = databaseDirectory,
             withIntermediateDirectories = true,
-            attributes = protectionAttributes(),
+            attributes = iosDatabaseProtectionAttributes(),
             error = null,
         ),
     ) { "The private iOS database directory could not be created" }
-    check(fileManager.setAttributes(protectionAttributes(), ofItemAtPath = databaseDirectory, error = null)) {
+    check(
+        fileManager.setAttributes(
+            iosDatabaseProtectionAttributes(),
+            ofItemAtPath = databaseDirectory,
+            error = null,
+        ),
+    ) {
         "The private iOS database directory could not be protected"
     }
 
@@ -72,7 +78,7 @@ private fun migrateLegacyDatabase(
 
     val movedThisAttempt = mutableListOf<Pair<String, String>>()
     try {
-        DATABASE_SUFFIXES.forEach { suffix ->
+        IOS_DATABASE_SUFFIXES.forEach { suffix ->
             val source = legacyPath + suffix
             val destination = destinationPath + suffix
             val sourceExists = fileManager.fileExistsAtPath(source)
@@ -112,10 +118,10 @@ private fun legacyDatabasePath(fileManager: NSFileManager): String {
 }
 
 private fun protectExistingDatabaseFiles(fileManager: NSFileManager, databasePath: String) {
-    DATABASE_SUFFIXES.forEach { suffix ->
+    IOS_DATABASE_SUFFIXES.forEach { suffix ->
         val path = databasePath + suffix
         if (fileManager.fileExistsAtPath(path)) {
-            check(fileManager.setAttributes(protectionAttributes(), ofItemAtPath = path, error = null)) {
+            check(fileManager.setAttributes(iosDatabaseProtectionAttributes(), ofItemAtPath = path, error = null)) {
                 "The iOS database protection attributes could not be applied"
             }
             excludeFromBackup(path)
@@ -123,7 +129,12 @@ private fun protectExistingDatabaseFiles(fileManager: NSFileManager, databasePat
     }
 }
 
-private fun protectionAttributes(): Map<Any?, *> = mapOf(
+/**
+ * Complete protection intentionally makes open database files unavailable after device lock.
+ * The Swift host must therefore dismantle the Compose runtime and checkpoint/close Room on the
+ * protected-data notification, then create a fresh runtime only after data becomes available.
+ */
+internal fun iosDatabaseProtectionAttributes(): Map<Any?, *> = mapOf(
     NSFileProtectionKey to NSFileProtectionComplete,
 )
 
@@ -165,13 +176,13 @@ fun createDatabaseBootstrap(): VaultDatabaseBootstrap {
 
 private fun protectRecoveryPath(path: String) {
     val fileManager = NSFileManager.defaultManager
-    check(fileManager.setAttributes(protectionAttributes(), ofItemAtPath = path, error = null)) {
+    check(fileManager.setAttributes(iosDatabaseProtectionAttributes(), ofItemAtPath = path, error = null)) {
         "The iOS recovery data could not be protected"
     }
     excludeFromBackup(path)
 }
 
-private val DATABASE_SUFFIXES = listOf("-wal", "-shm", "-journal", "")
+internal val IOS_DATABASE_SUFFIXES = listOf("-wal", "-shm", "-journal", "")
 private const val ATTACHMENT_DIRECTORY = "attachments"
 private const val RECOVERY_DIRECTORY = "recovery"
 private const val DATABASE_DIAGNOSTIC_FILE = "database-health.events"

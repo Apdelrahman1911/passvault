@@ -141,6 +141,9 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 - The iOS native privacy cover remains opaque until the shared UI acknowledges post-lock scrubbing. Lock failures and
   acknowledgement stalls use separate bounded retries; exhaustion exposes only a localized retry surface over the
   cover and never reveals the protected Compose hierarchy.
+- iOS keeps `NSFileProtectionComplete` for the Room database and sidecars. Its protected-data callback locks and
+  scrubs the session, unmounts Compose, checkpoints/closes Room, and stops Koin; a fresh runtime is allowed only after
+  protected data becomes available again. Teardown failures remain behind the native recovery cover.
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
   App-initiated document pickers retain a bounded return grace, but a non-exported screen-off observer active only for
   those flows revokes the grace and requests the normal background lock immediately. The policy records screen-off
@@ -200,6 +203,8 @@ security certification.
   record can still require roughly 130–195 MiB of transient managed memory; ordinary repository-created rows are far
   smaller. Format-1 compatibility import retains its older high-amplification JSON/Base64 path.
 - Android device lifecycle and Desktop graphical/window-protection behavior need platform smoke tests.
+- Simulator tests cover the iOS protected-data state machine and shutdown ordering, but Class A key eviction,
+  lock-time forced I/O/WAL behavior, and repeated lock/unlock cycles still require a passcode-enabled physical iPhone.
 - Face ID, Touch ID, Android biometrics, and Windows Hello prompts, cancellation, lockout, process restart, and
   enrollment/credential invalidation require physical-device smoke tests; compilation and common/repository tests
   cannot prove OS UI behavior. Windows Hello credentials represent the Windows Hello account and do not guarantee

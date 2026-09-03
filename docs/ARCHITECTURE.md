@@ -73,6 +73,12 @@ stale acknowledgement, or acknowledgement timeout keeps the native surface conce
 and UI acknowledgement waits on separate bounded budgets with backoff; an exhausted or unavailable runtime exposes
 a localized retry action on the opaque native cover rather than entering a silent process-lifetime dead end.
 
+The SwiftUI host also owns the `NSFileProtectionComplete` lifecycle. Before protected data becomes unavailable it
+covers the window, locks and scrubs the session, removes the Compose controller, cancels the application scope,
+checkpoints and closes Room, and stops Koin. It does not mount a replacement Compose/Koin runtime until
+`UIApplication.isProtectedDataAvailable` is true. A closed `VaultDatabaseBootstrap` is terminal; the rebuilt graph
+owns a new bootstrap and Room instance.
+
 Biometric enrollment is an explicit unlocked-vault action. `DefaultBiometricUnlockService` copies the active VEK to
 the platform `BiometricKeyStore`; Android encrypts it with an auth-per-use Keystore key, while iOS stores it as a
 device-only Keychain item bound to the current biometric set. On biometric unlock, the repository authenticates its

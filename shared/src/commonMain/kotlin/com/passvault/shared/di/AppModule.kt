@@ -86,7 +86,8 @@ object AppModule {
         single { createDatabaseBootstrap(get()) }
         single<VaultDatabase> { get<VaultDatabaseBootstrap>().database() }
         single<AppDatabaseLifecycle> {
-            AppDatabaseLifecycle { get<VaultDatabaseBootstrap>().close() }
+            val bootstrap = get<VaultDatabaseBootstrap>()
+            AppDatabaseLifecycle { bootstrap.checkpointAndClose() }
         }
         single { createAttachmentBlobStore(get()) }
 

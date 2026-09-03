@@ -63,6 +63,10 @@
 - **Resolved FIX:** #119 — production screenshot protection no longer exposes a runtime disable operation; the enabled state is one-way and a regression test guards the public API.
 - **Resolved FIX:** #134 — sourced shell-library contracts are documented and enforced, inline workflow callers enable strict mode, and macOS keychain capture now checks the `security` command directly instead of losing its status through process substitution.
 - **Resolved FIX:** #136 — every iOS `LAContext` now passes through a suspending, `finally`-backed lifecycle helper, including capability probing, enrollment, and Keychain reads; simulator tests cover success, failure, and cancellation invalidation.
+- **Mitigated, verification still open:** #132 — iOS now observes protected-data transitions, keeps the native cover
+  opaque, locks and scrubs the session, dismantles Compose, checkpoints/closes Room, stops Koin, and rebuilds only
+  after data is available. Automated lifecycle/WAL/protection tests and Debug/Release simulator builds pass; a
+  passcode-enabled physical-iPhone forced-I/O and repeated-cycle matrix is still required before closure.
 
 The detailed tables below retain the original recommendations for traceability; this section is the authoritative final disposition.
 
@@ -176,7 +180,7 @@ The detailed tables below retain the original recommendations for traceability; 
 | [121](https://github.com/Apdelrahman1911/passvault/issues/121) | Low | `pv_bio_destroy` waits without a timeout while an OS prompt is pending | Native destroy can wait forever for a direct consumer, while the JVM wrapper bounds/avoids the path; add ABI robustness tests before elevating impact. |
 | [123](https://github.com/Apdelrahman1911/passvault/issues/123) | Low | Minimum seed length is 80 bits, below RFC 4226 R6 (128 bits) | 80-bit TOTP seeds are below RFC 4226 R6; confirm provider interoperability, then raise the new-enrollment floor or document migration. |
 | [128](https://github.com/Apdelrahman1911/passvault/issues/128) | Low | Document-picker `asCopy` intermediate sits at default protection briefly | The picker-controlled intermediate protection window needs real iOS device evidence and immediate post-receipt protection. |
-| [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | No protected-data lifecycle handling exists despite NSFileProtectionComplete; test I/O during lock and design quiesce/reopen behavior. |
+| [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | Source mitigation and automated regression coverage are implemented; keep open until physical-device lock/forced-I/O/WAL and repeated-cycle verification proves the runtime behavior. |
 | [133](https://github.com/Apdelrahman1911/passvault/issues/133) | Low | External URL opening relies on a scheme allowlist only | The title overstates the gap: HTTP(S), authority, character, and port syntax are validated. IP classes (127.0.0.1/private/link-local) are not filtered; decide if that informational hardening is needed. |
 | [135](https://github.com/Apdelrahman1911/passvault/issues/135) | Low | Notices are generated, not diffed against the actual release graph | Notice checks compare repository files, not the resolved dependency graph; automate SBOM/license diffing as a release-process improvement. |
 | [140](https://github.com/Apdelrahman1911/passvault/issues/140) | Informational | R8 keeps the entire libsodium binding package unshrunk | The blanket libsodium keep rule is conservative, not proven required; measure minified builds and narrow only after KAT/instrumentation tests. |

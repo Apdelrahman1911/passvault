@@ -144,7 +144,7 @@ internal data class DesktopShutdownOperations(
     val clearClipboard: suspend () -> Unit,
     val purgeAttachmentPreviews: suspend () -> Unit,
     val closeBiometricHost: () -> Unit,
-    val closeDatabase: () -> Unit,
+    val closeDatabase: suspend () -> Unit,
 )
 
 internal data class DesktopShutdownReport(
@@ -166,7 +166,7 @@ internal fun createDesktopShutdownCoordinator(koin: Koin): DesktopShutdownCoordi
             clearClipboard = { clearClipboardForShutdown(clipboardService) },
             purgeAttachmentPreviews = attachmentFileStore::purgePreviews,
             closeBiometricHost = biometricHost::close,
-            closeDatabase = databaseLifecycle::close,
+            closeDatabase = { databaseLifecycle.close().getOrThrow() },
         ),
     )
 }

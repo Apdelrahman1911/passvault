@@ -2,6 +2,7 @@ package com.passvault.core.database
 
 import androidx.room.PooledConnection
 import androidx.room.useReaderConnection
+import androidx.room.useWriterConnection
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.driver.bundled.SQLITE_OPEN_NOFOLLOW
@@ -10,6 +11,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -112,6 +114,49 @@ class VaultDatabaseBootstrap internal constructor(
     /** Closes the Room instance if any platform component caused it to be constructed. */
     fun close() {
         if (databaseDelegate.isInitialized()) databaseDelegate.value.close()
+    }
+
+    /**
+     * Checkpoints committed WAL frames and then closes this process-lifetime Room instance.
+     *
+     * This is a terminal runtime operation: dependency injection must discard this bootstrap
+     * before database access resumes. Cleanup is non-cancellable so platform shutdown cannot
+     * strand an open handle after it has started.
+     */
+    suspend fun checkpointAndClose(): Result<Unit> = withContext(NonCancellable) {
+        mutex.withLock {
+            withContext(dispatcher) databaseContext@{
+                if (!databaseDelegate.isInitialized()) return@databaseContext Result.success(Unit)
+
+                val database = databaseDelegate.value
+                var checkpointFailed = false
+                try {
+                    database.useWriterConnection { connection ->
+                        connection.usePrepared("PRAGMA wal_checkpoint(TRUNCATE)") { statement ->
+                            check(statement.step()) { "The WAL checkpoint returned no status" }
+                            check(statement.getLong(0) == 0L) { "The WAL checkpoint remained busy" }
+                            check(!statement.step()) { "The WAL checkpoint returned unexpected status rows" }
+                        }
+                    }
+                } catch (_: Exception) {
+                    checkpointFailed = true
+                }
+
+                val closeSucceeded = try {
+                    database.close()
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+                ready = false
+
+                if (!checkpointFailed && closeSucceeded) {
+                    Result.success(Unit)
+                } else {
+                    Result.failure(IllegalStateException("The database could not be closed cleanly"))
+                }
+            }
+        }
     }
 
     @Suppress("TooGenericExceptionCaught") // SQLite exposes platform-specific exception implementations.

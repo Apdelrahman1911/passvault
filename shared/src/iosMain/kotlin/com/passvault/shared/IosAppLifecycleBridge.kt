@@ -4,15 +4,20 @@ import com.passvault.core.domain.repository.LockReason
 import com.passvault.core.domain.repository.VaultRepository
 import com.passvault.core.domain.repository.lockWithBoundedRetry
 import com.passvault.core.security.VaultUiSecurityCoordinator
+import com.passvault.shared.di.AppDatabaseLifecycle
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import org.koin.core.context.stopKoin
 import org.koin.mp.KoinPlatform
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
@@ -30,12 +35,21 @@ class IosAppLifecycleBridge internal constructor(
     private val dispatchToMain: ((() -> Unit) -> Unit),
     private val acknowledgementTimeoutMillis: Long,
     private val retryPolicy: IosBackgroundCleanupRetryPolicy,
+    private val protectedDataScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+    private val protectedDataRuntimeResolver: () -> IosProtectedDataRuntimeDependencies? =
+        ::resolveIosProtectedDataRuntime,
+    private val protectedDataRuntimeShutdown: suspend (IosProtectedDataRuntimeDependencies?) -> Boolean =
+        ::shutdownIosAppRuntime,
 ) {
     private var inactiveEpisode = false
     private val backgroundCleanupEpisode = BackgroundCleanupEpisode<Deferred<IosBackgroundCleanupOutcome>>()
     // Main-thread-confined episode state; duplicate active callbacks may add
     // observers, but cannot reset the budget of an already attached cleanup.
     private var cleanupRetryState = IosBackgroundCleanupRetryState()
+    private var protectedDataAvailable = true
+    private var protectedDataPhase = IosProtectedDataPhase.AVAILABLE
+    private var protectedDataCleanup: Deferred<IosBackgroundCleanupOutcome>? = null
+    private var protectedDataRuntime: IosProtectedDataRuntimeDependencies? = null
 
     constructor() : this(
         dispatchToMain = { block ->
@@ -59,6 +73,7 @@ class IosAppLifecycleBridge internal constructor(
         onRecoveryRequired: () -> Unit,
     ) {
         inactiveEpisode = false
+        if (!protectedDataAvailable || protectedDataPhase != IosProtectedDataPhase.AVAILABLE) return
         val applicationScope = resolveApplicationScope()
         if (applicationScope == null) {
             // The native privacy cover is the last security boundary when the
@@ -103,11 +118,169 @@ class IosAppLifecycleBridge internal constructor(
     }
 
     fun applicationDidEnterBackground() {
-        if (!backgroundCleanupEpisode.requestCleanup()) return
+        if (
+            !protectedDataAvailable ||
+            protectedDataPhase != IosProtectedDataPhase.AVAILABLE ||
+            !backgroundCleanupEpisode.requestCleanup()
+        ) {
+            return
+        }
 
         cleanupRetryState = IosBackgroundCleanupRetryState()
         val applicationScope = resolveApplicationScope() ?: return
         launchBackgroundLock(applicationScope)?.let(backgroundCleanupEpisode::attachCleanup)
+    }
+
+    /**
+     * Starts the terminal cleanup required before iOS revokes access to Complete-protected files.
+     * The native host has already installed an opaque cover and must detach Compose when either
+     * callback runs. Runtime teardown is intentionally separate so Room is not closed while its
+     * controller can still launch work.
+     */
+    fun applicationProtectedDataWillBecomeUnavailable(
+        onRuntimeTeardownRequired: () -> Unit,
+        onRecoveryRequired: () -> Unit,
+    ) {
+        protectedDataAvailable = false
+        if (protectedDataPhase != IosProtectedDataPhase.AVAILABLE) return
+        protectedDataPhase = IosProtectedDataPhase.SECURING
+
+        val runtime = protectedDataRuntime ?: protectedDataRuntimeResolver()
+        protectedDataRuntime = runtime
+        if (runtime?.repository == null || runtime.coordinator == null) {
+            dispatchProtectedDataCleanup(
+                outcome = IosBackgroundCleanupOutcome.RuntimeUnavailable,
+                onRuntimeTeardownRequired = onRuntimeTeardownRequired,
+                onRecoveryRequired = onRecoveryRequired,
+            )
+            return
+        }
+
+        val cleanup = protectedDataScope.async {
+            secureRuntimeForProtectedDataLoss(runtime)
+        }
+        protectedDataCleanup = cleanup
+        protectedDataScope.launch {
+            val outcome = try {
+                cleanup.await()
+            } catch (_: CancellationException) {
+                currentCoroutineContext().ensureActive()
+                IosBackgroundCleanupOutcome.RuntimeUnavailable
+            } catch (_: Exception) {
+                IosBackgroundCleanupOutcome.RuntimeUnavailable
+            }
+            dispatchProtectedDataCleanup(
+                cleanup = cleanup,
+                outcome = outcome,
+                onRuntimeTeardownRequired = onRuntimeTeardownRequired,
+                onRecoveryRequired = onRecoveryRequired,
+            )
+        }
+    }
+
+    /** Records that iOS can open Complete-protected files again. */
+    fun applicationProtectedDataDidBecomeAvailable() {
+        protectedDataAvailable = true
+        if (protectedDataPhase == IosProtectedDataPhase.UNAVAILABLE) {
+            protectedDataPhase = IosProtectedDataPhase.RUNTIME_STOPPED
+        }
+    }
+
+    /**
+     * Completes terminal runtime shutdown after SwiftUI has dismantled the Compose controller.
+     */
+    fun composeRuntimeDidDetach(
+        onRuntimeStopped: () -> Unit,
+        onRecoveryRequired: () -> Unit,
+    ) {
+        if (protectedDataPhase != IosProtectedDataPhase.AWAITING_CONTROLLER_DETACH) return
+        protectedDataPhase = IosProtectedDataPhase.STOPPING_RUNTIME
+        // Resolve once more after controller disposal. This closes a narrow startup race where
+        // Koin can appear after the protected-data callback but before SwiftUI unmounts Compose.
+        val runtime = protectedDataRuntime ?: protectedDataRuntimeResolver()
+
+        // Queue once beyond UIViewControllerRepresentable.dismantle so Compose has released its
+        // hierarchy before application work is cancelled and Room is checkpointed and closed.
+        dispatchToMain {
+            protectedDataScope.launch {
+                val stoppedCleanly = try {
+                    protectedDataRuntimeShutdown(runtime)
+                } catch (_: CancellationException) {
+                    currentCoroutineContext().ensureActive()
+                    false
+                } catch (_: Exception) {
+                    false
+                }
+                dispatchToMain completion@{
+                    if (protectedDataPhase != IosProtectedDataPhase.STOPPING_RUNTIME) return@completion
+                    protectedDataRuntime = null
+                    protectedDataPhase = if (protectedDataAvailable) {
+                        IosProtectedDataPhase.RUNTIME_STOPPED
+                    } else {
+                        IosProtectedDataPhase.UNAVAILABLE
+                    }
+                    if (stoppedCleanly) onRuntimeStopped() else onRecoveryRequired()
+                }
+            }
+        }
+    }
+
+    /** Resets lifecycle bookkeeping only after a newly-created Compose/Koin runtime exists. */
+    fun composeRuntimeDidStart() {
+        if (
+            !protectedDataAvailable ||
+            (protectedDataPhase != IosProtectedDataPhase.AVAILABLE &&
+                protectedDataPhase != IosProtectedDataPhase.RUNTIME_STOPPED)
+        ) {
+            return
+        }
+        protectedDataCleanup = null
+        // Capture the shutdown dependencies while Complete-protected storage is available. If a
+        // later notification races with dependency construction, teardown can still close Room.
+        protectedDataRuntime = protectedDataRuntimeResolver()
+        backgroundCleanupEpisode.reset()
+        cleanupRetryState = IosBackgroundCleanupRetryState()
+        protectedDataPhase = IosProtectedDataPhase.AVAILABLE
+    }
+
+    private suspend fun secureRuntimeForProtectedDataLoss(
+        runtime: IosProtectedDataRuntimeDependencies,
+    ): IosBackgroundCleanupOutcome = try {
+        val repository = runtime.repository ?: return IosBackgroundCleanupOutcome.RuntimeUnavailable
+        val coordinator = runtime.coordinator ?: return IosBackgroundCleanupOutcome.RuntimeUnavailable
+        if (repository.lock(LockReason.Background).isFailure) {
+            IosBackgroundCleanupOutcome.LockFailed
+        } else {
+            val requestEpoch = coordinator.requestAcknowledgement()
+            awaitUiAcknowledgement(
+                coordinator = coordinator,
+                requestEpoch = requestEpoch,
+                timeoutMillis = minOf(acknowledgementTimeoutMillis, PROTECTED_DATA_ACK_TIMEOUT_MS),
+            )
+        }
+    } catch (cancel: CancellationException) {
+        throw cancel
+    } catch (_: Exception) {
+        IosBackgroundCleanupOutcome.RuntimeUnavailable
+    }
+
+    private fun dispatchProtectedDataCleanup(
+        outcome: IosBackgroundCleanupOutcome,
+        onRuntimeTeardownRequired: () -> Unit,
+        onRecoveryRequired: () -> Unit,
+        cleanup: Deferred<IosBackgroundCleanupOutcome>? = null,
+    ) {
+        dispatchToMain {
+            if (protectedDataPhase != IosProtectedDataPhase.SECURING) return@dispatchToMain
+            if (cleanup != null && protectedDataCleanup !== cleanup) return@dispatchToMain
+            protectedDataCleanup = null
+            protectedDataPhase = IosProtectedDataPhase.AWAITING_CONTROLLER_DETACH
+            if (outcome == IosBackgroundCleanupOutcome.Succeeded) {
+                onRuntimeTeardownRequired()
+            } else {
+                onRecoveryRequired()
+            }
+        }
     }
 
     private fun launchBackgroundLock(
@@ -151,9 +324,10 @@ class IosAppLifecycleBridge internal constructor(
     private suspend fun awaitUiAcknowledgement(
         coordinator: VaultUiSecurityCoordinator,
         requestEpoch: Long,
+        timeoutMillis: Long = acknowledgementTimeoutMillis,
     ): IosBackgroundCleanupOutcome =
         if (
-            withTimeoutOrNull(acknowledgementTimeoutMillis) {
+            withTimeoutOrNull(timeoutMillis) {
                 coordinator.awaitAcknowledgement(requestEpoch)
                 true
             } == true
@@ -300,6 +474,7 @@ class IosAppLifecycleBridge internal constructor(
 
     private companion object {
         const val UI_SECURITY_ACK_TIMEOUT_MS = 5_000L
+        const val PROTECTED_DATA_ACK_TIMEOUT_MS = 1_000L
     }
 }
 
@@ -307,3 +482,82 @@ private data class IosBackgroundCleanupDependencies(
     val repository: VaultRepository,
     val coordinator: VaultUiSecurityCoordinator,
 )
+
+internal data class IosProtectedDataRuntimeDependencies(
+    val repository: VaultRepository?,
+    val coordinator: VaultUiSecurityCoordinator?,
+    val applicationScope: CoroutineScope?,
+    val databaseLifecycle: AppDatabaseLifecycle?,
+)
+
+private enum class IosProtectedDataPhase {
+    AVAILABLE,
+    SECURING,
+    AWAITING_CONTROLLER_DETACH,
+    STOPPING_RUNTIME,
+    UNAVAILABLE,
+    RUNTIME_STOPPED,
+}
+
+private fun resolveIosProtectedDataRuntime(): IosProtectedDataRuntimeDependencies? {
+    val koin = KoinPlatform.getKoinOrNull() ?: return null
+    return IosProtectedDataRuntimeDependencies(
+        repository = try {
+            koin.get()
+        } catch (_: Exception) {
+            null
+        },
+        coordinator = try {
+            koin.get()
+        } catch (_: Exception) {
+            null
+        },
+        applicationScope = try {
+            koin.get()
+        } catch (_: Exception) {
+            null
+        },
+        databaseLifecycle = try {
+            koin.get()
+        } catch (_: Exception) {
+            null
+        },
+    )
+}
+
+internal suspend fun shutdownIosAppRuntime(
+    runtime: IosProtectedDataRuntimeDependencies?,
+    stopRuntime: () -> Unit = ::stopKoin,
+    runtimeIsStopped: () -> Boolean = { KoinPlatform.getKoinOrNull() == null },
+): Boolean {
+    val applicationScopeCancelled = if (runtime == null) {
+        true
+    } else {
+        runtime.applicationScope?.let { scope ->
+            try {
+                scope.cancel()
+                true
+            } catch (_: Exception) {
+                false
+            }
+        } ?: false
+    }
+    val databaseClosed = if (runtime == null) {
+        true
+    } else {
+        runtime.databaseLifecycle?.let { databaseLifecycle ->
+            try {
+                databaseLifecycle.close().isSuccess
+            } catch (_: Exception) {
+                false
+            }
+        } ?: false
+    }
+    val runtimeStopped = try {
+        stopRuntime()
+        runtimeIsStopped()
+    } catch (_: Exception) {
+        false
+    }
+    return applicationScopeCancelled && databaseClosed && runtimeStopped
+}

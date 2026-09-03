@@ -104,4 +104,17 @@ class BackgroundCleanupEpisodeTest {
             episode.attachCleanup(Any())
         }
     }
+
+    @Test
+    fun `runtime reset discards a pending cleanup token`() {
+        val episode = BackgroundCleanupEpisode<Any>()
+        episode.requestCleanup()
+        episode.attachCleanup(Any())
+
+        episode.reset()
+
+        assertFalse(episode.cleanupRequested)
+        assertNull(episode.currentCleanup)
+        assertTrue(episode.requestCleanup())
+    }
 }

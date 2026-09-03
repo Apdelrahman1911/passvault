@@ -69,7 +69,8 @@ Run focused suites while editing, for example:
 - Platform: clipboard ownership, lifecycle lock, screenshot flag, file pickers, focus/IME, graphical behavior, native
   biometric ABI/integrity loading, macOS metadata/path/error invariants, Windows envelope crypto/tamper,
   credential-identity and temporary-inventory invariants, prompt serialization, cancellation, and focus-lock
-  coordination.
+  coordination. iOS simulator tests also cover protected-data notification deduplication, fail-closed recovery,
+  runtime teardown ordering, Room WAL checkpoint/close, and preservation of `NSFileProtectionComplete`.
 
 Shared fakes must deep-copy sensitive arrays/models and represent failure/lock behavior. Tests should assert domain
 behavior rather than private implementation detail.
@@ -88,6 +89,11 @@ startup-verified by `:app-desktop:run`: build
 `:app-desktop:createReleaseDistributable` and run the packaged-release smoke script. The release workflow uses this
 guard before uploading Windows artifacts. The final Windows image remained running for 30 seconds, while
 visual/focus/file-dialog behavior still needs an interactive human graphical session.
+
+Issue #132 cannot be fully runtime-verified in the simulator. On a passcode-enabled physical iPhone, exercise at
+least 20 lock/unlock cycles, including a committed write immediately before lock and forced database activity while
+locked. Confirm the privacy cover never reveals content, the app resumes without restart, the write remains durable,
+WAL growth is bounded, and Instruments shows no leaked controllers, observers, or database handles.
 
 Touch ID and Windows Hello cannot be security-validated by an unauthenticated CI runner. Follow the physical matrix
 in `DESKTOP_BIOMETRIC_UNLOCK.md` on installed signed packages. At minimum validate enable, restart unlock,
