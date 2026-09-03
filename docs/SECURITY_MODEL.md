@@ -124,6 +124,9 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 
 - Failed unlock attempts use progressive delays.
 - Manual, inactivity, and application-background signals request a central vault lock.
+- The iOS native privacy cover remains opaque until the shared UI acknowledges post-lock scrubbing. Lock failures and
+  acknowledgement stalls use separate bounded retries; exhaustion exposes only a localized retry surface over the
+  cover and never reveals the protected Compose hierarchy.
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
 - Clipboard expiration verifies a random ownership token/value before clearing, so newer unrelated clipboard data is
   preserved.

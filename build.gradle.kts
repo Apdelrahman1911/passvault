@@ -254,6 +254,8 @@ val verifyLocalization = tasks.register<Exec>("verifyLocalization") {
         layout.projectDirectory.file(
             "core/designsystem/src/commonMain/composeResources/values-ar/strings.xml",
         ),
+        layout.projectDirectory.file("iosApp/iosApp/en.lproj/Localizable.strings"),
+        layout.projectDirectory.file("iosApp/iosApp/ar.lproj/Localizable.strings"),
         layout.projectDirectory.file("scripts/validate-localizations.rb"),
     )
     commandLine("ruby", "scripts/validate-localizations.rb")

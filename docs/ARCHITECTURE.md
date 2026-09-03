@@ -69,8 +69,9 @@ after its serialized repository lock and required platform clipboard policy comp
 guarded navigation are scrubbed for that exact epoch, and an additional rendered frame has elapsed. iOS background
 locks preserve an owned local-only, expiring pasteboard item so app switching can complete a paste; other iOS lock
 reasons and all Android/Desktop locks still request immediate ownership-aware cleanup. A failed lock, cancelled job,
-stale acknowledgement, or acknowledgement timeout keeps the native surface concealed and leaves a later
-lifecycle/user retry armed.
+stale acknowledgement, or acknowledgement timeout keeps the native surface concealed. iOS retries lock failures
+and UI acknowledgement waits on separate bounded budgets with backoff; an exhausted or unavailable runtime exposes
+a localized retry action on the opaque native cover rather than entering a silent process-lifetime dead end.
 
 Biometric enrollment is an explicit unlocked-vault action. `DefaultBiometricUnlockService` copies the active VEK to
 the platform `BiometricKeyStore`; Android encrypts it with an auth-per-use Keystore key, while iOS stores it as a
