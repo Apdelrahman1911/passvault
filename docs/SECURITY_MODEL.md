@@ -101,8 +101,10 @@ attachment ID, owning credential ID, independent key context, detected MIME type
 length. An authenticated final record binds total bytes and chunks. Atomic staging, Room operation states, startup
 recovery, and post-commit orphan cleanup keep partial imports/deletes from becoming visible or silently losing a live
 row's object. Android registers a short-deadline, reboot-persistent cleanup lease before creating any plaintext preview
-or export staging file and also requests a sweep when the vault leaves its unlocked state. Version-1/2 metadata-only
-rows remain explicit unavailable `LEGACY` records.
+or export staging file and also requests a sweep when the vault leaves its unlocked state. Desktop preview files use
+one-minute leases, tracked cleanup on session lock and bounded process shutdown, and owner-only POSIX modes or a
+protected current-user Windows DACL. A viewer-held Windows handle can delay deletion, and a guarded next-launch sweep
+remains the hard-crash backstop. Version-1/2 metadata-only rows remain explicit unavailable `LEGACY` records.
 
 ## Backup boundary
 

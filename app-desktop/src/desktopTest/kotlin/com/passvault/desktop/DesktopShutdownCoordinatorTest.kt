@@ -24,6 +24,7 @@ class DesktopShutdownCoordinatorTest {
                 true
             },
             clearClipboard = { events += "clear-clipboard" },
+            purgePreviews = { events += "purge-previews" },
             closeBiometric = { events += "close-biometric" },
             closeDatabase = { events += "close-database" },
         )
@@ -43,6 +44,7 @@ class DesktopShutdownCoordinatorTest {
         assertEquals(0, report.failureCount)
         assertEquals(1, events.count { it == "lock-vault" })
         assertEquals(1, events.count { it == "clear-clipboard" })
+        assertEquals(1, events.count { it == "purge-previews" })
         assertEquals(1, events.count { it == "close-biometric" })
         assertEquals(1, events.count { it == "close-database" })
         assertTrue(events.indexOf("lock-vault") < events.indexOf("close-database"))
@@ -71,6 +73,7 @@ class DesktopShutdownCoordinatorTest {
     fun `non returning vault lock cannot hold the window open or suppress other cleanup`() = runTest {
         val lockEntered = CompletableDeferred<Unit>()
         val clipboardCleared = CompletableDeferred<Unit>()
+        val previewsPurged = CompletableDeferred<Unit>()
         val biometricClosed = CompletableDeferred<Unit>()
         val coordinator = coordinator(
             useBackgroundScope = true,
@@ -79,6 +82,7 @@ class DesktopShutdownCoordinatorTest {
                 awaitCancellation()
             },
             clearClipboard = { clipboardCleared.complete(Unit) },
+            purgePreviews = { previewsPurged.complete(Unit) },
             closeBiometric = { biometricClosed.complete(Unit) },
         )
         var exited = false
@@ -92,6 +96,7 @@ class DesktopShutdownCoordinatorTest {
         assertTrue(exited)
         assertTrue(lockEntered.isCompleted)
         assertTrue(clipboardCleared.isCompleted)
+        assertTrue(previewsPurged.isCompleted)
         assertTrue(biometricClosed.isCompleted)
         assertFalse(coordinator.awaitCleanup(0L).completed)
         backgroundScope.coroutineContext[kotlinx.coroutines.Job]?.cancel()
@@ -115,11 +120,35 @@ class DesktopShutdownCoordinatorTest {
         assertEquals(1, report.failureCount)
     }
 
+    @Test
+    fun `preview cleanup failure is reported without suppressing other boundaries`() = runTest {
+        var clipboardCleared = false
+        var biometricClosed = false
+        var databaseClosed = false
+        val coordinator = coordinator(
+            clearClipboard = { clipboardCleared = true },
+            purgePreviews = { error("preview cleanup failed") },
+            closeBiometric = { biometricClosed = true },
+            closeDatabase = { databaseClosed = true },
+        )
+
+        assertTrue(coordinator.requestShutdown())
+        advanceUntilIdle()
+
+        val report = coordinator.awaitCleanup(0L)
+        assertTrue(report.completed)
+        assertEquals(1, report.failureCount)
+        assertTrue(clipboardCleared)
+        assertTrue(biometricClosed)
+        assertTrue(databaseClosed)
+    }
+
     private fun kotlinx.coroutines.test.TestScope.coordinator(
         useBackgroundScope: Boolean = false,
         cancelBiometric: () -> Unit = {},
         lockVault: suspend () -> Boolean = { true },
         clearClipboard: suspend () -> Unit = {},
+        purgePreviews: suspend () -> Unit = {},
         closeBiometric: () -> Unit = {},
         closeDatabase: () -> Unit = {},
     ) = DesktopShutdownCoordinator(
@@ -128,6 +157,7 @@ class DesktopShutdownCoordinatorTest {
             cancelBiometricPrompt = cancelBiometric,
             lockVault = lockVault,
             clearClipboard = clearClipboard,
+            purgeAttachmentPreviews = purgePreviews,
             closeBiometricHost = closeBiometric,
             closeDatabase = closeDatabase,
         ),

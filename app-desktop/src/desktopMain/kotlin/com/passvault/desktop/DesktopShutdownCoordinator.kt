@@ -2,6 +2,7 @@ package com.passvault.desktop
 
 import com.passvault.core.domain.repository.VaultRepository
 import com.passvault.core.security.ClipboardService
+import com.passvault.desktop.attachment.DesktopAttachmentFileStore
 import com.passvault.desktop.security.biometric.DesktopBiometricHost
 import com.passvault.shared.di.AppDatabaseLifecycle
 import java.util.concurrent.CountDownLatch
@@ -19,9 +20,9 @@ import org.koin.core.Koin
  * Owns the terminal Desktop shutdown transition.
  *
  * The window is hidden immediately after the first close request. Vault,
- * clipboard, database, and native-biometric cleanup then run independently so
- * one blocked provider cannot prevent the other security boundaries from
- * executing. [awaitCleanup] is intentionally a Java latch wait: the main
+ * clipboard, attachment-preview, database, and native-biometric cleanup then
+ * run independently so one blocked provider cannot prevent the other security
+ * boundaries from executing. [awaitCleanup] is intentionally a Java latch wait: the main
  * thread can impose a hard deadline without becoming a structured parent of a
  * non-cooperative native or cryptographic operation.
  */
@@ -99,6 +100,9 @@ internal class DesktopShutdownCoordinator(
             operations.clearClipboard()
         }
         launchTracked(ioDispatcher) {
+            operations.purgeAttachmentPreviews()
+        }
+        launchTracked(ioDispatcher) {
             operations.closeBiometricHost()
         }
     }
@@ -128,7 +132,7 @@ internal class DesktopShutdownCoordinator(
     }
 
     private companion object {
-        const val CLEANUP_TASK_COUNT = 3
+        const val CLEANUP_TASK_COUNT = 4
     }
 }
 
@@ -136,6 +140,7 @@ internal data class DesktopShutdownOperations(
     val cancelBiometricPrompt: () -> Unit,
     val lockVault: suspend () -> Boolean,
     val clearClipboard: suspend () -> Unit,
+    val purgeAttachmentPreviews: suspend () -> Unit,
     val closeBiometricHost: () -> Unit,
     val closeDatabase: () -> Unit,
 )
@@ -148,6 +153,7 @@ internal data class DesktopShutdownReport(
 internal fun createDesktopShutdownCoordinator(koin: Koin): DesktopShutdownCoordinator {
     val vaultRepository = koin.get<VaultRepository>()
     val clipboardService = koin.get<ClipboardService>()
+    val attachmentFileStore = koin.get<DesktopAttachmentFileStore>()
     val biometricHost = koin.get<DesktopBiometricHost>()
     val databaseLifecycle = koin.get<AppDatabaseLifecycle>()
     return DesktopShutdownCoordinator(
@@ -156,6 +162,7 @@ internal fun createDesktopShutdownCoordinator(koin: Koin): DesktopShutdownCoordi
             cancelBiometricPrompt = biometricHost::cancelActive,
             lockVault = { lockVaultForShutdown(vaultRepository) },
             clearClipboard = { clearClipboardForShutdown(clipboardService) },
+            purgeAttachmentPreviews = attachmentFileStore::purgePreviews,
             closeBiometricHost = biometricHost::close,
             closeDatabase = databaseLifecycle::close,
         ),

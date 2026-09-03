@@ -42,5 +42,6 @@ val desktopModule = module {
     single { Preferences.userNodeForPackage(AppInfo::class.java) }
     single<AppSettingsStore> { DesktopAppSettingsStore(get()) }
     single<BackupFileStore> { DesktopBackupFileStore() }
-    single<AttachmentFileStore> { DesktopAttachmentFileStore() }
+    single { DesktopAttachmentFileStore(vaultRepository = get(), cleanupScope = get()) }
+    single<AttachmentFileStore> { get<DesktopAttachmentFileStore>() }
 }
