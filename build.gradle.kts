@@ -173,8 +173,14 @@ abstract class VerifyDependencyMetadataTask : DefaultTask() {
         check("<verify-metadata>true</verify-metadata>" in metadata) {
             "Gradle module metadata verification must remain enabled."
         }
+        /*
+         * This is an intentional checksum-only policy, not a statement that PGP is weak.
+         * A signature migration must replace this assertion with a requirement for the
+         * independently authenticated, coordinate-scoped keys reviewed in the same change.
+         * Accepting either value here would let the trust model drift without that review.
+         */
         check("<verify-signatures>false</verify-signatures>" in metadata) {
-            "PassVault's reviewed SHA-256 policy must not silently change modes."
+            "PassVault's reviewed checksum-only policy must not silently change modes."
         }
 
         val artifactStartCount = Regex("<artifact name=").findAll(metadata).count()
@@ -194,8 +200,16 @@ abstract class VerifyDependencyMetadataTask : DefaultTask() {
         ) {
             "Every verified dependency artifact must have exactly one lowercase SHA-256 checksum."
         }
-        check(!Regex("<(?:md5|sha1|sha512|pgp) ").containsMatchIn(metadata)) {
-            "Dependency verification must use SHA-256 checksums exclusively."
+        check(!Regex("<(?:md5|sha1|sha512) ").containsMatchIn(metadata)) {
+            "Dependency verification must not contain unreviewed alternate digests."
+        }
+        check(
+            !Regex("<pgp(?:\\s|>)").containsMatchIn(metadata) &&
+                "<trusted-keys" !in metadata &&
+                "<key-servers" !in metadata,
+        ) {
+            "PGP metadata is not allowed by the current checksum-only policy. " +
+                "Migrate atomically with independently authenticated, coordinate-scoped keys."
         }
 
         val trustedArtifactCount = Regex("<trust ").findAll(metadata).count()

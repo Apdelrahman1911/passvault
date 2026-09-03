@@ -1,6 +1,9 @@
 # PassVault Issue Triage Summary
 
-> Reply-aware review and final close verification performed against GitHub issues 35–146, with remediation synchronized through commit `b6d80a2`. Every close decision was checked against the issue, its comments, and the code. **61 issues are closed on GitHub; 51 remain open.**
+> Reply-aware review and final close verification performed against GitHub issues 35–146. Every disposition was
+> checked against the issue, its comments, and the code. At the triage snapshot, **61 issues were closed on GitHub and
+> 51 remained open**; later local remediations recorded below do not imply that their branches were pushed or their
+> tracker issues were closed.
 
 ## Triage legend
 
@@ -12,8 +15,8 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 70** (41 resolved as listed below; 29 still open)
-- **DIG: 19**
-- **CLOSE/ACCEPT: 23**
+- **DIG: 18**
+- **CLOSE/ACCEPT: 24**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
@@ -50,6 +53,12 @@
   friction, not a durable anti-guessing boundary. Persisting attacker-modifiable counters cannot protect a copied vault
   from offline guessing and can create an owner lockout; the password policy and per-attempt Argon2id cost remain the
   applicable controls. Documentation now prevents the throttle from being represented as stronger than it is.
+- **CLOSE/ACCEPT:** #67 — all recorded Gradle artifacts are pinned by SHA-256 and an induced checksum mismatch fails
+  before project configuration while naming the coordinate. This is strong integrity after pinning, not publisher
+  provenance at first use. Generated PGP metadata would not authenticate signer ownership; enabling it safely requires
+  independently sourced fingerprints, narrow scopes, rotation/revocation policy, an unsigned-artifact inventory, and
+  clean-cache coverage. The checksum-only boundary and atomic migration requirements are now explicit, and the gate
+  separates disallowed PGP metadata from alternate digests rather than representing PGP as a weak hash.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -181,7 +190,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [67](https://github.com/Apdelrahman1911/passvault/issues/67) | Medium | Dependency verification is checksum-only, and the repo's own gate forbids enabling signatures | SHA-256 verification provides artifact integrity; the remaining provenance/signature/SBOM choice needs an explicit supply-chain policy and curated keys. |
 | [82](https://github.com/Apdelrahman1911/passvault/issues/82) | Medium | `ENABLE_USER_SCRIPT_SANDBOXING = NO` with an unpinned Gradle shell phase in Release | Unsandboxed/untracked Release Gradle phase is confirmed, but impact depends on the build trust boundary; validate inputs/outputs and sandbox compatibility before gating. |
 | [85](https://github.com/Apdelrahman1911/passvault/issues/85) | Medium | `~/.passvault` creation has a permission TOCTOU window; Windows gets no explicit ACL | The create-then-chmod window and missing explicit Windows ACL are code facts, but cross-user exposure is unproven; verify OS behavior before hardening. |
 | [87](https://github.com/Apdelrahman1911/passvault/issues/87) | Low | Filename AAD uses unprefixed concatenation | AAD concatenation is ambiguous in theory, but UUID-derived keys prevent the claimed swap; retain as next-format cryptographic hardening/design review. |
@@ -233,6 +241,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #67, #82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
+   #35, #82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

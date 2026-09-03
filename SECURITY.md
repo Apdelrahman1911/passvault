@@ -23,7 +23,9 @@ but no independent audit, penetration-test certification, MASVS certification, o
   the vault verification record before a session is published.
 - Clipboard expiry clears only content still owned by PassVault. Android sensitive screens use `FLAG_SECURE`.
 - Database, cryptographic, parser, and file details are mapped to non-sensitive user errors at UI boundaries.
-- Gradle dependencies are checked against committed SHA-256 verification metadata.
+- Gradle dependencies are checked against committed SHA-256 verification metadata. This pins reviewed bytes but does
+  not establish publisher identity; the accepted checksum-only boundary and signature-migration requirements are in
+  [`docs/DEPENDENCY_VERIFICATION.md`](docs/DEPENDENCY_VERIFICATION.md).
 
 Managed UI/IME strings and garbage-collected copies cannot be guaranteed wipeable. Inside the KDF boundary,
 PassVault encodes `SensitiveText` directly into mutable UTF-8 and compatibility-preserving hexadecimal buffers and

@@ -10,6 +10,7 @@
 - [Backup capacity and memory](BACKUP_CAPACITY.md)
 - [Navigation](NAVIGATION.md)
 - [Testing](TESTING.md)
+- [Dependency verification policy](DEPENDENCY_VERIFICATION.md)
 - [Production-readiness audit](PRODUCTION_READINESS_AUDIT.md)
 - [Mobile store release](MOBILE_STORE_RELEASE.md)
 - [Release automation](RELEASE_AUTOMATION.md)
