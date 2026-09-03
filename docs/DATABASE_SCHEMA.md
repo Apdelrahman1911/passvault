@@ -10,9 +10,9 @@ Schema export is enabled and generated schemas belong under the configured schem
 | Table | Purpose | Sensitive boundary |
 |---|---|---|
 | `vault_metadata` | vault/crypto versions, vault ID, Argon2id parameters, wrapped VEK, verification record, counts | salts/parameters are public; `argon2_parallelism` is fixed at `1` because the binding has no lanes parameter; VEK and verification record are authenticated ciphertext |
-| `credential_records` | credential type, summary/secret payloads, folder, favorite, timestamps | summary and secret are encrypted separately |
-| `folder_records` | hierarchy/order plus folder payload | name is represented by a keyed blind index; payload is encrypted |
-| `tag_records` | tag payload and visual color | name uses a keyed blind index; payload is encrypted |
+| `credential_records` | credential type, summary/secret payloads, folder, favorite, timestamps | summary and secret are encrypted separately; identifiers, type, folder, favorite, and timestamps are structural plaintext |
+| `folder_records` | hierarchy/order plus folder payload | name is encrypted and has a keyed blind index; identifiers, hierarchy, icon, order, and timestamps are structural plaintext |
+| `tag_records` | tag payload and visual color | name is encrypted and has a keyed blind index; identifiers, color, and timestamps are structural plaintext |
 | `credential_folder_cross_ref` | compatibility relationship row | identifiers are structural plaintext |
 | `credential_tag_cross_ref` | credential-to-tag relationship | identifiers are structural plaintext |
 | `password_history_records` | previous credential passwords | password is encrypted; relationship/time are visible |

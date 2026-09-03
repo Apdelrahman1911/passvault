@@ -12,8 +12,8 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 70** (41 resolved as listed below; 29 still open)
-- **DIG: 22**
-- **CLOSE/ACCEPT: 20**
+- **DIG: 21**
+- **CLOSE/ACCEPT: 21**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
@@ -39,6 +39,9 @@
 - **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
 - **Resolved FIX:** #50 — Room v4 removes the unused credential-title blind index without losing dependent rows; new JSON and streaming backups omit it, while authenticated legacy backup readers validate and discard the old field.
 - **Resolved FIX:** #51 — contradictory attachment state/format combinations are quarantined, current-format paths remain protected and quota-accounted despite state tampering, and recovery cannot use a mutable state marker as authority to destroy a published object.
+- **CLOSE/ACCEPT:** #52 — stock SQLite can read the documented credential and relationship metadata, but whole-file
+  confidentiality is explicitly outside the persisted-data boundary. Current-schema allowlists now make any expansion
+  of that accepted surface review-visible, and the remaining PENTEST/database-schema documentation gap is closed.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -170,7 +173,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [52](https://github.com/Apdelrahman1911/passvault/issues/52) | Medium | Vault-wide plaintext metadata graph in an unencrypted SQLite file | Plaintext metadata graph is confirmed; decide whether whole-database confidentiality is required by the local-attacker threat model. |
 | [61](https://github.com/Apdelrahman1911/passvault/issues/61) | Medium | Biometric key does not request StrongBox and relies on an implicit GCM-IV default | StrongBox omission is optional capability hardening and the GCM-IV concern is false under Android defaults; keep for device/product decision, not as a Medium bypass. |
 | [62](https://github.com/Apdelrahman1911/passvault/issues/62) | Medium | Failed-attempt throttle is volatile, trivially reset, and capped at 5 seconds | Volatile five-second backoff is a policy weakness, but persistence needs an authenticated/device-bound design and an attack-rate decision. |
 | [67](https://github.com/Apdelrahman1911/passvault/issues/67) | Medium | Dependency verification is checksum-only, and the repo's own gate forbids enabling signatures | SHA-256 verification provides artifact integrity; the remaining provenance/signature/SBOM choice needs an explicit supply-chain policy and curated keys. |
@@ -225,6 +227,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #52, #61–#62, #67, #82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
+   #35, #61–#62, #67, #82, #85, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
