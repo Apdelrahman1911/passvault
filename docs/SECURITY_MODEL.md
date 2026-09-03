@@ -33,7 +33,11 @@ historical KDF input bytes + 16-byte random salt
 
 The repository encodes the master password directly from mutable characters to mutable UTF-8 bytes, then converts
 those bytes to mutable lowercase hexadecimal bytes to preserve the original KDF format. Both buffers are wiped
-best-effort after derivation; managed UI/IME strings remain outside that guarantee. The KEK is not persisted. Room
+best-effort after derivation. Unlock, onboarding, and password-change flows synchronously copy accepted input into an
+owned `SensitiveText` and drop their observable `String` state before navigation or asynchronous repository work;
+onboarding keeps only that mutable wrapper between its two password screens. Completion handlers wipe the owned
+buffers even when a coroutine is cancelled before its body starts. Managed UI/IME strings and garbage-collected copies
+remain outside that guarantee. The KEK is not persisted. Room
 stores the salt, Argon2id operations (2–10), memory (32–256 MiB), a fixed serialized parallelism value of `1`, the
 wrapped VEK, nonces, and an authenticated verification record. The current libsodium binding exposes no lanes
 argument, so unlock rejects a persisted parallelism value other than `1` before derivation. Unlock validates metadata

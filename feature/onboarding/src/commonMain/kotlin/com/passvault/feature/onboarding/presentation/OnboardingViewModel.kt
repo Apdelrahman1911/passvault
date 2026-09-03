@@ -41,6 +41,7 @@ class OnboardingViewModel(
 
     private val createMutex = Mutex()
     private var createJob: Job? = null
+    private var pendingMasterPassword: SensitiveText? = null
 
     fun onEvent(event: OnboardingEvent) {
         when (event) {
@@ -62,6 +63,7 @@ class OnboardingViewModel(
     }
 
     private fun updateMasterPassword(password: String) {
+        clearPendingMasterPassword()
         val boundedPassword = password.takeCodePoints(MasterPasswordPolicy.MAX_LENGTH + 1)
         val validationError = when {
             password.codePointLength() > MasterPasswordPolicy.MAX_LENGTH -> uiText(
@@ -76,6 +78,7 @@ class OnboardingViewModel(
                 it.copy(
                     masterPassword = boundedPassword,
                     confirmPassword = "",
+                    hasPendingMasterPassword = false,
                     passwordsMatch = false,
                     errorMessage = validationError,
                 )
@@ -88,6 +91,7 @@ class OnboardingViewModel(
             it.copy(
                 masterPassword = password,
                 confirmPassword = "",
+                hasPendingMasterPassword = false,
                 passwordsMatch = false,
                 passwordStrength = strength,
                 strengthFeedback = strength.feedback,
@@ -114,10 +118,16 @@ class OnboardingViewModel(
             return
         }
 
+        val confirmation = SensitiveText.from(password)
+        val matches = try {
+            confirmation.isNotEmpty() && pendingMasterPassword == confirmation
+        } finally {
+            confirmation.clear()
+        }
         _state.update {
             it.copy(
                 confirmPassword = password,
-                passwordsMatch = password.isNotEmpty() && it.masterPassword == password,
+                passwordsMatch = matches,
                 errorMessage = null,
             )
         }
@@ -140,7 +150,7 @@ class OnboardingViewModel(
 
     private fun continueToConfirmation() {
         val currentState = _state.value
-        if (currentState.isLoading) return
+        if (currentState.isLoading || currentState.hasPendingMasterPassword) return
         val passwordLength = currentState.masterPassword.codePointLength()
 
         when {
@@ -175,7 +185,16 @@ class OnboardingViewModel(
                 }
             }
             else -> {
-                _state.update { it.copy(errorMessage = null, confirmPassword = "", passwordsMatch = false) }
+                pendingMasterPassword = SensitiveText.from(currentState.masterPassword)
+                _state.update {
+                    it.copy(
+                        masterPassword = "",
+                        confirmPassword = "",
+                        hasPendingMasterPassword = true,
+                        errorMessage = null,
+                        passwordsMatch = false,
+                    )
+                }
                 _effect.tryEmit(OnboardingEffect.NavigateToMasterPasswordConfirmation)
             }
         }
@@ -183,20 +202,20 @@ class OnboardingViewModel(
 
     private fun validateConfirmation(): Boolean {
         val currentState = _state.value
-        val passwordLength = currentState.masterPassword.codePointLength()
+        val pendingPassword = pendingMasterPassword
         val error = when {
-            passwordLength < MasterPasswordPolicy.MIN_LENGTH ->
+            pendingPassword == null || pendingPassword.length < MasterPasswordPolicy.MIN_LENGTH ->
                 uiText(Res.string.error_master_password_too_short, MasterPasswordPolicy.MIN_LENGTH)
-            passwordLength > MasterPasswordPolicy.MAX_LENGTH ->
+            pendingPassword.length > MasterPasswordPolicy.MAX_LENGTH ->
                 uiText(Res.string.error_master_password_too_long, MasterPasswordPolicy.MAX_LENGTH)
-            !currentState.masterPassword.hasWellFormedUnicode() ||
+            !pendingPassword.hasWellFormedUnicode() ||
                 !currentState.confirmPassword.hasWellFormedUnicode() ->
                 uiText(Res.string.error_master_password_invalid)
-            !MasterPasswordPolicy.accepts(currentState.masterPassword) ->
+            !MasterPasswordPolicy.accepts(pendingPassword) ->
                 uiText(Res.string.error_master_password_predictable)
             currentState.confirmPassword.isEmpty() ->
                 uiText(Res.string.error_master_confirmation_required)
-            currentState.masterPassword != currentState.confirmPassword ->
+            !currentState.passwordsMatch ->
                 uiText(Res.string.error_master_password_mismatch)
             else -> null
         }
@@ -206,64 +225,66 @@ class OnboardingViewModel(
 
     private fun createAndVerifyVault() {
         if (_state.value.isLoading || !validateConfirmation()) return
-        val password = _state.value.masterPassword
-        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        val password = checkNotNull(pendingMasterPassword)
+        pendingMasterPassword = null
+        _state.update {
+            it.copy(
+                masterPassword = "",
+                confirmPassword = "",
+                hasPendingMasterPassword = false,
+                passwordsMatch = false,
+                isLoading = true,
+                errorMessage = null,
+            )
+        }
 
         createJob?.cancel()
-        createJob = viewModelScope.launch {
-            createMutex.withLock {
-                var createPassword: SensitiveText? = null
-                var verifyPassword: SensitiveText? = null
-                try {
-                    val existsResult = vaultRepository.exists()
-                    currentCoroutineContext().ensureActive()
-                    val vaultExists = existsResult.getOrElse {
-                        showCreationError(uiText(Res.string.error_vault_setup_check))
-                        return@withLock
-                    }
+        val job = viewModelScope.launch {
+            performVaultCreation(password)
+        }
+        job.invokeOnCompletion { password.clear() }
+        createJob = job
+    }
 
-                    if (!vaultExists) {
-                        createPassword = SensitiveText.from(password)
-                        val createResult = vaultRepository.create(createPassword)
-                        currentCoroutineContext().ensureActive()
-                        if (createResult.isFailure) {
-                            showCreationError(uiText(Res.string.error_vault_setup_create))
-                            return@withLock
-                        }
-                        _state.update { it.copy(vaultCreated = true) }
-                    } else if (!_state.value.vaultCreated) {
-                        showCreationError(uiText(Res.string.error_vault_setup_exists))
-                        return@withLock
-                    }
-
-                    verifyPassword = SensitiveText.from(password)
-                    val unlockResult = vaultRepository.unlock(verifyPassword)
-                    currentCoroutineContext().ensureActive()
-                    if (unlockResult.isSuccess) {
-                            _state.update {
-                                it.copy(
-                                    masterPassword = "",
-                                    confirmPassword = "",
-                                    passwordsMatch = false,
-                                    isLoading = false,
-                                    errorMessage = null,
-                                )
-                            }
-                            _effect.tryEmit(OnboardingEffect.NavigateToSecurityExplanation)
-                    } else {
-                        currentCoroutineContext().ensureActive()
-                        showCreationError(uiText(Res.string.error_vault_setup_verify))
-                    }
-                } catch (cancel: CancellationException) {
-                    throw cancel
-                } catch (_: Exception) {
-                    currentCoroutineContext().ensureActive()
-                    showCreationError(uiText(Res.string.error_vault_setup_finish))
-                } finally {
-                    createPassword?.clear()
-                    verifyPassword?.clear()
-                    _state.update { it.copy(isLoading = false) }
+    private suspend fun performVaultCreation(password: SensitiveText) {
+        createMutex.withLock {
+            try {
+                val existsResult = vaultRepository.exists()
+                currentCoroutineContext().ensureActive()
+                val vaultExists = existsResult.getOrElse {
+                    showCreationError(uiText(Res.string.error_vault_setup_check))
+                    return@withLock
                 }
+
+                if (!vaultExists) {
+                    val createResult = vaultRepository.create(password)
+                    currentCoroutineContext().ensureActive()
+                    if (createResult.isFailure) {
+                        showCreationError(uiText(Res.string.error_vault_setup_create))
+                        return@withLock
+                    }
+                    _state.update { it.copy(vaultCreated = true) }
+                } else if (!_state.value.vaultCreated) {
+                    showCreationError(uiText(Res.string.error_vault_setup_exists))
+                    return@withLock
+                }
+
+                val unlockResult = vaultRepository.unlock(password)
+                currentCoroutineContext().ensureActive()
+                if (unlockResult.isSuccess) {
+                    _state.update { it.copy(isLoading = false, errorMessage = null) }
+                    _effect.tryEmit(OnboardingEffect.NavigateToSecurityExplanation)
+                } else {
+                    currentCoroutineContext().ensureActive()
+                    showCreationError(uiText(Res.string.error_vault_setup_verify))
+                }
+            } catch (cancel: CancellationException) {
+                throw cancel
+            } catch (_: Exception) {
+                currentCoroutineContext().ensureActive()
+                showCreationError(uiText(Res.string.error_vault_setup_finish))
+            } finally {
+                _state.update { it.copy(isLoading = false) }
             }
         }
     }
@@ -285,10 +306,12 @@ class OnboardingViewModel(
     }
 
     private fun clearPasswordInputs() {
+        clearPendingMasterPassword()
         _state.update {
             it.copy(
                 masterPassword = "",
                 confirmPassword = "",
+                hasPendingMasterPassword = false,
                 passwordsMatch = false,
                 passwordStrength = PasswordStrength.TOO_SHORT,
                 strengthFeedback = PasswordStrength.TOO_SHORT.feedback,
@@ -297,9 +320,15 @@ class OnboardingViewModel(
         }
     }
 
+    private fun clearPendingMasterPassword() {
+        pendingMasterPassword?.clear()
+        pendingMasterPassword = null
+    }
+
     data class OnboardingState(
         val masterPassword: String = "",
         val confirmPassword: String = "",
+        val hasPendingMasterPassword: Boolean = false,
         val passwordStrength: PasswordStrength = PasswordStrength.TOO_SHORT,
         val strengthFeedback: UiText = PasswordStrength.TOO_SHORT.feedback,
         val passwordsMatch: Boolean = false,
@@ -311,7 +340,7 @@ class OnboardingViewModel(
             get() = MasterPasswordPolicy.accepts(masterPassword) && !isLoading
 
         val canCreateVault: Boolean
-            get() = canContinueToConfirmation &&
+            get() = hasPendingMasterPassword &&
                 confirmPassword.isNotEmpty() &&
                 passwordsMatch
     }
