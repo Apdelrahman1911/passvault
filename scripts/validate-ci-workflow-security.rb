@@ -38,6 +38,19 @@ unless test_job.fetch("permissions", {}) == read_only_permissions
 end
 
 test_steps = test_job.fetch("steps")
+security_analysis_index = test_steps.index do |step|
+  step["run"].to_s.strip == "./scripts/run-security-analysis.sh"
+end
+abort("CI test job must run the repository security-analysis gate") unless security_analysis_index
+security_analysis_step = test_steps.fetch(security_analysis_index)
+if security_analysis_step["continue-on-error"] || security_analysis_step["if"]
+  abort("CI security analysis must run unconditionally and fail closed")
+end
+unit_test_index = test_steps.index { |step| step["name"] == "Run Unit Tests" }
+unless unit_test_index && security_analysis_index < unit_test_index
+  abort("CI security analysis must run before the Gradle test batch")
+end
+
 report_upload = test_steps.find do |step|
   step["uses"].to_s.start_with?("actions/upload-artifact@") &&
     step.dig("with", "name") == "test-reports"

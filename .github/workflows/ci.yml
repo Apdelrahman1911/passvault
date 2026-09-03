@@ -186,6 +186,9 @@ jobs:
         with:
           cache-cleanup: always
 
+      - name: Run KMP and native security analysis
+        run: ./scripts/run-security-analysis.sh
+
       - name: Run Unit Tests
         run: ./gradlew test detekt verifyDependencies --continue --stacktrace
 

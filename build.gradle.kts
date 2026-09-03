@@ -338,6 +338,13 @@ fun Project.configureDetekt() {
 
 configureDetekt()
 
+val verifyStaticAnalysisCoverage = tasks.register<Exec>("verifyStaticAnalysisCoverage") {
+    group = "verification"
+    description = "Fails when Detekt or security-analysis source coverage silently shrinks"
+    workingDir(layout.projectDirectory)
+    commandLine("ruby", "scripts/verify-static-analysis-coverage.rb")
+}
+
 subprojects {
     pluginManager.apply("dev.detekt")
     configureDetekt()
@@ -347,12 +354,14 @@ subprojects {
     // source-set-specific tasks otherwise duplicate common code and can ingest
     // Room/KSP output under build/generated.
     tasks.named<Detekt>("detekt") {
+        dependsOn(rootProject.tasks.named("verifyStaticAnalysisCoverage"))
         setSource(layout.projectDirectory.dir("src"))
         include("**/*.kt", "**/*.kts")
     }
 }
 
 tasks.named<Detekt>("detekt") {
+    dependsOn(verifyStaticAnalysisCoverage)
     setSource(fileTree(rootDir))
     setIncludes(
         listOf(

@@ -20,7 +20,7 @@ manual device/visual pass.
 
 | Area | Reviewed responsibility | State |
 |---|---|---|
-| Gradle configuration | KMP modules, catalogs, Android build types/application identities, Desktop packaging, dependency verification, root verification aggregation, CI/release workflows | VERIFIED |
+| Gradle configuration | KMP modules, catalogs, Android build types/application identities, Desktop packaging, dependency verification, fail-closed static-analysis coverage, root verification aggregation, CI/release workflows | VERIFIED |
 | Android host | application/activity, lifecycle, clipboard, screenshot flag, preferences, backup document picker | SOURCE |
 | Desktop host | window lifecycle/concealment, keyboard/tray, clipboard, preferences, native backup file dialog | SOURCE |
 | Shared host | Koin graph, database providers, theme, session bootstrap, Navigation 3 back stack | VERIFIED |
@@ -135,6 +135,7 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | PORT-001 | S1 | common tests contained JVM-only `String.codePointCount` and `System.currentTimeMillis` calls | JVM APIs leaked into portable source sets | multiplatform Unicode counter plus `Clock.System`; Room-only DAO test scoped to Desktop | common tests, Android host tests, and iOS simulator compilation | VERIFIED |
 | TEST-001 | S1 | Android host crypto integration tests could not load libsodium on Windows | Android AAR packages device `.so` files but the host runner needs the JVM native resource | JVM libsodium artifact added to Android host-test runtime only | 119 crypto host tests pass | VERIFIED |
 | TEST-002 | S2 | Argon2 tests lacked independently generated known-answer vectors at the shipped profiles while readiness called the whole KDF verified | positive coverage was mostly differential or used a fake engine, and later compatibility vectors used below-production parameters without provenance | the common test suite now runs the production engine against Argon2id v1.3 vectors generated with the pinned upstream reference CLI at both 3/4-pass, 64 MiB, one-lane profiles | byte-exact Desktop, Android-host, and iOS-simulator tests plus Crypto Detekt | VERIFIED |
+| TEST-003 | S1 | Detekt had no source-coverage floor and no security-focused KMP/native analysis layer | hard-coded Detekt roots could shrink silently, while style/complexity rules did not cover password-manager security patterns | exact source inventory and per-module floors now precede Detekt; checksum-pinned OpenGrep rules cover Kotlin, Swift, native, secrets, crypto/RNG, logging, SQL, TLS, data protection, and unsafe native APIs with a required detection canary | rule fixtures, negative coverage/CI/engine tests, 516-file scan, Detekt, and complete repository check | VERIFIED |
 | DOC-001 | S1 | architecture/security/schema/release documents described nonexistent behavior and certifications | design documents were treated as implementation evidence | replaced with source-derived contracts and explicit evidence limits | claim scan | VERIFIED |
 | DEAD-001 | S2 | empty attachment feature module and duplicate route files remained in build | abandoned scaffolding | empty module removed; production attachment behavior now lives at credential/domain/database/platform boundaries | Gradle configuration/compile | VERIFIED |
 | DEAD-002 | S2 | Desktop tray exposed unreachable notification/icon/visibility helpers | prototype public API had no production or test consumers | removed unused helpers and made active tray text an explicit localized setup contract | whole-repository reference scan and Desktop compile/startup smoke | VERIFIED |
@@ -161,15 +162,21 @@ screen-reader sweeps remain platform gates and are not falsely marked as automat
 | GATE-006 | S0 | independent security assurance | third-party cryptographic review and penetration-test report | EXTERNAL |
 | GATE-007 | S1 | iOS runtime assurance | Xcode build plus physical-device lifecycle, protected-data forced-I/O/WAL and repeated lock cycles, Keychain, camera, document, and UI tests | EXTERNAL |
 | GATE-008 | S2 | Gradle 10 Kotlin DSL and `kotlinx.datetime.Instant` deprecation migration | warning-mode configuration and full regression | VERIFIED |
-| GATE-009 | S2 | zero-baseline Detekt after all remediation | successful `gradlew detekt`; no baseline or ignored failure | VERIFIED |
+| GATE-009 | S2 | zero-baseline Detekt and fail-closed security analysis after all remediation | successful coverage inventory, detection canary, OpenGrep scan, and `gradlew detekt`; no ignored failure | VERIFIED |
 | GATE-010 | S1 | mobile biometric runtime behavior | physical Android and iPhone tests for success, cancel, lockout, backgrounding, process recreation, and enrollment invalidation | EXTERNAL |
 | GATE-011 | S0 | real production-signing assurance without publication | protected `production-signing-validation` run using publisher credentials, Accepted macOS notarization, verified/stapled Gatekeeper state, valid iOS archive/IPA, and timestamped Windows signatures, all bound to one approved candidate | EXTERNAL |
+| GATE-012 | S1 | repository-host security controls | enable and read back GitHub secret scanning, push protection, and Dependabot security updates; vulnerability alerts are already enabled | EXTERNAL: disabled on 2026-09-03; changing repository settings requires owner authorization |
 
 `GATE-008` was resolved without warning suppression. The only warning left by `help --warning-mode all` is that an
 iOS simulator test cannot run on a Windows host; compile-only iOS simulator tasks pass.
 
-`GATE-009` is now verified without a baseline or ignored task. Narrow suppressions remain only at documented native
-adapter boundaries whose operating-system APIs surface broad exceptions and whose cleanup must fail closed.
+`GATE-009` is now verified without a Detekt finding-suppression baseline or ignored task. Narrow suppressions remain
+only at documented native adapter boundaries whose operating-system APIs surface broad exceptions and whose cleanup
+must fail closed.
+
+As of 2026-09-03, Detekt remains on the reviewed serial configuration because Detekt 2 has no stable release; the
+latest stable line is 1.23.8 and the available 2.x releases are prereleases. OpenGrep provides an independent
+security-focused layer rather than treating a Detekt version change as equivalent security coverage.
 
 Android lint has one productivity warning recommending the KTX `SharedPreferences.edit` helper. The checked
 `SharedPreferences.Editor.commit()` call is intentionally retained because the store must observe and report a
@@ -255,6 +262,9 @@ synchronous persistence failure; the KTX helper discards that Boolean result.
 | 2026-09-03 | issue #132 focused Room/Desktop/iOS lifecycle tests and Detekt | PASS: checkpoint/close ordering, partial-runtime failure handling, duplicate notifications, runtime rebuild eligibility, and Complete-protection regressions pass |
 | 2026-09-03 | `gradlew check verifyDependencies --max-workers=2` | PASS: 962 tasks; complete repository tests, Detekt, Android lint, localization, dependency, release, and iOS simulator checks pass |
 | 2026-09-03 | unsigned Xcode `Release` simulator build | PASS: Kotlin framework, Swift protected-data host integration, store-style bundle validation, and canonical Release identity compile successfully; no device run, signing, or upload |
+| 2026-09-03 | `scripts/run-security-analysis.sh` | PASS: official OpenGrep 1.29.0 host binary matched its pinned release SHA-256; 11/11 rule tests and the failure canary passed; all 516 inventoried files were accounted for with zero findings and five reviewed, file-hash-pinned Kotlin parser limitations |
+| 2026-09-03 | issue #76 release-automation/static negative matrix | PASS: missing CI invocation, impossible source floor, Kotlin moved outside `src`, missing canary detection, and analyzer-engine failure were all rejected; Actionlint, Ruby/Bash syntax, ShellCheck, and `git diff --check` passed |
+| 2026-09-03 | `gradlew verifyStaticAnalysisCoverage detekt check verifyDependencies --max-workers=2 --stacktrace` | PASS: 963 tasks; the 393-file Detekt floor ran before all module aggregations and the complete repository check/dependency gate passed |
 
 ## Completion rule
 

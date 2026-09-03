@@ -51,6 +51,7 @@
 - **Resolved FIX:** #68 — TOTP generation now decodes Base32 directly from mutable character buffers and uses byte-array HMAC implementations on every platform, clearing every application-owned seed and digest intermediate without introducing a long-lived decoded-key cache.
 - **Resolved FIX:** #69 — format-2 backup readers and writers now admit only the two historical 64 MiB Argon2 profiles (three or four operations), rejecting attacker-only profiles before derivation while leaving legacy format-1 compatibility unchanged.
 - **Resolved FIX:** #71 — format-2 restore now authenticates actual encrypted attachment bytes in metadata schema 3, preflights and rechecks attachment-volume capacity with bounded reserve, preserves schema-1/2 compatibility, maps real storage-full failures to an actionable localized error, and cleans objects published immediately before cancellation.
+- **Resolved FIX:** #76 — the required CI test job now runs checksum-pinned OpenGrep rules across an exact 516-file Kotlin/Swift/native/automation inventory, proves detection with a known-bad canary, rejects analyzer errors and coverage drift, and makes every Detekt aggregate depend on a reviewed 393-file source floor. Android Lint remains a separate gate; no crash-to-success behavior was found. Detekt stays serial because no stable Detekt 2 release existed on 2026-09-03.
 - **Resolved FIX:** #78 — Dependabot now schedules Gradle and Bundler updates as well as GitHub Actions, and a release-automation guard ensures the two runtime/release dependency manifests remain enrolled.
 - **Resolved FIX:** #88 — `SensitiveText` no longer implies non-existent automatic clearing; a scoped temporary-copy API clears its copied characters on every exit path.
 - **Resolved FIX:** #92 — review scope now correctly includes managed attachment storage and the macOS/Windows native biometric unlock bridge, with a CI-run documentation guard against the stale non-feature claims.
@@ -87,6 +88,10 @@ The detailed tables below retain the original recommendations for traceability; 
 - **#138** — fresh iOS `LAContext` instances use Apple’s zero reuse default.
 - **#142** — data-protection Keychain is the iOS/Catalyst default/only store; omission is not a downgrade.
 - **#145** — both privacy-manifest reason codes match actual in-container and user-selected file metadata access.
+
+GitHub vulnerability alerts are enabled. Secret scanning, push protection, and Dependabot security updates were
+disabled when read through the GitHub API on 2026-09-03; enabling those external controls remains separate from the
+repository fix for #76 and requires owner authorization.
 
 ## FIX NOW — critical/high findings
 | Issue | Severity | Short summary | Recommended next step |

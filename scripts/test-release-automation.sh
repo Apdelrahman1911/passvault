@@ -10,6 +10,7 @@ cd "$repository_root"
 ./scripts/verify-pentest-scope.sh >/dev/null
 ./scripts/verify-dependabot-coverage.sh >/dev/null
 ./scripts/verify-shell-library-contract.sh >/dev/null
+ruby scripts/verify-static-analysis-coverage.rb >/dev/null
 ruby scripts/validate-ci-workflow-security.rb >/dev/null
 ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
 ./scripts/test-apple-signing-secret-handling.sh >/dev/null
@@ -100,6 +101,134 @@ if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/nu
     echo "CI security policy accepted a missing failure-path test report artifact." >&2
     exit 1
 fi
+
+cp .github/workflows/ci.yml "$ci_security_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Run KMP and native security analysis\n        run: \.\/scripts\/run-security-analysis\.sh\n/
+  abort("missing security-analysis fixture") unless source.sub!(block, "\n")
+  File.write(path, source)
+' "$ci_security_fixture"
+if ruby scripts/validate-ci-workflow-security.rb "$ci_security_fixture" >/dev/null 2>&1; then
+    echo "CI security policy accepted a missing security-analysis gate." >&2
+    exit 1
+fi
+
+coverage_fixture="$temporary_root/static-analysis-baseline.json"
+cp .github/security-analysis/coverage-baseline.json "$coverage_fixture"
+ruby -rjson -e '
+  path = ARGV.fetch(0)
+  baseline = JSON.parse(File.read(path, encoding: "UTF-8"))
+  baseline.fetch("detekt")["minimumFileCount"] = 1_000_000
+  File.write(path, JSON.pretty_generate(baseline) + "\n")
+' "$coverage_fixture"
+if ruby scripts/verify-static-analysis-coverage.rb \
+    --baseline "$coverage_fixture" >/dev/null 2>&1; then
+    echo "Static-analysis coverage accepted an impossible Detekt floor." >&2
+    exit 1
+fi
+
+coverage_root="$temporary_root/static-analysis-project"
+mkdir -p "$coverage_root/module/src/commonMain/kotlin"
+cat > "$coverage_root/settings.gradle.kts" <<'COVERAGE_SETTINGS'
+rootProject.name = "coverage-fixture"
+include(":module")
+COVERAGE_SETTINGS
+cat > "$coverage_root/module/src/commonMain/kotlin/Main.kt" <<'COVERAGE_SOURCE'
+fun coveredSource() = Unit
+COVERAGE_SOURCE
+cat > "$coverage_root/baseline.json" <<'COVERAGE_BASELINE'
+{
+  "schemaVersion": 1,
+  "detekt": {
+    "minimumFileCount": 2,
+    "minimumGradleScriptCount": 1,
+    "minimumProjectSourceCounts": { ":module": 1 }
+  },
+  "securityAnalysis": {
+    "minimumFileCount": 2,
+    "minimumGroupCounts": {
+      "automation": 0,
+      "apple": 0,
+      "kotlin": 2,
+      "native": 0
+    },
+    "allowedPartialParsing": {}
+  }
+}
+COVERAGE_BASELINE
+git -C "$coverage_root" init --quiet
+git -C "$coverage_root" add settings.gradle.kts module/src/commonMain/kotlin/Main.kt
+ruby scripts/verify-static-analysis-coverage.rb \
+    --root "$coverage_root" \
+    --baseline "$coverage_root/baseline.json" >/dev/null
+mkdir -p "$coverage_root/module/code"
+mv "$coverage_root/module/src/commonMain/kotlin/Main.kt" "$coverage_root/module/code/Main.kt"
+git -C "$coverage_root" add --all
+if ruby scripts/verify-static-analysis-coverage.rb \
+    --root "$coverage_root" \
+    --baseline "$coverage_root/baseline.json" >/dev/null 2>&1; then
+    echo "Static-analysis coverage accepted a Kotlin source outside Detekt's configured roots." >&2
+    exit 1
+fi
+
+fake_opengrep="$temporary_root/fake-opengrep"
+cat > "$fake_opengrep" <<'FAKE_OPENGREP'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "show" && "${2:-}" == "version" ]]; then
+    printf '%s\n' '1.29.0'
+    exit 0
+fi
+case "${1:-}" in
+    validate|test)
+        exit 0
+        ;;
+    scan)
+        printf '%s\n' '{"version":"1.29.0","results":[],"errors":[],"paths":{"scanned":[]}}'
+        exit 0
+        ;;
+esac
+exit 125
+FAKE_OPENGREP
+chmod 700 "$fake_opengrep"
+if OPENGREP_BIN="$fake_opengrep" ./scripts/run-security-analysis.sh >/dev/null 2>&1; then
+    echo "Security-analysis wrapper accepted a canary that was not detected." >&2
+    exit 1
+fi
+
+cat > "$fake_opengrep" <<'FAILING_OPENGREP'
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${1:-}" == "show" && "${2:-}" == "version" ]]; then
+    printf '%s\n' '1.29.0'
+    exit 0
+fi
+case "${1:-}" in
+    validate|test)
+        exit 0
+        ;;
+    scan)
+        last_argument="${!#}"
+        if [[ "$last_argument" == */scripts/testdata/security-analysis/Canary.kt ]]; then
+            printf '{"version":"1.29.0","results":[{"check_id":"passvault.kotlin.insecure-cipher-transformation","path":"%s","start":{"line":4}}],"errors":[],"paths":{"scanned":["%s"]}}\n' \
+                "$last_argument" "$last_argument"
+            exit 1
+        fi
+        exit 125
+        ;;
+esac
+exit 125
+FAILING_OPENGREP
+chmod 700 "$fake_opengrep"
+analyzer_failure_log="$temporary_root/analyzer-failure.log"
+if OPENGREP_BIN="$fake_opengrep" ./scripts/run-security-analysis.sh \
+    >"$analyzer_failure_log" 2>&1; then
+    echo "Security-analysis wrapper accepted an analyzer engine failure." >&2
+    exit 1
+fi
+grep -Fq "OpenGrep failed with status 125." "$analyzer_failure_log"
 
 apple_release_fixture="$temporary_root/apple-release.yml"
 apple_mobile_fixture="$temporary_root/apple-mobile-store-release.yml"

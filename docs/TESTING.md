@@ -10,6 +10,8 @@ Desktop/JVM and Android host-test tasks; it must not be replaced by Gradle's amb
 ```bash
 ./gradlew test
 ./gradlew detekt
+./gradlew verifyStaticAnalysisCoverage
+./scripts/run-security-analysis.sh
 ./gradlew check
 ./gradlew check -x detekt
 ./gradlew verifyDependencies
@@ -57,6 +59,19 @@ Run focused suites while editing, for example:
 ./gradlew :feature:unlock:desktopTest
 ./gradlew :app-desktop:testDesktopBiometricBridge
 ```
+
+## Static security analysis
+
+Every aggregate Detekt task depends on `verifyStaticAnalysisCoverage`. The verifier inventories each included
+project's `src/` tree and the root Gradle scripts, enforces the reviewed per-module floors in
+`.github/security-analysis/coverage-baseline.json`, and rejects Kotlin files outside those configured roots.
+
+`scripts/run-security-analysis.sh` downloads OpenGrep 1.29.0 for the current supported host, verifies the pinned
+SHA-256 before execution, validates the local rules and their synthetic fixtures, and requires a known-bad canary to
+be detected. It then scans the exact inventoried Kotlin, Swift, native, and automation source set. Findings, analyzer
+errors, missing targets, and new parser failures all fail closed. Five current Kotlin parser limitations are accepted
+only while the affected file hashes remain unchanged; review the file and analyzer output before changing that list
+or lowering any coverage floor.
 
 ## Coverage intent
 
@@ -123,6 +138,10 @@ Repository settings were inspected through the GitHub API on 2026-09-03.
 intended required check. Treat that difference as externally managed
 configuration drift; reviewing this file does not prove that the settings
 still match, and changing them requires repository-owner authorization.
+
+Dependabot vulnerability alerts are enabled, but GitHub secret scanning, push protection, and Dependabot security
+updates were disabled at that inspection. The in-repository OpenGrep gate is complementary and does not substitute
+for enabling those repository controls.
 
 These limits must remain explicit in the audit ledger.
 
