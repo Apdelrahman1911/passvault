@@ -47,8 +47,8 @@ jobs:
         with:
           cache-cleanup: always
 
-      - name: Verify dependency integrity
-        run: ./gradlew verifyDependencies --stacktrace
+      - name: Verify dependency integrity and attribution
+        run: ./gradlew verifyDependencies checkThirdPartyAttribution --stacktrace
 
   build-android:
     name: Build Android

@@ -50,6 +50,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Revalidate reviewed third-party attribution metadata
+        run: |
+          ruby scripts/verify-third-party-attribution.rb \
+            legal/third-party-dependencies.lock \
+            legal/third-party-dependencies.lock \
+            legal/third-party-attribution.tsv \
+            THIRD_PARTY_NOTICES.md \
+            THIRD_PARTY_LICENSES
+
       - name: Test release automation scripts
         run: ./scripts/test-release-automation.sh
 

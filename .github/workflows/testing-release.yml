@@ -124,7 +124,7 @@ jobs:
         run: ./scripts/test-release-automation.sh
 
       - name: Verify the exact candidate source
-        run: ./gradlew test detekt verifyDependencies --continue --stacktrace
+        run: ./gradlew test detekt verifyDependencies checkThirdPartyAttribution --continue --stacktrace
 
   mobile-internal:
     if: needs.prepare.outputs.resume_existing_internal_uploads != 'true'

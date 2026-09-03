@@ -146,7 +146,9 @@ them as short-lived workflow artifacts. It promotes Linux packages unchanged,
 signs the restored Windows app image before creating EXE/MSI installers, and
 signs the restored macOS app image before creating and notarizing each DMG. The
 production workflow does not invoke Gradle or rebuild application payloads. It
-then freezes the attested Desktop bundle without changing either mobile Store.
+revalidates the reviewed attribution metadata from the candidate tree, whose
+resolved graph was gated before candidate creation, then freezes the attested
+Desktop bundle without changing either mobile Store.
 
 Stores cannot become live atomically: Google may publish before Apple finishes
 review. After both consoles show the version live, run `Publish Stable Release`
@@ -169,6 +171,24 @@ workflow run, and every promotion-input digest alongside the final asset hashes.
 Missing/partial credentials, an expired validation artifact, a different SHA,
 or a failed signature/notarization gate fail closed; production never falls back
 to rebuilding or unsigned Windows/macOS output.
+
+## Third-party attribution gate
+
+`./gradlew checkThirdPartyAttribution` resolves the Android release runtime,
+Desktop runtime, and iOS Arm64 KLIB inputs and compares them with
+`legal/third-party-dependencies.lock`. It also validates every coordinate
+against `legal/third-party-attribution.tsv`, checks the documented versions and
+native-carrier exceptions, and rejects missing or orphaned files in
+`THIRD_PARTY_LICENSES/`. The host-selected Skiko Desktop runtime artifact is
+normalized to `skiko-awt-runtime-current-os`; its version remains exact.
+
+After an intentional production dependency change, run
+`./gradlew generateThirdPartyDependencyInventory`, review the report under
+`build/reports/legal/`, then update the lock, attribution map, notices, and
+license texts together. Do not copy the generated lock without reviewing new,
+removed, or relicensed components. CI and candidate/mobile release preparation
+run the resolved-graph check. No-build Desktop promotion revalidates the same
+reviewed metadata from the attested candidate tree.
 
 ## Automated store screenshots
 

@@ -710,6 +710,74 @@ if [[ "$(find THIRD_PARTY_LICENSES -mindepth 1 -maxdepth 1 -type f | wc -l | tr 
     echo "The canonical third-party license set has an unexpected file count." >&2
     exit 1
 fi
+
+attribution_arguments=(
+    legal/third-party-dependencies.lock
+    legal/third-party-dependencies.lock
+    legal/third-party-attribution.tsv
+    THIRD_PARTY_NOTICES.md
+    THIRD_PARTY_LICENSES
+)
+ruby scripts/verify-third-party-attribution.rb "${attribution_arguments[@]}" >/dev/null
+
+unattributed_inventory="$temporary_root/unattributed-dependency.lock"
+ruby -e '
+  lines = File.readlines(ARGV.fetch(0), chomp: true)
+  headers, entries = lines.partition { |line| line.start_with?("#") || line.empty? }
+  entries << "android\tcom.example:unattributed-runtime:1.0.0"
+  File.write(ARGV.fetch(1), (headers + entries.sort).join("\n") + "\n")
+' legal/third-party-dependencies.lock "$unattributed_inventory"
+unattributed_error="$temporary_root/unattributed-dependency.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "$unattributed_inventory" "${attribution_arguments[@]:1}" \
+    >/dev/null 2>"$unattributed_error"; then
+    echo "An unattributed production dependency was accepted." >&2
+    exit 1
+fi
+grep -Fq 'com.example:unattributed-runtime:1.0.0' "$unattributed_error"
+
+drifted_inventory="$temporary_root/drifted-dependency.lock"
+ruby -e '
+  source = File.read(ARGV.fetch(0), encoding: "UTF-8")
+  old = "desktop\torg.jetbrains.skiko:skiko-awt:0.144.6"
+  replacement = "desktop\torg.jetbrains.skiko:skiko-awt:0.144.7"
+  abort("missing transitive-version fixture") unless source.sub!(old, replacement)
+  File.write(ARGV.fetch(1), source)
+' legal/third-party-dependencies.lock "$drifted_inventory"
+drifted_error="$temporary_root/drifted-dependency.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "$drifted_inventory" "${attribution_arguments[@]:1}" \
+    >/dev/null 2>"$drifted_error"; then
+    echo "A drifted transitive dependency version was accepted." >&2
+    exit 1
+fi
+grep -Fq 'org.jetbrains.skiko:skiko-awt:0.144.7' "$drifted_error"
+
+orphaned_license_directory="$temporary_root/orphaned-third-party-licenses"
+cp -R THIRD_PARTY_LICENSES "$orphaned_license_directory"
+printf 'fixture\n' >"$orphaned_license_directory/orphaned-LICENSE.txt"
+orphaned_error="$temporary_root/orphaned-third-party-license.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "${attribution_arguments[@]:0:4}" "$orphaned_license_directory" \
+    >/dev/null 2>"$orphaned_error"; then
+    echo "An orphaned third-party license file was accepted." >&2
+    exit 1
+fi
+grep -Fq 'Orphaned third-party license file: orphaned-LICENSE.txt' "$orphaned_error"
+
+missing_license_directory="$temporary_root/missing-third-party-license"
+cp -R THIRD_PARTY_LICENSES "$missing_license_directory"
+rm "$missing_license_directory/libsodium-1.0.19-LICENSE.txt"
+missing_license_error="$temporary_root/missing-third-party-license.err"
+if ruby scripts/verify-third-party-attribution.rb \
+    "${attribution_arguments[@]:0:4}" "$missing_license_directory" \
+    >/dev/null 2>"$missing_license_error"; then
+    echo "A missing mapped third-party license file was accepted." >&2
+    exit 1
+fi
+grep -Fq 'Mapped third-party license file is missing: libsodium-1.0.19-LICENSE.txt' \
+    "$missing_license_error"
+
 ./scripts/verify-third-party-license-archive.sh \
     "$output_directory/THIRD_PARTY_LICENSES.zip" >/dev/null
 license_archive_entries="$(unzip -Z1 "$output_directory/THIRD_PARTY_LICENSES.zip")"
@@ -2162,6 +2230,11 @@ fi
 test "$(grep -Fc 'legalEntryPrefix.set(' app-android/build.gradle.kts)" -eq 3
 grep -Fq 'Duplicate entries are present' app-android/build.gradle.kts
 grep -Fq 'verifyDesktopInstalledLegalNotices' app-desktop/build.gradle.kts
+grep -Fq 'checkThirdPartyAttribution' build.gradle.kts
+grep -Fq 'checkThirdPartyAttribution' .github/workflows/ci.yml
+grep -Fq 'checkThirdPartyAttribution' .github/workflows/testing-release.yml
+grep -Fq 'verify-third-party-attribution.rb' .github/workflows/release.yml
+grep -Fq 'checkThirdPartyAttribution' .github/workflows/mobile-store-release.yml
 grep -Fq 'THIRD_PARTY_LICENSES in Resources' iosApp/iosApp.xcodeproj/project.pbxproj
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-release-signing.sh
 grep -Fq 'verify-legal-notice-bundle.sh' scripts/verify-ios-exported-artifact.sh
