@@ -64,7 +64,12 @@ Face ID / Touch ID / strong Android biometric / Windows Hello
 ```
 
 Android encrypts the VEK with an auth-per-use AES-GCM key in Android Keystore and requires a strong biometric for
-every decrypt. The key is invalidated when biometric enrollment changes. iOS stores the VEK in a
+every decrypt. The key spec explicitly requires randomized encryption, encryption supplies no IV, and the
+provider-generated IV is stored with the wrapped VEK. The key is invalidated when biometric enrollment changes.
+PassVault does not claim or require StrongBox backing: it uses the device's default KeyMint/Keymaster implementation,
+whose hardware isolation is device-dependent. This matches the stated OS trust boundary. A future StrongBox
+preference would be optional, device-dependent hardening rather than a minimum guarantee and would require a physical
+compatibility and performance matrix. iOS stores the VEK in a
 `WhenPasscodeSetThisDeviceOnly` Keychain item using `biometryCurrentSet`, so it is neither synchronized nor restored
 to another device and becomes inaccessible after enrollment changes. In both cases the released candidate VEK must
 authenticate the existing vault verification record before the repository publishes a session. The master password
