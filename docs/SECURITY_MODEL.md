@@ -94,6 +94,11 @@ bind each encrypted payload to its record identity and purpose. They do not bind
 columns. Keyed deterministic blind indexes support exact normalized folder/tag comparisons without plaintext values;
 credential titles are searched only after decrypting records in memory.
 
+The deployed attachment-filename AAD v1 encoding uses colon-separated UUID identifiers. Its shared read/write
+builder rejects delimiter-bearing identifiers, preserving existing ciphertext bytes while making that format invariant
+fail closed. Any future identifier scheme that permits the delimiter must introduce a versioned, length-prefixed AAD
+encoding with explicit legacy migration rather than silently changing the authenticated bytes.
+
 TOTP codes are derived in memory from the encrypted setup key and authoritative device time. Codes and countdowns
 are not written to Room or backups. Decrypted setup-key batches remain producer-owned through a cancellation-bound
 lease until the authenticator ViewModel atomically takes them; cancellation before transfer wipes the batch, and

@@ -157,6 +157,37 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `filename ciphertext cannot be replayed across independently keyed attachments`() = runTest {
+        val first = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("first.txt", null, byteArrayOf(1)),
+        ).getOrThrow()
+        val second = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("second.txt", null, byteArrayOf(2)),
+        ).getOrThrow()
+        val firstEntity = requireEntity(first.id)
+        val secondEntity = requireEntity(second.id)
+
+        database.attachmentDao().update(
+            secondEntity.copy(
+                encryptedFilename = firstEntity.encryptedFilename.copyOf(),
+                filenameNonce = firstEntity.filenameNonce.copyOf(),
+            ),
+        )
+
+        val loaded = assertNotNull(credentialRepository.getById(credentialId).getOrThrow())
+        assertEquals(
+            AttachmentAvailability.CORRUPTED_FILENAME,
+            loaded.attachments.first { it.id == second.id }.availability,
+        )
+        assertEquals(
+            AttachmentAvailability.AVAILABLE,
+            loaded.attachments.first { it.id == first.id }.availability,
+        )
+    }
+
+    @Test
     fun `legacy attachment filename remains readable and is padded on rename`() = runTest {
         val attachment = attachmentRepository.import(
             credentialId,

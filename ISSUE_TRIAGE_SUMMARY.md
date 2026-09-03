@@ -15,8 +15,8 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 70** (41 resolved as listed below; 29 still open)
-- **DIG: 16**
-- **CLOSE/ACCEPT: 26**
+- **DIG: 15**
+- **CLOSE/ACCEPT: 27**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
@@ -29,6 +29,8 @@
   adjacent wrapper-validation gap is hardened and regression-tested).
 - **Reclassified to CLOSE/ACCEPT:** #85 (the claimed durable POSIX file access and unprotected stock-Windows profile
   premises do not hold; atomic POSIX creation and explicit ACL-presence checks were added as defense in depth).
+- **Reclassified to CLOSE/ACCEPT:** #87 (the delimiter collision exists in isolation but cannot enable the claimed
+  record swap with UUID identities and independently derived per-attachment keys; v1 now rejects delimiter-bearing IDs).
 - **Closed as accepted:** #146 (the Foojay resolver has no toolchain request in the repository or CI; it is dormant unused configuration, not an active defect).
 - **Resolved FIX:** #36 — Windows now requires a timestamped Authenticode signature shared by the packaged launcher and biometric bridge; the installer uses a protected machine-wide location and release scripts enforce the same binding.
 - **Resolved FIX:** #37 — recovery is private and can only run through the mutex-held repository boundary; DI publishes only the interface singleton, and the regression test verifies no public recovery method remains.
@@ -77,6 +79,12 @@
   all four current Desktop initializers now share atomic `0700` POSIX creation, repair existing modes, reject missing
   access-control support, and preserve rather than overwrite Windows SYSTEM/administrator policy; host tests cover
   new nested directories, repair, inherited ACL presence, and symlink rejection.
+- **CLOSE/ACCEPT:** #87 — the v1 filename AAD byte encoding is delimiter-ambiguous in isolation, but current attachment
+  and credential IDs are delimiter-free UUIDs and each filename uses an independently random key-derivation context.
+  Replaying ciphertext under another row therefore selects the wrong key; copying that context also breaks the
+  length-prefixed content AAD. The shared filename builder now rejects `:` in either identifier and locks the deployed
+  v1 bytes with compatibility tests. A future broader identifier format must use a versioned, length-prefixed encoding
+  and an explicit legacy migration rather than changing existing AAD in place.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -208,7 +216,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [87](https://github.com/Apdelrahman1911/passvault/issues/87) | Low | Filename AAD uses unprefixed concatenation | AAD concatenation is ambiguous in theory, but UUID-derived keys prevent the claimed swap; retain as next-format cryptographic hardening/design review. |
 | [89](https://github.com/Apdelrahman1911/passvault/issues/89) | Medium | Backup password may equal the vault master password; no check exists | Backup/master equality check is absent and can be derived by trial unwrap, but enforcing it is a product policy; decide whether compartmentalization outweighs weaker-user-password risk. |
 | [91](https://github.com/Apdelrahman1911/passvault/issues/91) | Low | `benchmarkArgon2` can only *lower* cost on fast devices | The “only lower” title is imprecise, but memory remains fixed at 64 MiB; decide whether calibration should vary memory and preserve compatibility. |
 | [108](https://github.com/Apdelrahman1911/passvault/issues/108) | Low | Unlock failure timing distinguishes corrupt/missing vault from wrong password | Timing differs for corrupt/missing metadata versus wrong password, but the observer needs local DB write access; treat as informational latency-floor decision. |
@@ -257,6 +264,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #87, #89, #91, #108, #115, #120–#121, #123, #128, #130,
+   #35, #89, #91, #108, #115, #120–#121, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
