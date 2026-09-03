@@ -107,6 +107,41 @@ class VaultBackupServiceTest {
     }
 
     @Test
+    fun `legacy export derives entry count from credential rows`() = runTest {
+        val staleSnapshot = validSnapshot("stale-count-vault", "credential-one").let { snapshot ->
+            snapshot.copy(metadata = snapshot.metadata.copy(entryCount = 7))
+        }
+        insertSnapshot(staleSnapshot)
+        val password = SensitiveText.from("stale entry count backup password")
+        var backup: ByteArray? = null
+        var plaintext: ByteArray? = null
+
+        try {
+            backup = service.createBackup(password).getOrThrow()
+            plaintext = decryptLegacyPayload(backup, password)
+            val metadata = Json.parseToJsonElement(plaintext.decodeToString())
+                .jsonObject.getValue("metadata").jsonObject
+
+            assertEquals(1, metadata.getValue("entryCount").jsonPrimitive.content.toInt())
+            assertEquals(1, service.inspectBackup(backup, password).getOrThrow().credentialCount)
+            assertEquals(7, backupDao.getVaultMetadata()?.entryCount)
+        } finally {
+            backup?.let(cryptoEngine::secureWipe)
+            plaintext?.let(cryptoEngine::secureWipe)
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `snapshot validation still rejects a mismatched imported entry count`() = runTest {
+        val snapshot = validSnapshot("mismatched-count-vault", "credential-one")
+
+        assertFailsWith<IllegalArgumentException> {
+            service.validateSnapshot(snapshot.copy(metadata = snapshot.metadata.copy(entryCount = 0)))
+        }
+    }
+
+    @Test
     fun `new legacy backup omits title hash while an old backup still restores`() = runTest {
         insertSnapshot(validSnapshot("legacy-title-index-vault", "credential-one"))
         val password = SensitiveText.from("legacy title index compatibility password")

@@ -257,6 +257,7 @@ internal class VaultBackupV2Service(
         }
 
         val metadata = requireNotNull(backupDao.getVaultMetadata()) { "Vault metadata is missing" }
+            .copy(entryCount = manifest.credentialCount)
         writeMetadataValue(writer, validator, BackupMetadataValue.Metadata(metadata))
         emitSingleKeyPages(
             limit = SMALL_PAGE_ROWS,

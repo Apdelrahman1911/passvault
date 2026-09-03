@@ -188,6 +188,24 @@ class VaultBackupStreamingTest {
     }
 
     @Test
+    fun `v2 export derives entry count from its transactional manifest`() = runTest {
+        val metadataDao = database.vaultMetadataDao()
+        metadataDao.update(requireNotNull(metadataDao.get()).copy(entryCount = 7))
+        val sink = PathBackupSink(backupPath)
+
+        withBackupPassword { password ->
+            val created = backupService.createBackup(password, sink).getOrThrow()
+            val inspected = backupService.inspectBackup(PathBackupSource(backupPath), password).getOrThrow()
+
+            assertEquals(1, created.credentialCount)
+            assertEquals(1, inspected.credentialCount)
+        }
+        assertTrue(sink.committed)
+        assertFalse(sink.aborted)
+        assertEquals(7, metadataDao.get()?.entryCount)
+    }
+
+    @Test
     fun `over quota legacy vault remains loadable and exportable while new imports stay blocked`() = runTest {
         val attachmentDao = database.attachmentDao()
         val original = attachmentDao.getByCredential(credentialId.value).single()
@@ -860,6 +878,28 @@ class VaultBackupStreamingTest {
                     managedAttachmentObjectBytes = 0L,
                 ),
             )
+        }
+    }
+
+    @Test
+    fun `stream validator still rejects a mismatched imported entry count`() = runTest {
+        val metadata = requireNotNull(database.vaultMetadataDao().get())
+        val validator = backupService.newStreamValidator(
+            BackupStreamManifest(
+                credentialCount = 0,
+                folderCount = 0,
+                tagCount = 0,
+                credentialFolderReferenceCount = 0,
+                credentialTagReferenceCount = 0,
+                attachmentCount = 0,
+                managedAttachmentCount = 0,
+                passwordHistoryCount = 0,
+                managedAttachmentObjectBytes = 0L,
+            ),
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            validator.accept(BackupMetadataValue.Metadata(metadata))
         }
     }
 

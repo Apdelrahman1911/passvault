@@ -217,8 +217,11 @@ class VaultBackupService(
         return try {
             sessionManager.withUnlockedSession {
                 val rawSnapshot = backupDao.readSnapshot()
-                validateSnapshot(rawSnapshot)
-                val snapshot = canonicalizeFolderRelationships(rawSnapshot)
+                val snapshotWithDerivedCount = rawSnapshot.copy(
+                    metadata = rawSnapshot.metadata.copy(entryCount = rawSnapshot.credentials.size),
+                )
+                validateSnapshot(snapshotWithDerivedCount)
+                val snapshot = canonicalizeFolderRelationships(snapshotWithDerivedCount)
                 val payload = SnapshotDto.from(snapshot, attachmentsIncluded = false)
                 val plaintext = json.encodeToString(payload).encodeToByteArray()
                 try {
