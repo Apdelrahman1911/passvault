@@ -141,7 +141,11 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 
 ## Session and platform controls
 
-- Failed unlock attempts use progressive delays.
+- Failed password unlocks use a process-local progressive delay after three failures, capped at five seconds; the UI
+  separately applies a 30-second cooldown after five failures. Both reset on process restart and are bounded
+  interactive-abuse friction, not a durable anti-guessing boundary. An offline attacker can omit or modify an
+  unauthenticated counter copied with the vault, while tampering with the original counter could deny its owner access.
+  Offline guessing resistance therefore comes from the master-password policy and per-attempt Argon2id cost.
 - Manual, inactivity, and application-background signals request a central vault lock.
 - The iOS native privacy cover remains opaque until the shared UI acknowledges post-lock scrubbing. Lock failures and
   acknowledgement stalls use separate bounded retries; exhaustion exposes only a localized retry surface over the

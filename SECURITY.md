@@ -16,7 +16,8 @@ but no independent audit, penetration-test certification, MASVS certification, o
 - Each attachment is an independently authenticated, size-bounded, atomically written app-private object. Its owner,
   identity, declared size, MIME metadata, and format are cryptographically bound; database staging states and cleanup
   prevent partial files or rows from becoming visible.
-- Manual/background/inactivity lock clears the active vault-key buffer best-effort; unlock failures are throttled.
+- Manual/background/inactivity lock clears the active vault-key buffer best-effort. A process-local delay and UI
+  cooldown slow rapid interactive unlock retries; they are not a persistent or offline anti-guessing claim.
 - Opt-in mobile biometric unlock releases the same VEK through an auth-per-use Android Keystore key or a
   device-only iOS Keychain item bound to the current biometric enrollment; the candidate VEK must still authenticate
   the vault verification record before a session is published.
@@ -30,6 +31,10 @@ clears those buffers after derivation; this narrows exposure but cannot guarante
 Room database file is not SQLCipher; sensitive record payloads are encrypted by the repository layer, while
 timestamps, identifiers, types, favorite flags, and relationship metadata remain visible to someone who obtains the
 database.
+
+Offline password-guessing resistance comes from the master-password policy and per-attempt Argon2id derivation. The
+failed-attempt delay deliberately is not persisted: an offline attacker could omit state copied with the vault, while
+tampering with the original state could deny the owner access without preventing guesses against a separate copy.
 
 ## Unsupported security claims
 

@@ -8,7 +8,7 @@ ships the shared Compose application on iPhone and iPad.
 
 - Local vault creation, password unlock, mobile and supported Desktop biometric unlock, manual lock,
   background/inactivity lock, and
-  failed-attempt throttling.
+  process-local failed-attempt throttling.
 - Authenticated XChaCha20-Poly1305 encryption with Argon2id-derived key-encryption keys and per-purpose subkeys.
 - Credential creation, editing, deletion, favorites, folders, tags, search, filters, and password history.
 - Per-login TOTP authenticators with local code generation, QR enrollment, and encrypted setup-key storage.
