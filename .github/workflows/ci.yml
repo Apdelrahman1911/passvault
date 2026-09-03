@@ -84,13 +84,42 @@ jobs:
           name: android-debug-apk
           path: app-android/build/outputs/apk/debug/*.apk
 
-      - name: Build Android Release (unsigned)
+      - name: Build Android Release with ephemeral validation signing
+        shell: bash
         run: |
+          set -euo pipefail
+          keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"
+          keystore_password="$(openssl rand -hex 32)"
+          key_alias="$(tr -d '\r\n' < release/android/passvault-upload-alias.txt)"
+          cleanup() {
+            rm -f -- "$keystore_path"
+            unset KEYSTORE_PATH KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
+            keystore_password=""
+          }
+          trap cleanup EXIT
+          export KEYSTORE_PATH="$keystore_path"
+          export KEYSTORE_PASSWORD="$keystore_password"
+          export KEY_ALIAS="$key_alias"
+          export KEY_PASSWORD="$keystore_password"
+          keytool -genkeypair \
+            -keystore "$KEYSTORE_PATH" \
+            -storetype PKCS12 \
+            -storepass:env KEYSTORE_PASSWORD \
+            -keypass:env KEY_PASSWORD \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA \
+            -keysize 3072 \
+            -sigalg SHA256withRSA \
+            -validity 2 \
+            -dname "CN=PassVault CI Validation, O=Non-Publishing Test" \
+            -noprompt
           ./gradlew \
+            :app-android:verifyReleaseSigningConfiguration \
             :app-android:assembleRelease \
             :app-android:bundleRelease \
             :app-android:lintRelease \
             :app-android:verifyReleasePackageContents \
+            -Ppassvault.requireReleaseSigning=true \
             --no-configuration-cache \
             --stacktrace
           ruby scripts/validate-google-play-readiness.rb

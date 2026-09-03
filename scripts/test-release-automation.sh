@@ -2372,6 +2372,23 @@ grep -Fq ':app-android:verifyDebugComposeResources' scripts/build-android.sh
 grep -Fq ':app-android:verifyDebugComposeResources' .github/workflows/ci.yml
 grep -Fq ':app-android:verifyReleasePackageContents' scripts/verify-release.sh
 grep -Fq ':app-android:verifyReleasePackageContents' .github/workflows/ci.yml
+if grep -Fq 'Build Android Release (unsigned)' .github/workflows/ci.yml; then
+    echo "CI still describes a forbidden unsigned Android Release archive." >&2
+    exit 1
+fi
+for ci_release_signing_control in \
+    'Build Android Release with ephemeral validation signing' \
+    'keystore_path="${RUNNER_TEMP:?}/passvault-ci-validation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.p12"' \
+    'keytool -genkeypair' \
+    '-storepass:env KEYSTORE_PASSWORD' \
+    'trap cleanup EXIT' \
+    ':app-android:verifyReleaseSigningConfiguration' \
+    '-Ppassvault.requireReleaseSigning=true'; do
+    grep -Fq -- "$ci_release_signing_control" .github/workflows/ci.yml || {
+        echo "Android CI release validation lacks: $ci_release_signing_control" >&2
+        exit 1
+    }
+done
 grep -Fq 'listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")' \
     app-android/build.gradle.kts
 for native_library in \

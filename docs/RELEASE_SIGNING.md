@@ -46,7 +46,10 @@ Release APK/AAB packaging fails before producing an archive unless all four
 signing inputs are present and `KEY_ALIAS` matches the pinned upload alias.
 Unsigned local builds must use the `debug` build type; `lintRelease` remains
 available without publisher credentials because it does not create a release
-artifact.
+artifact. Pull-request CI creates a unique, short-lived self-signed validation
+key in the runner's temporary directory so it can exercise Release packaging,
+R8, lint, and package inspection without exposing or impersonating the publisher
+key. CI never uploads that validation Release and deletes the key on every exit.
 
 The build script reads the canonical ignored `values.env`, requires the pinned
 alias, runs release lint and final-manifest checks, and verifies both signatures.
