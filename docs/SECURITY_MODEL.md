@@ -194,6 +194,8 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 - iOS keeps `NSFileProtectionComplete` for the Room database and sidecars. Its protected-data callback locks and
   scrubs the session, unmounts Compose, checkpoints/closes Room, and stops Koin; a fresh runtime is allowed only after
   protected data becomes available again. Teardown failures remain behind the native recovery cover.
+- The iOS container defaults to `NSFileProtectionComplete`. Attachment picker copies are additionally re-protected in
+  the delegate before they cross a coroutine boundary and are deleted rather than returned if that assertion fails.
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
   App-initiated document pickers retain a bounded return grace, but a non-exported screen-off observer active only for
   those flows revokes the grace and requests the normal background lock immediately. The policy records screen-off

@@ -14,8 +14,8 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 73** (44 resolved as listed below; 29 still open)
-- **DIG: 8**
+- **FIX: 74** (45 resolved as listed below; 29 still open)
+- **DIG: 7**
 - **CLOSE/ACCEPT: 31**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
@@ -42,7 +42,7 @@
 - **Resolved FIX:** #43 — Desktop lock now synchronously installs the same opaque concealment curtain used at shutdown before iconifying the native window; it stays in place through asynchronous UI cleanup and is restored only on unlock or disposal.
 - **Resolved FIX:** #44 — the V2 restore transfers staged-object ownership in the same non-cancellable region as the Room commit, and abort cleanup cross-checks durable attachment references before deleting; deterministic post-commit cancellation coverage preserves every live object.
 - **Resolved FIX:** #45 — session operations now use tracked, revocable VEK leases rather than holding the state mutex across arbitrary suspending work. Lock publishes `Locking`, cancels the lease operation, wipes the repository key, and force-revokes any non-cooperative lease after a hard deadline; `lockAndRun` additionally refuses protected work unless lease cleanup settled.
-- **Resolved FIX:** #46 — iOS backup staging directories and files now receive checked `NSFileProtectionComplete` attributes before any export write; picker copies are immediately re-protected and rejected/deleted if protection cannot be applied. Simulator regression coverage verifies ordering and fail-closed behavior; physical locked-device verification remains tracked by #35/#128.
+- **Resolved FIX:** #46 — iOS backup staging directories and files now receive checked `NSFileProtectionComplete` attributes before any export write; picker copies are immediately re-protected and rejected/deleted if protection cannot be applied. Simulator regression coverage verifies ordering and fail-closed behavior; physical locked-device verification remains tracked by #35.
 - **Resolved FIX:** #47 — new attachment names enforce a portable Windows-safe namespace and duplicate keys model trailing-dot aliases, while legacy names remain readable and fail safely at output boundaries.
 - **Resolved FIX:** #48 — credential summaries/secrets, password history, and attachment filenames now use an authenticated versioned padding format with power-of-two buckets; v2 records remain readable and are rewritten on ordinary updates.
 - **Resolved FIX:** #49 — Debug and Release now use a checked-in iOS entitlement that makes `NSFileProtectionComplete` the container default and explicitly declares the per-app Keychain group; source and signed-artifact release validators enforce both properties.
@@ -121,6 +121,10 @@
   interoperability without strengthening the issuer's account. The accepted 10–128-byte range, residual risk, and
   non-conformance are now explicit in source and security documentation; manual and URI boundary tests pin rejection
   below 10 bytes, acceptance at 10 bytes, and acceptance at the RFC's 16-byte boundary.
+- **Resolved FIX:** #128 — #49 eliminated the weak container default that originally created the picker-copy window.
+  As defense in depth, the attachment picker now re-applies `NSFileProtectionComplete` synchronously in its delegate,
+  before continuation resumption or the dispatcher hop, and deletes/rejects the copy if protection fails. The adopted
+  destination still receives an independent checked assertion; simulator tests cover ordering and fail-closed cleanup.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -258,7 +262,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [128](https://github.com/Apdelrahman1911/passvault/issues/128) | Low | Document-picker `asCopy` intermediate sits at default protection briefly | The picker-controlled intermediate protection window needs real iOS device evidence and immediate post-receipt protection. |
 | [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | Source mitigation and automated regression coverage are implemented; keep open until physical-device lock/forced-I/O/WAL and repeated-cycle verification proves the runtime behavior. |
 | [133](https://github.com/Apdelrahman1911/passvault/issues/133) | Low | External URL opening relies on a scheme allowlist only | The title overstates the gap: HTTP(S), authority, character, and port syntax are validated. IP classes (127.0.0.1/private/link-local) are not filtered; decide if that informational hardening is needed. |
 | [135](https://github.com/Apdelrahman1911/passvault/issues/135) | Low | Notices are generated, not diffed against the actual release graph | Notice checks compare repository files, not the resolved dependency graph; automate SBOM/license diffing as a release-process improvement. |
@@ -299,6 +302,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #128, #130,
+   #35, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

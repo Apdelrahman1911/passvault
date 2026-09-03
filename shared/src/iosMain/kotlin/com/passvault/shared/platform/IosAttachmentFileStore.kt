@@ -53,6 +53,7 @@ import kotlin.coroutines.resume
 
 class IosAttachmentFileStore(
     private val fileManager: NSFileManager = NSFileManager.defaultManager,
+    private val protectPath: (String) -> Unit = { path -> protectIosAttachmentPath(fileManager, path) },
 ) : AttachmentFileStore {
     private var activeDelegate: NSObject? = null
     private var activeController: UIViewController? = null
@@ -157,10 +158,7 @@ class IosAttachmentFileStore(
                     didPickDocumentsAtURLs: List<*>,
                 ) {
                     val path = (didPickDocumentsAtURLs.firstOrNull() as? NSURL)?.path
-                    finish(
-                        path?.let(Result.Companion::success)
-                            ?: Result.failure(IllegalStateException("No attachment file was selected")),
-                    )
+                    finish(prepareIosAttachmentImportPath(path, protectPath, ::deleteExactPath))
                 }
 
                 override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
@@ -325,7 +323,7 @@ class IosAttachmentFileStore(
                 check(fileManager.copyItemAtPath(sourcePath, destination, error = null))
                 check(fileManager.removeItemAtPath(sourcePath, error = null))
             }
-            check(fileManager.setAttributes(IOS_PLAINTEXT_PROTECTION, ofItemAtPath = destination, error = null))
+            protectPath(destination)
             destination
         } catch (error: Exception) {
             fileManager.removeItemAtPath(directory, error = null)
@@ -499,6 +497,36 @@ private fun resolveAttachmentPresenter(): UIViewController? {
 }
 
 private fun randomToken(): String = NSUUID.UUID().UUIDString.lowercase()
+
+internal fun prepareIosAttachmentImportPath(
+    path: String?,
+    protectPath: (String) -> Unit,
+    deletePath: (String) -> Unit,
+): Result<String> {
+    return when {
+        path == null -> Result.failure(IllegalStateException("No attachment file was selected"))
+        !path.startsWith('/') || path.split('/').contains("..") -> {
+            Result.failure(IllegalStateException("The selected attachment file is invalid"))
+        }
+        else -> try {
+            // UIKit owns creation of the asCopy payload. Apply the strongest class synchronously at the first callback
+            // under application control, before resuming the continuation or hopping to the adoption dispatcher.
+            protectPath(path)
+            Result.success(path)
+        } catch (_: Exception) {
+            runCatching { deletePath(path) }
+            Result.failure(IllegalStateException("The selected attachment file could not be protected"))
+        }
+    }
+}
+
+internal fun protectIosAttachmentPath(fileManager: NSFileManager, path: String) {
+    check(fileManager.setAttributes(IOS_PLAINTEXT_PROTECTION, ofItemAtPath = path, error = null)) {
+        "The temporary attachment file could not be protected"
+    }
+}
+
+internal fun iosAttachmentProtectionAttributes(): Map<Any?, Any?> = IOS_PLAINTEXT_PROTECTION
 
 private const val IOS_ATTACHMENT_DIRECTORY_PREFIX = "passvault-attachment-"
 private const val UUID_TEXT_LENGTH = 36
