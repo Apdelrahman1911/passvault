@@ -15,15 +15,17 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 74** (45 resolved as listed below; 29 still open)
-- **DIG: 7**
-- **CLOSE/ACCEPT: 31**
+- **DIG: 6**
+- **CLOSE/ACCEPT: 32**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
 
 - **Closed with an evidence comment:** #55, #56, #66, #70, #80–#81, #97, #103, #109, #110, #111, #116, #124, #129, #131, #137, #138, #142, #145, #146.
 - **Reclassified to FIX (open):** #117 (unsigned-local-release verification), #122 (pre-service temp-file ownership gap).
-- **Reclassified to DIG (open):** #130 (legal/export-compliance evidence). Live App Store territory enforcement disproves its described pipeline failure, but code cannot independently establish the legal classification.
+- **Reclassified to CLOSE/ACCEPT:** #130 (expected export-compliance policy). Apple defines `NO` to include exempt
+  encryption, the publisher-recorded questionnaire outcome is `EXEMPT_APPROVED`, and live Store enforcement disproves
+  the described France-drift failure. Legal classification remains an explicit owner responsibility, not a code claim.
 - **Reclassified to CLOSE/ACCEPT:** #80 (the user-writable Windows install premise was removed by #36), #81 (the pinned Gradle action makes PR, testing, and release refs read-only and does not cache configuration state without an encryption key).
 - **Reclassified to CLOSE/ACCEPT:** #82 (Kotlin's supported Xcode integration requires this sandbox setting; the
   adjacent wrapper-validation gap is hardened and regression-tested).
@@ -125,6 +127,10 @@
   As defense in depth, the attachment picker now re-applies `NSFileProtectionComplete` synchronously in its delegate,
   before continuation resumption or the dispatcher hop, and deletes/rejects the copy if protection fails. The adopted
   destination still receives an independent checked assertion; simulator tests cover ordering and fail-closed cleanup.
+- **CLOSE/ACCEPT:** #130 — `ITSAppUsesNonExemptEncryption=NO` means no encryption **or exempt encryption**, not
+  "no cryptography." The recorded Apple questionnaire result, a successful signed TestFlight submission, and the live
+  France-availability gate support the current non-France policy. Documentation now makes the publisher/legal authority
+  boundary, release-by-release inventory review, annual cadence, and mandatory change triggers explicit.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -175,7 +181,8 @@ The detailed tables below retain the original recommendations for traceability; 
 - **#117** — the claimed debug-signing fallback is false; the remaining unsigned-local-release verification gap is reclassified FIX.
 - **#122** — the proposed terminal-cleanup mechanism is false; a separate pre-service ownership gap is reclassified FIX.
 - **#124** — `storeScreenshot` is a debug-derived, workflow-isolated screenshot artifact, not a release vulnerability.
-- **#130** — live App Store/France checks disprove the described pipeline failure; legal classification evidence remains DIG.
+- **#130** — Apple's key semantics and live App Store/France checks disprove the described mismatch and pipeline
+  failure; the current result remains a publisher-owned legal attestation rather than a claim derived from source.
 - **#131** — readiness literals are written only after live store checks; the alleged tautological bypass is not present.
 - **#138** — fresh iOS `LAContext` instances use Apple’s zero reuse default.
 - **#142** — data-protection Keychain is the iOS/Catalyst default/only store; omission is not a downgrade.
@@ -290,7 +297,6 @@ repository fix for #76 and requires owner authorization.
 | [122](https://github.com/Apdelrahman1911/passvault/issues/122) | Low | Backup temp files leak on coroutine cancellation | False positive for coroutine cancellation: NonCancellable abort/commit handles the ownership handoff; rewrite only if crash residue is reproducibly orphaned. |
 | [124](https://github.com/Apdelrahman1911/passvault/issues/124) | Low | `storeScreenshot` variant disables all protection and shares the debug applicationId | False positive as a release vulnerability: storeScreenshot is debug-derived, workflow-dispatch-only, and not uploaded to Play. Close with a publication guard. |
 | [129](https://github.com/Apdelrahman1911/passvault/issues/129) | Informational | `single<Any> { Unit }` registers the root type globally in Koin | Root Any bindings are a DI workaround across platforms; replace with typed context or document/accept as non-security. |
-| [130](https://github.com/Apdelrahman1911/passvault/issues/130) | Low | `ITSAppUsesNonExemptEncryption = NO` declared by a vault application | False positive as an active release failure: export-compliance status and France availability are checked against live ASC and documented; close as accepted policy, reopening on scope change. |
 | [131](https://github.com/Apdelrahman1911/passvault/issues/131) | Low | Readiness manifest external-review states are asserted by `jq` | False positive as a tautological readiness bypass: live store checks run before literals are written; close or convert to evidence-fidelity enhancement. |
 | [137](https://github.com/Apdelrahman1911/passvault/issues/137) | Informational | `ci.yml` has no `concurrency` block | No CI concurrency is a confirmed cost/queue issue, not a security defect; close or track as optimization. |
 | [138](https://github.com/Apdelrahman1911/passvault/issues/138) | Informational | `touchIDAuthenticationAllowableReuseDuration` not explicitly zeroed on iOS | False positive mechanism: fresh iOS LAContext defaults to zero reuse; explicit zero is auditability hardening. Close/accept. |
@@ -302,6 +308,5 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #130,
-   #132–#133, #135, #140, and #143.
+   #35, #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

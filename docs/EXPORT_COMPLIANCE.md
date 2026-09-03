@@ -1,6 +1,6 @@
 # iOS Encryption and Export-Compliance Record
 
-Last technical review: 6 August 2026
+Last technical review: 3 September 2026
 
 This document is engineering evidence, not legal advice or an independent
 export classification. The publisher completed App Store Connect’s encryption
@@ -93,6 +93,12 @@ required for the approved distribution configuration. It does **not** mean that
 PassVault has no encryption: PassVault continues to include and use standard
 third-party cryptography through libsodium and Okio.
 
+[Apple defines](https://developer.apple.com/documentation/bundleresources/information-property-list/itsappusesnonexemptencryption)
+`NO` for this key as either no encryption **or only encryption that is exempt
+from export-compliance requirements**, including linked third-party libraries.
+The value is therefore consistent with the recorded `EXEMPT_APPROVED`
+determination; it is not an assertion that PassVault lacks cryptography.
+
 The durable questionnaire facts are:
 
 | Declaration fact | Recorded result |
@@ -102,6 +108,35 @@ The durable questionnaire facts are:
 | Contains standard third-party cryptography | **Yes** — libsodium and Okio |
 | France included in distribution | **No** |
 | Documentation required for the selected scope | **No**, per App Store Connect |
+
+## Verification and authority boundary
+
+The successful 6 August 2026
+[external-TestFlight workflow run](https://github.com/Apdelrahman1911/passvault/actions/runs/31092987677)
+queried App Store Connect before archiving, observed France disabled, built the
+signed artifact with `ITSAppUsesNonExemptEncryption=NO`, and completed Apple
+processing and external distribution. A public storefront lookup on 3 September
+2026 found version 1.0.7 in the US and Egypt and no French listing. These checks
+verify that the artifact, repository policy, and observed Store configuration
+agree; they are not an independent legal opinion.
+
+`EXPORT_COMPLIANCE_STATUS` is a publisher-approved release input. Repository
+automation must validate and enforce it, but must not infer a legal classification
+from dependency names or silently convert `PENDING` into an approved state. The
+Account Holder remains responsible for the declaration.
+
+Reopen the questionnaire and set the status to `PENDING` before the next release
+if any of these change:
+
+- a cryptographic dependency, algorithm, protocol, or linked native crypto surface;
+- account, sync, networking/TLS, remote backup, or other data-transfer behavior;
+- France, automatic new-territory availability, or another distribution territory;
+- Apple, US, or French export-compliance guidance applicable to the app.
+
+Review the source-backed crypto inventory for every release candidate and
+reconfirm the external determination at least annually. Record the date, scope,
+decision authority, and any Apple-issued documentation code without committing
+private legal material.
 
 ## France release constraint
 
