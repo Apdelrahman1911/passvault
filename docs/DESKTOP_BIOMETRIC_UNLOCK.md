@@ -195,8 +195,10 @@ clearing, and native biometric teardown then run as independent cleanup boundari
 provider cannot prevent the others from running or keep the window open. The process gives cleanup 2.5 seconds, then
 terminates fail-closed so process teardown reclaims in-memory keys. The JNA bridge itself waits at most 1.5 seconds for
 an in-flight native call. It never frees a context still in use: a late returning call performs deferred destruction,
-while a call that never returns is reclaimed only with terminal process exit. These deadlines apply only to app
-shutdown and do not weaken the normal lock path or allow the app to continue after an unsuccessful lock.
+while a call that never returns is reclaimed only with terminal process exit. The macOS C ABI independently bounds a
+direct destroy call to 250 milliseconds and transfers final context reclamation to the in-flight operation when that
+deadline expires; callers must treat the context as invalid as soon as destruction is requested. These deadlines apply
+only to app shutdown and do not weaken the normal lock path or allow the app to continue after an unsuccessful lock.
 
 ## Build and release integration
 

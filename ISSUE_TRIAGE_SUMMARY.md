@@ -14,8 +14,8 @@
 
 ## Final triage totals (after close verification)
 
-- **FIX: 72** (43 resolved as listed below; 29 still open)
-- **DIG: 10**
+- **FIX: 73** (44 resolved as listed below; 29 still open)
+- **DIG: 9**
 - **CLOSE/ACCEPT: 30**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
@@ -111,6 +111,11 @@
   not the title's implied live disclosure. The Desktop factory now atomically creates or repairs each attachment child
   through the existing private-directory policy: POSIX requires `0700`, while Windows requires an inherited non-empty
   ACL without discarding system-managed entries. A host integration test covers the complete directory chain.
+- **Resolved FIX:** #121 — a direct macOS native consumer reproduced `pv_bio_destroy` remaining blocked until an
+  active operation completed, while the production JNA wrapper already prevented this from hanging shutdown. The
+  macOS ABI now waits at most 250 milliseconds and, on timeout, transfers final context reclamation to the operation's
+  scope guard instead of freeing memory still in use. Native tests cover both cancellable and committed operation
+  windows; a permanently wedged OS call can retain resources only until the terminal process deadline.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -248,7 +253,6 @@ repository fix for #76 and requires owner authorization.
 | Issue | Severity | Short summary | Recommended next step |
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
-| [121](https://github.com/Apdelrahman1911/passvault/issues/121) | Low | `pv_bio_destroy` waits without a timeout while an OS prompt is pending | Native destroy can wait forever for a direct consumer, while the JVM wrapper bounds/avoids the path; add ABI robustness tests before elevating impact. |
 | [123](https://github.com/Apdelrahman1911/passvault/issues/123) | Low | Minimum seed length is 80 bits, below RFC 4226 R6 (128 bits) | 80-bit TOTP seeds are below RFC 4226 R6; confirm provider interoperability, then raise the new-enrollment floor or document migration. |
 | [128](https://github.com/Apdelrahman1911/passvault/issues/128) | Low | Document-picker `asCopy` intermediate sits at default protection briefly | The picker-controlled intermediate protection window needs real iOS device evidence and immediate post-receipt protection. |
 | [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | Source mitigation and automated regression coverage are implemented; keep open until physical-device lock/forced-I/O/WAL and repeated-cycle verification proves the runtime behavior. |
@@ -291,6 +295,6 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #121, #123, #128, #130,
+   #35, #123, #128, #130,
    #132–#133, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.
