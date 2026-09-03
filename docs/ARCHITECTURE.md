@@ -65,10 +65,12 @@ handoff design, not merely replacing `single` with `factory`.
 
 Native Android, iOS, and Desktop privacy surfaces coordinate with shared Compose through a monotonic
 `VaultUiSecurityCoordinator` epoch. During a lock/security episode, a platform reveals or restores content only
-after its serialized repository lock and clipboard cleanup succeed, shared singleton state and guarded navigation
-are scrubbed for that exact epoch, and an additional rendered frame has elapsed. A failed lock, cancelled job, stale
-acknowledgement, or acknowledgement timeout keeps the native surface concealed and leaves a later lifecycle/user
-retry armed.
+after its serialized repository lock and required platform clipboard policy complete, shared singleton state and
+guarded navigation are scrubbed for that exact epoch, and an additional rendered frame has elapsed. iOS background
+locks preserve an owned local-only, expiring pasteboard item so app switching can complete a paste; other iOS lock
+reasons and all Android/Desktop locks still request immediate ownership-aware cleanup. A failed lock, cancelled job,
+stale acknowledgement, or acknowledgement timeout keeps the native surface concealed and leaves a later
+lifecycle/user retry armed.
 
 Biometric enrollment is an explicit unlocked-vault action. `DefaultBiometricUnlockService` copies the active VEK to
 the platform `BiometricKeyStore`; Android encrypts it with an auth-per-use Keystore key, while iOS stores it as a

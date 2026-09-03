@@ -123,9 +123,27 @@ internal fun VaultSessionState.toSessionPhase(): SessionPhase = when (this) {
     is VaultSessionState.Locking -> SessionPhase.LOCKING
 }
 
+/**
+ * Non-sensitive state retained by the session cleanup observer.
+ *
+ * The lock reason distinguishes a normal `Locking(reason) -> Locked(reason)`
+ * completion from a superseding lock whose intermediate state was conflated.
+ */
+internal data class SessionCleanupObservation(
+    val phase: SessionPhase = SessionPhase.UNINITIALIZED,
+    val lockingReason: LockReason? = null,
+)
+
+internal fun VaultSessionState.toSessionCleanupObservation(): SessionCleanupObservation =
+    SessionCleanupObservation(
+        phase = toSessionPhase(),
+        lockingReason = (this as? VaultSessionState.Locking)?.reason,
+    )
+
 internal data class SessionCleanupPolicy(
     val clearSensitiveUiState: Boolean,
     val clearUnlockUiState: Boolean,
+    val clearClipboard: Boolean,
     val preserveBackupRestore: Boolean,
 )
 
@@ -135,25 +153,31 @@ internal data class SessionCleanupPolicy(
  */
 internal fun sessionCleanupPolicy(
     sessionState: VaultSessionState,
-    previousSessionPhase: SessionPhase = SessionPhase.UNINITIALIZED,
+    previousSessionObservation: SessionCleanupObservation = SessionCleanupObservation(),
     restoreInProgress: Boolean = false,
+    preserveClipboardOnBackgroundLock: Boolean = false,
 ): SessionCleanupPolicy {
-    val completedLock = sessionState as? VaultSessionState.Locked
-    val unobservedCompletedLock = completedLock?.reason != null && previousSessionPhase != SessionPhase.LOCKING
-    return when {
-        sessionState is VaultSessionState.Locking -> SessionCleanupPolicy(
+    val completedLockReason = (sessionState as? VaultSessionState.Locked)?.reason
+    val observedCompletedLock = completedLockReason != null &&
+        previousSessionObservation.phase == SessionPhase.LOCKING &&
+        previousSessionObservation.lockingReason == completedLockReason
+    val cleanupReason = when {
+        sessionState is VaultSessionState.Locking -> sessionState.reason
+        completedLockReason != null && !observedCompletedLock -> completedLockReason
+        else -> null
+    }
+    return if (cleanupReason != null) {
+        SessionCleanupPolicy(
             clearSensitiveUiState = true,
             clearUnlockUiState = true,
-            preserveBackupRestore = sessionState.reason == LockReason.Restore && restoreInProgress,
+            clearClipboard = !preserveClipboardOnBackgroundLock || cleanupReason != LockReason.Background,
+            preserveBackupRestore = cleanupReason == LockReason.Restore && restoreInProgress,
         )
-        unobservedCompletedLock -> SessionCleanupPolicy(
-            clearSensitiveUiState = true,
-            clearUnlockUiState = true,
-            preserveBackupRestore = completedLock.reason == LockReason.Restore && restoreInProgress,
-        )
-        else -> SessionCleanupPolicy(
+    } else {
+        SessionCleanupPolicy(
             clearSensitiveUiState = false,
             clearUnlockUiState = false,
+            clearClipboard = false,
             preserveBackupRestore = false,
         )
     }

@@ -2,6 +2,7 @@ package com.passvault.shared
 
 import com.passvault.core.domain.model.SessionId
 import com.passvault.core.domain.model.VaultSessionState
+import com.passvault.core.domain.repository.LockReason
 import com.passvault.core.security.ClipboardService
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,6 +55,62 @@ class SessionBoundClipboardTest {
 
         assertEquals(1, clipboard.copyCount)
         assertEquals(1, clipboard.clearCount)
+    }
+
+    @Test
+    fun `iOS background lock crossing a clipboard write preserves the bounded copy`() = runTest {
+        val backgroundStates = listOf<VaultSessionState>(
+            VaultSessionState.Locking(LockReason.Background),
+            VaultSessionState.Locked(LockReason.Background),
+        )
+
+        backgroundStates.forEach { backgroundState ->
+            val sessionState = unlockedSessionState()
+            val clipboard = RecordingClipboardService(
+                afterCopy = { sessionState.value = backgroundState },
+            )
+
+            copySensitiveWhileUnlocked(
+                sessionState = sessionState,
+                clipboardService = clipboard,
+                text = "secret",
+                timeoutMs = 30_000L,
+                preserveClipboardOnBackgroundLock = true,
+            )
+
+            assertEquals(1, clipboard.copyCount)
+            assertEquals(0, clipboard.clearCount)
+        }
+    }
+
+    @Test
+    fun `iOS stronger lock crossing a clipboard write still invalidates the copy`() = runTest {
+        val reasons = listOf(
+            LockReason.Manual,
+            LockReason.AutoLock,
+            LockReason.MemoryPressure,
+            LockReason.Restore,
+        )
+
+        reasons.forEach { reason ->
+            val sessionState = unlockedSessionState()
+            val clipboard = RecordingClipboardService(
+                afterCopy = { sessionState.value = VaultSessionState.Locked(reason) },
+            )
+
+            assertFailsWith<IllegalStateException> {
+                copySensitiveWhileUnlocked(
+                    sessionState = sessionState,
+                    clipboardService = clipboard,
+                    text = "secret",
+                    timeoutMs = 30_000L,
+                    preserveClipboardOnBackgroundLock = true,
+                )
+            }
+
+            assertEquals(1, clipboard.copyCount)
+            assertEquals(1, clipboard.clearCount)
+        }
     }
 
     @Test

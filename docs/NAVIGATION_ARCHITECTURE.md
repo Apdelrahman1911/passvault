@@ -150,8 +150,9 @@ restored route-only stacks
 The maximum restored depth is 32 entries per stack. Repository errors fail closed. Deleted,
 malformed, cross-tab, or unauthorized destinations fall back to the owning root. Lock/session-reset
 increments the session generation, quarantines routes, resets live stacks, destroys entry-scoped
-state, and invokes centralized sensitive-state and clipboard cleanup. Onboarding discards protected
-restoration entirely.
+state, and invokes centralized sensitive-state cleanup plus the platform clipboard lock policy. On
+iOS only, a background lock preserves an owned expiring/local-only copy for cross-app paste; stronger
+lock reasons still clear it. Onboarding discards protected restoration entirely.
 
 ## External navigation
 

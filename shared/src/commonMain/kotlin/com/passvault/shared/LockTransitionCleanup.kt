@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 
 /**
- * Clears clipboard state across a synchronous Locking -> Locked transition.
+ * Clears clipboard state when the platform lock policy requires it.
  * The session-keyed Compose effect is cancelled when the terminal state
  * arrives, so this small security boundary must outlive that cancellation.
  */

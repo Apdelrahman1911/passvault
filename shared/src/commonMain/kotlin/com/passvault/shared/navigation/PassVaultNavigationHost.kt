@@ -62,17 +62,18 @@ import com.passvault.feature.onboarding.presentation.OnboardingViewModel
 import com.passvault.feature.settings.presentation.SettingsViewModel
 import com.passvault.feature.unlock.presentation.UnlockViewModel
 import com.passvault.feature.vault.presentation.VaultViewModel
-import com.passvault.shared.SessionPhase
+import com.passvault.shared.SessionCleanupObservation
 import com.passvault.shared.VaultTabShell
 import com.passvault.shared.clearForLockTransition
 import com.passvault.shared.platform.platformNavigationTransitionSpecs
+import com.passvault.shared.platform.preservesSensitiveClipboardOnBackgroundLock
 import com.passvault.shared.security.AutoLockTimer
 import com.passvault.shared.security.UserActivitySignal
 import com.passvault.shared.security.recordUserActivity
 import com.passvault.shared.sessionCleanupPolicy
 import com.passvault.shared.shouldAcknowledgeVaultUiSecurity
 import com.passvault.shared.shouldGuardUnlockedRoutes
-import com.passvault.shared.toSessionPhase
+import com.passvault.shared.toSessionCleanupObservation
 import com.passvault.shared.navigation.adapters.ObserveNavigationFeatureEffects
 import com.passvault.shared.navigation.adapters.ObserveAuthenticationNavigationEffects
 import com.passvault.shared.navigation.adapters.authRouteAdapters
@@ -157,7 +158,7 @@ internal fun PassVaultNavigationHost(
     val settingsState by context.settingsViewModel.state.collectAsState()
     val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
     val hostResumed = lifecycleState == Lifecycle.State.RESUMED
-    var previousSessionPhase by remember { mutableStateOf(SessionPhase.UNINITIALIZED) }
+    var previousSessionObservation by remember { mutableStateOf(SessionCleanupObservation()) }
     var pendingSecurityAcknowledgement by remember { mutableLongStateOf(0L) }
 
     DisposableEffect(navigator, hostResumed) {
@@ -172,8 +173,8 @@ internal fun PassVaultNavigationHost(
         context = context,
         validator = runtime.validator,
         sessionState = sessionState,
-        previousSessionPhase = previousSessionPhase,
-        updatePreviousSessionPhase = { previousSessionPhase = it },
+        previousSessionObservation = previousSessionObservation,
+        updatePreviousSessionObservation = { previousSessionObservation = it },
         requestedSecurityEpoch = requestedSecurityEpoch,
         vaultUiSecurityCoordinator = vaultUiSecurityCoordinator,
         onSecurityAcknowledgementPending = { pendingSecurityAcknowledgement = it },
@@ -357,8 +358,8 @@ private fun ObserveSessionSecurity(
     context: RouteAdapterContext,
     validator: RestoredNavigationValidator,
     sessionState: VaultSessionState,
-    previousSessionPhase: SessionPhase,
-    updatePreviousSessionPhase: (SessionPhase) -> Unit,
+    previousSessionObservation: SessionCleanupObservation,
+    updatePreviousSessionObservation: (SessionCleanupObservation) -> Unit,
     requestedSecurityEpoch: Long,
     vaultUiSecurityCoordinator: VaultUiSecurityCoordinator,
     onSecurityAcknowledgementPending: (Long) -> Unit,
@@ -368,17 +369,18 @@ private fun ObserveSessionSecurity(
             sessionState is VaultSessionState.Locked
         val cleanup = sessionCleanupPolicy(
             sessionState = sessionState,
-            previousSessionPhase = previousSessionPhase,
+            previousSessionObservation = previousSessionObservation,
             restoreInProgress = context.backupViewModel.state.value.isImporting,
+            preserveClipboardOnBackgroundLock = preservesSensitiveClipboardOnBackgroundLock(),
         )
-        updatePreviousSessionPhase(sessionState.toSessionPhase())
+        updatePreviousSessionObservation(sessionState.toSessionCleanupObservation())
         if (cleanup.clearSensitiveUiState || hasPendingRequest) {
             val preserveRestore = cleanup.preserveBackupRestore ||
                 ((sessionState as? VaultSessionState.Locked)?.reason == LockReason.Restore &&
                     context.backupViewModel.state.value.isImporting)
             clearApplicationSensitiveState(context, cleanup.clearUnlockUiState || hasPendingRequest, preserveRestore)
         }
-        if (cleanup.clearSensitiveUiState) context.clipboardService.clearForLockTransition()
+        if (cleanup.clearClipboard) context.clipboardService.clearForLockTransition()
 
         when {
             shouldGuardUnlockedRoutes(sessionState) -> context.navigator.requireAuthentication()

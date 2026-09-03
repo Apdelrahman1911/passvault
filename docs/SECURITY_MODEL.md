@@ -122,6 +122,9 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
 - Clipboard expiration verifies a random ownership token/value before clearing, so newer unrelated clipboard data is
   preserved.
+- iOS sensitive copies are local-only and carry both an OS expiration date and an ownership-aware fallback timer.
+  Background locking preserves that bounded copy for cross-app paste; manual, inactivity, memory-pressure, and
+  restore locks request immediate clearing.
 - Desktop sensitive writes also request Windows Clipboard History/Cloud Clipboard exclusion and publish the macOS
   concealed/transient pasteboard conventions. These platform hints cannot bind malicious or non-cooperating readers.
 - Copying a TOTP code uses the same ownership-aware clipboard path as other credential values.
