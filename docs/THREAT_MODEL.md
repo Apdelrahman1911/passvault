@@ -1,6 +1,6 @@
 # Threat model
 
-Last reviewed: 2026-08-14
+Last reviewed: 2026-09-03
 
 ## Assets
 
@@ -13,11 +13,12 @@ Database relationship/timing metadata is privacy-relevant even where it is inten
 - The locked local database or copied `.pvault` file may be controlled by an attacker.
 - The application process and OS are trusted only while the user is actively using an unlocked vault.
 - Mobile cameras and biometric services, Android/Desktop file pickers, clipboard managers, window managers,
-  Keystore/Keychain, filesystems, and crash facilities are platform boundaries, not cryptographic peers.
+  URL handlers/browsers, Keystore/Keychain, filesystems, and crash facilities are platform boundaries, not
+  cryptographic peers.
 - Build repositories and CI artifacts are supply-chain boundaries.
 
-There is no server, cloud, account, telemetry, analytics, browser extension, or remote synchronization boundary in
-this codebase.
+PassVault provides no server, cloud account, telemetry, analytics, browser extension, or remote synchronization
+component.
 
 ## Defended scenarios
 
@@ -45,6 +46,8 @@ this codebase.
 - Malware, an accessibility service, debugger, keylogger, or memory reader on an unlocked endpoint can read secrets.
 - Managed Kotlin strings, garbage-collected copies, swap/pagefile, hibernation, and OS crash dumps cannot be
   guaranteed wipeable.
+- A user-launched credential URL leaves the vault boundary. The OS handler, browser history/sync/extensions, DNS, and
+  network path may observe that URL; PassVault sends no other credential field and performs no network request itself.
 - Structural SQLite metadata remains observable; blind indexes reveal equality within a vault.
 - Credential type/folder/favorite/timestamps, folder/tag relationships, row ordering, and other routing metadata are
   not included in record-payload AAD. A database attacker can tamper with that structural metadata without an AEAD

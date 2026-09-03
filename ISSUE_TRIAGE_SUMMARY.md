@@ -15,8 +15,8 @@
 ## Final triage totals (after close verification)
 
 - **FIX: 74** (45 resolved as listed below; 29 still open)
-- **DIG: 6**
-- **CLOSE/ACCEPT: 32**
+- **DIG: 5**
+- **CLOSE/ACCEPT: 33**
 - Critical/high findings remain urgent, but several original severities were overstated in replies (notably #37, #44, #46, and #49).
 
 ### Final verification dispositions
@@ -26,6 +26,10 @@
 - **Reclassified to CLOSE/ACCEPT:** #130 (expected export-compliance policy). Apple defines `NO` to include exempt
   encryption, the publisher-recorded questionnaire outcome is `EXEMPT_APPROVED`, and live Store enforcement disproves
   the described France-drift failure. Legal classification remains an explicit owner responsibility, not a code claim.
+- **Reclassified to CLOSE/ACCEPT:** #133 (expected external-handler boundary). Launching requires an explicit tap and
+  the common gate validates HTTP(S), authority syntax, characters, and ports before emitting the exact URL field. The
+  app performs no request, so blocking loopback/private sites would break valid local credentials without preventing
+  SSRF. Browser/history/sync/DNS visibility is now documented and the effect gate has positive and negative tests.
 - **Reclassified to CLOSE/ACCEPT:** #80 (the user-writable Windows install premise was removed by #36), #81 (the pinned Gradle action makes PR, testing, and release refs read-only and does not cache configuration state without an encryption key).
 - **Reclassified to CLOSE/ACCEPT:** #82 (Kotlin's supported Xcode integration requires this sandbox setting; the
   adjacent wrapper-validation gap is hardened and regression-tested).
@@ -131,6 +135,11 @@
   "no cryptography." The recorded Apple questionnaire result, a successful signed TestFlight submission, and the live
   France-availability gate support the current non-France policy. Documentation now makes the publisher/legal authority
   boundary, release-by-release inventory review, annual cadence, and mandatory change triggers explicit.
+- **CLOSE/ACCEPT:** #133 — the title's "scheme allowlist only" claim is false: the common validator also rejects
+  malformed DNS/IP authorities, credentials, invalid ports, whitespace, backslashes, and unsafe code points. The OS
+  browser boundary is expected after an explicit user tap, and local/private hosts remain useful supported targets
+  rather than an SSRF surface because PassVault never fetches the URL. Tests pin accepted and rejected effect payloads;
+  security and privacy documentation now record what the receiving browser, DNS, and network may observe.
 - **CLOSE/ACCEPT:** #55 — readable KDF parameters already determine the authenticated unwrap key, `entry_count` reveals no more than the accepted plaintext database structure, and exported `vault_id` values remain inside authenticated encryption; the proposed AAD change adds no independent protection.
 - **Resolved FIX:** #54 and #102 — password text is encoded directly into owned mutable UTF-8 and historical lowercase-hex buffers before raw libsodium Argon2 calls on every platform, preserving existing vault/backup keys while removing the avoidable immutable KDF copies.
 - **Resolved FIX:** #53 — unreadable or historically unsafe attachment names are isolated as visible quarantined rows, so valid siblings remain usable and the corrupt row can be renamed or deleted while every plaintext-producing path remains fail-closed.
@@ -270,7 +279,6 @@ repository fix for #76 and requires owner authorization.
 |---:|:---:|---|---|
 | [35](https://github.com/Apdelrahman1911/passvault/issues/35) | Verification | Complete iOS/macOS security review on Apple hardware | Apple source review is complete, but runtime/hardware evidence is still missing; keep this verification ledger open. |
 | [132](https://github.com/Apdelrahman1911/passvault/issues/132) | Low | No `protectedDataWillBecomeUnavailable` handling despite `NSFileProtectionComplete` | Source mitigation and automated regression coverage are implemented; keep open until physical-device lock/forced-I/O/WAL and repeated-cycle verification proves the runtime behavior. |
-| [133](https://github.com/Apdelrahman1911/passvault/issues/133) | Low | External URL opening relies on a scheme allowlist only | The title overstates the gap: HTTP(S), authority, character, and port syntax are validated. IP classes (127.0.0.1/private/link-local) are not filtered; decide if that informational hardening is needed. |
 | [135](https://github.com/Apdelrahman1911/passvault/issues/135) | Low | Notices are generated, not diffed against the actual release graph | Notice checks compare repository files, not the resolved dependency graph; automate SBOM/license diffing as a release-process improvement. |
 | [140](https://github.com/Apdelrahman1911/passvault/issues/140) | Informational | R8 keeps the entire libsodium binding package unshrunk | The blanket libsodium keep rule is conservative, not proven required; measure minified builds and narrow only after KAT/instrumentation tests. |
 | [143](https://github.com/Apdelrahman1911/passvault/issues/143) | Informational | `AndroidAttachmentFileStore.attach()` reads shared state outside the monitor | Unsynchronized launcher reads are real but main-thread confinement is the intended invariant; enforce/assert it and test lifecycle races. |
@@ -308,5 +316,5 @@ repository fix for #76 and requires owner authorization.
 1. Fix the remaining attachment/restore and session-boundary paths first (#74–#75, #77, #79, #83–#84, #86, #90, #93, #98–#99, #101, #107, #112–#114, #118, #122, #125).
 2. Address the remaining CI, release, and platform defects (#72–#73, #76, #94, #117, #126–#127, #139, #141, #144).
 3. Resolve every remaining DIG disposition using the required policy, runtime, legal, and platform evidence:
-   #35, #132–#133, #135, #140, and #143.
+   #35, #132, #135, #140, and #143.
 4. Close accepted issues only after the corrected rationale is recorded in the threat model, release docs, or tests.

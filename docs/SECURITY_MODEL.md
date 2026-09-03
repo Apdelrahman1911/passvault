@@ -208,6 +208,11 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
 - Desktop sensitive writes also request Windows Clipboard History/Cloud Clipboard exclusion and publish the macOS
   concealed/transient pasteboard conventions. These platform hints cannot bind malicious or non-cooperating readers.
 - Copying a TOTP code uses the same ownership-aware clipboard path as other credential values.
+- Opening a credential URL requires an explicit tap and hands only its validated `http` or `https` URL to the operating
+  system handler. The validator rejects embedded credentials, malformed authorities, whitespace, backslashes, and
+  unsafe code points; scheme-less values default to `https`. Local/private destinations remain valid because PassVault
+  does not resolve or fetch them. After the handoff, browser history or sync, extensions, system DNS, and the network
+  path may observe the URL. No username, password, TOTP setup key, note, or custom field is appended.
 - Android, iOS, macOS, and supported Windows systems expose explicit biometric/platform enrollment in Security
   settings and an unlock action beside the password field. Unsupported systems, including Linux, fail closed to
   master-password unlock.

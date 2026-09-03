@@ -4,6 +4,7 @@
 - [Internal contracts](API.md)
 - [Security model](SECURITY_MODEL.md)
 - [Threat model](THREAT_MODEL.md)
+- [Privacy behavior](PRIVACY.md)
 - [Database schema](DATABASE_SCHEMA.md)
 - [Local vault format](VAULT_FORMAT.md)
 - [Backup format](BACKUP_FORMAT.md)

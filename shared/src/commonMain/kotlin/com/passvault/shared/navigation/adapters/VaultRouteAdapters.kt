@@ -197,6 +197,8 @@ private fun ObserveCredentialEffects(
                     viewModel.onEvent(CredentialViewModel.CredentialEvent.OnCopyResult(copied))
                 }
                 is CredentialViewModel.CredentialEffect.LaunchUrl -> {
+                    // Intentional OS trust-boundary crossing. The credential router emits only an HTTP(S)
+                    // URL accepted by normalizeCredentialUrl; the receiving handler may retain or resolve it.
                     val opened = try {
                         uriHandler.openUri(effect.url)
                         true

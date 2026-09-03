@@ -1,6 +1,6 @@
 # PassVault privacy behavior
 
-Last source review: 2026-08-11
+Last source review: 2026-09-03
 
 This is a technical description of the current application, not legal advice or a claim of GDPR/CCPA/PIPEDA
 certification. The repository contains no verified company, website, privacy email, or policy owner.
@@ -49,6 +49,13 @@ Copied credentials and TOTP codes enter the operating-system clipboard and may b
 software. On Desktop, PassVault requests the Windows history/cloud opt-outs and the macOS concealed/transient
 pasteboard conventions. These hints are advisory to third-party software. The app can clear its own still-current
 value after the configured timeout but cannot revoke content another process has already read.
+
+Opening a stored credential URL is also an explicit user action. PassVault accepts only `http` or `https` with a
+syntactically valid DNS, IPv4, or bracketed IPv6 authority, and a missing scheme defaults to `https`. It intentionally
+allows local and private destinations because the app does not resolve or fetch the URL itself. Only the validated URL
+field is handed to the operating system; PassVault does not append a username, password, TOTP setup key, note, or
+custom field. After that handoff, the selected browser or handler and its extensions, history, synchronization, system
+DNS, and network path may observe or retain the URL according to the user's platform and browser settings.
 
 ## Platform notes
 
