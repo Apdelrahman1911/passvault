@@ -76,7 +76,10 @@ Biometric enrollment is an explicit unlocked-vault action. `DefaultBiometricUnlo
 the platform `BiometricKeyStore`; Android encrypts it with an auth-per-use Keystore key, while iOS stores it as a
 device-only Keychain item bound to the current biometric set. On biometric unlock, the repository authenticates its
 encrypted verification record with the released VEK before creating a session. The master password remains the
-fallback and is never stored for biometric use.
+fallback and is never stored for biometric use. On iOS, a non-interactive metadata query makes Keychain—not the
+`NSUserDefaults` marker—the enrollment authority. Startup/status reconciliation deletes all service items when no
+vault exists and retires items outside the single active vault otherwise. Preference markers change only after the
+corresponding protected add/delete succeeds.
 
 ## Persistence boundary
 

@@ -65,9 +65,10 @@ Users can view and edit records and their attachments while the vault is unlocke
 backup. Deleting an attachment or its owning credential removes both its database relationship and managed encrypted
 object; crash cleanup handles transaction/file-system boundary leftovers. Deleting the application through the
 operating system removes app-private files subject to platform behavior. The operating system controls whether an
-app's Keystore/Keychain item survives uninstall; a surviving mobile biometric item is device-only and is unusable
-without matching local enrollment metadata and vault verification. PassVault currently has no remote copy to delete
-and no operator capable of recovering a forgotten master password.
+app's Keystore/Keychain item survives uninstall. iOS deletes every item under PassVault's biometric service when no
+vault exists, otherwise enumerates non-secret account metadata and retries deletion outside the active vault. Any item
+retained after an OS deletion failure remains device-only and biometric-protected. PassVault currently has no remote
+copy to delete and no operator capable of recovering a forgotten master password.
 
 The publisher must perform a legal/privacy review and add verified ownership, jurisdiction, retention, contact, and
 store-disclosure information before public distribution.

@@ -63,7 +63,10 @@ every decrypt. The key is invalidated when biometric enrollment changes. iOS sto
 `WhenPasscodeSetThisDeviceOnly` Keychain item using `biometryCurrentSet`, so it is neither synchronized nor restored
 to another device and becomes inaccessible after enrollment changes. In both cases the released candidate VEK must
 authenticate the existing vault verification record before the repository publishes a session. The master password
-remains the recovery and fallback path.
+remains the recovery and fallback path. iOS checks enrollment with a non-prompting metadata-only Keychain query;
+`NSUserDefaults` is only a repaired cache. It retries failed deletion without hiding the item and reconciles service
+items that do not match the repository's single active vault. When a fresh install has no vault, it deletes all items
+under PassVault's biometric service without needing to recover their former vault identifiers.
 
 On macOS, Touch ID directly guards a device-only Keychain item using `biometryCurrentSet`. On Windows, an exact
 platform WebAuthn credential and its authenticated PRF output derive the AES-GCM key that wraps the VEK; Windows

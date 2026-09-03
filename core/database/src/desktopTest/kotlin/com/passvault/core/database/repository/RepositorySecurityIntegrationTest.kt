@@ -1338,6 +1338,22 @@ class VaultUnlockPreemptionIntegrationTest : RepositorySecurityIntegrationFixtur
 
 class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegrationFixture() {
     @Test
+    fun `biometric status reconciles surviving platform items when no vault exists`() = runTest {
+        val keyStore = InMemoryBiometricKeyStore()
+        val service = DefaultBiometricUnlockService(
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            keyStore = keyStore,
+            cryptoEngine = cryptoEngine,
+        )
+
+        val status = service.getStatus()
+
+        assertFalse(status.isEnabled)
+        assertEquals(listOf<String?>(null), keyStore.reconciledVaultIds)
+    }
+
+    @Test
     fun `biometric key opens a session only after vault verification succeeds`() = runTest {
         createAndUnlockVault()
         val vaultKey = vaultRepository.withUnlockedSession { it.copyOf() }
@@ -2022,6 +2038,7 @@ abstract class RepositorySecurityIntegrationFixture {
 
     protected class InMemoryBiometricKeyStore : BiometricKeyStore {
         private var key: ByteArray? = null
+        val reconciledVaultIds = mutableListOf<String?>()
 
         override suspend fun getCapability(): BiometricCapability = BiometricCapability(
             type = BiometricType.GENERIC,
@@ -2042,6 +2059,11 @@ abstract class RepositorySecurityIntegrationFixture {
 
         override suspend fun delete(vaultId: String): Result<Unit> {
             clear()
+            return Result.success(Unit)
+        }
+
+        override suspend fun reconcile(activeVaultId: String?): Result<Unit> {
+            reconciledVaultIds += activeVaultId
             return Result.success(Unit)
         }
 
