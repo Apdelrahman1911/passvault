@@ -308,8 +308,8 @@ class LibsodiumCryptoEngine : CryptoEngine {
 }
 
 /**
- * Selects a bounded interactive profile without increasing memory use on faster devices.
- * Slower benchmark results can never select a stronger profile than faster results.
+ * Selects one of the two shipped 64 MiB profiles. Fast devices receive the
+ * higher operation count; slower benchmark results never select a stronger profile.
  */
 internal fun selectArgon2Parameters(durationMilliseconds: Long): Argon2Parameters =
     if (durationMilliseconds < FAST_ARGON2_BENCHMARK_MILLISECONDS) {

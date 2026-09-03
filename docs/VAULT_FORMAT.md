@@ -48,6 +48,14 @@ best-effort after use. Unlock publishes the VEK only after both unwrap and verif
 The current libsodium `crypto_pwhash` binding exposes operations and memory but no lanes/parallelism argument.
 PassVault therefore writes and requires `1`; persisting another value would claim KDF work the binding cannot perform.
 
+Vault creation and each master-password change benchmark libsodium's 2-operation/64 MiB interactive probe once. A
+result below 50 ms selects the 4-operation/64 MiB profile; every slower result and any benchmark failure selects three
+operations at 64 MiB. The wider accepted ranges above are reader safety/compatibility bounds, not writer targets.
+Memory remains fixed deliberately: CPU timing does not prove that a mobile process can safely allocate 256 MiB, and
+no supported low-memory Android/iOS device matrix or product unlock-latency budget justifies that availability risk.
+A future memory tier needs those measurements; changing the backup profile additionally requires a new backup format
+version.
+
 ## Record envelopes
 
 Current protected fields use crypto envelope version 2:
