@@ -42,6 +42,12 @@ keystore passwords from the configuration environment in its local cache.
 `scripts/build-android.sh` enforces this automatically whenever any Android
 signing variable is nonblank.
 
+Release APK/AAB packaging fails before producing an archive unless all four
+signing inputs are present and `KEY_ALIAS` matches the pinned upload alias.
+Unsigned local builds must use the `debug` build type; `lintRelease` remains
+available without publisher credentials because it does not create a release
+artifact.
+
 The build script reads the canonical ignored `values.env`, requires the pinned
 alias, runs release lint and final-manifest checks, and verifies both signatures.
 Upload these four secrets only through `scripts/configure-mobile-release.sh`.

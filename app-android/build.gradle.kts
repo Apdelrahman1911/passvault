@@ -324,12 +324,22 @@ abstract class PrepareAndroidLegalAssets : DefaultTask() {
 
 abstract class VerifyReleaseSigningConfiguration : DefaultTask() {
     @get:Input
-    abstract val signingConfigured: Property<Boolean>
+    abstract val missingInputs: ListProperty<String>
+
+    @get:Input
+    abstract val aliasMatches: Property<Boolean>
+
+    @get:Input
+    abstract val expectedAlias: Property<String>
 
     @TaskAction
     fun verify() {
-        check(signingConfigured.get()) {
-            "Android release signing inputs are missing or invalid."
+        val missing = missingInputs.get()
+        check(missing.isEmpty()) {
+            "Android release signing inputs are missing or invalid: ${missing.joinToString()}."
+        }
+        check(aliasMatches.get()) {
+            "KEY_ALIAS must match the canonical Android upload alias: ${expectedAlias.get()}"
         }
     }
 }
@@ -402,7 +412,6 @@ val releaseKeystorePath =
     System.getenv("KEYSTORE_PATH")?.takeUnless(String::isBlank)
         ?: System.getenv("MOBILE_RELEASE_ANDROID_KEYSTORE_PATH")?.takeUnless(String::isBlank)
         ?: (findProperty("KEYSTORE_PATH") as? String)?.takeUnless(String::isBlank)
-        ?: "release.keystore"
 
 val releaseKeystorePassword =
     System.getenv("KEYSTORE_PASSWORD")
@@ -422,7 +431,7 @@ val releaseKeyPassword =
         ?: findProperty("KEY_PASSWORD") as? String
         ?: ""
 
-val releaseKeystoreFile = rootProject.file(releaseKeystorePath)
+val releaseKeystoreFile = releaseKeystorePath?.let(rootProject::file)
 val canonicalReleaseKeyAlias =
     rootProject.file("release/android/passvault-upload-alias.txt")
         .readText()
@@ -464,7 +473,7 @@ val prepareAndroidLegalAssets =
     }
 
 fun missingReleaseSigningInputs(): List<String> = buildList {
-    if (!releaseKeystoreFile.isFile) add("KEYSTORE_PATH")
+    if (releaseKeystoreFile?.isFile != true) add("KEYSTORE_PATH")
     if (releaseKeystorePassword.isBlank()) add("KEYSTORE_PASSWORD")
     if (releaseKeyAlias.isBlank()) add("KEY_ALIAS")
     if (releaseKeyPassword.isBlank()) add("KEY_PASSWORD")
@@ -560,13 +569,7 @@ android {
 
             val releaseSigningConfig =
                 signingConfigs.getByName("release")
-            val hasReleaseCredentials = listOf(
-                releaseSigningConfig.storePassword,
-                releaseSigningConfig.keyAlias,
-                releaseSigningConfig.keyPassword,
-            ).all { !it.isNullOrBlank() }
-
-            if (releaseSigningConfig.storeFile?.exists() == true && hasReleaseCredentials) {
+            if (releaseSigningIsValid()) {
                 signingConfig = releaseSigningConfig
             }
         }
@@ -652,10 +655,26 @@ androidComponents {
     }
 }
 
-tasks.register<VerifyReleaseSigningConfiguration>("verifyReleaseSigningConfiguration") {
-    group = "verification"
-    description = "Fails unless all Android release signing inputs are valid."
-    signingConfigured.set(releaseSigningIsValid())
+val verifyReleaseSigningConfiguration =
+    tasks.register<VerifyReleaseSigningConfiguration>("verifyReleaseSigningConfiguration") {
+        group = "verification"
+        description = "Fails unless all Android release signing inputs are valid."
+        missingInputs.set(missingReleaseSigningInputs())
+        aliasMatches.set(releaseKeyAlias == canonicalReleaseKeyAlias)
+        expectedAlias.set(canonicalReleaseKeyAlias)
+    }
+
+// Gate tasks that can materialize final Release archives. Compilation and lint
+// remain available without publisher credentials, but APK/AAB packaging can
+// never silently leave an unsigned artifact behind.
+val signedReleaseArchiveTasks = setOf(
+    "packageRelease",
+    "packageReleaseBundle",
+    "assembleRelease",
+    "bundleRelease",
+)
+tasks.matching { task -> task.name in signedReleaseArchiveTasks }.configureEach {
+    dependsOn(verifyReleaseSigningConfiguration)
 }
 
 /*

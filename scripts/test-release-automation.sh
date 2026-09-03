@@ -1421,6 +1421,23 @@ for shared_android_input in \
         exit 1
     fi
 done
+for gated_android_task in \
+    packageRelease \
+    packageReleaseBundle \
+    assembleRelease \
+    bundleRelease; do
+    grep -Fq "\"$gated_android_task\"" app-android/build.gradle.kts || {
+        echo "Android $gated_android_task is not explicitly signing-gated." >&2
+        exit 1
+    }
+done
+grep -Fq 'tasks.matching { task -> task.name in signedReleaseArchiveTasks }.configureEach' \
+    app-android/build.gradle.kts
+grep -Fq 'dependsOn(verifyReleaseSigningConfiguration)' app-android/build.gradle.kts
+if grep -Fq '?: "release.keystore"' app-android/build.gradle.kts; then
+    echo "Android release signing still accepts an implicit keystore path." >&2
+    exit 1
+fi
 android_build_script_fixture="$temporary_root/android-build-script"
 mkdir -p \
     "$android_build_script_fixture/scripts" \
@@ -1449,6 +1466,13 @@ if ! grep -Fqx -- '--no-configuration-cache' "$android_gradle_arguments"; then
     echo "A debug build could cache signing credentials from its environment." >&2
     exit 1
 fi
+env -u KEYSTORE_PATH -u KEYSTORE_PASSWORD -u KEY_ALIAS -u KEY_PASSWORD \
+    PASSVAULT_GRADLE_ARGS_FILE="$android_gradle_arguments" \
+    "$android_build_script_fixture/scripts/build-android.sh" --release >/dev/null
+grep -Fqx ':app-android:verifyReleaseSigningConfiguration' "$android_gradle_arguments"
+grep -Fqx ':app-android:assembleRelease' "$android_gradle_arguments"
+grep -Fqx ':app-android:bundleRelease' "$android_gradle_arguments"
+grep -Fqx -- '--no-configuration-cache' "$android_gradle_arguments"
 if command -v pwsh >/dev/null 2>&1; then
     android_build_tools_fixture="$temporary_root/android-build-tools"
     for build_tools_version in \
