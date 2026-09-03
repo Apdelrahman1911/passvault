@@ -964,6 +964,8 @@ class VaultBackupServiceTest {
             return block()
         }
 
+        override suspend fun matchesMasterPassword(candidate: SensitiveText): Boolean = false
+
     }
 
     private class RecordingBiometricKeyStore : BiometricKeyStore {

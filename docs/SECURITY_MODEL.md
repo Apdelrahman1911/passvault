@@ -140,10 +140,15 @@ remains the hard-crash backstop. Version-1/2 metadata-only rows remain explicit 
 ## Backup boundary
 
 New `.pvault` version 2 exports use a separate backup password, fresh salt, Argon2id, and ordered authenticated
-XChaCha20-Poly1305 records. Before deriving a key, the reader admits only the two historical writer profiles: 64 MiB
-with three or four operations. Room metadata is encoded and validated one row at a time; attachment objects are
-carried in 256 KiB outer records. Restore authenticates the entire stream and stages objects, then rewinds and replays
-only metadata in one Room transaction. A SHA-256 transcript over authenticated header/record proofs binds both passes.
+XChaCha20-Poly1305 records. Before any new export, the repository derives a candidate vault key from the proposed
+backup password and existing vault metadata, compares it with the active VEK in constant time, and rejects an exact
+master-password match. The master password is not retained or exposed, and imports of older same-password backups
+remain compatible. This prevents exact reuse but cannot make a trivially modified passphrase independent; users must
+still choose and safely retain a distinct, unpredictable backup passphrase. Before deriving an import key, the reader
+admits only the two historical writer profiles: 64 MiB with three or four operations. Room metadata is encoded and
+validated one row at a time; attachment objects are carried in 256 KiB outer records. Restore authenticates the entire
+stream and stages objects, then rewinds and replays only metadata in one Room transaction. A SHA-256 transcript over
+authenticated header/record proofs binds both passes.
 Legacy version 1 remains readable at its historical in-memory bounds and omits attachment rows/bytes. Restore locks
 the vault and deletes the previous OS biometric enrollment. Every restore format reconciles encrypted attachment
 objects only after the Room replacement commits and while attachment mutation is serialized; cleanup failure does not

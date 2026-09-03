@@ -48,6 +48,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -66,6 +67,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -669,6 +671,114 @@ class RepositorySecurityIntegrationTest : RepositorySecurityIntegrationFixture()
         }
     }
 
+}
+
+class VaultMasterPasswordMatcherIntegrationTest : RepositorySecurityIntegrationFixture() {
+
+    @Test
+    fun `master password matcher is exact and unavailable while locked`() = runTest {
+        createAndUnlockVault()
+        val currentPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val distinctPassword = SensitiveText.from(TEST_MASTER_PASSWORD.dropLast(1) + "!")
+
+        try {
+            assertTrue(vaultRepository.matchesMasterPassword(currentPassword))
+            assertFalse(vaultRepository.matchesMasterPassword(distinctPassword))
+            assertTrue(vaultRepository.lock().isSuccess)
+            assertFailsWith<VaultSessionLockedException> {
+                vaultRepository.matchesMasterPassword(currentPassword)
+            }
+        } finally {
+            currentPassword.clear()
+            distinctPassword.clear()
+        }
+    }
+
+    @Test
+    fun `master password matcher clears candidate derivation material`() = runTest {
+        val engine = PasswordMatchWipeRecordingCryptoEngine(DesktopCryptoEngine())
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val currentPassword = SensitiveText.from(TEST_MASTER_PASSWORD)
+        val wrongPassword = SensitiveText.from(TEST_MASTER_PASSWORD.dropLast(1) + "!")
+
+        try {
+            assertTrue(repository.create(currentPassword).isSuccess)
+            assertTrue(repository.unlock(currentPassword).isSuccess)
+
+            engine.captureNextMatch()
+            assertTrue(repository.matchesMasterPassword(currentPassword))
+            engine.assertCapturedMaterialCleared(expectUnwrappedKey = true)
+            assertEquals(1, engine.constantTimeComparisonCount)
+
+            engine.captureNextMatch()
+            assertFalse(repository.matchesMasterPassword(wrongPassword))
+            engine.assertCapturedMaterialCleared(expectUnwrappedKey = false)
+        } finally {
+            repository.lock()
+            currentPassword.clear()
+            wrongPassword.clear()
+        }
+    }
+
+    @Test
+    fun `cancelling master password matching releases its session lease`() = runTest {
+        val engine = GatedUnlockCryptoEngine(DesktopCryptoEngine())
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            val gate = engine.gateNextPasswordDerivation()
+            val matching = async { repository.matchesMasterPassword(password) }
+            gate.started.await()
+
+            matching.cancelAndJoin()
+
+            assertTrue(matching.isCancelled)
+            assertTrue(repository.isUnlocked())
+            assertTrue(repository.lock().isSuccess)
+        } finally {
+            password.clear()
+        }
+    }
+
+    @Test
+    fun `master password matcher propagates non authentication crypto failures`() = runTest {
+        val engine = PasswordMatchFailureCryptoEngine(DesktopCryptoEngine())
+        val repository = VaultRepositoryImpl(
+            vaultMetadataDao = database.vaultMetadataDao(),
+            cryptoEngine = engine,
+            keyHierarchy = com.passvault.core.crypto.VaultKeyHierarchy(engine),
+        )
+        val password = SensitiveText.from(TEST_MASTER_PASSWORD)
+
+        try {
+            assertTrue(repository.create(password).isSuccess)
+            assertTrue(repository.unlock(password).isSuccess)
+            engine.failNextPasswordDerivation()
+
+            assertFailsWith<IllegalStateException> {
+                repository.matchesMasterPassword(password)
+            }
+            engine.failNextVaultKeyUnwrap()
+            assertFailsWith<IllegalStateException> {
+                repository.matchesMasterPassword(password)
+            }
+            assertTrue(repository.isUnlocked())
+        } finally {
+            repository.lock()
+            password.clear()
+        }
+    }
 }
 
 class RepositoryMutationIntegrityIntegrationTest : RepositorySecurityIntegrationFixture() {
@@ -1763,6 +1873,121 @@ class VaultLockFailureIntegrationTest : RepositorySecurityIntegrationFixture() {
         } finally {
             password.clear()
         }
+    }
+}
+
+private class PasswordMatchWipeRecordingCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    private var captureMatch = false
+    private var passwordBytes: ByteArray? = null
+    private var derivedKeyBytes: ByteArray? = null
+    private var derivedSaltBytes: ByteArray? = null
+    private var unwrappedVek: ByteArray? = null
+    var constantTimeComparisonCount = 0
+        private set
+
+    fun captureNextMatch() {
+        captureMatch = true
+        passwordBytes = null
+        derivedKeyBytes = null
+        derivedSaltBytes = null
+        unwrappedVek = null
+        constantTimeComparisonCount = 0
+    }
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        if (captureMatch) passwordBytes = password
+        return delegate.deriveKey(password, salt, opsLimit, memLimit).also { result ->
+            if (captureMatch) {
+                result.getOrNull()?.let { derived ->
+                    derivedKeyBytes = derived.key
+                    derivedSaltBytes = derived.salt
+                }
+            }
+        }
+    }
+
+    override suspend fun decrypt(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): Result<ByteArray> = delegate.decrypt(ciphertext, nonce, key, associatedData).also { result ->
+        if (captureMatch && associatedData?.contentEquals(VEK_WRAP_ASSOCIATED_DATA) == true) {
+            unwrappedVek = result.getOrNull()
+            captureMatch = false
+        }
+    }
+
+    override suspend fun constantTimeEquals(a: ByteArray, b: ByteArray): Boolean {
+        constantTimeComparisonCount++
+        return delegate.constantTimeEquals(a, b)
+    }
+
+    fun assertCapturedMaterialCleared(expectUnwrappedKey: Boolean) {
+        assertTrue(requireNotNull(passwordBytes).all { it == 0.toByte() })
+        assertTrue(requireNotNull(derivedKeyBytes).all { it == 0.toByte() })
+        assertTrue(requireNotNull(derivedSaltBytes).all { it == 0.toByte() })
+        if (expectUnwrappedKey) {
+            assertTrue(requireNotNull(unwrappedVek).all { it == 0.toByte() })
+        } else {
+            assertNull(unwrappedVek)
+        }
+    }
+
+    private companion object {
+        val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
+    }
+}
+
+private class PasswordMatchFailureCryptoEngine(
+    private val delegate: CryptoEngine,
+) : CryptoEngine by delegate {
+    private var failNextDerivation = false
+    private var failNextUnwrap = false
+
+    fun failNextPasswordDerivation() {
+        failNextDerivation = true
+    }
+
+    fun failNextVaultKeyUnwrap() {
+        failNextUnwrap = true
+    }
+
+    override suspend fun deriveKey(
+        password: ByteArray,
+        salt: ByteArray,
+        opsLimit: Int,
+        memLimit: Int,
+    ): Result<DerivedKey> {
+        if (failNextDerivation) {
+            failNextDerivation = false
+            return Result.failure(IllegalStateException("simulated KDF failure"))
+        }
+        return delegate.deriveKey(password, salt, opsLimit, memLimit)
+    }
+
+    override suspend fun decrypt(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        key: ByteArray,
+        associatedData: ByteArray?,
+    ): Result<ByteArray> {
+        if (failNextUnwrap && associatedData?.contentEquals(VEK_WRAP_ASSOCIATED_DATA) == true) {
+            failNextUnwrap = false
+            return Result.failure(IllegalStateException("simulated VEK unwrap failure"))
+        }
+        return delegate.decrypt(ciphertext, nonce, key, associatedData)
+    }
+
+    private companion object {
+        val VEK_WRAP_ASSOCIATED_DATA = "VEK_WRAP".encodeToByteArray()
     }
 }
 

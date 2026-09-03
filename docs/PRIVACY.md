@@ -33,10 +33,10 @@ needs them, and managed-runtime copies cannot be guaranteed wipeable.
 
 ## User-controlled exports and clipboard
 
-Backups are created only after a user action and are encrypted with a separate backup password. PassVault does not
-ship CSV or plaintext credential export. Android and iOS use system document interfaces; Desktop uses a native file
-dialog. Once a backup is saved to a user-selected location, retention and sharing are controlled by the user and
-operating system.
+Backups are created only after a user action and are encrypted with a separate backup password; new exports reject
+an exact match with the current vault master password. PassVault does not ship CSV or plaintext credential export.
+Android and iOS use system document interfaces; Desktop uses a native file dialog. Once a backup is saved to a
+user-selected location, retention and sharing are controlled by the user and operating system.
 
 Opening or exporting an attachment is also an explicit user action. The app decrypts only the selected attachment to
 an owned, protected temporary location or user-selected destination and then hands it to the operating system. A

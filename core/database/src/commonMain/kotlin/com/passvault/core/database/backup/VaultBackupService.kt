@@ -124,9 +124,14 @@ private fun String.isValidIdentifier(): Boolean =
         hasOnlySafeTextCodePoints() &&
         all { it != '/' && it != '\\' }
 
+class BackupPasswordReusesMasterPasswordException : IllegalArgumentException(
+    "Backup password must differ from the current master password",
+)
+
 /**
  * Creates and restores an authenticated, versioned backup of the encrypted
- * vault records. The backup password is independent from the vault password.
+ * vault records. New exports require a password distinct from the current
+ * vault master password and derive an independent backup key from it.
  *
  * No decrypted credential value crosses this boundary. The database already
  * stores authenticated encrypted payloads, so the complete raw snapshot is
@@ -178,6 +183,16 @@ class VaultBackupService(
         sink: BackupContentSink,
         onProgress: (Int) -> Unit = {},
     ): Result<BackupInspection> = operationMutex.withLock {
+        val validationError = try {
+            newBackupPasswordValidationError(password)
+        } catch (cancel: CancellationException) {
+            withContext(kotlinx.coroutines.NonCancellable) { runCatching { sink.abort() } }
+            throw cancel
+        }
+        if (validationError != null) {
+            withContext(kotlinx.coroutines.NonCancellable) { runCatching { sink.abort() } }
+            return@withLock Result.failure(validationError)
+        }
         v2Service.create(password, sink, onProgress)
     }
 
@@ -200,11 +215,6 @@ class VaultBackupService(
         password: SensitiveText,
         includeAttachments: Boolean = false,
     ): Result<ByteArray> = operationMutex.withLock {
-        if (!BackupPasswordPolicy.acceptsNew(password)) {
-            return@withLock Result.failure(
-                IllegalArgumentException("Backup password length is invalid"),
-            )
-        }
         if (includeAttachments) {
             return@withLock Result.failure(
                 IllegalArgumentException(
@@ -212,6 +222,9 @@ class VaultBackupService(
                         "Create a metadata-only backup instead.",
                 ),
             )
+        }
+        newBackupPasswordValidationError(password)?.let { validationError ->
+            return@withLock Result.failure(validationError)
         }
 
         return try {
@@ -235,6 +248,23 @@ class VaultBackupService(
             throw cancel
         } catch (_: Exception) {
             Result.failure(IllegalStateException("The encrypted backup could not be created"))
+        }
+    }
+
+    private suspend fun newBackupPasswordValidationError(password: SensitiveText): Exception? {
+        if (!BackupPasswordPolicy.acceptsNew(password)) {
+            return IllegalArgumentException("Backup password length is invalid")
+        }
+        return try {
+            if (sessionManager.matchesMasterPassword(password)) {
+                BackupPasswordReusesMasterPasswordException()
+            } else {
+                null
+            }
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (_: Exception) {
+            IllegalStateException("The encrypted backup could not be created")
         }
     }
 

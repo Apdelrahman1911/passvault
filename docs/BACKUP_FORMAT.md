@@ -21,14 +21,19 @@ Every format-2 file starts with this 44-byte binary header:
 | attachment/record chunk bytes | 4 | 256 KiB |
 | random salt | 16 | exactly 16 bytes |
 
-The backup password is independent of the vault master password. PassVault strictly UTF-8 encodes it and then uses
-the lowercase ASCII hexadecimal bytes as the compatibility-critical Argon2id input; changing to raw UTF-8 would make
-existing backups unreadable. Mutable UTF-8 and hexadecimal buffers are cleared best-effort after deriving the
-32-byte backup key. The device benchmark selects one of the two profiles format 2 has emitted: 64 MiB with either
-three or four operations. Writers and readers reject every other profile before deriving a key; future KDF profiles
-require a new backup format version. The serialized parallelism value is fixed at `1`: the current libsodium
-`crypto_pwhash` binding exposes no lanes argument, so writers must not claim a parallelism value they cannot apply.
-Readers reject any other value.
+The backup key hierarchy is separate from the vault master-password hierarchy: a fresh salt and the supplied backup
+passphrase derive a distinct key. New exports reject a passphrase that exactly matches the current master password;
+users must still choose a distinct, unpredictable passphrase rather than a trivial variation. PassVault verifies this
+without retaining or exposing the master password by unwrapping a candidate VEK and comparing it with the active VEK
+in constant time. Existing backups remain readable even if their passphrase matched the master password.
+
+PassVault strictly UTF-8 encodes the backup passphrase and then uses the lowercase ASCII hexadecimal bytes as the
+compatibility-critical Argon2id input; changing to raw UTF-8 would make existing backups unreadable. Mutable UTF-8 and
+hexadecimal buffers are cleared best-effort after deriving the 32-byte backup key. The device benchmark selects one
+of the two profiles format 2 has emitted: 64 MiB with either three or four operations. Writers and readers reject
+every other profile before deriving a key; future KDF profiles require a new backup format version. The serialized
+parallelism value is fixed at `1`: the current libsodium `crypto_pwhash` binding exposes no lanes argument, so writers
+must not claim a parallelism value they cannot apply. Readers reject any other value.
 
 ### Authenticated records
 

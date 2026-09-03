@@ -1,5 +1,6 @@
 package com.passvault.core.database.repository
 
+import com.passvault.core.crypto.CiphertextAuthenticationException
 import com.passvault.core.crypto.CryptoEnvelope
 import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.DerivedKey
@@ -103,6 +104,30 @@ class VaultRepositoryImpl(
     }
 
     override fun getSessionState(): Flow<VaultSessionState> = _sessionState.asStateFlow()
+
+    override suspend fun matchesMasterPassword(candidate: SensitiveText): Boolean {
+        if (!MasterPasswordPolicy.acceptsExisting(candidate)) return false
+        return withUnlockedSession { activeVek ->
+            val metadata = vaultMetadataDao.get()
+                ?: throw IllegalStateException("Vault does not exist")
+            validateMetadataForUnlock(metadata)
+
+            var candidateVek: ByteArray? = null
+            try {
+                val unwrappedVek = try {
+                    unwrapVaultKey(metadata, candidate)
+                } catch (cancel: CancellationException) {
+                    throw cancel
+                } catch (_: CiphertextAuthenticationException) {
+                    return@withUnlockedSession false
+                }
+                candidateVek = unwrappedVek
+                cryptoEngine.constantTimeEquals(unwrappedVek, activeVek)
+            } finally {
+                candidateVek?.let(cryptoEngine::secureWipe)
+            }
+        }
+    }
 
     override suspend fun exists(): Result<Boolean> = operationResult {
         vaultMetadataDao.exists()
@@ -735,6 +760,12 @@ class VaultRepositoryImpl(
 interface VaultSessionManager {
     suspend fun <T> withUnlockedSession(block: suspend (ByteArray) -> T): T
     suspend fun <T> lockAndRun(reason: LockReason, block: suspend () -> T): T
+
+    /**
+     * Verifies a candidate against the active vault without retaining or
+     * exposing the plaintext master password.
+     */
+    suspend fun matchesMasterPassword(candidate: SensitiveText): Boolean
 }
 
 internal class VaultSessionLockedException : IllegalStateException("Vault not unlocked")

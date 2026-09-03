@@ -18,11 +18,13 @@ import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.entity.TagRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
+import com.passvault.core.database.repository.VaultSessionManager
 import com.passvault.core.domain.model.AttachmentAvailability
 import com.passvault.core.domain.model.Credential
 import com.passvault.core.domain.model.CredentialId
 import com.passvault.core.domain.model.CredentialType
 import com.passvault.core.domain.model.PasswordHealth
+import com.passvault.core.domain.model.PasswordStrengthEvaluator
 import com.passvault.core.domain.model.SensitiveText
 import com.passvault.core.domain.repository.AttachmentContentSink
 import com.passvault.core.domain.repository.AttachmentContentSource
@@ -185,6 +187,77 @@ class VaultBackupStreamingTest {
         } finally {
             restoredCredential.clearSensitiveValues()
         }
+    }
+
+    @Test
+    fun `backup creation rejects the current master password before writing`() = runTest {
+        val reusedPasswordPath = storageRoot.resolve("reused-master-password.pvault")
+        val sink = PathBackupSink(reusedPasswordPath)
+
+        val result = withMasterPassword { password ->
+            backupService.createBackup(password, sink)
+        }
+        val legacyResult = withMasterPassword { password ->
+            backupService.createBackup(password)
+        }
+
+        assertIs<BackupPasswordReusesMasterPasswordException>(result.exceptionOrNull())
+        assertIs<BackupPasswordReusesMasterPasswordException>(legacyResult.exceptionOrNull())
+        assertTrue(sink.aborted)
+        assertFalse(sink.committed)
+        assertFalse(Files.exists(reusedPasswordPath))
+    }
+
+    @Test
+    fun `backup creation accepts a distinct password with the same length`() = runTest {
+        val distinctPassword = MASTER_PASSWORD.dropLast(1) + "!"
+        assertEquals(MASTER_PASSWORD.length, distinctPassword.length)
+        assertEquals(
+            PasswordStrengthEvaluator.score(MASTER_PASSWORD),
+            PasswordStrengthEvaluator.score(distinctPassword),
+        )
+        val sink = PathBackupSink(backupPath)
+
+        withPassword(distinctPassword) { password ->
+            backupService.createBackup(password, sink).getOrThrow()
+        }
+
+        assertTrue(sink.committed)
+        assertFalse(sink.aborted)
+        assertTrue(Files.size(backupPath) > attachmentContent.size)
+    }
+
+    @Test
+    fun `backup creation fails closed when master password verification is unavailable`() = runTest {
+        val unavailableSessionManager = object : VaultSessionManager by vaultRepository {
+            override suspend fun matchesMasterPassword(candidate: SensitiveText): Boolean {
+                throw IllegalStateException("master password verification unavailable")
+            }
+        }
+        val unavailableService = VaultBackupService(
+            backupDao = database.vaultBackupDao(),
+            database = database,
+            cryptoEngine = cryptoEngine,
+            vaultRepository = vaultRepository,
+            sessionManager = unavailableSessionManager,
+            attachmentBlobStore = blobStore,
+            attachmentLifecycleManager = attachmentRepository,
+        )
+        val failedPath = storageRoot.resolve("unavailable-password-verification.pvault")
+        val sink = PathBackupSink(failedPath)
+
+        val result = withBackupPassword { password ->
+            unavailableService.createBackup(password, sink)
+        }
+        val legacyResult = withBackupPassword { password ->
+            unavailableService.createBackup(password)
+        }
+
+        assertTrue(result.isFailure)
+        assertTrue(legacyResult.isFailure)
+        assertTrue(sink.aborted)
+        assertFalse(sink.committed)
+        assertFalse(Files.exists(failedPath))
     }
 
     @Test

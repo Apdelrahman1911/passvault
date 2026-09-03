@@ -2,8 +2,9 @@ package com.passvault.feature.backup.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.passvault.core.database.backup.VaultBackupService
 import com.passvault.core.database.backup.BackupInsufficientStorageException
+import com.passvault.core.database.backup.BackupPasswordReusesMasterPasswordException
+import com.passvault.core.database.backup.VaultBackupService
 import com.passvault.core.designsystem.generated.resources.Res
 import com.passvault.core.designsystem.generated.resources.*
 import com.passvault.core.designsystem.text.UiText
@@ -226,6 +227,15 @@ class BackupViewModel(
                     }
                 } catch (cancel: CancellationException) {
                     throw cancel
+                } catch (reuse: BackupPasswordReusesMasterPasswordException) {
+                    currentCoroutineContext().ensureActive()
+                    _state.update {
+                        it.copy(
+                            isExporting = false,
+                            exportProgress = 0,
+                            errorMessage = backupCreateError(reuse),
+                        )
+                    }
                 } catch (_: Exception) {
                     currentCoroutineContext().ensureActive()
                     _state.update {
@@ -637,6 +647,13 @@ internal fun backupRestoreError(error: Exception): UiText =
         uiText(Res.string.error_backup_insufficient_storage)
     } else {
         uiText(Res.string.error_backup_invalid)
+    }
+
+internal fun backupCreateError(error: Exception): UiText =
+    if (error is BackupPasswordReusesMasterPasswordException) {
+        uiText(Res.string.error_backup_password_reuses_master)
+    } else {
+        uiText(Res.string.error_backup_save)
     }
 
 private fun VaultBackupService.BackupInspection.toImportPreview(): BackupViewModel.ImportPreview =
