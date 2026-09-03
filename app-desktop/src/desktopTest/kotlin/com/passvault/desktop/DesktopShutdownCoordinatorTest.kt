@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -67,6 +68,22 @@ class DesktopShutdownCoordinatorTest {
         assertTrue(coordinator.awaitCleanup(0L).completed)
         assertEquals(1, cancellations.get())
         assertEquals(1, exits.get())
+    }
+
+    @Test
+    fun `window preparation runs synchronously on the close caller`() = runTest {
+        val caller = Thread.currentThread()
+        var preparationThread: Thread? = null
+        val coordinator = coordinator()
+
+        coordinator.requestClose(
+            prepareWindowForExit = { preparationThread = Thread.currentThread() },
+            exitApplication = {},
+        )
+
+        assertSame(caller, preparationThread)
+        advanceUntilIdle()
+        assertTrue(coordinator.awaitCleanup(0L).completed)
     }
 
     @Test

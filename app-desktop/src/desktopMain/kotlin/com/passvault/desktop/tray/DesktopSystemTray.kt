@@ -14,15 +14,21 @@ import javax.swing.SwingUtilities
 
 /**
  * Desktop system tray integration for PassVault.
- * Provides tray icon, context menu, and notifications.
+ *
+ * Native tray handles and callbacks are confined to the AWT event dispatch
+ * thread. Calls made from another thread enqueue work without waiting for the
+ * event thread, so shutdown cannot deadlock behind tray cleanup.
  */
-class DesktopSystemTray {
+class DesktopSystemTray internal constructor(
+    private val platform: DesktopTrayPlatform,
+    private val eventThread: DesktopEventThread,
+) {
+
+    constructor() : this(AwtDesktopTrayPlatform, SwingDesktopEventThread)
 
     private val logger = Logger.getLogger(DesktopSystemTray::class.java.name)
 
-    private var trayIcon: TrayIcon? = null
-    private var isVisible = false
-    private var strings: DesktopTrayStrings? = null
+    private var trayIcon: DesktopTrayIconHandle? = null
 
     // Callbacks
     private var onShowCallback: (() -> Unit)? = null
@@ -33,7 +39,7 @@ class DesktopSystemTray {
      * Check if system tray is supported on this platform.
      */
     fun isSupported(): Boolean {
-        return SystemTray.isSupported()
+        return platform.isSupported()
     }
 
     /**
@@ -45,27 +51,28 @@ class DesktopSystemTray {
         onLock: () -> Unit,
         onExit: () -> Unit,
     ) {
-        if (!isSupported()) {
-            logger.fine("System tray is not supported on this platform")
-            return
-        }
-
-        this.onShowCallback = onShow
-        this.onLockCallback = onLock
-        this.onExitCallback = onExit
-        this.strings = strings
-
-        runOnEventDispatchThread {
+        eventThread.dispatch {
+            if (!platform.isSupported()) {
+                logger.fine("System tray is not supported on this platform")
+                return@dispatch
+            }
+            onShowCallback = onShow
+            onLockCallback = onLock
+            onExitCallback = onExit
             try {
-                if (trayIcon == null) createTrayIcon()
-                isVisible = true
+                if (trayIcon == null) {
+                    trayIcon = platform.install(
+                        strings = strings,
+                        onShow = { onShowCallback?.invoke() },
+                        onLock = { onLockCallback?.invoke() },
+                        onExit = { onExitCallback?.invoke() },
+                        image = loadTrayIcon(),
+                    )
+                }
             } catch (_: Exception) {
-                // createTrayIcon only publishes the property after SystemTray
-                // accepts it, but also clear state here in case a later setup
-                // step fails. A stale non-null icon would otherwise prevent all
-                // future setup attempts for the lifetime of this singleton.
+                // install only returns after the native tray accepts the icon.
+                // Keep a failed setup retryable for the lifetime of this singleton.
                 trayIcon = null
-                isVisible = false
                 logger.warning("Unable to create the system tray icon")
             }
         }
@@ -75,64 +82,20 @@ class DesktopSystemTray {
      * Hide the tray icon.
      */
     fun hide() {
-        if (!isSupported() || !isVisible) return
-
-        runOnEventDispatchThread {
-            try {
-                val tray = SystemTray.getSystemTray()
-                trayIcon?.let { tray.remove(it) }
-                trayIcon = null
-                isVisible = false
-            } catch (_: Exception) {
-                logger.warning("Unable to hide the system tray icon")
-            }
+        eventThread.dispatch {
+            hideOnEventThread()
         }
     }
 
-    /**
-     * Create the tray icon and menu.
-     */
-    private fun createTrayIcon() {
-        val tray = SystemTray.getSystemTray()
-        val currentStrings = checkNotNull(strings) { "Tray strings must be configured before setup" }
-
-        // Create popup menu
-        val popupMenu = PopupMenu().apply {
-            // Show window
-            add(MenuItem(currentStrings.showApp).apply {
-                addActionListener { onShowCallback?.invoke() }
-            })
-
-            addSeparator()
-
-            // Lock
-            add(MenuItem(currentStrings.lockVault).apply {
-                addActionListener { onLockCallback?.invoke() }
-            })
-
-            addSeparator()
-
-            // Exit
-            add(MenuItem(currentStrings.exit).apply {
-                addActionListener { onExitCallback?.invoke() }
-            })
+    private fun hideOnEventThread() {
+        if (!platform.isSupported()) return
+        val installedIcon = trayIcon ?: return
+        try {
+            installedIcon.remove()
+            trayIcon = null
+        } catch (_: Exception) {
+            logger.warning("Unable to hide the system tray icon")
         }
-
-        // Create tray icon
-        val image = loadTrayIcon()
-        val newTrayIcon = TrayIcon(image, currentStrings.tooltip, popupMenu).apply {
-            isImageAutoSize = true
-
-            // Double-click handler
-            addActionListener { onShowCallback?.invoke() }
-
-        }
-
-        // Publish the icon only after the native tray accepts it. Some Linux
-        // desktop environments report tray support but reject an add request;
-        // retaining that rejected icon would make setup incorrectly look done.
-        tray.add(newTrayIcon)
-        trayIcon = newTrayIcon
     }
 
     /**
@@ -182,21 +145,72 @@ class DesktopSystemTray {
      * Clean up resources.
      */
     fun cleanup() {
-        hide()
-        onShowCallback = null
-        onLockCallback = null
-        onExitCallback = null
-        strings = null
+        eventThread.dispatch {
+            hideOnEventThread()
+            onShowCallback = null
+            onLockCallback = null
+            onExitCallback = null
+        }
     }
+}
 
-    private fun runOnEventDispatchThread(block: () -> Unit) {
+internal fun interface DesktopEventThread {
+    fun dispatch(block: () -> Unit)
+}
+
+internal object SwingDesktopEventThread : DesktopEventThread {
+    override fun dispatch(block: () -> Unit) {
         if (SwingUtilities.isEventDispatchThread()) {
             block()
         } else {
-            SwingUtilities.invokeAndWait(block)
+            SwingUtilities.invokeLater(block)
         }
     }
+}
 
+internal fun interface DesktopTrayIconHandle {
+    fun remove()
+}
+
+internal interface DesktopTrayPlatform {
+    fun isSupported(): Boolean
+
+    fun install(
+        strings: DesktopTrayStrings,
+        onShow: () -> Unit,
+        onLock: () -> Unit,
+        onExit: () -> Unit,
+        image: Image,
+    ): DesktopTrayIconHandle
+}
+
+private object AwtDesktopTrayPlatform : DesktopTrayPlatform {
+    override fun isSupported(): Boolean = SystemTray.isSupported()
+
+    override fun install(
+        strings: DesktopTrayStrings,
+        onShow: () -> Unit,
+        onLock: () -> Unit,
+        onExit: () -> Unit,
+        image: Image,
+    ): DesktopTrayIconHandle {
+        val popupMenu = PopupMenu().apply {
+            add(MenuItem(strings.showApp).apply { addActionListener { onShow() } })
+            addSeparator()
+            add(MenuItem(strings.lockVault).apply { addActionListener { onLock() } })
+            addSeparator()
+            add(MenuItem(strings.exit).apply { addActionListener { onExit() } })
+        }
+        val newTrayIcon = TrayIcon(image, strings.tooltip, popupMenu).apply {
+            isImageAutoSize = true
+            addActionListener { onShow() }
+        }
+        val tray = SystemTray.getSystemTray()
+        // Publish the handle only after the native tray accepts the icon. Some
+        // Linux desktops report support but reject an add request.
+        tray.add(newTrayIcon)
+        return DesktopTrayIconHandle { tray.remove(newTrayIcon) }
+    }
 }
 
 data class DesktopTrayStrings(

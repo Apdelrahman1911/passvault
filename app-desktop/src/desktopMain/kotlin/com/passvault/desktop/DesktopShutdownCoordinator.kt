@@ -41,7 +41,9 @@ internal class DesktopShutdownCoordinator(
     /**
      * Starts cleanup exactly once, secures/hides the window, then closes the
      * Compose application immediately. Cleanup never sits in front of the UI
-     * exit callback.
+     * exit callback. [prepareWindowForExit] runs synchronously on the calling
+     * thread; UI callers are responsible for invoking this method on the AWT
+     * event dispatch thread.
      */
     fun requestClose(
         prepareWindowForExit: () -> Unit,
