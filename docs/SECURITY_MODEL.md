@@ -142,6 +142,9 @@ re-enrollment of the prior VEK. The OS key store and Room still cannot share one
   acknowledgement stalls use separate bounded retries; exhaustion exposes only a localized retry surface over the
   cover and never reveals the protected Compose hierarchy.
 - Android enables screenshot blocking for sensitive content and uses the Storage Access Framework for backup files.
+  App-initiated document pickers retain a bounded return grace, but a non-exported screen-off observer active only for
+  those flows revokes the grace and requests the normal background lock immediately. The policy records screen-off
+  before `Activity.onStop`, so either lifecycle/broadcast ordering fails closed.
 - Clipboard expiration verifies a random ownership token/value before clearing, so newer unrelated clipboard data is
   preserved.
 - iOS sensitive copies are local-only and carry both an OS expiration date and an ownership-aware fallback timer.

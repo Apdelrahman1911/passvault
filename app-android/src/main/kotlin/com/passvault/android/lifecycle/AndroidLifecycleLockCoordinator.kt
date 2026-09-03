@@ -24,13 +24,15 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * Known system flows receive a bounded grace period so their Activity result
  * can return without the lock cancelling the operation. If the user leaves the
- * system UI in the background, the grace timeout still locks the vault.
+ * system UI in the background, the grace timeout still locks the vault. Screen
+ * off revokes that grace immediately, regardless of broadcast/onStop ordering.
  */
-class AndroidLifecycleLockCoordinator(
+class AndroidLifecycleLockCoordinator internal constructor(
     private val vaultRepository: VaultRepository,
     private val clipboardService: ClipboardService,
     private val applicationScope: CoroutineScope,
     private val vaultUiSecurityCoordinator: VaultUiSecurityCoordinator,
+    private val screenOffObserver: ScreenOffObserver,
     private val handler: Handler = Handler(Looper.getMainLooper()),
 ) {
     private val policy = AndroidLifecycleLockPolicy()
@@ -61,6 +63,11 @@ class AndroidLifecycleLockCoordinator(
     }
 
     @Synchronized
+    private fun onScreenOff() {
+        applyDecisionLocked(policy.onScreenOff())
+    }
+
+    @Synchronized
     fun beginSystemFlow(): SystemFlowToken {
         applyDecisionLocked(policy.onSystemFlowStarted())
         return SystemFlowToken(this)
@@ -75,6 +82,16 @@ class AndroidLifecycleLockCoordinator(
         _privacyCoverVisible.value = policy.privacyCoverVisible
         if (decision.cancelGracePeriod) {
             handler.removeCallbacks(deferredSystemFlowLock)
+        }
+        if (decision.stopScreenOffObservation) {
+            screenOffObserver.stop()
+        }
+        if (decision.startScreenOffObservation) {
+            if (!screenOffObserver.start(::onScreenOff)) {
+                // A missing observer must not silently restore an unbounded sleep-time grace. Mark
+                // this flow unsafe so its next stopped transition requests the normal lock.
+                applyDecisionLocked(policy.onScreenOffObservationUnavailable())
+            }
         }
         if (decision.scheduleGracePeriod) {
             handler.postDelayed(deferredSystemFlowLock, SYSTEM_FLOW_GRACE_MS)
@@ -159,6 +176,8 @@ class AndroidLifecycleLockCoordinator(
 internal class AndroidLifecycleLockPolicy {
     private var activeSystemFlows = 0
     private var appStopped = false
+    private var screenOffSinceResume = false
+    private var screenOffObservationUnavailable = false
     private var lockRequestedForEpisode = false
     private var lockFinishedForEpisode = false
     private var sensitiveContentSecuredForEpisode = false
@@ -169,6 +188,7 @@ internal class AndroidLifecycleLockPolicy {
 
     fun onActivityResumed(): AndroidLifecycleLockDecision {
         appStopped = false
+        screenOffSinceResume = false
         retryReason?.let { reason ->
             return requestLock(reason, allowForeground = true)
         }
@@ -182,7 +202,11 @@ internal class AndroidLifecycleLockPolicy {
         // The repository lock can wait behind an in-progress unlock. Keep the
         // native Activity covered until that serialized lock has completed.
         privacyCoverVisible = true
-        return if (activeSystemFlows == 0) {
+        return if (
+            activeSystemFlows == 0 ||
+            screenOffSinceResume ||
+            screenOffObservationUnavailable
+        ) {
             requestLock(LockReason.Background)
         } else {
             AndroidLifecycleLockDecision(cancelGracePeriod = true, scheduleGracePeriod = true)
@@ -191,7 +215,10 @@ internal class AndroidLifecycleLockPolicy {
 
     fun onSystemFlowStarted(): AndroidLifecycleLockDecision {
         activeSystemFlows++
-        return AndroidLifecycleLockDecision()
+        if (activeSystemFlows == 1) screenOffObservationUnavailable = false
+        return AndroidLifecycleLockDecision(
+            startScreenOffObservation = activeSystemFlows == 1,
+        )
     }
 
     fun onSystemFlowEnded(returningToActivity: Boolean): AndroidLifecycleLockDecision {
@@ -201,9 +228,35 @@ internal class AndroidLifecycleLockPolicy {
             // Activity-result delivery can precede onResume. Treat it as the
             // foreground handoff so the result is not cancelled by a lock.
             appStopped = false
+            screenOffSinceResume = false
         }
         return if (activeSystemFlows == 0) {
-            requestLock(LockReason.Background).copy(cancelGracePeriod = true)
+            screenOffSinceResume = false
+            screenOffObservationUnavailable = false
+            requestLock(LockReason.Background).copy(
+                cancelGracePeriod = true,
+                stopScreenOffObservation = true,
+            )
+        } else {
+            AndroidLifecycleLockDecision()
+        }
+    }
+
+    fun onScreenOff(): AndroidLifecycleLockDecision {
+        if (activeSystemFlows == 0) return AndroidLifecycleLockDecision()
+        screenOffSinceResume = true
+        return if (appStopped) {
+            requestLock(LockReason.Background)
+        } else {
+            AndroidLifecycleLockDecision()
+        }
+    }
+
+    fun onScreenOffObservationUnavailable(): AndroidLifecycleLockDecision {
+        if (activeSystemFlows == 0) return AndroidLifecycleLockDecision()
+        screenOffObservationUnavailable = true
+        return if (appStopped) {
+            requestLock(LockReason.Background)
         } else {
             AndroidLifecycleLockDecision()
         }
@@ -281,6 +334,8 @@ internal class AndroidLifecycleLockPolicy {
 internal data class AndroidLifecycleLockDecision(
     val cancelGracePeriod: Boolean = false,
     val scheduleGracePeriod: Boolean = false,
+    val startScreenOffObservation: Boolean = false,
+    val stopScreenOffObservation: Boolean = false,
     val startLock: Boolean = false,
     val lockReason: LockReason? = null,
 )
