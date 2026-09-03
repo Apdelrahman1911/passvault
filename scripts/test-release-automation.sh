@@ -13,7 +13,9 @@ cd "$repository_root"
 ruby scripts/verify-static-analysis-coverage.rb >/dev/null
 ruby scripts/validate-ci-workflow-security.rb >/dev/null
 ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
+ruby scripts/validate-ios-gradle-build-boundary.rb >/dev/null
 ./scripts/test-apple-signing-secret-handling.sh >/dev/null
+./scripts/verify-gradle-wrapper.sh >/dev/null
 
 export PUBLISHER_NAME="PassVault test publisher"
 export COPYRIGHT_HOLDER="PassVault test contributors"
@@ -60,6 +62,65 @@ cleanup() {
     esac
 }
 trap cleanup EXIT
+
+wrapper_fixture="$temporary_root/wrapper-project"
+mkdir -p "$wrapper_fixture/scripts" "$wrapper_fixture/gradle/wrapper"
+cp scripts/verify-gradle-wrapper.sh "$wrapper_fixture/scripts/"
+cp gradle/wrapper/gradle-wrapper.jar gradle/wrapper/gradle-wrapper.jar.sha256 \
+    "$wrapper_fixture/gradle/wrapper/"
+"$wrapper_fixture/scripts/verify-gradle-wrapper.sh" >/dev/null
+printf 'tampered' >> "$wrapper_fixture/gradle/wrapper/gradle-wrapper.jar"
+if "$wrapper_fixture/scripts/verify-gradle-wrapper.sh" >/dev/null 2>&1; then
+    echo "Gradle wrapper verification accepted a tampered wrapper JAR." >&2
+    exit 1
+fi
+
+ios_gradle_workflow_fixture="$temporary_root/mobile-store-release.yml"
+cp .github/workflows/mobile-store-release.yml "$ios_gradle_workflow_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  block = /\n      - name: Validate Gradle wrapper\n        uses: gradle\/actions\/wrapper-validation@[^\n]+\n/
+  abort("missing iOS wrapper-validation fixture") unless source.sub!(block, "\n")
+  File.write(path, source)
+' "$ios_gradle_workflow_fixture"
+if ruby scripts/validate-ios-gradle-build-boundary.rb \
+    iosApp/iosApp.xcodeproj/project.pbxproj \
+    "$ios_gradle_workflow_fixture" >/dev/null 2>&1; then
+    echo "iOS release validation accepted an archive job without wrapper validation." >&2
+    exit 1
+fi
+
+ios_gradle_project_fixture="$temporary_root/project.pbxproj"
+cp iosApp/iosApp.xcodeproj/project.pbxproj "$ios_gradle_project_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "./scripts/verify-gradle-wrapper.sh\\n"
+  abort("missing Xcode wrapper-verification fixture") unless source.sub!(needle, "")
+  File.write(path, source)
+' "$ios_gradle_project_fixture"
+if ruby scripts/validate-ios-gradle-build-boundary.rb \
+    "$ios_gradle_project_fixture" \
+    .github/workflows/mobile-store-release.yml >/dev/null 2>&1; then
+    echo "iOS build validation accepted Gradle execution without local wrapper verification." >&2
+    exit 1
+fi
+
+cp iosApp/iosApp.xcodeproj/project.pbxproj "$ios_gradle_project_fixture"
+ruby -e '
+  path = ARGV.fetch(0)
+  source = File.read(path, encoding: "UTF-8")
+  needle = "ENABLE_USER_SCRIPT_SANDBOXING = NO;"
+  abort("missing Xcode sandbox fixture") unless source.sub!(needle, "ENABLE_USER_SCRIPT_SANDBOXING = YES;")
+  File.write(path, source)
+' "$ios_gradle_project_fixture"
+if ruby scripts/validate-ios-gradle-build-boundary.rb \
+    "$ios_gradle_project_fixture" \
+    .github/workflows/mobile-store-release.yml >/dev/null 2>&1; then
+    echo "iOS build validation accepted the Kotlin-incompatible sandbox setting." >&2
+    exit 1
+fi
 
 ci_security_fixture="$temporary_root/ci-security.yml"
 cp .github/workflows/ci.yml "$ci_security_fixture"

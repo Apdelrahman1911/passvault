@@ -75,6 +75,22 @@ only the expected Xcode-generated distribution keys, and rejects missing,
 modified, or additional signed entitlements. Keep capability changes and their
 artifact-verifier coverage in the same reviewed commit.
 
+The `Compile Kotlin Framework` phase intentionally disables Xcode User Script
+Sandboxing and runs on every build. Kotlin's supported direct-integration setup
+requires both settings for `embedAndSignAppleFrameworkForXcode`; forcing the
+sandbox on fails in `:shared:checkSandboxAndWriteProtection` before the framework
+can be produced. See the
+[Kotlin framework integration guidance](https://kotlinlang.org/docs/multiplatform/multiplatform-integrate-in-existing-app.html).
+
+Before that phase invokes Gradle, `scripts/verify-gradle-wrapper.sh` checks the
+wrapper JAR against the reviewed SHA-256 in `gradle/wrapper/`; the distribution
+ZIP has its own `distributionSha256Sum`. The iOS archive job also runs Gradle's
+immutable, pinned `wrapper-validation` action. These controls detect wrapper
+substitution; they do not make arbitrary Gradle build logic safe or prevent it
+from changing the framework it is intended to produce. Reviewed source,
+dependency verification, runner isolation, signing, and final artifact
+verification remain the release trust boundary.
+
 ## Windows
 
 Public Windows releases require a public-trust Authenticode identity and trusted
