@@ -1303,6 +1303,8 @@ class CredentialRepositoryImpl(
         const val MAX_ATTACHMENT_SIZE_BYTES = 4L * 1024L * 1024L * 1024L
         val UUID_HYPHEN_INDICES = setOf(8, 13, 18, 23)
         const val TOTP_VAULT_FORMAT_VERSION = 2
+        // Mirrors core:otp's deliberate Google Authenticator compatibility
+        // exception to RFC 4226 R6. Existing vaults must remain generatable.
         const val MIN_TOTP_SECRET_LENGTH = 16
         const val MAX_TOTP_SECRET_LENGTH = 205
         const val MIN_TOTP_SECRET_BYTES = 10

@@ -112,6 +112,16 @@ screen teardown wipes transferred inputs. QR payloads are handled locally, parse
 size/type/Base32/parameter bounds, and never sent to a service. Android and iOS camera capture and Desktop-selected
 image decoding remain OS and process trust boundaries.
 
+TOTP enrollment accepts decoded setup keys from 10 through 128 bytes. The 10-byte floor is a deliberate compatibility
+exception to RFC 4226 section 4 requirement R6's 16-byte minimum: PassVault imports keys chosen by account issuers,
+does not generate them, and the published
+[Google Authenticator Key URI example](https://github.com/google/google-authenticator/wiki/Key-Uri-Format) itself
+contains a 10-byte key. Rejecting that established format would prevent enrollment without strengthening the issuer's
+account. Keys below 10 bytes are rejected, while 16 bytes or more remain preferred. A uniformly random 10-byte key has
+at most a 2^80 brute-force space; PassVault cannot establish how much entropy an issuer used. Existing vault and backup
+entries follow the same floor so upgrades do not disable their codes. This exception means setup-key admission does
+not claim full RFC 4226 R6 conformance; RFC 6238 code calculation and its supported-algorithm vectors remain unchanged.
+
 The database intentionally exposes structural metadata needed for queries: record identifiers, credential type,
 favorite state, timestamps, folder/tag relationship identifiers, attachment MIME/size/opaque-path metadata, and
 row counts. That metadata is neither confidential nor cryptographically bound to the encrypted payloads, so direct

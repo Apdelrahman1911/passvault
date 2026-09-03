@@ -101,6 +101,56 @@ class TotpServiceTest {
     }
 
     @Test
+    fun `enrollment preserves the published 80 bit authenticator interoperability boundary`() {
+        val publishedSecret = "JBSWY3DPEHPK3PXP"
+        val inputs = listOf(
+            publishedSecret,
+            "otpauth://totp/Example:ada?secret=$publishedSecret&issuer=Example",
+        )
+
+        inputs.forEach { input ->
+            val configuration = assertIs<TotpParseResult.Success>(service.parse(input)).configuration
+            try {
+                assertEquals(publishedSecret, configuration.secret.toStringUnsafe())
+            } finally {
+                configuration.clear()
+            }
+        }
+    }
+
+    @Test
+    fun `enrollment boundaries reject sub 80 bit keys while retaining compatible and RFC sized keys`() {
+        val expectedAcceptance = mapOf(
+            15 to false,
+            16 to true,
+            24 to true,
+            // 25 characters cannot be a canonical whole-byte Base32 value;
+            // 26 is the first canonical representation of a 16-byte key.
+            25 to false,
+            26 to true,
+        )
+
+        expectedAcceptance.forEach { (characters, accepted) ->
+            val secret = "A".repeat(characters)
+            listOf(secret, "otpauth://totp/Example:ada?secret=$secret").forEach { input ->
+                when (val result = service.parse(input)) {
+                    is TotpParseResult.Success -> {
+                        try {
+                            assertTrue(accepted, "$characters Base32 characters should have been rejected")
+                        } finally {
+                            result.configuration.clear()
+                        }
+                    }
+                    is TotpParseResult.Error -> {
+                        assertTrue(!accepted, "$characters Base32 characters should have been accepted")
+                        assertEquals(TotpParseError.INVALID_SECRET, result.reason)
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     fun `accepts canonical padding and rejects noncanonical Base32 lengths`() {
         val unpadded = base32Encode("12345678901".encodeToByteArray())
         val padded = unpadded.padEnd((unpadded.length + 7) / 8 * 8, '=')

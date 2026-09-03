@@ -40,8 +40,8 @@ into unbounded heap retention. Limits that materially affect growth are:
 - at most 50 custom fields per credential, each name up to 200 code points and value up to 20,000 code points;
 - at most 100 URLs, 100 recovery codes, 100 API keys, and 100 license keys per credential;
 - notes up to 100,000 code points and common sensitive values up to 4,096 code points;
-- zero or one TOTP configuration per credential, with a decoded setup key up to 128 bytes and label up to 200 code
-  points; and
+- zero or one TOTP configuration per credential, with a decoded setup key from 10 through 128 bytes and label up to
+  200 code points (the 10-byte interoperability exception is documented in `SECURITY_MODEL.md`); and
 - up to 1,000,000 folders and 1,000,000 tags globally, although storage/container bounds normally win first.
 
 Backup validation enforces these relationship/history/managed-attachment limits again; an authenticated but

@@ -16,7 +16,7 @@ credentials and physical-device release evidence remain external gates.
 | `shared` | Koin composition, Room construction, theme ownership, session-to-navigation coordination, and the only live `NavDisplay` |
 | `core:domain` | Immutable domain models, typed identifiers, validation, health logic, and repository/settings contracts |
 | `core:crypto` | libsodium-backed Argon2id, XChaCha20-Poly1305, random data, constant-time comparison, and subkey derivation |
-| `core:otp` | Strict TOTP setup parsing and RFC 6238 code generation for SHA-1, SHA-256, and SHA-512 |
+| `core:otp` | Strict TOTP setup parsing and RFC 6238 code generation; issuer-key admission retains a documented 10-byte interoperability floor below RFC 4226 R6 |
 | `core:database` | Room schema/DAOs, encrypted repositories, vault session, and versioned backup service |
 | `core:security` | Biometric, clipboard, screenshot, and Desktop window-protection boundaries |
 | `core:designsystem` | Semantic theme tokens and reusable responsive/feedback/form controls |
