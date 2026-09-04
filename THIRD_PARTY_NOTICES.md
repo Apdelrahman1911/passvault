@@ -33,7 +33,7 @@ publish the exact directory as `THIRD_PARTY_LICENSES.zip`.
 | AndroidX SQLite | SQLite runtime and bundled-driver artifacts | 2.6.2 | Apache-2.0; bundled SQLite is public domain | <https://developer.android.com/jetpack/androidx/releases/sqlite> |
 | IonSpin Kotlin Multiplatform Libsodium Bindings | `com.ionspin.kotlin:multiplatform-crypto-libsodium-bindings` | 0.9.5 | Apache-2.0 | <https://github.com/ionspin/kotlin-multiplatform-libsodium> |
 | libsodium | Native libraries bundled by the IonSpin bindings | 1.0.19 | ISC | <https://github.com/jedisct1/libsodium> |
-| Okio | `com.squareup.okio:okio` | 3.17.0 | Apache-2.0 | <https://github.com/square/okio> |
+| Okio | `com.squareup.okio:okio` | 3.18.1 | Apache-2.0 | <https://github.com/square/okio> |
 | AndroidX Activity | `androidx.activity:activity-compose` | 1.13.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/activity> |
 | AndroidX Biometric | `androidx.biometric:biometric` | 1.1.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/biometric> |
 | AndroidX Core | `androidx.core:core-ktx` | 1.19.0 | Apache-2.0 | <https://developer.android.com/jetpack/androidx/releases/core> |
@@ -81,8 +81,8 @@ native code is present in a production runtime graph or installed artifact.
 | FreeType | Skia's Linux font scanner, statically present in the shipped Skiko runtime | 2.13.3 (`1518bc83d26b434031bd12c706ac3c7dab3902fd`) | FreeType License; PassVault selects the FTL option | `freetype-2.13.3-LICENSE.txt`; `freetype-2.13.3-FTL.txt` |
 | Wuffs | Skia's GIF codec, statically present in the shipped Skiko runtime | `e3f919ccfe3ef542cfc983a82146070258fb57f8` | Apache-2.0 | `wuffs-e3f919cc-LICENSE.txt` |
 | Touchlab Stately | Koin | 2.1.0 | Apache-2.0 | Apache-2.0 in `LICENSE.txt` |
-| Java Native Access (JNA) | IonSpin JVM bindings | 5.18.1 | Apache-2.0 OR LGPL-2.1-or-later; PassVault selects Apache-2.0 | `jna-5.18.1-LICENSE.txt`; Apache-2.0 in `LICENSE.txt` |
-| libffi | Statically linked into JNA's native dispatcher | 3.4.4 vendored by JNA 5.18.1 | MIT | `libffi-3.4.4-LICENSE.txt` |
+| Java Native Access (JNA) | IonSpin Android bindings and direct Desktop binding | 5.18.1; 5.19.1 | Apache-2.0 OR LGPL-2.1-or-later; PassVault selects Apache-2.0 | `jna-5.18.1-LICENSE.txt`; `jna-5.19.1-LICENSE.txt`; Apache-2.0 in `LICENSE.txt` |
+| libffi | Statically linked into JNA's native dispatcher | 3.4.4 vendored by JNA 5.18.1 and 5.19.1 | MIT | `libffi-3.4.4-LICENSE.txt` |
 | resource-loader | IonSpin JVM bindings | 2.0.2 | MIT | `resource-loader-2.0.2-LICENSE.txt` |
 | SLF4J API | resource-loader | 2.0.0-alpha1 | MIT | `slf4j-api-2.0.0-alpha1-LICENSE.txt` |
 | Checker Framework Qualifiers | resolved Android runtime graph | 3.43.0 | MIT | `checker-qual-3.43.0-LICENSE.txt` |

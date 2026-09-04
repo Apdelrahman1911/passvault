@@ -896,7 +896,7 @@ for legal_document in LICENSE.txt NOTICE.txt THIRD_PARTY_NOTICES.md; do
         exit 1
     fi
 done
-if [[ "$(find THIRD_PARTY_LICENSES -mindepth 1 -maxdepth 1 -type f | wc -l | tr -d ' ')" != "24" ]]; then
+if [[ "$(find THIRD_PARTY_LICENSES -mindepth 1 -maxdepth 1 -type f | wc -l | tr -d ' ')" != "25" ]]; then
     echo "The canonical third-party license set has an unexpected file count." >&2
     exit 1
 fi
@@ -2062,6 +2062,15 @@ grep -Fq 'needs: [ prepare, mobile-internal, resume-internal-receipts, desktop-l
 grep -Fq 'resume_existing_internal_uploads' .github/workflows/testing-release.yml
 grep -Fq 'resume-internal-receipts' .github/workflows/testing-release.yml
 grep -Fq 'scripts/resume-testing-candidate-receipts.rb' .github/workflows/testing-release.yml
+# Resume must see the original candidate commit, not only the later testing SHA.
+python3 - <<'PY'
+from pathlib import Path
+text = Path(".github/workflows/testing-release.yml").read_text()
+start = text.index("resume-internal-receipts:")
+chunk = text[start:text.index("mobile-external:", start)]
+if "fetch-depth: 0" not in chunk:
+    raise SystemExit("resume-internal-receipts must fetch full Git history")
+PY
 grep -Fq 'resume-receipt-sources.json' .github/workflows/testing-release.yml
 grep -Fq 'Resume publication must keep the original candidate tree.' \
     .github/workflows/testing-release.yml
@@ -2234,7 +2243,7 @@ reusable_call_permissions.each do |path, jobs|
   end
 end
 RUBY
-mobile_release_kit_sha="7eebb2656d28df33e4d8e5135f1f8fb64404e2bd"
+mobile_release_kit_sha="c3a5a0fedce2695f9e5ff520bc15c48aa0af268c"
 for workflow in \
     .github/workflows/mobile-release-preflight.yml \
     .github/workflows/mobile-release-candidate.yml \
@@ -2674,7 +2683,7 @@ grep -Fq 'runs-on: macos-26' .github/workflows/mobile-store-release.yml
 grep -Fq 'Require Xcode 26 or newer' .github/workflows/mobile-store-release.yml
 grep -Fq 'gem "multi_json", ">= 1.15", "< 2.0"' Gemfile
 test "$(tr -d '\r\n' < .ruby-version)" = "3.3"
-grep -Fq '  fastlane (2.235.0)' Gemfile.lock
+grep -Fq '  fastlane (2.238.0)' Gemfile.lock
 grep -Fq '  multi_json (1.21.1)' Gemfile.lock
 grep -Fq '  arm64-darwin' Gemfile.lock
 grep -Fq '  x86_64-linux' Gemfile.lock
@@ -2808,11 +2817,11 @@ if grep -Eq '^set_text_secret MACOS_NOTARIZATION_(APPLE_ID|PASSWORD)' \
     exit 1
 fi
 grep -Fq 'WINDOWS_SIGNING_CERTIFICATE_SHA256' .github/workflows/release.yml
-grep -Fq 'azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0' \
+grep -Fq 'azure/login@7ddb5af1ef8758cf1353cf3b42f940aee27ba21c # v3.0.2' \
     .github/workflows/release.yml
 grep -Fq 'azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82 # v2.0.0' \
     .github/workflows/release.yml
-grep -Fq 'signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2' \
+grep -Fq 'signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2.3' \
     .github/workflows/release.yml
 grep -Fq 'create-windows-signing-catalog.ps1' .github/workflows/release.yml
 grep -Fq 'prepare-windows-runtime-signing.ps1' .github/workflows/release.yml

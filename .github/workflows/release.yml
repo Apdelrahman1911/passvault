@@ -534,7 +534,7 @@ jobs:
 
       - name: Authenticate to Azure Artifact Signing with OIDC
         if: vars.WINDOWS_SIGNING_BACKEND == 'azure-artifact-signing'
-        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
+        uses: azure/login@7ddb5af1ef8758cf1353cf3b42f940aee27ba21c # v3.0.2
         with:
           client-id: ${{ vars.WINDOWS_AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.WINDOWS_AZURE_TENANT_ID }}
@@ -576,7 +576,7 @@ jobs:
 
       - name: Sign runtime request with SignPath HSM
         if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
-        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2.3
         with:
           api-token: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
@@ -743,7 +743,7 @@ jobs:
 
       - name: Sign installer request with SignPath HSM
         if: vars.WINDOWS_SIGNING_BACKEND == 'signpath'
-        uses: signpath/github-action-submit-signing-request@b9d91eadd323de506c0c81cf0c7fe7438f3360fd # v2
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2.3
         with:
           api-token: ${{ secrets.WINDOWS_SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.WINDOWS_SIGNPATH_ORGANIZATION_ID }}
