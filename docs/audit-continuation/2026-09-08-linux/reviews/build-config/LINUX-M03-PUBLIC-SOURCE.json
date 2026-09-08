@@ -1,0 +1,128 @@
+{
+  "reviewer": "/root/build_config",
+  "qualification": "Two root-authorized public source/data reads only. No source archive extraction, import, dependency execution, install, build or metadata trust edit. Docs/source bytes are not actual Gradle/plugin/native runtime or binary/source equivalence.",
+  "tls_verification": true,
+  "proxy_handler": "explicit empty",
+  "observations": [
+    {
+      "id": "gradle-toolchains",
+      "url": "https://docs.gradle.org/9.7.1/userguide/toolchains.html",
+      "method": "GET",
+      "started_utc": "2026-09-08T21:50:52.992087+00:00",
+      "timeout_seconds": 12,
+      "body_cap": 2097152,
+      "automatic_retries": 0,
+      "status": 200,
+      "body_bytes": 231654,
+      "body_sha256": "1acd0481aac0b0803507348c756d1e0d3ecaebd1589a51178eea5dbf85c201ec",
+      "final_url": "https://docs.gradle.org/9.7.1/userguide/toolchains.html",
+      "selected_plaintext_excerpts": [
+        {
+          "term": "org.gradle.java.installations.auto-detect",
+          "text": "A installations Among the set of all detected JRE/JDK installations, one will be picked according to the Toolchain Precedence Rules . Whether you are using toolchain auto-detection or you are configuring Custom toolchain locations , installations that are non-existing or without a bin/java executable will be ignored with a warning, but they won\u2019t generate an error. How to disable auto-detection In order to disable auto-detection, you can use the org.gradle.java.installations.auto-detect Gradle property: Either start Gradle using -Dorg.gradle.java.installations.auto-detect=false Or put org.gradle.java.installations.auto-detect=false into your gradle.properties file. Auto-provisioning If Gradle can\u2019t find a locally available toolchain that matches the requirements of the build, it can automatically download one (as long as a toolchain download repository has been configured; for detail, see relevant section ). Gradle installs the downloaded JDKs in the Gradle User Home . Gradle only downloads JDK versions for GA releases. There is no support for downloading early access versions. Once installed in the Gradle User Home , a provisioned JDK becomes one of the JDKs visible to auto-detection and can be used by any subsequent builds, just like any other JDK installed on the system. Since auto-provisioning only kicks in when auto-detecti"
+        },
+        {
+          "term": "org.gradle.java.installations.auto-detect",
+          "text": " according to the Toolchain Precedence Rules . Whether you are using toolchain auto-detection or you are configuring Custom toolchain locations , installations that are non-existing or without a bin/java executable will be ignored with a warning, but they won\u2019t generate an error. How to disable auto-detection In order to disable auto-detection, you can use the org.gradle.java.installations.auto-detect Gradle property: Either start Gradle using -Dorg.gradle.java.installations.auto-detect=false Or put org.gradle.java.installations.auto-detect=false into your gradle.properties file. Auto-provisioning If Gradle can\u2019t find a locally available toolchain that matches the requirements of the build, it can automatically download one (as long as a toolchain download repository has been configured; for detail, see relevant section ). Gradle installs the downloaded JDKs in the Gradle User Home . Gradle only downloads JDK versions for GA releases. There is no support for downloading early access versions. Once installed in the Gradle User Home , a provisioned JDK becomes one of the JDKs visible to auto-detection and can be used by any subsequent builds, just like any other JDK installed on the system. Since auto-provisioning only kicks in when auto-detection fails to find a matching JDK, auto-provisioning can only download new JDKs and is in"
+        },
+        {
+          "term": "org.gradle.java.installations.auto-detect",
+          "text": "you are using toolchain auto-detection or you are configuring Custom toolchain locations , installations that are non-existing or without a bin/java executable will be ignored with a warning, but they won\u2019t generate an error. How to disable auto-detection In order to disable auto-detection, you can use the org.gradle.java.installations.auto-detect Gradle property: Either start Gradle using -Dorg.gradle.java.installations.auto-detect=false Or put org.gradle.java.installations.auto-detect=false into your gradle.properties file. Auto-provisioning If Gradle can\u2019t find a locally available toolchain that matches the requirements of the build, it can automatically download one (as long as a toolchain download repository has been configured; for detail, see relevant section ). Gradle installs the downloaded JDKs in the Gradle User Home . Gradle only downloads JDK versions for GA releases. There is no support for downloading early access versions. Once installed in the Gradle User Home , a provisioned JDK becomes one of the JDKs visible to auto-detection and can be used by any subsequent builds, just like any other JDK installed on the system. Since auto-provisioning only kicks in when auto-detection fails to find a matching JDK, auto-provisioning can only download new JDKs and is in no way involved in updating any of the already install"
+        },
+        {
+          "term": "org.gradle.java.installations.auto-download",
+          "text": "6' + Oracle JDK 1.7.0_80 | Location: /Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre | Language Version: 7 | Vendor: Oracle | Architecture: x86_64 | Is JDK: false | Detected by: MacOS java_home This can help to debug which toolchains are available to the build, how they are detected and what kind of metadata Gradle knows about those toolchains. Disabling auto provisioning In order to disable auto-provisioning, you can use the org.gradle.java.installations.auto-download Gradle property: Either start Gradle using -Dorg.gradle.java.installations.auto-download=false Or put org.gradle.java.installations.auto-download=false into a gradle.properties file. After disabling the auto provisioning, ensure that the specified JRE/JDK version in the build file is already installed locally. Then, stop the Gradle daemon so that it can be reinitialized for the next build. You can use the ./gradlew --stop command to stop the daemon process. Removing an auto-provisioned toolchain When removing an auto-provisioned toolchain is necessary, remove the relevant toolchain located in the /jdks directory within the Gradle User Home . The Gradle Daemon caches information about your project, including configuration details such as toolchain paths or versions. Changes to a project\u2019s toolchain configuration might only occur once the Gradle "
+        },
+        {
+          "term": "org.gradle.java.installations.auto-download",
+          "text": "ntents/Home/jre | Language Version: 7 | Vendor: Oracle | Architecture: x86_64 | Is JDK: false | Detected by: MacOS java_home This can help to debug which toolchains are available to the build, how they are detected and what kind of metadata Gradle knows about those toolchains. Disabling auto provisioning In order to disable auto-provisioning, you can use the org.gradle.java.installations.auto-download Gradle property: Either start Gradle using -Dorg.gradle.java.installations.auto-download=false Or put org.gradle.java.installations.auto-download=false into a gradle.properties file. After disabling the auto provisioning, ensure that the specified JRE/JDK version in the build file is already installed locally. Then, stop the Gradle daemon so that it can be reinitialized for the next build. You can use the ./gradlew --stop command to stop the daemon process. Removing an auto-provisioned toolchain When removing an auto-provisioned toolchain is necessary, remove the relevant toolchain located in the /jdks directory within the Gradle User Home . The Gradle Daemon caches information about your project, including configuration details such as toolchain paths or versions. Changes to a project\u2019s toolchain configuration might only occur once the Gradle Daemon is restarted. It is recommended to stop the Gradle Daemon to ensure that Gradle up"
+        },
+        {
+          "term": "org.gradle.java.installations.auto-download",
+          "text": "Architecture: x86_64 | Is JDK: false | Detected by: MacOS java_home This can help to debug which toolchains are available to the build, how they are detected and what kind of metadata Gradle knows about those toolchains. Disabling auto provisioning In order to disable auto-provisioning, you can use the org.gradle.java.installations.auto-download Gradle property: Either start Gradle using -Dorg.gradle.java.installations.auto-download=false Or put org.gradle.java.installations.auto-download=false into a gradle.properties file. After disabling the auto provisioning, ensure that the specified JRE/JDK version in the build file is already installed locally. Then, stop the Gradle daemon so that it can be reinitialized for the next build. You can use the ./gradlew --stop command to stop the daemon process. Removing an auto-provisioned toolchain When removing an auto-provisioned toolchain is necessary, remove the relevant toolchain located in the /jdks directory within the Gradle User Home . The Gradle Daemon caches information about your project, including configuration details such as toolchain paths or versions. Changes to a project\u2019s toolchain configuration might only occur once the Gradle Daemon is restarted. It is recommended to stop the Gradle Daemon to ensure that Gradle updates the configuration for subsequent builds. Custom too"
+        },
+        {
+          "term": "org.gradle.java.installations.paths",
+          "text": "an display the list of all detected toolchains including their metadata. For example, to show all toolchains of a project, run: $ ./gradlew -q javaToolchains > gradle -q javaToolchains + Options | Auto-detection: Enabled | Auto-download: Enabled + AdoptOpenJDK 1.8.0_242 | Location: /Users/username/myJavaInstalls/8.0.242.hs-adpt/jre | Language Version: 8 | Vendor: AdoptOpenJDK | Architecture: x86_64 | Is JDK: false | Detected by: Gradle property 'org.gradle.java.installations.paths' + Microsoft JDK 16.0.2+7 | Location: /Users/username/.sdkman/candidates/java/16.0.2.7.1-ms | Language Version: 16 | Vendor: Microsoft | Architecture: aarch64 | Is JDK: true | Detected by: SDKMAN! + OpenJDK 15-ea | Location: /Users/user/customJdks/15.ea.21-open | Language Version: 15 | Vendor: AdoptOpenJDK | Architecture: x86_64 | Is JDK: true | Detected by: environment variable 'JDK16' + Oracle JDK 1.7.0_80 | Location: /Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre | Language Version: 7 | Vendor: Oracle | Architecture: x86_64 | Is JDK: false | Detected by: MacOS java_home This can help to debug which toolchains are available to the build, how they are detected and what kind of metadata Gradle knows about those toolchains. Disabling auto provisioning In order to disable auto-provisioning, you can use the org.gradle.java.installatio"
+        },
+        {
+          "term": "org.gradle.java.installations.paths",
+          "text": "lso let Gradle know about which environment variables to take into account. Assuming the environment variables JDK8 and JRE17 point to valid java installations, the following instructs Gradle to resolve those environment variables and consider those installations when looking for a matching toolchain. org.gradle.java.installations.fromEnv=JDK8,JRE17 Additionally, you can provide a comma-separated list of paths to specific installations using the org.gradle.java.installations.paths property. For example, using the following in your gradle.properties will let Gradle know which directories to look at when detecting toolchains. Gradle will treat these directories as possible installations but will not descend into any nested directories. org.gradle.java.installations.paths=/custom/path/jdk1.8,/shared/jre11 Gradle does not prioritize custom toolchains over auto-detected toolchains. If you enable auto-detection in your build, custom toolchains extend the set of toolchain locations. Gradle picks a toolchain according to the precedence rules . Toolchain installations precedence Gradle will sort all the JDK/JRE installations matching the toolchain specification of the build and will pick the first one. Sorting is done based on the following rules: the installation currently running Gradle is preferred over any other JDK installations are"
+        },
+        {
+          "term": "org.gradle.java.installations.paths",
+          "text": "olchain. org.gradle.java.installations.fromEnv=JDK8,JRE17 Additionally, you can provide a comma-separated list of paths to specific installations using the org.gradle.java.installations.paths property. For example, using the following in your gradle.properties will let Gradle know which directories to look at when detecting toolchains. Gradle will treat these directories as possible installations but will not descend into any nested directories. org.gradle.java.installations.paths=/custom/path/jdk1.8,/shared/jre11 Gradle does not prioritize custom toolchains over auto-detected toolchains. If you enable auto-detection in your build, custom toolchains extend the set of toolchain locations. Gradle picks a toolchain according to the precedence rules . Toolchain installations precedence Gradle will sort all the JDK/JRE installations matching the toolchain specification of the build and will pick the first one. Sorting is done based on the following rules: the installation currently running Gradle is preferred over any other JDK installations are preferred over JRE ones certain vendors take precedence over others; their ordering (from the highest priority to lowest): ADOPTIUM ADOPTOPENJDK AMAZON APPLE AZUL BELLSOFT GRAAL_VM HEWLETT_PACKARD IBM JETBRAINS MICROSOFT ORACLE SAP TENCENT everything else higher major versions take precedence"
+        },
+        {
+          "term": "org.gradle.java.installations.fromEnv",
+          "text": "ways you can let Gradle know about installed toolchains. If your setup already provides environment variables pointing to installed JVMs, you can also let Gradle know about which environment variables to take into account. Assuming the environment variables JDK8 and JRE17 point to valid java installations, the following instructs Gradle to resolve those environment variables and consider those installations when looking for a matching toolchain. org.gradle.java.installations.fromEnv=JDK8,JRE17 Additionally, you can provide a comma-separated list of paths to specific installations using the org.gradle.java.installations.paths property. For example, using the following in your gradle.properties will let Gradle know which directories to look at when detecting toolchains. Gradle will treat these directories as possible installations but will not descend into any nested directories. org.gradle.java.installations.paths=/custom/path/jdk1.8,/shared/jre11 Gradle does not prioritize custom toolchains over auto-detected toolchains. If you enable auto-detection in your build, custom toolchains extend the set of toolchain locations. Gradle picks a toolchain according to the precedence rules . Toolchain installations precedence Gradle will sort all the JDK/JRE installations matching the toolchain specification of the build and will pick the f"
+        }
+      ]
+    },
+    {
+      "id": "sqlite-jvm-sources",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-bundled-jvm/2.6.2/sqlite-bundled-jvm-2.6.2-sources.jar",
+      "method": "GET",
+      "started_utc": "2026-09-08T21:50:53.431695+00:00",
+      "timeout_seconds": 12,
+      "body_cap": 1048576,
+      "automatic_retries": 0,
+      "status": 200,
+      "body_bytes": 21152,
+      "body_sha256": "3749d31ce6ca154e91e842f3b9b8ce39bee897b8d9dc3526ef053b42b23bae8d",
+      "final_url": "https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-bundled-jvm/2.6.2/sqlite-bundled-jvm-2.6.2-sources.jar",
+      "source_member_count": 35,
+      "source_members": [
+        "META-INF/",
+        "META-INF/MANIFEST.MF",
+        "jvmMain/",
+        "jvmMain/androidx/",
+        "jvmMain/androidx/sqlite/",
+        "jvmMain/androidx/sqlite/driver/",
+        "jvmMain/androidx/sqlite/driver/bundled/",
+        "jvmMain/androidx/sqlite/driver/bundled/NativeLibraryLoader.jvm.kt",
+        "jvmMain/androidx/sqlite/driver/bundled/jni/",
+        "jvmMain/androidx/sqlite/driver/bundled/jni/FastNative.jvm.kt",
+        "jvmAndroidMain/",
+        "jvmAndroidMain/androidx/",
+        "jvmAndroidMain/androidx/sqlite/",
+        "jvmAndroidMain/androidx/sqlite/driver/",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/BundledSQLite.jvmAndroid.kt",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/BundledSQLiteConnection.jvmAndroid.kt",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/BundledSQLiteDriver.jvmAndroid.kt",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/BundledSQLiteStatement.jvmAndroid.kt",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/jni/",
+        "jvmAndroidMain/androidx/sqlite/driver/bundled/jni/FastNative.jvmAndroid.kt",
+        "commonMain/",
+        "commonMain/androidx/",
+        "commonMain/androidx/sqlite/",
+        "commonMain/androidx/sqlite/driver/",
+        "commonMain/androidx/sqlite/driver/bundled/",
+        "commonMain/androidx/sqlite/driver/bundled/BundledSQLite.kt",
+        "commonMain/androidx/sqlite/driver/bundled/BundledSQLiteConnection.kt",
+        "commonMain/androidx/sqlite/driver/bundled/BundledSQLiteDriver.kt",
+        "commonMain/androidx/sqlite/driver/bundled/BundledSQLiteStatement.kt",
+        "commonMain/androidx/sqlite/driver/bundled/NativeLibraryLoader.kt",
+        "META-INF/androidx/",
+        "META-INF/androidx/sqlite/",
+        "META-INF/androidx/sqlite/sqlite-bundled/",
+        "META-INF/androidx/sqlite/sqlite-bundled/LICENSE.txt"
+      ],
+      "selected_sources": [
+        {
+          "path": "jvmMain/androidx/sqlite/driver/bundled/NativeLibraryLoader.jvm.kt",
+          "bytes": 5516,
+          "sha256": "f41b2db9551afa478c2eedd2d7ed49b447a2ffe74f0133275fcb1622197d840a",
+          "text": "/*\n * Copyright 2023 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage androidx.sqlite.driver.bundled\n\nimport java.io.File\nimport java.nio.file.Files\nimport java.nio.file.StandardCopyOption\nimport java.util.Locale\n\n/** Helper class to load native libraries based on the host platform. */\ninternal actual object NativeLibraryLoader {\n\n    private const val LIB_PATH_PROPERTY_NAME = \"androidx.sqlite.driver.bundled.path\"\n    private const val LIB_NAME_PROPERTY_NAME = \"androidx.sqlite.driver.bundled.name\"\n\n    private val osName: String\n        get() = System.getProperty(\"os.name\")?.lowercase(Locale.US) ?: error(\"Cannot read osName\")\n\n    private val osArch: String\n        get() = System.getProperty(\"os.arch\")?.lowercase(Locale.US) ?: error(\"Cannot read osArch\")\n\n    private val osPrefix: String\n        get() =\n            when {\n                osName.contains(\"linux\") -> \"linux\"\n                osName.contains(\"mac\") || osName.contains(\"osx\") -> \"osx\"\n                osName.contains(\"windows\") -> \"windows\"\n                else -> error(\"Unsupported operating system: $osName\")\n            }\n\n    private val archSuffix: String\n        get() =\n            when {\n                osArch == \"aarch64\" -> \"arm64\"\n                osArch.contains(\"arm\") ->\n                    when {\n                        osArch.contains(\"64\") -> \"arm64\"\n                        else -> \"arm32\"\n                    }\n                osArch.contains(\"64\") -> \"x64\"\n                osArch.contains(\"86\") -> \"x86\"\n                else -> error(\"Unsupported architecture: $osArch\")\n            }\n\n    // TODO(b/304281116): Generate this via Gradle so it is consistent.\n    actual fun loadLibrary(name: String): Unit =\n        synchronized(this) {\n            // Load for Android\n            try {\n                System.loadLibrary(name)\n                return\n            } catch (_: UnsatisfiedLinkError) {\n                // Likely not on Android, continue...\n            }\n\n            // Load from configured property path\n            val libraryPath = System.getProperty(LIB_PATH_PROPERTY_NAME)\n            if (libraryPath != null) {\n                val libName = System.getProperty(LIB_NAME_PROPERTY_NAME) ?: getLibraryName(name)\n                val libFile = File(libraryPath, libName)\n                check(libFile.exists()) {\n                    \"Cannot find a suitable SQLite binary for $osName | $osArch at the \" +\n                        \"configured path ($LIB_PATH_PROPERTY_NAME = $libraryPath). \" +\n                        \"File $libFile does not exist.\"\n                }\n                tryLoad(libFile.canonicalPath)\n                return\n            }\n\n            val libName = getLibraryName(name)\n\n            // Load from shared lib/ or bin/ dir in Java home\n            val javaHomeLibs =\n                File(System.getProperty(\"java.home\"), if (osPrefix == \"windows\") \"bin\" else \"lib\")\n            val libFile = javaHomeLibs.resolve(libName)\n            if (libFile.exists()) {\n                tryLoad(libFile.canonicalPath)\n                return\n            }\n\n            // Load from temp file extracted from resources\n            val libResourceName = getResourceName(libName)\n            val libTempCopy =\n                Files.createTempFile(\"androidx_$name\", null).apply { toFile().deleteOnExit() }\n            NativeLibraryLoader::class\n                .java\n                .classLoader!!\n                .getResourceAsStream(libResourceName)\n                .use { resourceStream ->\n                    checkNotNull(resourceStream) {\n                        \"Cannot find a suitable SQLite binary for $osName | $osArch. \" +\n                            \"Please file a bug at \" +\n                            \"https://issuetracker.google.com/issues/new?component=460784\"\n                    }\n                    Files.copy(resourceStream, libTempCopy, StandardCopyOption.REPLACE_EXISTING)\n                }\n            tryLoad(libTempCopy.toFile().canonicalPath)\n        }\n\n    /** Gets the native library file name. */\n    private fun getLibraryName(name: String): String {\n        val prefix =\n            when (osPrefix) {\n                \"linux\",\n                \"osx\" -> \"lib\"\n                \"windows\" -> \"\"\n                else -> error(\"Unsupported operating system: $osName\")\n            }\n        val extension =\n            when (osPrefix) {\n                \"linux\" -> \"so\"\n                \"osx\" -> \"dylib\"\n                \"windows\" -> \"dll\"\n                else -> error(\"Unsupported operating system: $osName\")\n            }\n        return \"$prefix$name.$extension\"\n    }\n\n    /** Gets the JAR's resource file path to the native library. */\n    private fun getResourceName(libName: String): String {\n        val resourceFolder = \"${osPrefix}_$archSuffix\"\n        return \"natives/$resourceFolder/$libName\"\n    }\n\n    private fun tryLoad(path: String) {\n        @Suppress(\"UnsafeDynamicallyLoadedCode\") System.load(path)\n    }\n}\n"
+        },
+        {
+          "path": "commonMain/androidx/sqlite/driver/bundled/NativeLibraryLoader.kt",
+          "bytes": 893,
+          "sha256": "684bab0b20858ace5e03e84e34c58db9bcf9d6f1938496d17c6f8aecbee70e2a",
+          "text": "/*\n * Copyright 2023 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage androidx.sqlite.driver.bundled\n\n/** Helper class to load native libraries based on the host platform. */\ninternal expect object NativeLibraryLoader {\n    /** Loads the given native library via JNI (if running on JVM or Android). */\n    fun loadLibrary(name: String)\n}\n"
+        }
+      ]
+    }
+  ]
+}

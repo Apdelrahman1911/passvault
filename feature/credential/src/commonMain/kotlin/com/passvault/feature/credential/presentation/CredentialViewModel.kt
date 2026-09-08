@@ -513,6 +513,10 @@ class CredentialViewModel(
         data class OnCustomFieldRemoved(val fieldId: CustomFieldId) : CredentialEvent
         data class OnCustomFieldEditStarted(val fieldId: CustomFieldId) : CredentialEvent
         data class OnCustomFieldEditCancelled(val fieldId: CustomFieldId) : CredentialEvent
+        data class OnCustomFieldEditSaved(val fieldId: CustomFieldId) : CredentialEvent
+        data class OnCustomFieldDraftNameChanged(val fieldId: CustomFieldId, val name: String) : CredentialEvent
+        data class OnCustomFieldDraftValueChanged(val fieldId: CustomFieldId, val value: String) : CredentialEvent
+        data class OnCustomFieldDraftSecretChanged(val fieldId: CustomFieldId, val isSecret: Boolean) : CredentialEvent
         data class OnCustomFieldDraftChanged(
             val fieldId: CustomFieldId,
             val draft: CredentialCustomFieldDraft,

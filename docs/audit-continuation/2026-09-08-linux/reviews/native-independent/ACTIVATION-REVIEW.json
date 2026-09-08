@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author_and_activation_owner": "/root",
+  "disposition": "ACCEPT_EXACT_WINDOWS_NATIVE14_ACTIVATION_PUSH",
+  "reviewed_utc": "2026-09-08T22:02:12.576342+00:00",
+  "source_commit": "1a57239f74af792b64e631f51a79e1c0bf83816a",
+  "source_tree": "7375659b90f1c622b7fa29a19dcc8b268e4ed340",
+  "activation_commit": "a1fbdf0d5f0663225a459838d37b072a65e334f6",
+  "activation_tree": "0e5144c44fc79f052d0131808b887f8440e0a2cb",
+  "branch": "codex/audit-continuation-linux-20260908",
+  "request": {
+    "path": "docs/audit-continuation/2026-09-08-linux/requests/windows-native.json",
+    "sha256": "f7922c9f351307b233e542f15e3c377f00b228c0a2593e1d89b1bbf6167b87e0",
+    "bytes": 1568,
+    "physical_lf": 32
+  },
+  "request_schema": "Exact 15 fields, duplicate-free JSON, root owner, true exclusive slot, fresh 32-hex nonce, SDK26100, 900 seconds, ordered distinct 14 cases",
+  "case_names": [
+    "passvault_biometric_windows_file_success",
+    "passvault_biometric_windows_file_validation_failure",
+    "passvault_biometric_windows_file_dacl_failure",
+    "passvault_biometric_windows_file_collision",
+    "passvault_biometric_windows_file_empty_payload",
+    "passvault_biometric_windows_file_oversized_payload",
+    "passvault_biometric_windows_file_empty_suffix",
+    "passvault_biometric_windows_file_rename_failure",
+    "passvault_biometric_windows_secret_normal_scope",
+    "passvault_biometric_windows_secret_early_return",
+    "passvault_biometric_windows_secret_allocation_exception",
+    "passvault_biometric_windows_secret_nested_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_windows_security"
+  ],
+  "commit_relation": "C has exactly one parent S; C adds only REQUEST; no prior request in S or earlier path history",
+  "accepted_packet_inputs": [
+    {
+      "path": "scripts/audit/windows_native_validation.py",
+      "sha256": "67bcd0aeaa03fa829d55fecfbd640d185163805e4c0a067b281bd807333af243",
+      "bytes": 39470,
+      "physical_lf": 719,
+      "source_and_activation_blobs_and_working_bytes_match": true,
+      "git_mode": "100644"
+    },
+    {
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "sha256": "643fcba6cb393bd6bbd8497cfd03a52ccc43fa217a9d1d728c453d29ddb87b8c",
+      "bytes": 2056,
+      "physical_lf": 53,
+      "source_and_activation_blobs_and_working_bytes_match": true,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/SOURCE_BINDINGS.json",
+      "sha256": "27152712c1ac99ea1fcf739210764b0a5cabf8f45f1edbec2ecb3b143d2ebcb9",
+      "bytes": 3313,
+      "physical_lf": 76,
+      "source_and_activation_blobs_and_working_bytes_match": true,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS_ADMISSION.md",
+      "sha256": "870acc8431b65b59d1534413e6fc09126d9309802dbdc90771327b2c3cb811f2",
+      "bytes": 12924,
+      "physical_lf": 208,
+      "source_and_activation_blobs_and_working_bytes_match": true,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/REPORT.md",
+      "sha256": "ed83393e8bfd19898cf31ce2041fd2bc748c9475f03cef98da558a6f760eb3c7",
+      "bytes": 5149,
+      "physical_lf": 82,
+      "source_and_activation_blobs_and_working_bytes_match": true,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/ADMISSION.json",
+      "sha256": "7f4d33ff3e4860c9a28b2bf45b51d2957f3f049b88b422466fdd6ccaec94db63",
+      "bytes": 8747,
+      "physical_lf": 128,
+      "source_and_activation_blobs_and_working_bytes_match": true,
+      "git_mode": "100644"
+    }
+  ],
+  "native_source_inputs": [
+    {
+      "path": ".gitattributes",
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+      "bytes": 270,
+      "physical_lf": 20,
+      "handoff_source_activation_and_current_bytes_match": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23",
+      "bytes": 6177,
+      "physical_lf": 179,
+      "handoff_source_activation_and_current_bytes_match": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+      "bytes": 4540,
+      "physical_lf": 120,
+      "handoff_source_activation_and_current_bytes_match": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630",
+      "bytes": 97737,
+      "physical_lf": 2571,
+      "handoff_source_activation_and_current_bytes_match": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+      "bytes": 812,
+      "physical_lf": 33,
+      "handoff_source_activation_and_current_bytes_match": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+      "bytes": 826,
+      "physical_lf": 28,
+      "handoff_source_activation_and_current_bytes_match": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633",
+      "bytes": 24747,
+      "physical_lf": 549,
+      "handoff_source_activation_and_current_bytes_match": true
+    }
+  ],
+  "root_admission": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/ROOT-ADMISSION.md",
+    "sha256": "170828ec30b7fa11dc1e2fe8ea3a716acafd0c57bdda2788b9c88e0d165212cb",
+    "bytes": 3847,
+    "physical_lf": 64
+  },
+  "execution_slot": {
+    "path": "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+    "sha256": "f6d58d40c5252ac119892eb6a858f3a28d317bb77740d1cd75bd78c8a4d81ebc",
+    "bytes": 755,
+    "physical_lf": 16
+  },
+  "coordination": "Committed and live slot are RESERVED exclusively for Windows14; root explicitly holds through CI terminal state and independent result/cleanup reconciliation. Root attestation plus point samples, not a global host lease.",
+  "remote_observation": {
+    "continuation_commit": "1a57239f74af792b64e631f51a79e1c0bf83816a",
+    "activation_not_yet_on_observed_remote": true,
+    "method": "Independent read-only public git ls-remote, before acceptance"
+  },
+  "actions_point_observation": {
+    "kind": "Unauthenticated public GitHub API read only; no dispatch/cancel/mutation",
+    "utc": "2026-09-08T22:02:12.178683+00:00",
+    "status": "OBSERVED",
+    "total_count": 0,
+    "runs": []
+  },
+  "unchanged_non_audit_workflows_from_handoff": [
+    ".github/workflows/candidate-readiness.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/mobile-release-candidate.yml",
+    ".github/workflows/mobile-release-external-testing.yml",
+    ".github/workflows/mobile-release-preflight.yml",
+    ".github/workflows/mobile-store-release.yml",
+    ".github/workflows/pages.yml",
+    ".github/workflows/play-access-check.yml",
+    ".github/workflows/production-release.yml",
+    ".github/workflows/production-signing-validation.yml",
+    ".github/workflows/publish-stable-release.yml",
+    ".github/workflows/release.yml",
+    ".github/workflows/request-mobile-production.yml",
+    ".github/workflows/store-screenshots.yml",
+    ".github/workflows/testing-release.yml"
+  ],
+  "local_dirty_work_qualification": "Unrelated Android/editor/report changes exist in working tree but are not in C or the accepted native source set; no stash/reset/delete/build performed. Actions must still prove its actual clean C checkout at runtime.",
+  "preconditions_for_push": [
+    "Root still holds sole cross-local/CI build slot; no competing audit-owned build/test/emulator/job starts",
+    "Push only exact C to dedicated branch without intervening source/request mutation",
+    "Refresh point observation at push boundary; attempt1 only and no automatic retry",
+    "Runtime source/toolchain/resource/namespace checks must pass; this review does not establish their outcomes"
+  ],
+  "result_review_required": "Independently reconcile available raw XML/logs into actual passed/failed/skipped/unstarted/unknown cases, compiler/ABI hashes and cleanup settlement. Machine passed tally is not total executions.",
+  "actual_executed_cases": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "restrictions": "PVU007 STOP; PVU011 NO RETRY; PVA029 FAIL/no automatic retry; G7/G8 CLOSED; no old runner; no protected branch/tag/version/identity/dependency/protection edits; no signing/store secrets/publication/candidate1017001 replacement",
+  "limitations": [
+    "Historical PVA036 red controls not executed",
+    "PVA037 production-cut allocator injection not covered",
+    "PVA010 real native concurrency/sanitizer/packaged behavior not covered",
+    "PVA014 displayed prompts and genuine Apple/Windows hardware not covered",
+    "No fixed-output KDF compatibility vector or universal memory erasure claim"
+  ],
+  "review_cleanup": "Only read-only Git/API, source-data hash/schema comparisons and compact permanent reviewer output; no helper import/execution, test/build/workers or temporary artifacts. Appropriate Gradle --stop not applicable to this source-only review."
+}

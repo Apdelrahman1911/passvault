@@ -1,0 +1,123 @@
+{
+  "author": "/root/native",
+  "case_names": [
+    "passvault_biometric_windows_file_success",
+    "passvault_biometric_windows_file_validation_failure",
+    "passvault_biometric_windows_file_dacl_failure",
+    "passvault_biometric_windows_file_collision",
+    "passvault_biometric_windows_file_empty_payload",
+    "passvault_biometric_windows_file_oversized_payload",
+    "passvault_biometric_windows_file_empty_suffix",
+    "passvault_biometric_windows_file_rename_failure",
+    "passvault_biometric_windows_secret_normal_scope",
+    "passvault_biometric_windows_secret_early_return",
+    "passvault_biometric_windows_secret_allocation_exception",
+    "passvault_biometric_windows_secret_nested_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_windows_security"
+  ],
+  "files": [
+    {
+      "bytes": 270,
+      "path": ".gitattributes",
+      "physical_lf": 20,
+      "read_ranges": [
+        [
+          1,
+          20
+        ]
+      ],
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+    },
+    {
+      "bytes": 6177,
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "physical_lf": 179,
+      "read_ranges": [
+        [
+          1,
+          179
+        ]
+      ],
+      "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23"
+    },
+    {
+      "bytes": 4540,
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "physical_lf": 120,
+      "read_ranges": [
+        [
+          1,
+          120
+        ]
+      ],
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85"
+    },
+    {
+      "bytes": 97737,
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "physical_lf": 2571,
+      "range_qualification": "Bounded displayed source windows and declaration searches; not a complete 2571-line fresh review. Independent reviewer separately binds its reviewed ranges.",
+      "read_ranges": [
+        [
+          1,
+          740
+        ],
+        [
+          1740,
+          1900
+        ],
+        [
+          2015,
+          2085
+        ],
+        [
+          2100,
+          2571
+        ]
+      ],
+      "sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630"
+    },
+    {
+      "bytes": 812,
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "physical_lf": 33,
+      "read_ranges": [
+        [
+          1,
+          33
+        ]
+      ],
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c"
+    },
+    {
+      "bytes": 826,
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "physical_lf": 28,
+      "read_ranges": [
+        [
+          1,
+          28
+        ]
+      ],
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785"
+    },
+    {
+      "bytes": 24747,
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "physical_lf": 549,
+      "read_ranges": [
+        [
+          1,
+          549
+        ]
+      ],
+      "sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633"
+    }
+  ],
+  "handoff_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "handoff_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "source_qualification": "Seven unchanged LF inputs; native six plus checkout attributes. Not a new whole-project coverage claim. The request independently binds the later containing continuation source commit/tree and helper/workflow/review hashes.",
+  "status": "SOURCE_BOUND_NOT_EXECUTED_NOT_ADMITTED",
+  "suite": "windows-native-14-v1"
+}

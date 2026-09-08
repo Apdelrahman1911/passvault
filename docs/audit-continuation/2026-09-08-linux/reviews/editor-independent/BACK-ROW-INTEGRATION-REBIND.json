@@ -1,0 +1,87 @@
+{
+  "reviewer": "/root/editor_review",
+  "author": "/root/editor",
+  "finding": "PVA-007",
+  "recorded_utc": "2026-09-08T21:31:35.409297+00:00",
+  "containing_head": "488ab465125234e02bfbd28b3e7579251341cb54",
+  "containing_tree": "4f4c594ff19e62e19f641304b95eb6c086781ae7",
+  "scope": "Back source acceptance revalidation against id-only row Save integration",
+  "previous_manifest": "BACK-PATCH-INPUTS-v2.json",
+  "current_row_manifest": "ROW-SAVE-PATCH-INPUTS.json",
+  "four_back_files_unchanged": [
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+      "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db",
+      "bytes": 6999,
+      "physical_lf": 181,
+      "cr_bytes": 0
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+      "bytes": 11636,
+      "physical_lf": 271,
+      "cr_bytes": 0
+    },
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+      "sha256": "e777006c470eded3f4f8d8183c74857229a6cb1004dc98add17c6eab6743fa14",
+      "bytes": 11300,
+      "physical_lf": 263,
+      "cr_bytes": 0
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+      "bytes": 16583,
+      "physical_lf": 373,
+      "cr_bytes": 0
+    }
+  ],
+  "view_model_supersession": {
+    "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+    "before_sha256": "c6e83a2367f7bab80a70753bd31e9572f707c8deca128ec7debb5f2f80bf41af",
+    "after_sha256": "409a96629397c68cacd4e8b2e30a776ae77164ada6c742c56b401c21fe2db8df",
+    "delta": "Only new OnCustomFieldEditSaved event declaration; prior consulted action and cleanup ranges byte-identical",
+    "unchanged_ranges": [
+      {
+        "start": 206,
+        "end": 227,
+        "unchanged_raw_lf_bytes": true,
+        "range_sha256": "360883c11f900ecaaf97e9af68508dbece64c1d5989a3d4221a56f356c99b7e4"
+      },
+      {
+        "start": 314,
+        "end": 336,
+        "unchanged_raw_lf_bytes": true,
+        "range_sha256": "fe28cc19aa141042a1a06fcd76cf71fd9a824423a74be653bafa7529188cbd27"
+      },
+      {
+        "start": 423,
+        "end": 487,
+        "unchanged_raw_lf_bytes": true,
+        "range_sha256": "6f013138979ba2becff349d32d8d1e4ac125889237c79c594270922688605c32"
+      }
+    ]
+  },
+  "other_reviewed_dependency_deltas": [
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "sha256": "1e3f1181835b734e90da7ac7e3b602ee0a3d55ff957646a430b9b09279e08522",
+      "description": "Re-reviewed new row event routing/current-draft commit/UI emission; does not change old Back/Cancel/save entry handlers or draft dirty predicate"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "sha256": "8742df885951a2c3db6c2081c89345cd7d2a373e35b957f0f8b07c44c456d9b7",
+      "description": "Re-reviewed new row event routing/current-draft commit/UI emission; does not change old Back/Cancel/save entry handlers or draft dirty predicate"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+      "sha256": "1c7d5759bdb6e4b59f65fa0fd97c9a36c7f64d4000df82ccd333fea15e3204b5",
+      "description": "Re-reviewed new row event routing/current-draft commit/UI emission; does not change old Back/Cancel/save entry handlers or draft dirty predicate"
+    }
+  ],
+  "disposition": "SOURCE_ACCEPTANCE_RETAINED_EXECUTION_PENDING_NO_CLOSURE",
+  "newly_executed_test_cases": 0,
+  "qualification": "Historical manifests preserved rather than relabelled exact-current; this rebind is only the row Save after-image, not any subsequent property-input patch."
+}

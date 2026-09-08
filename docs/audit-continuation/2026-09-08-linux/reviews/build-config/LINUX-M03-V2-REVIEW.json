@@ -1,0 +1,100 @@
+{
+  "format": "passvault-focused-source-config-review-v2",
+  "reviewer": "/root/build_config",
+  "author": "/root/storage",
+  "captured_utc": "2026-09-08T22:22:16.973527+00:00",
+  "disposition": "ACCEPT_BOUNDED_M03_SOURCE_CONFIGURATION_WITH_EXPLICIT_TRUST_AND_RUNTIME_LIMITS",
+  "execution_admission": false,
+  "whole_runner_F01_F07_acceptance": false,
+  "application_test_executions": 0,
+  "base_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "base_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "inputs": [
+    {
+      "path": "scripts/audit/linux_database_validation.py",
+      "bytes": 53780,
+      "sha256": "9eeb0164825c37c03aa68bc60afe8789e81255aac152b643205f98d5839b4969"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/PLAN.md",
+      "bytes": 19850,
+      "sha256": "5ae71a905f6777c4c1acecfda30f5ba18544f0c5edafe118f922b14c0a721797"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/LINUX-M03-PACKET.json",
+      "bytes": 2822,
+      "sha256": "0ce080b824c1ac14684cf6e6fa3529f8c159f8b668a29be70656c308d8df045b"
+    }
+  ],
+  "reviewed_runner_ranges": [
+    {
+      "path": "scripts/audit/linux_database_validation.py",
+      "first_physical_line": 1,
+      "last_physical_line": 150,
+      "bytes": 6388,
+      "sha256": "6c37870fa379c2977eaac87237c646bb07820c4a1b8f49eaa801588f4bcf0a54",
+      "scope": "source_read_not_execution"
+    },
+    {
+      "path": "scripts/audit/linux_database_validation.py",
+      "first_physical_line": 604,
+      "last_physical_line": 655,
+      "bytes": 3118,
+      "sha256": "1bd6aa5f0f7b05956c3dc22f7f994d8df790f7897adc69af338d0b5737927151",
+      "scope": "source_read_not_execution"
+    },
+    {
+      "path": "scripts/audit/linux_database_validation.py",
+      "first_physical_line": 800,
+      "last_physical_line": 879,
+      "bytes": 6094,
+      "sha256": "e8d25a0ed82d47be3db04a13680221c3a75bfa61f925cffa494fd25426834332",
+      "scope": "source_read_not_execution"
+    },
+    {
+      "path": "scripts/audit/linux_database_validation.py",
+      "first_physical_line": 910,
+      "last_physical_line": 989,
+      "bytes": 5226,
+      "sha256": "8fb50465afcb6ce7e8fcc9baa4431704f3c798d69de0241435b4f47a5acba86e",
+      "scope": "source_read_not_execution"
+    }
+  ],
+  "plan_scope": "entire 302-line PLAN read as source; lifecycle acceptance remains with root/verification",
+  "prior_report_preservation": {
+    "packet_members_rehashed_exact": 10,
+    "prior_packet_unchanged": true,
+    "prior_runner": "60f639d95f2c7a6440b71955a59a8867f43e19daf572bb755f622216d9e5477e",
+    "intermediate_author_hash_not_current": "00bab0a3fbdb8807d173dbe316db59b2bd60ab13b431518012939a025ce4f541",
+    "note": "Author reports latest full-runner delta is process ownership only. This reviewer read/hash-bound current configuration and use-site ranges, not that lifecycle correction. Further byte changes require rebinding."
+  },
+  "accepted_source_contracts": [
+    "Fixed preserved-checkpoint :core:database:desktopTest with seven ordered exact class filters and 105 declared methods. Not a test of concurrent continuation application edits.",
+    "Checked-in wrapper; no-daemon request (does not exclude a temporary single-use Gradle JVM); max-workers=1; no-parallel/CoD/configuration-cache/build-cache; Kotlin compiler in process; STRICT dependency verification; one fixed stop command with same configuration.",
+    "Generated ENV is passed directly to subprocess.Popen(env=ENV), not copied from ambient environment. PATH/JAVA_HOME fixed to installed JDK17. Private HOME/Gradle/Konan/XDG/Android-user/JVM temp/JNA/native SQLite temp are declared before child launch; ambient credential/JVM-option variables are excluded.",
+    "JAVA_TOOL_OPTIONS contains default512MiB heap, DisablePerfData, UTF8 and private user.home/java.io.tmpdir/jna.tmpdir. Source-reviewed JDK17 ordering allows explicit daemon -Xmx2g to override inherited512MiB; later Test JVM argv can override too.",
+    "Both -Dorg.gradle.java.installations.auto-detect=false and auto-download=false match exact official Gradle9.7.1 documented CLI contracts. Prior provisional -P objection is rejected, not a confirmed issue.",
+    "-Dorg.gradle.java.installations.paths remains a non-authoritative hint. PLAN no longer relies on unproven CLI plumbing as an independent exclusion control.",
+    "-Pandroid.builder.sdkDownload=false is present. Official AGP9.4 BooleanOption/SdkComponents source supports disabling the identified automatic SDK-download path.",
+    "PLAN explicitly accepts normal installed JDK/SDK/system-library trust rather than claiming OS-read-only SDK or hermetic/native-binary provenance.",
+    "SQLite2.6.2 JVM loader first tries System.loadLibrary, optional androidx.sqlite path/name and Linux java.home/lib; only its bundled-resource fallback uses Files.createTempFile/java.io.tmpdir. org.sqlite.tmpdir is supplementary and unused by this loader. JNA tmp is explicitly fresh before initialization.",
+    "Exact request command/environment equality and hash bindings are present at reviewed use sites. This source observation is not lifecycle/control execution proof."
+  ],
+  "necessary_remaining_evidence": [
+    "Root/verification independently accept final exact runner bytes, F01-F07 lifecycle, fresh lock/namespace/source/toolchain bindings, mandatory inert negative controls and immediate cleanup admission; this file is not an ACCEPT-root or ACCEPT-verification document.",
+    "Actual realized task graph/configuration, owned JDK/worker argv and any later heap override, strict dependency resolution and concrete native execution remain unobserved by this review.",
+    "No total RSS/native-allocation/cgroup hard bound or hostile-same-UID isolation is established. Point resource/process samples and outer cleanup grace remain necessary.",
+    "Normal library/SDK trust does not prove loaded bundled-binary identity, source/binary equivalence or prevent arbitrary build code SDK writes. Packaging/native-provenance gates remain separate.",
+    "Independent semantic reconciliation requires all105 exact cases, nonempty expected XML, no missing/duplicate/unknown/skipped/failure/error result and actual command/stop/settlement/cleanup evidence. Compilation/task count/exit0 alone cannot qualify closure.",
+    "Original historical ad-hoc archive-reader disclosures and original source graph limitations remain normative; new official reads do not retrospectively upgrade them."
+  ],
+  "accounting": {
+    "original_confirmed": "19/25",
+    "all_confirmed": "22/37",
+    "original_suspicions": "2/12",
+    "delta": 0,
+    "design_decisions": "PVD001-008 remain separate",
+    "restrictions": "PVU007 STOP; PVU011 NO RETRY; PVA029 FAIL/no automatic retry; G7/G8 CLOSED; no candidate1017001 change"
+  },
+  "operations": "Source reads/hashes/report writing only; runner not imported/executed. No JVM/build/test/native/device/CI execution, archive download, temporary artifact or background worker; wrapper stop not applicable to this review."
+}

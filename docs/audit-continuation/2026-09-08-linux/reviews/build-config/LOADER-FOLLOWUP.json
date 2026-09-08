@@ -1,0 +1,63 @@
+{
+  "reviewer": "/root/build_config",
+  "qualification": "Exact historical source-data read only; source jar inspected in memory, no library/packed code imported or executed; no artifact download. No binary/source equivalence or runtime evidence.",
+  "sources": [
+    {
+      "container_path": "remediation-reports/20260905T222925Z/evidence/g8-pagination-navigation-public-sqlite-bundled-2.6.2-sources.jar",
+      "container_bytes": 14841,
+      "container_sha256": "3b4d8478f8c2a6b4d67d6460b2caeb23a046206f8787234d8adb8b6d708ba6b2",
+      "member": "commonMain/androidx/sqlite/driver/bundled/NativeLibraryLoader.kt",
+      "member_bytes": 893,
+      "member_sha256": "684bab0b20858ace5e03e84e34c58db9bcf9d6f1938496d17c6f8aecbee70e2a",
+      "excerpts": [
+        {
+          "first_line": 1,
+          "last_line": 23,
+          "text": "/*\n * Copyright 2023 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage androidx.sqlite.driver.bundled\n\n/** Helper class to load native libraries based on the host platform. */\ninternal expect object NativeLibraryLoader {\n    /** Loads the given native library via JNI (if running on JVM or Android). */\n    fun loadLibrary(name: String)\n}\n"
+        }
+      ]
+    },
+    {
+      "container_path": "remediation-reports/20260905T222925Z/evidence/g8-pagination-navigation-public-sqlite-bundled-2.6.2-sources.jar",
+      "container_bytes": 14841,
+      "container_sha256": "3b4d8478f8c2a6b4d67d6460b2caeb23a046206f8787234d8adb8b6d708ba6b2",
+      "member": "nativeMain/androidx/sqlite/driver/bundled/NativeLibraryLoader.native.kt",
+      "member_bytes": 874,
+      "member_sha256": "263a6f0511cbe31edd911180aaa771caefc16e6541043c3facfcc3874ef36437",
+      "excerpts": [
+        {
+          "first_line": 1,
+          "last_line": 24,
+          "text": "/*\n * Copyright 2023 The Android Open Source Project\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage androidx.sqlite.driver.bundled\n\n/** Helper class to load native libraries based on the host platform. */\ninternal actual object NativeLibraryLoader {\n    actual fun loadLibrary(name: String) {\n        // no-op, we are already in native code\n    }\n}\n"
+        }
+      ]
+    },
+    {
+      "container_path": "remediation-reports/20260905T222925Z/research/crypto-security-selection/sources/resource-loader-2.0.2-sources/com__goterl__resourceloader__ResourceLoader.java.txt",
+      "container_bytes": 24968,
+      "container_sha256": "6714869e8cf802256b56c26d9c33379b6b77931884ebc95af7d8015d32779ffd",
+      "member": "remediation-reports/20260905T222925Z/research/crypto-security-selection/sources/resource-loader-2.0.2-sources/com__goterl__resourceloader__ResourceLoader.java.txt",
+      "member_bytes": 24968,
+      "member_sha256": "6714869e8cf802256b56c26d9c33379b6b77931884ebc95af7d8015d32779ffd",
+      "excerpts": [
+        {
+          "first_line": 36,
+          "last_line": 92,
+          "text": "    private final Logger logger = LoggerFactory.getLogger(\"ResourceLoader\");\n\n    private final Collection<PosixFilePermission> writePerms = new ArrayList<>();\n    private final Collection<PosixFilePermission> readPerms = new ArrayList<>();\n    private final Collection<PosixFilePermission> execPerms = new ArrayList<>();\n\n    ResourceLoader() {\n        readPerms.add(PosixFilePermission.OWNER_READ);\n        readPerms.add(PosixFilePermission.OTHERS_READ);\n        readPerms.add(PosixFilePermission.GROUP_READ);\n\n        writePerms.add(PosixFilePermission.OWNER_WRITE);\n        writePerms.add(PosixFilePermission.OTHERS_WRITE);\n        writePerms.add(PosixFilePermission.GROUP_WRITE);\n\n        execPerms.add(PosixFilePermission.OWNER_EXECUTE);\n        execPerms.add(PosixFilePermission.OTHERS_EXECUTE);\n        execPerms.add(PosixFilePermission.GROUP_EXECUTE);\n    }\n\n    /**\n     * Copies a file into a temporary directory regardless of\n     * if it is in a JAR or not.\n     * @param relativePath A relative path to a file or directory\n     *                     relative to the resources folder.\n     * @return The file or directory you want to load.\n     * @throws IOException If at any point processing of the resource file fails.\n     * @throws URISyntaxException If cannot find the resource file.\n     */\n    public File copyToTempDirectory(String relativePath, Class outsideClass) throws IOException, URISyntaxException {\n        // Create a \"main\" temporary directory in which\n        // everything can be thrown in.\n        File mainTempDir = createMainTempDirectory();\n\n        // Create the required directories.\n        mainTempDir.mkdirs();\n\n        // Is the user loading resources that are\n        // from inside a JAR?\n        URL fullJarPathURL = getThePathToTheJarWeAreIn(outsideClass);\n\n        // Test if we are in a JAR and if we are\n        // then do the following...\n        if (isJarFile(fullJarPathURL)) {\n            File extracted = extractFromWithinAJarFile(fullJarPathURL, mainTempDir, relativePath);\n            if (extracted != null) {\n                return extracted;\n            }\n        }\n\n        // If not then get the file/directory\n        // straight from the file system\n        return getFileFromFileSystem(relativePath, mainTempDir);\n    }\n\n    public File extractFromWithinAJarFile(URL jarPath, File mainTempDir, String relativePath)\n            throws IOException, URISyntaxException {\n"
+        },
+        {
+          "first_line": 408,
+          "last_line": 459,
+          "text": "        return dir;\n    }\n\n    /**\n     * Sets permissions on a file or directory. This allows all users\n     * to read, write and execute.\n     * @see #setPermissions(File, Set)\n     * @param file A file to set global permissions on\n     * @return The file with the global permissions set\n     * @throws IOException Could not set permissions\n     */\n    public File setPermissions(File file) throws IOException {\n        return setPermissions(file, new HashSet<>());\n    }\n\n    /**\n     * Sets a file or directory's permissions. @{code filePermissions} can be null, in that\n     * case then global read, wrote and execute permissions will be set, so use\n     * with caution.\n     * @param file The file to set new permissions on.\n     * @param filePermissions New permissions.\n     * @return The file with correct permissions set.\n     * @throws IOException\n     */\n    public File setPermissions(File file, Set<PosixFilePermission> filePermissions) throws IOException {\n        if (isPosixCompliant()) {\n            // For posix set fine grained permissions.\n            if (filePermissions.isEmpty()) {\n                Set<PosixFilePermission> perms = new HashSet<>();\n                perms.add(PosixFilePermission.OWNER_READ);\n                perms.add(PosixFilePermission.OWNER_WRITE);\n                perms.add(PosixFilePermission.OWNER_EXECUTE);\n\n                perms.add(PosixFilePermission.OTHERS_READ);\n                perms.add(PosixFilePermission.OTHERS_WRITE);\n                perms.add(PosixFilePermission.OTHERS_EXECUTE);\n\n                perms.add(PosixFilePermission.GROUP_READ);\n                perms.add(PosixFilePermission.GROUP_WRITE);\n                perms.add(PosixFilePermission.GROUP_EXECUTE);\n                filePermissions = perms;\n            }\n            Files.setPosixFilePermissions(file.toPath(), filePermissions);\n        } else {\n            // For non-posix like Windows find if any are true and\n            // set the permissions accordingly.\n            if (filePermissions.stream().anyMatch(readPerms::contains)) {\n                file.setReadable(true);\n            } else if (filePermissions.stream().anyMatch(writePerms::contains)) {\n                file.setWritable(true);\n            } else {\n                file.setExecutable(true);\n"
+        },
+        {
+          "first_line": 464,
+          "last_line": 497,
+          "text": "    }\n\n    /**\n     * Mark the file or directory as \"to be deleted\".\n     * @param file The file or directory to be deleted.\n     */\n    public void requestDeletion(File file) {\n        if (isPosixCompliant()) {\n            // The file can be deleted immediately after loading\n            file.delete();\n        } else {\n            // Don't delete until last file descriptor closed\n            file.deleteOnExit();\n        }\n    }\n\n    /**\n     * Is the system we're running on Posix compliant?\n     * @return True if posix compliant.\n     */\n    protected boolean isPosixCompliant() {\n        try {\n            return FileSystems.getDefault()\n                    .supportedFileAttributeViews()\n                    .contains(\"posix\");\n        } catch (FileSystemNotFoundException | ProviderNotFoundException | SecurityException e) {\n            return false;\n        }\n    }\n\n    /**\n     * Gets the base location of the given class.\n     * From SciJava class.\n     * <p>\n"
+        }
+      ]
+    }
+  ],
+  "data_reader_disclosure": "AD-HOC-DATA-READ-DISCLOSURE.md",
+  "data_reader_qualification": "Earlier ad-hoc inline readers; not independently source-admitted before use, no full transport/no-follow/Git binding. Selected historical source hashes only; no packed source imported/executed. Original transcript byte-exact scripts not retained in repository; see disclosure."
+}

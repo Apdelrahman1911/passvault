@@ -1,0 +1,91 @@
+{
+  "format": "passvault-focused-source-config-review-v3",
+  "reviewer": "/root/build_config",
+  "captured_utc": "2026-09-08T22:36:23.907540+00:00",
+  "disposition": "ACCEPT_BOUNDED_M03_SOURCE_CONFIGURATION_WITH_EXPLICIT_TRUST_AND_RUNTIME_LIMITS",
+  "whole_runner_F01_F07_acceptance": false,
+  "execution_admission": false,
+  "application_test_executions": 0,
+  "inputs": [
+    {
+      "path": "scripts/audit/linux_database_validation.py",
+      "bytes": 55614,
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/PLAN.md",
+      "bytes": 21126,
+      "sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/LINUX-M03-V2-REVIEW.json",
+      "bytes": 7068,
+      "sha256": "ce1cbc8cc79c6edee9a4be44a12a8c2dac2b066928cad6f73e4be7bfc6721f5a"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/LINUX-M03-PACKET.json",
+      "bytes": 2822,
+      "sha256": "0ce080b824c1ac14684cf6e6fa3529f8c159f8b668a29be70656c308d8df045b"
+    }
+  ],
+  "reviewed_runner_ranges": [
+    {
+      "first_line": 1,
+      "last_line": 150,
+      "bytes": 6444,
+      "sha256": "e5bd4a7eeb72186f25b2b2f1d0926d68873d405c3513560c0cac8e25753638c0",
+      "scope": "focused source only, not lifecycle approval"
+    },
+    {
+      "first_line": 648,
+      "last_line": 681,
+      "bytes": 2082,
+      "sha256": "c47bb246d6da8a1dc60ecf7b6f75c08a0c5322372c354514aa511f89874d16e6",
+      "scope": "focused source only, not lifecycle approval"
+    },
+    {
+      "first_line": 827,
+      "last_line": 912,
+      "bytes": 6399,
+      "sha256": "ca13568172f596ebbfec401b9ec63f31290afc211f54c945024001d49c843e8c",
+      "scope": "focused source only, not lifecycle approval"
+    },
+    {
+      "first_line": 972,
+      "last_line": 1017,
+      "bytes": 3027,
+      "sha256": "85ac38be3d951beefb74a726443786a97f18fd46d775fd8aaa3fcfdb086dd799",
+      "scope": "focused source only, not lifecycle approval"
+    }
+  ],
+  "plan_scope": "entire current PLAN read as source",
+  "configuration_span": {
+    "first_marker": "JAVA_HOME =",
+    "exclusive_last_marker": "SIGNALS =",
+    "bytes": 4081,
+    "sha256": "ddb77ecc905a3d45e719ec93c8a9be8923aa75c39cf947cc3e440565bc482861"
+  },
+  "adoption": "Carries the source-configuration contracts and runtime/trust limits of exact LINUX-M03-V2-REVIEW.json and its packet forward to the current runner/PLAN only. It supersedes their full-runner current-byte binding, not their preserved historical observations. Any further runner/PLAN byte change needs rebinding.",
+  "configuration_rechallenge": [
+    "Current literal JDK17/SDK/task/seven classes/105 count sequence, private ENV, inherited JAVA_TOOL_OPTIONS, GRADLE_FLAGS, BUILD/STOP assembly and direct env=ENV launch sites reread. The prior M03 accepted configuration semantics remain unchanged.",
+    "Current flags retain SDK automatic-download prohibition, documented -D toolchain booleans, non-authoritative installations.paths hint, serial/strict/no-cache execution and the same-wrapper stop. Root accepts normal installed JDK/SDK/system-library trust only; no hermetic/provenance/OS-read-only SDK or RSS hard-cap upgrade.",
+    "Clone is now explicit --local --no-hardlinks rather than --no-local. PLAN describes avoidance of an upload-pack worker outside R, rejects outside-R signal exceptions, requires preserved Git store coordination and full later source checks, and forbids retry on copy failure. This review reads the fixed argv/trust qualification; it does not execute Git or supply the separate ownership/lifecycle proof.",
+    "Private generated roots remain explicit source-configured allowlist, not observed realized plugin outputs. Unknown outputs must be retained, not adopted for deletion; permanent schemas/reports/source stay protected."
+  ],
+  "authorship_correction": {
+    "runner_authors": [
+      "/root/storage",
+      "/root"
+    ],
+    "root_role": "OWNER_COAUTHOR_APPROVAL",
+    "verification_role": "INDEPENDENT_SOURCE_REVIEW",
+    "qualification": "Current PLAN/runner accurately distinguish coauthor approval from non-author review. Earlier v2 wording referring jointly to root/verification independent acceptance must not count root as a second independent vote. This focused M03 review is not an F01-F07 acceptance."
+  },
+  "not_covered_by_this_rebind": [
+    "v3 live-parent/zombie/PID birth/process-lifecycle corrections: actual independent source/control review remains with /root/verification.",
+    "Fresh lock/namespace/source/toolchain identity admission, mandatory inert negative controls, root launcher, single cross-local/CI execution slot and separately admitted immediate closeout.",
+    "Actual plugin graph/dependency resolution, owned JDK/worker/native behavior, all105 semantic cases with exact nonempty XML, stop/settlement/source-preservation and cleanup results."
+  ],
+  "boundaries": "PVU007 STOP,PVU011 NO RETRY,PVA029 FAIL/no automatic retry,G7/G8 CLOSED,no candidate1017001/publication changes; eight PVD choices separate.19/25,22/37,2/12 unchanged.",
+  "operations": "Local source reads/hashes/report writing only. No runner import, project code execution, build/JVM/Gradle/native/ADB/emulator/CI, temporary artifact or background worker; wrapper stop not applicable."
+}

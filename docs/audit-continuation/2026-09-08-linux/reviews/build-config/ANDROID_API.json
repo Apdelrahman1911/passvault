@@ -1,0 +1,93 @@
+{
+  "reviewer": "/root/build_config",
+  "qualification": "Official9.4 API docs: selected plain-text excerpts, not full HTML retention or plugin execution",
+  "observations": [
+    {
+      "id": "builder",
+      "method": "GET",
+      "url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidCompilationBuilder",
+      "started_utc": "2026-09-08T20:56:26.166672+00:00",
+      "timeout_seconds": 15,
+      "body_cap": 4194304,
+      "automatic_retries": 0,
+      "status": 200,
+      "body_bytes": 2622989,
+      "body_sha256": "75f1fa63639704ccda93cfff5a2e59905eaa7f4c89bb7be6438c72da6f41265a",
+      "final_url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidCompilationBuilder",
+      "selected_plaintext_excerpts": [
+        {
+          "term": "sourceSetTreeName",
+          "text": "of the sourceSet tree that would be used to infer the dependencies between sourceSets.\n            \n          \n        \n      \n    \n    \n      Public properties\n      \n        \n          \n            sourceSetTreeName\n          \n          \n            \n              Added in 8.2.0\n            \n          \n        \n        var sourceSetTreeName: String?\n        The name of the sourceSet tree that would be used to infer the dependencies between sourceSets. For example, setting the sourceSetTreeName to test means that compilation will include the commonTest sourceSet, and setting it to integrationTest means that the compilation will include the commonIntegrationTest sourceSet if exists.\n        Setting this value to null means that this compilation is not part of any sourceSet trees and the kotlin plugin will not include any common test sourceSets in this compilation.\n        \n          \n            \n              \n              \n            \n            \n              \n                See also\n              \n            \n            \n              \n     "
+        }
+      ]
+    },
+    {
+      "id": "device",
+      "method": "GET",
+      "url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest",
+      "started_utc": "2026-09-08T20:56:28.408214+00:00",
+      "timeout_seconds": 15,
+      "body_cap": 4194304,
+      "automatic_retries": 0,
+      "status": 200,
+      "body_bytes": 2659074,
+      "body_sha256": "a966323a1fb9dd14ce33d1fc0f317cf914839d289291bfd6233bb51705390eb4",
+      "final_url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest",
+      "selected_plaintext_excerpts": [
+        {
+          "term": "instrumentationRunner",
+          "text": "ebug Bridge (ADB), such as APK installation options.\n        For more information about the properties you can configure in this block, see Installation.\n      \n      \n        \n          \n            instrumentationRunner\n          \n          \n            \n              Added in 8.8.0\n            \n          \n        \n        var instrumentationRunner: String?\n        Test instrumentation runner class name. This is a fully qualified class name of the runner See instrumentation.\n      \n      \n        \n          \n            instrumentationRunnerArguments\n          \n          \n            \n              Added in 8.8.0\n            \n          \n        \n        val instrumentationRunnerArguments: MutableMap<String, String>\n        Test instrumentation runner custom arguments.\n        e.g. [key: \"value\"] will give adb shell am instrument -w -e key value com.example...\n        See instrumentation.\n        Test runner arguments can also be specified from the command line:\n        ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.size=medi"
+        },
+        {
+          "term": "execution",
+          "text": "s for code coverage collection such as instrumenting dependent library classes and module classes. This allows for code coverage reports to be generated.\n      \n      \n        \n          \n            execution\n          \n          \n            \n              Added in 8.8.0\n            \n          \n        \n        var execution: String\n        Specifies whether to use on-device test orchestration.\n        If you want to use Android Test Orchestrator you need to specify \"ANDROID_TEST_ORCHESTRATOR\", as shown below. By default, this property is set to \"HOST\", which disables on-device orchestration.\n      \n      \n        \n          \n            functionalTest\n          \n          \n            \n              Added in 8.8.0\n            \n          \n        \n        var functionalTest: Boolean?\n        See instrumentation.\n      \n      \n        \n          \n            handleProfiling\n          \n          \n            \n              Added in 8.8.0\n            \n          \n        \n        var handleProfiling: Boolean?\n        See instrumentation.\n      \n"
+        }
+      ]
+    }
+  ],
+  "related_prior_observations": [
+    {
+      "id": "official-overview",
+      "url": "https://developer.android.com/kotlin/multiplatform/plugin",
+      "status": 200,
+      "body_bytes": 364400,
+      "body_sha256": "6664e192c555ca811792a27c6b0e2368ec8b628449f577140f885904b1f2bed6",
+      "scope": "Read testing snippets: withDeviceTest runner/HOST, withDeviceTestBuilder sourceSetTreeName, withHostTestBuilder configure chaining, androidDeviceTest directory"
+    },
+    {
+      "id": "target-api-initial-cap",
+      "url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidLibraryTarget",
+      "outcome": "REFUSED_BODY_ABOVE_2500000_BYTES",
+      "full_body_sha256": null,
+      "relevant_contract_inferred": false
+    },
+    {
+      "id": "device-api-initial-cap",
+      "url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTest",
+      "outcome": "REFUSED_BODY_ABOVE_2500000_BYTES",
+      "full_body_sha256": null,
+      "relevant_contract_inferred": false
+    },
+    {
+      "id": "candidate-raw-source-locator",
+      "url": "https://android.googlesource.com/platform/tools/base/+/refs/tags/gradle_9.4.0/build-system/gradle-api/src/main/java/com/android/build/api/dsl/KotlinMultiplatformAndroidDeviceTestCompilation.kt?format=TEXT",
+      "status": 404,
+      "qualification": "Candidate locator only. Does not verify existence of this tag/file or establish canonical release source."
+    },
+    {
+      "id": "target-api-amended",
+      "url": "https://developer.android.com/reference/tools/gradle-api/9.4/com/android/build/api/dsl/KotlinMultiplatformAndroidLibraryTarget",
+      "status": 200,
+      "body_cap": 8388608,
+      "body_bytes": 2666883,
+      "body_sha256": "d6895dded75fbb5b5352b82b9735c536c7ed6a243f633b4de505c65ad29ad47c",
+      "completed_utc": "2026-09-08T20:52:35.515476+00:00",
+      "selected_plaintext_signatures": [
+        "Unit withDeviceTest(action: KotlinMultiplatformAndroidDeviceTest.() -> Unit)",
+        "HasConfigurableValue<KotlinMultiplatformAndroidDeviceTest> withDeviceTestBuilder(action: KotlinMultiplatformAndroidCompilationBuilder.() -> Unit)"
+      ],
+      "qualification": "Amended larger read explicitly authorized by root after cap refusal. No project/build retry."
+    }
+  ],
+  "retention": "Full developer-site HTML was never persisted. Only API-relevant excerpts and observed body hashes are retained; unrelated site scripts/navigation snippets omitted."
+}

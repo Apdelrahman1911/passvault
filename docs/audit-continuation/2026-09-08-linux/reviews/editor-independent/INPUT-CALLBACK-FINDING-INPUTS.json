@@ -1,0 +1,111 @@
+{
+  "reviewer": "/root/editor_review",
+  "originator": "/root/editor",
+  "finding": "PVA-007",
+  "scope": "Separate cross-control input callback tuple overwrite before recomposition",
+  "disposition": "INDEPENDENT_SOURCE_CONFIRMATION_NO_NEW_FAMILY_NO_EXECUTION",
+  "recorded_utc": "2026-09-08T21:31:35.409297+00:00",
+  "containing_head": "488ab465125234e02bfbd28b3e7579251341cb54",
+  "containing_tree": "4f4c594ff19e62e19f641304b95eb6c086781ae7",
+  "row_before_image_manifest": "ROW-SAVE-PATCH-INPUTS.json",
+  "before_images": [
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "sha256": "409a96629397c68cacd4e8b2e30a776ae77164ada6c742c56b401c21fe2db8df",
+      "bytes": 25093,
+      "physical_lf": 587,
+      "cr_bytes": 0,
+      "bounded_reviewed_line_ranges": [
+        [
+          58,
+          227
+        ],
+        [
+          229,
+          273
+        ],
+        [
+          314,
+          376
+        ],
+        [
+          423,
+          487
+        ],
+        [
+          507,
+          531
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "sha256": "1e3f1181835b734e90da7ac7e3b602ee0a3d55ff957646a430b9b09279e08522",
+      "bytes": 17394,
+      "physical_lf": 394,
+      "cr_bytes": 0,
+      "bounded_reviewed_line_ranges": [
+        [
+          1,
+          69
+        ],
+        [
+          151,
+          170
+        ],
+        [
+          307,
+          346
+        ],
+        [
+          382,
+          394
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "sha256": "8742df885951a2c3db6c2081c89345cd7d2a373e35b957f0f8b07c44c456d9b7",
+      "bytes": 15979,
+      "physical_lf": 359,
+      "cr_bytes": 0,
+      "bounded_reviewed_line_ranges": [
+        [
+          197,
+          359
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+      "sha256": "1c7d5759bdb6e4b59f65fa0fd97c9a36c7f64d4000df82ccd333fea15e3204b5",
+      "bytes": 15049,
+      "physical_lf": 433,
+      "cr_bytes": 0,
+      "bounded_reviewed_line_ranges": [
+        [
+          90,
+          257
+        ]
+      ]
+    },
+    {
+      "path": "core/designsystem/src/commonMain/kotlin/com/passvault/core/designsystem/components/SecureTextField.kt",
+      "sha256": "5708b81cea22eba7dc6dddf6370469dcd6146e79dc14939ac21cc598d559cc5a",
+      "bytes": 6153,
+      "physical_lf": 167,
+      "cr_bytes": 0,
+      "supporting_bounded_read_ranges": [
+        [
+          38,
+          113
+        ]
+      ]
+    }
+  ],
+  "framework_source_manifests": [
+    "FRAMEWORK-SOURCE.json",
+    "FRAMEWORK-POINTER-SOURCE.json"
+  ],
+  "qualification": "Exact current row-Save after-image still has old whole-tuple input callbacks; the four files are expected to be separately superseded only after this independent confirmation."
+}

@@ -8,6 +8,14 @@ plugins {
 kotlin {
     android {
         withHostTest { }
+        // A fixed Android32 native selection with no new runner dependency.
+        // Do not inherit commonTest's JVM/JUnit test classes.
+        withDeviceTestBuilder {
+            sourceSetTreeName = null
+        }.configure {
+            instrumentationRunner = "com.passvault.core.crypto.Android32KdfInstrumentation"
+            execution = "HOST"
+        }
         namespace = "com.passvault.core.crypto"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()

@@ -1,0 +1,88 @@
+{
+  "cleanup": "HOLD; hosted runner disposal is not an observed cleanup pass",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^",
+        "HEAD^^{tree}"
+      ],
+      "exit_code": 0,
+      "log": "01-git-identity.log",
+      "sha256": "df3a8515a0e0fddbceb29aef9d3b811f374b75bb1406e2b4387f7dae83618bdf",
+      "workers": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "diff",
+        "--name-only",
+        "HEAD^",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "log": "02-request-only-diff.log",
+      "sha256": "b6255c15c03c1aa79e3ffc93ece8827bf3354c39cd18cfb6e34ad39154533b1e",
+      "workers": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "log": "03-clean-source.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workers": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "04-cmake-version.log",
+      "sha256": "f6e81c2559f3ce00c5fdad01d7b226c301f5d6b07ee04f65db6dbfdc1cc5970b",
+      "workers": 0
+    }
+  ],
+  "failures": [
+    "RuntimeError: Owned descendants remain after command",
+    "Cleanup RuntimeError: Cleanup refuses reparse point"
+  ],
+  "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+  "hello_hardware": "BLOCKED: not exercised",
+  "operational_status": "FAILED_OR_INCOMPLETE",
+  "owned_workers": 0,
+  "passed_cases_machine_scored": 0,
+  "request_commit": "a1fbdf0d5f0663225a459838d37b072a65e334f6",
+  "request_tree": "0e5144c44fc79f052d0131808b887f8440e0a2cb",
+  "source_commit": "1a57239f74af792b64e631f51a79e1c0bf83816a",
+  "source_qualification": "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof",
+  "source_tree": "7375659b90f1c622b7fa29a19dcc8b268e4ed340",
+  "suite": "windows-native-14-v1"
+}

@@ -214,16 +214,40 @@ internal class CredentialCustomFieldEditor(
         }
     }
 
+    /** Existing whole-draft callers explicitly replace the tuple. */
     fun changeDraft(fieldId: CustomFieldId, draft: CredentialCustomFieldDraft) {
+        updateDraft(fieldId) {
+            draft.copy(
+                name = draft.name.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH),
+                value = draft.value.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH),
+            )
+        }
+    }
+
+    /** UI input changes only its property of the latest owned draft. */
+    fun changeDraftName(fieldId: CustomFieldId, name: String) {
+        updateDraft(fieldId) { it.copy(name = name.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH)) }
+    }
+
+    fun changeDraftValue(fieldId: CustomFieldId, value: String) {
+        updateDraft(fieldId) { it.copy(value = value.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH)) }
+    }
+
+    fun changeDraftSecret(fieldId: CustomFieldId, isSecret: Boolean) {
+        updateDraft(fieldId) { it.copy(isSecret = isSecret) }
+    }
+
+    private fun updateDraft(
+        fieldId: CustomFieldId,
+        transform: (CredentialCustomFieldDraft) -> CredentialCustomFieldDraft,
+    ) {
         state.update { current ->
-            if (fieldId !in current.customFieldDrafts) {
+            val draft = current.customFieldDrafts[fieldId]
+            if (draft == null) {
                 current
             } else {
                 current.copy(
-                    customFieldDrafts = current.customFieldDrafts + (fieldId to draft.copy(
-                        name = draft.name.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH),
-                        value = draft.value.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH),
-                    )),
+                    customFieldDrafts = current.customFieldDrafts + (fieldId to transform(draft)),
                     errorMessage = null,
                 )
             }
@@ -304,22 +328,41 @@ internal class CredentialCustomFieldEditor(
         }
     }
 
+    /** Row Save commits the owned draft, never a payload captured by an earlier composition. */
+    fun commitDraft(fieldId: CustomFieldId) {
+        updateField(fieldId, requireNonBlankName = true) { it.customFieldDrafts[fieldId] }
+    }
+
     fun update(fieldId: CustomFieldId, name: String, value: String, isSecret: Boolean) {
-        val replacementValue = SensitiveText.from(value.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH))
-        val replacementName = name.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH)
+        val draft = CredentialCustomFieldDraft(
+            name = name.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH),
+            value = value.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH),
+            isSecret = isSecret,
+        )
+        updateField(fieldId, requireNonBlankName = false) { draft }
+    }
+
+    private fun updateField(
+        fieldId: CustomFieldId,
+        requireNonBlankName: Boolean,
+        draftForState: (CredentialViewModel.CredentialState) -> CredentialCustomFieldDraft?,
+    ) {
         while (true) {
             val current = state.value
-            val replaced = current.customFields.firstOrNull { it.id == fieldId }
-            if (replaced == null) {
-                replacementValue.clear()
-                return
+            val draft = draftForState(current) ?: return
+            val replaced = current.customFields.firstOrNull { it.id == fieldId } ?: return
+            if (requireNonBlankName && draft.name.isBlank()) {
+                val invalid = current.copy(errorMessage = uiText(Res.string.validation_credential_custom_field_name))
+                if (state.compareAndSet(current, invalid)) return
+                continue
             }
-            val unchangedField = replaced.name == replacementName &&
-                replaced.value == replacementValue && replaced.isSecret == isSecret
+            val replacementValue = SensitiveText.from(draft.value)
+            val unchangedField = replaced.name == draft.name &&
+                replaced.value == replacementValue && replaced.isSecret == draft.isSecret
             val updated = current.copy(
                 customFields = if (unchangedField) current.customFields else current.customFields.map { field ->
                     if (field.id == fieldId) {
-                        field.copy(name = replacementName, value = replacementValue, isSecret = isSecret)
+                        field.copy(name = draft.name, value = replacementValue, isSecret = draft.isSecret)
                     } else {
                         field
                     }
@@ -334,6 +377,7 @@ internal class CredentialCustomFieldEditor(
                 if (unchangedField) replacementValue.clear() else replaced.value.clear()
                 return
             }
+            replacementValue.clear()
         }
     }
 }

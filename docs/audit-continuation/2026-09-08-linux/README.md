@@ -4,6 +4,25 @@ Resume from this directory **and** `../../../AUDIT_HANDOFF.md`. The frozen
 `docs/audit-handoff/` and `docs/audit-publication/` payloads are preserved. Their
 old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
+## Current continuation checkpoint
+
+Read `CHECKPOINT_2.md`, the updated issue/coverage/verification overlays, and
+`EXECUTION_SLOT.json` before choosing work. Three grouped PVA-007 freshness
+corrections and the Android32 test harness are independently source-reviewed;
+**zero application test cases have executed**. The first Windows CI attempt
+ran compiler-identification/ABI probes but stopped before product compilation
+or any of its 14 tests. Its operational FAIL and filesystem-cleanup HOLD are
+independently reconciled; no automatic retry is authorized. Its owned Job
+reported zero workers. The cross-host slot was released after reconciliation,
+without representing the cleanup HOLD as resolved.
+
+Android's installed image is 64-bit-only and was rejected. An official catalog
+identifies a 299 MiB API24/default/x86 archive candidate; download, checksum
+algorithm/bytes, installation, software-emulation feasibility and execution
+admission remain unproved. No emulator, ADB or SDK archive was launched/fetched.
+Fresh Linux database runner, inert-control and generated-output closeout work
+continues separately; no Gradle or old runner has been executed.
+
 ## Baseline
 
 - Fresh clone: `/root/projects/PassVault/passvault` (preserved, no edits).
@@ -55,7 +74,7 @@ and 3,543,848 KiB on `/tmp`; **both are below the 12 GiB launch floor**.
 `.gradle` or `.kotlin` output directory exists in the continuation worktree.
 No unrelated files/caches will be deleted to manufacture admission.
 
-No project build/test has run. One JSON read-only summary command failed with
+At that initial observation no project build/test had run. One JSON read-only summary command failed with
 `AttributeError` because the issue ledger is a list; a corrected data-only read
 succeeded. This is an inspection-tool failure, not an application test.
 

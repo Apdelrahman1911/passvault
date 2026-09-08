@@ -1,0 +1,385 @@
+{
+  "reviewer": "/root/build_config",
+  "qualification": "Root-authorized official AGP9.4 source/data read only; no extraction/import/plugin execution, install, build or dependency trust edit. Source artifacts are not bytecode/source-equivalence proof.",
+  "url": "https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/9.4.0/gradle-9.4.0-sources.jar",
+  "method": "GET",
+  "started_utc": "2026-09-08T21:57:55.953188+00:00",
+  "timeout_seconds": 12,
+  "body_cap": 8388608,
+  "automatic_retries": 0,
+  "tls_verification": true,
+  "proxy_handler": "explicit empty",
+  "status": 200,
+  "body_bytes": 4032871,
+  "body_sha256": "d462c399729eb35241208899f937037e40f2f9157a54fa9c455595ed6ceca091",
+  "final_url": "https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/9.4.0/gradle-9.4.0-sources.jar",
+  "member_count": 2240,
+  "selected_sources": [
+    {
+      "path": "com/android/build/gradle/internal/SdkComponents.kt",
+      "bytes": 21038,
+      "sha256": "9f0c2c1ed742a01633709013b977a24e5ccae7c0df8dfd18b64ae14c7beb2236",
+      "scope": "focused property/SDK download intervals; hash is full source member",
+      "excerpts": [
+        {
+          "line": 73,
+          "text": "  BuildService<SdkComponentsBuildService.Parameters>, AutoCloseable {"
+        },
+        {
+          "line": 74,
+          "text": ""
+        },
+        {
+          "line": 75,
+          "text": "  interface Parameters : BuildServiceParameters {"
+        },
+        {
+          "line": 76,
+          "text": "    val projectRootDir: RegularFileProperty"
+        },
+        {
+          "line": 77,
+          "text": "    val offlineMode: Property<Boolean>"
+        },
+        {
+          "line": 78,
+          "text": "    val issueReporter: Property<SyncIssueReporterImpl.GlobalSyncIssueService>"
+        },
+        {
+          "line": 79,
+          "text": "    val androidLocationsServices: Property<AndroidLocationsBuildService>"
+        },
+        {
+          "line": 80,
+          "text": ""
+        },
+        {
+          "line": 81,
+          "text": "    val enableSdkDownload: Property<Boolean>"
+        },
+        {
+          "line": 82,
+          "text": "    val androidSdkChannel: Property<Int>"
+        },
+        {
+          "line": 83,
+          "text": "    val useAndroidX: Property<Boolean>"
+        },
+        {
+          "line": 84,
+          "text": "    val suppressWarningUnsupportedCompileSdk: Property<String>"
+        },
+        {
+          "line": 85,
+          "text": "  }"
+        },
+        {
+          "line": 86,
+          "text": ""
+        },
+        {
+          "line": 87,
+          "text": "  private val sdkSourceSet: SdkLocationSourceSet by lazy { SdkLocationSourceSet(parameters.projectRootDir.get().asFile, providerFactory) }"
+        },
+        {
+          "line": 88,
+          "text": ""
+        },
+        {
+          "line": 89,
+          "text": "  class Environment : SdkLibDataFactory.Environment() {"
+        },
+        {
+          "line": 90,
+          "text": "    private val systemProperties = SystemProperty.values().associate { it to System.getProperty(it.key) }"
+        },
+        {
+          "line": 91,
+          "text": ""
+        },
+        {
+          "line": 92,
+          "text": "    override fun getSystemProperty(property: SystemProperty): String? {"
+        },
+        {
+          "line": 93,
+          "text": "      return systemProperties[property]"
+        },
+        {
+          "line": 104,
+          "text": "        sdkSourceSet,"
+        },
+        {
+          "line": 105,
+          "text": "        parameters.issueReporter.get(),"
+        },
+        {
+          "line": 106,
+          "text": "        parameters.suppressWarningUnsupportedCompileSdk.orNull,"
+        },
+        {
+          "line": 107,
+          "text": "        ConsoleProgressIndicatorFactory(providerFactory),"
+        },
+        {
+          "line": 108,
+          "text": "      )"
+        },
+        {
+          "line": 109,
+          "text": "      .also {"
+        },
+        {
+          "line": 110,
+          "text": "        it.setSdkLibData("
+        },
+        {
+          "line": 111,
+          "text": "          SdkLibDataFactory("
+        },
+        {
+          "line": 112,
+          "text": "              !parameters.offlineMode.get() && parameters.enableSdkDownload.get(),"
+        },
+        {
+          "line": 113,
+          "text": "              parameters.androidSdkChannel.orNull,"
+        },
+        {
+          "line": 114,
+          "text": "              LoggerWrapper.getLogger(SdkLibDataFactory::class.java),"
+        },
+        {
+          "line": 115,
+          "text": "              parameters.androidLocationsServices.get().prefsLocation,"
+        },
+        {
+          "line": 116,
+          "text": "            )"
+        },
+        {
+          "line": 117,
+          "text": "            .getSdkLibData(environment)"
+        },
+        {
+          "line": 118,
+          "text": "        )"
+        },
+        {
+          "line": 119,
+          "text": "      }"
+        },
+        {
+          "line": 120,
+          "text": "  }"
+        },
+        {
+          "line": 121,
+          "text": ""
+        },
+        {
+          "line": 122,
+          "text": "  private val sdkHandler: SdkHandler by sdkHandlerDelegate"
+        },
+        {
+          "line": 123,
+          "text": ""
+        },
+        {
+          "line": 124,
+          "text": "  /**"
+        },
+        {
+          "line": 339,
+          "text": "    ServiceRegistrationAction<SdkComponentsBuildService, Parameters>(project, SdkComponentsBuildService::class.java) {"
+        },
+        {
+          "line": 340,
+          "text": ""
+        },
+        {
+          "line": 341,
+          "text": "    override fun configure(parameters: Parameters) {"
+        },
+        {
+          "line": 342,
+          "text": "      parameters.projectRootDir.set(project.rootDir)"
+        },
+        {
+          "line": 343,
+          "text": "      parameters.offlineMode.set(project.gradle.startParameter.isOffline)"
+        },
+        {
+          "line": 344,
+          "text": "      parameters.issueReporter.set(getBuildService(project.gradle.sharedServices))"
+        },
+        {
+          "line": 345,
+          "text": "      parameters.androidLocationsServices.set(getBuildService(project.gradle.sharedServices))"
+        },
+        {
+          "line": 346,
+          "text": ""
+        },
+        {
+          "line": 347,
+          "text": "      parameters.enableSdkDownload.set(projectOptions.get(BooleanOption.ENABLE_SDK_DOWNLOAD))"
+        },
+        {
+          "line": 348,
+          "text": "      parameters.androidSdkChannel.set(projectOptions.get(IntegerOption.ANDROID_SDK_CHANNEL))"
+        },
+        {
+          "line": 349,
+          "text": "      parameters.useAndroidX.set(projectOptions.get(BooleanOption.USE_ANDROID_X))"
+        },
+        {
+          "line": 350,
+          "text": "      parameters.suppressWarningUnsupportedCompileSdk.set(projectOptions.get(StringOption.SUPPRESS_UNSUPPORTED_COMPILE_SDK))"
+        },
+        {
+          "line": 351,
+          "text": "    }"
+        },
+        {
+          "line": 352,
+          "text": "  }"
+        },
+        {
+          "line": 353,
+          "text": "}"
+        },
+        {
+          "line": 354,
+          "text": ""
+        },
+        {
+          "line": 355,
+          "text": "/**"
+        },
+        {
+          "line": 356,
+          "text": " * This avoids invoking [SdkComponentsBuildService.sdkDirectoryProvider] in order to get the SDK location. This is needed when AGP handles"
+        },
+        {
+          "line": 357,
+          "text": " * missing [com.android.build.gradle.BaseExtension.compileSdkVersion] and it tries to add highest installed API when invoked from the IDE."
+        },
+        {
+          "line": 358,
+          "text": " */"
+        },
+        {
+          "line": 359,
+          "text": "fun getSdkDir(projectRootDir: File, issueReporter: IssueReporter, providers: ProviderFactory): File {"
+        }
+      ]
+    },
+    {
+      "path": "com/android/build/gradle/internal/SdkHandler.java",
+      "bytes": 16345,
+      "sha256": "43f1e91127edc26a8c8c18a364e691dc0eb6d99f5e93517f7010fb10e00e1591",
+      "scope": "focused property/SDK download intervals; hash is full source member",
+      "excerpts": []
+    },
+    {
+      "path": "com/android/build/gradle/internal/SdkLoadingStrategy.kt",
+      "bytes": 3716,
+      "sha256": "2d0fa50dc2b8f2ea06124157e65e1a9910ffc566394f50b62ca02d11fe48c683",
+      "scope": "focused property/SDK download intervals; hash is full source member",
+      "excerpts": []
+    },
+    {
+      "path": "com/android/build/gradle/options/BooleanOption.kt",
+      "bytes": 48926,
+      "sha256": "83f71f7116284cb7bb4727821827887681d5c9eb5423947c058940dd874de29e",
+      "scope": "focused property/SDK download intervals; hash is full source member",
+      "excerpts": [
+        {
+          "line": 129,
+          "text": "    ApiStage.Stable,"
+        },
+        {
+          "line": 130,
+          "text": "  ),"
+        },
+        {
+          "line": 131,
+          "text": ""
+        },
+        {
+          "line": 132,
+          "text": "  /* ------------------"
+        },
+        {
+          "line": 133,
+          "text": "   * SUPPORTED FEATURES"
+        },
+        {
+          "line": 134,
+          "text": "   */"
+        },
+        {
+          "line": 135,
+          "text": ""
+        },
+        {
+          "line": 136,
+          "text": "  // Used by Studio as workaround for b/71054106, b/75955471"
+        },
+        {
+          "line": 137,
+          "text": "  ENABLE_SDK_DOWNLOAD(\"android.builder.sdkDownload\", true, FeatureStage.Supported),"
+        },
+        {
+          "line": 138,
+          "text": "  ENFORCE_UNIQUE_PACKAGE_NAMES("
+        },
+        {
+          "line": 139,
+          "text": "    \"android.uniquePackageNames\","
+        },
+        {
+          "line": 140,
+          "text": "    true,"
+        },
+        {
+          "line": 141,
+          "text": "    FeatureStage.Supported,"
+        },
+        {
+          "line": 142,
+          "text": "    FutureStage(Version.VERSION_10_0, true, FeatureStage.Enforced(Version.VERSION_10_0)),"
+        },
+        {
+          "line": 143,
+          "text": "  ),"
+        },
+        {
+          "line": 144,
+          "text": ""
+        },
+        {
+          "line": 145,
+          "text": "  // Flag added to work around b/130596259."
+        },
+        {
+          "line": 146,
+          "text": "  FORCE_JACOCO_OUT_OF_PROCESS(\"android.forceJacocoOutOfProcess\", false, FeatureStage.Supported),"
+        },
+        {
+          "line": 147,
+          "text": "  PRECOMPILE_DEPENDENCIES_RESOURCES(\"android.precompileDependenciesResources\", true, FeatureStage.Supported),"
+        },
+        {
+          "line": 148,
+          "text": "  INCLUDE_DEPENDENCY_INFO_IN_APKS(\"android.includeDependencyInfoInApks\", true, FeatureStage.Supported),"
+        },
+        {
+          "line": 149,
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

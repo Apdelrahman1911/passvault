@@ -1,0 +1,27 @@
+{
+  "reviewer": "/root/build_config",
+  "qualification": "Installed public SDK37 source/stub data read; no AAPT/manifest merge, jar execution, installation or Android target run. Not final dependency/runtime source provenance.",
+  "stub_container": "/opt/android-sdk/platforms/android-37.0/android-stubs-src.jar",
+  "stub_container_size": 8680535,
+  "stub_member": "android/R.java",
+  "stub_member_bytes": 176059,
+  "stub_member_sha256": "6b848b690cc3638d34435a3eb45f20f8f76b15526d7cceadc78fd80a44a50951",
+  "public_attribute_excerpts": [
+    {
+      "line": 857,
+      "text": "public static final int multiArch = 16843918;"
+    },
+    {
+      "line": 1468,
+      "text": "public static final int use32bitAbi = 16844053;"
+    }
+  ],
+  "manifest_schema": {
+    "path": "/opt/android-sdk/platforms/android-37.0/data/res/values/attrs_manifest.xml",
+    "bytes": 260254,
+    "sha256": "289cfc8300160c17e20b6fa4f30c801ec8e3dc1cc67a6fd7601fe7bff5f5468b",
+    "first_line": 604,
+    "last_line": 617,
+    "text": "         applications' processes. On devices that support multiple instruction sets,\n         this implies the code might be loaded into a process that's using any of the devices\n         supported instruction sets.\n\n         <p> The system might treat such applications specially, for eg., by\n         extracting the application's native libraries for all supported instruction\n         sets or by compiling the application's dex code for all supported instruction\n         sets. -->\n    <attr name=\"multiArch\" format =\"boolean\" />\n\n    <!-- Specify whether the 32 bit version of the ABI should be used in a\n         multiArch application. If both abioverride flag (i.e. using abi option of abd install)\n         and use32bitAbi are used, then use32bit is ignored.-->\n    <attr name=\"use32bitAbi\" />"
+  }
+}

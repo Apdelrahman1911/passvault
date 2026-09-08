@@ -155,6 +155,11 @@ internal class CredentialEventRouter(
             is CredentialEvent.OnCustomFieldRemoved -> customFields.remove(event.fieldId)
             is CredentialEvent.OnCustomFieldEditStarted -> customFields.beginDraft(event.fieldId)
             is CredentialEvent.OnCustomFieldEditCancelled -> customFields.cancelDraft(event.fieldId)
+            is CredentialEvent.OnCustomFieldEditSaved -> customFields.commitDraft(event.fieldId)
+            is CredentialEvent.OnCustomFieldDraftNameChanged -> customFields.changeDraftName(event.fieldId, event.name)
+            is CredentialEvent.OnCustomFieldDraftValueChanged -> customFields.changeDraftValue(event.fieldId, event.value)
+            is CredentialEvent.OnCustomFieldDraftSecretChanged ->
+                customFields.changeDraftSecret(event.fieldId, event.isSecret)
             is CredentialEvent.OnCustomFieldDraftChanged -> customFields.changeDraft(event.fieldId, event.draft)
             is CredentialEvent.OnCustomFieldUpdated ->
                 customFields.update(event.fieldId, event.name, event.value, event.isSecret)
@@ -338,6 +343,10 @@ private fun CredentialEvent.category(): EventCategory = when (this) {
     is CredentialEvent.OnCustomFieldRemoved,
     is CredentialEvent.OnCustomFieldEditStarted,
     is CredentialEvent.OnCustomFieldEditCancelled,
+    is CredentialEvent.OnCustomFieldEditSaved,
+    is CredentialEvent.OnCustomFieldDraftNameChanged,
+    is CredentialEvent.OnCustomFieldDraftValueChanged,
+    is CredentialEvent.OnCustomFieldDraftSecretChanged,
     is CredentialEvent.OnCustomFieldDraftChanged,
     is CredentialEvent.OnCustomFieldUpdated,
     is CredentialEvent.OnCopyCustomFieldClick,

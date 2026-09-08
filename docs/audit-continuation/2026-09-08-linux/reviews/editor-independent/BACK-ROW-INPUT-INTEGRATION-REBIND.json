@@ -1,0 +1,69 @@
+{
+  "reviewer": "/root/editor_review",
+  "author": "/root/editor",
+  "recorded_utc": "2026-09-08T21:44:21.793155+00:00",
+  "containing_head": "488ab465125234e02bfbd28b3e7579251341cb54",
+  "containing_tree": "4f4c594ff19e62e19f641304b95eb6c086781ae7",
+  "current_manifest": "INPUT-CALLBACK-PATCH-INPUTS.json",
+  "previous_rebind": "BACK-ROW-INTEGRATION-REBIND.json",
+  "four_back_files_unchanged": [
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+      "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db",
+      "bytes": 6999,
+      "physical_lf": 181,
+      "cr_bytes": 0
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+      "bytes": 11636,
+      "physical_lf": 271,
+      "cr_bytes": 0
+    },
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+      "sha256": "e777006c470eded3f4f8d8183c74857229a6cb1004dc98add17c6eab6743fa14",
+      "bytes": 11300,
+      "physical_lf": 263,
+      "cr_bytes": 0
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+      "bytes": 16583,
+      "physical_lf": 373,
+      "cr_bytes": 0
+    }
+  ],
+  "view_model_revalidation": {
+    "current_sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+    "row_stage_sha256": "409a96629397c68cacd4e8b2e30a776ae77164ada6c742c56b401c21fe2db8df",
+    "delta": "Only three property-specific event declarations added after row stage; all Back policy state/Save/lock supporting code unchanged byte-for-byte."
+  },
+  "form_revalidation": {
+    "current_sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c",
+    "reconstructed_row_stage_sha256": "8742df885951a2c3db6c2081c89345cd7d2a373e35b957f0f8b07c44c456d9b7",
+    "method": "Substitute only expanded changeDraft/updateDraft block with unchanged handoff block in memory; reconstructed raw file matches sealed row-stage SHA256.",
+    "meaning": "Everything outside this input block, including row commit CAS/ownership, page Save and Cancel/remove logic, remains byte-identical to accepted row stage."
+  },
+  "router_ui_revalidation": "New property dispatch/category entries retain busy edit guards; UI sends matching property/id only. Row Save id-only event retained at footer; Cancel unchanged. Reviewed against current live Back policy and both explicit tuple APIs.",
+  "row_test_preservation": {
+    "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+    "added_line_range": [
+      253,
+      422
+    ],
+    "added_declared_methods": 5,
+    "added_physical_lf": 170,
+    "prior_six_methods_and_fixture_unchanged": {
+      "reconstructed_sha256": "94131184ff94fec3f4c243385a61af3f731ed146dd681a7f7857e323a7b0f35c",
+      "reconstructed_bytes": 16670,
+      "reconstructed_physical_lf": 362,
+      "method": "Hash concatenation of final raw lines1-252 +423-532, excluding only added methods; source never rewritten or executed."
+    }
+  },
+  "disposition": "BACK_AND_ROW_SOURCE_ACCEPTANCE_RETAINED_INPUT_SOURCE_ACCEPTED_EXECUTION_PENDING",
+  "newly_executed_cases": 0,
+  "qualification": "Metadata reconstruction is not a product/test/mutant run; preserved historical manifests are not relabelled exact-current."
+}

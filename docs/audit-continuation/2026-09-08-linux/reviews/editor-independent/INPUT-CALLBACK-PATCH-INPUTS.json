@@ -1,0 +1,140 @@
+{
+  "reviewer": "/root/editor_review",
+  "author": "/root/editor",
+  "finding": "PVA-007",
+  "scope": "property-only custom-field input changes preserving latest sibling properties",
+  "disposition": "SOURCE_ACCEPTED_EXECUTION_PENDING_NO_CLOSURE",
+  "recorded_utc": "2026-09-08T21:44:21.793155+00:00",
+  "containing_head": "488ab465125234e02bfbd28b3e7579251341cb54",
+  "containing_tree": "4f4c594ff19e62e19f641304b95eb6c086781ae7",
+  "source_dirty": true,
+  "files": [
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+      "bytes": 25441,
+      "physical_lf": 590,
+      "cr_bytes": 0,
+      "bounded_delta_reviewed_ranges": [
+        [
+          503,
+          533
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a",
+      "bytes": 17946,
+      "physical_lf": 401,
+      "cr_bytes": 0,
+      "bounded_delta_reviewed_ranges": [
+        [
+          32,
+          44
+        ],
+        [
+          151,
+          172
+        ],
+        [
+          337,
+          353
+        ],
+        [
+          389,
+          401
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c",
+      "bytes": 16843,
+      "physical_lf": 383,
+      "cr_bytes": 0,
+      "bounded_delta_reviewed_ranges": [
+        [
+          197,
+          383
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+      "sha256": "dd60f4a65b4cf951a8ba94b2b6e4cab8440d1a33942eb046f1d74ccfcf9b31db",
+      "bytes": 15335,
+      "physical_lf": 446,
+      "cr_bytes": 0,
+      "bounded_delta_reviewed_ranges": [
+        [
+          47,
+          56
+        ],
+        [
+          90,
+          98
+        ],
+        [
+          116,
+          268
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "sha256": "d492ed289c21904c6f1145580aaf2980bd99e9a2ae6ccaf624b03c3d4faef0af",
+      "bytes": 26117,
+      "physical_lf": 532,
+      "cr_bytes": 0,
+      "bounded_delta_reviewed_ranges": [
+        [
+          253,
+          422
+        ]
+      ]
+    }
+  ],
+  "unchanged_companion": {
+    "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+    "sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+    "bytes": 15170,
+    "physical_lf": 314,
+    "cr_bytes": 0,
+    "role": "Existing thirteen-method companion unchanged; identity only, no additional source coverage credit"
+  },
+  "test_source_counts": {
+    "initial_row_methods": 6,
+    "added_input_methods": 5,
+    "current_new_class_methods": 11,
+    "property_order_loop_iterations_within_one_method": 6,
+    "loop_persistence_roundtrips_after_final_iteration_only": 1,
+    "new_back_methods": 9,
+    "total_new_editor_methods": 20,
+    "unchanged_companion_methods": 13,
+    "new_class_plus_companion_declarations": 24,
+    "new_and_existing_four_class_selection_declarations": 42,
+    "newly_executed_cases": 0
+  },
+  "test_identity_preservation": {
+    "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+    "added_line_range": [
+      253,
+      422
+    ],
+    "added_declared_methods": 5,
+    "added_physical_lf": 170,
+    "prior_six_methods_and_fixture_unchanged": {
+      "reconstructed_sha256": "94131184ff94fec3f4c243385a61af3f731ed146dd681a7f7857e323a7b0f35c",
+      "reconstructed_bytes": 16670,
+      "reconstructed_physical_lf": 362,
+      "method": "Hash concatenation of final raw lines1-252 +423-532, excluding only added methods; source never rewritten or executed."
+    }
+  },
+  "supersedes": "ROW-SAVE-PATCH-INPUTS.json for these four overlapping product-file identities and expanded test only; preserve prior intermediate/finding/Back manifests as historical.",
+  "qualifications": [
+    "Raw LF source metadata and bounded review, not executed test/compiler/UI results.",
+    "Property-order iterations are not six JUnit cases or six persistence roundtrips.",
+    "Registration composition, VM/event tests, source proof and rendered/hardware observations remain separate."
+  ]
+}

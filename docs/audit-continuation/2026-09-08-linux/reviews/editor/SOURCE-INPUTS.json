@@ -1,0 +1,1011 @@
+{
+  "schema": "passvault-editor-source-inspection-v1",
+  "author": "/root/editor",
+  "recorded_utc": "2026-09-08T21:44:33.377647+00:00",
+  "handoff_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "handoff_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "containing_head_at_capture": "488ab465125234e02bfbd28b3e7579251341cb54",
+  "containing_head_tree": "4f4c594ff19e62e19f641304b95eb6c086781ae7",
+  "scope": "PVA-007 Back/action, row-Save and cross-control input freshness; PVA-031 and PVU-004/005/006 qualifications preserved",
+  "disposition": "SOURCE_ACCEPTED_EXECUTION_PENDING_NO_CLOSURE",
+  "binding_semantics": "Point-in-time source byte inventory, not an atomic freeze or execution admission. Whole-file hash/line metadata is identity, not reviewed-line or runtime credit. Source ranges are inclusive bounded author reads; independent reports carry their own bounds.",
+  "checkout_eol": "All listed source after-images are LF with zero CR bytes; comparison is to the actual handoff Git blobs. No frozen raw macOS report byte identity is asserted.",
+  "unchanged_denominators": {
+    "original_confirmed_qualified": 19,
+    "original_confirmed_total": 25,
+    "all_confirmed_qualified": 22,
+    "all_confirmed_total": 37,
+    "original_suspicions_resolved": 2,
+    "original_suspicions_total": 12
+  },
+  "declarations_not_execution": {
+    "new_back_composition": 7,
+    "new_common_coordinator": 2,
+    "new_row_save": 6,
+    "new_cross_control": 5,
+    "new_total": 20,
+    "three_changed_test_classes_total": 29,
+    "unchanged_draft_controls": 13,
+    "unchanged_capacity_controls": 7,
+    "newly_executed": 0,
+    "cross_control_permutations_within_one_method": 6,
+    "persistence_roundtrips_within_that_one_method": 1
+  },
+  "row_test_preservation": {
+    "reconstruction": "Remove only the newly inserted five-method span in memory; keep original prefix and fixture tail. No source execution or file rewrite.",
+    "initial_six_method_file": {
+      "sha256": "94131184ff94fec3f4c243385a61af3f731ed146dd681a7f7857e323a7b0f35c",
+      "git_blob_sha1": "21fa310841f1704805d37bd95468b315197e9a10",
+      "bytes": 16670,
+      "physical_lf": 362,
+      "cr_bytes": 0
+    },
+    "expected_sha256": "94131184ff94fec3f4c243385a61af3f731ed146dd681a7f7857e323a7b0f35c",
+    "equal_recorded_initial_file": true
+  },
+  "files": [
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+      "role": "back-production",
+      "current": {
+        "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db",
+        "git_blob_sha1": "b49be3b72a88e83ff6ea830ed84abef0a690ab11",
+        "bytes": 6999,
+        "physical_lf": 181,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "e5b6faf84b4291f17cc48ed9e3f9a9cb0f516f76d8248e09eea3d3a83d1c3673",
+        "git_blob_sha1": "783875e34dc77cad8f41c138c80a7862513d80b0",
+        "bytes": 6119,
+        "physical_lf": 162,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          181
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "role": "back-production",
+      "current": {
+        "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+        "git_blob_sha1": "cc0a198b2e1d0aab221efdd8d12fa73358ed10b7",
+        "bytes": 11636,
+        "physical_lf": 271,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "171e14dd39c907c0afde10704aa74640699bc2533d4d1527af655412ba148308",
+        "git_blob_sha1": "7c6f7fa3920714d95dca785fa97bbdc4f2923e87",
+        "bytes": 11060,
+        "physical_lf": 258,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          271
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+      "role": "coordinator-tests",
+      "current": {
+        "sha256": "e777006c470eded3f4f8d8183c74857229a6cb1004dc98add17c6eab6743fa14",
+        "git_blob_sha1": "b897436f4c4e60dd86fa98061f557badf0368590",
+        "bytes": 11300,
+        "physical_lf": 263,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "1d6827b8de8e59a613e369933c91cee335373764e8b9af66a2ee7cfdd6c31289",
+        "git_blob_sha1": "232cfb70f91c18a75abab8795d5fbfcfbd797344",
+        "bytes": 7745,
+        "physical_lf": 183,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          263
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "role": "composition-tests",
+      "current": {
+        "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+        "git_blob_sha1": "80f19e9da75b57426d969cb995f2117ee8b063e1",
+        "bytes": 16583,
+        "physical_lf": 373,
+        "cr_bytes": 0
+      },
+      "handoff_blob": null,
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          373
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "role": "row-and-input-production",
+      "current": {
+        "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+        "git_blob_sha1": "72c0bfafe9c80be51cd2bac50dc8e8ec0c7b4c62",
+        "bytes": 25441,
+        "physical_lf": 590,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "c6e83a2367f7bab80a70753bd31e9572f707c8deca128ec7debb5f2f80bf41af",
+        "git_blob_sha1": "797c22601940f07052efac6346f865cb83cbf760",
+        "bytes": 25005,
+        "physical_lf": 586,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": false,
+      "author_bounded_source_ranges": [
+        [
+          58,
+          227
+        ],
+        [
+          314,
+          397
+        ],
+        [
+          477,
+          543
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "role": "row-and-input-production",
+      "current": {
+        "sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a",
+        "git_blob_sha1": "c7046b070451b4270d13497f937b7264679a0d72",
+        "bytes": 17946,
+        "physical_lf": 401,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "a5251e738a65921fb03b7b9b6603bc8afd4fec6cc45565a988d52669231d2a00",
+        "git_blob_sha1": "a176bc49bc29fdf17932b25158545f1431284c21",
+        "bytes": 17250,
+        "physical_lf": 392,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": false,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          401
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "role": "row-and-input-production",
+      "current": {
+        "sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c",
+        "git_blob_sha1": "d3a6b4a257f5f87afddcab03912e27e97df4d005",
+        "bytes": 16843,
+        "physical_lf": 383,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "7fa675ec4de10ea34b0f7f8887abe9c86f735f967b91975b51d5c710545b1a28",
+        "git_blob_sha1": "c2379e597193bb4a6709d1a19541a0526ea24a32",
+        "bytes": 15067,
+        "physical_lf": 339,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": false,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          383
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+      "role": "row-and-input-production",
+      "current": {
+        "sha256": "dd60f4a65b4cf951a8ba94b2b6e4cab8440d1a33942eb046f1d74ccfcf9b31db",
+        "git_blob_sha1": "64e9a0dcf99799312b4ac9b646e5fe66f4aa7864",
+        "bytes": 15335,
+        "physical_lf": 446,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "bb3f089979b76deb407430b2f0b442227a294c748b4a5ea2bb69c693e0b458f7",
+        "git_blob_sha1": "24c701143f6f003cbe644b9edb2f632254cf1ce3",
+        "bytes": 15116,
+        "physical_lf": 435,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": false,
+      "author_bounded_source_ranges": [
+        [
+          55,
+          271
+        ],
+        [
+          353,
+          446
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true,
+        "over_100_character_lines": []
+      }
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "role": "row-and-input-tests",
+      "current": {
+        "sha256": "d492ed289c21904c6f1145580aaf2980bd99e9a2ae6ccaf624b03c3d4faef0af",
+        "git_blob_sha1": "622519609d77ade406686f4c189a3fbb2ab4053e",
+        "bytes": 26117,
+        "physical_lf": 532,
+        "cr_bytes": 0
+      },
+      "handoff_blob": null,
+      "equal_handoff_bytes": false,
+      "equal_containing_head_bytes": false,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          532
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "role": "historical-controls-preserved",
+      "current": {
+        "sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+        "git_blob_sha1": "c790bd877a79bb6a96577a614e28ac28f3b79c06",
+        "bytes": 15170,
+        "physical_lf": 314,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+        "git_blob_sha1": "c790bd877a79bb6a96577a614e28ac28f3b79c06",
+        "bytes": 15170,
+        "physical_lf": 314,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          314
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+      "role": "pending-controls-preserved",
+      "current": {
+        "sha256": "b851a3fab0ea44109a6456896fb2936b99408aaeabb111c66d1bb96b1d1993bf",
+        "git_blob_sha1": "7b84c7971ef768ea6d1f63aeeab0c3116f9e02cd",
+        "bytes": 9016,
+        "physical_lf": 209,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "b851a3fab0ea44109a6456896fb2936b99408aaeabb111c66d1bb96b1d1993bf",
+        "git_blob_sha1": "7b84c7971ef768ea6d1f63aeeab0c3116f9e02cd",
+        "bytes": 9016,
+        "physical_lf": 209,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          209
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraft.kt",
+      "role": "supporting-source",
+      "current": {
+        "sha256": "a3ada356421638e66bc6393abd995ae59e3580ec856f13e569ae902f070e3309",
+        "git_blob_sha1": "2e1cc2f45922e71ee686738cb39e144295ba597b",
+        "bytes": 860,
+        "physical_lf": 23,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "a3ada356421638e66bc6393abd995ae59e3580ec856f13e569ae902f070e3309",
+        "git_blob_sha1": "2e1cc2f45922e71ee686738cb39e144295ba597b",
+        "bytes": 860,
+        "physical_lf": 23,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          23
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "core/security/src/desktopMain/kotlin/com/passvault/desktop/security/DesktopWindowProtection.kt",
+      "role": "PVU-005-retained-limit",
+      "current": {
+        "sha256": "92c473e21c262972983b111b61adc18610bc17fcea92c6cc2b7f65ea4d5ee128",
+        "git_blob_sha1": "081306f68af17d75a7f21a45cb7db0c03af03fe5",
+        "bytes": 12362,
+        "physical_lf": 357,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "92c473e21c262972983b111b61adc18610bc17fcea92c6cc2b7f65ea4d5ee128",
+        "git_blob_sha1": "081306f68af17d75a7f21a45cb7db0c03af03fe5",
+        "bytes": 12362,
+        "physical_lf": 357,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          98,
+          160
+        ],
+        [
+          237,
+          253
+        ],
+        [
+          266,
+          298
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/di/AppModule.kt",
+      "role": "PVU-006-retained-limit",
+      "current": {
+        "sha256": "9b486df509202e65311caf92895ba8db6a44e6eae351266c8daa952bc553af25",
+        "git_blob_sha1": "8779f42ec3df93b56e04de659685f4997bd97bde",
+        "bytes": 8995,
+        "physical_lf": 234,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "9b486df509202e65311caf92895ba8db6a44e6eae351266c8daa952bc553af25",
+        "git_blob_sha1": "8779f42ec3df93b56e04de659685f4997bd97bde",
+        "bytes": 8995,
+        "physical_lf": 234,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          188,
+          235
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "shared/src/iosMain/kotlin/com/passvault/shared/IosAppLifecycleBridge.kt",
+      "role": "PVU-006-retained-limit",
+      "current": {
+        "sha256": "0fea258bd697873b06b92beb6a48f8fea87b2f5b13c4ea4a08d84819a4e49278",
+        "git_blob_sha1": "90ca43c19363dc6108f8ae7569e4f17b5dd9a09d",
+        "bytes": 21931,
+        "physical_lf": 563,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "0fea258bd697873b06b92beb6a48f8fea87b2f5b13c4ea4a08d84819a4e49278",
+        "git_blob_sha1": "90ca43c19363dc6108f8ae7569e4f17b5dd9a09d",
+        "bytes": 21931,
+        "physical_lf": 563,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          128,
+          159
+        ],
+        [
+          528,
+          564
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "iosApp/iosApp/PassVaultApp.swift",
+      "role": "PVU-006-retained-limit",
+      "current": {
+        "sha256": "aaf907c2ba5c6ab1956bc0e4b099d28f84f85306cac03bb9835bd43d991e216d",
+        "git_blob_sha1": "d16e285864ee68edac8d01cefe372469748d677f",
+        "bytes": 10199,
+        "physical_lf": 289,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "aaf907c2ba5c6ab1956bc0e4b099d28f84f85306cac03bb9835bd43d991e216d",
+        "git_blob_sha1": "d16e285864ee68edac8d01cefe372469748d677f",
+        "bytes": 10199,
+        "physical_lf": 289,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          143,
+          228
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt",
+      "role": "PVA-007-and-PVU-004-support",
+      "current": {
+        "sha256": "50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006",
+        "git_blob_sha1": "eb8d43db07a94ea84fa5f92af39f90329d31f08e",
+        "bytes": 26617,
+        "physical_lf": 647,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006",
+        "git_blob_sha1": "eb8d43db07a94ea84fa5f92af39f90329d31f08e",
+        "bytes": 26617,
+        "physical_lf": 647,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          212,
+          286
+        ],
+        [
+          341,
+          354
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/fakes/FakeCredentialRepository.kt",
+      "role": "test-fixture-support",
+      "current": {
+        "sha256": "e23527840b0c9ffa1baa99bc70550c28115ea357fe213d5f436b568dfa76686a",
+        "git_blob_sha1": "06be2f4b13de6fbf91bd79c866d0f3ce04c31232",
+        "bytes": 15123,
+        "physical_lf": 390,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "e23527840b0c9ffa1baa99bc70550c28115ea357fe213d5f436b568dfa76686a",
+        "git_blob_sha1": "06be2f4b13de6fbf91bd79c866d0f3ce04c31232",
+        "bytes": 15123,
+        "physical_lf": 390,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          146
+        ],
+        [
+          229,
+          390
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/fakes/FakeCryptoEngine.kt",
+      "role": "test-fixture-support",
+      "current": {
+        "sha256": "3fd32dc7a5bf43fcbfe43694f83f4d9f5dc5efdbcee30bf7e0651f8fd07ca61e",
+        "git_blob_sha1": "aa086386fa23e80a7eb1904afc5efdcf4c97d57b",
+        "bytes": 12111,
+        "physical_lf": 341,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "3fd32dc7a5bf43fcbfe43694f83f4d9f5dc5efdbcee30bf7e0651f8fd07ca61e",
+        "git_blob_sha1": "aa086386fa23e80a7eb1904afc5efdcf4c97d57b",
+        "bytes": 12111,
+        "physical_lf": 341,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          98,
+          126
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    },
+    {
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/SecurePasswordGenerator.kt",
+      "role": "test-fixture-support",
+      "current": {
+        "sha256": "41cf16aa02feaccdc575afc8e93adc3978bd28f118ea3b489bea0e7ff503b79c",
+        "git_blob_sha1": "f4af6fc5f4b1a094a01d0e59adfc742b7a6a2011",
+        "bytes": 4072,
+        "physical_lf": 96,
+        "cr_bytes": 0
+      },
+      "handoff_blob": {
+        "sha256": "41cf16aa02feaccdc575afc8e93adc3978bd28f118ea3b489bea0e7ff503b79c",
+        "git_blob_sha1": "f4af6fc5f4b1a094a01d0e59adfc742b7a6a2011",
+        "bytes": 4072,
+        "physical_lf": 96,
+        "cr_bytes": 0
+      },
+      "equal_handoff_bytes": true,
+      "equal_containing_head_bytes": true,
+      "author_bounded_source_ranges": [
+        [
+          1,
+          96
+        ]
+      ],
+      "whitespace_metadata": {
+        "trailing_whitespace_lines": [],
+        "final_newline": true
+      }
+    }
+  ],
+  "test_source_inventory": [
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+      "class": "com.passvault.shared.navigation.NavigationBackCoordinatorTest",
+      "source_method_count": 11,
+      "new_method_count": 2,
+      "new_execution_count": 0,
+      "methods": [
+        {
+          "name": "blocked Back neither reveals nor mutates the previous destination",
+          "annotation_line": 20,
+          "declaration_line": 21,
+          "new_since_handoff": false
+        },
+        {
+          "name": "in-place Back runs local cleanup exactly once without popping",
+          "annotation_line": 32,
+          "declaration_line": 33,
+          "new_since_handoff": false
+        },
+        {
+          "name": "authorized interactive completion pops once and rejects stale duplicate completion",
+          "annotation_line": 47,
+          "declaration_line": 48,
+          "new_since_handoff": false
+        },
+        {
+          "name": "application-root Back is not consumed",
+          "annotation_line": 61,
+          "declaration_line": 62,
+          "new_since_handoff": false
+        },
+        {
+          "name": "forward navigation fails closed until a guarded route registers its policy",
+          "annotation_line": 67,
+          "declaration_line": 68,
+          "new_since_handoff": false
+        },
+        {
+          "name": "forward navigation obeys the active destination leave policy",
+          "annotation_line": 79,
+          "declaration_line": 80,
+          "new_since_handoff": false
+        },
+        {
+          "name": "blocked and in-place policies expose only the current entry to interactive Back",
+          "annotation_line": 95,
+          "declaration_line": 96,
+          "new_since_handoff": false
+        },
+        {
+          "name": "disposing an old registration cannot remove its replacement",
+          "annotation_line": 107,
+          "declaration_line": 108,
+          "new_since_handoff": false
+        },
+        {
+          "name": "policy composed while Face ID is inactive recovers when the host resumes",
+          "annotation_line": 121,
+          "declaration_line": 122,
+          "new_since_handoff": false
+        },
+        {
+          "name": "each Back decision reads one current policy pair instead of its composed snapshot",
+          "annotation_line": 157,
+          "declaration_line": 158,
+          "new_since_handoff": true
+        },
+        {
+          "name": "inactive host and stale session never evaluate an old entry current policy",
+          "annotation_line": 189,
+          "declaration_line": 190,
+          "new_since_handoff": true
+        }
+      ]
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "class": "com.passvault.shared.navigation.CredentialBackFreshnessCompositionTest",
+      "source_method_count": 7,
+      "new_method_count": 7,
+      "new_execution_count": 0,
+      "methods": [
+        {
+          "name": "inline draft edit is guarded before the next composition publishes its policy",
+          "annotation_line": 63,
+          "declaration_line": 64,
+          "new_since_handoff": true
+        },
+        {
+          "name": "same-tab reselection cannot discard the current inline draft before a frame",
+          "annotation_line": 80,
+          "declaration_line": 81,
+          "new_since_handoff": true
+        },
+        {
+          "name": "interactive completion rejects a newly dirty editor before another frame",
+          "annotation_line": 101,
+          "declaration_line": 102,
+          "new_since_handoff": true
+        },
+        {
+          "name": "synchronous save admission blocks old clean Back and forward policy",
+          "annotation_line": 115,
+          "declaration_line": 116,
+          "new_since_handoff": true
+        },
+        {
+          "name": "row Cancel restores clean Back without waiting to replace a dirty registration",
+          "annotation_line": 133,
+          "declaration_line": 134,
+          "new_since_handoff": true
+        },
+        {
+          "name": "unchanged draft remains clean and Back still pops exactly one entry",
+          "annotation_line": 153,
+          "declaration_line": 154,
+          "new_since_handoff": true
+        },
+        {
+          "name": "disposing the real registration leaves the guarded editor fail closed",
+          "annotation_line": 168,
+          "declaration_line": 169,
+          "new_since_handoff": true
+        }
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "class": "com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest",
+      "source_method_count": 11,
+      "new_method_count": 11,
+      "new_execution_count": 0,
+      "methods": [
+        {
+          "name": "row Save captured before further edits adopts the latest draft and preserves another row",
+          "annotation_line": 50,
+          "declaration_line": 51,
+          "new_since_handoff": true
+        },
+        {
+          "name": "a latest blank name rejects stale enabled row Save without losing its draft",
+          "annotation_line": 93,
+          "declaration_line": 94,
+          "new_since_handoff": true
+        },
+        {
+          "name": "unchanged and duplicate row Saves preserve the live value owner",
+          "annotation_line": 126,
+          "declaration_line": 127,
+          "new_since_handoff": true
+        },
+        {
+          "name": "late row Save cannot resurrect an unknown cancelled removed or locked draft",
+          "annotation_line": 159,
+          "declaration_line": 160,
+          "new_since_handoff": true
+        },
+        {
+          "name": "busy generation rejects row Save while the pending draft still exists",
+          "annotation_line": 200,
+          "declaration_line": 201,
+          "new_since_handoff": true
+        },
+        {
+          "name": "explicit update keeps supplied payload bounds and does not become draft Save",
+          "annotation_line": 226,
+          "declaration_line": 227,
+          "new_since_handoff": true
+        },
+        {
+          "name": "separate control events preserve all accepted properties in every order before row Save",
+          "annotation_line": 253,
+          "declaration_line": 254,
+          "new_since_handoff": true
+        },
+        {
+          "name": "property edits retain Unicode bounds and the latest sibling properties",
+          "annotation_line": 300,
+          "declaration_line": 301,
+          "new_since_handoff": true
+        },
+        {
+          "name": "property events cannot create cancelled removed unknown or locked drafts",
+          "annotation_line": 324,
+          "declaration_line": 325,
+          "new_since_handoff": true
+        },
+        {
+          "name": "busy generation rejects every property event without dropping the active draft",
+          "annotation_line": 369,
+          "declaration_line": 370,
+          "new_since_handoff": true
+        },
+        {
+          "name": "whole tuple draft change remains an explicit bounded replacement after property edits",
+          "annotation_line": 399,
+          "declaration_line": 400,
+          "new_since_handoff": true
+        }
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "class": "com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest",
+      "source_method_count": 13,
+      "new_method_count": 0,
+      "new_execution_count": 0,
+      "methods": [
+        {
+          "name": "page Save adopts every active draft without requiring row Save",
+          "annotation_line": 58,
+          "declaration_line": 59,
+          "new_since_handoff": false
+        },
+        {
+          "name": "toolbar and central Back both warn about inline draft changes",
+          "annotation_line": 82,
+          "declaration_line": 83,
+          "new_since_handoff": false
+        },
+        {
+          "name": "opening an unchanged draft and reverting edits leave a clean editor",
+          "annotation_line": 103,
+          "declaration_line": 104,
+          "new_since_handoff": false
+        },
+        {
+          "name": "row Cancel drops only its draft and preserves other unsaved work",
+          "annotation_line": 119,
+          "declaration_line": 120,
+          "new_since_handoff": false
+        },
+        {
+          "name": "blank draft blocks whole page Save without partially adopting other drafts",
+          "annotation_line": 134,
+          "declaration_line": 135,
+          "new_since_handoff": false
+        },
+        {
+          "name": "failed page Save keeps adopted values dirty and retry persists them",
+          "annotation_line": 157,
+          "declaration_line": 158,
+          "new_since_handoff": false
+        },
+        {
+          "name": "row Save and removal clear their owned draft without losing another draft",
+          "annotation_line": 174,
+          "declaration_line": 175,
+          "new_since_handoff": false
+        },
+        {
+          "name": "duplicate row Save preserves the live value and page Save persists it",
+          "annotation_line": 190,
+          "declaration_line": 191,
+          "new_since_handoff": false
+        },
+        {
+          "name": "unchanged row Save in a dirty editor never clears the live owner",
+          "annotation_line": 209,
+          "declaration_line": 210,
+          "new_since_handoff": false
+        },
+        {
+          "name": "unchanged row Save closes its draft without replacing or wiping the live value",
+          "annotation_line": 222,
+          "declaration_line": 223,
+          "new_since_handoff": false
+        },
+        {
+          "name": "busy save rejects repeat saves and late inline edits",
+          "annotation_line": 235,
+          "declaration_line": 236,
+          "new_since_handoff": false
+        },
+        {
+          "name": "lock drops draft references and late draft events cannot resurrect them",
+          "annotation_line": 252,
+          "declaration_line": 253,
+          "new_since_handoff": false
+        },
+        {
+          "name": "draft inputs retain Unicode bounds and unknown identities cannot create fields",
+          "annotation_line": 266,
+          "declaration_line": 267,
+          "new_since_handoff": false
+        }
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+      "class": "com.passvault.feature.credential.presentation.CredentialCustomFieldCapacityTest",
+      "source_method_count": 7,
+      "new_method_count": 0,
+      "new_execution_count": 0,
+      "methods": [
+        {
+          "name": "new and loaded states stop offering Add at the canonical limit but retain page Save",
+          "annotation_line": 50,
+          "declaration_line": 51,
+          "new_since_handoff": false
+        },
+        {
+          "name": "Add admission preserves every busy and unloaded restriction",
+          "annotation_line": 68,
+          "declaration_line": 69,
+          "new_since_handoff": false
+        },
+        {
+          "name": "real Add accepts the final slot and keeps every previous field intact",
+          "annotation_line": 88,
+          "declaration_line": 89,
+          "new_since_handoff": false
+        },
+        {
+          "name": "backend capacity rejection still preserves all accepted fields",
+          "annotation_line": 109,
+          "declaration_line": 110,
+          "new_since_handoff": false
+        },
+        {
+          "name": "removing one field reopens one slot without changing surviving fields",
+          "annotation_line": 128,
+          "declaration_line": 129,
+          "new_since_handoff": false
+        },
+        {
+          "name": "loading a full credential disables only Add and keeps every stored field",
+          "annotation_line": 149,
+          "declaration_line": 150,
+          "new_since_handoff": false
+        },
+        {
+          "name": "page Save at capacity still persists the accepted names and values",
+          "annotation_line": 168,
+          "declaration_line": 169,
+          "new_since_handoff": false
+        }
+      ]
+    }
+  ],
+  "process_and_cleanup": "Only metadata/source reads and report writes by this agent. No Gradle/compiler/test/app/process helper or persistent worker. No generated build outputs or downloaded cache owned by this lane; no wrapper stop applicable."
+}

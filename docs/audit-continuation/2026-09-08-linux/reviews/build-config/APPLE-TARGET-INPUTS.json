@@ -1,0 +1,212 @@
+{
+  "reviewer": "/root/build_config",
+  "captured_utc": "2026-09-08T21:44:44.330032+00:00",
+  "base_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "base_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "qualification": "Point-in-time hashes/source inventory only. No frozen whole-tree, Gradle task realization, filter/device binding or runtime proof.",
+  "executed_cases": 0,
+  "declared_selected_cases": 8,
+  "files": [
+    {
+      "path": "shared/build.gradle.kts",
+      "bytes": 3296,
+      "physical_LF": 101,
+      "sha256": "826cc234a59c05efdbbcd6a0ea62f25362f0a54d588e996582903f44d09949ad",
+      "inspection_scope": "full source-derived target/dependency graph"
+    },
+    {
+      "path": "core/crypto/build.gradle.kts",
+      "bytes": 2805,
+      "physical_LF": 90,
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112",
+      "inspection_scope": "full source including accepted Android device-test addition; iOS cinterop inspected"
+    },
+    {
+      "path": "core/database/build.gradle.kts",
+      "bytes": 2079,
+      "physical_LF": 78,
+      "sha256": "e83ca3a79cafd99f25d9d5a34c4db15f30ba1784a2e7613cfb44d9cbd7ffdbbc",
+      "inspection_scope": "full source incl KSP/schema target wiring"
+    },
+    {
+      "path": "core/designsystem/build.gradle.kts",
+      "bytes": 2484,
+      "physical_LF": 82,
+      "sha256": "38e51bb1d16a35032a9b6d0d987b6e97ca98c4f062e41c8b4468e762fd369abb",
+      "inspection_scope": "full source incl Compose/resources graph"
+    },
+    {
+      "path": "feature/credential/build.gradle.kts",
+      "bytes": 2696,
+      "physical_LF": 85,
+      "sha256": "a471dd3cf229c869059781856a387d2a2b7960af31bf88aeef0e74f918b5a47d",
+      "inspection_scope": "full source; includes relevant broader shared compile dependency"
+    },
+    {
+      "path": "settings.gradle.kts",
+      "bytes": 1108,
+      "physical_LF": 55,
+      "sha256": "a2a3336bd1cce66d616c2a49a1773f4d3c93d437759a093ff28e92e4bd646734",
+      "inspection_scope": "all-project configuration/marker source"
+    },
+    {
+      "path": "build.gradle.kts",
+      "bytes": 24486,
+      "physical_LF": 635,
+      "sha256": "6c35802a0f779baa1b4d5a65396a07824653761882ddfbfaa718a46c59fa5ee0",
+      "inspection_scope": "prior full source read; selected task graph claims preserved in REVIEW.md"
+    },
+    {
+      "path": "gradle.properties",
+      "bytes": 1173,
+      "physical_LF": 38,
+      "sha256": "323971ec6c0f02ff28c724b4c4f3120b5b8843faf3d77608485c1e15fb633235",
+      "inspection_scope": "prior full source read; overrides needed"
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "bytes": 5973,
+      "physical_LF": 129,
+      "sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a",
+      "inspection_scope": "version/target declarations"
+    },
+    {
+      "path": "iosApp/iosApp.xcodeproj/project.pbxproj",
+      "bytes": 12619,
+      "physical_LF": 332,
+      "sha256": "d44992415c7dee70084952e23702f003f0381bcd429095f87aaeb54443f30b09",
+      "inspection_scope": "focused Xcode build-phase/signing/minOS/identity settings, not Xcode execution"
+    },
+    {
+      "path": "iosApp/Configuration/Config.xcconfig",
+      "bytes": 90,
+      "physical_LF": 6,
+      "sha256": "f24a28fdce79117f2bc3ae78b2f39404e28a79b6551aa8b609e556346f52bf53",
+      "inspection_scope": "hash only"
+    },
+    {
+      "path": "core/crypto/src/nativeInterop/cinterop/rawSodium.def",
+      "bytes": 75,
+      "physical_LF": 2,
+      "sha256": "4fe6d1f0557ae48066bb17de8c584564e9c69eb42370c92cbd8e4dad486ce6a6",
+      "inspection_scope": "full source"
+    },
+    {
+      "path": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "bytes": 9452,
+      "physical_LF": 242,
+      "sha256": "e8c466aa2ca2adeb57d4a276eb315f3162bd751bbf8653c20b653e5414e6bdcd",
+      "inspection_scope": "focused names/imports/fixture cleanup source; full semantic read credited only to native reviewer"
+    },
+    {
+      "path": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosBiometricPromptStringsTest.kt",
+      "bytes": 1002,
+      "physical_LF": 24,
+      "sha256": "9e18f0bd193ba3308982ec05b45ab6d025e40f9b8b35baf880aa9ff66d640400",
+      "inspection_scope": "full source; zero runtime"
+    },
+    {
+      "path": "shared/src/iosMain/kotlin/com/passvault/shared/platform/IosAttachmentFileStore.kt",
+      "bytes": 23826,
+      "physical_LF": 575,
+      "sha256": "7f6a7e3efdeca79ae1410b98110ffd13160dd36a9aabd4cf046ceb5338096488",
+      "inspection_scope": "hash only in this supplementary matrix; semantic review referenced separately"
+    },
+    {
+      "path": "docs/audit-handoff/current/issue-to-fix.json",
+      "bytes": 908650,
+      "physical_LF": 16790,
+      "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e",
+      "inspection_scope": "focused PVA008/014 current source/evidence/status rows"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/APPLE_NEXT_SCOPE.md",
+      "bytes": 3602,
+      "physical_LF": 57,
+      "sha256": "810df2941a47f2e25b391e5be98747daa99fff8329b3056c6edc79a76bd0dc65",
+      "inspection_scope": "full counterpart semantic preparation report"
+    }
+  ],
+  "cases": [
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "cancelled return after move removes the adopted plaintext directory",
+      "annotation_line": 31,
+      "declaration_line": 32,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "cancelled return after copy fallback removes both plaintext locations",
+      "annotation_line": 36,
+      "declaration_line": 37,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "successful adoption transfers directory cleanup to source close",
+      "annotation_line": 78,
+      "declaration_line": 79,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "destination protection failure removes the moved file and owned directory",
+      "annotation_line": 99,
+      "declaration_line": 100,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "cancelled admission removes the original picker copy without adopting it",
+      "annotation_line": 115,
+      "declaration_line": 116,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "picker copy is protected before the import path is returned",
+      "annotation_line": 159,
+      "declaration_line": 160,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-008",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "class": "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+      "source_method": "picker copy is deleted when immediate protection fails",
+      "annotation_line": 179,
+      "declaration_line": 180,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    },
+    {
+      "finding": "PVA-014",
+      "source": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosBiometricPromptStringsTest.kt",
+      "class": "com.passvault.shared.platform.IosBiometricPromptStringsTest",
+      "source_method": "both native prompt operations receive the selected English or Arabic text",
+      "annotation_line": 7,
+      "declaration_line": 8,
+      "runtime_display_name": "NOT_ESTABLISHED",
+      "xml_mapping": "NOT_ESTABLISHED"
+    }
+  ]
+}

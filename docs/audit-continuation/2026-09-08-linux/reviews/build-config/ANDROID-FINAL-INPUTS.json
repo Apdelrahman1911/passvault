@@ -1,0 +1,111 @@
+{
+  "reviewer": "/root/build_config",
+  "implementation_author": "/root/android32",
+  "captured_utc": "2026-09-08T21:27:28.462572+00:00",
+  "base_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "base_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "disposition": "ACCEPT_BOUNDED_SOURCE_PATCH_NOT_EXECUTED_NOT_ADMITTED",
+  "qualification": "Point-in-time final selected-file hashes; other agents edits are not frozen. No compilation, plugin realization, APK, target or runtime proof.",
+  "application_test_executions": 0,
+  "harness_case_declarations": 4,
+  "kdf_calls_in_successful_harness_path": 4,
+  "files": [
+    {
+      "path": "core/crypto/build.gradle.kts",
+      "bytes": 2805,
+      "physical_LF": 90,
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112",
+      "inspection_scope": "full final source and eight-line diff"
+    },
+    {
+      "path": "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt",
+      "bytes": 14155,
+      "physical_LF": 291,
+      "sha256": "d9bdb00637773f5d239ffcc5f7d13dc3773e528ef0dec1b1efdffec0ee182310",
+      "inspection_scope": "full final source, no execution"
+    },
+    {
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt",
+      "bytes": 13666,
+      "physical_LF": 336,
+      "sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57",
+      "inspection_scope": "deriveKey/init source path; full hash only for other code"
+    },
+    {
+      "path": "core/crypto/src/androidMain/kotlin/com/passvault/core/crypto/RawPasswordHash.android.kt",
+      "bytes": 2837,
+      "physical_LF": 86,
+      "sha256": "d2c4bcd22df2cb89a97e10a4b591d651f224f0b1c5224bc6b5de10f407d0df1c",
+      "inspection_scope": "full Android actual native KDF source"
+    },
+    {
+      "path": "core/crypto/src/androidMain/kotlin/com/passvault/core/crypto/AndroidCryptoEngine.kt",
+      "bytes": 361,
+      "physical_LF": 10,
+      "sha256": "729a9e49d731ff72125b5c155ef95c898411cc1672c625e9e49b7f74d7746e27",
+      "inspection_scope": "full delegate source"
+    },
+    {
+      "path": "core/crypto/src/commonTest/kotlin/com/passvault/core/crypto/Argon2Test.kt",
+      "bytes": 7518,
+      "physical_LF": 207,
+      "sha256": "195fb796a4ed2a6a03cc27c6a785ebe09efd2dd977b30591f51025912e597231",
+      "inspection_scope": "full existing vector/test source, zero executions"
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "bytes": 5973,
+      "physical_LF": 129,
+      "sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a",
+      "inspection_scope": "focused Android SDK/JNA/libsodium/coroutines declarations; full hash"
+    },
+    {
+      "path": "gradle/verification-metadata.xml",
+      "bytes": 822452,
+      "physical_LF": 12557,
+      "sha256": "21ab6f9c2873325558f5bb96c7e7f68bfbb674e2a7ce867ffe19dabdae60c299",
+      "inspection_scope": "focused JNA5.18.1/5.19.1 metadata; full hash"
+    },
+    {
+      "path": "legal/third-party-dependencies.lock",
+      "bytes": 17552,
+      "physical_LF": 300,
+      "sha256": "252661ae65b520539b6d7a1e301cb1f6de505a17576301e970668b1778d150e2",
+      "inspection_scope": "focused JNA/libsodium/coroutines Android/Desktop rows; full hash"
+    },
+    {
+      "path": "scripts/audit/read_handoff_git.py",
+      "bytes": 12040,
+      "physical_LF": 279,
+      "sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+      "inspection_scope": "full admitted new Git-only data-reader source; separate root/coverage review authority"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/ANDROID_API.json",
+      "bytes": 7661,
+      "physical_LF": 93,
+      "sha256": "180651abf43f09da0bb245f27468b8766a66a9f6b170500f45a2629de3f88807",
+      "inspection_scope": "retained official9.4 API contracts, not plugin binary proof"
+    }
+  ],
+  "historical_read": {
+    "command": "timeout -k 10s 180s python3 -I -B scripts/audit/read_handoff_git.py show remediation-reports/20260905T222925Z/evidence/jna-size-t-contract/Native-5.18.1.java.txt",
+    "reader_sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+    "selected_sha256": "3d8a0598206583e90d76f9a3bd0c8709aed03cbc07d8520cdefd81e6535b619e",
+    "selected_bytes": 106724,
+    "scope": "focused text output matching implements Version, VERSION, getNativeVersion, SIZE_T_SIZE, LONG_SIZE, POINTER_SIZE; independent second selected hash comparison",
+    "exit_code": 0,
+    "elapsed_seconds": 1.033595151,
+    "retained_excerpt": [
+      "112: public final class Native implements Version {",
+      "165: public static final int POINTER_SIZE;",
+      "167: public static final int LONG_SIZE;",
+      "171: public static final int SIZE_T_SIZE;",
+      "239: POINTER_SIZE = sizeof(TYPE_VOIDP);",
+      "240: LONG_SIZE = sizeof(TYPE_LONG);",
+      "242: SIZE_T_SIZE = sizeof(TYPE_SIZE_T);",
+      "1201: private static native String getNativeVersion();"
+    ],
+    "limits": "Git-bound historical source data, not exact Android binary/source equivalence or current worktree transport verification. No extraction/import of captured code; no JVM launched."
+  }
+}

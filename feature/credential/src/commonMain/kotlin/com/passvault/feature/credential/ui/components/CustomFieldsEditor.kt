@@ -47,6 +47,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.components.SecureTextField
 import com.passvault.core.domain.model.CustomField
+import com.passvault.core.domain.model.CustomFieldId
 import com.passvault.core.domain.model.takeCodePoints
 import com.passvault.feature.credential.presentation.CredentialCustomFieldDraft
 import com.passvault.feature.credential.presentation.CredentialViewModel.CredentialEvent
@@ -131,12 +132,9 @@ private fun CustomFieldItem(
         )
     } else {
         CustomFieldEditCard(
+            fieldId = field.id,
             draft = draft,
-            onDraftChange = { onEvent(CredentialEvent.OnCustomFieldDraftChanged(field.id, it)) },
-            onCancel = { onEvent(CredentialEvent.OnCustomFieldEditCancelled(field.id)) },
-            onSave = {
-                onEvent(CredentialEvent.OnCustomFieldUpdated(field.id, draft.name, draft.value, draft.isSecret))
-            },
+            onEvent = onEvent,
             enabled = enabled,
             modifier = modifier,
         )
@@ -145,24 +143,37 @@ private fun CustomFieldItem(
 
 @Composable
 private fun CustomFieldEditCard(
+    fieldId: CustomFieldId,
     draft: CredentialCustomFieldDraft,
-    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
-    onCancel: () -> Unit,
-    onSave: () -> Unit,
+    onEvent: (CredentialEvent) -> Unit,
     enabled: Boolean,
     modifier: Modifier,
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
-            CustomFieldNameInput(draft, onDraftChange, enabled)
+            CustomFieldNameInput(
+                draft = draft,
+                onNameChange = {
+                    onEvent(CredentialEvent.OnCustomFieldDraftNameChanged(fieldId, it))
+                },
+                enabled = enabled,
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            CustomFieldValueInput(draft, onDraftChange, enabled)
+            CustomFieldValueInput(
+                draft = draft,
+                onValueChange = {
+                    onEvent(CredentialEvent.OnCustomFieldDraftValueChanged(fieldId, it))
+                },
+                enabled = enabled,
+            )
             Spacer(modifier = Modifier.height(8.dp))
             CustomFieldEditFooter(
                 draft = draft,
-                onDraftChange = onDraftChange,
-                onCancel = onCancel,
-                onSave = onSave,
+                onSecretChange = {
+                    onEvent(CredentialEvent.OnCustomFieldDraftSecretChanged(fieldId, it))
+                },
+                onCancel = { onEvent(CredentialEvent.OnCustomFieldEditCancelled(fieldId)) },
+                onSave = { onEvent(CredentialEvent.OnCustomFieldEditSaved(fieldId)) },
                 enabled = enabled,
             )
         }
@@ -172,14 +183,14 @@ private fun CustomFieldEditCard(
 @Composable
 private fun CustomFieldNameInput(
     draft: CredentialCustomFieldDraft,
-    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
+    onNameChange: (String) -> Unit,
     enabled: Boolean,
 ) {
     OutlinedTextField(
         value = draft.name,
         enabled = enabled,
         onValueChange = {
-            onDraftChange(draft.copy(name = it.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH)))
+            onNameChange(it.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH))
         },
         label = { Text(stringResource(Res.string.ui_field_name)) },
         singleLine = true,
@@ -190,17 +201,17 @@ private fun CustomFieldNameInput(
 @Composable
 private fun CustomFieldValueInput(
     draft: CredentialCustomFieldDraft,
-    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
+    onValueChange: (String) -> Unit,
     enabled: Boolean,
 ) {
-    val onValueChange: (String) -> Unit = {
-        onDraftChange(draft.copy(value = it.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH)))
+    val onBoundedValueChange: (String) -> Unit = {
+        onValueChange(it.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH))
     }
     if (draft.isSecret) {
         SecureTextField(
             value = draft.value,
             enabled = enabled,
-            onValueChange = onValueChange,
+            onValueChange = onBoundedValueChange,
             label = stringResource(Res.string.ui_value),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -208,7 +219,7 @@ private fun CustomFieldValueInput(
         OutlinedTextField(
             value = draft.value,
             enabled = enabled,
-            onValueChange = onValueChange,
+            onValueChange = onBoundedValueChange,
             label = { Text(stringResource(Res.string.ui_value)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
@@ -219,7 +230,7 @@ private fun CustomFieldValueInput(
 @Composable
 private fun CustomFieldEditFooter(
     draft: CredentialCustomFieldDraft,
-    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
+    onSecretChange: (Boolean) -> Unit,
     onCancel: () -> Unit,
     onSave: () -> Unit,
     enabled: Boolean,
@@ -235,7 +246,7 @@ private fun CustomFieldEditFooter(
                     value = draft.isSecret,
                     enabled = enabled,
                     role = Role.Checkbox,
-                    onValueChange = { onDraftChange(draft.copy(isSecret = it)) },
+                    onValueChange = onSecretChange,
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {

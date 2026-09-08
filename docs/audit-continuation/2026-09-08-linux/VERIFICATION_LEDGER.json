@@ -9,7 +9,34 @@
     "literal_ids_not_unique_logical_tests": 402,
     "latest_feature_shared_otp_G5_cases": 242
   },
-  "continuation_application_runs": [],
+  "continuation_application_runs": [
+    {
+      "kind": "NATIVE_VALIDATION_ATTEMPT_NOT_APPLICATION_TEST_PASS",
+      "platform": "Windows2022x64",
+      "run_id": 34284083351,
+      "attempt": 1,
+      "source_commit": "1a57239f74af792b64e631f51a79e1c0bf83816a",
+      "source_tree": "7375659b90f1c622b7fa29a19dcc8b268e4ed340",
+      "activation_commit": "a1fbdf0d5f0663225a459838d37b072a65e334f6",
+      "activation_tree": "0e5144c44fc79f052d0131808b887f8440e0a2cb",
+      "command_intents": 5,
+      "recorded_completed_commands": 4,
+      "compiler_probes_observed": true,
+      "configure_exit_code": "NOT_RETAINED",
+      "product_target_build_invocations": 0,
+      "ctest_invocations": 0,
+      "application_test_cases": 0,
+      "planned_ctest_cases_unstarted": 14,
+      "operational_status": "FAIL",
+      "cleanup": "HOLD_REPARSE_REFUSAL_BEFORE_DELETION",
+      "owned_workers_reported": 0,
+      "gradle_stop": "NOT_APPLICABLE",
+      "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json",
+      "independent_result_disposition": "OPERATIONAL_FAIL_CLEANUP_HOLD_14_CASES_UNSTARTED",
+      "evidence": "runs/windows-native-01/",
+      "retry": "NO_AUTOMATIC_RETRY_REQUEST_CONSUMED"
+    }
+  ],
   "continuation_application_test_cases": 0,
   "pending_selected_source_methods": 105,
   "pending_selected_classes": 7,
@@ -40,13 +67,13 @@
     {
       "id": "WINDOWS_NATIVE_ADMISSION",
       "status": "PASS",
-      "reason": "Exact new packet independently accepted; root source/command/environment/cleanup admission recorded. Slot reserved; zero native/application executions so far.",
+      "reason": "Exact run01 packet independently accepted and consumed by activation a1fbdf0; this historical admission is not retry authority. Subsequent operational failure and CleanupHOLD preserved.",
       "evidence": "reviews/native/ROOT-ADMISSION.md"
     },
     {
       "id": "ANDROID32_TARGET",
       "status": "BLOCKED",
-      "reason": "Harness source work; no real32bit application process test or synthetic vault/backup target result."
+      "reason": "Three-file harness source accepted; installedimage64only rejected. OfficialcatalogAPI24x86candidate identified and independently interpreted, no archive/install/boot/actual32bit native or synthetic vault/backup evidence."
     },
     {
       "id": "APPLE_DEVICE_GUI_PROVIDER",
@@ -65,8 +92,15 @@
     },
     {
       "id": "WINDOWS_NATIVE_EXECUTION",
+      "status": "FAIL",
+      "reason": "Independently reconciled attempt1 run34284083351: configure/compiler probes observed, owned-descendant drain failed; no product build/CTest, all14 planned cases unstarted, configure exit not retained. ExactJob termination reports0workers.",
+      "evidence": "reviews/native-independent/RESULT-REVIEW-01.json"
+    },
+    {
+      "id": "WINDOWS_NATIVE_CLEANUP",
       "status": "BLOCKED",
-      "reason": "Request-only activation commit not yet pushed; 14 planned CTests, zero executions. Independent result/cleanup adjudication required."
+      "reason": "Run01 refuses reparse point before any deletion; exact path/tag absent. OwnedJob0 supports process settlement only; hosted disposal is not observed file cleanup. No automatic cleanup/recovery retry.",
+      "evidence": "reviews/native-independent/RESULT-REVIEW-01.json"
     }
   ],
   "missing_skill_tool": {

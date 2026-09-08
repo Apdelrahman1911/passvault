@@ -1,0 +1,92 @@
+{
+  "reviewer": "/root/build_config",
+  "scope": "Current public metadata/HEAD observations only, zero application executions",
+  "observed_utc_start": "2026-09-08T20:37:26.015554+00:00",
+  "transport": "Python urllib.request HTTPS; ProxyHandler({}); default TLS verification; Accept-Encoding identity; PassVault-Audit-ReadOnly/20260908",
+  "limits": {
+    "requests": 6,
+    "automatic_retries": 0,
+    "per_request_timeout_seconds": 12,
+    "GET_body_cap_bytes": 131072,
+    "artifact_bodies_downloaded": 0,
+    "metadata_body_bytes": 3528
+  },
+  "receipt_qualification": "Selected response fields transcribed from tool output, not a verbatim HTTP wire capture. Public expiring release-assets signed URL query values deliberately omitted. Original metadata hashes are observed body hashes; HEAD Content-Length does not establish artifact bytes or hashes.",
+  "observations": [
+    {
+      "id": "foojay-marker",
+      "method": "GET",
+      "url": "https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver-convention/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin/1.0.0/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin-1.0.0.pom",
+      "status": 200,
+      "redirects": [],
+      "body_bytes": 715,
+      "body_sha256": "f133249a18754ae6a1d2701d00d849b1afba7b0683ddb5fc1b18a70071cec2fa",
+      "matches_existing_verification_metadata": true,
+      "declared_dependency": "org.gradle.toolchains:foojay-resolver:1.0.0"
+    },
+    {
+      "id": "foojay-module",
+      "method": "GET",
+      "url": "https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver/1.0.0/foojay-resolver-1.0.0.module",
+      "status": 200,
+      "redirects": [{"status": 303, "url": "https://plugins-artifacts.gradle.org/org.gradle.toolchains/foojay-resolver/1.0.0/6190cf0e42e664c11e1ac0a785699ab02b549cea34392c679f36d8a2c550fcb9/foojay-resolver-1.0.0.module"}],
+      "body_bytes": 2813,
+      "body_sha256": "6190cf0e42e664c11e1ac0a785699ab02b549cea34392c679f36d8a2c550fcb9",
+      "matches_existing_verification_metadata": true,
+      "runtime_variant": {
+        "name": "shadowRuntimeElements",
+        "org.gradle.dependency.bundling": "shadowed",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.plugin.api-version": "7.6",
+        "declared_jar_size": 327154,
+        "declared_jar_sha256": "78b86a47dfdf7697c9bd15da78983fd80da7247d6e02fc106bdf07e0388b60a8"
+      }
+    },
+    {
+      "id": "foojay-jar-head",
+      "method": "HEAD",
+      "url": "https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver/1.0.0/foojay-resolver-1.0.0.jar",
+      "status": 200,
+      "redirects": [{"status": 303, "url": "https://plugins-artifacts.gradle.org/org.gradle.toolchains/foojay-resolver/1.0.0/78b86a47dfdf7697c9bd15da78983fd80da7247d6e02fc106bdf07e0388b60a8/foojay-resolver-1.0.0.jar"}],
+      "content_length": 327154,
+      "body_downloaded": false
+    },
+    {
+      "id": "gradle-wrapper-head",
+      "method": "HEAD",
+      "url": "https://services.gradle.org/distributions/gradle-9.7.1-bin.zip",
+      "status": 200,
+      "redirects": [
+        {"status": 307, "url": "https://github.com/gradle/gradle-distributions/releases/download/v9.7.1/gradle-9.7.1-bin.zip"},
+        {"status": 302, "url_without_query": "https://release-assets.githubusercontent.com/github-production-release-asset/696192900/45f62dc6-d769-4657-adc9-32064153adbe", "query_omitted": true}
+      ],
+      "content_length": 151433392,
+      "body_downloaded": false
+    },
+    {
+      "id": "agp-module-head",
+      "method": "HEAD",
+      "url": "https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/9.4.0/gradle-9.4.0.pom",
+      "status": 200,
+      "redirects": [],
+      "content_length": 9034,
+      "body_downloaded": false
+    },
+    {
+      "id": "kotlin-plugin-head",
+      "method": "HEAD",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-gradle-plugin/2.4.10/kotlin-gradle-plugin-2.4.10.pom",
+      "status": 200,
+      "redirects": [],
+      "content_length": 10837,
+      "body_downloaded": false
+    }
+  ],
+  "unchanged_blockers": [
+    "Original G7 lower-level plugin-marker failure cause remains unresolved",
+    "Python HTTPS observations do not prove Java/Gradle transport or effective repository/configuration state",
+    "No dependency artifact body/hash verification or runtime loading observed",
+    "No test cases or XML produced",
+    "No build or retry admission"
+  ]
+}
