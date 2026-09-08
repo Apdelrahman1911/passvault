@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "historical_summary": "docs/audit-handoff/current/historical-verification-summary-adoption-g12.json",
+  "historical_event_counts_not_test_cases": {
+    "status_events": 70,
+    "passing_junit_execution_events": 684,
+    "pass_gate_events": 623,
+    "blocked_gate_events": 61,
+    "literal_ids_not_unique_logical_tests": 402,
+    "latest_feature_shared_otp_G5_cases": 242
+  },
+  "continuation_application_runs": [],
+  "continuation_application_test_cases": 0,
+  "pending_selected_source_methods": 105,
+  "pending_selected_classes": 7,
+  "pending_selected_files": 5,
+  "gates": [
+    {
+      "id": "PINNED_HANDOFF_COMMIT_TREE",
+      "status": "PASS",
+      "scope": "Git transport identity only; see README baseline."
+    },
+    {
+      "id": "ORIGINAL_POSIX_TRANSPORT_READER",
+      "status": "BLOCKED",
+      "observed_exit": 2,
+      "reason": "Directory/file device split; supplied reader fail-closed; not retried or edited."
+    },
+    {
+      "id": "COMMITTED_HANDOFF_TRANSPORT",
+      "status": "PASS",
+      "scope": "Root executed independently accepted Git-blob reader;21378 paths16510 blobs11packs;zero application tests;not checkout-byte proof.",
+      "evidence": "reviews/baseline-coverage/transport-verify-v3-result.json"
+    },
+    {
+      "id": "LOCAL_DATABASE_RUNNER_ADMISSION",
+      "status": "BLOCKED",
+      "reason": "New fixed Linux runner/coordination/cleanup and105XML mapping review in progress. Resource capacity improved externally, not admission."
+    },
+    {
+      "id": "WINDOWS_NATIVE_ADMISSION",
+      "status": "BLOCKED",
+      "reason": "New dedicated nonpublishing workflow/helper under independent review. No CI run yet."
+    },
+    {
+      "id": "ANDROID32_TARGET",
+      "status": "BLOCKED",
+      "reason": "Harness source work; no real32bit application process test or synthetic vault/backup target result."
+    },
+    {
+      "id": "APPLE_DEVICE_GUI_PROVIDER",
+      "status": "BLOCKED",
+      "reason": "Essential Apple/simulator/physical evidence remains absent; CI authorization is not execution."
+    },
+    {
+      "id": "PVA029_REGRESSION",
+      "status": "FAIL",
+      "reason": "Preserved49namedchecks44pass5fail;noautomaticretry."
+    },
+    {
+      "id": "PVA031_HISTORICAL_SETUP",
+      "status": "BLOCKED",
+      "reason": "Historicalpluginresolutionfailure0assertions0XML;publicmetadataisnotGradleresult."
+    }
+  ],
+  "missing_skill_tool": {
+    "path": "production-readiness-audit/scripts/validate_evidence_ledger.py",
+    "status": "NOT_SUPPLIED_NOT_RUN",
+    "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
+  }
+}

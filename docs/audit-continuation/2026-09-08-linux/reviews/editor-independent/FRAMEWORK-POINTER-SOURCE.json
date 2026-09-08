@@ -1,0 +1,63 @@
+{
+  "reviewer": "/root/editor_review",
+  "retrieved_utc": "2026-09-08T21:05:35.255553+00:00",
+  "source_url": "https://repo.maven.apache.org/maven2/org/jetbrains/compose/ui/ui-desktop/1.11.1/ui-desktop-1.11.1-sources.jar",
+  "archive_bytes": 1032410,
+  "archive_sha256": "b7bf3762c2f7220a780c65b9050ceb2ae760ac5ffc1869018b37fd53e0642b2e",
+  "purpose": "PVA007 pre-frame row Save pointer scheduling source challenge; no test execution",
+  "qualifications": [
+    "Companion FRAMEWORK-SOURCE.json binds snapshot notifications, key and composition-frame path.",
+    "Same-coordinate Maven source, not freshly resolved or bytecode-matched binary.",
+    "Pointer routing excerpts do not establish delivered UI test/IME/native/hardware observations.",
+    "Apache-2.0 upstream source; https://www.apache.org/licenses/LICENSE-2.0 .",
+    "Archive processed in-memory and not retained."
+  ],
+  "members": [
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/BaseComposeScene.skiko.kt",
+      "sha256": "98b3003a5232ebb3b3d2d3ee2e8d2d4a1841c15d30b957497b5d868bfa2badc0",
+      "physical_lf": 337,
+      "excerpts": [
+        {
+          "start": 56,
+          "end": 67,
+          "text": "internal abstract class BaseComposeScene(\n    coroutineContext: CoroutineContext,\n    private val invalidate: () -> Unit,\n) : ComposeScene {\n    protected val snapshotInvalidationTracker = SnapshotInvalidationTracker(::updateInvalidations)\n    protected val inputHandler: ComposeSceneInputHandler =\n        ComposeSceneInputHandler(\n            prepareForPointerInputEvent = ::doMeasureAndLayout,\n            processPointerInputEvent = ::onPointerInputEvent,\n            cancelPointerInput = ::processCancelPointerInput,\n            processKeyEvent = ::processKeyEvent,\n        )\n"
+        },
+        {
+          "start": 201,
+          "end": 262,
+          "text": "    override fun sendPointerEvent(\n        eventType: PointerEventType,\n        position: Offset,\n        scrollDelta: Offset,\n        timeMillis: Long,\n        type: PointerType,\n        buttons: PointerButtons?,\n        keyboardModifiers: PointerKeyboardModifiers?,\n        nativeEvent: Any?,\n        button: PointerButton?,\n        scaleGestureFactor: Float,\n        panGestureOffset: Offset\n    ): PointerEventResult = postponeInvalidation(\n        \"BaseComposeScene:sendPointerEvent\"\n    ) {\n        inputHandler.onPointerEvent(\n            eventType = eventType,\n            position = position,\n            scrollDelta = scrollDelta,\n            timeMillis = timeMillis,\n            type = type,\n            buttons = buttons,\n            keyboardModifiers = keyboardModifiers,\n            nativeEvent = nativeEvent,\n            button = button,\n            scaleGestureFactor = scaleGestureFactor,\n            panGestureOffset = panGestureOffset,\n        ).also {\n            recomposer.performScheduledEffects()\n        }\n    }\n\n    // TODO(demin) verify that pressure is the same on Android and iOS\n    override fun sendPointerEvent(\n        eventType: PointerEventType,\n        pointers: List<ComposeScenePointer>,\n        buttons: PointerButtons,\n        keyboardModifiers: PointerKeyboardModifiers,\n        scrollDelta: Offset,\n        timeMillis: Long,\n        nativeEvent: Any?,\n        button: PointerButton?,\n        scaleGestureFactor: Float,\n        panGestureOffset: Offset,\n    ): PointerEventResult = postponeInvalidation(\n        \"BaseComposeScene:sendPointerEvent\"\n    ) {\n        inputHandler.onPointerEvent(\n            eventType = eventType,\n            pointers = pointers,\n            buttons = buttons,\n            keyboardModifiers = keyboardModifiers,\n            scrollDelta = scrollDelta,\n            timeMillis = timeMillis,\n            nativeEvent = nativeEvent,\n            button = button,\n            scaleGestureFactor = scaleGestureFactor,\n            panGestureOffset = panGestureOffset,\n        ).also {\n            recomposer.performScheduledEffects()\n        }\n    }\n"
+        },
+        {
+          "start": 297,
+          "end": 315,
+          "text": "    protected fun doMeasureAndLayout() {\n        snapshotInvalidationTracker.onMeasureAndLayout()\n        measureAndLayout()\n    }\n\n    protected abstract fun createComposition(content: @Composable () -> Unit): Composition\n\n    private fun onPointerInputEvent(event: PointerInputEvent) = processPointerInputEvent(event)\n        .also {\n            if (composeSceneContext.platformContext.isClearFocusOnMouseDownEnabled) {\n                val isDown = event.eventType == PointerEventType.Press\n                val pointer = event.pointers.singleOrNull()\n                val isFromMouse = pointer?.type == PointerType.Mouse\n                if (isDown && isFromMouse) {\n                    focusManager.clearFocusIfOutsideOfActiveFocusTargetNode(pointer.position)\n                }\n            }\n        }\n\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/ComposeSceneInputHandler.skiko.kt",
+      "sha256": "5af4766e277f5c729431ff7675b8ed2b61f479c3a156cefc08b8c8fccf031ee4",
+      "physical_lf": 260,
+      "excerpts": [
+        {
+          "start": 112,
+          "end": 146,
+          "text": "    fun onPointerEvent(\n        eventType: PointerEventType,\n        pointers: List<ComposeScenePointer>,\n        buttons: PointerButtons,\n        keyboardModifiers: PointerKeyboardModifiers,\n        scrollDelta: Offset,\n        timeMillis: Long,\n        nativeEvent: Any?,\n        button: PointerButton?,\n        scaleGestureFactor: Float,\n        panGestureOffset: Offset,\n    ): PointerEventResult {\n        val event = PointerInputEvent(\n            eventType = eventType,\n            pointers = pointers,\n            timeMillis = timeMillis,\n            nativeEvent = nativeEvent,\n            scrollDelta = scrollDelta,\n            buttons = buttons,\n            keyboardModifiers = keyboardModifiers,\n            changedButton = button,\n            scaleGestureFactor = scaleGestureFactor,\n            panGestureOffset = panGestureOffset,\n        )\n        prepareForPointerInputEvent()\n        val updatePointerPositionResult = updatePointerPosition()\n        val eventResult = syntheticEventSender.send(event)\n        updatePointerPositions(event)\n        return updatePointerPositionResult.merging(eventResult)\n    }\n\n    fun onKeyEvent(keyEvent: KeyEvent): Boolean {\n        defaultPointerStateTracker.onKeyEvent(keyEvent)\n        return processKeyEvent(keyEvent.withTrackedModifiers())\n    }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/node/RootNodeOwner.skiko.kt",
+      "sha256": "e4d14ba19922ff7cbbb62f05bf0f23a52eb6e1b3bbaf78fa015351b5400c8090",
+      "physical_lf": 1046,
+      "excerpts": [
+        {
+          "start": 266,
+          "end": 322,
+          "text": "        owner.rectManager.dispatchCallbacks()\n        if (hasPositionInWindowChanged || hasContainerSizeChanged) {\n            graphicsContext.setLightingInfo(\n                canvasOffset = positionInWindow,\n                density = density,\n                containerSize = containerSize\n            )\n        }\n    }\n\n    fun invalidatePositionInWindow() {\n        updatePositionCacheAndDispatch()\n    }\n\n    fun invalidatePositionOnScreen() {\n        updatePositionCacheAndDispatch()\n    }\n\n    fun draw(canvas: Canvas) = trace(\"RootNodeOwner:draw\") {\n        ownedLayerManager.draw(canvas)\n        clearInvalidObservations()\n        owner.rectManager.dispatchCallbacks()\n    }\n\n    fun setRootModifier(modifier: Modifier) {\n        owner.root.modifier = _owner.rootModifier then modifier\n    }\n\n    private fun onRootConstrainsChanged(constraints: Constraints?) {\n        measureAndLayoutDelegate.updateRootConstraintsWithInfinityCheck(constraints)\n        if (measureAndLayoutDelegate.hasPendingMeasureOrLayout) {\n            snapshotInvalidationTracker.requestMeasureAndLayout()\n        }\n    }\n\n    fun onCancelPointerInput() {\n        pointerInputEventProcessor.processCancel()\n    }\n\n    @OptIn(InternalCoreApi::class)\n    fun onPointerInput(event: PointerInputEvent): PointerEventResult {\n        if (event.button != null) {\n            platformContext.inputModeManager.requestInputMode(InputMode.Touch)\n        }\n        val isInBounds = event.eventType != PointerEventType.Exit &&\n            event.pointers.fastAll { isInBounds(it.position) }\n        val result = pointerInputEventProcessor.process(\n            event,\n            IdentityPositionCalculator,\n            isInBounds = isInBounds\n        )\n        return PointerEventResult(value = result.value)\n    }\n\n    fun onKeyEvent(keyEvent: KeyEvent): Boolean {\n        return focusOwner.dispatchKeyEvent(keyEvent) || handleFocusKeys(keyEvent)\n    }\n"
+        }
+      ]
+    }
+  ]
+}

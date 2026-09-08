@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/baseline_coverage",
+  "author": "/root",
+  "at": "2026-09-08T21:00:53.268257+00:00",
+  "purpose": "Independent source/configuration/cleanup acceptance for bounded pinned-Git read-only handoff transport, not application/build/test execution",
+  "disposition": "ACCEPT",
+  "subject": {
+    "path": "scripts/audit/read_handoff_git.py",
+    "sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+    "bytes": 12040,
+    "physical_LF": 279,
+    "read_ranges": [
+      [
+        1,
+        279
+      ]
+    ],
+    "retained_inert_source": "transport-reader-v3.py.txt"
+  },
+  "target": {
+    "commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+    "git_prefix": "docs/audit-handoff/",
+    "actions": [
+      "list",
+      "show",
+      "verify"
+    ],
+    "checkout_verification": false
+  },
+  "challenge_resolution": {
+    "TR01": "Latched INT/TERM is installed before main and does not raise in Popen registration. Every returned child object enters finally; live direct child is killed once and reaped with5s bound. Wait timeout is explicit unresolved cleanup with PID; pipes close in nested finally. Signals during a successful Git operation are checked before returning bytes. Hardkill/host-loss limitations remain.",
+    "TR02": "Incremental nonblocking selector collection checks stdout and stderr caps before retention, polling to a30s per-child deadline. A single read scratch chunk is capped at65536 bytes. Output conversions, JSON tables and decoded-TAR storage are additional bounded memory, not a host RSS sandbox.",
+    "TR03": "NUL, ESC, bare CR and other disallowed Cc/Cf are refused. Checking a CRLF-normalized copy permits ordinary CRLF without changing the bytes actually displayed. LF/TAB remain permitted. Unsupported/binary display is a refusal, not a damaged evidence rewrite.",
+    "TR04": "The duplicate tree-path predicate compares the prefix-stripped suffix used as the map key. Package/tree equality and index/pack/blob membership remain checked.",
+    "network": "Fixed local plumbing with explicit clean environment, no replacement objects/lazy fetch, all Git protocols denied, hooks disabled and fsmonitor disabled. No archive import/extraction, credential inspection, application or network operation is implemented.",
+    "integrity": "Exact expected checkpoint tree checked; regular Git blobs are length/SHA1-object checked and handoff members/index/packs SHA256-bound. Decoder limits, USTAR metadata/type/path checks, disjoint expected blob set, padding and EOF checks retained."
+  },
+  "initial_execution_admission_conditions": [
+    "Root alone invokes the first verify once using the exact accepted script bytes with isolated Python: python3 -I -B scripts/audit/read_handoff_git.py verify. Root records interpreter identity, exact wrapper argv, exit and compact stdout/stderr.",
+    "External whole-operation timeout180s; TERM followed by KILL only after10s grace, only for the audit-owned invocation. The built-in30s Git deadlines do not by themselves bound the entire multi-command action.",
+    "Capture at most128KiB compact initial verify output; do not redirect large application binaries or extract pack content. Root retains any failure/timeout/cleanup residual honestly; no automatic unchanged retry.",
+    "No new toolcache/temp/build/application storage is used. Isolated Python -B avoids pycache; only fixed owned short-lived Git children need settlement. No Gradle stop is applicable to this data operation.",
+    "Root announces initial outcome before agents may use this accepted show/list path. Later show/list requests stay narrowly tied to allowed non-stopped findings/evidence and bounded caller walltime/output; no STOP/NO-RETRY/CLOSED procedure reopening.",
+    "Rehash accepted source immediately before use and preserve frozen handoff untouched. A changed reader requires fresh exact review rather than silently inheriting this acceptance."
+  ],
+  "limitations": [
+    "Source-only operational acceptance, not executed cancellation/failure/negative-control tests. This reviewer did not execute/import the reader or any packed helper.",
+    "A successful verify establishes committed handoff transport only; it cannot establish809+2 actual checkout identity, fresh source coverage, semantic reference closure, application correctness, release readiness or a closed PVA.",
+    "Cooperative repository/toolchain trust, not hostile-same-UID or arbitrary malicious-Git proof. No global process exclusivity, kernel/hardware RSS containment or universal child settlement guarantee.",
+    "SIGKILL/host loss and uninterruptible kernel waits can prevent cleanup. If root observes a residual PID/timeout, it remains unresolved; no automatic cleanup retry or unrelated process signal is authorized.",
+    "No total application source denominator is changed by this infrastructure review. Historical transport refusal and V1/V2 REVISE outcomes remain retained, including the failed intermediate snapshot capture.",
+    "G7/G8 CLOSED; PVU007 STOP; PVU011 NO RETRY; PVA029 FAIL/no automatic retry; all owner design, compatibility, candidate1017001 and publication boundaries remain."
+  ],
+  "execution_by_reviewer": {
+    "reader_invocations": 0,
+    "packed_program_imports": 0,
+    "application_test_cases": 0,
+    "builds": 0,
+    "failure_or_signal_experiments": 0
+  }
+}

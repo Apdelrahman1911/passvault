@@ -1,0 +1,12 @@
+Independent baseline transport only; no application tests or build admission.
+2026-09-08T20:37:36Z
+
+$ git rev-parse HEAD HEAD^{tree}
+9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed
+05014e9f635131d5db06701e4013b4b5a746465a
+
+$ git status --short --branch
+## codex/remediation-handoff-20260908...origin/codex/remediation-handoff-20260908
+
+$ timeout 120s python3 -B docs/audit-handoff/evidence.py verify-source
+REFUSED: file type/size/links

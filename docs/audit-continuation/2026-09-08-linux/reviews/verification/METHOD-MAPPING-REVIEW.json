@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/verification",
+  "subject_application_authors": "published handoff /root and historical test authors; reviewer changed no application/test source",
+  "at": "2026-09-08T21:12:04.607913+00:00",
+  "purpose": "Independent current-source105-method selection and exact prospective JUnit XML display mapping",
+  "disposition": "ACCEPT_SOURCE_AND_DISPLAY_MAPPING_ONLY",
+  "subjects": [
+    {
+      "path": "METHOD-INVENTORY.json",
+      "bytes": 73265,
+      "sha256": "40ac2f07ea2c98d1a320e75bb59d7bbc6b3ec954efd94b349257103aaccd8979"
+    },
+    {
+      "path": "SOURCE-BINDINGS.json",
+      "bytes": 11772,
+      "sha256": "02104ab5cc81776f7ebbf627d361968fb2ebf8ae689286b41f5f60249bd5fca5"
+    },
+    {
+      "path": "SOURCE-REVIEW.md",
+      "bytes": 12796,
+      "sha256": "92e9975ee52ad70f2b55bd59eb0dc14c0414b6642efcef290ffbb6c1c5349b19"
+    },
+    {
+      "path": "HISTORICAL-XML-MAPPING.json",
+      "bytes": 19710,
+      "sha256": "4d03849a0fd8d4566f0e69e054e47bac2eb4e0003a95411996720fe620c3a65e"
+    }
+  ],
+  "source_binding": {
+    "containing_handoff_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "containing_handoff_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+    "g12_application_manifest_canonical_sha256": "7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91",
+    "selected_source_files": [
+      {
+        "path": "core/database/src/commonTest/kotlin/com/passvault/core/database/backup/BackupPaginationTest.kt",
+        "bytes": 13328,
+        "sha256": "4291201c78f510e359c5e63c266c8374ec60821cd50f8a904dbd4363ca2d9765",
+        "physical_lf": 291,
+        "observed_mode": "0o600",
+        "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+        "bytes": 27183,
+        "sha256": "36103de28d5bff2eaff06f6bea0aaf472983c0d8607e3383a485081974444554",
+        "physical_lf": 522,
+        "observed_mode": "0o600",
+        "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+        "bytes": 17716,
+        "sha256": "1108e4b0d4353c840974ac0ed57331e257947e9bded200a52bc73afd3b9d3e0e",
+        "physical_lf": 473,
+        "observed_mode": "0o600",
+        "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+        "bytes": 96319,
+        "sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+        "physical_lf": 2371,
+        "observed_mode": "0o600",
+        "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupStreamingTest.kt",
+        "bytes": 73576,
+        "sha256": "ebf9675ec7c551c291848dc24a72a6056098d31e75d67ee31510112608dfc2d2",
+        "physical_lf": 1829,
+        "observed_mode": "0o600",
+        "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+      }
+    ],
+    "whole_current_worktree_freeze": false
+  },
+  "exact_selection": {
+    "task": ":core:database:desktopTest",
+    "ordered_classes": [
+      "com.passvault.core.database.backup.BackupPaginationTest",
+      "com.passvault.core.database.backup.VaultBackupUnicodePaginationTest",
+      "com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest",
+      "com.passvault.core.database.repository.RepositorySecurityIntegrationTest",
+      "com.passvault.core.database.backup.VaultBackupStreamingTest",
+      "com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest",
+      "com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest"
+    ],
+    "class_counts": [
+      13,
+      6,
+      12,
+      17,
+      39,
+      7,
+      11
+    ],
+    "source_declared_methods": 105,
+    "selected_files": 5,
+    "excluded_sibling_classes": 6,
+    "excluded_sibling_methods": 25
+  },
+  "normative_display_contract": {
+    "testcase_name": "exact literal source method name followed immediately by [desktop]",
+    "testcase_classname": "exact FQCN without suffix",
+    "testsuite_name": "exact simple class name followed immediately by [desktop]",
+    "file_path": "exact core/database/build/test-results/desktopTest/TEST-<FQCN>.xml",
+    "aliases_or_normalization_allowed": false,
+    "frozen_before_any_current_selection_execution": true
+  },
+  "independent_challenge": [
+    "All105 selected method bodies, source declarations, shared-class boundaries and fixture inheritance inspected; no hidden inherited @Test counted.",
+    "Four old XMLs show69 names shared with this selected source; a separate commonTest EntityTest XML supplies9 target-decoration controls. Exact blob sizes/SHA256 match the approved committed transport.",
+    "Historical XML has34 streaming cases, current source39. No old passed result transfers to changed identifier-budget body merely because method name is unchanged.",
+    "Three new selected classes are prospectively assigned the same exact decoration, not claimed observed/executed. Runtime discrepancy must fail mapping and require separately reviewed correction, not permissive posthoc stripping.",
+    "Source proofs preserve PVA033 final-last-access INTERNAL_ERROR versus other stale admission VAULT_LOCKED; PVA034 is accept-only discriminating budget oracle; PVA035 finite synthetic/helper and real Room/provider scopes remain distinct."
+  ],
+  "execution_admission": false,
+  "runtime_runner_review": false,
+  "runtime_results_verified": false,
+  "application_test_executions_by_reviewer": 0,
+  "transport_show_invocations": 5,
+  "conditions_for_future_use": [
+    "Root freezes and rehashes final whole source tree, exact runner/command/environment/instance/evidence/cleanup plan and this inventory before admission.",
+    "Any selected source hash/name/method count or test-framework display policy change invalidates this exact mapping until independently reconciled.",
+    "Exactly7 regular nonempty XMLs, each expected method exactly once, no extra/missing/duplicate/class mismatch or failure/error/skip required for eventual semantic passing result; command exit0/file count alone cannot pass.",
+    "Root retains actual execution/source/stop/owned-worker/cleanup evidence and obtains independent result reconciliation; this review does not preapprove unknown future results.",
+    "Current resource/coordination/environment/cleanup admission remains separate; physical target gaps, PVA029 failure/no automatic retry and STOP/NO-RETRY/CLOSED scopes remain."
+  ],
+  "limitations": [
+    "Reviewer-generated inventory/report metadata is not a second independent review of its own formatting; parent can challenge schema/content before relying on it. Application/test source was authored by others.",
+    "No compiler, Gradle, native build, actual application test, device prompt, user-data operation or historical runner import/execution occurred.",
+    "Approved Git show transport does not verify current checkout or grant any historical runtime/helper/recovery authority.",
+    "Only exact historical synthetic XML retained; no temporary workspace, cache or persistent worker produced; Gradle stop is NOT_APPLICABLE to these transport reads."
+  ],
+  "report_writer_failure": {
+    "tool_chunk_id": "430fdc",
+    "exit_code": 1,
+    "cause": "Unescaped apostrophe in inline Python metadata writer; SyntaxError before body execution.",
+    "effect": "No review JSON written by failed command; earlier separate Markdown addendum had applied.",
+    "correction": "Fixed quoting in data-only report writer, not runtime/test retry."
+  }
+}

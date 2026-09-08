@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation3.runtime.EntryProviderScope
 import com.passvault.core.domain.model.CredentialId
@@ -20,6 +21,8 @@ import com.passvault.feature.credential.ui.CredentialDetailScreen
 import com.passvault.feature.credential.ui.CredentialEditScreen
 import com.passvault.feature.vault.presentation.VaultViewModel
 import com.passvault.feature.vault.ui.VaultScreen
+import com.passvault.shared.navigation.BackPolicy
+import com.passvault.shared.navigation.NavigationBackCoordinator
 import com.passvault.shared.navigation.RegisterBackDisposition
 import com.passvault.shared.navigation.RouteAdapterContext
 import com.passvault.shared.navigation.checkExpected
@@ -74,7 +77,7 @@ private fun CredentialDetailEntry(context: RouteAdapterContext, route: VaultRout
     val viewModel: CredentialViewModel = koinViewModel()
     val state by viewModel.state.collectAsState()
     val token = entryNavigationToken(context.navigator, route)
-    RegisterCredentialBack(context, token, viewModel, credentialBackDisposition(state))
+    RegisterCredentialBack(context.backCoordinator, token, viewModel, credentialBackDisposition(state))
     ObserveCredentialEffects(
         context = context,
         viewModel = viewModel,
@@ -100,7 +103,7 @@ private fun CredentialCreateEntry(context: RouteAdapterContext, route: VaultRout
     val viewModel: CredentialViewModel = koinViewModel()
     val state by viewModel.state.collectAsState()
     val token = entryNavigationToken(context.navigator, route)
-    RegisterCredentialBack(context, token, viewModel, credentialBackDisposition(state))
+    RegisterCredentialBack(context.backCoordinator, token, viewModel, credentialBackDisposition(state))
     ObserveCredentialEffects(
         context = context,
         viewModel = viewModel,
@@ -131,7 +134,7 @@ private fun CredentialEditEntry(context: RouteAdapterContext, route: VaultRoute.
     val viewModel: CredentialViewModel = koinViewModel()
     val state by viewModel.state.collectAsState()
     val token = entryNavigationToken(context.navigator, route)
-    RegisterCredentialBack(context, token, viewModel, credentialBackDisposition(state))
+    RegisterCredentialBack(context.backCoordinator, token, viewModel, credentialBackDisposition(state))
     ObserveCredentialEffects(
         context = context,
         viewModel = viewModel,
@@ -213,18 +216,28 @@ private fun ObserveCredentialEffects(
 }
 
 @Composable
-private fun RegisterCredentialBack(
-    context: RouteAdapterContext,
+internal fun RegisterCredentialBack(
+    coordinator: NavigationBackCoordinator,
     token: NavigationToken,
     viewModel: CredentialViewModel,
     disposition: BackDisposition,
 ) {
+    val currentPolicy = remember(viewModel) {
+        {
+            val currentDisposition = credentialBackDisposition(viewModel.state.value)
+            BackPolicy(
+                disposition = currentDisposition,
+                blocksForwardNavigation = currentDisposition != BackDisposition.PopNow,
+            )
+        }
+    }
     RegisterBackDisposition(
-        coordinator = context.backCoordinator,
+        coordinator = coordinator,
         token = token,
         disposition = disposition,
         handleInPlace = { viewModel.onEvent(CredentialViewModel.CredentialEvent.OnBackClick) },
         blocksForwardNavigation = disposition != BackDisposition.PopNow,
+        currentPolicy = currentPolicy,
     )
 }
 

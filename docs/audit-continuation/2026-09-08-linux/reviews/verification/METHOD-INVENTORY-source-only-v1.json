@@ -1,0 +1,1179 @@
+{
+  "format": 1,
+  "author": "/root/verification",
+  "purpose": "independent_current_source_method_inventory; not execution admission or regression result",
+  "captured_at": "2026-09-08T20:41:31.187166+00:00",
+  "containing_handoff_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "containing_handoff_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "g12_application_manifest_canonical_sha256": "7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91",
+  "task": ":core:database:desktopTest",
+  "counts": {
+    "selected_classes": 7,
+    "selected_files": 5,
+    "source_declared_methods": 105,
+    "execution_events": 0,
+    "excluded_sibling_classes_in_selected_files": 6,
+    "excluded_sibling_methods": 25
+  },
+  "display_name_mapping": {
+    "status": "UNRESOLVED_PENDING_AUTHORIZED_HISTORICAL_XML_DATA_ACCESS",
+    "candidate_rule": "source method name + literal [desktop] suffix (not yet adopted)",
+    "normalization": "NONE; expected_xml_testcase_name must be fixed before admission, never inferred post hoc from results"
+  },
+  "result_policy": {
+    "expected_xml_files": 7,
+    "regular_nonempty": true,
+    "unexpected_xml_allowed": false,
+    "each_frozen_class_method_exactly_once": true,
+    "failures_errors_skips_allowed": 0,
+    "exit_zero_not_semantic_pass": true
+  },
+  "sources": [
+    {
+      "path": "core/database/src/commonTest/kotlin/com/passvault/core/database/backup/BackupPaginationTest.kt",
+      "bytes": 13328,
+      "sha256": "4291201c78f510e359c5e63c266c8374ec60821cd50f8a904dbd4363ca2d9765",
+      "physical_lf": 291,
+      "observed_mode": "0o600",
+      "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+      "bytes": 27183,
+      "sha256": "36103de28d5bff2eaff06f6bea0aaf472983c0d8607e3383a485081974444554",
+      "physical_lf": 522,
+      "observed_mode": "0o600",
+      "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "bytes": 17716,
+      "sha256": "1108e4b0d4353c840974ac0ed57331e257947e9bded200a52bc73afd3b9d3e0e",
+      "physical_lf": 473,
+      "observed_mode": "0o600",
+      "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "bytes": 96319,
+      "sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+      "physical_lf": 2371,
+      "observed_mode": "0o600",
+      "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupStreamingTest.kt",
+      "bytes": 73576,
+      "sha256": "ebf9675ec7c551c291848dc24a72a6056098d31e75d67ee31510112608dfc2d2",
+      "physical_lf": 1829,
+      "observed_mode": "0o600",
+      "capture": "bounded read; matching pre/post lstat at capture; not hostile-writer or atomic whole-tree proof"
+    }
+  ],
+  "classes": [
+    {
+      "fqcn": "com.passvault.core.database.backup.BackupPaginationTest",
+      "finding_ids": [
+        "PVA-035"
+      ],
+      "source_path": "core/database/src/commonTest/kotlin/com/passvault/core/database/backup/BackupPaginationTest.kt",
+      "source_sha256": "4291201c78f510e359c5e63c266c8374ec60821cd50f8a904dbd4363ca2d9765",
+      "source_declared_method_count": 13,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.BackupPaginationTest.xml",
+      "methods": [
+        {
+          "name": "encoding selection accepts explicit SQLite values without a guessed default",
+          "annotation_line": 16,
+          "declaration_line": 17,
+          "declaration_text": "    fun `encoding selection accepts explicit SQLite values without a guessed default`() {",
+          "declaration_line_sha256": "f6417198173a53ea23ad6efc24f5bdd258e4ae6a90c993f29ed71eee3c86d58f",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "comparison follows unsigned encoding bytes rather than platform String order",
+          "annotation_line": 26,
+          "declaration_line": 27,
+          "declaration_text": "    fun `comparison follows unsigned encoding bytes rather than platform String order`() {",
+          "declaration_line_sha256": "e14ae38c7061ab073a80c487be6d16cdae079a7f5e5d60fe74f2667e103ed101",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "single keys advance within pages and across pages in native order",
+          "annotation_line": 50,
+          "declaration_line": 51,
+          "declaration_text": "    fun `single keys advance within pages and across pages in native order`() = runTest {",
+          "declaration_line_sha256": "2059b865c3eda62259c512aa8e5351aa36e2a2e0eb143fdbb1cc95367b9639bb",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "single key repeat and backward progress fail before the offending consumer",
+          "annotation_line": 68,
+          "declaration_line": 69,
+          "declaration_text": "    fun `single key repeat and backward progress fail before the offending consumer`() = runTest {",
+          "declaration_line_sha256": "00e23decdaf8a7fa188ddeffa3b2667311e0a096e221c0d615dd4cebbca8c234",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "empty and oversized pages do not invoke a consumer",
+          "annotation_line": 88,
+          "declaration_line": 89,
+          "declaration_text": "    fun `empty and oversized pages do not invoke a consumer`() = runTest {",
+          "declaration_line_sha256": "749662c285f435056940f8425d3df0b343f69aa01adde0a918e47a6e96b70045",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "invalid row keys are rejected while the existing maximum Unicode key remains accepted",
+          "annotation_line": 105,
+          "declaration_line": 106,
+          "declaration_text": "    fun `invalid row keys are rejected while the existing maximum Unicode key remains accepted`() = runTest {",
+          "declaration_line_sha256": "4529e26155e3dd48fe59387fa22dd248e47a4654adaae8e917fa22de27695b13",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "tuple primary advance permits secondary reset and equal primary uses native secondary order",
+          "annotation_line": 132,
+          "declaration_line": 133,
+          "declaration_text": "    fun `tuple primary advance permits secondary reset and equal primary uses native secondary order`() = runTest {",
+          "declaration_line_sha256": "5d5f9d499807c978cd6ece82034212646271bb8677d02a8bded7005194aa7aa6",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "tuple duplicate primary regression and secondary regression are independently rejected",
+          "annotation_line": 152,
+          "declaration_line": 153,
+          "declaration_text": "    fun `tuple duplicate primary regression and secondary regression are independently rejected`() = runTest {",
+          "declaration_line_sha256": "d64483775383d6b3d76001620f4f8d715f2ed4d376ec4c4f0206b3a492b8a2ef",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "tuple validates both keys even when the primary alone would advance",
+          "annotation_line": 176,
+          "declaration_line": 177,
+          "declaration_text": "    fun `tuple validates both keys even when the primary alone would advance`() = runTest {",
+          "declaration_line_sha256": "a8827b92fc1246e25940f7c531e4147a5ff612e2961909a8c3488d906099e84f",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "tuple empty oversized and invalid limit paths retain their guards",
+          "annotation_line": 187,
+          "declaration_line": 188,
+          "declaration_text": "    fun `tuple empty oversized and invalid limit paths retain their guards`() = runTest {",
+          "declaration_line_sha256": "7754daefdbf8d508c34bf73176d96b8917bdd6817efeb011dff48c2da4a29b32",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "consumer exceptions propagate through both pagers without another fetch",
+          "annotation_line": 214,
+          "declaration_line": 215,
+          "declaration_text": "    fun `consumer exceptions propagate through both pagers without another fetch`() = runTest {",
+          "declaration_line_sha256": "938aee466aba883c8608dc68e23968e858da943fe4ab3c12d1927185253eae4f",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "job cancellation during a consumer stops both pagers",
+          "annotation_line": 239,
+          "declaration_line": 240,
+          "declaration_text": "    fun `job cancellation during a consumer stops both pagers`() = runTest {",
+          "declaration_line_sha256": "517c874c520d19b8d5fc5897d801d7733caf3455b4435ecf55e4bf71fb966f93",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "ordinary ASCII and exact equality retain BINARY semantics on all encodings",
+          "annotation_line": 271,
+          "declaration_line": 272,
+          "declaration_text": "    fun `ordinary ASCII and exact equality retain BINARY semantics on all encodings`() {",
+          "declaration_line_sha256": "7d3e5d573fcc6c493b07606c7908ad529b338b48e2b1a0e8704ef912d699729b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    },
+    {
+      "fqcn": "com.passvault.core.database.backup.VaultBackupUnicodePaginationTest",
+      "finding_ids": [
+        "PVA-035"
+      ],
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+      "source_sha256": "36103de28d5bff2eaff06f6bea0aaf472983c0d8607e3383a485081974444554",
+      "source_declared_method_count": 6,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.xml",
+      "methods": [
+        {
+          "name": "UTF8 export restores Unicode IDs relationships history and managed content",
+          "annotation_line": 57,
+          "declaration_line": 58,
+          "declaration_text": "    fun `UTF8 export restores Unicode IDs relationships history and managed content`() = runTest {",
+          "declaration_line_sha256": "bdd56e33d7449632ed83610b0d8adb43040c0f32f9f9595ef5d3edd5c21ff77b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "UTF16LE export uses low-byte-first BINARY ordering and restores into UTF8",
+          "annotation_line": 62,
+          "declaration_line": 63,
+          "declaration_text": "    fun `UTF16LE export uses low-byte-first BINARY ordering and restores into UTF8`() = runTest {",
+          "declaration_line_sha256": "444e954f814d8bc699101e0257e966610622cb4eb6e12d70bbe68b796a0f10d4",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "UTF16BE export preserves its native order and restores into UTF8",
+          "annotation_line": 67,
+          "declaration_line": 68,
+          "declaration_text": "    fun `UTF16BE export preserves its native order and restores into UTF8`() = runTest {",
+          "declaration_line_sha256": "ea2aba2bbf0eb6fcab6ca640d0cf511b6aa8f9006eb21461b69dd99ee752fa8c",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "all eight generated Room page queries agree with their actual encoding",
+          "annotation_line": 72,
+          "declaration_line": 73,
+          "declaration_text": "    fun `all eight generated Room page queries agree with their actual encoding`() = runTest {",
+          "declaration_line_sha256": "6671c6b5882737aa52c8d27cf6f8bb850af6dea80ad1aaff2c94366905d5a941",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "legacy logical backup with Unicode IDs reexports without renaming ciphertext",
+          "annotation_line": 100,
+          "declaration_line": 101,
+          "declaration_text": "    fun `legacy logical backup with Unicode IDs reexports without renaming ciphertext`() = runTest {",
+          "declaration_line_sha256": "39641b63c45015e20382f3a8ac4528ff3237be391b68f0ee8695ae96d4f5df2d",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "empty singleton and ASCII vaults remain exportable",
+          "annotation_line": 125,
+          "declaration_line": 126,
+          "declaration_text": "    fun `empty singleton and ASCII vaults remain exportable`() = runTest {",
+          "declaration_line_sha256": "b95d8ad0da607508c6d2d74440ef2109d451b88e1d80d37ec4d9a7c1135344af",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest",
+      "finding_ids": [
+        "PVA-033"
+      ],
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "source_sha256": "1108e4b0d4353c840974ac0ed57331e257947e9bded200a52bc73afd3b9d3e0e",
+      "source_declared_method_count": 12,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml",
+      "methods": [
+        {
+          "name": "completed lock rejects a key returned by an earlier biometric attempt",
+          "annotation_line": 81,
+          "declaration_line": 82,
+          "declaration_text": "    fun `completed lock rejects a key returned by an earlier biometric attempt`() = runTest {",
+          "declaration_line_sha256": "bb9078bc743ceff125c0a5e6072e04650cfc5fa418eac5ff9c5853b2596a32de",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "admission precedes the biometric metadata lookup",
+          "annotation_line": 87,
+          "declaration_line": 88,
+          "declaration_text": "    fun `admission precedes the biometric metadata lookup`() = runTest {",
+          "declaration_line_sha256": "bc58b17943dcc717cf7b09704de3b00082000e41a2c412a6be81138be7c5fbe8",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "admission precedes the platform enrollment lookup",
+          "annotation_line": 93,
+          "declaration_line": 94,
+          "declaration_text": "    fun `admission precedes the platform enrollment lookup`() = runTest {",
+          "declaration_line_sha256": "3614e681cb5161ba88d7c8a69eb5b500509b66efbdf36d66031c96c64677f828",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "a genuinely fresh attempt after completed lock still opens the vault",
+          "annotation_line": 99,
+          "declaration_line": 100,
+          "declaration_text": "    fun `a genuinely fresh attempt after completed lock still opens the vault`() = runTest {",
+          "declaration_line_sha256": "002f3e7820310d00eff2aae5d932a702f79448b782576ffb83c67f5abff83253",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "a stale completion cannot succeed against or relock a newer valid session",
+          "annotation_line": 112,
+          "declaration_line": 113,
+          "declaration_text": "    fun `a stale completion cannot succeed against or relock a newer valid session`() = runTest {",
+          "declaration_line_sha256": "3c13ad6b649d2d032ad06879188d120959a95f21ca19c76a38955aadf81e7544",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "stale admission takes precedence over malformed candidate invalidation",
+          "annotation_line": 141,
+          "declaration_line": 142,
+          "declaration_text": "    fun `stale admission takes precedence over malformed candidate invalidation`() = runTest {",
+          "declaration_line_sha256": "5bd47439d6289543cf9a91cbad75ef059dbdf8904f5642e7276c1d27b801d19b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "a fresh invalid candidate still invalidates its enrollment",
+          "annotation_line": 148,
+          "declaration_line": 149,
+          "declaration_text": "    fun `a fresh invalid candidate still invalidates its enrollment`() = runTest {",
+          "declaration_line_sha256": "14bc9053ac753157fec6212a2f01f46d8262874b37464e1cbd0ee92109f0fd25",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "pending lock refuses admission without metadata or platform access",
+          "annotation_line": 163,
+          "declaration_line": 164,
+          "declaration_text": "    fun `pending lock refuses admission without metadata or platform access`() = runTest {",
+          "declaration_line_sha256": "64ec7ecc72c4997b97cc6fb5265dcba0fcb1b5f97d571842673a7e29c44f80fe",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "cancellation after key transfer propagates and wipes the received array",
+          "annotation_line": 192,
+          "declaration_line": 193,
+          "declaration_text": "    fun `cancellation after key transfer propagates and wipes the received array`() = runTest {",
+          "declaration_line_sha256": "43b22f65fbff47f625ff9e0c13add8ced362231bd20aeb0ed9f7ca22ed135d6e",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock during the last access write still prevents biometric publication",
+          "annotation_line": 206,
+          "declaration_line": 207,
+          "declaration_text": "    fun `lock during the last access write still prevents biometric publication`() = runTest {",
+          "declaration_line_sha256": "5bd74c4924f8c33846187c2837a328e3e19a5aa94801766ce7f6145b4da1c6ef",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "an already open session still succeeds without an intervening lock",
+          "annotation_line": 250,
+          "declaration_line": 251,
+          "declaration_text": "    fun `an already open session still succeeds without an intervening lock`() = runTest {",
+          "declaration_line_sha256": "7710ddcb94545b7f5fcc601290f1c5bc30d0d2ad52c136ed4a511e620d66a106",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "an admission from another repository cannot authorize this repository",
+          "annotation_line": 264,
+          "declaration_line": 265,
+          "declaration_text": "    fun `an admission from another repository cannot authorize this repository`() = runTest {",
+          "declaration_line_sha256": "766d4ce4b5f897107dcf31e3e6cbf1971657129efeb9af032f08c9866234802d",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.RepositorySecurityIntegrationTest",
+      "finding_ids": [
+        "PVA-033"
+      ],
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "source_sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+      "source_declared_method_count": 17,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.repository.RepositorySecurityIntegrationTest.xml",
+      "methods": [
+        {
+          "name": "vault creation rejects a master password outside the shared policy",
+          "annotation_line": 86,
+          "declaration_line": 87,
+          "declaration_text": "    fun `vault creation rejects a master password outside the shared policy`() = runTest {",
+          "declaration_line_sha256": "f43e2fd5c279b78e64e2a9c48a7a81dbc8b2e9a35a86a798a3948289639ea2cb",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "vault creation rejects a predictable policy-length password without persistence",
+          "annotation_line": 98,
+          "declaration_line": 99,
+          "declaration_text": "    fun `vault creation rejects a predictable policy-length password without persistence`() = runTest {",
+          "declaration_line_sha256": "e22eef9373ff8392df0787e2958ad484d7ae8d0f9b5a2198f617b629e205c0ba",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "master password change rejects a predictable replacement without changing the vault",
+          "annotation_line": 110,
+          "declaration_line": 111,
+          "declaration_text": "    fun `master password change rejects a predictable replacement without changing the vault`() = runTest {",
+          "declaration_line_sha256": "092842a51780a6e71f1f5c37b935004e3a65b541b842a7bde17a97e53844f3be",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "vault created by an older version with a weak password remains unlockable",
+          "annotation_line": 126,
+          "declaration_line": 127,
+          "declaration_text": "    fun `vault created by an older version with a weak password remains unlockable`() = runTest {",
+          "declaration_line_sha256": "fdd0e5514142d6ee4cb8007e95bacb1c9491484ca5e036a144baf4bcf4883b30",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "real vault lifecycle rejects wrong password and blocks reads while locked",
+          "annotation_line": 174,
+          "declaration_line": 175,
+          "declaration_text": "    fun `real vault lifecycle rejects wrong password and blocks reads while locked`() = runTest {",
+          "declaration_line_sha256": "25b82f8588f211519c7c6c6508becb56cd1224d890364c259ddfd6947607bcf4",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "unlock rejects a non-exact wrapped VEK envelope",
+          "annotation_line": 207,
+          "declaration_line": 208,
+          "declaration_text": "    fun `unlock rejects a non-exact wrapped VEK envelope`() = runTest {",
+          "declaration_line_sha256": "48bbc2c7d4f49f99b6fea9f3f3cf0088cb485bc5290d0f99dd6f9796cea4df6e",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "unlock normalizes the authenticated duplicated-tag envelope written by legacy builds",
+          "annotation_line": 225,
+          "declaration_line": 226,
+          "declaration_text": "    fun `unlock normalizes the authenticated duplicated-tag envelope written by legacy builds`() = runTest {",
+          "declaration_line_sha256": "353f3c4c3c7b7d57072109243d68e36121a63c1915a1aee217b09427b53889c2",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "credential payload is encrypted, lossless, and uses fresh nonces",
+          "annotation_line": 242,
+          "declaration_line": 243,
+          "declaration_text": "    fun `credential payload is encrypted, lossless, and uses fresh nonces`() = runTest {",
+          "declaration_line_sha256": "70e3765d73a32d8067b228b6ade0dfec89601b9ac89708c1e1e447f8e2fce686",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "credential and password history payloads hide exact plaintext length in buckets",
+          "annotation_line": 302,
+          "declaration_line": 303,
+          "declaration_text": "    fun `credential and password history payloads hide exact plaintext length in buckets`() = runTest {",
+          "declaration_line_sha256": "5e71d2ae00ea5ebb844097e7c11c1cc98a21a39d7afc1265ee35787cce458247",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "legacy credential payloads decrypt and are padded on the next save",
+          "annotation_line": 348,
+          "declaration_line": 349,
+          "declaration_text": "    fun `legacy credential payloads decrypt and are padded on the next save`() = runTest {",
+          "declaration_line_sha256": "312160b50db8c4f0bddfba41a2793996da596c9d653a892cf477883cc9b5f9b8",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "padded credential framing tamper fails closed",
+          "annotation_line": 395,
+          "declaration_line": 396,
+          "declaration_text": "    fun `padded credential framing tamper fails closed`() = runTest {",
+          "declaration_line_sha256": "b559aeb2a3e462d07dfe89f2afd154978b27c79f85f311f8427cc7d5c16a59bf",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "legacy password history remains readable",
+          "annotation_line": 438,
+          "declaration_line": 439,
+          "declaration_text": "    fun `legacy password history remains readable`() = runTest {",
+          "declaration_line_sha256": "6bc01242f74521264da72b6191c4bf8eaf4890a32666f2e05d4cf4f8079d0041",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "credential edits preserve relations attachments history and reset password health",
+          "annotation_line": 470,
+          "declaration_line": 471,
+          "declaration_text": "    fun `credential edits preserve relations attachments history and reset password health`() = runTest {",
+          "declaration_line_sha256": "390f96e8397d10f15afad2b0404888fa2ddf230c2d7cbb245b4c47464f6ca843",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "tag edits preserve creation time and credential references",
+          "annotation_line": 522,
+          "declaration_line": 523,
+          "declaration_text": "    fun `tag edits preserve creation time and credential references`() = runTest {",
+          "declaration_line_sha256": "4a2883a1d7b7ed94c0bd0af63807ebac5d6b3fb30eccefbb5eceb9b87b5d9cca",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "deleting a folder keeps its credentials and moves them to root",
+          "annotation_line": 546,
+          "declaration_line": 547,
+          "declaration_text": "    fun `deleting a folder keeps its credentials and moves them to root`() = runTest {",
+          "declaration_line_sha256": "bb9f13784135fed39ce5bf3afd367e94630580eeda493019655307cd3ccb4ee5",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "tampered credential ciphertext is rejected without plaintext fallback",
+          "annotation_line": 608,
+          "declaration_line": 609,
+          "declaration_text": "    fun `tampered credential ciphertext is rejected without plaintext fallback`() = runTest {",
+          "declaration_line_sha256": "fd9eec9cf1f0515dbc6f3feba3ddfbc9a932628146fda4459426d560d15a9bc4",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "health analysis does not decrypt unrelated attachment or password history secrets",
+          "annotation_line": 629,
+          "declaration_line": 630,
+          "declaration_text": "    fun `health analysis does not decrypt unrelated attachment or password history secrets`() = runTest {",
+          "declaration_line_sha256": "678ed959d32b81b11e236468fcc05ed4a382832344a2508d82eacb6942df5018",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    },
+    {
+      "fqcn": "com.passvault.core.database.backup.VaultBackupStreamingTest",
+      "finding_ids": [
+        "PVA-034"
+      ],
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupStreamingTest.kt",
+      "source_sha256": "ebf9675ec7c551c291848dc24a72a6056098d31e75d67ee31510112608dfc2d2",
+      "source_declared_method_count": 39,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.VaultBackupStreamingTest.xml",
+      "methods": [
+        {
+          "name": "v2 backup streams authenticates and restores an attachment to a fresh object",
+          "annotation_line": 146,
+          "declaration_line": 147,
+          "declaration_text": "    fun `v2 backup streams authenticates and restores an attachment to a fresh object`() = runTest {",
+          "declaration_line_sha256": "689d9663ab40119cb57cd84c6c232f6df901f61e83ef7fac63580ef380af93a9",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "backup creation rejects the current master password before writing",
+          "annotation_line": 197,
+          "declaration_line": 198,
+          "declaration_text": "    fun `backup creation rejects the current master password before writing`() = runTest {",
+          "declaration_line_sha256": "99c8ec4d56da20da13f1c71ae18b677ccf6e4ccb187ba2884e38f6a4c3dc7876",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "backup creation accepts a distinct password with the same length",
+          "annotation_line": 216,
+          "declaration_line": 217,
+          "declaration_text": "    fun `backup creation accepts a distinct password with the same length`() = runTest {",
+          "declaration_line_sha256": "50073f092c36c602d0ed1fa9dd3b5b2cff66f66703b9182a036a642f537afe3f",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "backup creation fails closed when master password verification is unavailable",
+          "annotation_line": 235,
+          "declaration_line": 236,
+          "declaration_text": "    fun `backup creation fails closed when master password verification is unavailable`() = runTest {",
+          "declaration_line_sha256": "37ec34b1c3a814c101287111e018fbd88ee970aca274d698ba62c085e65b8592",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "v2 export derives entry count from its transactional manifest",
+          "annotation_line": 268,
+          "declaration_line": 269,
+          "declaration_text": "    fun `v2 export derives entry count from its transactional manifest`() = runTest {",
+          "declaration_line_sha256": "ef8ee6770e07168d4e213c9743f5b3d9d071f07c870d7b48d935a74c50531e57",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "over quota legacy vault remains loadable and exportable while new imports stay blocked",
+          "annotation_line": 286,
+          "declaration_line": 287,
+          "declaration_text": "    fun `over quota legacy vault remains loadable and exportable while new imports stay blocked`() = runTest {",
+          "declaration_line_sha256": "a8f444eccc9b753efc3959aaaba0081b2d802ff5da32f093e29675929e09a3ed",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore rejects insufficient capacity before staging any attachment",
+          "annotation_line": 334,
+          "declaration_line": 335,
+          "declaration_text": "    fun `restore rejects insufficient capacity before staging any attachment`() = runTest {",
+          "declaration_line_sha256": "4e43b1cdb744af2aa4b8afe61f41f14072f84b945e513777ab8686fbeb32f5b1",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "repeated legacy restores remove retired objects inside the attachment stability scope",
+          "annotation_line": 354,
+          "declaration_line": 355,
+          "declaration_text": "    fun `repeated legacy restores remove retired objects inside the attachment stability scope`() = runTest {",
+          "declaration_line_sha256": "e67d7d7d39ba34a508e7e8368d86df7f15c32e190109e203037dc20c39bbb55f",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "failed legacy Room replacement preserves attachment rows and objects",
+          "annotation_line": 390,
+          "declaration_line": 391,
+          "declaration_text": "    fun `failed legacy Room replacement preserves attachment rows and objects`() = runTest {",
+          "declaration_line_sha256": "5777ff5f4c6d478e8764af9e931059b737485180958a77343f0ed61b1e17cd14",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "cancellation after legacy commit cannot skip object cleanup",
+          "annotation_line": 413,
+          "declaration_line": 414,
+          "declaration_text": "    fun `cancellation after legacy commit cannot skip object cleanup`() = runTest {",
+          "declaration_line_sha256": "7bd8fcc65a02d251daa1e2a1750d9a10023f0d65b3b02ecd2c1ba2c67850a2c8",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "legacy cleanup failure preserves restore success and surfaces a warning",
+          "annotation_line": 448,
+          "declaration_line": 449,
+          "declaration_text": "    fun `legacy cleanup failure preserves restore success and surfaces a warning`() = runTest {",
+          "declaration_line_sha256": "59805aa88c1f78730014468d80efa2d01bd0af4c56f2c931f129d67d350a2402",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "v2 restore retains only objects referenced by committed rows",
+          "annotation_line": 473,
+          "declaration_line": 474,
+          "declaration_text": "    fun `v2 restore retains only objects referenced by committed rows`() = runTest {",
+          "declaration_line_sha256": "ddbe768cadc12c468caa6566b4fa5f7278a30e2837fd9b21de6a26fcf0573208",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore accepts the exact capacity boundary",
+          "annotation_line": 491,
+          "declaration_line": 492,
+          "declaration_text": "    fun `restore accepts the exact capacity boundary`() = runTest {",
+          "declaration_line_sha256": "93f52ae1c19421deea702c6b3f0ddd6495b1453d4d2efbbd3abecad5ecadcad3",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore continues when filesystem capacity is unavailable",
+          "annotation_line": 507,
+          "declaration_line": 508,
+          "declaration_text": "    fun `restore continues when filesystem capacity is unavailable`() = runTest {",
+          "declaration_line_sha256": "16c8c6c1343db9cb62b2c2078cc99ff25c6466e33830a29a2f246fdbe70f4b52",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore continues when capacity query fails or reports an invalid value",
+          "annotation_line": 522,
+          "declaration_line": 523,
+          "declaration_text": "    fun `restore continues when capacity query fails or reports an invalid value`() = runTest {",
+          "declaration_line_sha256": "ab02e8b0e9b39dd3b1c3ddd53e8357d1fa0aa17508bfe70575b238296a40fe60",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "capacity accounting preserves variable chunk attachment compatibility",
+          "annotation_line": 546,
+          "declaration_line": 547,
+          "declaration_text": "    fun `capacity accounting preserves variable chunk attachment compatibility`() = runTest {",
+          "declaration_line_sha256": "73143e1d040d0646001e6ae66b9032667a925c44fafadb1439d54dfb9e21e7d0",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore remains compatible with metadata schema 2 attachment backups",
+          "annotation_line": 574,
+          "declaration_line": 575,
+          "declaration_text": "    fun `restore remains compatible with metadata schema 2 attachment backups`() = runTest {",
+          "declaration_line_sha256": "eb183099ccbaec11ed532d2f5cbbe0f14109e35d84ea3ba2225d78e6b5f6ff35",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore rejects an authenticated underreported object total before staging",
+          "annotation_line": 597,
+          "declaration_line": 598,
+          "declaration_text": "    fun `restore rejects an authenticated underreported object total before staging`() = runTest {",
+          "declaration_line_sha256": "82b14451c3c891f4727867233dfd3eb1aaf5cb84823d987a2eb52ac1a785837b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "restore rejects an authenticated overreported object total and removes staged data",
+          "annotation_line": 616,
+          "declaration_line": 617,
+          "declaration_text": "    fun `restore rejects an authenticated overreported object total and removes staged data`() = runTest {",
+          "declaration_line_sha256": "22b13fff31d7c1aa0c172d493469a48965bd79ce5a0ffccb20b9e115ce5e52b5",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "export aborts if an object changes after the manifest size scan",
+          "annotation_line": 635,
+          "declaration_line": 636,
+          "declaration_text": "    fun `export aborts if an object changes after the manifest size scan`() = runTest {",
+          "declaration_line_sha256": "1d52960a1b7ac7ccea8cf6f3bf29e3573658370b6ec921969e7a628c701bc4e0",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "export aborts if object bytes change after inner verification",
+          "annotation_line": 650,
+          "declaration_line": 651,
+          "declaration_text": "    fun `export aborts if object bytes change after inner verification`() = runTest {",
+          "declaration_line_sha256": "01177837b05d4837b042a4d972e57a332d128e3fd6b3cd2919805d8ed27927ce",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "shrinking capacity aborts before the next object and cleans staged data",
+          "annotation_line": 682,
+          "declaration_line": 683,
+          "declaration_text": "    fun `shrinking capacity aborts before the next object and cleans staged data`() = runTest {",
+          "declaration_line_sha256": "b346b265ee8571667f3f4ef2673314bf51388bdb4f019e05b2665fd160a3f3f4",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "storage full during staging is actionable and cleans every staged object",
+          "annotation_line": 712,
+          "declaration_line": 713,
+          "declaration_text": "    fun `storage full during staging is actionable and cleans every staged object`() = runTest {",
+          "declaration_line_sha256": "0a711aecd3745c87eb029977b54360f298484e9448eb9a1f2e7ef391a3edfb79",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "cancellation after object publication removes the registered staged object",
+          "annotation_line": 737,
+          "declaration_line": 738,
+          "declaration_text": "    fun `cancellation after object publication removes the registered staged object`() = runTest {",
+          "declaration_line_sha256": "76630280f509dad4eed5a3be5f1811bee551789e5137d0de634578e6be659bd3",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "v2 backup preserves a quarantined filename and usable authenticated content",
+          "annotation_line": 758,
+          "declaration_line": 759,
+          "declaration_text": "    fun `v2 backup preserves a quarantined filename and usable authenticated content`() = runTest {",
+          "declaration_line_sha256": "7091b9490f5e9b2a14167bde0680e6ce87f744eec2244bd4698c42b4fa8d6c5b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "wrong password tampering and truncation preserve the active vault and objects",
+          "annotation_line": 790,
+          "declaration_line": 791,
+          "declaration_text": "    fun `wrong password tampering and truncation preserve the active vault and objects`() = runTest {",
+          "declaration_line_sha256": "e4472ef0b403a36489b0b3183b6f8f8658cb8c7be1d6d1b9baf30e622e87e93d",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "metadata source change between authenticated passes rolls back and removes staged objects",
+          "annotation_line": 831,
+          "declaration_line": 832,
+          "declaration_text": "    fun `metadata source change between authenticated passes rolls back and removes staged objects`() = runTest {",
+          "declaration_line_sha256": "7a1770f7f5d024f575d1e600cc9356d472e1bdead1b35c6fd04911700bcd870b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "cancelled attachment restore closes input and removes every staged object",
+          "annotation_line": 859,
+          "declaration_line": 860,
+          "declaration_text": "    fun `cancelled attachment restore closes input and removes every staged object`() = runTest {",
+          "declaration_line_sha256": "6b2b959d9d94d4051e19082e16c5a52a6cf7bd3fe52717a5c88bff7fa4a71d14",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "post commit cancellation keeps every restored attachment object",
+          "annotation_line": 885,
+          "declaration_line": 886,
+          "declaration_text": "    fun `post commit cancellation keeps every restored attachment object`() = runTest {",
+          "declaration_line_sha256": "9affc96e5b884fa6f61fe97725d888eb117097a745f7fab64e0713449f168ee6",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "output failure aborts the candidate and oversized declared input is closed",
+          "annotation_line": 926,
+          "declaration_line": 927,
+          "declaration_text": "    fun `output failure aborts the candidate and oversized declared input is closed`() = runTest {",
+          "declaration_line_sha256": "f01c0ca278129607fd0d24bdd1030ace157099247f61000ab24a076a99ed60d5",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "preview and restore cancellation close prefix legacy and v2 sources exactly once",
+          "annotation_line": 943,
+          "declaration_line": 944,
+          "declaration_text": "    fun `preview and restore cancellation close prefix legacy and v2 sources exactly once`() = runTest {",
+          "declaration_line_sha256": "3136dd3af3bddbbdfcfd55d040352e6a0bfab1f45cf99a3ed1bc55aa1a8cfe70",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "cancellation while waiting for backup admission still closes the supplied source",
+          "annotation_line": 975,
+          "declaration_line": 977,
+          "declaration_text": "    fun `cancellation while waiting for backup admission still closes the supplied source`() = runTest {",
+          "declaration_line_sha256": "25ab3dfc7f12d248a830bb270bf96630a7fb33e53d4b3208f40612cfd8092ab2",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "successful legacy and v2 inspection close once and two pass restore closes each pass",
+          "annotation_line": 1002,
+          "declaration_line": 1003,
+          "declaration_text": "    fun `successful legacy and v2 inspection close once and two pass restore closes each pass`() = runTest {",
+          "declaration_line_sha256": "935fe89bbee7c826d5a9b73790befd0c55a558f813efead673dd9f31f06b59a9",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "rewind failure after reopening cannot escape source cleanup",
+          "annotation_line": 1025,
+          "declaration_line": 1026,
+          "declaration_text": "    fun `rewind failure after reopening cannot escape source cleanup`() = runTest {",
+          "declaration_line_sha256": "823edb3fb5a51847d77ff981ed889bd42c88fb2ed06881746628b63dc70d2b05",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "read and close failures do not repeat source closure or mask invalid backup result",
+          "annotation_line": 1041,
+          "declaration_line": 1042,
+          "declaration_text": "    fun `read and close failures do not repeat source closure or mask invalid backup result`() = runTest {",
+          "declaration_line_sha256": "edff20c41a1e96eb010e7f0daf6849ddf52f60b1c7b3985a2d8bfd071e279afa",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "stream manifest rejects one entity beyond the exact global count bound",
+          "annotation_line": 1055,
+          "declaration_line": 1056,
+          "declaration_text": "    fun `stream manifest rejects one entity beyond the exact global count bound`() {",
+          "declaration_line_sha256": "e4d949945bd81800e9276338cb0252f774725da9a8222fe58ce1cf050d6cd29c",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "stream validator still rejects a mismatched imported entry count",
+          "annotation_line": 1074,
+          "declaration_line": 1075,
+          "declaration_text": "    fun `stream validator still rejects a mismatched imported entry count`() = runTest {",
+          "declaration_line_sha256": "e6a3d1cd2e0eb1e522cf4226c4d1920e0d4933aecae68731b2824f5c702ee979",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "stream validator rejects identifier text beyond its retained byte budget",
+          "annotation_line": 1096,
+          "declaration_line": 1097,
+          "declaration_text": "    fun `stream validator rejects identifier text beyond its retained byte budget`() = runTest {",
+          "declaration_line_sha256": "a1be7265ee1ea78488447593e477062066c10c641f483c49730cfa2c0223f639",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "stream manifest rejects a managed attachment without object bytes",
+          "annotation_line": 1124,
+          "declaration_line": 1125,
+          "declaration_text": "    fun `stream manifest rejects a managed attachment without object bytes`() {",
+          "declaration_line_sha256": "65853efc41c3e3120602cf9f04d6b648cc20e6e4c54aef7835447d901d22fe9a",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest",
+      "finding_ids": [
+        "PVA-033"
+      ],
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "source_sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+      "source_declared_method_count": 7,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest.xml",
+      "methods": [
+        {
+          "name": "lock intent during last-access write is linearized before session publication",
+          "annotation_line": 1208,
+          "declaration_line": 1209,
+          "declaration_text": "    fun `lock intent during last-access write is linearized before session publication`() = runTest {",
+          "declaration_line_sha256": "eed8a3209d44585e0fff5367a52acb5c9e75dce18e337c7a27ed1a2c77b1c55c",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "password unlock cannot publish a session after lock intent is registered",
+          "annotation_line": 1246,
+          "declaration_line": 1247,
+          "declaration_text": "    fun `password unlock cannot publish a session after lock intent is registered`() = runTest {",
+          "declaration_line_sha256": "89318dafd83bd4bd2224210648246f554c49a8c2dc6d6a095d4ce99c19de3189",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "biometric unlock cannot publish a session after lock intent is registered",
+          "annotation_line": 1288,
+          "declaration_line": 1289,
+          "declaration_text": "    fun `biometric unlock cannot publish a session after lock intent is registered`() = runTest {",
+          "declaration_line_sha256": "43f4627ac884af594244df8235ea359f37d795398762c869ad682d45dcc1cf0a",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock and run preempts an in-flight unlock before protected work",
+          "annotation_line": 1337,
+          "declaration_line": 1338,
+          "declaration_text": "    fun `lock and run preempts an in-flight unlock before protected work`() = runTest {",
+          "declaration_line_sha256": "8522b9582c32d3dc35edaf1eeebfc297cab5e728cdd3322cffeb78a6df028e2b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "overlapping lock intents both preempt unlock and are fully released",
+          "annotation_line": 1376,
+          "declaration_line": 1377,
+          "declaration_text": "    fun `overlapping lock intents both preempt unlock and are fully released`() = runTest {",
+          "declaration_line_sha256": "909eb2fcdb0d4cd093df0c333b17d8403db129e1533f361013242446d4082cc9",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock reason remains authoritative when the preempted unlock also fails authentication",
+          "annotation_line": 1411,
+          "declaration_line": 1412,
+          "declaration_text": "    fun `lock reason remains authoritative when the preempted unlock also fails authentication`() = runTest {",
+          "declaration_line_sha256": "beddbccc59727b0f251b748f35adefbc3b9f5f88a52d67ac57ceb026367e1db2",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock during password throttle preempts unlock without adding a failed attempt",
+          "annotation_line": 1444,
+          "declaration_line": 1445,
+          "declaration_text": "    fun `lock during password throttle preempts unlock without adding a failed attempt`() = runTest {",
+          "declaration_line_sha256": "276b956d3cb08a06fbc179cfbb567db8dd9f13564118dae1dc4fcfbf55a9008b",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest",
+      "finding_ids": [
+        "PVA-033"
+      ],
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "source_sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+      "source_declared_method_count": 11,
+      "expected_xml_path": "core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest.xml",
+      "methods": [
+        {
+          "name": "biometric status reconciles surviving platform items when no vault exists",
+          "annotation_line": 1493,
+          "declaration_line": 1494,
+          "declaration_text": "    fun `biometric status reconciles surviving platform items when no vault exists`() = runTest {",
+          "declaration_line_sha256": "85a857d09610aec54b6f9190dd23e63d1a0ebe9a226bc0cc096a0c071265dcfc",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "biometric key opens a session only after vault verification succeeds",
+          "annotation_line": 1509,
+          "declaration_line": 1510,
+          "declaration_text": "    fun `biometric key opens a session only after vault verification succeeds`() = runTest {",
+          "declaration_line_sha256": "2a16f31d3d0b209ca86130f3cfa6ef620cb3914744c91292bf50689ed8fcd56a",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock cancels biometric enrollment that is holding a vault key lease",
+          "annotation_line": 1524,
+          "declaration_line": 1525,
+          "declaration_text": "    fun `lock cancels biometric enrollment that is holding a vault key lease`() = runTest {",
+          "declaration_line_sha256": "7819844b61b09a3d3e90d3d03c62889087b98462f9dbae5147bfd41b05cff306",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "invalid biometric key fails closed and leaves vault locked",
+          "annotation_line": 1569,
+          "declaration_line": 1570,
+          "declaration_text": "    fun `invalid biometric key fails closed and leaves vault locked`() = runTest {",
+          "declaration_line_sha256": "ecd75ec73192527df95bf8ddc77e78655a4e8c558a3a75a78b48b6053d815bef",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "biometric service enrolls the active VEK and reopens the verified vault",
+          "annotation_line": 1583,
+          "declaration_line": 1584,
+          "declaration_text": "    fun `biometric service enrolls the active VEK and reopens the verified vault`() = runTest {",
+          "declaration_line_sha256": "ec920b8544487539e6ded602cd28ca8c73286a3083e18b14bfbabdf066331fde",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "biometric unlock racing an existing session keeps the enrolled key",
+          "annotation_line": 1604,
+          "declaration_line": 1605,
+          "declaration_text": "    fun `biometric unlock racing an existing session keeps the enrolled key`() = runTest {",
+          "declaration_line_sha256": "bb337dd9661b5b5ddf41ddde12388f687a947647f51a5c079c264c5f8084d499",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "transient vault activation failure keeps the enrolled biometric key",
+          "annotation_line": 1626,
+          "declaration_line": 1627,
+          "declaration_text": "    fun `transient vault activation failure keeps the enrolled biometric key`() = runTest {",
+          "declaration_line_sha256": "6292a9124bad7f76778348e179eaa5363e4e42009b09f1bb9b2b99f671307a91",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "biometric enrollment reports a locked vault without masking platform failures",
+          "annotation_line": 1665,
+          "declaration_line": 1666,
+          "declaration_text": "    fun `biometric enrollment reports a locked vault without masking platform failures`() = runTest {",
+          "declaration_line_sha256": "4519278d2c39ae5a210a01b339eb835036e6a92d43ca6d2a822cf1d984e4d088",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "biometric unlock preserves invalidation reported while checking enrollment",
+          "annotation_line": 1685,
+          "declaration_line": 1686,
+          "declaration_text": "    fun `biometric unlock preserves invalidation reported while checking enrollment`() = runTest {",
+          "declaration_line_sha256": "77b1beec5ba7122698097435c4a9592f8e59df7683f70af7bbb364cdd3fd4bd3",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock cancels an active session lease and wipes its key without waiting for caller work",
+          "annotation_line": 1720,
+          "declaration_line": 1721,
+          "declaration_text": "    fun `lock cancels an active session lease and wipes its key without waiting for caller work`() = runTest {",
+          "declaration_line_sha256": "9a058afbf13b919659da771824377a67c8301346c965dd14d1a5aacbc0b14e9f",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        },
+        {
+          "name": "lock and run revokes an active lease before running protected work",
+          "annotation_line": 1747,
+          "declaration_line": 1748,
+          "declaration_text": "    fun `lock and run revokes an active lease before running protected work`() = runTest {",
+          "declaration_line_sha256": "e85a4670e5d609a9c9ad58c0b5e320343f26c2c5e813f992e5fc797c27fdbd46",
+          "expected_xml_testcase_name": null,
+          "execution_count": 0
+        }
+      ]
+    }
+  ],
+  "excluded_siblings": [
+    {
+      "fqcn": "com.passvault.core.database.repository.VaultMasterPasswordMatcherIntegrationTest",
+      "source_declared_method_count": 4,
+      "names": [
+        "master password matcher is exact and unavailable while locked",
+        "master password matcher clears candidate derivation material",
+        "cancelling master password matching releases its session lease",
+        "master password matcher propagates non authentication crypto failures"
+      ],
+      "selected": false
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.RepositoryMutationIntegrityIntegrationTest",
+      "source_declared_method_count": 3,
+      "names": [
+        "credential mutations reject a missing credential instead of silently succeeding",
+        "credential read rejects password history beyond the retained limit before decrypting it",
+        "adding tags preserves idempotency at the limit and rejects a new tag beyond it"
+      ],
+      "selected": false
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.RepositoryMetadataSecurityIntegrationTest",
+      "source_declared_method_count": 6,
+      "names": [
+        "vault metadata fixes Argon2 parallelism at one and rejects another value",
+        "unlock validates untrusted metadata before password derivation and keeps failures opaque",
+        "folder read rejects an oversized encrypted payload before authentication",
+        "credential save rejects format controls in display labels",
+        "credential read quarantines an authenticated attachment filename with bidi controls",
+        "credential summary rejects an empty custom type identifier"
+      ],
+      "selected": false
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.RepositoryUnicodeSecurityIntegrationTest",
+      "source_declared_method_count": 3,
+      "names": [
+        "vault creation rejects a malformed Unicode master password",
+        "metadata limits count supplementary characters without splitting them",
+        "credential save rejects malformed Unicode in encrypted secret fields"
+      ],
+      "selected": false
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.RepositoryTotpSecurityIntegrationTest",
+      "source_declared_method_count": 5,
+      "names": [
+        "TOTP display read returns only authenticator accounts and transfers clearable seed ownership",
+        "TOTP configuration is encrypted and marks the vault format",
+        "encrypted backup restores TOTP configuration",
+        "TOTP configuration is rejected for non-login credentials without upgrading format",
+        "noncanonical TOTP secret is rejected before persistence"
+      ],
+      "selected": false
+    },
+    {
+      "fqcn": "com.passvault.core.database.repository.VaultLockFailureIntegrationTest",
+      "source_declared_method_count": 4,
+      "names": [
+        "lock cancels a platform prompt and its active session lease",
+        "lock reaches locked state after the hard deadline when lease code suppresses cancellation",
+        "platform prompt cancellation failure cannot prevent vault locking",
+        "failed key wipe still removes the live key and reaches terminal locked state"
+      ],
+      "selected": false
+    }
+  ],
+  "limitations": [
+    "Source declaration extraction is bounded line scanning with manually inspected top-level classes/annotations and fixture inheritance; not a Kotlin compilation or test discovery.",
+    "No inherited @Test methods appear in the inspected RepositorySecurityIntegrationFixture; BeforeTest/AfterTest hooks are not cases.",
+    "All selected source hashes must be independently rechecked against final admitted source; unrelated worktree edits are outside this inventory.",
+    "No build/test/compiler/project script/archived runner or viewer was run or imported."
+  ]
+}

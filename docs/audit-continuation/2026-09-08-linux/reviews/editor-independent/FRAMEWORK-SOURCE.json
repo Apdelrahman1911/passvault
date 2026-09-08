@@ -1,0 +1,152 @@
+{
+  "kind": "independent_dependency_source_review_not_execution",
+  "reviewer": "/root/editor_review",
+  "retrieved_utc": "2026-09-08T20:48:45.694608+00:00",
+  "source_url": "https://repo.maven.apache.org/maven2/org/jetbrains/compose/ui/ui-desktop/1.11.1/ui-desktop-1.11.1-sources.jar",
+  "archive_sha256": "b7bf3762c2f7220a780c65b9050ceb2ae760ac5ffc1869018b37fd53e0642b2e",
+  "archive_bytes": 1032410,
+  "dependency_pin": "gradle/libs.versions.toml compose-multiplatform=1.11.1",
+  "qualifications": [
+    "Archive fetched in-memory; no source JAR, build cache or native/application binary retained.",
+    "Same coordinate official Maven source, not independently bytecode-matched binary proof. Source artifact is not listed in dependency-verification metadata; metadata was not changed.",
+    "Exact selected excerpts and whole-file hashes bind a bounded source scheduling review, not full-library review, runtime observation or platform UI test.",
+    "Apache-2.0 upstream source copyright The Android Open Source Project; see https://www.apache.org/licenses/LICENSE-2.0 .",
+    "No project build/test/app/archive helper was executed/imported; zero test cases."
+  ],
+  "members": [
+    {
+      "path_in_source_archive": "desktopMain/androidx/compose/ui/scene/ComposeSceneMediator.desktop.kt",
+      "file_sha256": "cedfcf3c7fabcd657b64caede630796b3324b351357df37a91eaff7c7c3b7c02",
+      "file_bytes": 40699,
+      "physical_lf": 988,
+      "reviewed_excerpts": [
+        {
+          "start": 294,
+          "end": 309,
+          "text": "        override fun mouseExited(event: MouseEvent) = onMouseEvent(event)\n        override fun mouseDragged(event: MouseEvent) = onMouseEvent(event)\n        override fun mouseMoved(event: MouseEvent) = onMouseEvent(event)\n        override fun mouseWheelMoved(event: MouseWheelEvent) = onMouseWheelEvent(event)\n    }\n    private val keyListener = object : KeyAdapter() {\n        override fun keyPressed(event: KeyEvent) = onKeyEvent(event)\n        override fun keyReleased(event: KeyEvent) = onKeyEvent(event)\n        override fun keyTyped(event: KeyEvent) = onKeyEvent(event)\n    }\n\n    private val eventListener = if (eventListener != null) {\n        AwtEventListeners(OnlyValidPrimaryMouseButtonFilter, eventListener)\n    } else {\n        OnlyValidPrimaryMouseButtonFilter\n    }\n"
+        },
+        {
+          "start": 557,
+          "end": 576,
+          "text": "    private fun onKeyEvent(event: KeyEvent) = catchExceptions {\n        // AWT can send events after the window is disposed\n        if (isDisposed) {\n            return\n        }\n        if (eventListener.onKeyEvent(event)) {\n            return\n        }\n        val composeEvent = event.toComposeEvent()\n        textInputService.onKeyEvent(event)\n        textInputService2.onKeyEvent(event)\n        windowContext.setKeyboardModifiers(composeEvent.internal.modifiers)\n        if (onPreviewKeyEvent(composeEvent) ||\n            scene.sendKeyEvent(composeEvent) ||\n            onKeyEvent(composeEvent) ||\n            navigationEventInput.onKeyEvent(composeEvent)\n        ) {\n            event.consume()\n        }\n    }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/BaseComposeScene.skiko.kt",
+      "file_sha256": "98b3003a5232ebb3b3d2d3ee2e8d2d4a1841c15d30b957497b5d868bfa2badc0",
+      "file_bytes": 13152,
+      "physical_lf": 337,
+      "reviewed_excerpts": [
+        {
+          "start": 56,
+          "end": 98,
+          "text": "internal abstract class BaseComposeScene(\n    coroutineContext: CoroutineContext,\n    private val invalidate: () -> Unit,\n) : ComposeScene {\n    protected val snapshotInvalidationTracker = SnapshotInvalidationTracker(::updateInvalidations)\n    protected val inputHandler: ComposeSceneInputHandler =\n        ComposeSceneInputHandler(\n            prepareForPointerInputEvent = ::doMeasureAndLayout,\n            processPointerInputEvent = ::onPointerInputEvent,\n            cancelPointerInput = ::processCancelPointerInput,\n            processKeyEvent = ::processKeyEvent,\n        )\n\n    private val frameClock = BroadcastFrameClock(onNewAwaiters = ::updateInvalidations)\n    private val recomposer: ComposeSceneRecomposer =\n        ComposeSceneRecomposer(coroutineContext, frameClock)\n    private var composition: Composition? = null\n\n    protected val compositionContext: CompositionContext\n        get() = recomposer.compositionContext\n\n    abstract val composeSceneContext: ComposeSceneContext\n\n    protected var isClosed = false\n        private set\n\n    private var isInvalidationDisabled = false\n    private inline fun <T> postponeInvalidation(traceTag: String, crossinline block: () -> T): T = trace(traceTag) {\n        check(!isClosed) { \"postponeInvalidation called after ComposeScene is closed\" }\n        isInvalidationDisabled = true\n        return try {\n            // Try to get see the up-to-date state before running block\n            // Note that this doesn't guarantee it, if sendApplyNotifications is called concurrently\n            // in a different thread than this code.\n            snapshotInvalidationTracker.sendAndPerformSnapshotChanges()\n            snapshotInvalidationTracker.performSnapshotChangesSynchronously(block)\n        } finally {\n            snapshotInvalidationTracker.sendAndPerformSnapshotChanges()\n            isInvalidationDisabled = false\n        }.also {\n            updateInvalidations()\n        }\n    }\n"
+        },
+        {
+          "start": 158,
+          "end": 198,
+          "text": "    override fun render(canvas: Canvas, nanoTime: Long) {\n        // This is a no-op if the scene is closed, this situation can happen if the scene is\n        // in the list for rendering, but recomposition in another scene from the same list\n        // processed earlier has closed it.\n\n        if (isClosed) return\n\n        postponeInvalidation(\"BaseComposeScene:render\") {\n            // We try to run the phases here in the same order Android does.\n\n            // Flush composition effects (e.g. LaunchedEffect, coroutines launched in\n            // rememberCoroutineScope()) before everything else\n            recomposer.performScheduledEffects()\n\n            recomposer.performScheduledRecomposerTasks()\n            frameClock.sendFrame(nanoTime) // withFrameMillis/Nanos and recomposition\n\n            doMeasureAndLayout()  // Layout\n\n            // Schedule synthetic events to be sent after `render` completes\n            if (inputHandler.needUpdatePointerPosition) {\n                recomposer.scheduleAsEffect {\n                    inputHandler.updatePointerPosition()\n                }\n            }\n\n            // Between layout and draw, Android's Choreographer flushes the main dispatcher.\n            // We can't do quite that, but an important side effect of that is that the\n            // GlobalSnapshotManager gets to run and call `Snapshot.sendApplyNotifications()`, which\n            // we can (and must) do.\n            Snapshot.sendApplyNotifications()\n\n            // The drawing phase.\n            // Android calls these two before drawing (AndroidComposeView.dispatchDraw)\n            doMeasureAndLayout()\n            Snapshot.sendApplyNotifications()\n\n            // Actually draw\n            snapshotInvalidationTracker.onDraw()\n            draw(canvas)\n        }\n"
+        },
+        {
+          "start": 268,
+          "end": 272,
+          "text": "    override fun sendKeyEvent(keyEvent: KeyEvent): Boolean = postponeInvalidation(\"BaseComposeScene:sendKeyEvent\") {\n        inputHandler.onKeyEvent(keyEvent).also {\n            recomposer.performScheduledEffects()\n        }\n    }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/ComposeSceneRecomposer.skiko.kt",
+      "file_sha256": "229c8dd329854cd4cb36b06546c26cd82edfc05b137bbf0761e9633107743f86",
+      "file_bytes": 3796,
+      "physical_lf": 109,
+      "reviewed_excerpts": [
+        {
+          "start": 40,
+          "end": 92,
+          "text": "internal class ComposeSceneRecomposer(\n    coroutineContext: CoroutineContext,\n    vararg elements: CoroutineContext.Element\n) {\n    private val job = Job()\n    private val coroutineScope = CoroutineScope(coroutineContext + job)\n\n    /**\n     * We use [FlushCoroutineDispatcher] not only because we need [FlushCoroutineDispatcher.flush]\n     * for LaunchEffect tasks, but also to know whether it is idle (has no scheduled tasks)\n     */\n    private val effectDispatcher = FlushCoroutineDispatcher(coroutineScope)\n    private val recomposeDispatcher = FlushCoroutineDispatcher(coroutineScope)\n    private val recomposer = Recomposer(coroutineContext + job + effectDispatcher)\n\n    /**\n     * `true` if there is any pending work scheduled, regardless of whether it is currently running.\n     */\n    val hasPendingWork: Boolean\n        get() = recomposer.hasPendingWork ||\n        effectDispatcher.hasImmediateTasks() ||\n        recomposeDispatcher.hasImmediateTasks()\n\n    val compositionContext: CompositionContext\n        get() = recomposer\n\n    init {\n        var context: CoroutineContext = recomposeDispatcher\n        for (element in elements) {\n            context += element\n        }\n        coroutineScope.launch(context,\n            start = CoroutineStart.UNDISPATCHED\n        ) {\n            recomposer.runRecomposeAndApplyChanges()\n        }\n    }\n\n    /**\n     * Perform all scheduled recomposer tasks and wait for the tasks which are already\n     * performing in the recomposition scope.\n     */\n    fun performScheduledRecomposerTasks() =\n        trace(\"ComposeSceneRecomposer:performScheduledRecomposerTasks\") {\n            recomposeDispatcher.flush()\n        }\n\n    /**\n     * Perform all scheduled effects.\n     */\n    fun performScheduledEffects() = trace(\"ComposeSceneRecomposer:performScheduledEffects\") {\n        effectDispatcher.flush()\n    }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/node/SnapshotInvalidationTracker.skiko.kt",
+      "file_sha256": "bd1b6f4ff864ee2774ac3fa44b6b944737ffadc0182240fb616705590adcb9b2",
+      "file_bytes": 4461,
+      "physical_lf": 148,
+      "reviewed_excerpts": [
+        {
+          "start": 32,
+          "end": 47,
+          "text": "internal class SnapshotInvalidationTracker(\n    private val invalidate: () -> Unit = {}\n) {\n    private val snapshotChanges = CommandList(invalidate)\n    private var needMeasureAndLayout = true\n    private var needDraw = true\n\n    /**\n     * The id of the thread currently inside [performSnapshotChangesSynchronously].\n     *\n     * Note that it's not valid to have more than one thread calling it at the same time.\n     */\n    private var renderingThreadId: Long? by atomic(null)\n\n    val hasInvalidations: Boolean\n        get() = needMeasureAndLayout || needDraw || snapshotChanges.hasCommands\n"
+        },
+        {
+          "start": 72,
+          "end": 99,
+          "text": "    fun snapshotObserver() = OwnerSnapshotObserver { command ->\n        if (renderingThreadId == getCurrentThreadId())\n            command()\n        else\n            snapshotChanges.add(command)\n    }\n\n    /**\n     * Sends any pending apply notifications and performs the changes they cause.\n     */\n    fun sendAndPerformSnapshotChanges() {\n        Snapshot.sendApplyNotifications()\n        snapshotChanges.perform()\n    }\n\n    /**\n     * Runs [block], performing any snapshot changes it generates synchronously.\n     *\n     * See [OwnerSnapshotObserverTest.observeReadsChangedBeforeDisposeEffect] for more details.\n     */\n    inline fun <T> performSnapshotChangesSynchronously(block: () -> T): T {\n        return try {\n            renderingThreadId = getCurrentThreadId()\n            block()\n        } finally {\n            renderingThreadId = null\n        }\n    }\n"
+        },
+        {
+          "start": 140,
+          "end": 147,
+          "text": "    fun perform() {\n        synchronized(lock) {\n            listCopy.addAll(list)\n            list.clear()\n        }\n        listCopy.fastForEach { it.invoke() }\n        listCopy.clear()\n    }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/ComposeSceneInputHandler.skiko.kt",
+      "file_sha256": "5af4766e277f5c729431ff7675b8ed2b61f479c3a156cefc08b8c8fccf031ee4",
+      "file_bytes": 9633,
+      "physical_lf": 260,
+      "reviewed_excerpts": [
+        {
+          "start": 143,
+          "end": 146,
+          "text": "    fun onKeyEvent(keyEvent: KeyEvent): Boolean {\n        defaultPointerStateTracker.onKeyEvent(keyEvent)\n        return processKeyEvent(keyEvent.withTrackedModifiers())\n    }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/CanvasLayersComposeScene.skiko.kt",
+      "file_sha256": "add4fee69adc246b641b09c93a6c6c4e13c7ca2035f1b5c7aabd24b49d911c32",
+      "file_bytes": 25282,
+      "physical_lf": 678,
+      "reviewed_excerpts": [
+        {
+          "start": 271,
+          "end": 275,
+          "text": "    override fun processKeyEvent(keyEvent: KeyEvent): Boolean =\n        focusedLayer?.onKeyEvent(keyEvent) ?: mainOwner.onKeyEvent(keyEvent)\n\n    override fun processRotaryScrollEvent(event: RotaryScrollEvent): Boolean =\n        focusedLayer?.onRotaryEvent(event) ?: mainOwner.onRotaryEvent(event)\n"
+        },
+        {
+          "start": 611,
+          "end": 615,
+          "text": "        fun onKeyEvent(keyEvent: KeyEvent): Boolean {\n            return onPreviewKeyEvent?.invoke(keyEvent) == true ||\n                owner.onKeyEvent(keyEvent) ||\n                onKeyEvent?.invoke(keyEvent) == true\n        }\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/scene/PlatformLayersComposeScene.skiko.kt",
+      "file_sha256": "5bab0fe2cd52799f80ecf363e20dd607bcf85ddae4e42b0f909dd996edfa42e3",
+      "file_bytes": 7867,
+      "physical_lf": 210,
+      "reviewed_excerpts": [
+        {
+          "start": 182,
+          "end": 189,
+          "text": "    override fun processKeyEvent(keyEvent: KeyEvent): Boolean =\n        mainOwner.onKeyEvent(keyEvent)\n\n    override fun processRotaryScrollEvent(event: RotaryScrollEvent): Boolean =\n        mainOwner.onRotaryEvent(event)\n\n    override fun measureAndLayout() {\n        mainOwner.measureAndLayout()\n"
+        }
+      ]
+    },
+    {
+      "path_in_source_archive": "skikoMain/androidx/compose/ui/node/RootNodeOwner.skiko.kt",
+      "file_sha256": "e4d14ba19922ff7cbbb62f05bf0f23a52eb6e1b3bbaf78fa015351b5400c8090",
+      "file_bytes": 45093,
+      "physical_lf": 1046,
+      "reviewed_excerpts": [
+        {
+          "start": 320,
+          "end": 341,
+          "text": "    fun onKeyEvent(keyEvent: KeyEvent): Boolean {\n        return focusOwner.dispatchKeyEvent(keyEvent) || handleFocusKeys(keyEvent)\n    }\n\n    private fun handleFocusKeys(keyEvent: KeyEvent): Boolean {\n        // TODO(b/177931787) : Consider creating a KeyInputManager like we have for FocusManager so\n        //  that this common logic can be used by all owners.\n        val focusDirection = getFocusDirection(keyEvent)\n        if (focusDirection == null || keyEvent.type != KeyEventType.KeyDown) return false\n\n        platformContext.inputModeManager.requestInputMode(InputMode.Keyboard)\n        // Consume the key event if we moved focus.\n        return focusOwner.moveFocus(focusDirection)\n    }\n\n    private fun getFocusDirection(keyEvent: KeyEvent): FocusDirection? {\n        return when (keyEvent.key) {\n            Key.Tab -> if (keyEvent.isShiftPressed) FocusDirection.Previous else FocusDirection.Next\n            Key.DirectionCenter -> FocusDirection.Enter\n            Key.Back -> FocusDirection.Exit\n            else -> null\n        }\n"
+        }
+      ]
+    }
+  ]
+}

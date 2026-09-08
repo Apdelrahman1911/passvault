@@ -1,0 +1,489 @@
+{
+  "schema": 1,
+  "updated_utc": "2026-09-08T21:16:20.479953+00:00",
+  "status": "IN_PROGRESS_NOT_READY",
+  "base_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "base_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+  "base_ledger": {
+    "path": "docs/audit-handoff/current/issue-to-fix.json",
+    "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e",
+    "semantics": "Full historical row, grouped variants, reviewers, evidence and limitations remain normative; this overlay does not rewrite them."
+  },
+  "confirmed_families": [
+    {
+      "id": "PVA-001",
+      "title": "Android32 password-hash adapter passes a 64-bit value for size_t",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 0,
+      "base_row_canonical_sha256": "e8b362fa8d3debe16a2a6d4e254e9b74d6d14a858882dafcb092f135b575407d",
+      "continuation": [
+        "Current Android/JVM adapter source challenge sustains size_t fix and mandatory historical lowercase-hex compatibility. Isolated dependency-free Android32 instrumentation harness is being authored after independent AGP API/source review; no target execution."
+      ]
+    },
+    {
+      "id": "PVA-002",
+      "title": "Numeric sequences lose their intended password-strength penalty",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 1,
+      "base_row_canonical_sha256": "3e7407ae269566380fb8d33498d23776372f12ae8eb9c0c7ff36f588807fa24a",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-003",
+      "title": "Vault listing fails above the bundled SQLite bind-parameter limit",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 2,
+      "base_row_canonical_sha256": "2969c4223ca47cf29b74edcda89a2e723a0fb551f84da820d6f8667b0de89811",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-004",
+      "title": "Database recovery retry can move files behind an already-open cached Room handle",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 3,
+      "base_row_canonical_sha256": "7f5722631c0ee803a7e12b9998af05236390c2a57da9cf4eed54bedbe5defcfa",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-005",
+      "title": "Produced-but-undelivered mutable secrets lack a cleanup owner",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 4,
+      "base_row_canonical_sha256": "a72e82449092c970dec5caf35cb0582908370086917639ca549985e65efd9ece",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-006",
+      "title": "Attachment subkey cleanup starts after a suspending filename operation",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 5,
+      "base_row_canonical_sha256": "7f188870bb9c7e0f5fe51c0daf4cb7ab832c800dfb81d4534ef595e7cc0ae68c",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-007",
+      "title": "Page Save and Back silently discard active inline custom-field edits",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 6,
+      "base_row_canonical_sha256": "3bafe8cfafaf84136c31befae7fdead61cd23df53110e023dbb7328cbe25a327",
+      "continuation": [
+        "Known pre-SideEffect Back/forward freshness variant independently confirmed and source-fixed with nine new declared regression methods (seven Composition, two common); zero executions. Exact review: reviews/editor-independent/BACK-PATCH-INPUTS-v2.json. Source acceptance is not target closure.",
+        "Existing row-save stale callback sibling independently confirmed within same family; correction in progress in separate unstaged owner paths at first checkpoint. Original rendered/device and other remaining requirements remain normative."
+      ]
+    },
+    {
+      "id": "PVA-008",
+      "title": "Cancelled iOS attachment adoption can orphan an owned plaintext copy",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 7,
+      "base_row_canonical_sha256": "4f3d54355c130566c25c0dc85b4d331762909798c78c9147694313dd0a96a51d",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-009",
+      "title": "Unavailable Android clipboard reads discard cleanup ownership",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 8,
+      "base_row_canonical_sha256": "212399715010d2dda5aaf30c0a08655ec2d7ba572639d6f57298895dc82a5b94",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-010",
+      "title": "Desktop close-time native cancellation is outside context lifetime accounting",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 9,
+      "base_row_canonical_sha256": "b9d919cad8c374393d474c4079efc16659d08e2907baf0e5ac1fc120989e59b0",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-011",
+      "title": "Legal short reads can create attachments larger than the reader permits",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 10,
+      "base_row_canonical_sha256": "862acf21f9ca866a82b892636b3d8b208cf9d2b7fa5dcad2346a24f6a6cebd81",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-012",
+      "title": "Cancelled insert-result delivery can delete a committed attachment object",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 11,
+      "base_row_canonical_sha256": "980d5013a41ecdc068fbbb1f6d44cfd873ec5ac205ecedd1f5257081868e8c13",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-013",
+      "title": "Backup prefix/legacy cancellation can skip selected-source close",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 12,
+      "base_row_canonical_sha256": "f448ee3049f8841a1ef28be70b221b7208fa3efa35ba9a1291a839061f332400",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-014",
+      "title": "Native biometric prompt text does not consistently follow app language",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 13,
+      "base_row_canonical_sha256": "b0e22b8fcf3ab4b7085618dde2956f16164c091c32a6fcef6a59a873582639aa",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-015",
+      "title": "Current-main mobile promotion rejects the existing schema-2 candidate and requires Desktop receipt",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 14,
+      "base_row_canonical_sha256": "cbe33c679b951310646b5e0e15f83d460a2e7558ee78600bb9b634c0d3906b7c",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-016",
+      "title": "Direct production version input is inserted into validation shell source",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 15,
+      "base_row_canonical_sha256": "ba26c7d442d3504523228c3f6b46c3789ae81348db89bbafae0f3ac854e932b9",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-017",
+      "title": "Stable publication does not verify an already-existing tag target",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 16,
+      "base_row_canonical_sha256": "0c33e7fb065a1fd3d9596390846332a80070b407ad55980acd84cb866f921d14",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-018",
+      "title": "Changed-tree resume rejects only after possible external mobile distribution",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 17,
+      "base_row_canonical_sha256": "7ca0f22724172869c3da6523012a7f52fd772f934093357df769730748596c5d",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-019",
+      "title": "Receipt resume treats paginated GitHub output as one JSON document",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 18,
+      "base_row_canonical_sha256": "28bd6f3f99767ff04b804cc2a272f98ec911dfb7cc4dde236ce38c1b2589ce6c",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-020",
+      "title": "Windows checksum update receives the parent of the required app-image root",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 19,
+      "base_row_canonical_sha256": "b7ab40f4aca3db43079045fbc2e78e119369f0753a298e5a4f94d707c1300d28",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-021",
+      "title": "Standalone iOS signing verifier can fail to preserve keychain search-list configuration",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 20,
+      "base_row_canonical_sha256": "87fb9354bf70316be742eaacd52cde98d9d7f7dc8c54ec793eeea6ccb9c51391",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-022",
+      "title": "Action-pin regression validator skips unnamed YAML steps",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 21,
+      "base_row_canonical_sha256": "038eac967f46cb94b19088fe9ca547b6def0ec4d9de681f3711fd6ca98cf817d",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-023",
+      "title": "Ignored optional tester-secret deletion can leave stale configuration undetected",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 22,
+      "base_row_canonical_sha256": "44fc7a65037a16c925e4936d3c95ac9cf1bc41db80c861004b58fca0d16a2786",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-024",
+      "title": "Store metadata readiness checks and uploaded archive can use different files",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 23,
+      "base_row_canonical_sha256": "541da0606ae1cf482a292cae982e78e22b9c4bdd2812bbeddae0fff572be204b",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-025",
+      "title": "Release checklist describes obsolete schema3 as the complete current migration scope",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 24,
+      "base_row_canonical_sha256": "c68c158f504a7906e9822053b74f4c59c6f19777f7b6294379b615bbb355301c",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-026",
+      "title": "Equal row update wipes the live custom-field owner",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 25,
+      "base_row_canonical_sha256": "d58b8485a61c26ff2fce08bfa9e8511286196fae76d3e9b31576b12302e436a2",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-027",
+      "title": "Already-installed Desktop tray does not follow runtime app language",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 26,
+      "base_row_canonical_sha256": "7b264d7fc1e063c28f9d8b6344900783a0e9399710aa24c553f7edb5761d0cce",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-028",
+      "title": "Separate publication checkout lacks history required by a legitimate same-tree resume",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 27,
+      "base_row_canonical_sha256": "3c7cb39dcdc86f740b40c4ea76273e2ff63ca9e2e090af503392fd724f02e8da",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-029",
+      "title": "Same-tree different-SHA flow mismatches candidate identity with attestation invocation identity",
+      "status": "IMPLEMENTED — REGRESSION VERIFICATION FAILED",
+      "base_row_index": 28,
+      "base_row_canonical_sha256": "bbe750eaa39157c9eb23ffe5abcef8ce5d77a88f81953271aaa79e011baf2041",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-030",
+      "title": "Android SYSTEM language reapplies a process-lifetime stale locale snapshot",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 29,
+      "base_row_canonical_sha256": "7f02b18ea4508b1e434195b214cf10cdf3b16d228fa60bbce6eb1577138a148a",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-031",
+      "title": "Custom-field Add remains enabled at full capacity and loses the rejected new draft",
+      "status": "IMPLEMENTED — VERIFICATION BLOCKED",
+      "base_row_index": 30,
+      "base_row_canonical_sha256": "67da00e85864e28c366ccb35bfb7a7932e1df222e1ea60bea8b8dca4aebf1f74",
+      "continuation": [
+        "Historical setup failure before assertions preserved. Current public Foojay/plugin/wrapper metadata reachable via bounded HTTPS requests, not proof of historical cause or Java/Gradle transport; no retry has run."
+      ]
+    },
+    {
+      "id": "PVA-032",
+      "title": "Standalone iOS profile cleanup ownership is registered after copy and chmod",
+      "status": "FIXED AND VERIFIED",
+      "base_row_index": 31,
+      "base_row_canonical_sha256": "31d46cb710a16232d94000b62c66a29ef6e1de1a09623ec9559369fe2672da3a",
+      "continuation": [
+        "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements."
+      ]
+    },
+    {
+      "id": "PVA-033",
+      "title": "Completed lock does not revoke a biometric attempt that has not entered the repository",
+      "status": "IMPLEMENTED — REGRESSION VERIFICATION PENDING",
+      "base_row_index": 32,
+      "base_row_canonical_sha256": "02ee611c3aecb75e1d7327f0bc5d3bd757bb75a30765902ab7b2f234edbc1ecd",
+      "continuation": [
+        "Seven-class/five-file selection independently read and inventoried: 105 declared methods total across PVA033/034/035, zero new executions. Fresh Linux runner/environment/admission work in progress."
+      ]
+    },
+    {
+      "id": "PVA-034",
+      "title": "Identifier-budget integration test accepts an unrelated malformed-tag rejection",
+      "status": "IMPLEMENTED — REGRESSION VERIFICATION PENDING",
+      "base_row_index": 33,
+      "base_row_canonical_sha256": "e292b5ce12bd76d1216e019452ad781fb6a00f5383de60a83469314faed1e74f",
+      "continuation": [
+        "Discriminating 4-byte/3-byte acceptTag source oracle preserved; no mutant or regression execution."
+      ]
+    },
+    {
+      "id": "PVA-035",
+      "title": "Valid Unicode IDs can make V2 backup pagination reject correctly ordered SQLite rows",
+      "status": "IMPLEMENTED — REGRESSION VERIFICATION PENDING",
+      "base_row_index": 34,
+      "base_row_canonical_sha256": "dd9c1fb9bda895e6befb180841c535c3d7c6338de1f279de9da896dbe3403827",
+      "continuation": [
+        "Real three-encoding Room regression source preserved; runtime selection remains pending fresh admission."
+      ]
+    },
+    {
+      "id": "PVA-036",
+      "title": "Windows temporary-file failure cleanup deletes before close or without creation ownership",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 35,
+      "base_row_canonical_sha256": "d6002486f7810376731011e79c0b3b16710cec396d36d03ea8f14589f40a766a",
+      "continuation": [
+        "New non-publishing Windows CI source/coordination/cleanup admission in progress for eight named synthetic writer cases. Historical red controls and target execution remain pending."
+      ]
+    },
+    {
+      "id": "PVA-037",
+      "title": "Windows native secret-array erasure is skipped by C++ allocation exceptions",
+      "status": "IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED",
+      "base_row_index": 36,
+      "base_row_canonical_sha256": "76ae6167c6694d8f4759eedf4d19720215f7ac59639f37299913add31b1c8f9a",
+      "continuation": [
+        "New non-publishing Windows CI source/coordination/cleanup admission in progress for four guard cases plus two narrowly reviewed ABI/security siblings. Real Hello/hardware and production-cut injection remain separate."
+      ]
+    }
+  ],
+  "denominators": {
+    "original_confirmed": {
+      "qualified_closures": 19,
+      "total": 25,
+      "remaining": 6,
+      "percent": 76
+    },
+    "all_confirmed": {
+      "qualified_closures": 22,
+      "total": 37,
+      "remaining": 15,
+      "percent": 59.5
+    },
+    "original_suspicions": {
+      "conclusive_outcomes": 2,
+      "total": 12,
+      "remaining": 10,
+      "percent": 16.7
+    },
+    "design_explanations": {
+      "documented": 8,
+      "total": 8,
+      "owner_decisions": "PENDING_SEPARATE_EXCEPT_REQUIRED_EXISTING_COMPATIBILITY"
+    }
+  },
+  "counting": "Separate denominators, not overall readiness. No new family or closure from authored tests, source review, transport or runner work.",
+  "hard_fences": {
+    "PVU-007": "STOP_NO_INVESTIGATION_OR_REFORMULATION",
+    "PVU-011": "NO_RETRY_NO_PROCEDURE_INQUIRY_OR_CONTAINMENT_RELAXATION",
+    "PVA-029": "HISTORICAL_FAIL_49_NAMED_CHECKS_44_PASS_5_FAIL_NO_AUTOMATIC_RETRY",
+    "G7_G8": "EXECUTION_RECOVERY_CACHE_HELPER_SCOPES_CLOSED",
+    "candidate": "1017001_MUST_REMAIN_UNCHANGED"
+  },
+  "original_suspicions": [
+    {
+      "id": "PVU-001",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "continuation": "Bounded source continuation: unresolved; rejected unwired OnCancelOperation admission example retained in reviews/storage/REPORT.md. No production patch or runtime closure."
+    },
+    {
+      "id": "PVU-002",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "continuation": "Bounded source continuation: unresolved; rejected unwired OnCancelOperation admission example retained in reviews/storage/REPORT.md. No production patch or runtime closure."
+    },
+    {
+      "id": "PVU-003",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "continuation": "Bounded source continuation: unresolved; rejected unwired OnCancelOperation admission example retained in reviews/storage/REPORT.md. No production patch or runtime closure."
+    },
+    {
+      "id": "PVU-004",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "continuation": "Scoped editor/lifecycle review underway; original unresolved outcome retained."
+    },
+    {
+      "id": "PVU-005",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "continuation": "Scoped editor/lifecycle review underway; original unresolved outcome retained."
+    },
+    {
+      "id": "PVU-006",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "continuation": "Scoped editor/lifecycle review underway; original unresolved outcome retained."
+    },
+    {
+      "id": "PVU-007",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "boundary": "STOP: no investigation or reformulation"
+    },
+    {
+      "id": "PVU-008",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json"
+    },
+    {
+      "id": "PVU-009",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json"
+    },
+    {
+      "id": "PVU-010",
+      "status": "CONFIRMED DEFECT",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json"
+    },
+    {
+      "id": "PVU-011",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "boundary": "NO RETRY: no containment relaxation or procedure inquiry"
+    },
+    {
+      "id": "PVU-012",
+      "status": "FALSE POSITIVE",
+      "base_projection": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json"
+    }
+  ],
+  "continuation_review_index": "OWNERSHIP.md"
+}

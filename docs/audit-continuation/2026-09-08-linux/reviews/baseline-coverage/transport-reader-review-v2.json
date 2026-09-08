@@ -1,0 +1,29 @@
+{
+  "reviewer": "/root/baseline_coverage",
+  "author": "/root",
+  "purpose": "Source-only follow-up to transport-reader-review.json; historical intermediate disposition",
+  "disposition": "REVISE",
+  "subject": {
+    "path": "scripts/audit/read_handoff_git.py",
+    "sha256": "d11725815073a48ca5d683de4c85c79799d13162b1bf647566aea579edd818fd",
+    "physical_LF": 274,
+    "read_ranges": [
+      [
+        1,
+        274
+      ]
+    ],
+    "retained_inert_source": null
+  },
+  "findings": {
+    "TR01": "Source correction present, no runtime experiment",
+    "TR02": "Source correction present, no runtime experiment",
+    "TR03": "NUL/ESC/Cc/Cf refused except LF/CR/TAB; bare CR still allowed, required refusal or CRLF-only allowance",
+    "TR04": "Source correction present"
+  },
+  "source_snapshot_failure": {
+    "outcome": "A data-only administrative snapshot command hit AssertionError because the root author had advanced source before copy; no file was written by that failed command. No automatic helper retry or test occurred.",
+    "missing_original": "Exact intermediate source was fully displayed but was not separately retained before author advancement; do not describe later V3 bytes as that V2 preimage."
+  },
+  "execution_count": 0
+}

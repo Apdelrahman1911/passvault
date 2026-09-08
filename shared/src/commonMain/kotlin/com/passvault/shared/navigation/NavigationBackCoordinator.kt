@@ -17,13 +17,22 @@ import com.passvault.core.navigation.NavigationMutation
 import com.passvault.core.navigation.NavigationToken
 import com.passvault.core.navigation.PassVaultRoute
 
+internal data class BackPolicy(
+    val disposition: BackDisposition,
+    val blocksForwardNavigation: Boolean,
+)
+
 internal class BackRegistration(
     val token: NavigationToken,
     val disposition: BackDisposition,
     val handleInPlace: () -> Unit,
     val beforePop: () -> Unit,
     val blocksForwardNavigation: Boolean,
-)
+    private val readCurrentPolicy: (() -> BackPolicy)? = null,
+) {
+    fun resolvePolicy(): BackPolicy = readCurrentPolicy?.invoke()
+        ?: BackPolicy(disposition, blocksForwardNavigation)
+}
 
 /** One policy boundary shared by system, gesture, toolbar, and keyboard Back. */
 internal class NavigationBackCoordinator(
@@ -39,7 +48,8 @@ internal class NavigationBackCoordinator(
     fun effectiveDisposition(hostResumed: Boolean = navigator.isHostResumed()): BackDisposition {
         if (!hostResumed) return BackDisposition.Blocked
         val current = activeRegistration()
-        val disposition = current?.disposition ?: navigator.defaultBackDisposition(conservativeGuard = true)
+        val disposition = current?.resolvePolicy()?.disposition
+            ?: navigator.defaultBackDisposition(conservativeGuard = true)
         return if (disposition == BackDisposition.PopNow && !navigator.canPop()) {
             navigator.defaultBackDisposition(conservativeGuard = false)
         } else {
@@ -50,7 +60,8 @@ internal class NavigationBackCoordinator(
     fun requestBack(): Boolean {
         if (!navigator.isHostResumed()) return true
         val active = activeRegistration()
-        return when (active?.disposition ?: navigator.defaultBackDisposition(conservativeGuard = true)) {
+        val policy = active?.resolvePolicy()
+        return when (policy?.disposition ?: navigator.defaultBackDisposition(conservativeGuard = true)) {
             BackDisposition.PopNow -> {
                 val token = active?.token ?: navigator.currentToken()
                 active?.beforePop?.invoke()
@@ -77,7 +88,8 @@ internal class NavigationBackCoordinator(
             if (active == null) {
                 navigator.defaultBackDisposition(conservativeGuard = true) != BackDisposition.Blocked
             } else {
-                active.disposition != BackDisposition.Blocked && !active.blocksForwardNavigation
+                val policy = active.resolvePolicy()
+                policy.disposition != BackDisposition.Blocked && !policy.blocksForwardNavigation
             }
         }
     }
@@ -86,7 +98,7 @@ internal class NavigationBackCoordinator(
         val hostResumed = navigator.isHostResumed()
         val active = if (hostResumed) {
             activeRegistration()?.takeIf { candidate ->
-                candidate.disposition == BackDisposition.PopNow &&
+                candidate.resolvePolicy().disposition == BackDisposition.PopNow &&
                     navigator.isCurrentEntry(candidate.token)
             }
         } else {
@@ -136,9 +148,13 @@ internal fun RegisterBackDisposition(
     handleInPlace: () -> Unit = {},
     beforePop: () -> Unit = {},
     blocksForwardNavigation: Boolean = disposition == BackDisposition.Blocked,
+    currentPolicy: (() -> BackPolicy)? = null,
 ) {
     val currentHandleInPlace by rememberUpdatedState(handleInPlace)
     val currentBeforePop by rememberUpdatedState(beforePop)
+    val currentPolicyProvider by rememberUpdatedState(currentPolicy)
+    // The composed snapshot still invalidates rendering. Input can arrive before
+    // the next frame, so entry-owned guards may also supply a synchronous policy.
     val registration = remember(token, disposition, blocksForwardNavigation) {
         BackRegistration(
             token = token,
@@ -146,6 +162,9 @@ internal fun RegisterBackDisposition(
             handleInPlace = { currentHandleInPlace() },
             beforePop = { currentBeforePop() },
             blocksForwardNavigation = blocksForwardNavigation,
+            readCurrentPolicy = {
+                currentPolicyProvider?.invoke() ?: BackPolicy(disposition, blocksForwardNavigation)
+            },
         )
     }
     SideEffect {

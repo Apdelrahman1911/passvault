@@ -154,6 +154,86 @@ class NavigationBackCoordinatorTest {
         assertEquals(listOf(VaultRoute.Vault), navigator.state.activeStack())
     }
 
+    @Test
+    fun `each Back decision reads one current policy pair instead of its composed snapshot`() {
+        val navigator = unlockedNavigatorWithDetail()
+        val coordinator = NavigationBackCoordinator(navigator)
+        var reads = 0
+        var actions = 0
+        coordinator.register(
+            BackRegistration(
+                token = navigator.currentToken(),
+                disposition = BackDisposition.PopNow,
+                handleInPlace = { actions++ },
+                beforePop = { actions++ },
+                blocksForwardNavigation = false,
+                readCurrentPolicy = {
+                    reads++
+                    BackPolicy(BackDisposition.Blocked, blocksForwardNavigation = false)
+                },
+            ),
+        )
+
+        assertEquals(BackDisposition.Blocked, coordinator.effectiveDisposition())
+        assertEquals(1, reads)
+        assertFalse(coordinator.canLeaveForForwardNavigation())
+        assertEquals(2, reads)
+        assertTrue(coordinator.requestBack())
+        assertEquals(3, reads)
+        assertIs<NavigationMutation.Rejected>(coordinator.completeInteractivePop())
+        assertEquals(4, reads)
+        assertEquals(0, actions)
+        assertEquals(VaultRoute.CredentialDetail(CREDENTIAL_ID), navigator.state.currentRoute())
+    }
+
+    @Test
+    fun `inactive host and stale session never evaluate an old entry current policy`() {
+        val navigator = unlockedNavigatorWithDetail()
+        val coordinator = NavigationBackCoordinator(navigator)
+        var reads = 0
+        coordinator.register(
+            BackRegistration(
+                token = navigator.currentToken(),
+                disposition = BackDisposition.PopNow,
+                handleInPlace = {},
+                beforePop = {},
+                blocksForwardNavigation = false,
+                readCurrentPolicy = {
+                    reads++
+                    BackPolicy(BackDisposition.PopNow, blocksForwardNavigation = false)
+                },
+            ),
+        )
+
+        navigator.setHostResumed(false)
+        assertEquals(BackDisposition.Blocked, coordinator.effectiveDisposition())
+        assertFalse(coordinator.canLeaveForForwardNavigation())
+        assertTrue(coordinator.requestBack())
+        assertIs<NavigationMutation.Rejected>(coordinator.completeInteractivePop())
+        assertEquals(0, reads)
+
+        navigator.setHostResumed(true)
+        navigator.requireAuthentication()
+        coordinator.effectiveDisposition()
+        coordinator.canLeaveForForwardNavigation()
+        coordinator.requestBack()
+        assertIs<NavigationMutation.Rejected>(coordinator.completeInteractivePop())
+        assertEquals(0, reads)
+        assertEquals(AuthRoute.Unlock, navigator.state.currentRoute())
+
+        // Return to the same map key in a different authenticated session. A
+        // missing-route lookup alone must not be what rejects the old policy.
+        navigator.markSessionUnlocked()
+        assertEquals(NavigationMutation.Applied, navigator.activateUnlocked())
+        assertEquals(VaultRoute.CredentialDetail(CREDENTIAL_ID), navigator.state.currentRoute())
+        assertEquals(BackDisposition.Blocked, coordinator.effectiveDisposition())
+        assertFalse(coordinator.canLeaveForForwardNavigation())
+        assertTrue(coordinator.requestBack())
+        assertIs<NavigationMutation.Rejected>(coordinator.completeInteractivePop())
+        assertEquals(0, reads)
+        assertEquals(VaultRoute.CredentialDetail(CREDENTIAL_ID), navigator.state.currentRoute())
+    }
+
     private fun unlockedNavigatorWithDetail(): AppNavigator = unlockedNavigator().also { navigator ->
         navigator.push(VaultRoute.CredentialDetail(CREDENTIAL_ID), navigator.currentToken())
     }

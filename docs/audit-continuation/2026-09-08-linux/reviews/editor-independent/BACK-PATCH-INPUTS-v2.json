@@ -1,0 +1,105 @@
+{
+  "reviewer": "/root/editor_review",
+  "author": "/root/editor",
+  "finding": "PVA-007",
+  "scope": "live credential Back/forward/action-completion freshness patch",
+  "disposition": "SOURCE_ACCEPTED_EXECUTION_PENDING_NO_CLOSURE",
+  "recorded_utc": "2026-09-08T21:10:07.937091+00:00",
+  "containing_head_at_recording": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+  "source_dirty": true,
+  "test_source_counts": {
+    "new_composition_methods": 7,
+    "new_common_coordinator_methods": 2,
+    "existing_common_coordinator_methods": 9,
+    "selected_two_class_methods": 18,
+    "newly_executed_cases": 0
+  },
+  "files": [
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+      "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db",
+      "bytes": 6999,
+      "physical_lf": 181,
+      "review_semantics": "Modified lines and surrounding path re-read against immutable before-image; test new class read fully; hashes alone are not full-file coverage credit."
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+      "bytes": 11636,
+      "physical_lf": 271,
+      "review_semantics": "Modified lines and surrounding path re-read against immutable before-image; test new class read fully; hashes alone are not full-file coverage credit."
+    },
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+      "sha256": "e777006c470eded3f4f8d8183c74857229a6cb1004dc98add17c6eab6743fa14",
+      "bytes": 11300,
+      "physical_lf": 263,
+      "review_semantics": "Modified lines and surrounding path re-read against immutable before-image; test new class read fully; hashes alone are not full-file coverage credit."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+      "bytes": 16583,
+      "physical_lf": 373,
+      "review_semantics": "Modified lines and surrounding path re-read against immutable before-image; test new class read fully; hashes alone are not full-file coverage credit."
+    },
+    {
+      "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/fakes/FakeCredentialRepository.kt",
+      "sha256": "e23527840b0c9ffa1baa99bc70550c28115ea357fe213d5f436b568dfa76686a",
+      "bytes": 15123,
+      "physical_lf": 390,
+      "supporting_bounded_read_ranges": [
+        [
+          1,
+          150
+        ],
+        [
+          301,
+          337
+        ]
+      ]
+    },
+    {
+      "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/TestData.kt",
+      "sha256": "0ef930551068d29c657665894e776ecc79f3e5410398dfd531afc358ffb64cc6",
+      "bytes": 10585,
+      "physical_lf": 360,
+      "supporting_bounded_read_ranges": [
+        [
+          1,
+          76
+        ]
+      ]
+    },
+    {
+      "path": "core/navigation/src/commonMain/kotlin/com/passvault/core/navigation/NavigationState.kt",
+      "sha256": "cf38863884bfbbd7997be0db8a09f0791e62ce5760de1444e95ae6aa4f0b1d90",
+      "bytes": 12266,
+      "physical_lf": 298,
+      "supporting_bounded_read_ranges": [
+        [
+          179,
+          236
+        ]
+      ]
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "sha256": "c6e83a2367f7bab80a70753bd31e9572f707c8deca128ec7debb5f2f80bf41af",
+      "bytes": 25005,
+      "physical_lf": 586,
+      "supporting_bounded_read_ranges": [
+        [
+          206,
+          227
+        ],
+        [
+          314,
+          336
+        ]
+      ]
+    }
+  ],
+  "supersedes": "BACK-PATCH-INPUTS.json only for the revised composition-test after-image; other source hashes unchanged",
+  "reason": "Independent review requested preserving primary assertion failure alongside all cleanup/resetMain failures."
+}

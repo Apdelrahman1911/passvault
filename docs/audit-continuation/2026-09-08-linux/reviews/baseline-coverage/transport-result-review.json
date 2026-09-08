@@ -1,0 +1,116 @@
+{
+  "reviewer": "/root/baseline_coverage",
+  "root_execution_owner": "/root",
+  "at": "2026-09-08T21:10:40.934848+00:00",
+  "disposition": "ACCEPT_QUALIFIED_COMMITTED_TRANSPORT_AND_35_POINTER_BINDINGS",
+  "root_verification": {
+    "observed_root_receipt": {
+      "started_utc": "2026-09-08T21:03:00Z",
+      "ended_utc": "2026-09-08T21:03:05Z",
+      "exit_code": 0,
+      "reader_sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+      "review_sha256": "7d7db7ffd4f70d7946bd188a152dca951e513a803cac4e46e2d7d567526d735f",
+      "application_tests": 0,
+      "gradle_stop": "NOT_APPLICABLE_NO_GRADLE",
+      "cleanup": "No runtime/cache/temp outputs created; exact compact transport evidence retained. Direct Git children reaped by reviewed helper; hard-kill/host-loss limits retained.",
+      "outputs": {
+        "transport-verify-v3-command.txt": {
+          "bytes": 117,
+          "sha256": "da6687a38090435446f1bd7e24114fe85ad3659ff8a45b69a40dda268bcc9987"
+        },
+        "transport-verify-v3.stdout": {
+          "bytes": 290,
+          "sha256": "9928e3bf682d53164b287407c8fe73a64f25126af09acc982dce426496e82c6d"
+        },
+        "transport-verify-v3.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "independent_checks": [
+      "Exact reviewed helper SHA and exact reviewer-attestation SHA match root receipt.",
+      "Exact command matches isolated interpreter,180s TERM/10s KILL-grace action.",
+      "Retained command/stdout/stderr bytes and SHA256 match root receipt; stdout schema/commit/tree/counts are exact and stderr empty.",
+      "Independent package/index metadata count arithmetic agrees:171 PACKAGE entries (self not counted),21378 indexed paths,16510 distinct blobs,11 packs.",
+      "Exit0 plus reviewed direct-child finally/wait flow supports successful settlement for this normal invocation; no fresh kernel/process-attestation claim."
+    ]
+  },
+  "coverage_reference_operation": {
+    "owner": "/root/baseline_coverage",
+    "root_authorization": "Root message after initial verify permitted one bounded show of the exact G12 independent coverage report plus data-only summary.",
+    "reader_sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+    "selected_review_sha256": "13e6da10c4c942e1af342acb0585e107cc9029002bf7f2813b52477adf5d9c89",
+    "selected_review_bytes": 1547078,
+    "reader_exit": 0,
+    "summary_exit": 0,
+    "canonical_pointer_bindings": 35,
+    "all_match": true,
+    "full_raw_review_written_to_disk": false,
+    "fresh_semantic_source_LF_credit": 0,
+    "application_test_cases": 0
+  },
+  "evidence": [
+    {
+      "path": "transport-verify-v3-result.json",
+      "bytes": 988,
+      "sha256": "0f43eb12f8100c6e34f780fd3ce4fe61856e76af2a063a35036191d7a8f71dc5"
+    },
+    {
+      "path": "transport-verify-v3-command.txt",
+      "bytes": 117,
+      "sha256": "da6687a38090435446f1bd7e24114fe85ad3659ff8a45b69a40dda268bcc9987"
+    },
+    {
+      "path": "transport-verify-v3.stdout",
+      "bytes": 290,
+      "sha256": "9928e3bf682d53164b287407c8fe73a64f25126af09acc982dce426496e82c6d"
+    },
+    {
+      "path": "transport-verify-v3.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "transport-reader-review-v3.json",
+      "bytes": 5441,
+      "sha256": "7d7db7ffd4f70d7946bd188a152dca951e513a803cac4e46e2d7d567526d735f"
+    },
+    {
+      "path": "coverage-reference-command.txt",
+      "bytes": 2692,
+      "sha256": "ea38419db0a1cd3db99271b382245cc5e32169783966fdab85a62df9017a0e0d"
+    },
+    {
+      "path": "coverage-reference-summary.json",
+      "bytes": 8792,
+      "sha256": "2b8ff6fdf518de088223c1dd25507fb2dd81563d7699a416346c6b8ab5c27d27"
+    },
+    {
+      "path": "coverage-reference-exit.json",
+      "bytes": 35,
+      "sha256": "d13169188d66fdf7673f39ce1a0f526839af5d903f15b2f08f497286b16806f9"
+    },
+    {
+      "path": "coverage-reference.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "transport.log",
+      "bytes": 430,
+      "sha256": "a4b7374c77dd74d1a8d898f88c741ca4d35b1f02b6f37687d26e058bf7ff0d62"
+    }
+  ],
+  "resource_point_observation": {
+    "disk_available_bytes": 30630236160
+  },
+  "limits": [
+    "Root invocation is adjudicated from its exact retained receipt/artifacts and reviewed code, not repeated by the reviewer.",
+    "Committed handoff transport does NOT verify actual checkout809 raw+2 EOL members, modes, current edited source, semantic archive reference closure, application correctness or readiness.",
+    "The35 exact pointer/count/hash comparisons preserve historical18 conditions,12 limits and all original nested normative objects; no entire ancestry audit or source-event replay was performed.",
+    "The supplied-reader verify-source exit2 remains; following original verify never ran. V1/V2 REVISE and intermediate snapshot AssertionError remain.",
+    "No build, application tests, old runner import/execution, archive extraction, temp/cache/output tree or persistent worker created. Compact evidence retained. Gradle stop is not applicable; earlier CLOSED obligations are not discharged.",
+    "No fixed-family count changes or publication authority. G7/G8 CLOSED; PVU007 STOP; PVU011 NO RETRY; PVA029 FAIL/no automatic retry; candidate1017001 unchanged."
+  ]
+}

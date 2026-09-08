@@ -1,0 +1,32 @@
+/usr/bin/timeout --signal=TERM --kill-after=10s 180s /usr/bin/python3 -I -B scripts/audit/read_handoff_git.py show 'remediation-reports/20260905T222925Z/reviews/g12-coverage-independent-navigation-v1/REVIEW.json' | /usr/bin/python3 -I -B -c 'import hashlib,json,sys
+from pathlib import Path
+raw=sys.stdin.buffer.read(2*1024*1024+1)
+expected_hash="13e6da10c4c942e1af342acb0585e107cc9029002bf7f2813b52477adf5d9c89"
+if len(raw)!=1547078 or hashlib.sha256(raw).hexdigest()!=expected_hash:
+    raise SystemExit("refused: selected review bytes/hash mismatch")
+report=json.loads(raw)
+current_path=Path("docs/audit-handoff/current/coverage-CURRENT.json")
+current_raw=current_path.read_bytes()
+original_inputs=json.loads(Path("docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/INPUTS.json").read_bytes())
+binding=next(row for row in original_inputs["inputs"] if row["path"]==str(current_path))
+if len(current_raw)!=binding["bytes"] or hashlib.sha256(current_raw).hexdigest()!=binding["sha256"]:
+    raise SystemExit("refused: current frozen coverage binding changed")
+current=json.loads(current_raw)
+references=current["additional_mandatory_qualifiers"]["normative_references"]
+if len(references)!=35:
+    raise SystemExit("refused: normative reference count changed")
+rows=[]
+for reference in references:
+    obj=report
+    for token in reference["json_pointer"].split("/")[1:]:
+        token=token.replace("~1","/").replace("~0","~")
+        obj=obj[int(token)] if isinstance(obj,list) else obj[token]
+    actual=hashlib.sha256(json.dumps(obj,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    count=len(obj)
+    artifact=reference["artifact"]
+    passed=(actual==reference["canonical_sha256"] and count==reference["container_count"] and artifact["sha256"]==expected_hash and artifact["bytes"]==len(raw))
+    rows.append({"pointer":reference["json_pointer"],"container_count":count,"canonical_sha256":actual,"matches_declared_binding":passed})
+passed=all(row["matches_declared_binding"] for row in rows)
+print(json.dumps({"status":"PASS_35_HISTORICAL_NORMATIVE_POINTER_BINDINGS" if passed else "FAIL_NORMATIVE_POINTER_BINDINGS","selected_review_sha256":expected_hash,"selected_review_bytes":len(raw),"frozen_current_sha256":binding["sha256"],"canonicalization":"Python json.dumps(sort_keys=True,separators=(comma,colon)); default ensure_ascii=True; Python arbitrary-precision integers","references":rows,"application_tests":0,"semantic_source_LF_credit":0,"limits":"Metadata-only exact pointer/hash/container reconciliation, not ancestor audit replay, source semantic review, runtime coverage, correctness or finding closure."},indent=2))
+sys.exit(0 if passed else 2)
+'

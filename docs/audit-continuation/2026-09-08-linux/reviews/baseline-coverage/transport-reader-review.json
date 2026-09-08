@@ -1,0 +1,82 @@
+{
+  "reviewer": "/root/baseline_coverage",
+  "author": "/root",
+  "at": "2026-09-08T20:52:31.202734+00:00",
+  "purpose": "Independent exact-source operational review of a distinct read-only pinned-Git handoff reader; not product finding, application test, cleanup authority or runtime admission",
+  "disposition": "REVISE",
+  "subject": {
+    "path": "scripts/audit/read_handoff_git.py",
+    "sha256": "3d202c612c8186ed7383ae193381135080aef94b634c9649e4c7b67895b202a5",
+    "bytes": 9804,
+    "physical_LF": 231,
+    "read_ranges": [
+      [
+        1,
+        231
+      ]
+    ],
+    "retained_inert_source": "transport-reader-v1.py.txt"
+  },
+  "target": {
+    "commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+    "actions": [
+      "list",
+      "show",
+      "verify"
+    ],
+    "checkout_proof": false
+  },
+  "accepted_narrow_controls": [
+    "Fixed commit/tree, fixed /usr/bin/git plumbing, clean explicit child environment, no replace objects, no application/helper imports or archive extraction.",
+    "Package/tree membership, Git object SHA1 header+payload check, package/index SHA256 checks, descriptor validation and preserved same-hash alias consistency.",
+    "XZ32MiB decoder and72MiB expanded-TAR bounds, ordinary normalized USTAR-only members, bounded member length, exact digest/membership/padding/EOF checks.",
+    "Timeout cancellation targets only the direct unreaped Popen child, never process names or unrelated process groups.",
+    "Correct explicit committed-transport-only result, zero application tests and checkout_verification=false."
+  ],
+  "required_corrections": [
+    {
+      "id": "TR01",
+      "scope": "git child lifecycle, lines69-86",
+      "issue": "TimeoutExpired is handled but other interruption/error paths are not. SIGTERM can terminate Python while its direct Git child continues; KeyboardInterrupt or a pipe/error path can leave unverified settlement. Popen context management alone does not establish cancellation cleanup.",
+      "counterexample": "During child.communicate(), deliver SIGTERM to only the reader PID; default termination bypasses code and Popen finalization. No executed signal is alleged.",
+      "required": "Install bounded INT/TERM handling before child creation and unconditional positively-owned direct-child stop/reap in a finally path on interruption/error. Distinguish incomplete/failed cleanup and preserve nonzero outcome; document SIGKILL/power loss/uninterruptible kernel limits rather than promising universal settlement."
+    },
+    {
+      "id": "TR02",
+      "scope": "git output collection, lines69-86",
+      "issue": "communicate() accumulates both pipes before len(output)/len(error) checks. The advertised Git output caps are post-hoc, not memory-retention bounds.",
+      "counterexample": "A trusted plumbing process with an unexpectedly large listing/output or repeated diagnostic can exceed the cap before the check. Pinned object identities constrain ordinary valid payloads but are not a preemptive collector cap.",
+      "required": "Drain stdout/stderr with incremental per-stream byte bounds and a monotonic deadline; on overflow stop/reap only the owned child. Retain modest bounded diagnostics. Keep implementation narrow rather than importing an archived runner."
+    },
+    {
+      "id": "TR03",
+      "scope": "show output, lines207-214",
+      "issue": "UTF8 decoding alone accepts NUL and terminal control bytes; the supplied reader rejected NUL and neutralized non-text controls.",
+      "counterexample": "An included binary-like UTF8 payload with NUL or text with ESC bytes is emitted verbatim; this weakens display safety relative to the reviewed supplied reader.",
+      "required": "Refuse NUL/binary-like selected output and neutralize non-text terminal control/format characters while allowing ordinary newline/tab, without changing stored bytes/hash identity."
+    },
+    {
+      "id": "TR04",
+      "scope": "tree duplicate check, lines88-106",
+      "issue": "The duplicate predicate tests the full prefixed path against a map whose keys are prefix-stripped, so it does not reject repeated listing paths.",
+      "counterexample": "Two listing rows with the same docs/audit-handoff/x path overwrite the x entry; current pinned tree is not alleged to contain such a duplicate.",
+      "required": "Compute the relative suffix once and test/store that same key."
+    }
+  ],
+  "additional_admission_constraints": [
+    "Set an explicit all-protocol transport denial such as GIT_ALLOW_PROTOCOL empty in addition to GIT_NO_LAZY_FETCH; do not assume a silently ignored environment flag is a no-network boundary for installed Git2.43.",
+    "Root must use an isolated Python invocation (-I -B with an explicitly observed interpreter) to avoid ambient PYTHONPATH/site option injection and pycache creation; bind exact revised script SHA before launch.",
+    "All actions remain against the pinned committed handoff only. No current checkout/source-LF proof or broad archive reference closure follows.",
+    "No output extraction, packed-code import, old runner import/execution, stopped-scope procedure work, candidate mutation, signing or publication is permitted.",
+    "Root alone runs the first accepted verify; agents use bounded approved show only after root announces acceptance and initial outcome."
+  ],
+  "execution": {
+    "script_executions": 0,
+    "imports": 0,
+    "tests": 0,
+    "builds": 0,
+    "signal_or_failure_experiments": 0
+  },
+  "limitations": "Source-only hypothetical counterexamples, not observed runtime incidents. The frozen supplied reader remains unchanged and its prior refusal remains. G7/G8 CLOSED; PVU007 STOP; PVU011 NO RETRY; PVA029 FAIL/no automatic retry."
+}
