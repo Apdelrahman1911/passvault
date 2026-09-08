@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "subject_author": "/root/native",
+  "disposition": "ACCEPT_WINDOWS_NATIVE_14_ADMISSION",
+  "purpose": "Independent exact-source, command, environment, coordination, resource and cleanup admission review for one new root-admitted non-publishing Windows native14 request; not executed test results or root's final activation decision",
+  "suite": "windows-native-14-v1",
+  "helper_sha256": "67bcd0aeaa03fa829d55fecfbd640d185163805e4c0a067b281bd807333af243",
+  "workflow_sha256": "643fcba6cb393bd6bbd8497cfd03a52ccc43fa217a9d1d728c453d29ddb87b8c",
+  "source_bindings_sha256": "27152712c1ac99ea1fcf739210764b0a5cabf8f45f1edbec2ecb3b143d2ebcb9",
+  "author_admission_document_sha256": "870acc8431b65b59d1534413e6fc09126d9309802dbdc90771327b2c3cb811f2",
+  "author_report_sha256": "ed83393e8bfd19898cf31ce2041fd2bc748c9475f03cef98da558a6f760eb3c7",
+  "review_report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/ADMISSION.md",
+  "prior_nonacceptance": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/ADMISSION-REVIEW-v1.md",
+  "native_test_scope_review": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/NATIVE-TEST-SCOPE.md",
+  "source_binding_scope": "Exactly the seven hash-bound files in SOURCE_BINDINGS.json; all current local hash/byte/LF tuples independently matched; no whole-project source coverage claim",
+  "root_preconditions": [
+    "Commit the exact accepted helper/workflow/source-binding/review packet on codex/audit-continuation-linux-20260908; bind its actual source commit and Git tree",
+    "Root independently checks the final request, whose activation commit must directly follow that source commit and change only docs/audit-continuation/2026-09-08-linux/requests/windows-native.json",
+    "Root reserves the sole audit-owned build/test slot across local and CI before push and holds it until run termination and cleanup/evidence reconciliation",
+    "No attempt/rerun beyond 1 and no unchanged automatic retry; any corrected-source successor needs a new independent admission and root decision",
+    "Actual runner/resource/toolchain/source/namespace checks must pass; this acceptance does not assert their future runtime outcomes"
+  ],
+  "platform": {
+    "runner": "windows-2022",
+    "environment": "github-hosted",
+    "architecture": "X64",
+    "python": "preinstalled x64 >=3.11; no automatic install",
+    "cmake_ctest": "preinstalled >=3.25 from the same directory",
+    "generator": "Visual Studio 17 2022",
+    "sdk": "10.0.26100.0",
+    "required_compile_contract": ["C++20", "/EHsc", "/W4", "/WX", "/sdl", "/guard:cf"],
+    "artifact_architecture": "PE AMD64 0x8664, hash-only retention"
+  },
+  "command_contract": {
+    "variables": {
+      "W": "exact GITHUB_WORKSPACE activation checkout",
+      "U": "fresh RUNNER_TEMP/passvault-native-<run_id>-1",
+      "E": "fresh separate RUNNER_TEMP/passvault-native-evidence-<run_id>-1"
+    },
+    "read_only_identity": [
+      "git -c core.hooksPath=NUL -c core.fsmonitor=false -c gc.auto=0 rev-parse HEAD HEAD^{tree} HEAD^ HEAD^^{tree}",
+      "git -c core.hooksPath=NUL -c core.fsmonitor=false -c gc.auto=0 diff --name-only HEAD^ HEAD --",
+      "git -c core.hooksPath=NUL -c core.fsmonitor=false -c gc.auto=0 status --porcelain=v1 --untracked-files=all",
+      "cmake --version"
+    ],
+    "configure": ["cmake", "-S", "W/app-desktop/native/biometric-bridge", "-B", "U/build", "-G", "Visual Studio 17 2022", "-A", "x64", "-DCMAKE_SYSTEM_VERSION=10.0.26100.0", "-DBUILD_TESTING=ON"],
+    "build": ["cmake", "--build", "U/build", "--config", "Release", "--target", "passvault_biometric_windows_security_test", "passvault_biometric_abi_test", "--parallel", "1", "--verbose", "--", "/nodeReuse:false"],
+    "inventory": ["ctest", "--test-dir", "U/build", "-C", "Release", "--show-only=json-v1"],
+    "each_case": ["ctest", "--test-dir", "U/build", "-C", "Release", "--parallel", "1", "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit", "E/case-NN.xml", "-R", "^<one exact escaped case name>$"],
+    "case_order_is_fixed": true,
+    "gradle": "NOT_APPLICABLE; no Gradle/JDK command or old stop-obligation discharge"
+  },
+  "case_names": [
+    "passvault_biometric_windows_file_success",
+    "passvault_biometric_windows_file_validation_failure",
+    "passvault_biometric_windows_file_dacl_failure",
+    "passvault_biometric_windows_file_collision",
+    "passvault_biometric_windows_file_empty_payload",
+    "passvault_biometric_windows_file_oversized_payload",
+    "passvault_biometric_windows_file_empty_suffix",
+    "passvault_biometric_windows_file_rename_failure",
+    "passvault_biometric_windows_secret_normal_scope",
+    "passvault_biometric_windows_secret_early_return",
+    "passvault_biometric_windows_secret_allocation_exception",
+    "passvault_biometric_windows_secret_nested_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_windows_security"
+  ],
+  "resources": {
+    "launch_free_disk_gib": 12,
+    "launch_available_ram_fraction": 0.25,
+    "running_free_disk_gib": 8,
+    "running_available_ram_fraction": 0.20,
+    "resource_poll_seconds": 5,
+    "log_poll_seconds": 0.5,
+    "workers": 1,
+    "job_committed_child_memory_gib": 3,
+    "job_process_limit": 16,
+    "configure_seconds": 120,
+    "build_seconds": 420,
+    "metadata_inventory_seconds_each": 30,
+    "ctest_outer_seconds_each": 45,
+    "ctest_child_seconds_each": 30,
+    "global_command_seconds": 900,
+    "actions_job_minutes": 20,
+    "limits_are_sampled_not_host_resource_reservations": true
+  },
+  "environment_and_cleanup": {
+    "synthetic_data_only": true,
+    "owned_generated_children": ["build", "tmp", "home", "appdata", "localappdata", "logs"],
+    "child_home_temp_appdata": "All confined under U; fixed helper environment excludes signing credentials, ambient compiler/init options and personal user profile/cache paths",
+    "msbuild_node_reuse": false,
+    "process_containment": "Atomic PROC_THREAD_ATTRIBUTE_JOB_LIST plus explicit HANDLE_LIST; suspended launch; nonbreakaway Job; kill-on-close; exact handles only",
+    "explicit_termination_attempts_max": 1,
+    "cleanup_requires": "Owned Job empty, original parent/root handles, retained no-reparse single-link descendant handles, <=5000 entries, prior fsynced identity deletion intents",
+    "deletion_scope": "Only U, using bottom-up handle dispositions; evidence/source/permanent tests/reports/shared caches/SDKs/toolchains/unrelated files excluded",
+    "uncertain_cleanup": "FAILED/HOLD; no automatic retry, re-adoption, recovery namespace or inferred success from hosted disposal",
+    "namespace_limit": "Cooperative isolated hosted runner, not a hostile same-user path-mutation sandbox; test remove_all has the same scoped qualification",
+    "hard_interruption_limit": "Hard kill/runner loss may prevent finally, receipts or upload; external cancellation/failure cannot become a verification pass"
+  },
+  "evidence": {
+    "max_retained_log_prefix_bytes_each": 2097152,
+    "raw_log_overshoot": "Possible polling overshoot; failure retained; raw logs never uploaded; bounded prefix plus observed length/full settled-file hash",
+    "case_mapping": "Exactly 14 planned names, individually invoked; available raw XML/logs determine actual executed/passed/failed/skipped/unstarted/unknown outcomes",
+    "machine_tally": "passed_cases_machine_scored counts passes only, not actual total executions",
+    "artifacts": "Compact JSON/JSONL/log/XML, identities and binary/toolchain hashes only",
+    "artifact_retention_days": 3,
+    "no_application_binary_upload": true,
+    "independent_result_reconciliation_required": true
+  },
+  "not_established": [
+    "Any newly executed helper control, native compile/link or CTest result by this reviewer",
+    "PVA-010 concurrent native lifetime/sanitizer/provider/packaged behavior",
+    "PVA-014 actual selected-language prompt rendering on Android/iOS/macOS",
+    "PVA-036 historical three-red/five-positive target comparison",
+    "Fixed-output KDF compatibility or PVA-037 real production allocator-cut injection",
+    "Physical Windows Hello, universal memory erasure, project readiness or owner PVD decisions"
+  ],
+  "permanent_fences": [
+    "PVU-007 STOP, no investigation/reformulation",
+    "PVU-011 NO RETRY, no procedure inquiry/containment relaxation",
+    "PVA-029 recorded FAIL, no automatic retry",
+    "G7/G8 execution/recovery/cache/helper scopes CLOSED; no old runner import/execution",
+    "No protected-branch/tag/version/identity/dependency/protection change",
+    "No signing/store secrets, production signing, store upload, publication or candidate 1017001 rebuild/replacement"
+  ]
+}
