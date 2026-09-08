@@ -38,7 +38,14 @@ if ($signature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
     -not $signature.SignerCertificate -or -not $signature.TimeStamperCertificate) {
     throw "The Windows biometric bridge must be signed and timestamped before refreshing its checksum."
 }
-$launcher = Join-Path $runtime.FullName "PassVault.exe"
+$launchers = @(Get-ChildItem -LiteralPath $runtime.FullName -Recurse -File |
+    Where-Object { $_.Name -ceq "PassVault.exe" })
+if ($launchers.Count -ne 1 -or
+    $launchers[0].Directory.FullName -cne $runtime.FullName -or
+    ($launchers[0].Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+    throw "RuntimePath must contain exactly one direct PassVault.exe launcher."
+}
+$launcher = $launchers[0].FullName
 $launcherSignature = Get-AuthenticodeSignature -LiteralPath $launcher
 if ($launcherSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
     -not $launcherSignature.SignerCertificate -or -not $launcherSignature.TimeStamperCertificate -or

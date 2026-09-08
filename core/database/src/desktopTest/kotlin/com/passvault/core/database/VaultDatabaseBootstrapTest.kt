@@ -22,6 +22,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -219,19 +220,120 @@ class VaultDatabaseBootstrapTest {
         withTempDirectory { directory ->
             val path = directory.resolve("vault.db")
             createDatabaseWithFiller(path)
+            var factoryCalls = 0
             val bootstrap = bootstrap(path) {
+                factoryCalls++
                 corruptLastLeafPage(path)
                 openDatabase(path)
             }
 
-            val result = assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(
-                bootstrap.openAndVerify(),
-            )
+            try {
+                val result = assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(
+                    bootstrap.openAndVerify(),
+                )
 
-            assertFalse(result.canPreserveAndReset)
-            assertTrue(bootstrap.preserveAndReset().isFailure)
-            assertTrue(Files.isRegularFile(path))
-            bootstrap.close()
+                assertFalse(result.canPreserveAndReset)
+                assertTrue(bootstrap.preserveAndReset().isFailure)
+                assertTrue(Files.isRegularFile(path))
+                // A working DAO proves that this failed bootstrap still owns a live,
+                // cached Room instance. Preflight on retry must not erase that lifetime.
+                assertTrue(bootstrap.database().credentialDao().getAllSummaries().isEmpty())
+                val damagedBytes = Files.readAllBytes(path)
+                repeat(2) {
+                    val retry = assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(bootstrap.openAndVerify())
+                    assertFalse(retry.canPreserveAndReset)
+                    assertTrue(bootstrap.preserveAndReset().isFailure)
+                    assertContentEquals(damagedBytes, Files.readAllBytes(path))
+                    assertEquals(1, factoryCalls)
+                }
+            } finally {
+                bootstrap.close()
+            }
+        }
+    }
+
+    @Test
+    fun `claiming Room after a preflight failure revokes preservation eligibility`() = runTest {
+        withTempDirectory { directory ->
+            val path = directory.resolve("vault.db")
+            createDatabaseWithFiller(path)
+            corruptLastLeafPage(path)
+            val damagedBytes = Files.readAllBytes(path)
+            val bootstrap = bootstrap(path) { openDatabase(path) }
+            try {
+                assertTrue(
+                    assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(
+                        bootstrap.openAndVerify(),
+                    ).canPreserveAndReset,
+                )
+                bootstrap.database()
+                assertTrue(bootstrap.preserveAndReset().isFailure)
+                assertContentEquals(damagedBytes, Files.readAllBytes(path))
+                assertFalse(
+                    assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(
+                        bootstrap.openAndVerify(),
+                    ).canPreserveAndReset,
+                )
+            } finally {
+                bootstrap.close()
+            }
+        }
+    }
+
+    @Test
+    fun `a failed Room factory cannot regain file replacement authority on retry`() = runTest {
+        withTempDirectory { directory ->
+            val path = directory.resolve("vault.db")
+            createDatabaseWithFiller(path)
+            val bootstrap = bootstrap(path) {
+                corruptLastLeafPage(path)
+                error("synthetic factory failure after claiming database files")
+            }
+            try {
+                assertEquals(VaultDatabaseBootstrapResult.Unavailable, bootstrap.openAndVerify())
+                val damagedBytes = Files.readAllBytes(path)
+                val retry = assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(bootstrap.openAndVerify())
+                assertFalse(retry.canPreserveAndReset)
+                assertTrue(bootstrap.preserveAndReset().isFailure)
+                assertContentEquals(damagedBytes, Files.readAllBytes(path))
+            } finally {
+                bootstrap.close()
+            }
+        }
+    }
+
+    @Test
+    fun `Room cannot be constructed while recovery owns filesystem replacement`() = runTest {
+        withTempDirectory { directory ->
+            val path = directory.resolve("vault.db")
+            createDatabaseWithFiller(path)
+            corruptLastLeafPage(path)
+            var factoryCalls = 0
+            lateinit var bootstrap: VaultDatabaseBootstrap
+            val storage = object : VaultDatabaseStorage {
+                override val databasePath = path.toString()
+                override fun prepareForOpen() = Unit
+                override fun databaseExists() = true
+                override fun record(code: VaultDatabaseDiagnosticCode) = Unit
+                override fun preserveForRecovery() {
+                    assertFailsWith<IllegalStateException> { bootstrap.database() }
+                }
+            }
+            bootstrap = VaultDatabaseBootstrap(storage, databaseFactory = {
+                factoryCalls++
+                openDatabase(path)
+            })
+            try {
+                assertTrue(
+                    assertIs<VaultDatabaseBootstrapResult.RecoveryRequired>(
+                        bootstrap.openAndVerify(),
+                    ).canPreserveAndReset,
+                )
+                assertTrue(bootstrap.preserveAndReset().isSuccess)
+                assertEquals(0, factoryCalls)
+            } finally {
+                bootstrap.close()
+            }
         }
     }
 
@@ -398,7 +500,7 @@ class VaultDatabaseBootstrapTest {
 
     private suspend inline fun withTempDirectory(block: suspend (Path) -> Unit) {
         val directory = Files.createTempDirectory(
-            Path.of(System.getProperty("user.dir")).toRealPath(),
+            Path.of(System.getProperty("java.io.tmpdir")).toRealPath(),
             "passvault-database-bootstrap-",
         )
         try {

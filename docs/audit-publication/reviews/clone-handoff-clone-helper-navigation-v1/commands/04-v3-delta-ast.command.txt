@@ -1,0 +1,61 @@
+/usr/bin/python3 -I -B <<'PY'
+import datetime,hashlib,json,os,pathlib,stat
+ROOTS={"PUB":pathlib.Path("/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z"),"R":pathlib.Path("/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z"),"AR":pathlib.Path("/Users/abdelrahman/Projects/passvault/audit-reports/20260905T083114Z")}
+def fid(s):
+ return (s.st_dev,s.st_ino,s.st_uid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+def did(s):
+ return (s.st_dev,s.st_ino,s.st_uid,s.st_mode)
+def path_for(root,relative):
+ p=pathlib.Path(relative)
+ assert not p.is_absolute() and p.parts and ".." not in p.parts and "." not in p.parts
+ assert root in ROOTS
+ return ROOTS[root]/p
+def parent_guards(root,parent):
+ base=ROOTS[root];assert parent==base or parent.is_relative_to(base)
+ paths=[base];current=base
+ for part in parent.relative_to(base).parts:
+  current=current/part;paths.append(current)
+ result=[]
+ for p in paths:
+  s=p.lstat();assert stat.S_ISDIR(s.st_mode) and not stat.S_ISLNK(s.st_mode)
+  result.append((p,did(s)))
+ return result
+def read_named(root,relative,expected=None):
+ p=path_for(root,relative);guards=parent_guards(root,p.parent);a=p.lstat()
+ assert stat.S_ISREG(a.st_mode) and not stat.S_ISLNK(a.st_mode) and a.st_nlink==1 and a.st_size<=4194304
+ fd=os.open(str(p),os.O_RDONLY|os.O_NOFOLLOW)
+ try:
+  b=os.fstat(fd);assert fid(a)==fid(b);parts=[];remaining=b.st_size
+  while remaining:
+   piece=os.read(fd,min(65536,remaining));assert piece;parts.append(piece);remaining-=len(piece)
+  assert os.read(fd,1)==b"";raw=b"".join(parts);c=os.fstat(fd)
+ finally:os.close(fd)
+ assert fid(a)==fid(b)==fid(c)==fid(p.lstat())
+ for parent,i in guards:assert did(parent.lstat())==i
+ meta={"root":root,"path":relative,"bytes":len(raw),"lf":raw.count(b"\n"),"sha256":hashlib.sha256(raw).hexdigest(),"mode_octal":format(stat.S_IMODE(a.st_mode),"04o"),"single_link":True,"stable":True}
+ if expected:
+  for k,v in expected.items():assert meta[k]==v,(root,relative,k)
+ return raw,meta
+
+import ast,difflib
+raw2,meta2=read_named("R","handoff-publication/20260908T061500Z/clone_handoff_verify_v2.py",{"bytes":18270,"lf":345,"sha256":"a97e05a08b5c656f23b23bf3c08b35a85c7a26c79beffd43dccc0aa2a507a697"})
+raw3,meta3=read_named("R","handoff-publication/20260908T061500Z/clone_handoff_verify_v3.py",{"bytes":18374,"lf":346,"sha256":"3bb706229a82d1aa12ceba8f8d9762ca3e68e8994636e2d2afcd3512834ed988"})
+text2=raw2.decode("utf-8");text3=raw3.decode("utf-8")
+tree2=ast.parse(text2,filename=meta2["path"]);tree3=ast.parse(text3,filename=meta3["path"])
+def no_doc_run(tree):
+ result=[];run=[]
+ for i,node in enumerate(tree.body):
+  if i==0:
+   assert isinstance(node,ast.Expr) and isinstance(node.value,ast.Constant) and isinstance(node.value.value,str)
+  elif isinstance(node,ast.Assign) and len(node.targets)==1 and isinstance(node.targets[0],ast.Name) and node.targets[0].id=="RUN":
+   run.append(node)
+  else:result.append(node)
+ assert len(run)==1
+ return ast.Module(body=result,type_ignores=[]),run[0]
+clean2,run2=no_doc_run(tree2);clean3,run3=no_doc_run(tree3)
+assert ast.dump(clean2,include_attributes=False)==ast.dump(clean3,include_attributes=False)
+assert ast.dump(run2,include_attributes=False).replace("remote-clone-verification-v2","remote-clone-verification-v3")==ast.dump(run3,include_attributes=False)
+delta="".join(difflib.unified_diff(text2.splitlines(keepends=True),text3.splitlines(keepends=True),fromfile="clone_handoff_verify_v2.py (inert source)",tofile="clone_handoff_verify_v3.py (inert source)",n=3))
+print(json.dumps({"v2":meta2,"v3":{"meta":meta3,"content":text3},"delta":{"content":delta,"bytes":len(delta.encode("utf-8")),"lf":delta.count("\n"),"sha256":hashlib.sha256(delta.encode("utf-8")).hexdigest()},"checks":{"both_parsed_as_text_only":True,"ast_equal_excluding_docstring_and_RUN":True,"RUN_change_only_v2_to_v3":True,"no_import_execution_fixture_or_runtime_test":True},"source_functions":[{"name":n.name,"start":n.lineno,"end":n.end_lineno} for n in tree3.body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))]},ensure_ascii=False))
+
+PY

@@ -1,0 +1,697 @@
+{
+  "derivation": "Only PVU007/PVU011 rows replaced by outcome/boundary projection; ten other rows exact JSON values. Not an exact-byte original or revised finding disposition.",
+  "derived_from": {
+    "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations.json",
+    "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e"
+  },
+  "findings": [
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "Repository locking order can defer its inner lease-settlement timer in an artificial noncooperative schedule. Locking is published and session-owned keys cleared independently.",
+      "id": "PVU-001",
+      "independent_review": {
+        "disposition": {
+          "counterevidence": [
+            "OS prompt admission of second input not established",
+            "Android/iOS cancellable prompt paths; Desktop explicit cancel-and-join",
+            "Settings clearForLock cancels T-waiting password-change job before biometric job",
+            "No measured provider stall"
+          ],
+          "established": "T admission precedes inner lease settlement timeout; a noncooperative V owner plus T waiter forms the original artificial delay. Locking publication and repository-owned VEK wipe occur earlier.",
+          "id": "PVU-001",
+          "missing": "Actually admitted production caller/provider sequence preserving T/V beyond the deadline despite production cleanup; synthetic leased-array assertions.",
+          "real_caller_challenged": "Settings biometric enrollment holds a session lease; password-change source admission does not exclude biometric busy.",
+          "result": "INVESTIGATED_UNVERIFIED_NO_PRODUCTION_PATCH"
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/storage-pvu-independent-platform.json",
+        "reviewer": "/root/remed_platform",
+        "sha256": "1834ada72a62c9e9e76ec7b916910c756c640b426967f1b85026bd26abadef09"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Immediate Locking publication, cancellation and repository-owned-key clearing remain. A real admitted UI/provider/native operation schedule matching the noncooperative fixture was not established; a mock wait is not a measured OS stall or real user-visible lock failure.",
+        "established": "Real repository mutex ordering and a bounded synthetic noncooperative-lease/queued-transition diagnostic show lock cannot reach its inner2s settlement timeout in that artificial schedule.",
+        "evidence": [
+          "findings/DB-01-origin.md",
+          "reviews/root-independent.md",
+          "evidence/runs/database-domain-diagnostic-probes",
+          "reviews/audit_database-crossverification-results.md"
+        ],
+        "id": "PVU-001",
+        "origin": "DB-01",
+        "recorded_at": "2026-09-05T20:09:45.529482+00:00",
+        "reviewers": "Origin audit_database; root independently reproduced artificial ordering and retained reachability limitation.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Queued exclusive transition can defer the leased-key settlement deadline in an artificial schedule",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Production-bound permitted concurrent transition/provider schedule with isolated synthetic state, explicit deadline/lease assertions and cooperative/cancellation controls; no real vault."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Queued exclusive transition can defer the leased-key settlement deadline in an artificial schedule",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "A genuinely admitted production UI/provider schedule, cooperative controls and measured settlement; fake suspension alone cannot establish an OS/user lock failure."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "Internal attachment delete does not acquire a session lease, while entry busy/loaded/target guards, root replacement and owner cancellation constrain input admission.",
+      "id": "PVU-002",
+      "independent_review": {
+        "disposition": {
+          "counterevidence": [
+            "Synchronous attachment-busy claim",
+            "Entry registry lock cleanup cancels operation and resets loaded/ID/target state",
+            "Secure root replacement follows synchronous owner clearing",
+            "External typed intents contain no destructive deletion operation"
+          ],
+          "established": "Attachment delete lacks a session lease/state check; event router also has no hidden session-token check.",
+          "id": "PVU-002",
+          "missing": "New post-lock platform input plus real DAO durable deletion before teardown, distinguished from an action admitted before lock or a direct repository call.",
+          "real_caller_challenged": "CredentialAttachmentController loaded/target/nonbusy confirmation admission.",
+          "result": "INVESTIGATED_UNVERIFIED_NO_PRODUCTION_PATCH"
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/storage-pvu-independent-platform.json",
+        "reviewer": "/root/remed_platform",
+        "sha256": "1834ada72a62c9e9e76ec7b916910c756c640b426967f1b85026bd26abadef09"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Entry cancellation, busy/loaded/target guards, synchronous owner cleanup and secure root replacement substantially constrain actual UI access. No external caller/deep-link contract exposes this API. A newly post-lock admitted UI delete completing before teardown is unproven. A docs-only authority statement is not sufficient proof of a user-visible security defect.",
+        "established": "Independent reviews confirm the public internal repository delete checks IDs/storage ownership but neither obtains a session lease nor rejects solely for Locked. This is a component-contract omission, not a denied observation.",
+        "evidence": [
+          "findings/SUS-ATTACH-003-origin.md",
+          "reviews/audit_database-attachment-independent.md",
+          "findings/SUS-ATTACH-003-independent-audit_navigation.md"
+        ],
+        "id": "PVU-002",
+        "origin": "SUS-ATTACH-003",
+        "recorded_at": "2026-09-05T20:09:45.529662+00:00",
+        "reviewers": "Origin audit_crypto; independent audit_database and audit_navigation; root excludes broader UI harm from confirmed list.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Attachment delete omits session authority; newly post-lock UI deletion not demonstrated",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "A real production-repository locked-delete synthetic test plus independent actual input-admission/teardown ordering proof; distinguish actions admitted before lock from those admitted after authoritative lock."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Attachment delete omits session authority; newly post-lock UI deletion not demonstrated",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "Real repository locked-delete plus actual newly post-lock UI input admission/teardown ordering; distinguish an already admitted action."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "Inverse attachment/vault mutex order exists, but demonstrated two-caller schedules are constrained by shipped same-entry/Back/forward/backup/single-scene guards.",
+      "id": "PVU-003",
+      "independent_review": {
+        "disposition": {
+          "counterevidence": [
+            "Same-owner shared busy checks claimed synchronously",
+            "Credential and backup leave policies guard Back, tab, add and forward paths",
+            "Lock/entry teardown cancellation can release waits",
+            "No separate admitted bulk/background deleter or second application window; iOS declares single scene"
+          ],
+          "established": "Attachment/v2 backup A-to-V order opposes credential deletion V-to-A; DI binds the same singletons.",
+          "id": "PVU-003",
+          "missing": "Two independently admitted production operations and controlled launch/cancel/join/durable-state sequence; do not substitute arbitrary coroutines or an unconfirmed stale navigation guard.",
+          "real_caller_challenged": "CredentialViewModel is sole discovered production credential deleter.",
+          "result": "INVESTIGATED_UNVERIFIED_NO_PRODUCTION_PATCH"
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/storage-pvu-independent-platform.json",
+        "reviewer": "/root/remed_platform",
+        "sha256": "1834ada72a62c9e9e76ec7b916910c756c640b426967f1b85026bd26abadef09"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Same-entry busy flags, Back/forward/backup guards and iOS single-scene policy defeat ordinary overlap examples. No separate production bulk/background caller established. Cancellable waits, lock and entry teardown can break the cycle; permanent hang/data loss not shown.",
+        "established": "Attachment operations take attachment→vault; credential delete takes vault→attachment. Same singleton wiring and a two-independent-caller cycle are source-established.",
+        "evidence": [
+          "findings/SUS-ATTACH-005-origin.md",
+          "findings/SUS-ATTACH-005-independent-audit_navigation.md"
+        ],
+        "id": "PVU-003",
+        "origin": "SUS-ATTACH-005",
+        "recorded_at": "2026-09-05T20:09:45.529664+00:00",
+        "reviewers": "Origin audit_database; independent audit_navigation.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Inverse attachment/vault mutex ordering lacks a demonstrated admitted user deadlock",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Controlled real-session two-caller test, lock/cancel release controls, and a separately established actual user admission path before grading user-visible impact."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Inverse attachment/vault mutex ordering lacks a demonstrated admitted user deadlock",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "An admitted distinct production-caller cycle and cancellation/lock countercontrols, rather than arbitrary internal concurrent calls."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "Central Back has no whole-interactive-gesture token; installed framework/helper behavior has not established an admitted duplicate pop or protected content exposure.",
+      "id": "PVU-004",
+      "independent_review": {
+        "disposition": {
+          "attempts_to_disprove": [
+            "Touch-only toolbar counterexample is weakened by ignoreTouchChanges while UIKit edge Back is active; hardware-key routing is a separate scene-first path, subject to actual focus/text-input routing.",
+            "Core event processor input/handler ownership rejects mismatched terminal inputs and cancels a removed in-progress handler, but direct app requestBack does not dispatch through that ownership boundary.",
+            "Scene STARTED during animation is not a sufficient disproof: isCurrentEntry and popAfterGuard deliberately do not require entryResumed. Host-resumed, current root/tab/route and session-generation checks still apply.",
+            "Missing, Blocked or HandleInPlace current registrations reject interactive pop, and authentication root replacement invalidates old entry tokens. No dirty-editor or authentication bypass is established.",
+            "Existing duplicate-completion test pops Detail to an unregistered root; it does not cover a newly current, registered, clean Detail below Edit."
+          ],
+          "confirmed_source_scope": "The app key path invokes current Back policy directly; interactive completion selects a current active PopNow registration and has no origin-transition argument. The saved NavDisplay and Compose event sources can retain a handler while updating its callback and scene info.",
+          "id": "PVU-004",
+          "independent_review_disposition": "ACCEPT_NARROWED_UNRESOLVED_STATUS",
+          "original_title": "Held iOS swipe plus another Back source may over-pop",
+          "patch_or_execution": "None by this reviewer; no source patch proposed as a verified remediation.",
+          "recommended_disposition": "RETAIN_UNRESOLVED_INTEGRATED_OVERPOP",
+          "remaining_gap": "Whether actual pinned NavDisplay scene/registration/recomposition/recognizer timing permits the original held gesture to survive an intercepted hardware Escape, then invoke completion against the newly active registration. A hypothetical coordinator call sequence is not an observed integrated input sequence.",
+          "settling_evidence_required": [
+            "Exact resolved NavDisplay/NavigationEvent/Compose input integration with three synthetic entries Home/Detail/Edit, clean guards, held gesture, real app preview-key route, intervening scene frames, and final completion/cancellation counts.",
+            "Controls for touch-toolbar suppression, text-input focus, current guarded/missing registration, handler removal/disable, duplicate events, lock/root/session change, and rapid repeated input.",
+            "Authorized physical iPad/hardware-keyboard LTR and RTL held-swipe evidence after pure integration coverage; no real vault data."
+          ],
+          "severity": "NOT GRADED AS A CONFIRMED DEFECT"
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/root-pvu-independent-storage.json",
+        "reviewer": "/root/remed_storage",
+        "sha256": "b4d97cf14a572dc119968ce6d4576b3b5a0988166ba595b4edb286cc669ccff1"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Compose suppresses ordinary touch changes during the recognizer, defeating the simple second-finger toolbar example. Hardware Escape may be a separate path, but an exact integrated NavDisplay/input demonstration is missing. Current dirty/blocked guards still apply; no authentication bypass proved.",
+        "established": "App interactive completion uses the current active registration rather than an originating transition identity. Inspected pinned library source can retain/update the same handler during stack changes.",
+        "evidence": [
+          "findings/NAV-H1-origin.md",
+          "evidence/navigation-libraries/manifest.json",
+          "reviews/audit_navigation.md"
+        ],
+        "id": "PVU-004",
+        "origin": "NAV-H1",
+        "recorded_at": "2026-09-05T20:09:45.529665+00:00",
+        "reviewers": "Origin audit_navigation; root challenge retained integration gap; no confirmed runtime result.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Held iOS swipe plus another Back source may over-pop",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Real pinned NavDisplay/NavigationEvent integration harness and physical iPad/hardware-keyboard held-swipe controls, including no-overpop on scene changes and lock."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Held iOS swipe plus another Back source may over-pop",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "Actual held iOS interactive gesture plus hardware/programmatic Back through shipped handlers, including canceled gestures and session/entry controls."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "After lock, an opaque Swing glass pane remains logically installed even after Locked/render ACK permits native restore; only already-Unlocked state or cleanup removes it. Whether it actually obstructs the safe Unlock screen on the selected heavyweight Compose/Skia renderer is unproved.",
+      "id": "PVU-005",
+      "independent_review": {
+        "disposition": {
+          "actual_source_ranges": [
+            "core/security/src/desktopMain/kotlin/com/passvault/desktop/security/DesktopWindowProtection.kt:98-109,127-158,237-253,266-294",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt:134-158,259-275,307-319,329-338",
+            "core/security/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopWindowProtectionTest.kt:51-77,91-139"
+          ],
+          "confirmed_narrow_fact": "lock installs opaque black visible JPanel glass pane; secure ACK permits restore but does not remove it; only already-Unlocked update or cleanup removes it.",
+          "execution_gate": "BLOCKED pending root-approved isolated rendering fixture/GUI; no application launch or real data.",
+          "false_positive_rejected": "Equating a plain JFrame glass-pane property with proved ComposeWindow visual obstruction.",
+          "id": "PVU-005",
+          "independent_disposition": "RETAIN_UNVERIFIED_BLOCKED_RENDERING_BOUNDARY",
+          "independent_disproof": [
+            "Pinned Compose1.11.1 ComposeWindow:54-100 extends JFrame and installs ComposeWindowPanel.",
+            "ComposeWindowPanel:57-73 hard-selects RenderSettings.SkiaSurface and explicitly disables SwingGraphics for this host.",
+            "ComposeContainer:366-378 forwards renderSettings; SkiaLayerComponent factory:67-79 chooses heavyweight WindowSkiaLayerComponent, whose documentation and canvas path are at33-54,121-122.",
+            "Smooth Swing z-order contract belongs to alternate SwingSkiaLayerComponent:29-36, not the selected branch. It cannot establish opaque glass-pane coverage here.",
+            "Actual state/ACK/unlock route was traced; no logical authentication bypass was identified. Headless/plain-JFrame property tests do not inspect actual Compose/Skia pixels."
+          ],
+          "origin": "NAV-H2",
+          "original_disposition": "UNVERIFIED / BLOCKED; logical curtain retention established, black unusable Unlock screen not demonstrated.",
+          "remaining_settling_evidence": [
+            "Exact selected JDK/Skiko/OS rendering/mixing contract showing native heavy surface interaction with root glass pane, or isolated actual ComposeWindow test using the pinned dependency path.",
+            "On an authorized synthetic-only GUI, drive unlocked synthetic content -> lock -> logical Locked/render ACK -> native restore; independently assert logical lock remains and safe Unlock pixels are visible/usable (or obstructed). Include pre-ACK concealment and already-unlocked removal controls.",
+            "Record OS/JDK/render API/dependency hashes, native window identity, bounded event/frame settlement and finally disposal. Capture only the isolated synthetic test surface, never real desktop/private windows."
+          ],
+          "safe_existing_test_command": "No existing focused filter settles pixels. Existing DesktopWindowProtectionTest is a source-inspected logical regression only and returns early for its JFrame case in headless mode.",
+          "unchanged_from_baseline": "Relevant application protection/window/test files and Compose1.11.1 pin have identical full hashes."
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/platform-pvu-independent-storage.json",
+        "reviewer": "/root/remed_storage",
+        "sha256": "0f7891f32420e88ef1b2655c53f4c8b308a518481ace50dadcf0ca2f8b0db9a9"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Real ComposeWindow/Skia heavyweight/lightweight painting may differ from plain JFrame. No source-bound or executed demonstration establishes a black unusable Unlock screen. A plain JFrame property test alone would not settle it.",
+        "established": "Source sets an opaque glass pane on lock and acknowledgement does not remove it; removal is tied to already-unlocked state/cleanup.",
+        "evidence": [
+          "findings/NAV-H2-origin.md",
+          "reviews/root-independent.md",
+          "reviews/audit_navigation.md"
+        ],
+        "id": "PVU-005",
+        "origin": "NAV-H2",
+        "recorded_at": "2026-09-05T20:09:45.529666+00:00",
+        "reviewers": "Origin audit_navigation; independent root narrowed to unresolved rendering boundary.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Desktop curtain remains logically installed after acknowledgement; rendering impact unresolved",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Pinned ComposeWindow/Skia rendering contract or isolated synthetic actual-window test through lock→secure ACK→restore, checking safe unlock pixels and logical lock independently."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Desktop curtain remains logically installed after acknowledgement; rendering impact unresolved",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "Isolated actual ComposeWindow synthetic unlocked→lock→Locked/render ACK→restore, checking safe Unlock pixels remain visible/usable or are obstructed. Include pre-ACK concealment and already-unlocked curtain-removal controls; a plain JFrame property is not pixel evidence."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "Singleton feature ViewModels and terminal scope disposal have a source ownership gap, but a harmful externally rooted retained lifetime is unproved.",
+      "id": "PVU-006",
+      "independent_review": {
+        "disposition": {
+          "attempts_to_disprove": [
+            "Inspected Koin SingleInstanceFactory.drop only invokes an explicit definition onClose callback before dropping its value; it does not establish an implicit ViewModel clear for these singles.",
+            "Native host covers content, requests lock/UI acknowledgement, unmounts Compose, then queues runtime shutdown. shutdownIosAppRuntime cancels the application scope, calls database lifecycle close, and stops Koin, returning a conjunction of results. This is a real mitigation, not observed successful runtime teardown in this review.",
+            "Repository session StateFlow is per VaultRepositoryImpl instance, not a demonstrated process-global root connecting old collectors to the replacement runtime. A suspended, otherwise-unrooted flow/VM/repository cycle is not proof of a permanent leak.",
+            "NSUserDefaults load/save source is synchronous despite suspend signatures. A generic fake indefinitely suspended preference write cannot prove the alleged iOS inter-runtime overwrite.",
+            "Biometric getStatus reconciles null vault identity only when exists().getOrNull()==false; failed metadata/closed-store errors alone do not authorize deletion.",
+            "The existing bridge test supplies fake repository/coordinator/scope and injected close/stop callbacks, not actual singleton VMs/Koin host teardown. It does not settle VM terminal lifetime even if independently run."
+          ],
+          "confirmed_source_scope": "Five ordinary Koin single ViewModels launch viewModelScope work without an application-scope/terminal owner being supplied. No onClose hook is attached. clearForLock is intentionally not terminal and can retain collectors/preferences or start bounded status/discard work.",
+          "id": "PVU-006",
+          "independent_review_disposition": "ACCEPT_NARROWED_UNRESOLVED_STATUS",
+          "original_title": "Singleton ViewModel terminal scope ownership remains an open lifecycle gap",
+          "patch_or_execution": "None by this reviewer; blanket cancellation on ordinary lock is not accepted as a demonstrated fix.",
+          "recommended_disposition": "RETAIN_UNRESOLVED_TERMINAL_HARM",
+          "remaining_gap": "A real terminal schedule showing externally retained old work, harmful post-close callbacks, measurable resource accumulation, or cross-runtime state/data effect. Missing cancellation itself remains a source ownership gap, not proof of those effects.",
+          "settling_evidence_required": [
+            "Synthetic repeated actual Koin/ViewModel/host terminal teardown and rebuild, with explicit instance identity, external task/resource ownership, old-runtime callback markers and close timestamps.",
+            "Independently account for bounded queued biometric status/discard work and cancelled work; do not equate a live suspended job or a reference cycle with a permanent external root.",
+            "Verify ordinary-lock preference/session persistence remains functional and distinct from terminal cleanup; cover ACK failure/detach/background and no-old-runtime writes using isolated fakes/no protected OS provider."
+          ],
+          "severity": "NOT GRADED AS A CONFIRMED DEFECT"
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/root-pvu-independent-storage.json",
+        "reviewer": "/root/remed_storage",
+        "sha256": "b4d97cf14a572dc119968ce6d4576b3b5a0988166ba595b4edb286cc669ccff1"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "An unrooted repository/VM/flow cycle is not proof of permanent retention. Native cover/detach/ACK ordering and failed-metadata≠no-vault guards mitigate stronger claims. Repeated-runtime harmful callbacks, resource leaks or closed-Room corruption not demonstrated.",
+        "established": "Koin singles use independent ViewModel scopes without an explicit terminal onClose clear hook; ordinary clearForLock intentionally retains some collectors/preferences and can restart bounded status/discard work.",
+        "evidence": [
+          "findings/NAV-H5-origin.md",
+          "reviews/NAV-H5-independent-audit_crypto.md",
+          "reviews/NAV-H5-independent-audit_crypto.json"
+        ],
+        "id": "PVU-006",
+        "origin": "NAV-H5",
+        "recorded_at": "2026-09-05T20:09:45.529667+00:00",
+        "reviewers": "Origin audit_navigation; independent audit_crypto; root retains unverified harm.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Singleton ViewModel terminal scope ownership remains an open lifecycle gap",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Synthetic repeated terminal teardown/rebuild under actual Koin/ViewModel/host lifecycle, track external jobs/resources and post-close callbacks, separate deliberate ordinary-lock persistence from terminal ownership."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Singleton ViewModel terminal scope ownership remains an open lifecycle gap",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "Actual terminal teardown, retained-root/lifetime evidence and late-work behavior; existence of an internally referenced cycle is insufficient."
+    },
+    {
+      "boundary": "STOP: no investigation or reformulation",
+      "details": "Not reproduced in the portable current-entry summary. Original evidence is retained locally; historical references do not authorize inquiry or execution.",
+      "id": "PVU-007",
+      "portable_scope": "OUTCOME_ONLY_NOT_A_NEW_INVESTIGATION",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED"
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "HashHandle AND KeyHandle caller-owned provider-object allocations remain alive until BCryptDestroyHash/BCryptDestroyKey. sha256/hmac_sha256/AES-GCM helpers wipe their contents before handle destruction; content lifetime differs from freeing storage.",
+      "id": "PVU-008",
+      "independent_review": {
+        "disposition": {
+          "actual_source_ranges": [
+            "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp:55-68,88-140,160-227,264-363",
+            "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp:229-249,1076-1084,1721-1728,1921-1924,2154-2157"
+          ],
+          "confirmed_narrow_fact": "sha256, hmac_sha256 and AES-GCM helpers wipe caller-owned provider-object bytes before HashHandle/KeyHandle destructors call BCryptDestroyHash/Key.",
+          "execution_gate": "BLOCKED Windows provider contract/runtime evidence; no patch warranted solely by allocation-lifetime documentation.",
+          "false_positive_rejected": "Claim that backing allocation is freed before BCryptDestroyHash/Key. It is not.",
+          "id": "PVU-008",
+          "independent_disposition": "RETAIN_UNVERIFIED_BLOCKED_PROVIDER_CONTENT_CONSEQUENCE",
+          "independent_disproof": [
+            "AlgorithmHandle is declared before object vector; HashHandle/KeyHandle after it. Reverse automatic destruction destroys native handle before vector deallocation and algorithm provider close.",
+            "secure_wipe only writes bytes; it does not clear, resize, free or swap the object vector.",
+            "Saved primary Microsoft BCryptCreateHash:65-77 and BCryptGenerateSymmetricKey:66-78 explicitly prohibit freeing memory before handle destruction, not overwriting its contents after operations.",
+            "Destroy functions document status codes; current destructors ignore statuses. Helper boolean results are set before destructor execution, so a successful hash/AES result alone cannot settle destroy success.",
+            "Code uses default provider selection (nullptr), not a source-pinned exact provider implementation. No provider failure, leak, crash or undefined-behavior consequence was measured."
+          ],
+          "origin": "SUS-HOST-006",
+          "original_disposition": "UNVERIFIED / BLOCKED; pre-destroy provider-object byte wiping established, deallocation-before-destroy disproved, provider consequence unmeasured.",
+          "remaining_settling_evidence": [
+            "Authoritative exact-provider object-content lifetime contract, or isolated Windows CNG-only synthetic experiment.",
+            "Experiment must compare current wipe-before-destroy ordering against destroy-before-wipe control using known SHA256/HMAC/AES-GCM vectors; explicitly record BCryptDestroyHash/Key statuses while allocations remain alive.",
+            "Bound object lengths, iteration counts, elapsed time and synthetic buffers; include operation-failure paths and own-process resource checks. Record Windows/provider/DLL identity; do not infer resource cleanup merely from helper return values.",
+            "No Hello/WebAuthn credential inventory, app bridge enrollment/retrieval, Keychain, real keys or application private directories."
+          ],
+          "safe_existing_test_command": "No existing reviewed native command isolates this CNG content-lifetime question; unfiltered app-desktop native CTest is not a safe substitute. Requires separately reviewed standalone fixture first.",
+          "unchanged_from_baseline": "Current/base Windows helper slice55-363 SHA256 both16497c4658a6db7e3bd4377cbcfa02213992b91cb3d2e6baf49fb0c1a6406a81. Full file differs only for independently reviewed localized extension outside this helper scope."
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/platform-pvu-independent-storage.json",
+        "reviewer": "/root/remed_storage",
+        "sha256": "0f7891f32420e88ef1b2655c53f4c8b308a518481ace50dadcf0ca2f8b0db9a9"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Official docs establish allocation lifetime, not whether provider-private contents must remain intact at destruction. Deallocation-before-destroy is a false reading. No provider failure/status/resource consequence measured.",
+        "established": "Native code zeroes provider-object storage contents before BCryptDestroyKey/Hash; backing allocations remain alive until after destruction.",
+        "evidence": [
+          "findings/SUS-HOST-006-origin.md",
+          "reviews/SUS-HOST-006-independent-audit_database.md",
+          "evidence/audit_database-host-source/microsoft-cng/retrieval.json"
+        ],
+        "id": "PVU-008",
+        "origin": "SUS-HOST-006",
+        "recorded_at": "2026-09-05T20:09:45.529669+00:00",
+        "reviewers": "Origin audit_crypto; independent audit_database.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Windows CNG provider-object contents are wiped before handle destruction",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Authoritative exact-provider content-lifetime contract or isolated Windows synthetic handle tests with destroy statuses/resource accounting, without any real credential access."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Windows CNG provider-object contents are wiped before handle destruction",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "Exact applicable BCrypt provider object-content lifetime contract/source OR isolated Windows CNG known-vector and failure-path experiment comparing wipe-before-destroy versus destroy-before-wipe, recording BOTH BCryptDestroyHash and BCryptDestroyKey statuses with live bounded allocations. No provider failure/leak/crash was established."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "established_now": "Native cancellation can synchronously wait according to source, but the feared OS cancellation stall has not been measured.",
+      "id": "PVU-009",
+      "independent_review": {
+        "disposition": {
+          "actual_source_ranges": [
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt:176-184,259-260,315-318",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopShutdownCoordinator.kt:48-109,155-169",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt:55-64,117-140,254",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricBridge.kt:39-78",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricBridge.kt:134-187",
+            "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm:348-399,437-451,936-955",
+            "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp:1490-1559,2499-2524"
+          ],
+          "confirmed_narrow_fact": "requestClose calls beginShutdown/cancelBiometricPrompt before native window concealment, cleanup launch and exitApplication; Main's2500ms latch wait is reached only after application composition exits. JNA raw terminal cancel similarly precedes1500ms drain.",
+          "design_limit_statement": "There is a proven conditional deadline-coverage boundary: if cancellation blocks, the later timeout cannot constrain it. This is not an observed shutdown hang and is not silently accepted as a new PVD/design exception.",
+          "execution_gate": "BLOCKED actual target native/API latency evidence; preserve as separate from PVA010.",
+          "id": "PVU-009",
+          "independent_disposition": "RETAIN_UNVERIFIED_BLOCKED_ACTUAL_HANG; SOURCE_CONFIRMED_UNCOVERED_CANCEL_BOUNDARY",
+          "independent_disproof": [
+            "Missing bridge, no active operation, pending pre-entry cancellation and committed operation are immediate/no-provider controls; exceptions are caught and allow progress.",
+            "macOS ordinary authenticate semaphore wait/Keychain call is outside operation_mutex; Windows prompt work is likewise outside its short state critical sections. No mutex-held-whole-prompt deadlock was established.",
+            "Windows cancel releases operation_mutex before WebAuthn cancellation; macOS invalidates LAContext under mutex. Exact API worst-case latency is not established by these statements.",
+            "Existing DesktopShutdownCoordinatorTest:19-51 intentionally asserts cancel before prepare/exit. Its nonreturning-lock test:90-120 blocks a later cleanup coroutine, not pre-deadline cancellation.",
+            "PVA010 changes lifetime reservation, not cancellation deadline placement. Current close protects the context while a raw cancel may still delay the drain."
+          ],
+          "origin": "SUS-HOST-007",
+          "original_disposition": "UNVERIFIED / BLOCKED; reachable synchronous cancellation precedes terminal cleanup bound, actual native stall unproved.",
+          "remaining_settling_evidence": [
+            "A fake-only finite-latch cancellation test can establish uncovered ordering, but must be labeled conditional containment evidence, not native stall proof.",
+            "To establish a real defect, capture an admitted target-native cancellation/shutdown schedule with synthetic authorized prompt state: timestamps before request, before/after cancel, concealment, cleanup launch, composition exit and process exit.",
+            "Use independent process-group deadline, always release synthetic latches and close fixture windows/contexts. Compare inactive, cooperative active, committed, pre-entry and cancel-failure controls.",
+            "Actual biometric/provider testing needs separately permitted isolated synthetic platform state. No unfiltered current native suite/app run or real enrollment/credential access is authorized by this report."
+          ],
+          "safe_existing_test_command": "Existing fake coordinator class may characterize existing ordering under root's explicit native-task exclusions, but no existing source-inspected test settles target-native cancellation latency.",
+          "unchanged_from_baseline": "Coordinator/Main/Host/window hashes unchanged. Baseline JNA111-158 and current134-187 both call raw cancel before timed drain; PVA010 reservation and PVA014 signatures do not resolve this suspicion."
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/platform-pvu-independent-storage.json",
+        "reviewer": "/root/remed_storage",
+        "sha256": "0f7891f32420e88ef1b2655c53f4c8b308a518481ace50dadcf0ca2f8b0db9a9"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "UNRESOLVED / VERIFICATION BLOCKED",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "An actual native/API stall has not been established. Placement outside the deadline alone is not evidence shutdown hangs; public cancellation contracts do not prove a measured worst-case latency here.",
+        "established": "Reachable shutdown ordering performs synchronous native cancellation before starting the bounded terminal cleanup task.",
+        "evidence": [
+          "findings/SUS-HOST-007-origin.md",
+          "reviews/SUS-HOST-007-independent-audit_database.md"
+        ],
+        "id": "PVU-009",
+        "origin": "SUS-HOST-007",
+        "recorded_at": "2026-09-05T20:09:45.529670+00:00",
+        "reviewers": "Origin audit_crypto; independent audit_database.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Synchronous native cancellation runs before the terminal shutdown deadline",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Bounded target-platform cancellation/shutdown measurements under synthetic active prompt, with actual native mutex/API scheduling and cancellation controls."
+      },
+      "production_patch": null,
+      "status": "UNRESOLVED / VERIFICATION BLOCKED",
+      "title": "Synchronous native cancellation runs before the terminal shutdown deadline",
+      "updated_utc": "2026-09-06T08:30:19.120932+00:00",
+      "what_would_settle_now": "Instrumented, isolated actual native prompt/provider cancellation/late return latency on supported macOS/Windows, with context/cleanup ownership proof."
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "confirmed_scope": "Already-installed supported Desktop tray cannot refresh literal native menu labels across in-place selected-language change; not a measured native rendering result or cold-start locale guarantee.",
+      "established_now": "Independently confirmed stable-window installed tray ignores explicit in-place language updates; correction is PVA-027, not a second counted family.",
+      "finding_id": "PVA-027",
+      "finding_severity": "LOW / P3; stable installed tray text mismatch only",
+      "id": "PVU-010",
+      "independent_review": {
+        "disposition": {
+          "actual_source_ranges": [
+            "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/ui/AppearanceSettingsScreen.kt:123-127",
+            "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt:152-154,287-313",
+            "shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt:69-102,139-163",
+            "shared/src/desktopMain/kotlin/com/passvault/shared/platform/AppLanguageProvider.desktop.kt:12-44",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt:117-125",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt:60-110,114-158,176-184,227-239,307-319",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopSystemTray.kt:48-79,84-99,147-154,171-184,190-212",
+            "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/di/DesktopModule.kt:39"
+          ],
+          "confirmed_narrow_fact": "A successfully installed native tray handle has no label-update path. Actual settings language action updates the same app's state in place without tray removal/window restart; repeated setup refreshes callbacks only.",
+          "id": "PVU-010",
+          "independent_disposition": "PROPOSED_NARROW_SOURCE_CONFIRMED_STABLE_WINDOW_RUNTIME_NONREFRESH; ROOT_ADJUDICATION_PENDING",
+          "limitations": [
+            "Proposed source-level reachability narrowing was sent to root for independent challenge. Original registry not edited and no severity/confirmed-runtime result assigned by reviewer.",
+            "No runtime app/provider/tray execution, screenshot, native accessibility result or cold-start locale-propagation proof.",
+            "Full inverse OS/app cold-start localization and outer resource invalidation remain separate unverified scopes. PVA014's native biometric publication does not add tray update behavior."
+          ],
+          "new_source_proof": [
+            "Appearance control directly sends OnLanguageChanged; persistPreferences publishes state synchronously. Provider changes Locale/default density/direction inside existing Window content, not a keyed window/app restart.",
+            "Tray singleton/native handle survives language selection. Discovered production hide is terminal close; cleanup is window disposal. No runtime locale removal/reinstall or label/tooltip setter was found.",
+            "AWT installation constructs MenuItem with immutable String labels and TrayIcon tooltip once. Exposed handle has remove only.",
+            "For an already successful English install and an in-place explicit Arabic selection, either outer DTO changes and setup ignores replacement labels, or outer DTO never changes and no label update occurs. Both routes retain English labels. This disjunction does not require guessing outer recomposition timing.",
+            "The supported/stable-window precondition matters; unsupported tray, failed installation, external tray failure or deliberate disposal/reinstallation are controls, not this case.",
+            "Callbacks still update and lock callback consults currentSessionState, so stale security/action callbacks are not inferred."
+          ],
+          "origin": "SUS-HOST-008",
+          "original_disposition": "UNVERIFIED / BLOCKED; setup(newStrings) retaining labels source-confirmed, effective selected-language outer DTO and user regression unresolved.",
+          "remaining_settling_evidence": [
+            "Root independently adjudicate source-path proof and stable-tray/window assumptions.",
+            "A fake adapter integration fixture should use actual settings event and actual tray-string composition boundary, wait for en/ar/en content changes, record install/update/remove and retained native labels, and invoke callbacks after the switch to prove refresh independently.",
+            "If native rendering/accessibility is claimed, use an authorized isolated tray/window environment with synthetic state and cleanup; no real app DI/preferences/clipboard/biometrics.",
+            "Existing DesktopSystemTrayTest covers queued lifecycle, not runtime locale replacement; a passing existing class is not this evidence."
+          ],
+          "unchanged_from_baseline": "Tray/window/settings/shared app full hashes unchanged. Desktop language provider only adds PVA014 native biometric publication; no tray/window restart is introduced."
+        },
+        "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+        "report": "reviews/platform-pvu-independent-storage.json",
+        "reviewer": "/root/remed_storage",
+        "sha256": "0f7891f32420e88ef1b2655c53f4c8b308a518481ace50dadcf0ca2f8b0db9a9"
+      },
+      "investigation_stage": "SOURCE_TRACED_AND_INDEPENDENTLY_CHALLENGED",
+      "outcome": "CONFIRMED DEFECT",
+      "patch_independent_review": "reviews/PVA-027-independent-storage.json",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "Actual effective-language propagation to the outer Desktop tray DTO and visible runtime refresh was not established. Component parameter change alone is not a demonstrated selected-language user regression; callbacks/security actions do update.",
+        "established": "Independent component review confirms setup(newStrings) updates callbacks but retains existing menu labels. This confirmed component contract is preserved, not marked disproved.",
+        "evidence": [
+          "findings/SUS-HOST-008-origin.md",
+          "reviews/SUS-HOST-008-independent-audit_database.md"
+        ],
+        "id": "PVU-010",
+        "origin": "SUS-HOST-008",
+        "recorded_at": "2026-09-05T20:09:45.529671+00:00",
+        "reviewers": "Origin audit_crypto; independent audit_database confirmed narrow component behavior; root keeps broader UI finding unverified.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Tray setup ignores replacement labels after install; selected-language UI reach is unresolved",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Trace and execute the real app language→tray-string DTO→setup path using a fake system-tray adapter or isolated GUI; verify both locales and callback updates."
+      },
+      "production_patch": "PVA-027",
+      "remediation_id": "PVA-027",
+      "root_adjudicated_at": "2026-09-06T03:18:48.552650+00:00",
+      "status": "CONFIRMED DEFECT",
+      "title": "Installed Desktop tray does not refresh after in-place selected-language changes (confirmed as PVA-027)",
+      "updated_utc": "2026-09-06T11:42:22.105030+00:00",
+      "what_would_settle_now": "Confirmed as PVA027; patch independently source accepted. Shared resource-environment2 and fake tray5 passed; platform21 execution independently reconciled. Target iOS compile and real installed tray EN→AR→EN/EDT/focus/accessibility remain unverified."
+    },
+    {
+      "boundary": "NO RETRY: no containment relaxation or procedure inquiry",
+      "details": "Not reproduced in the portable current-entry summary. Original evidence is retained locally; historical references do not authorize inquiry or execution.",
+      "id": "PVU-011",
+      "portable_scope": "OUTCOME_ONLY_NOT_A_NEW_INVESTIGATION",
+      "status": "UNRESOLVED / VERIFICATION BLOCKED"
+    },
+    {
+      "baseline": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "candidate_artifact_impact": "NOT_INFERRED",
+      "disposition_scope": "Only the claim of an applicable PassVault vulnerability inferred solely from the Kotlin2.4.10 version match on frozenG5 and the observed isolated macOS/JDK17/Gradle configuration. The affected upstream coordinate/version match remains TRUE; no dependency was upgraded or suppression added.",
+      "established_now": "Offline :help observation found22 projects,5645 task definitions and4973 configuration descriptors, with no configured KAPT plugin/superclass/task/configuration/extension signal. Selected KGP2.4.10 artifact metadata matches checked-in checksum XML. Current authored Room/KSP build paths do not identify an affected KAPT operation;9 KSP task definitions are observed. Task/configuration counts are not executed tests.",
+      "historical_independent_reviews": [
+        {
+          "disposition": {
+            "advisory": {
+              "alias": "CVE-2026-53914",
+              "coordinate": "org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.10",
+              "description_wording": "before 2.4.20",
+              "fix_commit": "bf51df665b458fda7c3eaf436c4d88dc119d7ec6",
+              "id": "GHSA-r937-wjx7-w2jp",
+              "production_patch_files": [
+                "plugins/kapt/kapt-base/src/org/jetbrains/kotlin/kapt/base/KaptContext.kt",
+                "plugins/kapt/kapt-base/src/org/jetbrains/kotlin/kapt/base/incremental/cache.kt"
+              ],
+              "severity_scope": "Upstream advisory only, not a project exploitability or severity determination.",
+              "structured_affected_range": "< 2.4.20-Beta1",
+              "structured_first_patched_version": "2.4.20-Beta1",
+              "transport_scope": "Saved unauthenticated public responses captured2026-09-05; no requests reissued. OSV and GitHub share the same advisory lineage.",
+              "upstream_cvss_v3_score": 6.7,
+              "upstream_cvss_v3_vector": "CVSS:3.1/AV:L/AC:H/PR:H/UI:N/S:C/C:H/I:L/A:L",
+              "upstream_severity": "medium"
+            },
+            "attempts_to_disprove": [
+              "The2.4.10 version is explicitly listed in saved OSV affected versions; cannot dismiss the exact declared-coordinate match.",
+              "KaptContext constructs JavaClassCacheManager through options.incrementalCache; pre-fix cache reads deserialize before casting/catch fallback. Linked fix filters classes/rejects proxies/checks expected type and deletes corrupt/rejected cache files. Generic Gradle caching and Kotlin incremental flags do not establish this KAPT path.",
+              "Database compiler dependencies are attached to kspAndroid/kspIosArm64/kspIosSimulatorArm64/kspDesktop. The only tracked dynamic pluginManager.apply occurrence is dev.detekt. No inspected KAPT plugin block or applied script is present.",
+              "No fresh full resolved target/build-tool/plugin/transitive graph was produced, and plugin implementation behavior was not exhaustively resolved here. Absence from declared source is not an all-environments no-KAPT proof.",
+              "The saved382-query corpus is expected legal inventory/Gem specs/four declared tools, not a fresh graph.381 empty responses do not clear vulnerabilities; normalized Skiko coordinate and unqueried Bundler4.0.16 remain coverage limits."
+            ],
+            "confirmed_source_scope": "Declared kotlin-gradle-plugin2.4.10 has an exact saved OSV match. The linked upstream production patch addresses KAPT incremental-cache Java deserialization. All19 declared module plugin blocks, root/settings/catalog and build-time apply occurrences inspected here show KSP/Room and no KAPT application.",
+            "id": "PVU-012",
+            "independent_review_disposition": "ACCEPT_NARROWED_UNRESOLVED_STATUS",
+            "original_title": "Kotlin2.4.10 advisory match has no established KAPT reachability in this project",
+            "patch_or_execution": "No dependency/version change, graph resolution, validator/helper run, cache modification or downloaded-code execution by this reviewer.",
+            "recommended_disposition": "RETAIN_UNRESOLVED_PROJECT_APPLICABILITY",
+            "remaining_gap": "Bind exact selected build/plugin/runtime/native artifacts and actual task/configuration behavior to the candidate, then determine whether any enabled path loads affected KAPT incremental-cache metadata. Build-host cache provenance/threat conditions must be considered only if that path is present.",
+            "settling_evidence_required": [
+              "Root-owned authorized clean/safe-idle resolution of exact production and tooling graphs, resolved task/configuration evidence of KAPT present/absent, and exact primary advisory re-evaluation for selected artifacts.",
+              "Concrete platform Skiko/native/embedded components and Bundler/tooling coverage, separate from legal expected-inventory checks.",
+              "If KAPT is actually active, trace incremental-cache options and cache trust/input path under isolated synthetic evidence; no real-cache poisoning or exploit execution is needed for this source review."
+            ],
+            "severity": "PROJECT NOT GRADED AS A CONFIRMED DEFECT"
+          },
+          "record_semantics": "HISTORICAL SNAPSHOT: source/configuration and conclusion at the bound report timestamp. Embedded full-file unchanged-from-baseline claims predate later scoped patches and are not final-tree equality assertions.",
+          "report": "reviews/root-pvu-independent-storage.json",
+          "reviewer": "/root/remed_storage",
+          "sha256": "b4d97cf14a572dc119968ce6d4576b3b5a0988166ba595b4edb286cc669ccff1"
+        }
+      ],
+      "id": "PVU-012",
+      "independent_review": {
+        "disposition": "ACCEPT_SCOPED_FALSE_POSITIVE_FOR_PROJECT_VULNERABILITY_INFERRED_SOLELY_FROM_VERSION_MATCH",
+        "record_semantics": "Current bounded G5 observed configuration disposition; not all-host/plugin/classloader clearance.",
+        "report": "reviews/PVU-012-observed-applicability-independent-navigation-v1.json",
+        "reviewer": "/root/audit_navigation",
+        "sha256": "65ea188a6d01d9e06f8f2ad7e4a13d9021c7ddfe1c0c63dd2986d421ef863e49"
+      },
+      "investigation_stage": "ACTUAL_G5_CONFIGURATION_OBSERVED_AND_INDEPENDENTLY_CHALLENGED",
+      "observation_evidence": [
+        {
+          "path": "reviews/PVU-012-observed-applicability-root-v1.json",
+          "sha256": "d9a5271dfed4c788439d707db7bd7d6fdd0425a15a54ed8a70ef92b8c2997988"
+        },
+        {
+          "path": "verification/pvu012-kapt-observations-01.json",
+          "sha256": "7c247ce377df4957a84cca5f79b178c0742a624a531ecd4c1428afac3380a4c8"
+        },
+        {
+          "path": "reviews/PVU-012-observed-applicability-independent-navigation-v1.json",
+          "sha256": "65ea188a6d01d9e06f8f2ad7e4a13d9021c7ddfe1c0c63dd2986d421ef863e49"
+        },
+        {
+          "path": "verification/results-pvu012-kapt-inspection-01.json",
+          "sha256": "842eebfad04159196a30c1258633e6b1edf35548e86149285e5c06a740bc0d59"
+        },
+        {
+          "path": "verification/results-runner-selftest33-01.json",
+          "sha256": "a14a1ca52c9c005745d95d76a24d62bdbebccce76f4a50d8209b9b4b959a19a2"
+        }
+      ],
+      "outcome": "FALSE POSITIVE",
+      "prior_evidence": {
+        "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+        "disproof_or_limit": "382 queries come from committed expected inventory/Gem lock/4declared tools, not a freshly resolved complete graph. Declared-version match is not a confirmed PassVault vulnerability.381empty responses do not prove absence; concrete Skiko native coordinates, Bundler and complete tooling transitives are not fully assessed.",
+        "established": "Public OSV exact-coordinate query matches GHSA-r937-wjx7-w2jp/CVE-2026-53914 for declared kotlin-gradle-plugin2.4.10. Independent upstream fix review concerns KAPT incremental cache deserialization; repository declares KSP, no KAPT in inspected plugin blocks.",
+        "evidence": [
+          "reviews/dependency-advisory-independent.md",
+          "research/dependency-advisories/independent-input-reconciliation.json",
+          "research/dependency-advisories/matches.json"
+        ],
+        "id": "PVU-012",
+        "origin": "ADVISORY-KAPT",
+        "recorded_at": "2026-09-05T20:09:45.529674+00:00",
+        "reviewers": "Root query/origin; independent audit_crypto upstream applicability and input reconstruction.",
+        "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+        "status": "UNVERIFIED / BLOCKED",
+        "title": "Kotlin2.4.10 advisory match has no established KAPT reachability in this project",
+        "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+        "what_would_settle": "Resolve full exact production/build graph under safe idle validation, establish whether any plugin actually enables vulnerable KAPT path, assess native/runtime components and current primary advisories with exact configurations."
+      },
+      "production_patch": null,
+      "status": "FALSE POSITIVE",
+      "title": "Kotlin2.4.10 advisory match has no established KAPT reachability in this project",
+      "updated_utc": "2026-09-06T23:15:18.020509+00:00",
+      "verification_scope_limits": [
+        "Application tests0; only :help executed by observer, not5645 tasks. Runner33 is a separate inert harness denominator.",
+        "68 ordinary Java annotationProcessor descriptors exist; they are not KAPT and contents were not resolved/certified empty.",
+        "Settings/buildscript rows precede realization; empty child-local graphs do not prove empty inherited classloaders. Arbitrary late/injected/obfuscated/other-host paths remain outside evidence.",
+        "Linked vendor patch is not a full exact2.4.10 source/bytecode audit; vendor tests0, commit API signature verification=false/no_user.",
+        "Saved JetBrains issues-fixed HTML is only a shell with no issue-specific evidence; retained advisories/linked vendor patch support the contract.",
+        "No cache poisoning, hostile deserialization, private data, candidate or live setting change; no all-dependency/toolchain/READY verdict."
+      ],
+      "what_would_settle_now": "Observed-scope version-match inference is disposed as FALSE POSITIVE. Reopen if KAPT/manual cache use, plugin/configuration/init/included-build or relevant version changes, another host/task-selection caller, or expanded advisory scope establishes applicability. Broader exact native/runtime/transitive advisory review remains a separate incomplete audit gate."
+    }
+  ]
+}

@@ -68,9 +68,13 @@ class DesktopSystemTrayTest {
         ): DesktopTrayIconHandle {
             installRanOnEventThread.set(SwingUtilities.isEventDispatchThread())
             installed.set(true)
-            return DesktopTrayIconHandle {
-                removeRanOnEventThread.set(SwingUtilities.isEventDispatchThread())
-                removed.set(true)
+            return object : DesktopTrayIconHandle {
+                override fun updateStrings(strings: DesktopTrayStrings) = Unit
+
+                override fun remove() {
+                    removeRanOnEventThread.set(SwingUtilities.isEventDispatchThread())
+                    removed.set(true)
+                }
             }
         }
     }

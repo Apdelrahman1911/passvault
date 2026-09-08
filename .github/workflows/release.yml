@@ -107,31 +107,34 @@ jobs:
             --pattern '*-app-image.zip' \
             --dir "$RUNNER_TEMP/candidate"
           manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
-          gh attestation verify "$manifest" \
+          ruby scripts/verify-candidate-attestation.rb "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$GITHUB_SHA" \
+            --candidate-commit "$GITHUB_SHA" \
+            --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
             --deny-self-hosted-runners >/dev/null
           source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
           ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
           for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
-            gh attestation verify "$receipt" \
+            ruby scripts/verify-candidate-attestation.rb "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --candidate-commit "$GITHUB_SHA" \
+              --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \
             "$manifest" "$RUNNER_TEMP/candidate" "$GITHUB_SHA" "$source_tree" \
             "$RUNNER_TEMP/candidate"
           while IFS= read -r input_name; do
-            gh attestation verify "$RUNNER_TEMP/candidate/$input_name" \
+            ruby scripts/verify-candidate-attestation.rb "$RUNNER_TEMP/candidate/$input_name" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --candidate-commit "$GITHUB_SHA" \
+              --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done < <(jq -r '.artifacts | to_entries[] | .value.fileName' \
             "$RUNNER_TEMP/candidate/desktop-artifact-receipt.json")
@@ -639,7 +642,7 @@ jobs:
         shell: pwsh
         run: >
           ./scripts/update-desktop-biometric-checksum.ps1
-          -RuntimePath app-desktop/build/compose/binaries/main-release/app
+          -RuntimePath app-desktop/build/compose/binaries/main-release/app/PassVault
 
       - name: Package installers from the exact signed Windows app image
         env:
@@ -1174,18 +1177,20 @@ jobs:
             --pattern readiness-manifest.json \
             --pattern '*-artifact-receipt.json' \
             --dir release-assets
-          gh attestation verify release-assets/readiness-manifest.json \
+          ruby scripts/verify-candidate-attestation.rb release-assets/readiness-manifest.json \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$GITHUB_SHA" \
+            --candidate-commit "$GITHUB_SHA" \
+            --candidate-tree "$(jq -r .sourceTree release-assets/readiness-manifest.json)" \
             --deny-self-hosted-runners >/dev/null
           for provenance_file in release-assets/*-artifact-receipt.json; do
-            gh attestation verify "$provenance_file" \
+            ruby scripts/verify-candidate-attestation.rb "$provenance_file" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --candidate-commit "$GITHUB_SHA" \
+              --candidate-tree "$(jq -r .sourceTree release-assets/readiness-manifest.json)" \
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \

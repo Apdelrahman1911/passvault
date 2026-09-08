@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "captures": [
+    {
+      "label": "01-v1-source",
+      "tool_capture": "27350e",
+      "exit_code": 0,
+      "command_path": "commands/01-v1-source.command.txt",
+      "stdout_path": "captures/01-v1-source.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "02-v2-source",
+      "tool_capture": "b05a7a",
+      "exit_code": 0,
+      "command_path": "commands/02-v2-source.command.txt",
+      "stdout_path": "captures/02-v2-source.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "03-v1-v2-delta-ast",
+      "tool_capture": "1fbc3c",
+      "exit_code": 0,
+      "command_path": "commands/03-v1-v2-delta-ast.command.txt",
+      "stdout_path": "captures/03-v1-v2-delta-ast.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "04-v3-delta-ast",
+      "tool_capture": "3c4903",
+      "exit_code": 0,
+      "command_path": "commands/04-v3-delta-ast.command.txt",
+      "stdout_path": "captures/04-v3-delta-ast.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "05-workspace-instructions",
+      "tool_capture": "19a0e7",
+      "exit_code": 0,
+      "command_path": "commands/05-workspace-instructions.command.txt",
+      "stdout_path": "captures/05-workspace-instructions.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "06-provenance-skill",
+      "tool_capture": "a1e346",
+      "exit_code": 0,
+      "command_path": "commands/06-provenance-skill.command.txt",
+      "stdout_path": "captures/06-provenance-skill.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "07-provenance-reference",
+      "tool_capture": "2b98fd",
+      "exit_code": 0,
+      "command_path": "commands/07-provenance-reference.command.txt",
+      "stdout_path": "captures/07-provenance-reference.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "08-report-writer-v1-parse-failure",
+      "tool_capture": "2a6fab",
+      "exit_code": 1,
+      "command_path": null,
+      "command_fingerprint": {
+        "bytes": 97278,
+        "lf": 175,
+        "sha256": "3c8557ae4ac6c6b43a73a7dedb0ec6c165bdb1db35f0f27df2d00d461196d254"
+      },
+      "output_path": "captures/08-report-writer-v1.output.txt",
+      "scope": "Exact failed metadata-writer diagnostic. Source/helper body not imported/executed; original supplied command remains in named tool capture."
+    },
+    {
+      "label": "09-report-namespace-absence",
+      "tool_capture": "c92c92",
+      "exit_code": 0,
+      "command_path": null,
+      "stdout_path": "captures/09-report-namespace-absence.stdout.txt",
+      "scope": "Guarded exact-path lstat absence check plus SHA256 of held failed command text; no write/helper execution/cleanup."
+    }
+  ],
+  "no_runtime_evidence": true
+}

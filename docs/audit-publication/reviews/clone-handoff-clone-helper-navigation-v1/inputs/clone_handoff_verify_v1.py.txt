@@ -1,0 +1,283 @@
+"""One new Git-only clone check; never runs Gradle, app code, or archived helpers."""
+
+from pathlib import Path, PurePosixPath
+import datetime
+import hashlib
+import json
+import os
+import re
+import shutil
+import signal
+import stat
+import subprocess
+import sys
+
+
+BASE = Path('/Users/abdelrahman/Projects/passvault')
+H = BASE / 'remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z'
+RUN = H / 'remote-clone-verification-v1'
+CLONE = BASE / 'passvault-handoff-verify-20260908T083000Z'
+BRANCH = 'codex/remediation-handoff-20260908'
+URL = 'https://github.com/Apdelrahman1911/passvault.git'
+READER_SHA = '27c97a3df01da76efbec6b22041f5c2157a297a328969986928d22ae7edc1f0d'
+PACKAGE_SHA = 'bc4e7cc7d6ae83bedcec3b4947a14de2aac52706089af9e2abbc2564c5f91a81'
+GIT = ['git', '-c', 'core.hooksPath=/dev/null', '-c', 'core.attributesFile=/dev/null',
+       '-c', 'core.autocrlf=false', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',
+       '-c', 'pack.threads=1', '-c', 'init.templateDir=']
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', GIT_OPTIONAL_LOCKS='0',
+           GIT_TERMINAL_PROMPT='0', GIT_TRACE='0', GIT_TRACE_CURL='0',
+           GIT_CURL_VERBOSE='0', GIT_TRACE_PACKET='0', GIT_TRACE2='0',
+           GIT_TRACE2_EVENT='0', GIT_TRACE2_PERF='0', GIT_TRACE_REDACT='1')
+COMMANDS = []
+CHILD = None
+CLONE_ID = None
+BASE_ID = None
+
+
+def timestamp():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def identity(info):
+    return (info.st_dev, info.st_ino, info.st_uid, stat.S_IFMT(info.st_mode))
+
+
+def write(name, value):
+    with (RUN / name).open('x') as output:
+        json.dump(value, output, indent=2)
+        output.write('\n')
+        output.flush()
+        os.fsync(output.fileno())
+
+
+def interrupt(signum, frame):
+    raise KeyboardInterrupt('transport interrupted by signal %d' % signum)
+
+
+def stop_child():
+    global CHILD
+    if CHILD is None or CHILD.poll() is not None:
+        return
+    # Only the still-unreaped child/session created by this program is addressed.
+    try:
+        os.killpg(CHILD.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        CHILD.wait(timeout=10)
+        return
+    try:
+        CHILD.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        os.killpg(CHILD.pid, signal.SIGKILL)
+        CHILD.wait(timeout=10)
+
+
+def command(label, argv, cwd):
+    global CHILD
+    stdout = RUN / (label + '.stdout')
+    stderr = RUN / (label + '.stderr')
+    event = {'label': label, 'argv': argv, 'cwd': str(cwd), 'started': timestamp()}
+    write(label + '-START.json', event)
+    with stdout.open('xb') as out, stderr.open('xb') as err:
+        CHILD = subprocess.Popen(argv, cwd=cwd, env=ENV, stdout=out, stderr=err,
+                                 start_new_session=True)
+        event['pid'] = CHILD.pid
+        write(label + '-CHILD.json', event)
+        try:
+            CHILD.wait(timeout=240)
+        finally:
+            try:
+                stop_child()
+            except BaseException as error:
+                event['stop_error'] = {'type': type(error).__name__, 'message': str(error)}
+            event['exit_code'] = CHILD.returncode
+            event['finished'] = timestamp()
+            event['stdout'] = {'path': stdout.name, 'bytes': stdout.stat().st_size,
+                               'sha256': hashlib.sha256(stdout.read_bytes()).hexdigest()}
+            event['stderr'] = {'path': stderr.name, 'bytes': stderr.stat().st_size,
+                               'sha256': hashlib.sha256(stderr.read_bytes()).hexdigest()}
+            COMMANDS.append(event)
+            write(label + '.json', event)
+    require(event['exit_code'] == 0, label + ' failed; see retained logs')
+    return stdout.read_bytes()
+
+
+def inspect_owned_tree(fd):
+    """Preflight only, without following links or crossing filesystems."""
+    counts = {'files': 0, 'logical_bytes': 0, 'allocated_bytes': 0}
+    for name in os.listdir(fd):
+        info = os.stat(name, dir_fd=fd, follow_symlinks=False)
+        require(info.st_dev == CLONE_ID[0] and info.st_uid == os.getuid(), 'foreign clone member')
+        if stat.S_ISDIR(info.st_mode):
+            child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            try:
+                require(identity(os.fstat(child)) == identity(info), 'directory changed')
+                nested = inspect_owned_tree(child)
+                for key in counts:
+                    counts[key] += nested[key]
+            finally:
+                os.close(child)
+        else:
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'unexpected clone link/type')
+            counts['files'] += 1
+            counts['logical_bytes'] += info.st_size
+            counts['allocated_bytes'] += info.st_blocks * 512
+    return counts
+
+
+def remove_owned_contents(fd):
+    for name in os.listdir(fd):
+        info = os.stat(name, dir_fd=fd, follow_symlinks=False)
+        require(info.st_dev == CLONE_ID[0] and info.st_uid == os.getuid(), 'foreign cleanup member')
+        if stat.S_ISDIR(info.st_mode):
+            child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            try:
+                require(identity(os.fstat(child)) == identity(info), 'cleanup directory changed')
+                remove_owned_contents(child)
+                require(identity(os.stat(name, dir_fd=fd, follow_symlinks=False)) == identity(info),
+                        'cleanup directory entry changed')
+                os.rmdir(name, dir_fd=fd)
+            finally:
+                os.close(child)
+        else:
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'cleanup link/type')
+            # No symlink is followed; this cooperative audit-owned directory is the only allowlist entry.
+            require(identity(os.stat(name, dir_fd=fd, follow_symlinks=False)) == identity(info),
+                    'cleanup file entry changed')
+            os.unlink(name, dir_fd=fd)
+
+
+def cleanup():
+    if CLONE_ID is None:
+        require(not CLONE.exists() and not CLONE.is_symlink(),
+                'clone path exists without a recorded birth identity; preserve residual')
+        return {'status': 'NOT_CREATED', 'paths_deleted': []}
+    require(CLONE.parent == BASE and CLONE.name == 'passvault-handoff-verify-20260908T083000Z',
+            'cleanup path outside exact allowlist')
+    require(BASE.resolve() == BASE and not BASE.is_symlink(), 'unexpected workspace parent')
+    require(identity(BASE.lstat()) == BASE_ID, 'workspace parent identity changed')
+    parent = os.open(BASE, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    fd = None
+    try:
+        require(identity(os.fstat(parent)) == BASE_ID, 'opened workspace parent changed')
+        require(identity(os.stat(CLONE.name, dir_fd=parent, follow_symlinks=False)) == CLONE_ID,
+                'owned clone root changed; preserve residual for reviewed recovery')
+        fd = os.open(CLONE.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+        require(identity(os.fstat(fd)) == CLONE_ID, 'opened clone root changed')
+        counts = inspect_owned_tree(fd)
+        remove_owned_contents(fd)
+        require(identity(os.stat(CLONE.name, dir_fd=parent, follow_symlinks=False)) == CLONE_ID,
+                'clone parent entry changed')
+        os.rmdir(CLONE.name, dir_fd=parent)
+        require(not CLONE.exists(), 'clone path remains')
+        return {'status': 'REMOVED_EXACT_OWNED_CLONE', 'paths_deleted': [str(CLONE)],
+                'removed_inventory': counts, 'original_root_identity': CLONE_ID,
+                'scope': 'Cooperative owned namespace, not adversarial same-user isolation. No source/report/cache/SDK/unrelated path deleted.'}
+    finally:
+        if fd is not None:
+            os.close(fd)
+        os.close(parent)
+
+
+def main():
+    global CLONE_ID, BASE_ID
+    require(len(sys.argv) == 3 and re.fullmatch('[0-9a-f]{40}', sys.argv[1]) and
+            re.fullmatch('[0-9a-f]{64}', sys.argv[2]), 'expected commit and index SHA256 required')
+    expected_commit = sys.argv[1]
+    raw = (H / 'FINAL-STAGE-INDEX.json').read_bytes()
+    require(hashlib.sha256(raw).hexdigest() == sys.argv[2], 'index pin changed')
+    expected = json.loads(raw)
+    require(BASE.resolve() == BASE and not BASE.is_symlink(), 'unexpected workspace root')
+    BASE_ID = identity(BASE.lstat())
+    RUN.mkdir(mode=0o700)
+    require(not CLONE.exists() and not CLONE.is_symlink(), 'fresh clone path already occupied')
+    signal.signal(signal.SIGINT, interrupt)
+    signal.signal(signal.SIGTERM, interrupt)
+    result = {'started': timestamp(), 'expected_commit': expected_commit,
+              'index_sha256': sys.argv[2], 'commands': COMMANDS,
+              'scope': 'Git source/evidence transport only; no application/build/device/store verification.',
+              'disk_free_before': shutil.disk_usage(BASE).free,
+              'gradle_stop': 'NOT_APPLICABLE: no Gradle/build invocation; old CLOSED obligations unchanged.',
+              'python': sys.version}
+    write('RECOVERY.json', {'clone_allowlist': [str(CLONE)],
+          'meaning': 'If hard-killed/power-lost, do not blindly rerun. Inspect CREATED.json, retained command PIDs/identities and residual resources before separately reviewed cleanup. No old build lock/cache/journal may be revived.'})
+    try:
+        # This is bounded Git transport, not a new application-build launch floor/admission.
+        require(shutil.disk_usage(BASE).free > 4 * sum(row['checkout_bytes'] for row in expected['entries']),
+                'insufficient headroom for bounded Git transport')
+        CLONE.mkdir(mode=0o700)
+        CLONE_ID = identity(CLONE.lstat())
+        write('CREATED.json', {'path': str(CLONE), 'identity': CLONE_ID, 'at': timestamp()})
+        command('01-clone', GIT + ['clone', '--depth', '1', '--single-branch', '--no-tags',
+                '--no-local', '--branch', BRANCH, URL, str(CLONE)], BASE)
+        actual = command('02-identity', GIT + ['rev-parse', 'HEAD', 'HEAD^{tree}'], CLONE).decode().splitlines()
+        require(actual == [expected_commit, expected['git_tree']], 'remote clone commit/tree mismatch')
+        result['observed_commit'], result['observed_tree'] = actual
+        names = command('03-tracked', GIT + ['ls-files', '-z'], CLONE).decode().split('\0')[:-1]
+        require(set(names) == {row['path'] for row in expected['entries']}, 'clone tracked-path set mismatch')
+        for row in expected['entries']:
+            path = PurePosixPath(row['path'])
+            require(not path.is_absolute() and all(p not in ('.', '..') for p in path.parts), 'unsafe indexed path')
+            target = CLONE / path
+            info = target.lstat()
+            require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'clone file type/link mismatch')
+            data = target.read_bytes()
+            require(len(data) == row['checkout_bytes'] and hashlib.sha256(data).hexdigest() == row['checkout_sha256'],
+                    'checkout bytes mismatch: ' + str(path))
+            require(bool(info.st_mode & 0o111) == (row['git_mode'] == '100755'), 'checkout execute-mode mismatch')
+        result['all_tracked_checkout_files_matched'] = len(names)
+        reader = CLONE / 'docs/audit-handoff/evidence.py'
+        require(hashlib.sha256(reader.read_bytes()).hexdigest() == READER_SHA, 'unreviewed reader')
+        require(hashlib.sha256((reader.parent / 'PACKAGE.json').read_bytes()).hexdigest() == PACKAGE_SHA, 'package pin changed')
+        verified = command('04-evidence-verify', [sys.executable, '-B', str(reader), 'verify'], CLONE)
+        require(b'21378 indexed paths, 16510 exact blobs, 11 packs.' in verified, 'unexpected evidence result')
+        source = command('05-source-verify', [sys.executable, '-B', str(reader), 'verify-source'], CLONE)
+        require(b'809 exact G12 raw members; 2 declared checkout-EOL members.' in source, 'unexpected source result')
+        require(command('06-status', GIT + ['status', '--porcelain=v1', '--untracked-files=all'], CLONE) == b'',
+                'verification changed clone source or left untracked outputs')
+        result['transport_status'] = 'PASS'
+    except BaseException as error:
+        result['transport_status'] = 'FAIL_OR_INTERRUPTED'
+        result['error_type'] = type(error).__name__
+        result['error'] = str(error)
+    finally:
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        try:
+            stop_child()
+        except BaseException as error:
+            result['stop_error'] = {'error_type': type(error).__name__, 'error': str(error)}
+        # Failed stopping does not bypass independently safe cleanup. A live/ambiguous
+        # owned process instead makes file cleanup explicitly blocked, never an assumed pass.
+        try:
+            require(CHILD is None or CHILD.poll() is not None, 'owned child still running')
+            groups = {event['pid'] for event in COMMANDS if 'pid' in event}
+            probe = subprocess.run(['ps', '-axo', 'pid=,ppid=,pgid=,comm='],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+            require(probe.returncode == 0, 'owned-session process probe failed')
+            remaining = []
+            for line in probe.stdout.decode().splitlines():
+                fields = line.strip().split(None, 3)
+                if len(fields) == 4 and int(fields[2]) in groups:
+                    remaining.append({'pid': int(fields[0]), 'ppid': int(fields[1]),
+                                      'pgid': int(fields[2]), 'comm': fields[3]})
+            result['owned_session_group_point_observation'] = remaining
+            require(not remaining, 'created-session group remains; ownership review required, no blind killing')
+            result['cleanup'] = cleanup()
+        except BaseException as error:
+            result['cleanup'] = {'status': 'BLOCKED_RESIDUAL', 'path': str(CLONE),
+                                 'error_type': type(error).__name__, 'error': str(error)}
+        result['disk_free_after'] = shutil.disk_usage(BASE).free
+        result['disk_space_limit'] = 'Point observations only; concurrent unrelated changes may affect free-space delta.'
+        result['finished'] = timestamp()
+        write('RESULT.json', result)
+    print(json.dumps({k: v for k, v in result.items() if k != 'commands'}, indent=2))
+    return 0 if result.get('transport_status') == 'PASS' and result['cleanup']['status'] == 'REMOVED_EXACT_OWNED_CLONE' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -59,8 +59,9 @@ class DesktopSystemTray internal constructor(
             onShowCallback = onShow
             onLockCallback = onLock
             onExitCallback = onExit
+            val installedIcon = trayIcon
             try {
-                if (trayIcon == null) {
+                if (installedIcon == null) {
                     trayIcon = platform.install(
                         strings = strings,
                         onShow = { onShowCallback?.invoke() },
@@ -68,12 +69,17 @@ class DesktopSystemTray internal constructor(
                         onExit = { onExitCallback?.invoke() },
                         image = loadTrayIcon(),
                     )
+                } else {
+                    installedIcon.updateStrings(strings)
                 }
             } catch (_: Exception) {
                 // install only returns after the native tray accepts the icon.
-                // Keep a failed setup retryable for the lifetime of this singleton.
-                trayIcon = null
-                logger.warning("Unable to create the system tray icon")
+                // A failed update must retain the installed owner: forgetting it
+                // would leak the icon and allow a retry to install a duplicate.
+                logger.warning(
+                    if (installedIcon == null) "Unable to create the system tray icon"
+                    else "Unable to update the system tray labels",
+                )
             }
         }
     }
@@ -168,7 +174,9 @@ internal object SwingDesktopEventThread : DesktopEventThread {
     }
 }
 
-internal fun interface DesktopTrayIconHandle {
+internal interface DesktopTrayIconHandle {
+    fun updateStrings(strings: DesktopTrayStrings)
+
     fun remove()
 }
 
@@ -194,12 +202,15 @@ private object AwtDesktopTrayPlatform : DesktopTrayPlatform {
         onExit: () -> Unit,
         image: Image,
     ): DesktopTrayIconHandle {
+        val showItem = MenuItem(strings.showApp).apply { addActionListener { onShow() } }
+        val lockItem = MenuItem(strings.lockVault).apply { addActionListener { onLock() } }
+        val exitItem = MenuItem(strings.exit).apply { addActionListener { onExit() } }
         val popupMenu = PopupMenu().apply {
-            add(MenuItem(strings.showApp).apply { addActionListener { onShow() } })
+            add(showItem)
             addSeparator()
-            add(MenuItem(strings.lockVault).apply { addActionListener { onLock() } })
+            add(lockItem)
             addSeparator()
-            add(MenuItem(strings.exit).apply { addActionListener { onExit() } })
+            add(exitItem)
         }
         val newTrayIcon = TrayIcon(image, strings.tooltip, popupMenu).apply {
             isImageAutoSize = true
@@ -209,7 +220,19 @@ private object AwtDesktopTrayPlatform : DesktopTrayPlatform {
         // Publish the handle only after the native tray accepts the icon. Some
         // Linux desktops report support but reject an add request.
         tray.add(newTrayIcon)
-        return DesktopTrayIconHandle { tray.remove(newTrayIcon) }
+        return object : DesktopTrayIconHandle {
+            override fun updateStrings(strings: DesktopTrayStrings) {
+                check(SwingUtilities.isEventDispatchThread())
+                showItem.label = strings.showApp
+                lockItem.label = strings.lockVault
+                exitItem.label = strings.exit
+                newTrayIcon.toolTip = strings.tooltip
+            }
+
+            override fun remove() {
+                tray.remove(newTrayIcon)
+            }
+        }
     }
 }
 

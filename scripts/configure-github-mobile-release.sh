@@ -77,6 +77,11 @@ mkdir -m 700 "$metadata_validation_root"
 ruby scripts/create-store-metadata-archive.rb "$private_root" "$metadata_archive_path" >/dev/null
 ruby scripts/extract-store-metadata-archive.rb \
     "$metadata_archive_path" "$metadata_validation_root" >/dev/null
+# Validate/render the actual archived snapshot, not mutable original files.
+COPYRIGHT_HOLDER="$COPYRIGHT_HOLDER_EN" \
+    SUPPORT_URL="$SUPPORT_URL" PROJECT_URL="$PROJECT_URL" PRIVACY_POLICY_URL="$PRIVACY_POLICY_URL" \
+    ./scripts/prepare-mobile-store-metadata.sh "$metadata_validation_root" \
+        "$signing_validation_root/rendered-store-metadata" 1 >/dev/null
 
 # Consumed through repo_variable_sources indirection when local-pfx is selected.
 # shellcheck disable=SC2034
@@ -517,14 +522,14 @@ if [[ "$testflight_testers_ready" == "true" ]]; then
     set_binary_secret TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 mobile-external-beta \
         "$TESTFLIGHT_EXTERNAL_TESTERS_FILE"
 else
-    gh secret delete TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 --env mobile-external-beta \
-        --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+    ruby scripts/delete-github-environment-secret.rb "$GITHUB_REPOSITORY" \
+        mobile-external-beta TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64
 fi
 if [[ "$play_testers_ready" == "true" ]]; then
     set_binary_secret PLAY_CLOSED_TESTERS_BASE64 mobile-external-beta "$PLAY_CLOSED_TESTERS_FILE"
 else
-    gh secret delete PLAY_CLOSED_TESTERS_BASE64 --env mobile-external-beta \
-        --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+    ruby scripts/delete-github-environment-secret.rb "$GITHUB_REPOSITORY" \
+        mobile-external-beta PLAY_CLOSED_TESTERS_BASE64
 fi
 
 # Older setup revisions could leave these values at repository scope. Remove
@@ -761,6 +766,14 @@ verify_absent_environment_secrets mobile-beta "$mobile_beta_secrets" \
     "${all_desktop_production_secret_names[@]}"
 verify_absent_environment_secrets mobile-external-beta "$external_secrets" \
     "${upload_only_secret_names[@]}" "${all_desktop_production_secret_names[@]}"
+if [[ "$testflight_testers_ready" != true ]]; then
+    verify_absent_environment_secrets mobile-external-beta "$external_secrets" \
+        TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64
+fi
+if [[ "$play_testers_ready" != true ]]; then
+    verify_absent_environment_secrets mobile-external-beta "$external_secrets" \
+        PLAY_CLOSED_TESTERS_BASE64
+fi
 verify_absent_environment_secrets mobile-production "$production_secrets" \
     "${upload_only_secret_names[@]}" \
     TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64 PLAY_CLOSED_TESTERS_BASE64 \

@@ -49,20 +49,22 @@ jobs:
             --pattern '*-artifact-receipt.json' \
             --dir "$candidate_root"
           manifest="$candidate_root/readiness-manifest.json"
-          gh attestation verify "$manifest" \
+          ruby scripts/verify-candidate-attestation.rb "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$GITHUB_SHA" \
+            --candidate-commit "$GITHUB_SHA" \
+            --candidate-tree "$(jq -r .sourceTree "$candidate_root/readiness-manifest.json")" \
             --deny-self-hosted-runners >/dev/null
           source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
           ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
           for receipt in "$candidate_root"/*-artifact-receipt.json; do
-            gh attestation verify "$receipt" \
+            ruby scripts/verify-candidate-attestation.rb "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --candidate-commit "$GITHUB_SHA" \
+              --candidate-tree "$(jq -r .sourceTree "$candidate_root/readiness-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \

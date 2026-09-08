@@ -2,6 +2,8 @@ package com.passvault.desktop.security.biometric
 
 import com.passvault.core.security.BiometricCapability
 import com.passvault.core.security.BiometricType
+import com.passvault.shared.platform.NativeBiometricPromptStrings
+import com.passvault.shared.platform.currentNativeBiometricPromptStrings
 import com.sun.jna.IntegerType
 import com.sun.jna.Library
 import com.sun.jna.Memory
@@ -21,6 +23,7 @@ internal class JnaDesktopBiometricBridge private constructor(
     private val native: NativeApi,
     private val context: Pointer,
     private val closeWaitNanos: Long,
+    private val promptStrings: () -> NativeBiometricPromptStrings,
 ) : DesktopBiometricBridge {
     private val nextOperationId = AtomicLong(1L)
     private val activeOperationId = AtomicLong(NO_OPERATION)
@@ -62,14 +65,18 @@ internal class JnaDesktopBiometricBridge private constructor(
         withOperation { operationId ->
             withNativeBytes(vaultHash) { hash ->
                 withNativeBytes(vaultKey) { key ->
-                    native.pv_bio_enroll(
-                        context,
-                        operationId,
-                        hash,
-                        SizeT(vaultHash.size.toLong()),
-                        key,
-                        SizeT(vaultKey.size.toLong()),
-                    ).requireSuccess()
+                    withNativePromptReason(promptStrings().enrollmentReason) { reason, reasonLength ->
+                        native.pv_bio_enroll_localized(
+                            context,
+                            operationId,
+                            hash,
+                            SizeT(vaultHash.size.toLong()),
+                            key,
+                            SizeT(vaultKey.size.toLong()),
+                            reason,
+                            reasonLength,
+                        ).requireSuccess()
+                    }
                 }
             }
         }
@@ -79,23 +86,39 @@ internal class JnaDesktopBiometricBridge private constructor(
         ensureVaultHash(vaultHash)
         val output = Memory(VAULT_KEY_BYTES.toLong())
         output.clear()
+        var producedKey: ByteArray? = null
         return try {
-            withOperation { operationId ->
-                withNativeBytes(vaultHash) { hash ->
-                    native.pv_bio_retrieve(
-                        context,
-                        operationId,
-                        hash,
-                        SizeT(vaultHash.size.toLong()),
-                        output,
-                        SizeT(VAULT_KEY_BYTES.toLong()),
-                    ).requireSuccess()
+            val result = try {
+                withOperation { operationId ->
+                    withNativeBytes(vaultHash) { hash ->
+                        withNativePromptReason(promptStrings().unlockReason) { reason, reasonLength ->
+                            native.pv_bio_retrieve_localized(
+                                context,
+                                operationId,
+                                hash,
+                                SizeT(vaultHash.size.toLong()),
+                                output,
+                                SizeT(VAULT_KEY_BYTES.toLong()),
+                                reason,
+                                reasonLength,
+                            ).requireSuccess()
+                        }
+                    }
                 }
-                output.getByteArray(0, VAULT_KEY_BYTES)
+                // Do not create a managed secret until native lifecycle cleanup
+                // has completed. Keep discard authority through off-heap cleanup.
+                output.getByteArray(0, VAULT_KEY_BYTES).also { producedKey = it }
+            } finally {
+                try {
+                    output.clear()
+                } finally {
+                    output.close()
+                }
             }
+            producedKey = null
+            result
         } finally {
-            output.clear()
-            output.close()
+            producedKey?.fill(0)
         }
     }
 
@@ -128,34 +151,39 @@ internal class JnaDesktopBiometricBridge private constructor(
     }
 
     override fun close() {
-        val shouldClose = lifecycleLock.withLock {
-            if (closed.get()) false else {
-                closed.set(true)
-                cancelPendingOperation.set(true)
-                true
+        val operationId = lifecycleLock.withLock {
+            if (closed.get()) return
+            closed.set(true)
+            cancelPendingOperation.set(true)
+            activeOperationId.get().also { operationId ->
+                // Reserve cancellation's context reference before releasing the
+                // lock. The worker may finish and otherwise destroy the context
+                // before close reaches its first native instruction.
+                if (operationId != NO_OPERATION) nativeCallsInFlight += 1
             }
         }
-        if (shouldClose) {
-            val operationId = activeOperationId.get()
-            if (operationId != NO_OPERATION) {
+        if (operationId != NO_OPERATION) {
+            try {
                 runCatching { native.pv_bio_cancel(context, operationId) }
+            } finally {
+                finishNativeCall()
             }
-            var interrupted = false
-            var remainingNanos = closeWaitNanos
-            val destroyNow = lifecycleLock.withLock {
-                while (nativeCallsInFlight != 0 && remainingNanos > 0L) {
-                    try {
-                        remainingNanos = noNativeCalls.awaitNanos(remainingNanos)
-                    } catch (_: InterruptedException) {
-                        interrupted = true
-                        break
-                    }
-                }
-                claimNativeContextDestroyLocked()
-            }
-            if (destroyNow) native.pv_bio_destroy(context)
-            if (interrupted) Thread.currentThread().interrupt()
         }
+        var interrupted = false
+        var remainingNanos = closeWaitNanos
+        val destroyNow = lifecycleLock.withLock {
+            while (nativeCallsInFlight != 0 && remainingNanos > 0L) {
+                try {
+                    remainingNanos = noNativeCalls.awaitNanos(remainingNanos)
+                } catch (_: InterruptedException) {
+                    interrupted = true
+                    break
+                }
+            }
+            claimNativeContextDestroyLocked()
+        }
+        if (destroyNow) native.pv_bio_destroy(context)
+        if (interrupted) Thread.currentThread().interrupt()
     }
 
     private inline fun <T> withOperation(block: (Long) -> T): T {
@@ -189,14 +217,18 @@ internal class JnaDesktopBiometricBridge private constructor(
         return try {
             block()
         } finally {
-            val destroyNow = lifecycleLock.withLock {
-                nativeCallsInFlight -= 1
-                check(nativeCallsInFlight >= 0) { "Desktop biometric native-call accounting underflow" }
-                if (nativeCallsInFlight == 0) noNativeCalls.signalAll()
-                claimNativeContextDestroyLocked()
-            }
-            if (destroyNow) native.pv_bio_destroy(context)
+            finishNativeCall()
         }
+    }
+
+    private fun finishNativeCall() {
+        val destroyNow = lifecycleLock.withLock {
+            nativeCallsInFlight -= 1
+            check(nativeCallsInFlight >= 0) { "Desktop biometric native-call accounting underflow" }
+            if (nativeCallsInFlight == 0) noNativeCalls.signalAll()
+            claimNativeContextDestroyLocked()
+        }
+        if (destroyNow) native.pv_bio_destroy(context)
     }
 
     /**
@@ -225,6 +257,7 @@ internal class JnaDesktopBiometricBridge private constructor(
             native: NativeApi,
             dataDirectory: String,
             closeWaitMillis: Long = DEFAULT_CLOSE_WAIT_MILLIS,
+            promptStrings: () -> NativeBiometricPromptStrings = ::currentNativeBiometricPromptStrings,
         ): JnaDesktopBiometricBridge {
             require(closeWaitMillis > 0L) { "Desktop biometric close wait must be positive" }
             check(native.pv_bio_abi_version() == EXPECTED_ABI) {
@@ -252,6 +285,7 @@ internal class JnaDesktopBiometricBridge private constructor(
                     native = native,
                     context = pointer,
                     closeWaitNanos = TimeUnit.MILLISECONDS.toNanos(closeWaitMillis),
+                    promptStrings = promptStrings,
                 )
             } finally {
                 directory.clear()
@@ -264,6 +298,7 @@ internal class JnaDesktopBiometricBridge private constructor(
         private const val VAULT_HASH_BYTES = 32
         private const val VAULT_KEY_BYTES = 32
         private const val MAX_DIRECTORY_BYTES = 4096
+        private const val MAX_PROMPT_REASON_BYTES = 1024
         private const val NO_OPERATION = 0L
         private const val DEFAULT_CLOSE_WAIT_MILLIS = 1_500L
 
@@ -281,6 +316,19 @@ internal class JnaDesktopBiometricBridge private constructor(
                 memory.close()
             }
         }
+
+        private inline fun <T> withNativePromptReason(reason: String, block: (Memory, SizeT) -> T): T {
+            require(reason.length in 1..MAX_PROMPT_REASON_BYTES && '\u0000' !in reason) {
+                "Desktop biometric prompt reason is invalid"
+            }
+            val encoded = reason.encodeToByteArray(throwOnInvalidSequence = true)
+            try {
+                require(encoded.size <= MAX_PROMPT_REASON_BYTES) { "Desktop biometric prompt reason is too long" }
+                return withNativeBytes(encoded) { memory -> block(memory, SizeT(encoded.size.toLong())) }
+            } finally {
+                encoded.fill(0)
+            }
+        }
     }
 }
 
@@ -293,21 +341,25 @@ internal interface NativeApi : Library {
     fun pv_bio_set_parent_window(context: Pointer, nativeWindow: Pointer?): Int
     fun pv_bio_get_capability(context: Pointer, outAvailability: IntByReference): Int
     fun pv_bio_contains(context: Pointer, vaultHash: Pointer, hashLength: SizeT, outContains: IntByReference): Int
-    fun pv_bio_enroll(
+    fun pv_bio_enroll_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         vaultKey: Pointer,
         keyLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int
-    fun pv_bio_retrieve(
+    fun pv_bio_retrieve_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         outVaultKey: Pointer,
         outLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int
     fun pv_bio_delete(context: Pointer, vaultHash: Pointer, hashLength: SizeT): Int
     fun pv_bio_cancel(context: Pointer, operationId: Long): Int

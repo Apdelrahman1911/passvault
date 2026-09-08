@@ -1,0 +1,42 @@
+{
+  "scope": "Tool capture IDs plus retained guarded reader protocol. No archived helper imported/executed.",
+  "captures": [
+    {
+      "activity": "source_read",
+      "capture": "ab62fd",
+      "exit_code": 0
+    },
+    {
+      "activity": "source_v2_read",
+      "capture": "ace23e",
+      "exit_code": 0
+    },
+    {
+      "activity": "source_v3_read",
+      "capture": "d8c126",
+      "exit_code": 0
+    },
+    {
+      "activity": "v3_diff_check",
+      "capture": "aeba88",
+      "exit_code": 0
+    },
+    {
+      "activity": "v3_receipt_read",
+      "capture": "ec5058",
+      "exit_code": 0
+    },
+    {
+      "activity": "output_check",
+      "capture": "f63140",
+      "exit_code": 0
+    },
+    {
+      "activity": "companion_and_v1_failure_read",
+      "capture": "9a8a75",
+      "exit_code": 0
+    }
+  ],
+  "reader_protocol": "import datetime,hashlib,json,os,pathlib,stat\nROOTS={\"PUB\":pathlib.Path(\"/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z\"),\"R\":pathlib.Path(\"/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z\"),\"AR\":pathlib.Path(\"/Users/abdelrahman/Projects/passvault/audit-reports/20260905T083114Z\")}\ndef fid(s):\n return (s.st_dev,s.st_ino,s.st_uid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\ndef did(s):\n return (s.st_dev,s.st_ino,s.st_uid,s.st_mode)\ndef path_for(root,relative):\n p=pathlib.Path(relative)\n assert not p.is_absolute() and p.parts and \"..\" not in p.parts and \".\" not in p.parts\n assert root in ROOTS\n return ROOTS[root]/p\ndef parent_guards(root,parent):\n base=ROOTS[root];assert parent==base or parent.is_relative_to(base)\n paths=[base];current=base\n for part in parent.relative_to(base).parts:\n  current=current/part;paths.append(current)\n result=[]\n for p in paths:\n  s=p.lstat();assert stat.S_ISDIR(s.st_mode) and not stat.S_ISLNK(s.st_mode)\n  result.append((p,did(s)))\n return result\ndef read_named(root,relative,expected=None):\n p=path_for(root,relative);guards=parent_guards(root,p.parent);a=p.lstat()\n assert stat.S_ISREG(a.st_mode) and not stat.S_ISLNK(a.st_mode) and a.st_nlink==1 and a.st_size<=4194304\n fd=os.open(str(p),os.O_RDONLY|os.O_NOFOLLOW)\n try:\n  b=os.fstat(fd);assert fid(a)==fid(b);parts=[];remaining=b.st_size\n  while remaining:\n   piece=os.read(fd,min(65536,remaining));assert piece;parts.append(piece);remaining-=len(piece)\n  assert os.read(fd,1)==b\"\";raw=b\"\".join(parts);c=os.fstat(fd)\n finally:os.close(fd)\n assert fid(a)==fid(b)==fid(c)==fid(p.lstat())\n for parent,i in guards:assert did(parent.lstat())==i\n meta={\"root\":root,\"path\":relative,\"bytes\":len(raw),\"lf\":raw.count(b\"\\n\"),\"sha256\":hashlib.sha256(raw).hexdigest(),\"mode_octal\":format(stat.S_IMODE(a.st_mode),\"04o\"),\"single_link\":True,\"stable\":True}\n if expected:\n  for k,v in expected.items():assert meta[k]==v,(root,relative,k)\n return raw,meta\n",
+  "large_output_exception": "Only PUB:docs/audit-handoff/reference-locators.json was allowed up to12582912 bytes; its exact11439084-byte/SHA binding was required. All other reads retained the4MiB cap."
+}

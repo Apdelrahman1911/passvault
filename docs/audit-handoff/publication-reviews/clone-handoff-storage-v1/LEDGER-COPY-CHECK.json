@@ -1,0 +1,2848 @@
+{
+  "administrative_notes": [
+    {
+      "disposition": "Root supplied no mode requirement. H002B reads the same exact hash/regular named file, records actual mode, and does not modify it or relax any runtime/source gate.",
+      "exit_code": 1,
+      "operation": "H002",
+      "stage": "Before content read at inherited0600 mode assertion",
+      "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 35, in <module>\n  File \"<stdin>\", line 32, in read_json\n  File \"<stdin>\", line 21, in read_artifact\nAssertionError\n"
+    },
+    {
+      "exit_code": 0,
+      "kind": "All17 named original/copy byte-equality assertions completed in inline stdlib (shell exit0), but returned JSON display was truncated and orchestration JSON.parse failed. No review report was created by this read. A bounded metadata redisplay/copy-only confirmation will avoid refreshing mutable original pins.",
+      "operation": "H007",
+      "original_token_count": 40642
+    },
+    {
+      "disposition": "Parent supplied exact423256B/fullSHA; H009B used explicit1MiB bound and verified exact unchanged pin.",
+      "exit_code": 1,
+      "kind": "Metadata actual423256B exceeded arbitrary display-read limit; no hash mismatch, viewer execution/failure, or report creation.",
+      "operation": "H009",
+      "stage": "Before metadata content read at a self-imposed65536B cap"
+    },
+    {
+      "disposition": "Parent asked for exact authorized locations; no claim that snapshot contains raw originals and no claim of failed viewer behavior.",
+      "exit_code": 1,
+      "kind": "Metadata-referenced originals were not present under the assumed snapshot-relative raw-source/ directory. FileNotFoundError before any raw-original content read; no traversal, source execution, report creation, or runtime retry.",
+      "operation": "H010",
+      "stage": "Named raw-source directory open under supplied reader-v2 metadata snapshot"
+    }
+  ],
+  "complete_pva_family_preservation": {
+    "all37_full_record_hashes_rechecked": true,
+    "canonical_hash_definition": "Python stdlib json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode('utf-8'); original JSON values never roundtripped through JavaScript numbers.",
+    "descriptive_shapes_only": {
+      "families_with_literal_top_level_variant_details_dict": 12,
+      "families_with_literal_top_level_variants_list": 9,
+      "literal_top_level_variant_details_dict_entries": 13,
+      "literal_top_level_variants_list_entries": 17,
+      "warning": "These literal-field counts are NOT the total number of all semantic variants and NOT a new denominator. Original families also represent variants/origins in other nested fields/text. Full raw and full-record identity, not a variants_preserved flag or this descriptive selection, is the preservation proof."
+    },
+    "family_field_hashes": [
+      {
+        "full_record_canonical_sha256": "e8b362fa8d3debe16a2a6d4e254e9b74d6d14a858882dafcb092f135b575407d",
+        "id": "PVA-001",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "0271b17fef6787ce239a503273d60ea182ad22b6388c91c9957bb409c5759c04",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "86033116255bd48794789d9e78bf5e0c1bc016ac95c7993199368bab91489939",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "3e7407ae269566380fb8d33498d23776372f12ae8eb9c0c7ff36f588807fa24a",
+        "id": "PVA-002",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "8f05f00c7ead6d37b540eae525c43081e62a1df8417f838fd4222728cecc978a",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "7cf2ece268c769df3ab0ad40b914a223bc5d38095b0651d6e3f27646b95399c2",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "2969c4223ca47cf29b74edcda89a2e723a0fb551f84da820d6f8667b0de89811",
+        "id": "PVA-003",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "c55b801045433e825f4f9bd17dcc3a2c77ad4bf9f496dc6b36ff96aafefbe45a",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 5,
+            "full_subtree_canonical_sha256": "52e45c89971932ffa801b9e106747cd3128d71aefd06be5bfbd10a89154a2e63",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "e38477b6428c7bb8aca9d0a6d04ff1bdc5b1f7fa8846e336663bf5c76fdac8db",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "763f90f0b80e45f6abce7fb7952f05e68558947660008487dfcd74c0d7fb7265",
+                "key": "DB-02",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "7f5722631c0ee803a7e12b9998af05236390c2a57da9cf4eed54bedbe5defcfa",
+        "id": "PVA-004",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "f30b30440c5f1202791d5fbf5ff8f5ead343b0ddba8da66694426ac3ec29da4e",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 5,
+            "full_subtree_canonical_sha256": "2022a5141b153797a0f3491cb2f39902dd6ac53cd18a25bc2d291ff494257f29",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "36227ab29845a13a79cbe8910905f0ebf1e4ea8ab46d9a0afda8d96232b23e08",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "2f64a46b7a890bc27967808b0205d8ee84ca2ed2a35530e24fb1587ff19a9d59",
+                "key": "DB-03",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "a72e82449092c970dec5caf35cb0582908370086917639ca549985e65efd9ece",
+        "id": "PVA-005",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "63a7aa8312297a44e489f09128c5524c97190e431ce93838e886fa23bcf75749",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "d567328b1383c131eb982307166510a926574d1d0323fbefae01c22a0bb8aebd",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "091da4c873d078ec8b2f331623a4e9fbb5a980b8763bbfce70cff60545ca101a",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "21c177ee2d551b35ae211ceae3396b48c87284f6aae2b77bd183cb6500fef05b",
+                "index": 1,
+                "kind": "str"
+              }
+            ]
+          },
+          "variant_details": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "651e6ce0f0b0364c1e64f16a79f5376a2e04f70f01781449c45167e691f2cd71",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "04f99834bca23b3cb7325f0e0fda22b993609b22cccd4ac26f6a7091cacb4322",
+                "key": "DB-04",
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "e21d95a591d199061f9212ec74b6bfba4f30e90e761b51d5ccd76c92b98bab5d",
+                "key": "SUS-HOST-003",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "7f188870bb9c7e0f5fe51c0daf4cb7ab832c800dfb81d4534ef595e7cc0ae68c",
+        "id": "PVA-006",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "5c86cbaa2d76f73133949110dfee0f9802f04c213652f86be1d926c97639c01c",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "3bc0d46bd8dfcc0c8d981f1ceebc8c66604c55e67b96f979301311c74ce7f282",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "2b7eaff807363bbd6eca3263e5f939f22a9ead1c84ba98bad5285972b508b073",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "8a1575272fdcd7c36901fc4b78f62b1d73af5a596ee3eebb87c19d0f20d5771a",
+                "key": "SUS-ATTACH-002",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "3bafe8cfafaf84136c31befae7fdead61cd23df53110e023dbb7328cbe25a327",
+        "id": "PVA-007",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "c99610b6c1c915255cf71c2c44ed2ab1dff250bd02b1fde1c9a46530f5c9a07f",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 6,
+            "full_subtree_canonical_sha256": "515bdf254a0bf4c9d258894b70ed6daff7a1a2e198436ee16f471277a51b2210",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "4f3d54355c130566c25c0dc85b4d331762909798c78c9147694313dd0a96a51d",
+        "id": "PVA-008",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "84b23609be490b958ad6a2dec7623dbac07bd0844f6c5afeb2e47507d366509e",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 6,
+            "full_subtree_canonical_sha256": "365fa371b50df8bd812fd2403d01ad88d00952f93e8c28b9e9c6bb165b034b9b",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "e6aa5aaaa3ff0089cf961f53c3af877437853de7b432f7b6f5c8c7dbe82f8ecc",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "95a8f310a2b14dea3a9f573d0a90a0c647b0f667f25fc19538aa95a17a2ca85d",
+                "key": "platform_scope",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "212399715010d2dda5aaf30c0a08655ec2d7ba572639d6f57298895dc82a5b94",
+        "id": "PVA-009",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "9a050f0f969253d1215a4c4bbbab46c09f39a14595518e3a23435a4254f7494e",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 12,
+            "full_subtree_canonical_sha256": "da36194ea1889867d68f512ce963adf0faac793a1e95ae7c981760aadc5ac2e8",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "8e06221bc3a0886baca9836e037f65080c98c09d37e250bcc1bde456bffdb619",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "3f3c4a89929bac4ade5929c54b39fb3ffde84788140c7545c743f9e8be8ecd9d",
+                "key": "platform_scope",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "b9d919cad8c374393d474c4079efc16659d08e2907baf0e5ac1fc120989e59b0",
+        "id": "PVA-010",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "34876460ff01924b642f80acbfb816d724cc32577cc40ea7352dc80da452a430",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 12,
+            "full_subtree_canonical_sha256": "71d4d96c96c0e9e88fc5713ed71dce36e4e6edb33db189c0483407971dce44fd",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "cd74bf0b1733da9d55b6a4271501222677af27aa9a126c3956d500b43f1f58fe",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "4013cb63b8785d0d267d43d1d4162e721c9fcccc02356c76af7aef29b1c9a4cc",
+                "key": "platform_scope",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "862acf21f9ca866a82b892636b3d8b208cf9d2b7fa5dcad2346a24f6a6cebd81",
+        "id": "PVA-011",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "ccc1bcc65a0d74d67f03191aa074ee4754c998330ab5525ee5a3df60c87d730c",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "e9ebd3e9ac4e8dd83db3daf3c5b7101ee0cd88c0eda026f9a0125595bee0b3b5",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "4a7db3a4c33b7f4e609f8ff2105318f36d2d1132ec3800de2df4a0aeaed40b79",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "bcb519c974e91ba30956484ae04683adbd491f52b86b969c39a92b9d857e20a9",
+                "key": "SUS-ATTACH-001",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "980d5013a41ecdc068fbbb1f6d44cfd873ec5ac205ecedd1f5257081868e8c13",
+        "id": "PVA-012",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "0e4a1b1a3d506b8f907a0d6b0321986a36d46146a7ee74f560c615b7009c940a",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "d1633db4f613bc7540253a45f6e2a2c749b1ac082d34dd2a19bbe059940ad3d7",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "366b37ef7dd991b710880012223160b1b52d2f9d70974a3b2a3ce798244f93f7",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "4f2bb94e01e5fdee35e4f93143aea08fed64e004004dc0ff025a3f452512341a",
+                "key": "SUS-ATTACH-004",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "f448ee3049f8841a1ef28be70b221b7208fa3efa35ba9a1291a839061f332400",
+        "id": "PVA-013",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "94d3d9aac3d216a8edcace8918170fcd6d95cfbe9800207a305c10ec5e8cc8e4",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "44412d4144a7b828555b327990b74acd71e9587ebb646e50d0deecc10ebc92d5",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "f56a76691827bbbc58566a5d44c0d7f735e238f93cf2228d2ee4fdd32d46f34f",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "de7a636ef20808e02fe4d30dbbb98c044d9903bfb08446687db043d981473285",
+                "key": "SUS-BACKUP-001",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "b0e22b8fcf3ab4b7085618dde2956f16164c091c32a6fcef6a59a873582639aa",
+        "id": "PVA-014",
+        "named_top_level_family_variant_origin_subtrees": {
+          "explicit_grouped_variants": {
+            "count_or_string_length": 3,
+            "full_subtree_canonical_sha256": "1a59a58e0089d1d8e156996470a66abe18344eb04abf7a1a0f5766d4cc196650",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "0862687c94f26116997851ea4348a8eee61a8c75dbdc16d717401a924281fc6c",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "da6a106a3c00a5f3b68c8d7cac0dd9ca96df812e01d334a1d31509d20aea59ad",
+                "index": 1,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "49674973c198258e9ad392a7ccf21f736ae8d9ba3a93967f31789558fd639c2b",
+                "index": 2,
+                "kind": "str"
+              }
+            ]
+          },
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "6c52c45b3335883b8470759ee4daa8b4e632b02a65ed34f423c2817f5d4074ce",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 3,
+            "full_subtree_canonical_sha256": "51fdbe1cb81687624d011d0c82212a8c50a4fd3e9d08f5ac3f0139020bf56c28",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "6ccd1ba2785fdf4051e48108b2dab0ddb721e7f218bf4badcb771466a73165b4",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "0a27ff1064d39ff202a0c7976e9fd48e9e1fea13702e8cf757e85228919a7415",
+                "index": 1,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "477d447de91d8e4f5f87bde1e93326ba83cb20af7be39d09a411db131ab3334c",
+                "index": 2,
+                "kind": "str"
+              }
+            ]
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "6219366c5c7ba12b972e7c253ad9c7933661c8e7bd253fd7b065997133e35f6c",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "29691c13b97089f3dbf08dbe20094dc62aac9103fbdf36f935c332f57a371c5c",
+                "key": "platform_scope",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "cbe33c679b951310646b5e0e15f83d460a2e7558ee78600bb9b634c0d3906b7c",
+        "id": "PVA-015",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "249287227e3f52b3ceedb73c5e3ccff45621244e78f76d28248ccd0646e1441b",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "f97a50fe25abbc354a1f2fae6ff68d3cbbbc02ca28203afc68b8373b40866b3a",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "ba26c7d442d3504523228c3f6b46c3789ae81348db89bbafae0f3ac854e932b9",
+        "id": "PVA-016",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "cea6ececa90704e4997945ce0e558592153456d82d3470771bf7d0390a6d305c",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "1ae644b8cbec33a058158de7ed1f780d14cf09d732ff9668390a51d30a4244a4",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "0c33e7fb065a1fd3d9596390846332a80070b407ad55980acd84cb866f921d14",
+        "id": "PVA-017",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "df7355a5e85df127585386877a11be1cd79348992bf6eb4212b24cfc343dbfd0",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "ad19c074d775033a3a96a09af6ef58eca7ea1019db9da397ba990ef06bfb5f2a",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "7ca0f22724172869c3da6523012a7f52fd772f934093357df769730748596c5d",
+        "id": "PVA-018",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "6c300c28f910a651bd94e391591df90f54c7b5dc05ec7dc6ab4c5ba73accaba4",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "2f1d7a6cd1fe736818d450b551ee1574902e7fc8094593452a0745b441e6504d",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "28bd6f3f99767ff04b804cc2a272f98ec911dfb7cc4dde236ce38c1b2589ce6c",
+        "id": "PVA-019",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "fe75ebbd0fb840da1cca8a5058acfa9b1727c646d467b20fd3bc504abe98ecee",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "65ec8fac0f622af040465b51e937dc5a18f43b81329e0b8fcb9ff6b970173cfa",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "b7ab40f4aca3db43079045fbc2e78e119369f0753a298e5a4f94d707c1300d28",
+        "id": "PVA-020",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "bbbdd8cdd1e3ffb6b2313fad4bd0096dea231795066801ae1fa2ed3f084d58ca",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "6e191be4c905d7c79ed4acbc5b344f8e8f5906b0b1dfc26014ad518007fe2f4c",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "87fb9354bf70316be742eaacd52cde98d9d7f7dc8c54ec793eeea6ccb9c51391",
+        "id": "PVA-021",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "8fdc61aafdc379e4e4f892f6173295e75ae11de5d5896d15fbeacff2867881d7",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "255c99a41d7c03dd6e7b5cc7b96057ab25f649fa8a84caf404fbad895602ade1",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "038eac967f46cb94b19088fe9ca547b6def0ec4d9de681f3711fd6ca98cf817d",
+        "id": "PVA-022",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "9afb3d81797f9be17fd17a81ea5423a90195d9d1070878d302178aee911de09c",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "c9f8279757ecaffe2a6ba6efe89f3d4bf2fa02dc007e23e02141dc5cb12ace08",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "44fc7a65037a16c925e4936d3c95ac9cf1bc41db80c861004b58fca0d16a2786",
+        "id": "PVA-023",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "f5f74ad2f2b4aac8e83200cfc57ea22ccef3bd8df8e1715bf3ded136df8b57a3",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "4df657526846e6be2978eae09621f22abab199499226ff19361b821b5159ed6e",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "541da0606ae1cf482a292cae982e78e22b9c4bdd2812bbeddae0fff572be204b",
+        "id": "PVA-024",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "8b5cd181acab99479835b823e77d6831c850298d75772434d58b3832c1eedcf9",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 11,
+            "full_subtree_canonical_sha256": "43f35e0bdce43e8c5b1086caeb1a4169485eccc66855637ccc7722c5cff8423a",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "c68c158f504a7906e9822053b74f4c59c6f19777f7b6294379b615bbb355301c",
+        "id": "PVA-025",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 88,
+            "full_subtree_canonical_sha256": "5027fb7c80d11a71cde480e57205fafd1c6aeff709d4e9febe355156f3cf6b16",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 6,
+            "full_subtree_canonical_sha256": "36095f5fd398286ec9359e1b59746fc396d73eb0aaed20208a06e421a7195edb",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "d58b8485a61c26ff2fce08bfa9e8511286196fae76d3e9b31576b12302e436a2",
+        "id": "PVA-026",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 19,
+            "full_subtree_canonical_sha256": "52abfeb3f0f6e6e56a06db407acdac06c8818fba5514360e29007c9512437423",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 14,
+            "full_subtree_canonical_sha256": "ea6a3ed8686dfc3308b245b2d1117bef0ab5e5932c08807a12dac030265cc924",
+            "kind": "str"
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "7b264d7fc1e063c28f9d8b6344900783a0e9399710aa24c553f7edb5761d0cce",
+        "id": "PVA-027",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 19,
+            "full_subtree_canonical_sha256": "7c697ef2ff061f9bb7990c307859269c61bdbca6e38d143e74d4743ca78aa071",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 22,
+            "full_subtree_canonical_sha256": "b0033e142bbccf38a4e11c8dee0474f4df41fe0f1776f92aecc499735952010d",
+            "kind": "str"
+          },
+          "variant_details": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "296f972372e80849c45f005285e0dd9f4892fc27797efd9073305c923e2810d7",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "e65be9be75a2699ff11c879aa084e2eae7121d423678eafbf2da5bf5bca3e775",
+                "key": "platform_scope",
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "3c7cb39dcdc86f740b40c4ea76273e2ff63ca9e2e090af503392fd724f02e8da",
+        "id": "PVA-028",
+        "named_top_level_family_variant_origin_subtrees": {
+          "finding_originator": {
+            "count_or_string_length": 22,
+            "full_subtree_canonical_sha256": "2860c9e1c83a7bdcc0befcfff8ca6e6c2fea5bda723f6114867f6e0081f62a04",
+            "kind": "str"
+          },
+          "original_evidence": {
+            "count_or_string_length": 58,
+            "full_subtree_canonical_sha256": "17e2513ee628e5b8ae5f5994046fa35dc3a448cf11259e9342eba0088b085c50",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 21,
+            "full_subtree_canonical_sha256": "7a8cc2f79bd79777a50db1eb04ee6cff5e553c3a0e56694e5d24df3e2f35be0f",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "f2477282770a3079c41b73d987a09a1cdfc92045498ef4cb0c50ce2fe8eca7c2",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "cffb1fccd8ab269711c76bd25c8465ce2b489c8f177aed698ae77a21d3854e7a",
+                "index": 0,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "bbe750eaa39157c9eb23ffe5abcef8ce5d77a88f81953271aaa79e011baf2041",
+        "id": "PVA-029",
+        "named_top_level_family_variant_origin_subtrees": {
+          "finding_originator": {
+            "count_or_string_length": 22,
+            "full_subtree_canonical_sha256": "2860c9e1c83a7bdcc0befcfff8ca6e6c2fea5bda723f6114867f6e0081f62a04",
+            "kind": "str"
+          },
+          "original_evidence": {
+            "count_or_string_length": 58,
+            "full_subtree_canonical_sha256": "17e2513ee628e5b8ae5f5994046fa35dc3a448cf11259e9342eba0088b085c50",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 20,
+            "full_subtree_canonical_sha256": "fb64233e6b45e2bdc0d53d20f5627f409b16f16824dcf4251d60104072271741",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "6712a8a4aa05762e2648a038ec39389b5e1ef156153ec3cb12870d6fb5d204da",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "a8a2f79e616a39567ec833a813c6f2a1d2e17c0e66c9e14e75b6ea54d5a0b43f",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "2342d393c9b7d4839f9e72da6f830f0ae8b4b644f37855d2e2186a8897354f98",
+                "index": 1,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "7f02b18ea4508b1e434195b214cf10cdf3b16d228fa60bbce6eb1577138a148a",
+        "id": "PVA-030",
+        "named_top_level_family_variant_origin_subtrees": {
+          "finding_originator": {
+            "count_or_string_length": 5,
+            "full_subtree_canonical_sha256": "3dc89b58689e1894d09922d21ea265badebe5a0e00d1b5782a5d915cb4053e5a",
+            "kind": "str"
+          },
+          "original_evidence": {
+            "count_or_string_length": 39,
+            "full_subtree_canonical_sha256": "44bbaa4e3f575c8619b3a4f285667459059a4fe110f0db5e8dc77bb49fc1bbd5",
+            "kind": "str"
+          },
+          "original_origins": {
+            "count_or_string_length": 22,
+            "full_subtree_canonical_sha256": "b2d7b6aa1404a56c2f8dc68ff21d673c27f5af01f99ca2d1c40f1b54755216f2",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "cd38167eaf5c0e24790a1dbefe0514af8e6ce2d321800e4da7e7d0a3ed87071f",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "659a53c020ebbab658db8297a155af6000f83e2ed49404010381579f8ca5a883",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "bed9a72cd5107b95b6b3a65ff23a044d717f3f4da37b37e0d18f75ba3f885298",
+                "index": 1,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "67da00e85864e28c366ccb35bfb7a7932e1df222e1ea60bea8b8dca4aebf1f74",
+        "id": "PVA-031",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "15e9881eee6f5b1cc364681c21d2acc4e9d8e56ee3a5e63dddec349337f9ca68",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "2c7ec1a04cbc8e1c1af700a4dcf421f1b59be5677d09e98ebca376616f5d94fd",
+                "key": "path",
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "2fd621f134070da17a1505ff5353a7092257e5cebf7f726ca54d6583caf4d3d2",
+                "key": "sha256",
+                "kind": "str"
+              }
+            ]
+          },
+          "original_origins": {
+            "count_or_string_length": 18,
+            "full_subtree_canonical_sha256": "13511f73a2679a55e3dd8067075893f1c86daef0d61b87bf09ea60049829bb79",
+            "kind": "str"
+          },
+          "originator": {
+            "count_or_string_length": 20,
+            "full_subtree_canonical_sha256": "1e328da7462a46716b6b312174caa1d17bcf05ae347e28d24a2258ed4d23b2f3",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "f541e6c6121774532c7ea84f313ee71a8a8214b99a01f81668c716635c13c96f",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "139121b9b73b9e881f351dd5ba3621551b2eb268640483b954de1af261e7a3cb",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "a88fe0e08f130ba151a53a8a8c2748b3156e58112c23573b93613b8689c0ebdb",
+                "index": 1,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "31d46cb710a16232d94000b62c66a29ef6e1de1a09623ec9559369fe2672da3a",
+        "id": "PVA-032",
+        "named_top_level_family_variant_origin_subtrees": {
+          "finding_originator": {
+            "count_or_string_length": 5,
+            "full_subtree_canonical_sha256": "3dc89b58689e1894d09922d21ea265badebe5a0e00d1b5782a5d915cb4053e5a",
+            "kind": "str"
+          },
+          "original_source": {
+            "count_or_string_length": 4,
+            "full_subtree_canonical_sha256": "81f42f2538df25c084418621b6d109b437d92d888261f36592b51da032ab27c2",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "e16fcd0393878dd1d8a2d5b670be1e9b67d86964d4e6e8278c35918e8d0934fa",
+                "key": "note",
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "927c6e4054b1259098085389e27874b54ed299102913f034afc8887bffa33748",
+                "key": "path",
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "4dbabea63494cb659cf62b21f36674015464a169552ae0db2e592fe3b08a5bc9",
+                "key": "ranges",
+                "kind": "list"
+              },
+              {
+                "canonical_sha256": "c36299be3bced6de24556191db2050f07a5412e656be4c63bd1b15cb497dc634",
+                "key": "sha256",
+                "kind": "str"
+              }
+            ]
+          },
+          "variants": {
+            "count_or_string_length": 3,
+            "full_subtree_canonical_sha256": "b0b079a3c40bd216ec9039030aa44a7fa1dc2db44fa9b1f7efd75e42a25cc8eb",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "211952f244769152d0c7efd6daa2d39b1e84bdf391f19423b301bbb5bb2e53eb",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "1d355c9051b20ab609593d0fe46af796d24e186f9b404522894e7e6661c92564",
+                "index": 1,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "462f94cce7ec6d26e38658866bf7dde19e794b8bf437011a1469ffdf596573bd",
+                "index": 2,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "02ee611c3aecb75e1d7327f0bc5d3bd757bb75a30765902ab7b2f234edbc1ecd",
+        "id": "PVA-033",
+        "named_top_level_family_variant_origin_subtrees": {
+          "finding_originator": {
+            "count_or_string_length": 5,
+            "full_subtree_canonical_sha256": "3dc89b58689e1894d09922d21ea265badebe5a0e00d1b5782a5d915cb4053e5a",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "9cc4823bf0ecbba5a27b5e241a5fedcc77c9fd7af59a3e31bb2fa43b2edfe852",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "f29116887089dca71376134e005d5b3425d8d82dbd81aa470b5ae4c7eee280f3",
+                "index": 0,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "e292b5ce12bd76d1216e019452ad781fb6a00f5383de60a83469314faed1e74f",
+        "id": "PVA-034",
+        "named_top_level_family_variant_origin_subtrees": {
+          "finding_originator": {
+            "count_or_string_length": 19,
+            "full_subtree_canonical_sha256": "2cd9de151b663cf82aecdb9402dd495542e1ce798057b0f102bd8e4056a5751d",
+            "kind": "str"
+          },
+          "original_applicability_binding": {
+            "count_or_string_length": 3,
+            "full_subtree_canonical_sha256": "f4f9f122fcac433980e98a0add56d4b8af22d23fee5345ca234bf935d55330b6",
+            "kind": "dict",
+            "named_member_hashes": [
+              {
+                "canonical_sha256": "b312d5fbcfab403a28f259ab3d2b333ae2412727528b63ae3c032be535410ed5",
+                "key": "bytes",
+                "kind": "int"
+              },
+              {
+                "canonical_sha256": "bfc6a6206d1bd0e8e0d9d7cf5e6f17078fd3f3433b6b7159f62d3e190bcc89e6",
+                "key": "path",
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "a05452873dc170f8f85d94d8898a42943b9276b65786b24c8cfe56a63e0f439f",
+                "key": "sha256",
+                "kind": "str"
+              }
+            ]
+          },
+          "variants": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "18b6f765e7d77a96f7ba2bd6ab31efd51c0a2916ecdc8c4d15722ad75c80789d",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "dba1a1d78b29f9a77b6b8be43919b9af54db21b199d57c7e14f418c3a6c7e413",
+                "index": 0,
+                "kind": "str"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "dd9c1fb9bda895e6befb180841c535c3d7c6338de1f279de9da896dbe3403827",
+        "id": "PVA-035",
+        "named_top_level_family_variant_origin_subtrees": {
+          "affected_variants": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "67ce95ba49d9a76bc0fe1ab2a74d05844ecd4f44b5fb031ab3286a74cf666745",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "3b103e24c0e9a22f46e3d244a216f3ca2ded69c827f6dde5d4d2ebec603657b9",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "035979257c06f139860205d70b41203afa2d5fc5c551ec805a0cbcf2e418431e",
+                "index": 1,
+                "kind": "str"
+              }
+            ]
+          },
+          "original_evidence_semantics": {
+            "count_or_string_length": 167,
+            "full_subtree_canonical_sha256": "a677f13209ef51e2f1aec23f8b0fbeb19a842583b1f20703f926e3bb8d63ff8a",
+            "kind": "str"
+          },
+          "originator": {
+            "count_or_string_length": 19,
+            "full_subtree_canonical_sha256": "2cd9de151b663cf82aecdb9402dd495542e1ce798057b0f102bd8e4056a5751d",
+            "kind": "str"
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "d6002486f7810376731011e79c0b3b16710cec396d36d03ea8f14589f40a766a",
+        "id": "PVA-036",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_G10_file_locations": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "df3f287096a7223f521f67fd9f5ee9682af73fd77855fb7779b2f030735685be",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "c54517fd56a01700a1aa3888e84faeeb0cfe4f3359e364453f550dea3db39474",
+                "index": 0,
+                "kind": "dict"
+              }
+            ]
+          },
+          "original_G10_source_manifest_sha256": {
+            "count_or_string_length": 64,
+            "full_subtree_canonical_sha256": "c600316c49ffbf88f0cbdcb7a4db8bdfb9b943a8abd8a8869efbb2c1854441d8",
+            "kind": "str"
+          },
+          "original_evidence": {
+            "count_or_string_length": 4,
+            "full_subtree_canonical_sha256": "06cbe298959c77e6b2deb539a3eba9b7628fef6a4e2d6f73a689f55b3249f448",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "c2583d52424fbd25568dcccd44fcb56411eb9fd7dde570a1840a595e9ec1a682",
+                "index": 0,
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "3fc534f00728efa4a9931acd76d2223723ed1d1be768bf863c7d9d6830becf9e",
+                "index": 1,
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "fbe4ea0a36b6fd2bb6f861a305c1c35f5923d9ca324a15976edb9711aefc373c",
+                "index": 2,
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "e3ea02c90e2b93985bc8663f66a2fc8d8f124afa51f9bb4b7efc4fee724fbbea",
+                "index": 3,
+                "kind": "dict"
+              }
+            ]
+          },
+          "original_origins": {
+            "count_or_string_length": 7,
+            "full_subtree_canonical_sha256": "b62a534d6c3a74d16689d7b54e6a7c5ea1506e2c1c2d72feed756f749bffc70e",
+            "kind": "str"
+          },
+          "originator": {
+            "count_or_string_length": 19,
+            "full_subtree_canonical_sha256": "2cd9de151b663cf82aecdb9402dd495542e1ce798057b0f102bd8e4056a5751d",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 2,
+            "full_subtree_canonical_sha256": "cc3ecd23482e9563dbb8e6de9b73c62544a678bd0ec45d593027518f4ea9d593",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "a1793d528a4d22a2b94efbf7e29cff0d9e4075eeda4472fa9a1bc17f9ed29a63",
+                "index": 0,
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "5827c4de84316554237935616667faddb03d816050082029d49ed36cc856f580",
+                "index": 1,
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      },
+      {
+        "full_record_canonical_sha256": "76ae6167c6694d8f4759eedf4d19720215f7ac59639f37299913add31b1c8f9a",
+        "id": "PVA-037",
+        "named_top_level_family_variant_origin_subtrees": {
+          "original_evidence": {
+            "count_or_string_length": 6,
+            "full_subtree_canonical_sha256": "08662b9de71c52255525035ac382f95ac04a2423fcd542c3f35eed443d813684",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "4103fe24577e22c9294ec9c2b2363007d0d04d586bd8f74cf9de46eaf504da53",
+                "index": 0,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "c5dfaec4eb42bc9545afa491856ebe81184ed1de103a2503a655037418b213ee",
+                "index": 1,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "ef87949c174b7380e2129551bd88ac29506c3a80b22362e39a509084fbb17fba",
+                "index": 2,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "17564be24b980802cf8e2d2c9aabfdb2b2301b97c88325d57fc8768b0f7bf24e",
+                "index": 3,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "efc5c55090e817a0a4c9a41fd4834216f4daaf0c81d8b7d60f3fb39b921475e1",
+                "index": 4,
+                "kind": "str"
+              },
+              {
+                "canonical_sha256": "c2afcc7ee93529a9976fb23824e9d0f7d3da062b20e7ef414d13f8f848aa7537",
+                "index": 5,
+                "kind": "str"
+              }
+            ]
+          },
+          "original_origins": {
+            "count_or_string_length": 1,
+            "full_subtree_canonical_sha256": "46e43372fcd89972c9eb2d0654fa787054ce99776ab799cd8a0eddbbabc441e9",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "292d4ea168f317aa2c1bc8bba3076250777fdae7f053ac7538b112a03f744710",
+                "index": 0,
+                "kind": "str"
+              }
+            ]
+          },
+          "originator": {
+            "count_or_string_length": 20,
+            "full_subtree_canonical_sha256": "1e328da7462a46716b6b312174caa1d17bcf05ae347e28d24a2258ed4d23b2f3",
+            "kind": "str"
+          },
+          "variants": {
+            "count_or_string_length": 3,
+            "full_subtree_canonical_sha256": "3877ee459a9a54604a4706627d212564e4f9a4f68fda93bd79c0c5f88dbe28e6",
+            "kind": "list",
+            "ordered_member_hashes": [
+              {
+                "canonical_sha256": "d58e75cdb7495d2511c400b6dee79090142fb7bea1e827795d534ede83161226",
+                "index": 0,
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "dbed1f1a4c0a744d8e760c761b80dfdd3741a54a78838cd91256ee66a7e9825e",
+                "index": 1,
+                "kind": "dict"
+              },
+              {
+                "canonical_sha256": "b70481eb2f28ac99d29fe5bd392ed75958d7bdd7739fae4049378d67bb2943db",
+                "index": 2,
+                "kind": "dict"
+              }
+            ]
+          },
+          "variants_preserved": {
+            "full_subtree_canonical_sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+            "kind": "bool",
+            "value": true
+          }
+        }
+      }
+    ],
+    "id_range": "PVA-001\u2013PVA-037",
+    "proof": "The entire908650-byte issue ledger matches the exact original SHA-2565782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e. Original/copy raw equality was established in H007; current exact-pin rereads in H014 and this seal retain every value, nesting, record order, original/variant record and qualification, not merely selected fields or counts.",
+    "unique_ids": 37
+  },
+  "coverage_preservation": {
+    "conditions": "All raw qualifications and references are preserved, including the18 mandatory conditions and12 materializer limits. This reviewer does not infer transitive evidence closure or rerun coverage from numeric attribution.",
+    "input": {
+      "bytes": 37151,
+      "mode": 420,
+      "mode_octal": "0644",
+      "path": "docs/audit-handoff/current/coverage-CURRENT.json",
+      "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+      "sha256": "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04"
+    },
+    "metrics_caution": "129167 physical LF/714 owned text members and97 exclusions across811 members remain mixed historical/exact-source attribution, not fresh whole-source review.",
+    "raw_exact_copy_not_new_coverage": true
+  },
+  "current_rechecks": {
+    "all_current_exact_copies_keep_their_original_raw_pins": true,
+    "inputs": [
+      {
+        "bytes": 908650,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/current/issue-to-fix.json",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+      },
+      {
+        "bytes": 11558,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/current/additional-investigations.json",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "dfc0be5063993d43f47fcf47669d5822e6fe0837c03ca060b1248097cbaed044"
+      },
+      {
+        "bytes": 35048,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/current/design-decisions-separate.json",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "1eb18bd7867ac3f2d83f11af0bfad83611c072ad434bb6b1e0bd43784e14ec1b"
+      },
+      {
+        "bytes": 37151,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/current/coverage-CURRENT.json",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04"
+      },
+      {
+        "bytes": 62958,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "420b7eb1a419aabec37cbc323bc7d9a9b32ca160395dcc2d5f109488820eed19"
+      }
+    ],
+    "prior_copy_only_observation": "H014",
+    "summaries": [
+      {
+        "count": 37,
+        "descriptor": {
+          "bytes": 908650,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/issue-to-fix.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+        },
+        "entries": [
+          {
+            "canonical_full_record_sha256": "e8b362fa8d3debe16a2a6d4e254e9b74d6d14a858882dafcb092f135b575407d",
+            "id": "PVA-001",
+            "index": 0,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "3e7407ae269566380fb8d33498d23776372f12ae8eb9c0c7ff36f588807fa24a",
+            "id": "PVA-002",
+            "index": 1,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "2969c4223ca47cf29b74edcda89a2e723a0fb551f84da820d6f8667b0de89811",
+            "id": "PVA-003",
+            "index": 2,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "7f5722631c0ee803a7e12b9998af05236390c2a57da9cf4eed54bedbe5defcfa",
+            "id": "PVA-004",
+            "index": 3,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "a72e82449092c970dec5caf35cb0582908370086917639ca549985e65efd9ece",
+            "id": "PVA-005",
+            "index": 4,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "7f188870bb9c7e0f5fe51c0daf4cb7ab832c800dfb81d4534ef595e7cc0ae68c",
+            "id": "PVA-006",
+            "index": 5,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "3bafe8cfafaf84136c31befae7fdead61cd23df53110e023dbb7328cbe25a327",
+            "id": "PVA-007",
+            "index": 6,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "4f3d54355c130566c25c0dc85b4d331762909798c78c9147694313dd0a96a51d",
+            "id": "PVA-008",
+            "index": 7,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "212399715010d2dda5aaf30c0a08655ec2d7ba572639d6f57298895dc82a5b94",
+            "id": "PVA-009",
+            "index": 8,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "b9d919cad8c374393d474c4079efc16659d08e2907baf0e5ac1fc120989e59b0",
+            "id": "PVA-010",
+            "index": 9,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "862acf21f9ca866a82b892636b3d8b208cf9d2b7fa5dcad2346a24f6a6cebd81",
+            "id": "PVA-011",
+            "index": 10,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "980d5013a41ecdc068fbbb1f6d44cfd873ec5ac205ecedd1f5257081868e8c13",
+            "id": "PVA-012",
+            "index": 11,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "f448ee3049f8841a1ef28be70b221b7208fa3efa35ba9a1291a839061f332400",
+            "id": "PVA-013",
+            "index": 12,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "b0e22b8fcf3ab4b7085618dde2956f16164c091c32a6fcef6a59a873582639aa",
+            "id": "PVA-014",
+            "index": 13,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "cbe33c679b951310646b5e0e15f83d460a2e7558ee78600bb9b634c0d3906b7c",
+            "id": "PVA-015",
+            "index": 14,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "ba26c7d442d3504523228c3f6b46c3789ae81348db89bbafae0f3ac854e932b9",
+            "id": "PVA-016",
+            "index": 15,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "0c33e7fb065a1fd3d9596390846332a80070b407ad55980acd84cb866f921d14",
+            "id": "PVA-017",
+            "index": 16,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "7ca0f22724172869c3da6523012a7f52fd772f934093357df769730748596c5d",
+            "id": "PVA-018",
+            "index": 17,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "28bd6f3f99767ff04b804cc2a272f98ec911dfb7cc4dde236ce38c1b2589ce6c",
+            "id": "PVA-019",
+            "index": 18,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "b7ab40f4aca3db43079045fbc2e78e119369f0753a298e5a4f94d707c1300d28",
+            "id": "PVA-020",
+            "index": 19,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "87fb9354bf70316be742eaacd52cde98d9d7f7dc8c54ec793eeea6ccb9c51391",
+            "id": "PVA-021",
+            "index": 20,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "038eac967f46cb94b19088fe9ca547b6def0ec4d9de681f3711fd6ca98cf817d",
+            "id": "PVA-022",
+            "index": 21,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "44fc7a65037a16c925e4936d3c95ac9cf1bc41db80c861004b58fca0d16a2786",
+            "id": "PVA-023",
+            "index": 22,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "541da0606ae1cf482a292cae982e78e22b9c4bdd2812bbeddae0fff572be204b",
+            "id": "PVA-024",
+            "index": 23,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "c68c158f504a7906e9822053b74f4c59c6f19777f7b6294379b615bbb355301c",
+            "id": "PVA-025",
+            "index": 24,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "d58b8485a61c26ff2fce08bfa9e8511286196fae76d3e9b31576b12302e436a2",
+            "id": "PVA-026",
+            "index": 25,
+            "status": "FIXED AND VERIFIED"
+          },
+          {
+            "canonical_full_record_sha256": "7b264d7fc1e063c28f9d8b6344900783a0e9399710aa24c553f7edb5761d0cce",
+            "id": "PVA-027",
+            "index": 26,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "3c7cb39dcdc86f740b40c4ea76273e2ff63ca9e2e090af503392fd724f02e8da",
+            "full_top_level_variant_hashes": [
+              "cffb1fccd8ab269711c76bd25c8465ce2b489c8f177aed698ae77a21d3854e7a"
+            ],
+            "id": "PVA-028",
+            "index": 27,
+            "status": "FIXED AND VERIFIED",
+            "top_level_variant_count": 1,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "bbe750eaa39157c9eb23ffe5abcef8ce5d77a88f81953271aaa79e011baf2041",
+            "full_top_level_variant_hashes": [
+              "a8a2f79e616a39567ec833a813c6f2a1d2e17c0e66c9e14e75b6ea54d5a0b43f",
+              "2342d393c9b7d4839f9e72da6f830f0ae8b4b644f37855d2e2186a8897354f98"
+            ],
+            "id": "PVA-029",
+            "index": 28,
+            "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION FAILED",
+            "top_level_variant_count": 2,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "7f02b18ea4508b1e434195b214cf10cdf3b16d228fa60bbce6eb1577138a148a",
+            "full_top_level_variant_hashes": [
+              "659a53c020ebbab658db8297a155af6000f83e2ed49404010381579f8ca5a883",
+              "bed9a72cd5107b95b6b3a65ff23a044d717f3f4da37b37e0d18f75ba3f885298"
+            ],
+            "id": "PVA-030",
+            "index": 29,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+            "top_level_variant_count": 2,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "67da00e85864e28c366ccb35bfb7a7932e1df222e1ea60bea8b8dca4aebf1f74",
+            "full_top_level_variant_hashes": [
+              "139121b9b73b9e881f351dd5ba3621551b2eb268640483b954de1af261e7a3cb",
+              "a88fe0e08f130ba151a53a8a8c2748b3156e58112c23573b93613b8689c0ebdb"
+            ],
+            "id": "PVA-031",
+            "index": 30,
+            "status": "IMPLEMENTED \u2014 VERIFICATION BLOCKED",
+            "top_level_variant_count": 2,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "31d46cb710a16232d94000b62c66a29ef6e1de1a09623ec9559369fe2672da3a",
+            "full_top_level_variant_hashes": [
+              "211952f244769152d0c7efd6daa2d39b1e84bdf391f19423b301bbb5bb2e53eb",
+              "1d355c9051b20ab609593d0fe46af796d24e186f9b404522894e7e6661c92564",
+              "462f94cce7ec6d26e38658866bf7dde19e794b8bf437011a1469ffdf596573bd"
+            ],
+            "id": "PVA-032",
+            "index": 31,
+            "status": "FIXED AND VERIFIED",
+            "top_level_variant_count": 3,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "02ee611c3aecb75e1d7327f0bc5d3bd757bb75a30765902ab7b2f234edbc1ecd",
+            "full_top_level_variant_hashes": [
+              "f29116887089dca71376134e005d5b3425d8d82dbd81aa470b5ae4c7eee280f3"
+            ],
+            "id": "PVA-033",
+            "index": 32,
+            "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING",
+            "top_level_variant_count": 1,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "e292b5ce12bd76d1216e019452ad781fb6a00f5383de60a83469314faed1e74f",
+            "full_top_level_variant_hashes": [
+              "dba1a1d78b29f9a77b6b8be43919b9af54db21b199d57c7e14f418c3a6c7e413"
+            ],
+            "id": "PVA-034",
+            "index": 33,
+            "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING",
+            "top_level_variant_count": 1,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "dd9c1fb9bda895e6befb180841c535c3d7c6338de1f279de9da896dbe3403827",
+            "id": "PVA-035",
+            "index": 34,
+            "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING"
+          },
+          {
+            "canonical_full_record_sha256": "d6002486f7810376731011e79c0b3b16710cec396d36d03ea8f14589f40a766a",
+            "full_top_level_variant_hashes": [
+              "a1793d528a4d22a2b94efbf7e29cff0d9e4075eeda4472fa9a1bc17f9ed29a63",
+              "5827c4de84316554237935616667faddb03d816050082029d49ed36cc856f580"
+            ],
+            "id": "PVA-036",
+            "index": 35,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+            "top_level_variant_count": 2,
+            "variants_preserved_value": true
+          },
+          {
+            "canonical_full_record_sha256": "76ae6167c6694d8f4759eedf4d19720215f7ac59639f37299913add31b1c8f9a",
+            "full_top_level_variant_hashes": [
+              "d58e75cdb7495d2511c400b6dee79090142fb7bea1e827795d534ede83161226",
+              "dbed1f1a4c0a744d8e760c761b80dfdd3741a54a78838cd91256ee66a7e9825e",
+              "b70481eb2f28ac99d29fe5bd392ed75958d7bdd7739fae4049378d67bb2943db"
+            ],
+            "id": "PVA-037",
+            "index": 36,
+            "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+            "top_level_variant_count": 3,
+            "variants_preserved_value": true
+          }
+        ],
+        "kind": "ledger",
+        "original_full_raw_pin_matched": true,
+        "status_counts": {
+          "FIXED AND VERIFIED": 22,
+          "IMPLEMENTED \u2014 REGRESSION VERIFICATION FAILED": 1,
+          "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING": 3,
+          "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED": 10,
+          "IMPLEMENTED \u2014 VERIFICATION BLOCKED": 1
+        },
+        "top_level_variant_total": 17,
+        "unique_ids": 37
+      },
+      {
+        "count": 4,
+        "descriptor": {
+          "bytes": 11558,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/additional-investigations.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "dfc0be5063993d43f47fcf47669d5822e6fe0837c03ca060b1248097cbaed044"
+        },
+        "entries": [
+          {
+            "canonical_full_record_sha256": "968128948064ebd65221caee86cf2f4a8fbc254d6b2371e6f1383ef103b83b90",
+            "id": "NAV-FRESH-SUS-001",
+            "index": 0,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "UNRESOLVED / VERIFICATION BLOCKED"
+          },
+          {
+            "canonical_full_record_sha256": "3306be739e748148c85ce28791144fcacfbda201173460ccbd6d2104b4da1453",
+            "id": "CI-RESUME-SHALLOW-001",
+            "index": 1,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii"
+            ],
+            "status": "CONFIRMED DEFECT"
+          },
+          {
+            "canonical_full_record_sha256": "88de0c1c255d01ca7a870b008a1c2a1f289e2296e5ca1e39eb6806dfc8e2c246",
+            "id": "CI-RESUME-ATTEST-001",
+            "index": 2,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii"
+            ],
+            "status": "CONFIRMED DEFECT"
+          },
+          {
+            "canonical_full_record_sha256": "0255ab2e161cf26b545a19a4b83397cbb960d26e2b488a69b45becd60c60aee9",
+            "id": "LOC-SYSTEM-REFRESH-001",
+            "index": 3,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii"
+            ],
+            "status": "CONFIRMED DEFECT"
+          }
+        ],
+        "kind": "ledger",
+        "original_full_raw_pin_matched": true,
+        "status_counts": {
+          "CONFIRMED DEFECT": 3,
+          "UNRESOLVED / VERIFICATION BLOCKED": 1
+        },
+        "top_level_variant_total": 0,
+        "unique_ids": 4
+      },
+      {
+        "count": 8,
+        "descriptor": {
+          "bytes": 35048,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/design-decisions-separate.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "1eb18bd7867ac3f2d83f11af0bfad83611c072ad434bb6b1e0bd43784e14ec1b"
+        },
+        "entries": [
+          {
+            "canonical_full_record_sha256": "f551d87e646317ae45bf251365225b8c8ad42fea2b7dcdf4fa2dd2e8b7a6634e",
+            "id": "PVD-001",
+            "index": 0,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "6f9a4a2e77542ddc6e0579ee7b0fc8e81fb2677f6737800d8c78bb66ea35b27d",
+            "id": "PVD-002",
+            "index": 1,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "3668acc30bfd2c19a63ad8df99f8930fba87914d96e6a066f09847101286e1d7",
+            "id": "PVD-003",
+            "index": 2,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "e4827a26bfd835b3b65e6441e5068fe74d4e2fdfea7911575e26547269c53da8",
+            "id": "PVD-004",
+            "index": 3,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "6c0cbb5d2b790c5f381442c1577156aa838ea7758dcedd8c4a40fcdc259be68c",
+            "id": "PVD-005",
+            "index": 4,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "b87cc76dfa7a5bc2ba55e2ffd00b7068ffa1d0884e1fe1abded59821e7425cee",
+            "id": "PVD-006",
+            "index": 5,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "e57a3c50e1617533efb85a9042abe363306d607a3ca51f41c8587e827b7fa4b0",
+            "id": "PVD-007",
+            "index": 6,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          },
+          {
+            "canonical_full_record_sha256": "4c5c985b63be2ff6ababeea563b28b8fe9d4a86b588ee6516ba3d0228413f139",
+            "id": "PVD-008",
+            "index": 7,
+            "matches_H007_record_hash_under": [
+              "sorted_compact_ascii",
+              "sorted_compact_utf8"
+            ],
+            "status": "DESIGN LIMITATION / TRADEOFF"
+          }
+        ],
+        "kind": "ledger",
+        "original_full_raw_pin_matched": true,
+        "status_counts": {
+          "DESIGN LIMITATION / TRADEOFF": 8
+        },
+        "top_level_variant_total": 0,
+        "unique_ids": 8
+      },
+      {
+        "descriptor": {
+          "bytes": 37151,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/coverage-CURRENT.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04"
+        },
+        "kind": "coverage",
+        "metrics": {
+          "excluded_nonowned_files": 97,
+          "inventoried_files": 811,
+          "mixed_historical_exact_source_attributed_LF": 129167,
+          "owned_physical_LF_lines": 129167,
+          "owned_text_files": 714,
+          "status_counts": {
+            "NONOWNED_EXCLUDED_RETAIN_PRIOR_INSPECTION_LIMITS": 97,
+            "NUMERIC_ATTRIBUTION_COMPLETE_NOT_WHOLE_FILE_REREVIEW": 714
+          },
+          "unattributed_LF": 0,
+          "unattributed_owned_files": 0
+        },
+        "original_full_raw_pin_matched": true,
+        "qualifier_container_shapes": {
+          "additional_mandatory_qualifiers": {
+            "count": 3,
+            "kind": "dict"
+          },
+          "bindings": {
+            "count": 11,
+            "kind": "dict"
+          },
+          "limitations": {
+            "count": 7,
+            "kind": "list"
+          },
+          "mandatory_qualifiers": {
+            "count": 18,
+            "kind": "list"
+          },
+          "root_materializer_limits_verbatim": {
+            "count": 12,
+            "kind": "list"
+          }
+        },
+        "top_level_keys": [
+          "additional_mandatory_qualifiers",
+          "at",
+          "bindings",
+          "current_source_generation",
+          "limitations",
+          "mandatory_qualifiers",
+          "metrics",
+          "not_established",
+          "owner",
+          "root_materializer_limits_verbatim",
+          "source_generation",
+          "source_manifest_sha256",
+          "status"
+        ]
+      }
+    ]
+  },
+  "initial_direct_copy_evidence": {
+    "all17_exact_original_copy_byte_comparisons_completed": true,
+    "display_qualification": "The oversized JSON stdout was truncated. H007R1 recovered the complete intact paired_copies field, source receipt descriptor, and complete12-PVU/8-PVD/4-additional record-hash arrays from stored stdout. No missing/truncated record content was reconstructed.",
+    "not_current_inventory": "The later portable PVU projection is a different explicitly named file. This initial17-copy result does not claim that the original unprojected PVU ledger remains published or should be republished.",
+    "observation_id": "H007",
+    "observed_at_utc": "2026-09-08T06:42:29.233832+00:00",
+    "original_shell_exit_code": 0,
+    "paired_copies": [
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 908650,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/issue-to-fix.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+        },
+        "original": {
+          "bytes": 908650,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "findings/issue-to-fix.json",
+          "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 86184,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/unresolved-investigations.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e"
+        },
+        "original": {
+          "bytes": 86184,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "findings/unresolved-investigations.json",
+          "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 11558,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/additional-investigations.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "dfc0be5063993d43f47fcf47669d5822e6fe0837c03ca060b1248097cbaed044"
+        },
+        "original": {
+          "bytes": 11558,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "findings/additional-investigations.json",
+          "sha256": "dfc0be5063993d43f47fcf47669d5822e6fe0837c03ca060b1248097cbaed044"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 35048,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/design-decisions-separate.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "1eb18bd7867ac3f2d83f11af0bfad83611c072ad434bb6b1e0bd43784e14ec1b"
+        },
+        "original": {
+          "bytes": 35048,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "findings/design-decisions-separate.json",
+          "sha256": "1eb18bd7867ac3f2d83f11af0bfad83611c072ad434bb6b1e0bd43784e14ec1b"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 169300,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/source-manifest-v12.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f"
+        },
+        "original": {
+          "bytes": 169300,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "verification/source-manifest-v12.json",
+          "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 2542,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/source-freeze-v12.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "78940d6931f8435cad97873aae22d8d580f8ea806de5d7559cf7d312684dc9b5"
+        },
+        "original": {
+          "bytes": 2542,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "verification/source-freeze-v12.json",
+          "sha256": "78940d6931f8435cad97873aae22d8d580f8ea806de5d7559cf7d312684dc9b5"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 46323,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/delivery-generation12.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "5de7e5c50b146c23827879c4ebd57fced4a4a1b8046cdea94bad978934c09c54"
+        },
+        "original": {
+          "bytes": 46323,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "delivery/generation12/FILES.json",
+          "sha256": "5de7e5c50b146c23827879c4ebd57fced4a4a1b8046cdea94bad978934c09c54"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 37151,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/coverage-CURRENT.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04"
+        },
+        "original": {
+          "bytes": 37151,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "coverage/CURRENT.json",
+          "sha256": "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 3030,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/historical-verification-summary-adoption-g12.json",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "3d75ff60fb3129b28120e827361f64b65101f9bb25ecc404a53351a9fb72f957"
+        },
+        "original": {
+          "bytes": 3030,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "verification/historical-verification-summary-adoption-g12.json",
+          "sha256": "3d75ff60fb3129b28120e827361f64b65101f9bb25ecc404a53351a9fb72f957"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 43407,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/OWNER_DESIGN_DECISIONS.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+        },
+        "original": {
+          "bytes": 43407,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "OWNER_DESIGN_DECISIONS.md",
+          "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 25189,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/NEXT_REGRESSION_MATRIX.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "abd29460167398a3dfa703904085b11023f75d020ed22f57fba832e4dc384481"
+        },
+        "original": {
+          "bytes": 25189,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "reviews/g12-next-regressions-independent-storage-v1/MATRIX.md",
+          "sha256": "abd29460167398a3dfa703904085b11023f75d020ed22f57fba832e4dc384481"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 27635,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/current/RUNNER_READINESS.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "695a431954225e19fbcc518b22a30fb5c8f0884b1008f52068ccf2c905c0e25e"
+        },
+        "original": {
+          "bytes": 27635,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "reviews/g12-runner-readiness-independent-navigation-v1/REPORT.md",
+          "sha256": "695a431954225e19fbcc518b22a30fb5c8f0884b1008f52068ccf2c905c0e25e"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 501,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/instructions/workspace-AGENTS.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "f660cc6ac9183f0de2f08ebd17411a1efa4f809694b1dffcb336a08adcf56d57"
+        },
+        "original": {
+          "bytes": 501,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "handoff-publication/20260908T061500Z/workspace-AGENTS.md",
+          "sha256": "f660cc6ac9183f0de2f08ebd17411a1efa4f809694b1dffcb336a08adcf56d57"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 4031,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/instructions/primary-AGENTS.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "3fa4f6cc134ce49300ec3a4fe9697f94d782a3cdea18a7e9bef7e977768b833c"
+        },
+        "original": {
+          "bytes": 4031,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "handoff-publication/20260908T061500Z/primary-AGENTS.md",
+          "sha256": "3fa4f6cc134ce49300ec3a4fe9697f94d782a3cdea18a7e9bef7e977768b833c"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 1005,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/instructions/skills-AGENTS.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "3a17e7109775f8599a521a97b5b8b1b5d7b2fc347e538d7cd4e137834adcff67"
+        },
+        "original": {
+          "bytes": 1005,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "handoff-publication/20260908T061500Z/skills-AGENTS.md",
+          "sha256": "3a17e7109775f8599a521a97b5b8b1b5d7b2fc347e538d7cd4e137834adcff67"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 3180,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/instructions/G12-AGENTS.md",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "0a9539b5d78895b28245ce43730a68ad22ad3486cf26c14cabde16ebd84c2875"
+        },
+        "original": {
+          "bytes": 3180,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "handoff-publication/20260908T061500Z/G12-AGENTS.md",
+          "sha256": "0a9539b5d78895b28245ce43730a68ad22ad3486cf26c14cabde16ebd84c2875"
+        }
+      },
+      {
+        "byte_identical": true,
+        "copy": {
+          "bytes": 270,
+          "mode": 420,
+          "mode_octal": "0644",
+          "path": "docs/audit-handoff/instructions/G12-gitattributes.txt",
+          "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+          "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+        },
+        "original": {
+          "bytes": 270,
+          "mode": 384,
+          "mode_octal": "0600",
+          "path": "handoff-publication/20260908T061500Z/G12-gitattributes.txt",
+          "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+        }
+      }
+    ],
+    "receipt": {
+      "bytes": 19167,
+      "mode": 420,
+      "mode_octal": "0644",
+      "path": "handoff-publication/20260908T061500Z/DIRECT-COPIES.json",
+      "sha256": "952e58d9124111a5daee3fc845e5fcff6f010fd566d2ecf355c2185e80dc7042"
+    },
+    "retained_full_record_fingerprints": {
+      "current/additional-investigations.json": {
+        "count": 4,
+        "entries": [
+          {
+            "canonical_full_record_sha256": "968128948064ebd65221caee86cf2f4a8fbc254d6b2371e6f1383ef103b83b90",
+            "id": "NAV-FRESH-SUS-001",
+            "index": 0,
+            "variant_origin_field_shapes": {
+              "origin_evidence": {
+                "kind": "str",
+                "length": null
+              },
+              "original_review_generation": {
+                "kind": "int",
+                "length": null
+              },
+              "originator": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "3306be739e748148c85ce28791144fcacfbda201173460ccbd6d2104b4da1453",
+            "id": "CI-RESUME-SHALLOW-001",
+            "index": 1,
+            "variant_origin_field_shapes": {
+              "originator": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "88de0c1c255d01ca7a870b008a1c2a1f289e2296e5ca1e39eb6806dfc8e2c246",
+            "id": "CI-RESUME-ATTEST-001",
+            "index": 2,
+            "variant_origin_field_shapes": {
+              "originator": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "0255ab2e161cf26b545a19a4b83397cbb960d26e2b488a69b45becd60c60aee9",
+            "id": "LOC-SYSTEM-REFRESH-001",
+            "index": 3,
+            "variant_origin_field_shapes": {
+              "originator": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          }
+        ],
+        "kind": "list"
+      },
+      "current/design-decisions-separate.json": {
+        "count": 8,
+        "entries": [
+          {
+            "canonical_full_record_sha256": "f551d87e646317ae45bf251365225b8c8ad42fea2b7dcdf4fa2dd2e8b7a6634e",
+            "id": "PVD-001",
+            "index": 0,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "6f9a4a2e77542ddc6e0579ee7b0fc8e81fb2677f6737800d8c78bb66ea35b27d",
+            "id": "PVD-002",
+            "index": 1,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "3668acc30bfd2c19a63ad8df99f8930fba87914d96e6a066f09847101286e1d7",
+            "id": "PVD-003",
+            "index": 2,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "e4827a26bfd835b3b65e6441e5068fe74d4e2fdfea7911575e26547269c53da8",
+            "id": "PVD-004",
+            "index": 3,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "6c0cbb5d2b790c5f381442c1577156aa838ea7758dcedd8c4a40fcdc259be68c",
+            "id": "PVD-005",
+            "index": 4,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "b87cc76dfa7a5bc2ba55e2ffd00b7068ffa1d0884e1fe1abded59821e7425cee",
+            "id": "PVD-006",
+            "index": 5,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "e57a3c50e1617533efb85a9042abe363306d607a3ca51f41c8587e827b7fa4b0",
+            "id": "PVD-007",
+            "index": 6,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          },
+          {
+            "canonical_full_record_sha256": "4c5c985b63be2ff6ababeea563b28b8fe9d4a86b588ee6516ba3d0228413f139",
+            "id": "PVD-008",
+            "index": 7,
+            "variant_origin_field_shapes": {
+              "origin": {
+                "kind": "str",
+                "length": null
+              }
+            }
+          }
+        ],
+        "kind": "list"
+      },
+      "current/unresolved-investigations.json": {
+        "count": 12,
+        "entries": [
+          {
+            "canonical_full_record_sha256": "01d0f8b5f4c9f184cad5d72f3481b751f90c51a1d60bdfb1c6ef0a5350e80765",
+            "id": "PVU-001",
+            "index": 0,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "fd11716e1256cb0e6689ad0e3890850ecaacdb131b1f85de27be3729cdfb4a61",
+            "id": "PVU-002",
+            "index": 1,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "9270b6989e0021677f457deb99c0e6d5a0f86de824fb4f516910f437043fe33c",
+            "id": "PVU-003",
+            "index": 2,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "876dda8dc6eb0b9a8f6621c3071638c553dd77f15651d431249370314454e441",
+            "id": "PVU-004",
+            "index": 3,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "ccda282edf114e1628c28a5add46d8cce67723c34fb076bb8cd45944a755f907",
+            "id": "PVU-005",
+            "index": 4,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "c596d0aceff1dfabc301a6715aa6b5d46393a0851ffcbde0d8d3ac0e645d9166",
+            "id": "PVU-006",
+            "index": 5,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "951bc4b0ffc2221b2caef7ea5e0429fa0e14f32ffd2bfc5e7745a27b5bf964e4",
+            "id": "PVU-007",
+            "index": 6,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "a09761192a384e9a3fdf33b0ea0f11a31dbc5e8bcc1c1f2ad6c7cbb62670cb45",
+            "id": "PVU-008",
+            "index": 7,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "0f062af7417118115f9d691dad2beab8430e200f8a8aa1cc47c2226440fa061c",
+            "id": "PVU-009",
+            "index": 8,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "f3bdeb12812eafa16a1ad4316506ca938969f1328e239c8ade2561dc1c29d758",
+            "id": "PVU-010",
+            "index": 9,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "5a274b61dd7db395a1d11cb75896919aa5e234dc2bad772e57a727c202c64f31",
+            "id": "PVU-011",
+            "index": 10,
+            "variant_origin_field_shapes": {}
+          },
+          {
+            "canonical_full_record_sha256": "8c9640f7b4165d5d581d8ab1267c338d61fbcdfd320eceff36b524ce4b5797ca",
+            "id": "PVU-012",
+            "index": 11,
+            "variant_origin_field_shapes": {}
+          }
+        ],
+        "kind": "list"
+      }
+    }
+  },
+  "instruction_precedence": {
+    "authority": "The dedicated-branch publication exception is root-owned. It does not authorize child Git operations, runtime work, stores, version/identity changes or candidate replacement.",
+    "observed_resolution": "AUDIT_HANDOFF lines5\u20139 and PERMISSIONS lines18\u201340 require reading current scope before inherited command examples, identify the clone root, distinguish primary/G12 instruction snapshots and dormant copied skills, and explicitly flag stale task/schema/Kover facts. No frozen G12 source AGENTS file was edited and no redundant defect is raised.",
+    "root_document_inputs": [
+      {
+        "bytes": 1806,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "AUDIT_HANDOFF.md",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "3f5a06f6d33fe4e5e87ac9620a43551001d8954426463fbbc3720495e6ec6e27"
+      },
+      {
+        "bytes": 6702,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/EVIDENCE.md",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "189b65e6e06dc240dd5e6b559920256b731a78184d79800280fe6194c7d14104"
+      },
+      {
+        "bytes": 6350,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/PERMISSIONS.md",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "3bde2eab96c83cbf313bd8f5cf184a08212cc82c67288c9c735f863ef0bd5723"
+      },
+      {
+        "bytes": 9826,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/START_HERE.md",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "8311cc3cab113588c3f585d96ff52157e6b74937672d64d81996daa6d5137565"
+      }
+    ]
+  },
+  "nonactions": {
+    "central_status_changes": 0,
+    "network_or_resource_process_probes": 0,
+    "original_runtime_replay": 0,
+    "private_data_reads": 0,
+    "source_or_Git_mutations": 0,
+    "syntax_AST_checks": 0,
+    "tests": 0,
+    "viewer_helper_or_project_execution": 0
+  },
+  "pvd_and_additional_separation": {
+    "additional_ids": [
+      "NAV-FRESH-SUS-001",
+      "CI-RESUME-SHALLOW-001",
+      "CI-RESUME-ATTEST-001",
+      "LOC-SYSTEM-REFRESH-001"
+    ],
+    "additional_meaning": "Four distinct additional-investigation records are preserved exactly. They are not four extra PVUs and are not mechanically added to either closure denominator.",
+    "pvd_id_range": "PVD-001\u2013PVD-008",
+    "pvd_meaning": "All eight original explanation records are byte-preserved; the root guide records G11 independent checking. This copy review neither repeats that semantic review nor resolves owner choices.",
+    "pvd_status": "DESIGN LIMITATION / TRADEOFF",
+    "pvd_unique_ids": 8
+  },
+  "pvu_current_projection": {
+    "all12_status_preservation_claim_attribution": "Parent root explicitly reports12 statuses unchanged. This reviewer independently confirms full-record equality for10 rows and the current two stopped statuses/boundaries, but does not separately reread the original two statuses after projection; original/full projected equality is not claimed for those rows.",
+    "current12_unique_ids_preserved": true,
+    "declared_derivation": {
+      "derivation": "Only PVU007/PVU011 rows replaced by outcome/boundary projection; ten other rows exact JSON values. Not an exact-byte original or revised finding disposition.",
+      "derived_from": {
+        "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations.json",
+        "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e"
+      }
+    },
+    "observation": {
+      "container_path": "findings",
+      "descriptor": {
+        "bytes": 62958,
+        "mode": 420,
+        "mode_octal": "0644",
+        "path": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+        "root_alias": "NEW_HANDOFF_ROOT_20260908T061500Z",
+        "sha256": "420b7eb1a419aabec37cbc323bc7d9a9b32ca160395dcc2d5f109488820eed19"
+      },
+      "entries": [
+        {
+          "canonical_current_record_sha256": "01d0f8b5f4c9f184cad5d72f3481b751f90c51a1d60bdfb1c6ef0a5350e80765",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii",
+            "sorted_compact_utf8"
+          ],
+          "id": "PVU-001",
+          "index": 0,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "01d0f8b5f4c9f184cad5d72f3481b751f90c51a1d60bdfb1c6ef0a5350e80765",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "fd11716e1256cb0e6689ad0e3890850ecaacdb131b1f85de27be3729cdfb4a61",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii",
+            "sorted_compact_utf8"
+          ],
+          "id": "PVU-002",
+          "index": 1,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "fd11716e1256cb0e6689ad0e3890850ecaacdb131b1f85de27be3729cdfb4a61",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "9270b6989e0021677f457deb99c0e6d5a0f86de824fb4f516910f437043fe33c",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii"
+          ],
+          "id": "PVU-003",
+          "index": 2,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "9270b6989e0021677f457deb99c0e6d5a0f86de824fb4f516910f437043fe33c",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "876dda8dc6eb0b9a8f6621c3071638c553dd77f15651d431249370314454e441",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii",
+            "sorted_compact_utf8"
+          ],
+          "id": "PVU-004",
+          "index": 3,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "876dda8dc6eb0b9a8f6621c3071638c553dd77f15651d431249370314454e441",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "ccda282edf114e1628c28a5add46d8cce67723c34fb076bb8cd45944a755f907",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii"
+          ],
+          "id": "PVU-005",
+          "index": 4,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "ccda282edf114e1628c28a5add46d8cce67723c34fb076bb8cd45944a755f907",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "c596d0aceff1dfabc301a6715aa6b5d46393a0851ffcbde0d8d3ac0e645d9166",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii"
+          ],
+          "id": "PVU-006",
+          "index": 5,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "c596d0aceff1dfabc301a6715aa6b5d46393a0851ffcbde0d8d3ac0e645d9166",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "f34d1d88f81f7fa195f54a1990b0a551161434009a8ff0161f5279559e51e058",
+          "field_names": [
+            "boundary",
+            "details",
+            "id",
+            "portable_scope",
+            "status"
+          ],
+          "full_record_matches_H007_under": [],
+          "id": "PVU-007",
+          "index": 6,
+          "intentionally_outcome_only_stopped_row": true,
+          "original_H007_record_sha256": "951bc4b0ffc2221b2caef7ea5e0429fa0e14f32ffd2bfc5e7745a27b5bf964e4",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "a09761192a384e9a3fdf33b0ea0f11a31dbc5e8bcc1c1f2ad6c7cbb62670cb45",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii",
+            "sorted_compact_utf8"
+          ],
+          "id": "PVU-008",
+          "index": 7,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "a09761192a384e9a3fdf33b0ea0f11a31dbc5e8bcc1c1f2ad6c7cbb62670cb45",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "0f062af7417118115f9d691dad2beab8430e200f8a8aa1cc47c2226440fa061c",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii",
+            "sorted_compact_utf8"
+          ],
+          "id": "PVU-009",
+          "index": 8,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "0f062af7417118115f9d691dad2beab8430e200f8a8aa1cc47c2226440fa061c",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "f3bdeb12812eafa16a1ad4316506ca938969f1328e239c8ade2561dc1c29d758",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii"
+          ],
+          "id": "PVU-010",
+          "index": 9,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "f3bdeb12812eafa16a1ad4316506ca938969f1328e239c8ade2561dc1c29d758",
+          "status": "CONFIRMED DEFECT"
+        },
+        {
+          "canonical_current_record_sha256": "7ea8baac5248a6b0ad3b5f494ffcb53299c7db6498324245323893b1920d4348",
+          "field_names": [
+            "boundary",
+            "details",
+            "id",
+            "portable_scope",
+            "status"
+          ],
+          "full_record_matches_H007_under": [],
+          "id": "PVU-011",
+          "index": 10,
+          "intentionally_outcome_only_stopped_row": true,
+          "original_H007_record_sha256": "5a274b61dd7db395a1d11cb75896919aa5e234dc2bad772e57a727c202c64f31",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED"
+        },
+        {
+          "canonical_current_record_sha256": "8c9640f7b4165d5d581d8ab1267c338d61fbcdfd320eceff36b524ce4b5797ca",
+          "field_names": null,
+          "full_record_matches_H007_under": [
+            "sorted_compact_ascii",
+            "sorted_compact_utf8"
+          ],
+          "id": "PVU-012",
+          "index": 11,
+          "intentionally_outcome_only_stopped_row": false,
+          "original_H007_record_sha256": "8c9640f7b4165d5d581d8ab1267c338d61fbcdfd320eceff36b524ce4b5797ca",
+          "status": "FALSE POSITIVE"
+        }
+      ],
+      "ordinary_full_records_match_H007": 10,
+      "original_ledger_reopened": false,
+      "stopped_records_intentionally_derived": 2,
+      "top_level_keys": [
+        "derivation",
+        "derived_from",
+        "findings"
+      ]
+    },
+    "original_and_derived_hashes_are_distinct": true,
+    "original_ledger_reopened_for_projection_check": false,
+    "stopped_outcome_boundaries_only": [
+      {
+        "boundary": "STOP: no investigation or reformulation",
+        "id": "PVU-007",
+        "portable_scope": "OUTCOME_ONLY_NOT_A_NEW_INVESTIGATION",
+        "status": "UNRESOLVED / VERIFICATION BLOCKED"
+      },
+      {
+        "boundary": "NO RETRY: no containment relaxation or procedure inquiry",
+        "id": "PVU-011",
+        "portable_scope": "OUTCOME_ONLY_NOT_A_NEW_INVESTIGATION",
+        "status": "UNRESOLVED / VERIFICATION BLOCKED"
+      }
+    ],
+    "stopped_procedure_display_investigation_or_reformulation": false,
+    "ten_nonstopped_full_record_values_independently_match_initial_H007_hashes": true,
+    "two_stopped_original_procedural_rows_not_reproduced": "PVU-007 and PVU-011 are intentionally derived outcome/boundary records, not full-record copies. Their current raw status is UNRESOLVED / VERIFICATION BLOCKED; their operational STOP and NO RETRY boundaries remain separate explicit fields."
+  },
+  "recorded_at_utc": "2026-09-08T07:12:20.455543+00:00",
+  "review_id": "clone-handoff-storage-v1",
+  "reviewer": "/root/remed_storage",
+  "schema": "passvault.clone-handoff.independent-storage-ledger-copy.v1",
+  "scope": "Read-only preservation of complete ledger bytes/records and explicitly defined denominators. No finding, patch, old procedure or runtime reinvestigation; no source/central edit or coverage credit.",
+  "separate_defined_denominators": {
+    "all_confirmed_families": {
+      "current_FIXED_AND_VERIFIED_ids": [
+        "PVA-002",
+        "PVA-003",
+        "PVA-004",
+        "PVA-005",
+        "PVA-006",
+        "PVA-011",
+        "PVA-012",
+        "PVA-013",
+        "PVA-015",
+        "PVA-016",
+        "PVA-017",
+        "PVA-018",
+        "PVA-019",
+        "PVA-020",
+        "PVA-021",
+        "PVA-022",
+        "PVA-023",
+        "PVA-024",
+        "PVA-025",
+        "PVA-026",
+        "PVA-028",
+        "PVA-032"
+      ],
+      "denominator": 37,
+      "numerator": 22,
+      "remaining": 15,
+      "unit": "qualified closures among all independently confirmed PVA-001\u2013037 families"
+    },
+    "definition_source": {
+      "conclusive_original_pvu": {
+        "lines": "30\u201340 and85\u201389",
+        "path": "docs/audit-handoff/START_HERE.md",
+        "quote": "Conclusive original PVU-001\u2013012 outcomes | 2/12 (16.7%) | 10; PVU-010 confirmed as PVA-027, which remains target-blocked; PVU-012 is a scoped false positive, not blanket dependency clearance."
+      },
+      "original_qualified_closures": {
+        "lines": "30\u201340",
+        "path": "docs/audit-handoff/START_HERE.md",
+        "quote": "Original PVA-001\u2013025 qualified closures | 19/25 (76%) | 6",
+        "sha256": "8311cc3cab113588c3f585d96ff52157e6b74937672d64d81996daa6d5137565"
+      },
+      "pvd_separate": {
+        "lines": "37 and66",
+        "path": "docs/audit-handoff/START_HERE.md",
+        "quote": "Original PVD-001\u2013008 explanations | 8/8 documented and independently checked at G11 | Owner decisions remain separate"
+      },
+      "total_confirmed_families": {
+        "lines": "30\u201340",
+        "path": "docs/audit-handoff/START_HERE.md",
+        "quote": "All independently confirmed families PVA-001\u2013037 | 22/37 (59.5%) | 15"
+      }
+    },
+    "nonadditive": "The19 original closures are a subset of the22 total closures. PVD choices, additional investigations and variant counts are separate; none is added to these denominators.",
+    "not_readiness": "No fraction measures overall readiness, source correctness, fresh coverage, elapsed effort, platform validation or entire-audit completion.",
+    "original_families": {
+      "current_FIXED_AND_VERIFIED_ids": [
+        "PVA-002",
+        "PVA-003",
+        "PVA-004",
+        "PVA-005",
+        "PVA-006",
+        "PVA-011",
+        "PVA-012",
+        "PVA-013",
+        "PVA-015",
+        "PVA-016",
+        "PVA-017",
+        "PVA-018",
+        "PVA-019",
+        "PVA-020",
+        "PVA-021",
+        "PVA-022",
+        "PVA-023",
+        "PVA-024",
+        "PVA-025"
+      ],
+      "denominator": 25,
+      "numerator": 19,
+      "remaining": 6,
+      "unit": "qualified original PVA-001\u2013025 family closures"
+    },
+    "original_pvu_outcomes": {
+      "denominator": 12,
+      "ids": [
+        "PVU-010",
+        "PVU-012"
+      ],
+      "interpretation": "PVU-010 confirms PVA-027, which is still implemented/target-runtime-blocked; PVU-012 is a scoped false positive.",
+      "numerator": 2,
+      "remaining": 10,
+      "unit": "conclusive original PVU-001\u2013012 outcomes, not necessarily fixed defects"
+    }
+  },
+  "status": "EXACT_INITIAL_COPY_PRESERVATION_WITH_EXPLICIT_CURRENT_PVU_OUTCOME_PROJECTION",
+  "unchanged_boundaries": [
+    "G7/G8 CLOSED",
+    "PVA029 FAIL/no automatic retry",
+    "PVU007 STOP/no investigation or reformulation",
+    "PVU011 NO RETRY/no containment relaxation"
+  ]
+}

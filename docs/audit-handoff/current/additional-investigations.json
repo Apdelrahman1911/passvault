@@ -1,0 +1,235 @@
+[
+  {
+    "id": "NAV-FRESH-SUS-001",
+    "title": "Verifier catch may label a non-authentication crypto failure as an invalid biometric enrollment",
+    "originator": "/root/audit_navigation",
+    "independent_reviewer": "/root",
+    "status": "UNRESOLVED / VERIFICATION BLOCKED",
+    "outcome": "UNVERIFIED / BLOCKED",
+    "baseline_commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "original_review_generation": 3,
+    "current_generation_applicability": "Four inspected source files hash-identical in generation4. No production patch applied for this suspicion.",
+    "source_proof_established": [
+      "DefaultBiometricUnlockService114-121 does call keyStore.delete if repository returns BiometricVaultKeyRejectedException.",
+      "VaultRepositoryImpl695-705 maps Exception from verifyVaultKey but separately rethrows CancellationException.",
+      "Metadata get/validation316 and openSession319 are outside mapped catch, so ordinary database errors there do NOT invalidate. Key size/state/session/generation checks further constrain reachability.",
+      "LibsodiumCryptoEngine154-191 maps an actual AEAD rejection to CiphertextAuthenticationException; plaintext length rejection is authentication/format failure under the fixed32-byte metadata bound.",
+      "Current evidence does not establish a reachable non-authentication Exception from initialized production decrypt. Suspending fake failure can demonstrate abstract routing only, not real provider failure."
+    ],
+    "controls_checked": [
+      "size bounds/envelope magic and normalization validated before helper",
+      "matching key nonce length validated before decrypt",
+      "Coroutine cancellation propagated without key-store deletion",
+      "openSession/DAO failures outside helper mapped generically",
+      "managed secureWipe calls fill, not OS provider"
+    ],
+    "what_would_settle": "Inspect exact libsodium-bindings0.9.5 initialization/decrypt and supported platform exception contract, trace cold-start admission; reproduce deterministic legitimate transient non-authentication failure with valid metadata/OS-released key if contract admits it. Compare auth failure (delete intended), cancellation/DB error (no delete) and valid success. Do not infer real applicability from fake CryptoEngine failure alone.",
+    "impact_if_reachable": "Availability/enrollment loss requiring password fallback and re-enrollment; no unauthenticated unlock or vault plaintext disclosure established.",
+    "source_bindings": [
+      {
+        "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+        "sha256": "5686165ac686fb533fde3c5d551545ca78d1c3d28e76b0b987aaaef3ee5017d9",
+        "ranges": [
+          [
+            225,
+            336
+          ],
+          [
+            630,
+            789
+          ]
+        ]
+      },
+      {
+        "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/DefaultBiometricUnlockService.kt",
+        "sha256": "670d1f7a2c709bb69097f82038889771ddbb57e7fcccf28b9940959b4af90d1b",
+        "ranges": [
+          [
+            1,
+            187
+          ]
+        ]
+      },
+      {
+        "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt",
+        "sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57",
+        "ranges": [
+          [
+            1,
+            75
+          ],
+          [
+            140,
+            227
+          ],
+          [
+            240,
+            330
+          ]
+        ]
+      },
+      {
+        "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/CryptoEngine.kt",
+        "sha256": "571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9",
+        "ranges": [
+          [
+            1,
+            180
+          ]
+        ]
+      }
+    ],
+    "origin_evidence": "reviews/PVA-002-fresh-numeric-review-navigation.json",
+    "production_patch": false,
+    "confirmed_count_impact": 0,
+    "updated_utc": "2026-09-06T16:35:13.103868+00:00"
+  },
+  {
+    "id": "CI-RESUME-SHALLOW-001",
+    "title": "Possible missing Git history in the separate equal-tree resume publication checkout",
+    "originator": "/root/audit_navigation",
+    "source_locations": [
+      {
+        "path": ".github/workflows/testing-release.yml",
+        "ranges": [
+          [
+            154,
+            162
+          ],
+          [
+            402,
+            456
+          ]
+        ]
+      }
+    ],
+    "established_or_suspected": "Originator reports publication checkout has default depth while allowed different-SHA/equal-tree resume later inspects original commit/tree and ancestry. Full-history preflight is a separate runner job. Actual default-depth/action contract and admitted path are under independent challenge.",
+    "independent_reviewer": "/root/remed_storage",
+    "required_evidence": "Exact pinned checkout contract and caller admission/history schedule; disprove later fetch or same-SHA-only guards; distinguish new root cause from PVA018. No application impact/upgrade bypass claimed.",
+    "status": "CONFIRMED DEFECT",
+    "independent_status": "CONFIRMED",
+    "source_generation": 5,
+    "source_manifest_sha256": "c79fe054bf8eafc692ea1c7a1119556f945924babbdbc1a60956e79731836ade",
+    "timestamp": "2026-09-07T00:20:35.759443+00:00",
+    "confirmed_product_finding": true,
+    "production_patch": null,
+    "severity": "MEDIUM / P2",
+    "counting": "Additional lead, not one of original PVU001–012 and not a new PVA family unless independently confirmed.",
+    "confirmed_as": "PVA-028",
+    "independent_review": {
+      "reviewer": "/root/remed_storage",
+      "path": "reviews/testing-release-resume-history-independent-storage-v1.json",
+      "sha256": "9686b12299f246ebb9071ea02def0db8ec6c5c49b94a9c05d64d360861d2ac99",
+      "disposition": "CONFIRMED",
+      "scope": "Conditional/bounded source proof; runtime not observed."
+    },
+    "confirmation_scope": "At original C and strict descendant E with identical trees, accepted original receipts and all upstream gates, prepare/resume succeed with full history; the separate publish job checks out E depth1 and cannot resolve C^{tree}/ancestry. Same-SHA resumes are unaffected; no current store state is inferred.",
+    "updated_utc": "2026-09-07T00:56:01.983924+00:00"
+  },
+  {
+    "id": "CI-RESUME-ATTEST-001",
+    "title": "Possible source-digest mismatch for accepted equal-tree different-SHA attestations",
+    "originator": "/root/audit_navigation",
+    "source_locations": [
+      {
+        "path": ".github/workflows/candidate-readiness.yml",
+        "ranges": [
+          [
+            67,
+            74
+          ],
+          [
+            260,
+            272
+          ],
+          [
+            294,
+            297
+          ]
+        ]
+      }
+    ],
+    "established_or_suspected": "Originator reports permitted different-SHA/exact-tree workflow paths attest subject-path while consumers verify original candidate source digest. Requires exact pinned attest action semantics; source alone does not establish its recorded digest.",
+    "independent_reviewer": "/root/remed_storage",
+    "required_evidence": "Inspect exact pinned action/library provenance construction and actual source-digest consumer contract, caller guards and any source override; independently disprove before confirming. No dispatched workflow or fabricated receipt.",
+    "status": "CONFIRMED DEFECT",
+    "independent_status": "CONFIRMED",
+    "source_generation": 5,
+    "source_manifest_sha256": "c79fe054bf8eafc692ea1c7a1119556f945924babbdbc1a60956e79731836ade",
+    "timestamp": "2026-09-07T00:20:35.759443+00:00",
+    "confirmed_product_finding": true,
+    "production_patch": null,
+    "severity": "MEDIUM / P2",
+    "counting": "Additional lead, not one of original PVU001–012 and not a new PVA family unless independently confirmed.",
+    "confirmed_as": "PVA-029",
+    "independent_review": {
+      "reviewer": "/root/remed_storage",
+      "path": "reviews/testing-release-resume-history-independent-storage-v1.json",
+      "sha256": "9686b12299f246ebb9071ea02def0db8ec6c5c49b94a9c05d64d360861d2ac99",
+      "disposition": "CONFIRMED",
+      "scope": "Conditional/bounded source proof; runtime not observed."
+    },
+    "confirmation_scope": "Valid original C candidate plus first readiness on ancestor-compatible equal-tree E, with no prior matching readiness attestation at C: pinned attest binds invocation/OIDC source E, whereas documented gh --source-digest C checks certificate source digest. Same SHA and a previous acceptable C attestation are explicit countercontrols. Actual CI gh version and live certificates are unobserved.",
+    "updated_utc": "2026-09-07T00:56:01.983924+00:00"
+  },
+  {
+    "id": "LOC-SYSTEM-REFRESH-001",
+    "title": "Possible stale Android System-language snapshot across a same-process configuration recreation",
+    "originator": "/root",
+    "source_locations": [
+      {
+        "path": "shared/src/androidMain/kotlin/com/passvault/shared/platform/AppLanguageProvider.android.kt",
+        "ranges": [
+          [
+            1,
+            53
+          ]
+        ]
+      },
+      {
+        "path": "app-android/src/main/AndroidManifest.xml",
+        "ranges": [
+          [
+            26,
+            45
+          ]
+        ]
+      },
+      {
+        "path": "app-android/src/main/kotlin/com/passvault/android/MainActivity.kt",
+        "ranges": [
+          [
+            50,
+            110
+          ],
+          [
+            125,
+            137
+          ]
+        ]
+      }
+    ],
+    "established_or_suspected": "One static AndroidAppLocales instance captures LocaleList.getDefault; SYSTEM reapplies it. Whether actual supported OS change/lifecycle and intended behavior leave stale displayed app/prompt language is under independent contract/caller review; explicit EN/AR and cold-process controls must be checked.",
+    "independent_reviewer": "/root/remed_platform",
+    "required_evidence": "Authoritative LocaleList/configuration/process lifetime behavior and actual source caller guards, with expected product behavior versus deliberate restart boundary. No device/global locale/UserDefaults operation authorized by this source-only task.",
+    "status": "CONFIRMED DEFECT",
+    "independent_status": "CONFIRMED",
+    "source_generation": 5,
+    "source_manifest_sha256": "c79fe054bf8eafc692ea1c7a1119556f945924babbdbc1a60956e79731836ade",
+    "timestamp": "2026-09-07T00:20:35.759443+00:00",
+    "confirmed_product_finding": true,
+    "production_patch": null,
+    "severity": "LOW / P3",
+    "counting": "Additional lead, not one of original PVU001–012 and not a new PVA family unless independently confirmed.",
+    "confirmed_as": "PVA-030",
+    "independent_review": {
+      "reviewer": "/root/remed_platform",
+      "path": "reviews/android-system-locale-snapshot-independent-platform-v1.json",
+      "sha256": "fdabeb7cace7bbb6e48955bb3da2b7c46f671269f649ea3bcf5ca9d0f9efc739",
+      "disposition": "CONFIRMED",
+      "scope": "Conditional/bounded source proof; runtime not observed."
+    },
+    "confirmation_scope": "Android supported same-process Activity recreation updates framework configuration but does not reconstruct the Kotlin singleton or mutate its immutable old LocaleList. New remember(language) calls reapply old locale and publish its direction/native text. No all-OEM/all-Compose-string or physical-device claim.",
+    "updated_utc": "2026-09-07T00:56:01.983924+00:00"
+  }
+]

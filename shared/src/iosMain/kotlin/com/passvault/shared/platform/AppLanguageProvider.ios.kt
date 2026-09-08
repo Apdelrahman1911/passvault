@@ -9,12 +9,16 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.uikit.LocalUIViewController
 import androidx.compose.ui.unit.LayoutDirection
 import com.passvault.feature.settings.presentation.SettingsViewModel
+import platform.Foundation.NSLocale
 import platform.Foundation.NSUserDefaults
+import platform.Foundation.currentLocale
+import platform.Foundation.languageCode
+import platform.Foundation.preferredLanguages
 
 private object IosAppLocales {
     private const val APPLE_LANGUAGES_KEY = "AppleLanguages"
 
-    fun apply(language: SettingsViewModel.AppLanguage) {
+    fun apply(language: SettingsViewModel.AppLanguage): String {
         val defaults = NSUserDefaults.standardUserDefaults
         when (language) {
             SettingsViewModel.AppLanguage.SYSTEM -> defaults.removeObjectForKey(APPLE_LANGUAGES_KEY)
@@ -22,6 +26,18 @@ private object IosAppLocales {
             SettingsViewModel.AppLanguage.ARABIC -> defaults.setObject(listOf("ar"), APPLE_LANGUAGES_KEY)
         }
         defaults.synchronize()
+        return when (language) {
+            // Resolve after removing the app override, using the same native
+            // preferred-language authority as the shared resource environment.
+            SettingsViewModel.AppLanguage.SYSTEM -> {
+                val locale = (NSLocale.preferredLanguages.firstOrNull() as? String)
+                    ?.let { NSLocale(it) }
+                    ?: NSLocale.currentLocale
+                locale.languageCode
+            }
+            SettingsViewModel.AppLanguage.ENGLISH -> "en"
+            SettingsViewModel.AppLanguage.ARABIC -> "ar"
+        }
     }
 }
 
@@ -30,7 +46,7 @@ internal actual fun AppLanguageProvider(
     language: SettingsViewModel.AppLanguage,
     content: @Composable () -> Unit,
 ) {
-    remember(language) { IosAppLocales.apply(language) }
+    remember(language) { publishNativeBiometricPromptLanguage(IosAppLocales.apply(language)) }
     val baseDensity = LocalDensity.current
     val languageDensity = remember(language, baseDensity.density, baseDensity.fontScale) {
         AppLanguageDensity(baseDensity.density, baseDensity.fontScale)

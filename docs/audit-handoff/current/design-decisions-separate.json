@@ -1,0 +1,714 @@
+[
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "This limits at-rest metadata confidentiality/integrity but is not by itself an encryption bypass. OS sandbox/file protection, authenticated payload/identifier checks and logical validation mitigate different threats, not whole-file encryption.",
+    "established": "Application uses purpose-bound encrypted payloads with bundled SQLite, not SQLCipher; IDs, relationships, counts/timestamps and format/structural columns remain observable outside encrypted values.",
+    "evidence": [
+      "reviews/audit_database.md",
+      "reviews/audit_documentation_assets.md",
+      "coverage/ledger.json"
+    ],
+    "id": "PVD-001",
+    "origin": "DATABASE-AT-REST-SCOPE",
+    "recorded_at": "2026-09-05T20:09:45.529682+00:00",
+    "reviewers": "Database source/schema inspection and cross-domain claims review.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.202868+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811052+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Record encryption does not encrypt the entire SQLite file or authenticate all structural metadata",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Threat-model decision for whole-database/metadata authentication would require design/fix authorization and migration/compatibility validation."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "This deterministic encoding is part of the existing format. Replacing it with raw UTF8 would change derived keys and can break unlock/backup compatibility; unusual encoding alone is not a proven weakness.",
+    "established": "RawPasswordHash helper transforms UTF8 bytes into lowercase ASCII hex before Argon2; caller and native paths preserve it, with reference-vector tests.",
+    "evidence": [
+      "reviews/audit_crypto.md",
+      "evidence/runs/crypto-domain-otp-desktop",
+      "findings/PVA-001.md"
+    ],
+    "id": "PVD-002",
+    "origin": "KDF-HISTORICAL-HEX",
+    "recorded_at": "2026-09-05T20:09:45.529683+00:00",
+    "reviewers": "Crypto source review; root independent ABI/KDF trace.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.202906+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "REQUIRED_CURRENT_UTF8_LOWERCASE_HEX",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811055+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Password KDF uses the historical UTF8\u2192lowercase-hex transformation",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Any intentional redesign requires a versioned migration/compatibility protocol and separate authorization, not a silent cleanup."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "No supported runtime guarantees complete removal from RAM/swap/IME/crash/OS buffers. PVA-005/006 concern avoidable owned-array omissions, not a promise to eliminate all copies.",
+    "established": "SensitiveText and arrays have explicit owner cleanup; UI/serialization/interop may create immutable strings, GC copies or provider-internal state outside application control.",
+    "evidence": [
+      "reviews/audit_crypto.md",
+      "reviews/root-testing.md",
+      "findings/PVA-005.md",
+      "findings/PVA-006.md"
+    ],
+    "id": "PVD-003",
+    "origin": "MANAGED-MEMORY",
+    "recorded_at": "2026-09-05T20:09:45.529684+00:00",
+    "reviewers": "Crypto/database/root ownership review.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.202934+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811057+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Best-effort mutable wiping is not a runtime/OS erasure guarantee",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Preserve honest security claims and focused ownership tests; managed-runtime guarantees require platform evidence, not optimistic assertions."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "Judging this solely against Android immediate background policy would invent a defect. Real iOS pasteboard ownership/expiry/protected-data transitions remain device gates; no universal clearing guarantee.",
+    "established": "Platform policy can preserve cross-app clipboard usefulness on ordinary iOS background lock while stronger lifecycle boundaries and expiry have separate cleanup.",
+    "evidence": [
+      "reviews/audit_navigation.md",
+      "reviews/audit_platform_hosts.md",
+      "coverage/ledger.json"
+    ],
+    "id": "PVD-004",
+    "origin": "IOS-CROSSAPP-CLIPBOARD",
+    "recorded_at": "2026-09-05T20:09:45.529685+00:00",
+    "reviewers": "Navigation/platform source review; root policy-boundary tracing.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.202961+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811058+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Ordinary iOS background clipboard behavior intentionally differs from Android",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Validate the intentional iOS matrix with synthetic clipboard data and keep stronger security boundaries distinct."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "An external viewer can retain bytes already received; unlinking cannot force it to forget. This does not excuse the owned orphan in PVA-008.",
+    "established": "Opening/exporting explicitly materializes bounded plaintext for another OS component/application; owned staging cleanup is scoped to PassVault paths.",
+    "evidence": [
+      "reviews/audit_backup_attachment.md",
+      "reviews/audit_platform_hosts.md",
+      "findings/PVA-008.md"
+    ],
+    "id": "PVD-005",
+    "origin": "EXTERNAL-PLAINTEXT-RETENTION",
+    "recorded_at": "2026-09-05T20:09:45.529686+00:00",
+    "reviewers": "Backup/platform source review with root iOS handoff challenge.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.202987+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811058+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Removing an attachment staging file cannot revoke a recipient viewer copy",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Accurate user warning/operational policy and per-platform synthetic ownership cleanup checks; no unachievable revocation claim."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "The documented Google Authenticator compatibility exception is not proof of an implementation regression. Algorithms/time vectors pass on Desktop, not every native platform.",
+    "established": "Enrollment intentionally permits10\u2013128byte keys, supported algorithms/digits/periods, with strict Base32 and URI bounds.",
+    "evidence": [
+      "reviews/audit_crypto.md",
+      "evidence/runs/crypto-domain-otp-desktop"
+    ],
+    "id": "PVD-006",
+    "origin": "TOTP-COMPATIBILITY",
+    "recorded_at": "2026-09-05T20:09:45.529687+00:00",
+    "reviewers": "Crypto/OTP source and test review.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.203014+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811059+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "TOTP accepts80-bit legacy-compatible seeds rather than claiming everyRFC4226 recommendation",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Any minimum-key-policy change must preserve existing enrollments explicitly; test legacy compatibility and platform implementations."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "Compensation is not cross-system atomicity; power failure or native-store failures need explicit recovery policy. No demonstrated corruption is inferred solely from two systems.",
+    "established": "Restore uses staged authenticated data/attachment publication and a database transaction, with separate biometric storage and compensation.",
+    "evidence": [
+      "reviews/audit_backup_attachment.md",
+      "reviews/audit_database.md"
+    ],
+    "id": "PVD-007",
+    "origin": "RESTORE-ATOMICITY",
+    "recorded_at": "2026-09-05T20:09:45.529688+00:00",
+    "reviewers": "Backup/database source and failure-path review.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.203041+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811060+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Database restore transaction and external biometric store are not one atomic system",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Synthetic postcommit/native-store failure and process-death recovery tests, then authorized hardware validation; never a real backup."
+  },
+  {
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "disproof_or_limit": "Only the production-bound tests/diagnostics support their specific assertions. Timing-positive assertions are not constant-time proof; source test counts are not executed case counts or physical lifecycle evidence.",
+    "established": "Test review identifies deliberate FakeCryptoEngine/repository/biometric substitutes, narrow assertions and some names stronger than their exercised paths.",
+    "evidence": [
+      "reviews/audit_crypto.md",
+      "reviews/root-testing.md",
+      "reviews/audit_core_flows.md",
+      "reviews/audit_database.md"
+    ],
+    "id": "PVD-008",
+    "origin": "FAKE-TEST-ASSURANCE",
+    "recorded_at": "2026-09-05T20:09:45.529689+00:00",
+    "reviewers": "Every test file source-reviewed in coverage; final report independently challenged. No extra runtime claims.",
+    "severity": "NOT GRADED AS A CONFIRMED DEFECT",
+    "source_generation11_explanation_review": {
+      "at": "2026-09-08T03:04:36.203067+00:00",
+      "author": "/root/remed_storage",
+      "author_draft": {
+        "bytes": 43683,
+        "path": "reviews/owner-decisions-refresh-storage-v2/DRAFT.md",
+        "sha256": "674c5995ac71ce3acf2a518d32bda6eb23759ee3abcd2f4e42ca9c20d6818bc5"
+      },
+      "compatibility": "NO_DESIGN_CHANGE",
+      "owner_policy_made": false,
+      "report": {
+        "bytes": 31070,
+        "path": "reviews/owner-decisions-independent-root-g11-v1/REPORT.json",
+        "sha256": "3436c71fdba1e84e7e5c0127c73280516ef66f8c767837425b303bb42aa546c6"
+      },
+      "reviewer": "/root",
+      "source_generation": 11,
+      "source_manifest_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc",
+      "status": "INDEPENDENTLY_SOURCE_REVIEWED_OWNER_DECISION_PENDING",
+      "tests_executed_in_explanation_review": 0
+    },
+    "source_generation11_final_explanation_report_review": {
+      "at": "2026-09-08T04:07:10.662868+00:00",
+      "disposition": "ACCEPT_QUALIFIED_ADOPTED_OWNER_EXPLANATIONS",
+      "independent_report": {
+        "bytes": 13094,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        "sha256": "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219"
+      },
+      "owner_choices_made": false,
+      "publication": {
+        "bytes": 4479,
+        "path": "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        "sha256": "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212"
+      },
+      "reviewer": "/root/audit_navigation",
+      "runtime_tests": 0,
+      "scope": "Final explanation/prose/source-reference challenge, independent of author and root adopter; not fresh implementation acceptance, whole-project coverage/readiness or waiver of original compatibility/runtime requirements.",
+      "source_generation": 11,
+      "source_or_policy_changes": false,
+      "subject": {
+        "bytes": 43040,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      }
+    },
+    "source_generation12_explanation_applicability": {
+      "all48_source_tuples_unchanged": true,
+      "at": "2026-09-08T04:55:02.811061+00:00",
+      "binding": {
+        "bytes": 23288,
+        "path": "verification/owner-decision-applicability-g12.json",
+        "sha256": "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3"
+      },
+      "bodies_changed": false,
+      "document": {
+        "bytes": 43407,
+        "path": "OWNER_DESIGN_DECISIONS.md",
+        "sha256": "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a"
+      },
+      "historical_G11_subject_snapshot": {
+        "bytes": 43040,
+        "path": "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        "sha256": "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a"
+      },
+      "independent_current_report_challenge": "PENDING",
+      "new_tests": 0,
+      "owner_choices_made": false,
+      "source_generation": 12
+    },
+    "status": "DESIGN LIMITATION / TRADEOFF",
+    "title": "Passing fake contracts do not prove OS, cryptographic or persistent behavior",
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+    "what_would_settle": "Add targeted negative/real-boundary regressions after fixes and complete the unexecuted integration/platform matrix; individual vacuous-assertion concerns are documented in source-review notes, not claimed as additional independently confirmed production findings."
+  }
+]

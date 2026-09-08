@@ -72,11 +72,12 @@ jobs:
               exit 1
             fi
           fi
-          gh attestation verify "$manifest" \
+          ruby scripts/verify-candidate-attestation.rb "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$source_commit" \
+            --candidate-commit "$source_commit" \
+            --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/candidate-manifest.json")" \
             --deny-self-hosted-runners >/dev/null
           git fetch origin "refs/tags/$CANDIDATE_TAG:refs/tags/$CANDIDATE_TAG" --force --no-tags
           if [[ "$(git rev-list -n 1 "$CANDIDATE_TAG")" != "$source_commit" ]]; then
@@ -87,11 +88,12 @@ jobs:
           ruby scripts/validate-candidate-manifest.rb --allow-pending \
             "$manifest" "$source_commit" "$source_tree"
           for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
-            gh attestation verify "$receipt" \
+            ruby scripts/verify-candidate-attestation.rb "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$source_commit" \
+              --candidate-commit "$source_commit" \
+              --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/candidate-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \
@@ -257,18 +259,20 @@ jobs:
             --pattern candidate-manifest.json \
             --pattern '*-artifact-receipt.json' \
             --dir "$RUNNER_TEMP/candidate"
-          gh attestation verify "$RUNNER_TEMP/candidate/candidate-manifest.json" \
+          ruby scripts/verify-candidate-attestation.rb "$RUNNER_TEMP/candidate/candidate-manifest.json" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$SOURCE_COMMIT" \
+            --candidate-commit "$SOURCE_COMMIT" \
+            --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/candidate-manifest.json")" \
             --deny-self-hosted-runners >/dev/null
           for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
-            gh attestation verify "$receipt" \
+            ruby scripts/verify-candidate-attestation.rb "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$SOURCE_COMMIT" \
+              --candidate-commit "$SOURCE_COMMIT" \
+              --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/candidate-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done
           jq '.android.external = "completed" | .ios.external = "approved"' \

@@ -277,13 +277,37 @@ class VaultRepositoryImpl(
             }
         }
 
+    /** Captures admission before the caller starts metadata lookup or OS authentication. */
+    internal suspend fun beginBiometricUnlock(): Result<BiometricUnlockAttempt> =
+        try {
+            currentCoroutineContext().ensureActive()
+            Result.success(BiometricUnlockAttempt(this, lockIntents.snapshotGeneration()))
+        } catch (_: UnlockPreemptedException) {
+            Result.failure(VaultSessionLockedException())
+        }
+
     /**
-     * Opens a session with a key released by an OS biometric policy. The key
-     * is still authenticated against the vault verification record before it
-     * can become the active session key.
+     * Opens a session with a key released by an OS biometric policy, using the
+     * admission captured before that attempt began. The key is authenticated
+     * against the vault verification record before becoming the session key.
      */
-    suspend fun unlockWithBiometricKey(vaultKey: ByteArray): Result<SessionId> =
+    internal suspend fun unlockWithBiometricKey(
+        vaultKey: ByteArray,
+        attempt: BiometricUnlockAttempt,
+    ): Result<SessionId> =
         withExclusiveSessionTransition {
+            currentCoroutineContext().ensureActive()
+            if (attempt.repositoryIdentity !== this) {
+                return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
+            }
+            val unlockGeneration = attempt.lockGeneration
+            try {
+                lockIntents.verify(unlockGeneration)
+            } catch (_: UnlockPreemptedException) {
+                // A stale caller owns no session. Do not relock or wipe a newer
+                // valid session, and do not classify its key as invalidated.
+                return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
+            }
             if (vaultKey.size != VEK_BYTES) {
                 return@withExclusiveSessionTransition Result.failure(BiometricVaultKeyRejectedException())
             }
@@ -297,13 +321,11 @@ class VaultRepositoryImpl(
                 // Treat an already-open session as success. This avoids a race
                 // where a concurrent password unlock succeeds and the caller
                 // mistakes the still-valid biometric key for an invalid one.
-                return@withExclusiveSessionTransition Result.success(activeSession.sessionId)
-            }
-            val unlockGeneration = try {
-                lockIntents.snapshotGeneration()
-            } catch (preempted: UnlockPreemptedException) {
-                _sessionState.value = VaultSessionState.Locked(preempted.reason)
-                return@withExclusiveSessionTransition preemptedUnlockResult()
+                return@withExclusiveSessionTransition try {
+                    Result.success(lockIntents.commit(unlockGeneration) { activeSession.sessionId })
+                } catch (_: UnlockPreemptedException) {
+                    Result.failure(VaultSessionLockedException())
+                }
             }
 
             currentVek?.let { cryptoEngine.secureWipe(it) }
@@ -770,6 +792,12 @@ interface VaultSessionManager {
 }
 
 internal class VaultSessionLockedException : IllegalStateException("Vault not unlocked")
+
+/** In-memory, repository-bound admission; never derive a replacement after OS authentication. */
+internal class BiometricUnlockAttempt internal constructor(
+    internal val repositoryIdentity: Any,
+    internal val lockGeneration: Long,
+)
 
 internal class BiometricVaultKeyRejectedException : IllegalStateException("Biometric vault key was rejected")
 

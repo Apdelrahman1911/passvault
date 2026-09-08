@@ -34,11 +34,15 @@ import com.passvault.desktop.components.KeyboardShortcuts
 import com.passvault.desktop.security.DesktopWindowProtection
 import com.passvault.desktop.security.biometric.DesktopBiometricHost
 import com.passvault.desktop.tray.DesktopSystemTray
-import com.passvault.desktop.tray.DesktopTrayStrings
+import com.passvault.desktop.tray.desktopTrayStrings
+import com.passvault.shared.platform.rememberDesktopAppResourceEnvironment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.ResourceEnvironment
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.GlobalContext
 import java.awt.Dimension
@@ -68,7 +72,7 @@ internal fun PassVaultDesktopWindow(
     val windowProtection = remember { GlobalContext.get().get<DesktopWindowProtection>() }
     val systemTray = remember { GlobalContext.get().get<DesktopSystemTray>() }
     val biometricHost = remember { GlobalContext.get().get<DesktopBiometricHost>() }
-    val trayStrings = desktopTrayStrings()
+    val trayEnvironment = rememberDesktopAppResourceEnvironment()
     val focusRequester = remember { FocusRequester() }
     val requestClose = rememberCloseHandler(
         windowState,
@@ -85,7 +89,7 @@ internal fun PassVaultDesktopWindow(
     )
     DesktopWindowEffects(
         focusRequester,
-        trayStrings,
+        trayEnvironment,
         systemTray,
         windowProtection,
         sessionState,
@@ -109,14 +113,6 @@ internal fun PassVaultDesktopWindow(
         content,
     )
 }
-
-@Composable
-private fun desktopTrayStrings(): DesktopTrayStrings = DesktopTrayStrings(
-    tooltip = stringResource(Res.string.desktop_tray_tooltip),
-    showApp = stringResource(Res.string.desktop_tray_show),
-    lockVault = stringResource(Res.string.desktop_tray_lock),
-    exit = stringResource(Res.string.desktop_tray_exit),
-)
 
 @Composable
 private fun DesktopApplicationWindow(
@@ -211,7 +207,7 @@ private fun rememberKeyboardShortcuts(
 @Composable
 private fun DesktopWindowEffects(
     focusRequester: FocusRequester,
-    trayStrings: DesktopTrayStrings,
+    trayEnvironment: ResourceEnvironment,
     systemTray: DesktopSystemTray,
     windowProtection: DesktopWindowProtection,
     sessionState: VaultSessionState,
@@ -224,8 +220,10 @@ private fun DesktopWindowEffects(
 ) {
     val currentSessionState by rememberUpdatedState(sessionState)
     BindBiometricPromptFocusPolicy(windowProtection, biometricHost)
-    LaunchedEffect(focusRequester, trayStrings, systemTray, windowProtection, requestClose) {
-        focusRequester.requestFocus()
+    RequestDesktopContentFocus(focusRequester)
+    LaunchedEffect(trayEnvironment, systemTray, windowProtection, requestClose) {
+        val trayStrings = desktopTrayStrings(trayEnvironment)
+        currentCoroutineContext().ensureActive()
         systemTray.setup(
             strings = trayStrings,
             onShow = windowProtection::restoreWindow,
@@ -278,6 +276,13 @@ private fun DesktopWindowEffects(
         onDispose {
             windowProtection.setLockListener(null)
         }
+    }
+}
+
+@Composable
+private fun RequestDesktopContentFocus(focusRequester: FocusRequester) {
+    LaunchedEffect(focusRequester) {
+        focusRequester.requestFocus()
     }
 }
 

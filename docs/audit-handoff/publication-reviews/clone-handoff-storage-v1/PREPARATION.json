@@ -1,0 +1,204 @@
+{
+  "administrative_notes": [
+    {
+      "disposition": "Root supplied no mode requirement. H002B reads the same exact hash/regular named file, records actual mode, and does not modify it or relax any runtime/source gate.",
+      "exit_code": 1,
+      "operation": "H002",
+      "stage": "Before content read at inherited0600 mode assertion",
+      "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 35, in <module>\n  File \"<stdin>\", line 32, in read_json\n  File \"<stdin>\", line 21, in read_artifact\nAssertionError\n"
+    }
+  ],
+  "central_coverage_credit": 0,
+  "git_mutations": 0,
+  "inputs": [
+    {
+      "bytes": 46323,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "delivery/generation12/FILES.json",
+      "sha256": "5de7e5c50b146c23827879c4ebd57fced4a4a1b8046cdea94bad978934c09c54"
+    },
+    {
+      "bytes": 169300,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "verification/source-manifest-v12.json",
+      "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f"
+    },
+    {
+      "bytes": 10881,
+      "mode": 420,
+      "mode_octal": "0644",
+      "path": "handoff-publication/20260908T061500Z/SOURCE-TRANSFER.json",
+      "sha256": "9f73aa278977d67024b391dfbe9f764a929f606a50bf428191e4d95dd556f6d0"
+    },
+    {
+      "bytes": 501,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "handoff-publication/20260908T061500Z/workspace-AGENTS.md",
+      "sha256": "f660cc6ac9183f0de2f08ebd17411a1efa4f809694b1dffcb336a08adcf56d57"
+    },
+    {
+      "bytes": 4031,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "handoff-publication/20260908T061500Z/primary-AGENTS.md",
+      "sha256": "3fa4f6cc134ce49300ec3a4fe9697f94d782a3cdea18a7e9bef7e977768b833c"
+    },
+    {
+      "bytes": 1005,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "handoff-publication/20260908T061500Z/skills-AGENTS.md",
+      "sha256": "3a17e7109775f8599a521a97b5b8b1b5d7b2fc347e538d7cd4e137834adcff67"
+    }
+  ],
+  "instruction_copies": [
+    {
+      "bytes": 501,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "handoff-publication/20260908T061500Z/workspace-AGENTS.md",
+      "sha256": "f660cc6ac9183f0de2f08ebd17411a1efa4f809694b1dffcb336a08adcf56d57"
+    },
+    {
+      "bytes": 4031,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "handoff-publication/20260908T061500Z/primary-AGENTS.md",
+      "sha256": "3fa4f6cc134ce49300ec3a4fe9697f94d782a3cdea18a7e9bef7e977768b833c"
+    },
+    {
+      "bytes": 1005,
+      "mode": 384,
+      "mode_octal": "0600",
+      "path": "handoff-publication/20260908T061500Z/skills-AGENTS.md",
+      "sha256": "3a17e7109775f8599a521a97b5b8b1b5d7b2fc347e538d7cd4e137834adcff67"
+    }
+  ],
+  "instructions_applied": "No project/helper execution, no source writes, no Git mutation, no private-name material; no product flavors/F-Droid. A new handoff root does not relax frozen runtime/STOP/NO RETRY constraints.",
+  "metadata_observation": {
+    "delivery_metadata": {
+      "at": "2026-09-08T04:41:28.607855+00:00",
+      "base_commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "base_tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f",
+      "canonical_sha256": "7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91",
+      "delta_patch": {
+        "bytes": 8056,
+        "mode": 384,
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/PATCH.diff",
+        "sha256": "daf09a6adce2b7d3ba4f4b1416612793929b624ba8fd61d7b3bdf350ddd6ba12"
+      },
+      "limits": "Exact source identity/after-images only; no new build/test/device/artifact/store result. PVA037 target/runtime verification remains blocked.",
+      "predecessor": {
+        "bytes": 46142,
+        "mode": 384,
+        "path": "delivery/generation11/FILES.json",
+        "sha256": "53d1e7685ea7a2feb6527ee0e4791ccc1f9598d84274b5ff1b6523d058d36f72"
+      },
+      "reproduction": "Base commit plus these122 exact changed-file after-images and intended source modes reconstructs G12. Retained R file0600 is not intended source0644. Prior snapshots remain immutable. No execution/publishing/cleanup authorization follows.",
+      "source_file_count": 811,
+      "source_manifest": {
+        "bytes": 169300,
+        "path": "verification/source-manifest-v12.json",
+        "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f"
+      },
+      "state": "EXACT_G12_SOURCE_SNAPSHOTS_UNCOMMITTED_NOT_RUNTIME_VERIFIED"
+    },
+    "delivery_reconciliation": {
+      "all122_exactly_match_full811_manifest": true,
+      "delta_only_copy_cannot_supply_full_source": true,
+      "delta_rows": 122,
+      "unchanged_non_delta_source_rows": 689
+    },
+    "display_id": "H001",
+    "git_mutations": 0,
+    "inputs": [
+      {
+        "bytes": 46323,
+        "mode": 384,
+        "mode_octal": "0600",
+        "path": "delivery/generation12/FILES.json",
+        "sha256": "5de7e5c50b146c23827879c4ebd57fced4a4a1b8046cdea94bad978934c09c54"
+      },
+      {
+        "bytes": 169300,
+        "mode": 384,
+        "mode_octal": "0600",
+        "path": "verification/source-manifest-v12.json",
+        "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f"
+      }
+    ],
+    "manifest": {
+      "all_paths_strict_relative": true,
+      "casefold_collisions": [],
+      "declared_total_bytes": 14080228,
+      "mode_counts": {
+        "0644": 737,
+        "0755": 74
+      },
+      "ordered_paths_sha256": "60e21008e3add473a474e4940edca4d82ff9bd6b928da58ab9c71d0fb5d615bf",
+      "path_prefix_conflicts": [],
+      "path_tuple_count_is_not_semantic_coverage": true,
+      "source_rows": 811,
+      "tuple_keys": [
+        "path",
+        "mode",
+        "bytes",
+        "sha256"
+      ],
+      "unique_paths": 811
+    },
+    "recorded_at_utc": "2026-09-08T06:19:40.318135+00:00",
+    "scope": "Safe named delivery/source-manifest metadata only; no retained source files or prospective checkout read.",
+    "source_file_reads": 0,
+    "source_or_central_edits": 0,
+    "tests": 0
+  },
+  "minimal_verification_plan": [
+    {
+      "area": "Authoritative identity and scope",
+      "id": "V1",
+      "predicate": "Use root-pinned G12 full811 manifest and122-member delivery plus exact transfer/index/ledger/viewer inputs. Distinguish canonical source identity from raw artifact hash and capture-time modes from Git executable bits. Bind logical artifact-root mapping; do not follow old-root/recovery/runtime authority."
+    },
+    {
+      "area": "Every source member once",
+      "id": "V2",
+      "predicate": "Check811 unique safe relative paths and no case/prefix collisions; resolve each exact member through no-follow directory/file descriptors in only the NEW root, compare bytes/hash/expected mode and stable pre/open/post identities, record no duplicate path/inode alias and811 checked members. Verify122 changed source paths equal delivery/transfer sets and689 unchanged members are present. Never treat delta-only, identical-content deduplication or a PASS count as full-source proof."
+    },
+    {
+      "area": "No silent extras or skips",
+      "id": "V3",
+      "predicate": "Under root's explicit new-root-only enumeration permission, exclude .git without opening it; separately inventory observed non-source paths and root-added docs without source review credit. All expected source members must be present in named observations. Concurrent doc additions mean any extras observation is bounded/non-atomic and must be frozen/rechecked at final publication; no primary/old/private-root enumeration."
+    },
+    {
+      "area": "Ledger structural and semantic preservation",
+      "id": "V4",
+      "predicate": "Once root supplies authoritative copied ledger paths/pins, prefer exact byte identity; if sanitized derivatives are intentional, require explicit original+derived hashes and a narrow authorized field transformation manifest. Preserve all37 unique issue records, full family/variant/original-origin arrays and per-variant statuses/links. Preserve all12 PVUs and8 PVDs without collapsing them into issue rows. Compare stable identifiers and full canonical records, not just totals. Do not inspect stopped procedures or infer new execution from legacy records."
+    },
+    {
+      "area": "Denominators and historical boundaries",
+      "id": "V5",
+      "predicate": "Keep19/25,22/37,2/12 separately labeled exactly as the authoritative root documents define them, with numerator-member sets and denominator universe stable. Do not add fractions or convert them into811-file audit coverage, tests, findings closed or runtime readiness. Pending, excluded, blocked, failed and stopped members must stay visible; PVA029 FAIL/no retry and PVU007 STOP/PVU011 NO RETRY are not reopened."
+    },
+    {
+      "area": "Read-only viewer, inert review only",
+      "id": "V6",
+      "predicate": "After exact source is supplied, inspect the viewer as inert text for read-only deterministic joins, escaping, local allowlisted path resolution, no fetch/network/subprocess/eval/imported helper execution, no data mutation/status synthesis, and complete unfiltered totals plus explicit filtered counts. Broken/missing members and provenance must remain visible; no UI can silently drop unknown variants or promote old results. Do not launch/import/test the viewer under this task."
+    },
+    {
+      "area": "Portable handoff publication",
+      "id": "V7",
+      "predicate": "Root alone creates branch/commit/push. Bind final source tuple, exact original/derived evidence manifests, include/reference-only partition, instruction and denominator meanings, and preserved STOP/no-replay notices. Keep immutable bytes/line endings; Git does not preserve0600/0700 or original inodes. A clone is not old lock/cache/run ownership. Root must independently establish final packaged-member closure and publication commit mapping."
+    }
+  ],
+  "new_tests": 0,
+  "recorded_at_utc": "2026-09-08T06:27:02.471521+00:00",
+  "review_id": "clone-handoff-storage-v1",
+  "reviewer": "/root/remed_storage",
+  "schema": "passvault.clone-handoff.storage-preparation.v1",
+  "scope_limits": "This preparation is not source semantic review, ledger-copy verification, viewer acceptance, runtime test/admission or central readiness. Future actual verification requires exact named inputs and root-authorized scope.",
+  "source_or_central_edits": 0,
+  "status": "PREPARATION_ONLY_SOURCE_COPY_AND_LEDGER_VIEWER_CHECKS_PENDING"
+}

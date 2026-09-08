@@ -1,6 +1,7 @@
 package com.passvault.desktop.security.biometric
 
 import com.passvault.core.security.BiometricType
+import com.passvault.shared.platform.NativeBiometricPromptStrings
 import com.sun.jna.Pointer
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
@@ -15,6 +16,100 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class JnaDesktopBiometricBridgeTest {
+    @Test
+    fun `prompt reasons follow the app snapshot for enrollment retrieval and runtime changes`() {
+        var strings = NativeBiometricPromptStrings.forLanguageTag("en")
+        val api = PromptTextNativeApi()
+        val dataDirectory = Files.createTempDirectory("passvault-jna-prompt-text-test")
+        val bridge = JnaDesktopBiometricBridge.create(
+            type = BiometricType.TOUCH_ID,
+            native = api,
+            dataDirectory = dataDirectory.toString(),
+            promptStrings = { strings },
+        )
+        try {
+            listOf("en", "ar", "en").forEach { language ->
+                strings = NativeBiometricPromptStrings.forLanguageTag(language)
+                bridge.enroll(ByteArray(32), ByteArray(32))
+                bridge.retrieve(ByteArray(32)).fill(0)
+                assertEquals(strings.enrollmentReason, api.enrollmentReason)
+                assertEquals(strings.unlockReason, api.unlockReason)
+                assertEquals(strings.unlockReason.encodeToByteArray().size, api.unlockReasonLength)
+            }
+        } finally {
+            bridge.close()
+            dataDirectory.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `invalid or oversized reasons cannot reach the native prompt`() {
+        val api = PromptTextNativeApi()
+        var reason = "invalid\u0000reason"
+        val dataDirectory = Files.createTempDirectory("passvault-jna-invalid-text-test")
+        val bridge = JnaDesktopBiometricBridge.create(
+            type = BiometricType.TOUCH_ID,
+            native = api,
+            dataDirectory = dataDirectory.toString(),
+            promptStrings = { NativeBiometricPromptStrings.forLanguageTag("en").copy(unlockReason = reason) },
+        )
+        try {
+            listOf("", "invalid\u0000reason", "a".repeat(1_025), "ع".repeat(600)).forEach { invalid ->
+                reason = invalid
+                assertFailsWith<IllegalArgumentException> { bridge.retrieve(ByteArray(32)) }
+                assertEquals(0, api.retrieveCalls)
+            }
+        } finally {
+            bridge.close()
+            dataDirectory.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `close cancellation retains context after the active worker returns`() {
+        verifyCloseCancellationLifetime(cancelThrows = false)
+    }
+
+    @Test
+    fun `failed close cancellation releases its context reservation exactly once`() {
+        verifyCloseCancellationLifetime(cancelThrows = true)
+    }
+
+    private fun verifyCloseCancellationLifetime(cancelThrows: Boolean) {
+        val api = PausedCancellationNativeApi(cancelThrows)
+        val dataDirectory = Files.createTempDirectory("passvault-jna-cancel-lifetime-test")
+        val bridge = JnaDesktopBiometricBridge.create(
+            type = BiometricType.TOUCH_ID,
+            native = api,
+            dataDirectory = dataDirectory.toString(),
+        )
+        val executor = Executors.newFixedThreadPool(2)
+        try {
+            val retrieval = executor.submit { runCatching { bridge.retrieve(ByteArray(32)) } }
+            assertTrue(api.retrieveEntered.await(5, TimeUnit.SECONDS))
+            val close = executor.submit { bridge.close() }
+            assertTrue(api.cancelEntered.await(5, TimeUnit.SECONDS))
+
+            // Pause cancellation before it uses the context and return the last
+            // ordinary call. close's reservation, not the worker, now owns it.
+            api.releaseRetrieve.countDown()
+            retrieval.get(5, TimeUnit.SECONDS)
+            assertEquals(0, api.destroyCalls)
+
+            api.releaseCancel.countDown()
+            close.get(5, TimeUnit.SECONDS)
+            bridge.close()
+            assertEquals(1, api.destroyCalls)
+            assertFalse(api.destroyedBeforeCancelFinished)
+        } finally {
+            api.releaseRetrieve.countDown()
+            api.releaseCancel.countDown()
+            executor.shutdownNow()
+            bridge.close()
+            dataDirectory.toFile().deleteRecursively()
+        }
+    }
+
     @Test
     fun `close cancels an active prompt and waits before destroying native context`() {
         val api = BlockingNativeApi()
@@ -105,7 +200,7 @@ class JnaDesktopBiometricBridgeTest {
     }
 }
 
-private class ImmediateNativeApi : NativeApi {
+private open class ImmediateNativeApi : NativeApi {
     var retrieveCalls = 0
 
     override fun pv_bio_abi_version() = 1
@@ -130,22 +225,26 @@ private class ImmediateNativeApi : NativeApi {
         outContains: IntByReference,
     ) = 0
 
-    override fun pv_bio_enroll(
+    override fun pv_bio_enroll_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         vaultKey: Pointer,
         keyLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ) = 0
 
-    override fun pv_bio_retrieve(
+    override fun pv_bio_retrieve_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         outVaultKey: Pointer,
         outLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int {
         retrieveCalls += 1
         return 0
@@ -153,6 +252,88 @@ private class ImmediateNativeApi : NativeApi {
 
     override fun pv_bio_delete(context: Pointer, vaultHash: Pointer, hashLength: SizeT) = 0
     override fun pv_bio_cancel(context: Pointer, operationId: Long) = 0
+}
+
+private class PausedCancellationNativeApi(
+    private val cancelThrows: Boolean,
+) : ImmediateNativeApi() {
+    val retrieveEntered = CountDownLatch(1)
+    val releaseRetrieve = CountDownLatch(1)
+    val cancelEntered = CountDownLatch(1)
+    val releaseCancel = CountDownLatch(1)
+
+    @Volatile
+    var destroyCalls = 0
+
+    @Volatile
+    var cancelFinished = false
+
+    @Volatile
+    var destroyedBeforeCancelFinished = false
+
+    override fun pv_bio_retrieve_localized(
+        context: Pointer,
+        operationId: Long,
+        vaultHash: Pointer,
+        hashLength: SizeT,
+        outVaultKey: Pointer,
+        outLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
+    ): Int {
+        retrieveEntered.countDown()
+        check(releaseRetrieve.await(5, TimeUnit.SECONDS))
+        return NATIVE_ABI_STATUS_CANCELLED
+    }
+
+    override fun pv_bio_cancel(context: Pointer, operationId: Long): Int {
+        cancelEntered.countDown()
+        check(releaseCancel.await(5, TimeUnit.SECONDS))
+        cancelFinished = true
+        check(!cancelThrows) { "Synthetic native cancellation failure" }
+        return NATIVE_ABI_STATUS_OK
+    }
+
+    override fun pv_bio_destroy(context: Pointer) {
+        destroyedBeforeCancelFinished = !cancelFinished
+        destroyCalls += 1
+    }
+}
+
+private class PromptTextNativeApi : ImmediateNativeApi() {
+    var enrollmentReason: String? = null
+    var unlockReason: String? = null
+    var unlockReasonLength: Int? = null
+
+    override fun pv_bio_enroll_localized(
+        context: Pointer,
+        operationId: Long,
+        vaultHash: Pointer,
+        hashLength: SizeT,
+        vaultKey: Pointer,
+        keyLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
+    ): Int {
+        enrollmentReason = reason.getByteArray(0, reasonLength.toInt()).decodeToString(throwOnInvalidSequence = true)
+        return NATIVE_ABI_STATUS_OK
+    }
+
+    override fun pv_bio_retrieve_localized(
+        context: Pointer,
+        operationId: Long,
+        vaultHash: Pointer,
+        hashLength: SizeT,
+        outVaultKey: Pointer,
+        outLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
+    ): Int {
+        retrieveCalls += 1
+        unlockReasonLength = reasonLength.toInt()
+        unlockReason = reason.getByteArray(0, reasonLength.toInt()).decodeToString(throwOnInvalidSequence = true)
+        return NATIVE_ABI_STATUS_OK
+    }
 }
 
 private class BlockingNativeApi : NativeApi {
@@ -194,22 +375,26 @@ private class BlockingNativeApi : NativeApi {
         outContains: IntByReference,
     ): Int = 0
 
-    override fun pv_bio_enroll(
+    override fun pv_bio_enroll_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         vaultKey: Pointer,
         keyLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int = 0
 
-    override fun pv_bio_retrieve(
+    override fun pv_bio_retrieve_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         outVaultKey: Pointer,
         outLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int {
         retrieveEntered.countDown()
         cancelCalled.await(5, TimeUnit.SECONDS)
@@ -267,22 +452,26 @@ private class UnresponsiveNativeApi : NativeApi {
         outContains: IntByReference,
     ): Int = 0
 
-    override fun pv_bio_enroll(
+    override fun pv_bio_enroll_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         vaultKey: Pointer,
         keyLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int = 0
 
-    override fun pv_bio_retrieve(
+    override fun pv_bio_retrieve_localized(
         context: Pointer,
         operationId: Long,
         vaultHash: Pointer,
         hashLength: SizeT,
         outVaultKey: Pointer,
         outLength: SizeT,
+        reason: Pointer,
+        reasonLength: SizeT,
     ): Int {
         retrieveEntered.countDown()
         releaseRetrieve.await(5, TimeUnit.SECONDS)
@@ -297,3 +486,7 @@ private class UnresponsiveNativeApi : NativeApi {
         return 0
     }
 }
+
+// ABI 1 fixture values from native/biometric-bridge/include/passvault_biometric.h:pv_bio_status.
+private const val NATIVE_ABI_STATUS_OK = 0 // PV_BIO_OK
+private const val NATIVE_ABI_STATUS_CANCELLED = 1 // PV_BIO_CANCELLED

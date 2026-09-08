@@ -67,6 +67,23 @@ template <typename Container> void secure_wipe(Container &value) {
               value.size() * sizeof(typename Container::value_type));
 }
 
+// Borrowed arrays must outlive their guard. Register before filling a secret so
+// both ordinary returns and C++ exception unwinding retain an erasure owner.
+// This allocation-free guard does not promise erasure of OS/runtime copies.
+template <size_t Size> class ScopedArrayWipe final {
+public:
+  explicit ScopedArrayWipe(std::array<uint8_t, Size> &value) noexcept
+      : value_(value) {}
+  ~ScopedArrayWipe() noexcept { secure_wipe(value_); }
+  ScopedArrayWipe(const ScopedArrayWipe &) = delete;
+  ScopedArrayWipe &operator=(const ScopedArrayWipe &) = delete;
+  ScopedArrayWipe(ScopedArrayWipe &&) = delete;
+  ScopedArrayWipe &operator=(ScopedArrayWipe &&) = delete;
+
+private:
+  std::array<uint8_t, Size> &value_;
+};
+
 bool valid_vault_hash(const uint8_t *value, size_t length) {
   return value != nullptr && length == PV_BIO_VAULT_HASH_BYTES;
 }
@@ -234,6 +251,7 @@ bool derive_wrapping_key(const std::array<uint8_t, kPrfBytes> &prf,
     return false;
   }
   std::array<uint8_t, kHashBytes> pseudorandom_key{};
+  const ScopedArrayWipe<kHashBytes> wipe_pseudorandom_key(pseudorandom_key);
   std::vector<uint8_t> info;
   info.reserve(sizeof(kKdfInfo) - 1 + vault_hash.size() + 1);
   info.insert(info.end(), kKdfInfo, kKdfInfo + sizeof(kKdfInfo) - 1);
@@ -623,14 +641,21 @@ std::wstring random_suffix() {
   return result;
 }
 
-bool write_secure_file_atomic(const std::filesystem::path &directory,
-                              const std::filesystem::path &destination,
-                              const std::vector<uint8_t> &bytes) {
+// Keep filesystem ownership and I/O in one implementation. The three local
+// callables make rare validation failures deterministic in the native tests;
+// the production entry below always supplies the real security operations.
+template <typename MakeSuffix, typename ValidateFile, typename ProtectFile>
+bool write_secure_file_atomic_impl(const std::filesystem::path &directory,
+                                   const std::filesystem::path &destination,
+                                   const std::vector<uint8_t> &bytes,
+                                   MakeSuffix make_suffix,
+                                   ValidateFile validate_file,
+                                   ProtectFile protect_file) {
   if (bytes.empty() || bytes.size() > kMaxEnvelopeBytes ||
       !safe_directory(directory)) {
     return false;
   }
-  const std::wstring suffix = random_suffix();
+  const std::wstring suffix = make_suffix();
   if (suffix.empty()) {
     return false;
   }
@@ -642,9 +667,16 @@ bool write_secure_file_atomic(const std::filesystem::path &directory,
                   FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_TEMPORARY |
                       FILE_FLAG_WRITE_THROUGH | FILE_FLAG_OPEN_REPARSE_POINT,
                   nullptr));
-  if (!file.valid() || !safe_handle(file.get()) ||
-      !apply_current_user_only_dacl(file.get(), NO_INHERITANCE)) {
-    DeleteFileW(temporary.c_str());
+  if (!file.valid()) {
+    // Failed CREATE_NEW grants no ownership, even if the pathname exists.
+    return false;
+  }
+  if (!validate_file(file.get()) ||
+      !protect_file(file.get(), NO_INHERITANCE)) {
+    // Share mode zero prevents deletion until this acquired handle is closed.
+    if (file.close()) {
+      DeleteFileW(temporary.c_str());
+    }
     return false;
   }
   size_t offset = 0;
@@ -669,10 +701,18 @@ bool write_secure_file_atomic(const std::filesystem::path &directory,
     success = MoveFileExW(temporary.c_str(), destination.c_str(),
                           MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
   }
-  if (!success) {
+  if (!success && closed) {
     DeleteFileW(temporary.c_str());
   }
   return success;
+}
+
+bool write_secure_file_atomic(const std::filesystem::path &directory,
+                              const std::filesystem::path &destination,
+                              const std::vector<uint8_t> &bytes) {
+  return write_secure_file_atomic_impl(directory, destination, bytes,
+                                       random_suffix, safe_handle,
+                                       apply_current_user_only_dacl);
 }
 
 void append_u32(std::vector<uint8_t> *output, uint32_t value) {
@@ -1913,9 +1953,11 @@ pv_bio_status create_windows_hello_credential(pv_bio_context *context,
   envelope.public_x = public_key.x;
   envelope.public_y = public_key.y;
   std::array<uint8_t, kPrfBytes> prf_output{};
+  const ScopedArrayWipe<kPrfBytes> wipe_prf_output(prf_output);
   std::copy_n(result->pHmacSecret->pbFirst, prf_output.size(),
               prf_output.begin());
   std::array<uint8_t, kHashBytes> wrapping_key{};
+  const ScopedArrayWipe<kHashBytes> wipe_wrapping_key(wrapping_key);
   std::vector<uint8_t> aad = encode_envelope_aad(envelope);
   const bool encrypted =
       derive_wrapping_key(prf_output, envelope.kdf_salt, envelope.vault_hash,
@@ -2146,9 +2188,11 @@ pv_bio_status retrieve_windows_hello_credential(pv_bio_context *context,
   }
 
   std::array<uint8_t, kPrfBytes> prf_output{};
+  const ScopedArrayWipe<kPrfBytes> wipe_prf_output(prf_output);
   std::copy_n(result->pHmacSecret->pbFirst, prf_output.size(),
               prf_output.begin());
   std::array<uint8_t, kHashBytes> wrapping_key{};
+  const ScopedArrayWipe<kHashBytes> wipe_wrapping_key(wrapping_key);
   std::vector<uint8_t> aad = encode_envelope_aad(envelope);
   const bool decrypted =
       derive_wrapping_key(prf_output, envelope.kdf_salt, envelope.vault_hash,
@@ -2383,6 +2427,44 @@ pv_bio_status PV_BIO_CALL pv_bio_retrieve(pv_bio_context *context,
     return result;
   } catch (...) {
     secure_wipe(out_vault_key, out_vault_key_length);
+    return PV_BIO_INTERNAL_ERROR;
+  }
+}
+
+pv_bio_status PV_BIO_CALL pv_bio_enroll_localized(
+    pv_bio_context *context, uint64_t operation_id, const uint8_t *vault_hash,
+    size_t vault_hash_length, const uint8_t *vault_key, size_t vault_key_length,
+    const char *reason_utf8, size_t reason_length) {
+  try {
+    if (reason_length > PV_BIO_MAX_PROMPT_REASON_BYTES ||
+        !utf8_to_utf16(reason_utf8, reason_length).has_value()) {
+      return PV_BIO_INTERNAL_ERROR;
+    }
+    // Windows WebAuthn owns its prompt labels. Accept the shared extension
+    // without substituting app text into credential identity or policy fields.
+    return pv_bio_enroll(context, operation_id, vault_hash, vault_hash_length,
+                          vault_key, vault_key_length);
+  } catch (...) {
+    return PV_BIO_INTERNAL_ERROR;
+  }
+}
+
+pv_bio_status PV_BIO_CALL pv_bio_retrieve_localized(
+    pv_bio_context *context, uint64_t operation_id, const uint8_t *vault_hash,
+    size_t vault_hash_length, uint8_t *out_vault_key,
+    size_t out_vault_key_length, const char *reason_utf8, size_t reason_length) {
+  if (out_vault_key != nullptr &&
+      out_vault_key_length == PV_BIO_VAULT_KEY_BYTES) {
+    secure_wipe(out_vault_key, out_vault_key_length);
+  }
+  try {
+    if (reason_length > PV_BIO_MAX_PROMPT_REASON_BYTES ||
+        !utf8_to_utf16(reason_utf8, reason_length).has_value()) {
+      return PV_BIO_INTERNAL_ERROR;
+    }
+    return pv_bio_retrieve(context, operation_id, vault_hash, vault_hash_length,
+                            out_vault_key, out_vault_key_length);
+  } catch (...) {
     return PV_BIO_INTERNAL_ERROR;
   }
 }

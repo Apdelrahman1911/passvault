@@ -1,0 +1,97 @@
+{
+  "schema": "passvault.clone-handoff.marker-platform-review-ledger.v1",
+  "entries": [
+    {
+      "id": "MARK-001",
+      "kind": "EXACT_FOUR_SOURCE_METADATA_BINDINGS",
+      "display_chunk_id": "1da69a",
+      "display_emission_end_utc": "2026-09-08T08:07:42.731443+00:00",
+      "after_reasoning_utc": "2026-09-08T08:10:20.231Z",
+      "reasoning": "The four expressly admitted D paths each uniquely occur in pinned G12 manifest with exact bytes/hash/intended mode. Rules330B hash matches root's concrete flag. No directories/source beyond those paths are authorized, and source metadata identity alone does not classify any literal.",
+      "disposition": "PINS_ESTABLISHED_NO_CONTENT_CLASSIFICATION_YET"
+    },
+    {
+      "id": "MARK-002",
+      "kind": "REDACTED_FIXTURE_AND_COMPLETE_PARSER_CONTEXT",
+      "display_chunk_id": "1be9ba",
+      "display_emission_end_utc": "2026-09-08T08:10:20.303157+00:00",
+      "after_reasoning_utc": "2026-09-08T08:12:24.472Z",
+      "subjects": [
+        {
+          "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+          "lines": [
+            1,
+            10
+          ],
+          "literal_values": "suppressed"
+        },
+        {
+          "path": "scripts/validate-app-store-connect-key.rb",
+          "lines": [
+            1,
+            40
+          ]
+        }
+      ],
+      "reasoning": "Rules has explicit ruleid annotations for provider-token and private-key-material; marker bodies and unrelated bidi-control fixture value were not displayed. The40-line Ruby source uses BEGIN/END literal strings only as envelope predicates on external input read at runtime; its key validation calls are source text, not executed by this reviewer. That marker is not embedded private-key material. Fixture role alone is not enough for literal classification, so deterministic-body/base64 properties are checked next without value disclosure or authentication.",
+      "disposition": "PARSER_MARKER_NON_CREDENTIAL_CONTEXT;FIXTURE_LITERAL_PROPERTIES_PENDING"
+    },
+    {
+      "id": "MARK-003",
+      "kind": "LITERAL_BYTE_PROPERTIES_AND_TWO_ADJACENT_PREDICATES",
+      "display_chunk_id": "0c2130",
+      "display_emission_end_utc": "2026-09-08T08:12:24.560330+00:00",
+      "after_reasoning_utc": "2026-09-08T08:15:04.354Z",
+      "subjects": [
+        {
+          "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+          "lines": [
+            1,
+            7
+          ]
+        },
+        {
+          "path": "scripts/test-release-automation.sh",
+          "lines": [
+            845,
+            892
+          ]
+        },
+        {
+          "path": "scripts/validate-private-release-config.sh",
+          "lines": [
+            839,
+            885
+          ]
+        }
+      ],
+      "reasoning": "Fixture PEM base64 decodes to48 identical ASCII-A octets, not a DER SEQUENCE, so this exact block is not PKCS#8 key material. Provider body is36 distinct characters, but four over-specific zero-first/letter-first templates did not match; it is not yet called an exact ordered placeholder. Source868 constructs invalid_asc_key and870-872 treats validator acceptance as failure; adjacent real positive is generated at runtime, not a committed key literal. Private-config862 is grep predicate followed by runtime-input Ruby validation; no key body is embedded in that marker. All tool/key-generation/validation code was displayed inertly, never executed, and literal bodies remained redacted.",
+      "disposition": "THREE_PEM_CONTEXTS_SYNTHETIC_OR_PREDICATE;PROVIDER_ORDERED_RUN_PROOF_PENDING"
+    },
+    {
+      "id": "MARK-004",
+      "kind": "NEGATIVE_PEM_PROOF_AND_PROVIDER_CHARACTER_CLASSES",
+      "display_chunk_id": "0786c3",
+      "display_emission_end_utc": "2026-09-08T08:15:04.454150+00:00",
+      "after_reasoning_utc": "2026-09-08T08:16:09.366Z",
+      "reasoning": "The exact negative test uses four quoted printf arguments:format,BEGIN,7-character invalid-base64 body,END; explicit if-accepted failure confirms a deliberate invalid fixture. No command ran. Provider body is not digits-plus-alphabet: it consists of26distinct uppercase letters followed by10distinct lowercase letters. The first run is the complete cyclic ascending uppercase class; the incomplete lower run makes the prior full-two-class predicate false. These are observed byte properties, not retries of a security gate. One final exact alphabet-prefix comparison will avoid overstating the initial guess.",
+      "disposition": "NEGATIVE_PEM_NON_KEY_FIXTURE_CONFIRMED;EXACT_PROVIDER_PREFIX_PATTERN_NEXT"
+    },
+    {
+      "id": "MARK-005",
+      "kind": "EXACT_SYNTHETIC_PROVIDER_PATTERN",
+      "display_chunk_id": "a627b3",
+      "display_emission_end_utc": "2026-09-08T08:16:09.453863+00:00",
+      "after_reasoning_utc": "2026-09-08T08:19:45.664Z",
+      "reasoning": "The exact36-character body equals the first36characters of the constructed uppercase/lowercase/decimal alphabet:complete26uppercase alphabet then first10lowercase letters,zero digits. Combined with its immediate expected-positive provider-token ruleid this is deliberately synthetic fixture text, not unexplained high-entropy credential material. Earlier digit/full-two-class guesses were not adopted. This is a local byte-property publication disposition only; issuance,validity,revocation or ownership were not authenticated or inferred, and neither value nor value-derived hash was printed.",
+      "disposition": "ACCEPT_EXACT_PROVIDER_SHAPED_SYNTHETIC_FIXTURE_CONTEXT"
+    },
+    {
+      "id": "MARK-006",
+      "kind": "FINAL_FIVE_CONTEXT_FOUR_FILE_PUBLICATION_DISPOSITION",
+      "after_reasoning_utc": "2026-09-08T08:19:45.664Z",
+      "reasoning": "Allfive concrete markers acrossfourpinned files are explained:oneproviderpositivefixture,oneinvalidDER PEMpositivefixture,oneinvalid-base64 expected-rejection testfixture,twoinputpredicate markers. No source replacement is warranted for theseexactliteralcontexts. Acceptance is exacthash/context only,notpathwide exclusion or publicsecretclearance. No securityanalysis/script/test/provider/network/crypto validation was executed,no newproduct finding/closure/coverage/admission gatecreated,and allclosedscopes remain intact.",
+      "disposition": "ACCEPT_BOUNDED_PUBLICATION_MARKER_DISPOSITIONS_ONLY"
+    }
+  ]
+}

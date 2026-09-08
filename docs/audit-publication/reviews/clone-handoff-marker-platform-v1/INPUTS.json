@@ -1,0 +1,122 @@
+{
+  "schema": "passvault.clone-handoff.marker-platform-inputs.v1",
+  "reviewer": "/root/remed_platform",
+  "preflight_started_at_utc": "2026-09-08T08:25:05.687313+00:00",
+  "preflight_finished_at_utc": "2026-09-08T08:25:05.692985+00:00",
+  "roots": {
+    "R": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z",
+    "D": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z"
+  },
+  "input_count": 5,
+  "D_source_input_count": 4,
+  "R_supporting_input_count": 1,
+  "inputs": [
+    {
+      "root": "R",
+      "path": "verification/source-manifest-v12.json",
+      "bytes": 169300,
+      "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f",
+      "scope": "Only four exact source metadata rows; no source inventory expansion.",
+      "mode_octal": "0600",
+      "LF": 4868,
+      "seal_preflight_sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f",
+      "preflight_hash_identity_only_not_semantic_reexecution": true
+    },
+    {
+      "bytes": 330,
+      "mode": 420,
+      "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+      "sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+      "root": "D",
+      "scope": "Complete10-line file displayed only with literals and unrelated bidi fixture value suppressed.",
+      "observed_metadata": {
+        "bytes": 330,
+        "mode": 420,
+        "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+        "sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+        "mode_octal": "0644",
+        "LF": 10,
+        "device": "16777232",
+        "inode": "86607112",
+        "mtime_ns": "1788848289517811105",
+        "ctime_ns": "1788848289517811105"
+      },
+      "seal_preflight_sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+      "preflight_hash_identity_only_not_semantic_reexecution": true
+    },
+    {
+      "bytes": 145239,
+      "mode": 493,
+      "path": "scripts/test-release-automation.sh",
+      "sha256": "e2830b2ec2284087b606b1a652fe38b33d75c87a1aa405e4e3661cc89aa4e3f0",
+      "root": "D",
+      "scope": "Only845-892semanticcontext; fullfilehashidentity is not fullfileaudit.",
+      "observed_metadata": {
+        "bytes": 145239,
+        "mode": 493,
+        "path": "scripts/test-release-automation.sh",
+        "sha256": "e2830b2ec2284087b606b1a652fe38b33d75c87a1aa405e4e3661cc89aa4e3f0",
+        "mode_octal": "0755",
+        "LF": 2990,
+        "device": "16777232",
+        "inode": "86607092",
+        "mtime_ns": "1788848349373770077",
+        "ctime_ns": "1788848349373887035"
+      },
+      "seal_preflight_sha256": "e2830b2ec2284087b606b1a652fe38b33d75c87a1aa405e4e3661cc89aa4e3f0",
+      "preflight_hash_identity_only_not_semantic_reexecution": true
+    },
+    {
+      "bytes": 1089,
+      "mode": 493,
+      "path": "scripts/validate-app-store-connect-key.rb",
+      "sha256": "28e8bd28457d44b7eefa63b38f1ba774060090cbd3e2ec43dc78930e2abc6738",
+      "root": "D",
+      "scope": "Complete40-line parser source, inert only; runtimeinput path not opened.",
+      "observed_metadata": {
+        "bytes": 1089,
+        "mode": 493,
+        "path": "scripts/validate-app-store-connect-key.rb",
+        "sha256": "28e8bd28457d44b7eefa63b38f1ba774060090cbd3e2ec43dc78930e2abc6738",
+        "mode_octal": "0755",
+        "LF": 40,
+        "device": "16777232",
+        "inode": "86607114",
+        "mtime_ns": "1788848289517967856",
+        "ctime_ns": "1788848289517967856"
+      },
+      "seal_preflight_sha256": "28e8bd28457d44b7eefa63b38f1ba774060090cbd3e2ec43dc78930e2abc6738",
+      "preflight_hash_identity_only_not_semantic_reexecution": true
+    },
+    {
+      "bytes": 55104,
+      "mode": 493,
+      "path": "scripts/validate-private-release-config.sh",
+      "sha256": "7172fcaf6c480c9922f1ed83b54a021f8b841a64abe3dca63133601a1210e3da",
+      "root": "D",
+      "scope": "Only839-885semanticcontext; privateconfig/inputpaths not opened.",
+      "observed_metadata": {
+        "bytes": 55104,
+        "mode": 493,
+        "path": "scripts/validate-private-release-config.sh",
+        "sha256": "7172fcaf6c480c9922f1ed83b54a021f8b841a64abe3dca63133601a1210e3da",
+        "mode_octal": "0755",
+        "LF": 1050,
+        "device": "16777232",
+        "inode": "86607132",
+        "mtime_ns": "1788848349384631300",
+        "ctime_ns": "1788848349384660383"
+      },
+      "seal_preflight_sha256": "7172fcaf6c480c9922f1ed83b54a021f8b841a64abe3dca63133601a1210e3da",
+      "preflight_hash_identity_only_not_semantic_reexecution": true
+    }
+  ],
+  "limits": [
+    "All five exact input hashes and sizes were checked before creating the new output namespace.",
+    "D reads are restricted to four expressly named files, each bounded at 1MiB; R manifest is bounded at 2MiB.",
+    "The final seal input reads check exact file identities only; no semantic/source calculation, scanner, test, helper, provider or cryptographic validation was re-executed.",
+    "Whole-source-file hashes bind exact review inputs; no credential-value hashes or literal token/key bodies are recorded.",
+    "The two larger shell files received only the explicitly listed semantic context review, not a whole-file secret audit.",
+    "No private configuration, credential, signing or runtime input paths were followed."
+  ]
+}

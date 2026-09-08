@@ -423,9 +423,20 @@ void configure_biometric_context(LAContext *auth_context, NSString *reason) {
   auth_context.touchIDAuthenticationAllowableReuseDuration = 0;
 }
 
-pv_bio_status authenticate_for_enrollment(LAContext *auth_context) {
-  configure_biometric_context(
-      auth_context, @"Enable Touch ID unlock for this vault");
+NSString *localized_prompt_reason(const char *bytes, size_t length) {
+  if (bytes == nullptr || length == 0 ||
+      length > PV_BIO_MAX_PROMPT_REASON_BYTES ||
+      std::memchr(bytes, 0, length) != nullptr) {
+    return nil;
+  }
+  return [[NSString alloc] initWithBytes:bytes
+                                 length:length
+                               encoding:NSUTF8StringEncoding];
+}
+
+pv_bio_status authenticate_for_enrollment(LAContext *auth_context,
+                                         NSString *reason) {
+  configure_biometric_context(auth_context, reason);
   dispatch_semaphore_t completion = dispatch_semaphore_create(0);
   __block BOOL authenticated = NO;
   __block NSError *authentication_error = nil;
@@ -682,11 +693,23 @@ pv_bio_status PV_BIO_CALL pv_bio_enroll(pv_bio_context *context,
                                         size_t vault_hash_length,
                                         const uint8_t *vault_key,
                                         size_t vault_key_length) {
+  constexpr char reason[] = "Enable Touch ID unlock for this vault";
+  return pv_bio_enroll_localized(
+      context, operation_id, vault_hash, vault_hash_length, vault_key,
+      vault_key_length, reason, sizeof(reason) - 1);
+}
+
+pv_bio_status PV_BIO_CALL pv_bio_enroll_localized(
+    pv_bio_context *context, uint64_t operation_id, const uint8_t *vault_hash,
+    size_t vault_hash_length, const uint8_t *vault_key, size_t vault_key_length,
+    const char *reason_utf8, size_t reason_length) {
   @autoreleasepool {
     return guarded_status([&]() -> pv_bio_status {
+      NSString *reason = localized_prompt_reason(reason_utf8, reason_length);
       if (context == nullptr ||
           !valid_vault_hash(vault_hash, vault_hash_length) ||
-          vault_key == nullptr || vault_key_length != PV_BIO_VAULT_KEY_BYTES) {
+          vault_key == nullptr || vault_key_length != PV_BIO_VAULT_KEY_BYTES ||
+          reason == nil) {
         return PV_BIO_INTERNAL_ERROR;
       }
       LAContext *auth_context = [[LAContext alloc] init];
@@ -698,7 +721,7 @@ pv_bio_status PV_BIO_CALL pv_bio_enroll(pv_bio_context *context,
         return PV_BIO_CANCELLED;
       }
       const pv_bio_status authentication =
-          authenticate_for_enrollment(auth_context);
+          authenticate_for_enrollment(auth_context, reason);
       if (authentication != PV_BIO_OK ||
           operation_was_cancelled(context, operation_id)) {
         return authentication == PV_BIO_OK ? PV_BIO_CANCELLED : authentication;
@@ -780,16 +803,27 @@ pv_bio_status PV_BIO_CALL pv_bio_retrieve(pv_bio_context *context,
                                           size_t vault_hash_length,
                                           uint8_t *out_vault_key,
                                           size_t out_vault_key_length) {
+  constexpr char reason[] = "Unlock PassVault with Touch ID";
+  return pv_bio_retrieve_localized(
+      context, operation_id, vault_hash, vault_hash_length, out_vault_key,
+      out_vault_key_length, reason, sizeof(reason) - 1);
+}
+
+pv_bio_status PV_BIO_CALL pv_bio_retrieve_localized(
+    pv_bio_context *context, uint64_t operation_id, const uint8_t *vault_hash,
+    size_t vault_hash_length, uint8_t *out_vault_key,
+    size_t out_vault_key_length, const char *reason_utf8, size_t reason_length) {
   @autoreleasepool {
     if (out_vault_key != nullptr &&
         out_vault_key_length == PV_BIO_VAULT_KEY_BYTES) {
       secure_wipe(out_vault_key, out_vault_key_length);
     }
     const pv_bio_status guarded_result = guarded_status([&]() -> pv_bio_status {
+      NSString *reason = localized_prompt_reason(reason_utf8, reason_length);
       if (context == nullptr ||
           !valid_vault_hash(vault_hash, vault_hash_length) ||
           out_vault_key == nullptr ||
-          out_vault_key_length != PV_BIO_VAULT_KEY_BYTES) {
+          out_vault_key_length != PV_BIO_VAULT_KEY_BYTES || reason == nil) {
         return out_vault_key_length < PV_BIO_VAULT_KEY_BYTES
                    ? PV_BIO_BUFFER_TOO_SMALL
                    : PV_BIO_INTERNAL_ERROR;
@@ -807,8 +841,7 @@ pv_bio_status PV_BIO_CALL pv_bio_retrieve(pv_bio_context *context,
         return PV_BIO_INVALIDATED;
       }
       LAContext *auth_context = [[LAContext alloc] init];
-      configure_biometric_context(auth_context,
-                                  @"Unlock PassVault with Touch ID");
+      configure_biometric_context(auth_context, reason);
       if (!begin_operation(context, operation_id, auth_context)) {
         secure_wipe(&metadata, sizeof(metadata));
         return PV_BIO_BUSY;

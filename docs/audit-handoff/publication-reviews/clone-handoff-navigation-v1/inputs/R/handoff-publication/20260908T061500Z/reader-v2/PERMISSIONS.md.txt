@@ -1,0 +1,100 @@
+# Current authority and workspace safety
+
+## Authorization history
+
+The owner first requested an independent whole-project audit, then authorized
+fixes for confirmed defects and independently confirmed new defects. On
+2026-09-08 the owner additionally authorized committing/pushing the remediation
+and important continuation information so another agent can clone the repo.
+This handoff uses a **dedicated branch only**, without merging it.
+
+Old reports saying “no commits/push” accurately describe earlier authority; this
+specific handoff authorization supersedes that restriction only. It does not
+authorize main/testing/release changes, merging, live settings, approvals,
+production signing, uploads to stores, publishing, version/dependency/identity
+changes or replacement of the existing candidate. Do not treat the branch as an
+approved release. No automatic PR is required.
+
+## Instructions before any project execution
+
+- Read this file and the continuation guide before root `AGENTS.md`, skill or
+  report commands are executed. Their example commands and historical run
+  records are **dormant**, not current execution admission.
+- On a clone, the Git/Gradle root is the clone directory, not an extra nested
+  `passvault/`. The original host's workspace topology is historical.
+- The clone's `agent-skills/` is a generated mirror containing only seven
+  navigation-focused skills at G12; do not edit it. `instructions/skills/`
+  separately preserves 18 focused skill documents and their available text
+  references from the authoritative local collection, with exact copy hashes.
+  These are read-only instruction snapshots, not a newly generated mirror or a
+  complete runnable skill-tool distribution. Referenced scripts not copied here
+  remain unavailable/dormant; obtain their authoritative source if actually
+  needed rather than inventing or automatically running them.
+- Some inherited AGENTS facts/commands are stale. Actual source is schema5;
+  `:core:crypto:desktopTest` is the JVM module test task, not
+  `:core:crypto:test`. Do not assume Kover exists or an aggregate task's success
+  means the intended test cases executed. Verify task wiring before admission.
+- `instructions/G12-AGENTS.md` is the clone's exact inherited instruction file;
+  `instructions/primary-AGENTS.md` is a different, non-shipped local-primary
+  snapshot. Do not confuse them or silently apply that local file to source.
+- Android has no product flavors. Never run `assembleStandard*` or `assembleFdroid*`.
+
+## Preserve work and evidence
+
+- Never reset/clean/stash/switch/overwrite the owner's original dirty checkout.
+  The delivered source comes from the separate remediation worktree; only its
+  G12 changes are applied. The frozen original audit/report bytes remain intact.
+- Keep local-only application changes/findings separate from the audited source.
+- No real vaults, personal backups, credentials, private signing material,
+  tester information, personal clipboard or installed Store application.
+- Use only synthetic data and isolated storage for permitted validations.
+- Preserve exact patches, source hashes, regression evidence, rejected concerns,
+  grouped variants, disagreements and independent-review dispositions.
+- File hashes establish bytes, not correctness. Historical filesystem modes,
+  uid/device/inode/birth metadata and absolute paths are not clone authority.
+
+## Build, RAM and disk discipline
+
+1. Exactly one build owner and an explicit shared coordination mechanism. No
+   concurrent Gradle/Xcode/native builds; agents must not launch competing work.
+2. Fresh and ongoing RAM/disk/process-ownership checks. Retain the existing
+   12 GiB/25% launch floors and 8 GiB/20% running floors. Point-idle observation
+   does not guarantee exclusivity. Pause/cancel only positively identified owned
+   work if unrelated work appears; never stop somebody else's tasks.
+3. JDK17, checked-in wrapper, one worker by default, non-daemon execution,
+   configure-on-demand disabled, serial Detekt, dependency verification intact.
+4. Before an invocation, establish cleanup for success/failure/cancellation and
+   interrupted-run recovery. Preserve compact exact commands/logs/results/hashes
+   outside all cleanup targets.
+5. After every applicable build/test invocation, run the wrapper's `--stop` with
+   the original isolated Gradle configuration, verify audit-owned worker
+   settlement, and remove only allowlisted audit-created outputs/staging files.
+   A failed stop must not silently bypass independently safe file cleanup;
+   uncertain ownership stays an explicit residual, not a success claim.
+   Failed/timed-out/ambiguous stop retains the active stop obligation and its
+   original HOME/TMP/run identity; no automatic stop retry, namespace replacement
+   or journal normalization. Retain dedicated caches for a separate exact,
+   independently admitted closeout. Only independently safe allowlisted cleanup
+   may proceed while these obligations remain open.
+6. Resolve/validate cleanup paths, reject symlinks/unexpected roots and preserve
+   source, permanent tests, reports, shared caches/SDKs/toolchains and unrelated
+   files. No blanket `git clean`, broad recursive deletion or Java-name killing.
+
+## Non-replay boundaries
+
+- **PVU-007 STOP:** no investigation or reformulation.
+- **PVU-011 NO RETRY:** no containment relaxation or procedure inquiry.
+- **PVA-029:** preserve regression FAIL; no automatic retry.
+- **G7/G8 runtime/recovery/cache/helper gates remain CLOSED.**
+- **Never execute/import `tools/validation_g10db_one_shot_v2.py`** from archived
+  reports or replay old materialization/application helpers. It is unadmitted
+  and incomplete. Historical journals are inert evidence, not recovery state.
+- Original-host coordination lock and parent must not be recreated:
+  `(16777232,73291247)` and `(16777232,73291246)` respectively. A clone cannot
+  inherit these identities. Fresh host coordination must be independently
+  established rather than forged or substituted into old receipts.
+
+Independent verification is mandatory: a reviewer other than the originator
+must challenge each finding and patch, inspect relevant surrounding code and
+attempt to disprove it. Final coverage/report review also remains independent.
+Do not call compilation, fake tests or an accurate checkpoint “fully verified.”

@@ -7,16 +7,17 @@ require "zlib"
 
 module PassVault
   module StoreMetadataArchive
-    EXPECTED_FILES = %w[
-      privacy-ar.md
-      privacy-en.md
-      release-notes-ar.md
-      release-notes-en.md
-      store-description-ar.md
-      store-description-en.md
-      store-metadata-ar.env
-      store-metadata-en.env
-    ].freeze
+    SOURCE_VARIABLES = {
+      "PRIVACY_TEXT_AR_FILE" => "privacy-ar.md",
+      "PRIVACY_TEXT_EN_FILE" => "privacy-en.md",
+      "RELEASE_NOTES_AR_FILE" => "release-notes-ar.md",
+      "RELEASE_NOTES_EN_FILE" => "release-notes-en.md",
+      "STORE_DESCRIPTION_AR_FILE" => "store-description-ar.md",
+      "STORE_DESCRIPTION_EN_FILE" => "store-description-en.md",
+      "STORE_METADATA_AR_FILE" => "store-metadata-ar.env",
+      "STORE_METADATA_EN_FILE" => "store-metadata-en.env",
+    }.freeze
+    EXPECTED_FILES = SOURCE_VARIABLES.values.sort.freeze
     MAX_FILE_BYTES = 512 * 1024
     MAX_TOTAL_BYTES = 2 * 1024 * 1024
 
@@ -30,8 +31,37 @@ module PassVault
         File.symlink?(archive_path)
 
       payloads = read_payloads(source_path)
+      validate_payloads(payloads)
       write_archive(payloads, archive_path)
     end
+
+    def validate_inputs(source_path, configuration = nil)
+      if configuration
+        SOURCE_VARIABLES.each do |variable, name|
+          unless configuration[variable] == "release/private/#{name}"
+            raise "#{variable} must identify the canonical release/private/#{name} payload."
+          end
+        end
+      end
+      unless File.directory?(source_path) && !File.symlink?(source_path)
+        raise "The metadata source directory is missing or unsafe."
+      end
+      validate_payloads(read_payloads(File.expand_path(source_path)))
+    end
+
+    def validate_payloads(payloads)
+      payloads.each do |name, bytes|
+        text = bytes.dup.force_encoding(Encoding::UTF_8)
+        if text.match?(/replace this placeholder|example\.invalid|todo|draft|change[ -]?me|استبدل هذا النص|استبدل هذا/i)
+          raise "A canonical metadata payload contains placeholder content: #{name}"
+        end
+        if name.match?(/-ar\.(md|env)\z/) && !text.match?(/[ء-ي]/)
+          raise "A canonical Arabic metadata payload contains no Arabic text: #{name}"
+        end
+      end
+      true
+    end
+    private_class_method :validate_payloads
 
     def validate_directories(source_path, output_parent)
       unless File.directory?(source_path) && !File.symlink?(source_path)

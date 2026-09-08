@@ -242,7 +242,7 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
         operation: IosBiometricPromptCoordinator.Operation,
     ): Result<Unit> = withContext(Dispatchers.Main) {
         suspendCancellableCoroutine { continuation ->
-            val context = LAContext()
+            val context = iosBiometricPromptContext(enrolling = true)
             continuation.invokeOnCancellation { promptCoordinator.cancel(operation) }
             if (
                 promptCoordinator.activate(
@@ -255,7 +255,7 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
             ) {
                 context.evaluatePolicy(
                     LAPolicyDeviceOwnerAuthenticationWithBiometrics,
-                    localizedReason = ENROLLMENT_REASON,
+                    localizedReason = context.localizedReason,
                 ) { success, error ->
                     promptCoordinator.finishPrompt(operation, context) {
                         continuation.resumeIfPending(
@@ -325,7 +325,7 @@ class IosBiometricKeyStore : BiometricKeyStore, BiometricPromptController {
         vaultId: String,
         operation: IosBiometricPromptCoordinator.Operation,
     ): Result<ByteArray> = suspendCancellableCoroutine { continuation ->
-        val context = LAContext().apply { localizedReason = UNLOCK_REASON }
+        val context = iosBiometricPromptContext(enrolling = false)
         continuation.invokeOnCancellation { promptCoordinator.cancel(operation) }
         if (
             promptCoordinator.activate(
@@ -652,9 +652,15 @@ private fun markerKey(vaultId: String): String = "biometric.unlock.enabled.$vaul
 private fun <T> internalFailure(): Result<T> =
     Result.failure(IllegalStateException("Biometric Keychain operation failed"))
 
+internal fun iosBiometricPromptContext(
+    enrolling: Boolean,
+    strings: NativeBiometricPromptStrings = currentNativeBiometricPromptStrings(),
+): LAContext = LAContext().apply {
+    localizedReason = if (enrolling) strings.enrollmentReason else strings.unlockReason
+    localizedCancelTitle = strings.cancel
+}
+
 private const val SERVICE_NAME = "com.passvault.biometric-unlock"
-private const val ENROLLMENT_REASON = "Enable biometric unlock for this vault"
-private const val UNLOCK_REASON = "Unlock PassVault"
 private const val VAULT_KEY_BYTES = 32
 private const val MAX_KEYCHAIN_ACCOUNT_COUNT = 256L
 private const val MAX_KEYCHAIN_ACCOUNT_UTF8_BYTES = 4_096L

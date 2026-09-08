@@ -232,7 +232,7 @@ internal fun credentialBackDisposition(state: CredentialViewModel.CredentialStat
     state.isBusy -> BackDisposition.Blocked
     state.showTotpScanner || state.showTotpReplaceConfirmation || state.showTotpRemoveConfirmation ||
         state.showDeleteConfirmation || state.attachmentRenameTarget != null ||
-        state.attachmentDeleteTarget != null || state.showDiscardConfirmation || state.isDirty ->
+        state.attachmentDeleteTarget != null || state.showDiscardConfirmation || state.hasUnsavedChanges ->
         BackDisposition.HandleInPlace
     else -> BackDisposition.PopNow
 }

@@ -1,0 +1,110 @@
+{
+  "at": "2026-09-08T09:12:25.630897+00:00",
+  "tool_capture": "290bac",
+  "stage_attempt_git_exit": 1,
+  "orchestration_exit": 1,
+  "failure": "Explicit handoff metadata paths hit inherited .gitignore patterns; not an application/test failure. No commit or push happened.",
+  "original_path_list_sha256": "df69c6a82270ddbcae5f233cb4ebee3eb0a1c568118665a1d6040b0ef09dca11",
+  "tracked_source_paths_still_present": 811,
+  "tracked_total_after_failed_stage": 1104,
+  "ignored_explicit_paths": [
+    {
+      "ignore_file": ".gitignore",
+      "line": "79",
+      "pattern": "*.log",
+      "path": "docs/audit-publication/assembly/PACK-WRITER.log"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "79",
+      "pattern": "*.log",
+      "path": "docs/audit-publication/assembly/REFERENCE-WRITER-V3.log"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "79",
+      "pattern": "*.log",
+      "path": "docs/audit-publication/assembly/REFERENCE-WRITER.log"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/01-v1-source.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/02-v2-source.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/03-v1-v2-delta-ast.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/04-v3-delta-ast.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/05-workspace-instructions.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/06-provenance-skill.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/07-provenance-reference.stdout.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/08-report-writer-v1.output.txt"
+    },
+    {
+      "ignore_file": ".gitignore",
+      "line": "42",
+      "pattern": "captures/",
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/captures/09-report-namespace-absence.stdout.txt"
+    }
+  ],
+  "corrected_check_ignore_argv": [
+    "/usr/bin/git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-c",
+    "core.attributesFile=/dev/null",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "check-ignore",
+    "--no-index",
+    "-v",
+    "-z",
+    "--stdin"
+  ],
+  "corrected_check_ignore_exit": 0,
+  "extra_metadata_diagnostic": {
+    "capture": "9595a0",
+    "exit": 1,
+    "description": "An earlier check-ignore wrapper assertion failed before writing this report; underlying stderr was not retained. The corrected query omits unnecessary global literal-pathspec mode. Do not infer an unobserved Git failure cause."
+  },
+  "intended_correction": "Force-add only already enumerated/screened handoff metadata allowlist plus this diagnostic; no .gitignore edit or force-push. No private or unrelated path included.",
+  "scope": "Git staging metadata only; no source edit, build, cleanup or candidate change"
+}

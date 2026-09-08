@@ -1,0 +1,293 @@
+{
+  "schema": "passvault.clone-handoff.marker-platform-publication.v1",
+  "review_id": "clone-handoff-marker-platform-v1",
+  "reviewer": "/root/remed_platform",
+  "sealed_at_utc": "2026-09-08T08:25:05.694589+00:00",
+  "status": "ACCEPT_QUALIFIED",
+  "disposition": "ACCEPT_EXACT_FIVE_PUBLICATION_MARKER_CONTEXTS_ONLY",
+  "canonical_raw_G12_source_manifest_sha256": "7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91",
+  "exact_input_count": 5,
+  "source_file_count": 4,
+  "concrete_marker_context_count": 5,
+  "accepted_exact_source_files_and_contexts": [
+    {
+      "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+      "sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+      "bytes": 330,
+      "contexts": [
+        {
+          "lines": [
+            1,
+            2
+          ],
+          "marker": "provider-token-shaped literal",
+          "disposition": "INTENTIONAL_EXPECTED_POSITIVE_SYNTHETIC_FIXTURE",
+          "evidence": "Adjacent explicit ruleid; exact deterministic36-character alphabet-prefix construction."
+        },
+        {
+          "lines": [
+            4,
+            7
+          ],
+          "marker": "PEM private-key envelope",
+          "disposition": "INTENTIONAL_EXPECTED_POSITIVE_NON_KEY_FIXTURE",
+          "evidence": "Adjacent explicit ruleid; base64 decodes to48identical ASCII-A bytes, not a DER SEQUENCE."
+        }
+      ],
+      "read_scope": "Complete10-line file displayed only with literals and unrelated bidi fixture value suppressed."
+    },
+    {
+      "path": "scripts/test-release-automation.sh",
+      "sha256": "e2830b2ec2284087b606b1a652fe38b33d75c87a1aa405e4e3661cc89aa4e3f0",
+      "bytes": 145239,
+      "contexts": [
+        {
+          "lines": [
+            860,
+            873
+          ],
+          "flag_line": 868,
+          "marker": "PEM private-key envelope",
+          "disposition": "DELIBERATELY_INVALID_EXPECTED_REJECTION_FIXTURE",
+          "evidence": "Literal invalid_asc_key body has7characters and invalidbase64; validator acceptance explicitly exits1. Positive control key is generated only if the test is run, not embedded."
+        }
+      ],
+      "read_scope": "Only845-892semanticcontext; fullfilehashidentity is not fullfileaudit."
+    },
+    {
+      "path": "scripts/validate-app-store-connect-key.rb",
+      "sha256": "28e8bd28457d44b7eefa63b38f1ba774060090cbd3e2ec43dc78930e2abc6738",
+      "bytes": 1089,
+      "contexts": [
+        {
+          "lines": [
+            15,
+            29
+          ],
+          "flag_line": 17,
+          "marker": "PEM private-key envelope prefix",
+          "disposition": "INPUT_PARSER_MARKER_NOT_KEY_MATERIAL",
+          "evidence": "start_with?/end_with? literal predicates on external runtimeinput before PKey validation."
+        }
+      ],
+      "read_scope": "Complete40-line parser source, inert only; runtimeinput path not opened."
+    },
+    {
+      "path": "scripts/validate-private-release-config.sh",
+      "sha256": "7172fcaf6c480c9922f1ed83b54a021f8b841a64abe3dca63133601a1210e3da",
+      "bytes": 55104,
+      "contexts": [
+        {
+          "lines": [
+            861,
+            873
+          ],
+          "flag_line": 862,
+          "marker": "PEM private-key envelope prefix",
+          "disposition": "GREP_INPUT_PREDICATE_NOT_KEY_MATERIAL",
+          "evidence": "grep pattern applied to runtime asc_private_key input followed by parser invocation; pattern itself has no body."
+        }
+      ],
+      "read_scope": "Only839-885semanticcontext; privateconfig/inputpaths not opened."
+    }
+  ],
+  "source_replacement_warranted_for_these_exact_five_contexts": false,
+  "bounded_conclusion": "Five concrete flags are explained synthetic fixtures or runtime-input predicates, not unexplained embedded credential material. The provider-shaped fixture is a deterministic uppercase26/lowercase10 alphabet prefix, zero digits; no provider issuance or validity conclusion is made.",
+  "publication_authority_limits": {
+    "general_secret_clearance": false,
+    "provider_authentication_issuance_validity_revocation_or_ownership_assertion": false,
+    "source_finding_severity_owner_runtime_coverage_admission_or_release_change": false,
+    "blanket_path_or_glob_allowlist": false,
+    "actual_Git_stage_commit_push_clone_or_remote_proof": false,
+    "source_test_scanner_helper_or_crypto_validation_execution": false,
+    "private_configuration_credential_signing_or_runtime_input_opened": false,
+    "raw_token_key_body_or_credential_derived_hash_disclosed": false
+  },
+  "review_basis": {
+    "six_after_reasoning_ledger_entries": true,
+    "exact_manifest_rows_and_four_source_file_pins_bound": true,
+    "five_preexisting_display_captures": [
+      "1da69a",
+      "1be9ba",
+      "0c2130",
+      "0786c3",
+      "a627b3"
+    ],
+    "source_file_hashes_are_identity_bindings_not_credential_value_hashes": true,
+    "initial_nonmatching_pattern_guesses_preserved_not_adopted": true,
+    "seal_preflight_is_hash_size_identity_only_not_new_semantic_review": true
+  },
+  "scope_limits": [
+    "Exacthash/location decisions only; not broad path/glob allowlisting.",
+    "No general secret clearance, provider issuance/validity assertion, actualGitstage/clone proof, runtime/coverage/admission or release grant.",
+    "Only exact publicfixture and adjacentpredicates read; no privateinput paths followed.",
+    "All token/key values suppressed; no token-value hash recorded.",
+    "G7/G8CLOSED;PVU007STOP;PVU011NORETRY;PVA029noautomaticretry.",
+    "Acceptance applies only to the four exact file hashes and five enumerated contexts; later changed bytes or markers require separate reconciliation.",
+    "Whole-file hashing of the shell scripts does not expand their bounded semantic context review into general file or repository secret clearance.",
+    "Fixture-role and deterministic/invalid-body reasoning are inert source observations, not provider authentication or executed validator/test/scanner/cryptographic proof.",
+    "No release, runtime, source-finding, closure, coverage, owner, severity or admission gate is changed or reopened by this publication.",
+    "G7/G8 CLOSED; PVU007 STOP with no investigation or reformulation; PVU011 NO RETRY with no procedure inquiry or containment relaxation; PVA029 no automatic retry.",
+    "This marker review does not repeat or supersede the prior sealed checkpoint and clone-handoff document/transport reviews, and performs no Git or archive operation."
+  ],
+  "new_source_test_runtime_finding_closure_coverage_admission_release_credit": 0,
+  "artifacts": [
+    {
+      "path": "reviews/clone-handoff-marker-platform-v1/REPORT.md",
+      "bytes": 5205,
+      "LF": 38,
+      "sha256": "538022dc145a275e29b41ba2054c59edc6a7c5b036a5ec65cd7dbd619005d6fa",
+      "mode": 384,
+      "mode_octal": "0600",
+      "original_creation_identity": {
+        "device": "16777232",
+        "inode": "86848977",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "0",
+        "mtime_ns": "1788855905693789628",
+        "ctime_ns": "1788855905693805461"
+      },
+      "original_identity": {
+        "device": "16777232",
+        "inode": "86848977",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "5205",
+        "mtime_ns": "1788855905693860378",
+        "ctime_ns": "1788855905693860378"
+      },
+      "fsynced": true,
+      "original_identity_guarded_readback": true
+    },
+    {
+      "path": "reviews/clone-handoff-marker-platform-v1/COMPUTED-CHECKS.json",
+      "bytes": 6316,
+      "LF": 173,
+      "sha256": "15edcd6a2a20ae06a965daf78ad9e6eac4c9e39b477cfd6d385a30e08a1572ab",
+      "mode": 384,
+      "mode_octal": "0600",
+      "original_creation_identity": {
+        "device": "16777232",
+        "inode": "86848978",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "0",
+        "mtime_ns": "1788855905693967128",
+        "ctime_ns": "1788855905693984795"
+      },
+      "original_identity": {
+        "device": "16777232",
+        "inode": "86848978",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "6316",
+        "mtime_ns": "1788855905694110253",
+        "ctime_ns": "1788855905694110253"
+      },
+      "fsynced": true,
+      "original_identity_guarded_readback": true
+    },
+    {
+      "path": "reviews/clone-handoff-marker-platform-v1/REVIEW-LEDGER.json",
+      "bytes": 6318,
+      "LF": 97,
+      "sha256": "47f1988d0d6b9ff12a16e7ce5f3a3be4628aaf43450e0003ea6eb2da21470b4d",
+      "mode": 384,
+      "mode_octal": "0600",
+      "original_creation_identity": {
+        "device": "16777232",
+        "inode": "86848979",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "0",
+        "mtime_ns": "1788855905694207503",
+        "ctime_ns": "1788855905694222003"
+      },
+      "original_identity": {
+        "device": "16777232",
+        "inode": "86848979",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "6318",
+        "mtime_ns": "1788855905694254212",
+        "ctime_ns": "1788855905694254212"
+      },
+      "fsynced": true,
+      "original_identity_guarded_readback": true
+    },
+    {
+      "path": "reviews/clone-handoff-marker-platform-v1/INPUTS.json",
+      "bytes": 5377,
+      "LF": 122,
+      "sha256": "6993a729c143e246978cbd9cd8deecf29c95f1d84c19afdce14f99b46b86e626",
+      "mode": 384,
+      "mode_octal": "0600",
+      "original_creation_identity": {
+        "device": "16777232",
+        "inode": "86848980",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "0",
+        "mtime_ns": "1788855905694349795",
+        "ctime_ns": "1788855905694365587"
+      },
+      "original_identity": {
+        "device": "16777232",
+        "inode": "86848980",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "5377",
+        "mtime_ns": "1788855905694395670",
+        "ctime_ns": "1788855905694395670"
+      },
+      "fsynced": true,
+      "original_identity_guarded_readback": true
+    },
+    {
+      "path": "reviews/clone-handoff-marker-platform-v1/DIAGNOSTIC-INCIDENTS.json",
+      "bytes": 716,
+      "LF": 8,
+      "sha256": "786efd0293810083a4883a56832b15374ca8d2f91d3a5e49989129227cb8a549",
+      "mode": 384,
+      "mode_octal": "0600",
+      "original_creation_identity": {
+        "device": "16777232",
+        "inode": "86848981",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "0",
+        "mtime_ns": "1788855905694485712",
+        "ctime_ns": "1788855905694498878"
+      },
+      "original_identity": {
+        "device": "16777232",
+        "inode": "86848981",
+        "mode_octal": "0600",
+        "nlink": "1",
+        "size": "716",
+        "mtime_ns": "1788855905694519629",
+        "ctime_ns": "1788855905694519629"
+      },
+      "fsynced": true,
+      "original_identity_guarded_readback": true
+    }
+  ],
+  "artifact_count_excluding_publication": 5,
+  "artifact_bytes_excluding_publication": 23932,
+  "write_policy": {
+    "namespace_mode": "0700",
+    "files_mode": "0600",
+    "all_exclusive": true,
+    "no_prior_file_overwrite_or_writer_replay": true,
+    "all_five_hash_size_preflights_before_mkdir": true,
+    "no_follow_directory_and_file_descriptors": true,
+    "fsync_files_namespace_and_parent": true,
+    "original_creation_and_written_identities_recorded": true,
+    "original_identity_guarded_readback": true,
+    "nanosecond_identities_returned_as_decimal_strings": true,
+    "publication_created_last": true,
+    "inherited_ancestors_unchanged": true
+  },
+  "publication_hash_policy": "Self hash excluded; exact hash and original-created/written-identity readback descriptor returned in seal receipt."
+}

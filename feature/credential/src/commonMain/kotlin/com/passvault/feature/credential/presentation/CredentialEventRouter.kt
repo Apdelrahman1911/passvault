@@ -153,6 +153,9 @@ internal class CredentialEventRouter(
         when (event) {
             is CredentialEvent.OnCustomFieldAdded -> customFields.add(event.name, event.value, event.isSecret)
             is CredentialEvent.OnCustomFieldRemoved -> customFields.remove(event.fieldId)
+            is CredentialEvent.OnCustomFieldEditStarted -> customFields.beginDraft(event.fieldId)
+            is CredentialEvent.OnCustomFieldEditCancelled -> customFields.cancelDraft(event.fieldId)
+            is CredentialEvent.OnCustomFieldDraftChanged -> customFields.changeDraft(event.fieldId, event.draft)
             is CredentialEvent.OnCustomFieldUpdated ->
                 customFields.update(event.fieldId, event.name, event.value, event.isSecret)
             is CredentialEvent.OnCopyCustomFieldClick -> state.value.customFields
@@ -239,7 +242,7 @@ internal class CredentialEventRouter(
             }
             current.attachmentDeleteTarget != null -> state.update { it.copy(attachmentDeleteTarget = null) }
             current.showDiscardConfirmation -> state.update { it.copy(showDiscardConfirmation = false) }
-            current.isDirty -> state.update { it.copy(showDiscardConfirmation = true) }
+            current.hasUnsavedChanges -> state.update { it.copy(showDiscardConfirmation = true) }
             else -> effect.tryEmit(CredentialEffect.NavigateBack)
         }
     }
@@ -333,6 +336,9 @@ private fun CredentialEvent.category(): EventCategory = when (this) {
     -> EventCategory.TOTP_ACTION
     is CredentialEvent.OnCustomFieldAdded,
     is CredentialEvent.OnCustomFieldRemoved,
+    is CredentialEvent.OnCustomFieldEditStarted,
+    is CredentialEvent.OnCustomFieldEditCancelled,
+    is CredentialEvent.OnCustomFieldDraftChanged,
     is CredentialEvent.OnCustomFieldUpdated,
     is CredentialEvent.OnCopyCustomFieldClick,
     -> EventCategory.CUSTOM_FIELD

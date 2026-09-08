@@ -3,10 +3,16 @@ package com.passvault.core.database.attachment
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.passvault.core.crypto.DesktopCryptoEngine
+import com.passvault.core.crypto.CryptoEngine
 import com.passvault.core.crypto.CryptoEnvelope
+import com.passvault.core.crypto.EncryptedData
 import com.passvault.core.crypto.PaddedPayload
 import com.passvault.core.crypto.VaultKeyHierarchy
 import com.passvault.core.database.VaultDatabase
+import com.passvault.core.database.backup.BackupContentSink
+import com.passvault.core.database.backup.BackupContentSource
+import com.passvault.core.database.backup.VaultBackupService
+import com.passvault.core.database.dao.AttachmentDao
 import com.passvault.core.database.entity.AttachmentRecordEntity
 import com.passvault.core.database.repository.CredentialRepositoryImpl
 import com.passvault.core.database.repository.VaultRepositoryImpl
@@ -26,6 +32,7 @@ import com.passvault.core.domain.repository.AttachmentInvalidFileNameException
 import com.passvault.core.domain.repository.AttachmentPolicy
 import com.passvault.core.domain.repository.AttachmentTotalSizeLimitException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
@@ -132,6 +139,105 @@ class AttachmentRepositoryTest {
         assertContentEquals(pdf, sink.bytes())
         assertTrue(sink.committed)
         assertFalse(sink.aborted)
+    }
+
+    @Test
+    fun `filename encryption failure and cancellation wipe the import subkey`() = runTest {
+        for (cancel in listOf(false, true)) {
+            val engine = FilenameFailureEngine(cryptoEngine, cancel)
+            val repository = repository(engine = engine)
+            val source = ByteArraySource("failed.txt", null, byteArrayOf(1, 2, 3))
+            if (cancel) {
+                assertFailsWith<CancellationException> { repository.import(credentialId, source) }
+            } else {
+                assertTrue(repository.import(credentialId, source).isFailure)
+            }
+            assertTrue(assertNotNull(engine.filenameKey).all { it == 0.toByte() })
+            assertTrue(source.closed)
+            assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+            assertDirectoryEmpty(storageRoot.resolve("objects"))
+            assertDirectoryEmpty(storageRoot.resolve("staging"))
+        }
+    }
+
+    @Test
+    fun `filename encryption failure and cancellation wipe the rename subkey without mutating content`() = runTest {
+        val attachment = attachmentRepository.import(
+            credentialId,
+            ByteArraySource("original.txt", null, byteArrayOf(1, 2, 3)),
+        ).getOrThrow()
+        val before = assertNotNull(database.attachmentDao().getById(attachment.id.value, credentialId.value))
+        for (cancel in listOf(false, true)) {
+            val engine = FilenameFailureEngine(cryptoEngine, cancel)
+            val repository = repository(engine = engine)
+            if (cancel) {
+                assertFailsWith<CancellationException> { repository.rename(credentialId, attachment.id, "new.txt") }
+            } else {
+                assertTrue(repository.rename(credentialId, attachment.id, "new.txt").isFailure)
+            }
+            assertTrue(assertNotNull(engine.filenameKey).all { it == 0.toByte() })
+            assertEquals(before, database.attachmentDao().getById(attachment.id.value, credentialId.value))
+            assertTrue(blobStore.exists(before.storagePath))
+            attachmentRepository.verify(credentialId, attachment.id).getOrThrow()
+        }
+    }
+
+    @Test
+    fun `cancelled insert result keeps the committed row and authenticated object`() = runTest {
+        val delegate = database.attachmentDao()
+        var inserted: AttachmentRecordEntity? = null
+        val dao = object : AttachmentDao by delegate {
+            override suspend fun insert(entity: AttachmentRecordEntity): Long {
+                delegate.insert(entity)
+                inserted = entity
+                throw CancellationException("synthetic post-commit result cancellation")
+            }
+        }
+        val source = ByteArraySource("committed.bin", null, byteArrayOf(7, 8, 9))
+        assertFailsWith<CancellationException> { repository(dao = dao).import(credentialId, source) }
+        val row = assertNotNull(inserted)
+        assertEquals(row, delegate.getById(row.id, row.credentialId))
+        assertTrue(blobStore.exists(row.storagePath))
+        assertTrue(source.closed)
+        val sink = RecordingSink()
+        attachmentRepository.copyContentTo(credentialId, AttachmentId(row.id), sink).getOrThrow()
+        assertContentEquals(byteArrayOf(7, 8, 9), sink.bytes())
+    }
+
+    @Test
+    fun `precommit insert cancellation removes only the unreferenced completed object`() = runTest {
+        val delegate = database.attachmentDao()
+        var attempted: AttachmentRecordEntity? = null
+        val dao = object : AttachmentDao by delegate {
+            override suspend fun insert(entity: AttachmentRecordEntity): Long {
+                attempted = entity
+                throw CancellationException("synthetic precommit cancellation")
+            }
+        }
+        val source = ByteArraySource("uncommitted.bin", null, byteArrayOf(7, 8, 9))
+        assertFailsWith<CancellationException> { repository(dao = dao).import(credentialId, source) }
+        val row = assertNotNull(attempted)
+        assertNull(delegate.getById(row.id, row.credentialId))
+        assertFalse(blobStore.exists(row.storagePath))
+        assertTrue(source.closed)
+    }
+
+    @Test
+    fun `unavailable database during failed insert cleanup cannot authorize object deletion`() = runTest {
+        val delegate = database.attachmentDao()
+        var attempted: AttachmentRecordEntity? = null
+        val dao = object : AttachmentDao by delegate {
+            override suspend fun insert(entity: AttachmentRecordEntity): Long {
+                delegate.insert(entity)
+                attempted = entity
+                database.close()
+                throw CancellationException("synthetic lost result and unavailable ownership query")
+            }
+        }
+        val source = ByteArraySource("uncertain.bin", null, byteArrayOf(7, 8, 9))
+        assertFailsWith<CancellationException> { repository(dao = dao).import(credentialId, source) }
+        assertTrue(blobStore.exists(assertNotNull(attempted).storagePath))
+        assertTrue(source.closed)
     }
 
     @Test
@@ -766,6 +872,72 @@ class AttachmentRepositoryTest {
     }
 
     @Test
+    fun `fragmented maximum file fits reader bounds and can be copied verified and backed up`() = runTest {
+        val source = RepeatingSource(AttachmentPolicy.MAX_FILE_SIZE_BYTES, maximumReadBytes = 8 * 1024)
+        val attachment = attachmentRepository.import(credentialId, source).getOrThrow()
+        val entity = requireEntity(attachment.id)
+        assertEquals(AttachmentContainerCodec.MAX_ENCRYPTED_OBJECT_BYTES, Files.size(objectPath(entity)))
+        attachmentRepository.verify(credentialId, attachment.id).getOrThrow()
+        val sink = CountingSink()
+        attachmentRepository.copyContentTo(credentialId, attachment.id, sink).getOrThrow()
+        assertEquals(AttachmentPolicy.MAX_FILE_SIZE_BYTES, sink.byteCount)
+        assertTrue(sink.committed)
+
+        val backupPath = storageRoot.resolve("fragmented-maximum.pvault")
+        val service = VaultBackupService(
+            backupDao = database.vaultBackupDao(),
+            cryptoEngine = cryptoEngine,
+            vaultRepository = vaultRepository,
+            sessionManager = vaultRepository,
+            attachmentBlobStore = blobStore,
+            attachmentLifecycleManager = attachmentRepository,
+            database = database,
+        )
+        val password = SensitiveText.from("separate synthetic backup canopy 57")
+        try {
+            val created = service.createBackup(password, PathBackupSink(backupPath)).getOrThrow()
+            assertEquals(1, created.attachmentCount)
+            val inspected = service.inspectBackup(PathBackupSource(backupPath), password).getOrThrow()
+            assertEquals(1, inspected.attachmentCount)
+        } finally {
+            password.clear()
+            Files.deleteIfExists(backupPath)
+        }
+    }
+
+    @Test
+    fun `uneven reads leave only one final short encrypted record`() = runTest {
+        val size = 2L * AttachmentPolicy.CONTENT_CHUNK_BYTES + 17L
+        val attachment = attachmentRepository.import(
+            credentialId,
+            RepeatingSource(size, maximumReadBytes = 113),
+        ).getOrThrow()
+        // Deployed v1 framing: 16-byte container header, 61 bytes per data
+        // record, and 77 bytes for the authenticated final totals record.
+        assertEquals(16L + size + 3L * 61L + 77L, Files.size(objectPath(requireEntity(attachment.id))))
+        attachmentRepository.verify(credentialId, attachment.id).getOrThrow()
+        val sink = CountingSink()
+        attachmentRepository.copyContentTo(credentialId, attachment.id, sink).getOrThrow()
+        assertEquals(size, sink.byteCount)
+    }
+
+    @Test
+    fun `unknown fragmented input one byte above maximum is rejected without a row or object`() = runTest {
+        val result = attachmentRepository.import(
+            credentialId,
+            RepeatingSource(
+                size = AttachmentPolicy.MAX_FILE_SIZE_BYTES + 1L,
+                maximumReadBytes = 8 * 1024,
+                declaredSize = null,
+            ),
+        )
+        assertIs<AttachmentFileTooLargeException>(result.exceptionOrNull())
+        assertTrue(database.attachmentDao().getByCredential(credentialId.value).isEmpty())
+        assertDirectoryEmpty(storageRoot.resolve("objects"))
+        assertDirectoryEmpty(storageRoot.resolve("staging"))
+    }
+
+    @Test
     fun `credential deletion cascades metadata then removes every encrypted attachment`() = runTest {
         val attachment = attachmentRepository.import(
             credentialId,
@@ -943,6 +1115,37 @@ class AttachmentRepositoryTest {
         Files.list(path).use { assertEquals(0, it.count()) }
     }
 
+    private fun repository(
+        engine: CryptoEngine = cryptoEngine,
+        dao: AttachmentDao = database.attachmentDao(),
+    ) = AttachmentRepositoryImpl(
+        attachmentDao = dao,
+        credentialDao = database.credentialDao(),
+        blobStore = blobStore,
+        cryptoEngine = engine,
+        sessionManager = vaultRepository,
+    )
+
+    private class FilenameFailureEngine(
+        private val delegate: CryptoEngine,
+        private val cancel: Boolean,
+    ) : CryptoEngine by delegate {
+        var filenameKey: ByteArray? = null
+
+        override suspend fun encrypt(
+            plaintext: ByteArray,
+            key: ByteArray,
+            associatedData: ByteArray?,
+        ): Result<EncryptedData> {
+            if (associatedData?.decodeToString()?.contains(":filename:v1") == true) {
+                filenameKey = key
+                if (cancel) throw CancellationException("synthetic filename encryption cancellation")
+                return Result.failure(IllegalStateException("synthetic filename encryption failure"))
+            }
+            return delegate.encrypt(plaintext, key, associatedData)
+        }
+    }
+
     private class ByteArraySource(
         name: String,
         mime: String?,
@@ -1051,21 +1254,50 @@ class AttachmentRepositoryTest {
 
     private class RepeatingSource(
         private val size: Long,
+        private val maximumReadBytes: Int = AttachmentPolicy.CONTENT_CHUNK_BYTES,
+        declaredSize: Long? = size,
     ) : AttachmentContentSource {
         override val displayName = "maximum.bin"
         override val claimedMimeType: String? = null
-        override val declaredSizeBytes = size
+        override val declaredSizeBytes = declaredSize
         private var remaining = size
 
         override suspend fun read(buffer: ByteArray): Int {
             if (remaining == 0L) return -1
-            val count = minOf(buffer.size.toLong(), remaining).toInt()
+            val count = minOf(buffer.size.toLong(), maximumReadBytes.toLong(), remaining).toInt()
             buffer.fill(0x5a.toByte(), toIndex = count)
             remaining -= count
             return count
         }
 
         override suspend fun close() = Unit
+    }
+
+    private class PathBackupSink(private val path: Path) : BackupContentSink {
+        private val output = Files.newOutputStream(path)
+        private var committed = false
+
+        override suspend fun write(buffer: ByteArray, byteCount: Int) = output.write(buffer, 0, byteCount)
+
+        override suspend fun commit() {
+            output.close()
+            committed = true
+        }
+
+        override suspend fun abort() {
+            if (!committed) {
+                output.close()
+                Files.deleteIfExists(path)
+            }
+        }
+    }
+
+    private class PathBackupSource(path: Path) : BackupContentSource {
+        override val declaredSizeBytes = Files.size(path)
+        private val input = Files.newInputStream(path)
+        override suspend fun read(buffer: ByteArray): Int = input.read(buffer)
+        override suspend fun rewind() = error("Inspection does not rewind its source")
+        override suspend fun close() = input.close()
     }
 
     private class RecordingSink : AttachmentContentSink {

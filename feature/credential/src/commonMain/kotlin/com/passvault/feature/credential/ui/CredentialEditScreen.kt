@@ -326,27 +326,7 @@ private fun CredentialCustomFieldsEditor(
     state: CredentialViewModel.CredentialState,
     onEvent: (CredentialViewModel.CredentialEvent) -> Unit,
 ) {
-    CustomFieldsEditor(
-        fields = state.customFields,
-        onAdd = { name, value, isSecret ->
-            onEvent(
-                CredentialViewModel.CredentialEvent.OnCustomFieldAdded(name, value, isSecret),
-            )
-        },
-        onRemove = { fieldId ->
-            onEvent(CredentialViewModel.CredentialEvent.OnCustomFieldRemoved(fieldId))
-        },
-        onUpdate = { fieldId, name, value, isSecret ->
-            onEvent(
-                CredentialViewModel.CredentialEvent.OnCustomFieldUpdated(
-                    fieldId,
-                    name,
-                    value,
-                    isSecret,
-                ),
-            )
-        },
-    )
+    CustomFieldsEditor(state = state, onEvent = onEvent)
 }
 
 @Composable

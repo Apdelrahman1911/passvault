@@ -1,0 +1,66 @@
+{
+  "status": "STORED_TRANSPORT_METADATA_CONSISTENCY_PASS_NOT_ACTUAL_SOURCE_VERIFICATION",
+  "transport": {
+    "root": "R",
+    "path": "handoff-publication/20260908T061500Z/reader-v2/current/source-transport.json",
+    "bytes": 423256,
+    "lf": 8139,
+    "sha256": "4b1f8ea5e78742faf39622a8291fb42c6b277c5d06d428fca0c3733e1611769c",
+    "mode_octal": "0600",
+    "single_link": true,
+    "stable": true
+  },
+  "source_manifest": {
+    "root": "R",
+    "path": "verification/source-manifest-v12.json",
+    "bytes": 169300,
+    "lf": 4868,
+    "sha256": "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f",
+    "mode_octal": "0600",
+    "single_link": true,
+    "stable": true
+  },
+  "raw_tuple_matches": 811,
+  "declared_expected_checkout_raw_matches": 809,
+  "declared_checkout_exceptions": [
+    "scripts/test-windows-checksum-boundary.ps1",
+    "scripts/update-desktop-biometric-checksum.ps1"
+  ],
+  "declared_expected_git_blob_raw_matches": 797,
+  "git_blob_different_raw_count": 14,
+  "exception_records": [
+    {
+      "expected_checkout_bytes": 11940,
+      "expected_checkout_sha256": "7c9dae59e786612de3852b28ee8bb1ee64ba3b97d31af8d9f3d50f0617c818c7",
+      "expected_git_blob_bytes": 11703,
+      "expected_git_blob_sha256": "17e5d8e8a30ec0ececf31fd20453938a904ab657573b80cccaee72fe35943141",
+      "git_mode": "100644",
+      "path": "scripts/test-windows-checksum-boundary.ps1",
+      "raw_bytes": 11703,
+      "raw_sha256": "17e5d8e8a30ec0ececf31fd20453938a904ab657573b80cccaee72fe35943141"
+    },
+    {
+      "expected_checkout_bytes": 4221,
+      "expected_checkout_sha256": "855c8f71a8437d2469917ff75dc6d17b3ac34c041d3cfbc8d8b6e15410541aa1",
+      "expected_git_blob_bytes": 4132,
+      "expected_git_blob_sha256": "aa399f28b78df8a81a46e3be198022e8dce34dfd8bd7b57e91b71a3e5a7ed203",
+      "git_mode": "100644",
+      "path": "scripts/update-desktop-biometric-checksum.ps1",
+      "raw_bytes": 4213,
+      "raw_sha256": "3d7221596a01c46b23100f7f05b6c0ebd246af141ce943b3f63f4704be19a396"
+    }
+  ],
+  "computed_expected_manifest_identities": {
+    "checkout": {
+      "canonical_sha256": "a9b6b831ea36891b117e2ed9406ded9c42ab50fb5c25945a9af3a56202b66582",
+      "member_count": 811,
+      "computed_from": "Original stored source-manifest tuple order/modes with the declared expected byte/hash fields. Expected only, not actual Git/worktree evidence."
+    },
+    "git_blob": {
+      "canonical_sha256": "08763d509dfa47bf176bc674514a29687f46d8be87e9079c3615286ddb8babb9",
+      "member_count": 811,
+      "computed_from": "Original stored source-manifest tuple order/modes with the declared expected byte/hash fields. Expected only, not actual Git/worktree evidence."
+    }
+  },
+  "scope": "All 811 metadata rows checked against the retained raw manifest. No PS1/application source, raw-copy payload, Git object, attributes execution, index, checkout or reader was opened/run."
+}

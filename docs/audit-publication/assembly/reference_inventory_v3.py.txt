@@ -1,0 +1,167 @@
+"""Candidate locators; reads public Git blobs as data, never executes referenced code."""
+from pathlib import Path
+import collections
+import datetime
+import hashlib
+import json
+import posixpath
+import re
+import subprocess
+
+BASE = Path('/Users/abdelrahman/Projects/passvault')
+OUT = BASE / 'passvault-handoff-20260908T061500Z/docs/audit-handoff'
+INDEX = json.loads((OUT / 'evidence-index.json').read_text())['files']
+OMISSIONS = json.loads((OUT / 'omissions.json').read_text())['files']
+BY_PATH = {row['path']: row for row in INDEX}
+BY_HASH = collections.defaultdict(list)
+for row in INDEX:
+    BY_HASH[row['sha256']].append(row['path'])
+OMITTED_PATH = {row['path']: row for row in OMISSIONS}
+OMITTED_HASH = {row['sha256']: row for row in OMISSIONS if 'sha256' in row}
+SOURCE = json.loads((OUT / 'current/source-manifest-v12.json').read_text())
+SOURCE_HASH = collections.defaultdict(list)
+for row in SOURCE:
+    SOURCE_HASH[row['sha256']].append(row['path'])
+
+
+def no_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('duplicate JSON key')
+        result[key] = value
+    return result
+
+
+def candidates(declared, document):
+    value = declared.removeprefix(str(BASE) + '/')
+    root = '/'.join(document.split('/')[:2])
+    return list(dict.fromkeys(posixpath.normpath(p) for p in [
+        value, root + '/' + value, posixpath.dirname(document) + '/' + value,
+    ]))
+
+
+def main():
+    # Public baseline Git objects supply a locator, not a fresh source review.
+    baseline = '0dbc12c7f1b7770e75963c751c8c67af6e8b057a'
+    baseline_tree = subprocess.check_output(['git', 'rev-parse', baseline + '^{tree}'], cwd=OUT.parent.parent).decode().strip()
+    bindings = []
+    for name in ['evidence-index.json', 'omissions.json', 'current/source-manifest-v12.json']:
+        bound = (OUT / name).read_bytes()
+        bindings.append({'path': name, 'bytes': len(bound), 'sha256': hashlib.sha256(bound).hexdigest()})
+    script = Path(__file__).read_bytes()
+    script_binding = {'path': Path(__file__).name, 'bytes': len(script), 'sha256': hashlib.sha256(script).hexdigest()}
+    tree = subprocess.check_output(['git', 'ls-tree', '-rz', baseline], cwd=OUT.parent.parent)
+    git_rows = []
+    for item in tree.split(b'\0'):
+        if not item:
+            continue
+        head, path = item.split(b'\t', 1)
+        mode, kind, oid = head.decode().split()
+        if kind == 'blob':
+            git_rows.append((path.decode(), oid))
+    request = ''.join(oid + '\n' for _, oid in git_rows).encode()
+    raw = subprocess.check_output(['git', 'cat-file', '--batch'], input=request, cwd=OUT.parent.parent)
+    baseline_blob_stream_bytes = len(raw)
+    baseline_hash = collections.defaultdict(list)
+    offset = 0
+    for name, oid in git_rows:
+        end = raw.index(b'\n', offset)
+        fields = raw[offset:end].decode().split()
+        assert fields[0] == oid and fields[1] == 'blob'
+        size = int(fields[2])
+        data = raw[end + 1:end + 1 + size]
+        offset = end + 1 + size + 1
+        baseline_hash[hashlib.sha256(data).hexdigest()].append('git:' + baseline + ':' + name)
+        if name.endswith(('.ps1', '.bat', '.cmd')):
+            data = data.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+            baseline_hash[hashlib.sha256(data).hexdigest()].append('baseline-checkout-CRLF:' + name)
+    assert offset == len(raw)
+    records = {}
+    parsed = 0
+    failures = []
+    for item in INDEX:
+        if not item['path'].endswith(('.json', '.jsonl')):
+            continue
+        raw = (BASE / item['path']).read_bytes()
+        assert hashlib.sha256(raw).hexdigest() == item['sha256']
+        try:
+            if item['path'].endswith('.jsonl'):
+                documents = [(json.loads(line, object_pairs_hook=no_duplicates), '/jsonl-line/' + str(number))
+                             for number, line in enumerate(raw.decode().splitlines(), 1) if line.strip()]
+            else:
+                documents = [(json.loads(raw, object_pairs_hook=no_duplicates), '')]
+        except (ValueError, UnicodeError, RecursionError) as error:
+            failures.append({'path': item['path'], 'exception_type': type(error).__name__,
+                             'meaning': 'Not parsed as strict metadata; raw bytes remain included.'})
+            continue
+        parsed += 1
+        stack = list(documents)
+        while stack:
+            value, pointer = stack.pop()
+            if isinstance(value, dict):
+                declared = value.get('path')
+                digest = value.get('sha256')
+                if isinstance(declared, str) and isinstance(digest, str) and re.fullmatch('[0-9a-f]{64}', digest):
+                    key = (declared, digest)
+                    found = records.setdefault(key, {'declared_path': declared, 'sha256': digest,
+                                                     'occurrences': 0, 'example_contexts': []})
+                    found['occurrences'] += 1
+                    if len(found['example_contexts']) < 3:
+                        found['example_contexts'].append({'document': item['path'], 'pointer': pointer})
+                    paths = candidates(declared, item['path'])
+                    exact = [p for p in paths if p in BY_PATH and BY_PATH[p]['sha256'] == digest]
+                    if exact:
+                        found.update(disposition='LOCATOR_INCLUDED_PATH_HASH_IN_AT_LEAST_ONE_CONTEXT', locators=exact)
+                    elif found.get('disposition') == 'LOCATOR_INCLUDED_PATH_HASH_IN_AT_LEAST_ONE_CONTEXT':
+                        pass
+                    elif digest in BY_HASH:
+                        found.update(disposition='LOCATOR_INCLUDED_HASH_ALIAS_NOT_SAME_PATH',
+                                     locators=BY_HASH[digest][:3], alias_count=len(BY_HASH[digest]))
+                    elif digest in OMITTED_HASH:
+                        omitted = OMITTED_HASH[digest]
+                        found.update(disposition='LOCATOR_EXPLICITLY_WITHHELD_HASH', locators=[omitted['path']],
+                                     limitation=omitted['reason'])
+                    elif any(p in OMITTED_PATH for p in paths):
+                        omitted = next(OMITTED_PATH[p] for p in paths if p in OMITTED_PATH)
+                        found.update(disposition='WITHHELD_PATH_POLICY_HASH_UNRESOLVED', locators=[omitted['path']],
+                                     limitation='Path is withheld; this descriptor digest is not established as withheld or present. ' + omitted['reason'])
+                    elif digest in SOURCE_HASH:
+                        found.update(disposition='LOCATOR_G12_RAW_SOURCE_NOT_FRESH_CLONE_PROOF', locators=SOURCE_HASH[digest])
+                    elif digest in baseline_hash:
+                        found.update(disposition='LOCATOR_BASELINE_GIT_OR_PREDICTED_CRLF_NOT_OBSERVED', locators=baseline_hash[digest])
+                    elif any(k in value for k in ['start', 'end', 'start_line', 'end_line', 'line_start', 'line_end', 'range', 'lines']):
+                        found.update(disposition='RANGE_OR_OTHER_NON_WHOLE_FILE_DESCRIPTOR_UNRESOLVED', locators=[])
+                    else:
+                        found.update(disposition='UNRESOLVED_OR_EXTERNAL_DESCRIPTOR', locators=[],
+                                     limitation='May be canonical/interval/runtime/toolchain/omitted historical identity. No resolution or pass invented.')
+                stack.extend((v, pointer + '/' + str(k).replace('~', '~0').replace('/', '~1')) for k, v in value.items())
+            elif isinstance(value, list):
+                stack.extend((v, pointer + '/' + str(i)) for i, v in enumerate(value))
+    data = sorted(records.values(), key=lambda row: (row['declared_path'], row['sha256']))
+    result = {'format': 1, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'scope': 'Included parseable JSON/JSONL dicts with lowercase64hex sha256 and string path. Deduplicated candidate locators, not per-occurrence resolution or semantic reference closure.',
+              'input_bindings': bindings, 'script_binding': script_binding,
+              'public_baseline': {'commit': baseline, 'tree': baseline_tree, 'git_blobs_read_as_data': len(git_rows), 'buffered_batch_bytes': baseline_blob_stream_bytes},
+              'method_limits': [
+                  'Grouped by declared path and digest across contexts. A path/hash locator exists in at least one context, not necessarily every occurrence. Only three example contexts retained; JSONL physical line recorded.',
+                  'Bytes/mode/range/generation semantics not validated. A range-like descriptor can share a whole-file hash locator without proving its intended referent.',
+                  'baseline-checkout-CRLF is a suffix-based calculated byte form, not an observed Git checkout or checked attribute policy.',
+                  'Reads every included JSON/JSONL body and public baseline Git blobs as data; no packed code execution. Stable frozen inputs/path/size envelope supplied externally, not a sandbox implemented by this helper.',
+                  'No Markdown/free-form/canonical/range digest closure, private-runtime access, physical-device evidence or execution admission.',
+              ],
+              'included_index_paths': len(INDEX), 'parsed_json_jsonl_files': parsed,
+              'unparsed_metadata_files': failures, 'distinct_descriptors': len(data),
+              'descriptor_occurrences': sum(row['occurrences'] for row in data),
+              'counts': dict(collections.Counter(row['disposition'] for row in data)), 'descriptors': data,
+              'important_limit': 'Unresolved descriptors remain visible. This transport inventory is not a claim of complete audit, fully resolved evidence graph, new semantic review or readiness.'}
+    target = OUT / 'reference-locators.json'
+    with target.open('x') as output:
+        json.dump(result, output, ensure_ascii=False, separators=(',', ':'), sort_keys=True)
+        output.write('\n')
+    print(json.dumps({k: v for k, v in result.items() if k != 'descriptors'}, indent=2))
+    print('result_bytes', target.stat().st_size)
+
+
+if __name__ == '__main__':
+    main()

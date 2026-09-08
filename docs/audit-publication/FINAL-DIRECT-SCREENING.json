@@ -1,0 +1,339 @@
+{
+  "at": "2026-09-08T09:06:13.000741+00:00",
+  "file_count_at_scan": 1115,
+  "total_bytes": 62433605,
+  "patterns": {
+    "github_classic": "gh[pousr]_[A-Za-z0-9]{36}",
+    "github_fine_grained": "github_pat_[A-Za-z0-9_]{60,}",
+    "google_key_shape": "AIza[0-9A-Za-z_-]{35}",
+    "aws_access_key_shape": "(?:AKIA|ASIA)[A-Z0-9]{16}",
+    "slack_token_shape": "xox[baprs]-[0-9A-Za-z-]{20,}",
+    "quoted_secret_value": "\"(?:access_token|refresh_token|client_secret|private_key)\"\\s*:\\s*\"[^\"\\r\\n]{16,}\""
+  },
+  "flags_without_values": [
+    {
+      "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+      "sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+      "category": "github_classic",
+      "lines": [
+        2
+      ],
+      "count": 1
+    }
+  ],
+  "pem_header_contexts_without_values": [
+    {
+      "path": "scripts/test-release-automation.sh",
+      "sha256": "e2830b2ec2284087b606b1a652fe38b33d75c87a1aa405e4e3661cc89aa4e3f0"
+    },
+    {
+      "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+      "sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104"
+    },
+    {
+      "path": "scripts/validate-app-store-connect-key.rb",
+      "sha256": "28e8bd28457d44b7eefa63b38f1ba774060090cbd3e2ec43dc78930e2abc6738"
+    },
+    {
+      "path": "scripts/validate-private-release-config.sh",
+      "sha256": "7172fcaf6c480c9922f1ed83b54a021f8b841a64abe3dca63133601a1210e3da"
+    }
+  ],
+  "independent_marker_review": "reviews/clone-handoff-marker-platform-v1/PUBLICATION.json",
+  "new_unexplained_flags": 0,
+  "non_utf8_files_not_text_scanned": [
+    {
+      "path": "app-android/src/main/res/drawable-nodpi/ic_launcher_artwork.png",
+      "bytes": 371446,
+      "sha256": "0997a30cdbb128416d0118e86cd5238fedb8cbe705c3bf58d34a8160672e47bf"
+    },
+    {
+      "path": "app-android/src/main/res/drawable-nodpi/ic_launcher_monochrome_artwork.png",
+      "bytes": 189246,
+      "sha256": "2647445bb55bd990e6288acfe06e202426b771db0076be6ea5e951295d53940e"
+    },
+    {
+      "path": "app-android/src/main/res/drawable-nodpi/ic_splash_artwork.png",
+      "bytes": 210632,
+      "sha256": "32477c2feb844aa54f1ad6a87c9c7bd909a3d629d173667dd908850f0f24e92a"
+    },
+    {
+      "path": "app-desktop/resources/linux/icon.png",
+      "bytes": 99797,
+      "sha256": "3109797ca5e627d88fcb2e98d0495a3bef179c6e4e7e1b29245e2a6d3f2915d8"
+    },
+    {
+      "path": "app-desktop/resources/macos/icon.icns",
+      "bytes": 524906,
+      "sha256": "ef23d58512867abe8e96f346a628c26c698cc8c9e54d02962935209f3478b6cd"
+    },
+    {
+      "path": "app-desktop/resources/windows/icon.ico",
+      "bytes": 49407,
+      "sha256": "3d82be2d3fc1b678bdc0ab31f38659a574f740acc4d754115847ccc75ae01e25"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/resources/icons/app-icon-mac.png",
+      "bytes": 99797,
+      "sha256": "3109797ca5e627d88fcb2e98d0495a3bef179c6e4e7e1b29245e2a6d3f2915d8"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/resources/icons/app-icon-win.png",
+      "bytes": 99797,
+      "sha256": "3109797ca5e627d88fcb2e98d0495a3bef179c6e4e7e1b29245e2a6d3f2915d8"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/resources/icons/app-icon.png",
+      "bytes": 99797,
+      "sha256": "3109797ca5e627d88fcb2e98d0495a3bef179c6e4e7e1b29245e2a6d3f2915d8"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/resources/icons/tray-mac.png",
+      "bytes": 2469,
+      "sha256": "b5d671f85e5c446093d2279e5fe821d8c26c07207b103843d0668b2c17b7ce2e"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/resources/icons/tray-win.png",
+      "bytes": 1621,
+      "sha256": "19102491cd352d38602d637db9164e6d9cfde66f4f7897b8bcfe8813a493a533"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/resources/icons/tray.png",
+      "bytes": 1621,
+      "sha256": "19102491cd352d38602d637db9164e6d9cfde66f4f7897b8bcfe8813a493a533"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.jar",
+      "bytes": 47505,
+      "sha256": "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+    },
+    {
+      "path": "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon-1024-dark.png",
+      "bytes": 371335,
+      "sha256": "10da2da4554b25ef3719e9066712514ea165568dba172cc149b71495dc4db080"
+    },
+    {
+      "path": "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png",
+      "bytes": 384271,
+      "sha256": "70c77bf41832688da564a74a9ff410d1d2e387d310db9da88520f2e1591e0e8d"
+    },
+    {
+      "path": "iosApp/iosApp/Assets.xcassets/LaunchLogo.imageset/LaunchLogo-1024-dark.png",
+      "bytes": 210632,
+      "sha256": "32477c2feb844aa54f1ad6a87c9c7bd909a3d629d173667dd908850f0f24e92a"
+    },
+    {
+      "path": "iosApp/iosApp/Assets.xcassets/LaunchLogo.imageset/LaunchLogo-1024.png",
+      "bytes": 210632,
+      "sha256": "32477c2feb844aa54f1ad6a87c9c7bd909a3d629d173667dd908850f0f24e92a"
+    },
+    {
+      "path": "release/store-assets/android/ar/images/featureGraphic.png",
+      "bytes": 93583,
+      "sha256": "0cca8158ecf2ca0c262c699ae5b38eb2bd255da641002fe9c1d705853e400e65"
+    },
+    {
+      "path": "release/store-assets/android/ar/images/icon.png",
+      "bytes": 176547,
+      "sha256": "3d27b6b8c558d7adb04400897ea081f90a7c4c8bc427446dc7150db8f5d7dc7e"
+    },
+    {
+      "path": "release/store-assets/android/ar/images/phoneScreenshots/01-welcome.png",
+      "bytes": 172160,
+      "sha256": "e7af08f812183cbbbd127572b5a4aadcb361ac5c30d4fae7d868287a3e453a5d"
+    },
+    {
+      "path": "release/store-assets/android/ar/images/phoneScreenshots/02-master-password.png",
+      "bytes": 100843,
+      "sha256": "725f9a87341d9fd6e6764ffa53e640e28303f1838383d269c726b0d8da3dfc8b"
+    },
+    {
+      "path": "release/store-assets/android/ar/images/phoneScreenshots/03-confirm-password.png",
+      "bytes": 124278,
+      "sha256": "68a92dd87a0f1fa0dc8e3a3d6d10aaef83be17dbe60671684675259f02acad30"
+    },
+    {
+      "path": "release/store-assets/android/ar/images/phoneScreenshots/04-security-model.png",
+      "bytes": 204954,
+      "sha256": "b25bac99033deb1b577bee6e1b2becea00cf058dc0459b5cd3a0f06ba7969ce0"
+    },
+    {
+      "path": "release/store-assets/android/en-US/images/featureGraphic.png",
+      "bytes": 93583,
+      "sha256": "0cca8158ecf2ca0c262c699ae5b38eb2bd255da641002fe9c1d705853e400e65"
+    },
+    {
+      "path": "release/store-assets/android/en-US/images/icon.png",
+      "bytes": 176547,
+      "sha256": "3d27b6b8c558d7adb04400897ea081f90a7c4c8bc427446dc7150db8f5d7dc7e"
+    },
+    {
+      "path": "release/store-assets/android/en-US/images/phoneScreenshots/01-welcome.png",
+      "bytes": 176603,
+      "sha256": "cd4c641d4c317a41507b2aee5eaab8c5a2944d7c8be322a8d0c862043e1ca5fe"
+    },
+    {
+      "path": "release/store-assets/android/en-US/images/phoneScreenshots/02-master-password.png",
+      "bytes": 105093,
+      "sha256": "70f71ef9ed03e84ac7cff2fdc93a1c974bb0c62e4b3a89eaefa9ec1caf283858"
+    },
+    {
+      "path": "release/store-assets/android/en-US/images/phoneScreenshots/03-confirm-password.png",
+      "bytes": 118978,
+      "sha256": "49b4a5208b02e0e44bb8dc40ed6564a51edc2f3cb2e78db1528d1d232c60789e"
+    },
+    {
+      "path": "release/store-assets/android/en-US/images/phoneScreenshots/04-security-model.png",
+      "bytes": 203554,
+      "sha256": "c48bd5fc1bd175a80845a7b441f8ceeaa880e463dc0a0b624c9bf54a430fee6c"
+    },
+    {
+      "path": "release/store-assets/ios/ar-SA/01-welcome.png",
+      "bytes": 187403,
+      "sha256": "218cf2948490910f82c925d33c191219fc302f61f5e4090b07bd8d35e759a090"
+    },
+    {
+      "path": "release/store-assets/ios/ar-SA/02-ipad-12.9.png",
+      "bytes": 301623,
+      "sha256": "58c708d6f2c3e650611b69ee1897f8edd516f1cade98cb738dc053f4d7cfd055"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/01-ipad.png",
+      "bytes": 120700,
+      "sha256": "194480cb6ff805d627a039267b95d8a3c3e7e6425e04be1e23f6d108676f027f"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/01-iphone.png",
+      "bytes": 153072,
+      "sha256": "5e6a5ae82905f3202411dba4df40248798b26cd0bd3ebb37492ae9fa4503be55"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/02-ipad.png",
+      "bytes": 70426,
+      "sha256": "50d3c2fb4e7b212b02001f4c55ef1bcdc717d2f111c47173ca2a242e7c2f7a1b"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/02-iphone.png",
+      "bytes": 91427,
+      "sha256": "9035973476100a41b43430756a4a70e0f5efb23f5355811672f45094e82f4f3d"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/03-ipad.png",
+      "bytes": 140986,
+      "sha256": "e43c2b40f9bb1b55a43e3d5ff5c2cc0548c7dffc451d18263ace34802e9f49e2"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/03-iphone.png",
+      "bytes": 119784,
+      "sha256": "50ab27a9baf29815c032fe9fb0fd6a1b5948aa50ecbc69fea831bb02eb823af8"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/04-ipad.png",
+      "bytes": 126471,
+      "sha256": "305d13f125d5b844c78828910abf137486fa77ebcbd74ddfde1224b9821ec3a8"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/04-iphone.png",
+      "bytes": 144162,
+      "sha256": "959d844ef7a64e6d9f926a1ba39e6d54e6c87ddf426f6a930fe22de913732990"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/05-ipad.png",
+      "bytes": 149119,
+      "sha256": "d89ec6f146e46262cc6d50b00a78e72e08b569bd7d36978739d38a2b497d3b0e"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/05-iphone.png",
+      "bytes": 163823,
+      "sha256": "97b66f0ff9f60af1235a1c153420a2044af488b8626515e86b8ac830f5c41acd"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/06-ipad.png",
+      "bytes": 170742,
+      "sha256": "d0009c6553a8535732f4beedc63ae9936c08aa9e36f5d73977f5636de1682889"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/06-iphone.png",
+      "bytes": 180269,
+      "sha256": "19eb0d5d6374df7cfcbd6327ae19ecf3f3cc08c6928efda6064099630839b24e"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/07-ipad.png",
+      "bytes": 165591,
+      "sha256": "95cce995d13eba62bd42490a65cc3b43bb5dc5320400446517ac58b992767860"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/07-iphone.png",
+      "bytes": 183352,
+      "sha256": "89d7ecdfa4821e1975de37f03a5eaf7cbb76ab5c4595d820823b137b6b6dbbb5"
+    },
+    {
+      "path": "release/store-assets/ios/en-US/08-iphone.png",
+      "bytes": 160851,
+      "sha256": "d6b248f7165e2352746bf053c4af2b68af9711fcbb17f704cf2d394ba46fcca6"
+    }
+  ],
+  "separately_verified_previously_screened_packs": [
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-001.tar.xz",
+      "bytes": 5423468,
+      "sha256": "c4f8368b6ad803bef4cc6e9e03ec354c5a83d84ffb267934534b24529853f9fd"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-002.tar.xz",
+      "bytes": 2929400,
+      "sha256": "10817ffc854b91f04a6469b415a73163fe1ee9ffd5aa30fc3025c6ff157cafd4"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-003.tar.xz",
+      "bytes": 236108,
+      "sha256": "66e6b6b797e5c55ebe2d48874ac510af19a1d237b7bc76beced860d6f8630b4c"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-004.tar.xz",
+      "bytes": 327944,
+      "sha256": "6ac3a55eb5730891bd50ca7a626cddd63de84230430849e61db7b3ffcf36e84f"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-005.tar.xz",
+      "bytes": 396060,
+      "sha256": "ae69975131824052b430a66bb7e2e12d67b8c1aca1899578984b69b547e38276"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-006.tar.xz",
+      "bytes": 286452,
+      "sha256": "00fd1691f4161291c4d5302fbcfb6b02676a660c68de2eb7c99b5844c2f3810b"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-007.tar.xz",
+      "bytes": 282552,
+      "sha256": "8d2c702ade0a03a229461248b473d7e19b8e9b39b0699d77352a732c4eab5909"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-008.tar.xz",
+      "bytes": 199944,
+      "sha256": "d13283b6e631c3aae5955d7daca5ab210e6f7f05fd419f99343ce4c44812cb20"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-009.tar.xz",
+      "bytes": 1944388,
+      "sha256": "b881cdb273f3f80f7ad94a2dfeed68d2a36f2edd47deec7282e45824cf633ea8"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-010.tar.xz",
+      "bytes": 5605652,
+      "sha256": "a705337efc6a8b5e85ef90d2dbcef69d7be29c61d0e4952fe4d32536b68242c1"
+    },
+    {
+      "path": "docs/audit-handoff/evidence-packs/evidence-011.tar.xz",
+      "bytes": 2811328,
+      "sha256": "308cee6de9ac256e7510a0fe240f952dfa2472113f450541d0a0fa8a251c540b"
+    }
+  ],
+  "limits": [
+    "Static signatures only, not universal secret clearance. No marker values printed or authenticated.",
+    "Frozen packed content has separate screening/omission receipts; no new semantic pack review here.",
+    "This derived report and later receipts are not their own scan inputs; final index will bind their exact bytes."
+  ],
+  "application_test_cases": 0
+}

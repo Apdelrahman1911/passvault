@@ -26,11 +26,6 @@ internal data class StoredAttachmentContent(
     val mimeType: String,
 )
 
-private data class InitialChunk(
-    val count: Int,
-    val reachedEndOfFile: Boolean,
-)
-
 /** Versioned, chunked XChaCha20-Poly1305 attachment container. */
 internal class AttachmentContainerCodec(
     private val blobStore: AttachmentBlobStore,
@@ -46,43 +41,38 @@ internal class AttachmentContainerCodec(
         require(key.size == KEY_BYTES)
         require(existingCredentialBytes in 0..AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES)
         val plaintext = ByteArray(AttachmentPolicy.CONTENT_CHUNK_BYTES)
+        val chunks = ChunkReader(source)
         return try {
-            val initialChunk = readInitialChunk(source, plaintext)
-            val mimeType = detectMimeType(plaintext, initialChunk.count)
+            val firstCount = chunks.read(plaintext)
+            val mimeType = detectMimeType(plaintext, firstCount.coerceAtLeast(0))
             val binding = bindingWithoutMime.copy(mimeType = mimeType)
             val size = blobStore.writeAtomically(relativePath) { sink ->
                 writeHeader(sink)
                 var totalBytes = 0L
                 var chunkIndex = 0L
-                var count = initialChunk.count
-                while (count >= 0) {
-                    if (count > 0) {
-                        totalBytes += count
-                        if (totalBytes > AttachmentPolicy.MAX_FILE_SIZE_BYTES) {
-                            throw AttachmentFileTooLargeException()
-                        }
-                        if (
-                            existingCredentialBytes + totalBytes >
-                            AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES
-                        ) {
-                            throw AttachmentTotalSizeLimitException()
-                        }
-                        writeEncryptedRecord(
-                            sink = sink,
-                            recordType = RECORD_TYPE_DATA,
-                            recordIndex = chunkIndex,
-                            plaintext = plaintext,
-                            plaintextSize = count,
-                            key = key,
-                            binding = binding,
-                        )
-                        chunkIndex++
+                var count = firstCount
+                while (count != -1) {
+                    totalBytes += count
+                    if (totalBytes > AttachmentPolicy.MAX_FILE_SIZE_BYTES) {
+                        throw AttachmentFileTooLargeException()
                     }
-                    count = if (initialChunk.reachedEndOfFile) {
-                        -1
-                    } else {
-                        source.read(plaintext).validatedReadCount(plaintext.size)
+                    if (
+                        existingCredentialBytes + totalBytes >
+                        AttachmentPolicy.MAX_TOTAL_SIZE_PER_CREDENTIAL_BYTES
+                    ) {
+                        throw AttachmentTotalSizeLimitException()
                     }
+                    writeEncryptedRecord(
+                        sink = sink,
+                        recordType = RECORD_TYPE_DATA,
+                        recordIndex = chunkIndex,
+                        plaintext = plaintext,
+                        plaintextSize = count,
+                        key = key,
+                        binding = binding,
+                    )
+                    chunkIndex++
+                    count = chunks.read(plaintext)
                 }
                 writeFinalRecord(sink, key, binding, totalBytes, chunkIndex)
                 totalBytes
@@ -90,32 +80,50 @@ internal class AttachmentContainerCodec(
             StoredAttachmentContent(sizeBytes = size, mimeType = mimeType)
         } finally {
             plaintext.fill(0)
+            chunks.clear()
         }
     }
 
-    private suspend fun readInitialChunk(
-        source: AttachmentContentSource,
-        plaintext: ByteArray,
-    ): InitialChunk {
-        val firstRead = source.read(plaintext).validatedReadCount(plaintext.size)
-        if (firstRead < 0) return InitialChunk(count = 0, reachedEndOfFile = true)
-        var count = firstRead
-        var reachedEndOfFile = false
-        while (count < MIME_SNIFF_BYTES && !reachedEndOfFile) {
-            val prefixRemainder = ByteArray(MIME_SNIFF_BYTES - count)
-            try {
-                val read = source.read(prefixRemainder).validatedReadCount(prefixRemainder.size)
-                if (read < 0) {
-                    reachedEndOfFile = true
-                } else {
-                    prefixRemainder.copyInto(plaintext, destinationOffset = count, endIndex = read)
-                    count += read
+    /**
+     * Source fragmentation must not become container framing. Coalesce full records
+     * with one fixed scratch buffer; only EOF can produce a short final data record.
+     * Retaining spill bytes avoids allocating a new remainder array for every read.
+     */
+    private class ChunkReader(private val source: AttachmentContentSource) {
+        private val buffer = ByteArray(AttachmentPolicy.CONTENT_CHUNK_BYTES)
+        private var offset = 0
+        private var count = 0
+        private var exhausted = false
+
+        suspend fun read(destination: ByteArray): Int {
+            var written = 0
+            while (written < destination.size && !exhausted) {
+                if (offset == count) {
+                    val read = source.read(buffer)
+                    require(read == -1 || read in 1..buffer.size) {
+                        "The attachment source returned an invalid byte count"
+                    }
+                    if (read == -1) {
+                        exhausted = true
+                        break
+                    }
+                    offset = 0
+                    count = read
                 }
-            } finally {
-                prefixRemainder.fill(0)
+                val copied = minOf(destination.size - written, count - offset)
+                buffer.copyInto(
+                    destination,
+                    destinationOffset = written,
+                    startIndex = offset,
+                    endIndex = offset + copied,
+                )
+                offset += copied
+                written += copied
             }
+            return if (written == 0) -1 else written
         }
-        return InitialChunk(count, reachedEndOfFile)
+
+        fun clear() = buffer.fill(0)
     }
 
     suspend fun decryptObject(
@@ -389,11 +397,6 @@ internal class AttachmentContainerCodec(
         return this
     }
 
-    private fun Int.validatedReadCount(bufferSize: Int): Int {
-        require(this == -1 || this in 1..bufferSize) { "The attachment source returned an invalid byte count" }
-        return this
-    }
-
     private fun detectMimeType(bytes: ByteArray, byteCount: Int): String = when {
         bytes.startsWith(byteCount, PDF_MAGIC) -> "application/pdf"
         bytes.startsWith(byteCount, PNG_MAGIC) -> "image/png"
@@ -413,7 +416,6 @@ internal class AttachmentContainerCodec(
             WEBP_MAGIC.indices.all { index -> this[WEBP_OFFSET + index] == WEBP_MAGIC[index] }
 
     companion object {
-        private const val MIME_SNIFF_BYTES = 12
         private const val KEY_BYTES = 32
         private const val NONCE_BYTES = 24
         private const val ENCRYPTION_OVERHEAD_BYTES = 20

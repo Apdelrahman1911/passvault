@@ -197,6 +197,75 @@ internal fun Credential.toEditableState(
 internal class CredentialCustomFieldEditor(
     private val state: MutableStateFlow<CredentialViewModel.CredentialState>,
 ) {
+    fun beginDraft(fieldId: CustomFieldId) {
+        state.update { current ->
+            val field = current.customFields.firstOrNull { it.id == fieldId }
+            if (field == null || fieldId in current.customFieldDrafts) {
+                current
+            } else {
+                current.copy(
+                    customFieldDrafts = current.customFieldDrafts + (fieldId to CredentialCustomFieldDraft(
+                        name = field.name,
+                        value = field.value.toStringUnsafe(),
+                        isSecret = field.isSecret,
+                    )),
+                )
+            }
+        }
+    }
+
+    fun changeDraft(fieldId: CustomFieldId, draft: CredentialCustomFieldDraft) {
+        state.update { current ->
+            if (fieldId !in current.customFieldDrafts) {
+                current
+            } else {
+                current.copy(
+                    customFieldDrafts = current.customFieldDrafts + (fieldId to draft.copy(
+                        name = draft.name.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH),
+                        value = draft.value.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH),
+                    )),
+                    errorMessage = null,
+                )
+            }
+        }
+    }
+
+    fun cancelDraft(fieldId: CustomFieldId) {
+        state.update { it.copy(customFieldDrafts = it.customFieldDrafts - fieldId) }
+    }
+
+    /** Page Save adopts every visible draft before validation and persistence. */
+    fun commitDrafts(): Boolean {
+        var current = state.value
+        while (current.customFieldDrafts.isNotEmpty()) {
+            if (current.customFieldDrafts.values.any { it.name.isBlank() }) {
+                state.update { it.copy(errorMessage = uiText(Res.string.validation_credential_custom_field_name)) }
+                return false
+            }
+            val replacements = current.customFields.mapNotNull { field ->
+                current.customFieldDrafts[field.id]?.let { draft ->
+                    field.id to field.copy(
+                        name = draft.name,
+                        value = SensitiveText.from(draft.value),
+                        isSecret = draft.isSecret,
+                    )
+                }
+            }.toMap()
+            val updated = current.copy(
+                customFields = current.customFields.map { replacements[it.id] ?: it },
+                customFieldDrafts = emptyMap(),
+                isDirty = current.hasUnsavedChanges,
+            )
+            if (state.compareAndSet(current, updated)) {
+                current.customFields.filter { it.id in replacements }.forEach { it.value.clear() }
+                break
+            }
+            replacements.values.forEach { it.value.clear() }
+            current = state.value
+        }
+        return true
+    }
+
     @OptIn(ExperimentalUuidApi::class)
     fun add(name: String, value: String, isSecret: Boolean) {
         if (state.value.customFields.size >= MAX_CUSTOM_FIELDS) {
@@ -225,6 +294,7 @@ internal class CredentialCustomFieldEditor(
             val removed = current.customFields.firstOrNull { it.id == fieldId } ?: return
             val updated = current.copy(
                 customFields = current.customFields.filterNot { it.id == fieldId },
+                customFieldDrafts = current.customFieldDrafts - fieldId,
                 isDirty = true,
             )
             if (state.compareAndSet(current, updated)) {
@@ -244,18 +314,24 @@ internal class CredentialCustomFieldEditor(
                 replacementValue.clear()
                 return
             }
+            val unchangedField = replaced.name == replacementName &&
+                replaced.value == replacementValue && replaced.isSecret == isSecret
             val updated = current.copy(
-                customFields = current.customFields.map { field ->
+                customFields = if (unchangedField) current.customFields else current.customFields.map { field ->
                     if (field.id == fieldId) {
                         field.copy(name = replacementName, value = replacementValue, isSecret = isSecret)
                     } else {
                         field
                     }
                 },
+                customFieldDrafts = current.customFieldDrafts - fieldId,
                 isDirty = true,
             )
             if (state.compareAndSet(current, updated)) {
-                replaced.value.clear()
+                // StateFlow CAS uses equality: a repeated row Save can succeed
+                // without installing a new state reference. Keep the live owner
+                // for unchanged fields and wipe only the unused replacement.
+                if (unchangedField) replacementValue.clear() else replaced.value.clear()
                 return
             }
         }

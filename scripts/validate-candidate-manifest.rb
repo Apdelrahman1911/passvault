@@ -2,10 +2,12 @@
 
 require "json"
 require "time"
+require_relative "lib/strict_json"
 
 allow_pending = ARGV.delete("--allow-pending")
+mobile_only = ARGV.delete("--mobile-only")
 path = ARGV.fetch(0) do
-  abort("Usage: #{$PROGRAM_NAME} [--allow-pending] <candidate-manifest.json> [expected-commit] [expected-tree]")
+  abort("Usage: #{$PROGRAM_NAME} [--allow-pending] [--mobile-only] <candidate-manifest.json> [expected-commit] [expected-tree]")
 end
 expected_commit = ARGV[1]&.downcase
 expected_tree = ARGV[2]&.downcase
@@ -19,7 +21,7 @@ end
 unless File.file?(path) && !File.symlink?(path) && File.size(path) <= 64 * 1024
   abort("Candidate manifest is missing, unsafe, or too large")
 end
-document = JSON.parse(File.read(path, encoding: "UTF-8"))
+document = PassVault::StrictJson.parse(File.read(path, encoding: "UTF-8"))
 abort("Candidate manifest root must be a JSON object") unless document.is_a?(Hash)
 
 def require_string(document, *keys)
@@ -30,16 +32,22 @@ def require_string(document, *keys)
   value
 end
 
-abort("Unsupported candidate manifest schema") unless document["schemaVersion"] == 3
+schema = document["schemaVersion"]
+# Schema 2 is the immutable, mobile-only historical contract. Never relabel an
+# attested manifest or invent a Desktop receipt to make it fit schema 3.
+unless schema == 3 || (mobile_only && schema == 2)
+  abort("Unsupported candidate manifest schema for this release scope")
+end
 expected_root_keys = %w[
-  schemaVersion marketingVersion buildNumber sourceCommit sourceTree candidateTag createdAt android ios desktop
+  schemaVersion marketingVersion buildNumber sourceCommit sourceTree candidateTag createdAt android ios
 ]
+expected_root_keys << "desktop" if schema == 3
 abort("Candidate manifest has unexpected or missing fields") unless document.keys.sort == expected_root_keys.sort
 expected_platform_keys = {
   "android" => %w[packageName signingCertificateSha256 artifactReceiptSha256 internal external],
   "ios" => %w[bundleId appStoreAppId signingIdentitySha1 artifactReceiptSha256 internal external],
-  "desktop" => %w[artifactReceiptSha256],
 }
+expected_platform_keys["desktop"] = %w[artifactReceiptSha256] if schema == 3
 expected_platform_keys.each do |platform, expected_keys|
   section = document[platform]
   unless section.is_a?(Hash) && section.keys.sort == expected_keys.sort
@@ -92,8 +100,10 @@ ios_fingerprint = require_string(document, "ios", "signingIdentitySha1")
 abort("Invalid iOS signing fingerprint") unless ios_fingerprint.match?(/\A[0-9A-F]{40}\z/)
 ios_receipt = require_string(document, "ios", "artifactReceiptSha256")
 abort("Invalid iOS artifact-receipt digest") unless ios_receipt.match?(/\A[0-9a-f]{64}\z/)
-desktop_receipt = require_string(document, "desktop", "artifactReceiptSha256")
-abort("Invalid Desktop artifact-receipt digest") unless desktop_receipt.match?(/\A[0-9a-f]{64}\z/)
+if schema == 3
+  desktop_receipt = require_string(document, "desktop", "artifactReceiptSha256")
+  abort("Invalid Desktop artifact-receipt digest") unless desktop_receipt.match?(/\A[0-9a-f]{64}\z/)
+end
 
 required_states = {
   ["android", "internal"] => %w[completed],
@@ -107,5 +117,6 @@ required_states.each do |(platform, channel), accepted_states|
   abort("#{platform}.#{channel} is not ready: #{state}") unless accepted_states.include?(state)
 end
 
-status = allow_pending ? "valid candidate provenance" : "valid for production"
+scope = mobile_only ? "mobile-only" : "mobile and Desktop"
+status = allow_pending ? "valid candidate provenance (#{scope})" : "valid for production (#{scope})"
 puts "Candidate #{tag} has #{status} (commit #{commit}, build #{build_number})."

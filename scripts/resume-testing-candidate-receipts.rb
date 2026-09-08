@@ -8,6 +8,7 @@ require "pathname"
 require "rbconfig"
 require "tmpdir"
 require_relative "lib/testing_candidate_resume"
+require_relative "lib/github_api"
 
 def abort_usage
   abort(
@@ -39,17 +40,23 @@ begin
     version: options[:version],
     build_number: options[:build_number],
   )
+  PassVault::TestingCandidateResume.validate_identity!(
+    version: options[:version], build_number: options[:build_number],
+    source_commit: options[:source_commit],
+  )
+  options[:source_commit] = PassVault::TestingCandidateResume.canonical_sha(options[:source_commit])
+  options[:source_tree] = PassVault::TestingCandidateResume.canonical_sha(options[:source_tree])
 rescue RuntimeError => error
   abort(error.message)
 end
 
-repository = ENV.fetch("GITHUB_REPOSITORY")
+repository = PassVault::GitHubApi.repository!(ENV.fetch("GITHUB_REPOSITORY"))
 if ENV["GH_TOKEN"].to_s.strip.empty? && ENV["GITHUB_TOKEN"].to_s.strip.empty?
   abort("GH_TOKEN or GITHUB_TOKEN is required")
 end
 
-def gh_json(path, query = {})
-  args = ["gh", "api", "--paginate"]
+def gh_collection(path, collection, query = {})
+  args = ["gh", "api", "--paginate", "--slurp"]
   unless query.empty?
     encoded = query.map { |key, value| "#{key}=#{value}" }.join("&")
     path = "#{path}?#{encoded}"
@@ -57,7 +64,22 @@ def gh_json(path, query = {})
   stdout, stderr, status = Open3.capture3(*args, path)
   abort(stderr.empty? ? "gh api #{path} failed" : stderr) unless status.success?
 
-  JSON.parse(stdout)
+  abort("GitHub pagination response exceeds the size limit") if stdout.bytesize > 16 * 1024 * 1024
+  pages = JSON.parse(stdout)
+  unless pages.is_a?(Array) && pages.length.between?(1, 100)
+    abort("GitHub pagination response must contain 1 through 100 pages")
+  end
+  entries = pages.flat_map do |page|
+    unless page.is_a?(Hash) && page[collection].is_a?(Array) &&
+           page[collection].all? { |entry| entry.is_a?(Hash) }
+      abort("GitHub pagination page has invalid #{collection}")
+    end
+    page.fetch(collection)
+  end
+  abort("GitHub pagination collection exceeds the entry limit") if entries.length > 10_000
+  entries
+rescue JSON::ParserError
+  abort("GitHub pagination response is not valid JSON")
 end
 
 def run!(*args)
@@ -77,30 +99,32 @@ def git_is_ancestor?(ancestor, descendant)
   status.success?
 end
 
+unless git_commit_has_tree?(options[:source_commit], options[:source_tree])
+  abort("Current testing commit does not have the requested source tree")
+end
+
 output_dir = Pathname.new(options[:output_dir]).expand_path
 abort("Resume output directory is unsafe") if output_dir.symlink?
 FileUtils.mkdir_p(output_dir)
 abort("Resume output directory must be a real directory") unless output_dir.directory? && !output_dir.symlink?
 
-runs_payload = gh_json(
+workflow_runs = gh_collection(
   "repos/#{repository}/actions/workflows/testing-release.yml/runs",
+  "workflow_runs",
   "branch" => "testing",
   "per_page" => "100",
 )
-workflow_runs = runs_payload.is_a?(Hash) ? runs_payload.fetch("workflow_runs") : runs_payload
 
 jobs_by_run_id = {}
 artifacts_by_run_id = {}
 workflow_runs.each do |run|
-  run_id = run.fetch("id").to_s
-  jobs_payload = gh_json("repos/#{repository}/actions/runs/#{run_id}/jobs", "per_page" => "100")
-  jobs_by_run_id[run_id] = jobs_payload.is_a?(Hash) ? jobs_payload.fetch("jobs") : jobs_payload
-  artifacts_payload = gh_json("repos/#{repository}/actions/runs/#{run_id}/artifacts", "per_page" => "100")
-  artifacts_by_run_id[run_id] = if artifacts_payload.is_a?(Hash)
-    artifacts_payload.fetch("artifacts")
-  else
-    artifacts_payload
-  end
+  run_id = PassVault::TestingCandidateResume.canonical_run_id(run)
+  jobs_by_run_id[run_id] = gh_collection(
+    "repos/#{repository}/actions/runs/#{run_id}/jobs", "jobs", "per_page" => "100",
+  )
+  artifacts_by_run_id[run_id] = gh_collection(
+    "repos/#{repository}/actions/runs/#{run_id}/artifacts", "artifacts", "per_page" => "100",
+  )
 end
 
 runs = PassVault::TestingCandidateResume.parse_github_runs(
@@ -140,6 +164,9 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
       abort("Resumed #{platform} receipt is missing from #{candidate.fetch('artifact_name')}") unless receipt_path.file?
       receipt = JSON.parse(receipt_path.read(encoding: "UTF-8"))
       original = PassVault::TestingCandidateResume.resolve_original_candidate([receipt])
+      unless original.fetch("sourceTree") == options[:source_tree]
+        abort("Changed-tree resume is forbidden; allocate a new candidate/build instead")
+      end
       validated = system(
         RbConfig.ruby,
         validator.to_s,
@@ -189,6 +216,9 @@ Dir.mktmpdir("passvault-testing-resume.") do |temporary_root|
 
   chosen = PassVault::TestingCandidateResume.choose_unique_sources(candidates, receipts_by_source)
   original = PassVault::TestingCandidateResume.resolve_original_candidate(receipts_by_source.values_at(*chosen.values.map { |candidate| PassVault::TestingCandidateResume.source_key(candidate) }))
+  unless original.fetch("sourceTree") == options[:source_tree]
+    abort("Resumed receipts do not match the current testing tree")
+  end
   unless git_is_ancestor?(original.fetch("sourceCommit"), options[:source_commit])
     abort("Resumed receipts are not from an ancestor of the current testing commit")
   end

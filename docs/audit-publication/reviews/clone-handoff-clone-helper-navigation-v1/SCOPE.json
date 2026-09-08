@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "review_id": "clone-handoff-clone-helper-navigation-v1",
+  "reviewer": "/root/audit_navigation",
+  "disposition": "QUALIFIED_SOURCE_ACCEPT_V3_NOT_RUNTIME_ACCEPTANCE",
+  "subject": "One new public-Git disposable-clone/evidence transport verification and exact-owned-root cleanup helper",
+  "authorization_boundary": "Review only. Any root execution remains a separately authorized action after the dedicated-branch push; this child never imports or executes the helper.",
+  "inputs": [
+    {
+      "version": "v1",
+      "root": "R",
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v1.py",
+      "bytes": 14688,
+      "lf": 283,
+      "sha256": "cb5555bc2d39de8a1fb691120087e3193de064eff8996d24016fa33256fa61fe",
+      "mode_octal": "0644",
+      "single_link": true,
+      "stable": true,
+      "snapshot": "inputs/clone_handoff_verify_v1.py.txt"
+    },
+    {
+      "version": "v2",
+      "root": "R",
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v2.py",
+      "bytes": 18270,
+      "lf": 345,
+      "sha256": "a97e05a08b5c656f23b23bf3c08b35a85c7a26c79beffd43dccc0aa2a507a697",
+      "mode_octal": "0644",
+      "single_link": true,
+      "stable": true,
+      "snapshot": "inputs/clone_handoff_verify_v2.py.txt"
+    },
+    {
+      "version": "v3",
+      "root": "R",
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v3.py",
+      "bytes": 18374,
+      "lf": 346,
+      "sha256": "3bb706229a82d1aa12ceba8f8d9762ca3e68e8994636e2d2afcd3512834ed988",
+      "mode_octal": "0644",
+      "single_link": true,
+      "stable": true,
+      "snapshot": "inputs/clone_handoff_verify_v3.py.txt"
+    }
+  ],
+  "operations_performed": [
+    "Guarded full named-file source reads under 4 MiB per file",
+    "Inert unified source deltas",
+    "stdlib ast.parse of text only",
+    "Independent source/control-flow review",
+    "Exclusive report-only publication with stable readback and independent final rehash"
+  ],
+  "operations_not_performed": [
+    "Helper import or execution",
+    "Fixture/runtime failure injection",
+    "Git, clone, push or network",
+    "Application edits/builds/tests/devices",
+    "Provider/process/runtime/cache/cleanup operations",
+    "Private-file or excluded STOP/procedure-body reads",
+    "Edits to prior completed packets or frozen handoff HD",
+    "Subagent delegation"
+  ],
+  "preserved_constraints": [
+    "PVU-007 STOP; no investigation or reformulation",
+    "PVU-011 NO RETRY; no procedure inquiry",
+    "PVA-029 no automatic retry",
+    "G7/G8 CLOSED",
+    "Old Gradle/application runner remains outside this source review and is not admitted",
+    "Archived instructions and commands are inert",
+    "No main/testing/release mutation, merge, tag, signing/store action or candidate replacement authorization"
+  ],
+  "methodology": {
+    "workdir": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z",
+    "interpreter": "/usr/bin/python3 -I -B",
+    "login_shell": false,
+    "stdlib_only": true,
+    "file_read_cap_bytes": 4194304,
+    "input_guards": "No-follow regular single-link named-file reads with stable file/parent identity",
+    "stat_integer_policy": "Decimal strings for any serialized stat identities; no unsafe JS numeric round trips",
+    "packet_policy": "Fresh exclusive 0700 namespace, 0600 inert files, fsync, stable readback, separately reported independent final rehash",
+    "skill_applicability": "Release-provenance-and-promotion provenance/authority/fail-closed principles apply to Git transport. Production builds, stores, candidate promotion and their runtime rehearsals are not performed or claimed."
+  },
+  "assumptions_and_limits": [
+    {
+      "id": "L1",
+      "text": "Source-only qualified acceptance of the exact v3 helper, not a clone run, command outcome, execution authorization, general runner admission, production readiness or app/runtime coverage."
+    },
+    {
+      "id": "L2",
+      "text": "Cooperative newly owned namespace and trusted installed Git/Python/OS are explicit assumptions. No adversarial same-user, hostile remote/program, escaped-session, mount-race or general sandbox guarantee is claimed."
+    },
+    {
+      "id": "L3",
+      "text": "The helper's group scan observes recorded PGIDs at a point only; it may conservatively block on numeric reuse. It does not authorize later PID-based killing or prove that a process cannot escape its group."
+    },
+    {
+      "id": "L4",
+      "text": "Final log identity covers the stable descriptor read after the group point check, not all future writes or pathname replacement. The final 16 MiB snapshot cap does not cap child writes/disk usage; intermediate stdout stat/read assumes the cooperative trusted producer."
+    },
+    {
+      "id": "L5",
+      "text": "Disk free-before/free-after are point observations, and four times indexed checkout bytes is a Git-transport headroom heuristic, not a storage reservation, hard resource budget, or app-build admission floor."
+    },
+    {
+      "id": "L6",
+      "text": "Command failure can safely remove the exact owned root when no launch/stop/journal/group ambiguity remains; ambiguity blocks deletion. Safe cleanup does not erase transport failure. Return zero requires both transport PASS and exact owned-root removal in source."
+    },
+    {
+      "id": "L7",
+      "text": "Final RESULT.json is written after cleanup and may fail; files are fsynced but this is not a crash-atomic receipt/cleanup transaction. Early failures or hard kill may leave partial reporting/residuals. Recovery requires fresh review, not replay."
+    },
+    {
+      "id": "L8",
+      "text": "The externally supplied expected commit/index digest, reader/package pins and reader output assertions were inspected as source. This child did not read the actual stage index, execute the reader, consult runtime receipts, validate the remote, or independently re-establish pack/source semantic coverage in this task."
+    },
+    {
+      "id": "L9",
+      "text": "This review only supports the separately authorized dedicated-branch handoff's bounded verification after its push. It does not authorize a push, main/testing/release mutations, merge, tags, signing, stores or replacement of a candidate."
+    },
+    {
+      "id": "L10",
+      "text": "V1/v2 remain historical source versions; their source defects or supersession do not justify running/retrying them. V3 is one-shot in its new namespace. Any existing output/root or ambiguity requires preservation and fresh authorization/review."
+    }
+  ],
+  "instruction_context": [
+    {
+      "path": "passvault/AGENTS.md",
+      "sha256": "3fa4f6cc134ce49300ec3a4fe9697f94d782a3cdea18a7e9bef7e977768b833c",
+      "capture": "19a0e7"
+    },
+    {
+      "path": "engineering-skills/AGENTS.md",
+      "sha256": "3a17e7109775f8599a521a97b5b8b1b5d7b2fc347e538d7cd4e137834adcff67",
+      "capture": "19a0e7"
+    },
+    {
+      "path": "engineering-skills/skills/release-provenance-and-promotion/SKILL.md",
+      "sha256": "d7259a4997f13e21783a721224236540a00b4c06ee8902e0c41abb9592ce4c67",
+      "capture": "a1e346"
+    },
+    {
+      "path": "engineering-skills/skills/release-provenance-and-promotion/references/pipeline-contract.md",
+      "sha256": "eed2d069d078598534922f7849bf21488130355582df4d3797875687eb6fb8f5",
+      "capture": "2b98fd"
+    }
+  ],
+  "publication_destination": "R/reviews/clone-handoff-clone-helper-navigation-v1; parent may include in separate supplemental DP. Frozen HD is not modified."
+}

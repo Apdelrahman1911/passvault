@@ -204,8 +204,8 @@ class CredentialViewModel(
     fun onEvent(event: CredentialEvent) = eventRouter.handle(event)
 
     private fun saveCredential() {
+        if (!_state.value.canSave || !customFieldEditor.commitDrafts()) return
         val beforeSave = _state.value
-        if (beforeSave.isBusy || (!beforeSave.isNewCredential && !beforeSave.isCredentialLoaded)) return
         val validation = evaluateCredentialValidation(beforeSave)
         if (!validation.isValid) {
             _state.update {
@@ -430,6 +430,7 @@ class CredentialViewModel(
         val urls: List<String> = emptyList(),
         val notes: String = "",
         val customFields: List<CustomField> = emptyList(),
+        val customFieldDrafts: Map<CustomFieldId, CredentialCustomFieldDraft> = emptyMap(),
         val recoveryCodes: List<SensitiveText> = emptyList(),
         val apiKeys: List<SensitiveText> = emptyList(),
         val licenseKeys: List<SensitiveText> = emptyList(),
@@ -479,6 +480,11 @@ class CredentialViewModel(
         val isBusy: Boolean
             get() = isLoading || isSaving || isDeleting || isAttachmentBusy || isGeneratingPassword
         val canSave: Boolean get() = !isBusy && (isNewCredential || isCredentialLoaded)
+        val canAddCustomField: Boolean get() = canSave && customFields.size < MAX_CUSTOM_FIELDS
+        val hasUnsavedChanges: Boolean
+            get() = isDirty || customFieldDrafts.any { (id, draft) ->
+                customFields.firstOrNull { it.id == id }?.let(draft::matches) != true
+            }
         val displayTitle: UiText
             get() = title
                 .takeIf(String::isNotBlank)
@@ -505,6 +511,12 @@ class CredentialViewModel(
         data class OnTotpQrScanned(val payload: String) : CredentialEvent
         data class OnCustomFieldAdded(val name: String, val value: String, val isSecret: Boolean) : CredentialEvent
         data class OnCustomFieldRemoved(val fieldId: CustomFieldId) : CredentialEvent
+        data class OnCustomFieldEditStarted(val fieldId: CustomFieldId) : CredentialEvent
+        data class OnCustomFieldEditCancelled(val fieldId: CustomFieldId) : CredentialEvent
+        data class OnCustomFieldDraftChanged(
+            val fieldId: CustomFieldId,
+            val draft: CredentialCustomFieldDraft,
+        ) : CredentialEvent
         data class OnCustomFieldUpdated(
             val fieldId: CustomFieldId,
             val name: String,

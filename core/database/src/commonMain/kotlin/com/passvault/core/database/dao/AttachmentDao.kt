@@ -66,4 +66,8 @@ interface AttachmentDao {
         """,
     )
     suspend fun getManagedStoragePaths(): List<String>
+
+    /** Every durable reference protects its object, even when its state metadata is inconsistent. */
+    @Query("SELECT EXISTS(SELECT 1 FROM attachment_records WHERE storage_path = :storagePath)")
+    suspend fun hasStoragePathReference(storagePath: String): Boolean
 }

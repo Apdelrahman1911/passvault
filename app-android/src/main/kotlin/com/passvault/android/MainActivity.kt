@@ -23,6 +23,7 @@ import com.passvault.android.backup.AndroidBackupFileStore
 import com.passvault.android.attachment.AndroidAttachmentFileStore
 import com.passvault.android.lifecycle.AndroidLifecycleLockCoordinator
 import com.passvault.android.security.AndroidBiometricKeyStore
+import com.passvault.android.security.AndroidClipboardService
 import com.passvault.android.security.AndroidScreenshotProtection
 import com.passvault.shared.PassVaultApp
 import org.koin.android.ext.android.inject
@@ -43,6 +44,7 @@ class MainActivity : FragmentActivity() {
     private val backupFileStore: AndroidBackupFileStore by inject()
     private val attachmentFileStore: AndroidAttachmentFileStore by inject()
     private val biometricKeyStore: AndroidBiometricKeyStore by inject()
+    private val clipboardService: AndroidClipboardService by inject()
     private val lifecycleLockCoordinator: AndroidLifecycleLockCoordinator by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,6 +115,7 @@ class MainActivity : FragmentActivity() {
         super.onResume()
         attachmentFileStore.onActivityResumed()
         lifecycleLockCoordinator.onActivityResumed()
+        clipboardService.onForeground()
         screenshotProtection.onActivityResumed(this)
         if (screenshotProtection.isEnabled()) {
             AndroidScreenshotProtection.applyToActivity(this)
@@ -136,6 +139,9 @@ class MainActivity : FragmentActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
+            // onResume can precede clipboard access being restored. Retry at
+            // actual focus too, retaining ownership when inspection is denied.
+            clipboardService.onForeground()
             // Re-apply screenshot protection when window regains focus
             if (screenshotProtection.isEnabled()) {
                 AndroidScreenshotProtection.applyToActivity(this)

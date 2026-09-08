@@ -38,6 +38,7 @@ import com.passvault.core.security.VaultUiSecurityCoordinator
 import com.passvault.feature.settings.presentation.SettingsViewModel
 import com.passvault.shared.navigation.PassVaultNavigationHost
 import com.passvault.shared.platform.AppLanguageProvider
+import com.passvault.shared.platform.PublishAppResourceEnvironment
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -146,6 +147,7 @@ private fun VerifiedPassVaultApp() {
     }
 
     AppLanguageProvider(settingsState.language) {
+        PublishAppResourceEnvironment()
         PassVaultTheme(
             darkTheme = useDarkTheme,
             accent = settingsState.accentColor,

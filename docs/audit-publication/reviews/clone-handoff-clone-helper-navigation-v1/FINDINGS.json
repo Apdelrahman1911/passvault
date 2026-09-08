@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "findings": [
+    {
+      "id": "CHV-NAV-01",
+      "kind": "MATERIAL_SOURCE_BLOCKER_IN_V1",
+      "title": "Inherited Git, HOME and Python context escaped the stated Git-only boundary",
+      "v1_evidence": [
+        "L24-L30",
+        "L236-L239"
+      ],
+      "v3_evidence": [
+        "L31-L44",
+        "L236",
+        "L263-L266",
+        "L288-L291"
+      ],
+      "v1_problem": "dict(os.environ, ...) retained Git repository/index/object redirects and GIT_CONFIG_* injection; global/system config, credentials, URL rewriting and HOME/netrc were not isolated. Reader invocation lacked -I. Disabling hooks, templates and traces did not suppress those independent inputs.",
+      "v3_resolution": "Whole child environment is allowlisted rather than inherited; /usr/bin/git is explicit; HOME/XDG_CONFIG_HOME/TMPDIR are fresh owned directories; user/system Git config and credential helpers/prompts are disabled; allowed transport is HTTPS; fsmonitor, hooks, templates, automatic maintenance and attribute file are constrained. Helper requires isolated/no-bytecode flags, and both reader commands include -I -B.",
+      "disposition": "RESOLVED_IN_V2_CARRIED_UNCHANGED_TO_V3",
+      "limit": "Trusted installed Git, Python, standard library/system startup behavior and OS remain assumptions. This is cooperative configuration isolation, not an adversarial same-user or general sandbox claim."
+    },
+    {
+      "id": "CHV-NAV-02",
+      "kind": "MATERIAL_SOURCE_BLOCKER_IN_V1",
+      "title": "Launch or journal failure could omit a created session from the cleanup gate",
+      "v1_evidence": [
+        "L79-L104",
+        "L247-L270"
+      ],
+      "v3_evidence": [
+        "L66-L75",
+        "L116-L151",
+        "L299-L328"
+      ],
+      "v1_problem": "Popen and CHILD journaling preceded the command try/finally. COMMANDS.append occurred only after stop/log reads, while final PGID observations derived solely from COMMANDS. Interruption or I/O failure could therefore omit a launched group; an exited direct child could leave same-group descendants unobserved.",
+      "v3_resolution": "Event and child registry entries precede filesystem journals; launch_attempted is set before Popen; its returned object is retained directly and registration is separate. Launch/child-journal/wait are covered by finally. Final cleanup rejects journal failures, any attempted-but-unregistered launch, live direct children and retained stop errors, then derives groups from all registered CHILDREN rather than finalized events. An interrupted object-assignment/registration window preserves residual instead of treating it as no child.",
+      "disposition": "RESOLVED_IN_V2_CARRIED_UNCHANGED_TO_V3",
+      "limit": "The recorded-group scan is only a point observation. It does not prove absence of escaped sessions; recorded PIDs are historical evidence, not future kill/recovery authority. This review does not import the closed Gradle runner's process-birth/admission framework."
+    },
+    {
+      "id": "CHV-NAV-03",
+      "kind": "SUPPORTING_CORRECTNESS_OBSERVATION_IN_V1",
+      "title": "Logs could be hashed while stopping or producer lifetime was ambiguous",
+      "v1_evidence": [
+        "L93-L103"
+      ],
+      "v3_evidence": [
+        "L100-L113",
+        "L140-L151",
+        "L309-L331"
+      ],
+      "v1_problem": "Size and SHA256 were read separately immediately after a possibly failed stop. A live writer could make those values describe different versions of the log.",
+      "v3_resolution": "Per-command records explicitly mark log binding provisional and do not hash in the command finally. Final log snapshots occur only after launch/stop/journal gates and the recorded-group point observation; no-follow descriptor reads check regular single-link type, size, identity and mtime across bounded capture.",
+      "disposition": "ADDRESSED_IN_V2_CARRIED_UNCHANGED_TO_V3",
+      "limit": "Stable descriptor snapshots are not future pathname/producer or escaped-writer guarantees. The 16 MiB final-capture cap and intermediate stdout size check are not an output-write/disk quota or a hostile-growing-writer memory guarantee."
+    },
+    {
+      "id": "CHV-NAV-04",
+      "kind": "CLAIM_BOUNDARY_QUALIFICATION_IN_V2",
+      "title": "The final result journal is after cleanup, not a pre-deletion durable receipt",
+      "v2_evidence": [
+        "L1-L6",
+        "L332-L339"
+      ],
+      "v3_evidence": [
+        "L1-L7",
+        "L332-L340"
+      ],
+      "v2_problem": "The docstring broadly said a failed journal preserves residual, although RESULT.json itself is written after cleanup and can fail then.",
+      "v3_resolution": "The v3 docstring limits residual preservation to pre-cleanup journal/launch/stop ambiguity and explicitly disclaims a durable final-receipt guarantee before deletion. The only other v2-to-v3 change is the fresh RUN namespace.",
+      "disposition": "RESOLVED_BY_EXPLICIT_SCOPE_NARROWING_IN_V3",
+      "limit": "Power loss, hard kill, final-journal failure or early failure can leave partial/no final reporting. No blind replay or automatic recovery is authorized."
+    }
+  ],
+  "limitations": [
+    {
+      "id": "L1",
+      "text": "Source-only qualified acceptance of the exact v3 helper, not a clone run, command outcome, execution authorization, general runner admission, production readiness or app/runtime coverage."
+    },
+    {
+      "id": "L2",
+      "text": "Cooperative newly owned namespace and trusted installed Git/Python/OS are explicit assumptions. No adversarial same-user, hostile remote/program, escaped-session, mount-race or general sandbox guarantee is claimed."
+    },
+    {
+      "id": "L3",
+      "text": "The helper's group scan observes recorded PGIDs at a point only; it may conservatively block on numeric reuse. It does not authorize later PID-based killing or prove that a process cannot escape its group."
+    },
+    {
+      "id": "L4",
+      "text": "Final log identity covers the stable descriptor read after the group point check, not all future writes or pathname replacement. The final 16 MiB snapshot cap does not cap child writes/disk usage; intermediate stdout stat/read assumes the cooperative trusted producer."
+    },
+    {
+      "id": "L5",
+      "text": "Disk free-before/free-after are point observations, and four times indexed checkout bytes is a Git-transport headroom heuristic, not a storage reservation, hard resource budget, or app-build admission floor."
+    },
+    {
+      "id": "L6",
+      "text": "Command failure can safely remove the exact owned root when no launch/stop/journal/group ambiguity remains; ambiguity blocks deletion. Safe cleanup does not erase transport failure. Return zero requires both transport PASS and exact owned-root removal in source."
+    },
+    {
+      "id": "L7",
+      "text": "Final RESULT.json is written after cleanup and may fail; files are fsynced but this is not a crash-atomic receipt/cleanup transaction. Early failures or hard kill may leave partial reporting/residuals. Recovery requires fresh review, not replay."
+    },
+    {
+      "id": "L8",
+      "text": "The externally supplied expected commit/index digest, reader/package pins and reader output assertions were inspected as source. This child did not read the actual stage index, execute the reader, consult runtime receipts, validate the remote, or independently re-establish pack/source semantic coverage in this task."
+    },
+    {
+      "id": "L9",
+      "text": "This review only supports the separately authorized dedicated-branch handoff's bounded verification after its push. It does not authorize a push, main/testing/release mutations, merge, tags, signing, stores or replacement of a candidate."
+    },
+    {
+      "id": "L10",
+      "text": "V1/v2 remain historical source versions; their source defects or supersession do not justify running/retrying them. V3 is one-shot in its new namespace. Any existing output/root or ambiguity requires preservation and fresh authorization/review."
+    }
+  ]
+}

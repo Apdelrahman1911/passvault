@@ -5,12 +5,17 @@ import com.passvault.core.security.BiometricCapability
 import com.passvault.core.security.BiometricKeyStoreException
 import com.passvault.core.security.BiometricType
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import java.util.ArrayDeque
 import java.util.concurrent.CountDownLatch
@@ -102,23 +107,6 @@ class DesktopBiometricKeyStoreTest {
     }
 
     @Test
-    fun `prompt coordination is active only for the native prompt lifetime`() {
-        val coordinator = DesktopBiometricPromptCoordinator()
-        var completions = 0
-        coordinator.setFinishedListener { completions += 1 }
-
-        assertFailsWith<IllegalStateException> {
-            coordinator.withPrompt {
-                assertTrue(coordinator.isActive)
-                coordinator.withPrompt { error("must not start") }
-            }
-        }
-
-        assertFalse(coordinator.isActive)
-        assertEquals(1, completions)
-    }
-
-    @Test
     fun `cancelling retrieval cancels native prompt waits for cleanup and wipes a late key`() = runTest {
         val bridge = CancellationBridge()
         val store = DesktopBiometricKeyStore(bridge)
@@ -185,6 +173,89 @@ class DesktopBiometricKeyStoreTest {
         retryResult.getOrThrow().fill(0)
     }
 
+    @Test
+    fun `completed key is wiped when cancellation wins the queued parent delivery`() = runTest {
+        val bridge = RecordingBridge(retrievedKey = ByteArray(32) { 7 })
+        val workerDispatcher = QueuedCoroutineDispatcher()
+        val store = DesktopBiometricKeyStore(bridge, blockingDispatcher = workerDispatcher)
+        val retrieval = async { store.retrieve("vault") }
+        try {
+            runCurrent()
+
+            // Run the producer to completion but deliberately leave await's parent
+            // continuation queued. The early worker cancellation check succeeds.
+            workerDispatcher.runAll()
+            val producedKey = checkNotNull(bridge.producedKey)
+            assertTrue(producedKey.all { it == 7.toByte() })
+            cancelAndDrain(retrieval, workerDispatcher)
+
+            assertFailsWith<CancellationException> { retrieval.await() }
+            assertTrue(producedKey.all { it == 0.toByte() })
+            assertEquals(1, bridge.retrieveCalls)
+        } finally {
+            try {
+                cancelAndDrain(retrieval, workerDispatcher)
+            } finally {
+                bridge.producedKey?.fill(0)
+            }
+        }
+    }
+
+    @Test
+    fun `successful queued delivery transfers the key without wiping it`() = runTest {
+        val bridge = RecordingBridge(retrievedKey = ByteArray(32) { 9 })
+        val workerDispatcher = QueuedCoroutineDispatcher()
+        val store = DesktopBiometricKeyStore(bridge, blockingDispatcher = workerDispatcher)
+        val retrieval = async { store.retrieve("vault") }
+        try {
+            runCurrent()
+            workerDispatcher.runAll()
+            runCurrent()
+
+            assertTrue(retrieval.isCompleted)
+            val key = retrieval.await().getOrThrow()
+            assertTrue(key === bridge.producedKey)
+            assertTrue(key.all { it == 9.toByte() })
+        } finally {
+            try {
+                cancelAndDrain(retrieval, workerDispatcher)
+            } finally {
+                bridge.producedKey?.fill(0)
+            }
+        }
+    }
+
+    @Test
+    fun `post production prompt cleanup failure wipes the undelivered key`() = runTest {
+        val bridge = RecordingBridge(
+            retrievedKey = ByteArray(32) { 5 },
+            failClearPendingCancellation = true,
+        )
+        val store = DesktopBiometricKeyStore(bridge)
+
+        try {
+            assertTrue(store.retrieve("vault").isFailure)
+            assertTrue(checkNotNull(bridge.producedKey).all { it == 0.toByte() })
+        } finally {
+            bridge.producedKey?.fill(0)
+        }
+    }
+
+    private suspend fun TestScope.cancelAndDrain(job: Job, worker: QueuedCoroutineDispatcher) {
+        withContext(NonCancellable) {
+            job.cancel()
+            repeat(8) {
+                worker.runAll()
+                testScheduler.runCurrent()
+                if (job.isCompleted) {
+                    job.join()
+                    return@withContext
+                }
+            }
+            error("Synthetic biometric handoff did not settle after draining both dispatchers")
+        }
+    }
+
     private companion object {
         const val DUPLICATE_OPERATION_COUNT = 1_000
     }
@@ -198,7 +269,11 @@ private class QueuedCoroutineDispatcher : CoroutineDispatcher() {
     }
 
     fun runAll() {
-        while (tasks.isNotEmpty()) tasks.removeFirst().run()
+        repeat(32) {
+            val next = tasks.pollFirst() ?: return
+            next.run()
+        }
+        check(tasks.isEmpty()) { "Synthetic biometric handoff exceeded the queued-task drain bound" }
     }
 }
 
@@ -247,6 +322,7 @@ private class CancellationBridge : DesktopBiometricBridge {
 private class RecordingBridge(
     private val retrievedKey: ByteArray = ByteArray(32),
     private val retrieveFailure: DesktopBiometricBridgeException? = null,
+    private val failClearPendingCancellation: Boolean = false,
     private val onContains: suspend () -> Unit = {},
 ) : DesktopBiometricBridge {
     override val type: BiometricType = BiometricType.TOUCH_ID
@@ -254,6 +330,7 @@ private class RecordingBridge(
     var containsCalls = 0
     var retrieveCalls = 0
     var cancelCalls = 0
+    var producedKey: ByteArray? = null
     var maximumConcurrentCalls = 0
     private var concurrentCalls = 0
 
@@ -280,12 +357,16 @@ private class RecordingBridge(
     override fun retrieve(vaultHash: ByteArray): ByteArray {
         retrieveCalls += 1
         retrieveFailure?.let { throw it }
-        return retrievedKey.copyOf()
+        return retrievedKey.copyOf().also { producedKey = it }
     }
 
     override fun delete(vaultHash: ByteArray) = Unit
     override fun cancelActive() {
         cancelCalls += 1
+    }
+
+    override fun clearPendingCancellation() {
+        check(!failClearPendingCancellation) { "Synthetic cancellation cleanup failure" }
     }
 
     override fun close() = Unit

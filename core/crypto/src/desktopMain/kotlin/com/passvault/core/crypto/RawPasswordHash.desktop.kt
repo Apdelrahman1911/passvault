@@ -5,6 +5,7 @@ import com.ionspin.kotlin.crypto.pwhash.PasswordHashingFailed
 import com.sun.jna.Function
 import com.sun.jna.Library
 import com.sun.jna.Memory
+import com.sun.jna.Native
 import java.lang.reflect.Proxy
 
 internal actual fun rawPasswordHash(
@@ -51,7 +52,7 @@ private fun invokeRawPasswordHash(
                             password.size.toLong(),
                             saltMemory,
                             opsLimit.toLong(),
-                            memLimit.toLong(),
+                            passwordHashMemoryLimitArgument(memLimit, Native.SIZE_T_SIZE),
                             algorithm,
                         ),
                     )

@@ -1,0 +1,70 @@
+{
+  "status": "OUTPUT_BYTES_AND_INTERNAL_METADATA_CONSISTENCY_PASS_NOT_REFERENCE_RESOLUTION",
+  "output": {
+    "root": "PUB",
+    "path": "docs/audit-handoff/reference-locators.json",
+    "bytes": 11439084,
+    "lf": 1,
+    "sha256": "47cebd38e2b5200fe9b709d51ff9aee61000b26c46f2b36b8295729bbe4b1c72",
+    "mode_octal": "0644",
+    "single_link": true,
+    "stable": true
+  },
+  "compared_log": {
+    "root": "R",
+    "path": "handoff-publication/20260908T061500Z/REFERENCE-WRITER-V3.log",
+    "bytes": 3833,
+    "lf": 77,
+    "sha256": "9712e49a807fe2da29aea64c939d9ebe7d2540715bf4c7c13709884f30514e63",
+    "mode_octal": "0644",
+    "single_link": true,
+    "stable": true
+  },
+  "compared_receipt": {
+    "root": "R",
+    "path": "handoff-publication/20260908T061500Z/REFERENCE-WRITER-V3-RECEIPT.json",
+    "bytes": 1611,
+    "lf": 30,
+    "sha256": "d5fe26b47749c2c4aefe324650b750b640b1a2c297fad6e541ff3f84766c5a8d",
+    "mode_octal": "0644",
+    "single_link": true,
+    "stable": true
+  },
+  "independently_checked_descriptor_rows": 13927,
+  "distinct_unique_sorted_keys": 13927,
+  "descriptor_occurrences": 266962,
+  "disposition_counts": {
+    "LOCATOR_INCLUDED_HASH_ALIAS_NOT_SAME_PATH": 1027,
+    "LOCATOR_G12_RAW_SOURCE_NOT_FRESH_CLONE_PROOF": 536,
+    "LOCATOR_INCLUDED_PATH_HASH_IN_AT_LEAST_ONE_CONTEXT": 12134,
+    "LOCATOR_BASELINE_GIT_OR_PREDICTED_CRLF_NOT_OBSERVED": 83,
+    "UNRESOLVED_OR_EXTERNAL_DESCRIPTOR": 109,
+    "WITHHELD_PATH_POLICY_HASH_UNRESOLVED": 31,
+    "LOCATOR_EXPLICITLY_WITHHELD_HASH": 7
+  },
+  "example_contexts_checked": 31876,
+  "jsonl_examples_with_synthetic_line_prefix": 130,
+  "parsed_json_jsonl_files": 15886,
+  "retained_unparsed_metadata_files": 4,
+  "included_index_paths_as_declared": 21378,
+  "startup_bindings_match_receipt": true,
+  "script_binding": {
+    "bytes": 10225,
+    "path": "reference_inventory_v3.py",
+    "sha256": "3bc6a732e30f40ad9dcac19072a1c6dd1c75a34b085cf87c89e0f0c9ac248914"
+  },
+  "public_baseline_as_declared": {
+    "buffered_batch_bytes": 13712798,
+    "commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "git_blobs_read_as_data": 763,
+    "tree": "20fb8f6f2c6fb11ad99af80c170b4150c16beb6f"
+  },
+  "method_limits_verbatim": [
+    "Grouped by declared path and digest across contexts. A path/hash locator exists in at least one context, not necessarily every occurrence. Only three example contexts retained; JSONL physical line recorded.",
+    "Bytes/mode/range/generation semantics not validated. A range-like descriptor can share a whole-file hash locator without proving its intended referent.",
+    "baseline-checkout-CRLF is a suffix-based calculated byte form, not an observed Git checkout or checked attribute policy.",
+    "Reads every included JSON/JSONL body and public baseline Git blobs as data; no packed code execution. Stable frozen inputs/path/size envelope supplied externally, not a sandbox implemented by this helper.",
+    "No Markdown/free-form/canonical/range digest closure, private-runtime access, physical-device evidence or execution admission."
+  ],
+  "scope": "Direct pinned output read/parse and all-row structural/count checks; log/receipt agreement only. Referenced JSON bodies, omitted procedure bodies, evidence index, omissions corpus, raw-source payloads and baseline Git blobs were not read here. No independent rederivation of classifications, per-occurrence meanings, complete closure or source correctness."
+}

@@ -1,0 +1,76 @@
+{
+  "timestamp_utc": "2026-09-05T20:21:26.561214+00:00",
+  "attempt_count": 13,
+  "attempt_dispositions": {
+    "PROCESS_EXITED_ZERO": 7,
+    "PROCESS_EXITED_NONZERO": 2,
+    "INTERRUPTED": 2,
+    "BLOCKED_NOT_STARTED": 2
+  },
+  "test_counts_from_actual_xml_cases": {
+    "REPOSITORY": {
+      "test_suites": 55,
+      "test_cases": 520,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "DIAGNOSTIC_BASELINE_OBSERVATIONS": {
+      "test_suites": 4,
+      "test_cases": 6,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "xml_hashes_verified": 59,
+  "successful_wrapper_stops": 13,
+  "cleanup_complete_recorded": 13,
+  "candidate_compatibility_controls": {
+    "count": 9,
+    "expected_observations_matched": 9,
+    "not_application_test_cases": true
+  },
+  "source_validation": {
+    "result_records": 123,
+    "nonzero_records": [],
+    "label_counts": {
+      "system-python-version": 1,
+      "system-ruby-version": 1,
+      "bash-version": 1,
+      "node-version": 1,
+      "powershell-version": 1,
+      "ruby-syntax": 40,
+      "parse-only": 26,
+      "bash-syntax": 46,
+      "powershell-parse-only": 1,
+      "public-validator": 5
+    },
+    "syntax_parsed_files": 125,
+    "syntax_file_breakdown": {
+      "bash": 46,
+      "ruby": 40,
+      "xml": 24,
+      "python_ast": 2,
+      "powershell": 13
+    },
+    "tool_version_probes": 5,
+    "public_validators": 5,
+    "limitations": "125 syntax-parsed files, not 123 application tests. Node version was probed; no JavaScript was parsed. Ruby syntax used system2.6.10, not production3.3 runtime validation."
+  },
+  "action_pin_controls_evidence": "evidence/runs/action-pin-diagnostic-controls/controls.json",
+  "action_pin_controls": {
+    "count": 4,
+    "expected_baseline_outcomes": 4,
+    "desired_product_outcomes": 3,
+    "frozen_workflow_references": 147,
+    "local_references": 4,
+    "invalid_references": []
+  },
+  "limitations": [
+    "Diagnostic assertions pass by reproducing undesirable baseline behavior; they do not establish corrected behavior.",
+    "The latest navigation invocation was interrupted overall after only28 core-navigation cases completed; none of the eight requested feature test tasks completed.",
+    "Gradle task counts, parse counts, query counts and multi-scenario loops are never substituted for test-case counts.",
+    "No Android/iOS production build, upload, promotion, deployment approval or real app launch occurred."
+  ]
+}

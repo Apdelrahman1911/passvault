@@ -1,0 +1,36 @@
+{
+  "scope": "In-memory comparison of previously guarded full gate-document reads only; no underlying evidence or source revalidation.",
+  "counts": {
+    "PASS": 4,
+    "BLOCKED": 7,
+    "FAIL": 1,
+    "NOT_APPLICABLE": 2
+  },
+  "changes": [
+    {
+      "location": "$.at",
+      "old": "2026-09-08T05:51:28.230769+00:00",
+      "new": "2026-09-08T06:39:55.247801+00:00"
+    },
+    {
+      "location": "$.gates[3].reason",
+      "old": "Frozen base review identified stale PVA030 prose; exact report-only correction applied. Current-checkpoint delta acceptance remains pending.",
+      "new": "Accurate INCOMPLETE-checkpoint report independently accepted. No remediation completion, source/runtime/coverage/readiness or execution admission follows."
+    },
+    {
+      "location": "$.gates[3].status",
+      "old": "BLOCKED",
+      "new": "PASS"
+    },
+    {
+      "location": "$.gates[3].evidence",
+      "old": null,
+      "new": {
+        "path": "reviews/g12-checkpoint-delta-independent-platform-v1/PUBLICATION.json",
+        "report_sha256": "e67c47120061c10d53fcae35c097276167cde8f6210b97c8c1c9f4c1759fe824",
+        "root_adoption": "reviews/g12-final-report-adoption-root-v1/ADOPTION.json",
+        "sha256": "1de9a1fba5b6e2f9acc2a98792a06e50c22a839a0e389cb2fb70e4b47a46d37c"
+      }
+    }
+  ]
+}

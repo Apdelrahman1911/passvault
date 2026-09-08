@@ -110,26 +110,30 @@ jobs:
           fi
           gh release download "$CANDIDATE_TAG" \
             --pattern readiness-manifest.json \
-            --pattern '*-artifact-receipt.json' \
+            --pattern android-artifact-receipt.json \
+            --pattern ios-artifact-receipt.json \
             --dir "$RUNNER_TEMP/candidate"
           manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
-          gh attestation verify "$manifest" \
+          ruby scripts/verify-candidate-attestation.rb "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$source_commit" \
+            --candidate-commit "$source_commit" \
+            --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
             --deny-self-hosted-runners >/dev/null
           source_tree="$(git rev-parse "$source_commit^{tree}")"
-          ruby scripts/validate-candidate-manifest.rb "$manifest" "$source_commit" "$source_tree"
-          for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
-            gh attestation verify "$receipt" \
+          ruby scripts/validate-candidate-manifest.rb --mobile-only "$manifest" "$source_commit" "$source_tree"
+          for platform in android ios; do
+            receipt="$RUNNER_TEMP/candidate/$platform-artifact-receipt.json"
+            ruby scripts/verify-candidate-attestation.rb "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$source_commit" \
+              --candidate-commit "$source_commit" \
+              --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done
-          ruby scripts/validate-candidate-artifact-provenance.rb \
+          ruby scripts/validate-candidate-artifact-provenance.rb --mobile-only \
             "$manifest" "$RUNNER_TEMP/candidate" "$source_commit" "$source_tree"
           if [[ "$(jq -r .candidateTag "$manifest")" != "$CANDIDATE_TAG" ]]; then
             echo "Readiness provenance does not match the requested candidate tag." >&2

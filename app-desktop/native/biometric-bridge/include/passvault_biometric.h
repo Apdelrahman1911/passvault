@@ -23,6 +23,7 @@ extern "C" {
 #define PV_BIO_ABI_VERSION 1u
 #define PV_BIO_VAULT_HASH_BYTES 32u
 #define PV_BIO_VAULT_KEY_BYTES 32u
+#define PV_BIO_MAX_PROMPT_REASON_BYTES 1024u
 
 typedef struct pv_bio_context pv_bio_context;
 
@@ -82,6 +83,28 @@ PV_BIO_API pv_bio_status PV_BIO_CALL
 pv_bio_retrieve(pv_bio_context *context, uint64_t operation_id,
                 const uint8_t *vault_hash, size_t vault_hash_length,
                 uint8_t *out_vault_key, size_t out_vault_key_length);
+
+/*
+ * Additive ABI1 localized-prompt extension. Original enroll/retrieve exports
+ * remain available with their historical English reasons. New callers must
+ * resolve both localized symbols before creating/using a context.
+ *
+ * reason_utf8 is borrowed for this call only, must be valid UTF-8 with no NUL,
+ * and has length 1..PV_BIO_MAX_PROMPT_REASON_BYTES. It is app-authored UI text,
+ * never vault/credential data. macOS displays it where LocalAuthentication
+ * supports an app reason; Windows validates it but retains OS-owned WebAuthn UI.
+ */
+PV_BIO_API pv_bio_status PV_BIO_CALL
+pv_bio_enroll_localized(pv_bio_context *context, uint64_t operation_id,
+                        const uint8_t *vault_hash, size_t vault_hash_length,
+                        const uint8_t *vault_key, size_t vault_key_length,
+                        const char *reason_utf8, size_t reason_length);
+
+PV_BIO_API pv_bio_status PV_BIO_CALL
+pv_bio_retrieve_localized(pv_bio_context *context, uint64_t operation_id,
+                          const uint8_t *vault_hash, size_t vault_hash_length,
+                          uint8_t *out_vault_key, size_t out_vault_key_length,
+                          const char *reason_utf8, size_t reason_length);
 
 PV_BIO_API pv_bio_status PV_BIO_CALL pv_bio_delete(pv_bio_context *context,
                                                    const uint8_t *vault_hash,

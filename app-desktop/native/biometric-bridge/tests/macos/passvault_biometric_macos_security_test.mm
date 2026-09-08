@@ -60,6 +60,16 @@ int main() {
     for (uint8_t byte : missing_output) {
       PV_TEST_CHECK(byte == 0);
     }
+    constexpr char arabic_reason[] = "افتح PassVault";
+    missing_output.fill(0xa5);
+    PV_TEST_CHECK(pv_bio_retrieve_localized(
+                      context, 2, missing_hash.data(), missing_hash.size(),
+                      missing_output.data(), missing_output.size(),
+                      arabic_reason, sizeof(arabic_reason) - 1) ==
+                  PV_BIO_NOT_ENABLED);
+    for (uint8_t byte : missing_output) {
+      PV_TEST_CHECK(byte == 0);
+    }
     pv_bio_destroy(context);
     secure_wipe(missing_hash.data(), missing_hash.size());
     secure_wipe(missing_output.data(), missing_output.size());
@@ -113,6 +123,24 @@ int main() {
         [configured_context.localizedFallbackTitle isEqualToString:@""]);
     PV_TEST_CHECK(
         configured_context.touchIDAuthenticationAllowableReuseDuration == 0);
+
+    NSString *arabic = localized_prompt_reason(arabic_reason,
+                                                sizeof(arabic_reason) - 1);
+    PV_TEST_CHECK([arabic isEqualToString:@"افتح PassVault"]);
+    configure_biometric_context(configured_context, arabic);
+    PV_TEST_CHECK([configured_context.localizedReason isEqualToString:arabic]);
+    PV_TEST_CHECK([configured_context.localizedFallbackTitle isEqualToString:@""]);
+    PV_TEST_CHECK(configured_context.touchIDAuthenticationAllowableReuseDuration == 0);
+    PV_TEST_CHECK(localized_prompt_reason(nullptr, 1) == nil);
+    PV_TEST_CHECK(localized_prompt_reason(arabic_reason, 0) == nil);
+    constexpr char embedded_nul[] = {'a', 0, 'b'};
+    PV_TEST_CHECK(localized_prompt_reason(embedded_nul, sizeof(embedded_nul)) == nil);
+    const char invalid_utf8[] = {static_cast<char>(0xc0), static_cast<char>(0xaf)};
+    PV_TEST_CHECK(localized_prompt_reason(invalid_utf8, sizeof(invalid_utf8)) == nil);
+    const std::string maximum_reason(PV_BIO_MAX_PROMPT_REASON_BYTES, 'a');
+    PV_TEST_CHECK(localized_prompt_reason(maximum_reason.data(), maximum_reason.size()) != nil);
+    const std::string oversized_reason(PV_BIO_MAX_PROMPT_REASON_BYTES + 1, 'a');
+    PV_TEST_CHECK(localized_prompt_reason(oversized_reason.data(), oversized_reason.size()) == nil);
 
     secure_wipe(&expected, sizeof(expected));
     secure_wipe(&decoded, sizeof(decoded));

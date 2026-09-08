@@ -1,0 +1,2403 @@
+{
+  "schema": "passvault.clone-handoff.platform-computed.v1",
+  "progress_and_adoption": {
+    "issues": {
+      "all_908650_bytes_identical_to_sealed_G12": true,
+      "families": 37,
+      "all37": [
+        {
+          "id": "PVA-001",
+          "title": "Android32 password-hash adapter passes a 64-bit value for size_t",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "HIGH / P1"
+        },
+        {
+          "id": "PVA-002",
+          "title": "Numeric sequences lose their intended password-strength penalty",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-003",
+          "title": "Vault listing fails above the bundled SQLite bind-parameter limit",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-004",
+          "title": "Database recovery retry can move files behind an already-open cached Room handle",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-005",
+          "title": "Produced-but-undelivered mutable secrets lack a cleanup owner",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-006",
+          "title": "Attachment subkey cleanup starts after a suspending filename operation",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-007",
+          "title": "Page Save and Back silently discard active inline custom-field edits",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-008",
+          "title": "Cancelled iOS attachment adoption can orphan an owned plaintext copy",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-009",
+          "title": "Unavailable Android clipboard reads discard cleanup ownership",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-010",
+          "title": "Desktop close-time native cancellation is outside context lifetime accounting",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-011",
+          "title": "Legal short reads can create attachments larger than the reader permits",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-012",
+          "title": "Cancelled insert-result delivery can delete a committed attachment object",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-013",
+          "title": "Backup prefix/legacy cancellation can skip selected-source close",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-014",
+          "title": "Native biometric prompt text does not consistently follow app language",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-015",
+          "title": "Current-main mobile promotion rejects the existing schema-2 candidate and requires Desktop receipt",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-016",
+          "title": "Direct production version input is inserted into validation shell source",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-017",
+          "title": "Stable publication does not verify an already-existing tag target",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-018",
+          "title": "Changed-tree resume rejects only after possible external mobile distribution",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-019",
+          "title": "Receipt resume treats paginated GitHub output as one JSON document",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-020",
+          "title": "Windows checksum update receives the parent of the required app-image root",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-021",
+          "title": "Standalone iOS signing verifier can fail to preserve keychain search-list configuration",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-022",
+          "title": "Action-pin regression validator skips unnamed YAML steps",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-023",
+          "title": "Ignored optional tester-secret deletion can leave stale configuration undetected",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-024",
+          "title": "Store metadata readiness checks and uploaded archive can use different files",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-025",
+          "title": "Release checklist describes obsolete schema3 as the complete current migration scope",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-026",
+          "title": "Equal row update wipes the live custom-field owner",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-027",
+          "title": "Already-installed Desktop tray does not follow runtime app language",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-028",
+          "title": "Separate publication checkout lacks history required by a legitimate same-tree resume",
+          "status": "FIXED AND VERIFIED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-029",
+          "title": "Same-tree different-SHA flow mismatches candidate identity with attestation invocation identity",
+          "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION FAILED",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-030",
+          "title": "Android SYSTEM language reapplies a process-lifetime stale locale snapshot",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-031",
+          "title": "Custom-field Add remains enabled at full capacity and loses the rejected new draft",
+          "status": "IMPLEMENTED \u2014 VERIFICATION BLOCKED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-032",
+          "title": "Standalone iOS profile cleanup ownership is registered after copy and chmod",
+          "status": "FIXED AND VERIFIED",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-033",
+          "title": "Completed lock does not revoke a biometric attempt that has not entered the repository",
+          "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING",
+          "severity": "HIGH / P1"
+        },
+        {
+          "id": "PVA-034",
+          "title": "Identifier-budget integration test accepts an unrelated malformed-tag rejection",
+          "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING",
+          "severity": "LOW / P3"
+        },
+        {
+          "id": "PVA-035",
+          "title": "Valid Unicode IDs can make V2 backup pagination reject correctly ordered SQLite rows",
+          "status": "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING",
+          "severity": "MEDIUM / P2"
+        },
+        {
+          "id": "PVA-036",
+          "title": "Windows temporary-file failure cleanup deletes before close or without creation ownership",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "LOW"
+        },
+        {
+          "id": "PVA-037",
+          "title": "Windows native secret-array erasure is skipped by C++ allocation exceptions",
+          "status": "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED",
+          "severity": "LOW"
+        }
+      ],
+      "status_counts": {
+        "IMPLEMENTED \u2014 TARGET RUNTIME VERIFICATION BLOCKED": 10,
+        "FIXED AND VERIFIED": 22,
+        "IMPLEMENTED \u2014 REGRESSION VERIFICATION FAILED": 1,
+        "IMPLEMENTED \u2014 VERIFICATION BLOCKED": 1,
+        "IMPLEMENTED \u2014 REGRESSION VERIFICATION PENDING": 3
+      },
+      "raw_severity_counts": {
+        "HIGH / P1": 2,
+        "MEDIUM / P2": 20,
+        "LOW / P3": 13,
+        "LOW": 2
+      },
+      "qualified_closures": 22,
+      "original25_closures": 19,
+      "remaining": [
+        "PVA-001",
+        "PVA-007",
+        "PVA-008",
+        "PVA-009",
+        "PVA-010",
+        "PVA-014",
+        "PVA-027",
+        "PVA-029",
+        "PVA-030",
+        "PVA-031",
+        "PVA-033",
+        "PVA-034",
+        "PVA-035",
+        "PVA-036",
+        "PVA-037"
+      ],
+      "all_grouped_variant_fields": [
+        [
+          "/0/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/1/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/2/variant_details",
+          "dict",
+          1,
+          "e38477b6428c7bb8aca9d0a6d04ff1bdc5b1f7fa8846e336663bf5c76fdac8db"
+        ],
+        [
+          "/2/variant_details/DB-02/grouped_variant",
+          "str",
+          61,
+          "02ed385fb6a08b0b1185c7ebdc11e2b42a5be39328a36a208c70e4a008d5e609"
+        ],
+        [
+          "/2/variant_details/DB-02/scope_variant_id",
+          "str",
+          5,
+          "52e45c89971932ffa801b9e106747cd3128d71aefd06be5bfbd10a89154a2e63"
+        ],
+        [
+          "/2/variant_details/DB-02/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/2/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/3/variant_details",
+          "dict",
+          1,
+          "36227ab29845a13a79cbe8910905f0ebf1e4ea8ab46d9a0afda8d96232b23e08"
+        ],
+        [
+          "/3/variant_details/DB-03/grouped_variant",
+          "str",
+          79,
+          "4e6516cc69aa180876b34eaf962094c548c0bf903aab009874a76ef0bca15abb"
+        ],
+        [
+          "/3/variant_details/DB-03/scope_variant_id",
+          "str",
+          5,
+          "2022a5141b153797a0f3491cb2f39902dd6ac53cd18a25bc2d291ff494257f29"
+        ],
+        [
+          "/3/variant_details/DB-03/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/3/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/4/closure_adjudication/variant_independence",
+          "dict",
+          2,
+          "d1d013ea3d55e19c81416e9507656f46c28d0d99e149ac7ad1b7ec3b369beabd"
+        ],
+        [
+          "/4/variant_details",
+          "dict",
+          2,
+          "651e6ce0f0b0364c1e64f16a79f5376a2e04f70f01781449c45167e691f2cd71"
+        ],
+        [
+          "/4/variant_details/DB-04/grouped_variant",
+          "str",
+          55,
+          "239792b5258ce2a699794c9fc1a4ea563f59b6435ff5e760db67e2e2ca379c04"
+        ],
+        [
+          "/4/variant_details/DB-04/out_of_scope_grouped_variants",
+          "list",
+          2,
+          "b30915e861dd938c30cb6c490f686aa1a17c5ea0cdb32cec3169d2a7695b4531"
+        ],
+        [
+          "/4/variant_details/DB-04/scope_variant_id",
+          "str",
+          5,
+          "091da4c873d078ec8b2f331623a4e9fbb5a980b8763bbfce70cff60545ca101a"
+        ],
+        [
+          "/4/variant_details/DB-04/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/4/variant_details/SUS-HOST-003/variant",
+          "str",
+          92,
+          "2338fee3bbbcde07ae6f1910028f1d701f71f28a066190fffa53160e50c3034a"
+        ],
+        [
+          "/4/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/5/variant_details",
+          "dict",
+          1,
+          "2b7eaff807363bbd6eca3263e5f939f22a9ead1c84ba98bad5285972b508b073"
+        ],
+        [
+          "/5/variant_details/SUS-ATTACH-002/grouped_variant",
+          "str",
+          62,
+          "9f8b2853d0d10da11d8bdf446824b0d9ec298f0f44aba60f9b92d36ad16083ef"
+        ],
+        [
+          "/5/variant_details/SUS-ATTACH-002/scope_variant_id",
+          "str",
+          14,
+          "3bc0d46bd8dfcc0c8d981f1ceebc8c66604c55e67b96f979301311c74ce7f282"
+        ],
+        [
+          "/5/variant_details/SUS-ATTACH-002/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/5/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/6/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/7/variant_details",
+          "dict",
+          1,
+          "e6aa5aaaa3ff0089cf961f53c3af877437853de7b432f7b6f5c8c7dbe82f8ecc"
+        ],
+        [
+          "/7/variant_details/platform_scope/variant",
+          "str",
+          66,
+          "0b3a7ea00533c3650f4d96661d275cc18451bb05be7cd052d93b913ceabf4902"
+        ],
+        [
+          "/7/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/8/variant_details",
+          "dict",
+          1,
+          "8e06221bc3a0886baca9836e037f65080c98c09d37e250bcc1bde456bffdb619"
+        ],
+        [
+          "/8/variant_details/platform_scope/variant",
+          "str",
+          110,
+          "f0cd19970fe8522bffee68030de88624413e99705f24aab6fb5e78223dead10e"
+        ],
+        [
+          "/8/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/9/variant_details",
+          "dict",
+          1,
+          "cd74bf0b1733da9d55b6a4271501222677af27aa9a126c3956d500b43f1f58fe"
+        ],
+        [
+          "/9/variant_details/platform_scope/variant",
+          "str",
+          80,
+          "8c75f2c22e617711be091338d17416299266d29e136f5a2c46cfc7333a21b8af"
+        ],
+        [
+          "/9/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/10/variant_details",
+          "dict",
+          1,
+          "4a7db3a4c33b7f4e609f8ff2105318f36d2d1132ec3800de2df4a0aeaed40b79"
+        ],
+        [
+          "/10/variant_details/SUS-ATTACH-001/grouped_variant",
+          "str",
+          71,
+          "11966e1fac66466642876597acc22f5f3286bb6ffeacb3e5e5eaa462c8581110"
+        ],
+        [
+          "/10/variant_details/SUS-ATTACH-001/scope_variant_id",
+          "str",
+          14,
+          "e9ebd3e9ac4e8dd83db3daf3c5b7101ee0cd88c0eda026f9a0125595bee0b3b5"
+        ],
+        [
+          "/10/variant_details/SUS-ATTACH-001/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/10/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/11/variant_details",
+          "dict",
+          1,
+          "366b37ef7dd991b710880012223160b1b52d2f9d70974a3b2a3ce798244f93f7"
+        ],
+        [
+          "/11/variant_details/SUS-ATTACH-004/grouped_variant",
+          "str",
+          84,
+          "59f8c8250b400753f3523ad5700ad8e3a6b38fa1565896978ad960e7e2fd6b0a"
+        ],
+        [
+          "/11/variant_details/SUS-ATTACH-004/scope_variant_id",
+          "str",
+          14,
+          "d1633db4f613bc7540253a45f6e2a2c749b1ac082d34dd2a19bbe059940ad3d7"
+        ],
+        [
+          "/11/variant_details/SUS-ATTACH-004/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/11/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/12/variant_details",
+          "dict",
+          1,
+          "f56a76691827bbbc58566a5d44c0d7f735e238f93cf2228d2ee4fdd32d46f34f"
+        ],
+        [
+          "/12/variant_details/SUS-BACKUP-001/grouped_variant",
+          "str",
+          85,
+          "bac81570371a6b81f440b019826863aaba3316864058681106af3177272bd0c1"
+        ],
+        [
+          "/12/variant_details/SUS-BACKUP-001/scope_variant_id",
+          "str",
+          14,
+          "44412d4144a7b828555b327990b74acd71e9587ebb646e50d0deecc10ebc92d5"
+        ],
+        [
+          "/12/variant_details/SUS-BACKUP-001/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/12/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/13/explicit_grouped_variants",
+          "list",
+          3,
+          "1a59a58e0089d1d8e156996470a66abe18344eb04abf7a1a0f5766d4cc196650"
+        ],
+        [
+          "/13/variant_details",
+          "dict",
+          1,
+          "6219366c5c7ba12b972e7c253ad9c7933661c8e7bd253fd7b065997133e35f6c"
+        ],
+        [
+          "/13/variant_details/platform_scope/platform_variants",
+          "list",
+          4,
+          "ec40e8263233784d479641d5941c8db4b32f60f63e46ec286b16dff30aaec997"
+        ],
+        [
+          "/13/variant_details/platform_scope/variant",
+          "str",
+          173,
+          "5e2e80399a3b35fb8a052cd52dbd60b7a41ab14b7eb9dc5b30c981240678f4ce"
+        ],
+        [
+          "/13/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/14/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/15/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/16/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/17/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/18/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/19/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/20/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/21/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/22/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/23/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/24/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/25/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/26/variant_details",
+          "dict",
+          1,
+          "296f972372e80849c45f005285e0dd9f4892fc27797efd9073305c923e2810d7"
+        ],
+        [
+          "/26/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/27/variants",
+          "list",
+          1,
+          "f2477282770a3079c41b73d987a09a1cdfc92045498ef4cb0c50ce2fe8eca7c2"
+        ],
+        [
+          "/27/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/28/variants",
+          "list",
+          2,
+          "6712a8a4aa05762e2648a038ec39389b5e1ef156153ec3cb12870d6fb5d204da"
+        ],
+        [
+          "/28/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/29/variants",
+          "list",
+          2,
+          "cd38167eaf5c0e24790a1dbefe0514af8e6ce2d321800e4da7e7d0a3ed87071f"
+        ],
+        [
+          "/29/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/30/grouping",
+          "str",
+          185,
+          "ab0959b8c8115e2e490641251e39377c3f52700a6e8bb2406ebf6759bedd10c1"
+        ],
+        [
+          "/30/variants",
+          "list",
+          2,
+          "f541e6c6121774532c7ea84f313ee71a8a8214b99a01f81668c716635c13c96f"
+        ],
+        [
+          "/30/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/31/grouping",
+          "str",
+          93,
+          "60f10a45fb9dde614d73cfeac79949103852c728d83397caf50de3ad79575f11"
+        ],
+        [
+          "/31/variants",
+          "list",
+          3,
+          "b0b079a3c40bd216ec9039030aa44a7fa1dc2db44fa9b1f7efd75e42a25cc8eb"
+        ],
+        [
+          "/31/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/32/variants",
+          "list",
+          1,
+          "9cc4823bf0ecbba5a27b5e241a5fedcc77c9fd7af59a3e31bb2fa43b2edfe852"
+        ],
+        [
+          "/32/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/33/variants",
+          "list",
+          1,
+          "18b6f765e7d77a96f7ba2bd6ab31efd51c0a2916ecdc8c4d15722ad75c80789d"
+        ],
+        [
+          "/33/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/34/affected_variants",
+          "list",
+          2,
+          "67ce95ba49d9a76bc0fe1ab2a74d05844ecd4f44b5fb031ab3286a74cf666745"
+        ],
+        [
+          "/35/variants",
+          "list",
+          2,
+          "cc3ecd23482e9563dbb8e6de9b73c62544a678bd0ec45d593027518f4ea9d593"
+        ],
+        [
+          "/35/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ],
+        [
+          "/36/grouping_decision",
+          "str",
+          358,
+          "a8932aca3fa9775f344fdda6cea63bbe0656a26df47322ac5680d355c7649bfe"
+        ],
+        [
+          "/36/variants",
+          "list",
+          3,
+          "3877ee459a9a54604a4706627d212564e4f9a4f68fda93bd79c0c5f88dbe28e6"
+        ],
+        [
+          "/36/variants_preserved",
+          "bool",
+          null,
+          "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+        ]
+      ],
+      "grouped_field_count": 91,
+      "families_with_grouped_or_variant_fields": [
+        "PVA-001",
+        "PVA-002",
+        "PVA-003",
+        "PVA-004",
+        "PVA-005",
+        "PVA-006",
+        "PVA-007",
+        "PVA-008",
+        "PVA-009",
+        "PVA-010",
+        "PVA-011",
+        "PVA-012",
+        "PVA-013",
+        "PVA-014",
+        "PVA-015",
+        "PVA-016",
+        "PVA-017",
+        "PVA-018",
+        "PVA-019",
+        "PVA-020",
+        "PVA-021",
+        "PVA-022",
+        "PVA-023",
+        "PVA-024",
+        "PVA-025",
+        "PVA-026",
+        "PVA-027",
+        "PVA-028",
+        "PVA-029",
+        "PVA-030",
+        "PVA-031",
+        "PVA-032",
+        "PVA-033",
+        "PVA-034",
+        "PVA-035",
+        "PVA-036",
+        "PVA-037"
+      ],
+      "denominator_is_families_not_variant_field_occurrences": true,
+      "new_semantic_review_of_historical_source_or_tests": false,
+      "grouped_field_inventory_encoding": {
+        "scope": "Every key containing 'variant' or exactly 'grouping'/'grouping_decision', recursively through all37issue objects.91field occurrences are not91variants.",
+        "all_entire_values_preserved_by_exact_whole_file_bytes": true,
+        "issue_id_is_determined_by_zero_based_first_pointer_component": true
+      },
+      "grouped_field_columns": [
+        "pointer",
+        "type",
+        "count_or_characters",
+        "canonical_sha256"
+      ]
+    },
+    "gates": {
+      "exact_differences": [
+        {
+          "pointer": "/at",
+          "before": "2026-09-08T05:51:28.230769+00:00",
+          "after": "2026-09-08T06:39:55.247801+00:00"
+        },
+        {
+          "pointer": "/gates/3/evidence",
+          "kind": "added",
+          "after": {
+            "path": "reviews/g12-checkpoint-delta-independent-platform-v1/PUBLICATION.json",
+            "report_sha256": "e67c47120061c10d53fcae35c097276167cde8f6210b97c8c1c9f4c1759fe824",
+            "root_adoption": "reviews/g12-final-report-adoption-root-v1/ADOPTION.json",
+            "sha256": "1de9a1fba5b6e2f9acc2a98792a06e50c22a839a0e389cb2fb70e4b47a46d37c"
+          }
+        },
+        {
+          "pointer": "/gates/3/reason",
+          "before": "Frozen base review identified stale PVA030 prose; exact report-only correction applied. Current-checkpoint delta acceptance remains pending.",
+          "after": "Accurate INCOMPLETE-checkpoint report independently accepted. No remediation completion, source/runtime/coverage/readiness or execution admission follows."
+        },
+        {
+          "pointer": "/gates/3/status",
+          "before": "BLOCKED",
+          "after": "PASS"
+        }
+      ],
+      "only_permitted_final_report_metadata_changed": true,
+      "effective15_subjects_and_five_review_pins_exact": true,
+      "counts": {
+        "PASS": 4,
+        "BLOCKED": 7,
+        "FAIL": 1,
+        "NOT_APPLICABLE": 2
+      },
+      "new_runtime_test_invocations": 0,
+      "actual_live_central_file_not_read": true,
+      "copied_after_image_and_retained_adoption_only": true
+    },
+    "PVU": {
+      "rows": [
+        {
+          "id": "PVU-001",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-002",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-003",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-004",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-005",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-006",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-007",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "projection_keys": [
+            "boundary",
+            "details",
+            "id",
+            "portable_scope",
+            "status"
+          ]
+        },
+        {
+          "id": "PVU-008",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-009",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-010",
+          "status": "CONFIRMED DEFECT",
+          "entire_ordinary_JSON_value_preserved": true
+        },
+        {
+          "id": "PVU-011",
+          "status": "UNRESOLVED / VERIFICATION BLOCKED",
+          "projection_keys": [
+            "boundary",
+            "details",
+            "id",
+            "portable_scope",
+            "status"
+          ]
+        },
+        {
+          "id": "PVU-012",
+          "status": "FALSE POSITIVE",
+          "entire_ordinary_JSON_value_preserved": true
+        }
+      ],
+      "conclusive": 2,
+      "ordinary10_values_unchanged": true,
+      "stopped2_only_outcome_and_key_shape_observed": true,
+      "original_stopped_procedures_not_displayed_or_investigated": true
+    },
+    "additional_separate4": [
+      {
+        "id": "NAV-FRESH-SUS-001",
+        "title": "Verifier catch may label a non-authentication crypto failure as an invalid biometric enrollment",
+        "status": "UNRESOLVED / VERIFICATION BLOCKED",
+        "outcome": "UNVERIFIED / BLOCKED",
+        "confirmed_count_impact": 0,
+        "production_patch": false
+      },
+      {
+        "id": "CI-RESUME-SHALLOW-001",
+        "title": "Possible missing Git history in the separate equal-tree resume publication checkout",
+        "status": "CONFIRMED DEFECT",
+        "production_patch": null
+      },
+      {
+        "id": "CI-RESUME-ATTEST-001",
+        "title": "Possible source-digest mismatch for accepted equal-tree different-SHA attestations",
+        "status": "CONFIRMED DEFECT",
+        "production_patch": null
+      },
+      {
+        "id": "LOC-SYSTEM-REFRESH-001",
+        "title": "Possible stale Android System-language snapshot across a same-process configuration recreation",
+        "status": "CONFIRMED DEFECT",
+        "production_patch": null
+      }
+    ],
+    "owner": {
+      "both_complete_files_exact_base_bytes": true,
+      "PVD_count": 8,
+      "ids": [
+        "PVD-001",
+        "PVD-002",
+        "PVD-003",
+        "PVD-004",
+        "PVD-005",
+        "PVD-006",
+        "PVD-007",
+        "PVD-008"
+      ],
+      "prior_G11_eight_explanations_and_48_applicability_tuples_carried_not_new_source_review": true
+    }
+  },
+  "transport": {
+    "metadata_members": 811,
+    "unique_paths": 811,
+    "raw_tuple_checks": 811,
+    "all_raw_size_sha_and_intended_git_mode_match_pinned_G12_manifest": true,
+    "raw_projection_canonical_sha256": "7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91",
+    "pinned_manifest_canonical_sha256_calculated": "7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91",
+    "canonical_G12_identity_match": true,
+    "projection_order_and_rows_exact": true,
+    "per_path_check_digest": "89c61287adf757e28b93dfd4cd4779d4876d95930d065c347a71f2de288df12a",
+    "unchanged_application_attribute_descriptor": true,
+    "expected_checkout_raw_equal": 809,
+    "expected_checkout_declared_EOL_differences": 2,
+    "expected_git_blob_raw_equal": 797,
+    "expected_git_blob_normalizations": 14,
+    "declared_git_blob_normalization_records": [
+      {
+        "expected_checkout_bytes": 2848,
+        "expected_checkout_sha256": "d539676c48b596afda64c963ec8f7ee56c7b3fe7e3b81d1dbe2d1a1e3dd9e9f8",
+        "expected_git_blob_bytes": 2766,
+        "expected_git_blob_sha256": "59328c7a17f673b1a63040bfb380a0c749e5d6df3406f7f18641060314cd9aa1",
+        "git_mode": "100644",
+        "path": "gradlew.bat",
+        "raw_bytes": 2848,
+        "raw_sha256": "d539676c48b596afda64c963ec8f7ee56c7b3fe7e3b81d1dbe2d1a1e3dd9e9f8"
+      },
+      {
+        "expected_checkout_bytes": 8674,
+        "expected_checkout_sha256": "8b18c785cdb47eeeea011a9e433a60ae05eb155d3d2d32730e35730012b4442e",
+        "expected_git_blob_bytes": 8485,
+        "expected_git_blob_sha256": "f4bb6452505a36c5d8a30c6563223f531c8d011caa9229114fdd408f278276d2",
+        "git_mode": "100644",
+        "path": "scripts/apply-signpath-windows-result.ps1",
+        "raw_bytes": 8674,
+        "raw_sha256": "8b18c785cdb47eeeea011a9e433a60ae05eb155d3d2d32730e35730012b4442e"
+      },
+      {
+        "expected_checkout_bytes": 5993,
+        "expected_checkout_sha256": "827a3958bb8af0b194c10962bdb2d4286a9e54a72dc10b225538a0f25029ee49",
+        "expected_git_blob_bytes": 5829,
+        "expected_git_blob_sha256": "7c06e6635101f1235f5d3a5195e7f12976392203ec796c0b256d6f10b3b2e050",
+        "git_mode": "100644",
+        "path": "scripts/build-signed-android.ps1",
+        "raw_bytes": 5993,
+        "raw_sha256": "827a3958bb8af0b194c10962bdb2d4286a9e54a72dc10b225538a0f25029ee49"
+      },
+      {
+        "expected_checkout_bytes": 3889,
+        "expected_checkout_sha256": "84f626fd8dd800d4f1ca984595b0b569c5f45665895f9de350fda1f663e4e702",
+        "expected_git_blob_bytes": 3797,
+        "expected_git_blob_sha256": "8ffcf9f633bcd7fd60a508f1ce2c1c21ba2a1e30ca5b125864dac76c3f0b9a88",
+        "git_mode": "100644",
+        "path": "scripts/create-windows-signing-catalog.ps1",
+        "raw_bytes": 3889,
+        "raw_sha256": "84f626fd8dd800d4f1ca984595b0b569c5f45665895f9de350fda1f663e4e702"
+      },
+      {
+        "expected_checkout_bytes": 6423,
+        "expected_checkout_sha256": "e9bbaa72e970b4090382756f807b5db90f757f722648070a451eb2995f880f9a",
+        "expected_git_blob_bytes": 6266,
+        "expected_git_blob_sha256": "11976e2740832f5e8a26caa1eaf83f89b5b41f86ab9962f854b297fc44f84351",
+        "git_mode": "100644",
+        "path": "scripts/package-signed-windows-installers.ps1",
+        "raw_bytes": 6423,
+        "raw_sha256": "e9bbaa72e970b4090382756f807b5db90f757f722648070a451eb2995f880f9a"
+      },
+      {
+        "expected_checkout_bytes": 3973,
+        "expected_checkout_sha256": "d084ae1df0a32cb4a12e22ca4dea96d19ef850e01af3d327c9192d60a205c9f9",
+        "expected_git_blob_bytes": 3877,
+        "expected_git_blob_sha256": "369a906e2a5d88884aa3caf38c756f24006483d1cc1569772872591913be436c",
+        "git_mode": "100644",
+        "path": "scripts/prepare-signpath-windows-request.ps1",
+        "raw_bytes": 3973,
+        "raw_sha256": "d084ae1df0a32cb4a12e22ca4dea96d19ef850e01af3d327c9192d60a205c9f9"
+      },
+      {
+        "expected_checkout_bytes": 3505,
+        "expected_checkout_sha256": "cdcc48cb267a45c29fa9372b195ad2f07cdd234cc3bca6f3f98f53d2ef710458",
+        "expected_git_blob_bytes": 3417,
+        "expected_git_blob_sha256": "e868b45f419898aadcc92a93eb2116db679776333c5928642a6c8ef5b2f2a881",
+        "git_mode": "100644",
+        "path": "scripts/prepare-windows-runtime-signing.ps1",
+        "raw_bytes": 3505,
+        "raw_sha256": "cdcc48cb267a45c29fa9372b195ad2f07cdd234cc3bca6f3f98f53d2ef710458"
+      },
+      {
+        "expected_checkout_bytes": 5242,
+        "expected_checkout_sha256": "e2312f0b50675fbb85daba8299d2146e5ee8955d8aa60f492cc18d893ffe7cb0",
+        "expected_git_blob_bytes": 5115,
+        "expected_git_blob_sha256": "cbb94b9e081ed075c1fbcf88bdb8b6560366d05c4f65d080db1bda17915ef8d6",
+        "git_mode": "100644",
+        "path": "scripts/restore-promoted-windows-app-image.ps1",
+        "raw_bytes": 5242,
+        "raw_sha256": "e2312f0b50675fbb85daba8299d2146e5ee8955d8aa60f492cc18d893ffe7cb0"
+      },
+      {
+        "expected_checkout_bytes": 2557,
+        "expected_checkout_sha256": "70ad6000e9a238bd7d8e8f73c7086fe566c3aeb11e9d80657dc6a8ee95bda1ef",
+        "expected_git_blob_bytes": 2477,
+        "expected_git_blob_sha256": "1041f269dd4cc1d4ac2a8c34b9dc2d2a03568a0b03e30dc610ae8826540561ac",
+        "git_mode": "100644",
+        "path": "scripts/select-android-build-tool.ps1",
+        "raw_bytes": 2557,
+        "raw_sha256": "70ad6000e9a238bd7d8e8f73c7086fe566c3aeb11e9d80657dc6a8ee95bda1ef"
+      },
+      {
+        "expected_checkout_bytes": 5213,
+        "expected_checkout_sha256": "fc02017262ec89af523c19ec83f88710e90cc4124da234854a0425507972bfb5",
+        "expected_git_blob_bytes": 5071,
+        "expected_git_blob_sha256": "71d99880e61b994db162b6f5dec59f1373825c56b96916bb0f8bee6163849e24",
+        "git_mode": "100644",
+        "path": "scripts/sign-windows-artifacts.ps1",
+        "raw_bytes": 5213,
+        "raw_sha256": "fc02017262ec89af523c19ec83f88710e90cc4124da234854a0425507972bfb5"
+      },
+      {
+        "expected_checkout_bytes": 1832,
+        "expected_checkout_sha256": "d296d12bbc0e538e6131444c341cbbe77bba14dd00afa346c95bd3caa41e8601",
+        "expected_git_blob_bytes": 1782,
+        "expected_git_blob_sha256": "c06247597213a280fca40cbf827f7fbecd67af2b68ab3ab7a466589cfe4952c1",
+        "git_mode": "100644",
+        "path": "scripts/smoke-test-desktop-release.ps1",
+        "raw_bytes": 1832,
+        "raw_sha256": "d296d12bbc0e538e6131444c341cbbe77bba14dd00afa346c95bd3caa41e8601"
+      },
+      {
+        "expected_checkout_bytes": 4221,
+        "expected_checkout_sha256": "855c8f71a8437d2469917ff75dc6d17b3ac34c041d3cfbc8d8b6e15410541aa1",
+        "expected_git_blob_bytes": 4132,
+        "expected_git_blob_sha256": "aa399f28b78df8a81a46e3be198022e8dce34dfd8bd7b57e91b71a3e5a7ed203",
+        "git_mode": "100644",
+        "path": "scripts/update-desktop-biometric-checksum.ps1",
+        "raw_bytes": 4213,
+        "raw_sha256": "3d7221596a01c46b23100f7f05b6c0ebd246af141ce943b3f63f4704be19a396"
+      },
+      {
+        "expected_checkout_bytes": 4480,
+        "expected_checkout_sha256": "501f6c068c1010dae8933ee9f7677bfc3152d08e7c41c2ccb3a2ca466a345cb6",
+        "expected_git_blob_bytes": 4361,
+        "expected_git_blob_sha256": "4bedd3699e6617643e9d5012432f203ac6730aa5e3733e133aa128a48b96caf4",
+        "git_mode": "100644",
+        "path": "scripts/verify-android-signatures.ps1",
+        "raw_bytes": 4480,
+        "raw_sha256": "501f6c068c1010dae8933ee9f7677bfc3152d08e7c41c2ccb3a2ca466a345cb6"
+      },
+      {
+        "expected_checkout_bytes": 11599,
+        "expected_checkout_sha256": "62487f7ee3d2cb83f80ac32a33ca2916765f46962327034f3aae27c38a204e41",
+        "expected_git_blob_bytes": 11364,
+        "expected_git_blob_sha256": "fa1b184c9b10fb821dc83dbe793d1ec6d6f2f087506fb1ccc7779eb1c4e34db9",
+        "git_mode": "100644",
+        "path": "scripts/verify-windows-release-artifacts.ps1",
+        "raw_bytes": 11599,
+        "raw_sha256": "62487f7ee3d2cb83f80ac32a33ca2916765f46962327034f3aae27c38a204e41"
+      }
+    ],
+    "two_raw_original_exact_EOL_calculations": [
+      {
+        "path": "scripts/test-windows-checksum-boundary.ps1",
+        "raw_copy": "raw-source/test-windows-checksum-boundary.ps1.raw",
+        "raw_bytes": 11703,
+        "raw_sha256": "17e5d8e8a30ec0ececf31fd20453938a904ab657573b80cccaee72fe35943141",
+        "raw_LF": 237,
+        "raw_CRLF": 0,
+        "raw_lone_CR": 0,
+        "calculated_git_blob_bytes": 11703,
+        "calculated_git_blob_sha256": "17e5d8e8a30ec0ececf31fd20453938a904ab657573b80cccaee72fe35943141",
+        "calculated_checkout_bytes": 11940,
+        "calculated_checkout_sha256": "7c9dae59e786612de3852b28ee8bb1ee64ba3b97d31af8d9f3d50f0617c818c7",
+        "all_six_pinned_size_hash_values_match": true,
+        "raw_script_content_not_displayed_or_executed": true
+      },
+      {
+        "path": "scripts/update-desktop-biometric-checksum.ps1",
+        "raw_copy": "raw-source/update-desktop-biometric-checksum.ps1.raw",
+        "raw_bytes": 4213,
+        "raw_sha256": "3d7221596a01c46b23100f7f05b6c0ebd246af141ce943b3f63f4704be19a396",
+        "raw_LF": 89,
+        "raw_CRLF": 81,
+        "raw_lone_CR": 0,
+        "calculated_git_blob_bytes": 4132,
+        "calculated_git_blob_sha256": "aa399f28b78df8a81a46e3be198022e8dce34dfd8bd7b57e91b71a3e5a7ed203",
+        "calculated_checkout_bytes": 4221,
+        "calculated_checkout_sha256": "855c8f71a8437d2469917ff75dc6d17b3ac34c041d3cfbc8d8b6e15410541aa1",
+        "all_six_pinned_size_hash_values_match": true,
+        "raw_script_content_not_displayed_or_executed": true
+      }
+    ],
+    "actual_git_index_commit_checkout_not_observed": true,
+    "all811_live_source_files_not_opened": true,
+    "new_source_test_runtime_or_coverage_credit": 0,
+    "other_git_blob_normalization_source_contents_not_opened": {
+      "count": 13,
+      "paths": [
+        "gradlew.bat",
+        "scripts/apply-signpath-windows-result.ps1",
+        "scripts/build-signed-android.ps1",
+        "scripts/create-windows-signing-catalog.ps1",
+        "scripts/package-signed-windows-installers.ps1",
+        "scripts/prepare-signpath-windows-request.ps1",
+        "scripts/prepare-windows-runtime-signing.ps1",
+        "scripts/restore-promoted-windows-app-image.ps1",
+        "scripts/select-android-build-tool.ps1",
+        "scripts/sign-windows-artifacts.ps1",
+        "scripts/smoke-test-desktop-release.ps1",
+        "scripts/verify-android-signatures.ps1",
+        "scripts/verify-windows-release-artifacts.ps1"
+      ]
+    },
+    "other_source_member_contents_not_opened_count": 809,
+    "calculation_label_correction": {
+      "original_capture": "84bc0a",
+      "original_field": "other_12_raw_contents_not_opened",
+      "correct_uninspected_normalized_source_count": 13,
+      "reason": "Only one of14Git-blob normalized source members is among the2raw originals read; the other checkout exception was alreadyLF for Git storage.",
+      "underlying_hash_comparisons_and_counts_unchanged": true,
+      "completed_calculation_not_reexecuted": true
+    }
+  },
+  "matrix_and_resources": {
+    "matrix_exact_copy_of_independent_primary": true,
+    "matrix_publication_sha256": "f71767e86944a6c224eb56ac0c383e21eae7212743e3a4ccaa1383cc6836cd1e",
+    "seven_class_source_hashes_match_G12_metadata": true,
+    "classes": [
+      "com.passvault.core.database.backup.BackupPaginationTest",
+      "com.passvault.core.database.backup.VaultBackupUnicodePaginationTest",
+      "com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest",
+      "com.passvault.core.database.repository.RepositorySecurityIntegrationTest",
+      "com.passvault.core.database.backup.VaultBackupStreamingTest",
+      "com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest",
+      "com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest"
+    ],
+    "declared_method_counts": [
+      13,
+      6,
+      12,
+      17,
+      39,
+      7,
+      11
+    ],
+    "selected_method_total": 105,
+    "unique_class_total": 7,
+    "unique_source_files": 5,
+    "PVA_selected_counts": [
+      47,
+      39,
+      19
+    ],
+    "exact_filter_argv_count": 14,
+    "all_seven_XML_path_declarations_exact": true,
+    "method_count_is_attributed_source_declaration_not_fresh_source_inventory_or_execution": true,
+    "excluded_sibling_classes": 6,
+    "excluded_sibling_methods": 25,
+    "publication_status": "SEALED_PREPARATION_ONLY_NOT_ADMITTED",
+    "executed_cases_for_pending_selection": 0,
+    "resource": {
+      "at": "2026-09-08T07:01:14.745944+00:00",
+      "retained_disk_bytes": 11204067328,
+      "retained_free_GiB": 10.434600830078125,
+      "floor_GiB": 12,
+      "shortfall_bytes": 1680834560,
+      "shortfall_GiB": 1.565399169921875,
+      "rounded_4dp": 10.4346,
+      "named_worker_matches": 0,
+      "point_observation_not_global_or_continuous": true,
+      "retained_named_output_list_not_full_filesystem_absence_proof": true,
+      "live_probe_performed_by_reviewer": false
+    }
+  },
+  "index_descriptor_membership": {
+    "schema": "passvault.clone-handoff.platform-index-checks.v1",
+    "index_sha256": "47a3429d173a5373c7948d579677e1f12a151c54bc7f06b65f7e21ca61e56b70",
+    "omissions_sha256": "fd3c648f3e23bbe2bf440fce0e147851ed86a0f4264cee1048513a504e1a00e2",
+    "receipt_sha256": "2e0f8ed46b5f4165579db8bf05f76cd5b97d47892596989a46bff77e54689077",
+    "totals": {
+      "included_paths": 21378,
+      "unique_blobs": 16510,
+      "omitted_paths": 226,
+      "raw_bytes_with_aliases": 836373731,
+      "unique_raw_bytes": 689715162,
+      "compressed_bytes": 20443296
+    },
+    "all_receipt_totals_equal": true,
+    "alias_prefix_counts": {
+      "audit-reports": 626,
+      "remediation-reports": 20752
+    },
+    "unique_alias_paths": 21378,
+    "same_hash_all_size_pack_tuples_consistent": true,
+    "historical_mode_counts": {
+      "384": 19726,
+      "420": 1641,
+      "493": 11
+    },
+    "pack_descriptors": [
+      {
+        "blobs": 688,
+        "bytes": 5423468,
+        "path": "evidence-packs/evidence-001.tar.xz",
+        "sha256": "c4f8368b6ad803bef4cc6e9e03ec354c5a83d84ffb267934534b24529853f9fd"
+      },
+      {
+        "blobs": 1747,
+        "bytes": 2929400,
+        "path": "evidence-packs/evidence-002.tar.xz",
+        "sha256": "10817ffc854b91f04a6469b415a73163fe1ee9ffd5aa30fc3025c6ff157cafd4"
+      },
+      {
+        "blobs": 1577,
+        "bytes": 236108,
+        "path": "evidence-packs/evidence-003.tar.xz",
+        "sha256": "66e6b6b797e5c55ebe2d48874ac510af19a1d237b7bc76beced860d6f8630b4c"
+      },
+      {
+        "blobs": 1763,
+        "bytes": 327944,
+        "path": "evidence-packs/evidence-004.tar.xz",
+        "sha256": "6ac3a55eb5730891bd50ca7a626cddd63de84230430849e61db7b3ffcf36e84f"
+      },
+      {
+        "blobs": 1825,
+        "bytes": 396060,
+        "path": "evidence-packs/evidence-005.tar.xz",
+        "sha256": "ae69975131824052b430a66bb7e2e12d67b8c1aca1899578984b69b547e38276"
+      },
+      {
+        "blobs": 1804,
+        "bytes": 286452,
+        "path": "evidence-packs/evidence-006.tar.xz",
+        "sha256": "00fd1691f4161291c4d5302fbcfb6b02676a660c68de2eb7c99b5844c2f3810b"
+      },
+      {
+        "blobs": 1854,
+        "bytes": 282552,
+        "path": "evidence-packs/evidence-007.tar.xz",
+        "sha256": "8d2c702ade0a03a229461248b473d7e19b8e9b39b0699d77352a732c4eab5909"
+      },
+      {
+        "blobs": 1657,
+        "bytes": 199944,
+        "path": "evidence-packs/evidence-008.tar.xz",
+        "sha256": "d13283b6e631c3aae5955d7daca5ab210e6f7f05fd419f99343ce4c44812cb20"
+      },
+      {
+        "blobs": 1728,
+        "bytes": 1944388,
+        "path": "evidence-packs/evidence-009.tar.xz",
+        "sha256": "b881cdb273f3f80f7ad94a2dfeed68d2a36f2edd47deec7282e45824cf633ea8"
+      },
+      {
+        "blobs": 1220,
+        "bytes": 5605652,
+        "path": "evidence-packs/evidence-010.tar.xz",
+        "sha256": "a705337efc6a8b5e85ef90d2dbcef69d7be29c61d0e4952fe4d32536b68242c1"
+      },
+      {
+        "blobs": 647,
+        "bytes": 2811328,
+        "path": "evidence-packs/evidence-011.tar.xz",
+        "sha256": "308cee6de9ac256e7510a0fe240f952dfa2472113f450541d0a0fa8a251c540b"
+      }
+    ],
+    "pack_unique_blob_counts": {
+      "evidence-packs/evidence-001.tar.xz": 688,
+      "evidence-packs/evidence-002.tar.xz": 1747,
+      "evidence-packs/evidence-003.tar.xz": 1577,
+      "evidence-packs/evidence-004.tar.xz": 1763,
+      "evidence-packs/evidence-005.tar.xz": 1825,
+      "evidence-packs/evidence-006.tar.xz": 1804,
+      "evidence-packs/evidence-007.tar.xz": 1854,
+      "evidence-packs/evidence-008.tar.xz": 1657,
+      "evidence-packs/evidence-009.tar.xz": 1728,
+      "evidence-packs/evidence-010.tar.xz": 1220,
+      "evidence-packs/evidence-011.tar.xz": 647
+    },
+    "all_226_omitted_paths_absent_from_index": true,
+    "omission_reason_counts": {
+      "STOP_OR_NO_RETRY_RAW_PATH_WITHHELD_NO_CONTENT_INSPECTION": 216,
+      "EMBEDDED_PUBLIC_WEB_KEY_SHAPE_BLOB_AND_ALIASES_WITHHELD": 2,
+      "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION": 8
+    },
+    "omission_outside_scope": [
+      "Original dirty checkout/private vaults/backups/credentials/signing configuration were not packaged.",
+      "Old runtime/HOME/TMP/cache directories and ownership locks are not portable resources.",
+      "New handoff writer/receipts are maintained separately from the frozen report pack to avoid self-reference.",
+      "reviews/clone-handoff-* packets are delivered separately after the historical evidence cut; they are not silently treated as included pack members."
+    ],
+    "hashed_omission_count": 10,
+    "distinct_hashed_omissions": 7,
+    "all_hashed_omission_aliases_absent_from_index": true,
+    "hashed_omission_descriptors": [
+      {
+        "path": "remediation-reports/20260905T222925Z/evidence/android-system-locale-independent-platform-v1-android-runtime-changes.html.txt",
+        "sha256": "e5648102fd0f74eee4dbfa861b1f7c44b4fb7a0322aa9b41bcd2d61cc6d695b9",
+        "reason": "EMBEDDED_PUBLIC_WEB_KEY_SHAPE_BLOB_AND_ALIASES_WITHHELD",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/evidence/g8-pagination-navigation-public-androidx-sqlite-releases-v1.html",
+        "sha256": "d9ecf7d368293afc4dd042fc31fd2cfcbe95c316a45e2b6cbe47ceebe2095c31",
+        "reason": "EMBEDDED_PUBLIC_WEB_KEY_SHAPE_BLOB_AND_ALIASES_WITHHELD",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/evidence/unresolved-investigations-before-consolidation.json",
+        "sha256": "5378dc702972fd4d9608b07220def6b28d3fd80a956d9b253fc6ee1941f19e77",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/evidence/continuation-20260907T235248Z/central-after/findings--unresolved-investigations.json",
+        "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/evidence/continuation-20260907T235248Z/central-before/findings--unresolved-investigations.json",
+        "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations-before-20260906T1138Z.json",
+        "sha256": "c698e0c6c10daede7d2ec40bb6e1d059fc4df4f4997c61614d4749ab2ff59f76",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations-before-PVU012-observed-20260906T231518Z.json",
+        "sha256": "bbe0493227b5994d5a4363ac80aa2c1eff1f0ba83bda0d40d053e4da6e7be071",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations-before-execution-reconciliation-v3.json",
+        "sha256": "8af1eb6a08788956d79f39901fd223aa0b58ecb79486e926f8cf8f7b42b5e38c",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations.json",
+        "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      },
+      {
+        "path": "remediation-reports/20260905T222925Z/reviews/g6-progress-coverage-adoption-independent-storage-v1-inputs/files/findings/unresolved-investigations.json",
+        "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e",
+        "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+        "same_hash_included_aliases": []
+      }
+    ],
+    "known_reference_pin_count": 94,
+    "known_reference_dispositions": {
+      "EXACT_PATH_DESCRIPTOR": 93,
+      "TYPED_OMISSION_WITH_PRESERVED_OUTCOME": 1
+    },
+    "known_reference_checks": [
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/PUBLICATION.json",
+        7126,
+        "2b91efc0c2dfd755102b89df6aed2f724d55ea9b091bcb85b94c16e1cb89bb45",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/CHECKPOINT.md",
+        8119,
+        "1b97f4ef06de3908d6b15beef7942abc4329c12865d59216d345fe6490dc2ddd",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/PROGRESS.md",
+        4419,
+        "4f84fd6abc59c0d88e531fde34653883c0009e61b4c1d332a8dc9dc5025a37bc",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/REPORT.md",
+        8125,
+        "609973de9494393b2797a39fa30db6e071b97fe2e20f5e1a1813f27765ff21e1",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/ISSUE_STATUS.md",
+        6879,
+        "52dae66ebef3f48229afeb6a0a602af4c100e190fe65df348f17414c0204ea23",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/VERIFICATION.md",
+        7243,
+        "ac3665cab0289209b8d9395a8b744756f2092c3315a4ec39f3319d61c4d8b433",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/WORKSPACE_AND_CLEANUP.md",
+        3278,
+        "7302c710e5a69dcd6c6c0202829fc902838b5373dcfea731275082688c4da525",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/COORDINATION.md",
+        3370,
+        "3e01ff47550058219b1d9845b3ed55fd48de2895263b5955cd9a584df93946d8",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/NEXT_STEPS.md",
+        2376,
+        "e71941a9607e9be98ed143cf8049b2ed8630d3b0d1b635b60d7a84ca40c6021e",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/REJECTED_AND_OPEN.md",
+        2791,
+        "bffa8e276119ec42417bcd42d980024d169d3cab606eada97adb1580528a1a17",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/OWNER_DESIGN_DECISIONS.md",
+        43407,
+        "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a",
+        [
+          "B",
+          "D",
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/findings/issue-to-fix.json",
+        908468,
+        "64af0e4ea483711008ad27ee65075850f7708181a6227bcec91390c84b319637",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/findings/PVA-037.json",
+        25321,
+        "d5e0adf06f422f549cf5cf45df1ee59f5b3d4990ca780b3a2b19440755843c64",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/findings/design-decisions-separate.json",
+        35048,
+        "1eb18bd7867ac3f2d83f11af0bfad83611c072ad434bb6b1e0bd43784e14ec1b",
+        [
+          "B",
+          "D",
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-inputs-root-v1/snapshots/verification/g12-current-gates.json",
+        3775,
+        "a15281540b42c52bc1d4ef8fc985557ab5beb917d27ec278a30bdf446a09fe7d",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "verification/source-manifest-v12.json",
+        169300,
+        "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f",
+        [
+          "B",
+          "D",
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "verification/source-manifest-v11.json",
+        169300,
+        "499729b1643531001222fcc5ceeca555ace7781cf0edfe856b9a03cca389deed",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/source-freeze-v12.json",
+        2542,
+        "78940d6931f8435cad97873aae22d8d580f8ea806de5d7559cf7d312684dc9b5",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/g12-issue-impact.json",
+        20319,
+        "531a26d448419e430c3a0c3bd52c1f85e762d91f99a871b104846e97d9d24078",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/owner-decision-applicability-g12.json",
+        23288,
+        "cfc663952179d92da9a7a179bda9398c9e42007eb85125565cf5971b8c51fdb3",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/historical-verification-summary-adoption-g12.json",
+        3030,
+        "3d75ff60fb3129b28120e827361f64b65101f9bb25ecc404a53351a9fb72f957",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "coverage/HISTORICAL-G11-FINAL.json",
+        13202,
+        "aa81349de647f580c7e7472c75c9d3a10cb24db3acdd887f511e5dbebad7df5b",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-materialization-root-v1/PUBLICATION.json",
+        4811,
+        "64c1ca01505b6b3d56806d755d68baa2d0136c5d2542e2b6fdbe0a2ae55a191c",
+        [
+          "B",
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/pva037-application-independent-platform-v1/PUBLICATION.json",
+        7641,
+        "fac34ac8fef95799c3b62ef6c522ffc6bf2444768de7ed61bd9354162689e3ed",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/historical-verification-summary-independent-storage-v1/PUBLICATION.json",
+        14953,
+        "3a5e4bc5f734f544330c2b30d576a62f339e6af9a5635741e3842a1ff5e85c4a",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/owner-decisions-final-report-independent-navigation-v1/PUBLICATION.json",
+        4479,
+        "fab9a2fa76472de545bb332e174004c8c612cbd1c3e12753dd02957a98853212",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T042135Z/OWNER_DESIGN_DECISIONS-before-G12.md",
+        43040,
+        "4b4a92d63687f734866a8d49e118fb25dca220ab055e018cd109e169068cc89a",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T042135Z/PUBLIC-REFS.json",
+        3252,
+        "3e569e7c7543a52dfb36ea1968640943d701e1dc73831c59e407dddc50f98bfa",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T042135Z/RESOURCES.json",
+        2001,
+        "b65c315aa3b5f5cf08e88267fe7bc15b65c26f4201dfb04f86f107ea2f7625d3",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T042135Z/PVA037-POSTAPPLICATION.json",
+        2308,
+        "3f0c4fdc8c3afb730f31d0bb3f51b5ef469be7d819b10fe119c12342af6a1db2",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/results-g6-android-language-policy-01.json",
+        10774,
+        "be3eb849a752614b72ea04b9d8a597a7cdaacf35cb8ebb1c0156d4514e1ae005",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/results-g6-source-negative-controls-01.json",
+        15147,
+        "21f6ae410c1e9978c4973db52c4e713390305b3f9c58332babdd051e490c67ba",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g6-android-language-policy-01-actual-independent-navigation-v1.json",
+        9241,
+        "b4d65f60a7ae2c45f584a9c6b38862cf6bae2137c28013fbd4e56df0bb40cc10",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g6-source-negative-controls-01-actual-independent-navigation-v1.json",
+        16807,
+        "cb622e7c8b4f54af3ec3e6ff4f9c004e7772a86a1154127b4102c252ef6c0dc7",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "findings/unresolved-investigations.json",
+        86184,
+        "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e",
+        [
+          "B",
+          "D",
+          "R"
+        ],
+        "O"
+      ],
+      [
+        "reviews/owner-decisions-final-report-independent-navigation-v1/REPORT.md",
+        13094,
+        "d3b0f2607087ff22c9a400dacdcfb65c4f5a4513eab5216fb7a685b906090219",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/historical-verification-summary-independent-storage-v1/REPORT.md",
+        18837,
+        "3203641c46cc682aca73826fbc93cf530d16528390a6c4c3b996a4153f18fa42",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/historical-verification-summary-independent-storage-v1/RESULT-CATALOG.json",
+        211299,
+        "2c05abde5fce3a9f507dc47f4a1f354c8ce4c3481dd8645483a6b0ac955d27ff",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/historical-verification-summary-independent-storage-v1/XML-ACCOUNTING.json",
+        339841,
+        "e21315b91df141fd8370160ff46e7a1eeb63fa6b786350adf4fa4bd010c95e34",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "verification/gates.json",
+        226694,
+        "e262c78f24da0f7a164e71fd29fdb91b87b5833e5197782dcb606d0fc3eb1543",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g11-windows-prf-cleanup-independent-storage-v1/PUBLICATION.json",
+        9771,
+        "b836cdfdf698767a8c8edeb387d51f0e5bf23e224b078ccfcd701a6de3328b65",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g11-windows-prf-cleanup-independent-storage-v1/REPORT.md",
+        19884,
+        "566400751667c2d2d258c0afe34d1e86500d9cb2c29f0adc24bf537de3778b6b",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T042135Z/G12-APPLICATION-INDEPENDENT-ADOPTION.json",
+        1456,
+        "da4a3cd64bcb16e4818f9505fedf5efbd98f5c0f266cc7d9b011dc2fa8aa1630",
+        [
+          "B"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/PUBLICATION.json",
+        8693,
+        "95ab698794c2ea2db5cbcf53d1992705d805c67158bc76cedc1f4fb8b359e8c4",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-addendum-root-v1/PUBLICATION.json",
+        1985,
+        "f05381da4f707af962104c9d393121afbf52553db940a8aef0c844781d5b1931",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-independent-platform-v1/PUBLICATION.json",
+        6440,
+        "71401264fff05ebbc659a79b8548bde2ba8941e422a30aff7f0ad150804b54f3",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/CHECKPOINT.md",
+        10438,
+        "bd40c15e1319e93370d98fd8727a8f1deacce968ccd13f87ca5b59383db2cb01",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/PROGRESS.md",
+        5931,
+        "090a78d4708ea00e77c7f1cf9ab1ea8f39498f597afdf8d28cd8fa8acd436f7b",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/REPORT.md",
+        10444,
+        "36d109f5ec3f2198be39429de9ff99c4dfafcde1478163ba68048a28e80b4789",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/ISSUE_STATUS.md",
+        7011,
+        "ca6bff63a83b25bfbe359b9022143192053c56d07cd8c0eaaed0ef7754453735",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/VERIFICATION.md",
+        9014,
+        "4fa8cc37c6f661cd35a8cd28d865dff19e9da611c0804a78818eff88cf73cee2",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/WORKSPACE_AND_CLEANUP.md",
+        3874,
+        "ca354f8210857b588455364e19973812e034586488dce40fcc301f2612b78e02",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/COORDINATION.md",
+        3775,
+        "71d3db91e8c5cad20837223fe68c60b2eb8c4500f5db9f8e39275d672e35ea9a",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/NEXT_STEPS.md",
+        2403,
+        "18e83ff322f49fbae767ba0ad1e313554ffe1cafc40496ab119a2d1acd44b5b0",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/REJECTED_AND_OPEN.md",
+        3308,
+        "d19a76f9608378b270e61ace6f60d21f01017cbfaa241203c8cbace2914f704e",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/findings/issue-to-fix.json",
+        908650,
+        "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e",
+        [
+          "D",
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/verification/g12-current-gates.json",
+        4774,
+        "39e3cc4fd1a1ed91d940185539f27916a0b68dad4911b16fda4c032464dd3fc1",
+        [
+          "D",
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/snapshots/coverage/CURRENT.json",
+        37151,
+        "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-addendum-root-v1/snapshots/NEXT_STEPS.md",
+        3464,
+        "ade018d3265091b596acefdae03bd24c554d0973c49123484920a5f1e3f4d52f",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-addendum-root-v1/snapshots/COORDINATION.md",
+        4808,
+        "589ee01f7244d6844534af933f5ff6c4ad095e022b6e8a2ef9a8aee248c2cbee",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/APPLICATION.json",
+        2173,
+        "803841ff384dc0b6629fbdd0813699ece7dfb127c141f88b7778b68e7b831130",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/APPLY-PLAN.json",
+        4188,
+        "9ccb6b96f1e79a90ee18738db1c9d53b764b658d99b5887fe2c2f356874c21cc",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-independent-navigation-v1/PUBLICATION.json",
+        33632,
+        "2b0b66427611c257e25ffc5e975f78f9c76941df0da3bad28ea283cf8c8e0d24",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-adoption-root-v1/ADOPTION.json",
+        2475,
+        "6ad409ea65b0642ddbd0dcb983748c3f07b9f01e342d05d6eebefdfd976c8160",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-adoption-root-v1/ADOPTION-INPUTS.json",
+        22807,
+        "bacf9b8154f2628e1dd7c1b83fa5a04c42ee0fe299ec8639e7c41885c0fb5709",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/SOURCE-AND-PRESERVATION.json",
+        1184,
+        "b1f04d326fe83704482ed60aca4242863d42711f654dc31382fdaa42f31b4c0d",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/RESOURCES.json",
+        2216,
+        "91104f3f7da0248b4de47447d780626c32f6475ee44c0313834ab8b8cf018649",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/GIT-OBSERVATION.json",
+        10820,
+        "ea97019a2ed0df73f9be64fcfc9daf9d3f59091acea4c17b14c8e08a311d8791",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/PVA030-REPORT-CORRECTION.json",
+        2263,
+        "a4d0346a98b72fb64754f00be5f94e29b81b195cd83d99fc1ef4c67932016ea3",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/READ-ONLY-METADATA-DIAGNOSTIC.json",
+        1005,
+        "2acd0c2f5502822569d744097001d60e19548e00ce7ceb079d0b52cad11513f0",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/REPORT-DELTA-PARSE-DIAGNOSTIC.json",
+        793,
+        "9de753712f99738bd445e63ddc1b867cd8a94d7fe45e226a40f95c6f67e670c5",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-database-runner-root-v1/REVIEW.json",
+        1753,
+        "895f488a6610ba2b3c6f072e0ef167cb8e70914e7b040ad22fbe69c3963cb55c",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "evidence/continuation-20260908T052536Z/UNRESOLVED-DISPOSITION-SNAPSHOT.json",
+        1995,
+        "c2cd2a99d701378e12767e49133864e6aa858a2f9efd8ad4d77493722ae001e6",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-addendum-root-v1/REPORT-REQUIREMENTS.patch",
+        4262,
+        "d0cb1f590169746885107b6d11f97e5c8c03a75593a569324d1baa264d760c4c",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-root-v1/REPORT-DELTA.patch",
+        69576,
+        "b15e7418c90ca87afc7fd1c0523207fb249e890c633e057ccf2202f11ab3d1ec",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-independent-navigation-v1/REVIEW.json",
+        1547078,
+        "13e6da10c4c942e1af342acb0585e107cc9029002bf7f2813b52477adf5d9c89",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-materialization-root-v1/inventory-ledger.json",
+        1289634,
+        "79e12761fab8f30079f154330f7ca33415a4ad3de6d278b714e0bfe3acd8c8c0",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-adoption-root-v1/PREVIOUS-CURRENT-G11-PARTIAL.json",
+        11928,
+        "86f491af5318b590b4b536871057695207625ffa569f7b4806412570e0658c81",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-materialization-root-v1/PROVENANCE.json",
+        4937,
+        "2b62dd9588f7f5b7516b23c11c2b7203c00583a16a849edce965549a214e17c3",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-materialization-root-v1/summary.json",
+        8820,
+        "37a92deee16735338b173f4a566f2e23f117a07451f4b33d697f22e21be5eb57",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g11-final-native-range-independent-navigation-v1/REVIEW.json",
+        765495,
+        "446b22178fdaf405dcf30cb24ae03cd87fe5e1871d156e69a6e116a0b6a0de83",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-coverage-independent-navigation-v1/REPORT.md",
+        5402,
+        "0b85f0150c9ffe81526b2ebf8fbb202d2c3feaf040b087d017f5076789205f65",
+        [
+          "D"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-next-regressions-independent-storage-v1/PUBLICATION.json",
+        19563,
+        "f71767e86944a6c224eb56ac0c383e21eae7212743e3a4ccaa1383cc6836cd1e",
+        [
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-independent-platform-v1/PUBLICATION.json",
+        16563,
+        "1de9a1fba5b6e2f9acc2a98792a06e50c22a839a0e389cb2fb70e4b47a46d37c",
+        [
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-checkpoint-delta-independent-platform-v1/REPORT.md",
+        10442,
+        "e67c47120061c10d53fcae35c097276167cde8f6210b97c8c1c9f4c1759fe824",
+        [
+          "R"
+        ],
+        "E"
+      ],
+      [
+        "findings/additional-investigations.json",
+        11558,
+        "dfc0be5063993d43f47fcf47669d5822e6fe0837c03ca060b1248097cbaed044",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "findings/issue-to-fix.json",
+        908650,
+        "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "findings/design-decisions-separate.json",
+        35048,
+        "1eb18bd7867ac3f2d83f11af0bfad83611c072ad434bb6b1e0bd43784e14ec1b",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "OWNER_DESIGN_DECISIONS.md",
+        43407,
+        "bfd7a86eaae9f4412e52a7092845fca4656f6da798ef45d8aba8f0561669b55a",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "verification/g12-current-gates.json",
+        5165,
+        "7f8b326cc962793f4125a9771182174bc39ee1d998c9fc2cc5eb8646d38e76ec",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-final-report-adoption-root-v1/ADOPTION.json",
+        6229,
+        "b87859029441603fd61d80075d46081d0f3e83a3cd3cdd38d788f7cb6e130f1a",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-next-regressions-independent-storage-v1/MATRIX.md",
+        25189,
+        "abd29460167398a3dfa703904085b11023f75d020ed22f57fba832e4dc384481",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-next-regressions-independent-storage-v1/EVIDENCE.json",
+        111300,
+        "d3674f1bc7c7e5e5dfa1e20d8d806dc251cb1b6fe7987cf6806f71ecd714a31e",
+        [
+          "C"
+        ],
+        "E"
+      ],
+      [
+        "reviews/g12-next-regressions-independent-storage-v1/SELF-VALIDATION.json",
+        6301,
+        "9c4f6ff61347a41fa9c811484884359c9a8b4899a9417ea63c9f91dcd166e27f",
+        [
+          "C"
+        ],
+        "E"
+      ]
+    ],
+    "pack_archive_bytes_or_payloads_opened": false,
+    "independent_pack_decode_or_actual_membership_verified": false,
+    "arbitrary_transitive_reference_closure_or_secret_clearance": false,
+    "known_reference_locator_rule": "Each exact-path locator is remediation-reports/20260905T222925Z/ + path. This is index metadata only, not an archive-body read.",
+    "known_reference_exceptions": {
+      "alias_required": 0,
+      "unresolved_or_mismatched": 0,
+      "typed_omission": "findings/unresolved-investigations.json"
+    },
+    "reference_origin_codes": {
+      "B": "sealed_base_checkpoint_input",
+      "D": "sealed_delta_checkpoint_input",
+      "R": "this_review_direct_R_input",
+      "C": "declared_current_copy_origin_or_matrix_dependency"
+    },
+    "known_reference_columns": [
+      "path",
+      "bytes",
+      "sha256",
+      "origin_codes",
+      "disposition_code"
+    ],
+    "reference_disposition_codes": {
+      "E": "EXACT_PATH_DESCRIPTOR",
+      "O": "TYPED_OMISSION_WITH_PRESERVED_OUTCOME"
+    },
+    "typed_omission_descriptor": {
+      "bytes": 86184,
+      "path": "remediation-reports/20260905T222925Z/findings/unresolved-investigations.json",
+      "reason": "STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION",
+      "sha256": "24cebcf86c913176dbd157355bcecd7fdd2cd4c2890d9cac77eb14c39d12df2e"
+    }
+  },
+  "required_compact_doc_revisions_remaining": [],
+  "external_work_not_verified": [
+    "Reader source review/storage",
+    "Reference locator/navigation",
+    "Actual pack decode/root",
+    "Actual Git stage/commit/clone/remote/root",
+    "Public-secret clearance and arbitrary transitive closure/not granted"
+  ],
+  "new_source_test_runtime_closure_coverage_credit": 0
+}

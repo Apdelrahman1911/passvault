@@ -16,6 +16,8 @@ import com.passvault.core.security.BiometricKeyStore
 import com.passvault.core.security.BiometricKeyStoreException
 import com.passvault.core.security.BiometricPromptController
 import com.passvault.core.security.BiometricType
+import com.passvault.shared.platform.NativeBiometricPromptStrings
+import com.passvault.shared.platform.currentNativeBiometricPromptStrings
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -147,7 +149,7 @@ class AndroidBiometricKeyStore(
                     val cipher = Cipher.getInstance(TRANSFORMATION).apply {
                         init(Cipher.ENCRYPT_MODE, secretKey)
                     }
-                    val authenticatedCipher = authenticate(cipher, promptOperation).getOrThrow()
+                    val authenticatedCipher = authenticate(cipher, promptOperation, enrolling = true).getOrThrow()
                     val ciphertext = authenticatedCipher.doFinal(vaultKey)
                     val iv = authenticatedCipher.iv
                     check(iv.isNotEmpty() && ciphertext.isNotEmpty())
@@ -198,7 +200,8 @@ class AndroidBiometricKeyStore(
                             val cipher = Cipher.getInstance(TRANSFORMATION).apply {
                                 init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(GCM_TAG_BITS, iv))
                             }
-                            val authenticatedCipher = authenticate(cipher, promptOperation).getOrThrow()
+                            val authenticatedCipher = authenticate(cipher, promptOperation, enrolling = false)
+                                .getOrThrow()
                             val vaultKey = authenticatedCipher.doFinal(ciphertext)
                             if (vaultKey.size == VAULT_KEY_BYTES) {
                                 producedKey = vaultKey
@@ -245,14 +248,16 @@ class AndroidBiometricKeyStore(
     private suspend fun authenticate(
         cipher: Cipher,
         operation: AndroidBiometricPromptCoordinator.Operation,
+        enrolling: Boolean,
     ): Result<Cipher> = withContext(Dispatchers.Main) {
         val activity = attachedActivity
             ?: return@withContext Result.failure(BiometricKeyStoreException.NotAvailable())
+        val text = androidBiometricPromptText(enrolling)
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(context.getString(com.passvault.android.R.string.app_name))
-            .setSubtitle(context.getString(com.passvault.android.R.string.biometric_prompt_subtitle))
+            .setSubtitle(text.reason)
             .setAllowedAuthenticators(AUTHENTICATORS)
-            .setNegativeButtonText(context.getString(android.R.string.cancel))
+            .setNegativeButtonText(text.cancel)
             .build()
         suspendCancellableCoroutine { continuation ->
             val prompt = BiometricPrompt(
@@ -320,6 +325,16 @@ class AndroidBiometricKeyStore(
         }
     }
 }
+
+internal data class AndroidBiometricPromptText(val reason: String, val cancel: String)
+
+internal fun androidBiometricPromptText(
+    enrolling: Boolean,
+    strings: NativeBiometricPromptStrings = currentNativeBiometricPromptStrings(),
+): AndroidBiometricPromptText = AndroidBiometricPromptText(
+    reason = if (enrolling) strings.enrollmentReason else strings.unlockReason,
+    cancel = strings.cancel,
+)
 
 private fun <T> CancellableContinuation<T>.resumeIfPending(value: T) {
     resume(value) { _, _, _ -> }

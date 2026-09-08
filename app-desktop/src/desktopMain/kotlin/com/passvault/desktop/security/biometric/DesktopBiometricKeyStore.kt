@@ -14,6 +14,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
+import java.util.concurrent.atomic.AtomicReference
 
 internal class DesktopBiometricKeyStore(
     private val bridge: DesktopBiometricBridge,
@@ -44,16 +45,20 @@ internal class DesktopBiometricKeyStore(
     }
 
     override suspend fun retrieve(vaultId: String): Result<ByteArray> {
-        var producedKey: ByteArray? = null
+        // The caller owns discard authority before the worker can produce a key.
+        // Deferred.await may reject delivery of an already completed result when
+        // its parent is cancelled; assigning only after await would lose that key.
+        val producedKey = AtomicReference<ByteArray?>()
         var transferred = false
         return try {
             val result = operationResult {
                 withExclusiveOperation {
                     withVaultHash(vaultId) { vaultHash ->
-                        runCancellablePrompt(onDiscard = ByteArray::wipe) {
-                            promptCoordinator.withPrompt { bridge.retrieve(vaultHash) }
+                        runCancellablePrompt {
+                            promptCoordinator.withPrompt {
+                                bridge.retrieve(vaultHash).also(producedKey::set)
+                            }
                         }
-                            .also { producedKey = it }
                     }
                 }
             }
@@ -61,29 +66,24 @@ internal class DesktopBiometricKeyStore(
             transferred = result.isSuccess
             result
         } finally {
-            if (!transferred) producedKey?.fill(0)
+            val key = producedKey.getAndSet(null)
+            if (!transferred) key?.fill(0)
         }
     }
 
     /**
      * A blocking native prompt runs as a structured IO child. Cancellation
      * actively reaches the OS prompt, then waits for native cleanup before the
-     * mutex can admit another operation. A value produced after cancellation
-     * is discarded through [onDiscard].
+     * mutex can admit another operation. Retrieval registers its key with the
+     * outer discard owner inside [operation], before any cancellable handoff.
      */
     private suspend fun <T> runCancellablePrompt(
-        onDiscard: (T) -> Unit = {},
         operation: () -> T,
     ): T = coroutineScope {
         val worker = async(blockingDispatcher) {
             val value = operation()
-            try {
-                currentCoroutineContext().ensureActive()
-                value
-            } catch (cancel: CancellationException) {
-                onDiscard(value)
-                throw cancel
-            }
+            currentCoroutineContext().ensureActive()
+            value
         }
         try {
             try {
@@ -152,10 +152,6 @@ internal class DesktopBiometricKeyStore(
     private companion object {
         const val VAULT_KEY_BYTES = 32
     }
-}
-
-private fun ByteArray.wipe() {
-    fill(0)
 }
 
 private fun DesktopBiometricBridgeException.toKeyStoreException(): BiometricKeyStoreException = when (this) {

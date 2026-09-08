@@ -903,6 +903,13 @@ validate_text_file() {
         "Non-placeholder $language content" "None"
 }
 
+if ! ruby "$repository_root/scripts/validate-store-metadata-inputs.rb" \
+    "$private_root" "$values_file" >/dev/null 2>&1; then
+    fail_result "Canonical store metadata" "Metadata validation" "No" \
+        "release/private metadata files" "Configured paths or canonical payloads differ from the archive contract" \
+        "Use the eight canonical release/private filenames and approved bilingual content."
+fi
+
 validate_text_file RELEASE_NOTES_EN_FILE English
 validate_text_file RELEASE_NOTES_AR_FILE Arabic
 validate_text_file PRIVACY_TEXT_EN_FILE English

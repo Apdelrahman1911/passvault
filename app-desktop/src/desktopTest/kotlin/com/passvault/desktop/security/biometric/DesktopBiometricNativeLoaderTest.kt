@@ -15,6 +15,24 @@ import kotlin.test.assertTrue
 
 class DesktopBiometricNativeLoaderTest {
     @Test
+    fun `localized extension requires both symbols before a context can be created`() {
+        val resolved = mutableListOf<String>()
+        requireLocalizedBiometricPromptSymbols { resolved += it }
+        assertEquals(listOf("pv_bio_enroll_localized", "pv_bio_retrieve_localized"), resolved)
+    }
+
+    @Test
+    fun `an old or incomplete bridge fails closed at symbol discovery`() {
+        listOf("pv_bio_enroll_localized", "pv_bio_retrieve_localized").forEach { missing ->
+            assertFailsWith<DesktopBiometricBridgeException.NotAvailable> {
+                requireLocalizedBiometricPromptSymbols { symbol ->
+                    if (symbol == missing) throw UnsatisfiedLinkError("Synthetic missing symbol")
+                }
+            }
+        }
+    }
+
+    @Test
     fun `reviewed bridge loads with the expected ABI and platform capability`() {
         val stagingDirectory = System.getProperty(STAGING_DIRECTORY_PROPERTY).orEmpty()
         if (stagingDirectory.isBlank() || getOperatingSystem() == OperatingSystem.LINUX) return

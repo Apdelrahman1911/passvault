@@ -28,7 +28,9 @@ internal actual fun AppLanguageProvider(
     language: SettingsViewModel.AppLanguage,
     content: @Composable () -> Unit,
 ) {
-    val locale = remember(language) { DesktopAppLocales.apply(language) }
+    val locale = remember(language) {
+        DesktopAppLocales.apply(language).also { publishNativeBiometricPromptLanguage(it.toLanguageTag()) }
+    }
     val baseDensity = LocalDensity.current
     val languageDensity = remember(language, baseDensity.density, baseDensity.fontScale) {
         AppLanguageDensity(baseDensity.density, baseDensity.fontScale)

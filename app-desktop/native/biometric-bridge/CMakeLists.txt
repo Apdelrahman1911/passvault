@@ -139,6 +139,26 @@ elseif(WIN32)
             NAME passvault_biometric_windows_security
             COMMAND passvault_biometric_windows_security_test
         )
+        # Each failure path is a separate process/result, so a baseline failure
+        # cannot make later cases appear to have run. All data is synthetic.
+        foreach(file_case IN ITEMS
+            success validation_failure dacl_failure collision
+            empty_payload oversized_payload empty_suffix rename_failure
+        )
+            add_test(
+                NAME passvault_biometric_windows_file_${file_case}
+                COMMAND passvault_biometric_windows_security_test --file-case ${file_case}
+            )
+        endforeach()
+        # Guard-only synthetic checks return before all filesystem/provider tests.
+        foreach(secret_case IN ITEMS
+            normal_scope early_return allocation_exception nested_exception
+        )
+            add_test(
+                NAME passvault_biometric_windows_secret_${secret_case}
+                COMMAND passvault_biometric_windows_security_test --secret-wipe-case ${secret_case}
+            )
+        endforeach()
     endif()
 else()
     message(FATAL_ERROR "The biometric bridge is intentionally unavailable on this platform")

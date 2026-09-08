@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,15 +47,15 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.passvault.core.designsystem.components.SecureTextField
 import com.passvault.core.domain.model.CustomField
-import com.passvault.core.domain.model.CustomFieldId
 import com.passvault.core.domain.model.takeCodePoints
+import com.passvault.feature.credential.presentation.CredentialCustomFieldDraft
+import com.passvault.feature.credential.presentation.CredentialViewModel.CredentialEvent
+import com.passvault.feature.credential.presentation.CredentialViewModel.CredentialState
 
 @Composable
 fun CustomFieldsEditor(
-    fields: List<CustomField>,
-    onAdd: (name: String, value: String, isSecret: Boolean) -> Unit,
-    onRemove: (CustomFieldId) -> Unit,
-    onUpdate: (CustomFieldId, name: String, value: String, isSecret: Boolean) -> Unit,
+    state: CredentialState,
+    onEvent: (CredentialEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
@@ -69,7 +70,10 @@ fun CustomFieldsEditor(
                 style = MaterialTheme.typography.titleSmall
             )
 
-            TextButton(onClick = { showAddDialog = true }) {
+            TextButton(
+                onClick = { if (state.canAddCustomField) showAddDialog = true },
+                enabled = state.canAddCustomField,
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
@@ -82,25 +86,26 @@ fun CustomFieldsEditor(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        fields.forEach { field ->
-            CustomFieldItem(
-                field = field,
-                onUpdate = { name, value, isSecret ->
-                    onUpdate(field.id, name, value, isSecret)
-                },
-                onRemove = { onRemove(field.id) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+        state.customFields.forEach { field ->
+            key(field.id) {
+                CustomFieldItem(
+                    field = field,
+                    draft = state.customFieldDrafts[field.id],
+                    onEvent = onEvent,
+                    enabled = state.canSave,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 
     if (showAddDialog) {
         AddCustomFieldDialog(
+            canConfirm = state.canAddCustomField,
             onDismiss = { showAddDialog = false },
             onConfirm = { name, value, isSecret ->
-                onAdd(name, value, isSecret)
+                onEvent(CredentialEvent.OnCustomFieldAdded(name, value, isSecret))
                 showAddDialog = false
             }
         )
@@ -111,34 +116,28 @@ fun CustomFieldsEditor(
 @Composable
 private fun CustomFieldItem(
     field: CustomField,
-    onUpdate: (name: String, value: String, isSecret: Boolean) -> Unit,
-    onRemove: () -> Unit,
+    draft: CredentialCustomFieldDraft?,
+    onEvent: (CredentialEvent) -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    var draft by remember(field.id) { mutableStateOf<CustomFieldDraft?>(null) }
-    val currentDraft = draft
-    if (currentDraft == null) {
+    if (draft == null) {
         CustomFieldDisplayCard(
             field = field,
-            onEdit = {
-                draft = CustomFieldDraft(
-                    name = field.name,
-                    value = field.value.toStringUnsafe(),
-                    isSecret = field.isSecret,
-                )
-            },
-            onRemove = onRemove,
+            onEdit = { onEvent(CredentialEvent.OnCustomFieldEditStarted(field.id)) },
+            onRemove = { onEvent(CredentialEvent.OnCustomFieldRemoved(field.id)) },
+            enabled = enabled,
             modifier = modifier,
         )
     } else {
         CustomFieldEditCard(
-            draft = currentDraft,
-            onDraftChange = { draft = it },
-            onCancel = { draft = null },
+            draft = draft,
+            onDraftChange = { onEvent(CredentialEvent.OnCustomFieldDraftChanged(field.id, it)) },
+            onCancel = { onEvent(CredentialEvent.OnCustomFieldEditCancelled(field.id)) },
             onSave = {
-                onUpdate(currentDraft.name, currentDraft.value, currentDraft.isSecret)
-                draft = null
+                onEvent(CredentialEvent.OnCustomFieldUpdated(field.id, draft.name, draft.value, draft.isSecret))
             },
+            enabled = enabled,
             modifier = modifier,
         )
     }
@@ -146,23 +145,25 @@ private fun CustomFieldItem(
 
 @Composable
 private fun CustomFieldEditCard(
-    draft: CustomFieldDraft,
-    onDraftChange: (CustomFieldDraft) -> Unit,
+    draft: CredentialCustomFieldDraft,
+    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
     onCancel: () -> Unit,
     onSave: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier,
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
-            CustomFieldNameInput(draft, onDraftChange)
+            CustomFieldNameInput(draft, onDraftChange, enabled)
             Spacer(modifier = Modifier.height(8.dp))
-            CustomFieldValueInput(draft, onDraftChange)
+            CustomFieldValueInput(draft, onDraftChange, enabled)
             Spacer(modifier = Modifier.height(8.dp))
             CustomFieldEditFooter(
                 draft = draft,
                 onDraftChange = onDraftChange,
                 onCancel = onCancel,
                 onSave = onSave,
+                enabled = enabled,
             )
         }
     }
@@ -170,11 +171,13 @@ private fun CustomFieldEditCard(
 
 @Composable
 private fun CustomFieldNameInput(
-    draft: CustomFieldDraft,
-    onDraftChange: (CustomFieldDraft) -> Unit,
+    draft: CredentialCustomFieldDraft,
+    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
+    enabled: Boolean,
 ) {
     OutlinedTextField(
         value = draft.name,
+        enabled = enabled,
         onValueChange = {
             onDraftChange(draft.copy(name = it.takeCodePoints(MAX_CUSTOM_FIELD_NAME_LENGTH)))
         },
@@ -186,8 +189,9 @@ private fun CustomFieldNameInput(
 
 @Composable
 private fun CustomFieldValueInput(
-    draft: CustomFieldDraft,
-    onDraftChange: (CustomFieldDraft) -> Unit,
+    draft: CredentialCustomFieldDraft,
+    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
+    enabled: Boolean,
 ) {
     val onValueChange: (String) -> Unit = {
         onDraftChange(draft.copy(value = it.takeCodePoints(MAX_CUSTOM_FIELD_VALUE_LENGTH)))
@@ -195,6 +199,7 @@ private fun CustomFieldValueInput(
     if (draft.isSecret) {
         SecureTextField(
             value = draft.value,
+            enabled = enabled,
             onValueChange = onValueChange,
             label = stringResource(Res.string.ui_value),
             modifier = Modifier.fillMaxWidth(),
@@ -202,6 +207,7 @@ private fun CustomFieldValueInput(
     } else {
         OutlinedTextField(
             value = draft.value,
+            enabled = enabled,
             onValueChange = onValueChange,
             label = { Text(stringResource(Res.string.ui_value)) },
             singleLine = true,
@@ -212,10 +218,11 @@ private fun CustomFieldValueInput(
 
 @Composable
 private fun CustomFieldEditFooter(
-    draft: CustomFieldDraft,
-    onDraftChange: (CustomFieldDraft) -> Unit,
+    draft: CredentialCustomFieldDraft,
+    onDraftChange: (CredentialCustomFieldDraft) -> Unit,
     onCancel: () -> Unit,
     onSave: () -> Unit,
+    enabled: Boolean,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -226,22 +233,23 @@ private fun CustomFieldEditFooter(
                 .weight(1f)
                 .toggleable(
                     value = draft.isSecret,
+                    enabled = enabled,
                     role = Role.Checkbox,
                     onValueChange = { onDraftChange(draft.copy(isSecret = it)) },
                 ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(checked = draft.isSecret, onCheckedChange = null)
+            Checkbox(checked = draft.isSecret, onCheckedChange = null, enabled = enabled)
             Text(stringResource(Res.string.ui_secret_field))
         }
         Row {
-            IconButton(onClick = onCancel) {
+            IconButton(onClick = onCancel, enabled = enabled) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(Res.string.action_cancel),
                 )
             }
-            IconButton(onClick = onSave, enabled = draft.name.isNotBlank()) {
+            IconButton(onClick = onSave, enabled = enabled && draft.name.isNotBlank()) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = stringResource(Res.string.action_save),
@@ -256,6 +264,7 @@ private fun CustomFieldDisplayCard(
     field: CustomField,
     onEdit: () -> Unit,
     onRemove: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier,
 ) {
     Card(modifier = modifier) {
@@ -267,13 +276,13 @@ private fun CustomFieldDisplayCard(
         ) {
             CustomFieldDisplayValue(field, Modifier.weight(1f))
             Row {
-                IconButton(onClick = onEdit) {
+                IconButton(onClick = onEdit, enabled = enabled) {
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = stringResource(Res.string.action_edit),
                     )
                 }
-                IconButton(onClick = onRemove) {
+                IconButton(onClick = onRemove, enabled = enabled) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = stringResource(Res.string.ui_remove),
@@ -320,14 +329,9 @@ private fun CustomFieldDisplayValue(field: CustomField, modifier: Modifier) {
     }
 }
 
-private data class CustomFieldDraft(
-    val name: String,
-    val value: String,
-    val isSecret: Boolean,
-)
-
 @Composable
 private fun AddCustomFieldDialog(
+    canConfirm: Boolean,
     onDismiss: () -> Unit,
     onConfirm: (name: String, value: String, isSecret: Boolean) -> Unit,
 ) {
@@ -357,11 +361,13 @@ private fun AddCustomFieldDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirm(name, value, isSecret)
-                    name = ""
-                    value = ""
+                    if (canConfirm && name.isNotBlank()) {
+                        onConfirm(name, value, isSecret)
+                        name = ""
+                        value = ""
+                    }
                 },
-                enabled = name.isNotBlank()
+                enabled = canConfirm && name.isNotBlank(),
             ) {
                 Text(stringResource(Res.string.action_add))
             }

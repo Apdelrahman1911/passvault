@@ -1,0 +1,22 @@
+--- clone_handoff_verify_v2.py (inert source)
++++ clone_handoff_verify_v3.py (inert source)
+@@ -1,7 +1,8 @@
+ """One new public-Git transport check; no app, Gradle, archived runner or store work.
+ 
+-Never replay this one-shot program. A failed journal/launch/stop preserves the
+-exact residual for reviewed recovery. Cooperative owned namespace only: group
++Never replay this one-shot program. Pre-cleanup journal/launch/stop ambiguity
++preserves the residual for reviewed recovery. Final RESULT may fail after cleanup;
++no durable final-receipt guarantee is made before deletion. Cooperative owned namespace only: group
+ observations do not exclude escaped sessions or guarantee future PID identity.
+ """
+ 
+@@ -20,7 +21,7 @@
+ 
+ BASE = Path('/Users/abdelrahman/Projects/passvault')
+ H = BASE / 'remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z'
+-RUN = H / 'remote-clone-verification-v2'
++RUN = H / 'remote-clone-verification-v3'
+ OWNED = BASE / 'passvault-handoff-verify-20260908T091500Z'
+ CLONE = OWNED / 'repo'
+ BRANCH = 'codex/remediation-handoff-20260908'

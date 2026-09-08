@@ -5,18 +5,20 @@ import android.text.TextUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.passvault.feature.settings.presentation.SettingsViewModel
 import java.util.Locale
 
 private object AndroidAppLocales {
-    val systemLocales: LocaleList = LocaleList.getDefault()
-
-    fun apply(language: SettingsViewModel.AppLanguage): Locale {
+    fun apply(language: SettingsViewModel.AppLanguage, systemLocales: LocaleList): Locale {
         val locales = when (language) {
-            SettingsViewModel.AppLanguage.SYSTEM -> systemLocales
+            SettingsViewModel.AppLanguage.SYSTEM -> systemLocales.takeUnless { it.isEmpty }
+                // An undefined Configuration has no locales. Use the base resource
+                // language, never the process default that this adapter overrides.
+                ?: LocaleList(Locale.ENGLISH)
             SettingsViewModel.AppLanguage.ENGLISH -> LocaleList(Locale.forLanguageTag("en"))
             SettingsViewModel.AppLanguage.ARABIC -> LocaleList(Locale.forLanguageTag("ar"))
         }
@@ -32,9 +34,16 @@ internal actual fun AppLanguageProvider(
     language: SettingsViewModel.AppLanguage,
     content: @Composable () -> Unit,
 ) {
-    val locale = remember(language) { AndroidAppLocales.apply(language) }
+    // Framework configuration is observable and independent of our process-wide
+    // override. A cached LocaleList.getDefault() cannot follow device changes.
+    val configurationLocales = LocalConfiguration.current.locales
+    val locale = remember(language, configurationLocales) {
+        AndroidAppLocales.apply(language, configurationLocales).also {
+            publishNativeBiometricPromptLanguage(it.toLanguageTag())
+        }
+    }
     val baseDensity = LocalDensity.current
-    val languageDensity = remember(language, baseDensity.density, baseDensity.fontScale) {
+    val languageDensity = remember(language, configurationLocales, locale, baseDensity.density, baseDensity.fontScale) {
         AppLanguageDensity(baseDensity.density, baseDensity.fontScale)
     }
     val direction = if (TextUtils.getLayoutDirectionFromLocale(locale) == android.view.View.LAYOUT_DIRECTION_RTL) {

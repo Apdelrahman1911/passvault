@@ -1,0 +1,17 @@
+{
+  "at": "2026-09-08T08:39:06.303735+00:00",
+  "scope": "Two inert metadata-display failures only; no writes before failure, no application/build/test execution",
+  "incidents": [
+    {
+      "tool_capture": "9bf3e4",
+      "cause": "Assumed source-manifest list was dict and called keys; interpreter exited1; trailing shell commands meant overall tool exit0",
+      "other_qualification": "rev-parse --abbrev-ref printed branch names, not commit/tree"
+    },
+    {
+      "tool_capture": "9de2dc",
+      "cause": "Gate dict displayed successfully, then assumed issue ledger list was dict and called keys; exit1"
+    }
+  ],
+  "correction": "Check actual container type; issue ledger is list37; source manifest is list811; source-transport and gate ledgers are dicts",
+  "runtime_credits": 0
+}

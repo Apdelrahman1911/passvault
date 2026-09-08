@@ -1308,7 +1308,8 @@ class VaultUnlockPreemptionIntegrationTest : RepositorySecurityIntegrationFixtur
 
             val gate = engine.gateNextVerification()
             val unlock = async {
-                repository.unlockWithBiometricKey(requireNotNull(vaultKey))
+                val attempt = repository.beginBiometricUnlock().getOrThrow()
+                repository.unlockWithBiometricKey(requireNotNull(vaultKey), attempt)
             }
             gate.started.await()
             val locking = async { repository.lock(LockReason.AutoLock) }
@@ -1512,7 +1513,8 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
         try {
             assertTrue(vaultRepository.lock().isSuccess)
 
-            assertTrue(vaultRepository.unlockWithBiometricKey(vaultKey).isSuccess)
+            val attempt = vaultRepository.beginBiometricUnlock().getOrThrow()
+            assertTrue(vaultRepository.unlockWithBiometricKey(vaultKey, attempt).isSuccess)
             assertTrue(vaultRepository.isUnlocked())
         } finally {
             cryptoEngine.secureWipe(vaultKey)
@@ -1570,7 +1572,8 @@ class RepositoryBiometricSecurityIntegrationTest : RepositorySecurityIntegration
         assertTrue(vaultRepository.lock().isSuccess)
         val invalidKey = ByteArray(32) { 0x5a }
         try {
-            assertTrue(vaultRepository.unlockWithBiometricKey(invalidKey).isFailure)
+            val attempt = vaultRepository.beginBiometricUnlock().getOrThrow()
+            assertTrue(vaultRepository.unlockWithBiometricKey(invalidKey, attempt).isFailure)
             assertFalse(vaultRepository.isUnlocked())
         } finally {
             cryptoEngine.secureWipe(invalidKey)

@@ -41,7 +41,14 @@ object PasswordStrengthEvaluator {
                         } else {
                             0
                         }) +
-                            (if (hasSequence(normalized, codePoints.size)) SEQUENCE_PENALTY_BANDS else 0) +
+                            (if (
+                                hasSequence(normalized, codePoints.size, LETTER_SEQUENCES) ||
+                                hasSequence(codePoints.values, codePoints.size, NUMERIC_SEQUENCES)
+                            ) {
+                                SEQUENCE_PENALTY_BANDS
+                            } else {
+                                0
+                            }) +
                             (if (hasLikelyWordAndYear(password)) DATE_PATTERN_PENALTY_BANDS else 0)
                     baselineScore(codePoints.size).shiftBy(varietyBonus - penaltyBands)
                 }
@@ -105,9 +112,9 @@ object PasswordStrengthEvaluator {
             }
         }
 
-    private fun hasSequence(value: IntArray, size: Int): Boolean {
+    private fun hasSequence(value: IntArray, size: Int, sequences: List<String>): Boolean {
         if (size < SEQUENCE_LENGTH) return false
-        return SEQUENCES.any { sequence ->
+        return sequences.any { sequence ->
             (0..sequence.length - SEQUENCE_LENGTH).any { sequenceStart ->
                 containsSequenceWindow(value, size, sequence, sequenceStart, reversed = false) ||
                     containsSequenceWindow(value, size, sequence, sequenceStart, reversed = true)
@@ -319,9 +326,10 @@ object PasswordStrengthEvaluator {
         "november",
         "december",
     )
-    private val SEQUENCES = listOf(
+    // Detect digits before leetspeak normalization turns e.g. 012345 into oi2eas.
+    private val NUMERIC_SEQUENCES = listOf("0123456789")
+    private val LETTER_SEQUENCES = listOf(
         "abcdefghijklmnopqrstuvwxyz",
-        "0123456789",
         "qwertyuiop",
         "asdfghjkl",
         "zxcvbnm",

@@ -1,0 +1,230 @@
+{
+  "at": "2026-09-08T07:59:23.079797+00:00",
+  "scope": "Read-only handoff transport/guard checks only, not application tests, test cases, new G12 gates or execution admission.",
+  "reader_sha256": "27c97a3df01da76efbec6b22041f5c2157a297a328969986928d22ae7edc1f0d",
+  "package_sha256": "bc4e7cc7d6ae83bedcec3b4947a14de2aac52706089af9e2abbc2564c5f91a81",
+  "python": "3.9.6 (default, Apr 17 2026, 18:15:52) \n[Clang 21.0.0 (clang-2100.1.1.101)]",
+  "commands": [
+    {
+      "name": "verify",
+      "started": "2026-09-08T07:59:18.148288+00:00",
+      "finished": "2026-09-08T07:59:20.539724+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "verify"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59086,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "01-verify.stdout",
+        "bytes": 145,
+        "sha256": "5970e6d97d535caf7131fd3c1d008d229c4a57c274cf23e47332e21ea0c9c987"
+      },
+      "stderr": {
+        "path": "01-verify.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    },
+    {
+      "name": "verify-source",
+      "started": "2026-09-08T07:59:20.540116+00:00",
+      "finished": "2026-09-08T07:59:20.885489+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "verify-source"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59087,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "02-verify-source.stdout",
+        "bytes": 240,
+        "sha256": "653b43932a33189181b87e5a189c326a3ac6aa4c3b937e09187d2f73e00c0297"
+      },
+      "stderr": {
+        "path": "02-verify-source.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    },
+    {
+      "name": "list",
+      "started": "2026-09-08T07:59:20.885767+00:00",
+      "finished": "2026-09-08T07:59:21.293650+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "list",
+        "remediation-reports/20260905T222925Z/reviews/g12-runner-readiness-independent-navigation-v1/"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59088,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "03-list.stdout",
+        "bytes": 553,
+        "sha256": "23351adaad9f50a4c7f800001e65a858b8897231a1b970ad48ecff5b077e6701"
+      },
+      "stderr": {
+        "path": "03-list.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    },
+    {
+      "name": "show-gate",
+      "started": "2026-09-08T07:59:21.293973+00:00",
+      "finished": "2026-09-08T07:59:21.961117+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "show",
+        "remediation-reports/20260905T222925Z/verification/g12-current-gates.json"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59089,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "04-show-gate.stdout",
+        "bytes": 5165,
+        "sha256": "7f8b326cc962793f4125a9771182174bc39ee1d998c9fc2cc5eb8646d38e76ec"
+      },
+      "stderr": {
+        "path": "04-show-gate.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    },
+    {
+      "name": "missing-record",
+      "started": "2026-09-08T07:59:21.962061+00:00",
+      "finished": "2026-09-08T07:59:22.360110+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "show",
+        "synthetic/audit-no-such-record.json"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59091,
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "05-missing-record.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "05-missing-record.stderr",
+        "bytes": 51,
+        "sha256": "11ecf66a5d4982c6d1dcf8f1863625d5eeca73065f48655c356120948f593517"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    },
+    {
+      "name": "binary-refused",
+      "started": "2026-09-08T07:59:22.360358+00:00",
+      "finished": "2026-09-08T07:59:23.039000+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "show",
+        "audit-reports/20260905T083114Z/evidence/platform-assets/platform-assets-contact-sheet.png"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59093,
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "06-binary-refused.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "06-binary-refused.stderr",
+        "bytes": 80,
+        "sha256": "ee41f8b78a03b05bf864108b1152358ee11e0b8aa8fc8c0f6fb8b824c3cd70ff"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    },
+    {
+      "name": "extra-argument",
+      "started": "2026-09-08T07:59:23.039319+00:00",
+      "finished": "2026-09-08T07:59:23.079567+00:00",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z/docs/audit-handoff/evidence.py",
+        "verify-source",
+        "unexpected-argument"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "pid": 59094,
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "expected_behavior_observed": true,
+      "interruption": null,
+      "owned_process_waited": true,
+      "stdout": {
+        "path": "07-extra-argument.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "07-extra-argument.stderr",
+        "bytes": 37,
+        "sha256": "1d4d3d04f664b74101688e1dd46d02e7e8094751e5d8221aa56fbaa98fce1cb4"
+      },
+      "gradle_stop": "NOT_APPLICABLE: read-only transport reader, no Gradle process or build/test outputs.",
+      "cleanup": "No temporary application/storage/build outputs. Only required compact stdout/stderr evidence created; Python -B; process exited."
+    }
+  ],
+  "expected_command_count": 7,
+  "completed_command_count": 7,
+  "all_expected_behaviors_observed": true,
+  "application_test_cases": 0,
+  "build_invocations": 0,
+  "source_edits": 0
+}

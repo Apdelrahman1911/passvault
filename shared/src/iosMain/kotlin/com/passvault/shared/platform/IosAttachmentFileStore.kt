@@ -18,8 +18,11 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSCachesDirectory
@@ -75,13 +78,7 @@ class IosAttachmentFileStore(
         val selected = presentImportPicker()
         val selectedPath = selected.getOrElse { return Result.failure(it) }
         try {
-            val adoptedPath = withContext(Dispatchers.Default) { adoptSelectedImport(selectedPath) }
-            try {
-                Result.success(IosAttachmentSource(adoptedPath, cacheRoot, fileManager))
-            } catch (error: Exception) {
-                deleteOwnedIosAttachmentDirectory(adoptedPath, cacheRoot, fileManager)
-                throw error
-            }
+            Result.success(openIosAttachmentImport(selectedPath, cacheRoot, fileManager, protectPath))
         } catch (error: Exception) {
             deleteExactPath(selectedPath)
             throw error
@@ -297,38 +294,81 @@ class IosAttachmentFileStore(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught") // Foundation failures must clean the partially adopted plaintext copy.
-    private fun adoptSelectedImport(sourcePath: String): String {
-        require(sourcePath.startsWith('/') && !sourcePath.split('/').contains(".."))
-        val sourceAttributes = fileManager.attributesOfItemAtPath(sourcePath, error = null)
-            ?: error("The selected attachment disappeared")
-        require(sourceAttributes[NSFileType] == NSFileTypeRegular)
-        val size = (sourceAttributes["NSFileSize"] as? Number)?.toLong()
-            ?: error("The attachment size is unavailable")
-        AttachmentPolicy.validateFileSize(size)
-        val fileName = AttachmentPolicy.validateFileName(sourcePath.substringAfterLast('/'))
-        val directory = "$cacheRoot/$IOS_ATTACHMENT_DIRECTORY_PREFIX${randomToken()}"
-        check(
-            fileManager.createDirectoryAtPath(
-                path = directory,
-                withIntermediateDirectories = false,
-                attributes = IOS_PLAINTEXT_PROTECTION,
-                error = null,
-            ),
-        )
-        val destination = "$directory/$fileName"
-        return try {
-            val moved = fileManager.moveItemAtPath(sourcePath, destination, error = null)
-            if (!moved) {
-                check(fileManager.copyItemAtPath(sourcePath, destination, error = null))
-                check(fileManager.removeItemAtPath(sourcePath, error = null))
-            }
-            protectPath(destination)
-            destination
-        } catch (error: Exception) {
-            fileManager.removeItemAtPath(directory, error = null)
-            throw error
+}
+
+/** Retains destination cleanup authority until the import source reaches its caller. */
+internal suspend fun openIosAttachmentImport(
+    sourcePath: String,
+    cacheRoot: String,
+    fileManager: NSFileManager,
+    protectPath: (String) -> Unit,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    moveFile: (String, String) -> Boolean = { source, destination ->
+        fileManager.moveItemAtPath(source, destination, error = null)
+    },
+): AttachmentContentSource {
+    var ownedPath: String? = null
+    var transferred = false
+    return try {
+        val source = withContext(dispatcher) {
+            val path = adoptIosAttachmentImportPath(sourcePath, cacheRoot, fileManager, protectPath, moveFile)
+                .also { ownedPath = it }
+            IosAttachmentSource(path, cacheRoot, fileManager)
         }
+        currentCoroutineContext().ensureActive()
+        transferred = true
+        source
+    } finally {
+        if (!transferred) {
+            // withContext can discard a successful adoption while dispatching
+            // back to a cancelled entry. The outer owner was registered inside
+            // the worker, and structured completion precedes this cleanup.
+            withContext(NonCancellable + dispatcher) {
+                ownedPath?.let { deleteOwnedIosAttachmentDirectory(it, cacheRoot, fileManager) }
+                if (sourcePath.startsWith('/') && !sourcePath.split('/').contains("..")) {
+                    fileManager.removeItemAtPath(sourcePath, error = null)
+                }
+            }
+        }
+    }
+}
+
+@Suppress("TooGenericExceptionCaught") // Foundation failures must clean the partially adopted plaintext copy.
+private fun adoptIosAttachmentImportPath(
+    sourcePath: String,
+    cacheRoot: String,
+    fileManager: NSFileManager,
+    protectPath: (String) -> Unit,
+    moveFile: (String, String) -> Boolean,
+): String {
+    require(sourcePath.startsWith('/') && !sourcePath.split('/').contains(".."))
+    val sourceAttributes = fileManager.attributesOfItemAtPath(sourcePath, error = null)
+        ?: error("The selected attachment disappeared")
+    require(sourceAttributes[NSFileType] == NSFileTypeRegular)
+    val size = (sourceAttributes["NSFileSize"] as? Number)?.toLong()
+        ?: error("The attachment size is unavailable")
+    AttachmentPolicy.validateFileSize(size)
+    val fileName = AttachmentPolicy.validateFileName(sourcePath.substringAfterLast('/'))
+    val directory = "$cacheRoot/$IOS_ATTACHMENT_DIRECTORY_PREFIX${randomToken()}"
+    check(
+        fileManager.createDirectoryAtPath(
+            path = directory,
+            withIntermediateDirectories = false,
+            attributes = IOS_PLAINTEXT_PROTECTION,
+            error = null,
+        ),
+    )
+    val destination = "$directory/$fileName"
+    return try {
+        if (!moveFile(sourcePath, destination)) {
+            check(fileManager.copyItemAtPath(sourcePath, destination, error = null))
+            check(fileManager.removeItemAtPath(sourcePath, error = null))
+        }
+        protectPath(destination)
+        destination
+    } catch (error: Exception) {
+        fileManager.removeItemAtPath(directory, error = null)
+        throw error
     }
 }
 

@@ -35,6 +35,9 @@ jobs:
       source_tree: ${{ steps.manifest.outputs.source_tree }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Certificate invocation may be a later exact-tree commit on testing.
+          fetch-depth: 0
       - name: Validate exact stable candidate
         id: manifest
         env:
@@ -54,20 +57,22 @@ jobs:
             --pattern '*-artifact-receipt.json' \
             --dir "$RUNNER_TEMP/candidate"
           manifest="$RUNNER_TEMP/candidate/readiness-manifest.json"
-          gh attestation verify "$manifest" \
+          ruby scripts/verify-candidate-attestation.rb "$manifest" \
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/candidate-readiness.yml" \
             --source-ref refs/heads/testing \
-            --source-digest "$GITHUB_SHA" \
+            --candidate-commit "$GITHUB_SHA" \
+            --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
             --deny-self-hosted-runners >/dev/null
           source_tree="$(git rev-parse "$GITHUB_SHA^{tree}")"
           ruby scripts/validate-candidate-manifest.rb "$manifest" "$GITHUB_SHA" "$source_tree"
           for receipt in "$RUNNER_TEMP/candidate"/*-artifact-receipt.json; do
-            gh attestation verify "$receipt" \
+            ruby scripts/verify-candidate-attestation.rb "$receipt" \
               --repo "$GITHUB_REPOSITORY" \
               --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/testing-release.yml" \
               --source-ref refs/heads/testing \
-              --source-digest "$GITHUB_SHA" \
+              --candidate-commit "$GITHUB_SHA" \
+              --candidate-tree "$(jq -r .sourceTree "$RUNNER_TEMP/candidate/readiness-manifest.json")" \
               --deny-self-hosted-runners >/dev/null
           done
           ruby scripts/validate-candidate-artifact-provenance.rb \
@@ -229,16 +234,8 @@ jobs:
       - name: Publish immutable stable GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v${{ needs.candidate.outputs.version }}
           RELEASE_VERSION: ${{ needs.candidate.outputs.version }}
           VALIDATION_ROOT: ${{ steps.validation.outputs.root }}
         run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "A GitHub Release already exists for $RELEASE_TAG; refusing to overwrite it." >&2
-            exit 1
-          fi
-          gh release create "$RELEASE_TAG" "$VALIDATION_ROOT"/* \
-            --target "$GITHUB_SHA" \
-            --generate-notes \
-            --title "PassVault $RELEASE_VERSION" \
-            --notes "Exact production-validated desktop packages for Windows x64, macOS arm64/x64, and Linux x64. Windows/macOS packages derive from the receipt-verified candidate app images; Linux packages are the byte-identical tested candidates. Windows native code/installers are Authenticode verified; macOS packages are Developer ID signed, notarized, stapled, and Gatekeeper verified. SHA256SUMS.txt and release-provenance.json bind every asset to the tested candidate commit, Desktop promotion inputs, and mobile build receipts."
+          ruby scripts/publish-immutable-github-release.rb \
+            "$RELEASE_VERSION" "$GITHUB_SHA" "$VALIDATION_ROOT"

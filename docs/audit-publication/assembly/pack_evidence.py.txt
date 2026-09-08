@@ -1,0 +1,183 @@
+"""One-time report transport writer, not an application/validation/runtime helper."""
+from pathlib import Path
+import datetime
+import hashlib
+import io
+import json
+import lzma
+import os
+import re
+import stat
+import tarfile
+
+BASE = Path('/Users/abdelrahman/Projects/passvault')
+REPORT = BASE / 'remediation-reports/20260905T222925Z'
+OWN = REPORT / 'handoff-publication/20260908T061500Z'
+DEST = BASE / 'passvault-handoff-20260908T061500Z/docs/audit-handoff'
+ROOTS = [BASE / 'audit-reports/20260905T083114Z', REPORT]
+MIB = 1024 * 1024
+DENIED_BLOBS = {
+    'e5648102fd0f74eee4dbfa861b1f7c44b4fb7a0322aa9b41bcd2d61cc6d695b9',
+    'd9ecf7d368293afc4dd042fc31fd2cfcbe95c316a45e2b6cbe47ceebe2095c31',
+}
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def write_json(path, value):
+    data = (json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False) + '\n').encode()
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
+    with os.fdopen(fd, 'wb') as stream:
+        stream.write(data)
+        stream.flush()
+        os.fsync(stream.fileno())
+    return {'path': path.name, 'bytes': len(data), 'sha256': sha(data)}
+
+
+def capture(path):
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > 16 * MIB:
+        raise RuntimeError('Unexpected report member: ' + str(path))
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, 'rb') as stream:
+        opened = os.fstat(stream.fileno())
+        data = stream.read(16 * MIB + 1)
+        after = os.fstat(stream.fileno())
+    identity = lambda s: (s.st_dev, s.st_ino, s.st_uid, s.st_mode, s.st_nlink,
+                          s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+    if not identity(before) == identity(opened) == identity(after) == identity(path.lstat()):
+        raise RuntimeError('Report changed during capture')
+    if len(data) != before.st_size:
+        raise RuntimeError('Report length changed')
+    return data, before
+
+
+def main():
+    if DEST.is_symlink() or not DEST.is_dir() or (DEST / 'evidence-packs').exists():
+        raise RuntimeError('Destination not fresh')
+    if os.statvfs(BASE).f_bavail * os.statvfs(BASE).f_frsize < 2 * 1024**3:
+        raise RuntimeError('Insufficient transport headroom (not build admission)')
+    rows = []
+    omitted = []
+    unique = {}
+    blocked_ledger_hashes = set()
+    # Only opaque hashing of old ledger bytes for alias suppression; no stopped investigation.
+    for path in REPORT.rglob('*unresolved-investigations*.json'):
+        if not path.is_relative_to(OWN):
+            data, _ = capture(path)
+            blocked_ledger_hashes.add(sha(data))
+    for root in ROOTS:
+        for directory, directories, filenames in os.walk(root, followlinks=False):
+            directories.sort()
+            filenames.sort()
+            if Path(directory).is_relative_to(OWN):
+                directories[:] = []
+                continue
+            if Path(directory).is_relative_to(REPORT / 'reviews') and any(
+                    part.startswith('clone-handoff-') for part in Path(directory).relative_to(REPORT).parts):
+                # Fresh handoff reviews are published separately after this historical cut.
+                directories[:] = []
+                continue
+            for name in directories:
+                if (Path(directory) / name).is_symlink():
+                    raise RuntimeError('Symlink directory in report source')
+            for name in filenames:
+                path = Path(directory) / name
+                relative = path.relative_to(BASE).as_posix()
+                meta = path.lstat()
+                if re.search(r'pvu[-_]?0?(?:07|11)', relative, re.I):
+                    omitted.append({'path': relative, 'bytes': meta.st_size,
+                                    'reason': 'STOP_OR_NO_RETRY_RAW_PATH_WITHHELD_NO_CONTENT_INSPECTION'})
+                    continue
+                if re.search(r'(^|/)(local\.properties|MOBILE_RELEASE_AGENT_RUNBOOK\.md|[^/]+\.(p12|p8|jks|keystore|mobileprovision|pvault))$', relative, re.I):
+                    omitted.append({'path': relative, 'bytes': meta.st_size,
+                                    'reason': 'PRIVATE_FILENAME_EXCLUDED_WITHOUT_READING'})
+                    continue
+                data, meta = capture(path)
+                digest = sha(data)
+                if digest in DENIED_BLOBS or digest in blocked_ledger_hashes:
+                    omitted.append({'path': relative, 'bytes': len(data), 'sha256': digest,
+                                    'reason': 'EMBEDDED_PUBLIC_WEB_KEY_SHAPE_BLOB_AND_ALIASES_WITHHELD'
+                                    if digest in DENIED_BLOBS else 'STOPPED_ROW_LEDGER_BLOB_WITHHELD_USE_CURRENT_OUTCOME_PROJECTION'})
+                    continue
+                row = {'path': relative, 'bytes': len(data), 'sha256': digest,
+                       'historical_mode': stat.S_IMODE(meta.st_mode)}
+                rows.append(row)
+                unique.setdefault(digest, (path, len(data)))
+    # Every included original member will be rechecked before its blob is written.
+    groups = []
+    group = []
+    size = 10240
+    for digest, (path, length) in unique.items():
+        cost = 512 + (length + 511) // 512 * 512
+        if group and size + cost > 64 * MIB:
+            groups.append(group)
+            group, size = [], 10240
+        group.append((digest, path, length))
+        size += cost
+    if group:
+        groups.append(group)
+    (DEST / 'evidence-packs').mkdir(mode=0o755)
+    placement = {}
+    packs = []
+    for number, group in enumerate(groups, 1):
+        name = 'evidence-packs/evidence-%03d.tar.xz' % number
+        fd = os.open(DEST / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
+        with os.fdopen(fd, 'wb') as output:
+            with lzma.LZMAFile(output, 'w', preset=3) as compressed:
+                with tarfile.open(fileobj=compressed, mode='w|', format=tarfile.USTAR_FORMAT) as archive:
+                    for digest, path, length in group:
+                        data, _ = capture(path)
+                        if len(data) != length or sha(data) != digest:
+                            raise RuntimeError('Report changed after inventory: ' + str(path))
+                        entry = tarfile.TarInfo('blobs/' + digest)
+                        entry.size = length
+                        entry.mode = 0o644
+                        entry.uid = entry.gid = entry.mtime = 0
+                        entry.uname = entry.gname = ''
+                        archive.addfile(entry, io.BytesIO(data))
+                        placement[digest] = name
+            output.flush()
+            os.fsync(output.fileno())
+        data = (DEST / name).read_bytes()
+        if len(data) > 32 * MIB:
+            raise RuntimeError('Compressed pack exceeds reader cap')
+        packs.append({'path': name, 'bytes': len(data), 'sha256': sha(data), 'blobs': len(group)})
+        print('sealed', name, len(data), 'bytes', len(group), 'blobs', flush=True)
+    for row in rows:
+        row['pack'] = placement[row['sha256']]
+    # Check duplicate aliases too, not just each unique blob's first path.
+    for row in rows:
+        data, _ = capture(BASE / row['path'])
+        if len(data) != row['bytes'] or sha(data) != row['sha256']:
+            raise RuntimeError('Alias changed after inventory: ' + row['path'])
+    index = write_json(DEST / 'evidence-index.json', {
+        'format': 1, 'files': rows,
+        'scope': 'Exact included historical bytes; not active runtime state, permission, source correctness or full evidence closure.',
+    })
+    omissions = write_json(DEST / 'omissions.json', {
+        'format': 1, 'files': omitted,
+        'outside_scope': [
+            'Original dirty checkout/private vaults/backups/credentials/signing configuration were not packaged.',
+            'Old runtime/HOME/TMP/cache directories and ownership locks are not portable resources.',
+            'New handoff writer/receipts are maintained separately from the frozen report pack to avoid self-reference.',
+            'reviews/clone-handoff-* packets are delivered separately after the historical evidence cut; they are not silently treated as included pack members.',
+        ],
+        'limits': 'STOP-path exclusion is scope-based, not a claim of removing every historical mention. Privacy-key blob exclusions apply to all same-hash aliases.',
+    })
+    receipt = {'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'index': index,
+               'omissions': omissions, 'packs': packs, 'included_paths': len(rows),
+               'unique_blobs': len(unique), 'omitted_paths': len(omitted),
+               'raw_bytes_with_aliases': sum(r['bytes'] for r in rows),
+               'unique_raw_bytes': sum(n for _, n in unique.values()),
+               'compressed_bytes': sum(r['bytes'] for r in packs),
+               'build_test_application_invocations': 0,
+               'cleanup': 'No build/runtime outputs created. Evidence packs and source are required deliverables; no original evidence deleted.'}
+    write_json(OWN / 'PACK-RECEIPT.json', receipt)
+    print(json.dumps({k: v for k, v in receipt.items() if k not in ['packs']}, indent=2), flush=True)
+
+
+if __name__ == '__main__':
+    main()

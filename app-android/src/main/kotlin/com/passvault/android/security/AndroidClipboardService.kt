@@ -25,34 +25,30 @@ import java.util.UUID
  * copied by the user is never overwritten—even when it contains the same
  * text.
  */
-class AndroidClipboardService(
-    context: Context,
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
+class AndroidClipboardService internal constructor(
+    private val clipboard: AndroidClipboardAccess,
+    private val scope: CoroutineScope,
+    private val awaitTimeout: suspend (Long) -> Unit = { delay(it) },
 ) : ClipboardService {
+    constructor(
+        context: Context,
+        scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main),
+    ) : this(SystemAndroidClipboardAccess(context.applicationContext), scope)
 
-    private val appContext = context.applicationContext
-    private val clipboardManager by lazy {
-        appContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    }
     private val clipboardMutex = Mutex()
     private var ownedToken: String? = null
+    private var clearRequested = false
     private var clearJob: Job? = null
 
     override suspend fun copySensitive(text: String, timeoutMs: Long) {
         clipboardMutex.withLock {
             val token = ownershipToken("secret")
-            val clipData = ClipData.newPlainText(token, text).apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    description.extras = PersistableBundle().apply {
-                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-                    }
-                }
-            }
-            clipboardManager.setPrimaryClip(clipData)
+            clipboard.copySensitive(token, text)
             cancelClearLocked()
             ownedToken = token
+            clearRequested = false
             clearJob = scope.launch {
-                delay(timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS))
+                awaitTimeout(timeoutMs.coerceIn(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS))
                 clipboardMutex.withLock { clearIfOwnedLocked(token) }
             }
         }
@@ -60,9 +56,10 @@ class AndroidClipboardService(
 
     override suspend fun copy(text: String) {
         clipboardMutex.withLock {
-            clipboardManager.setPrimaryClip(ClipData.newPlainText("PassVault", text))
+            clipboard.copy(text)
             cancelClearLocked()
             ownedToken = null
+            clearRequested = false
         }
     }
 
@@ -75,35 +72,52 @@ class AndroidClipboardService(
     override suspend fun containsSensitive(): Boolean =
         clipboardMutex.withLock {
             val token = ownedToken ?: return@withLock false
-            val isOwned = currentToken() == token
-            if (!isOwned && ownedToken == token) {
-                ownedToken = null
-                cancelClearLocked()
+            when (val contents = clipboard.readContents()) {
+                AndroidClipboardContents.Unavailable -> true
+                is AndroidClipboardContents.Readable -> {
+                    val isOwned = contents.token == token
+                    if (!isOwned) forgetOwnershipLocked()
+                    isOwned
+                }
             }
-            isOwned
         }
 
-    private fun clearIfOwnedLocked(expectedToken: String) {
-        if (currentToken() != expectedToken) {
-            if (ownedToken == expectedToken) {
-                ownedToken = null
-                clearJob = null
+    /** Retry expired/locked clips when Android permits clipboard inspection again. */
+    fun onForeground() {
+        scope.launch {
+            clipboardMutex.withLock {
+                if (clearRequested) ownedToken?.let { clearIfOwnedLocked(it) }
             }
-            return
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            clipboardManager.clearPrimaryClip()
-        } else {
-            clipboardManager.setPrimaryClip(ClipData.newPlainText("PassVault", ""))
-        }
-        if (ownedToken == expectedToken) {
-            ownedToken = null
-            cancelClearLocked()
         }
     }
 
-    private fun currentToken(): String? =
-        clipboardManager.primaryClip?.description?.label?.toString()
+    private fun clearIfOwnedLocked(expectedToken: String) {
+        if (ownedToken != expectedToken) return
+        clearRequested = true
+        when (val contents = clipboard.readContents()) {
+            // A null/denied read is not proof of replacement or absence. Keep
+            // the token and retry intent without overwriting an unknown clip.
+            AndroidClipboardContents.Unavailable -> Unit
+            is AndroidClipboardContents.Readable -> {
+                if (contents.token == expectedToken) {
+                    // A provider failure retains ownership for the next usable
+                    // foreground boundary; it must not veto vault locking.
+                    try {
+                        clipboard.clear()
+                    } catch (_: Exception) {
+                        return
+                    }
+                }
+                forgetOwnershipLocked()
+            }
+        }
+    }
+
+    private fun forgetOwnershipLocked() {
+        ownedToken = null
+        clearRequested = false
+        cancelClearLocked()
+    }
 
     private fun cancelClearLocked() {
         clearJob?.cancel()
@@ -116,5 +130,56 @@ class AndroidClipboardService(
     private companion object {
         const val MIN_TIMEOUT_MS = 5_000L
         const val MAX_TIMEOUT_MS = 300_000L
+    }
+}
+
+internal sealed interface AndroidClipboardContents {
+    data object Unavailable : AndroidClipboardContents
+    data class Readable(val token: String?) : AndroidClipboardContents
+}
+
+internal interface AndroidClipboardAccess {
+    fun copySensitive(token: String, text: String)
+    fun copy(text: String)
+    fun readContents(): AndroidClipboardContents
+    fun clear()
+}
+
+private class SystemAndroidClipboardAccess(private val context: Context) : AndroidClipboardAccess {
+    private val manager by lazy {
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    }
+
+    override fun copySensitive(token: String, text: String) {
+        val clip = ClipData.newPlainText(token, text).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                description.extras = PersistableBundle().apply {
+                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                }
+            }
+        }
+        manager.setPrimaryClip(clip)
+    }
+
+    override fun copy(text: String) {
+        manager.setPrimaryClip(ClipData.newPlainText("PassVault", text))
+    }
+
+    override fun readContents(): AndroidClipboardContents = try {
+        manager.primaryClip?.let { clip ->
+            AndroidClipboardContents.Readable(clip.description.label?.toString())
+        } ?: AndroidClipboardContents.Unavailable
+    } catch (_: Exception) {
+        // Focus/access restrictions and transient provider failures are unknown,
+        // never evidence that the service's previous sensitive clip was replaced.
+        AndroidClipboardContents.Unavailable
+    }
+
+    override fun clear() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            manager.clearPrimaryClip()
+        } else {
+            manager.setPrimaryClip(ClipData.newPlainText("PassVault", ""))
+        }
     }
 }

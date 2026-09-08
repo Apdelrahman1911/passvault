@@ -14,6 +14,8 @@ values_file="$private_root/values.env"
 source "$repository_root/scripts/lib/dotenv.sh"
 # shellcheck source=scripts/lib/pkcs12-validation.sh
 source "$repository_root/scripts/lib/pkcs12-validation.sh"
+# shellcheck source=scripts/lib/macos-keychain.sh
+source "$repository_root/scripts/lib/macos-keychain.sh"
 
 cd "$repository_root"
 if ! git check-ignore -q release/private/values.env || [[ -n "$(git ls-files release/private)" ]]; then
@@ -61,32 +63,54 @@ verification_root="$(mktemp -d "${TMPDIR:-/tmp}/passvault-ios-signed-verify.XXXX
 keychain_path="$verification_root/release.keychain-db"
 installed_profile=""
 installed_profile_by_script=false
-original_keychains=()
-while IFS= read -r keychain_line; do
-    keychain_line="${keychain_line#*\"}"
-    keychain_line="${keychain_line%\"*}"
-    [[ -n "$keychain_line" ]] && original_keychains+=("$keychain_line")
-done < <(security list-keychains -d user)
+profile_staging="$verification_root/profile-to-install.mobileprovision"
+original_keychains_file="$verification_root/original-user-keychains.txt"
+keychains_captured=false
+keychain_creation_attempted=false
 
 cleanup() {
+    local cleanup_status="$1"
     IOS_DISTRIBUTION_CERTIFICATE_PASSWORD=""
     certificate_import_password=""
     keychain_password=""
+    # A failed/handled-interrupted publication is owned only if it still names
+    # the exact staged inode. Never remove a preexisting or replaced profile.
     if [[ "$installed_profile_by_script" == true &&
-        "$installed_profile" == "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision ]]; then
-        rm -f -- "$installed_profile"
+        "$installed_profile" == "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision &&
+        ! -L "$installed_profile" && "$installed_profile" -ef "$profile_staging" ]]; then
+        if ! rm -f -- "$installed_profile"; then
+            echo "Unable to remove the temporary installed provisioning profile." >&2
+            cleanup_status=1
+        fi
     fi
-    security delete-keychain "$keychain_path" >/dev/null 2>&1 || true
-    if (( ${#original_keychains[@]} > 0 )); then
-        security list-keychains -d user -s "${original_keychains[@]}" >/dev/null 2>&1 || true
+    if [[ "$keychain_creation_attempted" == true ]]; then
+        if [[ "$keychains_captured" != true ]] ||
+            ! passvault_restore_user_keychains "$original_keychains_file"; then
+            echo "Unable to restore the original user keychain search list." >&2
+            cleanup_status=1
+        fi
+        if ! security delete-keychain "$keychain_path" >/dev/null 2>&1; then
+            echo "Unable to remove the temporary signing keychain." >&2
+            cleanup_status=1
+        fi
     fi
     if [[ "$verification_root" == "${TMPDIR:-/tmp}"/passvault-ios-signed-verify.* &&
         -d "$verification_root" ]]; then
-        find "$verification_root" -type f -exec chmod 600 {} + 2>/dev/null || true
-        rm -rf -- "$verification_root"
+        if ! find "$verification_root" -type f -exec chmod 600 {} + 2>/dev/null; then
+            echo "Unable to normalize temporary verification file permissions for cleanup." >&2
+            cleanup_status=1
+        fi
+        if ! rm -rf -- "$verification_root"; then
+            echo "Unable to remove the temporary signed-verification directory." >&2
+            cleanup_status=1
+        fi
     fi
+    exit "$cleanup_status"
 }
-trap cleanup EXIT
+trap 'cleanup "$?"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 report_failure() {
     local failure_status="$1"
     local failure_line="$2"
@@ -94,6 +118,10 @@ report_failure() {
     exit "$failure_status"
 }
 trap 'report_failure "$?" "$LINENO"' ERR
+
+# Capture must succeed before profile installation or any keychain mutation.
+passvault_capture_user_keychains "$original_keychains_file"
+keychains_captured=true
 
 export IOS_DISTRIBUTION_CERTIFICATE_PASSWORD
 p12_validation_root="$verification_root/pkcs12-validation"
@@ -123,18 +151,30 @@ fi
 profile_directory="$HOME/Library/MobileDevice/Provisioning Profiles"
 mkdir -p "$profile_directory"
 installed_profile="$profile_directory/$profile_uuid.mobileprovision"
-if [[ -e "$installed_profile" ]]; then
+if [[ -L "$installed_profile" || ( -e "$installed_profile" && ! -f "$installed_profile" ) ]]; then
+    echo "The installed provisioning-profile path is not a regular file; archive stopped safely." >&2
+    exit 1
+elif [[ -e "$installed_profile" ]]; then
     if ! cmp -s "$profile_path" "$installed_profile"; then
         echo "A different installed profile has the same UUID; archive stopped safely." >&2
         exit 1
     fi
 else
-    cp "$profile_path" "$installed_profile"
-    chmod 600 "$installed_profile"
+    # Prepare bytes and permissions before exposing a profile to Xcode. Register
+    # cleanup before the exclusive hard link: it never replaces an existing path,
+    # and inode equality lets EXIT distinguish our publication from a competitor.
+    # A TMPDIR on another filesystem fails closed; no overwriting copy fallback.
+    cp "$profile_path" "$profile_staging"
+    chmod 600 "$profile_staging"
     installed_profile_by_script=true
+    if ! ruby -e 'File.link(ARGV.fetch(0), ARGV.fetch(1))' "$profile_staging" "$installed_profile"; then
+        echo "Unable to install the temporary profile without replacing an existing path; check TMPDIR filesystem." >&2
+        exit 1
+    fi
 fi
 
 keychain_password="$("$openssl_binary" rand -hex 32)"
+keychain_creation_attempted=true
 security create-keychain -p "$keychain_password" "$keychain_path"
 security set-keychain-settings -lut 21600 "$keychain_path"
 security unlock-keychain -p "$keychain_password" "$keychain_path"
@@ -145,7 +185,7 @@ certificate_import_password=""
 unset certificate_import_password
 security set-key-partition-list -S apple-tool:,apple: -s \
     -k "$keychain_password" "$keychain_path" >/dev/null 2>&1
-security list-keychains -d user -s "$keychain_path"
+passvault_activate_release_keychain "$keychain_path" "$original_keychains_file"
 if ! security find-identity -v -p codesigning "$keychain_path" |
     awk -v expected="$codesign_identity" '$2 == expected { found = 1 } END { exit !found }'; then
     echo "The expected Apple Distribution identity is not usable in the temporary keychain." >&2

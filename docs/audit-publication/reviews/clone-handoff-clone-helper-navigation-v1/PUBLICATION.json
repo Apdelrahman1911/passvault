@@ -1,0 +1,460 @@
+{
+  "schema_version": 1,
+  "review_id": "clone-handoff-clone-helper-navigation-v1",
+  "reviewer": "/root/audit_navigation",
+  "created_utc": "2026-09-08T08:56:40.863466+00:00",
+  "disposition": "QUALIFIED_SOURCE_ACCEPT_V3_NOT_RUNTIME_ACCEPTANCE",
+  "scope": "Independent inert source/delta/AST review and report-only publication; no helper import/execution, Git/clone/push, application build/test, process/provider/cache/cleanup operation or private/excluded-body read.",
+  "accepted_source": {
+    "version": "v3",
+    "root": "R",
+    "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v3.py",
+    "bytes": 18374,
+    "lf": 346,
+    "sha256": "3bb706229a82d1aa12ceba8f8d9762ca3e68e8994636e2d2afcd3512834ed988",
+    "mode_octal": "0644",
+    "single_link": true,
+    "stable": true,
+    "snapshot": "inputs/clone_handoff_verify_v3.py.txt"
+  },
+  "historical_sources": [
+    {
+      "version": "v1",
+      "root": "R",
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v1.py",
+      "bytes": 14688,
+      "lf": 283,
+      "sha256": "cb5555bc2d39de8a1fb691120087e3193de064eff8996d24016fa33256fa61fe",
+      "mode_octal": "0644",
+      "single_link": true,
+      "stable": true,
+      "snapshot": "inputs/clone_handoff_verify_v1.py.txt"
+    },
+    {
+      "version": "v2",
+      "root": "R",
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v2.py",
+      "bytes": 18270,
+      "lf": 345,
+      "sha256": "a97e05a08b5c656f23b23bf3c08b35a85c7a26c79beffd43dccc0aa2a507a697",
+      "mode_octal": "0644",
+      "single_link": true,
+      "stable": true,
+      "snapshot": "inputs/clone_handoff_verify_v2.py.txt"
+    }
+  ],
+  "source_deltas": [
+    {
+      "from": "v1",
+      "to": "v2",
+      "path": "deltas/v1-v2.diff.txt",
+      "bytes": 24408,
+      "lf": 413,
+      "sha256": "b5790944d31cd4e599640a163fe0aafcc066b9227c8271d7aa9440a1009a798a"
+    },
+    {
+      "from": "v2",
+      "to": "v3",
+      "path": "deltas/v2-v3.diff.txt",
+      "bytes": 1084,
+      "lf": 22,
+      "sha256": "afaa5366cfb14b725b6e4cf048fe15f5c723922b491cfa335573e309cb956327"
+    }
+  ],
+  "source_revalidation_before_and_after_write": "PASS: exact pinned full-byte inputs",
+  "writer_protocol": {
+    "namespace": "exclusive new directory",
+    "directory_mode_octal": "0700",
+    "file_mode_octal": "0600",
+    "files_exclusive_no_follow": true,
+    "file_and_directory_fsync": true,
+    "stable_guarded_readback": "PASS for every indexed member",
+    "stat_integer_encoding": "decimal strings",
+    "report_directory_identity": {
+      "dev": "16777232",
+      "ino": "86861625",
+      "uid": "501",
+      "mode": "16832"
+    },
+    "parent_identity": {
+      "dev": "16777232",
+      "ino": "73000783",
+      "uid": "501",
+      "mode": "16877"
+    }
+  },
+  "constraints": [
+    "PVU-007 STOP",
+    "PVU-011 NO RETRY",
+    "PVA-029 no automatic retry",
+    "G7/G8 CLOSED",
+    "Old Gradle/application runner unadmitted and outside scope",
+    "Archived sources/commands are inert",
+    "No main/testing/release mutation, merge, tags, signing/stores, candidate replacement or new execution authority",
+    "Frozen HD and previous review packets not modified"
+  ],
+  "limitations_file": "SCOPE.json",
+  "findings_file": "FINDINGS.json",
+  "captures": [
+    {
+      "label": "01-v1-source",
+      "tool_capture": "27350e",
+      "exit_code": 0,
+      "command_path": "commands/01-v1-source.command.txt",
+      "stdout_path": "captures/01-v1-source.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "02-v2-source",
+      "tool_capture": "b05a7a",
+      "exit_code": 0,
+      "command_path": "commands/02-v2-source.command.txt",
+      "stdout_path": "captures/02-v2-source.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "03-v1-v2-delta-ast",
+      "tool_capture": "1fbc3c",
+      "exit_code": 0,
+      "command_path": "commands/03-v1-v2-delta-ast.command.txt",
+      "stdout_path": "captures/03-v1-v2-delta-ast.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "04-v3-delta-ast",
+      "tool_capture": "3c4903",
+      "exit_code": 0,
+      "command_path": "commands/04-v3-delta-ast.command.txt",
+      "stdout_path": "captures/04-v3-delta-ast.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "05-workspace-instructions",
+      "tool_capture": "19a0e7",
+      "exit_code": 0,
+      "command_path": "commands/05-workspace-instructions.command.txt",
+      "stdout_path": "captures/05-workspace-instructions.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "06-provenance-skill",
+      "tool_capture": "a1e346",
+      "exit_code": 0,
+      "command_path": "commands/06-provenance-skill.command.txt",
+      "stdout_path": "captures/06-provenance-skill.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "07-provenance-reference",
+      "tool_capture": "2b98fd",
+      "exit_code": 0,
+      "command_path": "commands/07-provenance-reference.command.txt",
+      "stdout_path": "captures/07-provenance-reference.stdout.txt",
+      "scope": "Inert archived read/parse command and exact stdout; not replay instructions."
+    },
+    {
+      "label": "08-report-writer-v1-parse-failure",
+      "tool_capture": "2a6fab",
+      "exit_code": 1,
+      "command_path": null,
+      "command_fingerprint": {
+        "bytes": 97278,
+        "lf": 175,
+        "sha256": "3c8557ae4ac6c6b43a73a7dedb0ec6c165bdb1db35f0f27df2d00d461196d254"
+      },
+      "output_path": "captures/08-report-writer-v1.output.txt",
+      "scope": "Exact failed metadata-writer diagnostic. Source/helper body not imported/executed; original supplied command remains in named tool capture."
+    },
+    {
+      "label": "09-report-namespace-absence",
+      "tool_capture": "c92c92",
+      "exit_code": 0,
+      "command_path": null,
+      "stdout_path": "captures/09-report-namespace-absence.stdout.txt",
+      "scope": "Guarded exact-path lstat absence check plus SHA256 of held failed command text; no write/helper execution/cleanup."
+    }
+  ],
+  "indexed_member_count": 30,
+  "indexed_total_bytes": 232104,
+  "subdirectories": [
+    "captures",
+    "commands",
+    "deltas",
+    "inputs",
+    "protocol"
+  ],
+  "entries": [
+    {
+      "path": "CAPTURES.json",
+      "bytes": 3234,
+      "lf": 83,
+      "sha256": "3df7f566125d9deadd45ae6dedba9deb81d483ac822b541c82bd7edada445f8d",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "FINDINGS.json",
+      "bytes": 8048,
+      "lf": 118,
+      "sha256": "bfeb465d7ee8db7aa7232476dbba1aab24f1fbb161781ff42c9010629c650781",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "INPUTS.json",
+      "bytes": 1858,
+      "lf": 60,
+      "sha256": "3899b3527f5c4a2d03d6eaefe127e64e6d658c69c2941f485076a2e1a37c7f53",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "PUBLICATION-METADATA-INCIDENT.json",
+      "bytes": 1383,
+      "lf": 29,
+      "sha256": "0aa32686dd5b501169973ac10640e665e4715dd12fe0bf65b041f8cc3c402c6c",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 1031,
+      "lf": 11,
+      "sha256": "62a213b157a7d14e75c8a0d9831008a7427f022ed2cae82db0dff387479b5532",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "SCOPE.json",
+      "bytes": 7550,
+      "lf": 148,
+      "sha256": "7b87cb8c03274faa86ca63af956da0b78a6223cfaa695a7613fc481e706616ac",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "SOURCE-REVIEW.md",
+      "bytes": 11900,
+      "lf": 87,
+      "sha256": "b6b01d0c77302a00acd51f0011760483ec91a637604ec44383e3d6453cf6044e",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "STATIC-CHECKS.json",
+      "bytes": 2344,
+      "lf": 110,
+      "sha256": "8e11fd1a2e2bacc12dcb4652b4d6bd76f962c23396ad2a37ce89eeb23c30fb52",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/01-v1-source.stdout.txt",
+      "bytes": 15401,
+      "lf": 1,
+      "sha256": "df113d49f7abe60d36c7c4476b2ca4300931bcbaf53ed1918ff8308dd0d70030",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/02-v2-source.stdout.txt",
+      "bytes": 19034,
+      "lf": 1,
+      "sha256": "2e7c8d998537b615bde2c75da2f7e32faf9b98cda6f41f0488cbf74f4f316dca",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/03-v1-v2-delta-ast.stdout.txt",
+      "bytes": 26231,
+      "lf": 1,
+      "sha256": "4f20d0a862cc62032711e2c69efe7150bdbf81aa7f3e0cd7b0e1d2c57a8489a1",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/04-v3-delta-ast.stdout.txt",
+      "bytes": 21302,
+      "lf": 1,
+      "sha256": "2c818c270b8b9ad7c533bdcd92dc46e84dfa437def79ac67b47300aa3541f98a",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/05-workspace-instructions.stdout.txt",
+      "bytes": 5551,
+      "lf": 2,
+      "sha256": "cc4995ee6d65ceef91a7dc2aaaf512c4191567a24f821905881305b79f796a50",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/06-provenance-skill.stdout.txt",
+      "bytes": 5880,
+      "lf": 1,
+      "sha256": "4e2b23fec88d6eafbdc9535475f9e8437fb0ee87211356f5588f24f0c99bc97d",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/07-provenance-reference.stdout.txt",
+      "bytes": 3680,
+      "lf": 1,
+      "sha256": "c829317976799e715c30dcde3b1e0446f15bb5219d201c9c3fe92f0b2ec2a8ad",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/08-report-writer-v1.output.txt",
+      "bytes": 156,
+      "lf": 1,
+      "sha256": "8c1b014669c12b86bdd511eb6a72df9ccec7dd7749d48a2d76cc8928c4cfd000",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "captures/09-report-namespace-absence.stdout.txt",
+      "bytes": 522,
+      "lf": 1,
+      "sha256": "fdb621ee38b1c0c8490be252605ac280af0f661dc7b13091871a2bc77a3fe721",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/01-v1-source.command.txt",
+      "bytes": 2413,
+      "lf": 43,
+      "sha256": "7d1259bf52b131eed0f92fb8bd8a427f7be56d931681039751689fd4ab80fe62",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/02-v2-source.command.txt",
+      "bytes": 2436,
+      "lf": 43,
+      "sha256": "c296f3fac78c750a3613084da257251b24bd9fa35a72463aade8a7aecb561dcb",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/03-v1-v2-delta-ast.command.txt",
+      "bytes": 3313,
+      "lf": 48,
+      "sha256": "a661613b9c8c97eae21e627ac0733db3eaf58daf57fa310ce7f59fd0095d093c",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/04-v3-delta-ast.command.txt",
+      "bytes": 4109,
+      "lf": 61,
+      "sha256": "c6eec6f91f04f049e3fe0a1aa48efd6872efca65a933cdcca18b6a53500c465d",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/05-workspace-instructions.command.txt",
+      "bytes": 2375,
+      "lf": 45,
+      "sha256": "591f670c812b069ea8d4a3c3e92513eddc976d75b14124f025037d989f1ad0e7",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/06-provenance-skill.command.txt",
+      "bytes": 2283,
+      "lf": 44,
+      "sha256": "da8af2226d9bc1a8567c9c3b6632f561f3cc7304b26288c4f8a5bfb662347aab",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "commands/07-provenance-reference.command.txt",
+      "bytes": 2306,
+      "lf": 44,
+      "sha256": "e99531cfd80362e73055c25c727b4e26c6bbd759db4b0965967a9beac64f48d8",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "deltas/v1-v2.diff.txt",
+      "bytes": 24408,
+      "lf": 413,
+      "sha256": "b5790944d31cd4e599640a163fe0aafcc066b9227c8271d7aa9440a1009a798a",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "deltas/v2-v3.diff.txt",
+      "bytes": 1084,
+      "lf": 22,
+      "sha256": "afaa5366cfb14b725b6e4cf048fe15f5c723922b491cfa335573e309cb956327",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "inputs/clone_handoff_verify_v1.py.txt",
+      "bytes": 14688,
+      "lf": 283,
+      "sha256": "cb5555bc2d39de8a1fb691120087e3193de064eff8996d24016fa33256fa61fe",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "inputs/clone_handoff_verify_v2.py.txt",
+      "bytes": 18270,
+      "lf": 345,
+      "sha256": "a97e05a08b5c656f23b23bf3c08b35a85c7a26c79beffd43dccc0aa2a507a697",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "inputs/clone_handoff_verify_v3.py.txt",
+      "bytes": 18374,
+      "lf": 346,
+      "sha256": "3bb706229a82d1aa12ceba8f8d9762ca3e68e8994636e2d2afcd3512834ed988",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    },
+    {
+      "path": "protocol/PUBLICATION.md",
+      "bytes": 940,
+      "lf": 5,
+      "sha256": "7cafb9ffcf6eded54086653b00a7fdede6660eb04312c00f0bb560f950096a26",
+      "mode_octal": "0600",
+      "single_link": true,
+      "stable_writer_readback": true
+    }
+  ],
+  "self_indexed": false,
+  "external_seal": "PUBLICATION.json digest is returned by the writer. A separate read-only independent post-seal rehash is reported externally; the completed packet is not reopened to insert its own final receipt."
+}

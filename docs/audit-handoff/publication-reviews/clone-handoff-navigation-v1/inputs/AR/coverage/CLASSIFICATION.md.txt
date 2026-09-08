@@ -1,0 +1,56 @@
+# Coverage classifications and assurance limits
+
+The immutable inventory contains **763 tracked paths**. It was made before review;
+its initial zero-review summary is historical, not the current coverage result.
+`ledger.json` and `summary.json` are regenerated from the live reviewer journals.
+
+The initial category labels are retained so the denominator has not been changed
+to improve a percentage. Source-review accounting is now reconciled, but source
+authorship, byte provenance, executable behavior and legal clearance are different
+questions. No unqualified “100% reviewed/verified” conclusion is made.
+
+| Category | Files | Inspection/accounting method and remaining limit |
+|---|---:|---|
+| Application-owned text | 621 | Explicit inclusive line-range semantic attestations, caller/callee/control-flow notes, test and finding references. Includes code, tests, scripts, workflows and small configuration/resource text. Not execution coverage. |
+| Application-owned documentation | 45 | Same line-range protocol, checked as claims rather than implementation proof. Includes old audits/handoffs; their conclusions were not adopted as proof. |
+| Generated/resolved metadata | 8 | Five Room schema exports, Gradle verification metadata, expected production dependency inventory and Gem lock. Structural traversal and source/constraint comparison; actual migrations have separate tests. Not a fresh all-platform resolved graph or upstream vulnerability clearance. |
+| Third-party license text | 26 | Notice/terms/provenance inspection; bounded sections for long notices, complete short texts where recorded. Root GPL license is standard third-party license text, not application code. No exhaustive line review of long licenses or legal opinion claimed. |
+| Generated skill mirror | 15 | Mirror/frontmatter/interface inspection and passive comparison with the local authoritative collection. Not independent source ownership or immutable upstream attestation. |
+| Binary assets | 46 | Image/container decoding and visual inspection; wrapper JAR hash/ZIP inspection; font/container metadata as recorded per file. Not fictitious text ranges, binary decompilation, device UI proof or packaged-app proof. |
+| Generated wrapper launchers | 2 | Launcher/control-flow inspection of checked-in generated POSIX/Windows scripts. Windows not executed; no independent byte-equality assertion for the launcher scripts. Official JAR/distribution checksum evidence is narrower. |
+
+**Owned-line denominator:** 621 + 45 = **666 files / 120,425 physical lines**, including
+comments and blank lines. The numerator is the union of explicitly reviewed
+inclusive intervals, not a file-read/search/scanner count. Overlapping reviews
+do not double-count. All 120,425 lines currently have semantic attestations.
+
+**Separate non-line denominator:** 8 + 26 + 15 + 46 + 2 = **97 paths** with explicit
+inspection methods. Their text lines, where present, are deliberately excluded
+from the owned-source numerator and denominator. There are 142,856 text lines
+in the initial inventory across all categories; that larger total is not all
+application-owned source and is not claimed as line-reviewed.
+
+The machine ledger retains every original reviewer identity, event location,
+reviewed/unreviewed range, method, evidence link, test reference and suspected
+finding ID. `findings/id-map.json` resolves originating IDs to the final confirmed
+families; `findings/open-id-map.json` resolves rejected/unresolved items.
+
+Historical journal normalization evidence is retained. A status correction or
+additional cross-review is not another file reviewed. The aggregator verifies
+all frozen blob hashes and the declared CRLF checkout transformation for Windows
+scripts, ranges, reviewer-to-journal attribution and evidence existence. Those
+mechanical checks validate accounting, not the quality/correctness of a review.
+
+## Explicit exclusions and remaining work
+
+- Non-private primary-checkout local-only work is inventoried separately in
+  `inventory/local-only.json`; it was not comprehensively semantically reviewed
+  and is not represented as frozen-main/shipped source.
+- `opencode.json` is unrelated/private and unread. Real vaults, backups, secrets,
+  signing material, tester data and unrelated configuration were not inspected.
+- Source review does not fill missing feature/platform tests, physical-device
+  validation, production artifacts, store state, complete dependencies or open
+  finding reachability. See `VERIFICATION.md`, `PROJECT_REVIEW.md` and
+  `REJECTED_AND_OPEN.md` in the report root.
+- Relative report references in this document are rooted at the report root
+  unless the file is explicitly described as a sibling coverage file.

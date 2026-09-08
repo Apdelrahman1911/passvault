@@ -1,0 +1,173 @@
+{
+  "schema": "passvault.clone-handoff.marker-platform-computed.v1",
+  "files": [
+    {
+      "path": "scripts/testdata/security-analysis/rules/Rules.txt",
+      "sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+      "bytes": 330,
+      "contexts": [
+        {
+          "lines": [
+            1,
+            2
+          ],
+          "marker": "provider-token-shaped literal",
+          "disposition": "INTENTIONAL_EXPECTED_POSITIVE_SYNTHETIC_FIXTURE",
+          "evidence": "Adjacent explicit ruleid; exact deterministic36-character alphabet-prefix construction."
+        },
+        {
+          "lines": [
+            4,
+            7
+          ],
+          "marker": "PEM private-key envelope",
+          "disposition": "INTENTIONAL_EXPECTED_POSITIVE_NON_KEY_FIXTURE",
+          "evidence": "Adjacent explicit ruleid; base64 decodes to48identical ASCII-A bytes, not a DER SEQUENCE."
+        }
+      ],
+      "read_scope": "Complete10-line file displayed only with literals and unrelated bidi fixture value suppressed."
+    },
+    {
+      "path": "scripts/test-release-automation.sh",
+      "sha256": "e2830b2ec2284087b606b1a652fe38b33d75c87a1aa405e4e3661cc89aa4e3f0",
+      "bytes": 145239,
+      "contexts": [
+        {
+          "lines": [
+            860,
+            873
+          ],
+          "flag_line": 868,
+          "marker": "PEM private-key envelope",
+          "disposition": "DELIBERATELY_INVALID_EXPECTED_REJECTION_FIXTURE",
+          "evidence": "Literal invalid_asc_key body has7characters and invalidbase64; validator acceptance explicitly exits1. Positive control key is generated only if the test is run, not embedded."
+        }
+      ],
+      "read_scope": "Only845-892semanticcontext; fullfilehashidentity is not fullfileaudit."
+    },
+    {
+      "path": "scripts/validate-app-store-connect-key.rb",
+      "sha256": "28e8bd28457d44b7eefa63b38f1ba774060090cbd3e2ec43dc78930e2abc6738",
+      "bytes": 1089,
+      "contexts": [
+        {
+          "lines": [
+            15,
+            29
+          ],
+          "flag_line": 17,
+          "marker": "PEM private-key envelope prefix",
+          "disposition": "INPUT_PARSER_MARKER_NOT_KEY_MATERIAL",
+          "evidence": "start_with?/end_with? literal predicates on external runtimeinput before PKey validation."
+        }
+      ],
+      "read_scope": "Complete40-line parser source, inert only; runtimeinput path not opened."
+    },
+    {
+      "path": "scripts/validate-private-release-config.sh",
+      "sha256": "7172fcaf6c480c9922f1ed83b54a021f8b841a64abe3dca63133601a1210e3da",
+      "bytes": 55104,
+      "contexts": [
+        {
+          "lines": [
+            861,
+            873
+          ],
+          "flag_line": 862,
+          "marker": "PEM private-key envelope prefix",
+          "disposition": "GREP_INPUT_PREDICATE_NOT_KEY_MATERIAL",
+          "evidence": "grep pattern applied to runtime asc_private_key input followed by parser invocation; pattern itself has no body."
+        }
+      ],
+      "read_scope": "Only839-885semanticcontext; privateconfig/inputpaths not opened."
+    }
+  ],
+  "source_file_count": 4,
+  "concrete_marker_context_count": 5,
+  "initial_fixture_properties": {
+    "source_sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+    "bytes": 330,
+    "LF": 10,
+    "provider_marker": {
+      "line": 2,
+      "prefix_class": "classic GitHub personal-access-token test marker",
+      "body_length": 36,
+      "distinct_body_characters": 36,
+      "matching_deterministic_template_classes": [],
+      "explicit_adjacent_expected_positive_ruleid": true,
+      "raw_value_or_value_hash_disclosed": false,
+      "authenticated_or_checked_with_provider": false
+    },
+    "PEM_fixture": {
+      "lines": [
+        5,
+        7
+      ],
+      "explicit_adjacent_expected_positive_ruleid": true,
+      "base64_syntax_valid": true,
+      "decoded_bytes": 48,
+      "distinct_decoded_octets": 1,
+      "all_decoded_octets_are_ASCII_A": true,
+      "starts_with_DER_SEQUENCE_tag": false,
+      "raw_or_decoded_body_disclosed": false,
+      "no_key_parser_or_crypto_operation_executed": true
+    },
+    "other_line10_fixture_value_not_displayed_or_investigated": true
+  },
+  "intermediate_properties": {
+    "provider_fixture": {
+      "body_length": 36,
+      "distinct_characters": 36,
+      "ordered_character_class_runs": [
+        {
+          "character_class": "uppercase_latin",
+          "length": 26,
+          "distinct": 26,
+          "complete_class_once": true,
+          "cyclic_ascending_order": true
+        },
+        {
+          "character_class": "lowercase_latin",
+          "length": 10,
+          "distinct": 10,
+          "complete_class_once": false,
+          "cyclic_ascending_order": false
+        }
+      ],
+      "exact_complete_cyclic_ordered_two_class_placeholder": false,
+      "raw_value_or_hash_disclosed": false,
+      "prefix_and_positive_ruleid_context_preserved": true,
+      "provider_validity_issuance_revocation_or_authentication_not_checked": true
+    },
+    "negative_PEM_test_fixture": {
+      "path": "scripts/test-release-automation.sh",
+      "line": 868,
+      "single_quoted_printf_arguments": 4,
+      "body_length": 7,
+      "body_valid_base64": false,
+      "body_could_start_DER_SEQUENCE": false,
+      "three_literal_lines_target_invalid_asc_key": true,
+      "acceptance_is_explicit_source_failure_at_lines": [
+        870,
+        872
+      ],
+      "positive_control_generates_ephemeral_key_only_when_test_executes": true,
+      "actual_test_or_key_generation_not_executed": true,
+      "literal_body_not_disclosed": true
+    }
+  },
+  "final_provider_pattern": {
+    "source_sha256": "0e406b6aaa588e1668a1230b877a1780c8ba1e7eeda31bbaa237cd3df1b77104",
+    "line": 2,
+    "body_length": 36,
+    "uppercase_count": 26,
+    "lowercase_count": 10,
+    "digit_count": 0,
+    "body_exactly_first36_of_ascending_uppercase_then_lowercase_then_decimal_alphabet": true,
+    "full_uppercase_alphabet_then_first10_lowercase_letters": true,
+    "explicit_expected_positive_fixture_annotation": true,
+    "raw_literal_or_credential_derived_hash_not_disclosed": true,
+    "no_provider_authentication_or_security_analysis_execution": true
+  },
+  "new_source_runtime_test_scanner_crypto_provider_or_coverage_credit": 0
+}

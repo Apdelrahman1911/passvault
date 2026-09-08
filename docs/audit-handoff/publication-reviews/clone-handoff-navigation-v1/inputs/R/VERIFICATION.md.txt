@@ -1,0 +1,59 @@
+# Verification evidence and gaps
+
+Updated 2026-09-08T05:51:28.230769+00:00. **INCOMPLETE — uncommitted remediation, not release approval.**
+
+Base/main `0dbc12c7f1b7770e75963c751c8c67af6e8b057a`; committed tree `20fb8f6f2c6fb11ad99af80c170b4150c16beb6f`. Current isolated worktree is **G12** (811 source members), canonical source-manifest SHA256 `7fd2dab3eac6269baede8a0ca550f0cbdfee20391a12dfbd9ac84cdac5401d91`. See `verification/source-freeze-v12.json`, `verification/source-manifest-v12.json`, and `delivery/generation12/FILES.json` (122 changed-file after-images/intended modes). Main was unchanged at the saved public-ref observation; this is not continuous ref or store-state evidence.
+
+No build or test was invoked this continuation. No fresh G12 runtime PASS exists. `verification/g12-current-gates.json` is the current source/gap ledger; `verification/gates.json` remains unchanged historical execution authority. An independently checked historical summary is adopted in `verification/historical-verification-summary-adoption-g12.json` (source packet: `reviews/historical-verification-summary-independent-storage-v1/`).
+
+## Independently reconciled historical results — not new G12 tests
+- 70 run/status events:38 PASS,7 FAIL,25 BLOCKED. These are not testcase counts.
+- 56 compact results and123 retained JUnit XML artifacts checked:684 passing execution events, not684 unique tests.623 belong to overall PASS gates;61 to BLOCKED gates.402 literal IDs are not alias-normalized unique logical cases.
+- Latest broad feature/shared/OTP evidence is G5:242 passing cases (features141/shared88/OTP13). Earlier242 repeat the same IDs. G5 Android host7 passed using fakes. G5 selected Desktop40 passed but its overall gate remains BLOCKED; no native/provider pass.
+- PVA029 retains G6/G7 candidate-suite44 pass/5 fail out of49 named checks, no automatic retry. Separate release107 checks/formatter14/cleanup passes cannot erase it.
+- PVA030 has historical G6 six passing static predicates and one language original-fail/corrected-pass comparison. These are not fresh G12 or Android runtime cases; its essential target gate stays BLOCKED.
+- PVA031 requested two credential classes but failed settings/plugin resolution before tests:0 testcases/0 XML, not a product assertion failure or a pass. The underlying resolution cause is unverified.
+- G8 release/profile107 named checks are a different denominator from JUnit cases. Original profile controls are four expected failures plus two valid passes—not six ordinary passes.
+
+Exact historical commands, exit/source identities, per-run XML cases, overlaps and target limitations are retained in the independent report/EVIDENCE/RESULT-CATALOG. No unsafe historical command is authorized for replay by this report. Task counts, row counts, bytes and class counts are never substituted for test-case counts.
+
+## Remaining work
+- Implemented; essential target/runtime evidence missing: **PVA001,007,008,009,010,014,027,030,036,037**.
+- **PVA029:** recorded regression failure; no automatic retry.
+- **PVA031:** test setup/plugin-resolution blocked before assertions.
+- **PVA033,034,035:** source changes applied/reviewed, regression execution pending.
+- **PVU010** is confirmed as PVA027; **PVU012** is a scoped false positive. Other10 remain unresolved/blocked. **PVU007 STOP** (no investigation/reformulation); **PVU011 NO RETRY** (no containment relaxation).
+
+## Work completed since the prior checkpoint
+- Adopted the independently challenged G12 per-file numeric coverage ledger with all historical qualifications and exclusions; runtime verification remains incomplete.
+- Rechecked frozen source, the bounded nonprivate local-work sample, disk and named-worker state without a build.
+- Corrected stale PVA030 report prose after independent challenge and inspection of its historical evidence; no test or issue closure was invented.
+- Read the entire935-line unfinished G10v2 validation runner as inert source and recorded caller/state/cleanup analysis in reviews/g12-database-runner-root-v1/. It was not executed, syntax-checked, changed, installed or admitted. Independent readiness challenge and the PVA033/034/035 next-validation matrix are separate preparation evidence.
+- Preserved accounting/observation commands and failed administrative inspections separately from their corrections. These are not project tests.
+
+## Latest implemented correction and earlier reconciliations
+- Independently accepted and applied the exact PVA037 Windows local-secret cleanup patch: an allocation-free borrowed-array guard, five immediate registrations, and four authored synthetic regression cases. Three existing files changed (+123 LF, no deletion); 808/811 source identities stayed equal to G11.
+- Checked all811 source byte/size/mode tuples and all122 retained delivery after-images. Base plus the pinned after-images/modes reconstructs the uncommitted source. PVA014/PVA036 exact unchanged native counterparts are mapped in `verification/g12-issue-impact.json`.
+- Updated `findings/issue-to-fix.json` and `findings/PVA-037.json` to **IMPLEMENTED — TARGET RUNTIME VERIFICATION BLOCKED**, not fixed-and-verified. All original/grouped variants and original source evidence are retained.
+- Reconciled the owner report: all48 cited full source tuples and all8 explanatory bodies are unchanged. The G12 header/applicability binding is current; no owner design choice or compatibility change was made.
+- Refreshed public main/testing/release/candidate refs without authentication or mutation. Store/artifact availability is not inferred from refs.
+
+The PVA037 source patch was independently reviewed by `/root/remed_platform` (not its patch author). Finding confirmation was independently challenged by `/root/remed_storage`. Existing8 PVA036 file cases and new4 PVA037 guard cases have **0 target executions**. Source review/array units do not prove real allocator failure, CNG/WebAuthn behavior, physical memory erasure or device authentication.
+
+## Current gate outcomes
+- Native G12 compile/target regression: **BLOCKED** — Windows target and root resource/runtime admission unavailable. Four new guard cases authored;0 executed.
+- Whole-source identity/application metadata: independent captured-application challenge accepted the exact retained source/delivery/patch evidence; sequential point limits remain. This is not runtime evidence.
+- G12 numeric coverage: **PASS, accounting only**, independently accepted and root-adopted. Report acceptance is a separate metadata gate in verification/g12-current-gates.json.
+- Production signing/upload/store actions: **NOT_APPLICABLE to authorized remediation**, not verified availability.
+- Physical device/provider, GUI and final all-suite/static verification: existing gaps remain; source/fake/simulator results cannot substitute.
+
+## Workspace, RAM and cleanup
+Root alone edits source and owns builds/tests/cleanup; agents are read-only source/report reviewers with separate report namespaces. **No build/test/Gradle/Xcode/native/application worker was started in this checkpoint continuation.** No runtime/cache namespace or generated build output was created. Wrapper stop and build-output deletion are **NOT_APPLICABLE**, not successful-stop/deletion claims; no unrelated worker or shared cache was stopped or removed.
+
+At2026-09-08T05:25:36Z disk was8.5795GiB, below the retained12GiB launch floor (about3.42GiB short). The executable-basename probe matched0 workers; this is a point observation, not global or continuous exclusivity. The original coordination lock (16777232,73291247) and parent (16777232,73291246) matched and were not opened or recreated.
+
+The latest root observation matched all811 G12 source byte/size/mode/hash tuples and found no extra files except excluded .git, no symlink directories, and no directories named build/.gradle/.kotlin/.cxx/DerivedData. Ordinary empty-directory absence is not established. The prescribed22 nonprivate primary-work tuples match: **bounded P22 preservation, not full primary Git/extras or continuous proof**. No original-checkout/frozen-audit/application-source edit occurred in this checkpoint continuation. The122 after-images and74 modified+48 untracked remediation files are required work, not cleanup targets.
+
+G7/G8 runtime/recovery/cache/helper admission stays CLOSED. Never execute/import incomplete/unadmitted G10-specific tools/validation_g10db_one_shot_v2.py, replay prior helpers, reduce resource/containment floors, recreate the lock or terminate unrelated processes. The draft was read only as inert source; that does not admit it. Only compact reports, snapshots and metadata were created. Atomic report-update temporary paths are checked absent; no broad cleanup was used.
+
+Source/application evidence: evidence/continuation-20260908T042135Z/. Current accounting/report/resource evidence: evidence/continuation-20260908T052536Z/. Issue ledger: findings/issue-to-fix.json; frozen original audit: ../../audit-reports/20260905T083114Z/.

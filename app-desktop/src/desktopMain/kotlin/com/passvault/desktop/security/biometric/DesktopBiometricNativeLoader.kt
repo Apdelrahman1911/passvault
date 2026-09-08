@@ -5,6 +5,7 @@ import com.passvault.desktop.OperatingSystem
 import com.passvault.desktop.security.createOrHardenPrivateDesktopDirectory
 import com.sun.jna.Library
 import com.sun.jna.Native
+import com.sun.jna.NativeLibrary
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.Path
@@ -61,10 +62,19 @@ internal class DesktopBiometricNativeLoader(
                 "Packaged Windows biometric code lacks the owning app's Authenticode protection"
             }
         }
+        val nativeOptions = mapOf(Library.OPTION_STRING_ENCODING to Charsets.UTF_8.name())
+        val nativeLibrary = NativeLibrary.getInstance(library.toString(), nativeOptions)
+        // ABI1's original entry points remain compatible, but this application
+        // requires the additive localized extension. Probe symbol presence before
+        // creating a context; an old library becomes password-only, not a call
+        // through a missing symbol or a differently sized function signature.
+        requireLocalizedBiometricPromptSymbols(closeOnFailure = nativeLibrary::close) { symbol ->
+            nativeLibrary.getFunction(symbol)
+        }
         val api = Native.load(
             library.toString(),
             NativeApi::class.java,
-            mapOf(Library.OPTION_STRING_ENCODING to Charsets.UTF_8.name()),
+            nativeOptions,
         )
         val dataDirectory = ensureSecureDataDirectory()
         return JnaDesktopBiometricBridge.create(platform.biometricType, api, dataDirectory.toString())
@@ -344,6 +354,22 @@ internal class DesktopBiometricNativeLoader(
         """.trimIndent()
         val TEAM_ID = Regex("[A-Z0-9]{10}")
     }
+}
+
+internal fun requireLocalizedBiometricPromptSymbols(
+    closeOnFailure: () -> Unit = {},
+    resolve: (String) -> Unit,
+) {
+    runCatching {
+        try {
+            resolve("pv_bio_enroll_localized")
+            resolve("pv_bio_retrieve_localized")
+        } catch (_: UnsatisfiedLinkError) {
+            throw DesktopBiometricBridgeException.NotAvailable
+        }
+    }.onFailure { failure ->
+        if (failure is Exception) closeOnFailure()
+    }.getOrThrow()
 }
 
 private data class ProcessResult(val exitCode: Int, val output: String)

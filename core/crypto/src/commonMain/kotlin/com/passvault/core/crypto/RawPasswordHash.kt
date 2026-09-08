@@ -15,6 +15,22 @@ internal expect fun rawPasswordHash(
 ): ByteArray
 
 /**
+ * JNA's dynamic Function API uses the boxed argument type to select the native
+ * width. crypto_pwhash's memory limit is size_t, not unsigned long long like
+ * its output length, password length and operations limit. Keep those arguments
+ * 64-bit even on Android32; only this argument follows Native.SIZE_T_SIZE.
+ * Native.LONG_SIZE would be wrong for size_t on 64-bit Windows (LLP64).
+ */
+internal fun passwordHashMemoryLimitArgument(memLimit: Int, sizeTBytes: Int): Any {
+    require(memLimit >= 0) { "Password-hash memory limit must not be negative" }
+    return when (sizeTBytes) {
+        4 -> memLimit
+        8 -> memLimit.toLong()
+        else -> error("Unsupported native size_t width")
+    }
+}
+
+/**
  * Retains PassVault's historical KDF input exactly: lowercase ASCII hex of
  * the caller's bytes. The temporary is mutable and cleared on every exit.
  */

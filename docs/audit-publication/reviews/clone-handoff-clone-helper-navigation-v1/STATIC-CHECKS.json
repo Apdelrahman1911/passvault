@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "v1_v2_ast_text_only": [
+    {
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v1.py",
+      "status": "PARSED_AS_TEXT_NOT_IMPORTED_OR_EXECUTED",
+      "top_level_functions": [
+        "timestamp",
+        "require",
+        "identity",
+        "write",
+        "interrupt",
+        "stop_child",
+        "command",
+        "inspect_owned_tree",
+        "remove_owned_contents",
+        "cleanup",
+        "main"
+      ]
+    },
+    {
+      "path": "handoff-publication/20260908T061500Z/clone_handoff_verify_v2.py",
+      "status": "PARSED_AS_TEXT_NOT_IMPORTED_OR_EXECUTED",
+      "top_level_functions": [
+        "timestamp",
+        "require",
+        "identity",
+        "write",
+        "interrupt",
+        "stop_child",
+        "log_snapshot",
+        "command",
+        "inspect_owned_tree",
+        "remove_owned_contents",
+        "cleanup",
+        "main"
+      ]
+    }
+  ],
+  "v2_v3_checks": {
+    "both_parsed_as_text_only": true,
+    "ast_equal_excluding_docstring_and_RUN": true,
+    "RUN_change_only_v2_to_v3": true,
+    "no_import_execution_fixture_or_runtime_test": true
+  },
+  "v3_functions": [
+    {
+      "name": "timestamp",
+      "start": 53,
+      "end": 54
+    },
+    {
+      "name": "require",
+      "start": 57,
+      "end": 59
+    },
+    {
+      "name": "identity",
+      "start": 62,
+      "end": 63
+    },
+    {
+      "name": "write",
+      "start": 66,
+      "end": 75
+    },
+    {
+      "name": "interrupt",
+      "start": 78,
+      "end": 79
+    },
+    {
+      "name": "stop_child",
+      "start": 82,
+      "end": 97
+    },
+    {
+      "name": "log_snapshot",
+      "start": 100,
+      "end": 113
+    },
+    {
+      "name": "command",
+      "start": 116,
+      "end": 154
+    },
+    {
+      "name": "inspect_owned_tree",
+      "start": 157,
+      "end": 176
+    },
+    {
+      "name": "remove_owned_contents",
+      "start": 179,
+      "end": 197
+    },
+    {
+      "name": "cleanup",
+      "start": 200,
+      "end": 229
+    },
+    {
+      "name": "main",
+      "start": 232,
+      "end": 342
+    }
+  ],
+  "findings_disposition": "Two material v1 source blockers resolved in v2; v3 adds truthful final-journal scope and fresh RUN namespace only. No remaining material source objection under explicit limitations.",
+  "runtime_verification": "NOT_PERFORMED"
+}

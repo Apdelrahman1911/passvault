@@ -14,6 +14,9 @@ ruby scripts/verify-static-analysis-coverage.rb >/dev/null
 ruby scripts/validate-ci-workflow-security.rb >/dev/null
 ruby scripts/validate-apple-signing-secret-boundary.rb >/dev/null
 ruby scripts/validate-ios-gradle-build-boundary.rb >/dev/null
+ruby scripts/test-release-regressions.rb >/dev/null
+ruby scripts/test-candidate-attestation.rb >/dev/null
+ruby scripts/test-android-language-policy.rb >/dev/null
 ./scripts/test-apple-signing-secret-handling.sh >/dev/null
 ./scripts/verify-gradle-wrapper.sh >/dev/null
 
@@ -2169,7 +2172,7 @@ Dir[".github/workflows/*.{yml,yaml}"].each do |path|
   workflow.fetch("jobs", {}).each do |job_name, job|
     permissions = job.fetch("permissions", workflow_permissions)
     steps = job.fetch("steps", [])
-    if steps.any? { |step| step["run"].to_s.include?("gh attestation verify") }
+    if steps.any? { |step| step["run"].to_s.match?(/gh attestation verify|ruby scripts\/verify-candidate-attestation\.rb/) }
       unless %w[read write].include?(permissions["attestations"])
         abort("#{path} job #{job_name} verifies attestations without attestations: read")
       end
@@ -2321,7 +2324,7 @@ abort("Final release assembly must download only production Desktop outputs") un
   final_download&.dig("with", "pattern") == "desktop-*"
 
 prepare_run = jobs.fetch("prepare").fetch("steps").map { |step| step["run"].to_s }.join("\n")
-verify_position = prepare_run.index('gh attestation verify "$RUNNER_TEMP/candidate/$input_name"')
+verify_position = prepare_run.index('ruby scripts/verify-candidate-attestation.rb "$RUNNER_TEMP/candidate/$input_name"')
 stage_position = prepare_run.index("stage_input linuxDeb")
 abort("Candidate Desktop inputs are staged before their attestations are verified") unless
   verify_position && stage_position && verify_position < stage_position
@@ -2708,7 +2711,7 @@ grep -Fq 'Enforce email-list TestFlight policy and verify exact processed App St
 grep -Fq "grep -Fqx 'PROCESSING_STATE=VALID'" .github/workflows/mobile-store-release.yml
 grep -Fq 'set_environment_variable mobile-production TESTFLIGHT_EXTERNAL_GROUP' \
     scripts/configure-github-mobile-release.sh
-grep -Fq 'gh secret delete TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64' \
+grep -Fq 'mobile-external-beta TESTFLIGHT_EXTERNAL_TESTERS_CSV_BASE64' \
     scripts/configure-github-mobile-release.sh
 # Configuration-script expressions must be matched literally.
 # shellcheck disable=SC2016

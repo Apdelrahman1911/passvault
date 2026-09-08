@@ -1,0 +1,102 @@
+--- reference_inventory_v2.py
++++ reference_inventory_v3.py
+@@ -1,4 +1,4 @@
+-"""Metadata-only transport locator inventory; never executes referenced material."""
++"""Candidate locators; reads public Git blobs as data, never executes referenced code."""
+ from pathlib import Path
+ import collections
+ import datetime
+@@ -44,6 +44,13 @@
+ def main():
+     # Public baseline Git objects supply a locator, not a fresh source review.
+     baseline = '0dbc12c7f1b7770e75963c751c8c67af6e8b057a'
++    baseline_tree = subprocess.check_output(['git', 'rev-parse', baseline + '^{tree}'], cwd=OUT.parent.parent).decode().strip()
++    bindings = []
++    for name in ['evidence-index.json', 'omissions.json', 'current/source-manifest-v12.json']:
++        bound = (OUT / name).read_bytes()
++        bindings.append({'path': name, 'bytes': len(bound), 'sha256': hashlib.sha256(bound).hexdigest()})
++    script = Path(__file__).read_bytes()
++    script_binding = {'path': Path(__file__).name, 'bytes': len(script), 'sha256': hashlib.sha256(script).hexdigest()}
+     tree = subprocess.check_output(['git', 'ls-tree', '-rz', baseline], cwd=OUT.parent.parent)
+     git_rows = []
+     for item in tree.split(b'\0'):
+@@ -55,6 +62,7 @@
+             git_rows.append((path.decode(), oid))
+     request = ''.join(oid + '\n' for _, oid in git_rows).encode()
+     raw = subprocess.check_output(['git', 'cat-file', '--batch'], input=request, cwd=OUT.parent.parent)
++    baseline_blob_stream_bytes = len(raw)
+     baseline_hash = collections.defaultdict(list)
+     offset = 0
+     for name, oid in git_rows:
+@@ -79,16 +87,16 @@
+         assert hashlib.sha256(raw).hexdigest() == item['sha256']
+         try:
+             if item['path'].endswith('.jsonl'):
+-                documents = [json.loads(line, object_pairs_hook=no_duplicates)
+-                             for line in raw.decode().splitlines() if line.strip()]
++                documents = [(json.loads(line, object_pairs_hook=no_duplicates), '/jsonl-line/' + str(number))
++                             for number, line in enumerate(raw.decode().splitlines(), 1) if line.strip()]
+             else:
+-                documents = [json.loads(raw, object_pairs_hook=no_duplicates)]
++                documents = [(json.loads(raw, object_pairs_hook=no_duplicates), '')]
+         except (ValueError, UnicodeError, RecursionError) as error:
+             failures.append({'path': item['path'], 'exception_type': type(error).__name__,
+                              'meaning': 'Not parsed as strict metadata; raw bytes remain included.'})
+             continue
+         parsed += 1
+-        stack = [(value, '') for value in documents]
++        stack = list(documents)
+         while stack:
+             value, pointer = stack.pop()
+             if isinstance(value, dict):
+@@ -104,20 +112,24 @@
+                     paths = candidates(declared, item['path'])
+                     exact = [p for p in paths if p in BY_PATH and BY_PATH[p]['sha256'] == digest]
+                     if exact:
+-                        found.update(disposition='INCLUDED_EXACT_PATH_HASH', locators=exact)
+-                    elif found.get('disposition') == 'INCLUDED_EXACT_PATH_HASH':
++                        found.update(disposition='LOCATOR_INCLUDED_PATH_HASH_IN_AT_LEAST_ONE_CONTEXT', locators=exact)
++                    elif found.get('disposition') == 'LOCATOR_INCLUDED_PATH_HASH_IN_AT_LEAST_ONE_CONTEXT':
+                         pass
+                     elif digest in BY_HASH:
+-                        found.update(disposition='INCLUDED_HASH_ALIAS_NOT_SAME_PATH',
++                        found.update(disposition='LOCATOR_INCLUDED_HASH_ALIAS_NOT_SAME_PATH',
+                                      locators=BY_HASH[digest][:3], alias_count=len(BY_HASH[digest]))
+-                    elif digest in OMITTED_HASH or any(p in OMITTED_PATH for p in paths):
+-                        omitted = OMITTED_HASH.get(digest) or next(OMITTED_PATH[p] for p in paths if p in OMITTED_PATH)
+-                        found.update(disposition='EXPLICITLY_WITHHELD', locators=[omitted['path']],
++                    elif digest in OMITTED_HASH:
++                        omitted = OMITTED_HASH[digest]
++                        found.update(disposition='LOCATOR_EXPLICITLY_WITHHELD_HASH', locators=[omitted['path']],
+                                      limitation=omitted['reason'])
++                    elif any(p in OMITTED_PATH for p in paths):
++                        omitted = next(OMITTED_PATH[p] for p in paths if p in OMITTED_PATH)
++                        found.update(disposition='WITHHELD_PATH_POLICY_HASH_UNRESOLVED', locators=[omitted['path']],
++                                     limitation='Path is withheld; this descriptor digest is not established as withheld or present. ' + omitted['reason'])
+                     elif digest in SOURCE_HASH:
+-                        found.update(disposition='G12_RAW_SOURCE_LOCATOR_NOT_FRESH_CLONE_PROOF', locators=SOURCE_HASH[digest])
++                        found.update(disposition='LOCATOR_G12_RAW_SOURCE_NOT_FRESH_CLONE_PROOF', locators=SOURCE_HASH[digest])
+                     elif digest in baseline_hash:
+-                        found.update(disposition='PUBLIC_BASELINE_GIT_OR_CHECKOUT_LOCATOR', locators=baseline_hash[digest])
++                        found.update(disposition='LOCATOR_BASELINE_GIT_OR_PREDICTED_CRLF_NOT_OBSERVED', locators=baseline_hash[digest])
+                     elif any(k in value for k in ['start', 'end', 'start_line', 'end_line', 'line_start', 'line_end', 'range', 'lines']):
+                         found.update(disposition='RANGE_OR_OTHER_NON_WHOLE_FILE_DESCRIPTOR_UNRESOLVED', locators=[])
+                     else:
+@@ -128,7 +140,16 @@
+                 stack.extend((v, pointer + '/' + str(i)) for i, v in enumerate(value))
+     data = sorted(records.values(), key=lambda row: (row['declared_path'], row['sha256']))
+     result = {'format': 1, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+-              'scope': 'All included parseable JSON/JSONL dicts with lowercase64hex sha256 and string path. Locators only; not semantic closure of every Markdown/free-form reference, omitted file, canonical/range digest or private runtime.',
++              'scope': 'Included parseable JSON/JSONL dicts with lowercase64hex sha256 and string path. Deduplicated candidate locators, not per-occurrence resolution or semantic reference closure.',
++              'input_bindings': bindings, 'script_binding': script_binding,
++              'public_baseline': {'commit': baseline, 'tree': baseline_tree, 'git_blobs_read_as_data': len(git_rows), 'buffered_batch_bytes': baseline_blob_stream_bytes},
++              'method_limits': [
++                  'Grouped by declared path and digest across contexts. A path/hash locator exists in at least one context, not necessarily every occurrence. Only three example contexts retained; JSONL physical line recorded.',
++                  'Bytes/mode/range/generation semantics not validated. A range-like descriptor can share a whole-file hash locator without proving its intended referent.',
++                  'baseline-checkout-CRLF is a suffix-based calculated byte form, not an observed Git checkout or checked attribute policy.',
++                  'Reads every included JSON/JSONL body and public baseline Git blobs as data; no packed code execution. Stable frozen inputs/path/size envelope supplied externally, not a sandbox implemented by this helper.',
++                  'No Markdown/free-form/canonical/range digest closure, private-runtime access, physical-device evidence or execution admission.',
++              ],
+               'included_index_paths': len(INDEX), 'parsed_json_jsonl_files': parsed,
+               'unparsed_metadata_files': failures, 'distinct_descriptors': len(data),
+               'descriptor_occurrences': sum(row['occurrences'] for row in data),
