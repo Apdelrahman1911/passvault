@@ -1,0 +1,214 @@
+docs/audit-handoff/instructions/skills/database-migration-integrity/SKILL.md:61: new blank line at EOF.
+docs/audit-handoff/instructions/skills/desktop-native-interop-lifecycle/SKILL.md:67: new blank line at EOF.
+docs/audit-handoff/instructions/skills/mobile-app-identities-and-services/SKILL.md:76: new blank line at EOF.
+docs/audit-handoff/instructions/skills/release-provenance-and-promotion/SKILL.md:110: new blank line at EOF.
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:1: trailing whitespace.
++[CmdletBinding()]
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:2: trailing whitespace.
++param(
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:3: trailing whitespace.
++    [Parameter(Mandatory = $true)]
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:4: trailing whitespace.
++    [string]$RuntimePath
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:5: trailing whitespace.
++)
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:6: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:7: trailing whitespace.
++$ErrorActionPreference = "Stop"
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:8: trailing whitespace.
++Set-StrictMode -Version Latest
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:9: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:10: trailing whitespace.
++if (-not $IsWindows) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:11: trailing whitespace.
++    throw "The Windows biometric checksum must be refreshed on Windows."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:12: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:13: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:14: trailing whitespace.
++$runtime = Get-Item -LiteralPath $RuntimePath -ErrorAction Stop
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:15: trailing whitespace.
++if (-not $runtime.PSIsContainer -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:16: trailing whitespace.
++    ($runtime.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:17: trailing whitespace.
++    throw "RuntimePath must be a real Windows app-image directory."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:18: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:19: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:20: trailing whitespace.
++$libraries = @(Get-ChildItem -LiteralPath $runtime.FullName -Recurse -File |
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:21: trailing whitespace.
++    Where-Object { $_.Name -ceq "passvault_biometric.dll" })
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:22: trailing whitespace.
++$manifests = @(Get-ChildItem -LiteralPath $runtime.FullName -Recurse -File |
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:23: trailing whitespace.
++    Where-Object { $_.Name -ceq "bridge.properties" -and
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:24: trailing whitespace.
++        $_.Directory.Name -ceq "windows-x64" })
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:25: trailing whitespace.
++if ($libraries.Count -ne 1 -or $manifests.Count -ne 1) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:26: trailing whitespace.
++    throw "Expected exactly one Windows biometric bridge and one matching manifest."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:27: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:28: trailing whitespace.
++$library = $libraries[0]
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:29: trailing whitespace.
++$manifest = $manifests[0]
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:30: trailing whitespace.
++if (($library.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:31: trailing whitespace.
++    ($manifest.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:32: trailing whitespace.
++    $library.Directory.FullName -cne $manifest.Directory.FullName) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:33: trailing whitespace.
++    throw "The Windows biometric bridge resources are unsafe or separated."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:34: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:35: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:36: trailing whitespace.
++$signature = Get-AuthenticodeSignature -LiteralPath $library.FullName
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:37: trailing whitespace.
++if ($signature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:38: trailing whitespace.
++    -not $signature.SignerCertificate -or -not $signature.TimeStamperCertificate) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:39: trailing whitespace.
++    throw "The Windows biometric bridge must be signed and timestamped before refreshing its checksum."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:40: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:49: trailing whitespace.
++$launcherSignature = Get-AuthenticodeSignature -LiteralPath $launcher
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:50: trailing whitespace.
++if ($launcherSignature.Status -ne [Management.Automation.SignatureStatus]::Valid -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:51: trailing whitespace.
++    -not $launcherSignature.SignerCertificate -or -not $launcherSignature.TimeStamperCertificate -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:52: trailing whitespace.
++    $signature.SignerCertificate.Thumbprint -cne $launcherSignature.SignerCertificate.Thumbprint) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:53: trailing whitespace.
++    throw "The Windows biometric bridge and PassVault launcher must share one valid timestamped signer."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:54: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:55: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:56: trailing whitespace.
++$entries = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:57: trailing whitespace.
++foreach ($line in [IO.File]::ReadAllLines($manifest.FullName, [Text.Encoding]::UTF8)) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:58: trailing whitespace.
++    if ($line -notmatch '^(?<key>[a-z][a-z0-9_]{0,31})=(?<value>[A-Za-z0-9._-]{1,256})$' -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:59: trailing whitespace.
++        -not $entries.TryAdd($Matches.key, $Matches.value)) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:60: trailing whitespace.
++        throw "The Windows biometric bridge manifest is malformed."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:61: trailing whitespace.
++    }
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:62: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:63: trailing whitespace.
++$expectedKeys = @("abi", "integrity", "library", "platform", "sha256") | Sort-Object
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:64: trailing whitespace.
++$actualKeys = (($entries.Keys | Sort-Object) -join "`n")
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:65: trailing whitespace.
++$expectedKeyText = ($expectedKeys -join "`n")
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:66: trailing whitespace.
++if ($actualKeys -cne $expectedKeyText -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:67: trailing whitespace.
++    $entries["abi"] -cne "1" -or $entries["integrity"] -cne "sha256-and-authenticode" -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:68: trailing whitespace.
++    $entries["library"] -cne "passvault_biometric.dll" -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:69: trailing whitespace.
++    $entries["platform"] -cne "windows-x64" -or
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:70: trailing whitespace.
++    $entries["sha256"] -notmatch '^[0-9a-f]{64}$') {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:71: trailing whitespace.
++    throw "The Windows biometric bridge manifest does not match release policy."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:72: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:73: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:74: trailing whitespace.
++$checksum = (Get-FileHash -LiteralPath $library.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:75: trailing whitespace.
++$content = @(
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:76: trailing whitespace.
++    "abi=1",
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:77: trailing whitespace.
++    "platform=windows-x64",
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:78: trailing whitespace.
++    "library=passvault_biometric.dll",
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:79: trailing whitespace.
++    "integrity=sha256-and-authenticode",
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:80: trailing whitespace.
++    "sha256=$checksum"
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:81: trailing whitespace.
++)
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:82: trailing whitespace.
++[IO.File]::WriteAllLines($manifest.FullName, $content, [Text.UTF8Encoding]::new($false))
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:83: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:84: trailing whitespace.
++$verified = (Get-FileHash -LiteralPath $library.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:85: trailing whitespace.
++if ($verified -cne $checksum) {
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:86: trailing whitespace.
++    throw "The Windows biometric bridge changed while its checksum was refreshed."
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:87: trailing whitespace.
++}
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:88: trailing whitespace.
++
+docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw:89: trailing whitespace.
++Write-Output "Refreshed the checksum for the signed Windows biometric bridge."
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:11: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:15: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:56: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:57: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:60: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:61: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:77: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:78: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:81: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:82: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:125: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:126: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:180: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:181: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:218: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:219: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:266: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:267: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:411: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt:412: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt:5: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt:13: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt:15: trailing whitespace.
++ 
+docs/audit-publication/reviews/clone-handoff-final-document-storage-v1/REVIEW.md:3: trailing whitespace.
++Reviewer: `/root/remed_storage`  

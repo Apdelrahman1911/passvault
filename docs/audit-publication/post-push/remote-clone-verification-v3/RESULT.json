@@ -1,0 +1,362 @@
+{
+  "started": "2026-09-08T09:39:00.112465+00:00",
+  "expected_commit": "0d273426c45a1bb077a444edf58ec7e0715815ab",
+  "index_sha256": "bc0b215a31e842f57d73299a3d1b6719239f6cbb22ba8dc95a5da4b4e832645a",
+  "commands": [
+    {
+      "label": "01-clone",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "pack.threads=1",
+        "-c",
+        "init.templateDir=",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.interactive=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "clone",
+        "--depth",
+        "1",
+        "--single-branch",
+        "--no-tags",
+        "--no-local",
+        "--branch",
+        "codex/remediation-handoff-20260908",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault",
+      "started": "2026-09-08T09:39:00.113221+00:00",
+      "pid": 70582,
+      "pgid_at_creation_contract": 70582,
+      "exit_code": 0,
+      "finished": "2026-09-08T09:39:23.048178+00:00",
+      "log_binding": "PROVISIONAL until final owned-group point observation and stable read"
+    },
+    {
+      "label": "02-identity",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "pack.threads=1",
+        "-c",
+        "init.templateDir=",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.interactive=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo",
+      "started": "2026-09-08T09:39:23.048825+00:00",
+      "pid": 70609,
+      "pgid_at_creation_contract": 70609,
+      "exit_code": 0,
+      "finished": "2026-09-08T09:39:23.069739+00:00",
+      "log_binding": "PROVISIONAL until final owned-group point observation and stable read"
+    },
+    {
+      "label": "03-tracked",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "pack.threads=1",
+        "-c",
+        "init.templateDir=",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.interactive=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "ls-files",
+        "-z"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo",
+      "started": "2026-09-08T09:39:23.070070+00:00",
+      "pid": 70610,
+      "pgid_at_creation_contract": 70610,
+      "exit_code": 0,
+      "finished": "2026-09-08T09:39:23.090423+00:00",
+      "log_binding": "PROVISIONAL until final owned-group point observation and stable read"
+    },
+    {
+      "label": "04-evidence-verify",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-I",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo/docs/audit-handoff/evidence.py",
+        "verify"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo",
+      "started": "2026-09-08T09:39:23.157122+00:00",
+      "pid": 70612,
+      "pgid_at_creation_contract": 70612,
+      "exit_code": 0,
+      "finished": "2026-09-08T09:39:25.560386+00:00",
+      "log_binding": "PROVISIONAL until final owned-group point observation and stable read"
+    },
+    {
+      "label": "05-source-verify",
+      "argv": [
+        "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+        "-I",
+        "-B",
+        "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo/docs/audit-handoff/evidence.py",
+        "verify-source"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo",
+      "started": "2026-09-08T09:39:25.560970+00:00",
+      "pid": 70635,
+      "pgid_at_creation_contract": 70635,
+      "exit_code": 0,
+      "finished": "2026-09-08T09:39:25.846958+00:00",
+      "log_binding": "PROVISIONAL until final owned-group point observation and stable read"
+    },
+    {
+      "label": "06-status",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "pack.threads=1",
+        "-c",
+        "init.templateDir=",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "credential.interactive=false",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/repo",
+      "started": "2026-09-08T09:39:25.847371+00:00",
+      "pid": 70636,
+      "pgid_at_creation_contract": 70636,
+      "exit_code": 0,
+      "finished": "2026-09-08T09:39:25.924974+00:00",
+      "log_binding": "PROVISIONAL until final owned-group point observation and stable read"
+    }
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "LANG": "C",
+    "LC_ALL": "C",
+    "HOME": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/home",
+    "XDG_CONFIG_HOME": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/config",
+    "TMPDIR": "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z/tmp",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_SYSTEM": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_ASKPASS": "/usr/bin/false",
+    "SSH_ASKPASS": "/usr/bin/false",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "scope": "Git/evidence transport only; zero app/build/device/store checks.",
+  "disk_free_before": 12663951360,
+  "gradle_stop": "NOT_APPLICABLE: no Gradle/build invocation; old CLOSED obligations unchanged.",
+  "python": "3.9.6 (default, Apr 17 2026, 18:15:52) \n[Clang 21.0.0 (clang-2100.1.1.101)]",
+  "observed_commit": "0d273426c45a1bb077a444edf58ec7e0715815ab",
+  "observed_tree": "1eecedbecb500153397bd6b58fbf112a5a0a993e",
+  "all_tracked_checkout_files_matched": 1117,
+  "transport_status": "PASS",
+  "child_registry": [
+    {
+      "label": "01-clone",
+      "launch_attempted": true,
+      "registered": true,
+      "pid": 70582,
+      "stop_error": null
+    },
+    {
+      "label": "02-identity",
+      "launch_attempted": true,
+      "registered": true,
+      "pid": 70609,
+      "stop_error": null
+    },
+    {
+      "label": "03-tracked",
+      "launch_attempted": true,
+      "registered": true,
+      "pid": 70610,
+      "stop_error": null
+    },
+    {
+      "label": "04-evidence-verify",
+      "launch_attempted": true,
+      "registered": true,
+      "pid": 70612,
+      "stop_error": null
+    },
+    {
+      "label": "05-source-verify",
+      "launch_attempted": true,
+      "registered": true,
+      "pid": 70635,
+      "stop_error": null
+    },
+    {
+      "label": "06-status",
+      "launch_attempted": true,
+      "registered": true,
+      "pid": 70636,
+      "stop_error": null
+    }
+  ],
+  "journal_failures": [],
+  "owned_group_point_observation": [],
+  "process_limit": "Point group observation only; not proof of escaped sessions or future PID identity.",
+  "final_log_snapshots": [
+    {
+      "path": "01-clone.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "01-clone.stderr",
+      "bytes": 103,
+      "sha256": "936e157b985e4cfd1ea3a53466fe956709bf3686b3d5a291bc174d18db6fa167"
+    },
+    {
+      "path": "02-identity.stdout",
+      "bytes": 82,
+      "sha256": "02273b873eace2ea537e6a4146454e925233c84ea0c7e5c85bc23fd05c2f1529"
+    },
+    {
+      "path": "02-identity.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "03-tracked.stdout",
+      "bytes": 78684,
+      "sha256": "3fc16c93b729b6c8f24ac95e7276f800f858cd1e4b87d703dd03d0b724a308c7"
+    },
+    {
+      "path": "03-tracked.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "04-evidence-verify.stdout",
+      "bytes": 145,
+      "sha256": "5970e6d97d535caf7131fd3c1d008d229c4a57c274cf23e47332e21ea0c9c987"
+    },
+    {
+      "path": "04-evidence-verify.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "05-source-verify.stdout",
+      "bytes": 240,
+      "sha256": "80b77db8712f6c26154ddf3de94d429aa3e62c68e5682d795cc4ad3cda9cbb44"
+    },
+    {
+      "path": "05-source-verify.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "06-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "06-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "log_limit": "Stable descriptor reads after the group point check; no escaped-writer guarantee.",
+  "cleanup": {
+    "status": "REMOVED_EXACT_OWNED_CLONE_AND_ENVIRONMENT",
+    "paths_deleted": [
+      "/Users/abdelrahman/Projects/passvault/passvault-handoff-verify-20260908T091500Z"
+    ],
+    "removed_inventory": {
+      "files": 1128,
+      "logical_bytes": 94240927,
+      "allocated_bytes": 97878016
+    },
+    "original_root_identity": [
+      16777232,
+      86869812,
+      501,
+      16384
+    ],
+    "scope": "Cooperative owned namespace only; no source/report/cache/SDK/unrelated path deleted."
+  },
+  "disk_free_after": 12661096448,
+  "disk_space_limit": "Point observations; unrelated activity may change free-space delta.",
+  "finished": "2026-09-08T09:39:26.087345+00:00"
+}

@@ -1,0 +1,1091 @@
+{
+  "at": "2026-09-08T09:18:49.709916+00:00",
+  "overall_cached_whitespace_check": {
+    "exit_code": 2,
+    "status": "FAIL",
+    "stdout_sha256": "75eeca9931805b9925f2f54db35c8f16c576cc0451e8a8b556317e34b226186f",
+    "diagnostics": 109,
+    "affected_files": 8
+  },
+  "separate_source_only_check": {
+    "status": "PASS",
+    "argv": [
+      "/usr/bin/git",
+      "--literal-pathspecs",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "core.attributesFile=/dev/null",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "gc.auto=0",
+      "-c",
+      "maintenance.auto=false",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".github/workflows/candidate-readiness.yml",
+      ".github/workflows/mobile-store-release.yml",
+      ".github/workflows/production-release.yml",
+      ".github/workflows/production-signing-validation.yml",
+      ".github/workflows/publish-stable-release.yml",
+      ".github/workflows/release.yml",
+      ".github/workflows/testing-release.yml",
+      "RELEASE_CHECKLIST.md",
+      "app-android/src/main/kotlin/com/passvault/android/MainActivity.kt",
+      "app-android/src/main/kotlin/com/passvault/android/security/AndroidBiometricKeyStore.kt",
+      "app-android/src/main/kotlin/com/passvault/android/security/AndroidClipboardService.kt",
+      "app-android/src/main/res/values-ar/strings.xml",
+      "app-android/src/main/res/values/strings.xml",
+      "app-android/src/test/kotlin/com/passvault/android/security/AndroidBiometricPromptTextTest.kt",
+      "app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt",
+      "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm",
+      "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricKeyStore.kt",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricBridge.kt",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopSystemTray.kt",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopTrayStrings.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricKeyStoreTest.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoaderTest.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricPromptCoordinatorTest.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricSymbolDiscoveryCleanupTest.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricBridgeTest.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayLocalizationTest.kt",
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayTest.kt",
+      "core/crypto/src/androidMain/kotlin/com/passvault/core/crypto/RawPasswordHash.android.kt",
+      "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/RawPasswordHash.kt",
+      "core/crypto/src/commonTest/kotlin/com/passvault/core/crypto/RawPasswordHashArgumentTest.kt",
+      "core/crypto/src/desktopMain/kotlin/com/passvault/core/crypto/RawPasswordHash.desktop.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/VaultDatabaseBootstrap.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/attachment/AttachmentContainerCodec.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/attachment/AttachmentRepositoryImpl.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupStreams.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/VaultBackupService.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/VaultBackupV2Service.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/dao/AttachmentDao.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/CredentialRepositoryImpl.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/DefaultBiometricUnlockService.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "core/database/src/commonTest/kotlin/com/passvault/core/database/backup/BackupPaginationTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/VaultDatabaseBootstrapTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/attachment/AttachmentContainerCodecCompatibilityTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/attachment/AttachmentImportCommitHandoffTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/attachment/AttachmentRepositoryTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupStreamingTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/CredentialResultOwnershipTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/CredentialSummaryBatchingTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "core/domain/src/commonMain/kotlin/com/passvault/core/domain/model/PasswordStrengthEvaluator.kt",
+      "core/domain/src/commonTest/kotlin/com/passvault/core/domain/model/NumericPasswordSequenceTest.kt",
+      "docs/CANDIDATE_ATTESTATION_POLICY.md",
+      "docs/IOS_SIGNING_VERIFIER_CLEANUP.md",
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraft.kt",
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/CredentialEditScreen.kt",
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+      "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+      "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "scripts/configure-github-mobile-release.sh",
+      "scripts/delete-github-environment-secret.rb",
+      "scripts/lib/github_api.rb",
+      "scripts/lib/store_metadata_archive.rb",
+      "scripts/lib/strict_json.rb",
+      "scripts/prepare-mobile-store-metadata.sh",
+      "scripts/publish-immutable-github-release.rb",
+      "scripts/resume-testing-candidate-receipts.rb",
+      "scripts/test-android-language-policy.rb",
+      "scripts/test-candidate-attestation.rb",
+      "scripts/test-ios-profile-cleanup.rb",
+      "scripts/test-release-automation.sh",
+      "scripts/test-release-regressions.rb",
+      "scripts/test-windows-checksum-boundary.ps1",
+      "scripts/testdata/release-regressions/README.md",
+      "scripts/testdata/release-regressions/fake-provider.rb",
+      "scripts/testdata/release-regressions/schema2-1017001/android-artifact-receipt.json",
+      "scripts/testdata/release-regressions/schema2-1017001/candidate-manifest.json",
+      "scripts/testdata/release-regressions/schema2-1017001/ios-artifact-receipt.json",
+      "scripts/testdata/release-regressions/schema2-1017001/public-fixture-provenance.json",
+      "scripts/testdata/release-regressions/schema2-1017001/readiness-manifest.json",
+      "scripts/update-desktop-biometric-checksum.ps1",
+      "scripts/validate-candidate-artifact-provenance.rb",
+      "scripts/validate-candidate-manifest.rb",
+      "scripts/validate-desktop-artifact-receipt.rb",
+      "scripts/validate-mobile-artifact-receipt.rb",
+      "scripts/validate-private-release-config.sh",
+      "scripts/validate-store-metadata-inputs.rb",
+      "scripts/validate-workflow-action-pins.rb",
+      "scripts/validate-workflow-action-pins.sh",
+      "scripts/verify-candidate-attestation.rb",
+      "scripts/verify-ios-release-signing.sh",
+      "shared/src/androidMain/kotlin/com/passvault/shared/platform/AppLanguageProvider.android.kt",
+      "shared/src/androidMain/kotlin/com/passvault/shared/platform/AppResourceEnvironment.android.kt",
+      "shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt",
+      "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "shared/src/commonMain/kotlin/com/passvault/shared/platform/AppResourceEnvironment.kt",
+      "shared/src/commonMain/kotlin/com/passvault/shared/platform/NativeBiometricPromptStrings.kt",
+      "shared/src/commonTest/kotlin/com/passvault/shared/navigation/BackPolicyTest.kt",
+      "shared/src/commonTest/kotlin/com/passvault/shared/platform/NativeBiometricPromptStringsTest.kt",
+      "shared/src/desktopMain/kotlin/com/passvault/shared/platform/AppLanguageProvider.desktop.kt",
+      "shared/src/desktopMain/kotlin/com/passvault/shared/platform/DesktopAppResourceEnvironmentPublication.kt",
+      "shared/src/desktopTest/kotlin/com/passvault/shared/platform/DesktopAppResourceEnvironmentTest.kt",
+      "shared/src/iosMain/kotlin/com/passvault/shared/platform/AppLanguageProvider.ios.kt",
+      "shared/src/iosMain/kotlin/com/passvault/shared/platform/AppResourceEnvironment.ios.kt",
+      "shared/src/iosMain/kotlin/com/passvault/shared/platform/IosAttachmentFileStore.kt",
+      "shared/src/iosMain/kotlin/com/passvault/shared/platform/IosBiometricKeyStore.kt",
+      "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosBiometricPromptStringsTest.kt"
+    ],
+    "exit_code": 0,
+    "source_path_count": 122,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "byte_shapes": [
+    {
+      "path": "docs/audit-handoff/instructions/skills/database-migration-integrity/SKILL.md",
+      "file_sha256": "dd96f910bc54eb83ab8d3b25e82c9fc7e63a5bf2a90de83f3f93123b085aa0a4",
+      "file_bytes": 3352,
+      "diagnostics": [
+        {
+          "path": "docs/audit-handoff/instructions/skills/database-migration-integrity/SKILL.md",
+          "line": 61,
+          "kind": "new blank line at EOF",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-handoff/instructions/skills/desktop-native-interop-lifecycle/SKILL.md",
+      "file_sha256": "00a586157a50ae912290199061a55c1568ce678de67c080b56ffd1bd89220d17",
+      "file_bytes": 4342,
+      "diagnostics": [
+        {
+          "path": "docs/audit-handoff/instructions/skills/desktop-native-interop-lifecycle/SKILL.md",
+          "line": 67,
+          "kind": "new blank line at EOF",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-handoff/instructions/skills/mobile-app-identities-and-services/SKILL.md",
+      "file_sha256": "cf5984401437effd40725661cdbc32b427110e0cf96b805784e0d16a6b2348d4",
+      "file_bytes": 4140,
+      "diagnostics": [
+        {
+          "path": "docs/audit-handoff/instructions/skills/mobile-app-identities-and-services/SKILL.md",
+          "line": 76,
+          "kind": "new blank line at EOF",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-handoff/instructions/skills/release-provenance-and-promotion/SKILL.md",
+      "file_sha256": "d7259a4997f13e21783a721224236540a00b4c06ee8902e0c41abb9592ce4c67",
+      "file_bytes": 5503,
+      "diagnostics": [
+        {
+          "path": "docs/audit-handoff/instructions/skills/release-provenance-and-promotion/SKILL.md",
+          "line": 110,
+          "kind": "new blank line at EOF",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+      "file_sha256": "3d7221596a01c46b23100f7f05b6c0ebd246af141ce943b3f63f4704be19a396",
+      "file_bytes": 4213,
+      "diagnostics": [
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 1,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 2,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 3,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 4,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 5,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 6,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 7,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 8,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 9,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 10,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 11,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 12,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 13,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 14,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 15,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 16,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 17,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 18,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 19,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 20,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 21,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 22,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 23,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 24,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 25,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 26,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 27,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 28,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 29,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 30,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 31,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 32,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 33,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 34,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 35,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 36,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 37,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 38,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 39,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 40,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 49,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 50,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 51,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 52,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 53,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 54,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 55,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 56,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 57,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 58,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 59,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 60,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 61,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 62,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 63,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 64,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 65,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 66,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 67,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 68,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 69,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 70,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 71,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 72,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 73,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 74,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 75,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 76,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 77,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 78,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 79,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 80,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 81,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 82,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 83,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 84,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 85,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 86,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 87,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 88,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        },
+        {
+          "path": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+          "line": 89,
+          "kind": "trailing whitespace",
+          "line_ends_CR": true,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 0
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+      "file_sha256": "b5790944d31cd4e599640a163fe0aafcc066b9227c8271d7aa9440a1009a798a",
+      "file_bytes": 24408,
+      "diagnostics": [
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 11,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 15,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 56,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 57,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 60,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 61,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 77,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 78,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 81,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 82,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 125,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 126,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 180,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 181,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 218,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 219,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 266,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 267,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 411,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v1-v2.diff.txt",
+          "line": 412,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt",
+      "file_sha256": "afaa5366cfb14b725b6e4cf048fe15f5c723922b491cfa335573e309cb956327",
+      "file_bytes": 1084,
+      "diagnostics": [
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt",
+          "line": 5,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt",
+          "line": 13,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        },
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-clone-helper-navigation-v1/deltas/v2-v3.diff.txt",
+          "line": 15,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": true,
+          "line_trailing_space_count": 1
+        }
+      ]
+    },
+    {
+      "path": "docs/audit-publication/reviews/clone-handoff-final-document-storage-v1/REVIEW.md",
+      "file_sha256": "e5cd5263e4d4e2be0fdd23180eb08789ee1893e3655277a30888388f0fb1f9d4",
+      "file_bytes": 9706,
+      "diagnostics": [
+        {
+          "path": "docs/audit-publication/reviews/clone-handoff-final-document-storage-v1/REVIEW.md",
+          "line": 3,
+          "kind": "trailing whitespace",
+          "line_ends_CR": false,
+          "line_equals_unified_diff_blank_context_marker": false,
+          "line_trailing_space_count": 2
+        }
+      ]
+    }
+  ],
+  "proposed_disposition": "Keep exact frozen archive/reviewer bytes; not a production source defect or overall whitespace PASS. Independent classification pending separately. No whitespace configuration/check suppressed or file edited.",
+  "application_test_cases": 0
+}

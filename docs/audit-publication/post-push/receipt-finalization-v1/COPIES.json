@@ -1,0 +1,43 @@
+{
+  "at": "2026-09-08T10:10:06.693108+00:00",
+  "scope": "Metadata refresh only; initial path-check failure and corrected bounded identities retained. Script snapshots are inert historical source, not execution permission or build admission. No application invocation.",
+  "copy_preparation_incident": {
+    "tool_chunk": "e47f00",
+    "exit_code": 1,
+    "failure": "AssertionError at data=p.read_bytes(); assert p.lstat()==st. Full stat tuple was compared, including access time; original differing field was not retained so the exact cause is not proven. No destination file was written; the new directory was empty before this corrected copy.",
+    "correction": "Validate fixed source size/mode/dev/inode/mtime/ctime around the read; compare copy bytes; do not treat atime as content identity. Original metadata failure remains explicit.",
+    "failure_action_scope": "Read existing audit metadata and create one empty receipt subdirectory only; zero application invocations or background workers."
+  },
+  "files": [
+    {
+      "original": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z/receipt-finalization-v1/FACTS.json",
+      "copy": "docs/audit-publication/post-push/receipt-finalization-v1/FACTS.json",
+      "bytes": 465,
+      "sha256": "537a4b41af0839c76ed589bebbaad82f49a75cfe23db1775ad8f111132a9af7b"
+    },
+    {
+      "original": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z/receipt-finalization-v1/FACTS-v2.json",
+      "copy": "docs/audit-publication/post-push/receipt-finalization-v1/FACTS-v2.json",
+      "bytes": 16906,
+      "sha256": "460f7abaeb812a4ba24243e1c3d1038843600ffc5e33e887a1fc397a2f5cad98"
+    },
+    {
+      "original": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z/receipt-finalization-v1/PREPARATION-CORRECTION.json",
+      "copy": "docs/audit-publication/post-push/receipt-finalization-v1/PREPARATION-CORRECTION.json",
+      "bytes": 663,
+      "sha256": "0745d893cbe146d702e43263cb085cea84d7ff748774418aeffe79af8c28da80"
+    },
+    {
+      "original": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z/receipt-finalization-v1/refresh_final_receipt_facts.py",
+      "copy": "docs/audit-publication/post-push/receipt-finalization-v1/refresh_final_receipt_facts.py.txt",
+      "bytes": 11649,
+      "sha256": "4113bca30d7dcb647e67666522ed0ca453416370c3f38e114a34c47403aa5ded"
+    },
+    {
+      "original": "/Users/abdelrahman/Projects/passvault/remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z/receipt-finalization-v1/refresh_final_receipt_facts_v2.py",
+      "copy": "docs/audit-publication/post-push/receipt-finalization-v1/refresh_final_receipt_facts_v2.py.txt",
+      "bytes": 11671,
+      "sha256": "662b7a1de7b58925eab77d995313305d9a20576b7f80d5cb596c817c4194b327"
+    }
+  ]
+}

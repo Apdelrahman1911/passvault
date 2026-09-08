@@ -1,0 +1,8 @@
+{
+  "at": "2026-09-08T10:04:20.028965+00:00",
+  "original_source_sha256": "4113bca30d7dcb647e67666522ed0ca453416370c3f38e114a34c47403aa5ded",
+  "corrected_source_sha256": "662b7a1de7b58925eab77d995313305d9a20576b7f80d5cb596c817c4194b327",
+  "original_result": "FACTS.json",
+  "correction": "Bind the metadata reader to its validated fixed absolute source path, not lexical __file__.absolute() retaining ../ components. Separate one-shot FACTS-v2.json; original evidence retained.",
+  "original_failure": "Path validator rejected own relative invocation source before source/content/command comparisons; no application invocation or launched background worker."
+}

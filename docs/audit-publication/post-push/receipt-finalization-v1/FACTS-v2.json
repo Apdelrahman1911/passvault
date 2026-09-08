@@ -1,0 +1,465 @@
+{
+  "started": "2026-09-08T10:04:20.128920+00:00",
+  "scope": "Git handoff metadata/preservation only, not source/runtime verification",
+  "application_test_cases": 0,
+  "build_invocations": 0,
+  "gradle_stop": "NOT_APPLICABLE; earlier CLOSED obligations unchanged",
+  "commands": [
+    {
+      "label": "git-version",
+      "argv": [
+        "/usr/bin/git",
+        "--version"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:20.591806+00:00",
+      "pid": 73034,
+      "pgid_at_birth": 73034,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:20.603660+00:00",
+      "stdout_sha256": "0a72a762b37a3800276a1004e2c169aed0610d4a3ba601ba59e70e1c4d9f3200",
+      "stdout_bytes": 35,
+      "stdout": "git version 2.50.1 (Apple Git-155)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr": ""
+    },
+    {
+      "label": "payload-identity",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:20.603721+00:00",
+      "pid": 73035,
+      "pgid_at_birth": 73035,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:20.622825+00:00",
+      "stdout_sha256": "02273b873eace2ea537e6a4146454e925233c84ea0c7e5c85bc23fd05c2f1529",
+      "stdout_bytes": 82,
+      "stdout": "0d273426c45a1bb077a444edf58ec7e0715815ab\n1eecedbecb500153397bd6b58fbf112a5a0a993e\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr": ""
+    },
+    {
+      "label": "branch",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:20.622893+00:00",
+      "pid": 73036,
+      "pgid_at_birth": 73036,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:20.634118+00:00",
+      "stdout_sha256": "dffee365f218cb1d0c46f73bdb9bc6feb80eed617c1d7b59bf85237f82168289",
+      "stdout_bytes": 35,
+      "stdout": "codex/remediation-handoff-20260908\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr": ""
+    },
+    {
+      "label": "public-refs",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "ls-remote",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/main",
+        "refs/heads/testing",
+        "refs/heads/release",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/tags/v1.0.7-rc.1017001",
+        "refs/tags/v1.0.7-rc.1017001^{}"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:20.634194+00:00",
+      "pid": 73037,
+      "pgid_at_birth": 73037,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:21.715749+00:00",
+      "stdout_sha256": "b9bd453362be1411e88ed82a61adbd79bcf194f578f99b569de6429627d5ec10",
+      "stdout_bytes": 333,
+      "stdout": "0d273426c45a1bb077a444edf58ec7e0715815ab\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr": ""
+    },
+    {
+      "label": "status-passvault",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "-uall"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault",
+      "started": "2026-09-08T10:04:21.715918+00:00",
+      "pid": 73041,
+      "pgid_at_birth": 73041,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:21.794996+00:00",
+      "stdout_sha256": "f2afb895c6a6eff461fd115ad3a1fd43b817ad8f3397338ed799e3d95d1c9e1b",
+      "stdout_bytes": 1700,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "label": "status-passvault-remediation-20260905T222925Z",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "-uall"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-remediation-20260905T222925Z",
+      "started": "2026-09-08T10:04:21.795082+00:00",
+      "pid": 73042,
+      "pgid_at_birth": 73042,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:21.828871+00:00",
+      "stdout_sha256": "d5c4a61d3d8bcd11c3165073bfbe7b7e5b7330d2b0e4e7f4ca690279ff48de24",
+      "stdout_bytes": 9805,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "label": "status-passvault-handoff-20260908T061500Z",
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.attributesFile=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "credential.helper=",
+        "-c",
+        "protocol.allow=never",
+        "-c",
+        "protocol.https.allow=always",
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "-uall"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:21.828946+00:00",
+      "pid": 73043,
+      "pgid_at_birth": 73043,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:21.865666+00:00",
+      "stdout_sha256": "d9ed87203467893049a6f5f62b03dc2fdb077fe708442b03288b7b07aed46786",
+      "stdout_bytes": 4944,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    },
+    {
+      "label": "memory",
+      "argv": [
+        "/usr/bin/memory_pressure",
+        "-Q"
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:21.865764+00:00",
+      "pid": 73044,
+      "pgid_at_birth": 73044,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:21.868928+00:00",
+      "stdout_sha256": "c5ea03e3db38b88d41dfd96afcc157eca6cdb767cef1a4020d4afd7ae13777e2",
+      "stdout_bytes": 110,
+      "stdout": "The system has 17179869184 (1048576 pages with a page size of 16384).\nSystem-wide memory free percentage: 62%\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr": ""
+    },
+    {
+      "label": "processes",
+      "argv": [
+        "/bin/ps",
+        "-axo",
+        "pid=,ppid=,pgid=,uid=,lstart=,comm="
+      ],
+      "cwd": "/Users/abdelrahman/Projects/passvault/passvault-handoff-20260908T061500Z",
+      "started": "2026-09-08T10:04:21.868959+00:00",
+      "pid": 73045,
+      "pgid_at_birth": 73045,
+      "exit_code": 0,
+      "finished": "2026-09-08T10:04:21.890914+00:00",
+      "stdout_sha256": "e98809b6dacaf9106f36ad934e467809caddf8f13647ee6d23b309f3e557b5f3",
+      "stdout_bytes": 82122,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    }
+  ],
+  "errors": [],
+  "deleted_paths": [],
+  "stopped_processes": [],
+  "script": {
+    "bytes": 11671,
+    "sha256": "662b7a1de7b58925eab77d995313305d9a20576b7f80d5cb596c817c4194b327",
+    "execute_bits": 0
+  },
+  "source_preservation": [
+    {
+      "root": "passvault-remediation-20260905T222925Z",
+      "raw_tuples_matched": 811
+    },
+    {
+      "root": "passvault-handoff-20260908T061500Z",
+      "raw_tuples_matched": 811
+    }
+  ],
+  "primary_preservation": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "3fa4f6cc134ce49300ec3a4fe9697f94d782a3cdea18a7e9bef7e977768b833c",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "sha256": "3b99ef03bdb19b7c7d026f1fdf0fa5cab3932fe81b0383f28601deb6a19b65d4",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "sha256": "cb0c75a574ad78efe6b3d349af08dfa902fc959969ed583a0b9bad11960181dc",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "core/security/src/commonMain/kotlin/com/passvault/core/security/VaultUiSecurityCoordinator.kt",
+      "sha256": "1ca7d95806db20334981844fcd8ef438b24b58b41c3d1a4d7bf0982ee75c14d7",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "204c305b72c29ab3dcbb0e9918d5c8fc993066b9a218ad41786a1f1bb1faf7f9",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "docs/NAVIGATION_ARCHITECTURE.md",
+      "sha256": "983209730b1e46bfa97ac7fb1bfbcf7e14a6dee8af2cab4453cc9d8dc2a5e2fc",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "docs/SECURITY_MODEL.md",
+      "sha256": "cf9fbb50e0f3fdb0609e6b8ccbf5832c09c06f5b3475cc80ac68fd0e4f09668f",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt",
+      "sha256": "ba62624645e3a8c4e63ed97e1b914d3768956de3c524e56a69b15c7a4c27bd87",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/SessionBoundClipboard.kt",
+      "sha256": "8da1753f996e714934d0b2701564c667f22e5a78bb5b5f014df524573f882e2f",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt",
+      "sha256": "f5db62cebfc46295ca7047e39df64ff21d0b2f0f9e6ec9f3ea3c01bf8d321f3d",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/RouteAdapterContext.kt",
+      "sha256": "f9c52be05d40f827e68fb3dc6c9eaa5ad70ac594d3d989c2748022fb2d9d8ce9",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/SessionBoundClipboardTest.kt",
+      "sha256": "4b3d0aa41855bce4da405738100f813b12c159d06f5ab4813f99bb9ad2be5ac7",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/SessionCleanupPolicyTest.kt",
+      "sha256": "4355d484db49f8e25a6e3101e70c173a17c59f46a4e0caedf84b9540488a5adf",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/iosMain/kotlin/com/passvault/shared/IosAppLifecycleBridge.kt",
+      "sha256": "242d8f922b499db7365664cd8b5e0ace42b7f67c6cbf818fe652c7991cd4ba9a",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/androidHostTest/kotlin/com/passvault/shared/platform/ClipboardLockPolicyTest.kt",
+      "sha256": "d935129bc6e5547dfb45bcdb640b9078ee8625b5cd89c2307d36da9938c251ae",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/androidMain/kotlin/com/passvault/shared/platform/ClipboardLockPolicy.android.kt",
+      "sha256": "03a9d43af553ed689ce283fc98e61933c141fa441a195c7fa09337bd2cd91dc4",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/platform/ClipboardLockPolicy.kt",
+      "sha256": "b94c2f36d0b0df8d0b6830bf291823d9e2b01124d24bde9a2be76b5ab348a4af",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/desktopMain/kotlin/com/passvault/shared/platform/ClipboardLockPolicy.desktop.kt",
+      "sha256": "03a9d43af553ed689ce283fc98e61933c141fa441a195c7fa09337bd2cd91dc4",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/platform/ClipboardLockPolicyTest.kt",
+      "sha256": "f5e01e09e102da32fb882323a83e28175c91dc187425739105b16b61937dda8d",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/iosMain/kotlin/com/passvault/shared/platform/ClipboardLockPolicy.ios.kt",
+      "sha256": "390db04d97fa6c455ba0493ef2fe3ec8b5d13e502647b7ac3bdd323d81a12da7",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/iosTest/kotlin/com/passvault/shared/IosAppLifecycleBridgeTest.kt",
+      "sha256": "06ca6f07e2fa0891d9b8c3b92dbf004dce73c75cc3319e026cf1b8837fc2f2f5",
+      "matches_retained_initial": true
+    },
+    {
+      "path": "shared/src/iosTest/kotlin/com/passvault/shared/platform/ClipboardLockPolicyTest.kt",
+      "sha256": "e42188525c5252974eb9a1594a6c58653c69f31ffc91e84ddd93e3bb36e62244",
+      "matches_retained_initial": true
+    }
+  ],
+  "preservation_limit": "811 approved snapshot members and 22 previously permitted non-private paths only; not universal or continuous preservation.",
+  "frozen_package": {
+    "manifest": {
+      "bytes": 34357,
+      "sha256": "bc4e7cc7d6ae83bedcec3b4947a14de2aac52706089af9e2abbc2564c5f91a81",
+      "execute_bits": 0
+    },
+    "exact_members": 171
+  },
+  "receipt_copies": {
+    "exact_original_and_copy_pairs": 62,
+    "logical_bytes": 1146727
+  },
+  "git_version": "git version 2.50.1 (Apple Git-155)",
+  "remote_refs": {
+    "refs/heads/codex/remediation-handoff-20260908": "0d273426c45a1bb077a444edf58ec7e0715815ab",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "status_points": [
+    {
+      "root": "passvault",
+      "bytes": 1700,
+      "sha256": "f2afb895c6a6eff461fd115ad3a1fd43b817ad8f3397338ed799e3d95d1c9e1b"
+    },
+    {
+      "root": "passvault-remediation-20260905T222925Z",
+      "bytes": 9805,
+      "sha256": "d5c4a61d3d8bcd11c3165073bfbe7b7e5b7330d2b0e4e7f4ca690279ff48de24"
+    },
+    {
+      "root": "passvault-handoff-20260908T061500Z",
+      "bytes": 4944,
+      "sha256": "d9ed87203467893049a6f5f62b03dc2fdb077fe708442b03288b7b07aed46786"
+    }
+  ],
+  "disk_free_bytes": 12632715264,
+  "memory": "The system has 17179869184 (1048576 pages with a page size of 16384).\nSystem-wide memory free percentage: 62%\n",
+  "named_worker_point_observation": [],
+  "generated_path_observations": [],
+  "consumed_clone_namespace_absent": true,
+  "observation_limits": "Point named-worker and explicit output-path observations only; no global exclusivity or escaped-worker guarantee; no build admission.",
+  "result": "PASS_BOUNDED_PUBLICATION_FACTS",
+  "finished": "2026-09-08T10:04:21.894848+00:00"
+}

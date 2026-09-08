@@ -1,0 +1,1229 @@
+{
+  "at": "2026-09-08T10:12:33.781551+00:00",
+  "scope": "Read source event blocks only; no workflow run queried or dispatched. No external integration guarantee.",
+  "files": [
+    {
+      "path": ".github/workflows/candidate-readiness.yml",
+      "sha256": "b17a0d94f2e4a04f83a77fa99ff4a6300d3eaea4961bff31bb302ba6a667acd2",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Testing candidate tag to verify"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        type: string"
+        },
+        {
+          "line": 10,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "eddfa5917a77fa606c115c418b433a3aa04c4a061cd757af5040fbdd452d9af2",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  push:"
+        },
+        {
+          "line": 5,
+          "text": "    branches: [ main, testing, release ]"
+        },
+        {
+          "line": 6,
+          "text": "  pull_request:"
+        },
+        {
+          "line": 7,
+          "text": "    branches: [ main, testing, release ]"
+        },
+        {
+          "line": 8,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/mobile-release-candidate.yml",
+      "sha256": "bc776feeadf166d5c7f3252f11b29a23a00149fa9307fb385886f273b6755760",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      platform:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Platform to build once and upload to internal testing"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        default: android"
+        },
+        {
+          "line": 10,
+          "text": "        type: choice"
+        },
+        {
+          "line": 11,
+          "text": "        options:"
+        },
+        {
+          "line": 12,
+          "text": "          - android"
+        },
+        {
+          "line": 13,
+          "text": "          - ios"
+        },
+        {
+          "line": 14,
+          "text": "          - both"
+        },
+        {
+          "line": 15,
+          "text": "      confirmation:"
+        },
+        {
+          "line": 16,
+          "text": "        description: candidate:<platform>:<version>:<build>"
+        },
+        {
+          "line": 17,
+          "text": "        required: true"
+        },
+        {
+          "line": 18,
+          "text": "        type: string"
+        },
+        {
+          "line": 19,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/mobile-release-external-testing.yml",
+      "sha256": "fe250fea16e1fcf8ff4b74af591b43346af66bacc3dee0883c0e7c560c2f328b",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      platform:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Platform whose exact internal build should be promoted"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        default: android"
+        },
+        {
+          "line": 10,
+          "text": "        type: choice"
+        },
+        {
+          "line": 11,
+          "text": "        options:"
+        },
+        {
+          "line": 12,
+          "text": "          - android"
+        },
+        {
+          "line": 13,
+          "text": "          - ios"
+        },
+        {
+          "line": 14,
+          "text": "          - both"
+        },
+        {
+          "line": 15,
+          "text": "      candidate_run_id:"
+        },
+        {
+          "line": 16,
+          "text": "        description: Successful candidate workflow run ID"
+        },
+        {
+          "line": 17,
+          "text": "        required: true"
+        },
+        {
+          "line": 18,
+          "text": "        type: string"
+        },
+        {
+          "line": 19,
+          "text": "      confirmation:"
+        },
+        {
+          "line": 20,
+          "text": "        description: external-testing:<platform>:<version>:<build>"
+        },
+        {
+          "line": 21,
+          "text": "        required: true"
+        },
+        {
+          "line": 22,
+          "text": "        type: string"
+        },
+        {
+          "line": 23,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/mobile-release-preflight.yml",
+      "sha256": "15f25e2c07951a8481cb1203eb4076714699efdccd6e2712a043a53de76c51c9",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      platform:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Platform to validate"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        default: android"
+        },
+        {
+          "line": 10,
+          "text": "        type: choice"
+        },
+        {
+          "line": 11,
+          "text": "        options:"
+        },
+        {
+          "line": 12,
+          "text": "          - android"
+        },
+        {
+          "line": 13,
+          "text": "          - ios"
+        },
+        {
+          "line": 14,
+          "text": "          - both"
+        },
+        {
+          "line": 15,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/mobile-store-release.yml",
+      "sha256": "fdefa6745a686e180f75102d671914951e3fa5df77b07f1d2838afa2fd31c558",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_call:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      platform:"
+        },
+        {
+          "line": 7,
+          "text": "        required: true"
+        },
+        {
+          "line": 8,
+          "text": "        type: string"
+        },
+        {
+          "line": 9,
+          "text": "      channel:"
+        },
+        {
+          "line": 10,
+          "text": "        required: true"
+        },
+        {
+          "line": 11,
+          "text": "        type: string"
+        },
+        {
+          "line": 12,
+          "text": "      operation:"
+        },
+        {
+          "line": 13,
+          "text": "        required: true"
+        },
+        {
+          "line": 14,
+          "text": "        type: string"
+        },
+        {
+          "line": 15,
+          "text": "      version:"
+        },
+        {
+          "line": 16,
+          "text": "        required: true"
+        },
+        {
+          "line": 17,
+          "text": "        type: string"
+        },
+        {
+          "line": 18,
+          "text": "      build_number:"
+        },
+        {
+          "line": 19,
+          "text": "        required: true"
+        },
+        {
+          "line": 20,
+          "text": "        type: string"
+        },
+        {
+          "line": 21,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 22,
+          "text": "        required: false"
+        },
+        {
+          "line": 23,
+          "text": "        default: ''"
+        },
+        {
+          "line": 24,
+          "text": "        type: string"
+        },
+        {
+          "line": 25,
+          "text": "      candidate_commit:"
+        },
+        {
+          "line": 26,
+          "text": "        required: false"
+        },
+        {
+          "line": 27,
+          "text": "        default: ''"
+        },
+        {
+          "line": 28,
+          "text": "        type: string"
+        },
+        {
+          "line": 29,
+          "text": "      testflight_distribution:"
+        },
+        {
+          "line": 30,
+          "text": "        required: false"
+        },
+        {
+          "line": 31,
+          "text": "        default: email-list"
+        },
+        {
+          "line": 32,
+          "text": "        type: string"
+        },
+        {
+          "line": 33,
+          "text": "      production_confirmation:"
+        },
+        {
+          "line": 34,
+          "text": "        required: false"
+        },
+        {
+          "line": 35,
+          "text": "        default: ''"
+        },
+        {
+          "line": 36,
+          "text": "        type: string"
+        },
+        {
+          "line": 37,
+          "text": "      testing_confirmation:"
+        },
+        {
+          "line": 38,
+          "text": "        required: false"
+        },
+        {
+          "line": 39,
+          "text": "        default: ''"
+        },
+        {
+          "line": 40,
+          "text": "        type: string"
+        },
+        {
+          "line": 41,
+          "text": "      review_withdrawal_confirmation:"
+        },
+        {
+          "line": 42,
+          "text": "        required: false"
+        },
+        {
+          "line": 43,
+          "text": "        default: ''"
+        },
+        {
+          "line": 44,
+          "text": "        type: string"
+        },
+        {
+          "line": 45,
+          "text": "      pipeline_lock_held:"
+        },
+        {
+          "line": 46,
+          "text": "        description: The protected caller already holds the repository-wide release-pipeline lock"
+        },
+        {
+          "line": 47,
+          "text": "        required: false"
+        },
+        {
+          "line": 48,
+          "text": "        default: false"
+        },
+        {
+          "line": 49,
+          "text": "        type: boolean"
+        },
+        {
+          "line": 50,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 51,
+          "text": "    inputs:"
+        },
+        {
+          "line": 52,
+          "text": "      platform:"
+        },
+        {
+          "line": 53,
+          "text": "        description: Platform to build and upload"
+        },
+        {
+          "line": 54,
+          "text": "        required: true"
+        },
+        {
+          "line": 55,
+          "text": "        default: both"
+        },
+        {
+          "line": 56,
+          "text": "        type: choice"
+        },
+        {
+          "line": 57,
+          "text": "        options:"
+        },
+        {
+          "line": 58,
+          "text": "          - both"
+        },
+        {
+          "line": 59,
+          "text": "          - android"
+        },
+        {
+          "line": 60,
+          "text": "          - ios"
+        },
+        {
+          "line": 61,
+          "text": "      channel:"
+        },
+        {
+          "line": 62,
+          "text": "        description: Store destination"
+        },
+        {
+          "line": 63,
+          "text": "        required: true"
+        },
+        {
+          "line": 64,
+          "text": "        default: internal"
+        },
+        {
+          "line": 65,
+          "text": "        type: choice"
+        },
+        {
+          "line": 66,
+          "text": "        options:"
+        },
+        {
+          "line": 67,
+          "text": "          - internal"
+        },
+        {
+          "line": 68,
+          "text": "          - external"
+        },
+        {
+          "line": 69,
+          "text": "          - production"
+        },
+        {
+          "line": 70,
+          "text": "      operation:"
+        },
+        {
+          "line": 71,
+          "text": "        description: Upload a new internal binary or promote the exact existing build"
+        },
+        {
+          "line": 72,
+          "text": "        required: true"
+        },
+        {
+          "line": 73,
+          "text": "        default: upload"
+        },
+        {
+          "line": 74,
+          "text": "        type: choice"
+        },
+        {
+          "line": 75,
+          "text": "        options:"
+        },
+        {
+          "line": 76,
+          "text": "          - upload"
+        },
+        {
+          "line": 77,
+          "text": "          - promote"
+        },
+        {
+          "line": 78,
+          "text": "          - store-assets"
+        },
+        {
+          "line": 79,
+          "text": "      version:"
+        },
+        {
+          "line": 80,
+          "text": "        description: Exact marketing version; blank uses version.properties"
+        },
+        {
+          "line": 81,
+          "text": "        required: false"
+        },
+        {
+          "line": 82,
+          "text": "        type: string"
+        },
+        {
+          "line": 83,
+          "text": "      build_number:"
+        },
+        {
+          "line": 84,
+          "text": "        description: Exact committed Store build number from version.properties"
+        },
+        {
+          "line": 85,
+          "text": "        required: true"
+        },
+        {
+          "line": 86,
+          "text": "        type: string"
+        },
+        {
+          "line": 87,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 88,
+          "text": "        description: Required readiness-approved candidate tag for production"
+        },
+        {
+          "line": 89,
+          "text": "        required: false"
+        },
+        {
+          "line": 90,
+          "text": "        type: string"
+        },
+        {
+          "line": 91,
+          "text": "      testflight_distribution:"
+        },
+        {
+          "line": 92,
+          "text": "        description: External iOS invitation method"
+        },
+        {
+          "line": 93,
+          "text": "        required: true"
+        },
+        {
+          "line": 94,
+          "text": "        default: email-list"
+        },
+        {
+          "line": 95,
+          "text": "        type: choice"
+        },
+        {
+          "line": 96,
+          "text": "        options:"
+        },
+        {
+          "line": 97,
+          "text": "          - email-list"
+        },
+        {
+          "line": 98,
+          "text": "      production_confirmation:"
+        },
+        {
+          "line": 99,
+          "text": "        description: Type I_APPROVE_PRODUCTION only for a production upload"
+        },
+        {
+          "line": 100,
+          "text": "        required: false"
+        },
+        {
+          "line": 101,
+          "text": "        type: string"
+        },
+        {
+          "line": 102,
+          "text": "      testing_confirmation:"
+        },
+        {
+          "line": 103,
+          "text": "        description: Type I_CONFIRM_REQUIRED_TESTING_COMPLETED only after required store testing is complete"
+        },
+        {
+          "line": 104,
+          "text": "        required: false"
+        },
+        {
+          "line": 105,
+          "text": "        type: string"
+        },
+        {
+          "line": 106,
+          "text": "      review_withdrawal_confirmation:"
+        },
+        {
+          "line": 107,
+          "text": "        description: Type I_APPROVE_REVIEW_WITHDRAWAL to withdraw review and replace iOS store assets"
+        },
+        {
+          "line": 108,
+          "text": "        required: false"
+        },
+        {
+          "line": 109,
+          "text": "        type: string"
+        },
+        {
+          "line": 110,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "sha256": "3da09e8e67b8502cd2e9a311e890b96bdb874e85b490afd323d5925df045a933",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  push:"
+        },
+        {
+          "line": 5,
+          "text": "    branches:"
+        },
+        {
+          "line": 6,
+          "text": "      - main"
+        },
+        {
+          "line": 7,
+          "text": "    paths:"
+        },
+        {
+          "line": 8,
+          "text": "      - '.github/workflows/pages.yml'"
+        },
+        {
+          "line": 9,
+          "text": "      - 'site/**'"
+        },
+        {
+          "line": 10,
+          "text": "      - 'scripts/build-public-site.rb'"
+        },
+        {
+          "line": 11,
+          "text": "      - 'iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png'"
+        },
+        {
+          "line": 12,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 13,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/play-access-check.yml",
+      "sha256": "f9f001ffffc7512a3da6e2b42b15cf539e25eb851cf35e2761ef5c5bbfca0040",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      confirmation:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Type VERIFY_ONLY_NO_UPLOAD to run the disposable-edit check"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        type: string"
+        },
+        {
+          "line": 10,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/production-release.yml",
+      "sha256": "3cf6b2ce6fc6270b007132777e0681a221d3fe3544ef39899f2917333f87d2c5",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Readiness-approved candidate tag"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        type: string"
+        },
+        {
+          "line": 10,
+          "text": "      platform:"
+        },
+        {
+          "line": 11,
+          "text": "        description: Store to submit; choose one when retrying a partial failure"
+        },
+        {
+          "line": 12,
+          "text": "        required: true"
+        },
+        {
+          "line": 13,
+          "text": "        default: both"
+        },
+        {
+          "line": 14,
+          "text": "        type: choice"
+        },
+        {
+          "line": 15,
+          "text": "        options:"
+        },
+        {
+          "line": 16,
+          "text": "          - both"
+        },
+        {
+          "line": 17,
+          "text": "          - android"
+        },
+        {
+          "line": 18,
+          "text": "          - ios"
+        },
+        {
+          "line": 19,
+          "text": "      authorization_run_id:"
+        },
+        {
+          "line": 20,
+          "text": "        description: Successful Request Mobile Production Release run ID"
+        },
+        {
+          "line": 21,
+          "text": "        required: true"
+        },
+        {
+          "line": 22,
+          "text": "        type: string"
+        },
+        {
+          "line": 23,
+          "text": "      authorization_sha:"
+        },
+        {
+          "line": 24,
+          "text": "        description: Exact protected-main SHA that authorized this child run"
+        },
+        {
+          "line": 25,
+          "text": "        required: true"
+        },
+        {
+          "line": 26,
+          "text": "        type: string"
+        },
+        {
+          "line": 27,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/production-signing-validation.yml",
+      "sha256": "3d530176598e68a3332c47e72f43b5ff0120a6a12a669ec70f09e8a40aafa338",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Readiness-approved candidate tag to sign without publishing"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        type: string"
+        },
+        {
+          "line": 10,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/publish-stable-release.yml",
+      "sha256": "65d91bad705bbe9b3216d07fac954869d39f48ae6253c9a09b950a0bf0cad9f1",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 7,
+          "text": "        description: Production candidate whose stores are live"
+        },
+        {
+          "line": 8,
+          "text": "        required: true"
+        },
+        {
+          "line": 9,
+          "text": "        type: string"
+        },
+        {
+          "line": 10,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "sha256": "e6b842aad78a7eb8697d860265531fa606111b86e8ced44186ef64e5b0ec12b9",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_call:"
+        },
+        {
+          "line": 5,
+          "text": "    inputs:"
+        },
+        {
+          "line": 6,
+          "text": "      version:"
+        },
+        {
+          "line": 7,
+          "text": "        required: true"
+        },
+        {
+          "line": 8,
+          "text": "        type: string"
+        },
+        {
+          "line": 9,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 10,
+          "text": "        required: true"
+        },
+        {
+          "line": 11,
+          "text": "        type: string"
+        },
+        {
+          "line": 12,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/request-mobile-production.yml",
+      "sha256": "45525424359e72b37fbc0ec8fe38c92486211b486f5b859aed71361c122150f3",
+      "event_lines": [
+        {
+          "line": 4,
+          "text": "on:"
+        },
+        {
+          "line": 5,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 6,
+          "text": "    inputs:"
+        },
+        {
+          "line": 7,
+          "text": "      candidate_tag:"
+        },
+        {
+          "line": 8,
+          "text": "        description: Readiness-approved mobile candidate tag"
+        },
+        {
+          "line": 9,
+          "text": "        required: true"
+        },
+        {
+          "line": 10,
+          "text": "        type: string"
+        },
+        {
+          "line": 11,
+          "text": "      platform:"
+        },
+        {
+          "line": 12,
+          "text": "        description: Store to promote; choose one only when retrying a partial failure"
+        },
+        {
+          "line": 13,
+          "text": "        required: true"
+        },
+        {
+          "line": 14,
+          "text": "        default: both"
+        },
+        {
+          "line": 15,
+          "text": "        type: choice"
+        },
+        {
+          "line": 16,
+          "text": "        options:"
+        },
+        {
+          "line": 17,
+          "text": "          - both"
+        },
+        {
+          "line": 18,
+          "text": "          - android"
+        },
+        {
+          "line": 19,
+          "text": "          - ios"
+        },
+        {
+          "line": 20,
+          "text": "      confirmation:"
+        },
+        {
+          "line": 21,
+          "text": "        description: Type I_APPROVE_MOBILE_PRODUCTION"
+        },
+        {
+          "line": 22,
+          "text": "        required: true"
+        },
+        {
+          "line": 23,
+          "text": "        type: string"
+        },
+        {
+          "line": 24,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/store-screenshots.yml",
+      "sha256": "6f0230f49c724372a352855a58edbf8234cd9253e58e0b839fde0ccbbb2bdeb5",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 5,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/testing-release.yml",
+      "sha256": "b2df9bf0d52073dbcc7351f6847d2edb4e5e903a41eae04589b9b4bfbed9a6d4",
+      "event_lines": [
+        {
+          "line": 3,
+          "text": "on:"
+        },
+        {
+          "line": 4,
+          "text": "  push:"
+        },
+        {
+          "line": 5,
+          "text": "    branches: [ testing ]"
+        },
+        {
+          "line": 6,
+          "text": "  workflow_dispatch:"
+        },
+        {
+          "line": 7,
+          "text": "    inputs:"
+        },
+        {
+          "line": 8,
+          "text": "      resume_existing_internal_uploads:"
+        },
+        {
+          "line": 9,
+          "text": "        description: Reuse attested internal receipts instead of uploading Android/iOS again"
+        },
+        {
+          "line": 10,
+          "text": "        required: true"
+        },
+        {
+          "line": 11,
+          "text": "        type: boolean"
+        },
+        {
+          "line": 12,
+          "text": "        default: false"
+        },
+        {
+          "line": 13,
+          "text": "      resume_confirmation:"
+        },
+        {
+          "line": 14,
+          "text": "        description: Required as resume:<version>:<build> when resuming existing internal uploads"
+        },
+        {
+          "line": 15,
+          "text": "        required: false"
+        },
+        {
+          "line": 16,
+          "text": "        type: string"
+        },
+        {
+          "line": 17,
+          "text": "        default: ''"
+        },
+        {
+          "line": 18,
+          "text": ""
+        }
+      ]
+    }
+  ],
+  "source_trigger_conclusion": "15 workflows; CI push restricted to main/testing/release, pages push main, testing-release push testing. Other events dispatch/call; dedicated handoff branch push does not select these build/publish paths. No PR created."
+}

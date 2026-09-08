@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-08T09:29:13.374796+00:00",
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-c",
+    "core.attributesFile=/dev/null",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.autocrlf=false",
+    "-c",
+    "commit.gpgsign=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "pack.threads=1",
+    "commit",
+    "--quiet",
+    "-m",
+    "chore: preserve incomplete G12 remediation handoff\n\nRetain all 122 source changes, permanent tests and compact audit evidence.\n22/37 confirmed families have qualified verification; remaining work, failures\nand platform limitations stay explicit. This is not a release candidate.\n\nNo main/testing/release merge, tag or Store build change. Historical evidence\nbytes are preserved, including the separately recorded whitespace diagnostics."
+  ],
+  "expected_parent": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+  "expected_tree": "1eecedbecb500153397bd6b58fbf112a5a0a993e",
+  "expected_index_sha256": "bc0b215a31e842f57d73299a3d1b6719239f6cbb22ba8dc95a5da4b4e832645a",
+  "authorization": "Owner explicitly authorized dedicated Git handoff branch commit/push; no merge or app publication",
+  "overall_whitespace_gate": "FAIL109 archival diagnostics preserved; separate122-source checkPASS",
+  "recovery": "If interrupted, inspect exact HEAD/tree and retained command PID; do not blindly recommit or alter primary worktree."
+}

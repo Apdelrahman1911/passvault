@@ -1,0 +1,201 @@
+#!/usr/bin/python3
+"""One-shot, read-only publication identity/resource refresh; not a build runner."""
+import datetime, hashlib, json, os, shutil, signal, stat, subprocess, sys
+from pathlib import Path
+
+ROOT = Path("/Users/abdelrahman/Projects/passvault")
+D = ROOT / "passvault-handoff-20260908T061500Z"
+W = ROOT / "passvault-remediation-20260905T222925Z"
+P = ROOT / "passvault"
+H = ROOT / "remediation-reports/20260905T222925Z/handoff-publication/20260908T061500Z"
+OUT = H / "receipt-finalization-v1"
+PAYLOAD = "0d273426c45a1bb077a444edf58ec7e0715815ab"
+BRANCH = "codex/remediation-handoff-20260908"
+ENV = {"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "LANG": "C", "LC_ALL": "C",
+       "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_SYSTEM": "/dev/null",
+       "GIT_CONFIG_NOSYSTEM": "1", "GIT_OPTIONAL_LOCKS": "0",
+       "GIT_TERMINAL_PROMPT": "0", "GIT_ASKPASS": "/usr/bin/false",
+       "PYTHONDONTWRITEBYTECODE": "1"}
+GIT = ["/usr/bin/git", "-c", "core.hooksPath=/dev/null",
+       "-c", "core.attributesFile=/dev/null", "-c", "core.fsmonitor=false",
+       "-c", "gc.auto=0", "-c", "maintenance.auto=false",
+       "-c", "credential.helper=", "-c", "protocol.allow=never",
+       "-c", "protocol.https.allow=always"]
+record = {"started": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          "scope": "Git handoff metadata/preservation only, not source/runtime verification",
+          "application_test_cases": 0, "build_invocations": 0,
+          "gradle_stop": "NOT_APPLICABLE; earlier CLOSED obligations unchanged",
+          "commands": [], "errors": [], "deleted_paths": [], "stopped_processes": []}
+
+def checked_path(p):
+    p = Path(p)
+    if not p.is_absolute() or ".." in p.parts: raise ValueError("invalid absolute path")
+    for q in list(p.parents)[::-1] + [p]:
+        if stat.S_ISLNK(q.lstat().st_mode): raise ValueError("symlink: " + str(q))
+    return p
+
+def identity(p):
+    checked_path(p)
+    fd = os.open(str(p), os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode): raise ValueError("not regular: " + str(p))
+        h = hashlib.sha256()
+        while True:
+            b = os.read(fd, 1024 * 1024)
+            if not b: break
+            h.update(b)
+        after = os.fstat(fd)
+        fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns", "st_mode")
+        if any(getattr(before, k) != getattr(after, k) for k in fields):
+            raise ValueError("changed during read: " + str(p))
+        end = p.lstat()
+        if any(getattr(after, k) != getattr(end, k) for k in fields):
+            raise ValueError("path changed: " + str(p))
+        return {"bytes": after.st_size, "sha256": h.hexdigest(),
+                "execute_bits": stat.S_IMODE(after.st_mode) & 0o111}
+    finally:
+        os.close(fd)
+
+def read_json(p):
+    first = identity(p)
+    data = p.read_bytes()
+    if hashlib.sha256(data).hexdigest() != first["sha256"] or identity(p) != first:
+        raise ValueError("metadata changed: " + str(p))
+    return json.loads(data)
+
+def member(root, rel):
+    if not isinstance(rel, str) or not rel or Path(rel).is_absolute() or ".." in Path(rel).parts:
+        raise ValueError("invalid member")
+    return root / rel
+
+def run(label, argv, cwd=D, timeout=60, retain_text=True):
+    item = {"label": label, "argv": argv, "cwd": str(cwd),
+            "started": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    record["commands"].append(item)
+    p = subprocess.Popen(argv, cwd=str(cwd), env=ENV, stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE, start_new_session=True)
+    item["pid"] = p.pid
+    item["pgid_at_birth"] = p.pid
+    try:
+        out, err = p.communicate(timeout=timeout)
+    except BaseException:
+        if p.poll() is None:
+            os.killpg(p.pid, signal.SIGTERM)
+            record["stopped_processes"].append({"pid": p.pid, "reason": "own live child interrupted"})
+        try:
+            out, err = p.communicate(timeout=5)
+        except subprocess.TimeoutExpired:
+            if p.poll() is None:
+                os.killpg(p.pid, signal.SIGKILL)
+            out, err = p.communicate(timeout=5)
+        item["interrupted"] = True
+        item["exit_code"] = p.returncode
+        raise
+    item["exit_code"] = p.returncode
+    item["finished"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    for key, data in (("stdout", out), ("stderr", err)):
+        item[key + "_sha256"] = hashlib.sha256(data).hexdigest()
+        item[key + "_bytes"] = len(data)
+        if retain_text: item[key] = data.decode("utf-8", "replace")
+    if p.returncode != 0: raise ValueError(label + " exit " + str(p.returncode))
+    return out
+
+try:
+    if (OUT / "FACTS.json").exists(): raise ValueError("one-shot output already exists")
+    for path in (ROOT, D, W, P, H, OUT): checked_path(path)
+    record["script"] = identity(Path(__file__).absolute())
+    raw_manifest = D / "docs/audit-handoff/current/source-manifest-v12.json"
+    if identity(raw_manifest)["sha256"] != "2f029f9cefd3262313e960b1bcc3cabd875d02ebe31a44e6e78f946bb3e98f1f":
+        raise ValueError("source manifest pin mismatch")
+    manifest = read_json(raw_manifest)
+    if len(manifest) != 811 or len({x["path"] for x in manifest}) != 811:
+        raise ValueError("source denominator mismatch")
+    record["source_preservation"] = []
+    for root in (W, D):
+        matches = 0
+        for row in manifest:
+            actual = identity(member(root, row["path"]))
+            expected = {"bytes": row["bytes"], "sha256": row["sha256"], "execute_bits": row["mode"] & 0o111}
+            if actual != expected: raise ValueError("source mismatch: " + str(root) + "/" + row["path"])
+            matches += 1
+        record["source_preservation"].append({"root": root.name, "raw_tuples_matched": matches})
+    primary = read_json(H / "PRESERVATION-PREPUBLICATION.json")["primary_checks"]
+    if len(primary) != 22 or len({x["path"] for x in primary}) != 22: raise ValueError("primary allowlist mismatch")
+    record["primary_preservation"] = []
+    for row in primary:
+        actual = identity(member(P, row["path"]))
+        if actual["sha256"] != row["sha256"]: raise ValueError("permitted primary mismatch: " + row["path"])
+        record["primary_preservation"].append({"path": row["path"], "sha256": actual["sha256"], "matches_retained_initial": True})
+    record["preservation_limit"] = "811 approved snapshot members and 22 previously permitted non-private paths only; not universal or continuous preservation."
+    hd = D / "docs/audit-handoff"
+    package_id = identity(hd / "PACKAGE.json")
+    if package_id["sha256"] != "bc4e7cc7d6ae83bedcec3b4947a14de2aac52706089af9e2abbc2564c5f91a81":
+        raise ValueError("frozen package changed")
+    package = read_json(hd / "PACKAGE.json")
+    if len(package["files"]) != 171: raise ValueError("frozen member denominator mismatch")
+    for row in package["files"]:
+        v = identity(member(hd, row["path"]))
+        if (v["bytes"], v["sha256"]) != (row["bytes"], row["sha256"]): raise ValueError("frozen package member changed")
+    record["frozen_package"] = {"manifest": package_id, "exact_members": 171}
+    copies_path = D / "docs/audit-publication/post-push/COPIES.json"
+    if identity(copies_path)["sha256"] != "62476cb9325383ada645e6491548137b62823fc066a37f34e94973ca30655ec7":
+        raise ValueError("copy manifest pin mismatch")
+    copied = read_json(copies_path)["files"]
+    if len(copied) != 62: raise ValueError("copy denominator mismatch")
+    for row in copied:
+        original = Path(row["original"])
+        allowed = (H, ROOT / "remediation-reports/20260905T222925Z/reviews")
+        if not any(original.is_relative_to(a) for a in allowed): raise ValueError("unexpected original root")
+        for f in (original, member(D, row["copy"])):
+            v = identity(f)
+            if (v["bytes"], v["sha256"]) != (row["bytes"], row["sha256"]): raise ValueError("receipt copy mismatch")
+    record["receipt_copies"] = {"exact_original_and_copy_pairs": 62, "logical_bytes": sum(x["bytes"] for x in copied)}
+    record["git_version"] = run("git-version", ["/usr/bin/git", "--version"]).decode().strip()
+    head = run("payload-identity", GIT + ["rev-parse", "HEAD", "HEAD^{tree}"]).decode().splitlines()
+    if head != [PAYLOAD, "1eecedbecb500153397bd6b58fbf112a5a0a993e"]: raise ValueError("unexpected payload checkout")
+    branch = run("branch", GIT + ["symbolic-ref", "--short", "HEAD"]).decode().strip()
+    if branch != BRANCH: raise ValueError("unexpected branch")
+    refs = ["refs/heads/main", "refs/heads/testing", "refs/heads/release",
+            "refs/heads/" + BRANCH, "refs/tags/v1.0.7-rc.1017001", "refs/tags/v1.0.7-rc.1017001^{}"]
+    remote = run("public-refs", GIT + ["ls-remote", "https://github.com/Apdelrahman1911/passvault.git"] + refs)
+    record["remote_refs"] = {line.split()[1]: line.split()[0] for line in remote.decode().splitlines()}
+    if record["remote_refs"].get("refs/heads/" + BRANCH) != PAYLOAD: raise ValueError("handoff remote advanced; stop publication")
+    for root in (P, W, D):
+        status_out = run("status-" + root.name, GIT + ["status", "--porcelain=v1", "-z", "-uall"], cwd=root, retain_text=False)
+        record.setdefault("status_points", []).append({"root": root.name,
+            "bytes": len(status_out), "sha256": hashlib.sha256(status_out).hexdigest()})
+    record["disk_free_bytes"] = shutil.disk_usage(D).free
+    record["memory"] = run("memory", ["/usr/bin/memory_pressure", "-Q"]).decode()
+    process_out = run("processes", ["/bin/ps", "-axo", "pid=,ppid=,pgid=,uid=,lstart=,comm="], retain_text=False)
+    names = ("gradle", "kotlin", "java", "xcodebuild", "clang", "cmake", "ninja", "passvault.app")
+    record["named_worker_point_observation"] = [line for line in process_out.decode().splitlines()
+        if any(name in line.lower().split()[-1] for name in names)]
+    output_candidates = {"build", ".gradle", ".kotlin", "DerivedData"}
+    for row in manifest:
+        q = Path(row["path"])
+        if q.name in ("build.gradle.kts", "build.gradle", "CMakeLists.txt"):
+            output_candidates.add(str(q.parent / "build"))
+    record["generated_path_observations"] = []
+    for root in (W, D):
+        for rel in sorted(output_candidates):
+            q = root / rel
+            if q.exists() or q.is_symlink():
+                record["generated_path_observations"].append({"path": str(q), "symlink": q.is_symlink(), "directory": q.is_dir()})
+    clone = ROOT / "passvault-handoff-verify-20260908T091500Z"
+    record["consumed_clone_namespace_absent"] = not clone.exists() and not clone.is_symlink()
+    record["observation_limits"] = "Point named-worker and explicit output-path observations only; no global exclusivity or escaped-worker guarantee; no build admission."
+    record["result"] = "PASS_BOUNDED_PUBLICATION_FACTS"
+except BaseException as exc:
+    record["result"] = "FAIL"
+    record["errors"].append(type(exc).__name__ + ": " + str(exc))
+finally:
+    record["finished"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    with open(OUT / "FACTS.json", "x", encoding="utf-8") as f:
+        json.dump(record, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+print(json.dumps({k: record.get(k) for k in ("result", "remote_refs", "source_preservation", "frozen_package",
+      "receipt_copies", "disk_free_bytes", "memory", "named_worker_point_observation",
+      "generated_path_observations", "consumed_clone_namespace_absent", "errors", "finished")}, indent=2))
+sys.exit(0 if record["result"].startswith("PASS") else 1)
+

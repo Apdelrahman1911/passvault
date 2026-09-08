@@ -4,6 +4,10 @@ This directory records publication of an **incomplete remediation checkpoint**,
 not an app release. Start with [`../audit-handoff/START_HERE.md`](../audit-handoff/START_HERE.md)
 and retain every boundary in `PERMISSIONS.md`.
 
+The payload was pushed and verified in a fresh public clone. Read
+[`PUBLISHED_PAYLOAD.md`](PUBLISHED_PAYLOAD.md) for the exact checked commit,
+results, cleanup, evidence-only whitespace failure and continuation limits.
+
 ## Identity
 
 - Branch: `codex/remediation-handoff-20260908`.
