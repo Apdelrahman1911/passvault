@@ -311,7 +311,7 @@
     "planned_ctest_cases_unstarted": 14,
     "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json"
   },
-  "updated_utc": "2026-09-09T08:26:26.580619+00:00",
+  "updated_utc": "2026-09-09T10:04:41.639355+00:00",
   "infrastructure_evidence": {
     "not_original_811_denominator": true,
     "source_capture": {
@@ -673,5 +673,27 @@
     "scope": "reviews/android32/PVU005-LINUX-RENDER-SCOPE.md",
     "current167_inclusion": false,
     "product_finding_or_closure_delta": 0
+  },
+  "macos_focused_execution": {
+    "run_id": 34333087199,
+    "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "activation_commit": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+    "new_product_tests": 0,
+    "unstarted_declarations": 5,
+    "operational_result": "FAIL_RESOURCE_LAUNCH_GATE",
+    "independent_review": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json",
+    "qualification": "No source-review percentage, family count/closure or hardware evidence increment. Preserve pending-final-exit-zero cleanup qualification and no retry."
+  },
+  "linux_current_cycle01_execution": {
+    "run_id": "linux-current-cycle01",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "product_tests": 0,
+    "unstarted_regression_methods": 166,
+    "unstarted_fixture_producers": 1,
+    "source_materialization_verified": false,
+    "operational_result": "FAIL_GIT_DESCENDANT_OWNERSHIP_HOLD_BEFORE_CHECKOUT",
+    "independent_review": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json",
+    "cleanup": "HOLD_ORIGINAL_RUNTIME_RETAINED",
+    "coverage_and_denominator_credit": 0
   }
 }

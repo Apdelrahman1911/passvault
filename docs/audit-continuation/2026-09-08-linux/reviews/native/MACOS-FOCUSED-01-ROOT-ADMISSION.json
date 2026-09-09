@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "created_utc": "2026-09-09T09:00:15.629050+00:00",
+  "state": "ROOT_APPROVED_PENDING_INDEPENDENT_ACTIVATION_REVIEW_AND_PUSH",
+  "scope": "macos-focused-01",
+  "source": {
+    "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "source_tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+    "nonce": "2adf33dd8d2773f8fa16a68ef0613fac"
+  },
+  "request_sha256": "6026f8aa2867765cc17389638a04846b1ca569e3faf05c51dfa3dee8985b806d",
+  "request_path": "docs/audit-continuation/2026-09-08-linux/requests/macos-focused-01.json",
+  "findings": [
+    "MAC-FIXTURE-001",
+    "PVA-010",
+    "PVA-014"
+  ],
+  "why_platform": "Foundation/LocalAuthentication Objective-C++ and Mach-O x86_64 cannot run on Linux. Five synthetic CTests only; no real prompt/Keychain/biometric enrollment query. No physical hardware claims or family closure inferred.",
+  "commands_and_cleanup_plan": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md",
+  "plan_sha256": "bfa26b13cdab4477b9f5e118b0b7369184be1af10b9c9c47441c66fabe9d9f07",
+  "helper_sha256": "4448517d4615a34090d2acc61cd8eb872d3e8c1445fd711e8d7aa146f243b69c",
+  "workflow_sha256": "3d9c947eaacaabec26a8bea26810305ec37021773a83edee38ee1887e1356ac5",
+  "source_review_sha256": "703afe261bb4fadfdf901bfc45249eb7fbbe8cef7b8ac4f5c5f11f7615d8db62",
+  "expected_cases": [
+    "passvault_biometric_macos_fixture_normal",
+    "passvault_biometric_macos_fixture_early_return",
+    "passvault_biometric_macos_fixture_cpp_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_macos_security"
+  ],
+  "runner": "macos-15-intel/x86_64; installed CMake/CTest4.4.2, Xcode16.4/16F6, macOS SDK15.5, Python3; fail closed on drift; no install/fallback",
+  "bounds": "one native worker; job600s, commands480s, cleanup540s; configure120s/build240s/case45s(CTest30s); disk12GiB/RAM25% launch and8GiB/20% running;16MiB evidence;7-day artifacts; no binaries",
+  "cleanup": "handlers installed before execution; original private nofollow handles, allowlisted generated trees only, never fixture residue. Nonzero CTest/timeout/uncertainty HOLD, no further cases/tree deletion/automatic retry. Normal closed synchronous tool/workload settlement qualified, not arbitrary descendants. CMake-only: Gradle stop not applicable.",
+  "coordination": {
+    "prior_slot_sha256": "532c2426c4d16ea37e7004ddabf103ea464fb1cd6782a8708853b56950bb7d9e",
+    "reserved_for_this_scope": true,
+    "other_agents": "all completed, source-only; root sole executor",
+    "local_audit_build": "none",
+    "ci_point_tool": "0803e6",
+    "ci_point": "only completed failed Windows34284083351 observed; no active continuation run; preserve its HOLD/no retry",
+    "activation": "single parent exactly source_commit; adds only request; push exact branch only after independent review; no other audit build/test until actual final result/settlement reconciliation"
+  },
+  "prohibited_scopes": "PVU-007 STOP; PVU-011 NO RETRY; PVA-02949/44PASS/5FAIL no auto retry; G7/G8 CLOSED; Windows34284083351 failure/filesystem HOLD14UNSTARTED unchanged; no archived helper imports or release/signing/dependency/version/identity/protected-ref changes."
+}

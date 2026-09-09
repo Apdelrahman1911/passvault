@@ -1,5 +1,20 @@
 # Bounded team ownership
 
+## Current C6 execution follow-up
+
+Root executed only the newly admitted Mac5 and Linux01 attempts and owns their
+exact receipts/ledger updates/publication. `native_review` independently
+reconciled Mac5's prebuild resource FAIL/five UNSTARTED; `editor_review` reconciled
+Linux01's source-setup ownership FAIL/all167 UNSTARTED and rejected the proposed
+primary-path-only clone remedy. Both old scopes are consumed, not retry permits.
+`storage` may author only the four assigned02 driver/init/PLAN/COMMANDS source
+files; `editor_review` independently challenges their narrow delta. No agent
+executes/imports any helper, initializes a runtime or starts a build. New02
+admission is separate and must not relax process guards, borrow old namespaces
+or erase old HOLDs. `baseline_coverage` remains the independent checkpoint/report
+reviewer. Source-only iOS/rendering feasibility follow-ups are completed and do
+not authorize displays, simulators or CI.
+
 Root alone edits central ledgers and this file. Agents write their named review
 subdirectory and only explicitly assigned source paths; report proposed overlaps
 before editing. No agent launches builds/tests or commits/pushes.

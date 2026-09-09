@@ -6,6 +6,16 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
+**Latest: `CHECKPOINT_6.md`.** Two fresh once-only attempts have now been
+independently reconciled: Mac34333087199 failed its prebuild resource gate
+(five CTests UNSTARTED); Linux current-cycle01 failed source-setup process
+ownership before checkout/Gradle (all167 declarations UNSTARTED). No product
+test or closure was added. Preserve both consumed scopes, the Linux original
+runtime/cleanup HOLD and the Mac finalization qualification. Scheduling-only
+release is not cleanup or retry approval. A transport-free02 source proposal
+is separate; newly observed unowned Java processes require fresh clear local
+admission. The C5 and older descriptions below are historical preparation facts.
+
 Read `CHECKPOINT_5.md`, the updated issue/coverage/verification overlays, and
 `EXECUTION_SLOT.json` before choosing work. Three grouped PVA-007 freshness
 corrections and the Android32 test harness are independently source-reviewed;

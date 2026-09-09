@@ -1,0 +1,47 @@
+{
+  "format": "passvault-checkpoint6-staging-v1",
+  "at": "2026-09-09T10:29:56.528789+00:00",
+  "parent": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+  "selected_files": 44,
+  "selected_manifest_sha256": "78bc75b5f8cb78885ff5b460f723a323d8cf400633047cc3cf03c717fa7787c8",
+  "independent_review_sha256": "88e73aacc60d1e35ad8c60e052e713276908f291fce2559bdfeec54a9074b222",
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 2,
+      "stdout": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused-01/GITHUB-CLI.log:169: trailing whitespace.\n+native-five\tRetain only newly owned compact synthetic evidence\t\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "docs/audit-continuation/2026-09-08-linux/reviews/current-cycle/LAUNCH_CURRENT_CYCLE_01.sh"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "qualification": "Raw CLI log whitespace remains unchanged and whole selected check failure retained; caller source check separate. Zero application source delta/build/test. This receipt added separately as publication metadata."
+}

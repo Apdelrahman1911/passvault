@@ -1,0 +1,77 @@
+{
+  "format": "passvault-checkpoint6-remote-refresh-v1",
+  "at": "2026-09-09T10:17:35.649999+00:00",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "fetch",
+        "--no-tags",
+        "origin",
+        "refs/heads/main:refs/remotes/origin/main",
+        "refs/heads/testing:refs/remotes/origin/testing",
+        "refs/heads/release:refs/remotes/origin/release",
+        "refs/heads/codex/remediation-handoff-20260908:refs/remotes/origin/codex/remediation-handoff-20260908",
+        "refs/heads/codex/audit-continuation-linux-20260908:refs/remotes/origin/codex/audit-continuation-linux-20260908"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/main",
+        "refs/heads/testing",
+        "refs/heads/release",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/tags/v1.0.7-rc.1017001",
+        "refs/tags/v1.0.7-rc.1017001^{}"
+      ],
+      "exit": 0,
+      "stdout": "17a19b0a36472e586851f5ea4185cefe9adaad71\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "origin/main",
+        "origin/testing",
+        "origin/release",
+        "origin/codex/remediation-handoff-20260908",
+        "origin/codex/audit-continuation-linux-20260908"
+      ],
+      "exit": 0,
+      "stdout": "17a19b0a36472e586851f5ea4185cefe9adaad71\ndcc68d1819f5c13295cfa7e68ce423fa5c936fac\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\n2ae65df7111a9c5493740e8b772932be77eb98bc\n61f55216302023d9872aba17546126450e5fbad3\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\n17a19b0a36472e586851f5ea4185cefe9adaad71\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Read-only remote identity plus remote-tracking-only fetch. No protected branch/tag, build/test, SDK, dependency or signing change.",
+  "observation_tool": "57ed39",
+  "all_commands_exit_zero": true,
+  "expected_protected_and_candidate_refs_unchanged": true
+}

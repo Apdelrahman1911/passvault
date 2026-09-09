@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-09T09:11:58.805Z",
+  "scope": "macos-focused-01",
+  "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+  "activation_commit": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+  "run_id": 34333087199,
+  "job_id": 102406012501,
+  "push": {
+    "chunk_id": "20e63f",
+    "wall_time_seconds": 1.001180243,
+    "session_id": 50777,
+    "original_token_count": 25,
+    "output": "Exact instance independently accepted. Shared slot reserved across push/CI/result reconciliation.\n"
+  },
+  "push_completion": {
+    "chunk_id": "b96dd3",
+    "wall_time_seconds": 0.000004975,
+    "exit_code": 0,
+    "original_token_count": 63,
+    "output": "To https://github.com/Apdelrahman1911/passvault.git\n   96f7758..17a19b0  17a19b0a36472e586851f5ea4185cefe9adaad71 -> codex/audit-continuation-linux-20260908\n17a19b0a36472e586851f5ea4185cefe9adaad71\trefs/heads/codex/audit-continuation-linux-20260908\n"
+  },
+  "first_run_observation": {
+    "chunk_id": "9f4262",
+    "wall_time_seconds": 0.795124292,
+    "exit_code": 0,
+    "original_token_count": 150,
+    "output": "[{\"conclusion\":\"failure\",\"createdAt\":\"2026-09-09T09:09:09Z\",\"databaseId\":34333087199,\"headSha\":\"17a19b0a36472e586851f5ea4185cefe9adaad71\",\"name\":\"Audit focused macOS native validation (non-publishing)\",\"status\":\"completed\",\"url\":\"https://github.com/Apdelrahman1911/passvault/actions/runs/34333087199\"},{\"conclusion\":\"failure\",\"createdAt\":\"2026-09-08T22:05:27Z\",\"databaseId\":34284083351,\"headSha\":\"a1fbdf0d5f0663225a459838d37b072a65e334f6\",\"name\":\"Audit Windows native validation (non-publishing)\",\"status\":\"completed\",\"url\":\"https://github.com/Apdelrahman1911/passvault/actions/runs/34284083351\"}]\n"
+  },
+  "query_tools": [
+    {
+      "kind": "run",
+      "launch": {
+        "chunk_id": "56793e",
+        "wall_time_seconds": 1.001539182,
+        "session_id": 72240,
+        "original_token_count": 0,
+        "output": ""
+      },
+      "completion": {
+        "chunk_id": "e04785",
+        "wall_time_seconds": 0.000005643,
+        "exit_code": 0,
+        "original_token_count": 306,
+        "output": "PRESERVED_IN_GITHUB-RUN.json"
+      }
+    },
+    {
+      "kind": "cli_log",
+      "launch": {
+        "chunk_id": "170a35",
+        "wall_time_seconds": 1.001760373,
+        "session_id": 76857,
+        "original_token_count": 0,
+        "output": ""
+      },
+      "completion": {
+        "chunk_id": "0a7d64",
+        "wall_time_seconds": 0.000003106,
+        "exit_code": 0,
+        "original_token_count": 8071,
+        "output": "PRESERVED_IN_GITHUB-CLI.log"
+      }
+    },
+    {
+      "kind": "artifact_list",
+      "chunk_id": "ceff8f",
+      "wall_time_seconds": 0.325181119,
+      "exit_code": 0,
+      "original_token_count": 193,
+      "output": "{\"total_count\":1,\"artifacts\":[{\"id\":10096561526,\"node_id\":\"MDg6QXJ0aWZhY3QxMDA5NjU2MTUyNg==\",\"name\":\"macos-focused-34333087199-1\",\"size_in_bytes\":3438,\"url\":\"https://api.github.com/repos/Apdelrahman1911/passvault/actions/artifacts/10096561526\",\"archive_download_url\":\"https://api.github.com/repos/Apdelrahman1911/passvault/actions/artifacts/10096561526/zip\",\"expired\":false,\"digest\":\"sha256:93646be5a7d573e6d504332dd14223ff1751610f3bbc98c611b52c68ef0b5524\",\"created_at\":\"2026-09-09T09:09:27Z\",\"updated_at\":\"2026-09-09T09:09:27Z\",\"expires_at\":\"2026-09-16T09:09:26Z\",\"workflow_run\":{\"id\":34333087199,\"repository_id\":1318415796,\"head_repository_id\":1318415796,\"head_branch\":\"codex/audit-continuation-linux-20260908\",\"head_sha\":\"17a19b0a36472e586851f5ea4185cefe9adaad71\"}}]}"
+    }
+  ],
+  "classification": "ACTUAL_CI_FAILURE_RESULT_PENDING_INDEPENDENT_RECONCILIATION_NO_AUTOMATIC_RETRY",
+  "log_scope": "Exact tool-returned gh run view --log text, not raw runner-log archive. Masked credentials remain masked; no secret read by root. Evidence artifact archive separately hash-checked."
+}

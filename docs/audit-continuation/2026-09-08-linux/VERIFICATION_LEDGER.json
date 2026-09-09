@@ -35,6 +35,69 @@
       "independent_result_disposition": "OPERATIONAL_FAIL_CLEANUP_HOLD_14_CASES_UNSTARTED",
       "evidence": "runs/windows-native-01/",
       "retry": "NO_AUTOMATIC_RETRY_REQUEST_CONSUMED"
+    },
+    {
+      "kind": "NATIVE_VALIDATION_ATTEMPT_NO_PRODUCT_COMMAND_LAUNCHED",
+      "platform": "macos-15-intel/x86_64",
+      "run_id": 34333087199,
+      "job_id": 102406012501,
+      "attempt": 1,
+      "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+      "source_tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+      "activation_commit": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+      "activation_tree": "dcc68d1819f5c13295cfa7e68ce423fa5c936fac",
+      "command_intents": 0,
+      "product_target_build_invocations": 0,
+      "ctest_invocations": 0,
+      "application_test_cases": 0,
+      "planned_ctest_cases_unstarted": 5,
+      "actual_helper_exit": 1,
+      "operational_status": "FAIL_RESOURCE_LAUNCH_GATE",
+      "resources": {
+        "disk_free_bytes": 116283990016,
+        "free_physical_bytes": 3195535360,
+        "total_ram": "NOT_RETAINED_NO_INDEPENDENT_FRACTION_RECOMPUTATION"
+      },
+      "toolchain": "Observed expected CMake/CTest4.4.2, Xcode16.4/16F6, SDK15.5, x86_64",
+      "cleanup": "Original private generated-root removal reported and independently source-qualified for prelaunch normal metadata path; actual-helper-exit-zero condition unmet, no independent final-FD/arbitrary-descendant proof. Preserve qualifiers; no global finalization PASS.",
+      "gradle_stop": "NOT_APPLICABLE_NO_GRADLE",
+      "independent_result_review": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json",
+      "evidence": "runs/macos-focused-01/",
+      "retry": "NO_AUTOMATIC_RETRY_REQUEST_CONSUMED"
+    },
+    {
+      "kind": "LOCAL_SOURCE_SETUP_ATTEMPT_ZERO_GRADLE_OR_PRODUCT_TESTS",
+      "platform": "Linuxx86_64",
+      "run_id": "linux-current-cycle01",
+      "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+      "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+      "actual_outer_exit": 1,
+      "journal_rows": 46,
+      "git_clone": {
+        "started": true,
+        "exit": 0
+      },
+      "git_checkout": {
+        "started": false,
+        "reason": "sticky ownership journal error before launch intent/Popen"
+      },
+      "gradle_invocations": 0,
+      "planned_gradle_invocations_unstarted": 5,
+      "application_test_cases": 0,
+      "regression_methods_unstarted": 166,
+      "fixture_producers_unstarted": 1,
+      "XML": 0,
+      "source_before_ok": false,
+      "source_after_ok": false,
+      "owned_settled": false,
+      "cleanup": "HOLD_ORIGINAL_R_RETAINED_NO_DELETION",
+      "gradle_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH_INTENT",
+      "operational_status": "FAIL",
+      "evidence": "runs/linux-current-cycle01/",
+      "external_receipt": "reviews/current-cycle/EXTERNAL-FINAL-RECEIPT-01.json",
+      "independent_result_review": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json",
+      "retry": "CONSUMED_NO_AUTOMATIC_RETRY",
+      "qualification": "Unknown30730 exact cause/cwd not captured; real local clone may spawn upload-pack; no assertion of transport fallback or primary-only remedy. Unowned Java point separately blocks fresh local execution."
     }
   ],
   "continuation_application_test_cases": 0,
@@ -62,8 +125,8 @@
     {
       "id": "LOCAL_DATABASE_RUNNER_ADMISSION",
       "status": "BLOCKED",
-      "reason": "CurrentC4 targeted167 driver/PLAN and wiring independently source accepted. Fresh original REQUEST, root/independent actual acceptances, external supervision, resources and sole-slot admission pending. One compilation cycle; all105 retained; no product executions or implicit namespace reuse.",
-      "evidence": "reviews/editor-independent/CURRENT-CYCLE-SOURCE-REVIEW-01.json"
+      "reason": "Cycle01 original instance was independently admitted and consumed once; clone0 then ownershipHOLD prevented detached checkout and all5Gradle/167declarations. No XML/product executions/stop duty; originalR/cleanupHOLD retained. Distinct transport-free02 source proposal requires new review and actual admission; unowned Java point separately blocks local launch.",
+      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json"
     },
     {
       "id": "WINDOWS_NATIVE_ADMISSION",
@@ -140,8 +203,8 @@
     {
       "id": "MACOS_SYNTHETIC_FIXTURE",
       "status": "BLOCKED",
-      "reason": "New narrow focused Mac5 helper/workflow/plan independently source accepted after a preserved late-cancellation finalization correction; exact source publication, one-shot activation and idle-slot execution admission still pending. No Apple runtime/XML. Prior larger preparation remains dormant.",
-      "evidence": "reviews/native-independent/MACOS-FOCUSED-PACKET-SOURCE-REVIEW-v2.json"
+      "reason": "Exact Mac5 source and instance were independently accepted and consumed in run34333087199; resource-gate FAIL before any product command, all5UNSTARTED. No runtime/XML/closure. Finalization qualifications and no automatic retry preserved; older preparation remains dormant.",
+      "evidence": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json"
     },
     {
       "id": "EMPTY_E_BOOTSTRAP_01",
@@ -164,8 +227,8 @@
     {
       "id": "CURRENT_C4_TARGETED167",
       "status": "BLOCKED",
-      "reason": "CurrentC4 targeted167 driver/PLAN and wiring independently source accepted. Fresh original REQUEST, root/independent actual acceptances, external supervision, resources and sole-slot admission pending. One compilation cycle; all105 retained; no product executions or implicit namespace reuse.",
-      "evidence": "reviews/editor-independent/CURRENT-CYCLE-SOURCE-REVIEW-01.json"
+      "reason": "Cycle01 original instance was independently admitted and consumed once; clone0 then ownershipHOLD prevented detached checkout and all5Gradle/167declarations. No XML/product executions/stop duty; originalR/cleanupHOLD retained. Distinct transport-free02 source proposal requires new review and actual admission; unowned Java point separately blocks local launch.",
+      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json"
     },
     {
       "id": "PVU006_SOURCE_NARROWING",
@@ -178,6 +241,18 @@
       "status": "BLOCKED",
       "reason": "One independently source-accepted actual ComposeWindow fixture added after C4; no compilation/render/input execution. Fresh isolated X display/WM/JVM and cleanup admission pending; no product patch or closure.",
       "evidence": "reviews/editor/PVU005-LINUX-FIXTURE-SOURCE-REVIEW.md"
+    },
+    {
+      "id": "MACOS_FOCUSED_01_EXECUTION",
+      "status": "FAIL",
+      "reason": "Exact source/activation admitted then one actual hosted resource-gate failure before any configure/build/CTest;0 product cases/5UNSTARTED. Original root removal qualified; finalization not global PASS. No automatic retry. Scheduling slot separately released.",
+      "evidence": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json"
+    },
+    {
+      "id": "LINUX_CURRENT_CYCLE01_EXECUTION",
+      "status": "FAIL",
+      "reason": "Actualexit1/source-setup ownershipHOLD after Gitclone0; all167unstarted; no Gradle/stop/XML. OriginalR/source/process/cleanupHOLD retained; schedulingonly released; new unownedJava conflict external.",
+      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json"
     }
   ],
   "missing_skill_tool": {
@@ -185,7 +260,7 @@
     "status": "NOT_SUPPLIED_NOT_RUN",
     "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
   },
-  "updated_utc": "2026-09-09T08:26:26.579952+00:00",
+  "updated_utc": "2026-09-09T10:18:00.832321+00:00",
   "continuation_infrastructure_runs": [
     {
       "id": "LINUX_SOURCE_CAPTURE_01",

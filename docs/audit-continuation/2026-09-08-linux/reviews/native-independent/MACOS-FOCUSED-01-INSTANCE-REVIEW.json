@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "reviewed_utc": "2026-09-09T09:04:23Z",
+  "scope": "macos-focused-01",
+  "verdict": "ACCEPT_EXACT_SINGLE_ACTIVATION_FOR_ROOT_OWNED_PUSH",
+  "qualification": "Source/metadata instance acceptance only, under the reviewed synchronous-stock-tool/closed-workload normal-path assumption and root's reserved shared slot; no target execution, pass, cleanup or hardware result is inferred.",
+  "source": {
+    "commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+    "publication_receipt_sha256": "78bc0b833906539c1f42616bd36c030832fe8e1b1eaae99c1b34175a40fbe38c",
+    "publication_evidence": "Root's saved successful push/remote-ref receipt and local origin tracking ref match; reviewer made no network query."
+  },
+  "activation": {
+    "commit": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+    "tree": "dcc68d1819f5c13295cfa7e68ce423fa5c936fac",
+    "sole_parent": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "branch": "codex/audit-continuation-linux-20260908",
+    "only_change": "A\tdocs/audit-continuation/2026-09-08-linux/requests/macos-focused-01.json",
+    "request_sha256": "6026f8aa2867765cc17389638a04846b1ca569e3faf05c51dfa3dee8985b806d",
+    "request_blob": "32e33878db672b979ca0bd5e11e5eb7d37f12c75",
+    "request_mode": "100644",
+    "nonce": "2adf33dd8d2773f8fa16a68ef0613fac",
+    "request_absent_in_source_commit": true,
+    "request_fields_exactly_match_source_commit_tree_nonce": true,
+    "independently_checked": "Local Git commit/tree/parent/diff/blob metadata and worktree bytes; exact activation still HEAD at final pre-report check."
+  },
+  "frozen_packet_sha256": {
+    "scripts/audit/macos_focused_validation.py": "4448517d4615a34090d2acc61cd8eb872d3e8c1445fd711e8d7aa146f243b69c",
+    ".github/workflows/audit-macos-focused-validation.yml": "3d9c947eaacaabec26a8bea26810305ec37021773a83edee38ee1887e1356ac5",
+    "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md": "bfa26b13cdab4477b9f5e118b0b7369184be1af10b9c9c47441c66fabe9d9f07"
+  },
+  "source_review_v2_sha256": {
+    "markdown": "812d257ab57b610e9d38457e2d87e92bf22510c52efc2c85c81c8c6652c4933f",
+    "json": "703afe261bb4fadfdf901bfc45249eb7fbbe8cef7b8ac4f5c5f11f7615d8db62"
+  },
+  "native_input_prefix": "app-desktop/native/biometric-bridge/",
+  "native_inputs_sha256": {
+    "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "src/macos/passvault_biometric_macos.mm": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+    "tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "tests/macos/passvault_biometric_macos_security_test.mm": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4"
+  },
+  "identity_coverage": "Each packet, v2 review and native input SHA matched independently in source-commit blobs, activation blobs and worktree. The unchanged v2 source review, including MF-R1 correction and retained qualifications, applies without another source audit.",
+  "root_admission": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FOCUSED-01-ROOT-ADMISSION.json",
+    "sha256": "3cacd69abb7d88970e113582f33a06c2559b35b451d6a9ac4abc9576ea09cfad",
+    "findings": ["MAC-FIXTURE-001", "PVA-010", "PVA-014"],
+    "complete_for_bounded_scope": true,
+    "commands": "Exact source-bound vectors in frozen helper and plan: configure Release Unix Makefiles with explicit x86_64/SDK/clang/clang++/make; build two test targets parallel1; check three binary hashes/architectures and five-case inventory; five exact regex-selected CTests in declared order.",
+    "runner": "macos-15-intel x86_64; installed CMake/CTest4.4.2, Xcode16.4/16F6, SDK15.5, /usr/bin/make and /usr/local/bin/python3 -I -B; no install/fallback; expected not observed.",
+    "bounds": "One build/test job/worker; configure120s/build240s/CTest30s with wrapper45s; command budget480s, cleanup540s, job600s. Launch disk12GiB/free-physical-RAM25%; running8GiB/20%. Logs2MiB/XML512KiB/evidence16MiB with64KiB reserve; flat compact artifacts retained7days, no binaries.",
+    "cleanup": "Preinstalled handlers and original nofollow private handles; allowlisted owned generated outputs once only, never fixture-residue adoption/sweep. Nonzero CTest/forced stop/unknown settlement means HOLD, no later cases/tree deletion/automatic retry. CMake-only, no Gradle invocation or daemon-stop obligation. Runner disposal is containment, not observed cleanup.",
+    "nonpublishing": "Exact branch/request-path push, repository/ref/event/attempt1 guards, immutable action pins, contents:read, shared audit concurrency, no signing/store secrets or release workflow."
+  },
+  "expected_cases_in_order": [
+    "passvault_biometric_macos_fixture_normal",
+    "passvault_biometric_macos_fixture_early_return",
+    "passvault_biometric_macos_fixture_cpp_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_macos_security"
+  ],
+  "coordination": {
+    "source_slot_sha256": "532c2426c4d16ea37e7004ddabf103ea464fb1cd6782a8708853b56950bb7d9e",
+    "reserved_slot_sha256": "1e391f41a85b7da68b2c17e0d63ea9c0b63277c4158eed1543f5ae22a6246165",
+    "state": "RESERVED_MACOS_FOCUSED_01_PENDING_INDEPENDENT_ACTIVATION_REVIEW",
+    "local_audit_build": "Root records none; reviewer launched none.",
+    "other_agents": "Independent collaboration roster observation: all other non-root agents completed; this review source/metadata only.",
+    "ci_point_tool": "0803e6",
+    "ci_point_qualification": "Root-recorded point observation: only completed failed Windows34284083351, no active continuation run. Reviewer did not issue a duplicate CI query or claim independent live-state observation.",
+    "obligation": "Root alone pushes this exact activation while reservation remains valid; no competing audit build/test until actual final result and settlement reconciliation. Any changed identity, scope or coordination requires review, not silent substitution."
+  },
+  "worktree_qualification": "Local worktree has preserved unrelated untracked/modified records and dormant old helpers; it is not claimed clean and must not be executed as this Mac job. Hosted checkout of the exact activation must satisfy the helper's clean-checkout/EOL checks. Do not fold this report or other local files into the already reviewed activation commit.",
+  "post_run_evidence_required": "Actual helper exit plus compact logs/raw XML/hashes and independent exact-case/failure/skip/source/cleanup reconciliation. Earlier success snapshots, task counts or diagnostic words alone do not establish pass/closure. Preserve unknown and UNSTARTED outcomes; no automatic retry.",
+  "restrictions": "PVU-007 STOP; PVU-011 NO RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; Windows34284083351 operationalFAIL/filesystemHOLD/14UNSTARTED unchanged. No old runner/capture/application/recovery helper import/execution. No protected-ref/tag/version/build-number/identity/dependency/signing/store/publication changes, including occupied1017001. Physical iPhone/Touch ID/Windows Hello remain BLOCKED.",
+  "reviewer_actions": {
+    "helper_execution_import_syntax_or_control_probes": 0,
+    "build_test_or_ci_execution": 0,
+    "network_or_ci_queries": 0,
+    "request_or_commit_changes": 0,
+    "runtime_outputs_workers_or_cleanup_tasks": 0,
+    "permanent_compact_report_created": 1,
+    "product_family_or_closure_increments": 0
+  }
+}

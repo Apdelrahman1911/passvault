@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "reviewed_utc": "2026-09-09T09:15:20Z",
+  "scope": "macos-focused-01",
+  "verdict": "RECONCILED_OPERATIONAL_FAIL_RESOURCE_LAUNCH_GATE_ALL_FIVE_CASES_UNSTARTED",
+  "slot_recommendation": "Root may release this completed job's scheduling reservation only. Preserve its consumed failure, qualified cleanup and final-exit limitations. This is not retry/recovery permission, execution admission for Linux or a product closure.",
+  "identity": {
+    "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "source_tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+    "activation_commit": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+    "activation_tree": "dcc68d1819f5c13295cfa7e68ce423fa5c936fac",
+    "nonce": "2adf33dd8d2773f8fa16a68ef0613fac",
+    "run_id": 34333087199,
+    "job_id": 102406012501,
+    "attempt": 1,
+    "repository": "Apdelrahman1911/passvault",
+    "branch": "codex/audit-continuation-linux-20260908",
+    "event": "push",
+    "job_status": "completed",
+    "job_conclusion": "failure",
+    "job_started_utc": "2026-09-09T09:09:12Z",
+    "job_completed_utc": "2026-09-09T09:09:30Z",
+    "instance_review_sha256": "6f8836e885cba330fc0c92c37457e3d61348e9d54da44af3cec2f60afe235679",
+    "helper_sha256": "4448517d4615a34090d2acc61cd8eb872d3e8c1445fd711e8d7aa146f243b69c",
+    "binding": "Retained run/artifact/CLI/intent/result source and run identities agree with the previously accepted exact instance. Unchanged source review is reused; no helper was reexecuted or imported."
+  },
+  "evidence_prefix": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused-01/",
+  "independently_read_and_hash_checked_files": {
+    "GITHUB-RUN.json": "59cc682224f0cd044c3b7aef219ef95218cad303162ff04500d00cfa96fcfc72",
+    "GITHUB-CLI.log": "06a7bda46aac245825a484b3172a4defdc9d063657ad028383752c0f0544f163",
+    "GITHUB-ARTIFACT-LIST.json": "854b6de2cf4e4db0f18118b3c09e8b4e33a15f12c6b9e8ef51ba0f51a882f2ef",
+    "EXTERNAL-RECEIPT.json": "16a56cdd021fd833131e3086e6f76b1d252e64c602003b40c49ec2f7c046dbe0",
+    "ARTIFACT-TRANSFER.json": "71ca36fe26787165f5e12e2b38b248886c2ca2069f7f279ee05fba43cde99651",
+    "intent.json": "d9baa4729d56edb813566fefcb2bdaa032cbf3d58923d339cdee89626c6a3d9d",
+    "cleanup-start.json": "1b7a29d18b70381fc8f2acb0496c0d7d02922602b98d7017b2120e017e3bfdd8",
+    "result.json": "f5eff0cd7251d755d542b566a1972e359369ce409e70c41b31bbcd23c2666d1d"
+  },
+  "artifact": {
+    "id": 10096561526,
+    "name": "macos-focused-34333087199-1",
+    "bytes": 3438,
+    "sha256": "93646be5a7d573e6d504332dd14223ff1751610f3bbc98c611b52c68ef0b5524",
+    "members": {"cleanup-start.json": 137, "intent.json": 2779, "result.json": 8564},
+    "expires_utc": "2026-09-16T09:09:26Z",
+    "qualification": "Upload CLI, artifact-list digest and root transfer receipt agree; reviewer independently hashed all three retained member bytes against the receipt. The archive existed only in root transfer memory and was not retained/recomputed/redownloaded by reviewer. No binary, command log or XML member exists."
+  },
+  "actual_outcome": {
+    "helper_final_exit": 1,
+    "runner_reported_process_exit": 1,
+    "status": "FAIL_OR_HOLD_NO_AUTOMATIC_RETRY",
+    "cancelled": false,
+    "settlement_uncertain": false,
+    "errors": ["Hold: handoff resource floor not met using conservative free-physical reading"],
+    "workload_command_records": 0,
+    "configure_build_case_invocations": 0,
+    "actual_product_test_cases": 0,
+    "passed_cases": 0,
+    "failed_product_cases": 0,
+    "unstarted_cases": 5,
+    "basis": "Raw commands[] and all five UNSTARTED statuses agree with the frozen source: command() performs its launch resource check before recording or Popen-launching configure. This is a real one-shot runner failure, not five failed tests or a successful build. Fixed stock metadata subprocesses did run; zero workload commands does not mean zero subprocesses."
+  },
+  "case_outcomes": {
+    "passvault_biometric_macos_fixture_normal": "UNSTARTED",
+    "passvault_biometric_macos_fixture_early_return": "UNSTARTED",
+    "passvault_biometric_macos_fixture_cpp_exception": "UNSTARTED",
+    "passvault_biometric_abi": "UNSTARTED",
+    "passvault_biometric_macos_security": "UNSTARTED"
+  },
+  "resource_gate": {
+    "sample_elapsed_s": 6.729,
+    "disk_free_bytes": 116283990016,
+    "free_physical_bytes": 3195535360,
+    "launch_disk_floor_bytes": 12884901888,
+    "launch_free_physical_percent_floor": 25,
+    "total_ram_retained": false,
+    "reconciliation": "Retained disk value exceeds12GiB. The reported resource rejection is consistent with the RAM side of the reviewed predicate, but missing total_ram prevents independent recomputation of the exact fraction or identification of the rejecting RAM subcondition. Do not substitute available/reclaimable RAM or manufacture the total from a runner label."
+  },
+  "observed_target_metadata": {
+    "architecture": "x86_64",
+    "cmake_ctest": "4.4.2 at /usr/local/Cellar/cmake/4.4.2/bin",
+    "xcode": "16.4 / 16F6",
+    "sdk": "MacOSX15.5.sdk under selected Xcode_16.4",
+    "cc_cxx": "selected XcodeDefault clang/clang++ paths",
+    "python": "3.14.7",
+    "runner_os": "macOS15.7.9/24G830; image macos-15 version20260824.0482.1",
+    "qualification": "These retained version/path/architecture observations match admission expectations. They do not prove compiler execution, Mach-O outputs, CTest compatibility, native fixture behavior, provider or physical hardware behavior."
+  },
+  "cleanup": {
+    "reported": "QUALIFIED_GENERATED_ROOT_REMOVED_ORIGINAL_HANDLES",
+    "root_identity": [16777220, 12888345620, 16384, 501],
+    "root_name": "passvault-macos-focused-34333087199-1-2adf33dd8d2773f8fa16a68ef0613fac",
+    "accepted_scope": "Qualified normal prelaunch cleanup report is supported by original-root cleanup-start, result and final console, with only the resource error and no reported cleanup/close errors. No native fixture child was launched/adopted/swept. Root/evidence/native-parent ACL observations were NO_ACL; the ancestor deny-delete variant was not exercised.",
+    "final_exit_qualification_preserved": "Raw evidence_and_ancestor_close remains PENDING_REQUIRE_ACTUAL_HELPER_EXIT_ZERO. Actual exit is1, not0: do not rewrite this into fully successful finalization. Final console records no additional close error, but this is not an independent FD-state observation or satisfaction of the exit-zero condition.",
+    "stock_metadata_settlement": "Qualified only by reviewed synchronous stock calls, returned metadata, no recorded uncertainty/cancellation and completed helper/job. Per-metadata-child exits and arbitrary descendants were not independently observed. No foreground-exit-only universal settlement claim is made.",
+    "runner_disposal": "Hosted job completion/orphan-cleanup text is containment/platform completion only, not proof of arbitrary descendant or historical filesystem recovery.",
+    "local_transfer": "Root receipt reports completed gh transfer with archive in memory only. Reviewer created only this permanent compact report, no temporary/runtime output, worker or cleanup task."
+  },
+  "slot": {
+    "reserved_record_sha256_observed": "3e134d2e2083cf6fdd86aaa840145f009277696a86091f6ea6e6ed5dd753a513",
+    "release_basis": "This exact hosted job is completed and its resource-only failure is reconciled; no application/build/test worker was launched. Releasing scheduling does not claim overall successful cleanup, relax trust assumptions, erase failure, release any older filesystem HOLD or admit a new execution. Root remains sole slot owner."
+  },
+  "evidence_limits": "CLI evidence is exact retained gh run view --log transformed text, not a raw runner-log archive; credentials remain masked. No new CI query, source change, helper execution/import or probe was performed by reviewer. No test XML exists because all cases remained UNSTARTED.",
+  "restrictions_and_counts": "Consumed once; no automatic retry, replay or recovery. MAC-FIXTURE-001/PVA-010/PVA-014 receive zero product test/closure credit. All denominators/design boundaries unchanged. PVU-007 STOP, PVU-011 NO RETRY, PVA-029 failure/no retry, G7/G8 CLOSED and Windows34284083351 operationalFAIL/filesystemHOLD/14UNSTARTED remain unchanged. Physical iPhone/Touch ID/Windows Hello remain BLOCKED; protected refs/publication/identities/dependencies/occupied1017001 fences unchanged."
+}
