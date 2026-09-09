@@ -1,0 +1,64 @@
+{
+  "author": "/root/editor_review",
+  "bindings": {
+    "controls02_json": {
+      "bytes": 41913,
+      "path": "reviews/editor-independent/CONTROL-RESULT-02-REVIEW.json",
+      "sha256": "8284e904b16f0b4bb87f05dee4cd7fe59f2b850dcd562fc4dafc5752547e7f62"
+    },
+    "controls02_md": {
+      "bytes": 7251,
+      "path": "reviews/editor-independent/CONTROL-RESULT-02-REVIEW.md",
+      "sha256": "52d64053760ff1ba8f62ace444cf012a5fb18305cfda48c9441f683f88f58a4a"
+    },
+    "root_pva038": {
+      "bytes": 14400,
+      "path": "reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.json",
+      "sha256": "8cd66918d13af25d14bda9cfd2c113fa0b57cf69f65aaeaa5551b866fe7781d5"
+    }
+  },
+  "current_accounting_from_bound_root_confirmation": {
+    "all_confirmed": {
+      "open": 16,
+      "percent": 57.9,
+      "qualified_closed": 22,
+      "total": 38
+    },
+    "original_confirmed": {
+      "open": 6,
+      "percent": 76,
+      "qualified_closed": 19,
+      "total": 25
+    },
+    "original_suspicions": {
+      "conclusively_resolved": 2,
+      "total": 12,
+      "unresolved": 10
+    },
+    "overall_readiness_percentage": null,
+    "owner_design_decisions": "SEPARATE",
+    "pvd_explanations": 8
+  },
+  "disposition": "ADDITIVE_ACCOUNTING_QUALIFICATION_FROZEN_CONTROLS02_RESULTS_UNCHANGED",
+  "format": "passvault-controls02-additive-accounting-qualification-v1",
+  "generation_distinction": {
+    "chronology": "Root source-confirmed PVA-038 in parallel at01:29 UTC, after the controls02 admission baseline but before the01:34 controls02 result report was written. That separate generation was not incorporated into the frozen result report; do not imply the finding was confirmed after01:34.",
+    "controls02_inherited_all_confirmed": "22/37",
+    "controls02_review_utc": "2026-09-09T01:34:03.041723+00:00",
+    "meaning": "The frozen controls02 report carried the earlier controls-admission product-accounting baseline. Its wording that global product progress remained22/37 was stale, not a freshly reconciled current denominator.",
+    "review_scope": "This addendum reads and attributes root confirmation/accounting metadata only. It does not independently review or confirm PVA-038, its reachability, patch or tests, and controls02 did not test it.",
+    "root_disposition": "INDEPENDENTLY_CONFIRMED_SOURCE_DEFECT_NOT_RUNTIME_VERIFIED",
+    "separate_root_pva038_confirmation_utc": "2026-09-09T01:29:16.091939+00:00"
+  },
+  "operations": "Bounded existing-report data/hash reads and this small permanent additive note only. No target source import, syntax check, compilation, control/application test, build, temporary outputs, caches or workers; metadata FDs closed.",
+  "restrictions": "All PVU-007 STOP, PVU-011 NO RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED, archived-runner/helper prohibition, Windows FAIL/HOLD/all14unstarted, PVD/hardware and publication restrictions remain.",
+  "unchanged_controls_scope": {
+    "controls01": "22 attempted,20 PASS,2 FAIL; original failure/reviewer miss preserved",
+    "controls02": "22 attempted,22 PASS,0 FAIL,0 unstarted; actual application tests0",
+    "effect_on_controls02_case_cleanup_and_timing_adjudication": "NONE",
+    "effect_on_slot_release_or_execution_admission": "NONE; root reports completed controls02 slot released; this addendum is not execution, retry or database admission",
+    "frozen_original_reports_rewritten": false,
+    "qualified_closure_delta_from_controls_or_this_addendum": 0
+  },
+  "utc": "2026-09-09T02:00:12.460546+00:00"
+}

@@ -1,0 +1,89 @@
+{
+  "application_tests_executed": 0,
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/RUN_CONTROLS.py"
+  ],
+  "author": "/root",
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "format": "passvault-controls-external-observation-v1",
+  "independent_result_review": "PENDING",
+  "input_sha256": {
+    "CONTROL-ACCEPT-editor_review.json": "57fbb7f4458d7f5f60d034f93c41a13e54aeed94ca2124a5356b21c60e611bce",
+    "CONTROL-ACCEPT-root.json": "7ea702e1069e6b7a262c69ff83cc2fe70ca02d8a1bc543f28b9f85e79722b3f2",
+    "CONTROL-LAUNCH-PLAN.md": "66f9345ae32f43d6da894e6edfd688fda1f2325372effc1dd1beace60a21d29c",
+    "CONTROL-PREFLIGHT.json": "64c926bccc2233c0be64fdb46299d36b864e8e45cd3a408273168a1a5ae0bd14",
+    "CONTROL-REQUEST.json": "8d2e20fcb074d5ffeb1775f15e7116971dab8fa46448634fb68dfdcce9539931",
+    "LINUX-CONTROLS-DESIGN.md": "1292305d4a0f1729be7016002c9f1bc99f37487077aea4f4f3d1aa1854723921",
+    "RUN_CONTROLS.py": "967ddf9a5d792712dff248f29b7845b58fcafe68e99c772341bac845ce744210",
+    "linux_runner_controls.py": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d"
+  },
+  "journal": {
+    "bytes": 123873,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events.jsonl",
+    "records": 213,
+    "sha256": "75fcebbd3c666518f9b2160d186e83ad9eebb9b8774c016eae043e88e40c6eb7"
+  },
+  "limits": "Tool exit and PID/absence are external bounded observations; internal clock/status/cleanup need independent reconciliation; no host-wide exclusivity or real mocked-process runtime proof",
+  "observed_utc": "2026-09-09T00:22:11.640263+00:00",
+  "original_process_settlement": {
+    "original_pid": 8117,
+    "original_starttime": 18227925,
+    "status": "ORIGINAL_PID_ABSENT_POINT_OBSERVATION"
+  },
+  "resources": {
+    "disk_available_bytes": {
+      "/root/projects/PassVault": 23659110400,
+      "/tmp": 22073982976
+    },
+    "memory_bytes": {
+      "MemAvailable": 46281326592,
+      "MemTotal": 67435888640
+    }
+  },
+  "retry": "NOT_AUTHORIZED_CONSUMED_ADMISSION",
+  "scratch_absent_at_point": true,
+  "terminal_record_count": 1,
+  "terminal_records": [
+    {
+      "allocation_attempted": true,
+      "application_tests_executed": 0,
+      "cancelled": [],
+      "cleanup": "ORIGINAL_EMPTY_SCRATCH_REMOVED",
+      "error": null,
+      "exit": 1,
+      "external_timeout_observed": false,
+      "kind": "launcher_terminal_commit",
+      "resources": {
+        "disks_free_bytes": {
+          "/root/projects/PassVault": 23665139712,
+          "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification": 23665139712
+        },
+        "launch_floor": false,
+        "memory_bytes": {
+          "MemAvailable": 46253379584,
+          "MemTotal": 67435888640
+        },
+        "self_maxrss_kib": 212196,
+        "unix_ns": 1788913263406571857,
+        "within_floors": true
+      },
+      "sequence": 212,
+      "source_inputs_unchanged": true,
+      "status": "CONTROLS_ONLY_NOT_DATABASE_EXECUTION_ADMISSION",
+      "unix_ns": 1788913263406856882,
+      "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+    }
+  ],
+  "tool_output_scope": "Tool supplies combined output, empty; no separately stored stream claim",
+  "tool_result": {
+    "chunk_id": "8b0448",
+    "exit_code": 1,
+    "original_token_count": 0,
+    "output": "",
+    "wall_time_seconds": 0.255451913
+  },
+  "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+}

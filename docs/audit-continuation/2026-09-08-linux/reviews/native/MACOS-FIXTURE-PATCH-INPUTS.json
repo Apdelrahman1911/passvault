@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-09",
+  "author": "/root/native",
+  "independent_reviewer_requested": "/root/native_review",
+  "scope": "MAC-FIXTURE-001 test-infrastructure/admission correction, not a new product family",
+  "status_at_submission": "IMPLEMENTED_SOURCE_ONLY_PENDING_INDEPENDENT_PATCH_CHALLENGE",
+  "observed_base_commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "observed_base_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "identity_qualification": "These exact working-tree paths, not all concurrent workspace changes or a postpatch Git tree",
+  "changed_paths": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "before_sha256": "0dcfe3a1e07aee49ca36463931b5a23a9d0302d431f9eb9f5e98726245f8797b",
+      "before_bytes": 7269,
+      "before_physical_lf": 151,
+      "after_sha256": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4",
+      "after_bytes": 20245,
+      "after_physical_lf": 459,
+      "author_after_read_ranges": [[1, 459]]
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before_sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23",
+      "before_bytes": 6177,
+      "before_physical_lf": 179,
+      "after_sha256": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+      "after_bytes": 6626,
+      "after_physical_lf": 187,
+      "author_after_read_ranges": [[1, 187]]
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/README.md",
+      "before": "ABSENT",
+      "after_sha256": "01211c798abc0a3a4134b1606ee9e57ec3d136ef12f540b3a08dd4a2b3691c61",
+      "after_bytes": 3492,
+      "after_physical_lf": 57,
+      "author_after_read_ranges": [[1, 57]]
+    }
+  ],
+  "unchanged_context": [
+    {
+      "path": "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm",
+      "sha256": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+      "bytes": 35723,
+      "physical_lf": 959,
+      "focused_author_read_ranges": [[1, 240], [323, 450], [470, 640], [800, 915]],
+      "qualification": "Focused guard/lifetime reads, not a fresh full-file review"
+    },
+    {
+      "path": "app-desktop/build.gradle.kts",
+      "sha256": "381ef53b5bc4ae775aa2322dbaea02588d499111d2a32e2ca3cdb2557363acde",
+      "bytes": 59984,
+      "physical_lf": 1472,
+      "focused_author_read_ranges": [[890, 950], [1000, 1035]],
+      "qualification": "Caller wiring only, not a fresh full-file review"
+    }
+  ],
+  "exact_unchanged_intervals": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "purpose": "Existing verify_bounded_busy_destroy retained byte-for-byte",
+      "before_lines": [14, 37],
+      "after_lines": [217, 240],
+      "inclusive_lf_interval_sha256": "776e245c039364f14cb78eb874b4f3f0c0f33b6bcbb6cad87287a864a883fa23"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "purpose": "WIN32 branch through common ABI/install tail retained byte-for-byte",
+      "before_lines": [65, 179],
+      "after_lines": [73, 187],
+      "inclusive_lf_interval_sha256": "29b45efb03531ed4b906a285d5e9c1536764976b7121ed8cb7d07db636372dc8"
+    }
+  ],
+  "prepatch_independent_finding_review": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FIXTURE-FINDING-REVIEW.json",
+    "sha256": "af52955f85171d5ce6812cbab40aebacb16c7f570b222bae8e9f668b57bc0610"
+  },
+  "preserved_windows_inputs": {
+    "scripts/audit/windows_native_validation.py": "67bcd0aeaa03fa829d55fecfbd640d185163805e4c0a067b281bd807333af243",
+    ".github/workflows/audit-windows-native-validation.yml": "643fcba6cb393bd6bbd8497cfd03a52ccc43fa217a9d1d728c453d29ddb87b8c",
+    "docs/audit-continuation/2026-09-08-linux/requests/windows-native.json": "f7922c9f351307b233e542f15e3c377f00b228c0a2593e1d89b1bbf6167b87e0"
+  },
+  "new_declared_ctest_cases": [
+    "passvault_biometric_macos_fixture_normal",
+    "passvault_biometric_macos_fixture_early_return",
+    "passvault_biometric_macos_fixture_cpp_exception"
+  ],
+  "new_declared_cases": 3,
+  "new_executions": 0,
+  "new_xml_results": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "build_or_execution_admission": false,
+  "resource_qualification": "Point sample only; not execution-slot admission: available disk 32088412 KiB; MemAvailable 44567748 KiB; no task-owned build/cache/archive/worker created"
+}

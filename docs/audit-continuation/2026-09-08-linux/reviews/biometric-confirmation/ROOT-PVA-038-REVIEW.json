@@ -1,0 +1,283 @@
+{
+  "accounting": {
+    "PVD": "8 explanations; owner decisions separate",
+    "all_confirmed": "22/38 (57.9%),16 open",
+    "original_confirmed": "19/25 (76%),6 open",
+    "original_suspicions": "2/12,10 open"
+  },
+  "application_tests": 0,
+  "author_of_finding": "/root/editor",
+  "author_report_sha256": "4cce4fba3ecefb24a7b3967c2d8e87f7c14eae1fbf46b653e4aec188daa490b5",
+  "capture_bindings": [
+    {
+      "bytes": 10769,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources/android-aead.stdout.txt",
+      "previous_transport_qualifications": "Preserved in original source-data receipts and followup",
+      "sha256": "2eac8066b9b07b7dd920d684f650c9279c8ce911f322800c2a8611cdd2fd48da"
+    },
+    {
+      "bytes": 11125,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources/common-aead.stdout.txt",
+      "previous_transport_qualifications": "Preserved in original source-data receipts and followup",
+      "sha256": "243dccc28f03b94f5c4f323c8e0139ac1088e2da091524bedfcae7a7f011ea7a"
+    },
+    {
+      "bytes": 619,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources/general-exception.stdout.txt",
+      "previous_transport_qualifications": "Preserved in original source-data receipts and followup",
+      "sha256": "ec14e1af2529d326677e6c36deae23c31188ca3afebc7a254ca81feaf074264f"
+    },
+    {
+      "bytes": 635,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources/resource-exception.stdout.txt",
+      "previous_transport_qualifications": "Preserved in original source-data receipts and followup",
+      "sha256": "b6775e595ce829aeafa6bc2627c96aad9585b9fb8bcc596f6a8cbcf6a658c341"
+    },
+    {
+      "bytes": 2575,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources/libsodium-jvm-pom.stdout.txt",
+      "previous_transport_qualifications": "Preserved in original source-data receipts and followup",
+      "sha256": "bb0a0ab14c39fd52d05df8e65bd9554a515fded99daf94f9ba35444ae32a5856"
+    },
+    {
+      "bytes": 24968,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources/resource-loader.stdout.txt",
+      "previous_transport_qualifications": "Preserved in original source-data receipts and followup",
+      "sha256": "6714869e8cf802256b56c26d9c33379b6b77931884ebc95af7d8015d32779ffd"
+    }
+  ],
+  "disposition": "INDEPENDENTLY_CONFIRMED_SOURCE_DEFECT_NOT_RUNTIME_VERIFIED",
+  "finding_id": "PVA-038",
+  "independent_counterexamples": "Static-init Error wrapping, eagerVM/Room warming, failure before retrieval, generation/session/key/metadata guards, deletion failure and POM-vs-resolved-graph limits challenged in narrative.",
+  "inspection_diagnostics": "Wrong guessed service paths and truncated overlong displays; correct exact service subsequently fully read and focused loader witness supplied. Metadata writer f99646 stopped at parse time with unmatched closing parenthesis before body/execution/output; corrected writer only serializes reports. No new project execution/cache/temp/worker.",
+  "new_confirmed_families": 1,
+  "new_qualified_closures": 0,
+  "new_semantic_LF_credit": 0,
+  "origin_additional_investigation": "NAV-FRESH-SUS-001",
+  "patch": "NOT_YET_AUTHORED_OR_REVIEWED",
+  "remaining": "Separate independently reviewed narrow fix and meaningful actual-provider regression; no test/hardware/run admission; fixed handoff105 selection cannot verify this change.",
+  "reviewer": "/root",
+  "root_narrative": {
+    "bytes": 7054,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.md",
+    "physical_LF": 108,
+    "sha256": "407da44d881319017607d1c9662e937c5ad23878490bc56168117b10dbff9d9d"
+  },
+  "schema": 1,
+  "scope": "Supported Desktop cold initialization ordinary loader IOException after valid key release to typed rejection to delete attempt; actual loss needs successful deletion. macOS return traced; Windows common/JVM chain, native success not newly end-to-end retraced. Linux biometrics unavailable; mobile/warm/Error cases excluded.",
+  "source_bindings": [
+    {
+      "bytes": 36754,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "physical_LF": 842,
+      "sha256": "f2fc2ff02926e62230eff5e4723b2a68998649eee5f758f5ff99df93bcf61469"
+    },
+    {
+      "bytes": 9170,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/DefaultBiometricUnlockService.kt",
+      "physical_LF": 194,
+      "sha256": "431356205bb300aeb0a7c14759eef0bbf09583d3100082e5dd0103ac731a90f5"
+    },
+    {
+      "bytes": 13666,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt",
+      "physical_LF": 336,
+      "sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57"
+    },
+    {
+      "bytes": 12041,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/CryptoEngine.kt",
+      "physical_LF": 400,
+      "sha256": "571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9"
+    },
+    {
+      "bytes": 8995,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/di/AppModule.kt",
+      "physical_LF": 234,
+      "sha256": "9b486df509202e65311caf92895ba8db6a44e6eae351266c8daa952bc553af25"
+    },
+    {
+      "bytes": 12108,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt",
+      "physical_LF": 315,
+      "sha256": "75349af0300801f0cad87f72b6afe9701e54bd24dafdd8867d7509c776506737"
+    },
+    {
+      "bytes": 26617,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt",
+      "physical_LF": 647,
+      "sha256": "50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006"
+    },
+    {
+      "bytes": 25067,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "feature/vault/src/commonMain/kotlin/com/passvault/feature/vault/presentation/VaultViewModel.kt",
+      "physical_LF": 609,
+      "sha256": "879a2a7ba8208004f619b22109708ae4f1232e3d4acd5266522b1afc97dd20f2"
+    },
+    {
+      "bytes": 32872,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt",
+      "physical_LF": 745,
+      "sha256": "a19baf0425234acdae2c2d923d74dbabf1e2b6a4822d923d80b9cccabfd6d723"
+    },
+    {
+      "bytes": 28938,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "feature/backup/src/commonMain/kotlin/com/passvault/feature/backup/presentation/BackupViewModel.kt",
+      "physical_LF": 716,
+      "sha256": "afd73521b4fc0d1b06af29bdc7d4940f4646507a66fcc4e55d801f2448060e63"
+    },
+    {
+      "bytes": 15273,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "feature/onboarding/src/commonMain/kotlin/com/passvault/feature/onboarding/presentation/OnboardingViewModel.kt",
+      "physical_LF": 378,
+      "sha256": "ae02e90a35bb2809414796df9357a5e42be8223be3a7ef614155cf00cdaea06c"
+    },
+    {
+      "bytes": 17391,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "feature/unlock/src/commonMain/kotlin/com/passvault/feature/unlock/presentation/UnlockViewModel.kt",
+      "physical_LF": 433,
+      "sha256": "5c0c5511caf2cfa17df92cdb10ab1513ef98bbe7fa64798173106c57ff4811a0"
+    },
+    {
+      "bytes": 60169,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/CredentialRepositoryImpl.kt",
+      "physical_LF": 1384,
+      "sha256": "910fa9d999a3ef7327e3e70d6a9aa142eabf8b14131402f4415f3ef4e72f1e9f"
+    },
+    {
+      "bytes": 6557,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/ToolsRouteAdapters.kt",
+      "physical_LF": 144,
+      "sha256": "67a3436fb532bce79f88220fe2d28984f9e2a977d58579df0bdbcbecabc68173"
+    },
+    {
+      "bytes": 21792,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/VaultDatabaseBootstrap.kt",
+      "physical_LF": 507,
+      "sha256": "5726afb24093afa8c56c57321d64f0ea747db69910f0b7aa984e9d18a86f2598"
+    },
+    {
+      "bytes": 3537,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/database/src/desktopMain/kotlin/com/passvault/core/database/Database.desktop.kt",
+      "physical_LF": 95,
+      "sha256": "2aa4d34c71de4dae66a79e6d93af187a44642e4a504ff2a592d82c60245f39a7"
+    },
+    {
+      "bytes": 255,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "shared/src/desktopMain/kotlin/com/passvault/shared/di/DatabaseProvider.desktop.kt",
+      "physical_LF": 7,
+      "sha256": "4e4806f1fdaae610749f9f5f04c2788163d8c6de69abaf9ec75c940f0d664270"
+    },
+    {
+      "bytes": 7646,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+      "physical_LF": 254,
+      "sha256": "9457f71fefe63de14ddd80d91b14b5b281175ee7c9bcdb113ac6a8ae15452616"
+    },
+    {
+      "bytes": 6062,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopShutdownCoordinator.kt",
+      "physical_LF": 172,
+      "sha256": "7156e03eb7e5d2ea7636a9320a49aeaf15d0694522d88f78836b075c74e9043d"
+    },
+    {
+      "bytes": 2132,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/di/DesktopModule.kt",
+      "physical_LF": 47,
+      "sha256": "7b70040fe488c9825090548b3d8ca4a2e4f34c1989b072d2571d74c9647cd253"
+    },
+    {
+      "bytes": 1830,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricRuntime.kt",
+      "physical_LF": 45,
+      "sha256": "111d03d9d074f0dc46dfcd670bcf2b3669b6a9104236fdb88287d41ad2b2e496"
+    },
+    {
+      "bytes": 22534,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt",
+      "physical_LF": 473,
+      "sha256": "58bfb35a24738dafa765216aba023371088c697c5b5024462b1e2bc09ecbe787"
+    },
+    {
+      "bytes": 6861,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricKeyStore.kt",
+      "physical_LF": 168,
+      "sha256": "0e4cb1569508466614af3782b3b58a1b22a1b3a3a89a124f7a14516d34c62499"
+    },
+    {
+      "bytes": 16004,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricBridge.kt",
+      "physical_LF": 404,
+      "sha256": "772d17b80f6e131aeed8cf763efa59cb909eb0696f777da555382b91f6113232"
+    },
+    {
+      "bytes": 35723,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm",
+      "physical_LF": 959,
+      "sha256": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9"
+    },
+    {
+      "bytes": 5973,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "gradle/libs.versions.toml",
+      "physical_LF": 129,
+      "sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a"
+    },
+    {
+      "bytes": 822452,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "gradle/verification-metadata.xml",
+      "physical_LF": 12557,
+      "sha256": "21ab6f9c2873325558f5bb96c7e7f68bfbb674e2a7ce867ffe19dabdae60c299"
+    },
+    {
+      "bytes": 2805,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "core/crypto/build.gradle.kts",
+      "physical_LF": 90,
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112"
+    },
+    {
+      "bytes": 33812,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/LOADER-EXCERPTS.json",
+      "physical_LF": 163,
+      "sha256": "0c2d3275c6e85b9d62f980609a6e1e021b4b967f88919254bde4349de977b160"
+    },
+    {
+      "bytes": 10466,
+      "meaning": "Exact source binding; not whole-file semantic coverage or execution",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/LOADER-FOLLOWUP.json",
+      "physical_LF": 63,
+      "sha256": "867b760578d96cbb1f2143a85836829a916132fe84ea59b033d798400613711b"
+    }
+  ],
+  "source_checkpoint_commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "source_checkpoint_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "utc": "2026-09-09T01:29:16.091939+00:00"
+}

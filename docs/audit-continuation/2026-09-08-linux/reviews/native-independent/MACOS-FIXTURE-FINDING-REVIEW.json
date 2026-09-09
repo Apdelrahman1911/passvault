@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T00:34:12.780626+00:00",
+  "scope_alias": "MAC-FIXTURE-001",
+  "disposition": "TEST_INFRASTRUCTURE_SOURCE_GAP_SUPPORTED_PATCH_REVIEW_PENDING_NO_EXECUTION_ADMISSION",
+  "original_source_commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "original_source_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "source_inputs": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "sha256": "0dcfe3a1e07aee49ca36463931b5a23a9d0302d431f9eb9f5e98726245f8797b",
+      "bytes": 7269,
+      "physical_lf": 151,
+      "read_ranges": [
+        [
+          1,
+          151
+        ]
+      ],
+      "identity": "Original prepatch bytes read before implementation; matched observed committed source, not an assertion future worktree is unchanged"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm",
+      "sha256": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+      "bytes": 35723,
+      "physical_lf": 959,
+      "read_ranges": [
+        [
+          1,
+          225
+        ],
+        [
+          323,
+          436
+        ],
+        [
+          539,
+          635
+        ],
+        [
+          800,
+          907
+        ]
+      ],
+      "identity": "Original prepatch bytes read before implementation; matched observed committed source, not an assertion future worktree is unchanged"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23",
+      "bytes": 6177,
+      "physical_lf": 179,
+      "read_ranges": [
+        [
+          1,
+          179
+        ]
+      ],
+      "identity": "Original prepatch bytes read before implementation; matched observed committed source, not an assertion future worktree is unchanged"
+    }
+  ],
+  "author_proposal": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FIXTURE-PROPOSAL.md",
+    "sha256": "98bca2fa8a6b15d8b347d95d4814d6ee42ef619072a626b37cf4b79b753d5290",
+    "bytes": 5871,
+    "physical_lf": 94,
+    "read": "Complete"
+  },
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FIXTURE-FINDING-REVIEW.md",
+  "report_sha256": "b235494307644f83fafac23e00b5d746790771eb893062d0fa70b0b2f9a3acf4",
+  "finding_classification": "Continuation of pending test-fixture cleanup/isolation and oracle-quality qualification; not new PVA product family",
+  "challenge": "Early return after acquired child supported; successful cleanup/failed acquisition/private0700 counterexamples preserved; current lstat/O_NOFOLLOW rejects system symlink; valid private metadata target is stronger negative control; absent macos-v1.meta guards provider entry",
+  "source_work_boundary": "Root-authorized bounded fixture/CMake-Apple source preparation only; exact patch/regression design remains independently reviewable",
+  "new_tests_executed": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "prior_windows01": "FAIL/HOLD/14UNSTARTED preserved; no observability application, request/helper execution or retry",
+  "restrictions": "PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED,hardware/PVD and publication fences unchanged",
+  "cleanup": "Compact permanent reviewer reports only; no temporary helper/archive/build/cache or worker created; no wrapper/deletion/termination invoked"
+}

@@ -1,0 +1,234 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T01:16:36.108124+00:00",
+  "scope_alias": "MAC-FIXTURE-001",
+  "disposition": "QUALIFIED_SOURCE_ACCEPTANCE_NO_EXECUTION_ADMISSION_RUNTIME_PENDING",
+  "observed_base_commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "observed_base_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "identity_qualification": "Exact frozen working-file tuples; not all concurrent changes or a postpatch Git tree",
+  "inputs": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "sha256": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4",
+      "bytes": 20245,
+      "physical_lf": 459
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+      "bytes": 6626,
+      "physical_lf": 187
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/README.md",
+      "sha256": "01211c798abc0a3a4134b1606ee9e57ec3d136ef12f540b3a08dd4a2b3691c61",
+      "bytes": 3492,
+      "physical_lf": 57
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm",
+      "sha256": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+      "bytes": 35723,
+      "physical_lf": 959
+    },
+    {
+      "path": "app-desktop/build.gradle.kts",
+      "sha256": "381ef53b5bc4ae775aa2322dbaea02588d499111d2a32e2ca3cdb2557363acde",
+      "bytes": 59984,
+      "physical_lf": 1472
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FIXTURE-PATCH.md",
+      "sha256": "c8594961cb636da41e0a7a6b97b3a4fee84b8aec10257262c970f7c0ecdd7985",
+      "bytes": 9102,
+      "physical_lf": 145
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FIXTURE-PATCH-INPUTS.json",
+      "sha256": "3755b0e18b8e4ed94870c03621c5c022993af4ca763660e2bc01c9dae207acc9",
+      "bytes": 4542,
+      "physical_lf": 96
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FIXTURE-PATCH-QUALIFICATIONS.md",
+      "sha256": "f821e6db983d0cc647710a7edf1f227fdcb27e1c6e5154a04814356a9a65e97c",
+      "bytes": 2880,
+      "physical_lf": 43
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FIXTURE-FINDING-REVIEW.json",
+      "sha256": "af52955f85171d5ce6812cbab40aebacb16c7f570b222bae8e9f668b57bc0610",
+      "bytes": 3557,
+      "physical_lf": 81
+    },
+    {
+      "path": "scripts/audit/windows_native_validation.py",
+      "sha256": "67bcd0aeaa03fa829d55fecfbd640d185163805e4c0a067b281bd807333af243",
+      "bytes": 39470,
+      "physical_lf": 719
+    },
+    {
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "sha256": "643fcba6cb393bd6bbd8497cfd03a52ccc43fa217a9d1d728c453d29ddb87b8c",
+      "bytes": 2056,
+      "physical_lf": 53
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/requests/windows-native.json",
+      "sha256": "f7922c9f351307b233e542f15e3c377f00b228c0a2593e1d89b1bbf6167b87e0",
+      "bytes": 1568,
+      "physical_lf": 32
+    }
+  ],
+  "independent_read_ranges": {
+    "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm": {
+      "before": [
+        [
+          1,
+          151
+        ]
+      ],
+      "after": [
+        [
+          1,
+          459
+        ]
+      ]
+    },
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": {
+      "before": [
+        [
+          1,
+          179
+        ]
+      ],
+      "after": [
+        [
+          1,
+          187
+        ]
+      ]
+    },
+    "app-desktop/native/biometric-bridge/tests/macos/README.md": {
+      "after": [
+        [
+          1,
+          57
+        ]
+      ]
+    },
+    "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm": {
+      "focused_unchanged_context": [
+        [
+          1,
+          225
+        ],
+        [
+          323,
+          436
+        ],
+        [
+          539,
+          635
+        ],
+        [
+          800,
+          907
+        ]
+      ],
+      "qualification": "Previously independently read ranges reused against identical bytes, with focused patch guard re-reads; not a new full-file audit"
+    },
+    "app-desktop/build.gradle.kts": {
+      "focused_unchanged_context": [
+        [
+          861,
+          975
+        ],
+        [
+          1000,
+          1038
+        ]
+      ],
+      "qualification": "Caller/task wiring only; not a new full-file audit"
+    }
+  },
+  "complete_packet_docs_read": true,
+  "unchanged_intervals": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "before_lines": [
+        14,
+        37
+      ],
+      "after_lines": [
+        217,
+        240
+      ],
+      "sha256": "776e245c039364f14cb78eb874b4f3f0c0f33b6bcbb6cad87287a864a883fa23",
+      "purpose": "Byte-identical existing verify_bounded_busy_destroy, not hard elapsed-bound proof"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before_lines": [
+        65,
+        179
+      ],
+      "after_lines": [
+        73,
+        187
+      ],
+      "sha256": "29b45efb03531ed4b906a285d5e9c1536764976b7121ed8cb7d07db636372dc8",
+      "qualification": "Original manifest interval valid but omits first three WIN32 lines"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before_lines": [
+        62,
+        179
+      ],
+      "after_lines": [
+        70,
+        187
+      ],
+      "sha256": "72f7ebd4a170f4923ba16ffd213a552feee03a19aec62d4add7ed12b67499c0e",
+      "purpose": "Complete WIN32 branch header through common ABI/install tail; independently compared identical"
+    }
+  ],
+  "required_qualifications": [
+    "Pre-mkdir allocation assertion covers only NativeFixture::create owned member strings; later guarded allocations remain",
+    "Descriptor-close outcomes observe only fixture parent/root/biometric directory fds, not production-helper/native-worker settlement",
+    "Full WIN32 branch requires corrected inclusive LF interval 62-179 before / 70-187 after"
+  ],
+  "qualification_resolution": "Author preserved frozen inputs and supplied exact-bound addendum; reviewer read and accepted its narrowed scope",
+  "functional_source_challenge": "No further defect found within cooperative/ordinary-unwind test-fixture scope; not compilation/runtime proof",
+  "caller_compatibility": "Existing macOS Gradle/Desktop test callers now intentionally fail closed without independently admitted PASSVAULT_NATIVE_TEST_PARENT; no ambient fallback or runner admission supplied",
+  "new_declared_ctest_cases": [
+    "passvault_biometric_macos_fixture_normal",
+    "passvault_biometric_macos_fixture_early_return",
+    "passvault_biometric_macos_fixture_cpp_exception"
+  ],
+  "new_declared_cases": 3,
+  "total_apple_source_declared_cases": 5,
+  "new_executions": 0,
+  "new_xml_results": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "denominator_delta": 0,
+  "build_or_execution_admission": false,
+  "process_cleanup_clearance": false,
+  "macos_target_compile_status": "UNEXECUTED",
+  "macos_target_runtime_status": "UNEXECUTED",
+  "hardware_proof": false,
+  "prior_windows01": "FAIL/HOLD/14UNSTARTED preserved; frozen helper/workflow/consumed request intact; observability patch inert; no retry/recovery authority",
+  "restrictions": "PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED,PVD/owner/hardware and publication/build1017001 fences unchanged",
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FIXTURE-PATCH-REVIEW.md",
+  "report_sha256": "60459a1a7d011ca4b218659ac5f52297f3cea2a42ac1ffb64d5a565ff9158ba9",
+  "cleanup": "Compact permanent reviewer reports only; no build/cache/temp executable/archive/background worker; no source edit, helper import/execution, wrapper, deletion or process termination",
+  "resource_point_sample": {
+    "available_disk_KiB": 32008248,
+    "MemAvailable_KiB": 43145556,
+    "qualification": "During review, not build/test admission"
+  }
+}

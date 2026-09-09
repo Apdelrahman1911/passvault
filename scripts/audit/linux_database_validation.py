@@ -1,0 +1,1079 @@
+#!/usr/bin/python3
+"""One separately admitted Linux database run; NOT admission by its existence.
+
+Root alone may execute this file, without arguments, as /usr/bin/python3 -I -B.
+Import requires a separate exact-source inert-control admission; never import an
+archived runner. There is no retry/recovery/general-task operational mode.
+All runtime files are RETAINED for immediate, independently reviewed closeout.
+This is cooperative namespace/process coordination, not a hostile-UID sandbox.
+"""
+
+import collections
+import contextlib
+import errno
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import selectors
+import signal
+import stat
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+
+
+BASE = Path('/root/projects/PassVault')
+W = BASE / 'passvault-linux'
+REPOSITORY = BASE / 'passvault'
+C = W / 'docs/audit-continuation/2026-09-08-linux/reviews/linux-runner'
+E = W / 'docs/audit-continuation/2026-09-08-linux/runs/linux-database-01'
+R = BASE / 'audit-runtime-linux-db-01'
+LOCK = BASE / '.audit-coordination-linux-20260908/build.lock'
+SELF = W / 'scripts/audit/linux_database_validation.py'
+PLAN = C / 'PLAN.md'
+REQUEST = C / 'REQUEST.json'
+SOURCE = C / 'SOURCE.json'
+METHODS = W / 'docs/audit-continuation/2026-09-08-linux/reviews/verification/METHOD-INVENTORY.json'
+ACCEPTANCES = (C / 'ACCEPT-root.json', C / 'ACCEPT-verification.json')
+REVIEWERS = ('/root', '/root/verification')
+REVIEW_ROLES = ('OWNER_COAUTHOR_APPROVAL', 'INDEPENDENT_SOURCE_REVIEW')
+RUNNER_AUTHORS = ['/root/storage', '/root']
+COMMIT = '9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed'
+TREE = '05014e9f635131d5db06701e4013b4b5a746465a'
+METHODS_SHA = '40ac2f07ea2c98d1a320e75bb59d7bbc6b3ec954efd94b349257103aaccd8979'
+JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+SDK = '/opt/android-sdk'
+TASK = ':core:database:desktopTest'
+CLASSES = (
+    'com.passvault.core.database.backup.BackupPaginationTest',
+    'com.passvault.core.database.backup.VaultBackupUnicodePaginationTest',
+    'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest',
+    'com.passvault.core.database.repository.RepositorySecurityIntegrationTest',
+    'com.passvault.core.database.backup.VaultBackupStreamingTest',
+    'com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest',
+    'com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest',
+)
+COUNTS = (13, 6, 12, 17, 39, 7, 11)
+GIB = 1024 ** 3
+LIMITS = {
+    'launch_free_bytes': 12 * GIB, 'running_free_bytes': 8 * GIB,
+    'launch_memory_fraction': 0.25, 'running_memory_fraction': 0.20,
+    'build_seconds': 3600, 'stop_seconds': 600, 'git_seconds': 180,
+    'settlement_seconds': 120, 'total_seconds': 4800,
+    'log_bytes_per_command': 4 * 1024 ** 2, 'journal_bytes': 8 * 1024 ** 2,
+    'xml_bytes_per_file': 2 * 1024 ** 2, 'xml_total_bytes': 16 * 1024 ** 2,
+    'runtime_logical_bytes': 6 * GIB, 'runtime_files': 200000,
+    'runtime_directories': 30000, 'resource_poll_seconds': 5,
+    'inventory_poll_seconds': 30,
+    'preadmission_source_seconds': 120, 'preadmission_source_bytes': 256 * 1024 ** 2,
+}
+PRIVATE_DIRS = (
+    'checkout', 'home', 'tmp', 'jna', 'sqlite', 'gradle-home', 'konan',
+    'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state', 'android-user',
+)
+GENERATED_ROOTS = (
+    '.gradle', '.kotlin', 'build',
+    'app-android/build', 'app-desktop/build', 'shared/build',
+    'core/domain/build', 'core/database/build', 'core/crypto/build', 'core/security/build',
+    'core/designsystem/build', 'core/navigation/build', 'core/otp/build', 'core/testing/build',
+    'feature/onboarding/build', 'feature/unlock/build', 'feature/vault/build',
+    'feature/credential/build', 'feature/generator/build', 'feature/health/build',
+    'feature/settings/build', 'feature/backup/build',
+)
+ENV = {
+    'PATH': JAVA_HOME + '/bin:/usr/bin:/bin', 'JAVA_HOME': JAVA_HOME,
+    'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC',
+    'HOME': str(R / 'home'), 'GRADLE_USER_HOME': str(R / 'gradle-home'),
+    'KONAN_DATA_DIR': str(R / 'konan'), 'XDG_CACHE_HOME': str(R / 'xdg-cache'),
+    'XDG_CONFIG_HOME': str(R / 'xdg-config'), 'XDG_DATA_HOME': str(R / 'xdg-data'),
+    'XDG_STATE_HOME': str(R / 'xdg-state'), 'ANDROID_USER_HOME': str(R / 'android-user'),
+    'ANDROID_HOME': SDK, 'ANDROID_SDK_ROOT': SDK,
+    'TMPDIR': str(R / 'tmp'), 'TMP': str(R / 'tmp'), 'TEMP': str(R / 'tmp'),
+    'SQLITE_TMPDIR': str(R / 'sqlite'),
+    'JAVA_TOOL_OPTIONS': ' '.join((
+        '-Xmx512m', '-XX:-UsePerfData', '-Dfile.encoding=UTF-8',
+        '-Duser.home=' + str(R / 'home'), '-Djava.io.tmpdir=' + str(R / 'tmp'),
+        '-Djna.tmpdir=' + str(R / 'jna'), '-Dorg.sqlite.tmpdir=' + str(R / 'sqlite'),
+    )),
+    'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': '/dev/null',
+    'GIT_TERMINAL_PROMPT': '0', 'GIT_OPTIONAL_LOCKS': '0',
+}
+GRADLE_FLAGS = [
+    '--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel',
+    '--no-configure-on-demand', '--no-configuration-cache', '--no-build-cache',
+    '--dependency-verification=strict', '-Pkotlin.compiler.execution.strategy=in-process',
+    '-Pandroid.builder.sdkDownload=false',
+    '-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8',
+    '-Dorg.gradle.java.installations.auto-download=false',
+    '-Dorg.gradle.java.installations.auto-detect=false',
+    '-Dorg.gradle.java.installations.paths=' + JAVA_HOME,
+]
+BUILD = [str(R / 'checkout/gradlew'), TASK]
+for _fqcn in CLASSES:
+    BUILD.extend(('--tests', _fqcn))
+BUILD += ['--rerun-tasks', '--stacktrace'] + GRADLE_FLAGS
+STOP = [str(R / 'checkout/gradlew'), '--stop'] + GRADLE_FLAGS
+GIT = [
+    '/usr/bin/git', '--no-pager', '-c', 'core.hooksPath=/dev/null',
+    '-c', 'core.fsmonitor=false', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',
+    '-c', 'core.autocrlf=false', '-c', 'core.eol=lf',
+]
+SIGNALS = {signal.SIGINT, signal.SIGTERM, signal.SIGHUP}
+BUILDLIKE = {
+    'java', 'javaw', 'gradle', 'kotlinc', 'kotlin', 'xcodebuild', 'swift',
+    'swift-frontend', 'clang', 'clang++', 'gcc', 'g++', 'cc1', 'cc1plus',
+    'cmake', 'ninja', 'make', 'adb', 'emulator', 'qemu-system-x86',
+}
+CANCEL = set()
+UID = os.getuid()
+
+
+class Refused(Exception):
+    pass
+
+
+class ProcessCompleted(Refused):
+    """Observed same-birth/UID zombie, not an arbitrary ownership refusal."""
+
+
+def require(condition, message):
+    if not condition:
+        raise Refused(message)
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode() + b'\n'
+
+
+def strict_json(data):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            require(key not in result, 'duplicate JSON key')
+            result[key] = value
+        return result
+    return json.loads(data, object_pairs_hook=pairs,
+                      parse_constant=lambda _: (_ for _ in ()).throw(Refused('nonfinite JSON')))
+
+
+def identity(st, directory=False):
+    names = ('st_dev', 'st_ino', 'st_uid', 'st_mode') if directory else (
+        'st_dev', 'st_ino', 'st_uid', 'st_mode', 'st_nlink',
+        'st_size', 'st_mtime_ns', 'st_ctime_ns')
+    return {name[3:]: getattr(st, name) for name in names}
+
+
+def clean_path(path):
+    path = Path(path)
+    require(path.is_absolute() and '..' not in path.parts, 'noncanonical absolute path')
+    return path
+
+
+class Directories:
+    """Retain original descriptors; discover only during explicit admission/allocation."""
+
+    def __init__(self):
+        self.fds = {}
+        self.pins = {}
+
+    def open(self, path, discover=False):
+        path = clean_path(path)
+        key = str(path)
+        if key in self.fds:
+            fd = self.fds[key]
+            require(identity(os.fstat(fd), True) == self.pins[key], 'directory descriptor drift')
+            if path != Path('/'):
+                parent = self.open(path.parent)
+                require(identity(os.stat(path.name, dir_fd=parent, follow_symlinks=False), True)
+                        == self.pins[key], 'directory pathname replacement')
+            return fd
+        require(discover, 'unregistered original directory')
+        parent = self.open(path.parent, True) if path != Path('/') else None
+        fd = os.open(path.name if parent is not None else '/',
+                     os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                     dir_fd=parent)
+        st = os.fstat(fd)
+        require(stat.S_ISDIR(st.st_mode), 'directory type')
+        self.fds[key] = fd
+        self.pins[key] = identity(st, True)
+        return fd
+
+    def bind(self, expected):
+        for path in sorted(expected, key=lambda p: (len(Path(p).parts), p)):
+            self.open(path, True)
+        require(self.pins == expected, 'original directory pin set/identity mismatch')
+
+    def verify(self):
+        for path in tuple(self.fds):
+            self.open(path)
+
+    def read(self, path, cap, discover=False):
+        path = clean_path(path)
+        parent = self.open(path.parent, discover)
+        before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, 'regular single-link file required')
+        require(before.st_size <= cap and not before.st_mode & 0o022, 'input size/write-mode')
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+        try:
+            require(identity(os.fstat(fd)) == identity(before), 'pre/open input change')
+            pieces = []
+            count = 0
+            while True:
+                piece = os.read(fd, min(65536, cap + 1 - count))
+                if not piece:
+                    break
+                pieces.append(piece)
+                count += len(piece)
+                require(count <= cap, 'input read cap')
+            after = os.fstat(fd)
+            last = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+            require(identity(before) == identity(after) == identity(last), 'post-read input change')
+            require(count == before.st_size, 'input short read')
+            self.open(path.parent)
+            return b''.join(pieces), identity(before)
+        finally:
+            os.close(fd)
+
+    def new_file(self, path):
+        path = clean_path(path)
+        parent = self.open(path.parent)
+        fd = os.open(path.name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                     0o600, dir_fd=parent)
+        try:
+            os.fsync(parent)
+        except BaseException:
+            os.close(fd)
+            raise
+        return fd
+
+    def write_new(self, path, data):
+        fd = self.new_file(path)
+        try:
+            view = memoryview(data)
+            while view:
+                view = view[os.write(fd, view):]
+            os.fsync(fd)
+            st = os.fstat(fd)
+        finally:
+            os.close(fd)
+        os.fsync(self.open(Path(path).parent))
+        return {'sha256': sha(data), 'identity': identity(st)}
+
+    def mkdir(self, path, journal):
+        path = clean_path(path)
+        parent = self.open(path.parent)
+        journal.event('allocation_intent', path=str(path), parent=self.pins[str(path.parent)])
+        os.mkdir(path.name, 0o700, dir_fd=parent)
+        os.fsync(parent)
+        self.open(path, True)
+        require(self.pins[str(path)]['uid'] == UID and self.pins[str(path)]['mode'] == stat.S_IFDIR | 0o700,
+                'new private directory ownership/mode')
+        journal.event('allocation_original', path=str(path), identity=self.pins[str(path)])
+
+    def close(self):
+        for fd in reversed(tuple(self.fds.values())):
+            os.close(fd)
+
+
+class Journal:
+    def __init__(self, dirs):
+        self.dirs = dirs
+        self.fd = dirs.new_file(E / 'JOURNAL.jsonl')
+        self.errors = []
+        self.ok = True
+        self.used = 0
+        self.sequence = 0
+
+    def event(self, kind, **values):
+        require(self.ok, 'journal already incomplete')
+        record = canonical({'sequence': self.sequence, 'time_ns': time.time_ns(),
+                            'kind': kind, **values})
+        try:
+            require(self.used + len(record) <= LIMITS['journal_bytes'], 'journal cap')
+            view = memoryview(record)
+            while view:
+                view = view[os.write(self.fd, view):]
+            os.fsync(self.fd)
+            self.used += len(record)
+            self.sequence += 1
+        except BaseException:
+            self.ok = False
+            self.errors.append('journal persistence failed')
+            raise
+
+    def error(self, message):
+        if message not in self.errors:
+            self.errors.append(message)
+            if self.ok:
+                self.event('error', reason=message)
+
+    def latch_cancel(self):
+        if CANCEL:
+            self.error('cancellation observed: ' + ','.join(map(str, sorted(CANCEL))))
+
+
+def resource_sample(launch=False):
+    disks = {str(p): os.statvfs(p).f_bavail * os.statvfs(p).f_frsize for p in (BASE, E)}
+    memory = {}
+    with open('/proc/meminfo', encoding='ascii') as stream:
+        for line in stream:
+            key, value = line.split(':', 1)
+            if key in ('MemTotal', 'MemAvailable'):
+                memory[key] = int(value.strip().split()[0]) * 1024
+    fraction = memory['MemAvailable'] / memory['MemTotal']
+    prefix = 'launch' if launch else 'running'
+    require(min(disks.values()) >= LIMITS[prefix + '_free_bytes'], 'disk floor')
+    require(fraction >= LIMITS[prefix + '_memory_fraction'], 'memory floor')
+    return {'disks_available': disks, 'memory': memory, 'available_fraction': fraction}
+
+
+def inside_runtime(path):
+    return path == str(R) or path.startswith(str(R) + '/')
+
+
+def process_row(pid):
+    root = Path('/proc') / str(pid)
+    raw = (root / 'stat').read_text(encoding='utf-8')
+    tail = raw[raw.rfind(')') + 2:].split()
+    comm = raw[raw.find('(') + 1:raw.rfind(')')]
+    first = (int(tail[19]), int(tail[1]), os.stat(root).st_uid)
+    cwd = '' if tail[0] == 'Z' else os.readlink(root / 'cwd')
+    raw2 = (root / 'stat').read_text(encoding='utf-8')
+    tail2 = raw2[raw2.rfind(')') + 2:].split()
+    second = (int(tail2[19]), int(tail2[1]), os.stat(root).st_uid)
+    cwd2 = '' if tail2[0] == 'Z' else os.readlink(root / 'cwd')
+    return {'pid': pid, 'start': first[0], 'ppid': first[1], 'uid': first[2],
+            'inside': inside_runtime(cwd), 'buildlike': comm in BUILDLIKE,
+            'comm': comm, 'stable': first == second and cwd == cwd2,
+            'birth_stable': first[0] == second[0] and first[2] == second[2],
+            'zombie': tail2[0] == 'Z'}
+
+
+class Processes:
+    def __init__(self, journal):
+        self.j = journal
+        self.owned = {}
+        self.pidfds = {}
+        self.children = {}
+        self.unknown = set()
+
+    def admit(self, row, anchor):
+        key = (row['pid'], row['start'])
+        if key in self.owned:
+            return
+        require(row['uid'] == UID and row['inside'] and row['stable'], 'owned process original identity/cwd')
+        parent_key = None
+        fd = None
+        try:
+            if isinstance(anchor, dict):
+                parent_key = (anchor['live_parent_pid'], anchor['start'])
+                require(parent_key in self.owned, 'parent birth has no original ownership')
+                parent = process_row(parent_key[0])
+                require((parent['pid'], parent['start']) == parent_key and parent['uid'] == UID
+                        and parent['inside'] and parent['stable'] and not parent['zombie'],
+                        'original live parent changed before child capture')
+            fresh = process_row(row['pid'])
+            require((fresh['pid'], fresh['start']) == key and fresh['uid'] == UID and fresh['birth_stable'],
+                    'fresh child birth/uid changed')
+            if fresh['zombie']:
+                raise ProcessCompleted('same-birth child completed before ownership capture')
+            require(fresh['inside'] and fresh['stable'], 'fresh child live cwd changed')
+            if parent_key is not None:
+                require(fresh['ppid'] == parent_key[0], 'child parent changed before pidfd acquisition')
+            if hasattr(os, 'pidfd_open'):
+                fd = os.pidfd_open(row['pid'], 0)
+            last = process_row(row['pid'])
+            require((last['pid'], last['start']) == key and last['uid'] == UID and last['birth_stable'],
+                    'pidfd acquisition child identity change')
+            if last['zombie']:
+                raise ProcessCompleted('same-birth child completed during ownership capture')
+            require(last['inside'] and last['stable'], 'pidfd acquisition live cwd change')
+            if parent_key is not None:
+                require(last['ppid'] == parent_key[0], 'child parent changed during admission')
+                parent = process_row(parent_key[0])
+                require((parent['pid'], parent['start']) == parent_key and parent['uid'] == UID
+                        and parent['inside'] and parent['stable'] and not parent['zombie'],
+                        'original live parent changed after child capture')
+        except BaseException:
+            if fd is not None:
+                os.close(fd)
+            raise
+        if fd is not None:
+            self.pidfds[key] = fd
+        self.owned[key] = last
+        command = (Path('/proc') / str(row['pid']) / 'cmdline').read_bytes()
+        require(len(command) <= 65536, 'owned command evidence cap')
+        self.j.event('owned_process', pid=row['pid'], start=row['start'], ppid=row['ppid'],
+                     anchor=anchor, inside_runtime=True,
+                     argv=[v.decode('utf-8', 'replace') for v in command.split(b'\0') if v])
+
+    def direct(self, child):
+        self.children[child.pid] = child
+        try:
+            row = process_row(child.pid)
+            if row['zombie']:
+                require(row['uid'] == UID and row['birth_stable'], 'direct zombie birth/uid unstable')
+                require(child.poll() is not None, 'direct zombie exit not observable')
+                self.j.event('direct_child_already_exited', pid=child.pid, start=row['start'], exit=child.returncode)
+            else:
+                self.admit(row, 'unreaped direct Popen child')
+        except (FileNotFoundError, ProcessLookupError, ProcessCompleted):
+            require(child.poll() is not None, 'direct child birth not observable')
+            self.j.event('direct_child_already_exited', pid=child.pid, exit=child.returncode)
+
+    def scan(self):
+        unknown = set()
+        completed_direct = set()
+        snapshots = []
+        for _ in range(2):
+            rows = {}
+            ids = {int(p) for p in os.listdir('/proc') if p.isdigit()}
+            for pid in ids:
+                if pid == os.getpid():
+                    continue
+                try:
+                    row = process_row(pid)
+                    rows[pid] = row
+                except (FileNotFoundError, ProcessLookupError):
+                    # A vanished positively owned child is settled only by subsequent sampling/wait.
+                    child = self.children.get(pid)
+                    if child is None or child.returncode is not None or child.poll() is None:
+                        unknown.add(('unclassified_vanished', pid))
+                except (PermissionError, ValueError, IndexError):
+                    unknown.add(('unclassifiable_process', pid))
+            snapshots.append(rows)
+        before, rows = snapshots
+        for pid in before.keys() | rows.keys():
+            old, new = before.get(pid), rows.get(pid)
+            relevant = any(row and (row['buildlike'] or row['inside'] or
+                                   (row['pid'], row['start']) in self.owned) for row in (old, new))
+            if not relevant:
+                continue
+            if old is not None and new is not None:
+                if old['start'] != new['start'] or old['uid'] != new['uid']:
+                    unknown.add(('between_sample_birth_identity_change', pid))
+                elif not old['zombie'] and not new['zombie'] and (
+                        old['inside'] != new['inside'] or old['ppid'] != new['ppid']):
+                    unknown.add(('between_sample_relevance_cwd_parent_churn', pid))
+            elif old is not None and (old['pid'], old['start']) not in self.owned:
+                unknown.add(('unowned_relevant_process_vanished', pid))
+        for row in rows.values():
+            child = self.children.get(row['pid'])
+            if child is not None and child.returncode is None and not row['zombie']:
+                try:
+                    self.admit(row, 'unreaped direct Popen child')
+                except ProcessCompleted:
+                    if child.poll() is None:
+                        unknown.add(('direct_completion_unobserved', row['pid']))
+                    else:
+                        self.j.event('direct_child_already_exited', pid=child.pid, exit=child.returncode)
+                        completed_direct.add((row['pid'], row['start']))
+                except (OSError, Refused):
+                    unknown.add(('unsettled_direct_child_birth', row['pid']))
+        changed = True
+        while changed:
+            changed = False
+            for row in rows.values():
+                key = (row['pid'], row['start'])
+                parent = rows.get(row['ppid'])
+                if key not in self.owned and parent is not None:
+                    parent_key = (parent['pid'], parent['start'])
+                    if parent_key in self.owned and row['start'] >= parent['start']:
+                        try:
+                            self.admit(row, {'live_parent_pid': parent['pid'], 'start': parent['start']})
+                            changed = True
+                        except (OSError, Refused):
+                            unknown.add(('unsettled_descendant_birth', row['pid']))
+        live = []
+        for row in rows.values():
+            key = (row['pid'], row['start'])
+            if key in completed_direct:
+                continue
+            if key in self.owned:
+                if not row['birth_stable'] or row['uid'] != UID or (
+                        not row['zombie'] and (not row['stable'] or not row['inside'])):
+                    unknown.add(('owned_identity_or_cwd_churn', row['pid']))
+                if not row['zombie']:
+                    live.append(row)
+            elif not row['zombie'] and (row['buildlike'] or row['inside']):
+                unknown.add(('other_buildlike_or_unanchored_runtime_birth', row['pid']))
+        for reason, pid in sorted(unknown - self.unknown):
+            self.j.event('process_unknown', pid=pid, reason=reason)
+        self.unknown |= unknown
+        if unknown:
+            self.j.error('process exclusivity/ownership unknown; HOLD')
+        return live
+
+    def signal_owned(self, row, sig):
+        key = (row['pid'], row['start'])
+        require(key in self.owned, 'no signal authority')
+        try:
+            current = process_row(row['pid'])
+        except (FileNotFoundError, ProcessLookupError):
+            return
+        require((current['pid'], current['start']) == key and current['uid'] == UID and current['birth_stable'],
+                'fresh signal birth/uid failed')
+        if current['zombie']:
+            self.j.event('owned_zombie_no_signal', pid=key[0], start=key[1])
+            return
+        require(current['inside'] and current['stable'], 'fresh signal live cwd failed')
+        self.j.event('owned_signal_intent', pid=key[0], start=key[1], signal=sig)
+        if key in self.pidfds and hasattr(signal, 'pidfd_send_signal'):
+            signal.pidfd_send_signal(self.pidfds[key], sig)
+        else:
+            # Narrow fallback: an unreaped direct child cannot have its PID reused.
+            child = self.children.get(key[0])
+            require(child is not None and child.returncode is None, 'no pidfd/unreaped-direct signal authority')
+            child.send_signal(sig)
+
+    def terminate_owned(self, sig):
+        for row in self.scan():
+            try:
+                self.signal_owned(row, sig)
+            except (OSError, Refused) as error:
+                self.j.error('owned signal incomplete: ' + type(error).__name__)
+
+    def settle(self):
+        deadline = time.monotonic() + LIMITS['settlement_seconds']
+        sent_term = sent_kill = False
+        empty_samples = 0
+        while time.monotonic() < deadline:
+            for child in self.children.values():
+                child.poll()
+            live = self.scan()
+            if not live:
+                empty_samples += 1
+                if empty_samples == 3:
+                    return not self.unknown
+            else:
+                empty_samples = 0
+                if not sent_term:
+                    self.terminate_owned(signal.SIGTERM)
+                    sent_term = True
+                elif not sent_kill and time.monotonic() > deadline - LIMITS['settlement_seconds'] + 10:
+                    self.terminate_owned(signal.SIGKILL)
+                    sent_kill = True
+            time.sleep(1)
+        self.j.error('owned settlement incomplete; original runtime retained')
+        return False
+
+    def close(self):
+        for fd in self.pidfds.values():
+            os.close(fd)
+
+
+class Run:
+    def __init__(self, dirs, journal, processes):
+        self.d = dirs
+        self.j = journal
+        self.p = processes
+        self.started = time.monotonic()
+        self.stop_required = False
+        self.stop_attempted = False
+        self.stop_ok = False
+        self.build_ok = False
+        self.source_ok = False
+        self.xml_ok = False
+        self.settled = False
+        self.last_resource = self.last_inventory = 0
+        self.commands = []
+
+    def inventory(self):
+        count = directories = logical = 0
+        for parent, subdirs, names in os.walk(R, followlinks=False):
+            directories += 1
+            require(directories <= LIMITS['runtime_directories'], 'runtime directory cap')
+            for name in subdirs + names:
+                path = Path(parent) / name
+                st = path.lstat()
+                require(stat.S_ISREG(st.st_mode) or stat.S_ISDIR(st.st_mode), 'runtime special/symlink member')
+                require(st.st_uid == UID, 'runtime ownership changed')
+                if stat.S_ISREG(st.st_mode):
+                    count += 1
+                    logical += st.st_size
+                    require(count <= LIMITS['runtime_files'] and logical <= LIMITS['runtime_logical_bytes'],
+                            'runtime file/byte cap')
+        result = {'files': count, 'directories': directories, 'logical_bytes': logical}
+        self.j.event('runtime_inventory', **result)
+        return result
+
+    def monitor(self, cleanup=False):
+        self.j.latch_cancel()
+        self.p.scan()
+        now = time.monotonic()
+        if now - self.last_resource >= LIMITS['resource_poll_seconds']:
+            try:
+                self.j.event('resources', **resource_sample())
+            except (OSError, Refused) as error:
+                self.j.error('running resource failure: ' + str(error))
+            self.last_resource = now
+        if now - self.last_inventory >= LIMITS['inventory_poll_seconds']:
+            try:
+                self.inventory()
+            except (OSError, Refused) as error:
+                self.j.error('runtime inventory failure: ' + str(error))
+            self.last_inventory = now
+        if now - self.started >= LIMITS['total_seconds']:
+            self.j.error('total run time bound')
+        return bool(self.j.errors) and not cleanup
+
+    def command(self, label, argv, budget, cleanup=False, gradle=False, observational=False):
+        record = {'label': label, 'argv': argv, 'cwd': str(R / 'checkout'),
+                  'started': False, 'exit': None, 'complete': False, 'errors': []}
+        self.commands.append(record)
+        output = bytearray()
+        try:
+            with contextlib.ExitStack() as acquired:
+                selector = acquired.enter_context(selectors.DefaultSelector())
+                log_fd = self.d.new_file(E / (label + '.log'))
+                acquired.callback(os.close, log_fd)
+                acquired.callback(os.fsync, log_fd)
+                return self.collect_command(label, argv, budget, cleanup, gradle, observational,
+                                            record, output, log_fd, selector, acquired)
+        except BaseException as error:
+            record['errors'].append('startup/log persistence: ' + type(error).__name__)
+            self.j.error(label + ' startup/log persistence incomplete: ' + type(error).__name__)
+        finally:
+            record['log_bytes'] = len(output)
+            record['log_sha256'] = sha(output)
+            self.j.event('command_result', **record)
+        return bytes(output), record
+
+    def collect_command(self, label, argv, budget, cleanup, gradle, observational,
+                        record, output, log_fd, selector, acquired):
+        child = None
+        old_mask = signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+        try:
+            if not cleanup and not observational:
+                self.j.latch_cancel()
+                require(not CANCEL and not signal.sigpending() & SIGNALS and not self.j.errors,
+                        'cancel/error before launch intent')
+            if gradle:
+                self.stop_required = True
+            if cleanup:
+                require(not self.stop_attempted, 'stop already attempted; no retry')
+                self.stop_attempted = True
+            self.j.event('launch_intent', **record, stop_required=self.stop_required,
+                         environment_sha256=sha(canonical(ENV)), budget_seconds=budget)
+            if not cleanup and not observational and signal.sigpending() & SIGNALS:
+                CANCEL.update(signal.sigpending() & SIGNALS)
+                self.j.latch_cancel()
+                raise Refused('cancel before launch commitment; original stop obligation retained')
+            # This is the launch commitment. Later concurrent cancellation aborts owned work;
+            # an ambiguous Popen outcome retains the durable original stop obligation.
+            child = subprocess.Popen(argv, cwd=R / 'checkout', env=ENV, stdin=subprocess.DEVNULL,
+                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                     start_new_session=True, close_fds=True,
+                                     preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, old_mask))
+            self.p.children[child.pid] = child
+            acquired.callback(child.stdout.close)
+            record['started'] = True
+            record['pid'] = child.pid
+            self.j.event('launch_observed', label=label, pid=child.pid)
+        except BaseException as error:
+            record['errors'].append('launch: ' + type(error).__name__)
+            self.j.error(label + ' launch failed/ambiguous: ' + type(error).__name__)
+        finally:
+            signal.pthread_sigmask(signal.SIG_SETMASK, old_mask)
+        start = time.monotonic()
+        abort_at = exit_at = None
+        kill_sent = False
+        eof = False
+        try:
+            if child is None:
+                return bytes(output), record
+            self.p.direct(child)
+            os.set_blocking(child.stdout.fileno(), False)
+            selector.register(child.stdout, selectors.EVENT_READ)
+            while True:
+                for key, _ in selector.select(0.25):
+                    piece = os.read(key.fileobj.fileno(), 65536)
+                    if not piece:
+                        selector.unregister(key.fileobj)
+                        eof = True
+                        continue
+                    remaining = LIMITS['log_bytes_per_command'] - len(output)
+                    retained = piece[:remaining]
+                    output.extend(retained)
+                    view = memoryview(retained)
+                    while view:
+                        view = view[os.write(log_fd, view):]
+                    if len(piece) > remaining:
+                        record['errors'].append('log cap')
+                        self.j.error(label + ' log cap; excess discarded')
+                now = time.monotonic()
+                aborted = self.monitor(cleanup or observational)
+                if now - start >= budget:
+                    record['errors'].append('timeout')
+                    self.j.error(label + ' time bound')
+                if aborted or record['errors']:
+                    if abort_at is None:
+                        abort_at = now
+                        self.p.terminate_owned(signal.SIGTERM)
+                    elif now - abort_at > 10 and not kill_sent:
+                        self.p.terminate_owned(signal.SIGKILL)
+                        kill_sent = True
+                code = child.poll()
+                if code is not None:
+                    record['exit'] = code
+                    if eof:
+                        record['complete'] = True
+                        break
+                    if exit_at is None:
+                        exit_at = now
+                    elif now - exit_at > 10:
+                        record['errors'].append('pipe held after direct exit')
+                        self.j.error(label + ' output pipe settlement unknown')
+                        break
+                if abort_at is not None and now - abort_at > 20:
+                    record['errors'].append('child abort settlement pending')
+                    break
+            if record['exit'] != 0:
+                self.j.error(label + ' exit nonzero/unobserved')
+        except BaseException as error:
+            record['errors'].append(type(error).__name__)
+            self.j.error(label + ' collection incomplete: ' + type(error).__name__)
+        return bytes(output), record
+
+    def git(self, label, extra):
+        output, record = self.command(label, GIT + extra, LIMITS['git_seconds'],
+                                      observational=label in ('identity-after', 'members-after'))
+        require(record['complete'] and record['exit'] == 0 and not record['errors'], 'Git command failed')
+        return output
+
+    def check_source(self, source, discover=False):
+        checkout = R / 'checkout'
+        # Git outputs are bounded and journaled; no filesystem mutation command is used here.
+        phase = 'before' if discover else 'after'
+        output = self.git('identity-' + phase, ['-C', str(checkout), 'rev-parse', 'HEAD', 'HEAD^{tree}'])
+        require(output.decode().splitlines() == [COMMIT, TREE], 'checkout commit/tree')
+        output = self.git('members-' + phase, ['-C', str(checkout), 'ls-tree', '-r', '-z', 'HEAD'])
+        actual = {}
+        for item in output.split(b'\0'):
+            if item:
+                metadata, path = item.split(b'\t', 1)
+                mode, kind, oid = metadata.decode().split()
+                require(kind == 'blob' and mode in ('100644', '100755'), 'nonregular tracked Git member')
+                actual[path.decode('utf-8')] = {'git_mode': mode, 'git_blob': oid}
+        require(set(actual) == {row['path'] for row in source['files']}, 'tracked member set changed')
+        for row in source['files']:
+            path = Path(row['path'])
+            require(not path.is_absolute() and '..' not in path.parts, 'source path escape')
+            require(actual[row['path']] == {k: row[k] for k in ('git_mode', 'git_blob')}, 'tracked blob/mode')
+            data, meta = self.d.read(checkout / path, 32 * 1024 ** 2, discover)
+            require(sha(data) == row['checkout_sha256'] and len(data) == row['checkout_size'],
+                    'actual checkout source hash/size mismatch: ' + row['path'])
+            require(bool(meta['mode'] & 0o111) == (row['git_mode'] == '100755'), 'source executable mode')
+        self.j.event('source_bound', phase=phase, files=len(actual), commit=COMMIT, tree=TREE,
+                     checkout_eol_qualifications=source['checkout_eol_qualifications'])
+
+    def preserve_xml(self, methods):
+        root = R / 'checkout/core/database/build/test-results/desktopTest'
+        expected = {Path(c['expected_xml_path']).name: c for c in methods['classes']}
+        observed = []
+        total = 0
+        good = True
+        try:
+            self.d.open(root, True)
+            names = sorted(name for name in os.listdir(self.d.open(root)) if name.startswith('TEST-') and name.endswith('.xml'))
+        except (OSError, Refused) as error:
+            self.j.error('XML directory unavailable: ' + type(error).__name__)
+            return
+        if set(names) != set(expected):
+            self.j.error('missing/extra mandatory XML set')
+            good = False
+        for index, name in enumerate(names):
+            if index >= 32:
+                self.j.error('XML file count cap; remainder retained in runtime')
+                good = False
+                break
+            try:
+                data, meta = self.d.read(root / name, LIMITS['xml_bytes_per_file'])
+                total += len(data)
+                require(total <= LIMITS['xml_total_bytes'], 'XML aggregate cap')
+                preserved = self.d.write_new(E / ('xml-' + name), data)
+                row = {'name': name, 'original': meta, 'preserved': preserved}
+                observed.append(row)
+                require(data and name in expected, 'empty/unexpected XML')
+                require(b'<!DOCTYPE' not in data and b'<!ENTITY' not in data, 'XML declarations not allowed')
+                suite = ET.fromstring(data)
+                klass = expected[name]
+                require(suite.tag == 'testsuite' and suite.get('name') == klass['expected_xml_suite_name'],
+                        'exact XML suite name')
+                wanted = collections.Counter((klass['expected_xml_testcase_classname'],
+                                              method['expected_xml_testcase_name']) for method in klass['methods'])
+                cases = suite.findall('testcase')
+                got = collections.Counter((case.get('classname'), case.get('name')) for case in cases)
+                require(got == wanted and len(cases) == klass['source_declared_method_count'], 'exact XML105 method mapping')
+                require(all(not case.findall('failure') and not case.findall('error') and not case.findall('skipped')
+                            for case in cases), 'XML failure/error/skip')
+                require(suite.get('tests') == str(len(cases)) and suite.get('failures') == '0'
+                        and suite.get('errors') == '0' and suite.get('skipped') == '0', 'XML suite counters')
+                row['mechanical_mapping'] = 'MATCH_NOT_INDEPENDENT_SEMANTIC_ACCEPTANCE'
+            except (OSError, Refused, ET.ParseError) as error:
+                self.j.error('XML preservation/mapping failed for ' + name + ': ' + type(error).__name__)
+                good = False
+        self.d.write_new(E / 'XML-INVENTORY.json', canonical(observed))
+        self.xml_ok = good and len(observed) == 7
+
+
+def admission(dirs):
+    paths = (REQUEST, SELF, PLAN, SOURCE, METHODS) + ACCEPTANCES
+    captured = {}
+    pins = {}
+    for path in paths:
+        captured[str(path)], pins[str(path)] = dirs.read(path, 4 * 1024 ** 2, True)
+    request = strict_json(captured[str(REQUEST)])
+    require(request['format'] == 'passvault-linux-database-request-v1' and request['author'] == '/root', 'request format/author')
+    require(request['run_id'] == 'linux-database-01', 'one-shot identity')
+    require(request['commit'] == COMMIT and request['tree'] == TREE, 'request source identity')
+    require(request['repository'] == str(REPOSITORY) and request['runtime'] == str(R)
+            and request['evidence'] == str(E) and request['lock'] == str(LOCK), 'fixed path contract')
+    require(request['findings'] == ['PVA-033', 'PVA-034', 'PVA-035'], 'fixed finding scope')
+    require(request['environment'] == ENV and request['command'] == BUILD and request['stop_command'] == STOP,
+            'exact command/environment contract')
+    require(request['limits'] == LIMITS, 'fixed resource/time/output bounds')
+    require(request['no_other_audit_local_or_ci_job'] is True and request['runtime_closeout'] == 'RETAIN_ALL_REVIEW_IMMEDIATE_ROOT_CLOSEOUT',
+            'coordination/closeout attestation')
+    require(request['created_unix_seconds'] <= time.time() <= request['expires_unix_seconds']
+            and request['expires_unix_seconds'] - request['created_unix_seconds'] <= 3600,
+            'fresh admission validity interval')
+    bindings = {
+        'runner_sha256': sha(captured[str(SELF)]), 'plan_sha256': sha(captured[str(PLAN)]),
+        'request_sha256': sha(captured[str(REQUEST)]), 'source_sha256': sha(captured[str(SOURCE)]),
+        'methods_sha256': sha(captured[str(METHODS)]),
+        'command_sha256': sha(canonical(BUILD)), 'stop_command_sha256': sha(canonical(STOP)),
+        'environment_sha256': sha(canonical(ENV)),
+    }
+    require(bindings['methods_sha256'] == METHODS_SHA, 'frozen reviewed method inventory')
+    require(request['bindings'] == {k: v for k, v in bindings.items() if k != 'request_sha256'}, 'request hash bindings')
+    require(request['input_pins'] == {str(p): pins[str(p)] for p in (SELF, PLAN, SOURCE, METHODS)}, 'original immutable input pins')
+    dirs.bind(request['directory_pins'])
+    require(str(REPOSITORY) in dirs.pins and str(E) in dirs.pins and str(LOCK.parent) in dirs.pins
+            and str(BASE) in dirs.pins, 'required original root/parent missing')
+    require(dirs.pins[str(E)]['uid'] == UID and dirs.pins[str(E)]['mode'] == stat.S_IFDIR | 0o700,
+            'private evidence original')
+    tool_paths = {
+        'java': JAVA_HOME + '/bin/java', 'java_release': JAVA_HOME + '/release',
+        'git': '/usr/bin/git', 'python': os.path.realpath(sys.executable),
+    }
+    require(set(request['toolchain']) == set(tool_paths), 'exact toolchain binding set')
+    for name, path in tool_paths.items():
+        bound = request['toolchain'][name]
+        require(bound['path'] == path, 'toolchain path substitution')
+        data, pin = dirs.read(path, 32 * 1024 ** 2)
+        require(sha(data) == bound['sha256'] and pin == bound['identity'], 'toolchain original bytes/identity')
+        require(not pin['mode'] & (stat.S_ISUID | stat.S_ISGID), 'set-id toolchain not admitted')
+        captured[path], pins[path] = data, pin
+        if name == 'java_release':
+            require(b'JAVA_VERSION="17.' in data and b'OS_ARCH="x86_64"' in data, 'JDK17 x86_64 release identity')
+    source = strict_json(captured[str(SOURCE)])
+    require(source['format'] == 'passvault-linux-checkout-source-v1' and source['commit'] == COMMIT
+            and source['tree'] == TREE and len(source['files']) == 1198, 'full checkout source manifest')
+    require(len({row['path'] for row in source['files']}) == 1198, 'duplicate source members')
+    require(len(source['checkout_eol_qualifications']) == 2, 'two checkout-EOL qualifications required')
+    methods = strict_json(captured[str(METHODS)])
+    require(methods['containing_handoff_commit'] == COMMIT and methods['containing_handoff_tree'] == TREE
+            and methods['task'] == TASK, 'method inventory source/task')
+    require(tuple(c['fqcn'] for c in methods['classes']) == CLASSES
+            and tuple(c['source_declared_method_count'] for c in methods['classes']) == COUNTS,
+            'frozen class order/counts')
+    source_map = {row['path']: row for row in source['files']}
+    for klass in methods['classes']:
+        require(source_map[klass['source_path']]['checkout_sha256'] == klass['source_sha256'], 'test source binding')
+        require(len(klass['methods']) == klass['source_declared_method_count'], 'method declaration count')
+    for path, reviewer, role in zip(ACCEPTANCES, REVIEWERS, REVIEW_ROLES):
+        accept = strict_json(captured[str(path)])
+        require(accept['format'] == 'passvault-linux-database-acceptance-v1' and accept['reviewer'] == reviewer
+                and accept['runner_authors'] == RUNNER_AUTHORS and accept['review_role'] == role,
+                'actual review identity/authorship/role')
+        require((role == 'INDEPENDENT_SOURCE_REVIEW' and reviewer not in RUNNER_AUTHORS)
+                or (role == 'OWNER_COAUTHOR_APPROVAL' and reviewer in RUNNER_AUTHORS),
+                'coauthor approval must not count as independent review')
+        require(accept['purpose'] == 'ONE_SHOT_LINUX_DATABASE_EXECUTION_AND_RETAINED_CLOSEOUT_CONTRACT'
+                and accept['disposition'] == 'ACCEPT' and accept['bindings'] == bindings, 'actual normative acceptance')
+        require(accept['commit'] == COMMIT and accept['tree'] == TREE and accept['runtime'] == str(R)
+                and accept['evidence'] == str(E), 'acceptance exact instance/source')
+        require(accept['obligations'] == {f'F{i:02}': 'ACCEPT' for i in range(1, 8)}, 'F01-F07 actual disposition')
+        require(accept['limits_acknowledged'] == [
+            'COOPERATIVE_NAMESPACE_NOT_HOSTILE_UID_SANDBOX', 'POINT_SAMPLED_PROCESS_RESOURCE_EVIDENCE',
+            'NO_INDEPENDENT_SEMANTIC_PASS_FROM_RUNNER', 'RETAIN_ALL_IMMEDIATE_SEPARATE_ROOT_CLOSEOUT',
+            'NO_RETRY_ON_FAILURE_OR_AMBIGUITY', 'HARDWARE_AND_CLOSED_SCOPES_UNCHANGED'], 'normative review limits')
+    return request, captured, pins, source, methods, bindings
+
+
+def preserved_source_under_lock(dirs, source):
+    """Read originals only; all parent pins come from root, never current adoption."""
+    started = last_resource = time.monotonic()
+    total = 0
+    for row in source['files']:
+        require(not CANCEL and not signal.sigpending() & SIGNALS, 'cancel during preadmission source scan')
+        require(time.monotonic() - started <= LIMITS['preadmission_source_seconds'], 'preadmission source time cap')
+        path = Path(row['path'])
+        require(not path.is_absolute() and '..' not in path.parts, 'preserved source path escape')
+        data, meta = dirs.read(REPOSITORY / path, 32 * 1024 ** 2)
+        total += len(data)
+        require(total <= LIMITS['preadmission_source_bytes'], 'preadmission source byte cap')
+        require(sha(data) == row['checkout_sha256'] and len(data) == row['checkout_size']
+                and bool(meta['mode'] & 0o111) == (row['git_mode'] == '100755'),
+                'preserved actual checkout source drift: ' + row['path'])
+        if time.monotonic() - last_resource >= LIMITS['resource_poll_seconds']:
+            resource_sample(True)
+            last_resource = time.monotonic()
+    return {'files': len(source['files']), 'bytes': total,
+            'seconds': time.monotonic() - started, 'commit': COMMIT, 'tree': TREE}
+
+
+def main():
+    require(sys.platform == 'linux' and sys.argv == [str(SELF)] and Path(__file__) == SELF,
+            'fixed Linux absolute entry; no arguments/import harness')
+    require(sys.flags.isolated and sys.dont_write_bytecode, 'use /usr/bin/python3 -I -B')
+    os.umask(0o077)
+    for sig in SIGNALS:
+        signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+    dirs = Directories()
+    lock_fd = None
+    journal = processes = run = None
+    source = methods = None
+    code = 1
+    try:
+        request, captured, pins, source, methods, bindings = admission(dirs)
+        parent = dirs.open(LOCK.parent)
+        before = os.stat(LOCK.name, dir_fd=parent, follow_symlinks=False)
+        require(identity(before) == request['lock_pin'] and stat.S_ISREG(before.st_mode)
+                and before.st_uid == UID and before.st_nlink == 1 and before.st_mode == stat.S_IFREG | 0o600,
+                'original lock identity/type/mode')
+        lock_fd = os.open(LOCK.name, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+        require(identity(os.fstat(lock_fd)) == request['lock_pin'], 'opened lock identity')
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        # Entire admission is checked again against the SAME originally captured images under lock.
+        dirs.verify()
+        for path, original in captured.items():
+            data, pin = dirs.read(path, 32 * 1024 ** 2)
+            require(data == original and pin == pins[path], 'under-lock input drift')
+        require(identity(os.stat(LOCK.name, dir_fd=parent, follow_symlinks=False)) == request['lock_pin'], 'under-lock lock drift')
+        require(time.time() <= request['expires_unix_seconds'], 'expired under-lock admission')
+        require(not os.path.lexists(R), 'runtime namespace occupied; no adoption/retry')
+        require(not os.listdir(dirs.open(E)), 'evidence namespace consumed; no replay')
+        require(not CANCEL and not signal.sigpending() & SIGNALS, 'cancel before first mutation')
+        preserved = preserved_source_under_lock(dirs, source)
+        require(time.time() <= request['expires_unix_seconds'], 'admission expired during source binding')
+        resources = resource_sample(True)
+        # Root preallocated/sealed E. Creating this exclusive journal consumes the one-shot namespace.
+        journal = Journal(dirs)
+        journal.event('admission_under_original_lock', bindings=bindings,
+                      directory_pins=dirs.pins.copy(), lock_pin=request['lock_pin'], resources=resources,
+                      preserved_checkout=preserved)
+        processes = Processes(journal)
+        require(not processes.scan() and not journal.errors, 'initial buildlike/unknown process; no launch')
+        run = Run(dirs, journal, processes)
+        dirs.mkdir(R, journal)
+        for name in PRIVATE_DIRS:
+            dirs.mkdir(R / name, journal)
+        run.git('clone', ['clone', '--local', '--no-hardlinks', '--no-checkout', '--no-tags',
+                          '--single-branch', '--branch', 'codex/remediation-handoff-20260908',
+                          '--template=', str(REPOSITORY), str(R / 'checkout')])
+        run.git('checkout', ['-C', str(R / 'checkout'), 'checkout', '--detach', COMMIT])
+        run.check_source(source, True)
+        for name in GENERATED_ROOTS:
+            require(not any(row['path'] == name or row['path'].startswith(name + '/') for row in source['files']),
+                    'generated target collides with tracked source prefix')
+            require(not os.path.lexists(R / 'checkout' / name), 'generated target already occupied; no adoption')
+        for name in GENERATED_ROOTS:
+            dirs.mkdir(R / 'checkout' / name, journal)
+        dirs.verify()
+        journal.event('prebuild_launch_resources', **resource_sample(True))
+        require(not processes.scan() and not journal.errors, 'prebuild exclusivity/ownership')
+        _, record = run.command('database', BUILD, LIMITS['build_seconds'], gradle=True)
+        run.build_ok = record['started'] and record['complete'] and record['exit'] == 0 and not record['errors']
+    except BaseException as error:
+        if journal is not None:
+            try:
+                journal.error('run interrupted/refused: ' + type(error).__name__ + ': ' + str(error))
+            except BaseException:
+                pass
+        else:
+            os.write(2, ('EARLY_REFUSAL_NO_PROJECT_LAUNCH: ' + type(error).__name__ + ': ' + str(error) + '\n').encode())
+    finally:
+        if run is not None:
+            if run.stop_required:
+                try:
+                    # Stop has original wrapper/environment authority only, never current-file adoption.
+                    dirs.verify()
+                    for authority in ('gradlew', 'gradle/wrapper/gradle-wrapper.jar',
+                                      'gradle/wrapper/gradle-wrapper.properties'):
+                        wrapper = next(row for row in source['files'] if row['path'] == authority)
+                        data, _ = dirs.read(R / 'checkout' / authority, 1024 ** 2)
+                        require(sha(data) == wrapper['checkout_sha256'],
+                                'original wrapper authority changed; stop outstanding')
+                    _, result = run.command('stop', STOP, LIMITS['stop_seconds'], cleanup=True)
+                    run.stop_ok = result['started'] and result['complete'] and result['exit'] == 0 and not result['errors']
+                except BaseException as error:
+                    try:
+                        journal.error('original stop outstanding/no retry: ' + type(error).__name__)
+                    except BaseException:
+                        pass
+            for name, operation in (
+                ('xml', lambda: run.preserve_xml(methods)),
+                ('source_after', lambda: run.check_source(source)),
+                ('settlement', lambda: setattr(run, 'settled', processes.settle())),
+                ('retained_inventory', run.inventory),
+            ):
+                try:
+                    operation()
+                    if name == 'source_after':
+                        run.source_ok = True
+                except BaseException as error:
+                    try:
+                        journal.error(name + ' incomplete: ' + type(error).__name__)
+                    except BaseException:
+                        pass
+            try:
+                journal.latch_cancel()
+                dirs.verify()
+                journal.event('final_resources', **resource_sample())
+                dirs.write_new(E / 'ORIGINAL-DIRECTORIES.json', canonical(dirs.pins))
+                dirs.write_new(E / 'RESULT.json', canonical({
+                    'status': 'PRETERMINAL_OBSERVATIONS_NOT_A_PASS', 'commands': run.commands,
+                    'build_ok': run.build_ok, 'stop_required': run.stop_required,
+                    'stop_attempted': run.stop_attempted, 'stop_ok': run.stop_ok,
+                    'source_ok': run.source_ok, 'xml_mapping_ok': run.xml_ok,
+                    'owned_settled': run.settled, 'errors': journal.errors,
+                    'runtime': str(R), 'runtime_disposition': 'RETAINED_IMMEDIATE_REVIEWED_ROOT_CLOSEOUT_REQUIRED',
+                    'semantic_disposition': 'NOT_INDEPENDENTLY_VERIFIED',
+                }))
+                # Defined terminal commitment: block signals, observe pending/latches, then publish
+                # once and exit under the mask. Signals after this sample are outside the boundary;
+                # no work, cleanup, retry or unmasked cached-success return follows it.
+                signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+                CANCEL.update(signal.sigpending() & SIGNALS)
+                journal.latch_cancel()
+                okay = (run.build_ok and run.stop_required and run.stop_attempted and run.stop_ok
+                        and run.source_ok and run.xml_ok and run.settled and journal.ok
+                        and not journal.errors and not CANCEL)
+                code = 0 if okay else 1
+                journal.event('terminal_commit', exit=code, operational_settled=okay,
+                              semantic_disposition='NOT_INDEPENDENTLY_VERIFIED',
+                              runtime_disposition='RETAINED_IMMEDIATE_REVIEWED_ROOT_CLOSEOUT_REQUIRED')
+            except BaseException:
+                code = 1
+        if processes is not None:
+            processes.close()
+        if journal is not None:
+            os.close(journal.fd)
+        if lock_fd is not None:
+            os.close(lock_fd)
+        dirs.close()
+    # No recursive deletion. A consumed/partial namespace is never reused by this program.
+    os._exit(code)
+
+
+if __name__ == '__main__':
+    main()

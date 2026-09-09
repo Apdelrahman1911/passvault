@@ -1,0 +1,251 @@
+--- a/scripts/audit/windows_native_validation.py
++++ b/scripts/audit/windows_native_validation.py
+@@ -178,6 +178,22 @@
+     ]
+ 
+ 
++class JOB_PROCESS_IDS(ctypes.Structure):
++    # Fixed to the existing Job's active-process limit; never resize or retry.
++    _fields_ = [("assigned", wt.DWORD), ("listed", wt.DWORD),
++                ("pids", ctypes.c_size_t * 16)]
++
++
++class FILE_ATTRIBUTE_TAG_INFO(ctypes.Structure):
++    _fields_ = [("attributes", wt.DWORD), ("tag", wt.DWORD)]
++
++
++class OwnedEntryRejected(RuntimeError):
++    def __init__(self, explanation, observation):
++        super().__init__(explanation)
++        self.observation = observation
++
++
+ class Windows:
+     """Atomic creation-time job assignment; no unowned fork/assignment gap."""
+ 
+@@ -198,10 +214,15 @@
+             "ResumeThread": ([wt.HANDLE], wt.DWORD),
+             "WaitForSingleObject": ([wt.HANDLE, wt.DWORD], wt.DWORD),
+             "GetExitCodeProcess": ([wt.HANDLE, wt.LPVOID], wt.BOOL),
++            "OpenProcess": ([wt.DWORD, wt.BOOL, wt.DWORD], wt.HANDLE),
++            "IsProcessInJob": ([wt.HANDLE, wt.HANDLE, wt.LPVOID], wt.BOOL),
++            "GetProcessTimes": ([wt.HANDLE, wt.LPVOID, wt.LPVOID, wt.LPVOID, wt.LPVOID], wt.BOOL),
++            "QueryFullProcessImageNameW": ([wt.HANDLE, wt.DWORD, wt.LPWSTR, wt.LPVOID], wt.BOOL),
+             "CloseHandle": ([wt.HANDLE], wt.BOOL),
+             "FlushFileBuffers": ([wt.HANDLE], wt.BOOL),
+             "GlobalMemoryStatusEx": ([wt.LPVOID], wt.BOOL),
+             "GetFileInformationByHandle": ([wt.HANDLE, wt.LPVOID], wt.BOOL),
++            "GetFileInformationByHandleEx": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+             "SetFileInformationByHandle": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+         }
+         for name, (arguments, result) in specs.items():
+@@ -234,6 +255,90 @@
+                                                     ctypes.sizeof(state), None), "JobAccounting")
+         return state.active
+ 
++    def observe_job_members(self, deadline, observation):
++        """One bounded, racy snapshot; grants no signaling or cleanup authority.
++
++        Called only inside the original drain interval, never after its deadline
++        or from termination. Results stay in memory until existing finalization;
++        no diagnostic journal I/O is added while descendants are draining.
++        """
++        observation.update(status="PARTIAL", max_members=16, members=[],
++                           sampled_at=time.time(), query_only=True, not_a_census=True)
++
++        def ready():
++            if CANCELLED or time.monotonic() >= deadline:
++                observation["stop_reason"] = "CANCELLED" if CANCELLED else "DEADLINE"
++                return False
++            return True
++
++        if not ready():
++            return
++        listed = JOB_PROCESS_IDS()
++        if not self.k.QueryInformationJobObject(self.job, 3, ctypes.byref(listed),
++                                                 ctypes.sizeof(listed), None):
++            observation.update(status="JOB_LIST_UNKNOWN", winerror=ctypes.get_last_error())
++            return  # Including ERROR_MORE_DATA: no resize, retry or fallback scan.
++        observation.update(reported_assigned=listed.assigned, reported_listed=listed.listed)
++        if not 0 <= listed.listed <= 16 or listed.assigned < listed.listed:
++            observation["status"] = "JOB_LIST_COUNTS_UNKNOWN"
++            return
++        for pid in listed.pids[:listed.listed]:
++            if not ready():
++                return
++            member = {"enumerated_pid": pid, "membership": "UNKNOWN"}
++            observation["members"].append(member)
++            if not 0 < pid <= 0xffffffff:
++                member["status"] = "PID_OUT_OF_RANGE"
++                continue
++            # PROCESS_QUERY_LIMITED_INFORMATION only; non-inheritable. Not even
++            # SYNCHRONIZE, and never PROCESS_TERMINATE/VM_READ or a name scan.
++            handle = self.k.OpenProcess(0x1000, False, pid)
++            if not handle:
++                member.update(status="OPEN_UNKNOWN", winerror=ctypes.get_last_error())
++                continue
++            try:
++                if not ready():
++                    return
++                belongs = wt.BOOL()
++                if not self.k.IsProcessInJob(handle, self.job, ctypes.byref(belongs)):
++                    member.update(status="MEMBERSHIP_UNKNOWN", winerror=ctypes.get_last_error())
++                    continue
++                if not belongs.value:
++                    member["status"] = "NOT_CURRENT_JOB_MEMBER"
++                    continue  # PID reuse: query no image, times, environment or command line.
++                member.update(membership="CONFIRMED_ON_OPEN_HANDLE", verified_at=time.time())
++                if not ready():
++                    return
++                created, exited, kernel, user = (wt.FILETIME() for _ in range(4))
++                if self.k.GetProcessTimes(handle, ctypes.byref(created), ctypes.byref(exited),
++                                           ctypes.byref(kernel), ctypes.byref(user)):
++                    member["creation_filetime_100ns"] = (created.dwHighDateTime << 32) | created.dwLowDateTime
++                else:
++                    member["creation_time_winerror"] = ctypes.get_last_error()
++                if not ready():
++                    return
++                image = ctypes.create_unicode_buffer(512)
++                length = wt.DWORD(len(image))
++                if self.k.QueryFullProcessImageNameW(handle, 0, image, ctypes.byref(length)):
++                    # Only the basename is retained, plus an opaque full-path
++                    # hash. No image file, command line, environment or target is read.
++                    image_path = image[:length.value]
++                    member["image_basename"] = Path(image_path).name
++                    member["image_path_sha256_utf16le"] = hashlib.sha256(
++                        image_path.encode("utf-16le", errors="surrogatepass")).hexdigest()
++                else:
++                    member["image_winerror"] = ctypes.get_last_error()
++                member["status"] = "MEMBER_QUERIED_WITH_POSSIBLE_UNKNOWNS"
++            finally:
++                closed = self.k.CloseHandle(handle)  # Required even at cancellation/deadline.
++                member["query_handle_close_observed"] = bool(closed)
++                if not closed:
++                    member["query_handle_close_winerror"] = ctypes.get_last_error()
++                    # Normal command finally still attempts its original exact-Job
++                    # termination. Do not continue commands with an unclosed handle.
++                    raise RuntimeError("Diagnostic query-only handle close unproved; no retry")
++        observation["status"] = "BOUNDED_RACY_SNAPSHOT_FINISHED"
++
+     def terminate_once(self):
+         require(not self.termination_attempted, "Unsettled prior job termination; no automatic retry")
+         self.termination_attempted = True
+@@ -252,7 +357,7 @@
+                 "Disk admission/running floor crossed: " + json.dumps(observation, sort_keys=True))
+         return observation
+ 
+-    def open_owned(self, path: Path, delete=True):
++    def open_owned(self, path: Path, delete=True, observe_rejection=False):
+         # DELETE + READ_ATTRIBUTES; denying delete sharing freezes this entry's
+         # name until its retained handle itself requests disposition/close.
+         handle = self.k.CreateFileW(str(path), (0x10000 if delete else 0) | 0x80, 0x1 | 0x2, None,
+@@ -261,12 +366,33 @@
+         try:
+             state = FILE_INFO()
+             self.check(self.k.GetFileInformationByHandle(handle, ctypes.byref(state)), "FileIdentity")
++            identity = [state.volume, state.index_high, state.index_low, state.attributes]
++            if observe_rejection and (state.attributes & 0x400 or state.links != 1):
++                observation = {"identity": identity, "links": state.links,
++                               "tag_status": "NOT_QUERIED", "target_read": False}
++                if state.attributes & 0x400 and not CANCELLED:
++                    tag = FILE_ATTRIBUTE_TAG_INFO()
++                    # FileAttributeTagInfo on the already-open OPEN_REPARSE_POINT
++                    # handle: tag/attributes only, never FSCTL_GET_REPARSE_POINT,
++                    # target bytes, a path reopen or traversal.
++                    if self.k.GetFileInformationByHandleEx(handle, 9, ctypes.byref(tag),
++                                                           ctypes.sizeof(tag)):
++                        observation.update(tag_status="OBSERVED", reparse_tag=tag.tag,
++                                           tag_attributes=tag.attributes)
++                    else:
++                        observation.update(tag_status="UNKNOWN", tag_winerror=ctypes.get_last_error())
++                explanation = ("Cleanup refuses reparse point" if state.attributes & 0x400
++                               else "Cleanup refuses multiple hard links")
++                raise OwnedEntryRejected(explanation, observation)
+             require(not state.attributes & 0x400, "Cleanup refuses reparse point")
+             require(state.links == 1, "Cleanup refuses multiple hard links")
+-            identity = [state.volume, state.index_high, state.index_low, state.attributes]
+             return handle, identity
+-        except BaseException:
+-            self.k.CloseHandle(handle)
++        except BaseException as error:
++            closed = self.k.CloseHandle(handle)  # The same single close; never retry.
++            if isinstance(error, OwnedEntryRejected):
++                error.observation["rejected_handle_close_observed"] = bool(closed)
++                if not closed:
++                    error.observation["rejected_handle_close_winerror"] = ctypes.get_last_error()
+             raise
+ 
+     def delete_handle(self, handle):
+@@ -286,6 +412,8 @@
+         self.start = time.monotonic()
+         self.sequence = 0
+         self.command_results = []
++        self.command_observations = []
++        self.cleanup_observations = []
+         self.environment = {
+             name: os.environ[name] for name in (
+                 "SystemRoot", "WINDIR", "COMSPEC", "PATH", "PATHEXT",
+@@ -411,7 +539,21 @@
+             # MSBuild node reuse is disabled; unknown/lingering descendants are
+             # an operational failure, not assumed harmless by their names.
+             settle_deadline = time.monotonic() + 10
++            observation = {"sequence": self.sequence, "log": log.name,
++                           "parent_pid": info.pid, "parent_exit_code": code.value,
++                           "job_members": {"status": "NOT_SAMPLED"}}
++            self.command_observations.append(observation)
++            # Parent outcome is distinct from the cohort outcome. Preserve it
++            # before drain, but never add it to completed command_results here.
++            # The original ten-second deadline starts BEFORE this durable write.
++            self.event("command_parent_exit", sequence=self.sequence, log=log.name,
++                       pid=info.pid, exit_code=code.value, cohort_status="NOT_YET_SETTLED")
++            sampled = False
+             while self.win.active() and time.monotonic() < settle_deadline:
++                if not sampled and not CANCELLED:
++                    sampled = True
++                    self.win.observe_job_members(min(settle_deadline, time.monotonic() + 0.25),
++                                                  observation["job_members"])
+                 time.sleep(0.1)
+             require(self.win.active() == 0, "Owned descendants remain after command")
+             self.win.check(self.win.k.FlushFileBuffers(output), "FlushCommandLog")
+@@ -460,7 +602,31 @@
+                     for entry in entries:
+                         path = Path(entry.path)
+                         require(len(handles) < 5000, "Cleanup entry cap exceeded")
+-                        handle, identity = self.win.open_owned(path)
++                        try:
++                            handle, identity = self.win.open_owned(path, observe_rejection=True)
++                        except OwnedEntryRejected as error:
++                            # Scandir supplies a descendant of original retained
++                            # parents; relative_to is lexical, never resolve/readlink.
++                            relative = path.relative_to(self.temp)
++                            require(not relative.is_absolute() and not relative.drive and
++                                    all(part not in (".", "..") for part in relative.parts),
++                                    "Rejected entry is not an owned-relative name")
++                            name = str(relative)
++                            record = {"reason": str(error), **error.observation}
++                            if len(name) <= 1024:
++                                record["owned_relative_path"] = name
++                            else:
++                                record["owned_relative_path_sha256_utf16le"] = hashlib.sha256(
++                                    name.encode("utf-16le", errors="surrogatepass")).hexdigest()
++                                record["path_characters"] = len(name)
++                                record["path_status"] = "OVERSIZE_NAME_NOT_RETAINED"
++                            self.cleanup_observations.append(record)
++                            try:
++                                self.event("cleanup_entry_rejected", **record)
++                            except BaseException as journal_error:
++                                record["journal_error_type"] = type(journal_error).__name__
++                                raise RuntimeError(str(error) + "; rejection journal write failed") from journal_error
++                            raise  # Preserve refusal before the deletion loop.
+                         handles.append((path, handle, identity))
+                         if identity[3] & 0x10:
+                             stack.append(path)
+@@ -705,6 +871,8 @@
+         if CANCELLED:
+             result["failures"].append("Cancellation observed before terminal evidence commit")
+         result["commands"] = run.command_results if run is not None else []
++        result["command_observations"] = run.command_observations if run is not None else []
++        result["cleanup_observations"] = run.cleanup_observations if run is not None else []
+         result["source_qualification"] = "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof"
+         if result["failures"] or result["cleanup"] != "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED":
+             result["operational_status"] = "FAILED_OR_INCOMPLETE"

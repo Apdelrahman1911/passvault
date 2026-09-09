@@ -1,0 +1,332 @@
+{
+  "commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "commit_object_sha256": "71a88891c5b769a870222458506cfa7900ab3eb4b05a219af8a58e3f56a80803",
+  "counts": {
+    "all_exact_matches": 21,
+    "application_cases_executed": 0,
+    "central_tuples": 7,
+    "commit_changed_paths": 84,
+    "frozen_review_objects": 2,
+    "new_conclusive_suspicion_outcomes": 0,
+    "new_family_closures": 0,
+    "source_tuples": 12
+  },
+  "disposition": "ACCEPT_EXACT_COMMITTED_OBJECT_BINDING_OF_FROZEN_QUALIFIED_CHECKPOINT_2_REVIEW",
+  "frozen_narrative_sha256": "48c702e817fa7357b9263630f7ef4b25a414fb5bc2fce3cf7e15abf78a99c932",
+  "frozen_review_sha256": "534b045662036aa88e389b3a28ad0d58bde79bf34dca2a7534b7796db68c63c4",
+  "local_head_at_observation": "f18995e6633904a6845e09eab8a481635290894d",
+  "method": [
+    "Read frozen review JSON as inert data and verify its previously accepted raw SHA256.",
+    "Use data-only git rev-parse/cat-file/ls-tree against the fixed commit, not moving refs, worktree filters, application commands or archived helpers.",
+    "For seven central and twelve application/configuration/test paths, compare committed blob SHA256, byte length and literal LF count to frozen review tuples; record raw Git blob OID and mode.",
+    "Verify exact committed inclusion of frozen independent JSON and Markdown review and parent identity.",
+    "Observe total changed paths and exclusion of four still-unadmitted Linux helper/draft namespaces without adopting their source."
+  ],
+  "objects": [
+    {
+      "bytes": 5344,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "6021db9b9254d4fc87d87ac3a4661170477f4821",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/README.md",
+      "physical_lf": 93,
+      "sha256": "a6f3e9c6e24542f0c259944f2d0232580de3eb29e736c2a306d6d876e90dddb8"
+    },
+    {
+      "bytes": 2481,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "30fe8cdb1fc9f5788578f5686f4c84824b55149e",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+      "physical_lf": 31,
+      "sha256": "670cfc7b771ac4becdbd93e4d9567c71ba947ed1df70b29564623ad777e2f443"
+    },
+    {
+      "bytes": 7912,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "64ce3795fcbb2384dd8d690a975acc031887d55c",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_2.md",
+      "physical_lf": 127,
+      "sha256": "4f169eac8ed8eab02b93acb8d8e54543dc9eeae3b7126decd0d786950ed6ac0f"
+    },
+    {
+      "bytes": 26212,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "01b30984349ba069d466a931a73e382b18adcd99",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "physical_lf": 501,
+      "sha256": "3d29fe67f1495007662a9d3d58d07daed9c374a5ec7bf9e2e2d3888adb84dc77"
+    },
+    {
+      "bytes": 12815,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "7f1a53309bb9182577110d56c2df50b048a8c950",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+      "physical_lf": 220,
+      "sha256": "baaec9fa98ffe15264c9f8f087f6029f30579b324d713b3dce4c0c74fdc4ed6f"
+    },
+    {
+      "bytes": 4968,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "8c67d4fcb588422b409057d26903cb952a4c28b3",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+      "physical_lf": 111,
+      "sha256": "92b3507a7a848faa09866d066ea877a80459a4c07846d559da80fd6fe4b8d6f0"
+    },
+    {
+      "bytes": 1338,
+      "category": "central",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "58c1d5b826dc150366adec2cccc33791e6776ba6",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+      "physical_lf": 24,
+      "sha256": "97a5d7b04839e10d8b86c29eadcd5eb60a9c03f83f1ba60d4a89749e845e60ef"
+    },
+    {
+      "bytes": 6999,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "b49be3b72a88e83ff6ea830ed84abef0a690ab11",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+      "physical_lf": 181,
+      "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db"
+    },
+    {
+      "bytes": 11636,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "cc0a198b2e1d0aab221efdd8d12fa73358ed10b7",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "physical_lf": 271,
+      "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98"
+    },
+    {
+      "bytes": 11300,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "b897436f4c4e60dd86fa98061f557badf0368590",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+      "physical_lf": 263,
+      "sha256": "e777006c470eded3f4f8d8183c74857229a6cb1004dc98add17c6eab6743fa14"
+    },
+    {
+      "bytes": 16583,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "80f19e9da75b57426d969cb995f2117ee8b063e1",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "physical_lf": 373,
+      "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0"
+    },
+    {
+      "bytes": 25441,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "72c0bfafe9c80be51cd2bac50dc8e8ec0c7b4c62",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "physical_lf": 590,
+      "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611"
+    },
+    {
+      "bytes": 17946,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "c7046b070451b4270d13497f937b7264679a0d72",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "physical_lf": 401,
+      "sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a"
+    },
+    {
+      "bytes": 16843,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "d3a6b4a257f5f87afddcab03912e27e97df4d005",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "physical_lf": 383,
+      "sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c"
+    },
+    {
+      "bytes": 15335,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "64e9a0dcf99799312b4ac9b646e5fe66f4aa7864",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+      "physical_lf": 446,
+      "sha256": "dd60f4a65b4cf951a8ba94b2b6e4cab8440d1a33942eb046f1d74ccfcf9b31db"
+    },
+    {
+      "bytes": 26117,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "622519609d77ade406686f4c189a3fbb2ab4053e",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "physical_lf": 532,
+      "sha256": "d492ed289c21904c6f1145580aaf2980bd99e9a2ae6ccaf624b03c3d4faef0af"
+    },
+    {
+      "bytes": 209,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "0632423a4f0da6caa15879cde80b5b304a851f12",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "core/crypto/src/androidDeviceTest/AndroidManifest.xml",
+      "physical_lf": 6,
+      "sha256": "95a2d24cac877cd0d4fbbfeb58bc10d06275b2c40592244617a83564ec1a06ff"
+    },
+    {
+      "bytes": 2805,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "50e937c5a9c29f8d9042ffe9d9408ee777445522",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "core/crypto/build.gradle.kts",
+      "physical_lf": 90,
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112"
+    },
+    {
+      "bytes": 14155,
+      "category": "application_configuration_test",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "bf73c2dce1ea003449842aa937142d8d2ff4494a",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt",
+      "physical_lf": 291,
+      "sha256": "d9bdb00637773f5d239ffcc5f7d13dc3773e528ef0dec1b1efdffec0ee182310"
+    },
+    {
+      "bytes": 60100,
+      "category": "frozen_independent_review",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "d7a572973a95160696774287e681786e0412fac9",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-2-REVIEW.json",
+      "physical_lf": 1298,
+      "sha256": "534b045662036aa88e389b3a28ad0d58bde79bf34dca2a7534b7796db68c63c4"
+    },
+    {
+      "bytes": 10379,
+      "category": "frozen_independent_narrative",
+      "frozen_tuple_match": true,
+      "git_blob_oid": "4bf126be1cd9289641bf4c1988ed6d4c09053c7f",
+      "git_mode": "100644",
+      "git_object_type": "blob",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-2-REVIEW.md",
+      "physical_lf": 163,
+      "sha256": "48c702e817fa7357b9263630f7ef4b25a414fb5bc2fce3cf7e15abf78a99c932"
+    }
+  ],
+  "parents": [
+    "a1fbdf0d5f0663225a459838d37b072a65e334f6"
+  ],
+  "preserved_denominators": {
+    "all_confirmed": {
+      "percent": 59.5,
+      "qualified_closures": 22,
+      "remaining": 15,
+      "total": 37
+    },
+    "design_explanations": {
+      "documented": 8,
+      "owner_decisions": "PENDING_SEPARATE_EXCEPT_REQUIRED_EXISTING_COMPATIBILITY",
+      "total": 8
+    },
+    "original_confirmed": {
+      "percent": 76,
+      "qualified_closures": 19,
+      "remaining": 6,
+      "total": 25
+    },
+    "original_suspicions": {
+      "conclusive_outcomes": 2,
+      "percent": 16.7,
+      "remaining": 10,
+      "total": 12
+    }
+  },
+  "publication_author": "/root",
+  "qualifications": [
+    "Git-object byte/LF identity is not a new actual-checkout proof, raw archived PowerShell-EOL equivalence, semantic whole-file review, successful build, discovered test count, application pass, hardware evidence or cleanup admission.",
+    "All qualifications, failures, blockers, STOP/NO-RETRY/CLOSED fences, coverage exclusions and method-versus-case distinctions in the exact frozen review remain binding.",
+    "The passed source tuples bind the reviewed source checkpoint only; all unexecuted regression and runtime/device gaps remain open.",
+    "Windows cleanup HOLD and the released coordination slot are unchanged; no new execution follows from this binding.",
+    "This new binding report is not contained in the commit it verifies and requires a later publication checkpoint if retained remotely."
+  ],
+  "recorded_utc": "2026-09-08T23:17:11.970676+00:00",
+  "remote_publication": {
+    "independent_network_query": false,
+    "qualification": "Remote equality, staged diff-check and push exit are root observations, not independently rerun here. Local commit/tree/blob binding is independently observed.",
+    "root_reported_commit": "f18995e6633904a6845e09eab8a481635290894d",
+    "root_reported_commit_push_and_remote_match": true,
+    "root_reported_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195"
+  },
+  "resources_and_cleanup": {
+    "background_workers_started": 0,
+    "builds_or_tests_or_helper_imports": 0,
+    "operations": "Bounded data reads/hashes and short foreground Git inspection only; one compact permanent review report written.",
+    "runtime_allocations_or_deletions": 0,
+    "temporary_artifacts_created": 0,
+    "wrapper_stop": "Not applicable to these metadata commands; not proof for any other job."
+  },
+  "reviewer": "/root/baseline_coverage",
+  "schema": "passvault-checkpoint-published-binding-v1",
+  "scope": "Separate data-only committed-object tuple validation requested by root; does not modify frozen accounting acceptance or grant runtime/cleanup admission.",
+  "tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "unadmitted_namespaces": [
+    {
+      "absent_from_commit": true,
+      "path": "scripts/audit/linux_database_closeout.py"
+    },
+    {
+      "absent_from_commit": true,
+      "path": "scripts/audit/linux_database_validation.py"
+    },
+    {
+      "absent_from_commit": true,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout"
+    },
+    {
+      "absent_from_commit": true,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner"
+    }
+  ]
+}

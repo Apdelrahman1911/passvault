@@ -1,0 +1,51 @@
+{
+  "reviewer": "/root/editor_review",
+  "launcher_author": "/root",
+  "scope": "NEW fixed inert-control launcher corrected after CL-R01/CL-R02",
+  "disposition": "ACCEPT_SOURCE_ONLY_ACTUAL_FILLED_INSTANCE_ADMISSION_PENDING",
+  "source_dirty": true,
+  "files": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/RUN_CONTROLS.py",
+      "sha256": "967ddf9a5d792712dff248f29b7845b58fcafe68e99c772341bac845ce744210",
+      "bytes": 21518,
+      "physical_lf": 400,
+      "review_basis": "Complete predecessor read plus complete 32-line net delta and surrounding admission/cleanup/terminal paths"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-PLAN.md",
+      "sha256": "66f9345ae32f43d6da894e6edfd688fda1f2325372effc1dd1beace60a21d29c",
+      "bytes": 10261,
+      "physical_lf": 160,
+      "review_basis": "Complete predecessor and complete delta; bootstrap description unchanged"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-CONTROLS-SOURCE-REVIEW.json",
+      "sha256": "bfdc0e7ebabc06078195c91e5f6014ca446895c8e22d0fb5f31848a963079432",
+      "reviewer": "/root/storage",
+      "controls_author": "/root/verification",
+      "disposition": "ACCEPT_SOURCE_ONLY",
+      "execution_authorized": false
+    }
+  ],
+  "dependent_subjects_checked": {
+    "controls_sha256": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d",
+    "controls_design_sha256": "1292305d4a0f1729be7016002c9f1bc99f37487077aea4f4f3d1aa1854723921",
+    "subject_runner_sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "subject_plan_sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+  },
+  "supersedes": "CONTROL-LAUNCH-INPUTS-v1.json for corrected launcher/plan only; predecessor review remains recorded REVISE",
+  "preserved_predecessors_verified": {
+    "RUN_CONTROLS-v0.py.txt": "485ffb42486576d52ec9c00a1db78f5ee09ac8748538275f7b8542acfbe72b6f",
+    "CONTROL-LAUNCH-PLAN-v0.md": "7a39a167b49ccfef50ed2be099529b2025efa6ac3ad20043189e2def82f870a3"
+  },
+  "challenge_outcomes": {
+    "CL-R01": "ACCEPT_SOURCE_ONLY_WITH_COOPERATIVE_NONATOMIC_PATHNAME_LIMIT",
+    "CL-R02": "ACCEPT_SOURCE_ONLY_EXACT_NAMES_AND_EXPLICIT_REPORT_RECONCILIATION"
+  },
+  "controls_executed_by_reviewer": 0,
+  "imports_or_syntax_probes_by_reviewer": 0,
+  "application_cases_executed_by_reviewer": 0,
+  "qualified_closure_delta": 0,
+  "qualification": "This source review is not the actual normative CONTROL-ACCEPT-editor_review.json. Bootstrap originals, exact filled request, current system-interpreter binding, actual approvals, slot observation and root-only execution remain required."
+}

@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-08T23:49:19.713268+00:00",
+  "disposition": "SOURCE_SCOPE_SUPPORTED_WITH_QUALIFICATIONS_NOT_APPLIED_NO_IMPLEMENTATION_OR_EXECUTION_ADMISSION",
+  "proposal_inputs": {
+    "baseline_helper": {
+      "path": "scripts/audit/windows_native_validation.py",
+      "sha256": "67bcd0aeaa03fa829d55fecfbd640d185163805e4c0a067b281bd807333af243",
+      "bytes": 39470,
+      "physical_lf": 719
+    },
+    "inert_patch": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch",
+      "sha256": "9c20a77fa231277bf9222c4b9e2579c523740203985694b9a9ceb24df39e5675",
+      "bytes": 14871,
+      "physical_lf": 251
+    },
+    "author_note": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.md",
+      "sha256": "692bc8bd0d642246c5e1b6481f0ec218092f90fe65bcdfcdce8dcd5362d316c8",
+      "bytes": 8537,
+      "physical_lf": 139
+    },
+    "workflow": {
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "sha256": "643fcba6cb393bd6bbd8497cfd03a52ccc43fa217a9d1d728c453d29ddb87b8c",
+      "bytes": 2056,
+      "physical_lf": 53
+    },
+    "source_bindings": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/SOURCE_BINDINGS.json",
+      "sha256": "27152712c1ac99ea1fcf739210764b0a5cabf8f45f1edbec2ecb3b143d2ebcb9",
+      "bytes": 3313,
+      "physical_lf": 76
+    },
+    "request": {
+      "path": "docs/audit-continuation/2026-09-08-linux/requests/windows-native.json",
+      "sha256": "f7922c9f351307b233e542f15e3c377f00b228c0a2593e1d89b1bbf6167b87e0",
+      "bytes": 1568,
+      "physical_lf": 32
+    },
+    "run01_independent_result_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/RESULT-REVIEW-01.json",
+      "sha256": "80e58633f4a2029b5e9b9e4ef805c3812d06be41a35330301abf1716353c6c6a",
+      "bytes": 16063,
+      "physical_lf": 396
+    }
+  },
+  "read_scope": "Entire251-LF inert patch and139-LF author note; prior exact719-LF baseline admission preserved; surrounding hypothetical command-finally/full-gather-deletion/final-result windows displayed from data-only in-memory reconstruction",
+  "in_memory_text_reconstruction": {
+    "hunks": 9,
+    "strict_old_text_offsets_and_counts_matched": true,
+    "hypothetical_bytes": 49882,
+    "hypothetical_physical_lf": 887,
+    "hypothetical_sha256": "13362bb5329c75acb8ade469c7fe7f2db0a9167f032bae797ed4dccbd67f231d",
+    "qualification": "Not written, applied, imported, evaluated, syntax-checked, compiled or executed; data-only identity comparison"
+  },
+  "source_supported": [
+    "Parent PID/exit observation recorded separately before drain; existing completed-command/cohort/exit0 guards remain",
+    "Original ten-second drain deadline set before new parent journal and never reset by sample",
+    "One fixed16-entry Job list, querylimited non-inheritable process handles, exact retained Job membership check before image/time queries",
+    "Same opened process handle supplies creation time and image metadata; stale outside-Job PID receives neither",
+    "Per-query readiness checks, one early-drain sample, no global/name scan or extra diagnostic worker",
+    "Acquired query handle finally closes once; failed close records and unwinds through existing exact-Job termination, no retry",
+    "Only descendant gathering opts into rejected-entry observation; same nofollow handle for attributes/tag, no target reads or extra rights",
+    "Unchanged reparse/hardlink refusal and full-gather-before-delete; rejection/journal failure cannot authorize deletion",
+    "Bounded relative path retention and explicit unknown fields; no inferred child or reparse root cause"
+  ],
+  "required_qualifications": [
+    "250ms is a cooperative call-admission bound, not a hard elapsed-time or termination guarantee",
+    "Synchronous Win32 calls, required closes and fsync can delay required termination despite an unchanged drain deadline",
+    "Time/signal can change between ready() and call; narrow absolute no-query-starts-after wording before promotion",
+    "Early/racy member list is not the member set at later drain failure or a simultaneous process census",
+    "Query/access/ctypes ABI/error/handle behavior is source-reviewed only, not runtime-validated",
+    "A full-path hash is a metadata fingerprint, not proof of anonymous/secret data; no expanded data collection is authorized",
+    "Not every preexisting handle-close result or hard-interruption output is observed"
+  ],
+  "author_counterchallenge": "Author independently acknowledged sampled ready()-to-call signal/deadline race and preserved exact v1 bytes; reviewer identified the same counterexample",
+  "future_authority": "None. Exact amended source, narrowed wording, evidence/query/cancellation/termination/cleanup controls and independent root admission/slot decision are still required before any implementation or execution proposal.",
+  "accepted_packet_changed": false,
+  "patch_applied": false,
+  "run_id": 34284083351,
+  "attempt": 1,
+  "preserved_run01": {
+    "operational_status": "FAIL",
+    "owned_job_workers_observed": 0,
+    "filesystem_cleanup": "HOLD",
+    "planned_cases": 14,
+    "executed_cases": 0,
+    "unstarted_cases": 14,
+    "unknown_causes_preserved": true
+  },
+  "new_executions": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "restrictions": "No retry/recovery/activation/containment relaxation; PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED and non-publishing/protected-ref boundaries unchanged",
+  "local_cleanup": "Permanent compact source-review files only; no amended helper/temporary executable/archive/build/cache/owned background worker created. No wrapper invocation or unrelated deletion/termination.",
+  "review_report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/OBSERVABILITY-v1-REVIEW.md",
+  "review_report_sha256": "b7baa281d9b1a83a48f4f44001af6e11c69e9e6c9a93672a88ac9c90f06ec3a0"
+}

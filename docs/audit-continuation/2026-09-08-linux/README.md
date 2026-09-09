@@ -6,7 +6,7 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-Read `CHECKPOINT_2.md`, the updated issue/coverage/verification overlays, and
+Read `CHECKPOINT_3.md`, the updated issue/coverage/verification overlays, and
 `EXECUTION_SLOT.json` before choosing work. Three grouped PVA-007 freshness
 corrections and the Android32 test harness are independently source-reviewed;
 **zero application test cases have executed**. The first Windows CI attempt
@@ -17,11 +17,31 @@ reported zero workers. The cross-host slot was released after reconciliation,
 without representing the cleanup HOLD as resolved.
 
 Android's installed image is 64-bit-only and was rejected. An official catalog
-identifies a 299 MiB API24/default/x86 archive candidate; download, checksum
-algorithm/bytes, installation, software-emulation feasibility and execution
-admission remain unproved. No emulator, ADB or SDK archive was launched/fetched.
-Fresh Linux database runner, inert-control and generated-output closeout work
-continues separately; no Gradle or old runner has been executed.
+identifies a 299 MiB API24/default/x86 archive candidate. A once-only three-XSD
+data capture and independent schema review establish the catalog's static SHA-1
+checksum linkage, not archive integrity, license authority or actual consumer
+behavior. Download, staging/cleanup, software-emulation and execution admission
+remain open. No emulator, ADB or SDK archive was launched/fetched.
+
+The first NEW Linux runner-control batch remains **20 PASS / 2 FAIL**. Its two
+mock-child fixture failures and original reviewer miss are preserved. After a
+narrow source correction and separate reviewed admission, controls02 executed
+**22 PASS / 0 FAIL**. Both batches used synthetic file/pipe I/O and mocked process
+APIs: **zero real children, process signals or application cases**. Their original
+scratch/process settlement was independently reconciled; both admissions are
+consumed. Exact handoff-source capture, runner/outer-supervisor and generated-output
+closeout source reviews are separate from actual database admission. No local
+Gradle or old runner has executed.
+
+Additional investigation NAV-FRESH-SUS-001 is independently confirmed as
+**PVA-038**: a cold Desktop crypto-loader I/O failure is misclassified as a
+rejected biometric key, attempting deletion of valid enrollment. Deletion success
+is required for persistent enrollment loss; there is no vault/password deletion
+or authentication bypass. Its active correction/tests are outside checkpoint3's
+published source scope until separately reviewed. The macOS synthetic fixture
+cleanup correction is source-accepted with three added, unexecuted CTest cases.
+Existing macOS Gradle/Desktop tests now require an independently admitted
+`PASSVAULT_NATIVE_TEST_PARENT`; this is an intentional fail-closed prerequisite.
 
 ## Baseline
 
@@ -30,12 +50,14 @@ continues separately; no Gradle or old runner has been executed.
 - Handoff tree: `05014e9f635131d5db06701e4013b4b5a746465a` (both matched).
 - Continuation worktree: `/root/projects/PassVault/passvault-linux`.
 - Dedicated branch: `codex/audit-continuation-linux-20260908`.
-- Remote observation on 2026-09-08 at 20:30 UTC: main remains
+- Remote refresh on 2026-09-09 at 02:05 UTC: main remains
   `0dbc12c7f1b7770e75963c751c8c67af6e8b057a`, testing remains
   `2ae65df7111a9c5493740e8b772932be77eb98bc`, release and
   `v1.0.7-rc.1017001` remain `61f55216302023d9872aba17546126450e5fbad3`.
-  Handoff ref is unchanged. Explicit `--no-tags` fetch refreshed only remote
-  tracking branches; no protected local branch or tag was moved.
+  Handoff ref is unchanged; continuation still points to published `f18995e…`
+  before checkpoint3. Explicit `--no-tags` fetch refreshed only remote tracking
+  branches; candidate tag was read separately, not moved. Exact results are in
+  `publication/CHECKPOINT-3-REMOTE-REFRESH.json`.
 - The two documented PowerShell checkout-EOL qualifications remain binding.
 
 ## Coordination and safety
@@ -78,16 +100,18 @@ At that initial observation no project build/test had run. One JSON read-only su
 `AttributeError` because the issue ledger is a list; a corrected data-only read
 succeeded. This is an inspection-tool failure, not an application test.
 
-## Starting denominators (unchanged until independently supported)
+## Current defined denominators
 
 | Measure | Qualified/conclusive | Remaining |
 | --- | ---: | ---: |
 | Original confirmed PVA-001–025 | 19/25 (76%) | 6 |
-| All confirmed PVA-001–037 | 22/37 (59.5%) | 15 |
+| All confirmed PVA-001–038 | 22/38 (57.9%) | 16 |
 | Original PVU-001–012 | 2/12 (16.7%) | 10 |
 | PVD-001–008 explanations | 8/8 documented | Owner choices separate |
 
-These are separate denominators, not overall readiness. Historical passes,
+The all-confirmed denominator increased by one source-confirmed family; no new
+qualified closure occurred. Frozen reports with 22/37 retain their historical
+scope, not the current global total. These are separate denominators, not overall readiness. Historical passes,
 failures, rejected concerns, grouped variants and coverage qualifications remain
 in the handoff. Pending work is not silently dropped because Linux lacks a
 target or sufficient disk.

@@ -1,0 +1,320 @@
+#!/usr/bin/python3
+"""One root-admitted capture of three fixed local XSD members as inert data.
+
+NOT execution admission. Root must independently freeze/review this file first.
+No arguments, network, Java, SDK commands, subprocesses, XML parsing or imports
+of captured data. A consumed output directory is never reused or removed here.
+"""
+
+import datetime
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import resource
+import signal
+import stat
+import sys
+import time
+import zipfile
+
+
+BASE = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android32')
+SELF = BASE / 'CAPTURE_FIXED_XSDS.py'
+OUTPUT_NAME = 'schema-capture-01'
+MIB = 1024 ** 2
+GIB = 1024 ** 3
+MAX_CONTAINER_BYTES = 2 * MIB
+MAX_MEMBER_BYTES = 32 * 1024
+MAX_JSON_BYTES = 64 * 1024
+MAX_ARCHIVE_ENTRIES = 10000
+MAX_CAPTURE_BYTES = 256 * 1024
+DIR_FLAGS = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+READ_FLAGS = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
+INPUTS = (
+    {
+        'path': '/opt/android-sdk/cmdline-tools/23.0/lib/sdklib/tools.sdklib.jar',
+        'bytes': 1909475,
+        'sha256': 'd0bbe0e03155a7bdd9bac03567b6b26797f81a778f55d5eadc3e71e7a0a27434',
+        'members': (
+            {
+                'name': 'xsd/sdk-sys-img-01.xsd',
+                'output': 'sdk-sys-img-01.xsd',
+                'bytes': 4481,
+                'sha256': '2eb33b82b4db5d24892e8b7c9ebb2eace2d309f6fc64c57103a034b7e2a9eaf5',
+            },
+        ),
+    },
+    {
+        'path': '/opt/android-sdk/cmdline-tools/23.0/lib/repository/tools.repository.jar',
+        'bytes': 272256,
+        'sha256': '9fd419f3307be633aaf7b02b52832521c1300d4bf9058cee83bb11139990a7f9',
+        'members': (
+            {
+                'name': 'xsd/repo-common-01.xsd',
+                'output': 'repo-common-01.xsd',
+                'bytes': 15469,
+                'sha256': '91a12ddb132fbf2a56fef48030c0bd21a6032eff1e095d92d605ac8baadb151e',
+            },
+            {
+                'name': 'xsd/repo-common-02.xsd',
+                'output': 'repo-common-02.xsd',
+                'bytes': 15510,
+                'sha256': '5f8b8c8b8bc3d965c4334c20d72cb83ff475012703bd922e6a3387d35efc36e3',
+            },
+        ),
+    },
+)
+OUTPUT_FILES = frozenset((
+    'INTENT.json', 'RESULT.json',
+    'sdk-sys-img-01.xsd', 'repo-common-01.xsd', 'repo-common-02.xsd',
+))
+
+
+class Refused(Exception):
+    pass
+
+
+def require(condition, message):
+    if not condition:
+        raise Refused(message)
+
+
+def utc():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def pin(info):
+    return {
+        'device': info.st_dev, 'inode': info.st_ino, 'uid': info.st_uid,
+        'mode': info.st_mode, 'links': info.st_nlink, 'bytes': info.st_size,
+        'mtime_ns': info.st_mtime_ns, 'ctime_ns': info.st_ctime_ns,
+    }
+
+
+def open_directory(path):
+    """No-follow traversal for fixed absolute paths; no caller-provided paths."""
+    require(path.is_absolute() and '..' not in path.parts, 'nonabsolute or parent traversal')
+    descriptor = os.open('/', DIR_FLAGS)
+    try:
+        for part in path.parts[1:]:
+            child = os.open(part, DIR_FLAGS, dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = child
+        return descriptor
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
+def read_regular(parent_fd, name, expected_bytes, expected_sha=None):
+    require('/' not in name and name not in ('.', '..'), 'invalid fixed file name')
+    descriptor = os.open(name, READ_FLAGS, dir_fd=parent_fd)
+    try:
+        before = os.fstat(descriptor)
+        require(stat.S_ISREG(before.st_mode), 'input is not a regular file')
+        require(before.st_size == expected_bytes, 'input byte count changed')
+        pieces = []
+        remaining = expected_bytes + 1
+        while remaining:
+            piece = os.read(descriptor, min(65536, remaining))
+            if not piece:
+                break
+            pieces.append(piece)
+            remaining -= len(piece)
+        payload = b''.join(pieces)
+        after = os.fstat(descriptor)
+        linked = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        require(pin(before) == pin(after) == pin(linked), 'input identity changed while read')
+        require(len(payload) == expected_bytes, 'input overrun or short read')
+        digest = hashlib.sha256(payload).hexdigest()
+        if expected_sha is not None:
+            require(digest == expected_sha, 'input SHA-256 mismatch')
+        return payload, {'pin': pin(after), 'bytes': len(payload), 'sha256': digest}
+    finally:
+        os.close(descriptor)
+
+
+def resources(parent_fd):
+    disk = os.fstatvfs(parent_fd)
+    with open('/proc/meminfo', 'rb') as handle:
+        data = handle.read(65537)
+    require(len(data) <= 65536, 'meminfo size cap')
+    fields = {}
+    for line in data.decode('ascii').splitlines():
+        key, _, value = line.partition(':')
+        if key in ('MemTotal', 'MemAvailable'):
+            number, unit = value.split()
+            require(unit == 'kB', 'unexpected meminfo unit')
+            fields[key] = int(number) * 1024
+    require(fields.get('MemTotal', 0) > 0 and 'MemAvailable' in fields, 'memory data missing')
+    return {
+        'utc': utc(), 'free_bytes': disk.f_bavail * disk.f_frsize,
+        'memory_total_bytes': fields['MemTotal'],
+        'memory_available_bytes': fields['MemAvailable'],
+    }
+
+
+def write_new(output_fd, name, payload, total):
+    require(name in OUTPUT_FILES, 'output not allowlisted')
+    require(len(payload) <= MAX_JSON_BYTES, 'single output cap')
+    require(total + len(payload) <= MAX_CAPTURE_BYTES, 'capture total cap')
+    flags = os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
+    descriptor = os.open(name, flags, 0o600, dir_fd=output_fd)
+    try:
+        remaining = memoryview(payload)
+        while remaining:
+            count = os.write(descriptor, remaining)
+            require(count > 0, 'output write made no progress')
+            remaining = remaining[count:]
+        os.fsync(descriptor)
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        actual = bytearray()
+        while len(actual) <= len(payload):
+            piece = os.read(descriptor, min(65536, len(payload) + 1 - len(actual)))
+            if not piece:
+                break
+            actual.extend(piece)
+        require(bytes(actual) == payload, 'output read-back mismatch')
+        info = os.fstat(descriptor)
+        linked = os.stat(name, dir_fd=output_fd, follow_symlinks=False)
+        require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, 'output type/link change')
+        require(pin(info) == pin(linked), 'output path identity changed')
+        return total + len(payload)
+    finally:
+        os.close(descriptor)
+
+
+def json_bytes(value):
+    result = (json.dumps(value, indent=2, sort_keys=True) + '\n').encode('utf-8')
+    require(len(result) <= MAX_JSON_BYTES, 'JSON cap')
+    return result
+
+
+def interrupted(number, _frame):
+    raise Refused('capture interrupted by signal ' + str(number))
+
+
+def main():
+    require(sys.platform == 'linux', 'Linux only')
+    require(len(sys.argv) == 1 and Path(__file__).absolute() == SELF, 'fixed script/no arguments only')
+    require(sys.flags.isolated and sys.dont_write_bytecode, 'run with python3 -I -B')
+    os.umask(0o077)
+    resource.setrlimit(resource.RLIMIT_AS, (128 * MIB, 128 * MIB))
+    resource.setrlimit(resource.RLIMIT_CPU, (5, 6))
+    resource.setrlimit(resource.RLIMIT_FSIZE, (MAX_CAPTURE_BYTES, MAX_CAPTURE_BYTES))
+    resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGALRM, signal.SIGXCPU):
+        signal.signal(number, interrupted)
+    signal.setitimer(signal.ITIMER_REAL, 15)
+    started = time.monotonic()
+    parent_fd = output_fd = None
+    total = 0
+    result = {
+        'format': 'passvault-fixed-xsd-capture-v1', 'finding': 'PVA-001',
+        'status': 'INCOMPLETE', 'started_utc': utc(),
+        'inputs': [], 'outputs': [], 'errors': [],
+        'scope': 'Three fixed XSDs as bytes; no XML parse, schema-chain verdict or target admission.',
+        'application_test_executions': 0,
+        'network_requests': 0, 'subprocesses_started': 0, 'temporary_files_created': 0,
+    }
+    try:
+        parent_fd = open_directory(BASE)
+        before = resources(parent_fd)
+        result['resources_before'] = before
+        require(before['free_bytes'] >= 12 * GIB, 'disk below inherited 12GiB launch floor')
+        require(before['memory_available_bytes'] * 4 >= before['memory_total_bytes'], 'RAM below 25% floor')
+        info = os.stat(SELF.name, dir_fd=parent_fd, follow_symlinks=False)
+        require(stat.S_ISREG(info.st_mode) and info.st_size <= MAX_JSON_BYTES, 'reader source size/type')
+        _, reader_record = read_regular(parent_fd, SELF.name, info.st_size)
+        result['reader'] = {'path': str(SELF), **reader_record}
+        os.mkdir(OUTPUT_NAME, mode=0o700, dir_fd=parent_fd)
+        output_fd = os.open(OUTPUT_NAME, DIR_FLAGS, dir_fd=parent_fd)
+        result['output_directory_pin'] = pin(os.fstat(output_fd))
+        total = write_new(output_fd, 'INTENT.json', json_bytes({
+            'status': 'INTENT_ONLY_NOT_COMPLETION', 'started_utc': result['started_utc'],
+            'reader': result['reader'], 'fixed_inputs': INPUTS,
+            'expected_outputs': sorted(OUTPUT_FILES),
+            'resources_before': before,
+            'limits': {
+                'address_space_bytes': 128 * MIB, 'cpu_soft_seconds': 5, 'cpu_hard_seconds': 6,
+                'wall_seconds': 15, 'per_container_bytes': MAX_CONTAINER_BYTES,
+                'archive_entries': MAX_ARCHIVE_ENTRIES, 'per_member_bytes': MAX_MEMBER_BYTES,
+                'total_output_bytes': MAX_CAPTURE_BYTES,
+            },
+        }), total)
+        payloads = []
+        for source in INPUTS:
+            require(source['bytes'] <= MAX_CONTAINER_BYTES, 'fixed container cap')
+            source_path = Path(source['path'])
+            source_parent = open_directory(source_path.parent)
+            try:
+                container, descriptor = read_regular(
+                    source_parent, source_path.name, source['bytes'], source['sha256'],
+                )
+            finally:
+                os.close(source_parent)
+            result['inputs'].append({'path': source['path'], **descriptor})
+            # Hash-verified immutable in-memory bytes, not a reopened mutable JAR.
+            with zipfile.ZipFile(io.BytesIO(container)) as archive:
+                entries = archive.infolist()
+                require(len(entries) <= MAX_ARCHIVE_ENTRIES, 'archive entry cap')
+                for member in source['members']:
+                    matches = [entry for entry in entries if entry.filename == member['name']]
+                    require(len(matches) == 1, 'missing or duplicate fixed member')
+                    entry = matches[0]
+                    require(not entry.is_dir() and not entry.flag_bits & 1, 'directory/encrypted member')
+                    require(stat.S_IFMT(entry.external_attr >> 16) in (0, stat.S_IFREG), 'special member')
+                    require(entry.compress_type in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED), 'compression type')
+                    require(entry.file_size == member['bytes'] <= MAX_MEMBER_BYTES, 'member byte cap/identity')
+                    require(entry.compress_size <= MAX_MEMBER_BYTES, 'compressed member cap')
+                    with archive.open(entry, 'r') as handle:
+                        data = handle.read(member['bytes'] + 1)
+                    require(len(data) == member['bytes'], 'member short read/overrun')
+                    require(hashlib.sha256(data).hexdigest() == member['sha256'], 'member SHA-256 mismatch')
+                    payloads.append((member, data))
+        require(len(payloads) == 3, 'fixed three-member inventory')
+        # Validate all three before creating any captured XSD output.
+        for member, data in payloads:
+            total = write_new(output_fd, member['output'], data, total)
+            result['outputs'].append({
+                'name': member['output'], 'member': member['name'],
+                'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
+                'physical_LF': data.count(b'\n'), 'read_back_verified': True,
+            })
+        result['status'] = 'CAPTURED_THREE_FIXED_XSDS_NO_SEMANTIC_VERDICT'
+    except BaseException as error:
+        result['status'] = 'FAIL_CAPTURE_NO_RETRY'
+        result['errors'].append({'type': type(error).__name__, 'message': str(error)[:1000]})
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        result['finished_utc'] = utc()
+        result['elapsed_seconds'] = round(time.monotonic() - started, 6)
+        result['cleanup'] = 'Close owned descriptors; retain compact permanent evidence, including partial failure. No temp/cache/SDK writes or subprocesses.'
+        try:
+            if parent_fd is not None:
+                result['resources_after'] = resources(parent_fd)
+            if output_fd is not None:
+                # Final receipt is exclusively created, never a replacement of an old result.
+                total = write_new(output_fd, 'RESULT.json', json_bytes(result), total)
+                os.fsync(output_fd)
+                os.fsync(parent_fd)
+        except BaseException as error:
+            result['status'] = 'FAIL_RECEIPT_NO_RETRY'
+            result['errors'].append({'type': type(error).__name__, 'message': str(error)[:1000]})
+        finally:
+            if output_fd is not None:
+                os.close(output_fd)
+            if parent_fd is not None:
+                os.close(parent_fd)
+    print(json.dumps({
+        'status': result['status'], 'output_directory': str(BASE / OUTPUT_NAME),
+        'captured_members': len(result['outputs']), 'written_payload_bytes': total,
+        'errors': result['errors'],
+    }, sort_keys=True))
+    return 0 if result['status'] == 'CAPTURED_THREE_FIXED_XSDS_NO_SEMANTIC_VERDICT' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

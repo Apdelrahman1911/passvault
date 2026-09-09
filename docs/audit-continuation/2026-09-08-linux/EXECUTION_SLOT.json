@@ -1,24 +1,29 @@
 {
   "schema": 1,
   "owner": "/root",
-  "state": "RELEASED",
-  "scope": "windows-native-14-v1",
-  "reserved_utc": "2026-09-08T21:55:59.705274+00:00",
+  "state": "IDLE_NO_EXECUTION_ADMITTED",
+  "updated_utc": "2026-09-09T01:44:27.901804+00:00",
   "branch": "codex/audit-continuation-linux-20260908",
-  "activation": "Consumed request-only commit a1fbdf0d5f0663225a459838d37b072a65e334f6, no automatic retry",
-  "all_other_agents": "SOURCE_REVIEW_ONLY_NO_BUILDS_TESTS_OR_CI",
-  "local_execution": "No local build/test/inert/emulator executed or newly admitted",
-  "release_condition": "CI terminal status plus independent compact evidence and cleanup reconciliation",
+  "all_other_agents": "SOURCE_ONLY_NO_BUILDS_TESTS_OR_CI",
+  "last_controls02": {
+    "scope": "linux-runner-controls-02",
+    "result": "22PASS/0FAIL/0unstarted; originalsyntheticcleanupandprocesssettled",
+    "release": "reviews/verification/CONTROL-SLOT-02-RELEASE.json",
+    "independent_review": "reviews/editor-independent/CONTROL-RESULT-02-REVIEW.json",
+    "consumed": true
+  },
+  "previous_controls01": {
+    "scope": "linux-runner-controls-01",
+    "outcome": "FAIL20PASS/2FAIL; originalscratchandprocesscleanupsettled",
+    "release": "reviews/verification/CONTROL-SLOT-01-RELEASE.json",
+    "independent_result": "reviews/editor-independent/CONTROL-RESULT-01-REVIEW.json",
+    "external_receipt": "reviews/verification/CONTROL-LAUNCH-RECEIPT.json",
+    "retry": "CONSUMED_NO_AUTOMATIC_RETRY"
+  },
+  "windows_run": 34284083351,
+  "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
+  "local_execution": "No Gradle/application run. Two distinctcontrolsbatchescompleted, consumed. XSDdatacaptureonceexit0 independentlyreconciled. No worker/task running owned byroot.",
+  "next_gate": "Prebuildclosercontrols source/instance admission and originaldatabasepacket/independentreview/finalpreflight remain; no Ebootstrap or runtime execution admitted by thisslot.",
   "historical_locks": "NOT_ADOPTED_OR_RECREATED",
-  "point_observation_utc": "2026-09-08T21:50:32Z",
-  "continuation_actions_runs_observed": 1,
-  "audit_owned_local_builds_started": 0,
-  "released_utc": "2026-09-08T22:30:25.964150+00:00",
-  "run_id": 34284083351,
-  "run_attempt": 1,
-  "terminal_status": "FAIL",
-  "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json",
-  "owned_workers_reported": 0,
-  "cleanup_residual": "HOLD: no deletion attempted after reparse refusal; hosted disposal not cleanup proof; cannot access terminated hosted namespace for closeout",
-  "release_basis": "One job terminal, exactJob0 reported, independent result/cleanup reconciliation complete; release does not resolve cleanupHOLD or admit next execution"
+  "release_of_slot_is_not_release_publication": true
 }

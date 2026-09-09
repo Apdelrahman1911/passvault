@@ -1,0 +1,472 @@
+{
+  "absent02_paths_at_review": [
+    "/root/projects/PassVault/audit-runtime-linux-runner-controls-02",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events-02.jsonl",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-editor_review-02.json"
+  ],
+  "bindings": {
+    "controls": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426",
+    "controls_review": "727a0884b82962425548c90ce01b9c9c501912be2617efa477662fc7c3dccd96",
+    "design": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192",
+    "launch_plan": "2046a1d818e3dad1720dea04fe67cab2f23c809b66e8be9bd1ceda568147fdae",
+    "launcher": "c1818984d63274465fe20f7a4ea9a765ee1d30e822357390596a3a433fa1d1e9",
+    "runner": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "runner_plan": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+  },
+  "cleanup": "Only bounded metadata/text reads and this permanent review file; all owned read descriptors close on command exit. No scratch/cache/build/daemon/worker/emulator created; wrapper --stop N/A; no unrelated deletion or signaling.",
+  "counts": {
+    "application_tests_executed_by_reviewer": 0,
+    "controls02_executed_by_reviewer": 0,
+    "imports_or_syntax_probes_by_reviewer": 0,
+    "qualified_closure_delta": 0
+  },
+  "disposition": "ACCEPT_FILLED02_INSTANCE_SUBJECT_TO_ROOT_FINAL_PREFLIGHT_AND_UNCHANGED_ONE_SHOT_ADMISSION",
+  "exact_required_directory_count": 17,
+  "execution_limits": "Only root may execute exact RUN_CONTROLS_02.py once before request expiry, after final admission checks. 22 NEW v4 inert controls, real synthetic IO vs mocked processes kept separate; every source/time/namespace/descriptor uncertainty remains failure/HOLD, not retry. Combined tool output and reported time are qualified; no full external monotonic/hard deadline proof. External observed exit and original cleanup independently reconciled before any separate database admission.",
+  "format": "passvault-linux-controls02-filled-instance-review-v1",
+  "freshness": {
+    "created": 1788915343.684762,
+    "expires": 1788918943.684762,
+    "review_within_window": true
+  },
+  "launcher_author": "/root",
+  "observed_files": {
+    "bootstrap": {
+      "bytes": 3768,
+      "identity": {
+        "ctime_ns": 1788910891125735946,
+        "dev": 24,
+        "ino": 13672350,
+        "mode": 33152,
+        "mtime_ns": 1788910891125735946,
+        "nlink": 1,
+        "size": 3768,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP.jsonl",
+      "sha256": "8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613"
+    },
+    "bootstrap_receipt": {
+      "bytes": 807,
+      "identity": {
+        "ctime_ns": 1788912174981659422,
+        "dev": 24,
+        "ino": 13672370,
+        "mode": 33152,
+        "mtime_ns": 1788912174981659422,
+        "nlink": 1,
+        "size": 807,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP-RECEIPT.json",
+      "sha256": "cd0ce6a2d06ea3deaf2556736e633c322d41f07919ef511ad0c1ae2571976fc0"
+    },
+    "controls": {
+      "bytes": 43063,
+      "identity": {
+        "ctime_ns": 1788914095690544939,
+        "dev": 24,
+        "ino": 13672397,
+        "mode": 33152,
+        "mtime_ns": 1788914095690544939,
+        "nlink": 1,
+        "size": 43063,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/linux_runner_controls_v4.py",
+      "sha256": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426"
+    },
+    "controls_review": {
+      "bytes": 5529,
+      "identity": {
+        "ctime_ns": 1788914610426514258,
+        "dev": 24,
+        "ino": 13672423,
+        "mode": 33152,
+        "mtime_ns": 1788914610426514258,
+        "nlink": 1,
+        "size": 5529,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-CONTROLS-SOURCE-REVIEW-02.json",
+      "sha256": "727a0884b82962425548c90ce01b9c9c501912be2617efa477662fc7c3dccd96"
+    },
+    "current_original_lock": {
+      "bytes": 0,
+      "identity": {
+        "ctime_ns": 1788910891124735946,
+        "dev": 24,
+        "ino": 14189001,
+        "mode": 33152,
+        "mtime_ns": 1788910891124735946,
+        "nlink": 1,
+        "size": 0,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "current_slot02": {
+      "bytes": 1668,
+      "identity": {
+        "ctime_ns": 1788915464177463370,
+        "dev": 24,
+        "ino": 13672222,
+        "mode": 33152,
+        "mtime_ns": 1788915464177463370,
+        "nlink": 1,
+        "size": 1668,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+      "sha256": "be7b4993b79dc6cc44a70560ef7588637a168607ab647110dcf720730385fdb5"
+    },
+    "design": {
+      "bytes": 7399,
+      "identity": {
+        "ctime_ns": 1788914335446530648,
+        "dev": 24,
+        "ino": 13672402,
+        "mode": 33152,
+        "mtime_ns": 1788914335446530648,
+        "nlink": 1,
+        "size": 7399,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-V4-DESIGN.md",
+      "sha256": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192"
+    },
+    "launch_plan": {
+      "bytes": 11568,
+      "identity": {
+        "ctime_ns": 1788914693441509310,
+        "dev": 24,
+        "ino": 13672401,
+        "mode": 33152,
+        "mtime_ns": 1788914693441509310,
+        "nlink": 1,
+        "size": 11568,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-PLAN-02.md",
+      "sha256": "2046a1d818e3dad1720dea04fe67cab2f23c809b66e8be9bd1ceda568147fdae"
+    },
+    "launcher": {
+      "bytes": 21545,
+      "identity": {
+        "ctime_ns": 1788914157559541251,
+        "dev": 24,
+        "ino": 13672400,
+        "mode": 33152,
+        "mtime_ns": 1788914157559541251,
+        "nlink": 1,
+        "size": 21545,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/RUN_CONTROLS_02.py",
+      "sha256": "c1818984d63274465fe20f7a4ea9a765ee1d30e822357390596a3a433fa1d1e9"
+    },
+    "original_journal01": {
+      "bytes": 123873,
+      "identity": {
+        "ctime_ns": 1788913263405594547,
+        "dev": 24,
+        "ino": 13672386,
+        "mode": 33152,
+        "mtime_ns": 1788913263405594547,
+        "nlink": 1,
+        "size": 123873,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events.jsonl",
+      "sha256": "75fcebbd3c666518f9b2160d186e83ad9eebb9b8774c016eae043e88e40c6eb7"
+    },
+    "original_receipt01": {
+      "bytes": 3583,
+      "identity": {
+        "ctime_ns": 1788913331639590480,
+        "dev": 24,
+        "ino": 13672387,
+        "mode": 33152,
+        "mtime_ns": 1788913331639590480,
+        "nlink": 1,
+        "size": 3583,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-RECEIPT.json",
+      "sha256": "39a7daf48e4096fab5245c858f71aef1fe7eae507dd88b424078774fca1217f1"
+    },
+    "original_request01": {
+      "bytes": 6823,
+      "identity": {
+        "ctime_ns": 1788912174977659422,
+        "dev": 24,
+        "ino": 13672368,
+        "mode": 33152,
+        "mtime_ns": 1788912174977659422,
+        "nlink": 1,
+        "size": 6823,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-REQUEST.json",
+      "sha256": "8d2e20fcb074d5ffeb1775f15e7116971dab8fa46448634fb68dfdcce9539931"
+    },
+    "original_result_review01": {
+      "bytes": 22452,
+      "identity": {
+        "ctime_ns": 1788914314017531925,
+        "dev": 24,
+        "ino": 13672404,
+        "mode": 33152,
+        "mtime_ns": 1788914314017531925,
+        "nlink": 1,
+        "size": 22452,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL-RESULT-01-REVIEW.json",
+      "sha256": "cb7e5629fad46d4287f6e65043fd0ba8b544bf14519991120a12da5d3fb3aede"
+    },
+    "original_slot_release01": {
+      "bytes": 3154,
+      "identity": {
+        "ctime_ns": 1788914979759492244,
+        "dev": 24,
+        "ino": 13672431,
+        "mode": 33152,
+        "mtime_ns": 1788914979759492244,
+        "nlink": 1,
+        "size": 3154,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-SLOT-01-RELEASE.json",
+      "sha256": "f81218951c2380cc983843c1317bd78239b087b6099d3087409a1de6d79b695e"
+    },
+    "python_executable": {
+      "bytes": 8020928,
+      "identity": {
+        "ctime_ns": 1787292627933100530,
+        "dev": 25,
+        "ino": 1088,
+        "mode": 33261,
+        "mtime_ns": 1781873160000000000,
+        "nlink": 1,
+        "size": 8020928,
+        "uid": 0
+      },
+      "path": "/usr/bin/python3.12",
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118"
+    },
+    "request": {
+      "bytes": 8395,
+      "identity": {
+        "ctime_ns": 1788915343684470552,
+        "dev": 24,
+        "ino": 13672440,
+        "mode": 33152,
+        "mtime_ns": 1788915343684470552,
+        "nlink": 1,
+        "size": 8395,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-REQUEST-02.json",
+      "sha256": "3d74124eb6a70fc5795928667d3f66eb6dc72ae5654269d0f805e4fbe3d4c8aa"
+    },
+    "root_approval": {
+      "bytes": 1555,
+      "identity": {
+        "ctime_ns": 1788915343685470552,
+        "dev": 24,
+        "ino": 13672441,
+        "mode": 33152,
+        "mtime_ns": 1788915343685470552,
+        "nlink": 1,
+        "size": 1555,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-root-02.json",
+      "sha256": "283f93f8150fcb2e2cc93f7d6cd8f742e56bd8b281ff454f3a74e39156fc4a9d"
+    },
+    "runner": {
+      "bytes": 55614,
+      "identity": {
+        "ctime_ns": 1788906692866986181,
+        "dev": 24,
+        "ino": 13672190,
+        "mode": 33152,
+        "mtime_ns": 1788906692866986181,
+        "nlink": 1,
+        "size": 55614,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_database_validation.py",
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    "runner_plan": {
+      "bytes": 21126,
+      "identity": {
+        "ctime_ns": 1788906599726991733,
+        "dev": 24,
+        "ino": 14171052,
+        "mode": 33152,
+        "mtime_ns": 1788906599726991733,
+        "nlink": 1,
+        "size": 21126,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/PLAN.md",
+      "sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+    }
+  },
+  "original_authority": "Unchanged original Linux bootstrap and external receipt, original01 sealed17 ancestors/lock/Python, not current-path adoption or historical macOS authority. No lock acquisition, write, recreation or repair.",
+  "original_directory_pins": {
+    "/": {
+      "dev": 23,
+      "ino": 2,
+      "mode": 16877,
+      "uid": 0
+    },
+    "/root": {
+      "dev": 23,
+      "ino": 19,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects": {
+      "dev": 23,
+      "ino": 62415,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault": {
+      "dev": 23,
+      "ino": 498323,
+      "mode": 16877,
+      "uid": 0
+    },
+    "/root/projects/PassVault/.audit-coordination-linux-20260908": {
+      "dev": 23,
+      "ino": 661121,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux": {
+      "dev": 23,
+      "ino": 505714,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs": {
+      "dev": 23,
+      "ino": 506056,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation": {
+      "dev": 23,
+      "ino": 506436,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux": {
+      "dev": 23,
+      "ino": 506437,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews": {
+      "dev": 23,
+      "ino": 506438,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner": {
+      "dev": 23,
+      "ino": 620706,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage": {
+      "dev": 23,
+      "ino": 610534,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification": {
+      "dev": 23,
+      "ino": 608474,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/scripts": {
+      "dev": 23,
+      "ino": 506353,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/scripts/audit": {
+      "dev": 23,
+      "ino": 610499,
+      "mode": 16832,
+      "uid": 0
+    },
+    "/usr": {
+      "dev": 23,
+      "ino": 11,
+      "mode": 16877,
+      "uid": 0
+    },
+    "/usr/bin": {
+      "dev": 23,
+      "ino": 13,
+      "mode": 16877,
+      "uid": 0
+    }
+  },
+  "preserved_restrictions": "PVU-007 STOP; PVU-011 NO RETRY; PVA-029 failure/no automatic retry; G7/G8 CLOSED; no old runner/helpers or Windows retry; PVD/hardware/publication/protectedrefs/dependency/version/identity/signing/store/build1017001 boundaries unchanged.",
+  "prior_result_preserved": {
+    "controls01_attempted": 22,
+    "controls01_cleanup": "Original synthetic namespace and no-child process settled; timing qualification retained",
+    "controls01_failed": 2,
+    "controls01_passed": 20,
+    "controls01_unstarted": 0,
+    "windows_cases_started": 0,
+    "windows_cases_unstarted": 14,
+    "windows_cleanup": "HOLD",
+    "windows_operational_status": "FAIL",
+    "windows_run": 34284083351
+  },
+  "python3_alias": {
+    "identity": {
+      "ctime_ns": 1787292627918100464,
+      "dev": 25,
+      "ino": 1087,
+      "mode": 41471,
+      "mtime_ns": 1762949744000000000,
+      "nlink": 1,
+      "size": 10,
+      "uid": 0
+    },
+    "path": "/usr/bin/python3",
+    "target": "python3.12"
+  },
+  "request_sha256": "3d74124eb6a70fc5795928667d3f66eb6dc72ae5654269d0f805e4fbe3d4c8aa",
+  "resource_point_bytes": {
+    "MemAvailable": 45416677376,
+    "MemTotal": 67435888640,
+    "disk_available": 32813383680
+  },
+  "review_method": "Bounded no-follow fixed-file reads, strict JSON data parse, pre/fd/post/name full regular identities, hashes of same images, retained original ancestry rechecks. No target import/compile, child API, application, Gradle or subject main execution.",
+  "reviewed_utc": "2026-09-09T01:03:31.874179+00:00",
+  "reviewer": "/root/editor_review",
+  "slot_evidence": {
+    "actual_reserved_slot_sha256": "be7b4993b79dc6cc44a70560ef7588637a168607ab647110dcf720730385fdb5",
+    "current_slot_state": "RESERVED_CONTROLS02_PENDING_INDEPENDENT_FILLED_APPROVAL",
+    "metadata_correction": "Initial displayed slot carried top-level predecessor preflight/receipt/journal/released fields. Reviewer challenged attribution; root independently agreed and moved historical evidence under previous_controls. This review read the normalized actual slot; old01 fields are not02 evidence.",
+    "previous01_independent_review_sha256": "cb7e5629fad46d4287f6e65043fd0ba8b544bf14519991120a12da5d3fb3aede",
+    "previous01_root_release_sha256": "f81218951c2380cc983843c1317bd78239b087b6099d3087409a1de6d79b695e",
+    "qualification": "Root sole-executor/point observation, not host-wide/future exclusivity. Root must repeat final slot/resource/absence preflight before invoking.",
+    "root_ci_tool": "204202",
+    "root_coordination_utc": "2026-09-09T00:55:43.684768+00:00"
+  },
+  "source_review_basis": "CONTROL02-LAUNCH-REVIEW-v2.md and INPUTS-v2.json; actual storage source-only v4 approval with disclosed subject coauthorship; original result challenge and root release. No new code or full-application acceptance inferred."
+}

@@ -1,0 +1,258 @@
+{
+  "accounting": {
+    "PVD_explanations_separate": 8,
+    "all_confirmed": "22/37 qualified;15 remain",
+    "new_application_cases": 0,
+    "new_application_families": 0,
+    "new_closures": 0,
+    "new_conclusive_suspicions": 0,
+    "new_semantic_lf_credit": 0,
+    "original_confirmed": "19/25 qualified;6 remain",
+    "original_suspicions": "2/12 conclusive;10 remain"
+  },
+  "code_corrections": [
+    {
+      "counterexample_now_refused": "Equal-size previous-record rewrite with changed mutable full-pin fields fails last completed pin/used precheck before another append.",
+      "failure_path_review": "Partial/zero write, fsync or final-check error latches journal.ok false and propagates out of future deletion; no repair or replacement.",
+      "finding": "LC-C05-01",
+      "independent_challenger": "/root/baseline_coverage",
+      "original_author_disclosure": "/root/editor",
+      "positive_path_review": "Initial empty name/FD is checked after durability; each completed append advances to its actual successor pin only after write/fsync/final name/FD/stable-fields/length checks, not the original empty-file mutable pin.",
+      "remaining_limits": [
+        "Metadata point observations do not authenticate journal history cryptographically.",
+        "Same-inode modification during own append and timestamp-resolution/hostile-writer effects are not fully distinguishable; frozen cooperative producers and external review remain necessary.",
+        "All proposed journal control effects remain unexecuted here; no runtime closure or cleanup credit."
+      ],
+      "source_disposition": "ACCEPT_UNEXECUTED_CODE_CORRECTION",
+      "source_lines": "258-311"
+    },
+    {
+      "counterexample_now_refused": "Already-latched/pending signal or elapsed deadline is checked before admission and at bounded read/chunk/fsync/bind/verify/event/source/ancestor/setup/under-lock-rehash boundaries, including prejournal.",
+      "failure_path_review": "Initial callback before descriptor creation leaves none owned; later callback failure propagates through existing finally; no command/signal/stop/retry or path expansion introduced.",
+      "finding": "LC-C06-01",
+      "independent_challenger": "/root/baseline_coverage",
+      "original_author_disclosure": "/root/editor",
+      "positive_path_review": "Cheap callback obtains no original ownership authority; full Guard replaces it only after originals/lock binding. Nonpolling Directories.open avoids Guard recursion; nonpolling bounded Journal/final descriptor close allow HOLD evidence and settlement after deadline.",
+      "remaining_limits": [
+        "900s starts at main monotonic-clock installation, not interpreter/stdlib loading; external launcher must bound startup.",
+        "Synchronous syscalls/CPU batches can delay soft sampling; not a hard deadline or host lease.",
+        "All proposed bootstrap control effects remain unexecuted here."
+      ],
+      "source_disposition": "ACCEPT_UNEXECUTED_CODE_CORRECTION",
+      "source_lines": [
+        "153-249",
+        "428-698",
+        "982-1022"
+      ]
+    }
+  ],
+  "compatibility_checks": [
+    "Full original33-top/35-allocation protection,15-input bindings, limits, role identities and fixed entry remain byte-identical.",
+    "Directories.open/Journal.event/final close do not call the new callback; no Guard recursion or cancellation-blocked HOLD writer introduced.",
+    "Source-bound before phase/1198 requirement and journal unique terminal/sequence checks retain their predicates.",
+    "Filtered owned_process rows still require start; fast-exit-without-start is still omitted, not PID adoption authority. Reordered set input does not alter ownership semantics.",
+    "Full process/mount/lock/resource Guard and deletion/retained/report/source algorithms are unchanged; new read callbacks can conservatively refuse, not widen authority."
+  ],
+  "design_contributors": [
+    "/root",
+    "/root/baseline_coverage"
+  ],
+  "disposition": "ACCEPT_V2_CODE_CORRECTIONS_REVISE_OVERBROAD_PLAN_PARSER_CLAIM_SOURCE_ONLY",
+  "documentation_observation": {
+    "agreed_change": "Narrow PLAN-only parser-claim qualification; no parser/schema/dependency/authority redesign.",
+    "countervailing_critical_guards": [
+      "Exact literal LIMITS/bindings and actual finite stat pins/sizes.",
+      "Bounded request interval and launcher enclosing current-time comparisons.",
+      "Typed journal time/terminal exit and original accepted fixed stop budget.",
+      "Exact boolean stop/settlement/coordination gates and independent fresh process/resource admission."
+    ],
+    "id": "LC-C03-DOC-01",
+    "independent_challenger": "/root/editor",
+    "new_application_family": false,
+    "noncritical_reachable_shapes": "Ignored/extra metadata and nonempty launcher limitations can contain overflowed floats.",
+    "origin": "/root/baseline_coverage",
+    "present_in_v1": true,
+    "prose": "All JSON parsers reject duplicate object keys and nonfinite values.",
+    "runtime_test_executed_for_observation": false,
+    "source_fact": "parse_constant rejects NaN/Infinity/-Infinity tokens; default parse_float overflow (e.g.1e400) is not a recursive finite-number guarantee.",
+    "status": "INDEPENDENTLY_CONFIRMED_NARROW_PLAN_REVISION_PENDING",
+    "unsafe_cleanup_path_identified": false
+  },
+  "helper_author": "/root/editor",
+  "inputs": [
+    {
+      "bytes": 59183,
+      "path": "scripts/audit/linux_database_closeout.py",
+      "physical_lf": 1094,
+      "review_scope": "All literal successor diff plus affected callers/failure/resource context independently reviewed; unchanged context separately reconciled.",
+      "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec"
+    },
+    {
+      "bytes": 28699,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md",
+      "physical_lf": 466,
+      "review_scope": "Entire successor PLAN diff read; narrow existing parser overclaim independently challenged.",
+      "sha256": "05ef7315917cf1d26106d1d69be47709738ea2bc5ee7d5805864749cbb77ba61"
+    },
+    {
+      "bytes": 59183,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/linux-closeout-v2.py.txt",
+      "physical_lf": 1094,
+      "review_scope": "Exact inert source snapshot.",
+      "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec"
+    },
+    {
+      "bytes": 28699,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/linux-closeout-plan-v2.md",
+      "physical_lf": 466,
+      "review_scope": "Exact inert PLAN snapshot.",
+      "sha256": "05ef7315917cf1d26106d1d69be47709738ea2bc5ee7d5805864749cbb77ba61"
+    },
+    {
+      "bytes": 14947,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-REVIEW-v1.json",
+      "physical_lf": 281,
+      "review_scope": "Preserved prior full-source review and rejected findings.",
+      "sha256": "18a2871618bbf75c2a1e6843aa1aacd1a5fc2257b655883f2ba9eec7f1d074bf"
+    },
+    {
+      "bytes": 14827,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-REVIEW-v1.md",
+      "physical_lf": 190,
+      "review_scope": "Preserved prior narrative/obligation review.",
+      "sha256": "d51f668387791584c80ac418cf0d1716fa85a20ebf21e236ff85ff251b1c7ecf"
+    }
+  ],
+  "is_normative_postrun_acceptance": false,
+  "method": {
+    "actual_inert_control_executions": 0,
+    "affected_callers_and_failure_paths_challenged": true,
+    "application_cases_executed": 0,
+    "cleanup_syscalls": 0,
+    "data_only_exact_region_reconciliation": true,
+    "helper_import_compile_syntax_or_execution": 0,
+    "prior_entire_source_review_retained_not_restarted": true,
+    "source_and_plan_diff_fully_read": true
+  },
+  "narrative": {
+    "bytes": 8364,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-REVIEW-v2.md",
+    "physical_lf": 133,
+    "review_scope": "Independent correction challenge and narrow pending PLAN disposition.",
+    "sha256": "8f5ce3844c4fff97200282b8ed16e11887ee3d74a44151a32671f6764b2dd8bf"
+  },
+  "normative_acceptance_path_written": false,
+  "recorded_utc": "2026-09-08T23:59:19.631114+00:00",
+  "required_next_steps": [
+    "Author narrowly qualify PLAN parser claim without changing frozen helper bytes; preserve both v2 snapshots and this review.",
+    "Independently bind successor PLAN and verify helper remains b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec.",
+    "Separately admit meaningful source-bound controls; no executions supplied here.",
+    "Require actual original run/launcher/stop/settlement/evidence and final runner acceptance.",
+    "Separately review actual TARGETS/EVIDENCE/REQUEST/all7 instance obligations and external closeout launcher before root may execute once."
+  ],
+  "resources_and_cleanup": {
+    "background_processes_started": 0,
+    "builds_tests_helper_imports_compiles_runs": 0,
+    "owned_cleanup_obligations_outstanding": 0,
+    "runtime_deletions": 0,
+    "runtime_or_cache_or_temp_archive_allocations": 0,
+    "wrapper_stop": "Not applicable to foreground data/source review; not proof for another run.",
+    "writes": "Compact permanent reports and exact inert source/PLAN snapshots in reviewer scope only."
+  },
+  "restrictions": "PVU-007 STOP; PVU-011 NO RETRY; PVA-029 actualFAIL/no automatic retry; G7/G8 CLOSED; Windows cleanup HOLD; synthetic only; no protected refs/tags/dependencies/versions/identities/signing/publication or replacement1017001; root sole execution owner.",
+  "reviewer": "/root/baseline_coverage",
+  "runner_interface_qualifications_retained": [
+    "Original accepted runner RESULT boolean is not retained raw three-snapshot/waitpid proof.",
+    "Fresh closeout Guard process/mount/resource observations and same-lock/root coordination/freeze remain conjunctive.",
+    "Final exact runner F01-F07 acceptance and real original run/launcher/input/evidence records are pending, not inferred from this source review."
+  ],
+  "schema": "passvault-linux-closeout-source-successor-review-v2",
+  "sole_execution_owner": "/root",
+  "source_obligations": {
+    "C01": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "ACCEPT_SOURCE_ONLY",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    },
+    "C02": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "ACCEPT_SOURCE_ONLY",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    },
+    "C03": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "REVISE_LC-C03-DOC-01",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    },
+    "C04": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "ACCEPT_SOURCE_ONLY",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    },
+    "C05": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "ACCEPT_SOURCE_ONLY",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    },
+    "C06": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "ACCEPT_SOURCE_ONLY",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    },
+    "C07": {
+      "actual_instance": "UNFILLED",
+      "plan_disposition": "ACCEPT_SOURCE_ONLY",
+      "source_code_disposition": "ACCEPT_WITH_EXPLICIT_QUALIFICATIONS"
+    }
+  },
+  "unchanged_reviewed_regions": [
+    {
+      "bytes": 6172,
+      "identical_to_reviewed_v1": true,
+      "new_semantic_lf_credit": 0,
+      "physical_lf": 152,
+      "region": "fixed_imports_paths_targets_schema_constants",
+      "sha256": "1ae2f25c46ee756bc7c4f7ee9a2e18790e639ad67af48efbb71393be15a2b2b0"
+    },
+    {
+      "bytes": 1178,
+      "identical_to_reviewed_v1": true,
+      "new_semantic_lf_credit": 0,
+      "physical_lf": 24,
+      "region": "original_directory_open",
+      "sha256": "7ec1c67495742d01488d34837df6f40656d9557bf5c7482c0dae8af62a4bf08e"
+    },
+    {
+      "bytes": 267,
+      "identical_to_reviewed_v1": true,
+      "new_semantic_lf_credit": 0,
+      "physical_lf": 10,
+      "region": "descriptor_close",
+      "sha256": "4c8a6e9b1d1a92e561bcd2ec1c59d2b5f8d43723ece32b157318e01b0b2895ad"
+    },
+    {
+      "bytes": 5612,
+      "identical_to_reviewed_v1": true,
+      "new_semantic_lf_credit": 0,
+      "physical_lf": 114,
+      "region": "process_mount_original_lock_and_resource_guard",
+      "sha256": "22b34e791fd69d6b8b1be7125950f2164936da730c54e4090d0782a91c2cb572"
+    },
+    {
+      "bytes": 15412,
+      "identical_to_reviewed_v1": true,
+      "new_semantic_lf_credit": 0,
+      "physical_lf": 281,
+      "region": "evidence_source_forest_and_recheck_contracts",
+      "sha256": "561a08f5d7808d5122cd627d3bb66405a31cc576373c52e8b6e1ba30c66b1a9d"
+    },
+    {
+      "bytes": 4090,
+      "identical_to_reviewed_v1": true,
+      "new_semantic_lf_credit": 0,
+      "physical_lf": 73,
+      "region": "post_bootstrap_preflight_delete_afterproof_terminal_close",
+      "sha256": "e1e7057188c063d38c05eb07d9aedadeeaa0b1d46063152b572de28e9e535fd3"
+    }
+  ]
+}

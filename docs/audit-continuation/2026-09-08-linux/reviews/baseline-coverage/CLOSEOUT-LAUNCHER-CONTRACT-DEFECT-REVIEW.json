@@ -1,0 +1,285 @@
+{
+  "accounting": {
+    "PVD": "8 explanations; owner decisions separate",
+    "all_confirmed": "22/38;16remain",
+    "new_application_executions": 0,
+    "new_product_families": 0,
+    "new_qualified_closures": 0,
+    "new_semantic_LF_credit": 0,
+    "original_confirmed": "19/25;6remain",
+    "original_suspicions": "2/12;10remain",
+    "predicted_failure_is_executed_case": false
+  },
+  "disposition": "CONFIRMED_SOURCE_DEFECT_PREBUILD_CLOSEOUT_VIABILITY_HOLD",
+  "finding_author": "/root/editor",
+  "finding_id": "LC-LAUNCHER-CONTRACT-001",
+  "focused_source_ranges": [
+    {
+      "bytes": 360,
+      "first_line": 118,
+      "last_line": 126,
+      "meaning": "Strict JSON yields plain builtins and rejects duplicate parsed keys",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "7c03043083c790bef9ce94b9a6b0fb5172885f81f22cbad5f1e091d26207db0c"
+    },
+    {
+      "bytes": 5395,
+      "first_line": 455,
+      "last_line": 528,
+      "meaning": "Actual single parsed launcher, original surrounding guards and incompatible evidence requirements",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "56dcddb3baa9ef6fd26c0ee9e22c1d4ba0e00cc433d85c931ee8be2b90110653"
+    },
+    {
+      "bytes": 715,
+      "first_line": 652,
+      "last_line": 658,
+      "meaning": "Unconditional run_contract call before target/evidence acceptance",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "f2b5e801b536601cd3584fce61130a03f2a871c22f0059393682a0d613551123"
+    },
+    {
+      "bytes": 388,
+      "first_line": 694,
+      "last_line": 698,
+      "meaning": "Second list consumer and durable per-file hash/identity checks",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "e409a7d3052abe3bce5fece2b2431294557218599d417690b3959e127ec57218"
+    },
+    {
+      "bytes": 3499,
+      "first_line": 982,
+      "last_line": 1040,
+      "meaning": "Main admission precedes lock, journal and destructive loop",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "bed6dfa577810dcd24b2049029ef978f233a240d853a40cc83bd4fb5573ecdda"
+    },
+    {
+      "bytes": 1509,
+      "first_line": 1062,
+      "last_line": 1090,
+      "meaning": "Ordinary admission error HOLD and descriptor-close handling",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "257827fffc5749363beca04b1fb73290918d3ce746b986d956757afd20778add"
+    }
+  ],
+  "helper_author": "/root/editor",
+  "impact": {
+    "actual_execution": false,
+    "availability": "Exact closer cannot successfully admit; relying on it before retained-output database build can strand generated/private files.",
+    "closeout_journal_after": 1017,
+    "destructive_loop_after": 1040,
+    "existing_stranded_allocation_established": false,
+    "main_admission_lines": [
+      999,
+      1000
+    ],
+    "original_lock_open_after": 1007,
+    "predicted_failure_phase": "admission",
+    "unconditional_admission_call_line": 652,
+    "unsafe_deletion_demonstrated": false
+  },
+  "independent_finding_reviewer": "/root/baseline_coverage",
+  "inputs": [
+    {
+      "bytes": 59183,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "physical_lf": 1094,
+      "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec"
+    },
+    {
+      "bytes": 29298,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md",
+      "physical_lf": 474,
+      "sha256": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d"
+    },
+    {
+      "bytes": 37477,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH_DATABASE.py",
+      "physical_lf": 715,
+      "sha256": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1"
+    },
+    {
+      "bytes": 11441,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH-PLAN.md",
+      "physical_lf": 200,
+      "sha256": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29"
+    },
+    {
+      "bytes": 55614,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_database_validation.py",
+      "physical_lf": 1079,
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    {
+      "bytes": 25416,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DATABASE-INSTANCE-FIELD-MAP.md",
+      "physical_lf": 400,
+      "sha256": "0edf9d585ee15f62477ededce368407ce74a73712f94d3d36e789e453eacb2e3"
+    },
+    {
+      "bytes": 11147,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json",
+      "physical_lf": 225,
+      "sha256": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e"
+    },
+    {
+      "bytes": 4191,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.md",
+      "physical_lf": 68,
+      "sha256": "9680e82520b0e47e0341ea581ee259cc98a511d841b892ecd031c2e8ecd15286"
+    },
+    {
+      "bytes": 4550,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-GATE-TIMING-CLARIFICATION.json",
+      "physical_lf": 80,
+      "sha256": "13679c9cf79ea2cebbbb9125d8f348eca6e6dcbf2c438654852de4565b881950"
+    },
+    {
+      "bytes": 4459,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-GATE-TIMING-CLARIFICATION.md",
+      "physical_lf": 75,
+      "sha256": "90487de217b5bb07ea8d275276f076995a1e1ae379eb480ecc1bd5158837cd88"
+    },
+    {
+      "bytes": 24215,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-3-REVIEW.json",
+      "physical_lf": 545,
+      "sha256": "4bcf59d5d558d4ac0a5b9e2087786d26818e39cbcfa51bed56d3f299225159a4"
+    },
+    {
+      "bytes": 15391,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-3-REVIEW.md",
+      "physical_lf": 234,
+      "sha256": "ab8bc0e07249c1da8eac217e91f7366d3af8fccedeaba929d71d9cf05002ae5f"
+    },
+    {
+      "bytes": 53810,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-SELECTED-INPUTS.json",
+      "physical_lf": 1323,
+      "sha256": "3ac00208eb3243aba1b4028fa8fff7d4f3b6088f413adfe2f3975e4c201c4821"
+    }
+  ],
+  "kind": "AUDIT_INFRASTRUCTURE_NOT_PRODUCT_FAMILY",
+  "meaningful_regression_proposed_only": {
+    "control_authorization_granted": false,
+    "designer_notified": "/root/build_config",
+    "negatives": [
+      "Old same-key string/list contradiction",
+      "Duplicate/equivalently escaped parsed keys using actual strict_json",
+      "Missing or wrong field types",
+      "Reordered/missing/duplicate external evidence rows",
+      "Second admission consumer retains durable exact file hash/identity checks"
+    ],
+    "not_sufficient": "Only source literal assertions, bypassed preconditions, mocked return, compilation or unrelated22runner controls.",
+    "positive": "Actual target run_contract with coherent synthetic preceding request/approval/journal/source witnesses reaches return using evidence string and distinct four-row evidence_files.",
+    "remaining_LC_C05_C06_controls_waived": false
+  },
+  "narrative": {
+    "bytes": 10806,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.md",
+    "physical_lf": 174,
+    "sha256": "0d43fbaf286539d6e09f183b969bb34feec42ec9c142df2284cca9ba734197cd"
+  },
+  "operations": {
+    "data_fds_closed": true,
+    "imports_syntax_parser_probes_build_tests": 0,
+    "new_outputs": "Only these2 compact permanent reviewer files",
+    "original_identity_process_probes": 0,
+    "read_tools": [
+      "c748c6 exit0",
+      "fcc209 exit0",
+      "3ba6b4 exit0"
+    ],
+    "signals_deletions_source_edits_staging": 0,
+    "source_scope": "Focused current parser/full run_contract/admission and main ordering/caller contract reads, not fresh full cleanup-algorithm audit.",
+    "temp_cache_artifacts_daemons_workers": 0,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "prior_acceptance_qualification": {
+    "C01_C07_actual_approval_granted": false,
+    "current_viable_prebuild_F03_acceptance_for_b167": false,
+    "frozen_bytes_preserved": true,
+    "gate_timing_changed": false,
+    "previous_C3_review_sha256": "4bcf59d5d558d4ac0a5b9e2087786d26818e39cbcfa51bed56d3f299225159a4",
+    "previous_source_acceptance_sha256": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e",
+    "publication": "Historical frozen source/reviews may be published only with prominent linked additive defect/HOLD qualification; unqualified viability claim blocked. No successor source accepted by this report.",
+    "reviewer_miss_acknowledged": true
+  },
+  "prior_design_contributors": [
+    "/root",
+    "/root/baseline_coverage"
+  ],
+  "proof": {
+    "conclusion": "No valid JSON completed-launcher receipt satisfies this success-path conjunction.",
+    "counterexamples": [
+      "Correct E string: first iterated character is str, row[path] predicts TypeError; not executed.",
+      "Correct four-object list: equality to E string false, fails fixed launcher guard.",
+      "Dict/number/bool/null/empty/different string: cannot equal fixed nonempty E string.",
+      "Duplicate or equivalently escaped parsed keys: strict_json rejects them.",
+      "Nested second field/custom __eq__ metadata/nonfinite extras: no custom decoded objects or top-level dual value.",
+      "Missing/cancellation/earlier guard failures: rejection, not valid success path.",
+      "Filesystem mutation after captured parse: cannot change local parsed value; no reread/conversion bypass."
+    ],
+    "directory_requirement": {
+      "expression": "launcher['evidence'] == str(E)",
+      "line": 513,
+      "shape": "Fixed nonempty absolute evidence-directory string"
+    },
+    "parsed_launcher": "Single get at462; same local mapping/value at513,527 and694, no conversion/mutation.",
+    "parser": "strict_json118-126 returns ordinary JSON builtins and duplicate-rejecting plain dicts.",
+    "plan_contradiction_lines": [
+      153,
+      170
+    ],
+    "qualification": "Static impossibility proof; no full actual-original packet constructed, parser executed, exception observed or runtime reachability test.",
+    "row_requirement": {
+      "expression": "[row['path'] for row in launcher['evidence']] == [str(p) for p in LAUNCHER_FILES]",
+      "line": 527,
+      "shape": "Ordered four row mappings"
+    },
+    "second_consumer": {
+      "lines": [
+        694,
+        697
+      ],
+      "shape": "Iterate same field; read path and compare complete identity/SHA256 durably"
+    }
+  },
+  "proposed_narrow_successor_not_authored_here": {
+    "directory_field": "evidence",
+    "explicit_shape_checks_recommended": "Required list of four row dicts; no deprecated ambiguous alias/fallback.",
+    "must_update_list_consumers": [
+      527,
+      694
+    ],
+    "must_update_plan_row_field": 170,
+    "other_objects_unchanged": [
+      "request.evidence",
+      "acceptance.evidence",
+      "EVIDENCE.json.evidence",
+      "EVIDENCE.json.files",
+      "LIMITS.evidence_files"
+    ],
+    "preserve": "Exact E path; four ordered LAUNCHER_FILES; bounded durable regular-file SHA/full-identity checks; every original/stop/process/source/role/cleanup fence.",
+    "producer_caller_reconciliation": "Outer source does not produce/read actual completed receipt; outer PLAN delegates closer schema. Inner runner only attests retained closeout. Fieldmap/future root writer/new outer closer and all exact successor binding/approval/control inputs require explicit qualification/review.",
+    "row_array_field": "evidence_files",
+    "sufficiency": "Removes only this incompatible field requirement. Not full admission satisfiability, source/runtime acceptance, prompt cleanup proof or execution authority."
+  },
+  "recorded_utc": "2026-09-09T03:08:00.441604+00:00",
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/PVA02949-44-5FAIL-noauto/G7G8CLOSED/oldrunnerprohibition/WindowsFAIL-cleanupHOLD14unstarted/synthetic-only/PVDhardware/rootsoleowner/protectedrefs-dependencies-versions-identities-signing-store-publication-1017001 unchanged.",
+  "schema": "passvault-closeout-launcher-contract-defect-review-v1"
+}

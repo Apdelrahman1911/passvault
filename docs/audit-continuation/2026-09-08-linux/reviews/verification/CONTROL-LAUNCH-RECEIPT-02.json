@@ -1,0 +1,94 @@
+{
+  "application_tests_executed": 0,
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/RUN_CONTROLS_02.py"
+  ],
+  "author": "/root",
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "format": "passvault-controls-external-observation-v1",
+  "independent_result_review": "PENDING",
+  "input_sha256": {
+    "CONTROL-ACCEPT-editor_review-02.json": "8dc7174497e1605858683c756284d3e9b045d73ddcfe06a805cd0e3e805964bf",
+    "CONTROL-ACCEPT-root-02.json": "283f93f8150fcb2e2cc93f7d6cd8f742e56bd8b281ff454f3a74e39156fc4a9d",
+    "CONTROL-LAUNCH-PLAN-02.md": "2046a1d818e3dad1720dea04fe67cab2f23c809b66e8be9bd1ceda568147fdae",
+    "CONTROL-PREFLIGHT-02.json": "e5a2c448b256c1a91855c7d1fd2398dceaea19fd576fdc8ef837c50411393698",
+    "CONTROL-REQUEST-02.json": "3d74124eb6a70fc5795928667d3f66eb6dc72ae5654269d0f805e4fbe3d4c8aa",
+    "LINUX-CONTROLS-V4-DESIGN.md": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192",
+    "RUN_CONTROLS_02.py": "c1818984d63274465fe20f7a4ea9a765ee1d30e822357390596a3a433fa1d1e9",
+    "linux_runner_controls_v4.py": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426"
+  },
+  "journal": {
+    "bytes": 124307,
+    "first_to_last_wallclock_seconds": 0.27677309,
+    "first_unix_ns": 1788916485930206233,
+    "last_unix_ns": 1788916486206979323,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events-02.jsonl",
+    "records": 213,
+    "sha256": "28f806393e0adacfdcd13913b57b2639aa0ae57010347fa67370aae1dd3aa863"
+  },
+  "limits": "Tool timing, journal wall-clock and batch self-time have distinct scopes; no complete external monotonic invocation measurement/hard elapsed proof. No host-wide/future exclusivity. Real synthetic IO differs from mocked process/pidfd/signal APIs. Result claims await independent journal/case/cleanup challenge.",
+  "observed_utc": "2026-09-09T01:15:52.555245+00:00",
+  "original_process_settlement": {
+    "current_point": null,
+    "original_pid": 21528,
+    "original_starttime": 18550209,
+    "status": "ORIGINAL_PID_ABSENT_POINT_OBSERVATION"
+  },
+  "preserved_previous_controls01": "22 executed,20 PASS,2 FAIL; settled original cleanup, failure unchanged",
+  "resources": {
+    "disk_available_bytes": {
+      "/root/projects/PassVault": 32596119552,
+      "/tmp": 21730177024
+    },
+    "memory_bytes": {
+      "MemAvailable": 45178519552,
+      "MemTotal": 67435888640
+    }
+  },
+  "retry": "NOT_AUTHORIZED_CONSUMED_ADMISSION",
+  "scratch_absent_at_point": true,
+  "terminal_record_count": 1,
+  "terminal_records": [
+    {
+      "allocation_attempted": true,
+      "application_tests_executed": 0,
+      "cancelled": [],
+      "cleanup": "ORIGINAL_EMPTY_SCRATCH_REMOVED",
+      "error": null,
+      "exit": 0,
+      "external_timeout_observed": false,
+      "kind": "launcher_terminal_commit",
+      "resources": {
+        "disks_free_bytes": {
+          "/root/projects/PassVault": 32610701312,
+          "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification": 32610701312
+        },
+        "launch_floor": false,
+        "memory_bytes": {
+          "MemAvailable": 44289724416,
+          "MemTotal": 67435888640
+        },
+        "self_maxrss_kib": 235496,
+        "unix_ns": 1788916486206731207,
+        "within_floors": true
+      },
+      "sequence": 212,
+      "source_inputs_unchanged": true,
+      "status": "CONTROLS_ONLY_NOT_DATABASE_EXECUTION_ADMISSION",
+      "unix_ns": 1788916486206979323,
+      "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+    }
+  ],
+  "tool_output_scope": "Tool combined output only, empty; no separately captured streams",
+  "tool_result": {
+    "chunk_id": "2f594a",
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": "",
+    "wall_time_seconds": 0.215379499
+  },
+  "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+}

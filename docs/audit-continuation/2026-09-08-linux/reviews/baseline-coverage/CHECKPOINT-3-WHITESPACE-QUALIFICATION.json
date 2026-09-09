@@ -1,0 +1,121 @@
+{
+  "disposition": "ACCEPT_BOUNDED_FROZEN_PATCH_FORMAT_QUALIFICATION_PRESERVE_CHECK_EXIT2",
+  "evidence_read_tool": "7ea3b1 exit0; complete patch/receipt/log texts, followed by exact stable-byte and Git-blob reconciliation in the writer command.",
+  "exact_original_diagnostics": {
+    "count": 8,
+    "execution_status": "Original root Git check failed with exit2; not rewritten as PASS.",
+    "exit": 2,
+    "log": {
+      "bytes": 917,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-WHITESPACE-all.log",
+      "physical_lf": 16,
+      "sha256": "1188c001c2e145654d405593eef03f2c2cf875d0a41bf9a150c05b919f98f5b3"
+    },
+    "raw_stdout": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch:5: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch:6: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch:25: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch:45: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch:136: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch:177: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-V4.patch:4: trailing whitespace.\n+ \ndocs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-V4.patch:13: trailing whitespace.\n+ \n",
+    "reconciliation": "Exact raw byte stream equals all8 listed file/line diagnostics in order, each followed by Git-added-line display of a single-space context line. No other diagnostic in this original917-byte stdout.",
+    "stderr_bytes": 0,
+    "stdout_bytes": 917
+  },
+  "independent_challenge": {
+    "both_patch_bytes_modes_match_manifest": true,
+    "both_patch_git_blob_ids_match_named_prestage_tree": true,
+    "bounded_regular_nofollow_stable_eightfield_hash_reads": true,
+    "complete_patch_text_and_diagnostic_records_read": true,
+    "counterexample_rejected": "These are not trailing spaces on added nonempty application/helper source. They are literal blank context records inside newly added inert patch-evidence files. The outer Git diff sees each retained record as an added line in the patch file.",
+    "format_consequence": "Stripping the marker changes immutable evidence and its canonical unified-diff context representation. No claim that every patch consumer rejects alternate serialization; no patch/parser/application execution performed.",
+    "independence": "Root identified the bounded issue; this nonauthor reviewer independently verified exact bytes/positions/context and sustained that interpretation.",
+    "not_claimed": "No independent recreation of all188 index blobs or root command execution; this review binds2 patch blobs and exact diagnostic logs/receipt."
+  },
+  "later_raw_log_and_final_index": {
+    "no_global_whitespace_suppression_or_source_rewrite": true,
+    "preserve_original_raw_log_bytes": true,
+    "raw_original_log_contains_eight_trailing_space_display_lines": true,
+    "recommended_recording": "Keep final command actual exit and JSON-escaped raw stdout/stderr with hashes/byte counts, rather than recursively saving more raw trailing-space log files. JSON decoding must recover the exact retained stdout, not sanitized text.",
+    "scope": "This qualification binds the188-path subject tree before later receipts. A later index including the raw log may report8 additional evidence-log whitespace diagnostics. This document does not claim an observed final expanded-index count or approve unexpected future diagnostics."
+  },
+  "patches": [
+    {
+      "bytes": 14871,
+      "diagnostic_lines": [
+        5,
+        6,
+        25,
+        45,
+        136,
+        177
+      ],
+      "each_exact_line_hex": "200a",
+      "git_mode": "100644",
+      "interpretation": "One unified-diff blank-context marker (0x20), then LF; no source-text trailing spaces after a nonempty context payload.",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-OBSERVABILITY-v1.patch",
+      "physical_lf": 251,
+      "sha256": "9c20a77fa231277bf9222c4b9e2579c523740203985694b9a9ceb24df39e5675"
+    },
+    {
+      "bytes": 941,
+      "diagnostic_lines": [
+        4,
+        13
+      ],
+      "each_exact_line_hex": "200a",
+      "git_mode": "100644",
+      "interpretation": "One unified-diff blank-context marker (0x20), then LF; no source-text trailing spaces after a nonempty context payload.",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-V4.patch",
+      "physical_lf": 20,
+      "sha256": "6ddef57c4463e97e170ba106e8786763f426aac7ca597f2b0798ea6b2c0210f5"
+    }
+  ],
+  "recorded_utc": "2026-09-09T02:50:46.812465+00:00",
+  "restrictions": "PVU007STOP,PVU011NO-RETRY,PVA02949/44/5FAIL-noauto,G7/G8CLOSED,oldrunner/helper prohibition,WindowsHOLD,synthetic-only,PVD/hardware,root sole executor,protectedrefs/dependencies/versions/identities/signing/store/publication/occupied1017001 unchanged.",
+  "review_operations": "Only bounded data/source reads and one read-only git ls-tree of2 exact patch entries plus this compact permanent JSON. No diff-check replay, patch apply/check, helper import/syntax validation, build/test, temporary/cache output, worker/daemon, signal/deletion, staging or commit. Read FDs closed and foreground Git returned; wrapper stop not applicable.",
+  "reviewer": "/root/baseline_coverage",
+  "root_record_author": "/root",
+  "root_recorded_subject_bytes": 2969392,
+  "root_recorded_subject_paths": 188,
+  "root_separate_source_check": {
+    "exit": 0,
+    "log": {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-WHITESPACE-source.log",
+      "physical_lf": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "paths": [
+      "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "app-desktop/native/biometric-bridge/tests/macos/README.md",
+      "scripts/audit/linux_database_closeout.py",
+      "scripts/audit/linux_database_validation.py"
+    ],
+    "qualification": "Only the five explicitly named source paths and recorded root command; not a full-source/test pass and not rerun by this reviewer.",
+    "stderr_bytes": 0,
+    "stdout_bytes": 0
+  },
+  "schema": "passvault-checkpoint3-whitespace-evidence-qualification-v1",
+  "selected_manifest": {
+    "bytes": 53810,
+    "git_mode": "100644",
+    "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-SELECTED-INPUTS.json",
+    "physical_lf": 1323,
+    "sha256": "3ac00208eb3243aba1b4028fa8fff7d4f3b6088f413adfe2f3975e4c201c4821"
+  },
+  "subject_prestage_receipt": {
+    "bytes": 2221,
+    "git_mode": "100644",
+    "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-PRESTAGE-VERIFICATION.json",
+    "physical_lf": 67,
+    "sha256": "9a08e395f830f720a7d3dc6d2b839e530647c3cf85a8dc8fbe68d7a936cfd5ca"
+  },
+  "subject_tree_before_later_receipts": "12018c79ae28a029e8c0a12ec93e0478477b0194",
+  "untouched_statuses": {
+    "application_cases": 0,
+    "controls01": "20PASS/2FAIL retained; this patch text is not another execution.",
+    "current_accounting": "19/25 original,22/38 all confirmed,2/12 original suspicions;8PVD explanations/owner decisions separate.",
+    "execution_or_retry_admitted": false,
+    "new_product_findings": 0,
+    "new_qualified_closures": 0,
+    "windows": "FAIL/filesystemHOLD/14UNSTARTED; inert observability patch remains unapplied/no retry."
+  }
+}

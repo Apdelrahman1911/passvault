@@ -1,0 +1,1036 @@
+{
+  "admission_reconciliation": {
+    "actual_independent_approval_sha256": "8dc7174497e1605858683c756284d3e9b045d73ddcfe06a805cd0e3e805964bf",
+    "actual_launch_inside_request_window": true,
+    "current_slot_snapshot_sha256": "552d3e57ff5543b8e635f7b8c3328f4e6ad761576186862c0495a321e2e10d90",
+    "journal_sha256": "28f806393e0adacfdcd13913b57b2639aa0ae57010347fa67370aae1dd3aa863",
+    "preflight_sha256": "e5a2c448b256c1a91855c7d1fd2398dceaea19fd576fdc8ef837c50411393698",
+    "qualification": "Root cooperative no-other-job and CI/comm point preflight is retained; not a fresh host-wide or future exclusivity claim. Consumed approval remains unchanged; reviewer does not release slot.",
+    "receipt_sha256": "88ee8b5264e3924aca77e392b3f69c9ad68a67b1a7cc7b9227ece35135a402b5",
+    "request_sha256": "3d74124eb6a70fc5795928667d3f66eb6dc72ae5654269d0f805e4fbe3d4c8aa",
+    "root_approval_sha256": "283f93f8150fcb2e2cc93f7d6cd8f742e56bd8b281ff454f3a74e39156fc4a9d"
+  },
+  "all17_admitted_directory_pins_currently_match": true,
+  "application_progress_unchanged": {
+    "all_confirmed": "22/37",
+    "original_confirmed": "19/25",
+    "original_suspicions": "2/12",
+    "qualified_closure_delta": 0
+  },
+  "attempts": 1,
+  "cases": [
+    {
+      "boundary": "REAL_POSIX_FILE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "b2957ddec82b12170cb0cb13c1416fb52ba18456048dae875de769a61caeae23",
+      "intended_control_boundary_reached": true,
+      "name": "LC01_reader_positive",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.007438425003783777,
+      "sequence": 11,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "d70609cf9600dfbcb96b43610f5d5d3b421b783b7428cd70c916fad800074bfa",
+      "intended_control_boundary_reached": true,
+      "name": "LC02_reader_symlink_refusal",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.007542088016634807,
+      "sequence": 23,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "d0873e7ea441540fcbd99c3590e73ca157d4b83f2893265aecb96cccb7090d16",
+      "intended_control_boundary_reached": true,
+      "name": "LC03_reader_hardlink_refusal",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.007141823007259518,
+      "sequence": 35,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "7817cfc79ebd1c524b05b622b308080b4ab77896a85fcedbc8de4f3650164b83",
+      "intended_control_boundary_reached": true,
+      "name": "LC04_reader_preopen_mutation",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0060480319953057915,
+      "sequence": 44,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "9e4c172149b0b5735bb18cf4da75f2040cf7b1e84ea781365d64840828a8f76e",
+      "intended_control_boundary_reached": true,
+      "name": "LC05_reader_postfd_mutation",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.007363929005805403,
+      "sequence": 53,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "91c0ba3d0b8ec85b5969ce8b0034b1e29190b29a73e209c08fa7c42d77426533",
+      "intended_control_boundary_reached": true,
+      "name": "LC06_reader_postpath_replacement",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.007627164013683796,
+      "sequence": 65,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "62a6bb8f9a39b3abbe9fa2d0be4e458d68ad4111796590ac49b2978c4e6b7623",
+      "intended_control_boundary_reached": true,
+      "name": "LC07_reader_parent_replacement",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.012907249009003863,
+      "sequence": 85,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_FD_WITH_INJECTED_IO_FAILURE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "05eb2b605cfe96ede7d893a32817bb9e2a55d0f87a4340a7cad22878aad497fc",
+      "intended_control_boundary_reached": true,
+      "name": "LC08_newfile_fsync_failure_closes_fd",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.005178755993256345,
+      "sequence": 93,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "b2e373032740b668b51bf78a7b83ec83307841dddd181282f344f9589082d807",
+      "intended_control_boundary_reached": true,
+      "name": "LC09_command_positive",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.008930764015531167,
+      "sequence": 104,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "ba7e204fcfbe20968232e8a449d36355776bd188ce8db7154ecd6e9472228518",
+      "intended_control_boundary_reached": true,
+      "name": "LC10_command_nonzero",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.009950920997653157,
+      "sequence": 115,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_SIGNAL_STATE_NO_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "1061d8b862f39312e57cbe9ffa0843102029fe39211ccf90b9367ea43cc3d62c",
+      "intended_control_boundary_reached": true,
+      "name": "LC11_command_prefork_cancel",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.00865870900452137,
+      "sequence": 126,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_SIGNAL_STATE_NO_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "bf0dbf24b4ed90ae768531d393f5be317d25f312e35ddf4f0a9dbd093086dec7",
+      "intended_control_boundary_reached": true,
+      "name": "LC12_command_pending_after_intent",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.008745404978981242,
+      "sequence": 137,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "09bc4e33b344c7677ae12a209b8d0706a47fe9e385026bfb3fb3fe72d253edb5",
+      "intended_control_boundary_reached": true,
+      "name": "LC13_cleanup_stop_once",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.012168974004453048,
+      "sequence": 151,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "389658519004c6bb4d72be16feb36529bb3db8a47d24317107596e0c0d9eb7aa",
+      "intended_control_boundary_reached": true,
+      "name": "LC14_command_log_cap",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.01041978198918514,
+      "sequence": 162,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_ROWS",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "06c6c0f13ea6778c937bc8a64ede03c1f2f2ccec9b81a9973c8b05d9dd2492ec",
+      "intended_control_boundary_reached": true,
+      "name": "LC15_scan_after_only",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0032937130017671734,
+      "sequence": 167,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_ROWS",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "cd7cf15b87df499168c1e178ddd06706a5fff47901feeb65eb142c8c4bdb3dd2",
+      "intended_control_boundary_reached": true,
+      "name": "LC16_scan_pid_reuse",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0030459080007858574,
+      "sequence": 172,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_DIRECT_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "041e72c07f8e44ebcedb9747a7e4d699e68fcc20e1d097ac8a58b93a608b2c6f",
+      "intended_control_boundary_reached": true,
+      "name": "LC17_direct_already_zombie",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0037067489756736904,
+      "sequence": 177,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_ROWS",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "2bd3b3ec965e8fec141ae9dda3037c157eb59bfffc72ace19a727b9899519e54",
+      "intended_control_boundary_reached": true,
+      "name": "LC18_owned_zombie_not_cwd_churn",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0027621279878076166,
+      "sequence": 182,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_SIGNAL_GUARD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "f643a0bae16e08da817b3d26d3380d983d3ff9348b5931339d26f230da7fce2c",
+      "intended_control_boundary_reached": true,
+      "name": "LC19_signal_zombie_and_wrong_birth",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.004070822993526235,
+      "sequence": 187,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_PARENT",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "b064ca27e301d072108fd31dd3402e6df18446944dfab535e28677520bcc1537",
+      "intended_control_boundary_reached": true,
+      "name": "LC20_parent_before_child_guard",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.005568164022406563,
+      "sequence": 195,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_PARENT_REAL_DUP_FD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "8f2bf83f3c0a05da729162afa390f4dee3246a25358ecc2d6bfe173f60102d20",
+      "intended_control_boundary_reached": true,
+      "name": "LC21_parent_after_child_guard",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.005498458020156249,
+      "sequence": 203,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_DIRECT_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "full_evidence_sha256_compact_sorted_json": "9cc7708a34f0fac9a0af5bda4e2ed28ca584fec1a07f6a269006a67e7a11ecf0",
+      "intended_control_boundary_reached": true,
+      "name": "LC22_direct_death_during_capture",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.003202691994374618,
+      "sequence": 208,
+      "within_case_soft_bound": true
+    }
+  ],
+  "control_evidence_limits": "LC01-08 actual tiny file/FD boundaries with declared injected faults/hooks. LC09/10/13/14 fake Popen/process rows with real pipes/log IO. LC11/12 no-child mock cancellation; their inner generic boundary label does not prove a pipe. LC15-22 mock process/signal/direct/parent behavior; LC21 real duplicated ordinary FD is not pidfd proof. Nested fake Gradle argv, PID910xxx, fake stop and resource rows are not real executions. LC17/22 are now meaningful mocked branch checks, not real waitpid tests.",
+  "controls_author": "/root/verification",
+  "counts": {
+    "application_tests": 0,
+    "attempted": 22,
+    "declared": 22,
+    "failed": 0,
+    "passed": 22,
+    "real_child_processes": 0,
+    "real_process_signals": 0,
+    "skipped": 0,
+    "unknown": 0,
+    "unstarted": 0
+  },
+  "disposition": "CONTROLS02_22_PASS_ORIGINAL_SYNTHETIC_NAMESPACE_AND_NO_CHILD_PROCESS_SETTLED_NOT_APPLICATION_ADMISSION",
+  "execution_owner": "/root",
+  "fixed_python_image_and_original_pin_currently_match": true,
+  "fixture_correction": {
+    "canonical_finding": "C-FIXTURE-01",
+    "classification": "INFRASTRUCTURE_FIXTURE_NOT_PRODUCT_OR_SUBJECT_DEFECT",
+    "counterexamples": "None remains no-pipe; empty bytes would allocate a pipe without direct_death pipe teardown. No assertion removed, exception swallowed, payload cap deleted, or expected subject result weakened. Current byte-payload collectors continue to pass. Oversize-payload refusal is source proof, not a separately executed regression.",
+    "disposition": "CORRECTED_FIXTURE_REACHABILITY_VALIDATED_AT_DECLARED_MOCK_CONTROL_BOUNDARY_ONLY",
+    "meaningful_new_evidence": [
+      {
+        "case": "LC17_direct_already_zombie",
+        "evidence": {
+          "boundary": "MOCK_DIRECT_CHILD_NOT_WAITPID_PROOF",
+          "during_admit": false,
+          "events": [
+            {
+              "exit": 0,
+              "kind": "direct_child_already_exited",
+              "pid": 910101,
+              "start": 100
+            }
+          ]
+        },
+        "sequence": 177
+      },
+      {
+        "case": "LC22_direct_death_during_capture",
+        "evidence": {
+          "boundary": "MOCK_DIRECT_CHILD_NOT_WAITPID_PROOF",
+          "during_admit": true,
+          "events": [
+            {
+              "exit": 0,
+              "kind": "direct_child_already_exited",
+              "pid": 910101
+            }
+          ]
+        },
+        "sequence": 208
+      }
+    ],
+    "reviewer_alias_same_finding": "LC-FIXTURE-01",
+    "semantic_change": "Exact-None short-circuit before original non-None <=32 payload bound; second line only scratch02 binding",
+    "source_two_line_delta_confirmed": true
+  },
+  "format": "passvault-linux-controls-result-review-v2",
+  "namespace_reconciliation": {
+    "all22_case_roots_removed_before_case_results": true,
+    "all22_descriptor_settlement_hold_false": true,
+    "all22_namespace_cleanups_reported_success": true,
+    "all_case_objects_equal_preterminal_duplicates": true,
+    "content_mutation_intent_sequences": [
+      39,
+      48
+    ],
+    "event_counts": {
+      "control_case_result": 22,
+      "controls_preterminal_report": 1,
+      "controls_source_loaded": 1,
+      "fixture_allocation_intent": 24,
+      "fixture_allocation_original": 24,
+      "fixture_content_mutation_intent": 2,
+      "fixture_file_original": 25,
+      "fixture_link_intent": 2,
+      "fixture_link_original": 2,
+      "fixture_rename_intent": 2,
+      "fixture_rmdir_intent": 24,
+      "fixture_rmdir_observed": 24,
+      "fixture_unlink_intent": 27,
+      "fixture_unlink_observed": 27,
+      "launcher_admission": 1,
+      "launcher_terminal_commit": 1,
+      "scratch_allocation_intent": 1,
+      "scratch_allocation_original": 1,
+      "scratch_rmdir_intent": 1,
+      "scratch_rmdir_observed": 1
+    },
+    "fixture_directory_allocations": 24,
+    "fixture_directory_removal_intent_observation_pairs": 24,
+    "fresh_reviewer_scratch_absent": true,
+    "journal_bytes": 124307,
+    "journal_records": 213,
+    "link_alias_originals": 2,
+    "original_identity_matches_at_all_deletion_intents": 51,
+    "original_scratch": {
+      "dev": 23,
+      "ino": 691491,
+      "mode": 16832,
+      "uid": 0
+    },
+    "original_unlink_intent_observation_pairs": 27,
+    "pending_or_live_synthetic_ledger_objects": 0,
+    "regular_file_originals": 25,
+    "rename_intents": [
+      {
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC06_reader_postpath_replacement/original-retained",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC06_reader_postpath_replacement/target",
+        "sequence": 57
+      },
+      {
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC07_reader_parent_replacement/original-parent",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC07_reader_parent_replacement/parent",
+        "sequence": 71
+      }
+    ],
+    "rename_member_projections": [
+      {
+        "identity": {
+          "dev": 24,
+          "ino": 14207659,
+          "type": 32768,
+          "uid": 0
+        },
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC06_reader_postpath_replacement/original-retained",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC06_reader_postpath_replacement/target"
+      },
+      {
+        "identity": {
+          "dev": 23,
+          "ino": 691499,
+          "mode": 16832,
+          "uid": 0
+        },
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC07_reader_parent_replacement/original-parent",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC07_reader_parent_replacement/parent"
+      },
+      {
+        "identity": {
+          "dev": 24,
+          "ino": 14207660,
+          "type": 32768,
+          "uid": 0
+        },
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC07_reader_parent_replacement/original-parent/target",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-02/LC07_reader_parent_replacement/parent/target"
+      }
+    ],
+    "rename_qualification": "Intent records are not separate rename-success events. Later original-pin deletion observations reconcile each remapped lifecycle. Reused inode numbers after completed lifetimes are not replacement adoption.",
+    "scratch_removal_intent_sequence": 210,
+    "scratch_removal_observed_sequence": 211,
+    "sequential_zero_based_records": true
+  },
+  "observed_evidence": [
+    {
+      "bytes": 8395,
+      "identity": {
+        "ctime_ns": 1788915343684470552,
+        "dev": 24,
+        "ino": 13672440,
+        "mode": 33152,
+        "mtime_ns": 1788915343684470552,
+        "nlink": 1,
+        "size": 8395,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-REQUEST-02.json",
+      "sha256": "3d74124eb6a70fc5795928667d3f66eb6dc72ae5654269d0f805e4fbe3d4c8aa"
+    },
+    {
+      "bytes": 1555,
+      "identity": {
+        "ctime_ns": 1788915343685470552,
+        "dev": 24,
+        "ino": 13672441,
+        "mode": 33152,
+        "mtime_ns": 1788915343685470552,
+        "nlink": 1,
+        "size": 1555,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-root-02.json",
+      "sha256": "283f93f8150fcb2e2cc93f7d6cd8f742e56bd8b281ff454f3a74e39156fc4a9d"
+    },
+    {
+      "bytes": 4879,
+      "identity": {
+        "ctime_ns": 1788915962974433640,
+        "dev": 24,
+        "ino": 13672450,
+        "mode": 33152,
+        "mtime_ns": 1788915962974433640,
+        "nlink": 1,
+        "size": 4879,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-editor_review-02.json",
+      "sha256": "8dc7174497e1605858683c756284d3e9b045d73ddcfe06a805cd0e3e805964bf"
+    },
+    {
+      "bytes": 17428,
+      "identity": {
+        "ctime_ns": 1788915811873442646,
+        "dev": 24,
+        "ino": 13672449,
+        "mode": 33152,
+        "mtime_ns": 1788915811873442646,
+        "nlink": 1,
+        "size": 17428,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL02-FILLED-INSTANCE-REVIEW.json",
+      "sha256": "844ea6d32245616eaca12c4af441911eac8129a769c5b28769b640f811879d25"
+    },
+    {
+      "bytes": 3594,
+      "identity": {
+        "ctime_ns": 1788915114489484213,
+        "dev": 24,
+        "ino": 13672434,
+        "mode": 33152,
+        "mtime_ns": 1788915114489484213,
+        "nlink": 1,
+        "size": 3594,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL02-LAUNCH-REVIEW-v2.md",
+      "sha256": "5d38a35d3d79d1a52cc2eb0f0fa90742cb996f1972d828d81c47d9b55f58fd90"
+    },
+    {
+      "bytes": 9078,
+      "identity": {
+        "ctime_ns": 1788915060096487456,
+        "dev": 24,
+        "ino": 13672433,
+        "mode": 33152,
+        "mtime_ns": 1788915060096487456,
+        "nlink": 1,
+        "size": 9078,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL02-LAUNCH-INPUTS-v2.json",
+      "sha256": "34209bb6220058864c5ad39c298c9556d5b46c04bf72c382d667a219de08f8dd"
+    },
+    {
+      "bytes": 1674,
+      "identity": {
+        "ctime_ns": 1788916480263402807,
+        "dev": 24,
+        "ino": 13672454,
+        "mode": 33152,
+        "mtime_ns": 1788916480263402807,
+        "nlink": 1,
+        "size": 1674,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-PREFLIGHT-02.json",
+      "sha256": "e5a2c448b256c1a91855c7d1fd2398dceaea19fd576fdc8ef837c50411393698"
+    },
+    {
+      "bytes": 4002,
+      "identity": {
+        "ctime_ns": 1788916552555398498,
+        "dev": 24,
+        "ino": 13672456,
+        "mode": 33152,
+        "mtime_ns": 1788916552555398498,
+        "nlink": 1,
+        "size": 4002,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-RECEIPT-02.json",
+      "sha256": "88ee8b5264e3924aca77e392b3f69c9ad68a67b1a7cc7b9227ece35135a402b5"
+    },
+    {
+      "bytes": 124307,
+      "identity": {
+        "ctime_ns": 1788916486205402453,
+        "dev": 24,
+        "ino": 13672455,
+        "mode": 33152,
+        "mtime_ns": 1788916486205402453,
+        "nlink": 1,
+        "size": 124307,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events-02.jsonl",
+      "sha256": "28f806393e0adacfdcd13913b57b2639aa0ae57010347fa67370aae1dd3aa863"
+    },
+    {
+      "bytes": 3768,
+      "identity": {
+        "ctime_ns": 1788910891125735946,
+        "dev": 24,
+        "ino": 13672350,
+        "mode": 33152,
+        "mtime_ns": 1788910891125735946,
+        "nlink": 1,
+        "size": 3768,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP.jsonl",
+      "sha256": "8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613"
+    },
+    {
+      "bytes": 807,
+      "identity": {
+        "ctime_ns": 1788912174981659422,
+        "dev": 24,
+        "ino": 13672370,
+        "mode": 33152,
+        "mtime_ns": 1788912174981659422,
+        "nlink": 1,
+        "size": 807,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP-RECEIPT.json",
+      "sha256": "cd0ce6a2d06ea3deaf2556736e633c322d41f07919ef511ad0c1ae2571976fc0"
+    },
+    {
+      "bytes": 6823,
+      "identity": {
+        "ctime_ns": 1788912174977659422,
+        "dev": 24,
+        "ino": 13672368,
+        "mode": 33152,
+        "mtime_ns": 1788912174977659422,
+        "nlink": 1,
+        "size": 6823,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-REQUEST.json",
+      "sha256": "8d2e20fcb074d5ffeb1775f15e7116971dab8fa46448634fb68dfdcce9539931"
+    },
+    {
+      "bytes": 0,
+      "identity": {
+        "ctime_ns": 1788910891124735946,
+        "dev": 24,
+        "ino": 14189001,
+        "mode": 33152,
+        "mtime_ns": 1788910891124735946,
+        "nlink": 1,
+        "size": 0,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 8020928,
+      "identity": {
+        "ctime_ns": 1787292627933100530,
+        "dev": 25,
+        "ino": 1088,
+        "mode": 33261,
+        "mtime_ns": 1781873160000000000,
+        "nlink": 1,
+        "size": 8020928,
+        "uid": 0
+      },
+      "path": "/usr/bin/python3.12",
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118"
+    },
+    {
+      "bytes": 123873,
+      "identity": {
+        "ctime_ns": 1788913263405594547,
+        "dev": 24,
+        "ino": 13672386,
+        "mode": 33152,
+        "mtime_ns": 1788913263405594547,
+        "nlink": 1,
+        "size": 123873,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events.jsonl",
+      "sha256": "75fcebbd3c666518f9b2160d186e83ad9eebb9b8774c016eae043e88e40c6eb7"
+    },
+    {
+      "bytes": 3583,
+      "identity": {
+        "ctime_ns": 1788913331639590480,
+        "dev": 24,
+        "ino": 13672387,
+        "mode": 33152,
+        "mtime_ns": 1788913331639590480,
+        "nlink": 1,
+        "size": 3583,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-RECEIPT.json",
+      "sha256": "39a7daf48e4096fab5245c858f71aef1fe7eae507dd88b424078774fca1217f1"
+    },
+    {
+      "bytes": 3154,
+      "identity": {
+        "ctime_ns": 1788914979759492244,
+        "dev": 24,
+        "ino": 13672431,
+        "mode": 33152,
+        "mtime_ns": 1788914979759492244,
+        "nlink": 1,
+        "size": 3154,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-SLOT-01-RELEASE.json",
+      "sha256": "f81218951c2380cc983843c1317bd78239b087b6099d3087409a1de6d79b695e"
+    },
+    {
+      "bytes": 3856,
+      "identity": {
+        "ctime_ns": 1788912973748611812,
+        "dev": 24,
+        "ino": 13672381,
+        "mode": 33152,
+        "mtime_ns": 1788912973748611812,
+        "nlink": 1,
+        "size": 3856,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-editor_review.json",
+      "sha256": "57fbb7f4458d7f5f60d034f93c41a13e54aeed94ca2124a5356b21c60e611bce"
+    },
+    {
+      "bytes": 43044,
+      "identity": {
+        "ctime_ns": 1788910244975774459,
+        "dev": 24,
+        "ino": 13672294,
+        "mode": 33152,
+        "mtime_ns": 1788910244975774459,
+        "nlink": 1,
+        "size": 43044,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/linux_runner_controls.py",
+      "sha256": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d"
+    },
+    {
+      "bytes": 22452,
+      "identity": {
+        "ctime_ns": 1788914314017531925,
+        "dev": 24,
+        "ino": 13672404,
+        "mode": 33152,
+        "mtime_ns": 1788914314017531925,
+        "nlink": 1,
+        "size": 22452,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL-RESULT-01-REVIEW.json",
+      "sha256": "cb7e5629fad46d4287f6e65043fd0ba8b544bf14519991120a12da5d3fb3aede"
+    },
+    {
+      "bytes": 5898,
+      "identity": {
+        "ctime_ns": 1788914428984525073,
+        "dev": 24,
+        "ino": 13672406,
+        "mode": 33152,
+        "mtime_ns": 1788914428984525073,
+        "nlink": 1,
+        "size": 5898,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL-RESULT-01-REVIEW.md",
+      "sha256": "7914df2c7c2fa7214b234d193f33da29f80e036a2a2e6fe731b7dc63f41566d0"
+    },
+    {
+      "bytes": 941,
+      "identity": {
+        "ctime_ns": 1788913041258607788,
+        "dev": 24,
+        "ino": 13672383,
+        "mode": 33152,
+        "mtime_ns": 1788913041258607788,
+        "nlink": 1,
+        "size": 941,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL-ACCEPT-COUNT-ERRATUM.json",
+      "sha256": "46252dd173d26bd5b01a27167d9a4a1a916a437781c33a254137e11f866fafdc"
+    },
+    {
+      "bytes": 1803,
+      "identity": {
+        "ctime_ns": 1788916552557398498,
+        "dev": 24,
+        "ino": 13672222,
+        "mode": 33152,
+        "mtime_ns": 1788916552557398498,
+        "nlink": 1,
+        "size": 1803,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+      "sha256": "552d3e57ff5543b8e635f7b8c3328f4e6ad761576186862c0495a321e2e10d90"
+    }
+  ],
+  "original_lock_currently_matches": true,
+  "preserved_boundaries": "Controls01 failed result, consumed approvals and count erratum immutable. Controls02 consumed once, no automatic retry or database admission. Windows34284083351 FAIL/cleanup HOLD, zero started/all14 unstarted, no retry. PVU-007 STOP; PVU-011 NO RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; archived runner/helpers forbidden; eight PVD limitations/hardware/protected refs/dependency/version/identity/signing/store/publication/build1017001 boundaries unchanged.",
+  "preserved_controls01": {
+    "attempted": 22,
+    "attempts": 1,
+    "external_exit": 1,
+    "failed": 2,
+    "failed_cases": [
+      "LC17_direct_already_zombie",
+      "LC22_direct_death_during_capture"
+    ],
+    "failure": "TypeError: object of type 'NoneType' has no len(); original FakeChild None guard defect",
+    "journal_sha256": "75fcebbd3c666518f9b2160d186e83ad9eebb9b8774c016eae043e88e40c6eb7",
+    "original_failure_and_reviewer_miss_retained": true,
+    "passed": 20,
+    "receipt_sha256": "39a7daf48e4096fab5245c858f71aef1fe7eae507dd88b424078774fca1217f1",
+    "result_not_rewritten_by_controls02": true,
+    "review_sha256": "cb7e5629fad46d4287f6e65043fd0ba8b544bf14519991120a12da5d3fb3aede",
+    "status": "FAILED_BEFORE_INTENDED_SUBJECT_BOUNDARY_WITH_ORIGINAL_NAMESPACE_AND_PROCESS_SETTLED",
+    "unstarted": 0
+  },
+  "process_settlement": {
+    "basis": "Exact no-real-child source scope plus actually observed external exit and original PID absence supplies final OS descriptor settlement. Namespace absence alone is not FD proof.",
+    "combined_output": "",
+    "fresh_reviewer_pid_absent_point": true,
+    "limits": "No individual final close-return trace, host-wide process census, real subject child/waitpid/pidfd/daemon test or future exclusivity claim.",
+    "observed_exit_code": 0,
+    "original_pid": 21528,
+    "original_starttime": 18550209,
+    "root_original_pid_absent_point": true,
+    "tool_chunk": "2f594a"
+  },
+  "read_method": "No-follow retained ancestors; bounded regular single-link pre/fd/post/name full-pin equality and same-image SHA256; strict data-only JSON parse. All213 ordered events and full22 case payloads challenged; preterminal22 duplicate objects match exactly. No target source import, syntax check, compilation, or execution by reviewer.",
+  "resources": {
+    "all_recorded_launch_running_floors_met": true,
+    "maximum_sampled_self_maxrss_kib": 235496,
+    "minimum_sampled_available_disk_bytes": 32610701312,
+    "minimum_sampled_available_ram_bytes": 44289724416,
+    "qualification": "Point samples only, not continuous quotas. Fake command-resource samples excluded.",
+    "real_launcher_samples": 3,
+    "reviewer_point": {
+      "disk_available_bytes": {
+        "/root/projects/PassVault": 32403124224,
+        "/tmp": 21694312448
+      },
+      "memory_bytes": {
+        "MemAvailable": 44819505152,
+        "MemTotal": 67435888640
+      },
+      "utc": "2026-09-09T01:34:03.041723+00:00"
+    },
+    "sample_times_unix_ns": [
+      1788916485927931422,
+      1788916485930273495,
+      1788916486206731207
+    ]
+  },
+  "retry_or_database_execution_admitted": false,
+  "review_role": "INDEPENDENT_ACTUAL_CONTROLS02_RESULT_AND_CLEANUP_CHALLENGE_NOT_LAUNCHER_OR_CONTROLS_AUTHOR",
+  "reviewed_utc": "2026-09-09T01:34:03.041723+00:00",
+  "reviewer": "/root/editor_review",
+  "reviewer_operations": {
+    "application_tests_executed": 0,
+    "cleanup": "Bounded source/data reads and compact permanent reports only; no scratch, cache, build outputs, worker, JVM, daemon, server or emulator. All owned metadata descriptors are closed in finally; no unrelated process or resource deletion. External metadata-tool exit is reported separately after completion.",
+    "controls_executed": 0,
+    "reviewer_metadata_diagnostic": "First inline data-display attempt6dd051 had an unmatched-parenthesis SyntaxError before its body ran; corrected metadata read succeeded. Not target source execution or another control attempt. A later display accidentally repeated the nested report and was truncated; all original payloads were separately read and fully reconciled without using truncation as completeness proof.",
+    "target_source_imports_or_syntax_probes": 0
+  },
+  "run_id": "linux-runner-controls-02",
+  "slot_recommendation": {
+    "admits_next_execution": false,
+    "disposition": "ROOT_MAY_RELEASE_THIS_COMPLETED_CONTROLS02_SLOT_AFTER_RECORDING_REVIEW",
+    "reason": "Exact actual22 control outcomes and full original synthetic ledger reconcile, no descriptor HOLD; observed no-child process exit plus fresh known PID/scratch absence. No remaining controls02 resource obligation is evidenced.",
+    "reviewer_released_slot": false
+  },
+  "source_bindings": {
+    "controls": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426",
+    "controls_review": "727a0884b82962425548c90ce01b9c9c501912be2617efa477662fc7c3dccd96",
+    "design": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192",
+    "launch_plan": "2046a1d818e3dad1720dea04fe67cab2f23c809b66e8be9bd1ceda568147fdae",
+    "launcher": "c1818984d63274465fe20f7a4ea9a765ee1d30e822357390596a3a433fa1d1e9",
+    "runner": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "runner_plan": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+  },
+  "source_observations": [
+    {
+      "binding": "launcher",
+      "bytes": 21545,
+      "identity": {
+        "ctime_ns": 1788914157559541251,
+        "dev": 24,
+        "ino": 13672400,
+        "mode": 33152,
+        "mtime_ns": 1788914157559541251,
+        "nlink": 1,
+        "size": 21545,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/RUN_CONTROLS_02.py",
+      "sha256": "c1818984d63274465fe20f7a4ea9a765ee1d30e822357390596a3a433fa1d1e9"
+    },
+    {
+      "binding": "launch_plan",
+      "bytes": 11568,
+      "identity": {
+        "ctime_ns": 1788914693441509310,
+        "dev": 24,
+        "ino": 13672401,
+        "mode": 33152,
+        "mtime_ns": 1788914693441509310,
+        "nlink": 1,
+        "size": 11568,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-PLAN-02.md",
+      "sha256": "2046a1d818e3dad1720dea04fe67cab2f23c809b66e8be9bd1ceda568147fdae"
+    },
+    {
+      "binding": "controls",
+      "bytes": 43063,
+      "identity": {
+        "ctime_ns": 1788914095690544939,
+        "dev": 24,
+        "ino": 13672397,
+        "mode": 33152,
+        "mtime_ns": 1788914095690544939,
+        "nlink": 1,
+        "size": 43063,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/linux_runner_controls_v4.py",
+      "sha256": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426"
+    },
+    {
+      "binding": "design",
+      "bytes": 7399,
+      "identity": {
+        "ctime_ns": 1788914335446530648,
+        "dev": 24,
+        "ino": 13672402,
+        "mode": 33152,
+        "mtime_ns": 1788914335446530648,
+        "nlink": 1,
+        "size": 7399,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-V4-DESIGN.md",
+      "sha256": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192"
+    },
+    {
+      "binding": "runner",
+      "bytes": 55614,
+      "identity": {
+        "ctime_ns": 1788906692866986181,
+        "dev": 24,
+        "ino": 13672190,
+        "mode": 33152,
+        "mtime_ns": 1788906692866986181,
+        "nlink": 1,
+        "size": 55614,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_database_validation.py",
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    {
+      "binding": "runner_plan",
+      "bytes": 21126,
+      "identity": {
+        "ctime_ns": 1788906599726991733,
+        "dev": 24,
+        "ino": 14171052,
+        "mode": 33152,
+        "mtime_ns": 1788906599726991733,
+        "nlink": 1,
+        "size": 21126,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/PLAN.md",
+      "sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+    },
+    {
+      "binding": "controls_review",
+      "bytes": 5529,
+      "identity": {
+        "ctime_ns": 1788914610426514258,
+        "dev": 24,
+        "ino": 13672423,
+        "mode": 33152,
+        "mtime_ns": 1788914610426514258,
+        "nlink": 1,
+        "size": 5529,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-CONTROLS-SOURCE-REVIEW-02.json",
+      "sha256": "727a0884b82962425548c90ce01b9c9c501912be2617efa477662fc7c3dccd96"
+    }
+  ],
+  "source_original_pins_currently_match": true,
+  "terminal": {
+    "cancelled": [],
+    "cleanup": "ORIGINAL_EMPTY_SCRATCH_REMOVED",
+    "error": null,
+    "exit": 0,
+    "external_timeout_observed": false,
+    "sequence": 212,
+    "source_inputs_unchanged": true,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "timing": {
+    "actual_full_outer_monotonic_duration_established": false,
+    "all_declared_internal_soft_bounds_met": true,
+    "batch_monotonic_seconds": 0.18573881100746803,
+    "batch_soft_limit_seconds": 180,
+    "case_soft_limit_seconds": 15,
+    "launcher_first_to_terminal_wall_stamp_seconds": 0.27677309,
+    "launcher_first_wall_stamp_unix_ns": 1788916485930206233,
+    "launcher_terminal_wall_stamp_unix_ns": 1788916486206979323,
+    "launcher_timeout_observed": false,
+    "max_case_monotonic_seconds": 0.012907249009003863,
+    "qualification": "Preserve tool0.215379499s versus journal0.276773090s: different or uncertain clock scopes; no separately recorded full external monotonic invocation interval and no hard240s invocation guarantee. Original01 tool0.255451913s versus journal0.311654695s remains unchanged; neither timing disagreement is normalized away.",
+    "sum_case_monotonic_seconds": 0.15127065603155643,
+    "tool_reported_wall_time_seconds": 0.215379499
+  }
+}

@@ -1,0 +1,220 @@
+#!/usr/bin/python3
+"""New, source-review-only until root admission: create ONE empty evidence dir.
+
+No runtime, build, child, deletion, retry, old-helper import or lock creation.
+Any ambiguous/partial effect is retained. Root must capture actual tool exit.
+"""
+import fcntl
+import json
+import os
+from pathlib import Path
+import resource
+import signal
+import stat
+import sys
+import time
+
+BASE = Path('/root/projects/PassVault')
+W = BASE / 'passvault-linux'
+C = W / 'docs/audit-continuation/2026-09-08-linux'
+RUN = C / 'reviews/linux-runner'
+PARENT = C / 'runs'
+E = PARENT / 'linux-database-01'
+SELF = RUN / 'BOOTSTRAP_E.py'
+LOCK = BASE / '.audit-coordination-linux-20260908/build.lock'
+INODES = {
+    '/': (2, 0o755), '/root': (19, 0o700), '/root/projects': (62415, 0o700),
+    str(BASE): (498323, 0o755), str(LOCK.parent): (661121, 0o700),
+    str(W): (505714, 0o700), str(W / 'docs'): (506056, 0o700),
+    str(W / 'docs/audit-continuation'): (506436, 0o700),
+    str(C): (506437, 0o700), str(C / 'reviews'): (506438, 0o700),
+    str(PARENT): (642474, 0o700), str(RUN): (620706, 0o700),
+}
+LOCK_PIN = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': stat.S_IFREG | 0o600,
+            'nlink': 1, 'size': 0, 'mtime_ns': 1788910891124735946,
+            'ctime_ns': 1788910891124735946}
+CANCEL = set()
+FDS = []
+DIRECTORIES = {}
+
+
+def require(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def pin(st, directory=False):
+    keys = ('dev', 'ino', 'uid', 'mode') if directory else (
+        'dev', 'ino', 'uid', 'mode', 'nlink', 'size', 'mtime_ns', 'ctime_ns')
+    return {key: getattr(st, 'st_' + key) for key in keys}
+
+
+def checkpoint():
+    require(not CANCEL, 'bootstrap cancellation; no further effect')
+
+
+def resources(parent_fd, launch):
+    disk = os.fstatvfs(parent_fd)
+    memory = {}
+    with open('/proc/meminfo', 'r', encoding='ascii') as source:
+        for line in source:
+            fields = line.split()
+            if fields[0] in ('MemTotal:', 'MemAvailable:'):
+                memory[fields[0][:-1]] = int(fields[1]) * 1024
+    free = disk.f_bavail * disk.f_frsize
+    require(free >= (12 if launch else 8) * 1024 ** 3, 'disk resource floor')
+    require(memory['MemAvailable'] >= memory['MemTotal'] * (0.25 if launch else 0.20),
+            'RAM resource floor')
+    return {'free_bytes': free, 'memory_bytes': memory, 'launch': launch,
+            'unix_ns': time.time_ns()}
+
+
+def opened(name, flags, mode=0o777, parent=None):
+    # Handlers only latch; they do not throw between acquisition and registration.
+    fd = os.open(name, flags | os.O_NOFOLLOW | os.O_CLOEXEC, mode, dir_fd=parent)
+    try:
+        FDS.append(fd)
+    except BaseException:
+        os.close(fd)
+        raise
+    return fd
+
+
+def directory(path):
+    fd = DIRECTORIES[str(path)]
+    inode, mode = INODES[str(path)]
+    expected = {'dev': 23, 'ino': inode, 'uid': 0, 'mode': stat.S_IFDIR | mode}
+    require(pin(os.fstat(fd), True) == expected, 'original directory fd drift')
+    if path != Path('/'):
+        parent = directory(path.parent)
+        require(pin(os.stat(path.name, dir_fd=parent, follow_symlinks=False), True) == expected,
+                'original directory pathname drift')
+    return fd
+
+
+def main():
+    require(sys.platform == 'linux' and sys.argv == [str(SELF)] and Path(__file__) == SELF,
+            'fixed Linux entry without arguments')
+    require(sys.flags.isolated and sys.dont_write_bytecode and not sys.flags.optimize,
+            'require /usr/bin/python3 -I -B without optimization')
+    require(os.path.realpath(sys.executable) == '/usr/bin/python3.12', 'fixed interpreter')
+    os.umask(0o077)
+    resource.setrlimit(resource.RLIMIT_AS, (128 * 1024 ** 2,) * 2)
+    resource.setrlimit(resource.RLIMIT_FSIZE, (65536,) * 2)
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGALRM):
+        signal.signal(number, lambda signum, _frame: CANCEL.add(signum))
+    signal.setitimer(signal.ITIMER_REAL, 15)
+    result = {'status': 'HOLD', 'started_unix_ns': time.time_ns(),
+              'runtime_created': False, 'children_started': 0, 'deletions': 0,
+              'journal_initial_pin': None, 'journal_last_completed_pin': None,
+              'journal_last_completed_bytes': 0, 'journal_completed_appends': 0,
+              'journal_append_state': 'NOT_CREATED'}
+    journal = lock_fd = None
+    last_pin = None
+    journal_bytes = 0
+
+    def check_lock():
+        parent = directory(LOCK.parent)
+        require(pin(os.fstat(lock_fd)) == LOCK_PIN ==
+                pin(os.stat(LOCK.name, dir_fd=parent, follow_symlinks=False)), 'original lock drift')
+
+    def emit(item):
+        nonlocal last_pin, journal_bytes
+        parent = directory(RUN)
+        require(pin(os.fstat(journal)) == last_pin ==
+                pin(os.stat('E-BOOTSTRAP.jsonl', dir_fd=parent, follow_symlinks=False)),
+                'original journal drift')
+        data = json.dumps({'unix_ns': time.time_ns(), **item}, sort_keys=True).encode() + b'\n'
+        require(journal_bytes + len(data) <= 65536, 'journal cap')
+        result['journal_append_state'] = 'APPEND_STARTED_NOT_COMPLETED'
+        view = memoryview(data)
+        while view:
+            written = os.write(journal, view)
+            require(written > 0, 'short journal write')
+            view = view[written:]
+        os.fsync(journal)
+        current = pin(os.fstat(journal))
+        require(all(current[k] == last_pin[k] for k in ('dev', 'ino', 'uid', 'mode', 'nlink'))
+                and current['size'] == journal_bytes + len(data)
+                and current == pin(os.stat('E-BOOTSTRAP.jsonl', dir_fd=parent, follow_symlinks=False)),
+                'journal append not proven')
+        last_pin, journal_bytes = current, current['size']
+        result['journal_last_completed_pin'] = dict(last_pin)
+        result['journal_last_completed_bytes'] = journal_bytes
+        result['journal_completed_appends'] += 1
+        result['journal_append_state'] = 'APPEND_FSYNCED_AND_ORIGINAL_RECHECKED'
+
+    try:
+        for raw in sorted(INODES, key=lambda p: (len(Path(p).parts), p)):
+            checkpoint()
+            p = Path(raw)
+            parent = directory(p.parent) if p != Path('/') else None
+            fd = opened(p.name if parent is not None else '/', os.O_RDONLY | os.O_DIRECTORY, parent=parent)
+            DIRECTORIES[raw] = fd
+            directory(p)
+        lock_fd = opened(LOCK.name, os.O_RDONLY, parent=directory(LOCK.parent))
+        check_lock()
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        require(not os.path.lexists(E), 'evidence directory occupied; no adoption')
+        require(not os.path.lexists(RUN / 'E-BOOTSTRAP.jsonl'), 'bootstrap consumed; no retry')
+        result['resources_before'] = resources(directory(PARENT), True)
+        checkpoint()
+        journal = opened('E-BOOTSTRAP.jsonl', os.O_RDWR | os.O_CREAT | os.O_EXCL,
+                         0o600, parent=directory(RUN))
+        last_pin = pin(os.fstat(journal))
+        result['journal_initial_pin'] = dict(last_pin)
+        result['journal_append_state'] = 'CREATED_EMPTY_BEFORE_PARENT_FSYNC'
+        require(last_pin['mode'] == stat.S_IFREG | 0o600 and last_pin['uid'] == 0
+                and last_pin['nlink'] == 1 and last_pin['size'] == 0, 'new journal identity')
+        os.fsync(directory(RUN))
+        emit({'kind': 'evidence_mkdir_intent', 'path': str(E),
+              'original_parent_pin': pin(os.fstat(directory(PARENT)), True),
+              'original_lock_pin': LOCK_PIN})
+        checkpoint()
+        check_lock()
+        parent = directory(PARENT)
+        os.mkdir(E.name, 0o700, dir_fd=parent)
+        child = opened(E.name, os.O_RDONLY | os.O_DIRECTORY, parent=parent)
+        original = pin(os.fstat(child), True)
+        require(original['uid'] == 0 and original['mode'] == stat.S_IFDIR | 0o700
+                and original == pin(os.stat(E.name, dir_fd=directory(PARENT), follow_symlinks=False), True)
+                and not os.listdir(child), 'new evidence original not proven')
+        os.fsync(directory(PARENT))
+        checkpoint()
+        check_lock()
+        require(original == pin(os.fstat(child), True) ==
+                pin(os.stat(E.name, dir_fd=directory(PARENT), follow_symlinks=False), True)
+                and not os.listdir(child), 'final empty original drift')
+        emit({'kind': 'evidence_original', 'path': str(E), 'identity': original,
+              'parent_fsync_completed': True, 'empty_observed': True})
+        result['resources_after'] = resources(directory(PARENT), False)
+        checkpoint()
+        result.update(status='EMPTY_ORIGINAL_E_CREATED_NOT_BUILD_ADMISSION', original=original)
+    except BaseException as error:
+        result['error'] = type(error).__name__ + ': ' + str(error)[:1500]
+        # Never append/retry a failed journal or delete a partial namespace.
+    finally:
+        errors = []
+        for fd in reversed(FDS):
+            try:
+                os.close(fd)
+            except BaseException as error:
+                errors.append(type(error).__name__ + ': ' + str(error)[:200])
+        result['descriptor_close_errors'] = errors
+        result['descriptor_close_attempts'] = len(FDS)
+        # Explicit terminal sample. Signals/host loss after commitment are outside
+        # this promise; only bounded output and this process's exit remain.
+        managed = {signal.SIGINT, signal.SIGTERM, signal.SIGHUP, signal.SIGALRM}
+        signal.pthread_sigmask(signal.SIG_BLOCK, managed)
+        CANCEL.update(signal.sigpending() & managed)
+        result['cancelled'] = sorted(CANCEL)
+        if errors or CANCEL:
+            result['status'] = 'HOLD'
+        result['finished_unix_ns'] = time.time_ns()
+        signal.setitimer(signal.ITIMER_REAL, 0)
+    print(json.dumps(result, sort_keys=True))
+    return 0 if result['status'] == 'EMPTY_ORIGINAL_E_CREATED_NOT_BUILD_ADMISSION' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "reviewer": "/root/storage",
+  "controls_author": "/root/verification",
+  "review_role": "INDEPENDENT_CONTROLS_SOURCE_REVIEW",
+  "disposition": "ACCEPT_SOURCE_ONLY",
+  "execution_authorized": false,
+  "accepted_inputs": {
+    "controls": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/linux_runner_controls_v4.py",
+      "sha256": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426",
+      "bytes": 43063,
+      "physical_lf": 893
+    },
+    "controls_design": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-V4-DESIGN.md",
+      "sha256": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192",
+      "bytes": 7399,
+      "physical_lf": 118
+    },
+    "inherited_controls_design_sha256": "1292305d4a0f1729be7016002c9f1bc99f37487077aea4f4f3d1aa1854723921",
+    "exact_two_line_patch_sha256": "6ddef57c4463e97e170ba106e8786763f426aac7ca597f2b0798ea6b2c0210f5",
+    "subject_runner": {
+      "path": "scripts/audit/linux_database_validation.py",
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+      "reviewer_is_subject_coauthor": true,
+      "independent_runner_approval_claimed": false
+    },
+    "subject_plan_sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f",
+    "detailed_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-CONTROLS-SOURCE-REVIEW-02.md",
+      "sha256": "04ebe56b6a341c7fd7e66a609e2c228cc46ae6771008a9824408b30792b2e841"
+    }
+  },
+  "preserved_history": {
+    "executed_source_sha256": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d",
+    "original_request_sha256": "8d2e20fcb074d5ffeb1775f15e7116971dab8fa46448634fb68dfdcce9539931",
+    "original_journal_sha256": "75fcebbd3c666518f9b2160d186e83ad9eebb9b8774c016eae043e88e40c6eb7",
+    "original_external_receipt_sha256": "39a7daf48e4096fab5245c858f71aef1fe7eae507dd88b424078774fca1217f1",
+    "original_review_sha256": "bfdc0e7ebabc06078195c91e5f6014ca446895c8e22d0fb5f31848a963079432",
+    "original_review_missed_fixture_bug": true,
+    "root_reported_case_results": {
+      "total": 22,
+      "pass": 20,
+      "fail": 2,
+      "outer_exit": 1
+    },
+    "full_original_result_adjudicator": "/root/editor_review",
+    "old_admission": "CONSUMED_NO_AUTOMATIC_RETRY",
+    "old_sources_design_reviews_and_results_unchanged": true
+  },
+  "challenges": [
+    {
+      "id": "C-FIXTURE-01",
+      "disposition": "CONFIRMED_CONTROLS_FIXTURE_DEFECT_NOT_SUBJECT_DEFECT",
+      "reachability": "LC17/LC22 call direct_death -> FakeChild(0,None,910101) -> len(None) before pipe allocation, process-row patch or Processes.direct",
+      "correction": "Exact-None short circuit before the original <=32 non-None payload guard",
+      "compatibility": "None initializes fake child without a pipe; actual byte payload cap and pipe/error/descriptor behavior unchanged",
+      "counterexamples": [
+        "Removing cap weakens real-pipe bound",
+        "Changing None to empty bytes allocates an unhandled direct_death pipe",
+        "Early return before child fields breaks fake-poll oracle"
+      ],
+      "final_disposition": "ACCEPT_SOURCE_ONLY_REQUIRES_NEW_MEANINGFUL_EXECUTION"
+    },
+    {
+      "id": "FRESH_NAMESPACE_02",
+      "disposition": "ACCEPT_SOURCE_ONLY",
+      "meaning": "Separate fixed proposed scratch02 binding, not the semantic fix or creation/retry authority"
+    },
+    {
+      "id": "PRESERVED_C_FD_01_C_FD_02_WHOLE_CASE_BOUND",
+      "disposition": "UNCHANGED_FROM_REVIEWED_V3_NOT_REEXECUTED"
+    }
+  ],
+  "reviewed_evidence": "Complete old-to-new two-line diff, full new design and author diagnosis, exact changed surroundings and subject direct/admit definitions, inherited prior review; bounded literal failed-record/receipt inspection, not duplicate full runtime adjudication",
+  "counts_at_review": {
+    "declared_controls": 22,
+    "new_source_controls_executed": 0,
+    "controls_executed_by_reviewer": 0,
+    "runner_imports_by_reviewer": 0,
+    "application_cases_executed_by_reviewer": 0,
+    "qualified_closure_delta": 0
+  },
+  "required_separate_admission": [
+    "Exact independently reviewed distinct launcher and PLAN",
+    "Fresh actual request and author/independent approvals binding source/design and all original pins",
+    "Original scratch02 ancestors parent lock interpreter authority; no consumed01 reuse",
+    "Root sole audit-owned local/CI slot and bounded evidence/resource/cancellation contract",
+    "Actual complete journal external tool exit and original scratch/descriptor/process settlement",
+    "Meaningful formerly unreachable LC17/LC22 mock outcomes and preserved other20 checks",
+    "Separate original database execution and generated-only closeout admission"
+  ],
+  "limitations": [
+    "No new-source import syntax compilation control execution or main/whole-admission execution",
+    "No real process ancestry pidfd waitpid signal race or host exclusivity proof",
+    "Reviewer coauthored subject runner; this is independent controls review only",
+    "Mocked process checks differ from actual POSIX file/pipe IO",
+    "No Gradle application native-loader physical-device or 105-method pass",
+    "Prior consumed20PASS/2FAIL remains even if a future changed-source run succeeds",
+    "Source/design drift invalidates this exact acceptance",
+    "All STOP NO-RETRY CLOSED PVD hardware publication and original Windows cleanup-HOLD boundaries remain"
+  ]
+}

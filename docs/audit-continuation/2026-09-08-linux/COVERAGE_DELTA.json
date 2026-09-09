@@ -187,17 +187,59 @@
       "source_disposition": "SOURCE_ACCEPTED_EXECUTION_PENDING_NO_CLOSURE",
       "new_attributed_semantic_LF": null,
       "historical_equal_line_credit_carried": false
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "sha256": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4",
+      "bytes": 20245,
+      "physical_lf": 459,
+      "author": "/root/native",
+      "independent_reviewer": "/root/native_review",
+      "review": "reviews/native-independent/MACOS-FIXTURE-PATCH-REVIEW.json",
+      "required_qualification": "reviews/native/MACOS-FIXTURE-PATCH-QUALIFICATIONS.md",
+      "review_semantics": "Entire changed files reviewed plus bounded original/production/Gradle context; no fresh semantic-LF or equal-line carry-forward credit. See reviewer exact ranges and qualifications.",
+      "source_disposition": "QUALIFIED_SOURCE_ACCEPTANCE_TARGET_EXECUTION_PENDING",
+      "new_attributed_semantic_LF": null,
+      "historical_equal_line_credit_carried": false
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+      "bytes": 6626,
+      "physical_lf": 187,
+      "author": "/root/native",
+      "independent_reviewer": "/root/native_review",
+      "review": "reviews/native-independent/MACOS-FIXTURE-PATCH-REVIEW.json",
+      "required_qualification": "reviews/native/MACOS-FIXTURE-PATCH-QUALIFICATIONS.md",
+      "review_semantics": "Entire changed files reviewed plus bounded original/production/Gradle context; no fresh semantic-LF or equal-line carry-forward credit. See reviewer exact ranges and qualifications.",
+      "source_disposition": "QUALIFIED_SOURCE_ACCEPTANCE_TARGET_EXECUTION_PENDING",
+      "new_attributed_semantic_LF": null,
+      "historical_equal_line_credit_carried": false
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/README.md",
+      "sha256": "01211c798abc0a3a4134b1606ee9e57ec3d136ef12f540b3a08dd4a2b3691c61",
+      "bytes": 3492,
+      "physical_lf": 57,
+      "author": "/root/native",
+      "independent_reviewer": "/root/native_review",
+      "review": "reviews/native-independent/MACOS-FIXTURE-PATCH-REVIEW.json",
+      "required_qualification": "reviews/native/MACOS-FIXTURE-PATCH-QUALIFICATIONS.md",
+      "review_semantics": "Entire changed files reviewed plus bounded original/production/Gradle context; no fresh semantic-LF or equal-line carry-forward credit. See reviewer exact ranges and qualifications.",
+      "source_disposition": "QUALIFIED_SOURCE_ACCEPTANCE_TARGET_EXECUTION_PENDING",
+      "new_attributed_semantic_LF": null,
+      "historical_equal_line_credit_carried": false
     }
   ],
   "new_application_test_executions": 0,
-  "delta_freeze": "SECOND_SOURCE_CHECKPOINT_BACK_ROW_INPUT_AND_ANDROID_HARNESS; Linux runner/closeout drafts excluded",
+  "delta_freeze": "CHECKPOINT3: earlier12 editor/Android identities plus3 qualified macOS fixture/CMake/README identities; PVA038 before-image finding confirmation only. Active PVA038 patch and new execution-plan/control drafts excluded.",
   "additional_test_source_declarations": 20,
   "baseline_policy_review": "reviews/baseline-coverage/REVIEW.md",
   "independent_checkpoint_review": {
     "reviewer": "/root/baseline_coverage",
-    "path": "reviews/baseline-coverage/CHECKPOINT-2-REVIEW.json",
-    "status": "CONSULT_REVIEWER_AUTHORED_EXACT_BYTE_DISPOSITION",
-    "scope": "Complete second source checkpoint delta/central ledgers/report; not implied by baseline policy review"
+    "path": "reviews/baseline-coverage/CHECKPOINT-3-REVIEW.json",
+    "status": "REFERENCE_ONLY_NOT_SELF_AUTHORED_ACCEPTANCE; consult reviewer exact-byte report after freeze",
+    "scope": "Checkpoint3 selected source/evidence and central ledgers; excludes active source drafts; publication is not execution admission"
   },
   "additional_test_source_declarations_scope": "JUnit methods: nine Back plus eleven row/input; zero executed",
   "additional_android_instrumentation_cases": {
@@ -216,5 +258,95 @@
     "ctest_invocations": 0,
     "planned_ctest_cases_unstarted": 14,
     "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json"
+  },
+  "updated_utc": "2026-09-09T02:10:16.675252+00:00",
+  "infrastructure_evidence": {
+    "not_original_811_denominator": true,
+    "source_capture": {
+      "files": 1198,
+      "raw_equal": 809,
+      "explicit_checkout_EOL_exceptions": 2,
+      "handoff_additions": 387,
+      "source_sha256": "3b34d8c862d33ccda9df0d77bb4507a2504c0612a236f36d6d89a60c8a7485ce",
+      "independent_review": "reviews/verification/SOURCE-MANIFEST-REVIEW.json",
+      "semantic_source_coverage_claim": false
+    },
+    "controls01": {
+      "executed": 22,
+      "passed": 20,
+      "failed": 2,
+      "unstarted": 0,
+      "case_scope": "RealPOSIXfile/pipe IO mixed with mocked subprocess/proc/pidfd/signal/stop, not real child/Gradle/native/app tests. Two mock constructor failures precede intended subject branches.",
+      "independent_review": "reviews/editor-independent/CONTROL-RESULT-01-REVIEW.json",
+      "cleanup": "Original synthetic scope/process settlement independently reconciled; fail retained."
+    },
+    "new_source_acceptances_not_runtime": [
+      {
+        "path": "scripts/audit/linux_database_validation.py",
+        "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+        "review": "reviews/verification/LINUX-RUNNER-V3-SOURCE-FOLLOWUP.md"
+      },
+      {
+        "path": "scripts/audit/linux_database_closeout.py",
+        "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec",
+        "review": "reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json"
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH_DATABASE.py",
+        "sha256": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1",
+        "review": "reviews/verification/LINUX-DATABASE-OUTER-SOURCE-REVIEW.json",
+        "scope": "Outer collection source only, unexecuted; outer0 can collect inner1."
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/BOOTSTRAP_E.py",
+        "sha256": "a49f750c0f8dc6a0527ee823717ec23b63031ab285fd1d297f23db3c2de77f6c",
+        "review": "reviews/verification/LINUX-DATABASE-E-BOOTSTRAP-V2-SOURCE-REVIEW.json",
+        "scope": "Empty evidence directory bootstrap source only; actual original instance/preflight acceptance absent, unexecuted. Rejected v1 retained."
+      }
+    ],
+    "controls02": {
+      "executed": 22,
+      "passed": 22,
+      "failed": 0,
+      "unstarted": 0,
+      "case_scope": "Real synthetic POSIX file/pipe IO; mocked subprocess/proc/pidfd/signal/stop; zero real children/signals/application cases. LC17/22 reach intended mock branch.",
+      "independent_review": "reviews/editor-independent/CONTROL-RESULT-02-REVIEW.json",
+      "accounting_qualification": "reviews/editor-independent/CONTROL-RESULT-02-ACCOUNTING-QUALIFICATION.json",
+      "cleanup": "Original synthetic namespace and process settlement independently reconciled; both runs consumed; controls01 FAIL retained."
+    },
+    "android_xsd_capture01": {
+      "files": 5,
+      "bytes": 46105,
+      "recorded_closes": 42,
+      "review": "reviews/build-config/ANDROID-XSD-CAPTURE-ACTUAL-AND-SCHEMA-REVIEW.md",
+      "scope": "Captured schemas/static SHA-1 linkage, no whole SDK consumer/archive/native/device result",
+      "external_diagnostic_preserved": "SCHEMA-CAPTURE-EXTERNAL-01.json records failed metadata-only postreader and corrected original comparison, no recapture."
+    },
+    "closeout_gate_timing": "Viable prompt-closeout design prebuild; meaningful LC-C05/06 controls required before closer invocation/actual C acceptance, root will finish before build. Runner controls not substitute."
+  },
+  "prior_independent_checkpoint_review": {
+    "reviewer": "/root/baseline_coverage",
+    "path": "reviews/baseline-coverage/CHECKPOINT-2-REVIEW.json",
+    "status": "CONSULT_REVIEWER_AUTHORED_EXACT_BYTE_DISPOSITION",
+    "scope": "Complete second source checkpoint delta/central ledgers/report; not implied by baseline policy review"
+  },
+  "additional_macos_ctest_declarations": {
+    "added": 3,
+    "apple_total_including_existing_abi_security": 5,
+    "executed": 0,
+    "xml": 0,
+    "infrastructure_not_product_family": "MAC-FIXTURE-001",
+    "caller_prerequisite": "Existing macOS Gradle/Desktop tests require independently admitted PASSVAULT_NATIVE_TEST_PARENT."
+  },
+  "additional_finding_confirmation": {
+    "id": "PVA-038",
+    "before_image_commit": "f18995e6633904a6845e09eab8a481635290894d",
+    "before_image_paths": 30,
+    "retained_captures": 6,
+    "review": "reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.json",
+    "counts": "22/38 qualified closures,16open; original19/25 and2/12 unchanged",
+    "patch_in_this_source_delta": false,
+    "new_application_executions": 0,
+    "new_semantic_LF_credit": 0
   }
 }

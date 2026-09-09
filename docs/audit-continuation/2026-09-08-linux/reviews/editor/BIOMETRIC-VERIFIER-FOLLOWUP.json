@@ -1,0 +1,200 @@
+{
+  "schema": "passvault-navigation-biometric-verifier-source-followup-v1",
+  "finding_id": "NAV-FRESH-SUS-001",
+  "author": "/root/editor",
+  "independent_challenger": "/root",
+  "recorded_utc": "2026-09-09",
+  "disposition": "PROPOSED_DESKTOP_COLD_INITIALIZATION_SOURCE_COUNTEREXAMPLE_PENDING_INDEPENDENT_DISPOSITION",
+  "confirmed_finding": false,
+  "production_patch": false,
+  "test_patch": false,
+  "original_frozen_row": {
+    "path": "docs/audit-handoff/current/additional-investigations.json",
+    "file_sha256": "dfc0be5063993d43f47fcf47669d5822e6fe0837c03ca060b1248097cbaed044",
+    "selector": "id == NAV-FRESH-SUS-001",
+    "status": "UNRESOLVED / VERIFICATION BLOCKED",
+    "outcome": "UNVERIFIED / BLOCKED",
+    "original_baseline_commit": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "unchanged": true,
+    "prior_limits_retained": [
+      "Broad verifier Exception routing was already established; not independently rediscovered here.",
+      "Cancellation, metadata/DAO/openSession, size/format and session/generation guards remain relevant.",
+      "Fake CryptoEngine failures alone establish only abstract routing.",
+      "No reachable legitimate transient failure from already initialized production AEAD is established by this follow-up."
+    ]
+  },
+  "source_checkpoint": {
+    "inspected_head": "f18995e6633904a6845e09eab8a481635290894d",
+    "inspected_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+    "preserved_handoff_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "preserved_handoff_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
+    "original_four_files_unchanged_from_handoff": true,
+    "current_engine_and_interface_equal_original_row_hashes": true,
+    "current_repository_and_service_differ_from_old_row_hashes": true,
+    "newer_admission_guards_revalidated": true,
+    "method": "Focused source/caller reads and exact hashes; file lengths are identities, not whole-file semantic coverage or executions."
+  },
+  "proposed_witness": {
+    "scope": "Supported admitted Desktop JVM biometric path; direct macOS native key-return range also inspected. Not a demonstrated hardware or loaded-binary outcome.",
+    "preconditions": [
+      "Existing valid vault metadata/enrollment, correct OS-released32-byte candidate, no earlier successful app CryptoEngine operation in this process.",
+      "Room bootstrap, separate biometric native loader/integrity admission and contains/status checks have succeeded.",
+      "Current coroutine/opaque repository attempt/generation remain valid; no newer lock or already-open session bypasses verification.",
+      "ResourceLoader singleton and ordinary class initialization succeed; witness is IOException during a subsequent load method's filesystem operation, not ExceptionInInitializerError.",
+      "A new temporary-directory creation becomes unavailable while existing metadata/bridge/protected-key reads remain usable."
+    ],
+    "call_chain": [
+      "DefaultBiometricUnlockService retrieves candidate after metadata/contains and checks cancellation.",
+      "VaultRepositoryImpl validates attempt/generation/key size/state/metadata then calls verifyBiometricVaultKey.",
+      "verifyVaultKey invokes decrypt and getOrThrow; initialization is inside LibsodiumCryptoEngine.cryptoOperation.",
+      "Cold ensureInitialized invokes JVM LibsodiumInitializer.initialize then loadLibrary.",
+      "Supported macOS/Windows branch calls SharedLibraryLoader.get().load; constructor does not create the temp directory.",
+      "load try calls ResourceLoader.copyToTempDirectory then Files.createTempDirectory; IOException is wrapped in ResourceLoaderException extends RuntimeException.",
+      "cryptoOperation catches Exception to Result.failure; getOrThrow rethrows into verifyBiometricVaultKey catchException, producing BiometricVaultKeyRejectedException.",
+      "Repository typed-rejection catch precedes generic catch; service typed branch attempts keyStore.delete then returns INVALIDATED."
+    ],
+    "impact_if_realized": "Non-authentication provider initialization failure can be classified as invalid enrollment; persistent enrollment loss requires successful deletion. Password fallback/re-enrollment availability impact only; no session publication, unauthenticated unlock or plaintext disclosure shown.",
+    "runtime_reproduction": false,
+    "post_initialized_aead_failure_proven": false
+  },
+  "independent_challenges": [
+    {
+      "author": "/root",
+      "question": "Does singleton/class initialization create the temp directory and convert the exception to ExceptionInInitializerError outside catchException?",
+      "author_response": "Exact ResourceLoader fields36-40 are LoggerFactory plus ArrayLists; constructor42-54 only populates permission collections. Declaration-wide scan finds one static numeric value field301 and no temp-call static initializer. Actual temp call is ordinary copyToTempDirectory68 -> createMainTempDirectory403-409, entered inside SharedLibraryLoader.load try after get returns.",
+      "disposition_by_author": "Specified post-singleton IOException witness survives this source counterexample; class-initialization failures explicitly excluded.",
+      "independent_final_disposition": "PENDING",
+      "failed_witness_silently_substituted": false
+    },
+    {
+      "author": "/root",
+      "question": "Could startup/bootstrap/settings/eager navigation viewmodels unconditionally initialize CryptoEngine before biometric verification?",
+      "author_response": "Checked Main/shutdown DI, app DB/prefs startup, existing-vault Unlock route, all five eager VM constructors and guarded Vault read. Generator is entry-scoped and only authentication entries render on authentication root. No required earlier successful CryptoEngine operation identified for the specified cold schedule.",
+      "independent_final_disposition": "PENDING"
+    }
+  ],
+  "counterexamples_and_limits": [
+    "Warm initialized engine skips this loader; do not claim all decrypts can fail this way.",
+    "Temp/DB/native failure before status/retrieve can prevent candidate release and does not enter verifier invalidation.",
+    "Error/ExceptionInInitializerError/UnsatisfiedLinkError and OOM are not this caught Exception witness.",
+    "Cancellation is rethrown; metadata validation and openSession/DAO exceptions remain outside mapped catch.",
+    "Exact key32/nonce24/normalized fixed payload52 bound the Android native output to32; invalid dimensions and actual authentication rejection are not legitimate nonauth examples.",
+    "GeneralLibsodiumException declaration alone does not prove a supported sodium_init transient failure.",
+    "Android initialization bypasses the Desktop resource-loader path; exact iOS native initializer/decrypt was not read and no mobile applicability is inferred.",
+    "Linux biometric runtime returns unavailable, so Linux fake-store service execution would not prove a supported Desktop OS-release path.",
+    "Windows native retrieval implementation was not independently followed end-to-end here; macOS key-return range is source only, not physical Touch ID proof.",
+    "POM runtime dependency edge and verification-metadata allowlist are not a current resolved dependency graph or source/binary equivalence.",
+    "Original initializer/SharedLibraryLoader excerpt captures retain their prior ad-hoc data-reader qualifications.",
+    "Actual persistent deletion is conditional on keyStore.delete success; source proves attempted deletion and classification, not universal enrollment loss."
+  ],
+  "primary_source_bindings": [
+    {"path":"core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt","sha256":"f2fc2ff02926e62230eff5e4723b2a68998649eee5f758f5ff99df93bcf61469","bytes":36754,"physical_lf":842,"ranges":[[69,94],[280,359],[477,508],[546,558],[659,673],[702,762]]},
+    {"path":"core/database/src/commonMain/kotlin/com/passvault/core/database/repository/DefaultBiometricUnlockService.kt","sha256":"431356205bb300aeb0a7c14759eef0bbf09583d3100082e5dd0103ac731a90f5","bytes":9170,"physical_lf":194,"ranges":[[1,194]]},
+    {"path":"core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt","sha256":"2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57","bytes":13666,"physical_lf":336,"ranges":[[24,35],[154,191],[239,251],[280,307]]},
+    {"path":"core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/CryptoEngine.kt","sha256":"571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9","bytes":12041,"physical_lf":400,"ranges":[[1,81],[175,234],[314,351]]}
+  ],
+  "caller_source_bindings": [
+    {"path":"shared/src/commonMain/kotlin/com/passvault/shared/di/AppModule.kt","sha256":"9b486df509202e65311caf92895ba8db6a44e6eae351266c8daa952bc553af25","ranges":[[54,102],[153,172]]},
+    {"path":"shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt","sha256":"75349af0300801f0cad87f72b6afe9701e54bd24dafdd8867d7509c776506737","ranges":[[47,79],[116,166],[192,239]]},
+    {"path":"shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt","sha256":"50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006","ranges":[[94,210],[219,339]]},
+    {"path":"feature/vault/src/commonMain/kotlin/com/passvault/feature/vault/presentation/VaultViewModel.kt","sha256":"879a2a7ba8208004f619b22109708ae4f1232e3d4acd5266522b1afc97dd20f2","ranges":[[37,115]]},
+    {"path":"feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt","sha256":"a19baf0425234acdae2c2d923d74dbabf1e2b6a4822d923d80b9cccabfd6d723","ranges":[[45,142]]},
+    {"path":"feature/backup/src/commonMain/kotlin/com/passvault/feature/backup/presentation/BackupViewModel.kt","sha256":"afd73521b4fc0d1b06af29bdc7d4940f4646507a66fcc4e55d801f2448060e63","ranges":[[52,73],[152,183]]},
+    {"path":"feature/onboarding/src/commonMain/kotlin/com/passvault/feature/onboarding/presentation/OnboardingViewModel.kt","sha256":"ae02e90a35bb2809414796df9357a5e42be8223be3a7ef614155cf00cdaea06c","ranges":[[32,63]]},
+    {"path":"feature/unlock/src/commonMain/kotlin/com/passvault/feature/unlock/presentation/UnlockViewModel.kt","sha256":"5c0c5511caf2cfa17df92cdb10ab1513ef98bbe7fa64798173106c57ff4811a0","ranges":[[40,107],[224,294]]},
+    {"path":"core/database/src/commonMain/kotlin/com/passvault/core/database/repository/CredentialRepositoryImpl.kt","sha256":"910fa9d999a3ef7327e3e70d6a9aa142eabf8b14131402f4415f3ef4e72f1e9f","ranges":[[176,203]]},
+    {"path":"shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/ToolsRouteAdapters.kt","sha256":"67a3436fb532bce79f88220fe2d28984f9e2a977d58579df0bdbcbecabc68173","ranges":[[30,72]]},
+    {"path":"core/database/src/commonMain/kotlin/com/passvault/core/database/VaultDatabaseBootstrap.kt","sha256":"5726afb24093afa8c56c57321d64f0ea747db69910f0b7aa984e9d18a86f2598","ranges":[[41,99]]},
+    {"path":"core/database/src/desktopMain/kotlin/com/passvault/core/database/Database.desktop.kt","sha256":"2aa4d34c71de4dae66a79e6d93af187a44642e4a504ff2a592d82c60245f39a7","ranges":[[1,72]]},
+    {"path":"shared/src/desktopMain/kotlin/com/passvault/shared/di/DatabaseProvider.desktop.kt","sha256":"4e4806f1fdaae610749f9f5f04c2788163d8c6de69abaf9ec75c940f0d664270","ranges":[[1,7]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt","sha256":"9457f71fefe63de14ddd80d91b14b5b281175ee7c9bcdb113ac6a8ae15452616","ranges":[[42,111]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopShutdownCoordinator.kt","sha256":"7156e03eb7e5d2ea7636a9320a49aeaf15d0694522d88f78836b075c74e9043d","ranges":[[155,172]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/di/DesktopModule.kt","sha256":"7b70040fe488c9825090548b3d8ca4a2e4f34c1989b072d2571d74c9647cd253","ranges":[[25,47]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricRuntime.kt","sha256":"111d03d9d074f0dc46dfcd670bcf2b3669b6a9104236fdb88287d41ad2b2e496","ranges":[[1,45]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt","sha256":"58bfb35a24738dafa765216aba023371088c697c5b5024462b1e2bc09ecbe787","ranges":[[1,83]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricKeyStore.kt","sha256":"0e4cb1569508466614af3782b3b58a1b22a1b3a3a89a124f7a14516d34c62499","ranges":[[1,168]]},
+    {"path":"app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricBridge.kt","sha256":"772d17b80f6e131aeed8cf763efa59cb909eb0696f777da555382b91f6113232","ranges":[[1,131]]},
+    {"path":"app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm","sha256":"ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9","ranges":[[812,902]]}
+  ],
+  "dependency_and_retained_capture_bindings": [
+    {"path":"gradle/libs.versions.toml","sha256":"49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a","scope":"libsodium0.9.5 catalog declaration"},
+    {"path":"gradle/verification-metadata.xml","sha256":"21ab6f9c2873325558f5bb96c7e7f68bfbb674e2a7ce867ffe19dabdae60c299","scope":"Exact libsodium0.9.5 and resource-loader2.0.2 component entries; not resolved graph."},
+    {"path":"core/crypto/build.gradle.kts","sha256":"a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112","scope":"Current dependency/source-set declaration; no build."},
+    {"path":"docs/audit-continuation/2026-09-08-linux/reviews/build-config/LOADER-EXCERPTS.json","sha256":"0c2d3275c6e85b9d62f980609a6e1e021b4b967f88919254bde4349de977b160","scope":"Full initializer d3cfd953... and SharedLibraryLoader5005a06f... literal captures plus focused ResourceLoader excerpts; prior ad-hoc-reader qualification retained."},
+    {"path":"docs/audit-continuation/2026-09-08-linux/reviews/build-config/LOADER-FOLLOWUP.json","sha256":"867b760578d96cbb1f2143a85836829a916132fe84ea59b033d798400613711b","scope":"ResourceLoader36-92 capture; now separately compared to new full same-hash ResourceLoader source data."}
+  ],
+  "source_data_reads": {
+    "count": 6,
+    "purpose": "Only root-authorized exact allowed text members; no packed program/library execution or binary extraction.",
+    "reader": "scripts/audit/read_handoff_git.py",
+    "reader_sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+    "reader_review_path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/transport-reader-review-v3.json",
+    "reader_review_sha256": "7d7db7ffd4f70d7946bd188a152dca951e513a803cac4e46e2d7d567526d735f",
+    "root_initial_verify_receipt_sha256": "0f43eb12f8100c6e34f780fd3ce4fe61856e76af2a063a35036191d7a8f71dc5",
+    "reader_rehashed_immediately_before_each": true,
+    "fixed_command_prefix": "/usr/bin/timeout --signal=TERM --kill-after=10s 180s /usr/bin/python3 -I -B scripts/audit/read_handoff_git.py show",
+    "output_directory": "docs/audit-continuation/2026-09-08-linux/reviews/editor/biometric-verifier-sources",
+    "command_and_receipt_suffixes": [".command.txt", ".receipt.txt"],
+    "stdout_stderr_suffixes": [".stdout.txt", ".stderr.txt"],
+    "outer_file_cap": "Bash ulimit -f64; at most64KiB per stdout/stderr regular file, at most128KiB per invocation; exact selected text outputs are smaller.",
+    "serial": true,
+    "retries": 0,
+    "all_exit_codes": 0,
+    "all_stderr_bytes": 0,
+    "empty_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_stdout_total_bytes": 50691,
+    "timeout_or_reported_owned_child_settlement_errors": 0,
+    "child_settlement_qualification": "Reviewed reader waits/reaps its owned Git children in finally before observed exit0; no raw process census retained. Hardkill/host-loss/uninterruptible-wait limitations remain.",
+    "captures": [
+      {"name":"android-aead","original_path":"remediation-reports/20260905T222925Z/reviews/root-exact-detekt-and-crypto-context-v1/androidMain__com__ionspin__kotlin__crypto__aead__AuthenticatedEncryptionWithAssociatedData.kt","sha256":"2eac8066b9b07b7dd920d684f650c9279c8ce911f322800c2a8611cdd2fd48da","bytes":10769,"physical_lf":309,"read_ranges":[[1,55]],"started_utc":"2026-09-09T00:34:51Z","ended_utc":"2026-09-09T00:34:52Z"},
+      {"name":"common-aead","original_path":"remediation-reports/20260905T222925Z/reviews/root-exact-detekt-and-crypto-context-v1/commonMain__com.ionspin.kotlin.crypto__aead__AuthenticatedEncryptionWithAssociatedData.kt","sha256":"243dccc28f03b94f5c4f323c8e0139ac1088e2da091524bedfcae7a7f011ea7a","bytes":11125,"physical_lf":288,"read_ranges":[[9,34],[80,94]],"started_utc":"2026-09-09T00:34:52Z","ended_utc":"2026-09-09T00:34:53Z"},
+      {"name":"general-exception","original_path":"remediation-reports/20260905T222925Z/research/crypto-security-selection/sources/multiplatform-crypto-libsodium-bindings-jvm-0.9.5-sources/commonMain__com.ionspin.kotlin.crypto__GeneralLibsodiumException.kt.txt","sha256":"ec14e1af2529d326677e6c36deae23c31188ca3afebc7a254ca81feaf074264f","bytes":619,"physical_lf":19,"read_ranges":[[1,19]],"started_utc":"2026-09-09T00:34:53Z","ended_utc":"2026-09-09T00:34:54Z"},
+      {"name":"resource-exception","original_path":"remediation-reports/20260905T222925Z/research/crypto-security-selection/sources/resource-loader-2.0.2-sources/com__goterl__resourceloader__ResourceLoaderException.java.txt","sha256":"b6775e595ce829aeafa6bc2627c96aad9585b9fb8bcc596f6a8cbcf6a658c341","bytes":635,"physical_lf":23,"read_ranges":[[1,23]],"started_utc":"2026-09-09T00:34:54Z","ended_utc":"2026-09-09T00:34:55Z"},
+      {"name":"libsodium-jvm-pom","original_path":"remediation-reports/20260905T222925Z/research/crypto-security-selection/multiplatform-crypto-libsodium-bindings-jvm-0.9.5.pom","sha256":"bb0a0ab14c39fd52d05df8e65bd9554a515fded99daf94f9ba35444ae32a5856","bytes":2575,"physical_lf":65,"read_ranges":[[1,65]],"started_utc":"2026-09-09T00:40:19Z","ended_utc":"2026-09-09T00:40:20Z"},
+      {"name":"resource-loader","original_path":"remediation-reports/20260905T222925Z/research/crypto-security-selection/sources/resource-loader-2.0.2-sources/com__goterl__resourceloader__ResourceLoader.java.txt","sha256":"6714869e8cf802256b56c26d9c33379b6b77931884ebc95af7d8015d32779ffd","bytes":24968,"physical_lf":627,"read_ranges":[[1,108],[179,204],[301,356],[380,497]],"declaration_search":"Entire file static/constructor/method/field declaration scan; not full627LF semantic credit.","started_utc":"2026-09-09T00:48:32Z","ended_utc":"2026-09-09T00:48:33Z"}
+    ]
+  },
+  "remaining_required_evidence": [
+    "Independent root disposition of exact source/cold-start/catch/static-initialization witness before confirmation or production patch.",
+    "No full current dependency-graph/loaded-binary equivalence from POM or checksum allowlist; any runtime applicability evidence must bind its actual graph.",
+    "Any eventual fix must preserve wrong-key/format rejection, cancellation/generation/metadata guards and password/envelope compatibility.",
+    "Meaningful actual-provider regression with fixed valid synthetic metadata/key and separately admitted fresh process/fixture, compared with authentication rejection, success, cancellation and metadata/openSession failure.",
+    "Synthetic store/provider boundary is not real OS-release/hardware security proof; physical platform gaps stay blocked."
+  ],
+  "resources_and_cleanup": {
+    "latest_point_utc": "2026-09-09T00:49:27Z",
+    "disk_available_kib": 32108684,
+    "ram_available_mib": 43607,
+    "ram_total_mib": 64311,
+    "reservation_or_measured_reclaimed_disk": false,
+    "permanent_source_capture_directory_disk_kib": 120,
+    "background_jobs_started": 0,
+    "builds_or_tests": 0,
+    "downloads": 0,
+    "shared_cache_changes": 0,
+    "temporary_extractions": 0,
+    "application_storage_reads_or_writes": 0,
+    "runtime_deletions": 0,
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE",
+    "diagnostics": "Foreground source-navigation missing guessed paths/globs/mislocated receipt and one overbroad one-line index output were retained as navigation diagnostics, not test failures. Cited content supplied through later focused data reads. No failed approved reader invocation or automatic retry."
+  },
+  "narrative": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/BIOMETRIC-VERIFIER-FOLLOWUP.md",
+    "sha256": "a66061a860213b33d25a91585d4bed1e940bb992013cb76acd966f3fd6839362",
+    "bytes": 13384,
+    "physical_lf": 201
+  },
+  "accounting": {
+    "original_confirmed": "19/25 qualified closures",
+    "all_confirmed": "22/37 qualified closures",
+    "original_suspicions": "2/12 conclusive",
+    "PVD_explanations_separate": 8,
+    "new_confirmed_findings": 0,
+    "new_closures": 0,
+    "new_application_tests": 0,
+    "new_mock_tests": 0,
+    "new_hardware_tests": 0,
+    "new_semantic_lf_credit": 0
+  },
+  "restrictions": "Root sole build/test/commit/push owner. Original STOP/NO-RETRY/CLOSED scopes untouched; no old runner/helper import/replay; PVA029 failure/no automatic retry, Windows failure/cleanup HOLD, physical gaps, protected refs/tags, dependencies/versions/identities, signing/store/publication and candidate1017001 fences unchanged. Generated skill mirror untouched."
+}

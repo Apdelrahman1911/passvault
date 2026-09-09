@@ -1,0 +1,69 @@
+{
+  "approval_utc": "2026-09-09T01:06:02.975939+00:00",
+  "basis": {
+    "filled_instance_review": "reviews/editor-independent/CONTROL02-FILLED-INSTANCE-REVIEW.json",
+    "filled_instance_review_sha256": "844ea6d32245616eaca12c4af441911eac8129a769c5b28769b640f811879d25",
+    "metadata_read_descriptors_closed": true,
+    "metadata_review_tool_observed_exit": 0,
+    "previous_controls01_root_release_sha256": "f81218951c2380cc983843c1317bd78239b087b6099d3087409a1de6d79b695e",
+    "root_author_approval_sha256": "283f93f8150fcb2e2cc93f7d6cd8f742e56bd8b281ff454f3a74e39156fc4a9d",
+    "source_review": "reviews/editor-independent/CONTROL02-LAUNCH-REVIEW-v2.md",
+    "source_review_manifest_sha256": "34209bb6220058864c5ad39c298c9556d5b46c04bf72c382d667a219de08f8dd"
+  },
+  "bindings": {
+    "controls": "dffa884b09c7786e763c9becc3b0b220242b5c9555288bf1052e9e16912fa426",
+    "controls_review": "727a0884b82962425548c90ce01b9c9c501912be2617efa477662fc7c3dccd96",
+    "design": "b52d60fcd8eb2cfb07275d3508977284a5ed8a46209b09ec8cdf669e8dd8c192",
+    "launch_plan": "2046a1d818e3dad1720dea04fe67cab2f23c809b66e8be9bd1ceda568147fdae",
+    "launcher": "c1818984d63274465fe20f7a4ea9a765ee1d30e822357390596a3a433fa1d1e9",
+    "runner": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "runner_plan": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+  },
+  "counts_at_approval": {
+    "application_cases_executed_by_reviewer": 0,
+    "controls02_executed_by_reviewer": 0,
+    "imports_or_syntax_probes_by_reviewer": 0,
+    "qualified_closure_delta": 0
+  },
+  "disposition": "ACCEPT",
+  "format": "passvault-linux-controls-acceptance-v1",
+  "launcher_author": "/root",
+  "limits": [
+    "Root sole-executor and CI/process observations are cooperative point evidence, not host-wide or future exclusivity",
+    "Same-image/no-follow/original-pin checks and pathname cleanup are not atomic hostile-same-UID protection",
+    "Python alarm/synchronous calls/host loss/signals can delay or interrupt cleanup; incomplete settlement or evidence remains HOLD",
+    "Combined output and tool-reported time only; original01 tool0.255451913s versus journal0.311654695s remains qualified, no full external monotonic interval or hard invocation-time guarantee",
+    "Installed Python standard-library/loader trust is not complete transitive executable provenance",
+    "Actual tiny file/pipe and dup-FD operations differ from mocked process/pidfd/signal/stop evidence; no wrapper runs, so wrapper --stop is N/A"
+  ],
+  "preserved_history": {
+    "controls01": {
+      "attempted": 22,
+      "failed": 2,
+      "passed": 20,
+      "status": "FAIL_WITH_ORIGINAL_SYNTHETIC_CLEANUP_AND_NO_CHILD_PROCESS_SETTLED; consumed unchanged",
+      "unstarted": 0
+    },
+    "fixture_grouping": "C-FIXTURE-01 and reviewer alias LC-FIXTURE-01 are one infrastructure defect, not product families",
+    "windows": {
+      "cases_started": 0,
+      "cases_unstarted": 14,
+      "cleanup": "HOLD",
+      "operational_status": "FAIL",
+      "retry_admitted": false,
+      "run_id": 34284083351
+    }
+  },
+  "preserved_restrictions": "PVU-007 STOP; PVU-011 NO RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; no archived runner/helpers; PVD/hardware/protectedref/dependency/version/identity/signing/store/publication/occupied1017001 boundaries unchanged.",
+  "purpose": "ONE_NEW_EXACT_SOURCE_INERT_CONTROL_EXECUTION",
+  "request_sha256": "3d74124eb6a70fc5795928667d3f66eb6dc72ae5654269d0f805e4fbe3d4c8aa",
+  "require_before_execution": [
+    "Root performs fresh actual controls02 local/CI slot, resource and scratch/journal absence preflight; no overlapping audit-owned build/test",
+    "Exact new request/author-specific approvals, seven source images/full pins, original17 ancestors, bootstrap lock, fixed Python and fresh window are rechecked under original lock before mutation",
+    "Any changed input, consumed journal, occupied scratch, expired request, failure, interruption or cleanup uncertainty stops this instance; no overwrite, replacement adoption, old01 reuse or automatic retry"
+  ],
+  "required_after_execution": "Retain full literal22 case evidence, failures, original namespace/descriptor outcomes, terminal event and actual external exit/PID settlement. Independent result challenge is required; no database admission follows automatically from any controls result.",
+  "review_role": "ACTUAL_INDEPENDENT_LAUNCHER_SOURCE_AND_FILLED02_INSTANCE_APPROVER_NOT_LAUNCHER_OR_CONTROLS_AUTHOR",
+  "reviewer": "/root/editor_review",
+  "scope": "Root alone may invoke fixed RUN_CONTROLS_02.py once with /usr/bin/python3 -I -B and no overrides before this exact request expires. Only22 current v4 inert controls and required new-subject definitions, no subject main(), actual child process/signal, Gradle, JVM, native/application or database execution."
+}

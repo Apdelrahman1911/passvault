@@ -1,0 +1,501 @@
+{
+  "all17_admitted_directory_pins_currently_match": true,
+  "application_progress_unchanged": {
+    "all_confirmed": "22/37",
+    "original_confirmed": "19/25",
+    "original_suspicions": "2/12",
+    "qualified_closure_delta": 0
+  },
+  "attempts": 1,
+  "cases": [
+    {
+      "boundary": "REAL_POSIX_FILE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC01_reader_positive",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.012284989992622286,
+      "sequence": 11,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC02_reader_symlink_refusal",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.008983248000731692,
+      "sequence": 23,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC03_reader_hardlink_refusal",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.008571434009354562,
+      "sequence": 35,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC04_reader_preopen_mutation",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.00628512998810038,
+      "sequence": 44,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC05_reader_postfd_mutation",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.007725164003204554,
+      "sequence": 53,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC06_reader_postpath_replacement",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.008542080002371222,
+      "sequence": 65,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_POSIX_FILE_WITH_EXACT_CALL_HOOK",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC07_reader_parent_replacement",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.016969640011666343,
+      "sequence": 85,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "REAL_FD_WITH_INJECTED_IO_FAILURE",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC08_newfile_fsync_failure_closes_fd",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.005064633005531505,
+      "sequence": 93,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC09_command_positive",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.011541436979314312,
+      "sequence": 104,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC10_command_nonzero",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.011207508010556921,
+      "sequence": 115,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_SIGNAL_STATE_NO_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC11_command_prefork_cancel",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.011005501000909135,
+      "sequence": 126,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_SIGNAL_STATE_NO_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC12_command_pending_after_intent",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.009367099002702162,
+      "sequence": 137,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC13_cleanup_stop_once",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.014058558008400723,
+      "sequence": 151,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "FAKE_CHILD_REAL_PIPE_LOG_IO",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC14_command_log_cap",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.010350213007768616,
+      "sequence": 162,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_ROWS",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC15_scan_after_only",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0027490590000525117,
+      "sequence": 167,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_ROWS",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC16_scan_pid_reuse",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0029372319986578077,
+      "sequence": 172,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_DIRECT_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "error": "TypeError: object of type 'NoneType' has no len()",
+      "failure_phase": "FAKE_CHILD_CONSTRUCTOR_BEFORE_PROCESS_DIRECT",
+      "intended_subject_boundary_reached": false,
+      "name": "LC17_direct_already_zombie",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "FAIL",
+      "seconds": 0.002500576985767111,
+      "sequence": 177,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_ROWS",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC18_owned_zombie_not_cwd_churn",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0025947050016839057,
+      "sequence": 182,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_SIGNAL_GUARD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC19_signal_zombie_and_wrong_birth",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.004027977003715932,
+      "sequence": 187,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_PARENT",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC20_parent_before_child_guard",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.0055920320155564696,
+      "sequence": 195,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_PROC_PARENT_REAL_DUP_FD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "intended_subject_boundary_reached": true,
+      "name": "LC21_parent_after_child_guard",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "PASS",
+      "seconds": 0.006706888001644984,
+      "sequence": 203,
+      "within_case_soft_bound": true
+    },
+    {
+      "boundary": "MOCK_DIRECT_CHILD",
+      "cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "descriptor_settlement_hold": false,
+      "error": "TypeError: object of type 'NoneType' has no len()",
+      "failure_phase": "FAKE_CHILD_CONSTRUCTOR_BEFORE_PROCESS_DIRECT",
+      "intended_subject_boundary_reached": false,
+      "name": "LC22_direct_death_during_capture",
+      "namespace_cleanup": "ORIGINAL_SYNTHETIC_MEMBERS_REMOVED",
+      "outcome": "FAIL",
+      "seconds": 0.0027422990242484957,
+      "sequence": 208,
+      "within_case_soft_bound": true
+    }
+  ],
+  "control_evidence_limits": "LC01-08 use actual tiny POSIX file/FD boundaries (mutation/fault hooks where declared). LC09/10/13/14 fake Popen/process behavior with real pipes/log IO; LC11/12 mock cancellation, other process rows/signals mock-only. LC21 real duplicated ordinary FD is not pidfd runtime proof. LC17/22 attempted fixture construction failed before subject direct/admit, so those behaviors remain untested. Nested fake Gradle argv, stop, PID910xxx and resource rows are not real execution evidence.",
+  "controls_author": "/root/verification",
+  "counts": {
+    "application_tests": 0,
+    "attempted": 22,
+    "declared": 22,
+    "failed": 2,
+    "failed_before_intended_subject_boundary": 2,
+    "passed": 20,
+    "real_child_processes": 0,
+    "real_process_signals": 0,
+    "skipped": 0,
+    "unknown": 0,
+    "unstarted": 0
+  },
+  "disposition": "FAIL_20_PASS_2_FIXTURE_FAILURES_ORIGINAL_SYNTHETIC_CLEANUP_AND_SINGLE_PROCESS_SETTLED",
+  "execution_owner": "/root",
+  "fixed_python_image_and_original_pin_currently_match": true,
+  "fixture_failure": {
+    "affected_cases": [
+      "LC17_direct_already_zombie",
+      "LC22_direct_death_during_capture"
+    ],
+    "classification": "CONTROL_FIXTURE_DEFECT_NOT_PRODUCT_OR_SUBJECT_FAILURE",
+    "controls_sha256": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d",
+    "counterchallenge": {
+      "agent": "/root/verification",
+      "qualification": "No result of any proposed corrected source or new namespace is credited here.",
+      "result": "AGREES after stable journal data read852635 and source review: only MemoryJournal/Processes in-memory state before guard; no FakeChild stdout/pipe2 acquisition and no subject direct/admit proof. Outer Area lifecycle is separate and was cleaned.",
+      "role": "ACTUAL_CONTROL_AUTHOR_SOURCE_COUNTERCHALLENGE"
+    },
+    "error": "TypeError: object of type 'NoneType' has no len()",
+    "local_id": "LC-FIXTURE-01",
+    "locus": "FakeChild.__init__ line475 unconditionally len(payload); direct_death line665 passes None; process_row patch and Processes.direct line671 not reached"
+  },
+  "format": "passvault-linux-controls-result-review-v1",
+  "namespace_reconciliation": {
+    "all22_descriptor_settlement_hold_false": true,
+    "all22_namespace_cleanups_reported_success": true,
+    "fixture_directory_allocations": 24,
+    "fixture_directory_removal_intent_observation_pairs": 24,
+    "fresh_reviewer_scratch_absent": true,
+    "journal_records": 213,
+    "link_alias_originals": 2,
+    "original_identity_matches_at_all_deletion_intents": 51,
+    "original_scratch": {
+      "dev": 23,
+      "ino": 669871,
+      "mode": 16832,
+      "uid": 0
+    },
+    "original_unlink_intent_observation_pairs": 27,
+    "pending_or_live_synthetic_ledger_objects": 0,
+    "regular_file_originals": 25,
+    "rename_intents": [
+      {
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-01/LC06_reader_postpath_replacement/original-retained",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-01/LC06_reader_postpath_replacement/target",
+        "sequence": 57
+      },
+      {
+        "new": "/root/projects/PassVault/audit-runtime-linux-runner-controls-01/LC07_reader_parent_replacement/original-parent",
+        "old": "/root/projects/PassVault/audit-runtime-linux-runner-controls-01/LC07_reader_parent_replacement/parent",
+        "sequence": 71
+      }
+    ],
+    "rename_qualification": "Source records intents, not separate rename-success events; later original-pin cleanup records reconcile the two remapped lifecycles.",
+    "scratch_removal_intent_sequence": 210,
+    "scratch_removal_observed_sequence": 211,
+    "sequential_zero_based_records": true,
+    "unexpected_event_kinds": 0
+  },
+  "observed_files": [
+    {
+      "bytes": 21518,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/RUN_CONTROLS.py",
+      "sha256": "967ddf9a5d792712dff248f29b7845b58fcafe68e99c772341bac845ce744210"
+    },
+    {
+      "bytes": 10261,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-PLAN.md",
+      "sha256": "66f9345ae32f43d6da894e6edfd688fda1f2325372effc1dd1beace60a21d29c"
+    },
+    {
+      "bytes": 43044,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/linux_runner_controls.py",
+      "sha256": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d"
+    },
+    {
+      "bytes": 17723,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-CONTROLS-DESIGN.md",
+      "sha256": "1292305d4a0f1729be7016002c9f1bc99f37487077aea4f4f3d1aa1854723921"
+    },
+    {
+      "bytes": 55614,
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_database_validation.py",
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    {
+      "bytes": 21126,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/PLAN.md",
+      "sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+    },
+    {
+      "bytes": 3861,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-CONTROLS-SOURCE-REVIEW.json",
+      "sha256": "bfdc0e7ebabc06078195c91e5f6014ca446895c8e22d0fb5f31848a963079432"
+    },
+    {
+      "bytes": 6823,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-REQUEST.json",
+      "sha256": "8d2e20fcb074d5ffeb1775f15e7116971dab8fa46448634fb68dfdcce9539931"
+    },
+    {
+      "bytes": 1511,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-root.json",
+      "sha256": "7ea702e1069e6b7a262c69ff83cc2fe70ca02d8a1bc543f28b9f85e79722b3f2"
+    },
+    {
+      "bytes": 3856,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-ACCEPT-editor_review.json",
+      "sha256": "57fbb7f4458d7f5f60d034f93c41a13e54aeed94ca2124a5356b21c60e611bce"
+    },
+    {
+      "bytes": 941,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CONTROL-ACCEPT-COUNT-ERRATUM.json",
+      "sha256": "46252dd173d26bd5b01a27167d9a4a1a916a437781c33a254137e11f866fafdc"
+    },
+    {
+      "bytes": 1632,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-PREFLIGHT.json",
+      "sha256": "64c926bccc2233c0be64fdb46299d36b864e8e45cd3a408273168a1a5ae0bd14"
+    },
+    {
+      "bytes": 123873,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-events.jsonl",
+      "sha256": "75fcebbd3c666518f9b2160d186e83ad9eebb9b8774c016eae043e88e40c6eb7"
+    },
+    {
+      "bytes": 3583,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-LAUNCH-RECEIPT.json",
+      "sha256": "39a7daf48e4096fab5245c858f71aef1fe7eae507dd88b424078774fca1217f1"
+    }
+  ],
+  "original_lock_currently_matches": true,
+  "preserved_boundaries": "Consumed request/journal/approvals/erratum retained unchanged. No retry of this instance, database admission, old runner, PVU-007 STOP, PVU-011 NO RETRY, PVA-029 no automatic retry or G7/G8 recovery. Windows34284083351 remains FAIL/cleanup HOLD with0 started/all14 unstarted. PVD/hardware/protected refs/dependency/version/identity/signing/store/publication/build1017001 boundaries unchanged.",
+  "process_settlement": {
+    "basis": "Exact no-real-child source scope plus actually observed tool exit and original PID absence; OS process exit supplies final descriptor settlement. Namespace absence alone was not used as FD proof.",
+    "combined_output": "",
+    "fresh_reviewer_pid_absent_point": true,
+    "limits": "Not a host-wide process census or proof of real subject child/pidfd/waitpid/daemon settlement; individual close-return traces are not retained.",
+    "observed_exit_code": 1,
+    "original_pid": 8117,
+    "original_starttime": 18227925,
+    "root_original_pid_absent_point": true,
+    "tool_chunk": "8b0448"
+  },
+  "read_method": "No-follow retained ancestor descriptors; bounded regular pre/fd/post/name identity equality; same-image SHA256; strict data-only JSON parse. No launcher/control/subject import, compilation or execution. Every213 event and full22 case payload reconciled, including exact preterminal duplication.",
+  "resources": {
+    "all_recorded_launch_running_floors_met": true,
+    "maximum_sampled_self_maxrss_kib": 212196,
+    "minimum_sampled_available_disk_bytes": 23665139712,
+    "minimum_sampled_available_ram_bytes": 46253379584,
+    "qualification": "Point samples, not continuous resource quotas; fake command-resource records excluded.",
+    "real_launcher_samples": 3,
+    "reviewer_point": {
+      "disk_available_bytes": 23545765888,
+      "memory_bytes": {
+        "MemAvailable": 46009966592,
+        "MemTotal": 67435888640
+      }
+    }
+  },
+  "retry_or_database_execution_admitted": false,
+  "reviewed_utc": "2026-09-09T00:38:34.017922+00:00",
+  "reviewer": "/root/editor_review",
+  "reviewer_operations": {
+    "application_tests_executed": 0,
+    "cleanup": "Data/text reads and compact permanent review output only; all owned metadata descriptors closed on script exit. No scratch/cache/build artifact/JVM/daemon/worker/emulator created; no unrelated process killed or shared cache/source/report removed.",
+    "controls_executed": 0,
+    "source_imports_or_syntax_probes": 0
+  },
+  "run_id": "linux-runner-controls-01",
+  "slot_recommendation": {
+    "admits_next_execution": false,
+    "disposition": "ROOT_MAY_RELEASE_THIS_COMPLETED_FAILED_CONTROLS_SLOT_AFTER_RECORDING_REVIEW",
+    "reason": "Single no-child process has actually exited; original process absent and all original synthetic namespace/removal records plus fresh absence reconcile. Functional control FAIL and timing qualification remain, but no unsettled Linux synthetic resource obligation is shown.",
+    "reviewer_released_slot": false
+  },
+  "source_bindings": {
+    "controls": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d",
+    "controls_review": "bfdc0e7ebabc06078195c91e5f6014ca446895c8e22d0fb5f31848a963079432",
+    "design": "1292305d4a0f1729be7016002c9f1bc99f37487077aea4f4f3d1aa1854723921",
+    "launch_plan": "66f9345ae32f43d6da894e6edfd688fda1f2325372effc1dd1beace60a21d29c",
+    "launcher": "967ddf9a5d792712dff248f29b7845b58fcafe68e99c772341bac845ce744210",
+    "runner": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "runner_plan": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+  },
+  "source_original_pins_currently_match": true,
+  "terminal": {
+    "cancelled": [],
+    "cleanup": "ORIGINAL_EMPTY_SCRATCH_REMOVED",
+    "error": null,
+    "exit": 1,
+    "sequence": 212,
+    "source_inputs_unchanged": true,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "timing": {
+    "actual_full_outer_monotonic_duration_established": false,
+    "all_declared_internal_soft_bounds_met": true,
+    "batch_monotonic_seconds": 0.2103432939911727,
+    "batch_soft_limit_seconds": 180,
+    "case_soft_limit_seconds": 15,
+    "launcher_first_to_terminal_wall_stamp_seconds": 0.311654695,
+    "launcher_timeout_observed": false,
+    "max_case_monotonic_seconds": 0.016969640011666343,
+    "qualification": "Tool duration0.255451913s is shorter than journal wall-stamp span0.311654695s. Root confirmed no separately retained full external monotonic entry/exit pair; tool envelope approx0.4s is not such proof. Different scopes/clocks are retained without normalization; no hard240s invocation claim or alarm/race coverage.",
+    "sum_case_monotonic_seconds": 0.17180740405456163,
+    "tool_reported_wall_time_seconds": 0.255451913
+  }
+}

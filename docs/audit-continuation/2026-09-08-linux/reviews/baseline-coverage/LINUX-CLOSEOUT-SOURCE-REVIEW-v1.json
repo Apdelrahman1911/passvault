@@ -1,0 +1,281 @@
+{
+  "containing_head_at_review": "f18995e6633904a6845e09eab8a481635290894d",
+  "design_contributors": [
+    "/root",
+    "/root/baseline_coverage"
+  ],
+  "disposition": "REVISE_SOURCE_PROPOSAL_BEFORE_EXECUTION_OR_FILLED_INSTANCE_ACCEPTANCE",
+  "findings": [
+    {
+      "compatibility_qualification": "Retain ordinary positive event progression and bounded best-effort HOLD persistence. Metadata checks remain cooperative point evidence, not cryptographic/atomic hostile-writer protection.",
+      "control_effects_proposed_not_executed": [
+        "Normal multi-event append retains literal bytes/order/length and advances completed pin only after durability.",
+        "Equal-size prior-record rewrite with mutable-pin drift refuses before the next write.",
+        "Preappend truncation/append/replacement/link drift refuses without journal adoption.",
+        "Partial/zero writes, fsync failure and final name/pin drift never advance completed state or permit subsequent success/deletion."
+      ],
+      "disposition": "REVISE",
+      "id": "LC-C05-01",
+      "kind": "AUDIT_INFRASTRUCTURE_SOURCE_REVISION_NOT_NEW_APPLICATION_FAMILY",
+      "obligation": "C05",
+      "origin": "Author self-review disclosure independently challenged and confirmed by /root/baseline_coverage; not claimed as independent discovery.",
+      "reachable_counterexample": "After one completed record, rewrite earlier bytes in the same inode without changing file length; changed mtime/ctime and bytes are not compared to the last completed pin. Stable-field/path-vs-current checks and next final-length check can all pass.",
+      "required_fix": "Before each append compare last completed full regular-file pin and current length to used; after write/fsync require final descriptor/name/expected-length proof before committing the next pin/sequence/used. Any drift/partial failure latches incomplete and prevents further append/deletion; no repair/adoption.",
+      "source_ranges": [
+        "Journal.__init__:250-269",
+        "Journal.event:271-293"
+      ],
+      "surrounding_guards_not_sufficient": [
+        "Exclusive creation prevents initial adoption, not later same-inode rewriting.",
+        "Full current path pin is compared to current FD, not previous completed state.",
+        "Original dev/ino/uid/mode/nlink checks reject replacements/link drift, not equal-size prior-record changes.",
+        "Postappend length detects some external append cases only after a write and cannot detect an equal-size rewrite."
+      ]
+    },
+    {
+      "compatibility_qualification": "Deadline remains soft between operations; blocking syscalls, hard kill/host loss and external timeout limitations remain. Early refusal is not automatic retry permission.",
+      "control_effects_proposed_not_executed": [
+        "Pre-admission elapsed deadline or latched signal refuses before closeout journal creation/deletion.",
+        "Latch/deadline during chunks, binding or under-lock rehash is observed at next bounded callback and owned descriptors settle.",
+        "Valid small bootstrap remains reachable without callback recursion, lost HOLD evidence, process/stop launch or path-mode widening."
+      ],
+      "disposition": "REVISE",
+      "id": "LC-C06-01",
+      "kind": "AUDIT_INFRASTRUCTURE_SOURCE_REVISION_NOT_NEW_APPLICATION_FAMILY",
+      "obligation": "C06",
+      "origin": "Author self-review disclosure independently challenged and confirmed by /root/baseline_coverage; not claimed as independent discovery.",
+      "reachable_counterexample": "An early cancellation latch or elapsed900s can occur while bounded admission reads/dir binds/launcher fsyncs/under-lock rehash continue with no-op dirs.tick. The later cancellation/expiry check is not initial elapsed-time polling; actual Guard begins only after journal creation.",
+      "required_fix": "Install cheap monotonic deadline and latched/pending-signal checks before admission; use them at bounded bootstrap read/setup/bind/rehash and long-loop boundaries and before journal consumption. Preserve actual original-lock/process/mount/resource admission and avoid callback recursion or suppressing terminal-HOLD persistence.",
+      "source_ranges": [
+        "Directories.__init__:168-172",
+        "Directories.read:208-238",
+        "admission:572-654",
+        "main:942-969"
+      ],
+      "surrounding_guards_not_sufficient": [
+        "Read byte caps and RLIMIT_AS do not implement elapsed-time/cancellation checks.",
+        "Signal handlers latch but do not stop the no-op bootstrap read loop.",
+        "Later destructive-syscall checks prevent ordinary deletion after refusal but do not satisfy whole-helper initial responsiveness."
+      ]
+    }
+  ],
+  "helper_and_plan_committed_in_that_head": false,
+  "helper_author": "/root/editor",
+  "inputs": [
+    {
+      "bytes": 57457,
+      "path": "scripts/audit/linux_database_closeout.py",
+      "physical_lf": 1041,
+      "review_scope": "Entire frozen source read, no import/compile/execution.",
+      "sha256": "a0001a0e5e9e399f7a9f27f627564cdfc99753b9143a35b9dd6bc0d79c7029c4"
+    },
+    {
+      "bytes": 25769,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md",
+      "physical_lf": 423,
+      "review_scope": "Entire frozen source-proposal PLAN read; actual controls are not filled.",
+      "sha256": "15b2fb04baeba8e849bf50f8c3ff6cfdb67f8c355b89e6e5706df9e1eda2a696"
+    },
+    {
+      "bytes": 57457,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/linux-closeout-v1.py.txt",
+      "physical_lf": 1041,
+      "review_scope": "Exact inert reviewer source snapshot.",
+      "sha256": "a0001a0e5e9e399f7a9f27f627564cdfc99753b9143a35b9dd6bc0d79c7029c4"
+    },
+    {
+      "bytes": 25769,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/linux-closeout-plan-v1.md",
+      "physical_lf": 423,
+      "review_scope": "Exact inert reviewer PLAN snapshot.",
+      "sha256": "15b2fb04baeba8e849bf50f8c3ff6cfdb67f8c355b89e6e5706df9e1eda2a696"
+    },
+    {
+      "bytes": 9324,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/linux-closeout-design.md",
+      "physical_lf": 153,
+      "review_scope": "Earlier disclosed reviewer design contribution.",
+      "sha256": "4fd2379723a343e63783ef0938779963f377e7e7e73fc38edca2eaba7029715c"
+    },
+    {
+      "bytes": 3127,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/linux-closeout-design-inputs.json",
+      "physical_lf": 68,
+      "review_scope": "Earlier design input hash/qualification manifest.",
+      "sha256": "7c025ef3f71702a5475a02410652bd0433e14f6d830519eaae51b44d46e1d302"
+    },
+    {
+      "bytes": 55614,
+      "path": "scripts/audit/linux_database_validation.py",
+      "physical_lf": 1079,
+      "review_scope": "Companion interface identity only; full independent F review is /root/verification.",
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    {
+      "bytes": 21126,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/PLAN.md",
+      "physical_lf": 318,
+      "review_scope": "Companion contract identity, not final runner acceptance.",
+      "sha256": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+    }
+  ],
+  "integration_receipt": {
+    "closer_sha256": "a0001a0e5e9e399f7a9f27f627564cdfc99753b9143a35b9dd6bc0d79c7029c4",
+    "fresh_guard_and_owner_coordination_still_required": true,
+    "global_or_escaped_worker_absence_proved": false,
+    "no_gradle_schema_mismatch_found": false,
+    "original_instance_review_complete": false,
+    "owned_births_omit_bare_launch_observed_and_fast_exit_without_start": true,
+    "qualification": "SOURCE_BOUND_RESULT_BOOLEAN_NOT_RETAINED_RAW_THREE_SNAPSHOT_WAITPID_PROOF",
+    "result_boolean_is_standalone_fresh_settlement_authority": false,
+    "runner_sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "source": "Collaboration message from /root/verification after bounded runner-to-closeout schema review; full F review remains theirs."
+  },
+  "is_normative_postrun_acceptance": false,
+  "method": {
+    "actual_closeout_runs": 0,
+    "application_tests_or_builds": 0,
+    "destructive_syscalls": 0,
+    "entire_frozen_helper_read": true,
+    "entire_frozen_plan_read": true,
+    "helper_imports": 0,
+    "runner_F_review_duplicated": false,
+    "source_counterexamples_not_runtime_tests": true,
+    "syntax_checks_or_compiles": 0
+  },
+  "narrative": {
+    "bytes": 14827,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-REVIEW-v1.md",
+    "physical_lf": 190,
+    "review_scope": "Complete independent narrative; required corrections/counterexamples and source-only dispositions.",
+    "sha256": "d51f668387791584c80ac418cf0d1716fa85a20ebf21e236ff85ff251b1c7ecf"
+  },
+  "normative_acceptance_path_written": false,
+  "not_defects_or_not_proofs": [
+    "Unrelated /proc churn/unclassifiable births can conservatively HOLD; not license to ignore uncertainty or signal unrelated processes.",
+    "Missing originals or partial allocation, unknown output roots, changed source, absent unexplained XML or ambiguous stop conservatively HOLD; no adoption/recreation.",
+    "Target child snapshots are post-run observations, not fabricated creation proofs; original top/parent allocations remain separate authority.",
+    "Preserved report metadata may cause HOLD on symlink/special/hardlink anomalies; preservation does not turn such nodes into deletion authority.",
+    "Logical/stat-block accounting is not measured net disk reclaimed; terminal0 requires completed external0 and descriptor settlement before independent outcome adoption.",
+    "Runner/launcher source-bound assertions and role labels do not cryptographically authenticate agent authorship or replace actual independent filled-instance evidence review."
+  ],
+  "recorded_utc": "2026-09-08T23:34:27.420992+00:00",
+  "required_followup": [
+    "Preserve rejected v1 exact source and plan.",
+    "Author a focused successor for both findings; obtain new exact-hash independent source review.",
+    "Admit any necessary meaningful inert controls separately; expected effects here are not executions or regression passes.",
+    "Require final independent F review and actual original run/stop/settlement/launcher evidence.",
+    "Independently review actual closeout TARGETS/EVIDENCE/REQUEST/acceptances and outer-launcher/coordination before any one-shot closeout.",
+    "Root alone may execute only after all separate gates; retain and independently challenge exact outcomes and any consumed HOLD."
+  ],
+  "resources_and_cleanup": {
+    "build_cache_runtime_or_temp_archive_created": false,
+    "helper_imports_compiles_or_executions": 0,
+    "new_background_workers": 0,
+    "owned_write_scope": "Compact permanent review artifacts and inert source snapshots only.",
+    "point_available_ram_mib": 45913,
+    "point_tmp_available_kib": 22575596,
+    "point_total_ram_mib": 64311,
+    "point_worktree_available_kib": 26871360,
+    "resource_reservation": false,
+    "runtime_deletions": 0,
+    "unrelated_files_or_processes_removed": false,
+    "wrapper_stop": "Not applicable to bounded data/source review; not claimed for another run."
+  },
+  "restrictions_preserved": [
+    "PVU-007 STOP",
+    "PVU-011 NO RETRY",
+    "PVA-029 actualFAIL/no automatic retry",
+    "G7/G8 CLOSED execution/recovery/cache/helper scopes",
+    "Windows cleanup HOLD; slot release is not new admission",
+    "Synthetic storage only; no real vault/backups/clipboard/tester/signing data",
+    "No protected branches/tags, dependency/version/application-identity changes, signing/store/publication or replacement1017001",
+    "No archived helper import/replay or adoption of historical host locks/runtimes",
+    "Eight PVD product/compatibility decisions remain separate"
+  ],
+  "reviewer": "/root/baseline_coverage",
+  "runner_authors": [
+    "/root/storage",
+    "/root"
+  ],
+  "runner_independent_reviewer": "/root/verification",
+  "schema": "passvault-linux-closeout-source-review-v1",
+  "scope": {
+    "delete_top_count": 33,
+    "evidence": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-database-01",
+    "generated_top_count": 22,
+    "historical_raw_source_manifest_files_distinct": 811,
+    "private_top_count": 11,
+    "protection_names": [
+      ".git",
+      "reports",
+      "test-results"
+    ],
+    "required_original_allocation_count": 35,
+    "retained_checkout": "/root/projects/PassVault/audit-runtime-linux-db-01/checkout",
+    "runtime": "/root/projects/PassVault/audit-runtime-linux-db-01",
+    "tracked_checkout_source_files": 1198,
+    "whole_runtime_or_checkout_delete": false
+  },
+  "sole_build_test_execution_owner": "/root",
+  "source_obligations": {
+    "C01": {
+      "disposition": "ACCEPT",
+      "instance_disposition": "UNFILLED",
+      "scope": "Unexecuted exact fixed33-target protection/source-disjoint proposal only."
+    },
+    "C02": {
+      "disposition": "ACCEPT",
+      "instance_disposition": "UNFILLED",
+      "scope": "Original35 records, full parent FD/pin checks, separate fresh device kinds, mount and descendant type/link guards in cooperative model."
+    },
+    "C03": {
+      "disposition": "ACCEPT",
+      "instance_disposition": "UNFILLED",
+      "scope": "Exact15 inputs/original source/request/review/launcher/evidence schema contract; truthful final originals and final runner identity independently pending."
+    },
+    "C04": {
+      "disposition": "ACCEPT",
+      "instance_disposition": "UNFILLED",
+      "scope": "Conjunctive original stop or positive no-Gradle contract, fresh same-lock/coordination/process/mount gates, with integration qualifications."
+    },
+    "C05": {
+      "disposition": "REVISE",
+      "finding": "LC-C05-01",
+      "instance_disposition": "UNFILLED"
+    },
+    "C06": {
+      "disposition": "REVISE",
+      "finding": "LC-C06-01",
+      "instance_disposition": "UNFILLED"
+    },
+    "C07": {
+      "disposition": "ACCEPT",
+      "instance_disposition": "UNFILLED",
+      "scope": "Source/report/retained-graph protection and qualified actual outcomes; no application/hardware/closure claim."
+    }
+  },
+  "unchanged_accounting": {
+    "all_confirmed_qualified_closures": {
+      "denominator": 37,
+      "numerator": 22,
+      "remain": 15
+    },
+    "application_cases_executed": 0,
+    "design_explanations_separate": 8,
+    "new_application_family_count": 0,
+    "new_family_closures": 0,
+    "new_semantic_lf_credit": 0,
+    "new_suspicion_conclusions": 0,
+    "original_confirmed_qualified_closures": {
+      "denominator": 25,
+      "numerator": 19,
+      "remain": 6
+    },
+    "original_suspicions_conclusive": {
+      "denominator": 12,
+      "numerator": 2,
+      "remain": 10
+    }
+  }
+}

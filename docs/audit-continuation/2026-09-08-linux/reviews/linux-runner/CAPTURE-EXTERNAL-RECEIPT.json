@@ -1,0 +1,135 @@
+{
+  "format": "passvault-source-capture-external-receipt-v1",
+  "author": "/root",
+  "observed_unix_ns": 1788911720721078552,
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/CAPTURE_SOURCE.py"
+  ],
+  "tool_chunk_id": "4256eb",
+  "observed_exit": 0,
+  "observed_elapsed_seconds": 0.935093527,
+  "tool_stdout": "",
+  "tool_stderr": "",
+  "inputs_and_outputs": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/CAPTURE_SOURCE.py",
+      "bytes": 22477,
+      "sha256": "26c939c39864f20b721f1c0caa81d79008d6304bf91fbd4b528329ee3367a149"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/CAPTURE-ROOT-ADMISSION.json",
+      "bytes": 2969,
+      "sha256": "50a0f15bb330cf14c0aab3b4b5f9feafcf88171b7a3fdf6f985a5d39fc7bf6fd"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/CAPTURE-stdout.jsonl",
+      "bytes": 4408,
+      "sha256": "6095f18167d2370f038ce9f7c4db37a3d35d4c236a4b8072840e7be09503af1b"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/CAPTURE-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/SOURCE.json",
+      "bytes": 380695,
+      "sha256": "3b34d8c862d33ccda9df0d77bb4507a2504c0612a236f36d6d89a60c8a7485ce"
+    }
+  ],
+  "git_children_settled": [
+    {
+      "actual_exit": 0,
+      "body_error": null,
+      "child_number": 1,
+      "cleanup_errors": [],
+      "disposition": "SETTLED",
+      "event": "git_child_settlement",
+      "kill_attempted": false,
+      "launch_called": true,
+      "original_pid": 950,
+      "pipes": {
+        "stdin": true,
+        "stdout": true
+      },
+      "settled": true
+    },
+    {
+      "actual_exit": 0,
+      "body_error": null,
+      "child_number": 2,
+      "cleanup_errors": [],
+      "disposition": "SETTLED",
+      "event": "git_child_settlement",
+      "kill_attempted": false,
+      "launch_called": true,
+      "original_pid": 951,
+      "pipes": {
+        "stdin": true,
+        "stdout": true
+      },
+      "settled": true
+    },
+    {
+      "actual_exit": 0,
+      "body_error": null,
+      "child_number": 3,
+      "cleanup_errors": [],
+      "disposition": "SETTLED",
+      "event": "git_child_settlement",
+      "kill_attempted": false,
+      "launch_called": true,
+      "original_pid": 953,
+      "pipes": {
+        "stdin": true,
+        "stdout": true
+      },
+      "settled": true
+    },
+    {
+      "actual_exit": 0,
+      "body_error": null,
+      "child_number": 4,
+      "cleanup_errors": [],
+      "disposition": "SETTLED",
+      "event": "git_child_settlement",
+      "kill_attempted": false,
+      "launch_called": true,
+      "original_pid": 1022,
+      "pipes": {
+        "stdin": true,
+        "stdout": true
+      },
+      "settled": true
+    }
+  ],
+  "last_resource_observation": {
+    "disk_floor_bytes": 8589934592,
+    "disks": [
+      {
+        "available_bytes": 25113395200,
+        "path": "/root/projects/PassVault/passvault"
+      },
+      {
+        "available_bytes": 25113395200,
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner"
+      }
+    ],
+    "event": "resources",
+    "memory_available_bytes": 46709710848,
+    "memory_fraction_floor": 0.2,
+    "memory_total_bytes": 67435888640,
+    "phase": "final",
+    "unix_seconds": 1788911653.6015515,
+    "within_floors": true
+  },
+  "source_files": 1198,
+  "checkout_bytes": 63833122,
+  "framed_git_batch_bytes": 63893502,
+  "outcome": "CAPTURE_COMPLETE_NOT_BUILD_OR_APPLICATION_TEST",
+  "cleanup": "Four original direct Git children observed waited/reaped exit0, original pipes closed; no runtime/cache/temp/generated application output. Only source manifest and compact permanent evidence retained. Wrapper stop NOT_APPLICABLE. No unrelated files/processes touched.",
+  "limits": "No atomic whole-tree, current application coverage or independent semantic acceptance implied; independent manifest review and original under-lock build admission still required."
+}

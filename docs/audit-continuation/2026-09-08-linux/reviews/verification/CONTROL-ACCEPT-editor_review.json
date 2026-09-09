@@ -1,0 +1,48 @@
+{
+  "approval_utc": "2026-09-09T00:16:13.749478+00:00",
+  "basis": {
+    "filled_instance_review": "reviews/editor-independent/CONTROL-FILLED-INSTANCE-REVIEW.json",
+    "filled_instance_review_sha256": "7f52febf060bef5f94c9c9045b0005667e0ce04a5a7a5fc6a7933ce413e497ba",
+    "metadata_read_descriptors_closed": true,
+    "metadata_review_tool_observed_exit": 0,
+    "root_author_approval_sha256": "7ea702e1069e6b7a262c69ff83cc2fe70ca02d8a1bc543f28b9f85e79722b3f2",
+    "source_review": "reviews/editor-independent/CONTROL-LAUNCH-REVIEW-v2.md"
+  },
+  "bindings": {
+    "controls": "320f363e5f9bdce0e806a624f7e9fd9fc943690be57f8c75c9f43f865c04903d",
+    "controls_review": "bfdc0e7ebabc06078195c91e5f6014ca446895c8e22d0fb5f31848a963079432",
+    "design": "1292305d4a0f1729be7016002c9f1bc99f37487077aea4f4f3d1aa1854723921",
+    "launch_plan": "66f9345ae32f43d6da894e6edfd688fda1f2325372effc1dd1beace60a21d29c",
+    "launcher": "967ddf9a5d792712dff248f29b7845b58fcafe68e99c772341bac845ce744210",
+    "runner": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279",
+    "runner_plan": "74739fd3ea58cf9dface6202e12c34c909fa2280d700bcc28a3460aff0e6690f"
+  },
+  "counts_at_approval": {
+    "application_cases_executed_by_reviewer": 0,
+    "controls_executed_by_reviewer": 0,
+    "imports_or_syntax_probes_by_reviewer": 0,
+    "qualified_closure_delta": 0
+  },
+  "disposition": "ACCEPT",
+  "format": "passvault-linux-controls-acceptance-v1",
+  "launcher_author": "/root",
+  "limits": [
+    "Whole-host/future exclusivity remains a root coordination attestation, not a property proved by this reviewer or flock",
+    "Cooperative no-follow namespace checks are not atomic compare-and-delete against hostile same-UID writers",
+    "Alarm/signal delivery, synchronous calls, host loss and cancellation can overrun or interrupt cleanup; incomplete exit or evidence remains HOLD",
+    "Installed Python standard-library/loader trust is not full transitive toolchain provenance",
+    "No wrapper is invoked, so wrapper --stop is N/A, not an observed successful stop"
+  ],
+  "preserved_restrictions": "PVU-007 STOP; PVU-011 NO RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; no archived runner/helper; Windows34284083351 FAIL/cleanup HOLD and 0/14 unstarted cases, no retry; all PVD, hardware, protected-ref, dependency/version/identity, signing/store/publication and occupied1017001 boundaries remain.",
+  "purpose": "ONE_NEW_EXACT_SOURCE_INERT_CONTROL_EXECUTION",
+  "request_sha256": "8d2e20fcb074d5ffeb1775f15e7116971dab8fa46448634fb68dfdcce9539931",
+  "require_before_execution": [
+    "Root refreshes sole audit-local/CI-slot, resources and scratch/journal absence; no overlap with another audit build/test job",
+    "Launcher revalidates these exact inputs, original 17 ancestors, original bootstrap lock, interpreter identity, time window and actual approvals under the original lock",
+    "Any drift, consumed journal, expiration, failure, cancellation or cleanup ambiguity stops this admission; no automatic retry or replacement adoption"
+  ],
+  "required_result_closeout": "Exact ordered case evidence, namespace and descriptor uncertainty, original scratch removal, terminal evidence and external observed process exit/settlement must be independently reconciled; no database admission follows automatically from controls PASS.",
+  "review_role": "ACTUAL_INDEPENDENT_LAUNCHER_SOURCE_AND_FILLED_INSTANCE_APPROVER_NOT_LAUNCHER_OR_CONTROLS_AUTHOR",
+  "reviewer": "/root/editor_review",
+  "scope": "Only root may invoke the fixed no-argument RUN_CONTROLS.py once, before this exact request expires, loading exact new control/runner definition bytes for 22 inert controls. Real synthetic-file/pipe IO is distinct from mocked process/signal/stop evidence. No subject main(), child, Gradle, JVM, native or application run is admitted."
+}

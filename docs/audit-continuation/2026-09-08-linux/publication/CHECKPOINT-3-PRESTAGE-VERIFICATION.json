@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T02:46:09.722739+00:00",
+  "subject_index_tree_before_receipts": "12018c79ae28a029e8c0a12ec93e0478477b0194",
+  "stage_tool": "80388b",
+  "staged_paths": 188,
+  "staged_bytes": 2969392,
+  "exact_index_blobs_match": true,
+  "commands": [
+    {
+      "scope": "all",
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit": 2,
+      "stdout_bytes": 917,
+      "stderr_bytes": 0,
+      "log": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-WHITESPACE-all.log",
+      "log_sha256": "1188c001c2e145654d405593eef03f2c2cf875d0a41bf9a150c05b919f98f5b3"
+    },
+    {
+      "scope": "source",
+      "argv": [
+        "/usr/bin/git",
+        "--no-optional-locks",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "app-desktop/native/biometric-bridge/CMakeLists.txt",
+        "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+        "app-desktop/native/biometric-bridge/tests/macos/README.md",
+        "scripts/audit/linux_database_closeout.py",
+        "scripts/audit/linux_database_validation.py"
+      ],
+      "exit": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "log": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-WHITESPACE-source.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "application_tests": 0,
+  "scope": "Static Git whitespace/transport checks only; no Gradle/native/application test. Existing active work excluded and unchanged by these commands.",
+  "cleanup": "Foreground Git children returned; no build/temp/cache/worker or wrapper launch. Permanent compact evidence retained; no source/report/shared cache deletion."
+}

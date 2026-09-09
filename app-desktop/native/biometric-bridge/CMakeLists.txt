@@ -58,6 +58,14 @@ if(APPLE)
             NAME passvault_biometric_macos_security
             COMMAND passvault_biometric_macos_security_test
         )
+        # Caller supplies an admitted private PASSVAULT_NATIVE_TEST_PARENT.
+        # Separate real-filesystem cases; no default /tmp or parent cleanup.
+        foreach(fixture_case IN ITEMS normal early_return cpp_exception)
+            add_test(
+                NAME passvault_biometric_macos_fixture_${fixture_case}
+                COMMAND passvault_biometric_macos_security_test --fixture-case ${fixture_case}
+            )
+        endforeach()
     endif()
 elseif(WIN32)
     add_library(passvault_biometric SHARED

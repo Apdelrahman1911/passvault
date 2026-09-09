@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "observed_utc": "2026-09-09T02:05:15Z",
+  "prior_observed_utc": "2026-09-09T00:54:11Z",
+  "purpose": "Refresh remote tracking refs and separately read occupied candidate tag before checkpoint3; no protected local ref/tag move",
+  "fetch": {
+    "tool_chunk": "eb098c",
+    "exit": 0,
+    "wall_seconds": 0.423808084,
+    "argv": [
+      "/usr/bin/timeout",
+      "--foreground",
+      "-k",
+      "5s",
+      "60s",
+      "git",
+      "-c",
+      "gc.auto=0",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      "origin",
+      "+refs/heads/main:refs/remotes/origin/main",
+      "+refs/heads/testing:refs/remotes/origin/testing",
+      "+refs/heads/release:refs/remotes/origin/release",
+      "+refs/heads/codex/remediation-handoff-20260908:refs/remotes/origin/codex/remediation-handoff-20260908",
+      "+refs/heads/codex/audit-continuation-linux-20260908:refs/remotes/origin/codex/audit-continuation-linux-20260908"
+    ]
+  },
+  "tag_read": {
+    "tool_chunk": "8e5bc9",
+    "exit": 0,
+    "wall_seconds": 0.496300649,
+    "argv": [
+      "/usr/bin/timeout",
+      "--foreground",
+      "-k",
+      "5s",
+      "30s",
+      "git",
+      "-c",
+      "gc.auto=0",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "ls-remote",
+      "--refs",
+      "origin",
+      "refs/tags/v1.0.7-rc.1017001"
+    ]
+  },
+  "refs": {
+    "main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "release": "61f55216302023d9872aba17546126450e5fbad3",
+    "v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3",
+    "codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "codex/audit-continuation-linux-20260908": "f18995e6633904a6845e09eab8a481635290894d"
+  },
+  "advancement_since_previous_observation": false,
+  "affected_finding_revalidation": "No source advancement found; existing findings and candidate/schema qualifications preserved",
+  "application_cases": 0,
+  "cleanup": "Only bounded foreground Git transport/read commands; no build/cache/runtime or daemon created; wrapper stop not applicable; no independent full process census inferred"
+}

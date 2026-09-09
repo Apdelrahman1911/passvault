@@ -1,0 +1,20 @@
+--- linux_runner_controls.py (executed v3; consumed01)
++++ linux_runner_controls_v4.py (SOURCE_ONLY; fresh02)
+@@ -24,7 +24,7 @@
+ 
+ TARGET = Path('/root/projects/PassVault/passvault-linux/scripts/audit/linux_database_validation.py')
+ TARGET_SHA256 = '346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279'
+-SCRATCH = Path('/root/projects/PassVault/audit-runtime-linux-runner-controls-01')
++SCRATCH = Path('/root/projects/PassVault/audit-runtime-linux-runner-controls-02')
+ MAX_CASE_SECONDS = 15
+ MAX_TOTAL_SECONDS = 180
+ MAX_EMITTED_BYTES = 512 * 1024
+@@ -472,7 +472,7 @@
+ 
+ class FakeChild:
+     def __init__(self, code=0, payload=b'', pid=910001):
+-        check(len(payload) <= 32, 'fake child payload cap')
++        check(payload is None or len(payload) <= 32, 'fake child payload cap')
+         self.pid, self.code, self.returncode, self.polls = pid, code, None, 0
+         self.stdout = None
+         if payload is not None:
