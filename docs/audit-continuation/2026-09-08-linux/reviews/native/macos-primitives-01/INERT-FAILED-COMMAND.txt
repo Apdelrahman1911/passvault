@@ -1,0 +1,67 @@
+INERT FAILURE EVIDENCE. DO NOT EXECUTE OR REPLAY.
+
+Author /root/native used the following JavaScript string construction inside
+functions.exec. JSON.stringify(reader) was NOT a shell-quoting function. Its
+escaped newlines remained literal \n in the shell's double-quoted Python -c
+argument. Python failed parsing, before imports, response reading or file writes.
+The intended reader below therefore did not execute. This reconstruction is
+not a successful raw-response capture and does not contain an API source body.
+
+Exact per-slot command construction:
+
+const cmd="set -o pipefail\ncurl -q --proto '=https' --connect-timeout 5 --max-time 20 --max-filesize 32768 --fail --silent --show-error '"+url+"' | python3 -I -B -c "+JSON.stringify(reader)+" '"+id+"' '"+repo+"' '"+url+"'\nstatus=(\"${PIPESTATUS[@]}\")\nprintf 'PIPESTATUS curl=%s reader=%s\\n' \"${status[0]}\" \"${status[1]}\"\ntest \"${status[0]}\" -eq 0 && test \"${status[1]}\" -eq 0";
+
+The orchestration read each completed tools.exec_command result and continued
+to the next distinct metadata slot. It broke only on an ongoing session ID,
+not on exit1. This missing fail-fast branch let the same parser mistake affect
+all three independently named metadata requests. URLs/order/results are in
+FAILURE.json; none was retried and all nine dependent file slots remain unstarted.
+
+Intended reader source, inert and unexecuted:
+
+import datetime,hashlib,json,re,sys
+from pathlib import Path
+identifier,repository,url=sys.argv[1:]
+cap=32768
+raw=sys.stdin.buffer.read(cap+1)
+record={"id":identifier,"url":url,"repository":repository,"utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),"response_cap_bytes":cap,"response_bytes":len(raw),"response_sha256":hashlib.sha256(raw).hexdigest(),"classification":"anonymous source metadata only","curl_exit":"reported separately by invoking shell","status":"FAIL"}
+def unique(pairs):
+    value={}
+    for k,v in pairs:
+        if k in value: raise ValueError("duplicate JSON key")
+        value[k]=v
+    return value
+try:
+    if len(raw)>cap: raise ValueError("response cap exceeded")
+    data=json.loads(raw.decode("utf-8"),object_pairs_hook=unique)
+    prefix="https://api.github.com/repos/"+repository+"/"
+    if identifier=="cmake-commit":
+        sha=data["sha"]
+        if data["url"]!=prefix+"commits/"+sha: raise ValueError("wrong commit URL")
+        if data["html_url"]!="https://github.com/"+repository+"/commit/"+sha: raise ValueError("wrong repository identity")
+        record["resolved_tree"]=data["commit"]["tree"]["sha"]
+        record["html_url"]=data["html_url"]
+    else:
+        if data["ref"]!="refs/heads/main" or data["object"]["type"]!="commit": raise ValueError("wrong ref type")
+        sha=data["object"]["sha"]
+        if data["object"]["url"]!=prefix+"git/commits/"+sha: raise ValueError("wrong commit URL")
+        record["ref"]=data["ref"]
+    if re.fullmatch("[0-9a-f]{40}",sha) is None: raise ValueError("invalid commit identity")
+    record["resolved_commit"]=sha
+    record["status"]="METADATA_PARSED"
+except Exception as error:
+    record["error"]=type(error).__name__+": "+str(error)
+path=Path("docs/audit-continuation/2026-09-08-linux/reviews/native/macos-primitives-01")/(identifier+".json")
+with path.open("x",encoding="utf-8") as stream:
+    json.dump(record,stream,indent=2,sort_keys=True);stream.write("\n")
+print(json.dumps(record,sort_keys=True))
+sys.exit(0 if record["status"]=="METADATA_PARSED" else 1)
+
+Observed diagnostics (not an API response):
+  SyntaxError: unexpected character after line continuation character
+  PIPESTATUS curl=23 reader=1
+The last slot additionally printed:
+  curl: (23) Failure writing output to destination
+
+No source API availability, specific returned commit, raw body size/hash,
+downloaded file identity or platform primitive can be inferred from this failure.

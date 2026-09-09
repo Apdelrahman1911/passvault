@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "finding_id": "PVA-038",
+  "author": "/root/editor",
+  "independent_patch_reviewer": "/root/storage",
+  "review_status_at_freeze": "PENDING_SOURCE_REVIEW_NOT_EXECUTION",
+  "source_base_commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "source_base_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "repository_preimage_sha256": "f2fc2ff02926e62230eff5e4723b2a68998649eee5f758f5ff99df93bcf61469",
+  "root_finding_confirmation": {
+    "markdown_sha256": "407da44d881319017607d1c9662e937c5ad23878490bc56168117b10dbff9d9d",
+    "json_sha256": "8cd66918d13af25d14bda9cfd2c113fa0b57cf69f65aaeaa5551b866fe7781d5"
+  },
+  "after_images": [
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+      "bytes": 37053,
+      "physical_LF": 846,
+      "disposition": "UNCOMMITTED_MODIFIED_SOURCE",
+      "change": "Private malformed-plaintext marker; biometric mapping catches only that marker and existing typed ciphertext-authentication exception"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt",
+      "sha256": "22a47793df143dcd9db299e04f2a83451e97011886b64da9b5245770fc78a017",
+      "bytes": 13654,
+      "physical_LF": 336,
+      "disposition": "UNCOMMITTED_NEW_TEST_SOURCE",
+      "test_declarations": 9,
+      "scope": "Real Room/crypto fixture, synthetic OS store, explicit provider/malformed/cancellation routing injections; real wrong-key/tag-tamper/retry/password controls"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt",
+      "sha256": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+      "bytes": 16180,
+      "physical_LF": 356,
+      "disposition": "UNCOMMITTED_NEW_DEDICATED_PROVIDER_TEST_SOURCE_UNADMITTED",
+      "test_declarations": 4,
+      "producer_declarations": 1,
+      "consumer_declarations": 3,
+      "scope": "Prepare synthetic valid fixture in separate JVM; same fixture fresh real-provider success/password, wrong-key, actual cold loader IO consumers; fake in-memory DAO and OS store only",
+      "default": "Explicit JUnit assumption skip without opt-in; no actual skip executed or counted",
+      "required_modes": ["prepare", "success", "wrong-key", "loader-io"],
+      "process_spawn_in_test": false,
+      "launch_admission": "NONE; source does not authorize commands, lifecycle helpers or old runner"
+    }
+  ],
+  "unchanged_relevant_bindings": [
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/RepositorySecurityIntegrationTest.kt",
+      "sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df",
+      "inspected_role": "Existing parent fixture initialization/teardown2146-2199; existing biometric source controls1492-1776 and scoped surrounding helpers"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "sha256": "1108e4b0d4353c840974ac0ed57331e257947e9bded200a52bc73afd3b9d3e0e",
+      "inspected_role": "Existing independent freshness/lock-generation regressions; not edited or rerun"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/DefaultBiometricUnlockService.kt",
+      "sha256": "431356205bb300aeb0a7c14759eef0bbf09583d3100082e5dd0103ac731a90f5",
+      "inspected_role": "Complete caller, key ownership and delete/error routing; unchanged"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/dao/VaultMetadataDao.kt",
+      "sha256": "46cc5e5175e4f72d978857513651e2c30ff3c5586caefab6e7a10bc4ba85bcb5",
+      "inspected_role": "Complete DAO test contract; unchanged"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/entity/VaultMetadataEntity.kt",
+      "sha256": "0b0450c1e86c8e3de103872b478d573f1aeb27dcbacf79b77fce2b52545ae408",
+      "inspected_role": "Complete metadata fixture contract; unchanged"
+    },
+    {
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/CryptoEngine.kt",
+      "sha256": "571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9",
+      "inspected_role": "Typed auth contract, hierarchy/wrapping and CryptoEnvelope; unchanged"
+    },
+    {
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt",
+      "sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57",
+      "inspected_role": "Initialization/KDF/encrypt/decrypt/exception/wipe boundaries; unchanged"
+    },
+    {
+      "path": "core/crypto/src/desktopMain/kotlin/com/passvault/core/crypto/DesktopCryptoEngine.kt",
+      "sha256": "ffd8302a8e6eb0585c515087b05eb0ed18bd7c4352e3f43df01e2eb06bede0b3",
+      "inspected_role": "Entire real Desktop delegate; unchanged"
+    }
+  ],
+  "new_declared_methods": 13,
+  "new_executed_test_cases": 0,
+  "actual_skipped_cases": 0,
+  "compiled_or_detekt_checked": false,
+  "new_task_completions": 0,
+  "new_hardware_cases": 0,
+  "new_qualified_closures": 0,
+  "new_coverage_credit": 0,
+  "handoff105_selection_changed": false,
+  "execution_gap": "Fresh independently reviewed exact four-phase launch/configuration/dependency/resource/cleanup admission; source tests and injected faults cannot close finding",
+  "native_compatibility_gap": "Exact Kotlin/Native iOS AEAD actual capture and device execution not acquired in original proposal; no broadened claim",
+  "accounting": {
+    "original_confirmed": "19/25 qualified closures (76%),6 open",
+    "all_confirmed": "22/38 qualified closures (57.9%),16 open",
+    "original_suspicions": "2/12 conclusively resolved,10 open",
+    "PVD": "8 explanations; owner decisions separate"
+  },
+  "preserved_restrictions": "PVU007 STOP,PVU011 NO RETRY,PVA029 FAIL/no automatic retry,G7/G8 CLOSED,Windows01 FAIL/cleanup HOLD,protected refs/tags/dependencies/identities/versions/signing/publication/mobile1017001 unchanged"
+}

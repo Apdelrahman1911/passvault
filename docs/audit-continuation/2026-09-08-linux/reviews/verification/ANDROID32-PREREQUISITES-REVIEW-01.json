@@ -1,0 +1,207 @@
+{
+  "schema": "passvault.android32-prerequisites-independent-source-review.v1",
+  "reviewer": "/root/verification",
+  "author": "/root/android32",
+  "review_date_utc": "2026-09-09",
+  "disposition": "ACCEPT_SOURCE_ASSESSMENT_WITH_QUALIFICATIONS_NOT_EXECUTION_ADMISSION",
+  "finding_ids": [
+    "PVA-001"
+  ],
+  "finding_status": "OPEN",
+  "assessment": {
+    "path": "../android32/ANDROID32-ADMISSION-PREREQUISITES.md",
+    "sha256": "5c2966372abb1aebb56175a7062e4ceef8fa990875a2c6d332c9b136e3397089",
+    "bytes": 20564,
+    "physical_lf": 292,
+    "independently_rechecked": true,
+    "containing_commit_reported_by_author": "bb094f8a39ba43f1ce1f43f394cb662b03febe38",
+    "containing_tree_reported_by_author": "82967f050816454b6905d560dfec15d0e0b091f5",
+    "current_whole_tree_freeze_claimed": false,
+    "fresh_remote_verification_claimed": false
+  },
+  "detailed_review": {
+    "path": "ANDROID32-PREREQUISITES-REVIEW-01.md",
+    "sha256": "eef42e0b62f24653228ca2f89b999fd559d5307375cbed30bcaebb71f33c012e",
+    "bytes": 13864,
+    "physical_lf": 211
+  },
+  "scope": {
+    "source_and_retained_data_only": true,
+    "independently_rechecked_assessment_repository_catalog_schema_inputs": 13,
+    "full_semantic_review_of_all_hashed_files_claimed": false,
+    "fresh_sdk_license_or_notice_read": false,
+    "execution_admitted": false,
+    "archive_get_performed": false,
+    "sdk_emulator_adb_or_process_probe_performed": false,
+    "project_or_helper_import_performed": false,
+    "build_test_or_packaging_performed": false,
+    "cleanup_action_performed": false,
+    "permanent_review_files_only": true
+  },
+  "qualifications": [
+    {
+      "id": "Q1",
+      "subject": "Text-encoding boundary",
+      "assessment_section": 3,
+      "conclusion": "Strict encoding belongs to text callers. ByteArray deriveKey accepts arbitrary nonempty bytes subject to other guards and preserves historical lowercase ASCII-hex; it does not decode or validate UTF-8.",
+      "counterexample": "The intentional 00ff01 binary compatibility vector must remain valid.",
+      "author_response": "CONFIRMED_ADDITIVELY_FROZEN_ASSESSMENT_UNCHANGED",
+      "product_finding_added": false
+    },
+    {
+      "id": "Q2",
+      "subject": "Idle sole-slot scheduling",
+      "assessment_section": 4,
+      "conclusion": "Android may be prioritized when root grants the idle sole slot after actually owned work settles. Completing or executing the unadmitted database job is not a prerequisite.",
+      "remaining_fence": "No competing local/CI execution; outstanding database closeout obligations stay explicit.",
+      "author_response": "CONFIRMED_ADDITIVELY_FROZEN_ASSESSMENT_UNCHANGED",
+      "product_finding_added": false
+    }
+  ],
+  "input_hashes": {
+    "core/crypto/build.gradle.kts": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112",
+    "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt": "d9bdb00637773f5d239ffcc5f7d13dc3773e528ef0dec1b1efdffec0ee182310",
+    "core/crypto/src/androidDeviceTest/AndroidManifest.xml": "95a2d24cac877cd0d4fbbfeb58bc10d06275b2c40592244617a83564ec1a06ff",
+    "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/RawPasswordHash.kt": "3fb16abe001752bf44b5a56039c58738ebed0e6ced5972e3ca0985d5a40586eb",
+    "core/crypto/src/androidMain/kotlin/com/passvault/core/crypto/RawPasswordHash.android.kt": "d2c4bcd22df2cb89a97e10a4b591d651f224f0b1c5224bc6b5de10f407d0df1c",
+    "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57",
+    "core/crypto/src/commonTest/kotlin/com/passvault/core/crypto/Argon2Test.kt": "195fb796a4ed2a6a03cc27c6a785ebe09efd2dd977b30591f51025912e597231",
+    "core/crypto/src/nativeInterop/cinterop/passvault_sodium.h": "192edcd85cfc70c602b5141b567bee03162fb33bae3af0029490a8bd67f49dce",
+    "app-android/build.gradle.kts": "bc4aef06f156617d15b41bfbf41d58cc4b455c4fcd15152f8ed31a4b8fcc7625",
+    "gradle/libs.versions.toml": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a",
+    "gradle.properties": "323971ec6c0f02ff28c724b4c4f3120b5b8843faf3d77608485c1e15fb633235",
+    "../android32/SDK-CATALOG.xml": "ebf2d810d9e0c0b511ae49ee6e8c671a8fa67d210d06f5e3e068f83244ece435",
+    "../build-config/ANDROID-XSD-CAPTURE-ACTUAL-AND-SCHEMA-REVIEW.md": "a97a44c24580df4e65c1d96ba1dc71666d9d6bf7ed437bdb4550ec384dd94acb"
+  },
+  "additional_input_hashes": {
+    "../android32/TARGET-FEASIBILITY-PROPOSAL.md": "8609e0f903d28501160f63fe2294879ae1d936aecc74b934dbf305e8c7e0a772",
+    "core/domain/src/commonMain/kotlin/com/passvault/core/domain/model/ValueTypes.kt": "9935405eef7911b34cd28a5aebd367fd1592927466e6347a4a0344129000edbd",
+    "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630"
+  },
+  "native_evidence_scope": {
+    "declared_harness_cases": [
+      {
+        "id": "nativeRuntimeIs32BitAndLoadsSodium",
+        "intended_kdf_calls": 0
+      },
+      {
+        "id": "historicalBinaryPasswordVector",
+        "intended_kdf_calls": 1
+      },
+      {
+        "id": "historicalTextPasswordVector",
+        "intended_kdf_calls": 1
+      },
+      {
+        "id": "productionProfilesMatchReferenceVectors",
+        "intended_kdf_calls": 2
+      }
+    ],
+    "total_declared_cases": 4,
+    "total_intended_kdf_calls": 4,
+    "executed_cases": 0,
+    "executed_kdf_calls": 0,
+    "source_contract": "Same loaded sodium proxy; pointer Memory arguments; 64-bit length/operations Long; only size_t selects Int4/Long8; algorithm Int.",
+    "process_and_jna_width_guards_source_reviewed": true,
+    "actual_android32_process_or_abi_proved": false,
+    "packaged_elf_bytes_or_native_dispatch_version_proved": false,
+    "x86_proves_arm32": false,
+    "arm32_necessarily_requires_physical_hardware": false,
+    "business_backup_minified_or_hardware_coverage_from_harness_claimed": false
+  },
+  "artifact_trust": {
+    "target": "system-images;android-24;default;x86",
+    "revision": 8,
+    "url": "https://dl.google.com/android/repository/sys-img/android/x86-24_r08.zip",
+    "expected_bytes": 313489224,
+    "catalog_algorithm": "SHA-1",
+    "catalog_digest": "c1cae7634b0216c0b5990f2c144eb8ca948e3511",
+    "schema_interpretation_status": "PREVIOUSLY_INDEPENDENTLY_ACCEPTED_COMMON_01_REUSED",
+    "tls_length_legacy_digest_policy": "MAY_BE_EXPLICITLY_ACCEPTED_NOT_ADMITTED_HERE",
+    "local_sha256_is_publisher_authenticity": false,
+    "stronger_upstream_digest_mandatory_by_default": false,
+    "archive_received_or_verified": false
+  },
+  "license": {
+    "retained_marker_sha256": "c43fa37686457c3f18caa3607945f4ec52a9d1beaaad8117e50dc4e863270c85",
+    "retained_marker_bytes": 41,
+    "existence_observation_basis": "AUTHOR_RETAINED_FILE_ONLY_OBSERVATION_NOT_REVIEWER_REPROBE",
+    "principal_entity_and_exact_agreement_coverage_proved": false,
+    "sdk_canonical_normalization_proved": false,
+    "raw_trimmed_digest_difference_proves_mismatch": false,
+    "narrow_owner_question": "ALREADY_ASKED_BY_ROOT_NOT_DUPLICATED_HERE",
+    "agreement_accepted_or_metadata_manufactured_by_reviewer": false,
+    "component_copy_rights_or_readonly_tool_strategy": "UNFINISHED_INTERNAL_REVIEW"
+  },
+  "proposed_budgets_not_enforcement": {
+    "discovery_work_seconds": 300,
+    "discovery_stop_cleanup_seconds": 120,
+    "package_work_seconds": 900,
+    "package_stop_cleanup_seconds": 120,
+    "build_owned_rss_gib": 4,
+    "build_new_disk_gib": 4,
+    "gradle_workers": 1,
+    "combined_logs_mib": 16,
+    "retained_evidence_mib": 32,
+    "launch_free_disk_floor_gib_plus_growth_reservation": 12,
+    "launch_available_ram_floor_fraction": 0.25,
+    "running_free_disk_floor_gib": 8,
+    "running_available_ram_floor_fraction": 0.2,
+    "optional_prepare_only_new_disk_gib": 3,
+    "full_target_input_runtime_growth_gib": 6,
+    "full_target_launch_free_disk_gib": 18,
+    "full_target_aggregate_rss_gib": 4,
+    "full_target_cpu_core_equivalent": 2,
+    "prepare_phase_seconds_including_cleanup": 900,
+    "boot_phase_seconds_including_cleanup": 900,
+    "automatic_retry_or_profile_fallback_allowed": false,
+    "actual_supervisor_controls_and_instance_review_complete": false
+  },
+  "next_internal_work": [
+    "Source/metadata mapping of actual AGP device task graph; separately admitted bounded configuration discovery only if necessary.",
+    "Freeze exact package invocation and inspect merged manifest, runner class, dependencies and APK native bytes without claiming native tests.",
+    "Implement and independently review bounded downloader/stager, containment and interruption/cleanup controls.",
+    "After license/trust and actual-instance prerequisites, separately admit archive preparation, one boot and later fixed-vector execution."
+  ],
+  "external_needs_not_blanket_linux_blockers": [
+    "Exact owner/license coverage clarification already requested.",
+    "Actual hardware only for genuinely hardware-specific claims; unsuitable current image and historical KVM absence do not prove software emulation impossible."
+  ],
+  "accounting": {
+    "original_confirmed_qualified_closures": [
+      19,
+      25
+    ],
+    "all_confirmed_qualified_closures": [
+      22,
+      38
+    ],
+    "original_suspicions_conclusively_resolved": [
+      2,
+      12
+    ],
+    "separate_pvd_explanations": 8,
+    "new_qualified_closures": 0,
+    "new_conclusive_suspicions": 0,
+    "new_findings": 0,
+    "new_actual_tests_build_tasks_or_mock_cases": 0
+  },
+  "fences_preserved": [
+    "ROOT_SOLE_BUILD_TEST_CONTROL_OWNER_ONE_LOCAL_CI_JOB",
+    "PVU-007_STOP",
+    "PVU-011_NO_RETRY",
+    "PVA-029_FAIL_NO_AUTOMATIC_RETRY",
+    "G7_G8_CLOSED",
+    "NO_OLD_RUNNER_OR_ARCHIVED_HELPER_EXECUTION_IMPORT",
+    "NO_DEPENDENCY_VERSION_IDENTITY_PROTECTED_REF_SIGNING_PUBLISHING_CHANGES",
+    "OCCUPIED_MOBILE_BUILD_1017001",
+    "PVD_PRODUCT_BOUNDARIES_SEPARATE"
+  ],
+  "reviewer_settlement": {
+    "foreground_file_data_readers_exited": true,
+    "temporary_files_caches_runtime_outputs_or_workers_created": false,
+    "wrapper_stop": "NOT_APPLICABLE_SOURCE_DATA_READS_ONLY",
+    "fresh_disk_ram_admission_claimed": false,
+    "other_owner_obligations_settled_by_this_review": false
+  }
+}

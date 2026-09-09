@@ -4,7 +4,7 @@ Root alone edits central ledgers and this file. Agents write their named review
 subdirectory and only explicitly assigned source paths; report proposed overlaps
 before editing. No agent launches builds/tests or commits/pushes.
 
-| Task | Initial scope | Write authority |
+| Task | Initial scope (historical; bounded follow-ups below supersede) | Initial write authority |
 | --- | --- | --- |
 | android32 | PVA-001 source/ABI/native target and compatibility evidence gap | Three explicitly authorized, now source-reviewed test/config files and own reports; no execution |
 | storage | PVU-001/002/003 remaining admitted source investigation, storage/session guards | Review report; proposed fixes require independent confirmation |
@@ -68,3 +68,71 @@ The previously accepted read-only Git-blob `show` reader may be used only for
 explicitly approved, bounded non-stopped source-data lookups after rehashing. Its
 successful original transport verification is not a license to execute any
 packed program. These data lookups launch no competing builds or tests.
+
+## C4 continuation assignments and independent-review boundaries
+
+The checkpoint selection, not this table, defines which source bytes are
+published. Unselected active work remains intact and unadmitted. Root alone
+stages, commits, pushes, edits the central ledgers, and executes any controls,
+builds, tests, CI or allowlisted cleanup. No agent may expand an assigned source
+lane into an actual instance, execute/import a helper, or occupy the build slot.
+
+- PVA-038: `editor` finished the production file, two Desktop test files and
+  V1/V2 notes; `storage` accepted the corrected exact patch/test design after
+  rejecting the original malformed-metadata oracle. Root's prior independent
+  finding confirmation remains distinct. All13 declarations are uncompiled and
+  unexecuted; no qualified closure is assigned.
+- C4 publication: root owns its explicit selection/receipts/narrative;
+  `android32` independently reviews coverage and the final selected report.
+  That agent's authorship of unchanged prior Android files is disclosed, not a
+  new independent implementation vote. `baseline_coverage` completed the separate
+  C3 committed-object binding and preserves its prior closer-review miss.
+- E bootstrap01: root authored/executed the once-only admitted metadata action;
+  `verification` independently reviewed exact source, original filled instance
+  and actual result. Empty original E and two-record journal are retained;
+  admission is consumed and the sole slot is IDLE, not permission to retry.
+- Closer/outer: `editor` finished the corrected fixed closer, `PLAN.md`,
+  `LAUNCH_CLOSEOUT.py`, `CLOSEOUT-OUTER-PLAN.md` and exact rejected snapshots in
+  `reviews/linux-closeout/`; `baseline_coverage` supplies independent defect and
+  successor source reviews. Root owns future original-instance admission and
+  external execution envelope. Source acceptance is not runtime acceptance.
+- Component28 controls: `build_config` authored the harness/design; root
+  preserved v2 and made only the exact final-subject hash/size/LF rebind plus
+  prose qualification in `reviews/build-config/CLOSEOUT-CONTROLS.py`/`DESIGN.md`.
+  `android32` independently challenges v3, separately from its historical v2
+  acceptance. `storage` authors only `LAUNCH_CONTROLS_01.py` and its matching
+  `CLOSEOUT-CONTROLS-LAUNCH-PLAN.md`, preserving rejected before-images in its own
+  directory; `editor_review` challenges body corrections and the final rebind.
+- Full-contract17 controls: `build_config` authored only
+  `CLOSEOUT-CONTRACT-CONTROLS.py` and `CLOSEOUT-CONTRACT-DESIGN.md`;
+  `baseline_coverage` reviews them. `storage` authors the distinct
+  `LAUNCH_CONTRACT_CONTROLS_01.py` and
+  `CLOSEOUT-CONTRACT-CONTROLS-LAUNCH-PLAN.md`; `editor_review` independently
+  challenges that launcher. No reuse or merger of28/17 namespaces/admission.
+- Registration4 controls: `verification` authors only a new callable and PLAN
+  under its review directory for exact closer/outer paired-map registration.
+  `build_config` is the intended independent source challenger; it authored
+  neither these4 nor their closer/outer subject. Launcher/external-envelope and
+  original-instance admission remain separate and unfilled.
+- Database105: fixed runner/outer and1198-source/105-method inventory still bind
+  the immutable handoff, not current PVA-038/editor/Android/Mac changes. Root and
+  `storage` are coauthors, `verification` is independent reviewer. The completed
+  LAUNCHER receipt needs `evidence_files` distinct from its E directory string;
+  final schema qualification and actual F/C packets remain root-owned.
+- Android32: owner license-scope clarification remains unanswered. Source-data
+  assessment and its `verification` review confer no image download, SDK license
+  command, emulator/ADB/KDF or packaging admission. It need not wait on a blocked
+  database execution when its own gates and the sole shared slot permit work.
+- macOS: `native` owns only the assigned fixed source-capture reader/proposal,
+  partial validation helper/workflow/PLAN and preserved before-images;
+  `native_review` is the independent source challenger. Capture01 failed and is
+  consumed. Capture02, actual backend and Apple CI remain unadmitted; hard-HOLD
+  cannot be bypassed by source acceptance. Windows01 FAIL/cleanup HOLD/all14
+  UNSTARTED/no automatic retry remains unchanged.
+
+Each batch has its own exact bounded names and evidence; declared cases are not
+execution events. The28/17/4 batches are all unexecuted at this ownership update.
+No temporary scratch, build cache or persistent worker was created by source-only
+authoring. Resource observations are point samples; root must refresh them and
+settle only positively owned work for any actual invocation. Permanent source,
+tests, reviews, compact failed evidence and shared SDK/toolchains are not garbage.

@@ -6,7 +6,7 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-Read `CHECKPOINT_3.md`, the updated issue/coverage/verification overlays, and
+Read `CHECKPOINT_4.md`, the updated issue/coverage/verification overlays, and
 `EXECUTION_SLOT.json` before choosing work. Three grouped PVA-007 freshness
 corrections and the Android32 test harness are independently source-reviewed;
 **zero application test cases have executed**. The first Windows CI attempt
@@ -42,6 +42,23 @@ published source scope until separately reviewed. The macOS synthetic fixture
 cleanup correction is source-accepted with three added, unexecuted CTest cases.
 Existing macOS Gradle/Desktop tests now require an independently admitted
 `PASSVAULT_NATIVE_TEST_PARENT`; this is an intentional fail-closed prerequisite.
+
+Checkpoint4 adds the independently source-reviewed PVA-038 correction and its
+nine routing declarations plus one provider-fixture producer and three separate
+fresh-provider consumer declarations. None compiled or ran. The earlier
+checkpoint3 descriptions of active/excluded PVA-038 work are historical, not a
+claim that this later patch remained unreviewed.
+
+**Before execution, read
+[`publication/CHECKPOINT-3-PUBLICATION-ADDENDUM.md`](publication/CHECKPOINT-3-PUBLICATION-ADDENDUM.md).**
+The published b167 closer's `LAUNCHER.json` contract is impossible: one field is
+required as both a directory string and an array. Its old acceptance is historical
+only; the independent reviewer miss is preserved. A corrected successor, its
+meaningful controls and new outer supervisor remain separate pending work.
+The database build is still BLOCKED. Empty-E bootstrap01 alone executed once and
+was independently reconciled; its completed metadata slot is released, with no
+runtime, cache, helper child or application test created. Its original empty E
+and 722-byte journal remain needed for the eventual original database admission.
 
 ## Baseline
 

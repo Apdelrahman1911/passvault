@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T03:48:59Z",
+  "disposition": "QUALIFIED_SOURCE_ACCEPTANCE_C02_R1_R2_R3_ONLY",
+  "wrapper_instance_network_execution": "HOLD_NOT_ADMITTED",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/CAPTURE_MACOS_SOURCE_DATA.py",
+      "sha256": "32fdca27e7e70573b0b5888809a955bdb4d76974400becd2054abb825c7901c4",
+      "bytes": 15395,
+      "physical_lf": 330,
+      "read": "Entire file as inert source; never executed, imported or syntax-probed"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-PRIMITIVE-CAPTURE-02-PROPOSAL.md",
+      "sha256": "697b7e112ca9debac318c67c1890d10cd3645d97ded352e15c4dd80be1b90fdf",
+      "bytes": 12459,
+      "physical_lf": 199,
+      "read": "Entire file as inert data; no proposed command run"
+    }
+  ],
+  "prior_rejected_bytes_preserved_and_hash_checked": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/CAPTURE_MACOS_SOURCE_DATA.rejected-v1.py.txt",
+      "sha256": "b963963180e12dcf952f5356a7a06d3364450150804bc23e25c25a4da984a1f9"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-PRIMITIVE-CAPTURE-02-PROPOSAL.rejected-v1.md",
+      "sha256": "313d6f0d464db721c5462ed3b36c0a64ce1c1a602f2eaee146c868ed26f72bbc"
+    }
+  ],
+  "prior_review": {
+    "report": "MACOS-CAPTURE-02-SOURCE-REVIEW-v1.md",
+    "report_sha256": "707736efca262228a2cb0e7b701afd3bf8eff8bb55cc6336afbf80a8ec60a44b",
+    "json_sha256": "35a6d377989ff7807f358e54bc912c03e65b791501a98d541b4cc3ace8fb3df7",
+    "status": "REVISE remains valid for archived v1, not overwritten"
+  },
+  "corrections": [
+    {
+      "id": "C02-R1",
+      "disposition": "QUALIFIED_SOURCE_CORRECTION_ACCEPTED",
+      "source_lines": [[230, 239], [315, 324]],
+      "trace": "Failed open acquires no parent; failed fstat/UID/privacy never sets admitted flag; finalizer writes/fsyncs only admitted parent and otherwise attempts original fd close once",
+      "counterexample": "Previously writable0755 parent reaches rejection then close-only, not report creation",
+      "limitation": "No runtime guard/close test; close or hard-interruption failure can prevent stdout failure receipt"
+    },
+    {
+      "id": "C02-R2",
+      "disposition": "QUALIFIED_SOURCE_CORRECTION_ACCEPTED",
+      "source_lines": [[230, 239], [315, 324]],
+      "trace": "Record/time construction precedes acquisition; try precedes open; all ordinary post-acquisition work is guarded",
+      "limitation": "Not asynchronous syscall/assignment or close-success proof; no close retry"
+    },
+    {
+      "id": "C02-R3",
+      "disposition": "QUALIFIED_SOURCE_CORRECTION_ACCEPTED",
+      "source_lines": [[112, 193], [253, 256]],
+      "trace": "Metadata own finite capture/id/repository/official endpoint/exact key set/bounded integer cap/body/status/hash required; caller validates commit; CMake process file identity resolves against accepted CMake commit",
+      "counterexample": "Stale different-role metadata plus currently labeled same-url/digest transport fails metadata role/endpoint gate",
+      "limitation": "Original dependency records must remain externally frozen; no atomic multirecord snapshot or provenance authentication"
+    }
+  ],
+  "qualifications": [
+    "parse_constant rejects nonfinite literal constants, not every overflowing exponent in unused JSON values; consumed count/cap/exit roles require exact bounded ints",
+    "Intent dictionary value equality permits a numerically equal float cap; actual request/read cap is the fixed inventory integer and outer owner must emit exact declared integer intent",
+    "Dependency sections are checked as a nonempty list only, not per-entry/content/semantics revalidated; source original-record binding remains external",
+    "UTC/qualification and transport extra fields are not a full typed receipt schema; /root label is not authentication",
+    "cmUVProcessChain substring flag is a mention only; root must justify semantic need from accepted captured source before final intent/GET",
+    "No syntax/runtime/startup or installed tool compatibility inferred from source-only inspection",
+    "Source/receipt writes or closes may fail with partial/unlisted permanent output; outer actual exits and bounds remain required"
+  ],
+  "author_response": "Agreed qualifications including intent float equality, section shape and external frozen-role/source provenance; no source changes or new GETs",
+  "accepted_body_caps": {
+    "metadata_bytes": 98304,
+    "file_envelope_bytes": 1703936,
+    "total_bytes": 1802240,
+    "owner_ceiling_bytes": 2097152,
+    "maximum_response_slots": 12,
+    "qualification": "Accepted-body caps, not wire/RAM/runtime/retained-output or failed-buffer measurement"
+  },
+  "external_pending": [
+    "Independently reviewed exact Linux wrapper with curl/Python identities, immutable reader/source hashes and trusted minimal environment/startup",
+    "Filled original checkout/evidence ancestry and private parent identity; exclusive durable ID attempts and preexisting-output rejection",
+    "Immediate both-PIPESTATUS observation plus whole-batch fail-fast under errexit/failure/cancellation",
+    "Finite outer timeout, owned-child settlement and selected curl streaming-limit semantics",
+    "Actual curl0/reader0 and original record/source binding plus compact durable receipt publication"
+  ],
+  "capture01": {
+    "status": "FAIL_CONSUMED_NO_RETRY_PRESERVED",
+    "metadata_pipelines_failed": 3,
+    "each_curl_exit": 23,
+    "each_reader_exit": 1,
+    "verified_responses": 0,
+    "verified_commits": 0,
+    "verified_source_files": 0,
+    "dependent_file_slots_unstarted": 9
+  },
+  "capture02_parent_observed": "ABSENT; no reviewer allocation",
+  "capture02_requests": 0,
+  "reader_executions": 0,
+  "syntax_checks": 0,
+  "imports": 0,
+  "ci_queries": 0,
+  "new_test_cases_executed": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "execution_admission": false,
+  "network_admission": false,
+  "target_admission": false,
+  "repository_passive_observation": {
+    "head": "bb094f8a39ba43f1ce1f43f394cb662b03febe38",
+    "tree": "82967f050816454b6905d560dfec15d0e0b091f5",
+    "qualification": "File hashes define this review; no claim inputs committed or concurrent worktree clean"
+  },
+  "resources_passive_snapshot": {
+    "filesystem_available_kib": 24028572,
+    "mem_available_kib": 39108296,
+    "qualification": "Point observation only, no future resource admission"
+  },
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-CAPTURE-02-SOURCE-REVIEW-v2.md",
+  "report_sha256": "f810d98fb79721675e3c8dc753e9d512a6c24c115d867e92f59179e8464e4c75",
+  "restrictions": "Windows01 FAIL/filesystemHOLD/14UNSTARTED/consumed; PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED and publication/version/dependency/identity/protected-ref/build1017001 fences unchanged",
+  "reviewer_cleanup": "Only permanent review pair created; no build/cache/temp executable/background worker/evidence-parent allocation; no deletion/stop/termination/recovery; Gradle stop not applicable"
+}

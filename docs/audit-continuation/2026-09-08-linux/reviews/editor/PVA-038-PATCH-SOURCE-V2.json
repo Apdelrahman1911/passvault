@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "finding_id": "PVA-038",
+  "source_revision": 2,
+  "author": "/root/editor",
+  "independent_challenger": "/root/storage",
+  "review_status": "CORRECTED_T01_PENDING_FINAL_INDEPENDENT_SOURCE_REVIEW",
+  "source_base_commit": "f18995e6633904a6845e09eab8a481635290894d",
+  "source_base_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "prior_report": {
+    "markdown": "PVA-038-PATCH-SOURCE-V1.md",
+    "markdown_sha256": "e51061a3899af459d76d08ee392d383d543f6fa8eb928ede526afef8f6ef28ac",
+    "json": "PVA-038-PATCH-SOURCE-V1.json",
+    "json_sha256": "7153498eb2dba7586fbfe9fcb8da7dfe099286bd8c04c04f3f7ba69915f28787"
+  },
+  "rejected_test_before_image": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/PVA-038-ROUTING-REJECTED-V1.kt.txt",
+    "sha256": "22a47793df143dcd9db299e04f2a83451e97011886b64da9b5245770fc78a017",
+    "bytes": 13654,
+    "physical_LF": 336,
+    "preservation": "Byte-exact exclusive create before source revision; inert source evidence"
+  },
+  "T01": {
+    "type": "SOURCE_DISCOVERED_TEST_ORACLE_ERROR_NOT_APPLICATION_FINDING_OR_EXECUTED_TEST_FAIL",
+    "reviewer_diagnosis": "Malformed nonce precedes service metadata validation; no vaultId means no OS retrieval or unlock transition. V1 wrongly required Locked and nonnull released key",
+    "author_challenge": "Independently reread getMetadata477-489, operationResult665-673, service95-117, initial state57-65 and V1 test136-147; concur",
+    "correction": "Prior state unchanged, no Unlocked publication, enrolled/delete0/retrieve0/verifier0, null returned/candidate keys; remove invalid optional candidate-free wipe branch",
+    "historical_table_claim_withdrawn": "V1 malformed-metadata case cannot claim received-key wipe because no key was released"
+  },
+  "after_images": [
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+      "bytes": 37053,
+      "physical_LF": 846,
+      "change_from_v1": "NONE"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt",
+      "sha256": "79e9d892d5aa0711facce39968ce6ce8d3a1a9dcefe47853af70e62e14168b10",
+      "bytes": 14243,
+      "physical_LF": 348,
+      "change_from_v1": "T01 bounded oracle/retrieval-observation correction",
+      "test_declarations": 9
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt",
+      "sha256": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+      "bytes": 16180,
+      "physical_LF": 356,
+      "change_from_v1": "NONE",
+      "test_declarations": 4
+    }
+  ],
+  "declared_test_methods": 13,
+  "new_executed_tests": 0,
+  "new_executed_failures_or_skips": 0,
+  "new_coverage_credit": 0,
+  "new_qualified_closures": 0,
+  "execution_admission": "NONE; V1 future four-phase design/limits unchanged",
+  "unmodified_selection": "Frozen handoff105 does not include this patch",
+  "gaps": "Compiler/Detekt, actual-provider fresh-worker commands/dependency graph/coordination/cleanup, exact native-iOS source/runtime and physical hardware evidence remain",
+  "accounting": {
+    "original_confirmed": "19/25 (76%),6 open",
+    "all_confirmed": "22/38 (57.9%),16 open",
+    "original_suspicions": "2/12,10 open",
+    "PVD": "8 explanations; owner decisions separate"
+  }
+}

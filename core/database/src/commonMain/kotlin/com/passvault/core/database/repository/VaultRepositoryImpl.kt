@@ -708,23 +708,27 @@ class VaultRepositoryImpl(
                 key = vaultKey,
                 associatedData = VERIFICATION_AAD.encodeToByteArray(),
             ).getOrThrow()
-            require(verificationPlaintext.size == VERIFICATION_BYTES)
+            if (verificationPlaintext.size != VERIFICATION_BYTES) {
+                throw InvalidVerificationPlaintextException()
+            }
         } finally {
             verificationPlaintext?.let { cryptoEngine.secureWipe(it) }
         }
     }
 
-    // Authentication failures are the only failures that invalidate an enrolled key.
-    @Suppress("TooGenericExceptionCaught")
+    // Only explicit authentication or verification-plaintext rejection invalidates
+    // an enrolled key. Provider/initialization failures must leave enrollment intact.
     private suspend fun verifyBiometricVaultKey(metadata: VaultMetadataEntity, vaultKey: ByteArray) {
         try {
             verifyVaultKey(metadata, vaultKey)
-        } catch (cancel: CancellationException) {
-            throw cancel
-        } catch (_: Exception) {
+        } catch (_: CiphertextAuthenticationException) {
+            throw BiometricVaultKeyRejectedException()
+        } catch (_: InvalidVerificationPlaintextException) {
             throw BiometricVaultKeyRejectedException()
         }
     }
+
+    private class InvalidVerificationPlaintextException : IllegalArgumentException("Invalid verification plaintext")
 
     private suspend fun openSession(vaultKey: ByteArray, expectedLockGeneration: Long): SessionId {
         require(vaultKey.size == VEK_BYTES)

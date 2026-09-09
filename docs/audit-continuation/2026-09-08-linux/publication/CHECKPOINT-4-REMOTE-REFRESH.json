@@ -1,0 +1,20 @@
+{
+  "schema": "passvault-checkpoint4-ref-refresh-v1",
+  "author": "/root",
+  "observed_utc": "2026-09-09T04:43:03Z",
+  "actual_tool_result": {
+    "chunk_id": "89f7a2",
+    "wall_time_seconds": 1.014092903,
+    "exit_code": 0,
+    "original_token_count": 90,
+    "output": "bb094f8a39ba43f1ce1f43f394cb662b03febe38\trefs/heads/codex/audit-continuation-linux-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n2026-09-09T04:43:03Z\n"
+  },
+  "commands": [
+    "git -c core.hooksPath=/dev/null -c core.fsmonitor=false -c gc.auto=0 -c maintenance.auto=false fetch --no-tags --no-write-fetch-head --no-recurse-submodules origin refs/heads/main:refs/remotes/origin/main refs/heads/testing:refs/remotes/origin/testing refs/heads/release:refs/remotes/origin/release",
+    "git -c core.hooksPath=/dev/null -c core.fsmonitor=false -c gc.auto=0 -c maintenance.auto=false ls-remote --refs origin refs/heads/main refs/heads/testing refs/heads/release refs/tags/v1.0.7-rc.1017001 refs/heads/codex/audit-continuation-linux-20260908"
+  ],
+  "envelope": "Each network Git command used /usr/bin/timeout --foreground -k 5s 60s; GIT_TERMINAL_PROMPT=0. Sole root metadata work, not a build.",
+  "relative_to_last_refresh": "2026-09-09T02:05:15Z main/testing/release/tag unchanged; dedicated continuation now C3 as separately pushed. No affected upstream finding needed revalidation from new source.",
+  "preservation": "Only remote-tracking refs refreshed. No local protected branch/tag or GitHub protection/identity/version/build/signing/store state was changed; no new source code executed.",
+  "cleanup": "Both foreground metadata commands exited and no build/cache/temp/background worker was created. No new Gradle stop obligation. This is not discharge of any older stopped scope."
+}

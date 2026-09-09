@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-09-09T02:10:16.675252+00:00",
+  "updated_utc": "2026-09-09T04:41:07.856605+00:00",
   "status": "IN_PROGRESS_NOT_READY",
   "base_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
   "base_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
@@ -403,7 +403,7 @@
     {
       "id": "PVA-038",
       "title": "Cold Desktop crypto initialization failure attempts deletion of valid biometric enrollment",
-      "status": "CONFIRMED — IMPLEMENTATION PENDING",
+      "status": "IMPLEMENTED — REGRESSION VERIFICATION PENDING",
       "base_row_index": null,
       "base_row_canonical_sha256": null,
       "introduced_in_continuation": true,
@@ -415,7 +415,59 @@
         "Narrow current-source finding independently confirmed: valid supported Desktop cold-start candidate verification can encounter ResourceLoaderException wrapping temp-directory IOException, mapped broadly to rejection and enrollment-delete attempt. Actual loss requires deletion success; no auth bypass or vault/password erasure.",
         "Windows common/JVM route supported; macOS native return traced; no real-provider Linux/mobile/warm/Error generalization, fresh resolved-graph or hardware result.",
         "Original additional-investigation row remains immutable; this is not an original PVU resolution. Narrow correction and independent patch challenge/regression remain pending. No application tests executed.",
-        "Checkpoint3 source confirmation binds30 before-images at publishedf18995e and6 retained source captures, not concurrently edited repository bytes. Narrow patch/9 routing and4 opt-in provider test declarations are active work outside this published source scope; independent patch review pending. No change in status or runtime credit."
+        "Checkpoint3 source confirmation binds30 before-images at publishedf18995e and6 retained source captures, not concurrently edited repository bytes. Narrow patch/9 routing and4 opt-in provider test declarations are active work outside this published source scope; independent patch review pending. No change in status or runtime credit.",
+        "Checkpoint4: independently accepted narrow verifier correction maps only typed authentication failure and private malformed-plaintext rejection to invalidation. Provider/ordinary argument/cancellation failures preserve enrollment and existing password fallback. Three source afterimages bound; nine routing declarations plus one synthetic provider-fixture producer and three separate fresh-provider consumer declarations, all uncompiled/unexecuted. Prior malformed-metadata oracle rejected before execution and preserved. Fixed handoff105 selection does not test this continuation patch."
+      ],
+      "patch_author": "/root/editor",
+      "independent_patch_reviewer": "/root/storage",
+      "patch_review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+      "patch_review_sha256": "c0b3cb9432b65d7a0da9c83c19d125ce2bdceab226be09ff6621b347d9ca9286",
+      "source_afterimages": [
+        {
+          "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+          "sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+          "bytes": 37053,
+          "physical_lf": 846,
+          "author": "/root/editor",
+          "independent_reviewer": "/root/storage",
+          "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+          "review_semantics": "Exact production diff and both complete test files plus relevant callers/guards/typed AEAD contract source-reviewed; real-provider startup orchestration remains unadmitted. Prior malformed-metadata test oracle rejected/corrected before execution.",
+          "source_disposition": "SOURCE_ACCEPTED_REGRESSION_EXECUTION_PENDING_NO_CLOSURE",
+          "new_attributed_semantic_LF": null,
+          "historical_equal_line_credit_carried": false
+        },
+        {
+          "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt",
+          "sha256": "79e9d892d5aa0711facce39968ce6ce8d3a1a9dcefe47853af70e62e14168b10",
+          "bytes": 14243,
+          "physical_lf": 348,
+          "author": "/root/editor",
+          "independent_reviewer": "/root/storage",
+          "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+          "review_semantics": "Exact production diff and both complete test files plus relevant callers/guards/typed AEAD contract source-reviewed; real-provider startup orchestration remains unadmitted. Prior malformed-metadata test oracle rejected/corrected before execution.",
+          "source_disposition": "SOURCE_ACCEPTED_REGRESSION_EXECUTION_PENDING_NO_CLOSURE",
+          "new_attributed_semantic_LF": null,
+          "historical_equal_line_credit_carried": false
+        },
+        {
+          "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt",
+          "sha256": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+          "bytes": 16180,
+          "physical_lf": 356,
+          "author": "/root/editor",
+          "independent_reviewer": "/root/storage",
+          "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+          "review_semantics": "Exact production diff and both complete test files plus relevant callers/guards/typed AEAD contract source-reviewed; real-provider startup orchestration remains unadmitted. Prior malformed-metadata test oracle rejected/corrected before execution.",
+          "source_disposition": "SOURCE_ACCEPTED_REGRESSION_EXECUTION_PENDING_NO_CLOSURE",
+          "new_attributed_semantic_LF": null,
+          "historical_equal_line_credit_carried": false
+        }
+      ],
+      "remaining_requirements": [
+        "Admit and execute nine routing integration methods, preserving actual wrong-key/tag controls and unchanged metadata preguard; no test has compiled or run.",
+        "Separately admit one real-provider fixture producer and three cold fresh-JVM consumers (success,wrong-key,loader-io); bind transferred synthetic fixture and effective worker-startup tmp/JNA/HOME flags. Unconfigured provider tests use JUnit assumptions and cannot pass as evidence.",
+        "Real cold loader ResourceLoaderException/IOException cause and stack witness, proper successful control, no-enrollment-delete/no-session publication and wiping require actual execution.",
+        "Exact iOS/Kotlin-Native AEAD source/runtime and relevant target/hardware gaps remain distinct; Linux synthetic key-release component tests do not prove native biometric authentication."
       ]
     }
   ],
@@ -553,11 +605,14 @@
     {
       "id": "LINUX-DATABASE-CLOSEOUT",
       "kind": "PREBUILD_SOURCE_PROPOSAL_NOT_EXECUTED",
-      "status": "SOURCE_ACCEPTED_INSTANCE_GATES_UNFILLED",
-      "review": "reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json",
+      "status": "BLOCKED_HISTORICAL_ACCEPTANCE_SUPERSEDED_SUCCESSOR_AND_CONTROLS_PENDING",
       "scope": "Generated/private roots only; preserve checkout,.git,1198source/tests and every reports/test-results subtree. No cleanup import/control/execution or actualinstance acceptance.",
       "timing_clarification": "Accepted viable prompt-closeout design is a prebuild gate. Meaningful LC-C05/06 controls required before closer invocation/actual instance acceptance; root will finish them before build to avoid stranded outputs. Runner22 controls do not substitute.",
-      "timing_review": "reviews/baseline-coverage/LINUX-CLOSEOUT-GATE-TIMING-CLARIFICATION.json"
+      "timing_review": "reviews/baseline-coverage/LINUX-CLOSEOUT-GATE-TIMING-CLARIFICATION.json",
+      "historical_review": "reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json",
+      "review": "reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.json",
+      "late_hold": "Published b167 helper cannot accept one JSON evidence field as both string and array; fail-closed before lock/journal/deletion, reviewer miss preserved. Local8437/0b21 closer and5047/1fbd outer source have bounded successor acceptance, explicitly not selected forC4. Distinct28/17/4 meaningful controls, external envelopes and actualoriginalinstance admissions remain unexecuted/unfilled; no build/cleanup occurred.",
+      "conditional_registration_variant": "LCL-OWN-001: paired fds/pins insertion second-store MemoryError could leave a stale numeric close entry. Author/editor and independent/baseline reviews confirmed and corrected source; no FD-reuse/unrelated-close/deletion incident observed. Variant and its4 controls remain active unselected source work, no PVA denominator change."
     },
     {
       "id": "MAC-FIXTURE-001",
@@ -568,6 +623,15 @@
       "added_ctest_declarations": 3,
       "executed": 0,
       "scope": "Original descriptor-bound synthetic fixture RAII cleanup and owned symlink sentinel; no product ABI/identity changes. Existing macOS Gradle/Desktop tests fail closed without separately admitted PASSVAULT_NATIVE_TEST_PARENT. Windows consumed CMake source identity not retargeted."
+    },
+    {
+      "id": "LC-LAUNCHER-CONTRACT-001",
+      "kind": "AUDIT_INFRASTRUCTURE_NOT_PRODUCT_FAMILY",
+      "status": "INDEPENDENTLY_CONFIRMED_NO_QUALIFIED_CLOSURE",
+      "finding_author": "/root/editor",
+      "independent_reviewer": "/root/baseline_coverage",
+      "review": "reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.json",
+      "scope": "Strict JSON makes frozen b167/cffc successful admission impossible. Preserve historical acceptance and reviewer miss. Narrow evidence_files successor is active excluded work; meaningful full-contract regression and fresh prebuild cleanup readiness still required. No actual run/failure or deletion was observed."
     }
   ],
   "additional_investigation_outcomes": [

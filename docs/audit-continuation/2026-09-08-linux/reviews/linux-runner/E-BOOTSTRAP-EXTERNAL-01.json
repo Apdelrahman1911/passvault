@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T03:22:52.423668+00:00",
+  "scope": "ONE_EMPTY_E_METADATA_BOOTSTRAP_ACTUAL_RESULT_PENDING_INDEPENDENT_RECONCILIATION",
+  "preflight": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/E-BOOTSTRAP-FINAL-PREFLIGHT-01.json",
+    "identity": {
+      "dev": 24,
+      "ino": 14252375,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 9214,
+      "mtime_ns": 1788924032867952637,
+      "ctime_ns": 1788924032867952637
+    },
+    "sha256": "0d6e1ee6da044924cf9799b8ade5cbad133f3d0907daeeeb209fa67c4dd86484",
+    "bytes": 9214
+  },
+  "preflight_tool": "b1c08a exit0",
+  "actual_tool_call": {
+    "chunk_id": "5d1303",
+    "wall_time_seconds": 8.679e-06,
+    "exit_code": 0,
+    "original_token_count": 292,
+    "output": "{\"cancelled\": [], \"children_started\": 0, \"deletions\": 0, \"descriptor_close_attempts\": 15, \"descriptor_close_errors\": [], \"finished_unix_ns\": 1788924066110355730, \"journal_append_state\": \"APPEND_FSYNCED_AND_ORIGINAL_RECHECKED\", \"journal_completed_appends\": 2, \"journal_initial_pin\": {\"ctime_ns\": 1788924066104950656, \"dev\": 24, \"ino\": 14252383, \"mode\": 33152, \"mtime_ns\": 1788924066104950656, \"nlink\": 1, \"size\": 0, \"uid\": 0}, \"journal_last_completed_bytes\": 722, \"journal_last_completed_pin\": {\"ctime_ns\": 1788924066108950655, \"dev\": 24, \"ino\": 14252383, \"mode\": 33152, \"mtime_ns\": 1788924066108950655, \"nlink\": 1, \"size\": 722, \"uid\": 0}, \"original\": {\"dev\": 23, \"ino\": 720983, \"mode\": 16832, \"uid\": 0}, \"resources_after\": {\"free_bytes\": 25007587328, \"launch\": false, \"memory_bytes\": {\"MemAvailable\": 42793119744, \"MemTotal\": 67435888640}, \"unix_ns\": 1788924066110282140}, \"resources_before\": {\"free_bytes\": 25007595520, \"launch\": true, \"memory_bytes\": {\"MemAvailable\": 42793119744, \"MemTotal\": 67435888640}, \"unix_ns\": 1788924066105550288}, \"runtime_created\": false, \"started_unix_ns\": 1788924066102385102, \"status\": \"EMPTY_ORIGINAL_E_CREATED_NOT_BUILD_ADMISSION\"}\n"
+  },
+  "exact_argv": [
+    "/usr/bin/timeout",
+    "--foreground",
+    "-k",
+    "5s",
+    "20s",
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/BOOTSTRAP_E.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "preexpiry_start_and_finish": true,
+  "original_journal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/E-BOOTSTRAP.jsonl",
+    "identity": {
+      "dev": 24,
+      "ino": 14252383,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 722,
+      "mtime_ns": 1788924066108950655,
+      "ctime_ns": 1788924066108950655
+    },
+    "sha256": "830dd8bb043839ab5375dce95268252690718e1c32964145cbbc8789db3f3a58",
+    "bytes": 722
+  },
+  "original_journal_initial_pin_from_process": {
+    "ctime_ns": 1788924066104950656,
+    "dev": 24,
+    "ino": 14252383,
+    "mode": 33152,
+    "mtime_ns": 1788924066104950656,
+    "nlink": 1,
+    "size": 0,
+    "uid": 0
+  },
+  "last_completed_pin_matched_to_original_postreturn": true,
+  "actual_journal_records": [
+    {
+      "kind": "evidence_mkdir_intent",
+      "original_lock_pin": {
+        "ctime_ns": 1788910891124735946,
+        "dev": 24,
+        "ino": 14189001,
+        "mode": 33152,
+        "mtime_ns": 1788910891124735946,
+        "nlink": 1,
+        "size": 0,
+        "uid": 0
+      },
+      "original_parent_pin": {
+        "dev": 23,
+        "ino": 642474,
+        "mode": 16832,
+        "uid": 0
+      },
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-database-01",
+      "unix_ns": 1788924066107415230
+    },
+    {
+      "empty_observed": true,
+      "identity": {
+        "dev": 23,
+        "ino": 720983,
+        "mode": 16832,
+        "uid": 0
+      },
+      "kind": "evidence_original",
+      "parent_fsync_completed": true,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-database-01",
+      "unix_ns": 1788924066109714575
+    }
+  ],
+  "E_original_from_creation": {
+    "dev": 23,
+    "ino": 720983,
+    "mode": 16832,
+    "uid": 0
+  },
+  "E_empty_original_postreturn": true,
+  "postreturn_immutable_images": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/E-BOOTSTRAP-REQUEST-01.json",
+      "identity": {
+        "dev": 24,
+        "ino": 14231080,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 9179,
+        "mtime_ns": 1788920500595163176,
+        "ctime_ns": 1788920500595163176
+      },
+      "sha256": "a748a1d231ef11201f830a86fdf42aef0f73839b028bd355f3f3dc2c548028e9",
+      "bytes": 9179
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/E-BOOTSTRAP-ACCEPT-root-01.json",
+      "identity": {
+        "dev": 24,
+        "ino": 14231082,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 1978,
+        "mtime_ns": 1788920560932159580,
+        "ctime_ns": 1788920560932159580
+      },
+      "sha256": "56b7e4d0d35085740e78ad8c53890d585ab30d176f359c09a69b8c2a4c563a5a",
+      "bytes": 1978
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/E-BOOTSTRAP-ACCEPT-verification-01.json",
+      "identity": {
+        "dev": 24,
+        "ino": 13672690,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 6460,
+        "mtime_ns": 1788921381067110696,
+        "ctime_ns": 1788921381067110696
+      },
+      "sha256": "4d1f04c84eda21625be09d53c837e42886809afec27bc877d817c59c8f3c7043",
+      "bytes": 6460
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/BOOTSTRAP_E.py",
+      "identity": {
+        "dev": 24,
+        "ino": 14210620,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 9956,
+        "mtime_ns": 1788919434579226716,
+        "ctime_ns": 1788919434579226716
+      },
+      "sha256": "a49f750c0f8dc6a0527ee823717ec23b63031ab285fd1d297f23db3c2de77f6c",
+      "bytes": 9956
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/E-BOOTSTRAP-PLAN.md",
+      "identity": {
+        "dev": 24,
+        "ino": 14210621,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 4255,
+        "mtime_ns": 1788919434580226716,
+        "ctime_ns": 1788919434580226716
+      },
+      "sha256": "87963b73231f34d55bf93487f960090d802dc029fe19d5b30feacc716224e87a",
+      "bytes": 4255
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DATABASE-E-BOOTSTRAP-V2-SOURCE-REVIEW.json",
+      "identity": {
+        "dev": 24,
+        "ino": 13672678,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 2866,
+        "mtime_ns": 1788919810984204281,
+        "ctime_ns": 1788919810984204281
+      },
+      "sha256": "58f7de021b9f695891763660fc8add25393c40c9f48c24f90e1726f4f3d013f0",
+      "bytes": 2866
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP.jsonl",
+      "identity": {
+        "dev": 24,
+        "ino": 13672350,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 3768,
+        "mtime_ns": 1788910891125735946,
+        "ctime_ns": 1788910891125735946
+      },
+      "sha256": "8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613",
+      "bytes": 3768
+    },
+    {
+      "path": "/usr/bin/python3.12",
+      "identity": {
+        "dev": 25,
+        "ino": 1088,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "size": 8020928,
+        "mtime_ns": 1781873160000000000,
+        "ctime_ns": 1787292627933100530
+      },
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+      "bytes": 8020928
+    },
+    {
+      "path": "/usr/bin/timeout",
+      "identity": {
+        "dev": 25,
+        "ino": 1223,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "size": 39880,
+        "mtime_ns": 1769175004000000000,
+        "ctime_ns": 1787292627976100720
+      },
+      "sha256": "4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08",
+      "bytes": 39880
+    },
+    {
+      "path": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+      "identity": {
+        "dev": 24,
+        "ino": 14189001,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 0,
+        "mtime_ns": 1788910891124735946,
+        "ctime_ns": 1788910891124735946
+      },
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "original_12_directories_postreturn_matched": true,
+  "original_lock_postreturn_matched": true,
+  "runtime_absent_postreturn": true,
+  "cleanup": {
+    "owned_fd_close_attempts_reported": 15,
+    "close_errors_reported": [],
+    "helper_children": 0,
+    "deletions": 0,
+    "temporary_or_build_outputs_created": 0,
+    "wrapper_stop": "NOT_APPLICABLE_NO_GRADLE_INVOCATION_NO_OLD_OBLIGATION_WAIVER",
+    "retained": "722-byte original journal and empty0700 E plus compact receipts for imminent database admission",
+    "limits": "No separate external PID census or monotonic whole-tool duration, no hostile same-UID/late-signal/host-loss guarantee. Tool wall time and process timestamps retained separately; not equated."
+  },
+  "admission": "Consumed once. No retry/deletion/repair/adoption; sole slot held pending independent result review. No database/closer/test/CI execution or qualified closure follows."
+}

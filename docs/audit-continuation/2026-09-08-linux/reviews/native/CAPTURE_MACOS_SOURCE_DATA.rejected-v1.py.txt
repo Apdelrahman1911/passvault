@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+"""Proposed capture02 bounded stdin DATA reader; execution is NOT yet admitted.
+
+No network request, subprocess, downloaded-code import, target/API probe or
+cleanup is performed here. Root must review/admit the separate exact curl argv
+and record its zero exit independently. A parsed body is not transport success.
+"""
+
+import argparse
+import base64
+import datetime
+import hashlib
+import json
+import os
+import re
+import stat
+import sys
+
+
+REPOSITORIES = {
+    "xnu": "apple-oss-distributions/xnu",
+    "libc": "apple-oss-distributions/Libc",
+    "cmake": "Kitware/CMake",
+}
+METADATA = {
+    "xnu-commit": ("xnu", "git/ref/heads/main", 32768),
+    "libc-commit": ("libc", "git/ref/heads/main", 32768),
+    "cmake-commit": ("cmake", "commits/v4.4.2", 32768),
+}
+FILES = {
+    "xnu-event": ("xnu", "bsd/sys/event.h", 65536, "complete"),
+    "xnu-kern-event": ("xnu", "bsd/kern/kern_event.c", 786432, "proc-sections"),
+    "xnu-proc-info": ("xnu", "bsd/sys/proc_info.h", 131072, "complete"),
+    "xnu-libproc": ("xnu", "libsyscall/wrappers/libproc/libproc.h", 65536, "complete"),
+    "xnu-vm-statistics": ("xnu", "osfmk/mach/vm_statistics.h", 65536, "complete"),
+    "xnu-host": ("xnu", "osfmk/kern/host.c", 262144, "vm-sections"),
+    "libc-acl": ("libc", "include/sys/acl.h", 65536, "complete"),
+    "cmake-process": ("cmake", "Source/CTest/cmProcess.cxx", 131072, "complete"),
+    "cmake-chain": ("cmake", "Source/cmUVProcessChain.cxx", 131072, "complete"),
+}
+REPORT_PARENT = "docs/audit-continuation/2026-09-08-linux/reviews/native/macos-primitives-02"
+SHA1 = re.compile(r"[0-9a-f]{40}\Z")
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+
+
+def duplicate_free(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def parse_json(raw):
+    return json.loads(
+        raw.decode("utf-8"),
+        object_pairs_hook=duplicate_free,
+        parse_constant=lambda value: (_ for _ in ()).throw(ValueError("nonfinite JSON")),
+    )
+
+
+def stamp():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def same_file(left, right):
+    return (left.st_dev, left.st_ino, left.st_size, left.st_mtime_ns, left.st_ctime_ns) == (
+        right.st_dev, right.st_ino, right.st_size, right.st_mtime_ns, right.st_ctime_ns,
+    )
+
+
+def read_regular(parent, name, cap):
+    fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+    try:
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > cap:
+            raise ValueError("input is not a bounded single-link regular file")
+        pieces = []
+        remaining = cap + 1
+        while remaining:
+            block = os.read(fd, min(65536, remaining))
+            if not block:
+                break
+            pieces.append(block)
+            remaining -= len(block)
+        raw = b"".join(pieces)
+        if len(raw) > cap or not same_file(before, os.fstat(fd)):
+            raise ValueError("input changed or exceeded cap")
+        return raw
+    finally:
+        os.close(fd)
+
+
+def create_once(parent, name, raw):
+    fd = os.open(
+        name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+        0o600, dir_fd=parent,
+    )
+    try:
+        remaining = memoryview(raw)
+        while remaining:
+            written = os.write(fd, remaining)
+            if written <= 0:
+                raise OSError("nonprogressing report write")
+            remaining = remaining[written:]
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def verified_record(parent, identifier):
+    metadata = parse_json(read_regular(parent, identifier + ".json", 16384))
+    transport = parse_json(read_regular(parent, identifier + ".transport.json", 4096))
+    if metadata.get("status") != "BODY_PARSED_TRANSPORT_UNADJUDICATED":
+        raise ValueError("metadata body was not accepted by the data reader")
+    digest = metadata.get("response_sha256")
+    if not isinstance(digest, str) or SHA256.fullmatch(digest) is None:
+        raise ValueError("response digest is absent or malformed")
+    if (
+        transport.get("capture") != "macos-primitives-02"
+        or transport.get("id") != identifier
+        or transport.get("curl_exit") != 0
+        or type(transport.get("curl_exit")) is not int
+        or transport.get("reader_exit") != 0
+        or type(transport.get("reader_exit")) is not int
+        or transport.get("response_sha256") != metadata.get("response_sha256")
+        or transport.get("url") != metadata.get("url")
+        or transport.get("adjudicator") != "/root"
+    ):
+        raise ValueError("exact root transport adjudication is absent")
+    return metadata
+
+
+def verified_commit(parent, key):
+    metadata = verified_record(parent, key + "-commit")
+    commit = metadata.get("resolved_commit")
+    if not isinstance(commit, str) or SHA1.fullmatch(commit) is None:
+        raise ValueError("metadata commit is absent or malformed")
+    return commit
+
+
+def selected_sections(source, policy):
+    # Original LF physical ranges: do not reinterpret CR, VT or form-feed as lines.
+    pieces = source.split(b"\n")
+    lines = [piece + b"\n" for piece in pieces[:-1]]
+    if pieces[-1]:
+        lines.append(pieces[-1])
+    if policy == "complete":
+        return [(1, len(lines), source)]
+    if policy == "proc-sections":
+        matches = [index for index, line in enumerate(lines) if b"filt_proc" in line]
+        radius, maximum = 80, 1800
+    else:
+        matches = [index for index, line in enumerate(lines) if b"HOST_VM_INFO64" in line]
+        radius, maximum = 130, 1000
+    if not matches:
+        raise ValueError("required source section anchor unavailable; no substitute")
+    ranges = []
+    for index in matches:
+        first, last = max(0, index - radius), min(len(lines), index + radius + 1)
+        if ranges and first <= ranges[-1][1]:
+            ranges[-1][1] = max(ranges[-1][1], last)
+        else:
+            ranges.append([first, last])
+    if sum(last - first for first, last in ranges) > maximum:
+        raise ValueError("selected source sections exceed line cap")
+    return [(first + 1, last, b"".join(lines[first:last])) for first, last in ranges]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--id", required=True, choices=sorted(METADATA | FILES))
+    args = parser.parse_args()
+    parent = os.open(REPORT_PARENT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    record = {"capture": "macos-primitives-02", "id": args.id, "utc": stamp(), "status": "FAIL"}
+    error = None
+    try:
+        info = os.fstat(parent)
+        if info.st_uid != os.geteuid() or info.st_mode & 0o077:
+            raise ValueError("root-admitted private evidence parent required")
+        if args.id in METADATA:
+            key, suffix, cap = METADATA[args.id]
+            repository = REPOSITORIES[key]
+            url = "https://api.github.com/repos/" + repository + "/" + suffix
+            commit = None
+        else:
+            key, path, cap, policy = FILES[args.id]
+            repository = REPOSITORIES[key]
+            commit = verified_commit(parent, key)
+            url = "https://api.github.com/repos/" + repository + "/contents/" + path + "?ref=" + commit
+            intent = parse_json(read_regular(parent, args.id + ".intent.json", 4096))
+            if intent != {"capture": "macos-primitives-02", "id": args.id, "url": url, "cap": cap}:
+                raise ValueError("exact pinned file request intent is absent or stale")
+            if args.id == "cmake-chain":
+                process_record = verified_record(parent, "cmake-process")
+                if process_record.get("mentions_cmUVProcessChain") is not True:
+                    raise ValueError("last source slot not justified by captured CTest implementation")
+        record.update({"url": url, "repository": repository, "response_cap_bytes": cap})
+        # cap+1 distinguishes an over-limit body. No input text is evaluated.
+        raw = sys.stdin.buffer.read(cap + 1)
+        record.update({"response_bytes": len(raw), "response_sha256": hashlib.sha256(raw).hexdigest()})
+        if len(raw) > cap:
+            record["response_hash_scope"] = "prefix only; not a complete response"
+            raise ValueError("response exceeds exact cap")
+        data = parse_json(raw)
+        prefix = "https://api.github.com/repos/" + repository + "/"
+        if args.id in METADATA:
+            if key == "cmake":
+                commit = data["sha"]
+                if data["url"] != prefix + "commits/" + commit:
+                    raise ValueError("wrong official commit URL")
+                if data["html_url"] != "https://github.com/" + repository + "/commit/" + commit:
+                    raise ValueError("wrong official repository identity")
+            else:
+                if data["ref"] != "refs/heads/main" or data["object"]["type"] != "commit":
+                    raise ValueError("wrong ref identity or annotated/missing commit")
+                commit = data["object"]["sha"]
+                if data["object"]["url"] != prefix + "git/commits/" + commit:
+                    raise ValueError("wrong official commit URL")
+            if not isinstance(commit, str) or SHA1.fullmatch(commit) is None:
+                raise ValueError("malformed commit identity")
+            record["resolved_commit"] = commit
+        else:
+            if (
+                data["type"] != "file" or data["path"] != path or data["encoding"] != "base64"
+                or data["download_url"] != "https://raw.githubusercontent.com/" + repository + "/" + commit + "/" + path
+                or data["url"] != url
+            ):
+                raise ValueError("official file metadata did not confirm the pinned candidate")
+            encoded = data["content"].replace("\n", "")
+            source = base64.b64decode(encoded, validate=True)
+            source.decode("utf-8")
+            git_hash = hashlib.sha1(b"blob " + str(len(source)).encode("ascii") + b"\0" + source).hexdigest()
+            if type(data["size"]) is not int or data["size"] != len(source) or data["sha"] != git_hash:
+                raise ValueError("source size/blob identity mismatch")
+            record.update({
+                "resolved_commit": commit, "path": path, "download_url": data["download_url"],
+                "source_bytes": len(source), "source_lf": source.count(b"\n"),
+                "source_sha256": hashlib.sha256(source).hexdigest(), "git_blob_sha1": git_hash,
+                "selection": policy, "sections": [],
+            })
+            if args.id == "cmake-process":
+                record["mentions_cmUVProcessChain"] = b"cmUVProcessChain" in source
+            for index, (first, last, selected) in enumerate(selected_sections(source, policy), start=1):
+                name = args.id + ".section-" + str(index) + ".txt"
+                create_once(parent, name, selected)
+                record["sections"].append({
+                    "file": name, "first_line": first, "last_line_inclusive": last,
+                    "bytes": len(selected), "sha256": hashlib.sha256(selected).hexdigest(),
+                })
+        record["status"] = "BODY_PARSED_TRANSPORT_UNADJUDICATED"
+        record["qualification"] = "Root must bind curl exit0 separately; not target/source-admission or executable proof."
+    except Exception as caught:
+        error = caught
+        record["error"] = type(caught).__name__ + ": " + str(caught)
+    finally:
+        try:
+            create_once(parent, args.id + ".json", (json.dumps(record, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    print(json.dumps(record, sort_keys=True))
+    return 0 if error is None else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

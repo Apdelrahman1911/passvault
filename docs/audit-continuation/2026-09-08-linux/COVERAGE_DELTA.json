@@ -229,17 +229,56 @@
       "source_disposition": "QUALIFIED_SOURCE_ACCEPTANCE_TARGET_EXECUTION_PENDING",
       "new_attributed_semantic_LF": null,
       "historical_equal_line_credit_carried": false
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+      "bytes": 37053,
+      "physical_lf": 846,
+      "author": "/root/editor",
+      "independent_reviewer": "/root/storage",
+      "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+      "review_semantics": "Exact production diff and both complete test files plus relevant callers/guards/typed AEAD contract source-reviewed; real-provider startup orchestration remains unadmitted. Prior malformed-metadata test oracle rejected/corrected before execution.",
+      "source_disposition": "SOURCE_ACCEPTED_REGRESSION_EXECUTION_PENDING_NO_CLOSURE",
+      "new_attributed_semantic_LF": null,
+      "historical_equal_line_credit_carried": false
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt",
+      "sha256": "79e9d892d5aa0711facce39968ce6ce8d3a1a9dcefe47853af70e62e14168b10",
+      "bytes": 14243,
+      "physical_lf": 348,
+      "author": "/root/editor",
+      "independent_reviewer": "/root/storage",
+      "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+      "review_semantics": "Exact production diff and both complete test files plus relevant callers/guards/typed AEAD contract source-reviewed; real-provider startup orchestration remains unadmitted. Prior malformed-metadata test oracle rejected/corrected before execution.",
+      "source_disposition": "SOURCE_ACCEPTED_REGRESSION_EXECUTION_PENDING_NO_CLOSURE",
+      "new_attributed_semantic_LF": null,
+      "historical_equal_line_credit_carried": false
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt",
+      "sha256": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+      "bytes": 16180,
+      "physical_lf": 356,
+      "author": "/root/editor",
+      "independent_reviewer": "/root/storage",
+      "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+      "review_semantics": "Exact production diff and both complete test files plus relevant callers/guards/typed AEAD contract source-reviewed; real-provider startup orchestration remains unadmitted. Prior malformed-metadata test oracle rejected/corrected before execution.",
+      "source_disposition": "SOURCE_ACCEPTED_REGRESSION_EXECUTION_PENDING_NO_CLOSURE",
+      "new_attributed_semantic_LF": null,
+      "historical_equal_line_credit_carried": false
     }
   ],
   "new_application_test_executions": 0,
-  "delta_freeze": "CHECKPOINT3: earlier12 editor/Android identities plus3 qualified macOS fixture/CMake/README identities; PVA038 before-image finding confirmation only. Active PVA038 patch and new execution-plan/control drafts excluded.",
+  "delta_freeze": "CHECKPOINT4: previous15 application-source identities unchanged plus3 independently accepted PVA038 afterimages. Also explicitly selected frozen Android prerequisite and Mac source-capture reports/code, all infrastructure not original811/app overlay. Active closer/outer/28/17/4 controls/partialMacvalidation workflow/helper changes excluded. No whole-worktree or semantic-LF review claim.",
   "additional_test_source_declarations": 20,
   "baseline_policy_review": "reviews/baseline-coverage/REVIEW.md",
   "independent_checkpoint_review": {
-    "reviewer": "/root/baseline_coverage",
-    "path": "reviews/baseline-coverage/CHECKPOINT-3-REVIEW.json",
-    "status": "REFERENCE_ONLY_NOT_SELF_AUTHORED_ACCEPTANCE; consult reviewer exact-byte report after freeze",
-    "scope": "Checkpoint3 selected source/evidence and central ledgers; excludes active source drafts; publication is not execution admission"
+    "reviewer": "/root/android32",
+    "path": "reviews/android32/CHECKPOINT-4-COVERAGE-REVIEW.json",
+    "status": "PROSPECTIVE_REFERENCE_NOT_ROOT_AUTHORED_ACCEPTANCE",
+    "scope": "Only frozen selected checkpoint4 source/evidence and central ledger delta, not whole-source or runtime readiness; prior Android authorship excluded from any new independent implementation vote."
   },
   "additional_test_source_declarations_scope": "JUnit methods: nine Back plus eleven row/input; zero executed",
   "additional_android_instrumentation_cases": {
@@ -259,7 +298,7 @@
     "planned_ctest_cases_unstarted": 14,
     "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json"
   },
-  "updated_utc": "2026-09-09T02:10:16.675252+00:00",
+  "updated_utc": "2026-09-09T04:41:07.856605+00:00",
   "infrastructure_evidence": {
     "not_original_811_denominator": true,
     "source_capture": {
@@ -289,7 +328,9 @@
       {
         "path": "scripts/audit/linux_database_closeout.py",
         "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec",
-        "review": "reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json"
+        "review": "reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json",
+        "status": "HISTORICAL_SOURCE_ACCEPTANCE_SUPERSEDED_BY_CONFIRMED_HOLD",
+        "superseding_review": "reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.json"
       },
       {
         "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH_DATABASE.py",
@@ -301,7 +342,7 @@
         "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/BOOTSTRAP_E.py",
         "sha256": "a49f750c0f8dc6a0527ee823717ec23b63031ab285fd1d297f23db3c2de77f6c",
         "review": "reviews/verification/LINUX-DATABASE-E-BOOTSTRAP-V2-SOURCE-REVIEW.json",
-        "scope": "Empty evidence directory bootstrap source only; actual original instance/preflight acceptance absent, unexecuted. Rejected v1 retained."
+        "scope": "Source v2 accepted after preserved rejectedv1; separately accepted E-bootstrap01 actual metadata execution exit0 and original result reconciled. No application or database/closer admission."
       }
     ],
     "controls02": {
@@ -322,13 +363,63 @@
       "scope": "Captured schemas/static SHA-1 linkage, no whole SDK consumer/archive/native/device result",
       "external_diagnostic_preserved": "SCHEMA-CAPTURE-EXTERNAL-01.json records failed metadata-only postreader and corrected original comparison, no recapture."
     },
-    "closeout_gate_timing": "Viable prompt-closeout design prebuild; meaningful LC-C05/06 controls required before closer invocation/actual C acceptance, root will finish before build. Runner controls not substitute."
+    "closeout_gate_timing": "Viable prompt-closeout design prebuild; meaningful LC-C05/06 controls required before closer invocation/actual C acceptance, root will finish before build. Runner controls not substitute.",
+    "E_bootstrap01": {
+      "kind": "ONE_REAL_METADATA_BOOTSTRAP_NOT_TEST",
+      "source_sha256": "a49f750c0f8dc6a0527ee823717ec23b63031ab285fd1d297f23db3c2de77f6c",
+      "tool": "5d1303",
+      "exit": 0,
+      "invocations": 1,
+      "journal_records": 2,
+      "journal_bytes": 722,
+      "journal_sha256": "830dd8bb043839ab5375dce95268252690718e1c32964145cbbc8789db3f3a58",
+      "original_E": "runs/linux-database-01 original0700 empty; retained for pending exact database admission",
+      "reported_fd_close_attempts": 15,
+      "reported_fd_close_errors": 0,
+      "runtime_created": false,
+      "application_cases": 0,
+      "deletions": 0,
+      "review": "reviews/verification/E-BOOTSTRAP-RESULT-REVIEW-01.json",
+      "external_receipt": "reviews/linux-runner/E-BOOTSTRAP-EXTERNAL-01.json",
+      "slot_release": "reviews/linux-runner/E-BOOTSTRAP-SLOT-RELEASE-01.json",
+      "consumed": true,
+      "limits": "Helper span0.007970628s and toolwall0.000008679s are not one whole-tool duration; no separate external PID or forced-timeout/partial-write failure-injection evidence. Original dirs/lock and ten immutable images independently matched, no host-wide idle or hostile-writer guarantee."
+    },
+    "macos_capture01": {
+      "kind": "FAILED_SOURCE_DATA_PIPELINES_NOT_TEST",
+      "pipeline_attempts": 3,
+      "curl_exits": [
+        23,
+        23,
+        23
+      ],
+      "reader_exits": [
+        1,
+        1,
+        1
+      ],
+      "reader_body_executed": false,
+      "verified_source_commits": 0,
+      "verified_source_files": 0,
+      "dependent_file_slots_unstarted": 9,
+      "evidence": "reviews/native/macos-primitives-01/FAILURE.json",
+      "consumed": true,
+      "limits": "Later two distinct-URL pipelines could have been avoided after shared parser failure; author sequencing miss preserved. No body size/hash observed, no actual source-capture helper result."
+    },
+    "macos_capture02_source": {
+      "source_sha256": "32fdca27e7e70573b0b5888809a955bdb4d76974400becd2054abb825c7901c4",
+      "review": "reviews/native-independent/MACOS-CAPTURE-02-SOURCE-REVIEW-v2.json",
+      "status": "QUALIFIED_SOURCE_ONLY_NO_GET_OR_EXECUTION_ADMISSION",
+      "executions": 0,
+      "GETs": 0,
+      "limits": "Original parent/packet/external wrapper/transport and one-shot admission absent. Does not supply CTest JUnit-producer schema, actual Mac APIs or backend/runtime/hardware proof. Partial validation helper/workflow excluded fromC4."
+    }
   },
   "prior_independent_checkpoint_review": {
     "reviewer": "/root/baseline_coverage",
-    "path": "reviews/baseline-coverage/CHECKPOINT-2-REVIEW.json",
-    "status": "CONSULT_REVIEWER_AUTHORED_EXACT_BYTE_DISPOSITION",
-    "scope": "Complete second source checkpoint delta/central ledgers/report; not implied by baseline policy review"
+    "path": "reviews/baseline-coverage/CHECKPOINT-3-REVIEW.json",
+    "status": "REFERENCE_ONLY_NOT_SELF_AUTHORED_ACCEPTANCE; consult reviewer exact-byte report after freeze",
+    "scope": "Checkpoint3 selected source/evidence and central ledgers; excludes active source drafts; publication is not execution admission"
   },
   "additional_macos_ctest_declarations": {
     "added": 3,
@@ -345,8 +436,30 @@
     "retained_captures": 6,
     "review": "reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.json",
     "counts": "22/38 qualified closures,16open; original19/25 and2/12 unchanged",
-    "patch_in_this_source_delta": false,
+    "patch_in_this_source_delta": true,
     "new_application_executions": 0,
-    "new_semantic_LF_credit": 0
+    "new_semantic_LF_credit": 0,
+    "patch_review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
+  },
+  "additional_pva038_source_declarations": {
+    "routing_junit_methods": 9,
+    "provider_fixture_producer_methods": 1,
+    "fresh_provider_consumer_methods": 3,
+    "executed": 0,
+    "compiled": false,
+    "default_provider_mode": "Absent explicit mode causes JUnit assumption skip, not PASS; no actual skip observed.",
+    "separate_fresh_worker_modes": [
+      "prepare",
+      "success",
+      "wrong-key",
+      "loader-io"
+    ],
+    "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
+  },
+  "android_prerequisite_qualification": {
+    "author_report": "reviews/android32/ANDROID32-ADMISSION-PREREQUISITES.md",
+    "independent_review": "reviews/verification/ANDROID32-PREREQUISITES-REVIEW-01.json",
+    "owner_license_scope_answer_received": false,
+    "scope": "Existing41B SDK license marker is present; user/entity/selected API24x86 image scope not established. UTF-8 is upstream text-caller policy, not deriveKey arbitrary ByteArray restriction. No required database-first dependency; each target needs its own admission and sharedslot. No runtime credit."
   }
 }

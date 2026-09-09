@@ -1,0 +1,116 @@
+{
+  "schema": "passvault.independent-source-review.v1",
+  "finding_id": "PVA-038",
+  "date_utc": "2026-09-09",
+  "reviewer": "/root/storage",
+  "application_and_test_author": "/root/editor",
+  "decision": "ACCEPT_SOURCE_DESIGN_ONLY",
+  "admission_granted": false,
+  "qualified_closure": false,
+  "base_commit_observed": "f18995e6633904a6845e09eab8a481635290894d",
+  "base_tree_observed": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "base_is_patch_commit": false,
+  "independence_scope": "Independent of editor-authored PVA-038 production and tests; not independent of reviewer-coauthored database runner.",
+  "afterimages": [
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+      "sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+      "bytes": 37053,
+      "lf": 846,
+      "preimage_sha256": "f2fc2ff02926e62230eff5e4723b2a68998649eee5f758f5ff99df93bcf61469"
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt",
+      "sha256": "79e9d892d5aa0711facce39968ce6ce8d3a1a9dcefe47853af70e62e14168b10",
+      "bytes": 14243,
+      "lf": 348,
+      "test_declarations": 9
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt",
+      "sha256": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+      "bytes": 16180,
+      "lf": 356,
+      "test_declarations": 4,
+      "fixture_producer_declarations": 1,
+      "prospective_consumer_regression_declarations": 3
+    }
+  ],
+  "supporting_bindings": [
+    {"path_suffix": "reviews/editor/PVA-038-PATCH-SOURCE-V1.md", "sha256": "e51061a3899af459d76d08ee392d383d543f6fa8eb928ede526afef8f6ef28ac"},
+    {"path_suffix": "reviews/editor/PVA-038-PATCH-SOURCE-V1.json", "sha256": "7153498eb2dba7586fbfe9fcb8da7dfe099286bd8c04c04f3f7ba69915f28787"},
+    {"path_suffix": "reviews/editor/PVA-038-PATCH-SOURCE-V2.md", "sha256": "cfb20d85eab95a6083ba1a55b00493508938503a31503c5e53134a892d3a0108"},
+    {"path_suffix": "reviews/editor/PVA-038-PATCH-SOURCE-V2.json", "sha256": "3b751b7ce1cd4e6cf949f72462393cb51a8b6b2038cc35db5cc99b220ad2eecd"},
+    {"path_suffix": "reviews/editor/PVA-038-ROUTING-REJECTED-V1.kt.txt", "sha256": "22a47793df143dcd9db299e04f2a83451e97011886b64da9b5245770fc78a017"},
+    {"path_suffix": "reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.md", "sha256": "407da44d881319017607d1c9662e937c5ad23878490bc56168117b10dbff9d9d"},
+    {"path_suffix": "reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.json", "sha256": "8cd66918d13af25d14bda9cfd2c113fa0b57cf69f65aaeaa5551b866fe7781d5"},
+    {"path_suffix": "DefaultBiometricUnlockService.kt", "sha256": "431356205bb300aeb0a7c14759eef0bbf09583d3100082e5dd0103ac731a90f5"},
+    {"path_suffix": "CryptoEngine.kt", "sha256": "571ff97bf0758e788e8ad405ab0c147b52e040fcc291c28080329d44ba8516b9"},
+    {"path_suffix": "LibsodiumCryptoEngine.kt", "sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57"},
+    {"path_suffix": "RepositorySecurityIntegrationTest.kt", "sha256": "4ab2395754910b118e9f56b11044fed7f316caa6b597fcb590d10a39ac70d9df"},
+    {"path_suffix": "BiometricUnlockFreshnessIntegrationTest.kt", "sha256": "1108e4b0d4353c840974ac0ed57331e257947e9bded200a52bc73afd3b9d3e0e"},
+    {"path_suffix": "reviews/build-config/LOADER-EXCERPTS.json", "sha256": "0c2d3275c6e85b9d62f980609a6e1e021b4b967f88919254bde4349de977b160"},
+    {"path_suffix": "reviews/editor/biometric-verifier-sources/resource-loader.stdout.txt", "sha256": "6714869e8cf802256b56c26d9c33379b6b77931884ebc95af7d8015d32779ffd"},
+    {"path_suffix": "reviews/editor/biometric-verifier-sources/resource-exception.stdout.txt", "sha256": "b6775e595ce829aeafa6bc2627c96aad9585b9fb8bcc596f6a8cbcf6a658c341"},
+    {"path_suffix": "reviews/editor/biometric-verifier-sources/libsodium-jvm-pom.stdout.txt", "sha256": "bb0a0ab14c39fd52d05df8e65bd9554a515fded99daf94f9ba35444ae32a5856"},
+    {"path_suffix": "reviews/editor/biometric-verifier-sources/android-aead.stdout.txt", "sha256": "2eac8066b9b07b7dd920d684f650c9279c8ce911f322800c2a8611cdd2fd48da"},
+    {"path_suffix": "reviews/editor/biometric-verifier-sources/common-aead.stdout.txt", "sha256": "243dccc28f03b94f5c4f323c8e0139ac1088e2da091524bedfcae7a7f011ea7a"}
+  ],
+  "independent_challenge": {
+    "id": "T01",
+    "classification": "SOURCE_DISCOVERED_TEST_ORACLE_ERROR",
+    "new_application_family": false,
+    "executed_failure": false,
+    "original_oracle": "Malformed nonce installed before service.unlock nevertheless expected Locked and a released key to wipe.",
+    "guard": "First repository.getMetadata validates metadata; failure precedes vaultId, retrieve, unlock and state transition.",
+    "author_independently_confirmed": true,
+    "revision_reviewed": "V2 checks unchanged pre-release state, no publication, no retrieval/verifier/deletion, null returned/candidate keys. General post-release helper now requires both key buffers and wipes.",
+    "resolution": "CORRECTED_IN_ACCEPTED_SOURCE; NOT_EXECUTED"
+  },
+  "source_challenges": [
+    "Cold ordinary-method resource-loader IO witness; static-initializer, logger/linkage Error and warm-provider counterexamples distinguished.",
+    "Repository-bound attempt, stale lock generation, metadata, size, already-open-session and publication guards retained.",
+    "Typed authentication failure and private malformed-plaintext marker invalidate; generic operational exceptions and cancellation do not acquire that type.",
+    "Real fixed-length envelope successful plaintext should be 32 bytes; injected 31-byte case is defensive policy, not a new witness.",
+    "Production typed crypto contract differs from generic-authentication-exception testing fake; no biometric test using that fake found.",
+    "Password path, data/crypto compatibility and plaintext/key wiping reviewed without product-boundary redesign."
+  ],
+  "unresolved_evidence": [
+    "Compilation, Detekt and JUnit/reflection API compatibility of new tests.",
+    "Fresh resolved graph and binary/source equivalence for retained provider/loader source.",
+    "Fresh-worker orchestration, exact startup JVM arguments, producer-to-consumer fixture binding and actual provider witness.",
+    "Independently admitted execution, coordination, resource limits, cleanup, wrapper stop and worker settlement.",
+    "Exact iOS/Kotlin-Native AEAD implementation, native runtime/binary proof and genuine hardware behavior.",
+    "Linux synthetic key release does not prove native protected key retrieval; Windows native success not newly reread end-to-end by this reviewer."
+  ],
+  "accounting": {
+    "new_test_declarations": 13,
+    "routing_declarations": 9,
+    "fixture_producer_declarations": 1,
+    "prospective_fresh_provider_consumer_regressions": 3,
+    "executed_cases": 0,
+    "compiled_cases": 0,
+    "passed_cases": 0,
+    "failed_cases": 0,
+    "skipped_cases": 0,
+    "hardware_cases": 0,
+    "qualified_closure_increment": 0,
+    "original_confirmed": {"closed": 19, "total": 25, "open": 6},
+    "all_confirmed": {"closed": 22, "total": 38, "open": 16},
+    "original_suspicions": {"resolved": 2, "total": 12, "open": 10},
+    "pvd_explanations_separate": 8,
+    "readiness_percentage_claimed": false
+  },
+  "inspection_qualifications": [
+    "Earlier combined displays truncated; relevant source and diff later read fully/focused.",
+    "Oversized single-line handoff JSON search was truncated, used for no native or semantic claim; bounded follow-up found only common/Android AEAD captures.",
+    "Guessed build-logic and core/crypto/src/desktopTest paths absent; corrected module/build/test paths read.",
+    "No project-code, runner or test import, compile or execution; no runtime artifacts or background processes created in this lane."
+  ],
+  "restrictions_preserved": [
+    "PVU-007 STOP", "PVU-011 NO_RETRY", "PVA-029 FAIL_NO_AUTOMATIC_RETRY",
+    "G7_G8_CLOSED", "Windows01_FAIL_CLEANUP_HOLD", "NO_ARCHIVED_OR_UNADMITTED_RUNNER_REPLAY",
+    "ROOT_SOLE_BUILD_EXECUTION_CLEANUP_PUBLICATION_OWNER", "PROTECTED_REFS_UNCHANGED",
+    "NON_PUBLISHING", "NO_REPLACEMENT_MOBILE_1017001", "PVD_OWNER_DECISIONS_SEPARATE"
+  ]
+}

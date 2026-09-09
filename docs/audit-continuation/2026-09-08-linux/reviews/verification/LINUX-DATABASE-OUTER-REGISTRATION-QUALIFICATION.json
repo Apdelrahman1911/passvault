@@ -1,0 +1,94 @@
+{
+  "format": "passvault-linux-database-outer-registration-qualification-v1",
+  "reviewer": "/root/verification",
+  "author_and_finder": "/root/storage",
+  "review_role": "INDEPENDENT_SOURCE_ONLY_CHALLENGE_OF_EXISTING_VARIANT",
+  "disposition": "CONFIRM_EXISTING_LCL-OWN-001_VARIANT_SOURCE_ONLY_DATABASE_ADMISSION_HOLD",
+  "new_application_family": false,
+  "execution_authorized": false,
+  "inputs": {
+    "launcher_sha256": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1",
+    "launcher_bytes": 37477,
+    "launcher_physical_lf": 715,
+    "plan_sha256": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29",
+    "plan_bytes": 11441,
+    "plan_physical_lf": 200,
+    "prior_review_md_sha256": "6307e9ee01eda1ce735407375b6ff1516feb308257e9fe528d75473a99525f06",
+    "prior_review_json_sha256": "a7a79601c6d30312b167b20a4c91291f14d8a81e1f07665003e20df7cdedea13",
+    "unchanged_exact_snapshot": "linux-database-outer-frozen-v1.py.txt"
+  },
+  "historical_qualification": {
+    "prior_reviewer_miss_acknowledged": true,
+    "prior_review_preserved_unchanged": true,
+    "newly_introduced_regression": false,
+    "prior_acceptance_clears_actual_admission": false,
+    "preliminary_citations_corrected_after_author_challenge": "Paired insertion133, local close135, final close175-183; preliminary137/139 and186-191 were incorrect"
+  },
+  "source_proof": {
+    "condition": "First ordinary FD-map store succeeds, second ordinary pin-map store raises handled MemoryError, local close succeeds, subsequent ordinary bookkeeping succeeds",
+    "paired_insertion_line": 133,
+    "local_close_line": 135,
+    "final_close_lines": [175, 183],
+    "stale_numeric_fd_entry_survives": true,
+    "new_discovery_sites": [289, 344, 349],
+    "admission_call_line": 546,
+    "later_lock_open_line": 552,
+    "later_first_evidence_line": 572,
+    "later_popen_line": 600,
+    "main_final_originals_close_line": 704,
+    "bounded_unwind": "Admission failure precedes request assignment/lock/evidence/child; no-child/empty-files/None-lock guards skip readers, samplers and writers before Originals.close",
+    "intervening_fd_allocator_identified": false,
+    "expected_not_observed_second_close_error": "EBADF",
+    "existing_hold": "The original allocation failure and absent child already force code1; no new operational HOLD established",
+    "close_error_reporting": "Main only tests returned close-error list truthiness; it does not append those strings to state.errors"
+  },
+  "not_established": [
+    "Actual injected fault or low-memory execution",
+    "FD-number reuse or unrelated-descriptor injury",
+    "Deletion, application data loss, postlaunch occurrence or false PASS",
+    "Additional emitted directory-close diagnostic",
+    "Completion of arbitrary repeated-allocation-failure or ambiguous-close paths"
+  ],
+  "counterexamples": [
+    "Successful paired registration retains and finally closes one original FD once",
+    "Failure before or during first FD-map insertion has no newly published stale entry",
+    "Missing post-admission directory registration with discover=False fails before a new open"
+  ],
+  "required_before_database_admission": [
+    "Narrow incomplete-registration unpublication before local close, preserving valid parent entries",
+    "Fresh exact source/PLAN binding and independent correction review",
+    "Meaningful separately admitted source-bound normal/fault regression",
+    "All original actual database instance, coordination, external envelope and settlement gates"
+  ],
+  "controls_boundary": {
+    "four_control_source_sha256": "0a012823b44c2c2bf2e7e81e185cecc324639d210529d1886ab6651d5efa0802",
+    "four_control_plan_sha256": "27cb2e2da38f6cface649695179ce472b27b8755171393fe3a803703de5f690f",
+    "subjects": [
+      "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+      "50473240372643cc30dc54f12e4f3cf818d6ab68e0f4f27b62929cdae4684a5c"
+    ],
+    "database_outer_covered": false,
+    "changed_extended_or_executed_by_this_task": false
+  },
+  "counts": {
+    "application_cases": 0,
+    "controls_executed": 0,
+    "imports_ast_compilations_or_helper_executions": 0,
+    "native_or_hardware_tests": 0,
+    "qualified_closure_delta": 0,
+    "original_confirmed": {"qualified": 19, "total": 25},
+    "all_confirmed": {"qualified": 22, "total": 38, "remaining": 16},
+    "original_suspicions": {"resolved": 2, "total": 12, "remaining": 10},
+    "pvd_explanations_owner_decisions_separate": 8
+  },
+  "resource_settlement": {
+    "created": "Necessary permanent review MD/JSON only",
+    "source_data_readers_exited": true,
+    "runtime_namespace_probe_or_cleanup": false,
+    "workers_builds_caches_temp_roots_created": false,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH",
+    "root_sole_executor_and_resource_monitor": true
+  },
+  "restrictions": "PVU-007 STOP; PVU-011 NO-RETRY; PVA-029 FAIL/no automatic retry; G7/G8 CLOSED; Windows failure/cleanup HOLD; hardware/PVD/mobile1017001 and protected-ref/dependency/version/identity/signing/store/publication boundaries unchanged",
+  "details": "LINUX-DATABASE-OUTER-REGISTRATION-QUALIFICATION.md"
+}

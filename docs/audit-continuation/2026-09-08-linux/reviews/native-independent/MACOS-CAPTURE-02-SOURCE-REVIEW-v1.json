@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T03:32:43.506289+00:00",
+  "disposition": "REVISE_NO_READER_WRAPPER_NETWORK_OR_TARGET_EXECUTION_ADMISSION",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/CAPTURE_MACOS_SOURCE_DATA.py",
+      "sha256": "b963963180e12dcf952f5356a7a06d3364450150804bc23e25c25a4da984a1f9",
+      "bytes": 11956,
+      "physical_lf": 268,
+      "read": "Complete as inert source/data, never executed/imported"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-PRIMITIVE-CAPTURE-02-PROPOSAL.md",
+      "sha256": "313d6f0d464db721c5462ed3b36c0a64ce1c1a602f2eaee146c868ed26f72bbc",
+      "bytes": 10098,
+      "physical_lf": 163,
+      "read": "Complete as inert source/data, never executed/imported"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/macos-primitives-01/FAILURE.json",
+      "sha256": "a4b063b4848551f504cc71752cdfc321d848d1c8007cfa6fb27a8811af86ae47",
+      "bytes": 3109,
+      "physical_lf": 51,
+      "read": "Complete as inert source/data, never executed/imported"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/macos-primitives-01/INERT-FAILED-COMMAND.txt",
+      "sha256": "f9f9caf5c68b1a977025b236da171f94916df5db76cc6aa799d87dc9354c1df3",
+      "bytes": 3848,
+      "physical_lf": 67,
+      "read": "Complete as inert source/data, never executed/imported"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-PRIMITIVE-CAPTURE-PLAN.json",
+      "sha256": "18d377c1843c7adbba66c491f4a934979aeade734c4c351ba45f0b1fd708e8c8",
+      "bytes": 5851,
+      "physical_lf": 109,
+      "read": "Complete as inert source/data, never executed/imported"
+    }
+  ],
+  "reviewed_source_ranges": {
+    "CAPTURE_MACOS_SOURCE_DATA.py": [
+      [
+        1,
+        268
+      ]
+    ],
+    "MACOS-PRIMITIVE-CAPTURE-02-PROPOSAL.md": [
+      [
+        1,
+        163
+      ]
+    ]
+  },
+  "issues": [
+    {
+      "id": "C02-R1",
+      "lines": [
+        [
+          175,
+          181
+        ],
+        [
+          254,
+          262
+        ]
+      ],
+      "title": "Rejected owner/private-mode parent still receives unconditional report write/fsync",
+      "severity_scope": "Required source correction; conditional guard-failure path, not observed unauthorized write",
+      "required": "No output mutation through parent before/after failed admission; close-only rejection and separate outer/stdout failure receipt"
+    },
+    {
+      "id": "C02-R2",
+      "lines": [
+        [
+          175,
+          178
+        ]
+      ],
+      "title": "Throwing record/stamp construction between parent open and cleanup try",
+      "severity_scope": "Required ordinary acquisition/unwind correction; process-exit fd release is not the intended recorded finalizer",
+      "required": "Preallocate record/stamp before open or install acquisition guard first; no close retry"
+    },
+    {
+      "id": "C02-R3",
+      "lines": [
+        [
+          112,
+          140
+        ]
+      ],
+      "title": "Dependency metadata role/endpoint/cap unchecked while transport labels and shared digest/url are trusted",
+      "severity_scope": "Required stale/wrong-role input rejection; no observed wrong GET or claim of malicious same-user authentication",
+      "required": "Check exact finite metadata identity/official endpoint/integer cap/body contract and same accepted CMake commit dependency; external original provenance remains necessary"
+    }
+  ],
+  "author_challenge_response": "Independently acknowledged all3 paths; agreed versioned source correction while preserving frozen inputs, no execution",
+  "accepted_body_caps": {
+    "metadata_bytes": 98304,
+    "file_envelope_bytes": 1703936,
+    "total_bytes": 1802240,
+    "owner_ceiling_bytes": 2097152,
+    "maximum_response_slots": 12,
+    "qualification": "Accepted-body caps only; failed overlimit pipes/wire buffers and runtime/RAM/evidence ceilings need outer implementation"
+  },
+  "conditional_last_slot": "cmUVProcessChain mention flag is not sufficient semantic proof of required dependency; root adjudication of captured source before exact intent remains necessary",
+  "external_pending": [
+    "Frozen exact Linux wrapper argv/startup/minimal environment and curl/Python identities",
+    "Original namespace/ancestry and owned private parent instance; exclusive durable attempt/consumed-output rejection",
+    "Immediate both-PIPESTATUS capture and fail-fast despite error/cancellation",
+    "Outer timeout/owned-child settlement and selected curl stream-limit/byte accounting",
+    "Observed transport/full original record binding and durable publication; no label-only provenance"
+  ],
+  "capture01": {
+    "status": "FAIL_CONSUMED_NO_RETRY",
+    "metadata_pipelines_failed": 3,
+    "curl_exits": [
+      23,
+      23,
+      23
+    ],
+    "reader_exits": [
+      1,
+      1,
+      1
+    ],
+    "verified_responses": 0,
+    "verified_source_commits": 0,
+    "verified_source_files": 0,
+    "dependent_file_slots_unstarted": 9,
+    "qualification": "Failure JSON and inert reconstruction read; no replay or raw response claim"
+  },
+  "capture02_parent_observed": "ABSENT; reviewer did not allocate it",
+  "capture02_requests": 0,
+  "reader_executions": 0,
+  "syntax_checks": 0,
+  "imports": 0,
+  "new_test_cases_executed": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "execution_admission": false,
+  "network_admission": false,
+  "target_admission": false,
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-CAPTURE-02-SOURCE-REVIEW-v1.md",
+  "report_sha256": "707736efca262228a2cb0e7b701afd3bf8eff8bb55cc6336afbf80a8ec60a44b",
+  "restrictions": "No Windows retry/CI activation/helper reuse; PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED,publication/build1017001 fences unchanged",
+  "reviewer_cleanup": "Permanent review pair only; no generated output/cache/temp executable/background worker/parent allocation; no deletion/stop/termination/recovery"
+}

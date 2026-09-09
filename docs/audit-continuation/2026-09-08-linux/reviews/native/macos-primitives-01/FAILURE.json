@@ -1,0 +1,51 @@
+{
+  "schema": "passvault-macos-source-data-capture-failure-v1",
+  "author": "/root/native",
+  "status": "FAIL; CAPTURE01 CONSUMED; NO RETRY",
+  "plan_sha256": "18d377c1843c7adbba66c491f4a934979aeade734c4c351ba45f0b1fd708e8c8",
+  "cause": "Author serialized multiline Python source with JSON.stringify and interpolated the resulting double-quoted text into a shell -c argument. Shell parsing left literal backslash-n characters instead of source newlines. Python rejected the first line before the reader body executed.",
+  "diagnostic": "SyntaxError: unexpected character after line continuation character",
+  "metadata_attempts": [
+    {
+      "id": "xnu-commit",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/git/ref/heads/main",
+      "curl_exit": 23,
+      "reader_exit": 1,
+      "command_exit": 1,
+      "tool_chunk_id": "aec81c",
+      "tool_wall_seconds": 0.203130003,
+      "response_cap_bytes": 32768
+    },
+    {
+      "id": "libc-commit",
+      "url": "https://api.github.com/repos/apple-oss-distributions/Libc/git/ref/heads/main",
+      "curl_exit": 23,
+      "reader_exit": 1,
+      "command_exit": 1,
+      "tool_chunk_id": "0c8871",
+      "tool_wall_seconds": 0.226457228,
+      "response_cap_bytes": 32768
+    },
+    {
+      "id": "cmake-commit",
+      "url": "https://api.github.com/repos/Kitware/CMake/commits/v4.4.2",
+      "curl_exit": 23,
+      "reader_exit": 1,
+      "command_exit": 1,
+      "tool_chunk_id": "71a1f5",
+      "tool_wall_seconds": 0.263163513,
+      "response_cap_bytes": 32768,
+      "curl_diagnostic": "curl: (23) Failure writing output to destination"
+    }
+  ],
+  "response_bytes": "UNKNOWN; reader never observed/hashed a body, so neither transport completeness nor exact received length is asserted",
+  "response_sha256": null,
+  "verified_source_commits": 0,
+  "verified_source_files": 0,
+  "remaining_file_slots": "all nine UNSTARTED; no pinned file URL was activated",
+  "execution_accounting": "three failed source-data pipelines, zero application/runner/control/test cases; no platform evidence",
+  "sequence_qualification": "The orchestration launched the three independent metadata slots sequentially despite the shared parser fault. None was a repeated URL, but later two attempts could have been avoided by fail-fast stopping. This is preserved as an author sequencing error, not a successful capture.",
+  "retention": "The data reader did not run its output-file creation. Only this permanent failure record and the inert command/reader reconstruction are retained. No received source is claimed to be preserved.",
+  "cleanup": "All three commands exited. The report-only macos-primitives-01 directory is a permanent evidence destination, not scratch. No build/cache/temp file, target process, emulator, daemon or background worker was created; no Gradle stop applies and no prior cleanup obligation is discharged.",
+  "restrictions": "No corrected replay, further file GET, helper import/execution, CI probe, installation, ownership adoption or cleanup recovery followed. All unresolved API/CTest primitives stay unadmitted."
+}

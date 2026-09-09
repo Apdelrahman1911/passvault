@@ -1,0 +1,109 @@
+{
+  "schema": "passvault-macos-source-data-capture-v1",
+  "author": "/root/native",
+  "authority": "Root explicitly authorized bounded anonymous official source-data captures on 2026-09-09; no target, CI, downloaded-code execution/import, installation, retry or cleanup recovery is authorized.",
+  "purpose": "Resolve real macOS process/VM/ACL and CMake 4.4.2 timeout source semantics before implementing a new, separately reviewed native-only runner.",
+  "classification": "INERT SOURCE DATA ONLY; not runner, API availability, platform or execution admission",
+  "network_policy": {
+    "method": "one anonymous HTTPS GET per selected URL",
+    "client": "curl -q --proto =https --connect-timeout 5 --max-time 20 --max-filesize CAP --fail --silent --show-error",
+    "credentials": "none; no config, credential, cookie, authorization header or redirects",
+    "retry": "none; any failed/missing source remains an explicit unadmitted dependency",
+    "maximum_responses": 12,
+    "aggregate_maximum_bytes": 1802240,
+    "owner_limit_bytes": 2097152,
+    "per_request_connect_seconds": 5,
+    "per_request_total_seconds": 20
+  },
+  "metadata_first": [
+    {
+      "id": "xnu-commit",
+      "url": "https://api.github.com/repos/apple-oss-distributions/xnu/git/ref/heads/main",
+      "expected_repository": "apple-oss-distributions/xnu",
+      "response_cap_bytes": 32768
+    },
+    {
+      "id": "libc-commit",
+      "url": "https://api.github.com/repos/apple-oss-distributions/Libc/git/ref/heads/main",
+      "expected_repository": "apple-oss-distributions/Libc",
+      "response_cap_bytes": 32768
+    },
+    {
+      "id": "cmake-commit",
+      "url": "https://api.github.com/repos/Kitware/CMake/commits/v4.4.2",
+      "expected_repository": "Kitware/CMake",
+      "response_cap_bytes": 32768
+    }
+  ],
+  "candidate_file_slots": [
+    {
+      "id": "xnu-event",
+      "repository": "apple-oss-distributions/xnu",
+      "candidate_path": "bsd/sys/event.h",
+      "response_cap_bytes": 65536,
+      "selection": "complete bounded header"
+    },
+    {
+      "id": "xnu-kern-event",
+      "repository": "apple-oss-distributions/xnu",
+      "candidate_path": "bsd/kern/kern_event.c",
+      "response_cap_bytes": 786432,
+      "selection": "bounded exact-line process-filter sections with full response/source hashes; no claim of full-file review"
+    },
+    {
+      "id": "xnu-proc-info",
+      "repository": "apple-oss-distributions/xnu",
+      "candidate_path": "bsd/sys/proc_info.h",
+      "response_cap_bytes": 131072,
+      "selection": "complete bounded header"
+    },
+    {
+      "id": "xnu-libproc",
+      "repository": "apple-oss-distributions/xnu",
+      "candidate_path": "libsyscall/wrappers/libproc/libproc.h",
+      "response_cap_bytes": 65536,
+      "selection": "complete bounded header"
+    },
+    {
+      "id": "xnu-vm-statistics",
+      "repository": "apple-oss-distributions/xnu",
+      "candidate_path": "osfmk/mach/vm_statistics.h",
+      "response_cap_bytes": 65536,
+      "selection": "complete bounded header"
+    },
+    {
+      "id": "xnu-host",
+      "repository": "apple-oss-distributions/xnu",
+      "candidate_path": "osfmk/kern/host.c",
+      "response_cap_bytes": 262144,
+      "selection": "bounded exact-line HOST_VM_INFO64 sections with full response/source hashes; no claim of full-file review"
+    },
+    {
+      "id": "libc-acl",
+      "repository": "apple-oss-distributions/Libc",
+      "candidate_path": "include/sys/acl.h",
+      "response_cap_bytes": 65536,
+      "selection": "complete bounded header if the official metadata confirms this candidate path"
+    },
+    {
+      "id": "cmake-process",
+      "repository": "Kitware/CMake",
+      "candidate_path": "Source/CTest/cmProcess.cxx",
+      "response_cap_bytes": 131072,
+      "selection": "complete bounded source at exact v4.4.2 resolved commit"
+    },
+    {
+      "id": "cmake-chain",
+      "repository": "Kitware/CMake",
+      "candidate_path": "Source/cmUVProcessChain.cxx",
+      "response_cap_bytes": 131072,
+      "selection": "complete bounded source only if independently relevant from the first CTest process record; otherwise leave this slot unstarted"
+    }
+  ],
+  "file_url_sealing": "After commit metadata capture, record an exact pinned Contents-API URL for each selected candidate before its request. Its returned repository/path/download_url/blob identity must confirm the candidate; a guessed path is never presented as a verified available file. Do not replace missing candidates or mutable/failed refs silently.",
+  "reader": "isolated python3 -I -B standard-library bounded bytes/strict UTF8/JSON/Base64/hash reader only; never imports or executes downloaded bytes",
+  "retention": "Exclusive new permanent records under reviews/native/macos-primitives-01. Retain compact metadata/receipt and necessary inert .txt source sections, each with hashes and original line ranges. Do not retain whole API Base64 envelopes, tool downloads, binaries, build/cache directories or raw unnecessary implementation files.",
+  "cleanup": "Install no background worker; pipe bounded responses directly to the data reader; use no temporary/cache files. Preserve partial/failure receipts and do not retry. No existing source, report, shared cache, SDK/toolchain or process is a cleanup target.",
+  "platform_qualification": "Current Apple upstream main is a declared source reference, not an attestation of the future macOS 15 Intel runner kernel/libc. Actual required symbol/ABI/toolchain observations and exact CTest binary/source-version binding remain fresh implementation and admission gates. Missing exact-version facts remain explicitly unadmitted.",
+  "coordination": "Stop all tool commands when root requests quiescence for its sole-owned Linux build. This source-data operation is not another build/test job and transfers no execution slot."
+}
