@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T10:49:01.215836+00:00",
+  "kind": "FRESH02_SOURCE_INSTANCE_CALLER_RESOURCE_SLOT_ENTRY_ADMISSION",
+  "request_sha256": "a0276e319813b459f704002853f71271ee58413a43dc644e7c3dbdfcaaaa5b4d",
+  "approvals": {
+    "ACCEPT-root.json": "553664f56ef0ed4c4a89a9071bcbfee14447340fdca61f8f8b9cb73099f8b8d4",
+    "ACCEPT-editor_review.json": "c0837342a33a7164cb09a0f5a68ba7a1c1259d8bd2bc9da3cfa15e8b6bcccb45"
+  },
+  "original_pins_rechecked": true,
+  "original_empty_E_rechecked": true,
+  "R_and_external_outputs_absent": true,
+  "source_c4_object_store_and_inputs_cooperatively_frozen": true,
+  "agents": {
+    "completed_quiescent": [
+      "android32",
+      "baseline_coverage",
+      "build_config",
+      "editor",
+      "editor_review",
+      "native",
+      "native_review",
+      "storage",
+      "verification"
+    ],
+    "rule": "No agent filesystem/tool calls/builds/tests/CI during local cycle; root only waits on admitted foreground caller."
+  },
+  "other_buildlike_point": [],
+  "vanished_point": [],
+  "resources": {
+    "utc": "2026-09-09T10:49:01.215836+00:00",
+    "disk_free_bytes": 20586356736,
+    "tmp_free_bytes": 21926236160,
+    "memory_available_bytes": 39040008192,
+    "memory_total_bytes": 67435888640
+  },
+  "CI_observation": {
+    "tool": "c6590d",
+    "exit": 0,
+    "scope": "gh run list --branch codex/audit-continuation-linux-20260908 --limit8; only Mac34333087199 andWindows34284083351 returned, bothcompletedFAIL; no activation edits since query",
+    "not_global_repository_idle_claim": true
+  },
+  "prior_slot_sha256": "fbd5634d4b45f287273fa96fec9388adeb822bd66deeee94db4f27b2c3208095",
+  "argv": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/bin/bash",
+    "--noprofile",
+    "--norc",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/current-cycle02/LAUNCH_CURRENT_CYCLE_02.sh"
+  ],
+  "caller_ownership": "Original caller/tool/link/pins/cleanenv/absentlogs checked; timeout and Python record original births before exec. External bound/late uncatchable interruptions retain HOLD, never retry/adopt.",
+  "cleanup": "Driver same original per-call stop, source/evidence/worker settlement and descriptor-bound allowlisted cleanup are installed before any Gradle intent; outputs retained only for imminent cold phases then dispose; all older HOLDs preserved."
+}

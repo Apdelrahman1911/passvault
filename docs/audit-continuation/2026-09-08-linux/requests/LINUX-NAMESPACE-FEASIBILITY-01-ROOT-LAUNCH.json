@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "run_id": "linux-namespace-feasibility01",
+  "at": "2026-09-09T12:21:15.301239+00:00",
+  "request_sha256": "663643572db5d1b180af73f6bfdea44f331922233b6624e8701fe19672c64fad",
+  "independent_admission_sha256": "b049cb01792425ba3f0f4285602188e0d13e98438cef45f3e5438b41ea9a57d9",
+  "verified_inputs": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-PLAN.md",
+      "sha256": "bb1f71d1b3e20f13b619d7bb2346efc74df77e97256bf86fb6eea46d3f1f4763",
+      "pin": {
+        "dev": 24,
+        "ino": 13765974,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 8414,
+        "mtime_ns": 1788953382472203264,
+        "ctime_ns": 1788953382472203264
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-PROBE.py",
+      "sha256": "96eb1d54c690fd19181a76a5abfeff874cde42ef2e87aa89260a6c29daea1fee",
+      "pin": {
+        "dev": 24,
+        "ino": 13765973,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 3717,
+        "mtime_ns": 1788953338187205903,
+        "ctime_ns": 1788953338187205903
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-CALLER.py",
+      "sha256": "1512cc719b06ff952bb0edd48941777becc0542674b7af560d1502a4613f4d01",
+      "pin": {
+        "dev": 24,
+        "ino": 13766081,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 9972,
+        "mtime_ns": 1788955033033104883,
+        "ctime_ns": 1788955033033104883
+      }
+    },
+    {
+      "path": "/usr/bin/unshare",
+      "sha256": "51bcc77ba5db162c80028f861f0a2770d728c1de80773816d863f28d7a817adb",
+      "pin": {
+        "dev": 25,
+        "ino": 1256,
+        "mode": 33261,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 43624,
+        "mtime_ns": 1772812854000000000,
+        "ctime_ns": 1787292627983100751
+      }
+    },
+    {
+      "path": "/usr/bin/python3.12",
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+      "pin": {
+        "dev": 25,
+        "ino": 1088,
+        "mode": 33261,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 8020928,
+        "mtime_ns": 1781873160000000000,
+        "ctime_ns": 1787292627933100530
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pin": {
+        "dev": 24,
+        "ino": 14189001,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 0,
+        "mtime_ns": 1788910891124735946,
+        "ctime_ns": 1788910891124735946
+      }
+    }
+  ],
+  "namespaces": {
+    "pid": "pid:[4026531836]",
+    "mnt": "mnt:[4026531841]"
+  },
+  "evidence_absent": true,
+  "original_evidence_parent": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs",
+    "dev": 23,
+    "ino": 642474,
+    "uid": 0,
+    "mode": 16832
+  },
+  "original_slot_sha256": "eeccbe7f436335537de0f06153a0e3efd15ede00498ff93648cdb1eb5e458e05",
+  "agents": "All nine completed/quiescent from collaboration.list_agents before launch; root only; no CI initiated since recorded query",
+  "resources": {
+    "disk_free": {
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux": 19591221248,
+      "/tmp": 21889519616
+    },
+    "ram_available": 38387679232,
+    "ram_total": 67435888640
+  },
+  "outer_argv": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-CALLER.py"
+  ],
+  "decision": "ROOT_ADMIT_EXACT_ONCE_BEFORE_REQUEST_EXPIRY; finite metadata only; no build/retry/oldscope authority",
+  "cleanup": "Frozen caller handlers/limits/pidfd/wait/private domain; preserve unknown/HOLD; no Gradle stop applicable"
+}

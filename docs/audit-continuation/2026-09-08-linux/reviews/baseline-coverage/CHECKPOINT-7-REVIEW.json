@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "review_id": "CHECKPOINT-7-INDEPENDENT-COVERAGE-AND-SELECTION-REVIEW",
+  "reviewer": "/root/baseline_coverage",
+  "review_date_utc": "2026-09-09",
+  "disposition": "ACCEPT_FROZEN_C7_SELECTED_PUBLICATION_ONLY_WITH_RETAINED_FAILURES",
+  "material_corrections_requested": [],
+  "independence_disclosure": {
+    "scope": "Independent review of C7 claim/count consistency and the explicitly selected publication payload; not execution or completed-publication approval.",
+    "prior_authorship": "Reviewer authored C5/C6 coverage reports and earlier cleanup/registration reviews. This is not a new independent vote on those own reports.",
+    "not_authored_by_reviewer": [
+      "Linux02 actual-result report",
+      "namespace01 actual-result report",
+      "C7 product patches"
+    ],
+    "qualification": "C7 contains no product patch. Existing independent source and actual-result reviews are reused with their limits, not represented as a fresh whole-source audit."
+  },
+  "frozen_selection": {
+    "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-7-SELECTION.json",
+    "sha256": "cd1d9cbd5abe33c196b5d6207d4cc8c05e262a69f1ad760112de1f4862beb04b",
+    "bytes": 17943,
+    "lf_count": 437,
+    "selected_file_count": 68,
+    "selected_bytes": 1106243,
+    "base_commit": "cf76341548b4ffb277a51b44a762ffa809bc5971",
+    "base_tree": "4ca4ddf23c6131db0f369e147d657e9de59421cf",
+    "per_file_check": "All 68 selected paths were checked once for SHA256, bytes, regular-file/executable mode, uniqueness and relative-path safety; all matched. Manifest rows have no LF field.",
+    "allowed_postselection_additions_relative_to_continuation": [
+      "publication/CHECKPOINT-7-SELECTION.json",
+      "reviews/baseline-coverage/CHECKPOINT-7-REVIEW.json",
+      "publication/CHECKPOINT-7-PRECOMMIT.json"
+    ],
+    "membership_limits": "Includes preserved Linux02 helper/init source, consumed namespace01 caller/probe, Linux metadata requests and compact evidence. No application delta or new CI activation edit. Old active larger Mac helper/workflow and new isolated-batch inner/init/outer-supervisor source are excluded. Concurrent unselected work is not approved or a blocker to this exact selection."
+  },
+  "central_sha256_bindings": {
+    "CHECKPOINT_7.md": "4a626a86a029211406f37d9ed0a958c789d549e62ceb638bd5d642bfa2aeeae6",
+    "COVERAGE_DELTA.json": "ad61ea935b322d5b387fc82dbe2e1a6294360be10275f804f4269a7a0b805930",
+    "EXECUTION_SLOT.json": "bf20195482368ff070f9cecc4651a73ead0f6d9686f6fcfe20b522e9a7d31f47",
+    "ISSUE_LEDGER.json": "f0418162e71d4334a19c1c2dbe4ed3efd0b3c7052cbfe89d09694d55f3d8f803",
+    "OWNERSHIP.md": "fe324c2b8b121d25727c560e2fb8d194d044730d2132376cd79fefb880266e24",
+    "README.md": "43587c6a8af8a23bc49f9e04600caeda5500ca485ee2c03f33206478a2fa78ad",
+    "VERIFICATION_LEDGER.json": "4158296abbbdf00023dd148725ef2f99bb80c40d650e70a82af7c024dbec09d3"
+  },
+  "review_method": {
+    "performed": [
+      "Read frozen selection; one complete selected-file metadata/hash comparison.",
+      "Read CHECKPOINT_7 and execution slot completely; reviewed complete incremental C6-to-C7 central ledger/report diffs.",
+      "Read independent Linux02/namespace01 actual reviews, bounded selected actual data, PVA029 and PVU008 outcomes/reviews, containment and mountinfo-format reviews.",
+      "Read prospective publication scopes, independent acceptances, root exception records, original object-baseline structure, C6 receipt and C7 remote observation."
+    ],
+    "not_performed": [
+      "No build, test, helper execution/import/AST/syntax check, runtime/process probe, old runtime traversal, network query or Git mutation.",
+      "No independent physical Linux02 checkout-byte replay or source-object-store reinspection.",
+      "No new full audit of the nineteen C5 application after-images; identity continuity is checked in central diffs and root reports physical verification.",
+      "No old validation runner invocation or substitute claim for missing validate_evidence_ledger.py."
+    ],
+    "evidence_class": "Manual/data review and hash/path checks, not application tests, hardware evidence, semantic-LF credit or an automated evidence-ledger validator."
+  },
+  "coverage_reconciliation": {
+    "original_confirmed": {
+      "qualified_closed": 19,
+      "total": 25,
+      "remaining": 6,
+      "percent": 76
+    },
+    "all_confirmed": {
+      "qualified_closed": 22,
+      "total": 38,
+      "remaining": 16,
+      "percent_rounded": 57.9
+    },
+    "original_suspicions": {
+      "conclusively_resolved": 2,
+      "total": 12,
+      "remaining": 10,
+      "percent_rounded": 16.7
+    },
+    "design_explanations": 8,
+    "design_qualification": "PVD explanations are separate from owner decisions and qualified closures; denominators are not overall readiness percentages.",
+    "c7_delta": "Zero new application executions, product fixes, qualified closures or semantic-LF credit; nineteen C5 application identities unchanged in central delta. All sixteen open confirmed families have source corrections, with required qualification incomplete.",
+    "current167": {
+      "regression_methods": 166,
+      "ordinary_methods": 163,
+      "consumer_methods": 3,
+      "producer": 1,
+      "planned_xml_captures": 17,
+      "execution_status": "ALL_UNSTARTED"
+    },
+    "original105": "Retained separately; not silently discarded or retargeted.",
+    "effort": "Conditional 2-4 engineering weeks, overlapping ranges, excluding external waiting and new defects. Not measured duration, guaranteed finish date or execution admission.",
+    "gap_separation": "Platform, runtime, hardware, owner and PVD gaps remain distinct."
+  },
+  "actual_result_reconciliation": {
+    "linux02": {
+      "classification": "ACTUAL_FAIL_STOP0_HOLD_CONSUMED_NO_RETRY",
+      "target_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+      "target_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+      "identity_qualification": "Borrowed frozen primary objects, not an independent clone. Independent actual review reconciles 1572 Git tuples and 68687648 checkout-byte sum with both EOL qualifications, not an independent physical byte replay.",
+      "progress": "Init/checkout/identity-before/members-before exit0 and source-before success. 249 journal rows, 99 allocation pairs and 880 directory-ledger entries are metadata counts, not tests.",
+      "ordinary_wrapper_exit": 143,
+      "once_only_original_wrapper_stop_exit": 0,
+      "outer_exit": 1,
+      "unresolved_identity_pids": [
+        11367,
+        11446,
+        11447,
+        11448,
+        11449,
+        11451,
+        11453,
+        11454
+      ],
+      "pid_qualification": "Birth/argv/cwd unavailable. Do not infer wrapper children, benign churn or unrelated jobs. Later absence cannot reconstruct ownership.",
+      "evidence": "Gradle 9.7.1 distribution bootstrap only; stop completes download and reports no Gradle daemons. No project task/test or Android task listing; all 166 methods plus producer unstarted; XML0.",
+      "release_limit": "Source-after, owned-settled and cleanup false. Stop0 is not whole-process settlement. Scheduling release only; no retry, adoption, cleanup or warm-cache reuse.",
+      "retained_runtime_reported": {
+        "files": 2301,
+        "directories": 878,
+        "logical_bytes": 239234928,
+        "stat_allocated_bytes": 245018624,
+        "gradle_home_bytes": 170299514,
+        "checkout_bytes": 68935414
+      },
+      "storage_qualification": "Required HOLD, not disposable cache. Old Linux01 HOLD also retained. These are reviewed reported counts, not reviewer runtime traversal."
+    },
+    "namespace01": {
+      "classification": "FINITE_METADATA_ACTUAL_FAIL_CONSUMED_NO_AUTOMATIC_RETRY",
+      "outer_exit": 1,
+      "direct_child_exit": 1,
+      "stderr_exact": "NAMESPACE_SELF_REFUSED: mountinfo fields\n",
+      "stderr_bytes": 41,
+      "stdout_bytes": 0,
+      "reached": "Source-ordered PID1/PPID0, distinct namespace and self-status gates; not final feasibility PASS, EPERM or technical-impossibility evidence.",
+      "evidence_files": 5,
+      "evidence_bytes": 1381,
+      "limits": "Direct wait completed, no signal/Gradle, parent namespace values unchanged. Missing failed-child mountinfo row. Five evidence files are not five tests. Normal direct wait and source-backed finite-domain lifetime support scheduling release only, not arbitrary-descendant/cancellation/kernel-reclamation/outer-hard-kill/global-inactivity proof or old HOLD clearance."
+    }
+  },
+  "source_only_reconciliation": {
+    "mountinfo": "Independent current SELF-format observation: ten rows, five rejected by old whitespace split. Legitimate suffix [filesystem_type, empty SOURCE, rw] loses its middle slot. Bounded upstream Linux v6.6 source supports empty source, not running-kernel identity. Proposed literal separator and positional suffix correction retains all propagation/proc/capability guards; not empty superoptions, captured failed-child cause, implemented parser or execution authority.",
+    "pva029": "Historical 49 batch checks = 48 PVA029 (43PASS/5FAIL) plus one PVA028 PASS; 42 functional (37/5) plus seven static passes. Five failures are overflow/timeout/cancellation capture-cleanup fixtures, not five provenance identity-policy failures. Markers precede TERM/KILL and reap follows successful wait; exact primitive/host cause remains underdetermined. Eleven source hashes unchanged. No justified product/oracle patch, weakening of reap, permission change or retry. Two separately admitted historical-data lookups were not old-runner execution.",
+    "pvu008": "Bounded first-party search did not locate the exact applicable content-lifetime contract; not proof none exists. Allocation survives native-handle-object unwinding; native destroy is conditional on non-null handle and statuses are discarded. Author corrected unconditional-destroy wording while retaining original quote/hash. Relocation guidance is not explicit private-byte wiping permission/prohibition. Inquiry completed inconclusively: no fault, patch, CNG test or closure. Do not repeat the completed possible lead as untouched work.",
+    "containment": "No exposed delegated cgroup identified; CAP_SYS_ADMIN present. Mandatory-external-provider/local-impossibility inference rejected and author agreed. Metadata capability is not execution authority; namespace01 initial gates do not establish final feasibility."
+  },
+  "prospective_publication_reconciliation": {
+    "status": "PROSPECTIVE_SELECTED_C7_ONLY_NOT_ACTUAL_PUBLICATION_RESULT",
+    "baseline_reported": {
+      "preexisting_files": 820,
+      "directories": 246,
+      "ancestors": 7,
+      "logical_bytes": 37439784
+    },
+    "limits": [
+      "Original source-store broad no-write freeze had no implicit additive exception. Later independent/root records supply narrow prospective C7 exceptions; dated pending-review proposal/header strings are not a material contradiction.",
+      "Only selected add, one commit and one dedicated fast-forward push; no held-runtime operation. Preserve preexisting object/pack/index/metadata bytes, identities, modes and access; additions separately accounted.",
+      "mtime/ctime exception applies only to existing regular loose-object names matching [0-9a-f]{2}/[0-9a-f]{38}; no other metadata waiver. Record baseline and observed timestamp differences without unsupported Git causation.",
+      "Compare original baseline before staging, after stage/commit and after push. Unexpected drift STOP; no repair/reset/GC/retry.",
+      "Disable hooks, fsmonitor, GC, maintenance and commit signing; explicit push --no-signed --no-follow-tags --recurse-submodules=no to one dedicated ref, without force.",
+      "Cooperative preservation is not hostile-writer prevention or historical worker settlement. This review accepts selection/coverage only; no execution, cleanup, retry, readiness or completed-publication approval."
+    ],
+    "history": "C6 receipt matches selected base commit/tree. C7 remote observation records unchanged dedicated/handoff/main/testing/release/tag refs without fetch. Branch-limited completed Mac/Windows listings are not repository-wide inactivity. Preserved C6 raw Mac CLI terminal-tab evidence is not to be normalized."
+  },
+  "evidence_sha256_relative_to_continuation": {
+    "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json": "afdc5a04fe44cf7f91ab87142dedf991dc81b1c07d47f73c7369d16e99e1b23a",
+    "reviews/editor-independent/CURRENT-CYCLE02-DELTA-REVIEW.json": "6f9117fd1bf775e09047cd710da536ea1e367156ac0d92e5d8bd774772ad7eb8",
+    "reviews/verification/LINUX-NAMESPACE-FEASIBILITY-01-ACTUAL-REVIEW.md": "307f4b7ce4379c37c1905af7a5575810b1fd5986a40713fec69b551b27dc0712",
+    "reviews/native-independent/NAMESPACE01-MOUNTINFO-CONTRACT-REVIEW.md": "541afd152ebaa7fa6cc5af0a0d2455c1c54f34c90effe8b9f139fec2024af7c6",
+    "reviews/build-config/PVA029-SOURCE-FOLLOWUP.md": "ba4a3d19020a2e011db4dca6154dd7f68cd75d6eb76a473c7e7075b251202a31",
+    "reviews/PVA029-ROOT-SOURCE-FOLLOWUP-REVIEW.json": "47f4ea5c9cfcafb11ff63fc9cc22ed805167e2a34e99fa212f3f459b1bc4608b",
+    "reviews/native-independent/PVU008-CONTENT-CONTRACT-REVIEW.md": "5298726147d9d63f8bf8ca68d0dfd400691096707cf33d33e0626eb21a9c1b80",
+    "reviews/native/PVU008-CONTENT-CONTRACT-OUTCOME.md": "a99f342ac00a483cf40e488db832e9f2c5423f9ced4c02ec7d7205c22077866a",
+    "reviews/native-independent/LINUX-CONTAINMENT-FEASIBILITY-REVIEW.md": "b38b1ef7828a0d4b7dc3338c250780e0f80a2e983f5a9227107748792c2dcc9a",
+    "publication/BORROWED-OBJECT-PUBLICATION-SCOPE.md": "bfa801d07d6f53eff5221f62c8224324206513fe0557761b3fdfbc9fe1f6c476",
+    "reviews/native-independent/BORROWED-OBJECT-PUBLICATION-SCOPE-REVIEW.md": "eb9fad5757266d302837c596398a3876456d5fa3068cb1d2f020be866dcd136a",
+    "publication/ROOT-C7-PUBLICATION-EXCEPTION.json": "d93c9827ce852134d941efa3b87dc8c44824a75e334a81551be2e7a6fe46cac1",
+    "publication/C7-LOOSE-OBJECT-TIMESTAMP-SCOPE.md": "7308723b53684a46efb5ccefe26b020de69b7d0ecd175abfca4357145be61439",
+    "reviews/native-independent/C7-LOOSE-OBJECT-TIMESTAMP-SCOPE-REVIEW.md": "b3328cae9ee4c2d1e7443e99dc4fe95d81bb6bb941a46d447b67a8ecd1317cab",
+    "publication/ROOT-C7-TIMESTAMP-EXCEPTION.json": "2c6b121e4d8eaab902f368a03a27e3fef0231da07cda36f17c948f2e918a35b3",
+    "publication/BORROWED-OBJECTS-BEFORE-C7.json": "22a284be19440b199b1b874b24d0b3049f370d341cd662aa878dabb6cfe27be1",
+    "publication/CHECKPOINT-6-PUBLISHED.json": "161201b1c5cd87170d7e046de3ecb9feb4f0f691bb131337c89a000dfc115b08",
+    "publication/CHECKPOINT-7-REMOTE-OBSERVATION.json": "fcd1330934aca97c4d243746f16bd2e44c958944af9b94f825287d4f0a1c135a"
+  },
+  "restrictions_retained": [
+    "PVU007 STOP; PVU011 NO RETRY; PVA029 recorded failure/no automatic retry; G7/G8 CLOSED.",
+    "Windows34284083351 operational FAIL/filesystem HOLD/all14 UNSTARTED; Mac34333087199 resource FAIL/all5 UNSTARTED, qualified root cleanup but actual-exit-zero finalization unmet.",
+    "Linux01/Linux02 consumed HOLDs; namespace01 consumed FAIL. No silent cleanup, adoption, reuse or rerun.",
+    "Prior 28/17/6 infrastructure PASS and controls01 20PASS/2FAIL then separately admitted controls02 22PASS are not product proof.",
+    "Hardware gaps, Android license/32-bit target requirements, owner/PVD decisions and missing validate_evidence_ledger.py NOT_SUPPLIED_NOT_RUN remain explicit.",
+    "Protected branches/tags, dependency/version/identity boundaries, production signing/store restrictions and occupied mobile1017001 remain unchanged."
+  ],
+  "reviewer_resource_cleanup": "Only bounded data reads, metadata/hash scripts, read-only diffs and this authorized report write. No reviewer build/test/temporary helper, cache, worker or background process created; no build --stop duty incurred. No old-runtime cleanup attempted.",
+  "conclusion": "No material claim/count/publication-selection defect found in this freeze. Retain the recorded failures, unknown ownership, HOLDs, unresolved investigation limits and separate denominators. Root retains sole responsibility for the already defined precommit/postcommit/postpush preservation checks and any later publication result."
+}

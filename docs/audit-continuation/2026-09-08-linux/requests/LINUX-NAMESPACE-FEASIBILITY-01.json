@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "run_id": "linux-namespace-feasibility01",
+  "purpose": "One finite SELF-metadata private PID/mount namespace feasibility invocation; no app/build/provider/Gradle or old scope",
+  "created_utc": "2026-09-09T12:03:40.109306+00:00",
+  "expires_utc": "2026-09-09T12:43:40.109306+00:00",
+  "sources": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-PLAN.md",
+      "sha256": "bb1f71d1b3e20f13b619d7bb2346efc74df77e97256bf86fb6eea46d3f1f4763",
+      "pin": {
+        "dev": 24,
+        "ino": 13765974,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 8414,
+        "mtime_ns": 1788953382472203264,
+        "ctime_ns": 1788953382472203264
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-PROBE.py",
+      "sha256": "96eb1d54c690fd19181a76a5abfeff874cde42ef2e87aa89260a6c29daea1fee",
+      "pin": {
+        "dev": 24,
+        "ino": 13765973,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 3717,
+        "mtime_ns": 1788953338187205903,
+        "ctime_ns": 1788953338187205903
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-CALLER.py",
+      "sha256": "1512cc719b06ff952bb0edd48941777becc0542674b7af560d1502a4613f4d01",
+      "pin": {
+        "dev": 24,
+        "ino": 13766081,
+        "mode": 33152,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 9972,
+        "mtime_ns": 1788955033033104883,
+        "ctime_ns": 1788955033033104883
+      }
+    }
+  ],
+  "tools": [
+    {
+      "path": "/usr/bin/unshare",
+      "sha256": "51bcc77ba5db162c80028f861f0a2770d728c1de80773816d863f28d7a817adb",
+      "pin": {
+        "dev": 25,
+        "ino": 1256,
+        "mode": 33261,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 43624,
+        "mtime_ns": 1772812854000000000,
+        "ctime_ns": 1787292627983100751
+      }
+    },
+    {
+      "path": "/usr/bin/python3.12",
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+      "pin": {
+        "dev": 25,
+        "ino": 1088,
+        "mode": 33261,
+        "uid": 0,
+        "nlink": 1,
+        "bytes": 8020928,
+        "mtime_ns": 1781873160000000000,
+        "ctime_ns": 1787292627933100530
+      }
+    }
+  ],
+  "python_selector": {
+    "path": "/usr/bin/python3",
+    "target": "python3.12"
+  },
+  "outer_argv": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/LINUX-NAMESPACE-FEASIBILITY-CALLER.py"
+  ],
+  "parent_namespaces": {
+    "pid": "pid:[4026531836]",
+    "mnt": "mnt:[4026531841]"
+  },
+  "original_evidence_parent": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs",
+    "dev": 23,
+    "ino": 642474,
+    "uid": 0,
+    "mode": 16832
+  },
+  "evidence_path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-namespace-feasibility01",
+  "evidence_absent": true,
+  "original_existing_lock": {
+    "path": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pin": {
+      "dev": 24,
+      "ino": 14189001,
+      "mode": 33152,
+      "uid": 0,
+      "nlink": 1,
+      "bytes": 0,
+      "mtime_ns": 1788910891124735946,
+      "ctime_ns": 1788910891124735946
+    }
+  },
+  "slot_previous_sha256": "fbd8a44688ca535f320f0737f5ff7f2283d0e121e3cc28795c17955b8271144a",
+  "reservation_state": "RESERVED_FINITE_NAMESPACE_FEASIBILITY01_ROOT_ONLY",
+  "resources": {
+    "disk_available_bytes": 20396552192,
+    "tmp_available_bytes": 21893189632,
+    "ram_available_bytes": 36036816896,
+    "ram_total_bytes": 67435888640,
+    "utc": "2026-09-09T12:03:40.109306+00:00"
+  },
+  "ci_observation": "publication/CHECKPOINT-7-REMOTE-OBSERVATION.json",
+  "coordination": "Root alone executes. Source agents must finish and quiesce tool/filesystem calls before launch; actual independent source+instance acceptance still pending. Existing Linux02 scheduling released without HOLD clearance.",
+  "bounds": "one entry,10s command collection+single5s owned child wait;128MiB callerAS/64MiB payloadAS;4KiB each rawlog/64KiB total evidence. Kernel-blocking/host loss/SIGKILL can defeat userspace bounds => HOLD.",
+  "cleanup": "No temporary file/tree or namespace handles persisted; private proc/mount die with finite process domain. Normal exact wait+external exit+parent namespace unchanged required. Failed signal remains sticky; wait still attempted once; no signal/stop/adoption/cleanup retry. Permanent small evidence retained. No Gradle --stop obligation.",
+  "old_fences": "PVU007 STOP;PVU011 NO RETRY;PVA02949/44PASS/5FAIL no retry;G7/G8CLOSED;Linux01/02 HOLD/consumed;Windows andMac FAIL/HOLD/no automaticretry. No new build03, dependency/version/identity/signing/store/protected refs change."
+}

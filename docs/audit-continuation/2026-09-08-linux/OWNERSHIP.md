@@ -1,5 +1,43 @@
 # Bounded team ownership
 
+## Current C7 continuation (supersedes earlier preparation status)
+
+- Root owns actual02 receipts, scheduling-only release, central ledgers and C7
+  selected publication. `editor_review` independently reconciled02: source-before
+  success, wrapper-bootstrap FAIL, original stop0, all166+1 UNSTARTED and retained
+  process/source-after/cleanup HOLD. No retry or recovery is admitted.
+- `build_config` completed PVA-029's bounded source follow-up; root independently
+  accepted its narrowing only. Five capture-cleanup failures remain; no patch or retry.
+- `verification` authored read-only containment metadata; `native_review`
+  independently rejected an external-only impossibility inference. No delegated
+  cgroup was exposed; namespace01 later reached initial gates but failed its
+  metadata parser. `verification` independently reconciled the consumed failure;
+  scheduling alone is released.
+- `storage` authors only a compact private PID/mount-domain feasibility plan and
+  finite metadata probe source in its own review directory. `verification`
+  independently challenges it. No Gradle, cgroup/global mount change, held-scope
+  operation, helper import or namespace execution follows without new root admission.
+  Root's once-only namespace01 is now consumed. `native_review` independently
+  established the empty-SOURCE parser contract; the failed child row remains
+  unknown. `storage` now authors only new isolated-batch inner/init source; root
+  authors its outer supervisor, with `verification` the independent challenger.
+  These active files are not C7-selected or execution-admitted.
+- `native` completed PVU-008's bounded authoritative CNG object content-lifetime
+  inquiry; `native_review` independently accepted the unresolved outcome after
+  correcting conditional-destruction wording. No Windows/CNG execution, new
+  fixture, production patch or closure occurred.
+- Root proposes a prospective publication-only exception to the broad borrowed
+  object-store freeze; `native_review` independently reviews it. Original02
+  permissions/results are not rewritten. The amended scope was accepted;
+  root captured the original820-file object-store preservation baseline and
+  separately admitted only selected C7 publication, with post-checks required.
+- `baseline_coverage` completed bounded gap triage: no unimplemented product fix
+  is justified by current records. It remains the independent C7 coverage/report
+  reviewer. Missing runtime evidence is not reclassified as source completion.
+
+All agents remain source/data-only; root is sole execution/Git owner. The current
+slot file, not a historical paragraph below, determines scheduling state.
+
 ## Current C6 execution follow-up
 
 Root executed only the newly admitted Mac5 and Linux01 attempts and owns their

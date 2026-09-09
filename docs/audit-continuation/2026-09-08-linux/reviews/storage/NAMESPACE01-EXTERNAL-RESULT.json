@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "scope": "linux-namespace-feasibility01",
+  "observed_at": "2026-09-09T12:22:45.061587+00:00",
+  "launch_admission": "requests/LINUX-NAMESPACE-FEASIBILITY-01-ROOT-LAUNCH.json",
+  "request_sha256": "663643572db5d1b180af73f6bfdea44f331922233b6624e8701fe19672c64fad",
+  "external_tool_result": {
+    "chunk_id": "407390",
+    "wall_time_seconds": 1.2074e-05,
+    "exit_code": 1,
+    "original_token_count": 32,
+    "output": "{\"caller_pid\": 16331, \"caller_start\": 22550030, \"parent_namespaces\": {\"pid\": \"pid:[4026531836]\", \"mnt\": \"mnt:[4026531841]\"}}\n"
+  },
+  "evidence": [
+    {
+      "path": "runs/linux-namespace-feasibility01/CHILD.json",
+      "bytes": 61,
+      "sha256": "e53bba963eba6d7bbd5e1935cbf8142b29565be5d83aac4050f1c14198b600da"
+    },
+    {
+      "path": "runs/linux-namespace-feasibility01/INTENT.json",
+      "bytes": 828,
+      "sha256": "249b18f0e79f08e5185e88b983a18b4beb713bb2936c144650d788674f427a81"
+    },
+    {
+      "path": "runs/linux-namespace-feasibility01/RESULT.json",
+      "bytes": 451,
+      "sha256": "7ac1eaed030743c11d1847667177e19d09f39338c5576a8e4d25a011bd9a01f2"
+    },
+    {
+      "path": "runs/linux-namespace-feasibility01/stderr.log",
+      "bytes": 41,
+      "sha256": "9a88981efe75b5b34b9b9c18f25973cafefb129247c3b68040c603d52e1852d6"
+    },
+    {
+      "path": "runs/linux-namespace-feasibility01/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "parent_namespaces": {
+    "pid": "pid:[4026531836]",
+    "mnt": "mnt:[4026531841]"
+  },
+  "result": "CONSUMED_EXIT1_SELF_METADATA_MOUNTINFO_FIELDS_REFUSAL",
+  "counts": {
+    "namespace_invocations": 1,
+    "product_tests": 0,
+    "regressions": 0,
+    "closure_credit": 0
+  },
+  "interpretation": "stderr is NAMESPACE_SELF_REFUSED: mountinfo fields, not an unshare EPERM/capability-denied message. Source-ordered earlier namespace/init checks reached before refusal; no final feasibility PASS. Independent actual review pending.",
+  "cleanup": "Direct child wait reported complete; no pidfd signal attempted; outer exit1; no persistent handles or temporary filesystem generated; five compact evidence files retained; no Gradle stop applies. No retry or old HOLD release."
+}

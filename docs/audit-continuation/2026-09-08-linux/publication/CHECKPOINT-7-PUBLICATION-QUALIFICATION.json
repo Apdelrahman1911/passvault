@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "checkpoint": 7,
+  "purpose": "Prospective continuation of the still-unstarted FIRST C7 commit and scoped dedicated push; not retroactive pass",
+  "selected_original_71": "Unchanged frozen68 selection plus original selection/reviewer/PRECOMMIT additions",
+  "selection_sha256": "cd1d9cbd5abe33c196b5d6207d4cc8c05e262a69f1ad760112de1f4862beb04b",
+  "late_selected_additions": [
+    "publication/CHECKPOINT-7-POSTSTAGE-PRESERVATION.json",
+    "publication/CHECKPOINT-7-PUBLICATION-QUALIFICATION.json"
+  ],
+  "poststage_receipt_sha256": "0b4787011bbb5e610070dcea52eeae17812c1c31967c1d551b6427e7320ced4a",
+  "whitespace": {
+    "receipt": "publication/CHECKPOINT-7-GIT-RESULT.json",
+    "receipt_sha256": "000e1adf01e1fe9230aaeefe588c1790d243bd1f72f08945f0b26a3a6ff07579",
+    "actual_exit": 2,
+    "actual_status": "FAIL; original PUBLICATION_HOLD_NO_REPAIR_OR_RETRY preserved",
+    "path": "runs/linux-current-cycle02/init.log",
+    "bytes": 597,
+    "sha256": "df09e59d95b0813aa8ef737b45c42d0af784917148802c5147f82f8f47744ec5",
+    "diagnostics": [
+      {
+        "line": 4,
+        "diagnostic": "trailing whitespace.",
+        "raw_added_line": "+hint: "
+      },
+      {
+        "line": 6,
+        "diagnostic": "trailing whitespace.",
+        "raw_added_line": "+hint: "
+      },
+      {
+        "line": 9,
+        "diagnostic": "trailing whitespace.",
+        "raw_added_line": "+hint: "
+      }
+    ],
+    "independent_reviewer": "/root/baseline_coverage",
+    "verdict": "ACCEPT_EVIDENCE_ONLY_WHITESPACE_QUALIFICATION_PROSPECTIVE_ONLY",
+    "scope": "Exactly three preserved Git-init advisory blank lines, not shown source/production whitespace defects. No trim, normalization, suppression or unchanged-check rerun."
+  },
+  "pack": {
+    "baseline_sha256": "22a284be19440b199b1b874b24d0b3049f370d341cd662aa878dabb6cfe27be1",
+    "path": "/root/projects/PassVault/passvault/.git/objects/pack/pack-244144b04072fe6c0e09e599c5f176705a70ad5f.pack",
+    "sha256": "d37ffae7585a3e9ae7e8b116c1f8a981046324424bc31218cb1954533741606d",
+    "bytes": 34105868,
+    "dev": 24,
+    "ino": 13668274,
+    "uid": 0,
+    "mode": 33024,
+    "nlink": 1,
+    "baseline_mtime_ctime_ns_strings": [
+      "1788949796503417004",
+      "1788949796503417004"
+    ],
+    "observed_mtime_ctime_ns_strings": [
+      "1788960461019781349",
+      "1788960461019781349"
+    ],
+    "actual_original_strict_comparison": "EXIT1/FAIL; publication HOLD. The earlier loose exception expressly excludes this pack.",
+    "independent_reviewer": "/root/baseline_coverage",
+    "verdict": "ACCEPT_EXACT_PACK_TIMESTAMP_ONLY_PROSPECTIVE_C7_CONTINUATION, NOT_RETROACTIVE_PASS",
+    "new_scope": "Permit mtime/ctime differences ONLY for this exact original regular pack, in addition to prior regular loose exception; retain exact original path/bytes/hash/size/dev/ino/type/mode/uid/nlink and directory/ancestor invariants. Compare original baseline after commit and after push, record every pair.",
+    "limits": "Timestamp cause unknown; not attributed to Git. Review is bounded data reconciliation, not replay/continuous writer/worker proof. Pack age can affect retention decisions, so all maintenance/deletion remains excluded. No time waiver for index/info/other files, no touching/restoring times or repair/reset/repack/GC/prune."
+  },
+  "root_adoption": "ADOPT_EXACT_TWO_INDEPENDENT_PROSPECTIVE_QUALIFICATIONS_AND_TWO_FILE_SELECTION_SUPPLEMENT. Only unstarted first C7 commit + single already-scoped dedicated fast-forward push. Original source selection/other safeguards unchanged; unexpected further drift STOP without repair or implicit waiver.",
+  "independent_selection_review": "reviews/baseline-coverage/CHECKPOINT-7-REVIEW.json",
+  "independent_selection_review_sha256": "f2f8b05307b90a2afa4a368bce6fd6cf3fec157638d20964986714aabfd29c7c",
+  "restrictions": "No application build/test/namespace/existing-runtime operation, cleanup/recovery/adoption/retry authority; no new closure or readiness credit. Existing failures, STOP/NO-RETRY and CLOSED gates preserved. No protected refs/tags/dependency/version/identity/signing/Store changes.",
+  "utc": "2026-09-09T13:48:32.547133+00:00"
+}

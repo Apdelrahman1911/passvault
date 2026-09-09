@@ -6,15 +6,32 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-**Latest: `CHECKPOINT_6.md`.** Two fresh once-only attempts have now been
-independently reconciled: Mac34333087199 failed its prebuild resource gate
-(five CTests UNSTARTED); Linux current-cycle01 failed source-setup process
-ownership before checkout/Gradle (all167 declarations UNSTARTED). No product
-test or closure was added. Preserve both consumed scopes, the Linux original
-runtime/cleanup HOLD and the Mac finalization qualification. Scheduling-only
-release is not cleanup or retry approval. A transport-free02 source proposal
-is separate; newly observed unowned Java processes require fresh clear local
-admission. The C5 and older descriptions below are historical preparation facts.
+**Latest: `CHECKPOINT_7.md` (being prepared).** Linux02's once-only attempt is
+independently reconciled: borrowed-object C4 checkout/source-before succeeded;
+the ordinary wrapper exited143 during distribution bootstrap after process
+provenance became unknown. Original `--stop` returned0 and completed the download,
+but source-after/owned-settlement/cleanup remain **HOLD**. All166 regression
+methods plus one producer are UNSTARTED; zero XML, product tests or closures.
+The scheduling reservation alone is released. Do not retry, adopt or clean01/02.
+The broad borrowed-object no-write freeze has a separately reviewed
+prospective C7-only publication exception; original objects and protected refs
+must remain preserved. No old cleanup or execution authority follows.
+
+Read the current overlays and `EXECUTION_SLOT.json` before choosing work.
+PVA-029's five retained failures are now precisely attributed to capture-cleanup
+fixtures, with the exact failing primitive still unknown; no speculative patch
+or retry follows. No delegated cgroup was identified, but `CAP_SYS_ADMIN` is
+present: independent review rejected calling local isolation technically
+impossible or an external provider mandatory. The once-only finite namespace01
+check reached initial namespace gates but failed its mountinfo parser; independent
+actual reconciliation released scheduling only, not a final feasibility PASS. A
+legitimate empty SOURCE field is separately source-supported, not a proven capture
+of the missing failed child row. A new compact isolated workload is source work
+only, excluded from C7 until separately reviewed and admitted. PVU-008's bounded first-party
+content-lifetime inquiry is independently complete but inconclusive: no applicable
+contract was located and no patch/provider consequence is established. Mac/Windows failures and all
+STOP/NO-RETRY/CLOSED scopes remain unchanged. Older descriptions below retain
+their historical checkpoint scope rather than current execution authority.
 
 Read `CHECKPOINT_5.md`, the updated issue/coverage/verification overlays, and
 `EXECUTION_SLOT.json` before choosing work. Three grouped PVA-007 freshness
@@ -48,8 +65,9 @@ narrow source correction and separate reviewed admission, controls02 executed
 APIs: **zero real children, process signals or application cases**. Their original
 scratch/process settlement was independently reconciled; both admissions are
 consumed. Exact handoff-source capture, runner/outer-supervisor and generated-output
-closeout source reviews are separate from actual database admission. No local
-Gradle or old runner has executed.
+closeout source reviews are separate from actual database admission. At that
+controls checkpoint no local Gradle had executed; Linux02 later reached wrapper
+bootstrap only. The archived old runner remains unexecuted.
 
 Additional investigation NAV-FRESH-SUS-001 is independently confirmed as
 **PVA-038**: a cold Desktop crypto-loader I/O failure is misclassified as a

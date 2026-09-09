@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "at": "2026-09-09T13:26:09.552584+00:00",
+  "checkpoint": 7,
+  "source_before_commit": "cf76341548b4ffb277a51b44a762ffa809bc5971",
+  "source_before_tree": "4ca4ddf23c6131db0f369e147d657e9de59421cf",
+  "selection": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-7-SELECTION.json",
+  "selection_sha256": "cd1d9cbd5abe33c196b5d6207d4cc8c05e262a69f1ad760112de1f4862beb04b",
+  "independent_review": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-7-REVIEW.json",
+  "independent_review_sha256": "f2f8b05307b90a2afa4a368bce6fd6cf3fec157638d20964986714aabfd29c7c",
+  "root_adoption": "ACCEPT_EXACT_SELECTED_C7_REPORT_AND_PUBLICATION_ONLY; this later adoption supersedes frozen coverage pointer pending label, not any retained failure/blocked gate",
+  "selection_files": 68,
+  "allowed_final_additions": [
+    "publication/CHECKPOINT-7-SELECTION.json",
+    "reviews/baseline-coverage/CHECKPOINT-7-REVIEW.json",
+    "publication/CHECKPOINT-7-PRECOMMIT.json"
+  ],
+  "new_application_executions": 0,
+  "new_qualified_closures": 0,
+  "original_application_source_identities_unchanged": 19,
+  "remote_precommit": {
+    "chunk_id": "8dcd86",
+    "wall_time_seconds": 0.50171309,
+    "exit_code": 0,
+    "original_token_count": 107,
+    "output": "cf76341548b4ffb277a51b44a762ffa809bc5971\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n"
+  },
+  "object_preservation": "Original820 files/246 directories baseline22a284...; fresh pre-stage then postcommit/postpush comparisons required. Only prospectively accepted regularlooseobject mtime/ctime deltas may differ and must be listed without causal attribution.",
+  "publication_scope": "publication/ROOT-C7-PUBLICATION-EXCEPTION.json",
+  "timestamp_supplement": "publication/ROOT-C7-TIMESTAMP-EXCEPTION.json",
+  "screening": {
+    "tool": "09c80b",
+    "exact_selected_files": 68,
+    "patterns": "private key header and GitHub/Google credential-shaped prefix screen",
+    "hits": 0,
+    "limits": "Not a secret-free guarantee; no private material scanned"
+  },
+  "git_policy": {
+    "hooks": "disabled",
+    "fsmonitor": false,
+    "gc_auto": 0,
+    "maintenance_auto": false,
+    "signing": false,
+    "stage": "Only68 exactselectedfiles+manifest+review+thisreceipt",
+    "commit": "One checkpoint7 commit",
+    "push": "--no-signed --no-follow-tags --recurse-submodules=no origin HEAD:refs/heads/codex/audit-continuation-linux-20260908",
+    "protected_refs_tags": "unchanged",
+    "whitespace": "Actual staged --check result must be retained; do not trim evidence"
+  },
+  "execution_cleanup": "No build/test/namespace/oldruntime action here. No new Gradle stop duty; original HOLDs unchanged. Git foreground processes must finish. Active isolatedbatch sources remain unstaged/unadmitted."
+}
