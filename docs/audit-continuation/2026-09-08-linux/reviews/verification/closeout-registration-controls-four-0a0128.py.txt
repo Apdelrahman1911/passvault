@@ -1,0 +1,521 @@
+#!/usr/bin/python3
+"""Four proposed real-FD component controls; NOT execution/scratch admission.
+
+Root supplies original borrowed scratch authority, exact source bytes, a durable
+bounded emitter, cancellation and an independently reviewed foreground deadline.
+No helper import/main, old runner, real memory pressure or FD-reuse scenario.
+"""
+
+import ast
+import errno
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import time
+
+
+SCRATCH = Path('/root/projects/PassVault/audit-runtime-linux-closeout-registration-controls-01')
+PARENTS = (Path('/'), Path('/root'), Path('/root/projects'), Path('/root/projects/PassVault'))
+CLOSER = ('8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517', 59609, 1100)
+OUTER = ('50473240372643cc30dc54f12e4f3cf818d6ab68e0f4f27b62929cdae4684a5c', 48017, 867)
+CASES = (
+    ('R01_closer_nominal_registration', 'closer', False, 'closer-normal'),
+    ('R02_closer_second_pin_store_memoryerror', 'closer', True, 'closer-fault'),
+    ('R03_outer_nominal_registration', 'outer', False, 'outer-normal'),
+    ('R04_outer_second_pin_store_memoryerror', 'outer', True, 'outer-fault'),
+)
+SELECTED = {
+    'closer': ('Hold', 'require', 'identity', 'absolute', 'Directories'),
+    'outer': ('LIMITS', 'Hold', 'require', 'pin', 'Originals'),
+}
+FLAGS = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+WORK_SECONDS, TOTAL_SECONDS = 30, 45  # Cleanup uses the remaining common deadline, never a reset.
+SCRATCH_BYTES_CAP = 64 * 1024
+EVENT_BYTES_CAP, PACKET_BYTES_CAP = 8 * 1024, 32 * 1024
+TICK_CAP = 2000
+FAULT = 'SYNTHETIC_SECOND_PIN_INSERTION'
+MARKER = 'FOUR_SYNTHETIC_REGISTRATION_COMPONENT_CONTROLS_NOT_CLOSEOUT_OR_APPLICATION_ADMISSION'
+CONSUMED = False
+
+
+class ControlFailure(Exception):
+    pass
+
+
+def check(condition, reason):
+    if not condition:
+        raise ControlFailure(reason)
+
+
+def pin(value):
+    return {name: getattr(value, 'st_' + name) for name in ('dev', 'ino', 'uid', 'mode')}
+
+
+def describe(error):
+    return {'type': type(error).__name__, 'errno': getattr(error, 'errno', None),
+            'message': str(error)[:160]}
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode() + b'\n'
+
+
+def absent(name, parent):
+    try:
+        os.stat(name, dir_fd=parent, follow_symlinks=False)
+    except FileNotFoundError:
+        return True
+    return False
+
+
+def names(fd, cap):
+    result = set()
+    with os.scandir(fd) as entries:
+        for entry in entries:
+            check(len(result) < cap, 'directory inventory exceeds fixed member cap')
+            result.add(entry.name)
+    return result
+
+
+class Clock:
+    def __init__(self, cancelled):
+        self.start = time.monotonic()
+        self.work_end, self.end = self.start + WORK_SECONDS, self.start + TOTAL_SECONDS
+        self.cancelled, self.ticks = cancelled, 0
+
+    def work(self):
+        self.ticks += 1
+        check(self.ticks <= TICK_CAP, 'component tick cap')
+        check(not self.cancelled(), 'latched cancellation')
+        check(time.monotonic() <= self.work_end, 'component work deadline')
+
+    def cleanup(self):
+        check(time.monotonic() <= self.end, 'common cleanup deadline')
+
+
+class Events:
+    def __init__(self, emit):
+        self.emit, self.sequence, self.failed = emit, 0, None
+
+    def send(self, event, **data):
+        check(self.failed is None, 'durable emitter already failed; no retry')
+        record = {'sequence': self.sequence + 1, 'event': event, 'marker': MARKER, **data}
+        check(len(encoded(record)) <= EVENT_BYTES_CAP, 'bounded protocol event')
+        try:
+            self.emit(record)
+        except BaseException as error:
+            self.failed = describe(error)
+            raise ControlFailure('durable event emission failed; no retry') from error
+        self.sequence += 1
+
+
+class Arena:
+    """Four fixed empty fixture originals; borrowed scratch is never closed/removed."""
+
+    def __init__(self, scratch_fd, originals, clock):
+        self.fd, self.originals, self.clock = scratch_fd, originals, clock
+        self.parents = [{'path': path, 'fd': None, 'attempted_close': False,
+                         'close_returned': False, 'closed_ebadf': False} for path in PARENTS]
+        self.children = [{'name': case[3], 'created': False, 'fd': None, 'pin': None,
+                          'rmdir_attempted': False, 'rmdir_returned': False, 'removed': False,
+                          'attempted_close': False, 'close_returned': False,
+                          'closed_ebadf': False} for case in CASES]
+        self.cleaned, self.validated = False, False
+
+    def start(self):
+        check(type(self.fd) is int and self.fd >= 0 and type(self.originals) is dict,
+              'borrowed scratch FD/original map types')
+        check(set(self.originals) == {str(path) for path in (*PARENTS, SCRATCH)},
+              'exact five original directory pins required')
+        for original in self.originals.values():
+            check(type(original) is dict and set(original) == {'dev', 'ino', 'uid', 'mode'}
+                  and all(type(value) is int for value in original.values()), 'original pin shape')
+        parent = None
+        for row in self.parents:
+            self.clock.work()
+            row['fd'] = os.open('/' if parent is None else row['path'].name, FLAGS, dir_fd=parent)
+            check(pin(os.fstat(row['fd'])) == self.originals[str(row['path'])], 'ancestor original mismatch')
+            parent = row['fd']
+        self.verify()
+        self.validated = True
+        check(names(self.fd, 1) == set(), 'scratch must be initially empty; no adoption')
+
+    def verify(self):
+        parent = None
+        for row in self.parents:
+            check(row['fd'] is not None and not row['attempted_close'], 'ancestor authority incomplete')
+            expected = self.originals[str(row['path'])]
+            check(pin(os.fstat(row['fd'])) == expected and stat.S_ISDIR(expected['mode']),
+                  'retained ancestor descriptor drift')
+            if parent is not None:
+                check(pin(os.stat(row['path'].name, dir_fd=parent, follow_symlinks=False)) == expected,
+                      'retained ancestor name drift')
+            parent = row['fd']
+        expected = self.originals[str(SCRATCH)]
+        check(expected['uid'] == os.getuid() and expected['mode'] == stat.S_IFDIR | 0o700,
+              'original scratch must be owned0700')
+        check(pin(os.fstat(self.fd)) == expected
+              == pin(os.stat(SCRATCH.name, dir_fd=parent, follow_symlinks=False)), 'scratch original drift')
+
+    def footprint(self):
+        values = [os.fstat(self.fd)]
+        for row in self.children:
+            if row['fd'] is not None and not row['attempted_close']:
+                values.append(os.fstat(row['fd']))
+        result = {'logical_bytes': sum(value.st_size for value in values),
+                  'allocated_bytes': sum(value.st_blocks * 512 for value in values)}
+        check(max(result.values()) <= SCRATCH_BYTES_CAP, '64KiB original scratch footprint cap')
+        return result
+
+    def create(self):
+        for row in self.children:
+            self.clock.work()
+            self.verify()
+            check(absent(row['name'], self.fd), 'occupied fixture name; no adoption')
+            os.mkdir(row['name'], 0o700, dir_fd=self.fd)
+            row['created'] = True
+            row['pin'] = pin(os.stat(row['name'], dir_fd=self.fd, follow_symlinks=False))
+            check(row['pin']['uid'] == os.getuid() and row['pin']['mode'] == stat.S_IFDIR | 0o700,
+                  'new fixture must be owned0700')
+            row['fd'] = os.open(row['name'], FLAGS, dir_fd=self.fd)
+            check(pin(os.fstat(row['fd'])) == row['pin'], 'new fixture descriptor/name mismatch')
+            os.fsync(self.fd)
+            check(names(row['fd'], 1) == set(), 'new fixture must be empty')
+            self.footprint()
+        check(names(self.fd, len(CASES)) == {row['name'] for row in self.children}, 'exact fixture inventory')
+
+    def expected(self, row):
+        self.verify()
+        check(row['created'] and row['fd'] is not None and row['pin'] is not None, 'fixture original incomplete')
+        check(pin(os.fstat(row['fd'])) == row['pin']
+              == pin(os.stat(row['name'], dir_fd=self.fd, follow_symlinks=False)), 'fixture original drift')
+        return {**self.originals, str(SCRATCH / row['name']): dict(row['pin'])}
+
+    def cleanup(self):
+        check(not self.cleaned, 'arena cleanup is one-shot')
+        self.cleaned = True
+        failures, removed = [], []
+        # A failed case does not prohibit independently safe original-only removal.
+        # Each original is separately validated; unknown/replaced entries are retained.
+        for row in reversed(self.children):
+            if not row['created']:
+                continue
+            try:
+                self.clock.cleanup()
+                self.expected(row)
+                check(names(row['fd'], 1) == set(), 'fixture gained contents; never traverse/delete')
+                row['rmdir_attempted'] = True
+                os.rmdir(row['name'], dir_fd=self.fd)
+                row['rmdir_returned'] = True
+                check(pin(os.fstat(row['fd'])) == row['pin'] and os.fstat(row['fd']).st_nlink == 0
+                      and absent(row['name'], self.fd), 'original empty-directory removal not proved')
+                os.fsync(self.fd)
+                row['removed'] = True
+                removed.append({'name': row['name'], 'original': row['pin']})
+            except BaseException as error:
+                failures.append({'operation': 'remove_original_empty_fixture', 'name': row['name'],
+                                 'error': describe(error)})
+        try:
+            check(self.validated, 'original scratch authority was not established')
+            self.clock.cleanup()
+            self.verify()
+            remaining = sorted(names(self.fd, len(CASES) + 1))
+            check(not remaining, 'scratch remains nonempty; root must not remove it')
+        except BaseException as error:
+            remaining = None
+            failures.append({'operation': 'final_original_scratch_check', 'error': describe(error)})
+        # Descriptor settlement is independent of case/deletion verdict. Never retry
+        # an attempted close, and never transfer a borrowed scratch FD into this list.
+        for row in (*reversed(self.children), *reversed(self.parents)):
+            if row['fd'] is not None and not row['attempted_close']:
+                row['attempted_close'] = True
+                try:
+                    os.close(row['fd'])
+                    row['close_returned'] = True
+                    try:
+                        os.fstat(row['fd'])
+                    except OSError as error:
+                        check(error.errno == errno.EBADF, 'unexpected closed-observer observation error')
+                        row['closed_ebadf'] = True
+                    else:
+                        raise ControlFailure('owned observer descriptor remained open after close')
+                except BaseException as error:
+                    failures.append({'operation': 'close_owned_observer',
+                                     'path': str(row.get('path', SCRATCH / row.get('name', ''))),
+                                     'error': describe(error)})
+        if self.validated:
+            try:
+                check(pin(os.fstat(self.fd)) == self.originals[str(SCRATCH)], 'borrowed scratch FD changed')
+            except BaseException as error:
+                failures.append({'operation': 'final_borrowed_scratch_check', 'error': describe(error)})
+        return {'status': 'COMPLETE' if not failures else 'HOLD', 'removed': removed,
+                'remaining_names': remaining, 'failures': failures,
+                'observer_close_attempts': sum(row['attempted_close'] for row in (*self.parents, *self.children)),
+                'observer_lifetimes': [
+                    {'path': str(row.get('path', SCRATCH / row.get('name', ''))), 'fd': row['fd'],
+                     'close_attempted': row['attempted_close'], 'close_returned': row['close_returned'],
+                     'closed_ebadf': row['closed_ebadf']}
+                    for row in (*self.parents, *self.children)],
+                'borrowed_scratch_closed_or_removed': False}
+
+
+class SubjectOs:
+    """Delegates real directory syscalls, never globally patches os or invents closes."""
+
+    O_RDONLY, O_DIRECTORY, O_NOFOLLOW, O_CLOEXEC = os.O_RDONLY, os.O_DIRECTORY, os.O_NOFOLLOW, os.O_CLOEXEC
+
+    def __init__(self, expected):
+        self.rows = [{'path': path, 'pin': original, 'fd': None, 'open_returned': False,
+                      'close_calls': 0, 'real_close_attempts': 0, 'close_returned': False,
+                      'closed_ebadf': False, 'close_origin': None, 'close_error': None}
+                     for path, original in expected.items()]
+        self.rows.sort(key=lambda row: len(Path(row['path']).parts))
+        self.stage = 'subject_open'
+
+    def open(self, path, flags, *, dir_fd=None):
+        unopened = [row for row in self.rows if not row['open_returned']]
+        check(unopened and flags == FLAGS, 'unexpected subject allocation or flags')
+        row = unopened[0]
+        wanted = Path(row['path'])
+        parents = [parent for parent in self.rows if parent['path'] == str(wanted.parent)
+                   and parent['open_returned']]
+        check((wanted == Path('/') and path == '/' and dir_fd is None)
+              or (wanted != Path('/') and len(parents) == 1 and path == wanted.name
+                  and dir_fd == parents[0]['fd']), 'nonallowlisted subject directory open')
+        row['fd'] = os.open(path, flags, dir_fd=dir_fd)
+        row['open_returned'] = True
+        check(pin(os.fstat(row['fd'])) == row['pin'], 'subject acquired a different original')
+        return row['fd']
+
+    def fstat(self, fd):
+        check(any(row['open_returned'] and row['fd'] == fd for row in self.rows), 'unowned subject fstat')
+        return os.fstat(fd)
+
+    def stat(self, path, *, dir_fd, follow_symlinks):
+        parents = [row for row in self.rows if row['open_returned'] and row['fd'] == dir_fd]
+        check(follow_symlinks is False and len(parents) == 1 and type(path) is str
+              and any(row['path'] == str(Path(parents[0]['path']) / path) for row in self.rows),
+              'nonallowlisted subject stat')
+        return os.stat(path, dir_fd=dir_fd, follow_symlinks=False)
+
+    def close(self, fd):
+        matches = [row for row in self.rows if row['open_returned'] and row['fd'] == fd]
+        check(len(matches) == 1, 'unowned or ambiguous subject close')
+        row = matches[0]
+        row['close_calls'] += 1
+        # Duplicate calls are failures, not a second syscall on an ambiguous number.
+        if row['real_close_attempts']:
+            raise OSError(errno.EBADF, 'duplicate subject close rejected without retry')
+        check(pin(os.fstat(fd)) == row['pin'], 'original subject descriptor drift before close')
+        row['real_close_attempts'], row['close_origin'] = 1, self.stage
+        try:
+            os.close(fd)
+            row['close_returned'] = True
+        except BaseException as error:
+            row['close_error'] = describe(error)
+            raise
+        # No descriptor allocator occurs between the close and this real kernel check.
+        try:
+            os.fstat(fd)
+        except OSError as error:
+            check(error.errno == errno.EBADF, 'unexpected closed-FD observation error')
+            row['closed_ebadf'] = True
+        else:
+            raise ControlFailure('successful close did not leave descriptor closed')
+
+    def settle_unattempted(self):
+        errors = []
+        self.stage = 'callable_finally_original_unattempted_only'
+        for row in reversed(self.rows):
+            if row['fd'] is not None and not row['real_close_attempts']:
+                try:
+                    # A fallback is never counted as a subject pass, even if settled.
+                    errors.append({'operation': 'subject_left_unattempted_original', 'path': row['path']})
+                    self.close(row['fd'])
+                except BaseException as error:
+                    errors.append({'operation': 'settle_original_unattempted', 'error': describe(error)})
+        return errors
+
+
+class FailTargetPinStore(dict):
+    """One deterministic second-map store exception, not allocator/resource pressure."""
+
+    def __init__(self, subject, target, parent_fds, parent_pins, expected_fd):
+        super().__init__(parent_pins)
+        self.subject, self.target, self.parent_fds = subject, target, parent_fds
+        self.parent_pins, self.expected_fd = parent_pins, expected_fd
+        self.attempts, self.observed_first_publication = 0, False
+
+    def __setitem__(self, key, value):
+        check(key == self.target and self.attempts == 0, 'unexpected/repeated failing-dict insertion')
+        self.attempts += 1
+        check(self.subject.fds == {**self.parent_fds, key: self.expected_fd()}
+              and dict(self) == self.parent_pins and key not in self, 'specific second-store precondition absent')
+        self.observed_first_publication = True
+        raise MemoryError(FAULT)
+
+
+def subject_definitions(source, kind, spy):
+    expected = CLOSER if kind == 'closer' else OUTER
+    check(type(source) is bytes and (hashlib.sha256(source).hexdigest(), len(source), source.count(b'\n'))
+          == expected, 'exact current subject bytes required; no silent rebind')
+    parsed = ast.parse(source.decode('utf-8'), filename='<pinned-' + kind + '-source>')
+    selected, seen = [], []
+    for node in parsed.body:
+        name = node.name if isinstance(node, (ast.ClassDef, ast.FunctionDef)) else None
+        if kind == 'outer' and isinstance(node, ast.Assign) and len(node.targets) == 1 \
+                and isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'LIMITS':
+            name = 'LIMITS'
+        if name in SELECTED[kind]:
+            selected.append(node)
+            seen.append(name)
+    check(tuple(seen) == SELECTED[kind], 'exact ordered unique source definitions required')
+    # Original nodes, bodies and predicates remain unchanged. No whole helper,
+    # imports, main, admission, I/O reader, process or deletion function is invoked.
+    namespace = {'__name__': 'passvault_registration_' + kind + '_selected',
+                 'os': spy, 'Path': Path, 'stat': stat, 'time': time}
+    exec(compile(ast.Module(body=selected, type_ignores=[]), '<pinned-' + kind + '-definitions>', 'exec'), namespace)
+    return namespace['Directories' if kind == 'closer' else 'Originals']
+
+
+def one_case(case, fixture, arena, source, clock):
+    case_id, kind, inject, _ = case
+    expected = arena.expected(fixture)
+    spy = SubjectOs(expected)
+    result = {'id': case_id, 'kind': kind, 'status': 'FAIL', 'injected': inject,
+              'specific_second_store_observed': False, 'parent_authority_preserved': False,
+              'registry_contract_verified': False, 'errors': []}
+    subject, close_called = None, False
+    target = str(SCRATCH / fixture['name'])
+    try:
+        clock.work()
+        cls = subject_definitions(source, kind, spy)
+        subject = cls(clock.work) if kind == 'closer' else cls()
+        operation = subject.open if kind == 'closer' else subject.directory
+        operation(SCRATCH, True)
+        parents = {key: value for key, value in expected.items() if key != target}
+        check(subject.pins == parents and set(subject.fds) == set(parents), 'initial original parent registration')
+        parent_fds, parent_pins = dict(subject.fds), {key: dict(value) for key, value in subject.pins.items()}
+        result['parent_registry_before'] = {'fds': parent_fds, 'pins': parent_pins}
+        target_row = spy.rows[-1]
+        failing = FailTargetPinStore(subject, target, parent_fds, parent_pins, lambda: target_row['fd']) if inject else None
+        if inject:
+            subject.pins = failing
+        clock.work()
+        if inject:
+            try:
+                operation(Path(target), True)
+            except MemoryError as error:
+                check(type(error) is MemoryError and error.args == (FAULT,), 'wrong MemoryError origin')
+            else:
+                raise ControlFailure('selected second-store failure did not propagate')
+            check(failing.attempts == 1 and failing.observed_first_publication, 'injection was not reached exactly once')
+            result['specific_second_store_observed'] = True
+            check(subject.fds == parent_fds and dict(subject.pins) == parent_pins,
+                  'failed registration leaked/removed registry authority')
+            check(target_row['close_calls'] == target_row['real_close_attempts'] == 1
+                  and target_row['closed_ebadf'], 'local failure did not close original exactly once')
+        else:
+            returned = operation(Path(target), True)
+            check(returned == target_row['fd'] and subject.fds == {**parent_fds, target: returned}
+                  and subject.pins == expected and target_row['close_calls'] == 0, 'normal registration contract')
+        result['registry_after_target'] = {'fds': dict(subject.fds), 'pins': dict(subject.pins)}
+        # No new FD allocator/emitter appears in the local-close -> final-close interval.
+        check(all(subject.fds[key] == fd and pin(os.fstat(fd)) == parent_pins[key]
+                  and subject.pins[key] == parent_pins[key] for key, fd in parent_fds.items()),
+              'registered parent original was closed or changed')
+        check(pin(os.fstat(arena.fd)) == arena.originals[str(SCRATCH)]
+              and pin(os.fstat(fixture['fd'])) == fixture['pin'], 'borrowed/fixture observer original changed')
+        result['parent_authority_preserved'] = True
+        expected_registry, expected_pins = dict(subject.fds), dict(subject.pins)
+        close_called, spy.stage = True, 'subject_final_close'
+        check(subject.close() == [], 'subject final-close error list')
+        # The closer deliberately retains closed numeric map values; the outer pops
+        # its FD map. Neither class is called again or given resumed authority.
+        check(subject.fds == (expected_registry if kind == 'closer' else {})
+              and dict(subject.pins) == expected_pins, 'post-close source-specific registry contract')
+        result['registry_after_close'] = {'fds': dict(subject.fds), 'pins': dict(subject.pins)}
+        check(len(spy.rows) == 6 and all(row['open_returned'] and row['close_calls'] == 1
+              and row['real_close_attempts'] == 1 and row['close_returned'] and row['closed_ebadf']
+              and row['close_error'] is None for row in spy.rows), 'real FD acquisition/once-close/closed proof')
+        arena.verify()
+        check(pin(os.fstat(fixture['fd'])) == fixture['pin'], 'retained fixture observer changed after subject close')
+        result['registry_contract_verified'], result['status'] = True, 'PASS'
+    except BaseException as error:
+        result['errors'].append(describe(error))
+    finally:
+        if subject is not None and not close_called:
+            close_called, spy.stage = True, 'subject_final_close_after_control_failure'
+            try:
+                errors = subject.close()
+                if errors:
+                    result['errors'].append({'operation': 'subject_final_close', 'errors': errors})
+            except BaseException as error:
+                result['errors'].append(describe(error))
+        result['errors'].extend(spy.settle_unattempted())
+        result['subject_close_called_once'] = close_called
+        result['fd_lifetimes'] = spy.rows
+        if result['errors']:
+            result['status'] = 'FAIL'
+    check(len(encoded(result)) <= EVENT_BYTES_CAP - 512, 'case result byte cap')
+    return result
+
+
+def run_controls(*, scratch_fd, original_directories, closer_source, outer_source, emit, cancelled):
+    """One root-owned future invocation; arguments are not self-issued admission."""
+    global CONSUMED
+    check(not CONSUMED, 'callable already consumed; no replay')
+    CONSUMED = True
+    clock, events = Clock(cancelled), Events(emit)
+    arena = Arena(scratch_fd, original_directories, clock)
+    started, results, failures, cleanup, footprint = [], [], [], None, None
+    try:
+        clock.work()
+        check(callable(emit) and callable(cancelled), 'root emitter/cancellation callbacks required')
+        for data, fixed in ((closer_source, CLOSER), (outer_source, OUTER)):
+            check(type(data) is bytes and len(data) == fixed[1] and data.count(b'\n') == fixed[2]
+                  and hashlib.sha256(data).hexdigest() == fixed[0], 'frozen source tuple')
+        arena.start()
+        events.send('begin', cases=[case[0] for case in CASES], closer_sha256=CLOSER[0], outer_sha256=OUTER[0])
+        arena.create()
+        footprint = arena.footprint()
+        for case, fixture in zip(CASES, arena.children):
+            clock.work()
+            events.send('case_start', id=case[0])
+            started.append(case[0])
+            result = one_case(case, fixture, arena, closer_source if case[1] == 'closer' else outer_source, clock)
+            results.append(result)
+            events.send('case_result', result=result)
+            if result['status'] != 'PASS':
+                break  # Unexpected failure is not a retry; later identities remain unstarted.
+    except BaseException as error:
+        failures.append(describe(error))
+    finally:
+        try:
+            cleanup = arena.cleanup()
+        except BaseException as error:
+            cleanup = {'status': 'HOLD', 'failures': [describe(error)],
+                       'borrowed_scratch_closed_or_removed': False}
+    if events.failed is None:
+        try:
+            events.send('cleanup', result=cleanup)
+        except BaseException as error:
+            failures.append(describe(error))
+    receipt = {'marker': MARKER, 'expected': [case[0] for case in CASES], 'started': started, 'results': results,
+               'unstarted': [case[0] for case in CASES if case[0] not in started],
+               'started_without_result': [case_id for case_id in started
+                                          if case_id not in {result['id'] for result in results}], 'failures': failures,
+               'emitter_failure': events.failed, 'completed_protocol_events': events.sequence,
+               'cleanup': cleanup, 'footprint_before_cases': footprint,
+               'source_sha256': {'closer': CLOSER[0], 'outer': OUTER[0]},
+               'elapsed_seconds': time.monotonic() - clock.start, 'root_scratch_closeout_required': True,
+               'application_cases': 0, 'status': 'HOLD'}
+    if started == [case[0] for case in CASES] and len(results) == len(CASES) \
+            and all(row['status'] == 'PASS' for row in results) \
+            and not failures and events.failed is None and cleanup['status'] == 'COMPLETE' \
+            and time.monotonic() <= clock.end:
+        receipt['status'] = 'FOUR_COMPONENT_CONTROLS_PASS_PENDING_ROOT_SETTLEMENT'
+    check(len(encoded(receipt)) <= PACKET_BYTES_CAP, 'returned receipt cap')
+    return receipt

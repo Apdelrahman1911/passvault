@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T02:34:53.161972+00:00",
+  "disposition": "QUALIFIED_INITIAL_PLAN_SCOPE_SUPPORT_EXECUTABLE_IMPLEMENTATION_AND_ADMISSION_PENDING",
+  "plan_sha256": "fcacf2f9075585995cb511c3de6e83f05782b63f4adc505465bc024c7a651795",
+  "plan_read_ranges": [
+    [
+      1,
+      338
+    ]
+  ],
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-VALIDATION-PLAN.md",
+      "sha256": "fcacf2f9075585995cb511c3de6e83f05782b63f4adc505465bc024c7a651795",
+      "bytes": 22562,
+      "physical_lf": 338
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+      "bytes": 6626,
+      "physical_lf": 187
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+      "bytes": 4540,
+      "physical_lf": 120
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm",
+      "sha256": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+      "bytes": 35723,
+      "physical_lf": 959
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+      "bytes": 826,
+      "physical_lf": 28
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+      "sha256": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4",
+      "bytes": 20245,
+      "physical_lf": 459
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FIXTURE-PATCH-REVIEW.json",
+      "sha256": "2a9564df192f9bc67c8a1966049b86d589d6ac79dd50e3f8e2aa9afe5aa3e6d9",
+      "bytes": 8299,
+      "physical_lf": 234
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FIXTURE-PATCH-QUALIFICATIONS.md",
+      "sha256": "f821e6db983d0cc647710a7edf1f227fdcb27e1c6e5154a04814356a9a65e97c",
+      "bytes": 2880,
+      "physical_lf": 43
+    }
+  ],
+  "observed_HEAD": "f18995e6633904a6845e09eab8a481635290894d",
+  "observed_tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+  "observed_branch": "codex/audit-continuation-linux-20260908",
+  "identity_qualification": "Frozen plan and exact native working-file tuples only; future S/T and runtime instance unfilled; no whole-project or complete postpatch tree claim",
+  "full_native_source_read_ranges": {
+    "CMakeLists.txt": [
+      [
+        1,
+        187
+      ]
+    ],
+    "include/passvault_biometric.h": [
+      [
+        1,
+        120
+      ]
+    ],
+    "tests/passvault_biometric_abi_test.cpp": [
+      [
+        1,
+        28
+      ]
+    ],
+    "tests/macos/passvault_biometric_macos_security_test.mm": [
+      [
+        1,
+        459
+      ]
+    ]
+  },
+  "production_read_qualification": "Previously independently reviewed unchanged guards/lifetime reused by SHA; additional focused full property/guard reads400-534 and702-741; no new full959LF coverage claim",
+  "ordered_existing_cases": [
+    {
+      "name": "passvault_biometric_macos_fixture_normal",
+      "argv": [
+        "U/build/passvault_biometric_macos_security_test",
+        "--fixture-case",
+        "normal"
+      ],
+      "meaning": "MAC-FIXTURE-001 explicit cleanup filesystem control"
+    },
+    {
+      "name": "passvault_biometric_macos_fixture_early_return",
+      "argv": [
+        "U/build/passvault_biometric_macos_security_test",
+        "--fixture-case",
+        "early_return"
+      ],
+      "meaning": "MAC-FIXTURE-001 assertion-return/destructor filesystem control"
+    },
+    {
+      "name": "passvault_biometric_macos_fixture_cpp_exception",
+      "argv": [
+        "U/build/passvault_biometric_macos_security_test",
+        "--fixture-case",
+        "cpp_exception"
+      ],
+      "meaning": "MAC-FIXTURE-001 dedicated exception/destructor filesystem control"
+    },
+    {
+      "name": "passvault_biometric_abi",
+      "argv": [
+        "U/build/passvault_biometric_abi_test"
+      ],
+      "meaning": "PVA014 ABI/null-guard/output-wipe compatibility only"
+    },
+    {
+      "name": "passvault_biometric_macos_security",
+      "argv": [
+        "U/build/passvault_biometric_macos_security_test"
+      ],
+      "meaning": "Synthetic metadata/missing retrieval/allowed LAContext property and limited busy-destroy native siblings; no real prompt/provider/hardware proof"
+    }
+  ],
+  "inventory_order_qualification": "Validate exact set and argv mapping; source registration order is security/normal/early_return/cpp_exception/ABI, distinct from planned run order",
+  "root_allowed_LAContext_scope": [
+    "test-owned construction",
+    "localized reason/fallback/reuse property reads/writes",
+    "test-owned invalidate"
+  ],
+  "forbidden_scope": [
+    "canEvaluatePolicy/evaluatePolicy",
+    "capability or actual enrollment inquiry",
+    "Keychain operations",
+    "OS dialog/authentication/key release",
+    "real vault/backup/clipboard data",
+    "physical-device inference"
+  ],
+  "required_review_clarifications": [
+    "Explicit pre-configure make/build-driver/compiler-subtool binding; configure probes are executable work",
+    "Inventory mapping distinct from fixture-first/security-last run order",
+    "Preserve old plan but explicitly qualify current all-confirmed denominator22/38, not22/37"
+  ],
+  "author_response": "Acknowledged first two sealing requirements without modifying frozen plan; source preparation remains root-assigned and request/activation/execution forbidden",
+  "future_executable_gaps": [
+    "Mac ownership/signal/after-set/process controller and real controls, including CTest timeout behavior",
+    "Reviewed memory/ACL/original parent primitives",
+    "Source/activation/normative acceptance schema and actual image/toolchain/pin admission",
+    "Cancellation/fork/terminal semantics and finite process/RSS/FD/output/log/traversal bounds",
+    "Allowlisted cleanup preserving native-parent HOLD and complete relevant worker settlement",
+    "Exact branch-only workflow, root cross-local/CI slot transfer, compact artifacts and independent XML/result adjudication"
+  ],
+  "metadata_capture_qualification": "Three official runner-image GET receipts/selected declarations read from author plan; raw responses not independently fetched or read by this reviewer; no observed hosted image",
+  "proposed_target": "macos-15-intel/x86_64; Xcode16.4(16F6), SDK15.5, CMake/CTest4.4.2, Python3.14.7; requires later exact runtime admission, no install/substitution",
+  "proposed_action_pin_qualification": "Immutable pin syntax proposed; exact canonical action identities remain for recheck before implementation/admission, not new verification credit here",
+  "denominator_snapshot": {
+    "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+    "sha256": "9615c2c3c6047b3a0715d0e7d9530f0045467077d78488a231754e70d4278242",
+    "updated_utc": "2026-09-09T02:10:16.675252+00:00",
+    "values": {
+      "original_confirmed": {
+        "qualified_closures": 19,
+        "total": 25,
+        "remaining": 6,
+        "percent": 76
+      },
+      "all_confirmed": {
+        "qualified_closures": 22,
+        "total": 38,
+        "remaining": 16,
+        "percent": 57.9
+      },
+      "original_suspicions": {
+        "conclusive_outcomes": 2,
+        "total": 12,
+        "remaining": 10,
+        "percent": 16.7
+      },
+      "design_explanations": {
+        "documented": 8,
+        "total": 8,
+        "owner_decisions": "PENDING_SEPARATE_EXCEPT_REQUIRED_EXISTING_COMPATIBILITY"
+      }
+    },
+    "qualification": "Read root-owned current counters only, not independent PVA038 finding review; frozen v1 all22/37 is superseded"
+  },
+  "proposed_existing_cases": 5,
+  "new_case_declarations": 0,
+  "new_executions": 0,
+  "new_xml_results": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "helper_source_present_at_review": false,
+  "workflow_source_present_at_review": false,
+  "request_present_at_review": false,
+  "executable_source_acceptance": false,
+  "execution_admission": false,
+  "cleanup_admission": false,
+  "hardware_evidence": false,
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-VALIDATION-PLAN-REVIEW.md",
+  "report_sha256": "51cdf3325edd2812ae4db0594803bae7068fa366592013b5c3605d443aac8d56",
+  "restrictions": "WindowsFAIL/HOLD/14UNSTARTED unchanged, no observability/retry; PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED and publication/build1017001 fences retained",
+  "reviewer_actions": "Source/data reads and own permanent reports only; no build/test/helper/native/network/CI/control/recovery invocation, no reviewed source edit or commit/push",
+  "cleanup": "No owned build/cache/temp executable/background worker; no deletion/termination or old obligation discharge",
+  "resource_point_sample": {
+    "available_disk_KiB": 28165740,
+    "MemAvailable_KiB": 42941976,
+    "qualification": "Source review point only, not admission"
+  }
+}

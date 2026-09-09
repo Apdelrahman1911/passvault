@@ -1,0 +1,123 @@
+{
+  "format": "passvault-linux-closeout-registration-controls-source-review-v2",
+  "reviewer": "/root/build_config",
+  "review_role": "INDEPENDENT_SOURCE_REVIEW",
+  "control_authors": ["/root/verification"],
+  "subject_correction_authors": ["/root/editor", "/root/storage"],
+  "disposition": "ACCEPT_BOUNDED_SOURCE_ONLY_PENDING_NEW_LAUNCH_INSTANCE_AND_EXECUTION",
+  "source_only": true,
+  "execution_admission": false,
+  "instance_admission": false,
+  "executed_controls": 0,
+  "application_test_cases": 0,
+  "qualified_closures_added": 0,
+  "reviewer_authored_separate_17_and_28_not_these_six_or_subject_corrections": true,
+  "adjudicates_actual_28_result_or_settlement": false,
+  "subjects": {
+    "controls": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/CLOSEOUT_REGISTRATION_CONTROLS.py",
+      "sha256": "08d1ea3f9638f816e116e9332131c3b26d4245f6a79509cae9e766ab759f702c",
+      "bytes": 28369, "physical_lf": 534
+    },
+    "plan": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/CLOSEOUT-REGISTRATION-CONTROLS-PLAN.md",
+      "sha256": "36a53fe51f2f0bf028c3f90223eb677e873160b5306a26ec65dc718ea834bc5b",
+      "bytes": 22088, "physical_lf": 335
+    },
+    "author_delta": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/CLOSEOUT-REGISTRATION-CONTROLS-02-DELTA.md",
+      "sha256": "cbb1b3e5569813acbab37dd76f5f4f220340863aa84cf9ceec069ab1d991aa8c",
+      "bytes": 4837, "physical_lf": 73
+    },
+    "closer": {
+      "path": "scripts/audit/linux_database_closeout.py",
+      "sha256": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+      "bytes": 59609, "physical_lf": 1100
+    },
+    "outer": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CLOSEOUT.py",
+      "sha256": "50473240372643cc30dc54f12e4f3cf818d6ab68e0f4f27b62929cdae4684a5c",
+      "bytes": 48017, "physical_lf": 867
+    },
+    "database_outer": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH_DATABASE.py",
+      "sha256": "871aa7ebca0a2c7cf3e73923396a1e918d2186332a7f7c22988d3d8469754889",
+      "bytes": 37642, "physical_lf": 718
+    }
+  },
+  "database_outer_acceptance": {
+    "plan_path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH-PLAN.md",
+    "plan_sha256": "965439c1a4ce968aa8c96ec9a379d5b0fdd17e55c33f1cccb6d02ebe793226f2",
+    "source_review_md_path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DATABASE-OUTER-REGISTRATION-SUCCESSOR-REVIEW.md",
+    "source_review_md_sha256": "615ca21a72ec40d832f804354c4be8d103d41ea935179fc0a036dfbc10106530",
+    "source_review_json_path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DATABASE-OUTER-REGISTRATION-SUCCESSOR-REVIEW.json",
+    "source_review_json_sha256": "26bd7fbc436c3c676eb7d0b35e8fc25e521cd77b4e47f4dc760aef9fb034598f",
+    "literal_metadata_is_not_document_or_agent_authentication": true,
+    "actual_launcher_input_role_binding_required": true
+  },
+  "preserved_four": {
+    "source_path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/closeout-registration-controls-four-0a0128.py.txt",
+    "source_sha256": "0a012823b44c2c2bf2e7e81e185cecc324639d210529d1886ab6651d5efa0802",
+    "plan_path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/closeout-registration-controls-four-27cb2e-PLAN.md",
+    "plan_sha256": "27cb2e2da38f6cface649695179ce472b27b8755171393fe3a803703de5f690f",
+    "review_md_sha256": "a3e77536c162e729536d7f9a773569dd9755b7662e71470f229ef598a5936b8c",
+    "review_json_sha256": "03f1e898026be305bc76ff64ac1c2fcc3e292359e2b8413fb30319b308c411dd",
+    "original_four_case_tuples_and_oracle_cleanup_bodies_unchanged": true,
+    "earlier_copy_fsync_provenance_independently_replayed": false,
+    "old_four_acceptance_silently_extended": false
+  },
+  "report": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/CLOSEOUT-REGISTRATION-CONTROLS-02-SOURCE-REVIEW.md",
+    "sha256": "da4ab13e396652aabb01f55e2cbed26b55e3d2fa82e4c17972328ce452392d34",
+    "bytes": 7664, "physical_lf": 112
+  },
+  "review_extent": {
+    "full_literal_source_and_plan_diffs_read": true,
+    "author_delta_and_prior_four_and_database_source_reviews_read": true,
+    "necessary_current_control_ranges": [[45, 209], [253, 534]],
+    "necessary_database_outer_range": [35, 186],
+    "fresh_whole_534_line_or_whole_helper_audit_claimed": false,
+    "syntax_ast_import_compile_execute_during_review": false
+  },
+  "fixed_case_count": 6,
+  "ordered_case_ids": [
+    "R01_closer_nominal_registration",
+    "R02_closer_second_pin_store_memoryerror",
+    "R03_outer_nominal_registration",
+    "R04_outer_second_pin_store_memoryerror",
+    "R05_database_outer_nominal_registration",
+    "R06_database_outer_second_pin_store_memoryerror"
+  ],
+  "runtime_status_all_six": "UNEXECUTED",
+  "new_case_oracles": {
+    "R05": "Exact871 normal six original FD registration, sole final real once-close/EBADF, FD map consumed and pin metadata retained.",
+    "R06": "Specific second-pin-map fault after real FD first publication; local once-close/EBADF and child unpublication; five original parents preserved then finally closed."
+  },
+  "qualifications": [
+    "The pin-map failure is a deterministic double, not allocator exhaustion; real syscalls are required prospectively, not observed by this review.",
+    "Duplicate source close records failure without another ambiguous kernel close; fallback settlement never supplies a PASS.",
+    "No deliberate FD-number reuse, old-source red execution, main/admission integration, interruption or close-error coverage.",
+    "REG4-TIME-QUAL-001: 30-second soft preoperation gate, common45 final condition, no guaranteed15 cleanup reserve; separate reviewed60 outer bound remains required.",
+    "64KiB scratch/8KiB event/32KiB packet caps unchanged;256MiB RSS/64KiB total evidence need outer enforcement. Wide illustrative32036+33518=65554 exceeds total by18 before framing; factoring and actual total accounting remain pending.",
+    "Actual launcher must capture/check database PLAN/reviews and roles, not trust emitted literal acceptance hashes."
+  ],
+  "prospective_scope": {
+    "scratch": "/root/projects/PassVault/audit-runtime-linux-closeout-registration-controls-02",
+    "empty_child_count": 6,
+    "subject_explicit_fd_lifetimes": 36,
+    "observer_explicit_fd_lifetimes": 10,
+    "lifetime_counts_are_not_tests_peak_or_all_kernel_fds": true,
+    "protocol_events": 14,
+    "returned_receipt_is_separate_not_fifteenth_event": true,
+    "strongest_callable_status": "SIX_COMPONENT_CONTROLS_PASS_PENDING_ROOT_SETTLEMENT",
+    "borrowed_scratch_closeout_and_independent_result_review_required": true
+  },
+  "operations": {
+    "only_new_own_review_md_json_written": true,
+    "frozen_source_plan_or_prior_review_edits": false,
+    "runtime_scratch_cache_namespace_process_probes": 0,
+    "control_build_test_import_execution": 0,
+    "workers_or_signals_or_cleanup_or_slot_changes": 0,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  }
+}

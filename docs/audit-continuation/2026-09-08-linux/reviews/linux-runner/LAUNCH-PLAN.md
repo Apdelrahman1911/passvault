@@ -198,3 +198,69 @@ overbroad nonfinite-JSON claim. PLAN SHA-256
 `4b569b5292838dccee5b0dcbbd0c14b78070746cba51087b5596b0e8ddcba0fc`
 was clarified above without changing helper bytes or execution authority. No
 parser example was executed; this is a documentation precision correction.
+
+## LCL-OWN-001 database-outer registration successor — source only
+
+On2026-09-09, author `/root/storage` identified the existing partial-registration
+edge while preparing separate receipt-schema documentation. Independent reviewer
+`/root/verification` confirmed it as a grouped **LCL-OWN-001 variant**, not a new
+application family. Its exact qualification is
+`../verification/LINUX-DATABASE-OUTER-REGISTRATION-QUALIFICATION.json`, SHA-256
+`326ed288776d5bfcf127d63341aaf2ae28ae21a939146fe75a01544257d82537`,
+with MD SHA-256
+`4737f349ca9c44314685492f66b4961759d056691ecf5fd97454b61d81a74f77`.
+That review preserves its earlier source-acceptance miss and unaffected evidence;
+it does not preaccept this successor. Actual database admission remains HOLD.
+
+Root explicitly authorized only the new-key exception rollback and this PLAN
+qualification. Before editing, the author exclusively copied/fsynced these inert
+rejected before-images under `../storage/`:
+
+| Before-image | Exact SHA-256 | Bytes / physical LF |
+| --- | --- | ---: |
+| `linux-database-outer-registration-rejected-ee46.py.txt` | `ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1` | 37477 /715 |
+| `linux-database-outer-registration-rejected-c5bb-LAUNCH-PLAN.md` | `c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29` | 11441 /200 |
+
+Current proposed `LAUNCH_DATABASE.py` is
+`871aa7ebca0a2c7cf3e73923396a1e918d2186332a7f7c22988d3d8469754889`,
+37642B/718LF. Its complete literal diff from ee46 is one three-line addition in
+`Originals.directory`'s existing exception handler: a comment and removal of
+`key` from both `self.fds` and `self.pins` **before the sole local close**.
+This PLAN's exact new hash is recorded externally to avoid a self-reference.
+
+The surrounding `key not in self.fds` guard and ordinary dictionaries remain.
+Only the incomplete new key is unpublished; valid parent entries remain owned.
+Normal successful registration is unchanged. If a pin-map insertion fails after
+the FD-map insertion, and ordinary rollback/local close complete, final registry
+cleanup no longer sees that closed numeric descriptor. This is a source proof,
+not an executed fault reproduction or guarantee against repeated catastrophic
+allocation failures, ambiguous close, host loss or blocked syscalls.
+
+The confirmed old path precedes lock/evidence/child allocation; no intervening
+FD allocator, number reuse, unrelated-FD injury or application data loss was
+established. The original admission failure already forces HOLD, and final
+directory-close errors were not separately appended to `state.errors`. Do not
+retell the correction as repairing a demonstrated false PASS or new HOLD.
+
+Commands, caps, outputs, fixed runtime/receipt paths, roles, admission shapes,
+one-shot supervision and wrapper-stop/descendant/cleanup boundaries are unchanged.
+Runner346e,1198-source inventory,105-method inventory, E/bootstrap journal and all
+old request/acceptance material are untouched. The frozen receipt-schema memo
+`LAUNCHER-RECEIPT-SCHEMA-QUALIFICATION.md` remains cdc7138ac4057defbfb4d4f3c067d977e5df7f1e3223d253fbc47a76ff7de43d;
+it qualifies ee46 schema only, not this successor or whole-outer viability.
+
+Independent exact successor source/PLAN review and separately admitted meaningful
+source-bound normal/fault regression are required before actual database
+admission. Root commissioned a distinct registration02 six-case proposal; its
+prior-four plus database-outer normal/fault scope requires its own exact source,
+review, launcher and original-instance admission. The old four controls target
+closer8437/new closeout outer5047, not database outeree46/this successor. Neither
+those four nor separate17/28 are silently extended, rerun or credited here.
+
+Preparation comprised bounded source/data reads, exclusive preservation, the
+three-line source edit and this permanent PLAN addition. No target import, AST,
+syntax probe, test, build, actual receipt, runtime/cache/temp root or worker was
+created. The data-only snapshot writer exited0; the literal diff command's exit1
+denotes the displayed source difference, not a failed control. No wrapper-stop
+duty arose. All earlier STOP/NO-RETRY/CLOSED, hardware, PVD and publication fences
+remain; this correction supplies zero executed cases or qualified closures.

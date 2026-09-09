@@ -1,0 +1,79 @@
+{
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "date": "2026-09-09",
+  "scope": "NEW_FOCUSED_PACKET_INERT_SOURCE_ONLY",
+  "verdict": "REVISE_MF_R1_LATE_CANCELLATION_FINALIZATION",
+  "inputs": [
+    {
+      "path": "scripts/audit/macos_focused_validation.py",
+      "lf": 606,
+      "bytes": 32562,
+      "sha256": "98fa2ccae3ec771fc4f3b841d38b61a9267546da8e149818646b20d6bd5f8f72"
+    },
+    {
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "lf": 68,
+      "bytes": 2645,
+      "sha256": "3d9c947eaacaabec26a8bea26810305ec37021773a83edee38ee1887e1356ac5"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md",
+      "lf": 102,
+      "bytes": 6615,
+      "sha256": "bfa26b13cdab4477b9f5e118b0b7369184be1af10b9c9c47441c66fabe9d9f07"
+    }
+  ],
+  "finding": {
+    "id": "MF-R1",
+    "location": "helper90-92,569-587",
+    "counterexample": "Handled cancellation during final result write or descriptor closes sets flags, but exit chosen from status remains zero.",
+    "evidence_type": "INDEPENDENT_MANUAL_SOURCE_TRACE_NOT_EXECUTED_SIGNAL_TEST",
+    "author_challenge": "AGREED_MATERIAL_MINIMAL_CORRECTION_PENDING",
+    "product_family_increment": 0,
+    "closure_increment": 0
+  },
+  "native_input_prefix": "app-desktop/native/biometric-bridge/",
+  "native_inputs_revalidated": {
+    "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "src/macos/passvault_biometric_macos.mm": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+    "tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "tests/macos/passvault_biometric_macos_security_test.mm": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4"
+  },
+  "case_names_not_executed": [
+    "passvault_biometric_macos_fixture_normal",
+    "passvault_biometric_macos_fixture_early_return",
+    "passvault_biometric_macos_fixture_cpp_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_macos_security"
+  ],
+  "qualified_trust": "SYNCHRONOUS_STOCK_TOOLS_AND_REVIEWED_CLOSED_WORKLOAD_NORMAL_PATH_ONLY",
+  "metadata_output_qualification": "FIXED_TRUSTED_STOCK_OUTPUT_BUFFERED_CAP_CHECKED_AFTER_COMMUNICATE_NOT_GENERIC_STREAMING_CAP",
+  "raw_xml": "ACTUAL_EXITS_AND_INDEPENDENT_MANUAL_CASE_RECONCILIATION_REQUIRED_NO_CUSTOM_PARSER",
+  "actions": {
+    "helper_execution_or_import": 0,
+    "syntax_or_control_probes": 0,
+    "build_test_or_ci": 0,
+    "get_or_ci_query": 0,
+    "activation_or_request_creation": 0,
+    "runtime_artifacts_or_workers": 0
+  },
+  "execution_admission": "NONE_ROOT_ALONE_MUST_ADMIT_FRESH_SOURCE_ACTIVATION_AND_IDLE_SHARED_SLOT",
+  "restrictions_preserved": [
+    "PVU-007_STOP",
+    "PVU-011_NO_RETRY",
+    "PVA-029_FAILURE_NO_AUTOMATIC_RETRY",
+    "G7_G8_CLOSED",
+    "WINDOWS01_CONSUMED_FAILURE_FILESYSTEM_HOLD_NO_RECOVERY",
+    "OLD_RUNNER_CAPTURE_APPLICATION_RECOVERY_HELPERS_NOT_EXECUTED_IMPORTED_OR_RETRIED",
+    "PROTECTED_REFS_PUBLICATION_IDENTITIES_DEPENDENCIES_BUILD1017001_UNCHANGED"
+  ],
+  "hardware_gaps": "PHYSICAL_IPHONE_TOUCH_ID_WINDOWS_HELLO_BLOCKED",
+  "passive_vps_sample_not_admission": {
+    "utc": "2026-09-09T08:00:45Z",
+    "filesystem_available_kib": 16713104,
+    "filesystem_used_percent": 82,
+    "mem_available_kib": 39584496
+  }
+}

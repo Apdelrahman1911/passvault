@@ -14,6 +14,92 @@ postrun acceptance of a filled instance. All actual controls below must be fille
 from the completed original run and independently accepted before one closeout.
 The Windows local/CI build slot remains separately coordinated by root.
 
+## Successor v4 — partial original-directory registration; source-only
+
+The Directories.open variant of grouped infrastructure finding LCL-OWN-001 was
+independently challenged by `/root/baseline_coverage`. A conditional MemoryError
+on the second ordinary dictionary insertion can leave the first fd-map entry
+published. The exception path closes that local FD, but final directory cleanup
+then attempts that same numeric FD again. In this closer, registrations occur
+before journal creation; the inspected unwind has no intervening FD allocator.
+The supported impact is stale registration and a redundant close attempt/
+expected EBADF diagnostic after successful first close, NOT demonstrated reuse,
+unrelated-descriptor closure, deletion harm or a new operational outcome. The
+original MemoryError already causes HOLD. Nothing executed to establish this.
+
+Root authorized only a narrow ownership correction after that challenge. The
+exact v3 before-images were exclusively preserved before editing:
+`registration-rejected.py.txt`, SHA-256
+`0bed64d9ecb2ebb3ff7a41d04d8c66240e9c82c161f28f13860b8c54f93f5c02`;
+`registration-rejected-PLAN.md`, SHA-256
+`bdd2f816592d409c7211375673ba3507375c52af8d41bf0688ab196fe8f0392c`.
+The independently accepted evidence/evidence_files separation remains intact;
+its narrow review JSON has SHA-256
+`1b84d746f7483970a5349a963b45d7b68c31e32a70d741f5ace08b4346c1fe5a`.
+
+Before the sole local close attempt, the exception path now removes the key
+only if its fd-map value equals this still-local acquired FD. Other fd-map
+entries and all existing pins remain untouched. A failure before registration
+does not clear preexisting authority, and a successful registration continues
+to transfer ownership to the normal final directory cleanup. There is no second
+local close attempt, replacement adoption, broad close-policy refactor or
+change to original directory/path validation, targets, stop or deletion.
+
+Independent exact-source review and a separately admitted real-FD fault control
+must verify pre/post-registry state, exactly one local close attempt, retained
+parent/pin authority and normal successful registration. Inject the specific
+store failure with tiny synthetic inputs; do not force host memory pressure.
+A controlled reused-number sentinel may test the component but cannot by itself
+prove such reuse is reachable on the inspected production unwind. These cases
+remain proposed and unexecuted. The distinct outer supervisor has its own review/
+binding obligation; this closer correction does not approve an outer variant.
+
+## Successor v3 — disjoint original launcher fields; source-only
+
+LC-LAUNCHER-CONTRACT-001 was independently confirmed by `/root/baseline_coverage`
+after this helper's earlier source acceptance. The rejected b16774ff helper
+required `launcher.evidence` to be both the E directory string and four object
+rows; no strict-JSON receipt could satisfy that conjunction. This is a
+fail-closed admission-availability defect before lock/journal/deletion, not an
+observed runtime failure or application PVA family. The earlier acceptance and
+reviewer miss remain historical evidence, not permission to execute that source.
+
+Exact original copies were exclusively preserved before this narrow correction:
+`launcher-contract-rejected.py.txt` has SHA-256
+`b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec`;
+`launcher-contract-rejected-PLAN.md` has SHA-256
+`cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d`.
+Independent defect review:
+`../baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.json`, SHA-256
+`3982b56c2f87c8b39dad6a936d69eac5341e739e1cf66ee1f26d6f9dbeeafb5d`.
+Root authorized this successor only after C3 publication, commit
+`bb094f8a39ba43f1ce1f43f394cb662b03febe38`, tree
+`82967f050816454b6905d560dfec15d0e0b091f5`, with the additive blocker preserved.
+
+Keep `RUN/LAUNCHER.json.evidence=E`; the four ordered exact
+`{path,sha256,identity}` objects now belong to distinct `evidence_files`.
+Both row consumers use the new field. It must be a list of exactly four
+objects with exactly those keys and unchanged fixed path order. Missing/wrong
+shape, old list-in-evidence or alias fallback cannot become accepted forms.
+The existing bounded durable read/hash/full-identity checks remain unchanged.
+No other `.evidence` field, EVIDENCE.json `.files`, numeric evidence-file cap,
+target, removal, stop, process, resource or retention policy is renamed/relaxed.
+
+The accepted NEW database outer ee46cfd9 does not produce or consume this
+external receipt. Its unchanged LAUNCH-PLAN c5bb3831 delegates the schema to
+this PLAN; root's future receipt producer and current instance field map must
+bind this successor's disjoint fields explicitly. The original runner346e1655
+only requires retained-closeout attestation and needs no code change here.
+Existing main requests/approvals are never edited to float old hashes. Fresh
+successor source review, source-bound full-run-contract positive/negative
+regression evidence, actual postrun controls and both role-correct acceptances
+remain required. None executed or was filled by this author. This narrow source
+correction alone does not prove all admission paths or any cleanup succeeds.
+
+The final section's22/37 is inherited proposal-era accounting. Current aggregate
+is22/38 qualified closures,16 open;19/25 originals and2/12 suspicions remain
+separate. This infrastructure correction adds no closure or execution credit.
+
 ## Successor v2 — focused source corrections, not executed controls
 
 V1 is preserved in `rejected-v1.py.txt` and `rejected-v1-PLAN.md`; the independent
@@ -167,7 +253,8 @@ Required schema:
   External timeout/interruption is HOLD, not converted to a normal exit.
 - Nonempty `limitations` list with actual outer timeout/interruption, host-loss,
   cleanup-grace, process/resource sampling and observation limitations.
-- `evidence`: four ordered objects `{path,sha256,identity}`, each a durable owned
+- `evidence_files`: a list of exactly four ordered objects with exactly
+  `{path,sha256,identity}` keys, each a durable owned
   regular file of at most1MiB, at these fixed RUN paths:
   `LAUNCHER-stdout.log`, `LAUNCHER-stderr.log`, `LAUNCHER-resources.json`,
   `LAUNCHER-processes.json`. Empty stdout/stderr are valid observed evidence;

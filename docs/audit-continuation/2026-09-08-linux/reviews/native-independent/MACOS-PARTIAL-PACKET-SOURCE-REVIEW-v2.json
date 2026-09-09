@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T04:46:13Z",
+  "scope": "Root-authorized fresh inert full-source review of corrected partial helper, unchanged workflow and plan-v3",
+  "disposition": "QUALIFIED_SOURCE_CORRECTION_ACCEPTANCE_MP_R1_MP_R2_ONLY",
+  "entry_and_eight_gates": "HARD_HOLD_NO_EXECUTABLE_CONTROLLER_CTEST_COMPATIBILITY_CONTROL_CI_TARGET_OR_CLEANUP_ADMISSION",
+  "inputs": [
+    {
+      "path": "scripts/audit/macos_native_validation.py",
+      "sha256": "d9eb3ae6f8aaa0b407069c51ad912d16e930a76805e82808aee9276336be1f79",
+      "bytes": 19092,
+      "physical_lf": 426,
+      "read_ranges": [[1, 426]]
+    },
+    {
+      "path": ".github/workflows/audit-macos-native-validation.yml",
+      "sha256": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d",
+      "bytes": 3777,
+      "physical_lf": 83,
+      "read_ranges": [[1, 83]]
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-VALIDATION-PLAN.md",
+      "version": 3,
+      "sha256": "efde8a14202426d3470eb522dba77fd460162acb93beb8d1548fce0fdc3eb487",
+      "bytes": 35759,
+      "physical_lf": 540,
+      "read_ranges": [[1, 540]]
+    }
+  ],
+  "review_method": "Entire files read as inert source/data; beginning/end hashes confirmed; no imports, syntax probes, helper execution, control fixtures, GET or CI query",
+  "preserved_archives_hash_checked": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-PARTIAL-HELPER.rejected-v1.py.txt",
+      "sha256": "fd9382c0a7d94eb30cdb48f3c09bf41b1f69926387b837a487f8f6a55b7ff4d8"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-PARTIAL-WORKFLOW.v1.yml.txt",
+      "sha256": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-VALIDATION-PLAN.preparation-v2.md",
+      "sha256": "ef06fbec02816f4b4a087c4c717798151d21d3791fbf55926a779428db434348"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-VALIDATION-PLAN.initial-v1.md",
+      "sha256": "fcacf2f9075585995cb511c3de6e83f05782b63f4adc505465bc024c7a651795"
+    }
+  ],
+  "prior_review_hash_checked": {
+    "md": "0dda43d0be86daa21d9ab2944052e2935c3a0110305c64bcaec9b7bc0d28fa73",
+    "json": "5ee5c63d902f9e11e9479adfce39a68513770e1dda471ab5e313bb8eeb087d52",
+    "qualification": "REVISE remains valid for its original frozen inputs; no overwrite or retrospective execution acceptance"
+  },
+  "corrections": [
+    {
+      "id": "MP-R1",
+      "disposition": "QUALIFIED_SOURCE_CORRECTION_ACCEPTED_PRODUCER_COMPATIBILITY_STILL_HOLD",
+      "source_lines": [[309, 378]],
+      "manual_traces": [
+        "Original unknown-wrapper selected testcase has no direct root case and fails369-371",
+        "Wrapper removed but namespaced failure retained fails case-child allowlist316-332,377",
+        "Extra direct cases, unknown/namespaced root children or used attributes, nested log children, duplicate logs and retained in-root comments/PIs reject",
+        "Opaque escaped/CDATA log diagnostics including intentional failure words remain informational, not JUnit outcome elements"
+      ],
+      "bounds": "Raw XML512KiB; decoded attribute4096 UTF8 bytes each; decoded log256KiB each; not measured parser heap/time",
+      "retained_semantics": "Omitted suite outcomes default0 and case status defaultsrun; metadata remains opaque; unused namespace declarations/prolog-epilog comments not claimed rejected; whitespace uses Python str semantics",
+      "required_remaining": "Exact CTest4.4.2 producer/source and representative positive/negative fixture binding, independent controls and actual exit/record provenance before backend reliance",
+      "evidence_type": "Source traces only, zero parser cases executed"
+    },
+    {
+      "id": "MP-R2",
+      "disposition": "QUALIFIED_RECORD_SHAPE_SOURCE_CORRECTION_ACCEPTED",
+      "source_lines": [[193, 224], [227, 265]],
+      "manual_trace": "All13 finite roles enumerated; missing/None/wrong-type/SealedTool-subclass values reject before each record validation and vectors; prior shell/xcrun=None cannot silently skip",
+      "required_remaining": "MAC-TOOLS actual installed identity, compiler-driver/shell/subtool resolution, expected toolchain versions and normative preconfigure acceptance; not arbitrary caller-code authentication",
+      "evidence_type": "Source/type-semantics trace only; no object construction/vector evaluation or target tool invocation"
+    }
+  ],
+  "author_response": "Agreed independent traces and intentional assertion-return diagnostic/log distinction; frozen tuple unchanged; no producer compatibility or control credit",
+  "capture02_scope_limit": "Finite inventory includes cmProcess.cxx and conditional cmUVProcessChain.cxx, not JUnit producer/schema source or representative XML; later successful separately admitted capture02 would not close MP-R1 compatibility; no added GET/path substitution authorized",
+  "native_inputs_rechecked_by_hash_only_this_review": {
+    "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "src/macos/passvault_biometric_macos.mm": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+    "tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "tests/macos/passvault_biometric_macos_security_test.mm": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4"
+  },
+  "native_coverage_qualification": "Prior reviewed null/missing-metadata guards, fixed five-case vectors/order and fixture/native compatibility limitations reused by unchanged identity, not counted as new full native reads or tests",
+  "hard_hold": {
+    "source_lines": [[52, 61], [405, 422]],
+    "trace": "Nonempty constant gates before request/native reads, namespace/tool/project/provider work; empty tuple still reaches explicit no-backend exception",
+    "qualification": "Normal source flow only, not observed exit; earlier argv/import/runtime/stderr failure possible; signal observer is not a controller"
+  },
+  "workflow": "Unchanged fully reread branch/path/repository/ref/event/attempt restriction, one IntelMac job, contents:read/no signing-store-deployment environment binding, literal pins and compact3-day artifact routing; action contents/interpreter/image/source-instance/output bounds/nonce naming/actual slot settlement unadmitted",
+  "open_gates": ["MAC-PROC", "MAC-CTEST", "MAC-MEMORY", "MAC-ACL", "MAC-CLEANUP", "MAC-TOOLS", "MAC-CONTROLS", "MAC-INSTANCE"],
+  "request_observed": "ABSENT; no creation or activation authority",
+  "capture02_parent_observed": "ABSENT; no allocation",
+  "existing_case_declarations": 5,
+  "case_executions": 0,
+  "xml_results": 0,
+  "control_executions": 0,
+  "imports": 0,
+  "syntax_probes": 0,
+  "get_requests": 0,
+  "ci_queries": 0,
+  "new_test_declarations": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "execution_admission": false,
+  "ctest_compatibility_admission": false,
+  "workflow_activation_admission": false,
+  "controller_admission": false,
+  "cleanup_admission": false,
+  "accounting": "No denominator change; original19/25, separately identified post-PVA03822/38 snapshot and original suspicions2/12 are distinct; eight design explanations separate from owner decisions; root live ledger authoritative",
+  "resources_passive_snapshot": {
+    "utc": "2026-09-09T04:46:13Z",
+    "filesystem_available_kib": 22738372,
+    "mem_available_kib": 40062244,
+    "qualification": "Linux point values only, not target observer semantics or future resource admission"
+  },
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-PARTIAL-PACKET-SOURCE-REVIEW-v2.md",
+  "report_sha256": "1f3d22de6ce7ba9b843446cafc86b785956f6689c9e39e1d9d86fd5fda12a3b5",
+  "restrictions": "Capture01 consumedFAIL/capture02 no newGETadmission; Windows01FAIL/filesystemHOLD/14UNSTARTED/no retry or recovery; PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED and protected-ref/publication/version/dependency/identity/build1017001 fences unchanged",
+  "reviewer_cleanup": "Permanent new review pair only; no build/cache/temp executable/background worker/request/namespace, no deletion/stop/termination/recovery, no capture or archive edits; Gradle stop not applicable and no historical obligation discharged"
+}

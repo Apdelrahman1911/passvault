@@ -1,0 +1,114 @@
+{
+  "format": "passvault-linux-database-outer-registration-successor-review-v1",
+  "reviewer": "/root/verification",
+  "implementation_and_plan_author": "/root/storage",
+  "disposition": "ACCEPT_NARROW_SUCCESSOR_SOURCE_ONLY_PENDING_REGRESSION_AND_INSTANCE",
+  "execution_authorized": false,
+  "actual_database_admission": "HOLD_PENDING_MEANINGFUL_REGRESSION_AND_ACTUAL_GATES",
+  "inputs": {
+    "source": {
+      "sha256": "871aa7ebca0a2c7cf3e73923396a1e918d2186332a7f7c22988d3d8469754889",
+      "bytes": 37642,
+      "physical_lf": 718
+    },
+    "plan": {
+      "sha256": "965439c1a4ce968aa8c96ec9a379d5b0fdd17e55c33f1cccb6d02ebe793226f2",
+      "bytes": 15746,
+      "physical_lf": 266
+    },
+    "author_report": {
+      "sha256": "5de601aa2996aac5c2f600d0d508b76ce4ad0e6af0eb11334a979519a5f67c68",
+      "bytes": 6506,
+      "physical_lf": 112
+    },
+    "source_beforeimage": {
+      "path": "../storage/linux-database-outer-registration-rejected-ee46.py.txt",
+      "sha256": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1",
+      "bytes": 37477,
+      "physical_lf": 715
+    },
+    "plan_beforeimage": {
+      "path": "../storage/linux-database-outer-registration-rejected-c5bb-LAUNCH-PLAN.md",
+      "sha256": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29",
+      "bytes": 11441,
+      "physical_lf": 200
+    },
+    "original_qualification_md_sha256": "4737f349ca9c44314685492f66b4961759d056691ecf5fd97454b61d81a74f77",
+    "original_qualification_json_sha256": "326ed288776d5bfcf127d63341aaf2ae28ae21a939146fe75a01544257d82537"
+  },
+  "independent_delta_checks": {
+    "source_beforeimage_cmp_to_prior_reviewer_snapshot": "0_EQUAL",
+    "whole_source_diff": "One hunk, three added lines only at135-137",
+    "whole_plan_diff": "Original200LF unchanged,66LF appended",
+    "current_plan_prefix_sha256": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29",
+    "diff_exit_one_is_expected_difference_not_test_failure": true,
+    "tool_chunks_exit_zero": ["ac20b5", "65ddcc", "74b9b4"],
+    "author_beforeimage_exclusive_creation_fsync_independently_replayed": false,
+    "beforeimage_original_inode_or_namespace_admission_supplied": false
+  },
+  "source_correction": {
+    "new_key_guard_line": 126,
+    "paired_store_line": 133,
+    "unpublish_fd_and_pin_lines": [136, 137],
+    "sole_local_close_line": 138,
+    "rethrow_line": 139,
+    "normal": "Successful paired publication bypasses rollback, preserves original FD/pin and valid parents; final FD-map pop181 precedes close183",
+    "normal_final_pin_metadata_retained": true,
+    "single_second_pin_store_failure": "New FD and any incomplete pin key removed before one local close; final registry enumeration cannot reclose failed key",
+    "valid_parent_entries_preserved": true,
+    "earlier_pin_type_or_first_store_failure": "No newly published key; ordinary pops are no-ops and existing local close remains",
+    "post_registration_verification_failure_lines": [140, 144],
+    "post_registration_verification_failure": "Outside exception handler; completed registration stays for one final registry close",
+    "new_descriptor_or_replacement_adoption": false,
+    "author_counterchallenge_agreed": true
+  },
+  "limits": [
+    "Single recoverable allocation failure with successful ordinary rollback/local close/subsequent bookkeeping",
+    "No actual MemoryError, FD/syscall fault injection or runtime reproduction",
+    "No repeated-catastrophic-failure, ambiguous-close, blocked-syscall, uncatchable-signal or host-loss settlement guarantee",
+    "Old bounded unwind has no identified intervening FD allocator; no reuse, injury, application loss or false PASS established",
+    "Original admission failure already produces HOLD; final close errors only force code1, not an added state.errors diagnostic"
+  ],
+  "authority_ambiguity": {
+    "challenged_wording": "Root commissioned a distinct registration02 six-case proposal",
+    "root_clarification": "Prospective scope/proposal intent only, NOT implementation or execution authorization",
+    "frozen_plan_rewrite_required": false,
+    "six_case_source_changes_or_actual_instance_admitted": false,
+    "separate_implementation_authorization_required_after_this_review": true,
+    "ambiguity_and_clarification_preserved": true
+  },
+  "history_and_controls": {
+    "prior_reviewer_acceptance_miss_preserved": true,
+    "new_application_family": false,
+    "original_qualification_and_schema_memo_changed": false,
+    "four_case_source_sha256": "0a012823b44c2c2bf2e7e81e185cecc324639d210529d1886ab6651d5efa0802",
+    "four_case_plan_sha256": "27cb2e2da38f6cface649695179ce472b27b8755171393fe3a803703de5f690f",
+    "existing_four_cover_this_database_outer": false,
+    "four_or_separate_17_28_changed_extended_executed_or_credited": false
+  },
+  "remaining_gates": [
+    "Meaningful separately authorized exact-source normal/fault regression with independent test/source/result review",
+    "Separate reviewed launcher and actual original-instance execution/settlement admission",
+    "Actual database F01-F07 source/toolchain/input/directory/approval seals, source/producer coordination, sole slot, resources and external cleanup envelope",
+    "Original actual run/stop/worker settlement and postrun C01-C07; no future evidence prefilled"
+  ],
+  "counts": {
+    "imports_ast_syntax_compilation_or_helper_executions": 0,
+    "controls_application_native_or_hardware_cases": 0,
+    "qualified_closure_delta": 0,
+    "original_confirmed": {"qualified": 19, "total": 25},
+    "all_confirmed": {"qualified": 22, "total": 38, "remaining": 16},
+    "original_suspicions": {"resolved": 2, "total": 12, "remaining": 10},
+    "pvd_explanations_owner_decisions_separate": 8
+  },
+  "resource_settlement": {
+    "created": "Necessary permanent independent review MD/JSON only",
+    "data_reader_commands_exited": true,
+    "runtime_namespace_process_or_resource_probe": false,
+    "workers_builds_caches_temp_roots_or_cleanup": false,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH",
+    "root_sole_execution_and_resource_monitoring_owner": true
+  },
+  "restrictions": "PVU-007 STOP; PVU-011 NO-RETRY; PVA-029 FAIL/no automatic retry; G7/G8 CLOSED; Windows failure/cleanup HOLD; PVD/hardware/mobile1017001; protected-ref/dependency/version/identity/signing/store/publication fences unchanged",
+  "details": "LINUX-DATABASE-OUTER-REGISTRATION-SUCCESSOR-REVIEW.md"
+}

@@ -1,0 +1,465 @@
+{
+  "format": "passvault-linux-closeout-contract-controls-request-v1",
+  "author": "/root",
+  "run_id": "linux-closeout-contract-controls-01",
+  "scratch": "/root/projects/PassVault/audit-runtime-linux-closeout-contract-controls-01",
+  "lock": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+  "journal": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-events-01.jsonl",
+  "no_other_audit_local_or_ci_job": true,
+  "cooperative_producers_frozen": true,
+  "limits": {
+    "launcher_seconds": 120,
+    "cleanup_grace_seconds": 60,
+    "controls_body_seconds": 60,
+    "controls_cleanup_seconds": 15,
+    "controls_tick_cap": 200000,
+    "controls_fd_allowance": 32,
+    "fixture_input_bytes": 131072,
+    "fixture_evidence_bytes": 4096,
+    "fixture_bytes": 524288,
+    "serialized_packet_bytes": 524288,
+    "address_space_bytes": 536870912,
+    "individual_written_file_bytes": 1048576,
+    "input_bytes": 524288,
+    "python_bytes": 33554432,
+    "journal_bytes": 262144,
+    "journal_record_bytes": 32768,
+    "control_record_bytes": 16384,
+    "control_records": 37,
+    "directory_originals": 64
+  },
+  "bindings": {
+    "launcher": "c482383a6e0d7cdf960e8ba99cce4c591675d02d34a49db62b354f00d42303f2",
+    "launch_plan": "0fa6395e4303ebd2f84f77021629c1bd58cf6f47ac34e82ae4bc1e45406e5065",
+    "controls": "328cf3bcd5d8e94c032eaf69d287b3360e4e6d3be35b0118a69a9dd5e6c25980",
+    "controls_design": "6d60685dec8fcfc5b3c70dd855397d68d298753801c37d28bea50e881b7a2d54",
+    "helper": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+    "helper_plan": "0b21ebfee0134c2853cfa8f3d17f9fef1b9acf812329581a93c0790c69930c5d",
+    "helper_historical_source_review": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e",
+    "helper_evidence_field_review": "1b84d746f7483970a5349a963b45d7b68c31e32a70d741f5ace08b4346c1fe5a",
+    "helper_registration_review": "c4b7e9d03dc8e5160c0f6cf628cbd4ee97e7dcb27707d73059c61f17576c6370",
+    "controls_source_review": "6cdfa2fc7c48853392710d48a993dd5a5fbca668b92c24084c4fba9ea1e6b9ff",
+    "methods": "40ac2f07ea2c98d1a320e75bb59d7bbc6b3ec954efd94b349257103aaccd8979",
+    "coordination_journal": "8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613",
+    "coordination_receipt": "cd0ce6a2d06ea3deaf2556736e633c322d41f07919ef511ad0c1ae2571976fc0"
+  },
+  "input_pins": {
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTRACT_CONTROLS_01.py": {
+      "dev": 24,
+      "ino": 14264214,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 42673,
+      "mtime_ns": 1788929772913610503,
+      "ctime_ns": 1788929772913610503
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-LAUNCH-PLAN.md": {
+      "dev": 24,
+      "ino": 14266048,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 22264,
+      "mtime_ns": 1788929859730605329,
+      "ctime_ns": 1788929859730605329
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/build-config/CLOSEOUT-CONTRACT-CONTROLS.py": {
+      "dev": 24,
+      "ino": 13672751,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 46695,
+      "mtime_ns": 1788926610530798996,
+      "ctime_ns": 1788926610530798996
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/build-config/CLOSEOUT-CONTRACT-DESIGN.md": {
+      "dev": 24,
+      "ino": 13672758,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 21587,
+      "mtime_ns": 1788926861200784055,
+      "ctime_ns": 1788926861200784055
+    },
+    "/root/projects/PassVault/passvault-linux/scripts/audit/linux_database_closeout.py": {
+      "dev": 24,
+      "ino": 13672307,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 59609,
+      "mtime_ns": 1788925358432873627,
+      "ctime_ns": 1788925358432873627
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md": {
+      "dev": 24,
+      "ino": 14184206,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 34814,
+      "mtime_ns": 1788925358434873627,
+      "ctime_ns": 1788925358434873627
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json": {
+      "dev": 24,
+      "ino": 13672377,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 11147,
+      "mtime_ns": 1788912590019634684,
+      "ctime_ns": 1788912590019634684
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-SUCCESSOR-REVIEW.json": {
+      "dev": 24,
+      "ino": 13672719,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 9865,
+      "mtime_ns": 1788924633027916864,
+      "ctime_ns": 1788924633027916864
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-REGISTRATION-SUCCESSOR-REVIEW.json": {
+      "dev": 24,
+      "ino": 13672749,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 6225,
+      "mtime_ns": 1788926106073829064,
+      "ctime_ns": 1788926106073829064
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-CONTRACT-CONTROLS-SOURCE-REVIEW.json": {
+      "dev": 24,
+      "ino": 13672822,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 8978,
+      "mtime_ns": 1788929270216640466,
+      "ctime_ns": 1788929270216640466
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/METHOD-INVENTORY.json": {
+      "dev": 24,
+      "ino": 13670861,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 73265,
+      "mtime_ns": 1788901758375280300,
+      "ctime_ns": 1788901758375280300
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP.jsonl": {
+      "dev": 24,
+      "ino": 13672350,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 3768,
+      "mtime_ns": 1788910891125735946,
+      "ctime_ns": 1788910891125735946
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP-RECEIPT.json": {
+      "dev": 24,
+      "ino": 13672370,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 807,
+      "mtime_ns": 1788912174981659422,
+      "ctime_ns": 1788912174981659422
+    }
+  },
+  "python": {
+    "path": "/usr/bin/python3.12",
+    "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+    "identity": {
+      "dev": 25,
+      "ino": 1088,
+      "uid": 0,
+      "mode": 33261,
+      "nlink": 1,
+      "size": 8020928,
+      "mtime_ns": 1781873160000000000,
+      "ctime_ns": 1787292627933100530
+    }
+  },
+  "created_unix_seconds": 1788935121.734735,
+  "expires_unix_seconds": 1788938721.734735,
+  "utc": "2026-09-09T06:25:21.734771+00:00",
+  "directory_pins": {
+    "/": {
+      "dev": 23,
+      "ino": 2,
+      "uid": 0,
+      "mode": 16877
+    },
+    "/root": {
+      "dev": 23,
+      "ino": 19,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/usr": {
+      "dev": 23,
+      "ino": 11,
+      "uid": 0,
+      "mode": 16877
+    },
+    "/root/projects": {
+      "dev": 23,
+      "ino": 62415,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/usr/bin": {
+      "dev": 23,
+      "ino": 13,
+      "uid": 0,
+      "mode": 16877
+    },
+    "/root/projects/PassVault": {
+      "dev": 23,
+      "ino": 498323,
+      "uid": 0,
+      "mode": 16877
+    },
+    "/root/projects/PassVault/.audit-coordination-linux-20260908": {
+      "dev": 23,
+      "ino": 661121,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux": {
+      "dev": 23,
+      "ino": 505714,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs": {
+      "dev": 23,
+      "ino": 506056,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/scripts": {
+      "dev": 23,
+      "ino": 506353,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation": {
+      "dev": 23,
+      "ino": 506436,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/scripts/audit": {
+      "dev": 23,
+      "ino": 610499,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux": {
+      "dev": 23,
+      "ino": 506437,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews": {
+      "dev": 23,
+      "ino": 506438,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage": {
+      "dev": 23,
+      "ino": 598192,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/build-config": {
+      "dev": 23,
+      "ino": 610558,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": {
+      "dev": 23,
+      "ino": 648972,
+      "uid": 0,
+      "mode": 16832
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification": {
+      "dev": 23,
+      "ino": 608474,
+      "uid": 0,
+      "mode": 16832
+    }
+  },
+  "lock_pin": {
+    "dev": 24,
+    "ino": 14189001,
+    "uid": 0,
+    "mode": 33152,
+    "nlink": 1,
+    "size": 0,
+    "mtime_ns": 1788910891124735946,
+    "ctime_ns": 1788910891124735946
+  },
+  "external_envelope": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-EXTERNAL-ENVELOPE-01.md",
+    "sha256": "a58fe3f97c5d637ca12c76cc7ab16bfb98dd2e760ccd9b0e9ff216ec1e58aa81",
+    "identity": {
+      "dev": 24,
+      "ino": 14281801,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 3453,
+      "mtime_ns": 1788933820223369265,
+      "ctime_ns": 1788933820223369265
+    },
+    "bytes": 3453
+  },
+  "external_envelope_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CLOSEOUT-CONTROLS-EXTERNAL-ENVELOPE-SOURCE-REVIEW.json",
+    "sha256": "efd3e640fbd66832c1d8ccc625c060883d64e009ce329e948c3cc74e588fdd2f",
+    "identity": {
+      "dev": 24,
+      "ino": 13704229,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 6355,
+      "mtime_ns": 1788932976382419562,
+      "ctime_ns": 1788932976382419562
+    },
+    "bytes": 6355
+  },
+  "external_envelope_review_scope": "Inherited common supervision semantics only; this new17 envelope receives combined independent instance review before invocation.",
+  "external_toolchain": {
+    "bash_entry": "/bin/bash",
+    "bash_resolved": "/usr/bin/bash",
+    "bash": {
+      "path": "/usr/bin/bash",
+      "sha256": "bc5945feb8bd26203ebfafea5ce1878bb2e32cb8fb50ab7ae395cfb1e1aaaef1",
+      "identity": {
+        "dev": 25,
+        "ino": 698,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "size": 1446024,
+        "mtime_ns": 1711874463000000000,
+        "ctime_ns": 1787292627812099998
+      },
+      "bytes": 1446024
+    },
+    "bin_symlink": {
+      "path": "/bin",
+      "identity": {
+        "dev": 25,
+        "ino": 13,
+        "uid": 0,
+        "mode": 41471,
+        "nlink": 1,
+        "size": 7,
+        "mtime_ns": 1713791283000000000,
+        "ctime_ns": 1787292627747099712
+      },
+      "target": "usr/bin",
+      "resolved": "/usr/bin"
+    },
+    "python_entry": {
+      "path": "/usr/bin/python3",
+      "target": "python3.12",
+      "resolved": "/usr/bin/python3.12"
+    },
+    "timeout": {
+      "path": "/usr/bin/timeout",
+      "sha256": "4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08",
+      "identity": {
+        "dev": 25,
+        "ino": 1223,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "size": 39880,
+        "mtime_ns": 1769175004000000000,
+        "ctime_ns": 1787292627976100720
+      },
+      "bytes": 39880
+    },
+    "extra_directory_pins": {
+      "/": {
+        "dev": 23,
+        "ino": 2,
+        "uid": 0,
+        "mode": 16877
+      },
+      "/usr": {
+        "dev": 23,
+        "ino": 11,
+        "uid": 0,
+        "mode": 16877
+      },
+      "/usr/bin": {
+        "dev": 23,
+        "ino": 13,
+        "uid": 0,
+        "mode": 16877
+      }
+    },
+    "exported_startup_loader_entry_presence": {
+      "BASH_ENV": false,
+      "ENV": false,
+      "SHELLOPTS": false,
+      "BASHOPTS": false,
+      "PS4": false,
+      "LD_PRELOAD": false,
+      "LD_LIBRARY_PATH": false,
+      "BASH_FUNC_*": false
+    }
+  },
+  "external_command": "exec /usr/bin/timeout --foreground --signal=TERM --kill-after=5s 200s /usr/bin/python3 -I -B /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTRACT_CONTROLS_01.py",
+  "tool_shell": "/bin/bash",
+  "tool_login": false,
+  "tool_tty": false,
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "source_checkpoint": {
+    "commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "qualification": "Exact13 input control overlay, not applicationC4 runtime verification."
+  },
+  "observations": {
+    "resources": {
+      "disks_free_bytes": {
+        "/root/projects/PassVault": 20146987008,
+        "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 20146987008,
+        "/tmp": 18128207872
+      },
+      "memory_bytes": {
+        "MemTotal": 67435888640,
+        "MemAvailable": 38007853056
+      }
+    },
+    "local_known_worker_names": [],
+    "local_name_read_permission_denied_pids": [],
+    "local_limits": "Point comm-only screen; not full-host ownership or continuous idle proof. Root no owned runtime worker; agents source-only.",
+    "ci": "Observed dedicated-branch list immediately after C4 push: only34284083351 completed/failure at a1fbdf0d5f0663225a459838d37b072a65e334f6; no dispatch/cancel. Per-command exit not separately captured from combined metadata display.",
+    "namespace_absence": {
+      "/root/projects/PassVault/audit-runtime-linux-closeout-contract-controls-01": true,
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-events-01.jsonl": true
+    },
+    "producer_freeze_scope": "Exact13 inputs/tools/lock/ancestry frozen; all agent tools will quiesce before invocation."
+  },
+  "prior_metadata_failure": "bd7d31 exit1: default512KiB read cap rejected1446024B /usr/bin/bash before creating request/approval; subsequent stat confirms size/mode/uid/link bounds and both files absent. This writer uses32MiB tool cap, not source/helper/test changes. No control attempt or retry occurred.",
+  "cleanup_and_risk": "Only17 full receipt-contract controls:2 valid branches/schema rejection/2 real hash-pin mismatches. Component28 succeeded but did not cover this full contract. Accepted finally before effects; original-only fixture+empty scratch cleanup, retained compact journal, external timeout200+5s. No helper children/Gradle/application/old runner; incomplete cleanup HOLD/no retry; wrapper stop not applicable.",
+  "separate_scopes": "Component28 completed once, independent result review in progress. Registration6/DB/actual closeout remain unexecuted/unadmitted."
+}

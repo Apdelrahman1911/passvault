@@ -1,0 +1,89 @@
+{
+  "format": "passvault-closeout-controls-source-review-v1",
+  "reviewer": "/root/android32",
+  "controls_author": "/root/build_config",
+  "review_point_utc": "2026-09-09T02:41:25Z",
+  "disposition": "REVISE_BEFORE_SEPARATE_ROOT_ADMISSION",
+  "execution_admission": false,
+  "bindings": {
+    "controls_sha256": "acb44cae0c8ac31729f043477fa19683b20487d13fcef74965f1dd71f96d79c4",
+    "design_sha256": "ab4c9a02873652b9a60482fab2f522aff33202ab1ee075f73271e986b642cc20",
+    "helper_sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec",
+    "helper_plan_sha256": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d"
+  },
+  "new_input_reads": {
+    "controls": {
+      "bytes": 39748,
+      "physical_LF": 832,
+      "full_inert_text_read": true
+    },
+    "design": {
+      "bytes": 19295,
+      "physical_LF": 251,
+      "full_inert_text_read": true
+    },
+    "helper_context_line_ranges": [
+      "1-335",
+      "380-470",
+      "612-701",
+      "976-1094"
+    ],
+    "whole_helper_fresh_review_claimed": false
+  },
+  "containing_checkpoint": {
+    "commit": "f18995e6633904a6845e09eab8a481635290894d",
+    "tree": "8948bb6c92b5baaf406f838b48bf8e31064d1195",
+    "qualification": "New controls were worktree additions, not part of a reviewed whole-tree claim."
+  },
+  "before_images": [
+    {
+      "path": "../build-config/CLOSEOUT-CONTROLS.v1.py.txt",
+      "sha256": "acb44cae0c8ac31729f043477fa19683b20487d13fcef74965f1dd71f96d79c4"
+    },
+    {
+      "path": "../build-config/DESIGN.v1.md",
+      "sha256": "ab4c9a02873652b9a60482fab2f522aff33202ab1ee075f73271e986b642cc20"
+    }
+  ],
+  "required_revisions": [
+    {
+      "id": "LCC-ORACLE-01",
+      "scope": "Control evidence discrimination, not a product/helper safety flaw",
+      "counterexample": "B10 changes both bytes and pin; removing the pin comparison still rejects via digest.",
+      "agreed_successor": "Real same-content write/fsync with unchanged bytes/hash and observed changed pin, retaining old expected pin; case count stays28."
+    },
+    {
+      "id": "LCC-DOC-01",
+      "scope": "Coordination authority prose",
+      "correction": "Permit only fresh admission binding retained verified original Linux coordination lock; forbid historical macOS/adopted/replaced/consumed authority."
+    },
+    {
+      "id": "LCC-DOC-02",
+      "scope": "Denominator prose",
+      "correction": "Handoff22/37 is historical; current all-confirmed22/38 after root PVA-038; control delta0."
+    }
+  ],
+  "required_qualifications": [
+    "removed_names excludes destructive operations not yet followed by successful original/link proof and parent fsync.",
+    "Per-fixture original pins are in-memory source-bound witnesses, not a separately emitted external allocation census.",
+    "Retain and reconcile28 individual case-result dictionaries; the terminal is not a results array.",
+    "Exact extracted callback bodies with injected closure globals do not prove helper main/admission/lock/Guard integration.",
+    "Synthetic CANCEL and injected failures are not OS-signal/hardware failure evidence.",
+    "Outer admission, borrowed-FD/scratch-original removal, monotone cancellation, final exit and actual-result review remain unfilled.",
+    "Fatal failures may prevent accounting/finally; no pathname-only recovery or automatic replay."
+  ],
+  "planned_cases": {
+    "journal": 13,
+    "bootstrap_rehash_hold": 15,
+    "total": 28
+  },
+  "executed_controls": 0,
+  "application_test_executions": 0,
+  "prior_control_count_adopted": 0,
+  "helper_imports_compilations_or_executions": 0,
+  "scratch_allocations": 0,
+  "owned_workers_or_stop_obligations_created": 0,
+  "denominator_delta": 0,
+  "actual_closeout_C01_C07_admission": "UNFILLED_NOT_INFERRED",
+  "full_review": "CLOSEOUT-CONTROLS-V1-SOURCE-REVIEW.md"
+}

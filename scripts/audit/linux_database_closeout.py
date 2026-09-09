@@ -188,6 +188,9 @@ class Directories:
                 require(stat.S_ISDIR(pin['mode']), 'directory type')
                 self.fds[key], self.pins[key] = fd, pin
             except BaseException:
+                # Unpublish only this still-local FD before its sole close attempt.
+                if self.fds.get(key) == fd:
+                    self.fds.pop(key)
                 os.close(fd)
                 raise
         fd = self.fds[key]
@@ -524,7 +527,10 @@ def run_contract(captured, pins, tick):
             'accept_verification_sha256': sha(captured[str(FILES['runner_accept_verification_sha256'])])},
             'launcher exact run/input/review binding')
     require(isinstance(launcher['limitations'], list) and launcher['limitations'], 'launcher limitations absent')
-    require([row['path'] for row in launcher['evidence']] == [str(p) for p in LAUNCHER_FILES],
+    evidence_files = launcher['evidence_files']
+    require(isinstance(evidence_files, list) and len(evidence_files) == len(LAUNCHER_FILES)
+            and all(isinstance(row, dict) and set(row) == {'path', 'sha256', 'identity'} for row in evidence_files)
+            and [row['path'] for row in evidence_files] == [str(p) for p in LAUNCHER_FILES],
             'exact bounded launcher evidence set')
     results = [{k: v for k, v in row.items() if k not in ('sequence', 'time_ns', 'kind')}
                for row in event_rows(events, 'command_result', tick)]
@@ -691,7 +697,7 @@ def admission(dirs):
     data, pin, digest = dirs.read(python['path'], 32 * MIB)
     require(pin == python['identity'] and digest == python['sha256'], 'original interpreter bytes changed')
     captured[python['path']], pins[python['path']] = data, pin
-    for row in launcher['evidence']:
+    for row in launcher['evidence_files']:
         data, pin, digest = dirs.read(row['path'], MIB, durable=True)
         require(pin == row['identity'] and digest == row['sha256'], 'durable launcher evidence mismatch')
         captured[row['path']], pins[row['path']] = data, pin

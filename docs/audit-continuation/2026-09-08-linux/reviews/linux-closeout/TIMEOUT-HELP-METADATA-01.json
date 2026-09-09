@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "tool_result": {
+    "chunk_id": "dd845f",
+    "wall_time_seconds": 0.000010313,
+    "exit_code": 0,
+    "original_token_count": 1257,
+    "output": "{\n  \"schema\": 1,\n  \"owner\": \"/root\",\n  \"kind\": \"SYSTEM_TOOL_HELP_INTERFACE_METADATA_ONLY\",\n  \"argv\": [\n    \"/usr/bin/timeout\",\n    \"--help\"\n  ],\n  \"cwd\": \"/root/projects/PassVault/passvault-linux\",\n  \"source_before\": [\n    {\n      \"st_dev\": 25,\n      \"st_ino\": 1088,\n      \"st_uid\": 0,\n      \"st_mode\": 33261,\n      \"st_nlink\": 1,\n      \"st_size\": 8020928,\n      \"st_mtime_ns\": 1781873160000000000,\n      \"st_ctime_ns\": 1787292627933100530,\n      \"path\": \"/usr/bin/python3.12\",\n      \"sha256\": \"1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118\",\n      \"bytes\": 8020928\n    },\n    {\n      \"st_dev\": 25,\n      \"st_ino\": 1223,\n      \"st_uid\": 0,\n      \"st_mode\": 33261,\n      \"st_nlink\": 1,\n      \"st_size\": 39880,\n      \"st_mtime_ns\": 1769175004000000000,\n      \"st_ctime_ns\": 1787292627976100720,\n      \"path\": \"/usr/bin/timeout\",\n      \"sha256\": \"4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08\",\n      \"bytes\": 39880\n    }\n  ],\n  \"started_utc\": \"2026-09-09T05:42:56.024317+00:00\",\n  \"child_timeout_seconds\": 5,\n  \"cleanup_installed_before_child\": \"subprocess.run timeout=5 kills and waits for its direct owned child on TimeoutExpired; no target COMMAND is supplied and no test or workload child is requested. No retry.\",\n  \"environment\": {\n    \"LC_ALL\": \"C\",\n    \"LANG\": \"C\",\n    \"PATH\": \"/usr/bin:/bin\"\n  },\n  \"outcome\": \"RETURNED\",\n  \"exit_code\": 0,\n  \"stdout\": \"Usage: /usr/bin/timeout [OPTION] DURATION COMMAND [ARG]...\\n  or:  /usr/bin/timeout [OPTION]\\nStart COMMAND, and kill it if still running after DURATION.\\n\\nMandatory arguments to long options are mandatory for short options too.\\n      --preserve-status\\n                 exit with the same status as COMMAND, even when the\\n                   command times out\\n      --foreground\\n                 when not running timeout directly from a shell prompt,\\n                   allow COMMAND to read from the TTY and get TTY signals;\\n                   in this mode, children of COMMAND will not be timed out\\n  -k, --kill-after=DURATION\\n                 also send a KILL signal if COMMAND is still running\\n                   this long after the initial signal was sent\\n  -s, --signal=SIGNAL\\n                 specify the signal to be sent on timeout;\\n                   SIGNAL may be a name like 'HUP' or a number;\\n                   see 'kill -l' for a list of signals\\n  -v, --verbose  diagnose to stderr any signal sent upon timeout\\n      --help        display this help and exit\\n      --version     output version information and exit\\n\\nDURATION is a floating point number with an optional suffix:\\n's' for seconds (the default), 'm' for minutes, 'h' for hours or 'd' for days.\\nA duration of 0 disables the associated timeout.\\n\\nUpon timeout, send the TERM signal to COMMAND, if no other SIGNAL specified.\\nThe TERM signal kills any process that does not block or catch that signal.\\nIt may be necessary to use the KILL signal, since this signal can't be caught.\\n\\nExit status:\\n  124  if COMMAND times out, and --preserve-status is not specified\\n  125  if the timeout command itself fails\\n  126  if COMMAND is found but cannot be invoked\\n  127  if COMMAND cannot be found\\n  137  if COMMAND (or timeout itself) is sent the KILL (9) signal (128+9)\\n  -    the exit status of COMMAND otherwise\\n\\nGNU coreutils online help: <https://www.gnu.org/software/coreutils/>\\nReport any translation bugs to <https://translationproject.org/team/>\\nFull documentation <https://www.gnu.org/software/coreutils/timeout>\\nor available locally via: info '(coreutils) timeout invocation'\\n\",\n  \"stderr\": \"\",\n  \"stdout_bytes\": 2146,\n  \"stderr_bytes\": 0,\n  \"finished_utc\": \"2026-09-09T05:42:56.026272+00:00\",\n  \"elapsed_monotonic_seconds\": 0.0019034470024053007,\n  \"source_after\": [\n    {\n      \"st_dev\": 25,\n      \"st_ino\": 1088,\n      \"st_uid\": 0,\n      \"st_mode\": 33261,\n      \"st_nlink\": 1,\n      \"st_size\": 8020928,\n      \"st_mtime_ns\": 1781873160000000000,\n      \"st_ctime_ns\": 1787292627933100530,\n      \"path\": \"/usr/bin/python3.12\",\n      \"sha256\": \"1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118\",\n      \"bytes\": 8020928\n    },\n    {\n      \"st_dev\": 25,\n      \"st_ino\": 1223,\n      \"st_uid\": 0,\n      \"st_mode\": 33261,\n      \"st_nlink\": 1,\n      \"st_size\": 39880,\n      \"st_mtime_ns\": 1769175004000000000,\n      \"st_ctime_ns\": 1787292627976100720,\n      \"path\": \"/usr/bin/timeout\",\n      \"sha256\": \"4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08\",\n      \"bytes\": 39880\n    }\n  ],\n  \"limits\": [\n    \"Installed binary self-description only; not independent source/manual proof, not actual signal/timeout/process-group/kernel behavior, not controls or application test execution.\",\n    \"No external GNU fetch, project helper import/execution, Gradle/JVM, namespace probe, build/cache/temp output or daemon.\",\n    \"Normal return establishes direct child reaped by subprocess.run, not a global process census. Wrapper stop not applicable; earlier stop obligations remain unchanged.\"\n  ]\n}\n"
+  },
+  "exact_metadata_command": "/usr/bin/python3 -I -B - <<'PY'\nimport datetime, hashlib, json, os, pathlib, stat, subprocess, time\nroot=pathlib.Path('/root/projects/PassVault/passvault-linux')\nexpected={'/usr/bin/python3.12':('1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118',8020928),'/usr/bin/timeout':('4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08',39880)}\ndef capture(p):\n    fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)\n    try:\n        before=os.fstat(fd); assert stat.S_ISREG(before.st_mode)\n        data=b''\n        while True:\n            b=os.read(fd,1024*1024)\n            if not b: break\n            data+=b\n        after=os.fstat(fd); current=os.stat(p,follow_symlinks=False)\n        keys=('st_dev','st_ino','st_uid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')\n        row={k:getattr(before,k) for k in keys}\n        assert row=={k:getattr(after,k) for k in keys}=={k:getattr(current,k) for k in keys}\n        row.update(path=p,sha256=hashlib.sha256(data).hexdigest(),bytes=len(data))\n        assert (row['sha256'],row['bytes'])==expected[p]\n        return row\n    finally: os.close(fd)\nbefore=[capture(p) for p in expected]\nstart=datetime.datetime.now(datetime.timezone.utc).isoformat(); clock=time.monotonic()\nrecord={'schema':1,'owner':'/root','kind':'SYSTEM_TOOL_HELP_INTERFACE_METADATA_ONLY','argv':['/usr/bin/timeout','--help'],'cwd':str(root),'source_before':before,'started_utc':start,'child_timeout_seconds':5,'cleanup_installed_before_child':'subprocess.run timeout=5 kills and waits for its direct owned child on TimeoutExpired; no target COMMAND is supplied and no test or workload child is requested. No retry.','environment':{'LC_ALL':'C','LANG':'C','PATH':'/usr/bin:/bin'}}\ntry:\n    proc=subprocess.run(record['argv'],cwd=root,env=record['environment'],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5,check=False)\n    record.update(outcome='RETURNED',exit_code=proc.returncode,stdout=proc.stdout.decode('utf-8'),stderr=proc.stderr.decode('utf-8'),stdout_bytes=len(proc.stdout),stderr_bytes=len(proc.stderr))\nexcept subprocess.TimeoutExpired as exc:\n    record.update(outcome='TIMEOUT_NO_RETRY',stdout=(exc.stdout or b'').decode('utf-8',errors='replace'),stderr=(exc.stderr or b'').decode('utf-8',errors='replace'))\nrecord.update(finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),elapsed_monotonic_seconds=time.monotonic()-clock,source_after=[capture(p) for p in expected],limits=['Installed binary self-description only; not independent source/manual proof, not actual signal/timeout/process-group/kernel behavior, not controls or application test execution.','No external GNU fetch, project helper import/execution, Gradle/JVM, namespace probe, build/cache/temp output or daemon.','Normal return establishes direct child reaped by subprocess.run, not a global process census. Wrapper stop not applicable; earlier stop obligations remain unchanged.'])\nprint(json.dumps(record,indent=2))\nPY",
+  "qualification": "One consumed timeout --help metadata observation. Literal tool output retained; elapsed monotonic sample and tool wall_time_seconds remain distinct values, not a reconciled hard-duration guarantee. No validation/helper or application test execution.",
+  "observed": {
+    "schema": 1,
+    "owner": "/root",
+    "kind": "SYSTEM_TOOL_HELP_INTERFACE_METADATA_ONLY",
+    "argv": [
+      "/usr/bin/timeout",
+      "--help"
+    ],
+    "cwd": "/root/projects/PassVault/passvault-linux",
+    "source_before": [
+      {
+        "st_dev": 25,
+        "st_ino": 1088,
+        "st_uid": 0,
+        "st_mode": 33261,
+        "st_nlink": 1,
+        "st_size": 8020928,
+        "st_mtime_ns": 1781873160000000000,
+        "st_ctime_ns": 1787292627933100500,
+        "path": "/usr/bin/python3.12",
+        "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+        "bytes": 8020928
+      },
+      {
+        "st_dev": 25,
+        "st_ino": 1223,
+        "st_uid": 0,
+        "st_mode": 33261,
+        "st_nlink": 1,
+        "st_size": 39880,
+        "st_mtime_ns": 1769175004000000000,
+        "st_ctime_ns": 1787292627976100600,
+        "path": "/usr/bin/timeout",
+        "sha256": "4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08",
+        "bytes": 39880
+      }
+    ],
+    "started_utc": "2026-09-09T05:42:56.024317+00:00",
+    "child_timeout_seconds": 5,
+    "cleanup_installed_before_child": "subprocess.run timeout=5 kills and waits for its direct owned child on TimeoutExpired; no target COMMAND is supplied and no test or workload child is requested. No retry.",
+    "environment": {
+      "LC_ALL": "C",
+      "LANG": "C",
+      "PATH": "/usr/bin:/bin"
+    },
+    "outcome": "RETURNED",
+    "exit_code": 0,
+    "stdout": "Usage: /usr/bin/timeout [OPTION] DURATION COMMAND [ARG]...\n  or:  /usr/bin/timeout [OPTION]\nStart COMMAND, and kill it if still running after DURATION.\n\nMandatory arguments to long options are mandatory for short options too.\n      --preserve-status\n                 exit with the same status as COMMAND, even when the\n                   command times out\n      --foreground\n                 when not running timeout directly from a shell prompt,\n                   allow COMMAND to read from the TTY and get TTY signals;\n                   in this mode, children of COMMAND will not be timed out\n  -k, --kill-after=DURATION\n                 also send a KILL signal if COMMAND is still running\n                   this long after the initial signal was sent\n  -s, --signal=SIGNAL\n                 specify the signal to be sent on timeout;\n                   SIGNAL may be a name like 'HUP' or a number;\n                   see 'kill -l' for a list of signals\n  -v, --verbose  diagnose to stderr any signal sent upon timeout\n      --help        display this help and exit\n      --version     output version information and exit\n\nDURATION is a floating point number with an optional suffix:\n's' for seconds (the default), 'm' for minutes, 'h' for hours or 'd' for days.\nA duration of 0 disables the associated timeout.\n\nUpon timeout, send the TERM signal to COMMAND, if no other SIGNAL specified.\nThe TERM signal kills any process that does not block or catch that signal.\nIt may be necessary to use the KILL signal, since this signal can't be caught.\n\nExit status:\n  124  if COMMAND times out, and --preserve-status is not specified\n  125  if the timeout command itself fails\n  126  if COMMAND is found but cannot be invoked\n  127  if COMMAND cannot be found\n  137  if COMMAND (or timeout itself) is sent the KILL (9) signal (128+9)\n  -    the exit status of COMMAND otherwise\n\nGNU coreutils online help: <https://www.gnu.org/software/coreutils/>\nReport any translation bugs to <https://translationproject.org/team/>\nFull documentation <https://www.gnu.org/software/coreutils/timeout>\nor available locally via: info '(coreutils) timeout invocation'\n",
+    "stderr": "",
+    "stdout_bytes": 2146,
+    "stderr_bytes": 0,
+    "finished_utc": "2026-09-09T05:42:56.026272+00:00",
+    "elapsed_monotonic_seconds": 0.0019034470024053007,
+    "source_after": [
+      {
+        "st_dev": 25,
+        "st_ino": 1088,
+        "st_uid": 0,
+        "st_mode": 33261,
+        "st_nlink": 1,
+        "st_size": 8020928,
+        "st_mtime_ns": 1781873160000000000,
+        "st_ctime_ns": 1787292627933100500,
+        "path": "/usr/bin/python3.12",
+        "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+        "bytes": 8020928
+      },
+      {
+        "st_dev": 25,
+        "st_ino": 1223,
+        "st_uid": 0,
+        "st_mode": 33261,
+        "st_nlink": 1,
+        "st_size": 39880,
+        "st_mtime_ns": 1769175004000000000,
+        "st_ctime_ns": 1787292627976100600,
+        "path": "/usr/bin/timeout",
+        "sha256": "4fccd5b0192653a2446b745d5385ea547b78e466150e07ade9e2caff2b7f4e08",
+        "bytes": 39880
+      }
+    ],
+    "limits": [
+      "Installed binary self-description only; not independent source/manual proof, not actual signal/timeout/process-group/kernel behavior, not controls or application test execution.",
+      "No external GNU fetch, project helper import/execution, Gradle/JVM, namespace probe, build/cache/temp output or daemon.",
+      "Normal return establishes direct child reaped by subprocess.run, not a global process census. Wrapper stop not applicable; earlier stop obligations remain unchanged."
+    ]
+  }
+}

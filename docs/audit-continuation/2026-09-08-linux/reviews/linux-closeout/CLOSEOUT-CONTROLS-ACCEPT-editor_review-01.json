@@ -1,0 +1,127 @@
+{
+  "automatic_retry_admitted": false,
+  "bindings": {
+    "controls": "441686459fa0cf8ec690c72e0547e240f19fe2ec7cd1be8b26549b6cf892600a",
+    "controls_design": "f288a5d2ac887ed033aa50f414fd1e746aa5c0ebd3f92438f41d60e74851d249",
+    "controls_source_review": "7c171788e55f87606a5bac1a7e2d69366dd62f51396642167fad2eaa4baef82b",
+    "coordination_journal": "8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613",
+    "coordination_receipt": "cd0ce6a2d06ea3deaf2556736e633c322d41f07919ef511ad0c1ae2571976fc0",
+    "helper": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+    "helper_evidence_field_review": "1b84d746f7483970a5349a963b45d7b68c31e32a70d741f5ace08b4346c1fe5a",
+    "helper_historical_source_review": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e",
+    "helper_plan": "0b21ebfee0134c2853cfa8f3d17f9fef1b9acf812329581a93c0790c69930c5d",
+    "helper_registration_review": "c4b7e9d03dc8e5160c0f6cf628cbd4ee97e7dcb27707d73059c61f17576c6370",
+    "launch_plan": "a4e59258b3e43b44933c99e42b7a02ba87adfc227283538263061b0d7fe08079",
+    "launcher": "67a84793cfa69c7ba33f34ce62b0aa54171370e599fb7242881b5d84f4eb28d0"
+  },
+  "controls_author": "/root/build_config",
+  "controls_source_reviewer": "/root/android32",
+  "disposition": "ACCEPT",
+  "external_command": "exec /usr/bin/timeout --foreground --signal=TERM --kill-after=5s 200s /usr/bin/python3 -I -B /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+  "external_envelope_review_sha256": "efd3e640fbd66832c1d8ccc625c060883d64e009ce329e948c3cc74e588fdd2f",
+  "external_envelope_sha256": "6476c10e3086afac5af013bd5f77885d4f1e383aa83d8c0c9d204140ccef588e",
+  "format": "passvault-linux-closeout-controls-acceptance-v1",
+  "helper_author": "/root/editor",
+  "helper_source_reviewer": "/root/baseline_coverage",
+  "independent_observations": {
+    "all12_source_hashes_and_exact_integer_pins_match": true,
+    "all19_derived_directory_originals_match": true,
+    "bootstrap6_original_lock_and_ancestry_match": true,
+    "exported_startup_loader_entry_presence": {
+      "BASHOPTS": false,
+      "BASH_ENV": false,
+      "BASH_FUNC_*": false,
+      "ENV": false,
+      "LD_LIBRARY_PATH": false,
+      "LD_PRELOAD": false,
+      "PS4": false,
+      "SHELLOPTS": false
+    },
+    "extra_external_review_directory_pin": {
+      "dev": 23,
+      "ino": 610533,
+      "mode": 16832,
+      "uid": 0
+    },
+    "fresh_resources": {
+      "disks_free_bytes": {
+        "/root/projects/PassVault": 20193468416,
+        "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 20193468416,
+        "/tmp": 18560573440
+      },
+      "memory_bytes": {
+        "MemAvailable": 35561320448,
+        "MemTotal": 67435888640
+      }
+    },
+    "git_checkpoint": "Root-reported da8ff89/cf0a8a7; reviewer binds12 exact source bytes, not a new whole-tree runtime claim.",
+    "lock_opened_readonly_not_acquired_or_modified": true,
+    "owner_acceptance_pin": {
+      "ctime_ns": 1788933637046380183,
+      "dev": 24,
+      "ino": 14281802,
+      "mode": 33152,
+      "mtime_ns": 1788933637046380183,
+      "nlink": 1,
+      "size": 2374,
+      "uid": 0
+    },
+    "python_entry_symlink_pin": {
+      "ctime_ns": 1787292627918100464,
+      "dev": 25,
+      "ino": 1087,
+      "mode": 41471,
+      "mtime_ns": 1762949744000000000,
+      "nlink": 1,
+      "size": 10,
+      "uid": 0
+    },
+    "root_local_CI_slot_freeze_observation": "Root exact request/owner attestation accepted; reviewer does not claim independent CI/global-process census. Root must quiesce all tools and perform final preflight before the one invocation.",
+    "root_request_pin": {
+      "ctime_ns": 1788933637043380183,
+      "dev": 24,
+      "ino": 14281799,
+      "mode": 33152,
+      "mtime_ns": 1788933637043380183,
+      "nlink": 1,
+      "size": 15270,
+      "uid": 0
+    },
+    "scratch_and_journal_absent": true,
+    "tool_resolution_hashes_pins_match": true
+  },
+  "invocations_admitted": 1,
+  "launcher_author": "/root/storage",
+  "obligation_evidence": {
+    "LC01": "Exact67a/a4e source and bounded6476/efd3 envelope;28 component scope only, source roles independent.",
+    "LC02": "Fresh absent fixed scratch/journal; original retained bootstrap6/lock/19ancestry independently matched, no allocation or flock by reviewer.",
+    "LC03": "12source hashes/full pins, request02dc/owner2f85 and resolved Python/bash/timeout exact integer originals independently checked; no rounded metadata copies used.",
+    "LC04": "Root sole-local/CI slot and input/tool freeze commitment; final all-agent quiescence/preflight remains required, not a perpetual host-idle proof.",
+    "LC05": "58ordered emissions/all28 effects plus original-only shared and empty-top cleanup and retained compact evidence; per-member originals stay in memory, external receipt not a complete original-member census.",
+    "LC06": "Literal resource caps/floors and120+60 inner/200+5 external scopes accepted with syscall/death/host-loss HOLD limits; no retry or cleanup adoption.",
+    "LC07": "Independent actual effects/cleanup/terminal/external exit/owned-child settlement required before slot release;0application cases or closures granted."
+  },
+  "obligations": {
+    "LC01": "ACCEPT",
+    "LC02": "ACCEPT",
+    "LC03": "ACCEPT",
+    "LC04": "ACCEPT",
+    "LC05": "ACCEPT",
+    "LC06": "ACCEPT",
+    "LC07": "ACCEPT"
+  },
+  "owner_acceptance_sha256": "2f854822c8b532e09f59c975200965160f9365fa5ddf6d92538b1c7629f5280e",
+  "purpose": "ONE_NEW_EXACT_SOURCE_CLOSEOUT_COMPONENT_CONTROL_EXECUTION",
+  "qualifications": [
+    "Only ONE root-owned exact strict28 invocation before request expiry and after final source/tools/namespace/resources/slot/freeze recheck.",
+    "No unconditional PASS, application/DB/full-closeout or17/registration6 admission. Root source/instance failures and metadata authoring failures remain retained.",
+    "Timeout help is interface metadata only; no actual signal/kernel-preemption proof. Combined timing/streams remain qualified; no supervisor-birth invention or PID-reuse signal authority.",
+    "No natural OOM/same-UID adversary assurance; unknown state retained HOLD, no automatic retry. PVU007/PVU011/PVA029/G7G8/Windows/oldrunner/PVDhardware/publication restrictions unchanged.",
+    "All source/packet reads were inert data only. No target AST/import/compile/run, worker, scratch, temporary/cache/build outputs, wrapper or process probe was used by reviewer."
+  ],
+  "request_sha256": "02dc3df032fc477f044c2221064bc87784e5dcc9b3ab0a469f616005c1aedead",
+  "review_role": "INDEPENDENT_SOURCE_AND_INSTANCE_REVIEW",
+  "reviewer": "/root/editor_review",
+  "source_review_sha256": "fc0d22972cedff86c9ff9462396f3463ffced97aa92481a06c410d92e2da5ea2",
+  "utc": "2026-09-09T06:08:50.055928+00:00"
+}

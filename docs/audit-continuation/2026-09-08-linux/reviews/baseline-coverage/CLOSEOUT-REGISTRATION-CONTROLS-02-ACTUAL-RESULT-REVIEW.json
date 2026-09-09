@@ -1,0 +1,283 @@
+{
+  "format": "passvault-linux-registration02-six-actual-result-review-v1",
+  "utc": "2026-09-09T08:04:33.376924+00:00",
+  "reviewer": "/root/baseline_coverage",
+  "launcher_author": "/root/editor",
+  "controls_author": "/root/verification",
+  "executor_and_external_receipt_author": "/root",
+  "disposition": "ACCEPT_SIX_COMPONENT_RESULTS_AND_ORIGINAL_SETTLEMENT",
+  "slot_release_permission": "ROOT_MAY_RELEASE_CONSUMED_REGISTRATION02_SCOPE_ONLY",
+  "slot_changed_by_reviewer": false,
+  "next_execution_admitted": false,
+  "retry_or_recreation_authorized": false,
+  "inputs": {
+    "request": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-REGISTRATION-CONTROLS-REQUEST-02.json",
+      "sha256": "4ffcf55e0e0a6cc37a9d761571319e213a134e3d8187948232a26501e027323f",
+      "bytes": 19224,
+      "physical_lf": 533
+    },
+    "root_approval": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-REGISTRATION-CONTROLS-ACCEPT-root-02.json",
+      "sha256": "0dc30ef856b6cc7df6e8d21b783fce3325d1994986d70c6cdcd684c0a7b56c24",
+      "bytes": 2880,
+      "physical_lf": 52
+    },
+    "independent_approval": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-REGISTRATION-CONTROLS-ACCEPT-baseline_coverage-02.json",
+      "sha256": "f4f134c6595cfd7a6c76397e9e5085df5ca80079b69897f41f038a370e65c576",
+      "bytes": 8543,
+      "physical_lf": 99
+    },
+    "journal": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-REGISTRATION-CONTROLS-events-02.jsonl",
+      "sha256": "60f239d2cca04a1191808467e8e0462079a68771df3d4949943e09b22f77e16b",
+      "bytes": 37395,
+      "physical_lf": 19
+    },
+    "external_receipt": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-REGISTRATION-CONTROLS-LAUNCH-RECEIPT-02.json",
+      "sha256": "8ccd574f3f0de112f313dc9e7c72cf18da1b1a2cb6a2662553d5e49d9e7c3546",
+      "bytes": 6800,
+      "physical_lf": 206
+    }
+  },
+  "source_checkpoint": {
+    "commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "qualification": "18 exact overlay inputs bound independently of C4; corrected helpers not retroactively C4 bytes."
+  },
+  "exact_subjects": {
+    "launcher": "ebe9cea90cb836691cdfe7a2837fbbcad437f2a3ae2623751f04ac5bcbe5e03b",
+    "launch_plan": "598335573c49c400a53d619d2ce08dba2944b468ea9c334e9d0bde4d70082304",
+    "controls": "08d1ea3f9638f816e116e9332131c3b26d4245f6a79509cae9e766ab759f702c",
+    "controls_plan": "36a53fe51f2f0bf028c3f90223eb677e873160b5306a26ec65dc718ea834bc5b",
+    "closer": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+    "outer": "50473240372643cc30dc54f12e4f3cf818d6ab68e0f4f27b62929cdae4684a5c",
+    "database_outer": "871aa7ebca0a2c7cf3e73923396a1e918d2186332a7f7c22988d3d8469754889",
+    "controls_source_review": "148e1816dfef3da8bf81b4c406f53afc5eed51860e4d04128a2710f4fff8151a",
+    "launcher_source_review": "838e86ba3e8188ecb6347ce81224eac9e93aa1faffe77407a288ec532988786f"
+  },
+  "actual_result": {
+    "invocations": 1,
+    "tool_chunk": "06fa2d",
+    "external_exit_code": 0,
+    "external_combined_output_bytes": 0,
+    "case_count": 6,
+    "passed": 6,
+    "failed": 0,
+    "unstarted": 0,
+    "cases": [
+      {
+        "id": "R01_closer_nominal_registration",
+        "status": "PASS",
+        "specific_second_store_observed": false,
+        "subject_lifetimes": 6,
+        "final_fd_map_entries": 6,
+        "final_pin_map_entries": 6
+      },
+      {
+        "id": "R02_closer_second_pin_store_memoryerror",
+        "status": "PASS",
+        "specific_second_store_observed": true,
+        "subject_lifetimes": 6,
+        "final_fd_map_entries": 5,
+        "final_pin_map_entries": 5
+      },
+      {
+        "id": "R03_outer_nominal_registration",
+        "status": "PASS",
+        "specific_second_store_observed": false,
+        "subject_lifetimes": 6,
+        "final_fd_map_entries": 0,
+        "final_pin_map_entries": 6
+      },
+      {
+        "id": "R04_outer_second_pin_store_memoryerror",
+        "status": "PASS",
+        "specific_second_store_observed": true,
+        "subject_lifetimes": 6,
+        "final_fd_map_entries": 0,
+        "final_pin_map_entries": 5
+      },
+      {
+        "id": "R05_database_outer_nominal_registration",
+        "status": "PASS",
+        "specific_second_store_observed": false,
+        "subject_lifetimes": 6,
+        "final_fd_map_entries": 0,
+        "final_pin_map_entries": 6
+      },
+      {
+        "id": "R06_database_outer_second_pin_store_memoryerror",
+        "status": "PASS",
+        "specific_second_store_observed": true,
+        "subject_lifetimes": 6,
+        "final_fd_map_entries": 0,
+        "final_pin_map_entries": 5
+      }
+    ],
+    "control_events": 14,
+    "outer_journal_rows": 19,
+    "application_cases": 0,
+    "qualified_closure_delta": 0
+  },
+  "independent_reconciliation": {
+    "tools_exit0": [
+      "28dd49",
+      "d484bf",
+      "81b87e"
+    ],
+    "entire_receipt_and_all_nineteen_literal_rows_read": true,
+    "duplicate_nonfinite_and_canonical_line_checks": "PASS",
+    "request_approval_binding_directory_lock_limits_command_and_interval": "MATCH",
+    "exact_six_ordered_case_map_and_start_result_pairs": "MATCH",
+    "source_specific_parent_target_final_registry_and_once_close_oracles": "MATCH",
+    "exact_three_source_and_database_PLAN_review_acceptance_bindings": "MATCH",
+    "all_eighteen_source_fullpins_and_hashes_stable_after_run": true,
+    "journal_current_pin_matches_root_stable_postrun_pin": true,
+    "project_helper_import_ast_compile_syntax_or_execution": false
+  },
+  "lossless_return": {
+    "canonical_sha256": "1e08a6c3f6e088ed6ec7c3c0aa0f1ef9b70ff34a54b33ca57ef7076b3079ada5",
+    "canonical_bytes": 25179,
+    "result_sequences": [
+      3,
+      5,
+      7,
+      9,
+      11,
+      13
+    ],
+    "cleanup_sequence": 14,
+    "results_sha256": "eb7a613dab560be41677747c01423d404e6b01769aad211c4d82d947a2732496",
+    "cleanup_sha256": "f19301193c260ce820b0e713c6ba5ad60c3f7fd108e30c145ba28a1a1273cb9a",
+    "seventeen_keys_reconstructed_from_literal_events_and_remaining_fields": true,
+    "raw_status_preserved": "SIX_COMPONENT_CONTROLS_PASS_PENDING_ROOT_SETTLEMENT",
+    "full_packet_written_again": false
+  },
+  "fd_and_cleanup": {
+    "subject_lifetimes": 36,
+    "subject_numbers_per_case": [
+      35,
+      36,
+      37,
+      38,
+      39,
+      40
+    ],
+    "observer_lifetimes": 10,
+    "observer_numbers": [
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34
+    ],
+    "real_once_close_and_immediate_ebadf_records": true,
+    "held_observer_subject_numbers_disjoint": true,
+    "numbers_naturally_recur_between_finished_cases_not_deliberate_stale_fd_reuse": true,
+    "borrowed_fd_exclusion": "Checked by frozen executed launcher; borrowed numeric map is not separately emitted for reviewer reconstruction.",
+    "three_fault_targets_locally_closed_and_unpublished": true,
+    "closer_closed_numeric_fd_metadata_retained": "6nominal/5fault",
+    "outer_and_database_fd_maps_popped_pin_maps_retained": "0FD;6nominal/5fault pins",
+    "shared_cleanup": "COMPLETE",
+    "six_removed_original_fixture_inodes": [
+      806370,
+      806369,
+      806368,
+      806367,
+      806366,
+      806365
+    ],
+    "scratch_original": {
+      "dev": 23,
+      "ino": 806364,
+      "mode": 16832,
+      "uid": 0
+    },
+    "unknown_names_or_cleanup_failures": [],
+    "root_rmdir_parent_fsync_close_ebadf": true,
+    "root_postrun_scratch_absence_reconciled": true,
+    "reviewer_runtime_reprobe": false
+  },
+  "external_settlement": {
+    "original_parent": {
+      "pid": 16631,
+      "ppid": 13528,
+      "starttime": 20901610,
+      "uid": 0
+    },
+    "original_child": {
+      "pid": 16632,
+      "ppid": 16631,
+      "starttime": 20901612,
+      "uid": 0
+    },
+    "root_postrun_observation": "Both original PID names absent; matches their admitted and preterminal births.",
+    "native_exit_zero_after_provisional_preterminal": true,
+    "python_exit_zero": "Inferred from exact GNU normal-status propagation and executed final-close/error guards, not a separately observed second tool exit.",
+    "global_process_census_or_hardware_or_deadline_fault_test": false,
+    "original19parents_lock_python_timeout_poststate": "Root receipt reports unchanged; source/instance evidence reviewed, not an additional reviewer runtime/tool probe."
+  },
+  "capacity_and_resources": {
+    "journal_bytes": 37395,
+    "journal_cap": 57344,
+    "external_receipt_plus_empty_output_bytes": 6800,
+    "external_cap": 8192,
+    "execution_evidence_total_bytes": 44195,
+    "execution_cap": 65536,
+    "maximum_journal_record_bytes": 5927,
+    "maximum_control_event_bytes": 4103,
+    "return_bytes": 25179,
+    "scratch_logical_and_allocated_bytes_each": 28672,
+    "maximum_point_observed_parent_plus_child_peak_rss_bytes": 49930240,
+    "all_recorded_launch_running_disk_ram_floors_recomputed": true,
+    "root_postrun_resources": {
+      "disks_free_bytes": {
+        "/root/projects/PassVault": 21035765760,
+        "/tmp": 18638909440
+      },
+      "memory_bytes": {
+        "MemTotal": 67435888640,
+        "MemAvailable": 37156397056
+      }
+    },
+    "scope": "Execution journal/receipt/output, not a total cap for permanent source/review/admission inputs. AS/RSS/footprint and observations are not universal quotas."
+  },
+  "preserved_timing_disagreement": {
+    "tool_wall_seconds": 0.178022006,
+    "journal_first_unix_ns": 1788940000002621006,
+    "journal_last_unix_ns": 1788940000194416941,
+    "journal_span_ns": 191795935,
+    "callable_elapsed_seconds": 0.1366905219911132,
+    "journal_span_exceeds_tool_wall_seconds": 0.013773929,
+    "cause_established": false,
+    "units_or_values_normalized": false,
+    "complete_external_hard_duration_bracket_proved": false,
+    "normal_completion_without_alarm_or_cancellation_and_owned_settlement": "ACCEPT; no claimed forced-timeout/interruption/host-loss guarantee."
+  },
+  "interpretation": [
+    "Meaningful six real-FD component regressions support the precise recoverable second-store rollback correction in8437/5047/871. The exception source is a deterministic pin-map double, not genuine OOM.",
+    "No unrelated descriptor injury, deliberate stale-FD reuse, first-store/failed-close/catastrophic-OOM matrix, whole-helper main/admission, application or hardware proof.",
+    "Four-only proposal remains preserved unaccepted/unexecuted; six02 is the actual commissioned invocation. Do not rewrite four history or replay17/28.",
+    "Stable postrun journal pin is not an independently emitted initial journal inode. Original/source/effect qualifications remain; no ambiguous recovery or automatic retry.",
+    "Root may release this consumed six02 component slot after adopting this review, not admit a database build/actual closeout/current-C4 driver or any next job."
+  ],
+  "accounting": {
+    "original_confirmed": "19/25",
+    "all_confirmed": "22/38;16remain",
+    "original_suspicions": "2/12;10remain",
+    "pvd_explanations_owner_choices_separate": 8,
+    "new_application_cases": 0,
+    "new_product_findings": 0,
+    "qualified_closures_added": 0
+  },
+  "operations": "Only bounded existing-source/data reads, in-memory JSON/hash reconciliation and this single permanent reviewer JSON. No helper or test replay, scratch/lock/process/CI probe, source edit, build, worker, signal, cleanup, cache/temp output or slot mutation. Wrapper stop NOT_APPLICABLE_NO_WRAPPER_LAUNCH.",
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/PVA02949-44PASS-5FAIL-noauto/G7G8CLOSED/oldrunnerprohibition/WindowsFAIL-cleanupHOLD14unstarted/synthetic-only/hardware/rootsoleowner/protectedrefs-dependencies-versions-identities-signing-store-publication-1017001 unchanged."
+}

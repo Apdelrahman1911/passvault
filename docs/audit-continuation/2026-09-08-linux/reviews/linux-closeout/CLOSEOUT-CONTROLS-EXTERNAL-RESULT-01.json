@@ -1,0 +1,589 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T06:17:22.219912+00:00",
+  "kind": "ACTUAL_COMPONENT28_CONTROLS01_EXTERNAL_RECEIPT_PENDING_INDEPENDENT_RECONCILIATION",
+  "tool_result": {
+    "chunk_id": "e9c2e8",
+    "wall_time_seconds": 0.744512552,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "exact_command": "exec /usr/bin/timeout --foreground --signal=TERM --kill-after=5s 200s /usr/bin/python3 -I -B /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+  "shell": "/bin/bash",
+  "login": false,
+  "tty": false,
+  "request_sha256": "02dc3df032fc477f044c2221064bc87784e5dcc9b3ab0a469f616005c1aedead",
+  "request_pin": {
+    "dev": 24,
+    "ino": 14281799,
+    "uid": 0,
+    "mode": 33152,
+    "nlink": 1,
+    "size": 15270,
+    "mtime_ns": 1788933637043380183,
+    "ctime_ns": 1788933637043380183
+  },
+  "journal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-events-01.jsonl",
+    "sha256": "e62831737dc20bdda490262dd7b4b9fd8ef1bcb25b1c6a749184969d974d07dd",
+    "bytes": 28471,
+    "physical_lf": 64,
+    "stable_postrun_pin": {
+      "dev": 24,
+      "ino": 14281812,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 28471,
+      "mtime_ns": 1788934509299328193,
+      "ctime_ns": 1788934509299328193
+    }
+  },
+  "actual_control_case_count": 28,
+  "durable_control_records": 58,
+  "actual_case_outcomes": {
+    "J01_progress": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 230,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J02_equal_rewrite": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 152,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J03_truncate": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 76,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J04_external_append": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 77,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J05_name_replace": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 98,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "J06_hardlink": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 76,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "J07_positive_short_writes": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 165,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J08_zero_write": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 76,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J09_partial_then_zero": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 83,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J10_fsync_error": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 157,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J11_postwrite_name": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 179,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "J12_postwrite_mode": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 157,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "J13_postwrite_nlink": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 157,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "B01_valid_bootstrap": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 31,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B02_cancel_before_read": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 31,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B03_deadline_before_read": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 31,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B04_cancel_during_read": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 31,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B05_deadline_during_read": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 31,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B06_cancel_during_bind": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 0,
+        "failures": [],
+        "removed_names": 0,
+        "status": "COMPLETE"
+      }
+    },
+    "B07_deadline_during_bind": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 0,
+        "failures": [],
+        "removed_names": 0,
+        "status": "COMPLETE"
+      }
+    },
+    "B08_directory_replace": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 0,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "B09_rehash_unchanged": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 31,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B10_rehash_pin": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 62,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B11_rehash_digest": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 62,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B12_rehash_cancel": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 54,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "B13_rehash_deadline": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 54,
+        "failures": [],
+        "removed_names": 2,
+        "status": "COMPLETE"
+      }
+    },
+    "B14_hold_after_cancel": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 171,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    },
+    "B15_hold_after_deadline": {
+      "status": "PASS",
+      "started": true,
+      "cleanup": {
+        "bytes_written": 171,
+        "failures": [],
+        "removed_names": 1,
+        "status": "COMPLETE"
+      }
+    }
+  },
+  "outer_terminal": {
+    "allocation_attempted": true,
+    "application_test_cases": 0,
+    "cancelled": [],
+    "cleanup": "ORIGINAL_EMPTY_SCRATCH_REMOVED",
+    "control_terminal": {
+      "application_test_cases": 0,
+      "attempted_cases": 28,
+      "borrowed_scratch_fd_closed_or_removed": false,
+      "case_bodies_started": 28,
+      "elapsed_seconds": 0.7382309439999517,
+      "kind": "closeout_controls_terminal",
+      "outer_settlement_and_original_scratch_removal": "required separately; not performed here",
+      "passed_cases": 28,
+      "planned_cases": 28,
+      "source_sha256": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+      "status": "PASS",
+      "unstarted_cases": []
+    },
+    "descriptor_close_failures_so_far": [],
+    "durable_control_records": 58,
+    "error": null,
+    "exit": 0,
+    "kind": "launcher_terminal_commit",
+    "launcher_alarm_observed": false,
+    "literal_case_results": 28,
+    "resources": {
+      "disks_free_bytes": {
+        "/root/projects/PassVault": 20174974976,
+        "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 20174974976
+      },
+      "launch_floor": false,
+      "memory_bytes": {
+        "MemAvailable": 37976940544,
+        "MemTotal": 67435888640
+      },
+      "self_maxrss_kib": 46944,
+      "unix_ns": 1788934509299854962,
+      "within_floors": true
+    },
+    "scratch_parent_fsync_completed": true,
+    "scratch_rmdir_performed": true,
+    "sequence": 63,
+    "source_inputs_unchanged": true,
+    "status": "CONTROLS_ONLY_NOT_DATABASE_OR_CLOSEOUT_EXECUTION_ADMISSION",
+    "terminal_scope": "PRE_FINAL_DESCRIPTOR_CLOSURES_REQUIRE_OBSERVED_OUTER_EXIT_ZERO",
+    "unix_ns": 1788934509300146034,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "first_journal_unix_ns": 1788934508515208185,
+  "last_journal_unix_ns": 1788934509300146034,
+  "tool_timing_is_distinct_from_journal_and_body_clocks": true,
+  "original_scratch": {
+    "identity": {
+      "dev": 23,
+      "ino": 783918,
+      "mode": 16832,
+      "uid": 0
+    },
+    "kind": "scratch_allocation_original",
+    "path": "/root/projects/PassVault/audit-runtime-linux-closeout-controls-01",
+    "sequence": 2,
+    "unix_ns": 1788934508520340987
+  },
+  "original_scratch_absent_after_rmdir": true,
+  "owned_python_birth_settlement": {
+    "pid": 23795,
+    "admitted_starttime": 20352466,
+    "same_birth_present": false,
+    "observation": "original PID absent at point check"
+  },
+  "all12_source_rows_unchanged": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+      "sha256": "67a84793cfa69c7ba33f34ce62b0aa54171370e599fb7242881b5d84f4eb28d0",
+      "identity": {
+        "dev": 24,
+        "ino": 14241182,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 37464,
+        "mtime_ns": 1788928895959662774,
+        "ctime_ns": 1788928895959662774
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-LAUNCH-PLAN.md",
+      "sha256": "a4e59258b3e43b44933c99e42b7a02ba87adfc227283538263061b0d7fe08079",
+      "identity": {
+        "dev": 24,
+        "ino": 14241555,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 28793,
+        "mtime_ns": 1788929062727652834,
+        "ctime_ns": 1788929062727652834
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/build-config/CLOSEOUT-CONTROLS.py",
+      "sha256": "441686459fa0cf8ec690c72e0547e240f19fe2ec7cd1be8b26549b6cf892600a",
+      "identity": {
+        "dev": 24,
+        "ino": 13672676,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 40149,
+        "mtime_ns": 1788928130542708396,
+        "ctime_ns": 1788928130542708396
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/build-config/DESIGN.md",
+      "sha256": "f288a5d2ac887ed033aa50f414fd1e746aa5c0ebd3f92438f41d60e74851d249",
+      "identity": {
+        "dev": 24,
+        "ino": 13672683,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 24839,
+        "mtime_ns": 1788928130544708396,
+        "ctime_ns": 1788928130544708396
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_database_closeout.py",
+      "sha256": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+      "identity": {
+        "dev": 24,
+        "ino": 13672307,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 59609,
+        "mtime_ns": 1788925358432873627,
+        "ctime_ns": 1788925358432873627
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md",
+      "sha256": "0b21ebfee0134c2853cfa8f3d17f9fef1b9acf812329581a93c0790c69930c5d",
+      "identity": {
+        "dev": 24,
+        "ino": 14184206,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 34814,
+        "mtime_ns": 1788925358434873627,
+        "ctime_ns": 1788925358434873627
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json",
+      "sha256": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e",
+      "identity": {
+        "dev": 24,
+        "ino": 13672377,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 11147,
+        "mtime_ns": 1788912590019634684,
+        "ctime_ns": 1788912590019634684
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-SUCCESSOR-REVIEW.json",
+      "sha256": "1b84d746f7483970a5349a963b45d7b68c31e32a70d741f5ace08b4346c1fe5a",
+      "identity": {
+        "dev": 24,
+        "ino": 13672719,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 9865,
+        "mtime_ns": 1788924633027916864,
+        "ctime_ns": 1788924633027916864
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-REGISTRATION-SUCCESSOR-REVIEW.json",
+      "sha256": "c4b7e9d03dc8e5160c0f6cf628cbd4ee97e7dcb27707d73059c61f17576c6370",
+      "identity": {
+        "dev": 24,
+        "ino": 13672749,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 6225,
+        "mtime_ns": 1788926106073829064,
+        "ctime_ns": 1788926106073829064
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android32/CLOSEOUT-CONTROLS-V3-SUCCESSOR-REVIEW.json",
+      "sha256": "7c171788e55f87606a5bac1a7e2d69366dd62f51396642167fad2eaa4baef82b",
+      "identity": {
+        "dev": 24,
+        "ino": 13672818,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 5884,
+        "mtime_ns": 1788928738195672177,
+        "ctime_ns": 1788928738195672177
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP.jsonl",
+      "sha256": "8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613",
+      "identity": {
+        "dev": 24,
+        "ino": 13672350,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 3768,
+        "mtime_ns": 1788910891125735946,
+        "ctime_ns": 1788910891125735946
+      }
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/verification/CONTROL-BOOTSTRAP-RECEIPT.json",
+      "sha256": "cd0ce6a2d06ea3deaf2556736e633c322d41f07919ef511ad0c1ae2571976fc0",
+      "identity": {
+        "dev": 24,
+        "ino": 13672370,
+        "uid": 0,
+        "mode": 33152,
+        "nlink": 1,
+        "size": 807,
+        "mtime_ns": 1788912174981659422,
+        "ctime_ns": 1788912174981659422
+      }
+    }
+  ],
+  "original_directories_and_lock_unchanged": true,
+  "resources_after": {
+    "disks_free_bytes": {
+      "/root/projects/PassVault": 20165341184,
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 20165341184,
+      "/tmp": 18128224256
+    },
+    "memory_bytes": {
+      "MemTotal": 67435888640,
+      "MemAvailable": 37974130688
+    }
+  },
+  "cleanup": "Accepted callable reports COMPLETE for all28 cases; outer reports original empty scratch rmdir+parent fsync and actual exit0 after descriptor-close path. Root observes original child birth absent and scratch absent. No caches/build/application/daemon created; wrapper stop NOT_APPLICABLE.",
+  "limits": [
+    "28 infrastructure cases, zero application cases/closures; not105 DB,17 contract,6 registration or actual closeout admission.",
+    "Journal capture is a stable postrun original-namespace observation, not an independently emitted initial journal pin/per-member original inventory.",
+    "Combined tool output empty; no separately captured streams or external supervisor PID/birth/whole monotonic runtime proof.",
+    "Failed/consumed historical controls/Windows/G7G8/PVA029/STOP and source-only/hardware qualifications remain. No automatic retry.",
+    "Slot remains reserved pending independently authored result reconciliation."
+  ]
+}

@@ -1,0 +1,373 @@
+#!/usr/bin/env python3
+"""SOURCE PREPARATION ONLY: macOS native-five NON-PUBLISHING validation.
+
+This draft deliberately refuses activation while process, resource, ACL,
+cleanup, toolchain and controls admission remain unimplemented. It is NOT an
+admitted runner, probe or recovery tool. Do not execute/import it to inspect it.
+
+The implemented pure source/input/command/result contracts below do not prove
+platform behavior. Removing OPEN_IMPLEMENTATION_GATES is a material new source
+change requiring independent full review, real controls and root admission;
+no request, caller flag or environment value can disable these gates.
+"""
+
+import argparse
+import dataclasses
+import hashlib
+import json
+import os
+import re
+import signal
+import stat
+import sys
+import xml.etree.ElementTree as ET
+
+
+REPOSITORY = "Apdelrahman1911/passvault"
+BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
+REQUEST_PATH = "docs/audit-continuation/2026-09-08-linux/requests/macos-native-01.json"
+WORKFLOW_PATH = ".github/workflows/audit-macos-native-validation.yml"
+SOURCE_ROOT = "app-desktop/native/biometric-bridge"
+DEVELOPER_DIR = "/Applications/Xcode_16.4.app/Contents/Developer"
+EXPECTED_PYTHON = (3, 14, 7)
+EXPECTED_CMAKE = "4.4.2"
+EXPECTED_XCODE = "16.4"
+EXPECTED_XCODE_BUILD = "16F6"
+EXPECTED_SDK = "15.5"
+EXPECTED_ARCHITECTURE = "x86_64"
+LOG_CAP = 2 * 1024 * 1024
+XML_CAP = 512 * 1024
+EVIDENCE_CAP = 16 * 1024 * 1024
+GIB = 1024 * 1024 * 1024
+SHA1 = re.compile(r"[0-9a-f]{40}\Z")
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+DECIMAL = re.compile(r"(?:0|[1-9][0-9]*)\Z")
+
+# No executed command, runtime/backend test or admission acceptance exists for
+# this draft. Preserve the failure and leave all five cases UNSTARTED.
+OPEN_IMPLEMENTATION_GATES = (
+    "MAC-PROC: exact original-process observation/signal and descendant settlement",
+    "MAC-CTEST: exact installed CTest timeout/descendant behavior",
+    "MAC-MEMORY: independently reviewed available-physical-memory observation",
+    "MAC-ACL: descriptor/ancestor ACL and original private-parent admission",
+    "MAC-CLEANUP: original descriptor-bound finite traversal and interruption controls",
+    "MAC-TOOLS: preconfigure make/compiler/linker/subtool capture and enforcement",
+    "MAC-CONTROLS: independently reviewed real-process/filesystem controls before project work",
+    "MAC-INSTANCE: normative source/activation/slot and actual filled-instance acceptance",
+)
+
+NATIVE_INPUTS = {
+    "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "src/macos/passvault_biometric_macos.mm": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+    "tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "tests/macos/passvault_biometric_macos_security_test.mm": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4",
+}
+
+
+class Hold(Exception):
+    """No advancement, automatic retry, ownership adoption or false pass."""
+
+
+@dataclasses.dataclass(frozen=True)
+class Case:
+    name: str
+    executable: str
+    selectors: tuple[str, ...] = ()
+
+    def command(self, build):
+        return (build + "/" + self.executable, *self.selectors)
+
+
+# Deliberate execution order, NOT CMake's declaration/inventory order.
+CASES = (
+    Case("passvault_biometric_macos_fixture_normal", "passvault_biometric_macos_security_test",
+         ("--fixture-case", "normal")),
+    Case("passvault_biometric_macos_fixture_early_return", "passvault_biometric_macos_security_test",
+         ("--fixture-case", "early_return")),
+    Case("passvault_biometric_macos_fixture_cpp_exception", "passvault_biometric_macos_security_test",
+         ("--fixture-case", "cpp_exception")),
+    Case("passvault_biometric_abi", "passvault_biometric_abi_test"),
+    Case("passvault_biometric_macos_security", "passvault_biometric_macos_security_test"),
+)
+
+
+def reject_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise Hold("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def decode_json(raw, cap):
+    if not isinstance(raw, bytes) or not raw or len(raw) > cap:
+        raise Hold("empty or over-limit JSON input")
+    try:
+        return json.loads(
+            raw.decode("utf-8"), object_pairs_hook=reject_duplicates,
+            parse_constant=lambda value: (_ for _ in ()).throw(Hold("nonfinite JSON input")),
+        )
+    except (UnicodeError, ValueError, TypeError, RecursionError) as error:
+        raise Hold("malformed JSON input") from error
+
+
+def valid_absolute_path(path):
+    if not isinstance(path, str) or not path.startswith("/") or len(path.encode("utf-8")) > 2048:
+        raise Hold("bounded absolute path required")
+    if "\x00" in path or "\n" in path or "\r" in path or path.endswith("/"):
+        raise Hold("unsafe pathname")
+    if any(part in ("", ".", "..") for part in path.split("/")[1:]):
+        raise Hold("noncanonical pathname component")
+    return path
+
+
+def stable_source_bytes(parent_fd, name, cap):
+    """Single original no-follow leaf capture; caller must bind all ancestors.
+
+    This is not a standalone workspace or filesystem-admission primitive.
+    An ambiguous close remains HOLD and is not retried.
+    """
+    if not isinstance(name, str) or "/" in name or name in ("", ".", ".."):
+        raise Hold("one admitted source leaf required")
+    descriptor = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent_fd)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > cap:
+            raise Hold("source is not a bounded single-link regular leaf")
+        blocks = []
+        remaining = cap + 1
+        while remaining:
+            block = os.read(descriptor, min(65536, remaining))
+            if not block:
+                break
+            blocks.append(block)
+            remaining -= len(block)
+        raw = b"".join(blocks)
+        after = os.fstat(descriptor)
+        keys = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns", "st_mode", "st_uid")
+        if len(raw) > cap or any(getattr(before, key) != getattr(after, key) for key in keys):
+            raise Hold("source changed during capture")
+        return raw
+    finally:
+        try:
+            os.close(descriptor)
+        except OSError as error:
+            raise Hold("original source descriptor close failed; no retry") from error
+
+
+def require_digest(actual, expected, label):
+    if not isinstance(expected, str) or SHA256.fullmatch(expected) is None:
+        raise Hold("invalid expected digest: " + label)
+    if hashlib.sha256(actual).hexdigest() != expected:
+        raise Hold("source digest mismatch: " + label)
+
+
+@dataclasses.dataclass(frozen=True)
+class SealedTool:
+    requested_path: str
+    canonical_path: str
+    sha256: str
+
+    def validate_record(self):
+        valid_absolute_path(self.requested_path)
+        valid_absolute_path(self.canonical_path)
+        if not isinstance(self.sha256, str) or SHA256.fullmatch(self.sha256) is None:
+            raise Hold("unsealed installed tool digest")
+
+
+@dataclasses.dataclass(frozen=True)
+class Toolchain:
+    """A required future preconfigure capture, NOT supplied by PATH lookup.
+
+    Setting CMAKE_LINKER alone does not constrain clang's subprocess lookup.
+    The future MAC-TOOLS backend must also resolve and check the actual driver
+    subtool chain before ANY CMake compiler/linker probe may be launched.
+    """
+
+    cmake: SealedTool
+    ctest: SealedTool
+    make: SealedTool
+    shell: SealedTool
+    cc: SealedTool
+    cxx: SealedTool
+    objcxx: SealedTool
+    linker: SealedTool
+    archiver: SealedTool
+    ranlib: SealedTool
+    nm: SealedTool
+    strip: SealedTool
+    xcrun: SealedTool
+    sdk: str
+    driver_chain_acceptance: str
+
+    def validate_records(self):
+        for name, value in vars(self).items():
+            if isinstance(value, SealedTool):
+                value.validate_record()
+        valid_absolute_path(self.sdk)
+        if not self.sdk.startswith(DEVELOPER_DIR + "/Platforms/MacOSX.platform/Developer/SDKs/"):
+            raise Hold("SDK outside the single admitted Xcode installation")
+        if not isinstance(self.driver_chain_acceptance, str) or SHA256.fullmatch(self.driver_chain_acceptance) is None:
+            raise Hold("preconfigure driver/subtool acceptance absent")
+        # An accepting hash field is only a record. Its actual normative source
+        # and original installed-byte checks are an OPEN_IMPLEMENTATION_GATE.
+
+
+def command_vectors(workspace, namespace, evidence, toolchain):
+    """Pure specification of commands; no subprocess or tool lookup occurs."""
+    for path in (workspace, namespace, evidence):
+        valid_absolute_path(path)
+    toolchain.validate_records()
+    build = namespace + "/build"
+    configure = (
+        toolchain.cmake.canonical_path, "-S", workspace + "/" + SOURCE_ROOT, "-B", build,
+        "-G", "Unix Makefiles", "-DBUILD_TESTING=ON", "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_OSX_ARCHITECTURES=x86_64", "-DCMAKE_OSX_SYSROOT=" + toolchain.sdk,
+        "-DCMAKE_MAKE_PROGRAM=" + toolchain.make.canonical_path,
+        "-DCMAKE_C_COMPILER=" + toolchain.cc.canonical_path,
+        "-DCMAKE_CXX_COMPILER=" + toolchain.cxx.canonical_path,
+        "-DCMAKE_OBJCXX_COMPILER=" + toolchain.objcxx.canonical_path,
+        "-DCMAKE_LINKER=" + toolchain.linker.canonical_path,
+        "-DCMAKE_AR=" + toolchain.archiver.canonical_path,
+        "-DCMAKE_RANLIB=" + toolchain.ranlib.canonical_path,
+        "-DCMAKE_NM=" + toolchain.nm.canonical_path,
+        "-DCMAKE_STRIP=" + toolchain.strip.canonical_path,
+        "-DCMAKE_C_COMPILER_AR=" + toolchain.archiver.canonical_path,
+        "-DCMAKE_CXX_COMPILER_AR=" + toolchain.archiver.canonical_path,
+        "-DCMAKE_C_COMPILER_RANLIB=" + toolchain.ranlib.canonical_path,
+        "-DCMAKE_CXX_COMPILER_RANLIB=" + toolchain.ranlib.canonical_path,
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    )
+    build_command = (
+        toolchain.cmake.canonical_path, "--build", build, "--config", "Release", "--target",
+        "passvault_biometric_macos_security_test", "passvault_biometric_abi_test", "--parallel", "1", "--verbose",
+    )
+    inventory = (toolchain.ctest.canonical_path, "--test-dir", build, "-C", "Release", "--show-only=json-v1")
+    tests = tuple(
+        (
+            toolchain.ctest.canonical_path, "--test-dir", build, "-C", "Release", "--parallel", "1",
+            "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit",
+            evidence + "/case-" + str(index).zfill(2) + ".xml", "-R", "^" + re.escape(case.name) + "$",
+        )
+        for index, case in enumerate(CASES, start=1)
+    )
+    return {"configure": configure, "build": build_command, "inventory": inventory, "cases": tests}
+
+
+def validate_inventory(raw, build):
+    """Exact identity/argv SET validation, independent of registration order."""
+    valid_absolute_path(build)
+    inventory = decode_json(raw, XML_CAP)
+    if not isinstance(inventory, dict) or inventory.get("kind") != "ctestInfo":
+        raise Hold("wrong CTest inventory kind")
+    if inventory.get("version") != {"major": 1, "minor": 0}:
+        raise Hold("wrong CTest inventory schema")
+    tests = inventory.get("tests")
+    if not isinstance(tests, list) or len(tests) != len(CASES):
+        raise Hold("missing or unexpected inventory case")
+    expected = {case.name: case.command(build) for case in CASES}
+    seen = set()
+    for test in tests:
+        if not isinstance(test, dict):
+            raise Hold("malformed inventory case")
+        name = test.get("name")
+        if not isinstance(name, str) or name not in expected or name in seen:
+            raise Hold("unknown or duplicate inventory identity")
+        command = test.get("command")
+        if not isinstance(command, list) or tuple(command) != expected[name]:
+            raise Hold("wrong executable/selector vector")
+        properties = test.get("properties", [])
+        if not isinstance(properties, list):
+            raise Hold("malformed test properties")
+        for prop in properties:
+            if not isinstance(prop, dict) or prop.get("name") != "WORKING_DIRECTORY" or prop.get("value") != build:
+                raise Hold("unadmitted CTest property/environment/timeout override")
+        seen.add(name)
+    if seen != set(expected):
+        raise Hold("case inventory identity mismatch")
+    return tuple(case.name for case in CASES)
+
+
+def integer_attribute(element, name, default=None):
+    value = element.attrib.get(name, default)
+    if not isinstance(value, str) or DECIMAL.fullmatch(value) is None:
+        raise Hold("malformed JUnit count: " + name)
+    return int(value)
+
+
+def validate_case_xml(raw, selected, actual_exit):
+    """A prospective XML case outcome, never worker/cleanup or family closure."""
+    if selected not in CASES or type(actual_exit) is not int or actual_exit != 0:
+        raise Hold("selected case did not exit zero")
+    if not isinstance(raw, bytes) or not raw or len(raw) > XML_CAP:
+        raise Hold("empty/over-limit XML")
+    try:
+        text = raw.decode("utf-8")
+        if "<!DOCTYPE" in text.upper() or "<!ENTITY" in text.upper() or "\x00" in text:
+            raise Hold("unsafe XML declaration or encoding")
+        root = ET.fromstring(text)
+    except (UnicodeError, ET.ParseError, RecursionError) as error:
+        raise Hold("malformed JUnit XML") from error
+    if root.tag != "testsuite" or integer_attribute(root, "tests") != 1:
+        raise Hold("wrong JUnit suite or case count")
+    for name in ("failures", "errors", "skipped", "disabled"):
+        if integer_attribute(root, name, "0") != 0:
+            raise Hold("failed/error/skipped/disabled JUnit outcome")
+    cases = list(root.iter("testcase"))
+    if len(cases) != 1 or cases[0].attrib.get("name") != selected.name:
+        raise Hold("wrong or duplicate JUnit selected-case identity")
+    if cases[0].attrib.get("status", "run") != "run":
+        raise Hold("case did not run")
+    if any(node.tag in ("failure", "error", "skipped") for node in root.iter()):
+        raise Hold("nonpassing nested JUnit outcome")
+    return {"case": selected.name, "xml_sha256": hashlib.sha256(raw).hexdigest(), "case_outcome": "PASS_CANDIDATE"}
+
+
+def resource_floor_check(available_disk, total_ram, available_ram, *, launching):
+    """Arithmetic only; MAC-MEMORY still lacks an accepted platform observer."""
+    if any(type(value) is not int or value < 0 for value in (available_disk, total_ram, available_ram)):
+        raise Hold("invalid resource unit/count")
+    if total_ram == 0 or available_ram > total_ram:
+        raise Hold("invalid physical-memory relationship")
+    disk_floor, ram_percent = (12 * GIB, 25) if launching else (8 * GIB, 20)
+    if available_disk < disk_floor or available_ram * 100 < total_ram * ram_percent:
+        raise Hold("handoff resource floor not met")
+
+
+class Cancellation:
+    def __init__(self):
+        self.received = None
+
+    def observe(self, number, _frame):
+        if self.received is None:
+            self.received = number
+
+    def install(self):
+        for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+            signal.signal(number, self.observe)
+
+
+def main():
+    cancellation = Cancellation()
+    cancellation.install()  # Before any future acquisition/tool/process stage.
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--request", required=True, choices=(REQUEST_PATH,))
+    parser.parse_args()
+    if OPEN_IMPLEMENTATION_GATES:
+        # Deliberately before request/acceptance/native reads or any U/E, tool,
+        # process, provider, controller, CI probe or cleanup operation.
+        print(json.dumps({
+            "status": "HOLD_NOT_IMPLEMENTED_NOT_ADMITTED",
+            "open_gates": list(OPEN_IMPLEMENTATION_GATES),
+            "cases": {case.name: "UNSTARTED" for case in CASES},
+            "target_invocations": 0,
+            "cleanup": "NOT_STARTED_NO_OWNED_NAMESPACE_OR_WORKER",
+        }, sort_keys=True), file=sys.stderr)
+        return 78
+    raise Hold("no implemented execution backend; never fall through to commands")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

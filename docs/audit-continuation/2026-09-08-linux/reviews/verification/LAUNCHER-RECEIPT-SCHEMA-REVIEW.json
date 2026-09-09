@@ -1,0 +1,89 @@
+{
+  "format": "passvault-linux-database-launcher-receipt-schema-review-v1",
+  "reviewer": "/root/verification",
+  "memo_author": "/root/storage",
+  "disposition": "ACCEPT_BOUNDED_SCHEMA_QUALIFICATION_SOURCE_ONLY",
+  "execution_authorized": false,
+  "whole_database_outer_accepted": false,
+  "actual_receipt_or_instance_approval": false,
+  "independence": {
+    "memo_or_closer_implementation_author": false,
+    "earlier_field_map_and_outer_source_review_author": true,
+    "own_historical_documents_counted_as_extra_independent_votes": false
+  },
+  "inputs": {
+    "memo_sha256": "cdc7138ac4057defbfb4d4f3c067d977e5df7f1e3223d253fbc47a76ff7de43d",
+    "memo_bytes": 7784,
+    "memo_physical_lf": 129,
+    "database_outer_sha256": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1",
+    "database_outer_plan_sha256": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29",
+    "field_map_sha256": "0edf9d585ee15f62477ededce368407ce74a73712f94d3d36e789e453eacb2e3",
+    "closer_sha256": "8437c693d5a1becb8ed06ed549a5e837b8e4820c83a047c841fbcc0289f4b517",
+    "closer_plan_sha256": "0b21ebfee0134c2853cfa8f3d17f9fef1b9acf812329581a93c0790c69930c5d"
+  },
+  "schema": {
+    "completed_receipt_location": "RUN/LAUNCHER.json outside E",
+    "evidence": "Exact absolute E directory string, not an array or RUN pathname",
+    "evidence_files": {
+      "type": "ordered list of exactly four objects",
+      "row_keys": ["path", "sha256", "identity"],
+      "absolute_run_path_leaves_in_order": [
+        "LAUNCHER-stdout.log",
+        "LAUNCHER-stderr.log",
+        "LAUNCHER-resources.json",
+        "LAUNCHER-processes.json"
+      ],
+      "identity_fields": ["dev", "ino", "uid", "mode", "nlink", "size", "mtime_ns", "ctime_ns"],
+      "per_file_cap_bytes": 1048576
+    },
+    "request_outer_launcher_evidence_paths_renamed": false,
+    "receipt_argv": "Fixed inner runner argv, not outer entry"
+  },
+  "source_checks": {
+    "directory_equality_line": 516,
+    "first_ordered_rows_consumer_lines": [530, 534],
+    "run_contract_call_line": 658,
+    "second_durable_rows_consumer_lines": [700, 703],
+    "durable_reader_lines": [215, 249],
+    "plan_lines": [232, 267],
+    "duplicate_keys_rejected_lines": [118, 126],
+    "database_outer_fixed_outputs_lines": [34, 37],
+    "database_outer_receipt_path_absence_lines": [565, 566],
+    "database_outer_preterminal_summary_lines": [670, 683],
+    "database_outer_delegated_receipt_plan_lines": [177, 185]
+  },
+  "qualifications": [
+    "Missing evidence_files raises KeyError only if its lookup is reached; earlier guards can refuse first",
+    "Four-file hash/identity/durability proof does not independently interpret every external resource/process value",
+    "Generic closer outer_exit in0/1 does not justify completed=true for actual ee46 outer1/HOLD",
+    "Previously documented nonfinite/JSON-type limitations remain; actual truthful instance review is required",
+    "Historical fieldmap section8 b16774ff/cffc6935 is not current whole8437/0b21 acceptance",
+    "No database-outer code change follows solely from this schema memo; unrelated registration defect remains separate"
+  ],
+  "schema_counterexamples_executed": false,
+  "database_registration_hold": {
+    "qualification_md_sha256": "4737f349ca9c44314685492f66b4961759d056691ecf5fd97454b61d81a74f77",
+    "qualification_json_sha256": "326ed288776d5bfcf127d63341aaf2ae28ae21a939146fe75a01544257d82537",
+    "cleared_by_schema_review": false,
+    "successor_or_four_control_extension_preaccepted": false
+  },
+  "counts": {
+    "imports_ast_syntax_compilation_or_helper_executions": 0,
+    "controls_application_native_or_hardware_cases": 0,
+    "qualified_closure_delta": 0,
+    "original_confirmed": {"qualified": 19, "total": 25},
+    "all_confirmed": {"qualified": 22, "total": 38, "remaining": 16},
+    "original_suspicions": {"resolved": 2, "total": 12, "remaining": 10},
+    "pvd_explanations_owner_decisions_separate": 8
+  },
+  "resource_settlement": {
+    "created": "Necessary permanent review MD/JSON only",
+    "runtime_process_resource_or_original_namespace_probes": false,
+    "builds_workers_daemons_caches_or_temp_roots_created": false,
+    "text_data_reader_commands_exited": true,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH",
+    "root_sole_execution_and_monitoring_owner": true
+  },
+  "restrictions": "PVU-007 STOP; PVU-011 NO-RETRY; PVA-029 FAIL/no automatic retry; G7/G8 CLOSED; Windows failure/cleanup HOLD; PVD/hardware/mobile1017001; protected-ref/dependency/version/identity/signing/store/publication boundaries unchanged",
+  "details": "LAUNCHER-RECEIPT-SCHEMA-REVIEW.md"
+}

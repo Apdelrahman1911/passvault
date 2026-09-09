@@ -1,0 +1,838 @@
+#!/usr/bin/python3
+"""Proposed callable inert controls, NOT a launcher or execution permission.
+
+Only a separately admitted root launcher may call run_controls. It creates and
+retains the new scratch original, supplies the exact reviewed helper bytes,
+persists bounded evidence, handles cancellation and removes the empty original
+scratch after independent settlement. No application/runner/closeout main runs.
+"""
+
+import ast
+import errno
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import stat
+import time
+
+
+SCRATCH = Path('/root/projects/PassVault/audit-runtime-linux-closeout-controls-01')
+SOURCE_SHA256 = 'b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec'
+SOURCE_BYTES = 59183
+SOURCE_LF = 1094
+TOTAL_SECONDS = 60
+FILE_CAP = 4096
+SELECTED = ('Hold', 'require', 'canonical', 'sha', 'identity', 'absolute',
+            'Directories', 'Journal', 'recheck_inputs')
+CASES = (
+    'J01_progress', 'J02_equal_rewrite', 'J03_truncate', 'J04_external_append',
+    'J05_name_replace', 'J06_hardlink', 'J07_positive_short_writes',
+    'J08_zero_write', 'J09_partial_then_zero', 'J10_fsync_error',
+    'J11_postwrite_name', 'J12_postwrite_mode', 'J13_postwrite_nlink',
+    'B01_valid_bootstrap', 'B02_cancel_before_read', 'B03_deadline_before_read',
+    'B04_cancel_during_read', 'B05_deadline_during_read',
+    'B06_cancel_during_bind', 'B07_deadline_during_bind', 'B08_directory_replace',
+    'B09_rehash_unchanged', 'B10_rehash_pin', 'B11_rehash_digest',
+    'B12_rehash_cancel', 'B13_rehash_deadline', 'B14_hold_after_cancel', 'B15_hold_after_deadline',
+)
+NAMES = frozenset(case + suffix for case in CASES for suffix in ('.a', '.b', '.old', '.link'))
+
+
+class ControlFailure(Exception):
+    pass
+
+
+class ControlCancelled(ControlFailure):
+    pass
+
+
+def check(value, reason):
+    if not value:
+        raise ControlFailure(reason)
+
+
+def pin(fd, directory=False):
+    return stat_pin(os.fstat(fd), directory)
+
+
+def stat_pin(value, directory=False):
+    fields = ('dev', 'ino', 'uid', 'mode') if directory else (
+        'dev', 'ino', 'uid', 'mode', 'nlink', 'size', 'mtime_ns', 'ctime_ns')
+    return {key: getattr(value, 'st_' + key) for key in fields}
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def rejection(operation, exception_type, reason):
+    try:
+        operation()
+    except exception_type as error:
+        check(str(error) == reason, 'wrong rejection: ' + str(error)[:160])
+        return reason
+    raise ControlFailure('expected rejection was not raised: ' + reason)
+
+
+class Arena:
+    """Owns only fixture originals; borrows, never removes/closes, scratch_fd."""
+
+    def __init__(self, scratch_fd, original_scratch, case):
+        self.fd, self.original = scratch_fd, dict(original_scratch)
+        self.allowed = {case + suffix for suffix in ('.a', '.b', '.old', '.link')}
+        self.parents, self.objects, self.consumed = [], [], set()
+        self.uncertain, self.cleaned = False, False
+        self.bytes_written = 0
+
+    def start(self):
+        # The caller already holds this Arena object before the first open, so
+        # partially initialized descriptor ownership still reaches its finally.
+        parent = None
+        for part in ('/', *SCRATCH.parent.parts[1:]):
+            fd = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                         dir_fd=parent)
+            row = {'fd': fd, 'pin': None, 'name': part, 'parent': parent}
+            self.parents.append(row)
+            row['pin'] = pin(fd, True)
+            check(stat.S_ISDIR(row['pin']['mode']), 'non-directory scratch ancestor')
+            parent = fd
+        self.verify_root()
+        check(os.listdir(self.fd) == [], 'scratch is not initially empty')
+
+    def verify_root(self):
+        check(pin(self.fd, True) == self.original, 'original scratch descriptor drift')
+        check(self.original['uid'] == os.getuid()
+              and self.original['mode'] == stat.S_IFDIR | 0o700, 'scratch must be owned0700')
+        for row in self.parents:
+            check(pin(row['fd'], True) == row['pin'], 'original ancestor descriptor drift')
+            if row['parent'] is not None:
+                check(stat_pin(os.stat(row['name'], dir_fd=row['parent'], follow_symlinks=False), True)
+                      == row['pin'], 'original ancestor pathname drift')
+        check(stat_pin(os.stat(SCRATCH.name, dir_fd=self.parents[-1]['fd'], follow_symlinks=False), True)
+              == self.original, 'original scratch pathname drift')
+
+    def unused(self, name):
+        self.verify_root()
+        check(name in NAMES and name in self.allowed and name not in self.consumed,
+              'unadmitted or consumed fixture name')
+        try:
+            os.stat(name, dir_fd=self.fd, follow_symlinks=False)
+        except FileNotFoundError:
+            return
+        raise ControlFailure('fixture name already occupied')
+
+    def claim(self, name, source_fd, directory=False):
+        # The first retained descriptor is captured before any fixture writes.
+        original = pin(source_fd)
+        row = {'fd': None, 'reader': None, 'pin': original, 'original': dict(original), 'mode': original['mode'],
+               'names': {name}, 'directory': directory}
+        self.objects.append(row)
+        self.consumed.add(name)
+        try:
+            row['fd'] = os.dup(source_fd)
+            check(original['uid'] == os.getuid()
+                  and original['mode'] == (stat.S_IFDIR | 0o700 if directory else stat.S_IFREG | 0o600),
+                  'fixture original mode/owner')
+            check(directory or original['nlink'] == 1, 'fixture original link count')
+            check(stat_pin(os.stat(name, dir_fd=self.fd, follow_symlinks=False)) == original,
+                  'fixture original name/descriptor mismatch')
+            if not directory:
+                row['reader'] = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=self.fd)
+                check(pin(row['reader']) == original, 'fixture original reader mismatch')
+            return row
+        except BaseException:
+            self.uncertain = True
+            raise
+
+    def verify_object(self, row):
+        self.verify_root()
+        check(row['fd'] is not None and pin(row['fd']) == row['pin'], 'owned fixture descriptor drift')
+        for name in row['names']:
+            check(stat_pin(os.stat(name, dir_fd=self.fd, follow_symlinks=False)) == row['pin'],
+                  'owned fixture pathname drift')
+        check(row['directory'] or row['pin']['nlink'] == len(row['names']), 'unknown fixture hardlink')
+
+    def refresh(self, row):
+        after = pin(row['fd'])
+        check(all(after[key] == row['original'][key] for key in ('dev', 'ino', 'uid')),
+              'fixture original replaced during owned operation')
+        check(after['mode'] == row['mode'], 'unplanned original fixture mode drift')
+        row['pin'] = after
+        self.verify_object(row)
+
+    def file(self, name, data=b''):
+        self.unused(name)
+        fd = os.open(name, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                     0o600, dir_fd=self.fd)
+        try:
+            row = self.claim(name, fd)
+            self.write_at(row, data, 0)
+            return row
+        finally:
+            self.close_setup(fd)
+
+    def directory(self, name):
+        self.unused(name)
+        fd = None
+        try:
+            os.mkdir(name, 0o700, dir_fd=self.fd)
+            self.consumed.add(name)
+            fd = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                         dir_fd=self.fd)
+            row = self.claim(name, fd, True)
+            os.fsync(self.fd)
+            return row
+        except BaseException:
+            self.uncertain = True
+            raise
+        finally:
+            if fd is not None:
+                self.close_setup(fd)
+
+    def close_setup(self, fd):
+        try:
+            os.close(fd)
+        except OSError:
+            self.uncertain = True
+            raise
+
+    def write_at(self, row, data, offset):
+        self.verify_object(row)
+        check(not row['directory'] and offset >= 0 and offset + len(data) <= FILE_CAP, 'fixture byte cap')
+        try:
+            count = os.pwrite(row['fd'], data, offset)
+            self.bytes_written += count
+            self.refresh(row)
+            check(count == len(data), 'fixture setup partial write; no retry')
+            os.fsync(row['fd'])
+        except BaseException:
+            self.uncertain = True
+            raise
+
+    def read(self, row):
+        check(not row['directory'] and row['reader'] is not None, 'missing original reader')
+        check(pin(row['reader']) == row['pin'], 'original reader descriptor drift')
+        data = os.pread(row['reader'], FILE_CAP + 1, 0)
+        check(len(data) == row['pin']['size'] <= FILE_CAP, 'original fixture read length/cap')
+        check(pin(row['reader']) == row['pin'], 'original fixture read drift')
+        return data
+
+    def rename(self, row, new_name):
+        self.verify_object(row)
+        self.unused(new_name)
+        check(len(row['names']) == 1, 'rename expects exactly one original name')
+        old_name = next(iter(row['names']))
+        try:
+            os.rename(old_name, new_name, src_dir_fd=self.fd, dst_dir_fd=self.fd)
+            row['names'] = {new_name}
+            self.consumed.add(new_name)
+            self.refresh(row)
+            os.fsync(self.fd)
+        except BaseException:
+            self.uncertain = True
+            raise
+        # The old name may be filled exactly once with a separately captured new
+        # fixture original, not adopted as the renamed original.
+        self.consumed.remove(old_name)
+
+    def hardlink(self, row, new_name):
+        self.verify_object(row)
+        self.unused(new_name)
+        check(not row['directory'] and len(row['names']) == 1, 'link expects one regular original')
+        try:
+            os.link(next(iter(row['names'])), new_name, src_dir_fd=self.fd, dst_dir_fd=self.fd,
+                    follow_symlinks=False)
+            row['names'].add(new_name)
+            self.consumed.add(new_name)
+            self.refresh(row)
+            os.fsync(self.fd)
+        except BaseException:
+            self.uncertain = True
+            raise
+
+    def truncate(self, row, length):
+        self.verify_object(row)
+        try:
+            os.ftruncate(row['fd'], length)
+            self.refresh(row)
+            os.fsync(row['fd'])
+        except BaseException:
+            self.uncertain = True
+            raise
+
+    def chmod(self, row):
+        self.verify_object(row)
+        try:
+            os.fchmod(row['fd'], 0o400)
+            row['mode'] = stat.S_IFREG | 0o400
+            self.refresh(row)
+            os.fsync(row['fd'])
+        except BaseException:
+            self.uncertain = True
+            raise
+
+    def cleanup(self, subject_failures):
+        failures = list(subject_failures)
+        removed = 0
+        try:
+            check(not self.cleaned, 'cleanup must not be replayed')
+            self.cleaned = True
+            check(not self.uncertain and not failures, 'uncertain fixture/subject settlement')
+            self.verify_root()
+            expected = {name for row in self.objects for name in row['names']}
+            check(set(os.listdir(self.fd)) == expected, 'unknown/missing scratch member; HOLD without adoption')
+            # All original pins/names/empty children must pass before first unlink.
+            for row in self.objects:
+                self.verify_object(row)
+                if row['directory']:
+                    check(os.listdir(row['fd']) == [], 'owned child directory is not empty')
+            for row in sorted(self.objects, key=lambda item: item['directory']):
+                for name in sorted(tuple(row['names'])):
+                    self.verify_object(row)
+                    previous_links = row['pin']['nlink']
+                    if row['directory']:
+                        os.rmdir(name, dir_fd=self.fd)
+                    else:
+                        os.unlink(name, dir_fd=self.fd)
+                    row['names'].remove(name)
+                    self.refresh(row)
+                    check(row['directory'] or row['pin']['nlink'] == previous_links - 1,
+                          'unlink original link transition uncertain')
+                    os.fsync(self.fd)
+                    removed += 1
+            self.verify_root()
+            check(os.listdir(self.fd) == [], 'scratch not empty after original-only cleanup')
+        except BaseException as error:
+            self.uncertain = True
+            failures.append(type(error).__name__ + ': ' + str(error)[:200])
+        failures.extend(self.close_descriptors())
+        return {'status': 'COMPLETE' if not failures else 'HOLD', 'removed_names': removed,
+                'failures': failures, 'bytes_written': self.bytes_written}
+
+    def close_descriptors(self):
+        failures = []
+        for row in reversed(self.objects):
+            for key in ('reader', 'fd'):
+                fd = row[key]
+                if fd is not None:
+                    row[key] = None  # Never retry a possibly completed close.
+                    try:
+                        os.close(fd)
+                    except OSError as error:
+                        failures.append('original fixture close: ' + str(error)[:120])
+        for row in reversed(self.parents):
+            fd, row['fd'] = row['fd'], None
+            if fd is not None:
+                try:
+                    os.close(fd)
+                except OSError as error:
+                    failures.append('original ancestor close: ' + str(error)[:120])
+        return failures
+
+
+class SubjectOS:
+    """Per-subject real-OS delegate; never monkeypatches process-global os."""
+
+    def __init__(self, arena, name, poll):
+        self.arena, self.name, self.poll = arena, name, poll
+        self.live, self.original, self.journal_fd = {}, None, None
+        self.close_failures = []
+        self.counts = {'file_opens': 0, 'read_calls': 0, 'write_calls': 0, 'written_bytes': 0, 'fsync_calls': 0}
+        self.write_mode, self.read_limit = 'normal', None
+        self.on_read, self.on_fsync = None, None
+        self.fsync_error = False
+
+    def __getattr__(self, name):
+        return getattr(os, name)
+
+    def open(self, name, flags, mode=0o777, *, dir_fd=None):
+        self.poll()
+        creating = bool(flags & os.O_CREAT)
+        if creating:
+            check(name == self.name and flags & os.O_EXCL and dir_fd is not None,
+                  'subject creation outside admitted fixture')
+            check(pin(dir_fd, True) == self.arena.original, 'subject creation outside original scratch')
+            self.arena.unused(name)
+        fd = os.open(name, flags, mode, dir_fd=dir_fd)
+        self.live[fd] = None
+        try:
+            self.live[fd] = pin(fd, True)
+            if stat.S_ISREG(os.fstat(fd).st_mode):
+                self.counts['file_opens'] += 1
+            if creating:
+                self.journal_fd = fd
+                self.original = self.arena.claim(name, fd)
+            return fd
+        except BaseException:
+            self.close(fd)
+            raise
+
+    def close(self, fd):
+        check(fd in self.live, 'subject closing unowned/already-closed descriptor')
+        # A close error is not retried; the parent receives the settlement gap.
+        del self.live[fd]
+        try:
+            os.close(fd)
+        except OSError as error:
+            self.close_failures.append('subject close uncertainty: ' + str(error)[:120])
+            raise
+
+    def read(self, fd, amount):
+        self.poll()
+        check(fd in self.live, 'subject reading unowned descriptor')
+        self.counts['read_calls'] += 1
+        data = os.read(fd, min(amount, self.read_limit) if self.read_limit is not None else amount)
+        if self.on_read is not None:
+            self.on_read(fd, data)
+        return data
+
+    def write(self, fd, data):
+        self.poll()
+        check(fd == self.journal_fd and fd in self.live, 'subject write outside original journal')
+        self.arena.verify_object(self.original)
+        self.counts['write_calls'] += 1
+        if self.write_mode == 'zero' or (self.write_mode == 'partial_zero' and self.counts['write_calls'] == 2):
+            return 0  # Explicit injected zero; it performs no real write.
+        part = data[:7] if self.write_mode in ('short', 'partial_zero') else data
+        check(self.original['pin']['size'] + len(part) <= FILE_CAP, 'subject write byte cap')
+        written = os.write(fd, part)
+        self.counts['written_bytes'] += written
+        self.arena.bytes_written += written
+        self.arena.refresh(self.original)
+        return written
+
+    def fsync(self, fd):
+        self.poll()
+        check(fd in self.live, 'subject fsync of unowned descriptor')
+        self.counts['fsync_calls'] += 1
+        if fd == self.journal_fd and self.fsync_error:
+            raise OSError(errno.EIO, 'synthetic fsync EIO')
+        os.fsync(fd)
+        if fd == self.journal_fd and self.on_fsync is not None:
+            callback, self.on_fsync = self.on_fsync, None
+            callback()
+
+    def reset_counts(self):
+        self.counts = dict.fromkeys(self.counts, 0)
+
+
+class Subject:
+    def __init__(self, arena, case, poll):
+        self.arena, self.case, self.poll = arena, case, poll
+        self.os = SubjectOS(arena, case + '.a', poll)
+        self.dirs, self.journals, self.ticks = [], [], 0
+        self.tick_hook = None
+        self.ns = {'__name__': 'accepted_closeout_selected_definitions',
+                   'os': self.os, 'Path': Path, 'hashlib': hashlib, 'json': json,
+                   'stat': stat, 'time': time, 'signal': signal, 'UID': os.getuid(),
+                   'E': SCRATCH, 'JOURNAL_PATH': SCRATCH / (case + '.a'),
+                   'LIMITS': {'journal_bytes': FILE_CAP, 'total_seconds': TOTAL_SECONDS},
+                   'CANCEL': set(), 'SIGNALS': {signal.SIGINT, signal.SIGTERM, signal.SIGHUP},
+                   'started': time.monotonic()}
+
+    def start(self, definitions, bootstrap):
+        # No helper imports, constants, main, admission, Guard, Forest, process,
+        # mount, lock, runtime or deletion definition enters this namespace.
+        selected = ast.Module(body=[*definitions, bootstrap], type_ignores=[])
+        exec(compile(selected, '<accepted-closeout-selected-definitions>', 'exec'), self.ns)
+        self.d = self.new_dirs()
+        self.d.open(SCRATCH, True)
+
+    def tick(self):
+        self.poll()
+        self.ticks += 1
+        if self.tick_hook is not None:
+            self.tick_hook(self.ticks)
+        self.ns['bootstrap_tick']()
+
+    def new_dirs(self):
+        result = self.ns['Directories'](self.tick)
+        self.dirs.append(result)
+        return result
+
+    def journal(self):
+        result = self.ns['Journal'](self.d)
+        self.journals.append(result)
+        return result
+
+    def reset(self):
+        self.os.reset_counts()
+        self.ticks = 0
+        self.ns['started'] = time.monotonic()
+
+    def cancel(self):
+        self.ns['CANCEL'].add(signal.SIGTERM)  # Synthetic latch, never an OS signal.
+
+    def expire(self):
+        self.ns['LIMITS']['total_seconds'] = 0.1
+        self.ns['started'] = time.monotonic() - 1.0  # Explicit pre-expired start state.
+
+    def sleep_past_deadline(self):
+        # Uses the real monotonic clock; not a mocked clock or fabricated result.
+        time.sleep(0.15)
+        self.poll()
+
+    def files_closed(self):
+        check(all(stat.S_ISDIR(os.fstat(fd).st_mode) for fd in self.os.live),
+              'subject input descriptor not closed after read/rejection')
+
+    def close(self):
+        failures = list(self.os.close_failures)
+        for journal in self.journals:
+            if journal.fd is not None:
+                fd, journal.fd = journal.fd, None
+                try:
+                    self.os.close(fd)
+                except BaseException as error:
+                    failures.append('subject journal close: ' + str(error)[:120])
+        for dirs in reversed(self.dirs):
+            try:
+                failures.extend(dirs.close())
+            except BaseException as error:
+                failures.append('subject directory close: ' + str(error)[:120])
+        # Only originally opened, still-live source descriptors may be closed.
+        # Reaching this path is HOLD even if the descriptor is subsequently closed.
+        for fd, original in tuple(self.os.live.items()):
+            failures.append('unexpected subject descriptor remained live')
+            try:
+                check(pin(fd, True) == original, 'unexpected subject descriptor identity drift')
+                self.os.close(fd)
+            except BaseException as error:
+                failures.append('unexpected descriptor settlement: ' + str(error)[:120])
+        return failures
+
+
+def journal_state(journal):
+    return {'sequence': journal.sequence, 'used': journal.used, 'last': dict(journal.last)}
+
+
+def complete_event(subject, journal, kind):
+    old = journal_state(journal)
+    before = subject.arena.read(subject.os.original)
+    journal.event(kind, synthetic=True)
+    data = subject.arena.read(subject.os.original)
+    rows = [json.loads(line) for line in data.splitlines()]
+    check(journal.ok and journal.sequence == old['sequence'] + 1 and journal.used == len(data),
+          'successful event did not advance completed sequence/length')
+    check(data.startswith(before) and rows[-1]['kind'] == kind and rows[-1]['sequence'] == old['sequence']
+          and rows[-1]['synthetic'] is True and isinstance(rows[-1]['time_ns'], int), 'real journal content mismatch')
+    check(journal.last == pin(journal.fd) == subject.os.original['pin'], 'last-completed pin not current original')
+    check(all(journal.last[key] == journal.original[key] for key in ('dev', 'ino', 'uid', 'mode', 'nlink')),
+          'normal write changed stable original pin')
+    return {'bytes': len(data), 'sha256': digest(data), 'completed_sequence': journal.sequence}
+
+
+def rejected_event(subject, journal, reason, error_type=None):
+    before = journal_state(journal)
+    expected_type = subject.ns['Hold'] if error_type is None else error_type
+    rejection(lambda: journal.event('candidate', synthetic=True), expected_type, reason)
+    check(not journal.ok and journal_state(journal) == before, 'failed append advanced completed state or stayed usable')
+    counts = dict(subject.os.counts)
+    rejection(lambda: journal.event('forbidden_second_append'), subject.ns['Hold'], 'closeout journal already incomplete')
+    check(subject.os.counts == counts and journal_state(journal) == before, 'incomplete journal performed further I/O')
+    data = subject.arena.read(subject.os.original)
+    return {'rejection': reason, 'remaining_original_bytes': len(data), 'remaining_original_sha256': digest(data),
+            'last_completed': before, 'io': dict(subject.os.counts)}
+
+
+def journal_case(subject):
+    name, arena = subject.case, subject.arena
+    journal = subject.journal()
+    check(journal_state(journal) == {'sequence': 0, 'used': 0, 'last': journal.original}, 'new journal state')
+    complete_event(subject, journal, 'seed')
+    subject.reset()
+    row = subject.os.original
+    original_data = arena.read(row)
+    original_length = len(original_data)
+    if name == 'J01_progress':
+        complete_event(subject, journal, 'middle')
+        result = complete_event(subject, journal, 'last')
+        check([item['sequence'] for item in map(json.loads, arena.read(row).splitlines())] == [0, 1, 2],
+              'multi-event ordering/content')
+        return result
+    if name == 'J07_positive_short_writes':
+        subject.os.write_mode = 'short'
+        result = complete_event(subject, journal, 'real_short_writes')
+        check(subject.os.counts['write_calls'] > 1, 'positive short-write loop not reached')
+        return {**result, 'io': dict(subject.os.counts)}
+    prior = 'closeout journal prior completed pin/length drift'
+    post = 'journal postappend descriptor/name/length drift'
+    reason, error_type, no_write = prior, None, True
+    if name == 'J02_equal_rewrite':
+        time.sleep(0.003)
+        changed = original_data.replace(b'"kind":"seed"', b'"kind":"sEed"')
+        check(changed != original_data and len(changed) == original_length, 'equal-size rewrite construction')
+        arena.write_at(row, changed, 0)
+        check(row['pin'] != journal.last, 'filesystem did not expose rewrite pin drift; HOLD, no retry')
+    elif name == 'J03_truncate':
+        arena.truncate(row, original_length - 1)
+    elif name == 'J04_external_append':
+        arena.write_at(row, b'\n', original_length)
+    elif name in ('J05_name_replace', 'J11_postwrite_name'):
+        def replace_name():
+            arena.rename(row, name + '.old')
+            arena.file(name + '.a', b'synthetic replacement\n')
+        if name == 'J05_name_replace':
+            replace_name()
+            if row['pin'] == journal.last:
+                reason = 'closeout journal pathname drift'
+        else:
+            subject.os.on_fsync = replace_name
+            reason, no_write = post, False
+    elif name == 'J06_hardlink':
+        arena.hardlink(row, name + '.link')
+    elif name in ('J08_zero_write', 'J09_partial_then_zero'):
+        subject.os.write_mode = 'zero' if name == 'J08_zero_write' else 'partial_zero'
+        reason, no_write = 'short journal write', False
+    elif name == 'J10_fsync_error':
+        subject.os.fsync_error = True
+        reason, error_type, no_write = '[Errno 5] synthetic fsync EIO', OSError, False
+    elif name == 'J12_postwrite_mode':
+        subject.os.on_fsync = lambda: arena.chmod(row)
+        reason, no_write = post, False
+    elif name == 'J13_postwrite_nlink':
+        subject.os.on_fsync = lambda: arena.hardlink(row, name + '.link')
+        reason, no_write = post, False
+    else:
+        raise ControlFailure('unimplemented journal case')
+    before_attempt = arena.read(row)
+    result = rejected_event(subject, journal, reason, error_type)
+    if no_write:
+        check(subject.os.counts['write_calls'] == 0 and subject.os.counts['fsync_calls'] == 0
+              and arena.read(row) == before_attempt, 'prior drift allowed append I/O')
+    elif name == 'J08_zero_write':
+        check(subject.os.counts['write_calls'] == 1 and subject.os.counts['written_bytes'] == 0
+              and arena.read(row) == original_data, 'zero-write residual/state mismatch')
+    elif name == 'J09_partial_then_zero':
+        check(subject.os.counts['write_calls'] == 2 and subject.os.counts['written_bytes'] == 7
+              and len(arena.read(row)) == original_length + 7, 'partial-zero residual/state mismatch')
+    else:
+        real_rows = [json.loads(line) for line in arena.read(row).splitlines()]
+        check(subject.os.counts['written_bytes'] > 0 and len(real_rows) == 2
+              and real_rows[-1]['kind'] == 'candidate' and real_rows[-1]['sequence'] == 1,
+              'postwrite failure not reached after a complete real record write')
+    return result
+
+
+def bootstrap_case(subject):
+    name, arena, ns = subject.case, subject.arena, subject.ns
+    hold = ns['Hold']
+    cancel_reason, deadline_reason = 'bootstrap cancellation observed', 'bootstrap closeout time cap'
+    if name in ('B14_hold_after_cancel', 'B15_hold_after_deadline'):
+        journal = subject.journal()
+        complete_event(subject, journal, 'before_hold')
+        subject.reset()
+        if name == 'B14_hold_after_cancel':
+            subject.cancel()
+            reason = cancel_reason
+        else:
+            subject.expire()
+            reason = deadline_reason
+        rejection(subject.tick, hold, reason)
+        ticks = subject.ticks
+        result = complete_event(subject, journal, 'best_effort_hold')
+        check(subject.ticks == ticks, 'HOLD journal unexpectedly used bootstrap callback')
+        return {**result, 'preceding_rejection': reason, 'synthetic_latch_or_expired_start': True}
+
+    if name in ('B06_cancel_during_bind', 'B07_deadline_during_bind', 'B08_directory_replace'):
+        if name == 'B08_directory_replace':
+            original = arena.directory(name + '.a')
+            subject.d.open(SCRATCH / (name + '.a'), True)
+            expected = {path: dict(value) for path, value in subject.d.pins.items()}
+            arena.rename(original, name + '.old')
+            arena.directory(name + '.a')
+            fresh = subject.new_dirs()
+            subject.reset()
+            rejection(lambda: fresh.bind(expected), hold, 'exact original directory pin set/identity mismatch')
+            check(subject.os.counts['read_calls'] == 0 and subject.os.counts['write_calls'] == 0,
+                  'rejected directory binding performed file I/O')
+            return {'rejection': 'exact original directory pin set/identity mismatch', 'ticks': subject.ticks}
+        fresh = subject.new_dirs()
+        expected = {path: dict(value) for path, value in subject.d.pins.items()}
+        subject.reset()
+        reason = cancel_reason if name == 'B06_cancel_during_bind' else deadline_reason
+        if name == 'B07_deadline_during_bind':
+            ns['LIMITS']['total_seconds'] = 0.1
+        def during_binding(count):
+            if count == 2:
+                subject.cancel() if name == 'B06_cancel_during_bind' else subject.sleep_past_deadline()
+        subject.tick_hook = during_binding
+        rejection(lambda: fresh.bind(expected), hold, reason)
+        check(subject.ticks == 2 and set(fresh.fds) == {'/'}, 'binding did not stop before second original open')
+        return {'rejection': reason, 'ticks': subject.ticks, 'bound_original_directories': len(fresh.fds)}
+
+    data = b'only synthetic immutable input\n'
+    row = arena.file(name + '.a', data)
+    path = str(SCRATCH / (name + '.a'))
+    expected_pin = dict(row['pin'])
+    subject.reset()
+    if name == 'B01_valid_bootstrap':
+        fresh = subject.new_dirs()
+        fresh.bind({key: dict(value) for key, value in subject.d.pins.items()})
+        actual, actual_pin, actual_digest = fresh.read(path, FILE_CAP, bootstrap=True, durable=True)
+        check((actual, actual_pin, actual_digest) == (data, expected_pin, digest(data)), 'valid bootstrap bytes/pin/hash')
+        fresh.verify()
+        subject.files_closed()
+        check(subject.os.counts['read_calls'] == 2 and subject.os.counts['fsync_calls'] == 2,
+              'valid durable bootstrap did not read EOF and fsync original file/parent')
+        return {'bytes': len(actual), 'sha256': actual_digest, 'io': dict(subject.os.counts), 'ticks': subject.ticks}
+
+    if name in ('B02_cancel_before_read', 'B03_deadline_before_read',
+                'B04_cancel_during_read', 'B05_deadline_during_read'):
+        reason = cancel_reason if name in ('B02_cancel_before_read', 'B04_cancel_during_read') else deadline_reason
+        during = name in ('B04_cancel_during_read', 'B05_deadline_during_read')
+        if not during:
+            subject.cancel() if name == 'B02_cancel_before_read' else subject.expire()
+        else:
+            subject.os.read_limit = 4  # Real short reads, not fabricated input bytes.
+            if name == 'B05_deadline_during_read':
+                ns['LIMITS']['total_seconds'] = 0.1
+            def after_chunk(_fd, chunk):
+                check(chunk and subject.os.counts['read_calls'] == 1, 'read cancellation/deadline hook phase')
+                subject.cancel() if name == 'B04_cancel_during_read' else subject.sleep_past_deadline()
+            subject.os.on_read = after_chunk
+        rejection(lambda: subject.d.read(path, FILE_CAP, bootstrap=True), hold, reason)
+        subject.files_closed()
+        check(subject.os.counts['read_calls'] == int(during)
+              and subject.os.counts['file_opens'] == int(during), 'bootstrap did not stop at the required read boundary')
+        return {'rejection': reason, 'io': dict(subject.os.counts), 'ticks': subject.ticks}
+
+    captured, pins = {path: data}, {path: expected_pin}
+    reason = 'admitted immutable input changed'
+    if name in ('B10_rehash_pin', 'B11_rehash_digest'):
+        time.sleep(0.003)
+        changed = data if name == 'B10_rehash_pin' else data.replace(b'only', b'ONLY')
+        arena.write_at(row, changed, 0)
+        readback = arena.read(row)
+        check(row['pin'] != expected_pin and readback == changed and len(readback) == len(data),
+              'rehash mutation phase; missing observable pin drift is HOLD, no retry')
+        if name == 'B10_rehash_pin':
+            check(readback == data and digest(readback) == digest(data),
+                  'pin-only rehash control must preserve actual captured bytes/hash')
+        else:
+            check(readback != data, 'digest-only rehash control must change actual bytes')
+            # Explicit seal-input fault injection isolates the digest comparison:
+            # current real metadata is paired with the previous captured bytes.
+            pins[path] = dict(row['pin'])
+    elif name in ('B12_rehash_cancel', 'B13_rehash_deadline'):
+        second = arena.file(name + '.b', b'synthetic second input\n')
+        second_path = str(SCRATCH / (name + '.b'))
+        captured[second_path], pins[second_path] = arena.read(second), dict(second['pin'])
+        subject.reset()
+        reason = cancel_reason if name == 'B12_rehash_cancel' else deadline_reason
+        if name == 'B13_rehash_deadline':
+            ns['LIMITS']['total_seconds'] = 0.1
+        def after_first_eof(_fd, chunk):
+            if not chunk:
+                check(subject.os.counts['read_calls'] == 2, 'rehash cancellation/deadline hook phase')
+                subject.cancel() if name == 'B12_rehash_cancel' else subject.sleep_past_deadline()
+        subject.os.on_read = after_first_eof
+    elif name != 'B09_rehash_unchanged':
+        raise ControlFailure('unimplemented bootstrap/rehash case')
+    if name == 'B09_rehash_unchanged':
+        ns['recheck_inputs'](subject.d, captured, pins)
+        result = {'unchanged_rehash_returned': True}
+    else:
+        rejection(lambda: ns['recheck_inputs'](subject.d, captured, pins), hold, reason)
+        result = {'rejection': reason}
+    subject.files_closed()
+    check(subject.os.counts['file_opens'] == 1 and subject.os.counts['read_calls'] == 2
+          and subject.os.counts['write_calls'] == 0, 'rehash performed unexpected input or write I/O')
+    return {**result, 'io': dict(subject.os.counts), 'ticks': subject.ticks,
+            'lock_scope': 'recheck_inputs function only; no lock or main executed'}
+
+
+def run_controls(*, scratch_fd, scratch_path, original_scratch, source_bytes, emit, cancelled):
+    """Return PASS only with every named case and original-only fixture cleanup.
+
+    emit(dict) must durably retain bounded external evidence or raise. cancelled()
+    is the outer launcher's monotone signal/deadline latch; it is never cleared.
+    The launcher must interpret HOLD/exception/evidence failure as consumed, must
+    never automatically retry, and must independently settle its original FD and
+    remove only the empty original scratch. This callable does not own that FD.
+    """
+    check(Path(scratch_path) == SCRATCH and str(scratch_path) == str(SCRATCH), 'fixed NEW scratch required')
+    check(isinstance(scratch_fd, int) and not isinstance(scratch_fd, bool), 'original scratch FD required')
+    check(set(original_scratch) == {'dev', 'ino', 'uid', 'mode'}, 'exact stable original scratch pin fields required')
+    check(isinstance(source_bytes, bytes) and len(source_bytes) == SOURCE_BYTES
+          and source_bytes.count(b'\n') == SOURCE_LF and digest(source_bytes) == SOURCE_SHA256,
+          'accepted exact helper source mismatch')
+    check(callable(emit) and callable(cancelled), 'root evidence/cancellation callbacks required')
+    started, cancellation_seen = time.monotonic(), False
+
+    def poll():
+        nonlocal cancellation_seen
+        cancellation_seen = cancellation_seen or bool(cancelled())
+        if cancellation_seen:
+            raise ControlCancelled('outer cancellation; consumed HOLD, no retry')
+        check(time.monotonic() - started <= TOTAL_SECONDS, 'inert-control total time cap; consumed HOLD')
+
+    # Parsing/extraction is deferred to the independently admitted invocation.
+    # Exact-source identity precedes it; no whole-module import/exec is used.
+    tree = ast.parse(source_bytes.decode('utf-8'), filename='<accepted-closeout-data>')
+    definitions = []
+    for name in SELECTED:
+        matches = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name == name]
+        check(len(matches) == 1 and not matches[0].decorator_list, 'selected definition shape mismatch')
+        definitions.append(matches[0])
+    mains = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'main']
+    check(len(mains) == 1, 'main syntax location missing/ambiguous')
+    callbacks = [node for node in mains[0].body if isinstance(node, ast.FunctionDef) and node.name == 'bootstrap_tick']
+    check(len(callbacks) == 1 and not callbacks[0].decorator_list, 'exact bootstrap callback syntax missing')
+    bootstrap = callbacks[0]
+    rows = []
+    emit({'kind': 'closeout_controls_begin', 'source_sha256': SOURCE_SHA256, 'planned_cases': list(CASES),
+          'application_test_cases': 0, 'scratch': str(SCRATCH), 'original_scratch': original_scratch})
+    for case in CASES:
+        arena, subject, result, failure = None, None, None, None
+        effect_started = False
+        cleanup = {'status': 'HOLD', 'failures': ['fixture ownership not established']}
+        try:
+            poll()
+            emit({'kind': 'closeout_control_begin', 'case': case})
+            arena = Arena(scratch_fd, original_scratch, case)
+            arena.start()
+            subject = Subject(arena, case, poll)
+            subject.start(definitions, bootstrap)
+            effect_started = True
+            result = journal_case(subject) if case.startswith('J') else bootstrap_case(subject)
+            poll()
+        except BaseException as error:
+            failure = type(error).__name__ + ': ' + str(error)[:240]
+        finally:
+            try:
+                failures = subject.close() if subject is not None else []
+            except BaseException as error:
+                failures = ['subject settlement exception: ' + str(error)[:160]]
+            if arena is not None:
+                cleanup = arena.cleanup(failures)
+        if failure is None:
+            try:
+                poll()
+            except BaseException as error:
+                failure = type(error).__name__ + ': ' + str(error)[:240]
+        status = 'PASS' if failure is None and cleanup['status'] == 'COMPLETE' else 'HOLD'
+        row = {'kind': 'closeout_control_result', 'case': case, 'status': status,
+               'case_body_started': effect_started, 'effect': result, 'failure': failure, 'cleanup': cleanup}
+        rows.append(row)
+        emit(row)
+        if status != 'PASS':
+            break
+    result = {'kind': 'closeout_controls_terminal',
+              'status': 'PASS' if len(rows) == len(CASES) and all(row['status'] == 'PASS' for row in rows) else 'HOLD',
+              'planned_cases': len(CASES), 'attempted_cases': len(rows),
+              'case_bodies_started': sum(row['case_body_started'] for row in rows),
+              'passed_cases': sum(row['status'] == 'PASS' for row in rows),
+              'unstarted_cases': [row['case'] for row in rows if not row['case_body_started']] + list(CASES[len(rows):]),
+              'application_test_cases': 0,
+              'source_sha256': SOURCE_SHA256, 'borrowed_scratch_fd_closed_or_removed': False,
+              'outer_settlement_and_original_scratch_removal': 'required separately; not performed here',
+              'elapsed_seconds': time.monotonic() - started}
+    emit(result)
+    return result
+
+
+if __name__ == '__main__':
+    raise SystemExit('NOT A RUNNER: separate source/instance/launcher admission is required; no automatic retry')

@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "reviewer": "/root/native_review",
+  "author": "/root/native",
+  "reviewed_utc": "2026-09-09T04:02:56Z",
+  "scope": "Root-authorized frozen partial Mac helper/workflow/plan inert source review only",
+  "disposition": "REVISE_TWO_PROSPECTIVE_CONTRACTS_CURRENT_ENTRY_HARD_HOLD",
+  "inputs": [
+    {
+      "path": "scripts/audit/macos_native_validation.py",
+      "sha256": "fd9382c0a7d94eb30cdb48f3c09bf41b1f69926387b837a487f8f6a55b7ff4d8",
+      "bytes": 16441,
+      "physical_lf": 373,
+      "read": "Entire frozen source, never imported/executed/syntax-probed"
+    },
+    {
+      "path": ".github/workflows/audit-macos-native-validation.yml",
+      "sha256": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d",
+      "bytes": 3777,
+      "physical_lf": 83,
+      "read": "Entire frozen source, never activated or parsed by a validation tool"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-VALIDATION-PLAN.md",
+      "sha256": "ef06fbec02816f4b4a087c4c717798151d21d3791fbf55926a779428db434348",
+      "bytes": 27140,
+      "physical_lf": 410,
+      "read": "Entire frozen data, no proposed command run"
+    }
+  ],
+  "native_inputs_hash_revalidated": {
+    "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "src/macos/passvault_biometric_macos.mm": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+    "tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "tests/macos/passvault_biometric_macos_security_test.mm": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4"
+  },
+  "native_input_root": "app-desktop/native/biometric-bridge",
+  "fresh_read_ranges": {
+    "helper": [[1, 373]],
+    "workflow": [[1, 83]],
+    "plan_v2": [[1, 410]],
+    "CMakeLists.txt": [[1, 90], [168, 187]],
+    "tests/passvault_biometric_abi_test.cpp": [[1, 28]],
+    "tests/macos/passvault_biometric_macos_security_test.mm": [[1, 28], [217, 459]],
+    "src/macos/passvault_biometric_macos.mm": [[414, 434], [539, 600], [702, 715], [812, 876]]
+  },
+  "prior_evidence": {
+    "initial_plan_archive_hash_checked": "fcacf2f9075585995cb511c3de6e83f05782b63f4adc505465bc024c7a651795",
+    "initial_plan_review_md_sha256": "51cdf3325edd2812ae4db0594803bae7068fa366592013b5c3605d443aac8d56",
+    "fixture_patch_review_json_sha256": "2a9564df192f9bc67c8a1966049b86d589d6ac79dd50e3f8e2aa9afe5aa3e6d9",
+    "qualification": "Preserved source-only acceptances reused by exact native hashes; prior full reads not counted as new coverage or runner acceptance"
+  },
+  "issues": [
+    {
+      "id": "MP-R1",
+      "title": "Prospective JUnit candidate allows unknown wrappers/namespaced outcome elements",
+      "source_lines": [[300, 325]],
+      "conditional_trace": "One selected testcase nested below unknown wrapper with namespaced failure passes root.iter testcase selection and literal-only failure/error/skipped scan when caller supplies actual integer exit0",
+      "guards_and_counterexamples": "Root kind/count, actual exit0, exact case name and literal outcome checks still apply; exact sealed CTest producer may exclude malformed input; current main calls no validator",
+      "required": "Finite accepted-producer direct-child schema with explicit metadata/log leaves; reject unknown/namespaced/nested outcomes and wrappers; preserve compatibility and independently bound actual exit",
+      "evidence_type": "Manual source counterexample, not executed fixture/parser/runtime or false CI pass",
+      "author_challenge": "Author independently raised broad concern and confirmed reviewer's specific source trace"
+    },
+    {
+      "id": "MP-R2",
+      "title": "Toolchain record validation filters matching values rather than requiring all tool roles",
+      "source_lines": [[180, 215], [218, 256]],
+      "conditional_trace": "shell=None and xcrun=None skip isinstance-filtered validation; otherwise shaped inputs let command_vectors return because neither missing role is dereferenced",
+      "guards_and_counterexamples": "Used wrong-type tool fields may raise before vectors; actual installed-byte/subtool/normative checks remain explicitly unimplemented MAC-TOOLS; current main never requests vectors",
+      "required": "Validate every one of13 finite required roles as SealedTool or reject before returning vectors, preserving separate actual installation/driver acceptance gate",
+      "evidence_type": "Manual Python source/type-semantics trace, no construction/import/execution",
+      "author_challenge": "Author independently confirmed annotations do not enforce role types and missing shell/xcrun path"
+    }
+  ],
+  "hard_hold_trace": {
+    "lines": [[48, 57], [352, 369]],
+    "effect": "Fixed normal argv reaches nonempty constant gates, HOLD/UNSTARTED stderr and exit78 before request/native reads or namespace/tool/project/target work; even empty tuple reaches no-backend exception",
+    "qualification": "Source control-flow proof only; signal handlers and stderr are not controller/settlement proof; help/invalid argv may exit earlier without target work; no installed runtime/startup claim"
+  },
+  "ordered_case_names": [
+    "passvault_biometric_macos_fixture_normal",
+    "passvault_biometric_macos_fixture_early_return",
+    "passvault_biometric_macos_fixture_cpp_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_macos_security"
+  ],
+  "native_scope": {
+    "null_abi_guard": "Enrollment709-714 precedes LAContext715; retrieval817-835 wipes output/rejects null before provider",
+    "missing_metadata_guard": "Fresh synthetic biometric/macos-v1.meta remains absent when retrieval runs; return834-835 precedes Keychain867; no later retrieval after fixture metadata writes",
+    "allowed_proposed_activity": "Test-owned LAContext init/properties/invalidate plus synthetic native metadata/fixture/ABI controls only",
+    "not_proven": "Prompt display, authentication/capability/enrollment, real Keychain operations, physical iPhone/TouchID/WindowsHello, iOS or complete provider/JVM/native/packaged interleavings",
+    "preserved_limits": "Raw context/async exceptional schedules, possible blocking/swallowed destroy/forced death; fixture cleanup is not worker settlement"
+  },
+  "workflow_source_shape": {
+    "routing": "Dedicated continuation branch and exact request path push only; repository/ref/push/not-deleted/attempt1 guarded",
+    "job": "One macos-15-intel job,20-minute source-declared bound",
+    "permissions": "contents:read only, no environment/secrets/signing/Store/write/OIDC/deployment binding",
+    "actions": "Literal40-hex immutable references match plan; no fresh remote pin/content provenance verification",
+    "checkout": "Activation SHA,depth2,persist-credentials:false,clean:false,no LFS/submodules",
+    "artifacts": "json/jsonl/log/xml routing and3-day retention only; content/ownership/size/nonce-path enforcement remains unimplemented",
+    "slot": "Shared audit concurrency and cancel-in-progress:false do not coordinate local workers/prove settlement or prevent pending-run supersession; root retains sole slot authority"
+  },
+  "open_gates": ["MAC-PROC", "MAC-CTEST", "MAC-MEMORY", "MAC-ACL", "MAC-CLEANUP", "MAC-TOOLS", "MAC-CONTROLS", "MAC-INSTANCE"],
+  "request_observed": "ABSENT; not created or authorized",
+  "declared_existing_ctest_cases": 5,
+  "case_executions": 0,
+  "xml_results": 0,
+  "new_test_declarations": 0,
+  "new_product_findings": 0,
+  "new_family_closures": 0,
+  "imports": 0,
+  "syntax_probes": 0,
+  "get_requests": 0,
+  "ci_queries": 0,
+  "execution_admission": false,
+  "workflow_activation_admission": false,
+  "controller_admission": false,
+  "cleanup_admission": false,
+  "accounting": "Packet explicitly supersedes historical22/37 with root's post-PVA03822/38 snapshot without closingPVA038; original19/25 and suspicions2/12 separate; eight design explanations are not owner decisions; root live ledger authoritative",
+  "resources_passive_snapshot": {
+    "utc": "2026-09-09T04:02:56Z",
+    "filesystem_available_kib": 23940608,
+    "mem_available_kib": 41293300,
+    "qualification": "Point values only, no future resource admission"
+  },
+  "report": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-PARTIAL-PACKET-SOURCE-REVIEW-v1.md",
+  "report_sha256": "0dda43d0be86daa21d9ab2944052e2935c3a0110305c64bcaec9b7bc0d28fa73",
+  "restrictions": "Capture01 consumedFAIL/capture02 noGETadmission; Windows01FAIL/filesystemHOLD/14UNSTARTED/no retry or recovery; PVU007STOP,PVU011NO-RETRY,PVA029FAIL/no-auto-retry,G7/G8CLOSED and protected-ref/publication/version/dependency/identity/build1017001 fences unchanged",
+  "reviewer_cleanup": "Permanent review pair only; no builds/generated cache/temp executable/background worker/request/namespace; no deletion/stop/termination/recovery; Gradle stop not applicable"
+}

@@ -1,0 +1,168 @@
+invocation	class_id	source_method
+ordinary	D01	encoding selection accepts explicit SQLite values without a guessed default
+ordinary	D01	comparison follows unsigned encoding bytes rather than platform String order
+ordinary	D01	single keys advance within pages and across pages in native order
+ordinary	D01	single key repeat and backward progress fail before the offending consumer
+ordinary	D01	empty and oversized pages do not invoke a consumer
+ordinary	D01	invalid row keys are rejected while the existing maximum Unicode key remains accepted
+ordinary	D01	tuple primary advance permits secondary reset and equal primary uses native secondary order
+ordinary	D01	tuple duplicate primary regression and secondary regression are independently rejected
+ordinary	D01	tuple validates both keys even when the primary alone would advance
+ordinary	D01	tuple empty oversized and invalid limit paths retain their guards
+ordinary	D01	consumer exceptions propagate through both pagers without another fetch
+ordinary	D01	job cancellation during a consumer stops both pagers
+ordinary	D01	ordinary ASCII and exact equality retain BINARY semantics on all encodings
+ordinary	D02	UTF8 export restores Unicode IDs relationships history and managed content
+ordinary	D02	UTF16LE export uses low-byte-first BINARY ordering and restores into UTF8
+ordinary	D02	UTF16BE export preserves its native order and restores into UTF8
+ordinary	D02	all eight generated Room page queries agree with their actual encoding
+ordinary	D02	legacy logical backup with Unicode IDs reexports without renaming ciphertext
+ordinary	D02	empty singleton and ASCII vaults remain exportable
+ordinary	D03	completed lock rejects a key returned by an earlier biometric attempt
+ordinary	D03	admission precedes the biometric metadata lookup
+ordinary	D03	admission precedes the platform enrollment lookup
+ordinary	D03	a genuinely fresh attempt after completed lock still opens the vault
+ordinary	D03	a stale completion cannot succeed against or relock a newer valid session
+ordinary	D03	stale admission takes precedence over malformed candidate invalidation
+ordinary	D03	a fresh invalid candidate still invalidates its enrollment
+ordinary	D03	pending lock refuses admission without metadata or platform access
+ordinary	D03	cancellation after key transfer propagates and wipes the received array
+ordinary	D03	lock during the last access write still prevents biometric publication
+ordinary	D03	an already open session still succeeds without an intervening lock
+ordinary	D03	an admission from another repository cannot authorize this repository
+ordinary	D04	vault creation rejects a master password outside the shared policy
+ordinary	D04	vault creation rejects a predictable policy-length password without persistence
+ordinary	D04	master password change rejects a predictable replacement without changing the vault
+ordinary	D04	vault created by an older version with a weak password remains unlockable
+ordinary	D04	real vault lifecycle rejects wrong password and blocks reads while locked
+ordinary	D04	unlock rejects a non-exact wrapped VEK envelope
+ordinary	D04	unlock normalizes the authenticated duplicated-tag envelope written by legacy builds
+ordinary	D04	credential payload is encrypted, lossless, and uses fresh nonces
+ordinary	D04	credential and password history payloads hide exact plaintext length in buckets
+ordinary	D04	legacy credential payloads decrypt and are padded on the next save
+ordinary	D04	padded credential framing tamper fails closed
+ordinary	D04	legacy password history remains readable
+ordinary	D04	credential edits preserve relations attachments history and reset password health
+ordinary	D04	tag edits preserve creation time and credential references
+ordinary	D04	deleting a folder keeps its credentials and moves them to root
+ordinary	D04	tampered credential ciphertext is rejected without plaintext fallback
+ordinary	D04	health analysis does not decrypt unrelated attachment or password history secrets
+ordinary	D05	v2 backup streams authenticates and restores an attachment to a fresh object
+ordinary	D05	backup creation rejects the current master password before writing
+ordinary	D05	backup creation accepts a distinct password with the same length
+ordinary	D05	backup creation fails closed when master password verification is unavailable
+ordinary	D05	v2 export derives entry count from its transactional manifest
+ordinary	D05	over quota legacy vault remains loadable and exportable while new imports stay blocked
+ordinary	D05	restore rejects insufficient capacity before staging any attachment
+ordinary	D05	repeated legacy restores remove retired objects inside the attachment stability scope
+ordinary	D05	failed legacy Room replacement preserves attachment rows and objects
+ordinary	D05	cancellation after legacy commit cannot skip object cleanup
+ordinary	D05	legacy cleanup failure preserves restore success and surfaces a warning
+ordinary	D05	v2 restore retains only objects referenced by committed rows
+ordinary	D05	restore accepts the exact capacity boundary
+ordinary	D05	restore continues when filesystem capacity is unavailable
+ordinary	D05	restore continues when capacity query fails or reports an invalid value
+ordinary	D05	capacity accounting preserves variable chunk attachment compatibility
+ordinary	D05	restore remains compatible with metadata schema 2 attachment backups
+ordinary	D05	restore rejects an authenticated underreported object total before staging
+ordinary	D05	restore rejects an authenticated overreported object total and removes staged data
+ordinary	D05	export aborts if an object changes after the manifest size scan
+ordinary	D05	export aborts if object bytes change after inner verification
+ordinary	D05	shrinking capacity aborts before the next object and cleans staged data
+ordinary	D05	storage full during staging is actionable and cleans every staged object
+ordinary	D05	cancellation after object publication removes the registered staged object
+ordinary	D05	v2 backup preserves a quarantined filename and usable authenticated content
+ordinary	D05	wrong password tampering and truncation preserve the active vault and objects
+ordinary	D05	metadata source change between authenticated passes rolls back and removes staged objects
+ordinary	D05	cancelled attachment restore closes input and removes every staged object
+ordinary	D05	post commit cancellation keeps every restored attachment object
+ordinary	D05	output failure aborts the candidate and oversized declared input is closed
+ordinary	D05	preview and restore cancellation close prefix legacy and v2 sources exactly once
+ordinary	D05	cancellation while waiting for backup admission still closes the supplied source
+ordinary	D05	successful legacy and v2 inspection close once and two pass restore closes each pass
+ordinary	D05	rewind failure after reopening cannot escape source cleanup
+ordinary	D05	read and close failures do not repeat source closure or mask invalid backup result
+ordinary	D05	stream manifest rejects one entity beyond the exact global count bound
+ordinary	D05	stream validator still rejects a mismatched imported entry count
+ordinary	D05	stream validator rejects identifier text beyond its retained byte budget
+ordinary	D05	stream manifest rejects a managed attachment without object bytes
+ordinary	D06	lock intent during last-access write is linearized before session publication
+ordinary	D06	password unlock cannot publish a session after lock intent is registered
+ordinary	D06	biometric unlock cannot publish a session after lock intent is registered
+ordinary	D06	lock and run preempts an in-flight unlock before protected work
+ordinary	D06	overlapping lock intents both preempt unlock and are fully released
+ordinary	D06	lock reason remains authoritative when the preempted unlock also fails authentication
+ordinary	D06	lock during password throttle preempts unlock without adding a failed attempt
+ordinary	D07	biometric status reconciles surviving platform items when no vault exists
+ordinary	D07	biometric key opens a session only after vault verification succeeds
+ordinary	D07	lock cancels biometric enrollment that is holding a vault key lease
+ordinary	D07	invalid biometric key fails closed and leaves vault locked
+ordinary	D07	biometric service enrolls the active VEK and reopens the verified vault
+ordinary	D07	biometric unlock racing an existing session keeps the enrolled key
+ordinary	D07	transient vault activation failure keeps the enrolled biometric key
+ordinary	D07	biometric enrollment reports a locked vault without masking platform failures
+ordinary	D07	biometric unlock preserves invalidation reported while checking enrollment
+ordinary	D07	lock cancels an active session lease and wipes its key without waiting for caller work
+ordinary	D07	lock and run revokes an active lease before running protected work
+ordinary	D08	provider result failure preserves enrollment for a later verified unlock
+ordinary	D08	thrown provider failure is not a rejected biometric key
+ordinary	D08	generic argument failure is not an authentication rejection
+ordinary	D08	verification cancellation propagates without deleting enrollment
+ordinary	D08	explicit malformed verification plaintext still invalidates and is wiped
+ordinary	D08	real wrong key authentication failure still invalidates enrollment
+ordinary	D08	real tampered verification tag still invalidates enrollment
+ordinary	D08	malformed metadata remains outside the invalidating verifier boundary
+ordinary	D08	provider failure keeps password fallback usable without reenrollment
+ordinary	C01	row Save captured before further edits adopts the latest draft and preserves another row
+ordinary	C01	a latest blank name rejects stale enabled row Save without losing its draft
+ordinary	C01	unchanged and duplicate row Saves preserve the live value owner
+ordinary	C01	late row Save cannot resurrect an unknown cancelled removed or locked draft
+ordinary	C01	busy generation rejects row Save while the pending draft still exists
+ordinary	C01	explicit update keeps supplied payload bounds and does not become draft Save
+ordinary	C01	separate control events preserve all accepted properties in every order before row Save
+ordinary	C01	property edits retain Unicode bounds and the latest sibling properties
+ordinary	C01	property events cannot create cancelled removed unknown or locked drafts
+ordinary	C01	busy generation rejects every property event without dropping the active draft
+ordinary	C01	whole tuple draft change remains an explicit bounded replacement after property edits
+ordinary	C02	page Save adopts every active draft without requiring row Save
+ordinary	C02	toolbar and central Back both warn about inline draft changes
+ordinary	C02	opening an unchanged draft and reverting edits leave a clean editor
+ordinary	C02	row Cancel drops only its draft and preserves other unsaved work
+ordinary	C02	blank draft blocks whole page Save without partially adopting other drafts
+ordinary	C02	failed page Save keeps adopted values dirty and retry persists them
+ordinary	C02	row Save and removal clear their owned draft without losing another draft
+ordinary	C02	duplicate row Save preserves the live value and page Save persists it
+ordinary	C02	unchanged row Save in a dirty editor never clears the live owner
+ordinary	C02	unchanged row Save closes its draft without replacing or wiping the live value
+ordinary	C02	busy save rejects repeat saves and late inline edits
+ordinary	C02	lock drops draft references and late draft events cannot resurrect them
+ordinary	C02	draft inputs retain Unicode bounds and unknown identities cannot create fields
+ordinary	C03	new and loaded states stop offering Add at the canonical limit but retain page Save
+ordinary	C03	Add admission preserves every busy and unloaded restriction
+ordinary	C03	real Add accepts the final slot and keeps every previous field intact
+ordinary	C03	backend capacity rejection still preserves all accepted fields
+ordinary	C03	removing one field reopens one slot without changing surviving fields
+ordinary	C03	loading a full credential disables only Add and keeps every stored field
+ordinary	C03	page Save at capacity still persists the accepted names and values
+ordinary	S01	blocked Back neither reveals nor mutates the previous destination
+ordinary	S01	in-place Back runs local cleanup exactly once without popping
+ordinary	S01	authorized interactive completion pops once and rejects stale duplicate completion
+ordinary	S01	application-root Back is not consumed
+ordinary	S01	forward navigation fails closed until a guarded route registers its policy
+ordinary	S01	forward navigation obeys the active destination leave policy
+ordinary	S01	blocked and in-place policies expose only the current entry to interactive Back
+ordinary	S01	disposing an old registration cannot remove its replacement
+ordinary	S01	policy composed while Face ID is inactive recovers when the host resumes
+ordinary	S01	each Back decision reads one current policy pair instead of its composed snapshot
+ordinary	S01	inactive host and stale session never evaluate an old entry current policy
+ordinary	S02	inline draft edit is guarded before the next composition publishes its policy
+ordinary	S02	same-tab reselection cannot discard the current inline draft before a frame
+ordinary	S02	interactive completion rejects a newly dirty editor before another frame
+ordinary	S02	synchronous save admission blocks old clean Back and forward policy
+ordinary	S02	row Cancel restores clean Back without waiting to replace a dirty registration
+ordinary	S02	unchanged draft remains clean and Back still pops exactly one entry
+ordinary	S02	disposing the real registration leaves the guarded editor fail closed
+prepare	P01	prepare public synthetic fixture in a separate provider process
+success	P01	fresh real provider authenticates the fixture and retains password fallback
+wrong-key	P01	fresh real provider rejects a wrong key with typed authentication failure
+loader-io	P01	actual cold resource loader IO failure keeps a valid enrollment

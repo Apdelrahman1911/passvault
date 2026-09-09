@@ -136,3 +136,26 @@ No temporary scratch, build cache or persistent worker was created by source-onl
 authoring. Resource observations are point samples; root must refresh them and
 settle only positively owned work for any actual invocation. Permanent source,
 tests, reviews, compact failed evidence and shared SDK/toolchains are not garbage.
+
+## C5 focused continuation (supersedes earlier pending-control status)
+
+- Root executed component28, contract17 and the expanded registration6 exactly
+  once under distinct admissions. `editor_review` independently reconciled28/17;
+  `baseline_coverage` reconciled6. Original scratch/process settlement is accepted
+  and all three slots released. No replay, whole-helper or product pass follows.
+- `build_config` authored the small current-cycle Test init and167-method inventory;
+  `storage` independently reviewed that wiring. `storage` and root author the
+  new fixed current-C4 cycle driver; `editor_review` challenges its orchestration,
+  admission/cleanup and actual results. Old immutable105 scheduling is not reused.
+- `native` authored the focused Mac5 helper/workflow/PLAN; `native_review` accepted
+  corrected source, preserving the first late-cancellation objection. Root alone
+  binds source/activation, admits and monitors any actual CI job.
+- `verification` authored PVU-006 source narrowing; `build_config` independently
+  accepted the bounded interpretation. The suspicion remains unresolved.
+- `android32` authors the prospective PVU-005 ComposeWindow fixture; `editor`
+  independently challenges its pixel/input oracles and source contracts. It is
+  unexecuted/unadmitted; its independently accepted v2 is selected in C5, but is
+  outside the unchanged C4 targeted167 execution selection.
+- Root owns C5 ledgers/report/explicit Git selection; `baseline_coverage` supplies
+  the independent checkpoint coverage/report review. Source-only agents quiesce
+  transient tools during real local process-sensitive execution.

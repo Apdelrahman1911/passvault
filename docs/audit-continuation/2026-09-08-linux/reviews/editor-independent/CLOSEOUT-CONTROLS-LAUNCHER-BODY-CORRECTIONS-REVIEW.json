@@ -1,0 +1,227 @@
+{
+  "accounting": {
+    "application_test_cases": 0,
+    "executed_component_controls": 0,
+    "global_denominator_recalculation": false,
+    "new_product_families": 0,
+    "planned_component_controls_in_unchanged_draft": 28,
+    "qualified_closure_delta": 0
+  },
+  "actual_instance_acceptance": false,
+  "author_of_corrections": "/root/storage",
+  "compatibility_and_scope_checks": {
+    "actual_outer_exit_and_independent_settlement_requirement_unchanged": true,
+    "exact58_durable_control_record_requirement_unchanged": true,
+    "input_paths_fixed_bindings_namespaces_caps_and_roles_unchanged": true,
+    "original_empty_root_only_cleanup_protocol_unchanged": true,
+    "original_linux_coordination_and_consumed_hold_rules_unchanged": true,
+    "selected_component_vs_whole_helper_boundary_unchanged": true,
+    "separate17_full_contract_controls_integrated": false,
+    "strict28_ids_order_interface_unchanged": true
+  },
+  "correction_results": [
+    {
+      "change": "Constructor exception path removes self.fds[key] and self.pins[key] with pop(key,None) before its one os.close(fd) attempt.",
+      "disposition": "SOURCE_CORRECTION_ACCEPTED_REGRESSION_NOT_EXECUTED",
+      "guards_retained": "Discovery remains pre-journal; exceptions do not admit scratch cleanup or controls. No demonstrated unrelated-FD reuse/close or product effect is added. The fix is a specific source-path correction, not a global guarantee under catastrophic allocation failure, interrupted acquisition or host loss.",
+      "id": "LCL-OWN-001",
+      "independent_counterexamples_checked": [
+        "Failure before either insertion: both pop operations are harmless for this previously absent key; the newly opened fd is attempted closed once.",
+        "First insertion succeeds, second fails: the published fds entry is removed before close; final d.close no longer contains that fd and cannot retry this constructor close through the registry.",
+        "Constructor close itself raises after possible completion: ownership has already been removed; error propagates to HOLD/nonzero path rather than retrying the close.",
+        "Successful insertion path is unchanged: both original maps remain available for identity/path checks and final registry cleanup.",
+        "Only this new key is removed; retained ancestor directory ownership is not adopted, closed or removed by the rollback."
+      ],
+      "runtime_regression": "Not executed; no MemoryError or close fault was injected. A future successful normal28-component run would not by itself test this constructor-exception branch."
+    },
+    {
+      "change": "When TIMEOUT is already true, the handler directly calls os._exit(124), with no intervening diagnostic I/O.",
+      "disposition": "SOURCE_CORRECTION_ACCEPTED_REGRESSION_NOT_EXECUTED",
+      "guards_retained": "No signal to other processes, retry, namespace change or additional execution occurs. Actual outer exit remains necessary even if a provisional terminal0 was already emitted.",
+      "id": "LCL-TIMER-001",
+      "independent_counterexamples_checked": [
+        "The identified blocked-stderr counterexample no longer lies on the second-stage branch: no os.write precedes _exit there.",
+        "First alarm still latches cancellation, sets TIMEOUT and arms the60-second grace; it does not introduce an explicit asynchronous exception through allocation code.",
+        "An emergency exit does not execute cleanup or imply an accepted receipt. External exit124 or missing/incomplete terminal remains consumed HOLD.",
+        "Actual Python handler delivery, a blocked syscall before handler execution, interpreter/kernel failure and host loss are still not bounded by this source change."
+      ],
+      "runtime_regression": "Not executed; no real alarm, blocked stderr transport or elapsed-time test. No physical hard-deadline proof is claimed."
+    },
+    {
+      "change": "PLAN now distinguishes the durable-emission list, advanced after completed journal output and before validation, from validated rows/protocol state advanced after their checks.",
+      "disposition": "SOURCE_PROSE_CORRECTION_ACCEPTED",
+      "guards_retained": "This never established a false-PASS execution defect; historical classification remains documentation precision.",
+      "id": "LCL-DOC-001",
+      "independent_counterexamples_checked": [
+        "An invalid but bounded dictionary can remain durably nested as control_record and appended to events before rejection; the new prose explicitly permits this.",
+        "Sticky failed is still set on validation exception; complete() requires not failed, so the wording correction does not relax pass admission.",
+        "Durable event count is still not a case or PASS count; exact28 ordered results and58 events remain distinct full-success requirements."
+      ],
+      "runtime_regression": "No execution; source/prose consistency only."
+    }
+  ],
+  "disposition": "ACCEPT_THREE_NARROW_BODY_CORRECTIONS_SOURCE_ONLY",
+  "evidence_limits": [
+    "Source reasoning only, not a completed meaningful runtime regression for either executable branch correction.",
+    "No proof of externally reconstructed per-member originals; harness does not emit every original member pin.",
+    "No physical durability, real OS-signal, hardware, application, helper main or admission integration proof.",
+    "No actual root slot, absence, host freeze, lock acquisition, cleanup or PID/starttime settlement was probed or approved."
+  ],
+  "execution_admission": false,
+  "final_launcher_source_acceptance": false,
+  "format": "passvault-linux-closeout-controls-launcher-body-corrections-review-v1",
+  "helper_viability_acceptance": false,
+  "method": {
+    "application_test_cases": 0,
+    "comparison": "Exhaustive full-text unified diff of the exact preserved first drafts against the two exact successor files, with surrounding function/PLAN context. Prior complete launcher/PLAN read and counterchallenge remains bound by the unchanged preliminary report.",
+    "comparison_tool_chunk": "253b07",
+    "launcher_diff_scope": "Only second-alarm direct _exit124 and partial fds/pins unpublication before constructor close. All other launcher bytes are unchanged.",
+    "plan_diff_scope": "Body findings/history/preservation section, accurate durable-versus-validated tracking, branch-qualified closure/interruption language, direct-emergency-exit description and explicit strict28/separate17 exclusion.",
+    "process_probes": 0,
+    "read_guards": "All subject/beforeimage/prior-report bytes read with bounded no-follow ancestor/file opens and pre/fd/post/name full-pin and SHA-256 checks; no target import/AST/compilation/syntax check/execution.",
+    "subject_ast_or_syntax_checks": 0,
+    "subject_executions": 0,
+    "subject_imports": 0
+  },
+  "preserved_beforeimages": [
+    {
+      "bytes": 36459,
+      "lf": 660,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/closeout-controls-launcher-unaccepted-draft-v1.py.txt",
+      "sha256": "7b1ab171d1e03f15e87ebdc3f413047618adba8db15f7d25c538ca1b162d2f46",
+      "source_read_pin": {
+        "ctime_ns": 1788924975431896455,
+        "dev": 24,
+        "gid": 0,
+        "ino": 13672728,
+        "mode": 33152,
+        "mtime_ns": 1788924975431896455,
+        "nlink": 1,
+        "size": 36459,
+        "uid": 0
+      }
+    },
+    {
+      "bytes": 22212,
+      "lf": 341,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/storage/closeout-controls-launch-plan-unaccepted-draft-v1.md",
+      "sha256": "1a3fdc16d537606a2baf49133dbe1f783653a2ad28379c9a69acecff4983a940",
+      "source_read_pin": {
+        "ctime_ns": 1788924975434896455,
+        "dev": 24,
+        "gid": 0,
+        "ino": 13672729,
+        "mode": 33152,
+        "mtime_ns": 1788924975434896455,
+        "nlink": 1,
+        "size": 22212,
+        "uid": 0
+      }
+    }
+  ],
+  "preserved_restrictions": [
+    "PVU-007 STOP",
+    "PVU-011 NO RETRY",
+    "PVA-029 failure/no automatic retry",
+    "G7/G8 CLOSED",
+    "Archived-helper and unadmitted-old-runner execution/import prohibition",
+    "Windows FAIL/cleanup HOLD,zero started/all14 unstarted,no retry",
+    "No publication/protected-branch/dependency/version/identity/mobile1017001 changes",
+    "PVD owner decisions and genuine hardware gaps remain separate"
+  ],
+  "recorded_utc": "2026-09-09T04:15:09.213894+00:00",
+  "remaining_generation_barrier": {
+    "currently_bound_helper": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec",
+    "currently_bound_helper_plan": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d",
+    "currently_bound_historical_helper_review": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e",
+    "disposition": "STALE_GENERATION_NOT_ACCEPTED_FOR_EXECUTION",
+    "later_rebind": "Preserve this exact accepted-body-only pair before editing. Root-coordinated final helper/PLAN/control/review tuple needs a separate explicit independent hash/diff/scope rebind, final launcher source review and fresh actual-instance packet. No automatic adoption of the proposed later generation.",
+    "reason": "LC-LAUNCHER-CONTRACT-001 whole-helper viability HOLD is not resolved or adjudicated by these launcher body corrections. Old component review does not establish excluded run_contract/main/admission/Guard/Forest/actual-closeout viability."
+  },
+  "resource_observation_not_execution_admission": {
+    "disk_available_bytes": {
+      "/root/projects/PassVault": 24323235840,
+      "/tmp": 20866932736
+    },
+    "memory": {
+      "MemAvailable_bytes": 40932843520,
+      "MemTotal_bytes": 67435888640
+    },
+    "observed_utc": "2026-09-09T04:15:09.213894+00:00"
+  },
+  "reviewer": "/root/editor_review",
+  "reviewer_cleanup": "Only this compact necessary permanent report pair was exclusively created. No target runtime, scratch, generated build output, cache, worker, daemon or background job created. No process probes/signals/deletions or wrapper invocation. All read/write descriptors closed normally.",
+  "scope": "Only LCL-OWN-001, LCL-TIMER-001 and LCL-DOC-001 body corrections in the strict28 launcher. Root authorization was relayed by storage; reviewer notified root before review. The stale helper/source-review generation is not accepted here. Any final source-chain rebind remains separate.",
+  "subject_sources": [
+    {
+      "bytes": 36657,
+      "lf": 662,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+      "sha256": "f6bc0b020377bcef55b592377f65a6e9dfeaf3d5aefe09effc904dac6f952b0e",
+      "source_read_pin": {
+        "ctime_ns": 1788925141115886580,
+        "dev": 24,
+        "gid": 0,
+        "ino": 14241182,
+        "mode": 33152,
+        "mtime_ns": 1788925141115886580,
+        "nlink": 1,
+        "size": 36657,
+        "uid": 0
+      }
+    },
+    {
+      "bytes": 25018,
+      "lf": 386,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-LAUNCH-PLAN.md",
+      "sha256": "b4515f359d3460906cd98dcae12d6d1337fb021e8b83283ed8167428f4ba8ec0",
+      "source_read_pin": {
+        "ctime_ns": 1788925141117886580,
+        "dev": 24,
+        "gid": 0,
+        "ino": 14241555,
+        "mode": 33152,
+        "mtime_ns": 1788925141117886580,
+        "nlink": 1,
+        "size": 25018,
+        "uid": 0
+      }
+    }
+  ],
+  "unchanged_preliminary_review": [
+    {
+      "bytes": 14978,
+      "lf": 210,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CLOSEOUT-CONTROLS-LAUNCHER-PRELIMINARY-BODY-REVIEW.json",
+      "sha256": "1f001b44fc5a8dbfd65eaed6115e7247737f76ee2e55e155ec7b6c6cb4310910",
+      "source_read_pin": {
+        "ctime_ns": 1788924682320913926,
+        "dev": 24,
+        "gid": 0,
+        "ino": 13672720,
+        "mode": 33152,
+        "mtime_ns": 1788924682320913926,
+        "nlink": 1,
+        "size": 14978,
+        "uid": 0
+      }
+    },
+    {
+      "bytes": 5169,
+      "lf": 43,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CLOSEOUT-CONTROLS-LAUNCHER-PRELIMINARY-BODY-REVIEW.md",
+      "sha256": "f38e7f658b1cbdcc339bee373bcf35c529c259832c5e620103ae246caf3160e5",
+      "source_read_pin": {
+        "ctime_ns": 1788924682321913926,
+        "dev": 24,
+        "gid": 0,
+        "ino": 13672721,
+        "mode": 33152,
+        "mtime_ns": 1788924682321913926,
+        "nlink": 1,
+        "size": 5169,
+        "uid": 0
+      }
+    }
+  ]
+}

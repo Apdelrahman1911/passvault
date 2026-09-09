@@ -132,6 +132,9 @@ class Originals:
                 require(stat.S_ISDIR(original['mode']), 'original directory type')
                 self.fds[key], self.pins[key] = fd, original
             except BaseException:
+                # Unpublish this new key before the possibly completed local close.
+                self.fds.pop(key, None)
+                self.pins.pop(key, None)
                 os.close(fd)
                 raise
         fd, original = self.fds[key], self.pins[key]

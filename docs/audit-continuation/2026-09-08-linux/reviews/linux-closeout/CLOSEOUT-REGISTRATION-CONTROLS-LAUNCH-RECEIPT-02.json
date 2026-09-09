@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T07:50:03.465388+00:00",
+  "kind": "ACTUAL_REGISTRATION6_02_EXTERNAL_RECEIPT_PENDING_INDEPENDENT_RECONCILIATION",
+  "tool_result": {
+    "chunk_id": "06fa2d",
+    "wall_time_seconds": 0.178022006,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "exact_command": "exec /usr/bin/timeout --foreground --signal=TERM --kill-after=10s 50s /usr/bin/python3 -I -B /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_REGISTRATION_CONTROLS_02.py",
+  "shell": "/bin/bash",
+  "login": false,
+  "tty": false,
+  "request_sha256": "4ffcf55e0e0a6cc37a9d761571319e213a134e3d8187948232a26501e027323f",
+  "request_pin": {
+    "dev": 24,
+    "ino": 14224678,
+    "uid": 0,
+    "mode": 33152,
+    "nlink": 1,
+    "size": 19224,
+    "mtime_ns": 1788939095858054812,
+    "ctime_ns": 1788939095858054812
+  },
+  "journal": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-REGISTRATION-CONTROLS-events-02.jsonl",
+    "sha256": "60f239d2cca04a1191808467e8e0462079a68771df3d4949943e09b22f77e16b",
+    "bytes": 37395,
+    "physical_lf": 19,
+    "stable_postrun_pin": {
+      "dev": 24,
+      "ino": 14225487,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 37395,
+      "mtime_ns": 1788940000194000910,
+      "ctime_ns": 1788940000194000910
+    }
+  },
+  "case_outcomes": [
+    {
+      "id": "R01_closer_nominal_registration",
+      "status": "PASS",
+      "subject_fds": 6
+    },
+    {
+      "id": "R02_closer_second_pin_store_memoryerror",
+      "status": "PASS",
+      "subject_fds": 6
+    },
+    {
+      "id": "R03_outer_nominal_registration",
+      "status": "PASS",
+      "subject_fds": 6
+    },
+    {
+      "id": "R04_outer_second_pin_store_memoryerror",
+      "status": "PASS",
+      "subject_fds": 6
+    },
+    {
+      "id": "R05_database_outer_nominal_registration",
+      "status": "PASS",
+      "subject_fds": 6
+    },
+    {
+      "id": "R06_database_outer_second_pin_store_memoryerror",
+      "status": "PASS",
+      "subject_fds": 6
+    }
+  ],
+  "actual_control_case_count": 6,
+  "durable_control_events": 14,
+  "outer_journal_rows": 19,
+  "subject_once_closed_ebadf_fds": 36,
+  "observer_once_closed_ebadf_fds": 10,
+  "lossless_return": {
+    "canonical_sha256": "1e08a6c3f6e088ed6ec7c3c0aa0f1ef9b70ff34a54b33ca57ef7076b3079ada5",
+    "canonical_bytes": 25179,
+    "result_control_sequences": [
+      3,
+      5,
+      7,
+      9,
+      11,
+      13
+    ],
+    "cleanup_control_sequence": 14,
+    "reconstructed_equals_all_literals": true,
+    "preserved_status": "SIX_COMPONENT_CONTROLS_PASS_PENDING_ROOT_SETTLEMENT"
+  },
+  "shared_cleanup": {
+    "status": "COMPLETE",
+    "removed_original_directories": 6,
+    "remaining_names": [],
+    "failures": []
+  },
+  "preterminal": {
+    "alarm_observed": false,
+    "allocation_attempted": true,
+    "application_cases": 0,
+    "cancelled": [],
+    "cleanup": "ORIGINAL_EMPTY_ROOT_REMOVED",
+    "descriptor_errors_so_far": [],
+    "durable_control_events": 14,
+    "errors": [],
+    "intended_exit": 0,
+    "kind": "launcher_preterminal",
+    "process_original": {
+      "child": {
+        "pid": 16632,
+        "ppid": 16631,
+        "starttime": 20901612,
+        "uid": 0
+      },
+      "parent": {
+        "pid": 16631,
+        "ppid": 13528,
+        "starttime": 20901610,
+        "uid": 0
+      }
+    },
+    "resources": {
+      "disks_free_bytes": {
+        "/root/projects/PassVault": 21051371520,
+        "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 21051371520
+      },
+      "launch_floor": false,
+      "memory_bytes": {
+        "MemAvailable": 37050179584,
+        "MemTotal": 67435888640
+      },
+      "self_peak_rss_bytes": 48721920,
+      "timeout_peak_rss_bytes": 1208320,
+      "unix_ns": 1788940000193708240,
+      "within_floors": true
+    },
+    "returned_packet_reconciled": true,
+    "root_fd_close_and_ebadf": true,
+    "root_parent_fsync_completed": true,
+    "root_rmdir_returned": true,
+    "scope": "PRE_FINAL_DESCRIPTOR_CLOSES_REQUIRE_ACTUAL_PYTHON_AND_TIMEOUT_EXIT_AND_REVIEW",
+    "sequence": 18,
+    "source_inputs_unchanged": true,
+    "unix_ns": 1788940000194416941,
+    "validated_case_results": 6,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "external_exit_zero_after_provisional_preterminal": true,
+  "process_settlement": {
+    "child": {
+      "original": {
+        "pid": 16632,
+        "ppid": 16631,
+        "starttime": 20901612,
+        "uid": 0
+      },
+      "same_birth_present": false,
+      "observation": "original PID absent"
+    },
+    "parent": {
+      "original": {
+        "pid": 16631,
+        "ppid": 13528,
+        "starttime": 20901610,
+        "uid": 0
+      },
+      "same_birth_present": false,
+      "observation": "original PID absent"
+    }
+  },
+  "scratch_absent": true,
+  "all18_input_pins_and_hashes_unchanged": true,
+  "original19_directory_pins_and_lock_unchanged": true,
+  "python_timeout_pins_and_hashes_unchanged": true,
+  "timing_distinct_scopes": {
+    "tool_wall_seconds": 0.178022006,
+    "callable_elapsed_seconds": 0.1366905219911132,
+    "first_journal_unix_ns": 1788940000002621006,
+    "last_journal_unix_ns": 1788940000194416941,
+    "no_normalization_or_hard_bound_claim": true
+  },
+  "resources_after": {
+    "disks_free_bytes": {
+      "/root/projects/PassVault": 21035765760,
+      "/tmp": 18638909440
+    },
+    "memory_bytes": {
+      "MemTotal": 67435888640,
+      "MemAvailable": 37156397056
+    }
+  },
+  "application_cases": 0,
+  "closure_delta": 0,
+  "cleanup": "Six original empty fixture directories removed and observer/subject descriptors once closed with immediate EBADF observations. Root empty scratch rmdir+parent fsync+rootFDclose reported; actual timeoutexit0 and original monitor/child birth absence observed. No Gradle, daemon, cache, application or other process created; wrapper --stop N/A.",
+  "limits": [
+    "Actual6 only;36+10 explicit lifetimes are not46 tests or all kernel allocations. Controlled pin-map exception is not genuine OOM/FDreuse/injury proof.",
+    "Journal pin is stable postrun capture, not independently emitted initial outer journal pin. Raw cases and preterminal/source qualifications preserved; native emergency/host interruption not exercised.",
+    "Full returned packet reconstructed losslessly from unchanged literal events; not stored twice. Root receipt plus empty combined output reserved <=8192B; journal <=57344B.",
+    "No retries, oldrunner/G7G8/PVU007/PVU011/PVA029/Windows/HW/PVD/candidate changes. Slot remains reserved until independent review; not DB/actualcloseout/nextjob admission."
+  ]
+}

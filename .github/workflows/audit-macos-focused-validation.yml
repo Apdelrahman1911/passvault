@@ -1,0 +1,68 @@
+name: Audit focused macOS native validation (non-publishing)
+
+# SOURCE PREPARATION. Root separately admits/fills the new one-shot request.
+on:
+  push:
+    branches:
+      - codex/audit-continuation-linux-20260908
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/macos-focused-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+jobs:
+  native-five:
+    if: >-
+      github.repository == 'Apdelrahman1911/passvault' &&
+      github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+      github.event_name == 'push' && github.event.deleted == false &&
+      github.run_attempt == 1
+    runs-on: macos-15-intel
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact activation source without retained credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          clean: false
+          lfs: false
+          submodules: false
+
+      - name: Run only the separately admitted focused native cycle
+        id: focused
+        shell: bash --noprofile --norc -euo pipefail {0}
+        env:
+          PV_REPOSITORY: ${{ github.repository }}
+          PV_REF: ${{ github.ref }}
+          PV_EVENT: ${{ github.event_name }}
+          PV_SHA: ${{ github.sha }}
+          PV_RUN_ID: ${{ github.run_id }}
+          PV_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          exec /usr/bin/env -i \
+            PATH='/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin' LANG=C LC_ALL=C TZ=UTC \
+            PV_REPOSITORY="${PV_REPOSITORY}" PV_REF="${PV_REF}" PV_EVENT="${PV_EVENT}" \
+            PV_SHA="${PV_SHA}" PV_RUN_ID="${PV_RUN_ID}" PV_ATTEMPT="${PV_ATTEMPT}" \
+            PV_WORKSPACE="${GITHUB_WORKSPACE}" PV_RUNNER_TEMP="${RUNNER_TEMP}" PV_OUTPUT="${GITHUB_OUTPUT}" \
+            /usr/local/bin/python3 -I -B scripts/audit/macos_focused_validation.py
+
+      - name: Retain only newly owned compact synthetic evidence
+        if: ${{ always() && steps.focused.outputs.evidence_path != '' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: macos-focused-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.focused.outputs.evidence_path }}/*.json
+            ${{ steps.focused.outputs.evidence_path }}/*.log
+            ${{ steps.focused.outputs.evidence_path }}/*.xml
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 6
+          include-hidden-files: false

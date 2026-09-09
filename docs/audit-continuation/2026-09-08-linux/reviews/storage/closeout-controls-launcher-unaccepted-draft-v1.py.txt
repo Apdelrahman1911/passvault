@@ -1,0 +1,660 @@
+#!/usr/bin/python3
+"""UNACCEPTED BODY-REVIEW DRAFT: new closeout-component control launcher.
+
+Author /root/storage; sole executor /root; independent reviewer /root/editor_review.
+No child, shell, network, Gradle, application, old runner or actual closeout runs.
+Only a filled, independently accepted new instance can authorize this entry.
+The bound helper has a newly challenged excluded run_contract evidence-shape
+blocker. Root has explicitly deferred final source freeze/viability/admission;
+this exact draft is only for preliminary ownership/cancellation/result review.
+The first timer alarm latches cancellation; a later emergency self-exit supplies
+HOLD, never guaranteed cleanup, a hard syscall deadline or retry authority.
+"""
+
+import fcntl
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import resource
+import signal
+import stat
+import sys
+import time
+import types
+
+
+BASE = Path('/root/projects/PassVault')
+W = BASE / 'passvault-linux'
+REVIEWS = W / 'docs/audit-continuation/2026-09-08-linux/reviews'
+C = REVIEWS / 'linux-closeout'
+SELF = C / 'LAUNCH_CONTROLS_01.py'
+SCRATCH = BASE / 'audit-runtime-linux-closeout-controls-01'
+LOCK = BASE / '.audit-coordination-linux-20260908/build.lock'
+REQUEST = C / 'CLOSEOUT-CONTROLS-REQUEST-01.json'
+JOURNAL_PATH = C / 'CLOSEOUT-CONTROLS-events-01.jsonl'
+APPROVALS = (C / 'CLOSEOUT-CONTROLS-ACCEPT-root-01.json',
+             C / 'CLOSEOUT-CONTROLS-ACCEPT-editor_review-01.json')
+REVIEWERS = ('/root', '/root/editor_review')
+REVIEW_ROLES = ('OWNER_EXECUTION_APPROVAL', 'INDEPENDENT_SOURCE_AND_INSTANCE_REVIEW')
+INPUTS = {
+    'launcher': SELF,
+    'launch_plan': C / 'CLOSEOUT-CONTROLS-LAUNCH-PLAN.md',
+    'controls': REVIEWS / 'build-config/CLOSEOUT-CONTROLS.py',
+    'controls_design': REVIEWS / 'build-config/DESIGN.md',
+    'helper': W / 'scripts/audit/linux_database_closeout.py',
+    'helper_plan': C / 'PLAN.md',
+    'helper_source_review': REVIEWS / 'baseline-coverage/LINUX-CLOSEOUT-SOURCE-ACCEPTANCE.json',
+    'controls_source_review': REVIEWS / 'android32/CLOSEOUT-CONTROLS-SOURCE-ACCEPTANCE.json',
+    'coordination_journal': REVIEWS / 'verification/CONTROL-BOOTSTRAP.jsonl',
+    'coordination_receipt': REVIEWS / 'verification/CONTROL-BOOTSTRAP-RECEIPT.json',
+}
+FIXED_BINDINGS = {
+    'helper': 'b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec',
+    'helper_plan': 'cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d',
+    'helper_source_review': 'c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e',
+    'coordination_journal': '8ae151484b4ddd74a1aea35f5acdc98748c52edf34b5321f170c08d8e67fb613',
+    'coordination_receipt': 'cd0ce6a2d06ea3deaf2556736e633c322d41f07919ef511ad0c1ae2571976fc0',
+}
+HELPER_SHA = FIXED_BINDINGS['helper']
+PYTHON = Path('/usr/bin/python3.12')
+EXPECTED_CASES = (
+    'J01_progress', 'J02_equal_rewrite', 'J03_truncate', 'J04_external_append',
+    'J05_name_replace', 'J06_hardlink', 'J07_positive_short_writes',
+    'J08_zero_write', 'J09_partial_then_zero', 'J10_fsync_error',
+    'J11_postwrite_name', 'J12_postwrite_mode', 'J13_postwrite_nlink',
+    'B01_valid_bootstrap', 'B02_cancel_before_read', 'B03_deadline_before_read',
+    'B04_cancel_during_read', 'B05_deadline_during_read',
+    'B06_cancel_during_bind', 'B07_deadline_during_bind', 'B08_directory_replace',
+    'B09_rehash_unchanged', 'B10_rehash_pin', 'B11_rehash_digest',
+    'B12_rehash_cancel', 'B13_rehash_deadline', 'B14_hold_after_cancel', 'B15_hold_after_deadline',
+)
+SELECTED = ('Hold', 'require', 'canonical', 'sha', 'identity', 'absolute',
+            'Directories', 'Journal', 'recheck_inputs')
+LIMITS = {
+    'launcher_seconds': 120,
+    'cleanup_grace_seconds': 60,
+    'controls_body_seconds': 60,
+    'address_space_bytes': 512 * 1024 ** 2,
+    'individual_written_file_bytes': 1024 ** 2,
+    'input_bytes': 512 * 1024,
+    'python_bytes': 32 * 1024 ** 2,
+    'journal_bytes': 256 * 1024,
+    'journal_record_bytes': 16 * 1024,
+    'control_record_bytes': 8 * 1024,
+    'control_records': 58,
+    'directory_originals': 64,
+}
+OBLIGATIONS = {
+    'LC01': 'ACCEPT',  # Exact selected-source scope, roles and non-admission fence.
+    'LC02': 'ACCEPT',  # New scratch/evidence and retained original Linux lock/parents.
+    'LC03': 'ACCEPT',  # Final helper/control/launcher/review/request/Python bindings.
+    'LC04': 'ACCEPT',  # Fresh one-slot and cooperative producer freeze attestation.
+    'LC05': 'ACCEPT',  # Durable ordered28 case evidence and original-only cleanup.
+    'LC06': 'ACCEPT',  # Resource/cancellation/deadline/consumed-HOLD limitations.
+    'LC07': 'ACCEPT',  # External exit/settlement/result review; zero application credit.
+}
+SIGNALS = {signal.SIGHUP, signal.SIGINT, signal.SIGTERM}
+OBSERVED_SIGNALS = SIGNALS | {signal.SIGALRM}
+GIB = 1024 ** 3
+CANCEL = set()
+START = time.monotonic()
+TIMEOUT = False
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode() + b'\n'
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def parse(data):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            require(key not in result, 'duplicate input key')
+            result[key] = value
+        return result
+    return json.loads(data, object_pairs_hook=pairs,
+                      parse_constant=lambda _: (_ for _ in ()).throw(RuntimeError('nonfinite JSON token')))
+
+
+def pin(st, directory=False):
+    names = ('dev', 'ino', 'uid', 'mode') if directory else (
+        'dev', 'ino', 'uid', 'mode', 'nlink', 'size', 'mtime_ns', 'ctime_ns')
+    return {name: getattr(st, 'st_' + name) for name in names}
+
+
+def cancelled():
+    CANCEL.update(signal.sigpending() & OBSERVED_SIGNALS)
+    if time.monotonic() - START >= LIMITS['launcher_seconds']:
+        CANCEL.add('launcher_monotonic_deadline')
+    return bool(CANCEL)
+
+
+def poll():
+    require(not cancelled(), 'outer cancellation/deadline; consumed HOLD, no retry')
+
+
+def alarm(_number, _frame):
+    global TIMEOUT
+    CANCEL.add('launcher_alarm_timeout')
+    if TIMEOUT:
+        # No deletion or other-process signal. The kernel closes this process's
+        # descriptors on exit; a missing/incomplete receipt is external HOLD.
+        try:
+            os.write(2, b'CLOSEOUT_CONTROLS_TIMEOUT_CLEANUP_INCOMPLETE_HOLD\n')
+        finally:
+            os._exit(124)
+    TIMEOUT = True
+    signal.setitimer(signal.ITIMER_REAL, LIMITS['cleanup_grace_seconds'])
+    # Latch only: do not asynchronously raise through allocation/ownership code.
+
+
+class Originals:
+    def __init__(self):
+        self.fds, self.pins = {}, {}
+
+    def directory(self, path, discover=False):
+        require(path.is_absolute() and '..' not in path.parts, 'absolute original path required')
+        key = str(path)
+        parent = self.directory(path.parent, discover) if path != Path('/') else None
+        if key not in self.fds:
+            require(discover and len(self.fds) < LIMITS['directory_originals'], 'unbound/excess directory')
+            fd = os.open(path.name if parent is not None else '/',
+                         os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+            try:
+                original = pin(os.fstat(fd), True)
+                require(stat.S_ISDIR(original['mode']), 'directory required')
+                self.fds[key], self.pins[key] = fd, original
+            except BaseException:
+                os.close(fd)
+                raise
+        fd, original = self.fds[key], self.pins[key]
+        require(pin(os.fstat(fd), True) == original, 'original directory descriptor changed')
+        if parent is not None:
+            require(pin(os.stat(path.name, dir_fd=parent, follow_symlinks=False), True) == original,
+                    'original directory pathname changed')
+        return fd
+
+    def read(self, path, discover=False, cap=None, check_cancel=True):
+        if check_cancel:
+            poll()
+        cap = LIMITS['input_bytes'] if cap is None else cap
+        parent = self.directory(path.parent, discover)
+        before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        require(stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()
+                and before.st_nlink == 1 and not before.st_mode & (0o022 | stat.S_ISUID | stat.S_ISGID)
+                and 0 <= before.st_size <= cap, 'bounded owned regular input required')
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC, dir_fd=parent)
+        try:
+            require(pin(os.fstat(fd)) == pin(before), 'input changed before open')
+            pieces, count = [], 0
+            while True:
+                if check_cancel:
+                    poll()
+                piece = os.read(fd, min(65536, cap + 1 - count))
+                if not piece:
+                    break
+                count += len(piece)
+                require(count <= cap, 'input streaming cap')
+                pieces.append(piece)
+            require(pin(before) == pin(os.fstat(fd))
+                    == pin(os.stat(path.name, dir_fd=parent, follow_symlinks=False)), 'input changed after read')
+            require(count == before.st_size, 'short input read')
+            self.directory(path.parent)
+            return b''.join(pieces), pin(before)
+        finally:
+            os.close(fd)
+
+    def close(self):
+        failures = []
+        for key, fd in reversed(tuple(self.fds.items())):
+            del self.fds[key]  # A possibly completed close is never retried.
+            try:
+                os.close(fd)
+            except OSError as error:
+                failures.append('original directory close: ' + str(error)[:160])
+        return failures
+
+
+def required_directories():
+    result = set()
+    for file_path in (REQUEST, *INPUTS.values(), *APPROVALS, LOCK, PYTHON, JOURNAL_PATH):
+        path = file_path.parent
+        while True:
+            result.add(str(path))
+            if path == Path('/'):
+                break
+            path = path.parent
+    return result
+
+
+def absent(parent_fd, name):
+    try:
+        os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    except FileNotFoundError:
+        return True
+    return False
+
+
+def sample(launch=False):
+    with open('/proc/meminfo', 'rb') as stream:
+        raw = stream.read(65537)
+    require(len(raw) <= 65536, 'meminfo cap')
+    memory = {}
+    for line in raw.splitlines():
+        fields = line.split()
+        if fields and fields[0] in (b'MemTotal:', b'MemAvailable:'):
+            memory[fields[0].decode().rstrip(':')] = int(fields[1]) * 1024
+    disks = {}
+    for path in (BASE, C):
+        fs = os.statvfs(path)
+        disks[str(path)] = fs.f_bavail * fs.f_frsize
+    memory_ok = memory['MemAvailable'] >= memory['MemTotal'] * (0.25 if launch else 0.20)
+    disk_ok = min(disks.values()) >= (12 if launch else 8) * GIB
+    return {'unix_ns': time.time_ns(), 'disks_free_bytes': disks, 'memory_bytes': memory,
+            'launch_floor': launch, 'within_floors': memory_ok and disk_ok,
+            'self_maxrss_kib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}
+
+
+class Journal:
+    def __init__(self, originals):
+        self.d = originals
+        self.fd, self.last, self.original = None, None, None
+        self.used, self.sequence, self.last_sample, self.failed = 0, 0, 0.0, False
+
+    def create(self):
+        parent = self.d.directory(C)
+        self.fd = os.open(JOURNAL_PATH.name, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                          | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=parent)
+        self.original = pin(os.fstat(self.fd))
+        require(self.original['uid'] == os.getuid() and self.original['nlink'] == 1
+                and self.original['mode'] == stat.S_IFREG | 0o600 and self.original['size'] == 0,
+                'new empty private evidence original')
+        os.fsync(self.fd)
+        os.fsync(parent)
+        require(pin(os.fstat(self.fd)) == self.original
+                == pin(os.stat(JOURNAL_PATH.name, dir_fd=parent, follow_symlinks=False)), 'initial journal drift')
+        self.last = dict(self.original)
+
+    def emit(self, event):
+        require(self.fd is not None and self.last is not None and not self.failed, 'journal unavailable/incomplete')
+        try:
+            parent = self.d.directory(C)
+            require(pin(os.fstat(self.fd)) == self.last
+                    == pin(os.stat(JOURNAL_PATH.name, dir_fd=parent, follow_symlinks=False))
+                    and self.last['size'] == self.used, 'journal prior completed pin/length drift')
+            require(not {'sequence', 'unix_ns', 'launcher_resource_observation'} & set(event),
+                    'reserved outer journal fields')
+            item = {'sequence': self.sequence, 'unix_ns': time.time_ns(), **event}
+            if event.get('kind') != 'launcher_terminal_commit' and time.monotonic() - self.last_sample >= 5:
+                item['launcher_resource_observation'] = sample()
+                self.last_sample = time.monotonic()
+                if not item['launcher_resource_observation']['within_floors']:
+                    CANCEL.add('resource_floor')
+            data = canonical(item)
+            require(len(data) <= LIMITS['journal_record_bytes']
+                    and self.used + len(data) <= LIMITS['journal_bytes'], 'launcher journal byte cap')
+            view = memoryview(data)
+            while view:
+                written = os.write(self.fd, view)
+                require(written > 0, 'short evidence write')
+                view = view[written:]
+            os.fsync(self.fd)
+            after = pin(os.fstat(self.fd))
+            require(all(after[key] == self.original[key] for key in ('dev', 'ino', 'uid', 'mode', 'nlink'))
+                    and after['size'] == self.used + len(data)
+                    and after == pin(os.stat(JOURNAL_PATH.name, dir_fd=parent, follow_symlinks=False)),
+                    'journal append or pathname drift')
+            self.last, self.used, self.sequence = after, after['size'], self.sequence + 1
+        except BaseException:
+            self.failed = True
+            raise
+
+
+class ControlEvidence:
+    """Keep literal durable control rows, not invented results[] or task counts."""
+
+    def __init__(self, journal, original_scratch):
+        self.journal, self.original = journal, dict(original_scratch)
+        self.events, self.rows = [], []
+        self.begun, self.pending, self.terminal, self.failed = False, None, None, False
+
+    def emit(self, event):
+        require(not self.failed and isinstance(event, dict), 'control evidence unavailable/non-object')
+        try:
+            data = canonical(event)
+            require(len(data) <= LIMITS['control_record_bytes']
+                    and len(self.events) < LIMITS['control_records'], 'control evidence cap')
+            row = parse(data)  # Independent immutable snapshot, not shared nested references.
+            # Preserve bounded even-invalid emissions under a separate outer kind;
+            # they can never impersonate the launcher's terminal commitment.
+            self.journal.emit({'kind': 'control_record', 'record': row})
+            self.events.append(row)
+            self.validate(row)
+        except BaseException:
+            self.failed = True
+            raise
+
+    def validate(self, row):
+        require(self.terminal is None, 'control emission after terminal')
+        kind = row.get('kind')
+        if not self.begun:
+            require(kind == 'closeout_controls_begin' and row['source_sha256'] == HELPER_SHA
+                    and row['planned_cases'] == list(EXPECTED_CASES)
+                    and row['application_test_cases'] == 0 and row['scratch'] == str(SCRATCH)
+                    and row['original_scratch'] == self.original, 'exact control begin contract')
+            self.begun = True
+        elif kind == 'closeout_control_begin':
+            require(self.pending is None and len(self.rows) < len(EXPECTED_CASES)
+                    and (not self.rows or self.rows[-1]['status'] == 'PASS')
+                    and row['case'] == EXPECTED_CASES[len(self.rows)], 'ordered control begin')
+            self.pending = row['case']
+        elif kind == 'closeout_control_result':
+            # The callable can fail its first poll before emitting a case begin.
+            # Preserve that explicit attempted-but-unstarted HOLD, never a PASS.
+            without_begin = (self.pending is None and len(self.rows) < len(EXPECTED_CASES)
+                             and (not self.rows or self.rows[-1]['status'] == 'PASS')
+                             and row['case'] == EXPECTED_CASES[len(self.rows)]
+                             and row['case_body_started'] is False and row['status'] == 'HOLD')
+            require((self.pending is not None and row['case'] == self.pending or without_begin)
+                    and type(row['case_body_started']) is bool and row['status'] in ('PASS', 'HOLD'),
+                    'matching literal case result required')
+            cleanup = row['cleanup']
+            require(isinstance(cleanup, dict) and cleanup['status'] in ('COMPLETE', 'HOLD')
+                    and isinstance(cleanup['failures'], list), 'literal cleanup result required')
+            if row['status'] == 'PASS':
+                require(row['case_body_started'] is True and row['failure'] is None
+                        and isinstance(row['effect'], dict) and cleanup['status'] == 'COMPLETE'
+                        and cleanup['failures'] == [] and type(cleanup['removed_names']) is int
+                        and 0 <= cleanup['removed_names'] <= 4 and type(cleanup['bytes_written']) is int
+                        and 0 <= cleanup['bytes_written'] <= 32768, 'complete case body/cleanup PASS required')
+            self.rows.append(row)
+            self.pending = None
+        elif kind == 'closeout_controls_terminal':
+            require(self.pending is None, 'control terminal before pending result')
+            passed = sum(result['status'] == 'PASS' for result in self.rows)
+            started = sum(result['case_body_started'] for result in self.rows)
+            unstarted = [result['case'] for result in self.rows if not result['case_body_started']]
+            unstarted += list(EXPECTED_CASES[len(self.rows):])
+            expected_status = 'PASS' if passed == len(EXPECTED_CASES) else 'HOLD'
+            elapsed = row['elapsed_seconds']
+            require(row['status'] == expected_status and row['source_sha256'] == HELPER_SHA
+                    and row['planned_cases'] == len(EXPECTED_CASES)
+                    and row['attempted_cases'] == len(self.rows) and row['case_bodies_started'] == started
+                    and row['passed_cases'] == passed and row['unstarted_cases'] == unstarted
+                    and row['application_test_cases'] == 0
+                    and row['borrowed_scratch_fd_closed_or_removed'] is False
+                    and row['outer_settlement_and_original_scratch_removal']
+                    == 'required separately; not performed here'
+                    and type(elapsed) in (int, float) and math.isfinite(elapsed) and elapsed >= 0,
+                    'literal emitted terminal/case mapping')
+            require(expected_status != 'PASS' or elapsed <= LIMITS['controls_body_seconds'],
+                    'control terminal exceeds body soft bound')
+            self.terminal = row
+        else:
+            raise RuntimeError('unexpected control emission kind')
+
+    def accept_return(self, report):
+        require(not self.failed and self.terminal is not None
+                and parse(canonical(report)) == self.terminal, 'returned/emitted terminal disagreement')
+
+    def complete(self):
+        return (not self.failed and self.terminal is not None and self.terminal['status'] == 'PASS'
+                and len(self.events) == LIMITS['control_records']
+                and tuple(row['case'] for row in self.rows) == EXPECTED_CASES
+                and all(row['status'] == 'PASS' and row['case_body_started'] is True for row in self.rows))
+
+
+def verify_lock(d, lock_fd, request):
+    parent = d.directory(LOCK.parent)
+    require(pin(os.fstat(lock_fd)) == request['lock_pin']
+            == pin(os.stat(LOCK.name, dir_fd=parent, follow_symlinks=False)), 'original coordination lock drift')
+
+
+def verify_coordination(request, images, bindings):
+    rows = [parse(line) for line in images[str(INPUTS['coordination_journal'])].splitlines()]
+    receipt = parse(images[str(INPUTS['coordination_receipt'])])
+    require(len(rows) == 6 and [row['sequence'] for row in rows] == list(range(6))
+            and rows[-1]['kind'] == 'bootstrap_complete'
+            and receipt['format'] == 'passvault-linux-control-bootstrap-receipt-v1'
+            and receipt['author'] == '/root' and receipt['observed_exit'] == 0
+            and receipt['journal_sha256'] == bindings['coordination_journal']
+            and receipt['journal_bytes'] == len(images[str(INPUTS['coordination_journal'])]),
+            'original completed Linux coordination evidence required')
+    require(request['lock_pin'] == receipt['original_lock'] == rows[4]['identity'] == rows[-1]['lock_pin']
+            and request['directory_pins'][str(LOCK.parent)] == receipt['original_directory'] == rows[2]['identity'],
+            'original Linux lock/directory must not be recreated or adopted')
+    require(all(request['directory_pins'][path] == original
+                for path, original in rows[-1]['directory_pins'].items()), 'original bootstrap ancestry drift')
+
+
+def recheck_inputs(d, images, identities, check_cancel):
+    for path, data in images.items():
+        cap = LIMITS['python_bytes'] if path == str(PYTHON) else LIMITS['input_bytes']
+        observed, original = d.read(Path(path), cap=cap, check_cancel=check_cancel)
+        require(observed == data and original == identities[path], 'source/admission/interpreter input drift')
+
+
+def main():
+    # The finally and empty ownership registries precede every open/allocation.
+    d, lock_fd, scratch_fd, journal = Originals(), None, None, None
+    scratch_original, allocation_attempted, scratch_admitted = None, False, False
+    scratch_rmdir_performed, scratch_parent_fsync_completed = False, False
+    report, observed, request, error = None, None, None, None
+    images, identities, bindings = {}, {}, {}
+    cleanup, close_failures, code = 'NOT_ALLOCATED', [], 1
+    try:
+        require(sys.platform == 'linux' and sys.argv == [str(SELF)] and Path(__file__) == SELF,
+                'fixed absolute Linux entry; no overrides')
+        require(sys.flags.isolated and sys.dont_write_bytecode and not sys.flags.optimize,
+                'require /usr/bin/python3 -I -B without -O')
+        require(Path(os.path.realpath(sys.executable)) == PYTHON, 'fixed resolved Python3.12 executable')
+        os.umask(0o077)
+        for number in SIGNALS:
+            signal.signal(number, lambda signum, _frame: CANCEL.add(signum))
+        signal.signal(signal.SIGALRM, alarm)
+        signal.setitimer(signal.ITIMER_REAL, max(0.001, LIMITS['launcher_seconds'] - (time.monotonic() - START)))
+        resource.setrlimit(resource.RLIMIT_AS, (LIMITS['address_space_bytes'], LIMITS['address_space_bytes']))
+        resource.setrlimit(resource.RLIMIT_FSIZE, (LIMITS['individual_written_file_bytes'],
+                                                LIMITS['individual_written_file_bytes']))
+        poll()
+        for path in (REQUEST, *INPUTS.values(), *APPROVALS):
+            images[str(path)], identities[str(path)] = d.read(path, True)
+        images[str(PYTHON)], identities[str(PYTHON)] = d.read(PYTHON, True, LIMITS['python_bytes'])
+        request = parse(images[str(REQUEST)])
+        bindings = {key: digest(images[str(path)]) for key, path in INPUTS.items()}
+        require(request['format'] == 'passvault-linux-closeout-controls-request-v1'
+                and request['author'] == '/root' and request['run_id'] == 'linux-closeout-controls-01',
+                'new request identity')
+        require(request['scratch'] == str(SCRATCH) and request['lock'] == str(LOCK)
+                and request['journal'] == str(JOURNAL_PATH), 'fixed new namespace')
+        require(request['no_other_audit_local_or_ci_job'] is True
+                and request['cooperative_producers_frozen'] is True and request['limits'] == LIMITS,
+                'fresh one-slot/freeze/literal bounds required')
+        require(request['bindings'] == bindings
+                and all(bindings[key] == value for key, value in FIXED_BINDINGS.items()), 'exact source bindings')
+        require(request['input_pins'] == {str(path): identities[str(path)] for path in INPUTS.values()},
+                'exact source original pins')
+        require(request['python'] == {'path': str(PYTHON), 'sha256': digest(images[str(PYTHON)]),
+                                      'identity': identities[str(PYTHON)]}, 'original interpreter bytes/pin')
+        created, expires = request['created_unix_seconds'], request['expires_unix_seconds']
+        require(type(created) in (int, float) and type(expires) in (int, float)
+                and math.isfinite(created) and math.isfinite(expires)
+                and created <= time.time() <= expires and 0 < expires - created <= 3600, 'fresh finite request interval')
+        expected_dirs = required_directories()
+        require(set(request['directory_pins']) == expected_dirs, 'exact bounded original directory set')
+        for path in sorted(expected_dirs, key=lambda value: (len(Path(value).parts), value)):
+            poll()
+            d.directory(Path(path), True)
+        require(d.pins == request['directory_pins'], 'original directories changed')
+        verify_coordination(request, images, bindings)
+        for path, reviewer, role in zip(APPROVALS, REVIEWERS, REVIEW_ROLES):
+            approval = parse(images[str(path)])
+            require(approval['format'] == 'passvault-linux-closeout-controls-acceptance-v1'
+                    and approval['reviewer'] == reviewer and approval['review_role'] == role
+                    and approval['launcher_author'] == '/root/storage'
+                    and approval['controls_author'] == '/root/build_config'
+                    and approval['controls_source_reviewer'] == '/root/android32'
+                    and approval['helper_author'] == '/root/editor'
+                    and approval['helper_source_reviewer'] == '/root/baseline_coverage'
+                    and approval['purpose'] == 'ONE_NEW_EXACT_SOURCE_CLOSEOUT_COMPONENT_CONTROL_EXECUTION'
+                    and approval['disposition'] == 'ACCEPT' and approval['obligations'] == OBLIGATIONS
+                    and approval['request_sha256'] == digest(images[str(REQUEST)])
+                    and approval['bindings'] == bindings, 'actual author-specific approval required')
+        parent = d.directory(LOCK.parent)
+        require(pin(os.stat(LOCK.name, dir_fd=parent, follow_symlinks=False)) == request['lock_pin']
+                and request['lock_pin']['mode'] == stat.S_IFREG | 0o600
+                and request['lock_pin']['uid'] == os.getuid() and request['lock_pin']['nlink'] == 1,
+                'original private coordination lock')
+        lock_fd = os.open(LOCK.name, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+        require(pin(os.fstat(lock_fd)) == request['lock_pin'], 'opened lock original')
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        recheck_inputs(d, images, identities, True)
+        verify_lock(d, lock_fd, request)
+        poll()
+        require(created <= time.time() <= expires, 'request expired under original lock')
+        resources = sample(True)
+        require(resources['within_floors'], 'launch disk/RAM floor')
+        require(absent(d.directory(BASE), SCRATCH.name), 'scratch already consumed; no adoption/replay')
+        poll()
+        journal = Journal(d)
+        journal.create()  # Exclusive permanent journal consumes this invocation.
+        with open('/proc/self/stat', 'r', encoding='ascii') as stream:
+            raw_stat = stream.read(8193)
+        require(len(raw_stat) <= 8192, 'own process identity cap')
+        process_fields = raw_stat.rsplit(')', 1)[1].split()
+        journal.emit({'kind': 'launcher_admission', 'bindings': bindings,
+                      'request_sha256': digest(images[str(REQUEST)]),
+                      'approval_sha256': [digest(images[str(path)]) for path in APPROVALS],
+                      'directory_pins': d.pins, 'lock_pin': request['lock_pin'], 'resources': resources,
+                      'pid': os.getpid(), 'starttime': int(process_fields[19]),
+                      'argv': ['/usr/bin/python3', '-I', '-B', str(SELF)], 'limits': LIMITS,
+                      'no_other_audit_local_or_ci_job': True, 'cooperative_producers_frozen': True,
+                      'real_children_admitted': 0, 'application_test_cases': 0})
+        journal.emit({'kind': 'scratch_allocation_intent', 'path': str(SCRATCH),
+                      'parent_pin': d.pins[str(BASE)]})
+        poll()
+        verify_lock(d, lock_fd, request)
+        allocation_attempted, cleanup = True, 'HOLD'
+        os.mkdir(SCRATCH.name, 0o700, dir_fd=d.directory(BASE))
+        scratch_fd = os.open(SCRATCH.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                             dir_fd=d.directory(BASE))
+        scratch_original = pin(os.fstat(scratch_fd), True)
+        require(scratch_original['mode'] == stat.S_IFDIR | 0o700 and scratch_original['uid'] == os.getuid()
+                and scratch_original == pin(os.stat(SCRATCH.name, dir_fd=d.directory(BASE),
+                                                    follow_symlinks=False), True)
+                and not os.listdir(scratch_fd), 'fresh empty scratch original')
+        os.fsync(d.directory(BASE))
+        journal.emit({'kind': 'scratch_allocation_original', 'path': str(SCRATCH), 'identity': scratch_original})
+        scratch_admitted = True
+        poll()
+        observed = ControlEvidence(journal, scratch_original)
+        module = types.ModuleType('passvault_new_closeout_controls_admitted')
+        module.__file__ = str(INPUTS['controls'])
+        exec(compile(images[str(INPUTS['controls'])], str(INPUTS['controls']), 'exec'), module.__dict__)
+        require(module.CASES == EXPECTED_CASES and module.SELECTED == SELECTED
+                and module.SCRATCH == SCRATCH and module.SOURCE_SHA256 == HELPER_SHA
+                and module.SOURCE_BYTES == 59183 and module.SOURCE_LF == 1094
+                and module.TOTAL_SECONDS == LIMITS['controls_body_seconds'], 'exact new callable source contract')
+        poll()
+        report = module.run_controls(scratch_fd=scratch_fd, scratch_path=SCRATCH,
+                                     original_scratch=scratch_original, source_bytes=images[str(INPUTS['helper'])],
+                                     emit=observed.emit, cancelled=cancelled)
+        observed.accept_return(report)
+    except BaseException as failure:
+        error = type(failure).__name__ + ': ' + str(failure)[:1600]
+        os.write(2, ('CLOSEOUT_CONTROLS_LAUNCH_FAIL: ' + error + '\n').encode())
+    finally:
+        # Known-original bounded cleanup remains allowed after cancellation;
+        # it neither resumes cases nor extends authority to unknown members.
+        if journal is not None and scratch_fd is not None and scratch_admitted:
+            try:
+                parent = d.directory(BASE)
+                require(pin(os.fstat(scratch_fd), True) == scratch_original
+                        == pin(os.stat(SCRATCH.name, dir_fd=parent, follow_symlinks=False), True), 'scratch original drift')
+                require(not os.listdir(scratch_fd), 'scratch not empty; retain HOLD')
+                journal.emit({'kind': 'scratch_rmdir_intent', 'path': str(SCRATCH), 'identity': scratch_original})
+                verify_lock(d, lock_fd, request)
+                parent = d.directory(BASE)
+                require(pin(os.fstat(scratch_fd), True) == scratch_original
+                        == pin(os.stat(SCRATCH.name, dir_fd=parent, follow_symlinks=False), True)
+                        and not os.listdir(scratch_fd), 'last-moment original empty scratch guard')
+                os.rmdir(SCRATCH.name, dir_fd=parent)
+                scratch_rmdir_performed = True
+                os.fsync(parent)
+                scratch_parent_fsync_completed = True
+                require(absent(parent, SCRATCH.name), 'scratch recreated; HOLD')
+                journal.emit({'kind': 'scratch_rmdir_observed', 'path': str(SCRATCH)})
+                cleanup = 'ORIGINAL_EMPTY_SCRATCH_REMOVED'
+            except BaseException as failure:
+                error = (error + '; ' if error else '') + 'cleanup: ' + type(failure).__name__ + ': ' + str(failure)[:800]
+                cleanup = 'HOLD'
+        if scratch_fd is not None:
+            closing, scratch_fd = scratch_fd, None
+            try:
+                os.close(closing)
+            except OSError as failure:
+                close_failures.append('borrowed scratch FD close: ' + str(failure)[:160])
+        if journal is not None and journal.fd is not None and journal.last is not None:
+            try:
+                recheck_inputs(d, images, identities, False)
+                verify_lock(d, lock_fd, request)
+                final_resources = sample()
+                # Keep ALRM deliverable through final I/O/descriptor settlement.
+                # Late pending INT/TERM/HUP are sampled again before process exit.
+                signal.pthread_sigmask(signal.SIG_BLOCK, SIGNALS)
+                cancelled()
+                okay = (observed is not None and report is not None and observed.complete()
+                        and cleanup == 'ORIGINAL_EMPTY_SCRATCH_REMOVED' and not error and not CANCEL
+                        and not close_failures and final_resources['within_floors'] and not journal.failed)
+                code = 0 if okay else 1
+                journal.emit({'kind': 'launcher_terminal_commit', 'exit': code, 'error': error,
+                              'cleanup': cleanup, 'allocation_attempted': allocation_attempted,
+                              'scratch_rmdir_performed': scratch_rmdir_performed,
+                              'scratch_parent_fsync_completed': scratch_parent_fsync_completed,
+                              'cancelled': sorted(map(str, CANCEL)), 'launcher_alarm_observed': TIMEOUT,
+                              'resources': final_resources, 'application_test_cases': 0,
+                              'durable_control_records': len(observed.events) if observed is not None else 0,
+                              'literal_case_results': len(observed.rows) if observed is not None else 0,
+                              'control_terminal': observed.terminal if observed is not None else None,
+                              'descriptor_close_failures_so_far': close_failures,
+                              'wrapper_stop': 'NOT_APPLICABLE_NO_WRAPPER_LAUNCH',
+                              'status': 'CONTROLS_ONLY_NOT_DATABASE_OR_CLOSEOUT_EXECUTION_ADMISSION',
+                              'terminal_scope': 'PRE_FINAL_DESCRIPTOR_CLOSURES_REQUIRE_OBSERVED_OUTER_EXIT_ZERO',
+                              'source_inputs_unchanged': True})
+            except BaseException as failure:
+                os.write(2, ('CLOSEOUT_CONTROLS_TERMINAL_INCOMPLETE_HOLD: ' + str(failure)[:1200] + '\n').encode())
+                code = 1
+        if journal is not None and journal.fd is not None:
+            closing, journal.fd = journal.fd, None
+            try:
+                os.close(closing)
+            except OSError as failure:
+                close_failures.append('evidence journal close: ' + str(failure)[:160])
+        close_failures.extend(d.close())
+        if lock_fd is not None:
+            closing, lock_fd = lock_fd, None
+            try:
+                os.close(closing)
+            except OSError as failure:
+                close_failures.append('original lock close: ' + str(failure)[:160])
+        if close_failures:
+            code = 1
+            os.write(2, ('CLOSEOUT_CONTROLS_DESCRIPTOR_HOLD: ' + '; '.join(close_failures)[:2000] + '\n').encode())
+        if cancelled():
+            code = 1
+    os._exit(code)
+
+
+if __name__ == '__main__':
+    main()

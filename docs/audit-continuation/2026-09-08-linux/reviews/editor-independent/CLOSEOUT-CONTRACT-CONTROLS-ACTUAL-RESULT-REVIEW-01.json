@@ -1,0 +1,391 @@
+{
+  "accounting": {
+    "PVD": "8 explanations;owner choices separate",
+    "all_confirmed": "22/38;57.9%;16remain",
+    "new_product_families": 0,
+    "original_confirmed": "19/25;76%;6remain",
+    "original_suspicions": "2/12;10remain",
+    "qualified_closure_delta": 0
+  },
+  "actual": {
+    "actual_durable_comparison_negatives": 2,
+    "application_test_cases": 0,
+    "combined_output": "",
+    "control_records": 37,
+    "exit_code": 0,
+    "external_tool_chunk": "4d79b6",
+    "failed_unstarted_cases": 0,
+    "invocations": 1,
+    "journal_outer_rows": 43,
+    "literal_case_shared_PENDING_preserved": true,
+    "named_bodies_started_passed": 17,
+    "named_case_reconciliation": [
+      {
+        "case": "L01_valid_stop",
+        "consumer_file_opens": 4,
+        "consumer_reads": 8,
+        "journal_sequence": 6,
+        "outcome": {
+          "durable_evidence_files": 4,
+          "normal_return": true
+        },
+        "packet_launcher_sha256": "2f964fdc7a73b7759d97b9e7cb17cd032111dd4e4717ae3cc24fb28c9831d270",
+        "run_contract_returned": true
+      },
+      {
+        "case": "L02_valid_no_gradle",
+        "consumer_file_opens": 4,
+        "consumer_reads": 8,
+        "journal_sequence": 8,
+        "outcome": {
+          "durable_evidence_files": 4,
+          "normal_return": true
+        },
+        "packet_launcher_sha256": "61f413dd78eabe92d5105f13796e41deb59fefd688df1cf5258f8ad661bd3e4a",
+        "run_contract_returned": true
+      },
+      {
+        "case": "L03_legacy_string_missing_rows",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 10,
+        "outcome": {
+          "reason": "evidence_files",
+          "type": "KeyError"
+        },
+        "packet_launcher_sha256": "c0f35975ac4d44e4416e99d406a708fb71bc86b1c1c550ff2394e22af273c442",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L04_legacy_list_directory",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 12,
+        "outcome": {
+          "reason": "external completed launcher missing/ambiguous",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "40b062f1118c3b1497b0bd23a7e5211bb04e2d152b52bade19841f81fbab46e8",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L05_rows_wrong_type",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 14,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "b031efbe77521d2217fcd8a655398a4ed0eb2a4913534d481b100b75abc88af6",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L06_rows_missing",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 16,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "dd273f3849f1b47f8b2c9591f6c4f776cdacf4ca5d73af27e4ac1296da5938c3",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L07_rows_extra",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 18,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "2aa1a579f2fc81552fef393fa6556bbf95e968b2b703278e92855f2b1578ba73",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L08_rows_reordered",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 20,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "eb884cf6892445b0db7f0d850705d121bbbd6ba45a1e6cbc52b9bb7a3d3b9b79",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L09_rows_duplicate",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 22,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "7909c95aa90f801032d2abc1f0cf8fd1ee0ce9310368caeb41c7221d12f8d116",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L10_rows_unknown",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 24,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "f940fd3ad567a72ba3fa47193886306740998e33b10bde7d6e45949de015e367",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L11_row_nondict",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 26,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "3a3db0d49a78b2b62d7d6097669f42c95026bf97ea112b9a19c76ca4bfa2606e",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L12_row_missing_key",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 28,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "c13eda80ad39d49d2f4c2936f455c0f152ce4cda73a25ba6184e8f19579f1fbc",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L13_duplicate_json_key",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 30,
+        "outcome": {
+          "reason": "duplicate JSON key",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "56e53e2374f4992899e252b5648ff209c0e55d0db2144439ab621e77ead42c0f",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L14_escaped_duplicate_json_key",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 32,
+        "outcome": {
+          "reason": "duplicate JSON key",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "b94df050da38be8ef726329873843d226a576a86326a9edf298b94bbea9246b4",
+        "run_contract_returned": false
+      },
+      {
+        "case": "L15_durable_digest_mismatch",
+        "consumer_file_opens": 1,
+        "consumer_reads": 2,
+        "journal_sequence": 34,
+        "outcome": {
+          "reason": "durable launcher evidence mismatch",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "e4af5ff35ddc49420d6e555cb7ac3e4be01010fd0218d83bdd4f10002a10bfea",
+        "run_contract_returned": true
+      },
+      {
+        "case": "L16_durable_pin_mismatch",
+        "consumer_file_opens": 1,
+        "consumer_reads": 2,
+        "journal_sequence": 36,
+        "outcome": {
+          "reason": "durable launcher evidence mismatch",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "894b7eedfbb28ed72712a741b215e5e65c25ac01da0aaed64d11bf98c82949e7",
+        "run_contract_returned": true
+      },
+      {
+        "case": "L17_row_extra_key",
+        "consumer_file_opens": 0,
+        "consumer_reads": 0,
+        "journal_sequence": 38,
+        "outcome": {
+          "reason": "exact bounded launcher evidence set",
+          "type": "Hold"
+        },
+        "packet_launcher_sha256": "84740a89ea71e27b669eca34a824b0677c94c1bf1486c51948247525f6cee5c9",
+        "run_contract_returned": false
+      }
+    ],
+    "positive_cases": 2,
+    "schema_parser_negatives": 13,
+    "source_io_exact": {
+      "directory_fsyncs": 10,
+      "directory_opens": 5,
+      "eofs": 10,
+      "file_closes": 10,
+      "file_fsyncs": 10,
+      "file_opens": 10,
+      "read_bytes": 802,
+      "reads": 20
+    },
+    "source_ticks": 13361
+  },
+  "authority": {
+    "application_DB_fullcloseout_registration6_admitted": false,
+    "one_actual17_result_adopted": true,
+    "repeat_or_next_invocation_admitted": false,
+    "root_may_release_this_slot": true,
+    "slot_released_by_reviewer": false
+  },
+  "cleanup_and_settlement": {
+    "all8distinct_private_original_empty_to_immutable_pins_checked": true,
+    "current13source18directories_original_lock_independently_matched": true,
+    "external_exit0_after_reviewed_descriptor_settlement_path": true,
+    "fixture_sizes_bytes": [
+      43,
+      41,
+      62128,
+      73265,
+      51,
+      54,
+      123,
+      122
+    ],
+    "initial_outer_journal_original_pin_independently_emitted": false,
+    "one_emitted_fixture_original_receipt": true,
+    "original_empty_top_rmdir_parent_fsync_observed": true,
+    "original_regular_files": 8,
+    "original_top_pin": {
+      "dev": 23,
+      "ino": 791694,
+      "mode": 16832,
+      "uid": 0
+    },
+    "owned_child": {
+      "admitted_starttime": 20541649,
+      "observation": "original PID absent at independent point check",
+      "pid": 14162,
+      "same_birth_present": false
+    },
+    "root_postrun3tools_and_entrylinks": "e48c9b exit0 root-owned data-only point: Python1643/bashbc59/timeout4fcc exact pins+hashes and /bin,/usr/bin/python3 entries match request. Attributed root observation; reviewer did not duplicate this check. Root embeds it in slot release.",
+    "scratch_absence_independently_checked": true,
+    "shared_finally": {
+      "borrowed_scratch_fd_closed_or_removed": false,
+      "bytes_written": 135827,
+      "created_files": 8,
+      "durably_removed_names": 8,
+      "failures": [],
+      "status": "COMPLETE",
+      "unlink_attempted_names": [
+        "runner.input",
+        "plan.input",
+        "source.input",
+        "methods.input",
+        "LAUNCHER-stdout.log",
+        "LAUNCHER-stderr.log",
+        "LAUNCHER-resources.json",
+        "LAUNCHER-processes.json"
+      ]
+    },
+    "supervisor_birth_proof_available": false,
+    "total_fixture_bytes": 135827,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "controls_author": "/root/build_config",
+  "disposition": "ACCEPT_QUALIFIED_ACTUAL_17_CONTRACT_PASS_AND_PERMIT_ROOT_SLOT_RELEASE",
+  "evidence": [
+    {
+      "bytes": 16150,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-REQUEST-01.json",
+      "sha256": "46edf68dd9bff047c1d1047ba0a7741026709ffb0e2e7e81917897a119d9c249"
+    },
+    {
+      "bytes": 63975,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-events-01.jsonl",
+      "sha256": "bef972fa4cdabe4ab02fc82fb21c97baf7d5ac7ba8e5b76b4644719d277e4226"
+    },
+    {
+      "bytes": 74377,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-EXTERNAL-RESULT-01.json",
+      "sha256": "3eabdb99b4e81a748f9aa48ffac9b089b8edca24d1581ce7c89995e44a5a4e59"
+    },
+    {
+      "bytes": 2495,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-ACCEPT-root-01.json",
+      "sha256": "a835c25d318846a5ccfb7a7fb68ffc23bbf663465032593b7ff9928c6e140ba3"
+    },
+    {
+      "bytes": 8116,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTRACT-CONTROLS-ACCEPT-editor_review-01.json",
+      "sha256": "cb490e96956095e3e1efebfb95ba2647f90399fffaf3ce5201696ca31454af21"
+    }
+  ],
+  "executor_receipt_author": "/root",
+  "meaningful_evidence": {
+    "L01_L02": "Full unchanged selected run_contract returns normally for stop-required and no-Gradle packet models; pure35-to33 projection; actual4files each read/EOF/hash/fullpin/fsync/close. No command or main/admission executed.",
+    "L03": "Legacy missing rows reaches exact KeyError evidence_files; no consumerI/O.",
+    "L04": "Legacy list-as-directory reaches exact completed-launcher Hold, not a missing-key substitute.",
+    "L05_L12_L17": "Nine distinct malformed row-set shapes reach exact bounded-evidence Hold with no consumerI/O.",
+    "L13_L14": "Literal and equivalently escaped duplicate top-level JSON keys have distinct packet hashes and exact real-parser refusal.",
+    "L15_L16": "Both full contracts normally return and pure projection completes; first real51B file read/EOF/fsync/close then durable mismatch. Source fixes exactly wrong expected digest vs wrong expected mtime pin separately; neither obtains capture/later-file I/O.",
+    "packet_integrity": "All17 launcher packet hashes distinct;11named hashes each;only expected launcher field varies outside L02 three-document branch change;actual4fixture hashes match emitted originals. Complete ext17 case array equals literal journal array, including PENDING flags.",
+    "qualification": "Serialized memory packet bytes are not all retained externally; fixture-mutation exactness is bound to reviewed executed source, not a freshly reconstructed external packet or cryptographic authenticity proof."
+  },
+  "operations": {
+    "metadata_FDs_closed_on_return": true,
+    "new_scratch_cache_temp_workers_or_cleanup_deletions": 0,
+    "own_permanent_reports": 1,
+    "process_probe_scope": "Only admitted ownPID14162/start20541649 and resource meminfo; no census/signals.",
+    "reviewer_new_workload_build_invocations": 0,
+    "reviewer_target_import_AST_compile_execution": 0
+  },
+  "remaining_limits": [
+    "17 component cases are not105application methods,1198actual source files,35runtime allocations,33actual targets,commands/PIDs/approvals or fulloriginal admission.",
+    "stop_branch remains synthetic packet selection; run_contract_returned marks only four normal-return cases,not all guard coverage in early negatives.",
+    "Eight durable fixture originals support shared cleanup, not independent simultaneous syscall witnesses, naturalOOM/powerloss/crashdurability/kernel/provenance or future path-based cleanup authority.",
+    "No source alarm/OSsignal/timeout fault/physical iOS/WindowsHello security evidence.",
+    "28 separately completed;registration6/DBouter fault regression,wholemain/admission/full F-C-O and original runtime cleanup remain separate. No automatic retry, hidden control extension or qualified application-family closure.",
+    "Retain prior failures/reviewer misses/PVU007STOP/PVU011NO-RETRY/PVA02949-44-5FAIL/G7G8CLOSED/WindowsFAILcleanupHOLD/oldrunner/PVDhardware/publication/versions/dependencies/identities/signing/store1017001 boundaries."
+  ],
+  "resources_after_review": {
+    "actual_launcher_maxrss_kib": 47108,
+    "disks_free_bytes": {
+      "/root/projects/PassVault": 17776259072,
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 17776259072,
+      "/tmp": 17908412416
+    },
+    "memory_bytes": {
+      "MemAvailable": 37186887680,
+      "MemTotal": 67435888640
+    },
+    "point_only": true
+  },
+  "review_extent": {
+    "all17nonhash_effects_and_complete_packet_hash_base_deltas_read": "ef8f87,untruncated",
+    "all43_outer_rows_and37control_protocol_parsed_as_data": true,
+    "initial_displays_truncated": "afe703 and547025 truncation not claimed as full narrative reads; missing case/hash values recovered via ef8f87 and full parsed comparison.",
+    "originals_terminal_admission_and_scratch_rows_read": "547025 visible sections;full structural comparison in sealing data reader",
+    "receipt_all17_case_rows_compared_exactly_to_journal": true,
+    "source_review_basis": "6cdfa2fc callable plus8b025e33 launcher and cb490e96 combined actual envelope/instance; no target reparse/replay."
+  },
+  "reviewer": "/root/editor_review",
+  "schema": "passvault-separate17-independent-actual-result-review-v1",
+  "timing": {
+    "callable_monotonic_seconds": 0.3423021600174252,
+    "journal_first_unix_ns": 1788936400350211479,
+    "journal_last_unix_ns": 1788936400741586083,
+    "journal_point_span_seconds": 0.391374604,
+    "qualification": "Literal scopes retained; journal span exceeds tool wall. Not independently measured full external monotonic duration, signal exercise or guaranteed kernel preemption.",
+    "tool_wall_seconds": 0.360477153
+  },
+  "utc": "2026-09-09T07:09:59.736510+00:00"
+}

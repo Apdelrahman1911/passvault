@@ -6,7 +6,7 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-Read `CHECKPOINT_4.md`, the updated issue/coverage/verification overlays, and
+Read `CHECKPOINT_5.md`, the updated issue/coverage/verification overlays, and
 `EXECUTION_SLOT.json` before choosing work. Three grouped PVA-007 freshness
 corrections and the Android32 test harness are independently source-reviewed;
 **zero application test cases have executed**. The first Windows CI attempt
@@ -15,6 +15,14 @@ or any of its 14 tests. Its operational FAIL and filesystem-cleanup HOLD are
 independently reconciled; no automatic retry is authorized. Its owned Job
 reported zero workers. The cross-host slot was released after reconciliation,
 without representing the cleanup HOLD as resolved.
+
+Checkpoint5 records the separately accepted **28/17/6** cleanup-control results,
+their original settlement and consumed admissions, **current-C4 targeted167**
+scheduling (166 regression methods plus one fixture producer), a narrower Mac5
+workflow and independent PVU-006 source narrowing. The original105 selection is
+retained unexecuted, superseded for scheduling only. **No new product tests or
+qualified closures** are implied. Later sections retain earlier checkpoint facts;
+the C5 overlays supersede their pending-control/preparation status, not failures.
 
 Android's installed image is 64-bit-only and was rejected. An official catalog
 identifies a 299 MiB API24/default/x86 archive candidate. A once-only three-XSD

@@ -1,0 +1,133 @@
+{
+  "format": "passvault-closeout-controls-source-review-v1",
+  "reviewer": "/root/android32",
+  "controls_author": "/root/build_config",
+  "review_point_utc": "2026-09-09T02:53:31Z",
+  "disposition": "ACCEPT_BOUNDED_SOURCE_FOR_SEPARATE_ROOT_ADMISSION",
+  "execution_admission": false,
+  "bindings": {
+    "controls_sha256": "bdee7e285f45f78e56d99fc6ef122767de00400d952f1e68c1d47b5d9bf35a53",
+    "design_sha256": "1e23c7432b9ea297e96ab56e7bd4742e5019af5c0726ce6ad28a2bdc8de3c8bb",
+    "helper_sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec",
+    "helper_plan_sha256": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d"
+  },
+  "accepted_inputs": {
+    "controls": {
+      "path": "../build-config/CLOSEOUT-CONTROLS.py",
+      "bytes": 40149,
+      "physical_LF": 838
+    },
+    "design": {
+      "path": "../build-config/DESIGN.md",
+      "bytes": 22609,
+      "physical_LF": 296
+    },
+    "helper": {
+      "path": "scripts/audit/linux_database_closeout.py",
+      "bytes": 59183,
+      "physical_LF": 1094
+    },
+    "helper_plan": {
+      "path": "../linux-closeout/PLAN.md",
+      "bytes": 29298,
+      "physical_LF": 474
+    }
+  },
+  "method": [
+    "Full832-LF v1 source and251-LF v1 DESIGN previously read; exact review preserved.",
+    "Entire literal source/DESIGN v1-v2 diffs read; only code change B10/B11 at703-718.",
+    "Changed source calling/result/cleanup context through744 reread; full296-LF successor DESIGN read.",
+    "Accepted input and predecessor hashes rechecked; no import, AST parse, compilation, syntax check or execution."
+  ],
+  "resolved_review_items": {
+    "LCC-ORACLE-01": "SOURCE_RESOLVED_NOT_EXECUTED: B10 same real bytes/hash plus changed observed pin isolates pin guard; B11 isolates digest.",
+    "LCC-DOC-01": "DESIGN_RESOLVED_NOT_ADMISSION: retained original Linux lock under fresh admission, not old/adopted/replaced authority.",
+    "LCC-DOC-02": "DESIGN_RESOLVED_NO_CLOSURE: historical22/37 versus current22/38 after root PVA-038.",
+    "reporting_qualifications": "ADOPTED: partial removal counts, no external per-fixture census, individual28 results, pending-signal/main/outer limits."
+  },
+  "callable": "run_controls(*, scratch_fd, scratch_path, original_scratch, source_bytes, emit, cancelled)",
+  "fixed_new_scratch": "/root/projects/PassVault/audit-runtime-linux-closeout-controls-01",
+  "original_scratch_fields": [
+    "dev",
+    "ino",
+    "uid",
+    "mode"
+  ],
+  "borrowed_fd_top_creation_and_removal_owner": "/root",
+  "planned_case_ids": [
+    "J01_progress",
+    "J02_equal_rewrite",
+    "J03_truncate",
+    "J04_external_append",
+    "J05_name_replace",
+    "J06_hardlink",
+    "J07_positive_short_writes",
+    "J08_zero_write",
+    "J09_partial_then_zero",
+    "J10_fsync_error",
+    "J11_postwrite_name",
+    "J12_postwrite_mode",
+    "J13_postwrite_nlink",
+    "B01_valid_bootstrap",
+    "B02_cancel_before_read",
+    "B03_deadline_before_read",
+    "B04_cancel_during_read",
+    "B05_deadline_during_read",
+    "B06_cancel_during_bind",
+    "B07_deadline_during_bind",
+    "B08_directory_replace",
+    "B09_rehash_unchanged",
+    "B10_rehash_pin",
+    "B11_rehash_digest",
+    "B12_rehash_cancel",
+    "B13_rehash_deadline",
+    "B14_hold_after_cancel",
+    "B15_hold_after_deadline"
+  ],
+  "counts_at_review": {
+    "planned_journal_cases": 13,
+    "planned_bootstrap_rehash_hold_cases": 15,
+    "planned_total": 28,
+    "actual_control_executions": 0,
+    "application_test_executions": 0,
+    "inherited_old_control_credit": 0,
+    "new_scratch_allocations_by_reviewer": 0,
+    "owned_workers_or_stop_obligations_created": 0,
+    "closure_delta": 0
+  },
+  "retained_limits": [
+    "Source-selected components only; no main/admission/Guard/Forest/lock/real-runtime or old-helper execution.",
+    "Relocated bootstrap callback plus injected globals is not main/closure/under-lock integration proof.",
+    "Synthetic latch/failure inputs and actual file/time effects remain separately labeled; pending nonempty OS-signal branch untested.",
+    "Per-fixture original pins are in-memory source-bound witnesses, not a separately emitted external allocation census.",
+    "removed_names only counts destructive call plus original/link proof and parent fsync; partial failure may contain unacknowledged removals.",
+    "Terminal counters alone insufficient: all28 ordered durable case-result objects and outer settlement are required.",
+    "60s cooperative body checks do not preempt startup/emit/I/O; outer resource/deadline/cancellation/cleanup admission remains separate.",
+    "Fatal failure, SIGKILL, close uncertainty or host loss may prevent receipts/finally; no automatic recovery, replay or adoption.",
+    "Root exclusively owns original scratch/lock/evidence/borrowed-FD admission and final settlement/removal."
+  ],
+  "preserved_v1": {
+    "review_json": {
+      "path": "CLOSEOUT-CONTROLS-V1-SOURCE-REVIEW.json",
+      "sha256": "5f7021de07eb6dfca45d593ceb0c20d9b4353931a4574286dee28ccfde141adb"
+    },
+    "review_md": {
+      "path": "CLOSEOUT-CONTROLS-V1-SOURCE-REVIEW.md",
+      "sha256": "61568e00dbd6f2b16d9dbf9d8b8d99bc7d07175163f4b17f9e7da6bcf8d4ca7c"
+    },
+    "controls": {
+      "path": "../build-config/CLOSEOUT-CONTROLS.v1.py.txt",
+      "sha256": "acb44cae0c8ac31729f043477fa19683b20487d13fcef74965f1dd71f96d79c4"
+    },
+    "design": {
+      "path": "../build-config/DESIGN.v1.md",
+      "sha256": "ab4c9a02873652b9a60482fab2f522aff33202ab1ee075f73271e986b642cc20"
+    }
+  },
+  "full_review": {
+    "path": "CLOSEOUT-CONTROLS-SOURCE-ACCEPTANCE.md",
+    "sha256": "f192f6a9a7206ec6feeb9cbcac246ce2b01cb9f1596ffbc50ac6044bd730cb23"
+  },
+  "actual_launcher_or_control_execution_admission": "NOT_SUPPLIED",
+  "actual_closeout_C01_C07_instance_admission": "NOT_SUPPLIED"
+}

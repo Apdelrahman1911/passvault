@@ -1,0 +1,238 @@
+{
+  "accounting": {
+    "PVD": "8 explanations; owner choices separate",
+    "all_confirmed": "22/38;16remain",
+    "new_application_cases": 0,
+    "new_product_families": 0,
+    "new_qualified_closures": 0,
+    "new_semantic_LF_credit": 0,
+    "original_confirmed": "19/25;6remain",
+    "original_suspicions": "2/12;10remain"
+  },
+  "authority": {
+    "actual_C01_C07_approved": false,
+    "build_admission_supplied": false,
+    "helper_or_test_execution_admitted": false,
+    "old_b167_viability_restored": false,
+    "overall_F03_complete": false
+  },
+  "caller_protocol": {
+    "actual_legacy_receipt_migration_claim": false,
+    "meaning": "Outer actual receipt is future root output delegated to closer PLAN; inner only attests retained closeout. Fieldmap/producer/new closer-outer and all successor hashes require explicit reviewed integration.",
+    "product_format_or_dependency_change": false,
+    "unchanged_database_outer": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1",
+    "unchanged_database_outer_plan": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29",
+    "unchanged_inner": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+  },
+  "correction": {
+    "complete_actual_instance_satisfiability_proved": false,
+    "directory_string_check_unchanged_line": 513,
+    "exact_row_keys": [
+      "path",
+      "sha256",
+      "identity"
+    ],
+    "four_fixed_paths_in_order": true,
+    "new_row_field": "evidence_files",
+    "no_old_array_consumer_remaining": true,
+    "row_count": 4,
+    "same_durable_reader_and_full_pin_sha_checks": true,
+    "second_consumer_lines": [
+      697,
+      700
+    ],
+    "shape_order_guard_lines": [
+      527,
+      531
+    ],
+    "static_contradiction_removed": true
+  },
+  "counterexamples_challenged": [
+    "Oldlist-as-directory fails fixed E identity",
+    "Missing array raises ordinary admission error, not fallback",
+    "Wrong list type/count rejected before projection",
+    "Non-dict/missing/extra row keys rejected",
+    "Reordered/duplicate/unknown paths rejected",
+    "Duplicate/equivalently escaped JSON keys still rejected",
+    "Wrong hash/fullpin still rejected by second durable consumer",
+    "Extra unused top-level alias is not read as fallback authority",
+    "No local launcher mutation between run_contract and second consumer"
+  ],
+  "disposition": "ACCEPT_NARROW_SOURCE_CORRECTION_PENDING_REGRESSION_AND_INSTANCE",
+  "finding_id": "LC-LAUNCHER-CONTRACT-001",
+  "independent_reviewer": "/root/baseline_coverage",
+  "inputs": [
+    {
+      "bytes": 59183,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/launcher-contract-rejected.py.txt",
+      "physical_lf": 1094,
+      "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec"
+    },
+    {
+      "bytes": 59443,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_database_closeout.py",
+      "physical_lf": 1097,
+      "sha256": "0bed64d9ecb2ebb3ff7a41d04d8c66240e9c82c161f28f13860b8c54f93f5c02"
+    },
+    {
+      "bytes": 29298,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/launcher-contract-rejected-PLAN.md",
+      "physical_lf": 474,
+      "sha256": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d"
+    },
+    {
+      "bytes": 32246,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md",
+      "physical_lf": 521,
+      "sha256": "bdd2f816592d409c7211375673ba3507375c52af8d41bf0688ab196fe8f0392c"
+    },
+    {
+      "bytes": 12699,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.json",
+      "physical_lf": 285,
+      "sha256": "3982b56c2f87c8b39dad6a936d69eac5341e739e1cf66ee1f26d6f9dbeeafb5d"
+    },
+    {
+      "bytes": 10806,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-DEFECT-REVIEW.md",
+      "physical_lf": 174,
+      "sha256": "0d43fbaf286539d6e09f183b969bb34feec42ec9c142df2284cca9ba734197cd"
+    },
+    {
+      "bytes": 3103,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-3-PUBLICATION-ADDENDUM.md",
+      "physical_lf": 48,
+      "sha256": "db46be62a2bfda2ae0cfe5ba130e480372926a4d58bbc94d6c6f6e512ed48f86"
+    },
+    {
+      "bytes": 37477,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH_DATABASE.py",
+      "physical_lf": 715,
+      "sha256": "ee46cfd974de0c7241763b251c6258a5b8a058cdaa4146fa029573c21e3812c1"
+    },
+    {
+      "bytes": 11441,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-runner/LAUNCH-PLAN.md",
+      "physical_lf": 200,
+      "sha256": "c5bb383165e2933a3d39da67b532613ffa71007c70e9dc38037f41e363a87a29"
+    },
+    {
+      "bytes": 55614,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_database_validation.py",
+      "physical_lf": 1079,
+      "sha256": "346e1655d273d7301258e932867d835b7897e0a1588e39dd8e83c92005cac279"
+    },
+    {
+      "bytes": 25416,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DATABASE-INSTANCE-FIELD-MAP.md",
+      "physical_lf": 400,
+      "sha256": "0edf9d585ee15f62477ededce368407ce74a73712f94d3d36e789e453eacb2e3"
+    }
+  ],
+  "literal_delta": {
+    "no_source_import_parse_or_execute": true,
+    "plan_all_other_bytes_identical": true,
+    "plan_delta_blocks": [
+      [
+        "insert",
+        16,
+        15,
+        16,
+        61
+      ],
+      [
+        "replace",
+        170,
+        170,
+        216,
+        217
+      ]
+    ],
+    "source_changes": 2,
+    "source_diff_bytes": 1565,
+    "source_diff_sha256": "9e3d3e03541b40c5fa95756642224793f70cdba13da99dea9280aa022bd3f19e",
+    "source_reconstruction_matches_all_bytes": true
+  },
+  "narrative": {
+    "bytes": 9222,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLOSEOUT-LAUNCHER-CONTRACT-SUCCESSOR-REVIEW.md",
+    "physical_lf": 143,
+    "sha256": "9886178331e55b7e8392ce212ee3f8a2a874c0b719a17a16871bb89e79767284"
+  },
+  "operations": {
+    "builds_or_workers_or_daemons": 0,
+    "data_read_tools": [
+      "ce98a7 exit0",
+      "fec771 exit0"
+    ],
+    "git_objects_read": 2,
+    "helper_import_AST_syntax_parser_or_test_runs": 0,
+    "metadata_fds_closed": true,
+    "scope": "Whole literal diffs, entire successor run_contract, current admission/PLAN context; unchanged earlier source review reused with exact reconstruction, not new1097line semantic audit.",
+    "source_edits_or_staging": 0,
+    "temp_cache_outputs_or_deletions": 0,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "plan_author": "/root/editor",
+  "published_beforeimages": {
+    "commit": "bb094f8a39ba43f1ce1f43f394cb662b03febe38",
+    "copies_match": true,
+    "exclusive_copy_creation": "Author reported; reviewer verifies bytes, not retrospective allocation originals.",
+    "git_blobs": [
+      {
+        "bytes": 59183,
+        "commit": "bb094f8a39ba43f1ce1f43f394cb662b03febe38",
+        "git_blob": "18128c6729e3a412744437b9e14c1693abaf93b6",
+        "path": "scripts/audit/linux_database_closeout.py",
+        "sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec"
+      },
+      {
+        "bytes": 29298,
+        "commit": "bb094f8a39ba43f1ce1f43f394cb662b03febe38",
+        "git_blob": "ad249e4497859f041834386112f536d72d351245",
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/PLAN.md",
+        "sha256": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d"
+      }
+    ],
+    "tree": "82967f050816454b6905d560dfec15d0e0b091f5"
+  },
+  "recorded_utc": "2026-09-09T03:30:33.025614+00:00",
+  "regression_status": {
+    "LC_C05_C06_waived": false,
+    "consultation": "Coherent serialized full actual run_contract positives for stop/noGradle, malformed/duplicate shapes/ordering; add extra-row-key negative; exact second-consumer component boundary.",
+    "designer": "/root/build_config",
+    "executed": 0,
+    "old_b167_execution_admitted": false,
+    "runner22_controls_substitute": false,
+    "source_control_inventory_accepted_by_this_report": false,
+    "synthetic_records_not_real_originals": true
+  },
+  "remaining_gates": [
+    "Source-bound regression implementation independently reviewed",
+    "Separately admitted meaningful successor full-contract/component controls plus required LC-C05/06 evidence",
+    "New outer-closeout source/protocol reviewed and exact hashes rebound",
+    "Fresh actual original run/launcher/stop-or-positive-noGradle/source/35allocations/process/mount/resources/lock evidence",
+    "Actual role-correct F and C approval with prompt root closeout scheduling"
+  ],
+  "restrictions": "PVU007STOP/PVU011NO-RETRY/PVA02949-44-5FAIL-noauto/G7G8CLOSED/oldrunnerprohibition/WindowsFAIL-cleanupHOLD14unstarted/synthetic-only/PVDhardware/rootsoleowner/protectedrefs-dependencies-versions-identities-signing-store-publication-1017001 unchanged.",
+  "reviewer_miss_history": {
+    "defect_review_sha256": "3982b56c2f87c8b39dad6a936d69eac5341e739e1cf66ee1f26d6f9dbeeafb5d",
+    "old_acceptance_not_silently_rebound": true,
+    "preserved": true,
+    "prior_bounded_design_role_disclosed": true
+  },
+  "schema": "passvault-closeout-launcher-contract-successor-review-v1",
+  "source_author": "/root/editor",
+  "surrounding_guards": "Exact2-replacement source proof preserves all other path/source/role/approval/lock/stop/allocation/cleanup/process/resource/cancellation/retention code; no resulting broad runtime safety proof."
+}

@@ -1,0 +1,90 @@
+{
+  "schema": "passvault-macos-partial-source-status-v2",
+  "author": "/root/native",
+  "event": "After full frozen independent MP-R1/MP-R2 correction review-v2; before any helper/control/instance/execution admission",
+  "disposition": "QUALIFIED SOURCE-CORRECTION ACCEPTANCE ONLY; all eight implementation/admission gates and main HARD HOLD remain",
+  "inputs": [
+    {
+      "path": "scripts/audit/macos_native_validation.py",
+      "sha256": "d9eb3ae6f8aaa0b407069c51ad912d16e930a76805e82808aee9276336be1f79",
+      "lf": 426,
+      "bytes": 19092
+    },
+    {
+      "path": ".github/workflows/audit-macos-native-validation.yml",
+      "sha256": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d",
+      "lf": 83,
+      "bytes": 3777,
+      "change": "Unchanged from prior packet; no request created or activation admitted"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-VALIDATION-PLAN.md",
+      "plan_version": 3,
+      "sha256": "efde8a14202426d3470eb522dba77fd460162acb93beb8d1548fce0fdc3eb487",
+      "lf": 540,
+      "bytes": 35759
+    }
+  ],
+  "independent_review": {
+    "reviewer": "/root/native_review",
+    "markdown": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-PARTIAL-PACKET-SOURCE-REVIEW-v2.md",
+    "markdown_sha256": "1f3d22de6ce7ba9b843446cafc86b785956f6689c9e39e1d9d86fd5fda12a3b5",
+    "markdown_lf": 158,
+    "json_sha256": "1faba40a7730b4150cc7a4623c6d19ba59724b083bc4c8edb4b74833108e8e46",
+    "json_lf": 128,
+    "author_receipt": "Read entire frozen Markdown and JSON, confirmed hashes plus unchanged input tuple; agrees qualified scope and retained counterexamples/limitations"
+  },
+  "accepted_source_corrections": {
+    "MP-R1": "One direct selected testcase, explicit bounded suite/case attributes, unique childless system-out/system-err logs, rejection of unknown/namespaced used nodes/attributes and nested outcomes. Original wrapper-plus-namespaced-failure counterexample and its wrapper-removed variant now reject by independent source trace only.",
+    "MP-R2": "Explicit enumeration/type check of all13 SealedTool roles, including shell/xcrun. Prior None/missing/wrong-type/subclass values cannot silently skip this record method. No installed tool, vector or caller-code authentication credit."
+  },
+  "mandatory_qualifications": [
+    "No parser input, tool record, vector or helper was evaluated. These are source traces, not regression executions or a tested validator.",
+    "Exact CTest4.4.2 producer/schema/source and representative positive/negative XML remain unbound. Prospective omission defaults are counts0/statusrun; compatibility is not proved.",
+    "Raw XML512KiB, decoded attributes4096UTF8 bytes each and decoded logs256KiB each are input/field bounds, not measured parser heap/time bounds. Metadata strings are opaque; diagnostic failure words inside escaped/CDATA logs are not outcome elements.",
+    "Used-node rejection does not claim rejection of unused namespace declarations or prolog/epilog comments/PIs. Container whitespace uses Python string semantics, not separately proved XML-S grammar. Conservative rejection may exclude legitimate producer data.",
+    "Capture02 finite source inventory contains cmProcess.cxx and conditional cmUVProcessChain.cxx, not JUnit producer/schema source or representative XML. Even later successful separately admitted capture02 cannot close MP-R1 compatibility. No added GET/path substitution is authorized.",
+    "All13 exact role records are required, but shaped paths/digests/acceptance strings are not installed executable/version/SDK/driver-chain evidence. Make/shell/compiler/linker/subtools still require sealing before configure probes.",
+    "The uncalled source-leaf function performs actual fd I/O if invoked; it is not pure, an admitted ancestor/leaf-type-before-open primitive or a safe standalone reader. Signal observation is not a process controller.",
+    "Inventory version dict equality is not strict numeric typing; equal WORKING_DIRECTORY duplicates remain accepted. Nonfinite JSON literal rejection is not arbitrary unused exponent-overflow validation.",
+    "Workflow path routing/pins/globs/concurrency do not prove action contents, installed Python/image, source/instance authorization, output ownership/size bounds, E/nonce reconciliation or cross-local/CI settlement. Accidental activation could allocate a job/check out/upload despite helper HOLD.",
+    "Native fixture acceptance remains source-only with original-parent/ancestor/ACL/descriptor/once-only and existing raw-context/async/blocking/swallowed-destroy limitations. Never sweep a fixture child after its HOLD. No provider/packaged/physical-device inference follows."
+  ],
+  "open_gates": ["MAC-PROC", "MAC-CTEST", "MAC-MEMORY", "MAC-ACL", "MAC-CLEANUP", "MAC-TOOLS", "MAC-CONTROLS", "MAC-INSTANCE"],
+  "entry_source_trace": "Nonempty constant gates return HOLD before request/native reads, namespace/tool/process/provider work; deleting the tuple still reaches a no-backend exception. This is not an observed exit or interpreter/startup/stderr safety proof.",
+  "preserved_previous_packet": {
+    "helper_archive": "MACOS-PARTIAL-HELPER.rejected-v1.py.txt",
+    "helper_sha256": "fd9382c0a7d94eb30cdb48f3c09bf41b1f69926387b837a487f8f6a55b7ff4d8",
+    "workflow_archive": "MACOS-PARTIAL-WORKFLOW.v1.yml.txt",
+    "workflow_sha256": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d",
+    "plan_archive": "MACOS-VALIDATION-PLAN.preparation-v2.md",
+    "plan_sha256": "ef06fbec02816f4b4a087c4c717798151d21d3791fbf55926a779428db434348",
+    "revise_markdown_sha256": "0dda43d0be86daa21d9ab2944052e2935c3a0110305c64bcaec9b7bc0d28fa73",
+    "revise_json_sha256": "5ee5c63d902f9e11e9479adfce39a68513770e1dda471ab5e313bb8eeb087d52",
+    "meaning": "The prior REVISE remains valid for its archived original bytes. Frozen initial plan and its qualified scope review also remain unchanged."
+  },
+  "separate_capture_history": "Capture01 remains consumed FAIL: three curl23/reader1 metadata pipelines, zero verified response/commit/source identity and nine dependent file slots UNSTARTED. Capture02 corrected reader32fdca27/proposal697b7e11 has qualified source-only acceptance with zero requests/executions, no original-parent/outer-wrapper/transport admission and no retry/deletion. Its frozen status6156ec9883928ed2f250eaafe42ed51fff688f166453535bf94a4854e0e5418e retains its earlier partial-packet-pending fields as historical evidence, superseded only by this additive status.",
+  "publication_boundary": "Root alone selects/commits/pushes C4 and later packets. This author asserts no new source commit/tree or publication. Root's C4 selection excludes active helper/workflow/plan-v3/backend preparation and may retain the separately frozen source-capture reports/reader/proposal/reviews for resumability only.",
+  "this_correction_packet_accounting": {
+    "existing_native_cases": 5,
+    "case_executions": 0,
+    "xml_results": 0,
+    "control_executions": 0,
+    "imports_or_syntax_probes": 0,
+    "new_gets_or_ci_queries": 0,
+    "new_test_declarations": 0,
+    "new_product_findings": 0,
+    "new_family_closures": 0,
+    "root_snapshot": "Original19/25(76%); post-PVA038all22/38(57.9%),16open; original suspicions2/12. Separate denominators, not readiness. Eight design explanations remain separate from owner decisions; root live ledger governs."
+  },
+  "resources_and_cleanup": {
+    "passive_linux_utc": "2026-09-09T04:50:43Z",
+    "filesystem_available_kib": 22689696,
+    "memory_available_kib": 39976068,
+    "memory_total_kib": 65855360,
+    "swap_total_kib": 0,
+    "qualification": "Point samples, not Mac memory semantics, resource lease or future admission.",
+    "native_owned_state": "Compact permanent source/reports only; no build/cache/temp output, target process, daemon, emulator, background worker, request or namespace acquired. No stop/deletion/recovery needed or attempted by this lane; no historical obligation discharged."
+  },
+  "restrictions": "Root sole build/CI/slot/commit/push owner; capture02 and backend/CI remain unadmitted. PVU-007STOP, PVU-011NO-RETRY, PVA-029FAIL/no automatic retry, G7/G8CLOSED, Windows01FAIL/filesystemHOLD/14UNSTARTED/no retry/recovery or observability-patch application, real-data/provider/hardware/publishing/protected-ref/version/dependency/identity/build1017001 fences remain unchanged."
+}

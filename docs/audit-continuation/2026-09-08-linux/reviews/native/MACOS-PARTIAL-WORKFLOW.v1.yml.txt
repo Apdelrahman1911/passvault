@@ -1,0 +1,83 @@
+name: Audit macOS native-only validation (not admitted)
+
+# Source preparation only. No request file is created with this workflow.
+# The helper is intentionally fail-closed until all platform/controls/source/
+# instance gates are independently reviewed. Root alone may admit activation.
+on:
+  push:
+    branches:
+      - codex/audit-continuation-linux-20260908
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/macos-native-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+jobs:
+  native-five:
+    if: >-
+      github.repository == 'Apdelrahman1911/passvault' &&
+      github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+      github.event_name == 'push' &&
+      github.event.deleted == false &&
+      github.run_attempt == 1
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact activation source without retained credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          clean: false
+          lfs: false
+          submodules: false
+
+      - name: Require the independently admitted native-only helper
+        shell: bash --noprofile --norc -euo pipefail {0}
+        env:
+          PV_EXPECTED_REPOSITORY: ${{ github.repository }}
+          PV_EXPECTED_REF: ${{ github.ref }}
+          PV_EXPECTED_SHA: ${{ github.sha }}
+          PV_EVENT_NAME: ${{ github.event_name }}
+          PV_RUN_ID: ${{ github.run_id }}
+          PV_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          # No environment dump, interpreter install or silent tool fallback.
+          # This bootstrap's installed Python path remains an explicit source/
+          # instance-review gate, not an observed target-image fact.
+          test "${PV_EXPECTED_REPOSITORY}" = 'Apdelrahman1911/passvault'
+          test "${PV_EXPECTED_REF}" = 'refs/heads/codex/audit-continuation-linux-20260908'
+          test "${PV_EVENT_NAME}" = 'push'
+          test "${PV_RUN_ATTEMPT}" = '1'
+          [[ "${PV_EXPECTED_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${PV_RUN_ID}" =~ ^[1-9][0-9]{0,19}$ ]]
+          exec /usr/bin/env -i \
+            PATH='/usr/bin:/bin:/usr/sbin:/sbin' LANG=C LC_ALL=C TZ=UTC \
+            PV_EXPECTED_REPOSITORY="${PV_EXPECTED_REPOSITORY}" \
+            PV_EXPECTED_REF="${PV_EXPECTED_REF}" PV_EXPECTED_SHA="${PV_EXPECTED_SHA}" \
+            PV_EVENT_NAME="${PV_EVENT_NAME}" PV_RUN_ID="${PV_RUN_ID}" \
+            PV_RUN_ATTEMPT="${PV_RUN_ATTEMPT}" \
+            PV_WORKSPACE="${GITHUB_WORKSPACE}" PV_RUNNER_TEMP="${RUNNER_TEMP}" \
+            /usr/local/bin/python3 -I -B scripts/audit/macos_native_validation.py \
+              --request docs/audit-continuation/2026-09-08-linux/requests/macos-native-01.json
+
+      - name: Retain only compact synthetic validation evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: macos-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/passvault-macos-native-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+            ${{ runner.temp }}/passvault-macos-native-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+            ${{ runner.temp }}/passvault-macos-native-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
+            ${{ runner.temp }}/passvault-macos-native-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 6
+          include-hidden-files: false

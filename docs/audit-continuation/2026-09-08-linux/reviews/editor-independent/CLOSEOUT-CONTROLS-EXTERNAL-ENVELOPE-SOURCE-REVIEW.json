@@ -1,0 +1,155 @@
+{
+  "accounting": {
+    "PVD": "8 explanations; owner choices separate",
+    "all_confirmed": "22/38;57.9%;16remain",
+    "original_confirmed": "19/25;76%;6remain",
+    "original_suspicions": "2/12;10remain",
+    "qualified_closure_delta": 0,
+    "reviewer_target_executions": 0,
+    "root_help_metadata_observations": 1,
+    "test_cases": 0
+  },
+  "authority": {
+    "actual_instance_accepted": false,
+    "actual_signal_timeout_kernel_behavior_proved": false,
+    "bounded_prospective_envelope_source_accepted": true,
+    "execution_cleanup_retry_admitted": false,
+    "whole_helper_or_other_suite_accepted": false
+  },
+  "command": "exec /usr/bin/timeout --foreground --signal=TERM --kill-after=5s 200s /usr/bin/python3 -I -B /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+  "counterexamples_preserved": [
+    "v1 one-process prose rejected;1job2processes correction accepted",
+    "aff308 text-match data-writer failure after preserving v1; not runtime failure",
+    "Duplicated metadata nanosecond rounding; raw literal remains authoritative"
+  ],
+  "disposition": "ACCEPT_BOUNDED_PROSPECTIVE_EXTERNAL_ENVELOPE_PENDING_FRESH_INSTANCE",
+  "entry": {
+    "PTY": false,
+    "audit_jobs": 1,
+    "cwd": "/root/projects/PassVault/passvault-linux",
+    "launcher_children": 0,
+    "login": false,
+    "owner": "/root",
+    "shell": "/bin/bash",
+    "simultaneous_owned_supervisor_and_child_processes": 2
+  },
+  "envelope_author": "/root",
+  "inputs": [
+    {
+      "bytes": 8390,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-EXTERNAL-ENVELOPE-01.md",
+      "physical_lf": 131,
+      "sha256": "6476c10e3086afac5af013bd5f77885d4f1e383aa83d8c0c9d204140ccef588e"
+    },
+    {
+      "bytes": 6598,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-EXTERNAL-ENVELOPE-01.rejected-v1.md",
+      "physical_lf": 106,
+      "sha256": "762ce031c39a2628b653971eb72800097cc378540e603c11ac25d102cfc714d6"
+    },
+    {
+      "bytes": 14087,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/TIMEOUT-HELP-METADATA-01.json",
+      "physical_lf": 100,
+      "sha256": "3bb473783038fbd5464e92f260c6fa4381fcbe77ed64a8d1c1bb65b8af4cb6c4"
+    },
+    {
+      "bytes": 37464,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+      "physical_lf": 670,
+      "sha256": "67a84793cfa69c7ba33f34ce62b0aa54171370e599fb7242881b5d84f4eb28d0"
+    },
+    {
+      "bytes": 28793,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-LAUNCH-PLAN.md",
+      "physical_lf": 437,
+      "sha256": "a4e59258b3e43b44933c99e42b7a02ba87adfc227283538263061b0d7fe08079"
+    },
+    {
+      "bytes": 18408,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CLOSEOUT-CONTROLS-LAUNCHER-SOURCE-REVIEW.json",
+      "physical_lf": 325,
+      "sha256": "fc0d22972cedff86c9ff9462396f3463ffced97aa92481a06c410d92e2da5ea2"
+    }
+  ],
+  "installed_metadata": {
+    "architecture": "amd64",
+    "manifest_sha256": "e36e1e184c4ff1899a52243e2e6f10f0e26fce8ba83675aeb6d4915f0dd91826",
+    "package": "coreutils",
+    "package_metadata_is_semantic_proof": false,
+    "status_paragraph_sha256": "d35ef1a634e51b734347253500acda4705b277324e8523eb4fa75268787c87be",
+    "unavailable": [
+      "/usr/share/man/man1/timeout.1.gz",
+      "/usr/share/doc/coreutils/copyright"
+    ],
+    "version": "9.4-3ubuntu6.2"
+  },
+  "interface_metadata": {
+    "author_independently_confirmed": "Root confirms JS Number rounding and will generate fresh actual request wholly with Python integer JSON; raw output intact; no edit/rerun.",
+    "authoritative_field": "tool_result.output decoded with exact integer JSON",
+    "duplicated_observed_pins_usable": false,
+    "external_documentation_GETs": 0,
+    "help_argv": [
+      "/usr/bin/timeout",
+      "--help"
+    ],
+    "help_exit": 0,
+    "help_stderr_bytes": 0,
+    "help_stdout_bytes": 2146,
+    "help_stdout_sha256": "5d66a7ae507a4e647c32e62b64231f45697a00aa9b7e7de3dcaf4702424aa1ea",
+    "raw_metadata_pre_post_tool_pins_match": true,
+    "raw_pin_copy_differences": [
+      {
+        "raw": 1787292627933100530,
+        "rounded_copy": 1787292627933100500,
+        "suffix": "source_before/0/st_ctime_ns and source_after/0/st_ctime_ns"
+      },
+      {
+        "raw": 1787292627976100720,
+        "rounded_copy": 1787292627976100600,
+        "suffix": "source_before/1/st_ctime_ns and source_after/1/st_ctime_ns"
+      }
+    ],
+    "scope": "Installed-binary command-interface self-description only; no independent implementation/manual/source proof or actual signal/timeout regression.",
+    "tool_chunk": "dd845f",
+    "tool_exit": 0
+  },
+  "narrative": {
+    "bytes": 6380,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/CLOSEOUT-CONTROLS-EXTERNAL-ENVELOPE-SOURCE-REVIEW.md",
+    "physical_lf": 95,
+    "sha256": "bf5c2dd19e3c44295a68d545cf6478585ef52fae27e8b1973c32133a5b1ca1ff"
+  },
+  "operations": {
+    "build_test_packaging_process_probe_signal_deletion": 0,
+    "data_reader_FDs_closed": true,
+    "own_compact_permanent_reports": 2,
+    "target_import_AST_syntax_compile_execution": 0,
+    "temporary_cache_outputs_workers_background_jobs": 0,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "remaining_gates": [
+    "Fresh exact actual28 request/source/tool/shell/environment originals and original coordination/slot/freeze/resources/expiry",
+    "Genuine independently authored actual-instance acceptance",
+    "One root-owned invocation with no competing audit-owned job",
+    "Independent28 effects/58 records/original-only cleanup/external exit and owned-process settlement review"
+  ],
+  "review_extent": {
+    "complete_v1_to_v2_diff_read": true,
+    "exhaustive_raw_vs_duplicate_value_comparison": true,
+    "full_metadata_receipt_read": true,
+    "full_v1_and_v2_read": true,
+    "tool_chunks": [
+      "0eb095",
+      "8c708c",
+      "057751",
+      "87e859",
+      "adce8c",
+      "d73e66",
+      "b20021"
+    ]
+  },
+  "reviewer": "/root/editor_review",
+  "schema": "passvault-strict28-external-envelope-source-review-v1",
+  "utc": "2026-09-09T05:49:36.381804+00:00"
+}

@@ -1,0 +1,335 @@
+{
+  "actual": {
+    "all28_effect_and_cleanup_records_independently_reconciled": true,
+    "application_test_cases": 0,
+    "combined_output": "",
+    "control_emissions": 58,
+    "external_exit": 0,
+    "failed_or_unstarted": 0,
+    "fixture_cleanup_complete_cases": 28,
+    "invocations": 1,
+    "named_bodies_started_passed": 28,
+    "named_result_references": [
+      {
+        "case": "J01_progress",
+        "cleanup_bytes_written": 230,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "fec5b7870320df7dfbc61dfaafdc4b779f37cd3341a89f025d307278b5235eec",
+        "journal_result_sequence": 5
+      },
+      {
+        "case": "J02_equal_rewrite",
+        "cleanup_bytes_written": 152,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "d123a8305a70ee50bb523ced80ea45af3b1875cd27268e14dd8304b287eec781",
+        "journal_result_sequence": 7
+      },
+      {
+        "case": "J03_truncate",
+        "cleanup_bytes_written": 76,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "0638ac3ac010ce7954c3b794f430b10240260f9c882258c8b11016f2366a5cae",
+        "journal_result_sequence": 9
+      },
+      {
+        "case": "J04_external_append",
+        "cleanup_bytes_written": 77,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "0e84e09bda2959bc360a7e3b6ae7c0061ad2d9092e52422499a0e0c2c11ebc43",
+        "journal_result_sequence": 11
+      },
+      {
+        "case": "J05_name_replace",
+        "cleanup_bytes_written": 98,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "3a1855b37e7c730b6b295d9cc9d28eaf038afe37839833c6acdcfadb262132c2",
+        "journal_result_sequence": 13
+      },
+      {
+        "case": "J06_hardlink",
+        "cleanup_bytes_written": 76,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "52f75782fe92df00ae09c8564f8767e700e59e7f11bf60f77fbb36e575652ac0",
+        "journal_result_sequence": 15
+      },
+      {
+        "case": "J07_positive_short_writes",
+        "cleanup_bytes_written": 165,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "37455faa9c497f346dfc04d9e9c0b5d6d3c1ed7a52f7a0641ec18cc99887d326",
+        "journal_result_sequence": 17
+      },
+      {
+        "case": "J08_zero_write",
+        "cleanup_bytes_written": 76,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "29b357a6de9321088739d8c151d0acae38e6d3976cc28d2327f3084f75ccad8f",
+        "journal_result_sequence": 19
+      },
+      {
+        "case": "J09_partial_then_zero",
+        "cleanup_bytes_written": 83,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "f36bdd486c4b2e2c30fc277b264d83ec255579aeaec395bfbbc8f5709a4002ca",
+        "journal_result_sequence": 21
+      },
+      {
+        "case": "J10_fsync_error",
+        "cleanup_bytes_written": 157,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "fe22190d7dd20bc52e15023c681392570410fb876bdc278faee0cdb2eb96aa13",
+        "journal_result_sequence": 23
+      },
+      {
+        "case": "J11_postwrite_name",
+        "cleanup_bytes_written": 179,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "6a53aadf8d7998fa0906cd1ab5e123421ecc0e45b522b3f0106de457c40d7976",
+        "journal_result_sequence": 25
+      },
+      {
+        "case": "J12_postwrite_mode",
+        "cleanup_bytes_written": 157,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "0116175d973f278731c91ec2f5a58e9852df80c6283b0af2b00b9ee9c7f50ab0",
+        "journal_result_sequence": 27
+      },
+      {
+        "case": "J13_postwrite_nlink",
+        "cleanup_bytes_written": 157,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "8494daed15337ae63dfeb5d3575d3b933aabbf86de1be3c622ee912749f0a2cd",
+        "journal_result_sequence": 29
+      },
+      {
+        "case": "B01_valid_bootstrap",
+        "cleanup_bytes_written": 31,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "46e111d94bcaab565ebad4dc49358921aa2c65c38a01751b0a8b11278b622f17",
+        "journal_result_sequence": 31
+      },
+      {
+        "case": "B02_cancel_before_read",
+        "cleanup_bytes_written": 31,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "0534b644fbf194c6783e3f6e395be8d3126bacedb88e49e824911e94e339c61d",
+        "journal_result_sequence": 33
+      },
+      {
+        "case": "B03_deadline_before_read",
+        "cleanup_bytes_written": 31,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "e8b4cae462b9f7219148bf3987eb4ef43c28fa5874d0448419f3e7ad9939edba",
+        "journal_result_sequence": 35
+      },
+      {
+        "case": "B04_cancel_during_read",
+        "cleanup_bytes_written": 31,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "03f6eaf1232c23d68d2f3e66aba4c3085bdef35eed8efb10e3fddd6b1b84ac21",
+        "journal_result_sequence": 37
+      },
+      {
+        "case": "B05_deadline_during_read",
+        "cleanup_bytes_written": 31,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "c8812ed9f25b2515aa355574130c02a1029521b3458b3d2f607364237683cf60",
+        "journal_result_sequence": 39
+      },
+      {
+        "case": "B06_cancel_during_bind",
+        "cleanup_bytes_written": 0,
+        "cleanup_removed_names": 0,
+        "effect_sha256": "e133cbcb121c4c8bfff8ce1a6e58a19c4d50e8b78697e98ed2518737f480519f",
+        "journal_result_sequence": 41
+      },
+      {
+        "case": "B07_deadline_during_bind",
+        "cleanup_bytes_written": 0,
+        "cleanup_removed_names": 0,
+        "effect_sha256": "dc5edfe9a997b39307cde156db4c05f63054a1687c731d3abde27e877570e866",
+        "journal_result_sequence": 43
+      },
+      {
+        "case": "B08_directory_replace",
+        "cleanup_bytes_written": 0,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "7a72d513b3b9aad945c3f88337ef4c1e65d009a0a2b430ef5e378675f54055a4",
+        "journal_result_sequence": 45
+      },
+      {
+        "case": "B09_rehash_unchanged",
+        "cleanup_bytes_written": 31,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "2b8c0b1fb66d658bb7c99c8b84c3295994b0cd884e03fccf2b444efc0d0fb2f7",
+        "journal_result_sequence": 47
+      },
+      {
+        "case": "B10_rehash_pin",
+        "cleanup_bytes_written": 62,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "a58fecab31a90795cbc632fdbf6162539006bdc8f01e5ce999c86f68069513c6",
+        "journal_result_sequence": 49
+      },
+      {
+        "case": "B11_rehash_digest",
+        "cleanup_bytes_written": 62,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "a58fecab31a90795cbc632fdbf6162539006bdc8f01e5ce999c86f68069513c6",
+        "journal_result_sequence": 51
+      },
+      {
+        "case": "B12_rehash_cancel",
+        "cleanup_bytes_written": 54,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "7e9d73907163ce66ec5d553754f37f2e2a86a6bf40b21eaf2c7a44fffeda2c42",
+        "journal_result_sequence": 53
+      },
+      {
+        "case": "B13_rehash_deadline",
+        "cleanup_bytes_written": 54,
+        "cleanup_removed_names": 2,
+        "effect_sha256": "a455f988727e9c167251ed7bf5efe66a57b71c5bba9726dce4ff84c30e6dfad6",
+        "journal_result_sequence": 55
+      },
+      {
+        "case": "B14_hold_after_cancel",
+        "cleanup_bytes_written": 171,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "70c4ad4dc0507e2488a7b87e2d69a1c100d1b3d083c7e16ccf55a9b259123741",
+        "journal_result_sequence": 57
+      },
+      {
+        "case": "B15_hold_after_deadline",
+        "cleanup_bytes_written": 171,
+        "cleanup_removed_names": 1,
+        "effect_sha256": "6138b70f3b3c96c28b3036d4e2338275b157d227c0bd3d17360fb52f1dec3d2c",
+        "journal_result_sequence": 59
+      }
+    ],
+    "outer_rows": 64,
+    "removed_name_counts_sum": 33,
+    "tool_chunk": "e9c2e8",
+    "tracked_fixture_written_bytes_sum": 2443
+  },
+  "authority": {
+    "application_DB_fullcloseout_or_other_suite_admitted": false,
+    "further_invocation_or_retry_admitted": false,
+    "one_actual28_outcome_adopted": true,
+    "root_may_release_this_execution_slot": true,
+    "slot_actually_released_by_reviewer": false
+  },
+  "controls_author": "/root/build_config",
+  "disposition": "ACCEPT_QUALIFIED_ACTUAL_28_COMPONENT_PASS_AND_PERMIT_ROOT_SLOT_RELEASE",
+  "effect_challenge": {
+    "B01_B08": "Actual bind/read/EOF/twofsync positive; exact cancellation/deadline refusal before read, after first4B read, after firstboundroot, or replaced directory; observed counters/ticks match intended boundaries.",
+    "B09_B13": "Unchanged rehash returns; pin-only same-content and digest-only injected-seal cases reject;between-input cancellation/real elapsed deadline stops before second input. No main/lock integration proof.",
+    "B14_B15": "After explicit synthetic cancellation/expired-start refusal, real HOLD record advances sequence2/171B without reentering refused callback.",
+    "J01": "Real3-record progression230B.",
+    "J02_J06": "Five prior pin/name/link/length mutations rejected before any append write/fsync; residual original-FD lengths distinguish truncate/append/replacement.",
+    "J07": "13 real delegated short writes complete89B new record; onefsync;165B total/sequence2.",
+    "J08_J09": "Injected zero refusals;0 versus7 real residual bytes;last completed sequence1/used76 unchanged.",
+    "J10": "81 real appended bytes followed by injected fsync EIO, not physical durability evidence;157B residual and completed state unchanged.",
+    "J11_J13": "81B real append/fsync then name/mode/nlink mutations rejected at postappend guard;last completed state unchanged.",
+    "nonemitted_internal_assertions": "Exact frozen callable source also asserts sticky incomplete guard, actual content/readback and sourceFD settlement; these are source-bound executed assertions, not independently serialized full per-member history."
+  },
+  "evidence": [
+    {
+      "bytes": 15270,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-REQUEST-01.json",
+      "sha256": "02dc3df032fc477f044c2221064bc87784e5dcc9b3ab0a469f616005c1aedead"
+    },
+    {
+      "bytes": 28471,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-events-01.jsonl",
+      "sha256": "e62831737dc20bdda490262dd7b4b9fd8ef1bcb25b1c6a749184969d974d07dd"
+    },
+    {
+      "bytes": 17388,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-EXTERNAL-RESULT-01.json",
+      "sha256": "5fd00b7a58e1dd2c19c6a3298937c749a3059986ef89cb66790dccd489bc77fa"
+    },
+    {
+      "bytes": 2374,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-ACCEPT-root-01.json",
+      "sha256": "2f854822c8b532e09f59c975200965160f9365fa5ddf6d92538b1c7629f5280e"
+    },
+    {
+      "bytes": 6896,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-ACCEPT-editor_review-01.json",
+      "sha256": "f776c71713a1750907b8ec9218f00b72eab08b799f8b2a654b779204d31aa95a"
+    }
+  ],
+  "executor_receipt_author": "/root",
+  "launcher_author": "/root/storage",
+  "operations": {
+    "metadata_descriptors_closed_on_return": true,
+    "new_build_or_workload_invocations": 0,
+    "own_permanent_reports": 1,
+    "process_probe_scope": "Only admitted own PID23795/start20352466 plus /proc/meminfo resource data; no census/signals.",
+    "reviewer_target_import_AST_compile_execution": 0,
+    "scratch_allocations_cleanup_deletions": 0,
+    "temporary_cache_outputs_workers_background_jobs": 0
+  },
+  "qualifications": [
+    "Only current8437 selected9definitions+nested bootstrap_tick; no helper main/admission/Guard/Forest, old runner or actual closeout execution.",
+    "Zero-write,fsyncEIO,CANCEL,pre-expired-start and B11seal are explicit injections; B05/B07/B13 use real150ms elapsed sleeps. No natural OOM, OS-signal/handler/timeout/kernel/Dstate/powerloss/hardware proof.",
+    "In-memory original-FD/member witnesses and source-bound cleanup plus observed empty scratch are not a complete externally reconstructible original allocation census or later cleanup authority.",
+    "Normal own-write compatibility demonstrated at tested boundaries; concurrent same-inode rewrite during append, hostile sameUID and cryptographic authentication remain outside scope.",
+    "Separate17 and registration6/DBouter regression/fullmain/actual original-runtime cleanup remain pending. Prior original19/25;all22/38;suspicions2/12;8PVD separate;0closure delta.",
+    "Prior controls01 20PASS2FAIL/controls02 22PASS0FAIL, PVU007STOP/PVU011NO-RETRY/PVA029FAILnoauto/G7G8CLOSED/WindowsFAILcleanupHOLD/oldrunner/publication/dependency/version/identity/signing/store/1017001 restrictions preserved."
+  ],
+  "resources_after_review": {
+    "disks_free_bytes": {
+      "/root/projects/PassVault": 20131946496,
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout": 20131946496,
+      "/tmp": 18125238272
+    },
+    "memory_bytes": {
+      "MemAvailable": 38002319360,
+      "MemTotal": 67435888640
+    },
+    "point_observation_only": true,
+    "root_actual_self_maxrss_kib": 46944
+  },
+  "review_reads": [
+    "739801 full external receipt",
+    "6f3a9a and51213f all64journal rows",
+    "c0c7aa exactDESIGN all325LF"
+  ],
+  "reviewer": "/root/editor_review",
+  "schema": "passvault-strict28-independent-actual-result-review-v1",
+  "settlement": {
+    "external_exit0_after_accepted_final_descriptor_close_path": true,
+    "journal_capture": "Stable postrun original-namespace fullpin andhash; no independently emitted initial journal original pin.",
+    "original_rmdir_intent_and_observed": true,
+    "outer_original_scratch": {
+      "dev": 23,
+      "ino": 783918,
+      "mode": 16832,
+      "uid": 0
+    },
+    "parent_fsync_recorded": true,
+    "per_member_external_original_census_available": false,
+    "same_original_child_birth": {
+      "admitted_starttime": 20352466,
+      "observation": "original PID absent at independent point check",
+      "pid": 23795,
+      "same_birth_present": false
+    },
+    "scratch_absent_independently": true,
+    "source12_and_directory19_and_original_lock_and_three_tools_freshly_matched": true,
+    "supervisor_birth_witness_available": false,
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_LAUNCH"
+  },
+  "timing": {
+    "actual_alarm_or_OS_signal_test": false,
+    "control_body_monotonic_seconds": 0.7382309439999517,
+    "first_journal_unix_ns": 1788934508515208185,
+    "journal_point_span_seconds": 0.784937849,
+    "last_journal_unix_ns": 1788934509300146034,
+    "scopes_not_normalized": "Journal point span is larger than tool wall field; retain literal distinct values. No independently measured full external monotonic interval or forced-timeout result claimed.",
+    "tool_wall_seconds": 0.744512552
+  },
+  "utc": "2026-09-09T06:27:13.977161+00:00"
+}

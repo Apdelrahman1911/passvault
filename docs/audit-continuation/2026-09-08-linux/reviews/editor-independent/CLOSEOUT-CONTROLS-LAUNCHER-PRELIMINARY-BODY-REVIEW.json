@@ -1,0 +1,210 @@
+{
+  "accounting": {
+    "application_test_cases": 0,
+    "executed_component_controls_by_this_review": 0,
+    "global_counts": "No retally here. Frozen PLAN337-341 reports19/25 original,22/38 all,2/12 suspicions with eight PVD explanations separate; this reviewer does not independently review PVA-038 in this body scope.",
+    "new_product_families": 0,
+    "planned_component_controls_in_draft": 28,
+    "qualified_closure_delta": 0,
+    "real_children_or_signals": 0
+  },
+  "actual_instance_acceptance": false,
+  "bounded_guards_independently_challenged": [
+    {
+      "area": "ownership before allocation",
+      "result": "Journal object exists before its create/open; fd is stored before journal pin/fsync checks. Scratch fd is retained before its identity checks. Scratch cleanup is not enabled until durable original allocation evidence. Partial allocations remain HOLD, not adopted. Directory registry exception issue above remains."
+    },
+    {
+      "area": "journal durability",
+      "result": "Prior completed full pin/length checked before append; reserved outer fields rejected; bounded canonical bytes, positive short-write loop, fsync and postwrite stable-original/path/length checks precede last/used/sequence advancement. Sticky failure blocks further successful accounting. Cooperative point evidence, not cryptographic prefix authentication or physical durability."
+    },
+    {
+      "area": "28-row mapping",
+      "result": "Fixed28 ordered string IDs, matching pending begin/result, valid attempted-but-unstarted HOLD path, PASS requires started body/effect/null failure/COMPLETE bounded cleanup. Terminal counts/unstarted list are recomputed from retained rows; returned terminal must equal emitted snapshot. Full success requires all28 PASS plus58 durable emissions. Duplicate, missing, reordered, extra, invalid, late or disagreeing rows cannot satisfy full success."
+    },
+    {
+      "area": "invalid emitted evidence",
+      "result": "Bounded invalid dictionaries are nested under outer kind=control_record and cannot impersonate launcher terminal. Validation failure latches failed. Durable event count may include invalid emissions; it is not a case/pass count."
+    },
+    {
+      "area": "cancel and clocks",
+      "result": "INT/TERM/HUP handlers latch; pending signals and monotonic deadline are sampled. First alarm does not asynchronously raise through acquisition. Known-original bounded cleanup can proceed after cancel. Final pending signal sampling may downgrade actual exit after provisional terminal0; hard preemption and complete external monotonic coverage are not established."
+    },
+    {
+      "area": "original-only root cleanup",
+      "result": "Retained parent/target identities and emptiness checked before durable intent and again immediately before one fd-relative rmdir. Parent fsync, absence and durable outcome required; rmdir/fsync progress flags retain partial failure. Unknown members, failed journal or unadmitted scratch yield HOLD, not recursive deletion, adoption or replay."
+    },
+    {
+      "area": "descriptor settlement",
+      "result": "Scratch close attempted before terminal; terminal explicitly provisional before journal/directory/lock closure, lock last. Close failure or late cancellation requires nonzero actual exit. External exit and independent own PID/starttime settlement are mandatory. LCL-OWN-001 and catastrophic interruption limitations prevent an unqualified universal once-only-cleanup claim."
+    },
+    {
+      "area": "resource scope",
+      "result": "Bounded inputs/evidence/file size,512MiB address-space limit,12/8GiB disk floors and25/20% memory floors; event-driven sampling may be delayed by synchronous work. No cgroup/RSS reservation, sampler process, build, child or shared-cache purge."
+    },
+    {
+      "area": "fresh admission boundary",
+      "result": "Draft requires exact source/request/approval/Python bindings, original Linux bootstrap lock provenance, derived ancestor pins, finite fresh interval and genuine independently supplied LC01-LC07 instance approval. This preliminary review supplies none of those actual approvals and does not certify current host/slot/packet state."
+    }
+  ],
+  "disposition": "REVISE_PRELIMINARY_BODY_SOURCE_ONLY",
+  "execution_admission": false,
+  "final_source_acceptance": false,
+  "findings": [
+    {
+      "author_counterchallenge": "/root/storage independently confirmed the partial two-target-assignment path and explicitly declined to exclude handled MemoryError. Author confirms current discovery is pre-journal and does not establish an unrelated-FD effect.",
+      "classification": "bounded infrastructure ownership/once-only-close defect",
+      "guards_and_counterexamples": "New discovery is currently pre-journal. The raised error prevents control execution/PASS and no new destructive authority is established. No demonstrated reuse of this closed descriptor, unrelated-FD close, application defect or product-data effect is claimed. The defect is the reachable partial-registration exception path contradicting once-only cleanup, not a successful normal-path close failure.",
+      "id": "LCL-OWN-001",
+      "locations": [
+        "LAUNCH_CONTROLS_01.py:172-180",
+        "LAUNCH_CONTROLS_01.py:218-226",
+        "CLOSEOUT-CONTROLS-LAUNCH-PLAN.md:278-280"
+      ],
+      "proposed_narrow_correction": "Unpublish both incomplete key entries before the constructor close, or use one registry entry with failure-safe publication. Preserve close-once semantics and consumed HOLD on uncertainty. Author implementation and separate exact successor review are still required.",
+      "pva_family_delta": 0,
+      "reachability": "After successful directory open/fstat, sequential assignment at line177 can insert self.fds[key] and then fail inserting self.pins[key], for example from MemoryError. The exception path closes fd without removing the already-published fds entry. Main finally then calls d.close(), which attempts that fd a second time.",
+      "runtime_evidence": "None: source counterexample only; not fault-injected or executed.",
+      "status": "CONFIRMED_SOURCE_ONLY_REVISE"
+    },
+    {
+      "author_counterchallenge": "/root/storage independently confirmed the avoidable dependency and proposed a direct second-stage os._exit(124) with no diagnostic write. Root was notified; no runtime reproduction requested or authorized.",
+      "classification": "avoidable blocking dependency in emergency self-exit",
+      "guards_and_counterexamples": "A returning write, including one that raises, reaches finally/_exit. Existing blocked-syscall, Python-handler-delivery and host-loss qualifications already prevent a universal hard-deadline claim; they are retained. No actual blocked write, transport failure, hang or elapsed-time violation was observed.",
+      "id": "LCL-TIMER-001",
+      "locations": [
+        "LAUNCH_CONTROLS_01.py:147-158",
+        "CLOSEOUT-CONTROLS-LAUNCH-PLAN.md:193-202",
+        "CLOSEOUT-CONTROLS-LAUNCH-PLAN.md:295-297"
+      ],
+      "proposed_narrow_correction": "Remove potentially blocking second-stage diagnostic I/O before self-exit and explain that external exit124/missing terminal means HOLD. Keep first-stage latch/cooperative cleanup and the remaining interpreter/kernel/host limitations.",
+      "pva_family_delta": 0,
+      "reachability": "On the second alarm TIMEOUT is already true and the one-shot timer has expired. os.write(2, notice) precedes os._exit(124) inside try/finally; a blocked stderr sink can keep that write from returning, so the finally self-exit need not be reached. The notice is byte-bounded, not time-bounded.",
+      "runtime_evidence": "None: source counterexample only, not an OS-signal or blocking-I/O test.",
+      "status": "CONFIRMED_SOURCE_ONLY_REVISE"
+    },
+    {
+      "author_counterchallenge": "/root/storage independently agreed this is prose precision only, not a false-PASS finding.",
+      "classification": "documentation tracking-order precision",
+      "guards_and_counterexamples": "emit catches validation failure, sets sticky failed and rethrows; complete() requires not failed. This wording mismatch does not establish false PASS, lost invalid evidence or incorrect completed-case credit.",
+      "id": "LCL-DOC-001",
+      "locations": [
+        "LAUNCH_CONTROLS_01.py:332-345",
+        "CLOSEOUT-CONTROLS-LAUNCH-PLAN.md:232-240"
+      ],
+      "proposed_narrow_correction": "State that the durable-emission list advances after fsync, before protocol validation; validated rows/protocol state advance after their checks. Retain sticky-failure explanation.",
+      "pva_family_delta": 0,
+      "reachability": "PLAN236 says in-memory tracking advances after durable output and protocol checks. Code appends to events after durable journal output but before validation, deliberately retaining bounded invalid durable emissions. Validated rows/protocol state are separate.",
+      "runtime_evidence": "None required to establish the source/prose ordering mismatch; not a completed regression test.",
+      "status": "CONFIRMED_DOCUMENTATION_ONLY_REVISE"
+    }
+  ],
+  "format": "passvault-linux-closeout-controls-launcher-preliminary-body-review-v1",
+  "frozen_chain_scope": {
+    "automatic_rebind_allowed": false,
+    "component_source_review_sha256": "f564f4a4ee1063538562f17bd7f3b4ebd0f3eaf982edf79fffa0d3445aac57ae",
+    "controls_design_sha256": "1e23c7432b9ea297e96ab56e7bd4742e5019af5c0726ce6ad28a2bdc8de3c8bb",
+    "controls_sha256": "bdee7e285f45f78e56d99fc6ef122767de00400d952f1e68c1d47b5d9bf35a53",
+    "current28_component_exclusions": [
+      "run_contract",
+      "helper main",
+      "actual admission",
+      "Guard",
+      "Forest",
+      "actual closeout"
+    ],
+    "helper_plan_sha256": "cffc69357a0c4f0c5e46fd4d282439ece513eb2f166074c05f2ab4e679f8a57d",
+    "helper_sha256": "b16774ff6d0c14ece40dbe2c75684a2b07e7c90c9da4373ec0a6e12e87cc7bec",
+    "historical_helper_source_acceptance_sha256": "c47bb8c9d39d32ab21d9f7d288c2239aafc847fe260e40bbee0e391fbcd6a58e",
+    "provenance": "These are the literal frozen bindings/table in the reviewed drafts, not new whole-helper source acceptance by this reviewer.",
+    "separate_root_confirmed_blocker": "LC-LAUNCHER-CONTRACT-001: incompatible LAUNCHER.evidence requirements in excluded run_contract; actual helper viability HOLD. This preliminary review does not independently adjudicate or resolve that separate defect."
+  },
+  "launcher_author": "/root/storage",
+  "preserved_history": "Original controls01=20PASS/2FAIL; controls02=22PASS/0FAIL with prior failures, reviewer miss and qualified external timing/cleanup evidence retained. Their completed slot release is not new admission. No existing report or source was modified by this reviewer.",
+  "preserved_restrictions": [
+    "PVU-007 STOP",
+    "PVU-011 NO RETRY",
+    "PVA-029 recorded failure/no automatic retry",
+    "G7/G8 CLOSED",
+    "No archived application/recovery-helper or unadmitted old-runner execution/import",
+    "Windows run34284083351 FAIL/cleanup HOLD,zero started/all14 unstarted,no retry",
+    "Hardware/security/owner PVD decisions remain separate",
+    "No protected-branch/publication/dependency/version/identity/candidate1017001 changes"
+  ],
+  "recorded_utc": "2026-09-09T03:31:22.321080+00:00",
+  "required_next_steps": [
+    "Preserve exact unaccepted draft beforeimages before any author revision; preserve this source-only disagreement/history.",
+    "Author fixes the three bounded items; independent reviewer re-reads exact successor changes and surrounding paths.",
+    "Root dispositions separate LC-LAUNCHER-CONTRACT-001 helper viability HOLD and obtains any necessary exact helper/PLAN/control/order/source-review successor, without silently rebinding old acceptance.",
+    "Perform separate final source review and genuinely filled fresh root/independent execution, coordination, cleanup and one-slot instance admission before any invocation.",
+    "After a separately admitted root-owned invocation, independently reconcile literal case rows, cleanup, resources, actual process exit and original own PID/starttime settlement. Source-only review is not regression evidence."
+  ],
+  "resource_observation_not_execution_admission": {
+    "disk_available_bytes": {
+      "/root/projects/PassVault": 24719228928,
+      "/tmp": 20948267008
+    },
+    "memory": {
+      "MemAvailable_bytes": 42685104128,
+      "MemTotal_bytes": 67435888640
+    },
+    "observed_utc": "2026-09-09T03:31:22.321080+00:00"
+  },
+  "review_method": {
+    "complete_source_lines_read": {
+      "launcher": 660,
+      "plan": 341
+    },
+    "data_read_guards": "Bounded owned single-link regular files, no-follow ancestor/file opens, pre/fd/post/name full-pin equality, exact SHA-256; descriptors closed after each reader.",
+    "process_probes": 0,
+    "read_only_tool_chunks": [
+      "f1cda1",
+      "6cd8d9",
+      "cff6bd"
+    ],
+    "scope": "Preliminary ownership, cancellation, durability, original-only cleanup and ordered28-result mapping. Not helper viability, main/admission/Guard/Forest/run_contract integration or final execution authority.",
+    "subject_compilations": 0,
+    "subject_executions": 0,
+    "subject_imports": 0,
+    "syntax_checks": 0
+  },
+  "reviewer": "/root/editor_review",
+  "reviewer_cleanup": "Only compact necessary permanent reports created in reviewer-owned directory. No scratch, build outputs, caches, target workers, daemons or background jobs created; no process signals, deletions or wrapper invocation performed. Reader descriptors were closed normally.",
+  "source_identity_qualification": "This review binds only the literal two unaccepted drafts above. No final helper/control/order generation or current Git HEAD/tree is asserted. A separate exact successor source and instance review is mandatory.",
+  "subject_sources": [
+    {
+      "bytes": 36459,
+      "lf": 660,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/LAUNCH_CONTROLS_01.py",
+      "sha256": "7b1ab171d1e03f15e87ebdc3f413047618adba8db15f7d25c538ca1b162d2f46",
+      "source_read_pin": {
+        "ctime_ns": 1788923147629005401,
+        "dev": 24,
+        "gid": 0,
+        "ino": 14241182,
+        "mode": 33152,
+        "mtime_ns": 1788923147629005401,
+        "nlink": 1,
+        "size": 36459,
+        "uid": 0
+      }
+    },
+    {
+      "bytes": 22212,
+      "lf": 341,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/linux-closeout/CLOSEOUT-CONTROLS-LAUNCH-PLAN.md",
+      "sha256": "1a3fdc16d537606a2baf49133dbe1f783653a2ad28379c9a69acecff4983a940",
+      "source_read_pin": {
+        "ctime_ns": 1788923147630005401,
+        "dev": 24,
+        "gid": 0,
+        "ino": 14241555,
+        "mode": 33152,
+        "mtime_ns": 1788923147630005401,
+        "nlink": 1,
+        "size": 22212,
+        "uid": 0
+      }
+    }
+  ]
+}
