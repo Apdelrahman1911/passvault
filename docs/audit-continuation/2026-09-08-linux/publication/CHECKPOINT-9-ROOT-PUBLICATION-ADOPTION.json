@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T17:26:20.281444+00:00",
+  "decision": "ADOPT_NEW_C9_TWO_PHASE_PUBLICATION_ONLY_SUBJECT_TO_EXACT_SELECTION_AND_INSTANCE_GATES",
+  "scope": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-9-PUBLICATION-SCOPE-ASSESSMENT.json",
+  "scope_sha256": "f5efa35986e6739a63c639418cfe5aa2fa02b16d4d99ec39e0d108530484d2cc",
+  "phase1": "One selected nonactivating source/report commit and dedicated fast-forward push after C8 activation7b716ce8c693fa480bfb99d518acd9d4c8f9cfab; pendingLinux03/GUI/unrelated work excluded. Exact payload review required before Git writes.",
+  "phase2": "One separately reviewed Windows03 request-only activation commit directly after exact published C9 source and dedicated fast-forward push; sole audit job slot and independent instance admission required before push.",
+  "bounds": {
+    "seconds_per_phase": 600,
+    "read_stage_commit_command_seconds": 60,
+    "push_seconds": 120,
+    "object_inventory_files": 100000,
+    "object_inventory_bytes": 536870912
+  },
+  "object_union": "976files/253dirs/7ancestors,38178667B derived from C8 baseline and every incremental addition in both publication receipts; fresh comparisons required before stage, afterstage, aftercommit, afterpush. Preserve bytes/non-time invariants and exact loose/pack timestamp qualifications, historicalFAIL/UNKNOWN.",
+  "git_guards": "No force, protected refs/tags, hooks/signing, config/dependency/version/identity changes, GC/prune/repack/maintenance, checkout/reset/clean/stash or preexisting-file deletion. Per-command hooks/fsmonitor/gc/maintenance/signing disabled. Root-only Git and shared original Linux lock.",
+  "no_execution_or_cleanup_authority": true,
+  "limits": "No retrospective02/HOLD clearance, retry or unadmitted helper import. Source/report publication alone cannot activate Windows03. No implicit third phase."
+}

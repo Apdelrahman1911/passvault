@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T16:02:24.865909+00:00",
+  "disposition": "RELEASE_SCHEDULING_ONLY_AFTER_INDEPENDENT_ACTUAL_RECONCILIATION",
+  "actual": {
+    "run_id": 34372394480,
+    "attempt": 1,
+    "source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
+    "source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
+    "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+    "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
+    "request_sha256": "65d4777974947ca1bfd62808b0ff60762a151d9611c53df59dbb91860578633b",
+    "operational_status": "CONSUMED_FAIL_READONLY_IMMEDIATE_JOB_ACCOUNTING_GATE",
+    "helper_exit": 1,
+    "first_parent_exit": 0,
+    "initial_job_active": 1,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_7_ENTRIES_AND_GENERATED_ROOT_REMOVED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-02-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "0ab0a9908e2af20710996183fdc633b6cfa68989eaaa5ccebf8d2a5fcf20baea",
+    "evidence": "runs/windows-cohort02/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
+    "limits": "Initial counter1/later0 neither identifies a child nor proves accounting lag/benignity/duration. Finalization after failed command sawzero without normal-drain loop; no retry or old HOLD release. Actual Hello/provider/hardware and historicalred/productionallocation-cut gaps remain."
+  },
+  "no_retry": true,
+  "prior_scopes_unchanged": true,
+  "next": "Fresh Linux02 actual-instance admission; Windows03 small source-supported readiness-wait correction may be reviewed separately, not activated."
+}

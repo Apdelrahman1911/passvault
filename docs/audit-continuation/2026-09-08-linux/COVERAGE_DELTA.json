@@ -284,14 +284,14 @@
     }
   ],
   "new_application_test_executions": 0,
-  "delta_freeze": "CHECKPOINT8: nineteen C5 application identities unchanged. Corrected isolated Linux source/instance reviewed; one preallocation hostconflict refusal, zero application tests/closures/semanticLF. Windows02 validation source is a separate reviewed source-only preparation; no CI activation in this checkpoint. All old failures and source/EOL/coverage qualifications retained.",
+  "delta_freeze": "CHECKPOINT9: nineteen C5 application identities unchanged; Windows02 and Linux isolated02 actual operational failures independently reconciled with zero product executions/closures, preserving cleanup/HOLD distinctions. Windows03 exact source delta accepted but fresh activation/instance pending. Linux03/GUI preparation excluded. All prior failures and source/EOL/coverage qualifications retained.",
   "additional_test_source_declarations": 20,
   "baseline_policy_review": "reviews/baseline-coverage/REVIEW.md",
   "independent_checkpoint_review": {
     "reviewer": "/root/baseline_coverage",
-    "path": "reviews/baseline-coverage/CHECKPOINT-8-REVIEW.json",
-    "status": "REFERENCE_TO_GENUINE_INDEPENDENT_REVIEW_NOT_ROOT_ACCEPTANCE",
-    "scope": "Explicit frozen C8 source/report selection and central ledger delta only; no whole-project re-audit or runtime readiness."
+    "path": "reviews/baseline-coverage/CHECKPOINT-9-REVIEW.json",
+    "status": "PROSPECTIVE_REFERENCE_TO_GENUINE_INDEPENDENT_REVIEW_NOT_ROOT_ACCEPTANCE",
+    "scope": "Exact selected C9 source/report/ledger delta and publication qualifications only; not product execution or whole-project readiness."
   },
   "additional_test_source_declarations_scope": "JUnit methods: nine Back plus eleven row/input; zero executed",
   "additional_android_instrumentation_cases": {
@@ -311,7 +311,7 @@
     "planned_ctest_cases_unstarted": 14,
     "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json"
   },
-  "updated_utc": "2026-09-09T15:06:46.745326+00:00",
+  "updated_utc": "2026-09-09T17:21:20.372103+00:00",
   "infrastructure_evidence": {
     "not_original_811_denominator": true,
     "source_capture": {
@@ -842,5 +842,84 @@
     "declared_cases": 14,
     "executed_cases": 0,
     "source_qualification": "One new ownedJob cohort; originalparentexit before settlement diagnostics; finalonly hashes/log retention; strict no-reparse cleanup. Unchanged14 cases; no historicalred/provider/hardware/CNGcontent test added. Actual source/request/rootcoordination admission remains separate."
+  },
+  "windows_cohort02_execution": {
+    "run_id": 34372394480,
+    "attempt": 1,
+    "source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
+    "source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
+    "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+    "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
+    "request_sha256": "65d4777974947ca1bfd62808b0ff60762a151d9611c53df59dbb91860578633b",
+    "operational_status": "CONSUMED_FAIL_READONLY_IMMEDIATE_JOB_ACCOUNTING_GATE",
+    "helper_exit": 1,
+    "first_parent_exit": 0,
+    "initial_job_active": 1,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_7_ENTRIES_AND_GENERATED_ROOT_REMOVED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-02-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "0ab0a9908e2af20710996183fdc633b6cfa68989eaaa5ccebf8d2a5fcf20baea",
+    "evidence": "runs/windows-cohort02/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
+    "limits": "Initial counter1/later0 neither identifies a child nor proves accounting lag/benignity/duration. Finalization after failed command sawzero without normal-drain loop; no retry or old HOLD release. Actual Hello/provider/hardware and historicalred/productionallocation-cut gaps remain.",
+    "release": "reviews/native/WINDOWS-COHORT-02-SLOT-RELEASE.json"
+  },
+  "linux_isolated_batch02_execution": {
+    "run_id": "linux-isolated-batch02",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "external_exit": 70,
+    "operational_status": "CONSUMED_MATERIALIZATION_FAIL_BEFORE_INNER_RUNTIME_HOLD",
+    "reason": "RuntimeError:raw Git blob mismatch",
+    "git_archive_child_exit": 0,
+    "inner_started": false,
+    "source_before": false,
+    "source_after": false,
+    "product_tests": 0,
+    "unstarted_regressions": 166,
+    "unstarted_fixture_producers": 1,
+    "xml_files": 0,
+    "cleanup": "NOT_ATTEMPTED_HOLD",
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
+    "review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+    "review_sha256": "d34f4e9890a35a72aa54a36c9dcbf09511396d49f2c4b8b95f5e5e4fb9379eca",
+    "external_receipt": "reviews/isolated-batch02/EXTERNAL-RESULT.json",
+    "consumed": true,
+    "limits": "Generic failed path/cause unknown; raw source certification not reached. Direct-child/outer settlement supports scheduling only; preterminal receipt does not establish final FD-close API success. No retry, held-runtime adoption/deletion or old-HOLD release.",
+    "release": "reviews/isolated-batch02/SLOT-RELEASE.json"
+  },
+  "windows_cohort03_source": {
+    "helper_sha256": "153d20b008896810b1929be2f4b2d97ef7d8699a46989e05a5dd9ac65982f7e5",
+    "workflow_sha256": "a547a24a547f8bef8d983212741556528f8d424b14fb14f8568a8bc31560a088",
+    "scope": "reviews/native/WINDOWS-COHORT-03-SCOPE.md",
+    "scope_sha256": "9f20d0e2b933590dc54144ab989558465b7456855bec0e7a6cdf6119e88d9ca3",
+    "review": "reviews/native-independent/WINDOWS-COHORT-03-ADMISSION.json",
+    "review_sha256": "96779f5141e5eba719efcb6481bcd2cb799572895398ca12382e55746a18b018",
+    "status": "SOURCE_ACCEPTED_FRESH_REQUEST_AND_EXECUTION_ADMISSION_REQUIRED",
+    "cases": 14,
+    "executed": 0,
+    "delta": "Bounded natural read-only Job drain within existing deadline; no added time/termination/oracle exemptions. Exact03 bindings, credential/Hello-excluded scope acknowledging real synthetic CNG sibling. Old02 failure retained.",
+    "python_syntax": "PASS_in_memory_ast_only_not_target_runtime"
+  },
+  "linux_raw_transport_challenge": {
+    "review": "reviews/verification/LINUX-ISOLATED-BATCH02-RAW-TRANSPORT-SOURCE-CHALLENGE.md",
+    "sha256": "e2e0c6a05fb981b7452f0bc8cc2522aca4312cb26edd792098a99288cdf69e9e",
+    "status": "SOURCE_CONTRACT_CORRECTION_REQUIRED_ACTUAL_FAILED_PATH_UNKNOWN",
+    "product_tests": 0
+  },
+  "checkpoint8_independent_review": {
+    "reviewer": "/root/baseline_coverage",
+    "path": "reviews/baseline-coverage/CHECKPOINT-8-REVIEW.json",
+    "status": "REFERENCE_TO_GENUINE_INDEPENDENT_REVIEW_NOT_ROOT_ACCEPTANCE",
+    "scope": "Explicit frozen C8 source/report selection and central ledger delta only; no whole-project re-audit or runtime readiness."
   }
 }

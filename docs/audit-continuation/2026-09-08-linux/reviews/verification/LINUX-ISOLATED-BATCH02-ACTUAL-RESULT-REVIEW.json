@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "reviewer": "/root/verification",
+  "run_id": "linux-isolated-batch02",
+  "disposition": "CONFIRMED_OPERATIONAL_FAIL_BEFORE_INNER_166_REGRESSIONS_PLUS_PRODUCER_UNSTARTED_RUNTIME_HOLD",
+  "evidence": {
+    "external_result": "reviews/isolated-batch02/EXTERNAL-RESULT.json",
+    "external_result_sha256": "0b75e6211697dc03e3606b2a458ce4ba72abf8786f8c97242281f00785f61d0d",
+    "root_admission_sha256": "a7b22d13737a5b95c4e33e95a1c9226aeeb8e2a10b106be474d889f51dd8db10",
+    "slot_before_sha256": "481fc0ea1f7d079c7f637cab5de581b4acbe6bc72dccc100e8e20e0bcbe2536f",
+    "outer_receipt_sha256": "710d9e95425b4b670ac83d23a35e7bdb65f498958c12d1f6385c9b9b0467a724",
+    "cancel_sha256": "af5c5353d5cd7df359b8a39b29a1c0577567241c7a561915855fb2488cb5ac40",
+    "only_log": "runs/linux-isolated-batch02/logs/outer-git.stderr",
+    "only_log_bytes": 0,
+    "only_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tools": "e2c342: permitted direct E/review metadata only; ba13cd: complete retained receipts/CANCEL/log read; 65dd3d: selected actual ordering source; d2acfd: all13 images plus request/approval reconciled to original root freeze. All completed0.",
+    "live_runtime_or_process_probes": false
+  },
+  "source": {
+    "commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "manifest_sha256": "2e8b82c91215bbfee9cf4a2a3f09bad386fc8515d7fd20263fbbfa5fe1217003",
+    "outer_sha256": "f65aecef66207da898c7bfda7d966ea235a2fe70f96b523ff977f32f8a80a6af",
+    "inner_sha256": "a1da36534c856ef9a5dddab303c7ad397b3bf2e7ca5d2ab5c07f4685d8255a31",
+    "init_sha256": "b8c443198bf6cd33860a704d0ee5bb6d054eae877b92bd17187f20d6e844fdcc",
+    "request_sha256": "2844335a072ab576176c8b839eec34dfc1f4a8f970630124d38e6c1e6a22b054",
+    "approval_sha256": "7b89c40f431a70111833fcb8a67f75ca0dc9567288fc4bdce27eb3ab801296c7",
+    "all_13_image_tuples_plus_request_and_approval_unchanged": true,
+    "representation": "RAW_GIT_BLOBS_REQUIRED_NOT_ESTABLISHED_BY_FAILED_MATERIALIZATION",
+    "qualification": "The1572-member C4 manifest and both EOL qualifications remain. No completed source_before/source_after or full raw checkout certification. No failed path or actual mismatching bytes were retained in the generic refusal."
+  },
+  "observed": {
+    "external_session": 2594,
+    "launch_chunk": "6bcbe5",
+    "completion_chunk": "39117a",
+    "external_exit": 70,
+    "outer_elapsed_preterminal_seconds": 2.318,
+    "receipt_status": "HOLD",
+    "reason": "RuntimeError:raw Git blob mismatch",
+    "inner_started": false,
+    "children_recorded": 1,
+    "archive_child_exit": 0,
+    "pidfd_kill_attempted": false,
+    "sequence": "Original admitted Git archive command completed0; original-child supervision and output fsync/close/capture preceded materialize. Tar member/type inventory and private directory creation are source-ordered before a raw-blob digest/length require failed. CANCEL records this exception, not a user-signal diagnosis. No second child, OUTER-INTENT, source_before, inner receipt or XML was produced.",
+    "archive_reported_bytes": 70277120,
+    "archive_reported_sha256": "20ba2328690084a6c977eb5d5e56d7e1bead83ba6dfee254d4d743fb29d5ec82",
+    "archive_qualification": "Original receipt captured the source.tar image after child completion and before materialization. Reviewer did not access held R/source.tar. The post-materialization archive-stability comparison was not reached; no exact failed-path/cause claim follows."
+  },
+  "settlement_and_cleanup": {
+    "direct_archive_child_reaped_source_order_supported": true,
+    "basis": "supervise records the original Popen returncode, transfers child=None, closes its original pidfd and returns before materialize can be reached. No signal/kill is recorded. The outer tool session also completed. This supports direct-child/outer scheduling settlement, not arbitrary-descendant/global-idle provenance.",
+    "namespace_or_gradle_launch": "NOT_REACHED",
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
+    "runtime_cleanup": "NOT_ATTEMPTED_HOLD",
+    "runtime": "/root/projects/PassVault/audit-runtime-linux-isolated-batch02",
+    "qualification": "Fresh R allocation and incomplete private materialization are source-ordered; contents/counts/current identity were not inspected. No inner namespace-empty proof, source-after, descriptor-bound inventory, mount guard or deletion was reached. Receipt is preterminal: final lock/directory close API success is not independently established and exit70 cannot distinguish an additional close error. Do not adopt, delete, replay or retry this runtime."
+  },
+  "resources": {
+    "reported_entry_disk_available_bytes": 22127902720,
+    "reported_entry_mem_available_bytes": 37117198336,
+    "reported_mem_total_bytes": 67435888640,
+    "recorded_runtime_resource_points": 1,
+    "qualification": "Reported launch samples exceed12GiB disk/25percent RAM floors. Archive observed70,277,120 bytes is below128MiB cap; outer reports2.318seconds against its bounds. This short run did not establish running-period monitoring, hard syscall deadlines, free inodes, namespace feasibility or eventual cleanup. Reviewer performed no live resource probes."
+  },
+  "product_evidence": {
+    "regression_pass": 0,
+    "regression_fail": 0,
+    "regression_unstarted": 166,
+    "fixture_producer_pass": 0,
+    "fixture_producer_unstarted": 1,
+    "xml_files": 0,
+    "expected_xml_captures": 17,
+    "new_closures": 0,
+    "qualification": "Infrastructure failure, not167 failed product tests. No Android32, physical biometric/iPhone, rendered Desktop, Apple/Windows native or PVA-029 execution credit."
+  },
+  "scheduling": {
+    "scheduling_only_release_supported": true,
+    "basis": "The exact outer tool session ended, its only admitted original Git child completed/reaped before refusal, no inner/build launch occurred, and no unresolved owned child is recorded. Retained inert private filesystem HOLD does not by itself keep this build/test reservation running.",
+    "automatic_retry_allowed": false,
+    "new_execution_admitted": false,
+    "cleanup_or_adoption_admitted": false,
+    "old_holds_released": false,
+    "qualification": "Root alone may release this reservation; this review does not change another reservation, prove host global idleness or authorize any next instance."
+  },
+  "preserved": "PVU-007 STOP; PVU-011 NO RETRY; PVA-029 failure/no automatic retry; G7/G8 CLOSED; all old FAIL/HOLD and consumed approvals; protected-ref/tag/version/identity/dependency/signing/publication/occupied1017001 fences. Counts remain19/25 original confirmed,22/38 all confirmed,2/12 original suspicions; eight PVD explanations separate.",
+  "reviewer_cleanup": "Only this compact permanent review written; no target execution/import, Git/build/CI, held-runtime access, process probes, temporary files, caches or workers. All inert-reader descriptors closed."
+}

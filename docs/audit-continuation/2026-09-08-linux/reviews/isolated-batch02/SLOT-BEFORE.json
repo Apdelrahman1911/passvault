@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "owner": "/root",
-  "state": "IDLE_AFTER_LINUX_ISOLATED_BATCH02_CONSUMED_FAILURE_RECONCILED",
-  "updated_utc": "2026-09-09T16:59:55.301897+00:00",
+  "state": "IDLE_AFTER_WINDOWS_COHORT02_CONSUMED_FAILURE_RECONCILED",
+  "updated_utc": "2026-09-09T16:02:24.865909+00:00",
   "branch": "codex/audit-continuation-linux-20260908",
   "all_other_agents": "ASSIGNED_SOURCE_DATA_ONLY_NO_BUILD_TEST_CI",
   "last_controls02": {
@@ -23,7 +23,7 @@
   "windows_run": 34284083351,
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
   "local_execution": "Linux02 consumed FAIL during wrapper bootstrap after verified C4 source-before:ordinary143/originalstop0;0 application tests/all166+1 UNSTARTED. Source-after/ownedsettlement/cleanupHOLD retained; no automatic retry.",
-  "next_gate": "Correct and independently review raw-source transport; separately admit any fresh instance. Windows03/GUI source preparation may resume; no build/test/CI by agents.",
+  "next_gate": "Fresh Linux isolated-batch02 host/CI/resource/pins and independent exact-instance admission; no automatic retry.",
   "historical_locks": "NOT_ADOPTED_OR_RECREATED",
   "release_of_slot_is_not_release_publication": true,
   "last_e_bootstrap": {
@@ -151,29 +151,5 @@
     "evidence_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
     "limits": "Initial counter1/later0 neither identifies a child nor proves accounting lag/benignity/duration. Finalization after failed command sawzero without normal-drain loop; no retry or old HOLD release. Actual Hello/provider/hardware and historicalred/productionallocation-cut gaps remain.",
     "release": "reviews/native/WINDOWS-COHORT-02-SLOT-RELEASE.json"
-  },
-  "last_linux_isolated_batch02": {
-    "run_id": "linux-isolated-batch02",
-    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
-    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
-    "external_exit": 70,
-    "operational_status": "CONSUMED_MATERIALIZATION_FAIL_BEFORE_INNER_RUNTIME_HOLD",
-    "reason": "RuntimeError:raw Git blob mismatch",
-    "git_archive_child_exit": 0,
-    "inner_started": false,
-    "source_before": false,
-    "source_after": false,
-    "product_tests": 0,
-    "unstarted_regressions": 166,
-    "unstarted_fixture_producers": 1,
-    "xml_files": 0,
-    "cleanup": "NOT_ATTEMPTED_HOLD",
-    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
-    "review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
-    "review_sha256": "d34f4e9890a35a72aa54a36c9dcbf09511396d49f2c4b8b95f5e5e4fb9379eca",
-    "external_receipt": "reviews/isolated-batch02/EXTERNAL-RESULT.json",
-    "consumed": true,
-    "limits": "Generic failed path/cause unknown; raw source certification not reached. Direct-child/outer settlement supports scheduling only; preterminal receipt does not establish final FD-close API success. No retry, held-runtime adoption/deletion or old-HOLD release.",
-    "release": "reviews/isolated-batch02/SLOT-RELEASE.json"
   }
 }

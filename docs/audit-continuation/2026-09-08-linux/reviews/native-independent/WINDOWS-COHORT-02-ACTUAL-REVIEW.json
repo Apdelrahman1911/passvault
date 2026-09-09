@@ -1,0 +1,128 @@
+{
+  "accounting_interpretation": {
+    "final_observed_zero": true,
+    "initial_active_after_parent": 1,
+    "normal_natural_drain_loop_entered": false,
+    "qualification": "The failed command makes settle(normal=False); its finalization query observed zero. This is no explicit Job termination, not evidence that the normal natural-drain loop ran. Equal/coarse journal timestamps do not establish an exact interval. Neither the counter nor its quick zero transition identifies a distinct child, benign stock-tool origin, delayed accounting or another causal explanation. The refusal text is not a process-identity proof.",
+    "termination_attempted": false
+  },
+  "cleanup": {
+    "delete_intents": 7,
+    "disposition": "ACCEPT_QUALIFIED_EXACT_OWNED_GENERATED_ROOT_REMOVAL",
+    "entry_refusals": [],
+    "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+    "journal_events": 17,
+    "original_handle_close_failures": [],
+    "original_root_identity": [
+      3131264093,
+      65536,
+      2931,
+      16
+    ],
+    "qualification": "Journal intent alone is insufficient; source-ordered cleanup_settled/result require successful bottom-up handle dispositions, original root close and require_absent, with no subsequent parent/Job close errors reported. Accepted only for this fresh cooperative namespace and exact Job, not arbitrary same-user isolation or historical HOLD recovery. Generic Actions orphan-cleanup text is not used as settlement proof.",
+    "removed_descendants": 7,
+    "removed_root": true,
+    "settlement_errors": []
+  },
+  "disposition": "CONFIRMED_OPERATIONAL_FAIL_14_UNSTARTED_QUALIFIED_OWNED_CLEANUP_SETTLED",
+  "evidence": {
+    "activation_receipt_sha256": "64635afb1bab3d3230f39134d51cd045b7d5a0b5e93b7ab7dcad05f8e023f015",
+    "all_download_receipt_file_hashes_checked": 14,
+    "all_download_receipt_file_hashes_match": true,
+    "all_three_raw_metadata_hashes_match_receipt": true,
+    "artifact_api_uploader_download_receipt_digest": "adbe6518d83a0faad3c8900264e8af5780778ba11ef579f0a29d0151d09f4aba",
+    "artifact_digest_correspondence": "API, uploader log and download receipt agree; reviewer did not refetch/recreate archive.",
+    "artifact_download_bytes": 4749,
+    "artifact_expanded_bytes": 10051,
+    "artifact_files": 6,
+    "artifact_id": 10112444242,
+    "content_review": "All six artifact files, complete helper/runner-setup/upload/final-job step logs, selected API fields and activation command records. Other CI log files hashed, not claimed fully semantically rereviewed.",
+    "directory": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02",
+    "download_receipt_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
+    "git_log_sha256": "98bc03dc49d3d524f5911693afdda0fe64ab832cb003f0c494ea576e2b52ded7",
+    "journal_sha256": "68e2f00870a46eb98c450026d0a383dcd565cfe44244e48975ddde326957d8f6",
+    "metadata_receipt_sha256": "54ea7e2c4c1f07fbff62ff838c7c82c45235aeb557ac13394603bc4b79ec0d07",
+    "result_sha256": "14ff48bdaa6e8887935f93a39084df5095d4105c1ca1c392d39194bb563f652b"
+  },
+  "observed_sequence": [
+    "Exclusive generated root and original ownership were bound; launch RAM/disk gates passed.",
+    "Only first git-identity parent was created/resumed; PID3340/TID7972 are historical evidence, not Linux authority.",
+    "Original process wait/exit retrieval retained parent exit0 before fallible whole-Job accounting.",
+    "Immediate Job accounting reported active1; readonly guard refused. Run.command did not return success and no next command launched.",
+    "Failure finalization then observed Job zero with termination_attempted=false and no settlement errors.",
+    "Final input hashes matched, one164-byte settled log was retained, original handles closed without reported errors, seven gathered entries and the exact generated root were removed.",
+    "Terminal result remained FAILED_OR_INCOMPLETE; CI captured helper exit1 and completed failure. Artifact upload succeeded."
+  ],
+  "preserved_predecessor": {
+    "cause_diagnosed": false,
+    "run_id": 34284083351,
+    "status": "FAIL/filesystem HOLD",
+    "unstarted_cases": 14
+  },
+  "product_evidence": {
+    "actual_executed_cases": 0,
+    "authored_cases": 14,
+    "cmake_configure": "UNSTARTED",
+    "ctest_inventory": "UNSTARTED",
+    "failed_product_cases": 0,
+    "intended_parent_commands": 22,
+    "native_build": "UNSTARTED",
+    "new_closures": 0,
+    "parent_exit0_observed": 1,
+    "parents_launched": 1,
+    "qualification": "Infrastructure refusal, not14 failed tests; no PVA-036/037/PVA-014 compatibility closure, CNG experiment or hardware/Hello credit.",
+    "remaining_parent_commands_unstarted": 21,
+    "successful_Run_command_returns": 0,
+    "unstarted_cases": 14,
+    "xml_files": 0
+  },
+  "resources_and_toolchain": {
+    "image_version": "20260830.290.1",
+    "initial_available_ram_bytes": 14671601664,
+    "initial_available_ram_fraction": 0.8542735571704851,
+    "initial_minimum_free_disk_bytes": 157740830720,
+    "initial_total_ram_bytes": 17174360064,
+    "os": "Windows Server2022 10.0.20348",
+    "qualification": "Initial/first-command launch samples satisfy declared floors. No running-period sample, compiler/SDK verification, configuration/build or effective compiler evidence was reached. Python platform/version gates are source-ordered; exact Python version was not retained in a toolchain report.",
+    "runner": "windows-2022"
+  },
+  "reviewer": "/root/native_review",
+  "reviewer_operations": "Bounded inert evidence reads/hashes/data reconciliation and this permanent review only; no source/body reaudit, Git/API, helper import/execution, build/test/CI, process probe, archived-runtime traversal or cleanup operation.",
+  "run": {
+    "attempt": 1,
+    "conclusion": "failure",
+    "created_at": "2026-09-09T15:46:00Z",
+    "helper_exit_code": 1,
+    "id": 34372394480,
+    "job_id": 102536602139,
+    "status": "completed",
+    "updated_at": "2026-09-09T15:46:21Z"
+  },
+  "scheduling_decision": {
+    "automatic_retry_allowed": false,
+    "basis": "Exact audit-owned Job zero and generated-root removal are reconciled; the sole exact CI job/run is completed. Root may release this reservation without retrying or recovering anything.",
+    "new_execution_admitted": false,
+    "old_holds_released": false,
+    "scheduling_only_release_supported": true,
+    "source_fix_admitted": false
+  },
+  "schema": 1,
+  "source_identity": {
+    "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+    "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
+    "captured_input_count": 12,
+    "checkout_eol_scope": "Exact12 captured files, including seven inline native/.gitattributes inputs; not whole-tree G12 checkout certification.",
+    "helper_sha256": "4bbb467ef222292071f693df22cd4fb3af467749d1f05dc3ea07cb94edb19e9a",
+    "instance_review_sha256": "e457e8ab8d0118c70cd0a19139de089aaaec3690f6a9c32ca75c02bae6b8653b",
+    "preallocation_final_input_hash_maps_equal": true,
+    "qualification": "Retained164-byte Git log gives activation/tree/parent/parent-tree in order. Request and completed CI metadata match; selected root publication commands separately prove one parent and exact A-only request delta. The helper aborted before its later identity parsing/one-parent/diff/status commands; do not credit those as executed runtime checks.",
+    "request_sha256": "65d4777974947ca1bfd62808b0ff60762a151d9611c53df59dbb91860578633b",
+    "root_admission_link_in_activation_receipt": "1722ffd7f9ef6f10e37fe9a67359f6afb1e195cac58e42dfb6347583b0920edf",
+    "scope_sha256": "0bcea8071094d849d013760c46bbb02e7668623763bea7e6e88a2ae5d221c3ee",
+    "source_acceptance_sha256": "475113c9b8658d3137437aa460b5a3e06ddb70ec2b97ea3a1e1a22524f6d3ec5",
+    "source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
+    "source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
+    "workflow_sha256": "ac14ac156b2aab5906064f3f6d6a915d6fda43972b2d8faac52461901723cf01"
+  },
+  "unchanged_restrictions": "All prior FAIL/HOLD; PVU-007 STOP; PVU-011 NO RETRY; PVA-029 failure/no automatic retry; G7/G8 CLOSED; PVD and physical-device gaps; protected-ref/tag/version/identity/dependency/signing/publication/occupied1017001 fences."
+}

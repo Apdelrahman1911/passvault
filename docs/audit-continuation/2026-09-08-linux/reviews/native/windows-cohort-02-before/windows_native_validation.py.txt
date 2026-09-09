@@ -1,6 +1,6 @@
 """Fresh Windows native-14 cohort; no automatic retry, general runner or recovery.
 
-Author: /root/native. Read WINDOWS-COHORT-03-SCOPE.md before admitting a new run.
+Author: /root/native. Read WINDOWS-COHORT-02-SCOPE.md before admitting a new run.
 Only root may activate this helper with an independently accepted request. No
 Gradle, signing, installation, credential inventory, or Hello operation is run.
 One Job encloses all commands; a command return is not whole-cohort settlement.
@@ -26,12 +26,11 @@ import time
 
 BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
 BASE = "docs/audit-continuation/2026-09-08-linux"
-REQUEST = f"{BASE}/requests/windows-cohort-03.json"
+REQUEST = f"{BASE}/requests/windows-cohort-02.json"
 HELPER = "scripts/audit/windows_native_validation.py"
 WORKFLOW = ".github/workflows/audit-windows-native-validation.yml"
-SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-03-SCOPE.md"
-REVIEW = f"{BASE}/reviews/native-independent/WINDOWS-COHORT-03-ADMISSION.json"
-SUITE = "windows-native-14-cohort-v3"
+SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-02-SCOPE.md"
+SUITE = "windows-native-14-cohort-v2"
 SDK = "10.0.26100.0"
 NATIVE = "app-desktop/native/biometric-bridge/"
 INPUTS = {
@@ -579,22 +578,7 @@ class Run:
             self.event("cohort_after_parent", log=log.name, active=record["job_active_after_parent"],
                        qualification="Point accounting only; not final Job settlement")
             if not self.compiler_cohort:
-                active = record["job_active_after_parent"]
-                while active:
-                    require(not CANCELLED, "Cancellation during read-only Job drain")
-                    require(time.monotonic() < deadline, "Read-only Job drain exceeded existing command/global deadline")
-                    self.check_outputs()
-                    if time.monotonic() - last_sample >= 5:
-                        self.event("resources", observation=self.win.resources([self.workspace, self.temp]))
-                        last_sample = time.monotonic()
-                    time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
-                    active = self.win.active()
-                require(not CANCELLED, "Cancellation after read-only Job drain")
-                require(time.monotonic() < deadline, "Read-only Job zero observed after existing deadline")
-                self.check_outputs()
-                record["readonly_job_zero_observed"] = True
-                self.event("readonly_job_natural_zero", log=log.name, initial_active=record["job_active_after_parent"],
-                           qualification="Point accounting only; no member identity or benignity inference")
+                require(record["job_active_after_parent"] == 0, "Read-only command left owned descendants")
             self.win.check(self.win.k.FlushFileBuffers(output), "FlushCommandLog")
             with log.open("rb") as completed_log:
                 captured_output = completed_log.read(LOG_LIMIT + 1)
@@ -809,12 +793,13 @@ def validated_inputs(workspace):
         require(request.get(key) == hashlib.sha256(data).hexdigest(), f"Request hash mismatch: {path}")
         captures[path] = data
     review_path = request.get("independent_review_path", "")
-    require(review_path == REVIEW, "Wrong cohort-03 independent-review path")
+    require(re.fullmatch(re.escape(BASE) + r"/reviews/native-independent/[A-Za-z0-9_.-]+\.json", review_path)
+            is not None, "Unexpected independent-review path")
     review_data = frozen_bytes(workspace / review_path)
     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
     require(review.get("reviewer") == "/root/native_review" and
-            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_COHORT_03_ADMISSION", "Missing genuine accepting review")
+            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_COHORT_ADMISSION", "Missing genuine accepting review")
     for key in ("helper_sha256", "workflow_sha256", "scope_sha256"):
         require(review.get(key) == request.get(key), "Acceptance does not bind the exact candidate")
     # Inline current native inputs are bound by the reviewed helper bytes. The
@@ -850,8 +835,8 @@ def main():
         signal.signal(number, cancel)
     request, binding, captures = validated_inputs(workspace)
     require(not CANCELLED, "Cancellation before allocation")
-    temp = runner_temp / f"passvault-windows-cohort-03-{run_id}-1-{request['nonce']}"
-    evidence = runner_temp / f"passvault-windows-cohort-03-{run_id}-1-evidence"
+    temp = runner_temp / f"passvault-windows-cohort-{run_id}-1-{request['nonce']}"
+    evidence = runner_temp / f"passvault-windows-cohort-{run_id}-1-evidence"
     require_absent(temp)
     require_absent(evidence)
     evidence.mkdir()

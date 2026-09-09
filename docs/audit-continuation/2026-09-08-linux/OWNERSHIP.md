@@ -1,5 +1,22 @@
 # Bounded team ownership
 
+## Current C9 continuation
+
+- Root remains sole build/test/CI/Git and central-ledger owner. Both Windows02
+  and Linux isolated02 are consumed failures, independently reconciled; only
+  their completed scheduling reservations were released. No product test ran.
+- `native` authored Windows03's bounded read-only Job-drain correction;
+  `native_review` accepted the exact source delta. C9 source publication and
+  later request-only activation retain separate admission gates.
+- `editor` authors new Linux03 raw-object transport; `storage` supplies its
+  path/hash-only inner/init. `verification` independently challenges the exact
+  change, reusing unchanged reviews. Old02/held runtimes stay untouched.
+- `android32` authors the existing single-case Desktop rendering execution
+  wiring; `editor_review` challenges the GUI-specific source/cleanup deltas.
+  This unfinished draft is outside C9 publication and execution.
+- `baseline_coverage` independently reviews C9's prospective publication scope
+  and exact final ledger/report selection. No review grants test or closure credit.
+
 ## Current C8 continuation
 
 - Root remains sole build/test/CI/Git and central-ledger owner. Windows02 source

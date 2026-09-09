@@ -1,0 +1,116 @@
+﻿2026-09-09T15:46:05.1218408Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-09T15:46:05.1219861Z with:
+2026-09-09T15:46:05.1220312Z   ref: 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab
+2026-09-09T15:46:05.1220867Z   fetch-depth: 2
+2026-09-09T15:46:05.1221284Z   persist-credentials: false
+2026-09-09T15:46:05.1221749Z   submodules: false
+2026-09-09T15:46:05.1222141Z   lfs: false
+2026-09-09T15:46:05.1222544Z   repository: Apdelrahman1911/passvault
+2026-09-09T15:46:05.1226400Z   token: ***
+2026-09-09T15:46:05.1226799Z   ssh-strict: true
+2026-09-09T15:46:05.1227202Z   ssh-user: git
+2026-09-09T15:46:05.1227586Z   clean: true
+2026-09-09T15:46:05.1227999Z   sparse-checkout-cone-mode: true
+2026-09-09T15:46:05.1228482Z   fetch-tags: false
+2026-09-09T15:46:05.1228893Z   show-progress: true
+2026-09-09T15:46:05.1229316Z   set-safe-directory: true
+2026-09-09T15:46:05.1229790Z   allow-unsafe-pr-checkout: false
+2026-09-09T15:46:05.1230458Z ##[endgroup]
+2026-09-09T15:46:05.2613472Z Syncing repository: Apdelrahman1911/passvault
+2026-09-09T15:46:05.2615343Z ##[group]Getting Git version info
+2026-09-09T15:46:05.2615962Z Working directory is 'D:\a\passvault\passvault'
+2026-09-09T15:46:05.3476338Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-09T15:46:05.8084551Z git version 2.55.0.windows.5
+2026-09-09T15:46:05.8118172Z ##[endgroup]
+2026-09-09T15:46:05.8132712Z Temporarily overriding HOME='D:\a\_temp\3a3f1a97-1569-4fe7-b4b5-f87096039b02' before making global git config changes
+2026-09-09T15:46:05.8134092Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-09T15:46:05.8143720Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-09T15:46:05.8714329Z Deleting the contents of 'D:\a\passvault\passvault'
+2026-09-09T15:46:05.8717874Z ##[group]Determining repository object format
+2026-09-09T15:46:05.8719874Z ##[endgroup]
+2026-09-09T15:46:05.8720895Z ##[group]Initializing the repository
+2026-09-09T15:46:05.8728990Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\passvault\passvault
+2026-09-09T15:46:05.9466091Z Initialized empty Git repository in D:/a/passvault/passvault/.git/
+2026-09-09T15:46:05.9501468Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Apdelrahman1911/passvault
+2026-09-09T15:46:06.0098356Z ##[endgroup]
+2026-09-09T15:46:06.0099891Z ##[group]Disabling automatic garbage collection
+2026-09-09T15:46:06.0108530Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-09T15:46:06.0328496Z ##[endgroup]
+2026-09-09T15:46:06.0330456Z ##[group]Setting up auth
+2026-09-09T15:46:06.0331534Z Removing SSH command configuration
+2026-09-09T15:46:06.0340028Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-09T15:46:06.0559343Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-09T15:46:07.5982554Z Removing HTTP extra header
+2026-09-09T15:46:07.5992596Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-09T15:46:07.6233836Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-09T15:46:08.0566462Z Removing includeIf entries pointing to credentials config files
+2026-09-09T15:46:08.0581769Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-09T15:46:08.0820790Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-09T15:46:08.5117434Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-09T15:46:08.5372316Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git.path D:\a\_temp\git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:08.5601113Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D:\a\_temp\git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:08.5879302Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:08.6131181Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:08.6368802Z ##[endgroup]
+2026-09-09T15:46:08.6369435Z ##[group]Fetching the repository
+2026-09-09T15:46:08.6385932Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab
+2026-09-09T15:46:11.3095838Z From https://github.com/Apdelrahman1911/passvault
+2026-09-09T15:46:11.3096750Z  * branch            7b716ce8c693fa480bfb99d518acd9d4c8f9cfab -> FETCH_HEAD
+2026-09-09T15:46:11.3136156Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse --verify --quiet 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab^{object}
+2026-09-09T15:46:11.3455678Z 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab
+2026-09-09T15:46:11.3484489Z ##[endgroup]
+2026-09-09T15:46:11.3484905Z ##[group]Determining the checkout info
+2026-09-09T15:46:11.3485332Z ##[endgroup]
+2026-09-09T15:46:11.3493628Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-09T15:46:11.3868353Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-09T15:46:11.4108956Z ##[group]Checking out the ref
+2026-09-09T15:46:11.4117862Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab
+2026-09-09T15:46:12.0102678Z Note: switching to '7b716ce8c693fa480bfb99d518acd9d4c8f9cfab'.
+2026-09-09T15:46:12.0103247Z 
+2026-09-09T15:46:12.0103559Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-09T15:46:12.0104254Z changes and commit them, and you can discard any commits you make in this
+2026-09-09T15:46:12.0104934Z state without impacting any branches by switching back to a branch.
+2026-09-09T15:46:12.0105361Z 
+2026-09-09T15:46:12.0105632Z If you want to create a new branch to retain commits you create, you may
+2026-09-09T15:46:12.0106253Z do so (now or later) by using -c with the switch command. Example:
+2026-09-09T15:46:12.0106630Z 
+2026-09-09T15:46:12.0106918Z   git switch -c <new-branch-name>
+2026-09-09T15:46:12.0107199Z 
+2026-09-09T15:46:12.0107327Z Or undo this operation with:
+2026-09-09T15:46:12.0107576Z 
+2026-09-09T15:46:12.0107679Z   git switch -
+2026-09-09T15:46:12.0107856Z 
+2026-09-09T15:46:12.0108181Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-09T15:46:12.0108614Z 
+2026-09-09T15:46:12.0108984Z HEAD is now at 7b716ce Validate the reviewed Windows native cohort without publishing
+2026-09-09T15:46:12.0307953Z ##[endgroup]
+2026-09-09T15:46:12.0832278Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-09T15:46:12.1051758Z 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab
+2026-09-09T15:46:12.1083556Z ##[group]Removing auth
+2026-09-09T15:46:12.1084006Z Removing SSH command configuration
+2026-09-09T15:46:12.1097503Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-09T15:46:12.1334738Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-09T15:46:12.5930934Z Removing HTTP extra header
+2026-09-09T15:46:12.5940554Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-09T15:46:12.6174550Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-09T15:46:13.0816583Z Removing includeIf entries pointing to credentials config files
+2026-09-09T15:46:13.0826479Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-09T15:46:13.1038444Z includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-09T15:46:13.1039403Z includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-09T15:46:13.1040015Z includeif.gitdir:/github/workspace/.git.path
+2026-09-09T15:46:13.1040459Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-09T15:46:13.1075322Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-09T15:46:13.1278015Z D:\a\_temp\git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:13.1309493Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git.path D\:\\a\\_temp\\git\-credentials\-aa3bea9d\-ca03\-4bfa\-a208\-db74d7f26d32\.config
+2026-09-09T15:46:13.1563694Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-09T15:46:13.1828121Z D:\a\_temp\git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:13.1860668Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-aa3bea9d\-ca03\-4bfa\-a208\-db74d7f26d32\.config
+2026-09-09T15:46:13.2154169Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-09T15:46:13.2437074Z /github/runner_temp/git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:13.2474516Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-aa3bea9d\-ca03\-4bfa\-a208\-db74d7f26d32\.config
+2026-09-09T15:46:13.2728511Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-09T15:46:13.2938676Z /github/runner_temp/git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config
+2026-09-09T15:46:13.2969544Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-aa3bea9d\-ca03\-4bfa\-a208\-db74d7f26d32\.config
+2026-09-09T15:46:13.3197101Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-09T15:46:13.7536332Z Removing credentials config 'D:\a\_temp\git-credentials-aa3bea9d-ca03-4bfa-a208-db74d7f26d32.config'
+2026-09-09T15:46:13.7547759Z ##[endgroup]

@@ -6,7 +6,16 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-**Latest: `CHECKPOINT_8.md` (source/report publication, not CI activation).**
+**Latest: `CHECKPOINT_9.md` (non-activating source/report checkpoint).**
+Windows02 and Linux isolated02 are consumed, independently reconciled failures;
+zero product tests/XML or new closures. Windows02's own allowlisted cleanup
+settled; Linux02's partial materialization remains HOLD. Windows03 source is
+accepted for a separately admitted request-only activation. Linux03 raw-object
+transport and Desktop GUI preparation remain unselected/unadmitted. Use the
+current ledgers and `EXECUTION_SLOT.json`; no old retry or cleanup follows.
+All checkpoint paragraphs below are historical, not current execution authority.
+
+**Historical: `CHECKPOINT_8.md` (source/report publication, not CI activation).**
 The exact new isolated Linux01 batch was independently admitted and attempted
 once, but its first host screen refused candidate `389:java` before allocation
 or any child. Independent review confirms **zero tests/XML, 166 regressions plus
@@ -17,7 +26,7 @@ source preparation is excluded from C8 until separately reviewed/admitted.
 All defined percentages remain unchanged; see C8 and the live overlays/slot.
 Older checkpoint paragraphs below retain historical status, not new authority.
 
-**Latest: `CHECKPOINT_7.md` (being prepared).** Linux02's once-only attempt is
+**Historical: `CHECKPOINT_7.md` (preparation status at capture).** Linux02's once-only attempt is
 independently reconciled: borrowed-object C4 checkout/source-before succeeded;
 the ordinary wrapper exited143 during distribution bootstrap after process
 provenance became unknown. Original `--stop` returned0 and completed the download,

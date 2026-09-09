@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "date_utc": "2026-09-09",
+  "disposition": "ACCEPT_NEW_C9_TWO_PHASE_PUBLICATION_SCOPE_WITH_BEFORE_ACTION_GATES",
+  "scope": "Independent assessment of root's new prospective C9 publication proposal, including its confirmed full activation path. C8 source and activation authority is consumed; no automatic extension. Root must expressly adopt this scope. Exact selected-payload/final coverage review and actual run admission remain separate.",
+  "independence": "Reviewer authored prior coverage/publication assessments, not the proposed Windows03/Linux03 implementation or root proposal. Reusing disclosed prior reasoning is not another independent vote on those own reports.",
+  "bound_receipts_relative_to_continuation": {
+    "publication/BORROWED-OBJECTS-BEFORE-C8.json": "19133c18ac993afc2598e6b55f0fdeac0cf75db063aed35b8ab03957449bb573",
+    "publication/CHECKPOINT-8-SOURCE-PUBLISHED.json": "73580dd444d8309f987b52fe0c39342a948278904c0767cc3db404500d049f66",
+    "publication/CHECKPOINT-8-WINDOWS-ACTIVATION-PUBLISHED.json": "64635afb1bab3d3230f39134d51cd045b7d5a0b5e93b7ab7dcad05f8e023f015",
+    "publication/CHECKPOINT-7-PUBLICATION-QUALIFICATION.json": "06f39acce0a6864260764a46149ba0cbb9d610d46b0ec09128df1d5eeab5d186",
+    "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json": "d34f4e9890a35a72aa54a36c9dcbf09511396d49f2c4b8b95f5e5e4fb9379eca"
+  },
+  "published_predecessor": {
+    "c8_source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
+    "c8_source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
+    "c8_activation_commit_expected_c9_parent": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+    "c8_activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
+    "recorded_result": "Both dedicated pushes completed0; exact source then single-parent request-only activation and protected refs are recorded. This is a data review of receipts, not a fresh Git/remote observation or product validation."
+  },
+  "new_c9_authority_proposed": {
+    "object_store": "/root/projects/PassVault/passvault/.git/objects",
+    "worktree": "/root/projects/PassVault/passvault-linux",
+    "only_ref": "refs/heads/codex/audit-continuation-linux-20260908",
+    "phase1": "ONE independently selected nonactivating source/report commit, directly after the expected published C8 activation, and ONE dedicated fast-forward push. Root narrowed the candidate contents to reviewed Windows03 source/scope/review, reviewed Linux-isolated-batch02 source and actual failure records, and necessary compact receipts/ledgers/report. Exact membership is not approved yet. Pending Linux03 and GUI preparation need not delay this checkpoint and remain excluded from this planned source phase, along with unrelated local work.",
+    "phase2": "ONE separate activation commit whose sole parent is the exact published C9 source commit, adding ONLY docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json, then ONE dedicated fast-forward push. No source/helper/workflow/report changes in that commit. Old requests/receipts remain unchanged.",
+    "limit": "These are two specifically bounded publication phases, not continuing authority, a third commit/push, old-run retry/recovery, or Linux/Windows/GUI execution admission."
+  },
+  "protected_object_union": {
+    "data_reconciliation": "MATCH: compose the C8 baseline and EVERY incremental object_checks.additive_files/additive_directories entry from both C8 receipts. Their final after_push entries contain zero additions; using only those would lose prior protected objects.",
+    "c8_baseline": {
+      "files": 912,
+      "directories": 249,
+      "ancestors": 7
+    },
+    "c8_source_additions": {
+      "files": 57,
+      "directories": 3
+    },
+    "c8_activation_additions": {
+      "files": 7,
+      "directories": 1
+    },
+    "protected_total": {
+      "files": 976,
+      "directories": 253,
+      "ancestors": 7,
+      "logical_bytes": 38178667
+    },
+    "verification_limit": "Distinct addition names, stage totals and logical-byte sums reconciled in recorded data; no reviewer physical/current object-store replay. Root agrees to refresh and compare this entire union before any C9 write. New phase1 additions become protected for phase2.",
+    "fixed_fields": "Preserve every protected relative path, file SHA256/bytes/size, device/inode, type/mode, uid, nlink and readable accessibility; preserve recorded directory/ancestor identities/modes. No claim that unrecorded filesystem attributes or continuous hostile-writer absence were verified.",
+    "prospective_time_exception": "New C9 permission is limited to mtime/ctime differences on existing regular loose names matching [0-9a-f]{2}/[0-9a-f]{38} and the exact original regular pack below. Preserve original plus observed timestamp records, including the C8 loose4e/5655111f0df99e24e9e9761258ccd42f181ffc delta. Directory timestamps may change with admitted additions. No index/info/config/other-file waiver or deliberate timestamp touch/restore.",
+    "exact_pack": {
+      "relative_path": "pack/pack-244144b04072fe6c0e09e599c5f176705a70ad5f.pack",
+      "sha256": "d37ffae7585a3e9ae7e8b116c1f8a981046324424bc31218cb1954533741606d",
+      "bytes": 34105868,
+      "dev": 24,
+      "ino": 13668274,
+      "uid": 0,
+      "mode": 33024,
+      "nlink": 1,
+      "qualification": "Original strict comparison EXIT1/FAIL/HOLD remains, as does the C7 raw-evidence whitespace EXIT2/FAIL. Original pack timestamp cause UNKNOWN, not attributed to Git. The C7 original baseline and qualification remain evidence, not rewritten by C8/C9 acceptance."
+    }
+  },
+  "indispensable_gates": [
+    "Before phase1: root adopts this scope/bounds, freezes exact paths/hashes plus genuine changed-source reviews and obtains the separately assigned final C9 coverage/selection review. Confirm the new Windows03 request is absent/excluded and the selected workflow triggers only that new path; source/report publication must not activate an audit build. Pending source-delta review is not completed acceptance.",
+    "Before phase2 push: freeze the request against the published C9 source commit/tree and actual helper/workflow/reviewer hashes, obtain independent exact-instance/coordination/cleanup acceptance, and have root reserve the sole local/CI audit build slot. Record finding IDs/platform necessity, commands/expected evidence, runner/toolchain/architecture, time/resources, interruption and allowlisted cleanup limits. A push can launch CI immediately; its admission must already exist. No Java/Gradle requirement is invented for a native-only job; applicable toolchain/stop obligations must be explicit.",
+    "For each phase: fresh bounded no-follow preservation comparison before staging, after staging before commit, after commit before push and after push; compare expected dedicated/protected refs and record exact selected/tree/source identities and exits. New drift or failed check means STOP with retained evidence, not repair/reset/GC/automatic retry or an implicit broader exception."
+  ],
+  "minimal_reuse_and_evidence": "Reuse the immutable baseline plus original delta receipts in place; do not duplicate full976-entry inventories merely to rename C9. Compact new comparison receipts can bind those hashes and record counts, every new addition and permitted time difference. If an existing receipt is not yet published, select its original path once rather than manufacture copies. Reuse unchanged successful source/semantic reviews; independently review only changed contracts/bindings plus the final selected report. Fresh point preservation checks at actual mutation boundaries still matter and must not be replaced with assumed continuous safety.",
+  "bounded_git_safeguards": "Suggested finite bounds remain600s/phase,60s read/stage/commit command,120s push,100000-file/512MiB inventory ceiling; root records exact adoption before entry. Foreground commands disable hooks with core.hooksPath=/dev/null, core.fsmonitor, gc.auto, maintenance.auto and commit.gpgsign. Push --no-signed --no-follow-tags --recurse-submodules=no origin HEAD:refs/heads/codex/audit-continuation-linux-20260908 without force. Only selected index/commit/lock/HEAD-log and dedicated branch/tracking ref/reflog updates; preserve all protected refs/tags. No config/alternates/promisor/shallow/replace changes, checkout/reset/clean/stash, hooks/signing, GC/prune/repack/maintenance, removal/replacement of preexisting objects, or broad staging. Only exclusive new invocation-owned temporary names have the existing narrow cleanup allowance.",
+  "challenge": "The safety argument is preservation of readable immutable object bytes/access in a cooperative model, not retrospective clearance of unknown workers. Pack age can affect retention; excluding maintenance/deletion is essential. Source/report and request publication differ because the latter triggers execution. Slot release, provider metadata and source acceptance are not new-run authority.",
+  "latest_failure_boundary": "Independent Linux-isolated-batch02 actual review supports scheduling-only release after external70/raw Git blob mismatch and its sole archive child0/reap, before namespace/inner/Gradle. Its allocated incomplete runtime remains HOLD,166 regressions plus one producer unstarted, no automatic retry/adoption/cleanup. Failed path/actual mismatching bytes were not retained; no cause or completed raw-source certification is inferred. Current root slot records this scheduling release only; no reviewer runtime probe occurred.",
+  "permanent_restrictions": "PVU007 STOP; PVU011 NO RETRY; PVA029 recorded failure/no automatic retry; G7/G8 CLOSED. Preserve all Linux/namespace/Windows/Mac consumed FAIL/HOLD results and prior instruction-enumeration/EOL qualifications. No old helper/runner import or replay, held-runtime/cache access/cleanup, hardware/provider or PVD/owner completion claim. No protected-ref/tag/dependency/version/identity/signing/Store or occupied1017001 change. Central denominators19/25,22/38,2/12 are unchanged; this scope review supplies no product test, closure or readiness credit.",
+  "review_method_and_cleanup": "Bounded standard-library data reads/hashes and recorded-union reconciliation only, plus this single authorized permanent report. No Git/API/CI/runtime/process command, helper import/execution, source-body audit, build/test, physical object-store or old-runtime traversal, central edit, temporary/cache creation or persistent worker. Missing evidence-ledger tool is not substituted. Later exact C9 selection/final independent coverage review remains separately pending.",
+  "proposal_clarification": "Before root adoption/final selection, root narrowed the initial likely-Linux03 candidate proposal to the already reviewed Linux02 source/failure packet. This changes no two-phase authority, preservation rule or execution gate; no separate duplicate scope receipt is needed."
+}

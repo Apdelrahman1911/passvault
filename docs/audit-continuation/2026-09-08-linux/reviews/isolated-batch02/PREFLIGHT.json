@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T16:10:27.388249+00:00",
+  "scope": "FRESH_ISOLATED_BATCH02_METADATA_REQUEST_ONLY_NOT_EXECUTION",
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=queued&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=in_progress&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=waiting&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=pending&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=requested&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    }
+  ],
+  "fresh_runtime_evidence_absent": [
+    "/root/projects/PassVault/audit-runtime-linux-isolated-batch02",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-isolated-batch02"
+  ],
+  "slot_before": {
+    "state": "IDLE_AFTER_WINDOWS_COHORT02_CONSUMED_FAILURE_RECONCILED",
+    "sha256": "481fc0ea1f7d079c7f637cab5de581b4acbe6bc72dccc100e8e20e0bcbe2536f"
+  },
+  "windows_actual_review_sha256": "0ab0a9908e2af20710996183fdc633b6cfa68989eaaa5ccebf8d2a5fcf20baea",
+  "windows_slot_release_sha256": "41e445915f330687b965143b1ec5915c1bca588fe3ca2e3978f898c396756477",
+  "ci": [
+    {
+      "status": "queued",
+      "total_count": 0,
+      "exit": 0
+    },
+    {
+      "status": "in_progress",
+      "total_count": 0,
+      "exit": 0
+    },
+    {
+      "status": "waiting",
+      "total_count": 0,
+      "exit": 0
+    },
+    {
+      "status": "pending",
+      "total_count": 0,
+      "exit": 0
+    },
+    {
+      "status": "requested",
+      "total_count": 0,
+      "exit": 0
+    }
+  ],
+  "host_screen": {
+    "kind": "bounded point comm-only; no PID exemption, ownership/global-idle inference or signals",
+    "matches": [],
+    "unclassified_disappearances": 0,
+    "entries": 370,
+    "elapsed_seconds": 0.008037598978262395
+  },
+  "resources": {
+    "MemTotal": 67435888640,
+    "MemAvailable": 37241294848,
+    "disk_available": {
+      "/root/projects/PassVault": 18668863488,
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs": 18668863488,
+      "/tmp": 21312565248
+    }
+  },
+  "request_sha256": "2844335a072ab576176c8b839eec34dfc1f4a8f970630124d38e6c1e6a22b054",
+  "request_path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-ISOLATED-BATCH-02.json",
+  "quiescence": "All implementation authors explicitly QUIESCENT_NO_TOOLS before this snapshot; other lanes completed. Verification alone receives this inert packet for review, then must be quiescent before root final locked admission. Root sole build/CI/Git owner. No Linux/CI invocation performed by this packet.",
+  "lock_snapshot": "Fresh original known Linux lock acquired nonblocking during image/request capture; not historical macOS authority or global lease.",
+  "status": "FRESH_REQUEST_PREPARED_PENDING_GENUINE_REVIEW_AND_ROOT_FINAL_ENTRY_FREEZE",
+  "elapsed_seconds": 2.763982058997499,
+  "cleanup": "No runtime/evidence/build/cache/worker allocated. Bounded metadata GitHub children completed; original lock closed once. Only fresh inert request and permanent metadata receipt retained; no old namespace/process/cache touched."
+}

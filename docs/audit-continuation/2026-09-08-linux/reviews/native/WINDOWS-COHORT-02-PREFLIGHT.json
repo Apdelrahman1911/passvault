@@ -1,0 +1,152 @@
+{
+  "active_ci_runs": [],
+  "application_execution": false,
+  "cleanup": "No application/build/cache/namespace created; bounded read-only Git/GH foreground children returned or timed out; no unrelated process/file cleanup.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "735f5596877ce4a9a5c015e2aa8036451a708392\nab502aad492688957640202b8e36ac69e30f08d2\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "codex/audit-continuation-linux-20260908\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=queued&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, path, status, conclusion, head_branch, head_sha, run_attempt, created_at, updated_at}]}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"runs\":[],\"total_count\":0}\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=in_progress&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, path, status, conclusion, head_branch, head_sha, run_attempt, created_at, updated_at}]}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"runs\":[],\"total_count\":0}\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=waiting&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, path, status, conclusion, head_branch, head_sha, run_attempt, created_at, updated_at}]}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"runs\":[],\"total_count\":0}\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=pending&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, path, status, conclusion, head_branch, head_sha, run_attempt, created_at, updated_at}]}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"runs\":[],\"total_count\":0}\n"
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=requested&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, path, status, conclusion, head_branch, head_sha, run_attempt, created_at, updated_at}]}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"runs\":[],\"total_count\":0}\n"
+    }
+  ],
+  "coordination": "Root sole build/test/CI owner; all agents source/data only; no local audit build started since independently reconciled no-child isolated01. No local/CI execution will start while this proposed instance owns the slot. CI API observation is point-in-time, ongoing root coordination still required.",
+  "elapsed_seconds": 2.7713098359818105,
+  "owner": "/root",
+  "request_path": "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-02.json",
+  "request_sha256": "65d4777974947ca1bfd62808b0ff60762a151d9611c53df59dbb91860578633b",
+  "resource_observation": {
+    "disk_free_bytes": 18865782784,
+    "meminfo": {
+      "MemAvailable": 37391945728,
+      "MemTotal": 67435888640
+    }
+  },
+  "schema": 1,
+  "scope": "FRESH_WINDOWS02_REQUEST_AND_READ_ONLY_COORDINATION",
+  "slot_before": {
+    "sha256": "cc36e879915b2ff051c03d739fdf9bda6f40ff8f739abe38a2cff79a5ff17d06",
+    "state": "IDLE_AFTER_ISOLATED_BATCH01_PREALLOCATION_HOLD_SCHEDULING_ONLY"
+  },
+  "source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
+  "source_receipt_sha256": "73580dd444d8309f987b52fe0c39342a948278904c0767cc3db404500d049f66",
+  "source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
+  "status": "REQUEST_PREPARED_INERT_PENDING_INDEPENDENT_INSTANCE_AND_ROOT_SLOT_ADMISSION",
+  "utc": "2026-09-09T15:36:36.991823+00:00"
+}

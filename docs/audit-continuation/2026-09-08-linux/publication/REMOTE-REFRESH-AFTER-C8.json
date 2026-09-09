@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T17:10:21.073440+00:00",
+  "scope": "READ_ONLY_REMOTE_REFS_NO_FETCH_OR_LOCAL_REF_CHANGE",
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "credential.helper=",
+    "ls-remote",
+    "https://github.com/Apdelrahman1911/passvault.git",
+    "refs/heads/main",
+    "refs/heads/testing",
+    "refs/heads/release",
+    "refs/tags/v1.0.7-rc.1017001",
+    "refs/heads/codex/remediation-handoff-20260908",
+    "refs/heads/codex/audit-continuation-linux-20260908"
+  ],
+  "exit": 0,
+  "stdout": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+  "stderr": "",
+  "expected": {
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/codex/audit-continuation-linux-20260908": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab"
+  },
+  "observed": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "differences": {},
+  "cleanup": "Synchronous bounded read-only Git child completed; no build/test/runtime/cache or temporary file created. No protected branch/tag/local ref modification."
+}
