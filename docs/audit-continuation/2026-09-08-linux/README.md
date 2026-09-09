@@ -6,6 +6,17 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
+**Latest: `CHECKPOINT_8.md` (source/report publication, not CI activation).**
+The exact new isolated Linux01 batch was independently admitted and attempted
+once, but its first host screen refused candidate `389:java` before allocation
+or any child. Independent review confirms **zero tests/XML, 166 regressions plus
+one producer UNSTARTED**, and scheduling release only. No retry01, cleanup or
+process-ownership inference. The smaller Windows02 native14 source packet is
+prepared for a separate, source-bound request-only activation. Fresh Linux02
+source preparation is excluded from C8 until separately reviewed/admitted.
+All defined percentages remain unchanged; see C8 and the live overlays/slot.
+Older checkpoint paragraphs below retain historical status, not new authority.
+
 **Latest: `CHECKPOINT_7.md` (being prepared).** Linux02's once-only attempt is
 independently reconciled: borrowed-object C4 checkout/source-before succeeded;
 the ordinary wrapper exited143 during distribution bootstrap after process

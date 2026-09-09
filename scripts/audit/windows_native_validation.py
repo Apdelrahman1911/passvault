@@ -1,8 +1,9 @@
-"""One Windows native audit request; not a general runner or recovery command.
+"""Fresh Windows native-14 cohort; no automatic retry, general runner or recovery.
 
-Author: /root/native. Read WINDOWS_ADMISSION.md before admitting any invocation.
+Author: /root/native. Read WINDOWS-COHORT-02-SCOPE.md before admitting a new run.
 Only root may activate this helper with an independently accepted request. No
 Gradle, signing, installation, credential inventory, or Hello operation is run.
+One Job encloses all commands; a command return is not whole-cohort settlement.
 """
 
 from __future__ import annotations
@@ -21,17 +22,30 @@ import struct
 import subprocess
 import sys
 import time
-import xml.etree.ElementTree as ET
 
 
 BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
 BASE = "docs/audit-continuation/2026-09-08-linux"
-REQUEST = f"{BASE}/requests/windows-native.json"
-BINDINGS = f"{BASE}/reviews/native/SOURCE_BINDINGS.json"
+REQUEST = f"{BASE}/requests/windows-cohort-02.json"
 HELPER = "scripts/audit/windows_native_validation.py"
 WORKFLOW = ".github/workflows/audit-windows-native-validation.yml"
-SUITE = "windows-native-14-v1"
+SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-02-SCOPE.md"
+SUITE = "windows-native-14-cohort-v2"
 SDK = "10.0.26100.0"
+NATIVE = "app-desktop/native/biometric-bridge/"
+INPUTS = {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    NATIVE + "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    NATIVE + "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    NATIVE + "src/windows/passvault_biometric_windows.cpp":
+        "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630",
+    NATIVE + "src/windows/passvault_biometric_windows.rc":
+        "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    NATIVE + "tests/passvault_biometric_abi_test.cpp":
+        "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    NATIVE + "tests/windows/passvault_biometric_windows_security_test.cpp":
+        "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633",
+}
 CASES = [
     "passvault_biometric_windows_file_" + name
     for name in (
@@ -46,12 +60,23 @@ CASES = [
 ] + ["passvault_biometric_abi", "passvault_biometric_windows_security"]
 GiB = 1024 ** 3
 LOG_LIMIT = 2 * 1024 ** 2
+LOG_TOTAL_LIMIT = 8 * 1024 ** 2
+XML_LIMIT = 512 * 1024
+COMMAND_SECONDS, CLEANUP_SECONDS = 480, 540
 CANCELLED = False
 
 
 def require(condition: bool, explanation: str) -> None:
     if not condition:
         raise RuntimeError(explanation)
+
+
+def require_absent(path: Path) -> None:
+    try:
+        path.lstat()  # Never follow a reparse target merely to test absence.
+    except FileNotFoundError:
+        return
+    raise RuntimeError(f"Namespace exists; no adoption/recovery: {path.name}")
 
 
 def digest(path: Path) -> str:
@@ -88,9 +113,10 @@ def read_json(path: Path):
 
 
 def write_json(path: Path, value) -> None:
+    encoded = json.dumps(value, sort_keys=True, indent=2) + "\n"
+    require(len(encoded.encode("utf-8")) <= 1024 ** 2, "Compact JSON exceeds one MiB")
     with path.open("x", encoding="utf-8", newline="\n") as output:
-        json.dump(value, output, sort_keys=True, indent=2)
-        output.write("\n")
+        output.write(encoded)
         output.flush()
         os.fsync(output.fileno())
 
@@ -102,7 +128,7 @@ def cancel(_number, _frame):
 
 def plain_path(path: Path) -> None:
     """No reparse components; no assertion of adversarial same-user isolation."""
-    for member in (path, *path.parents):
+    for member in reversed((path, *path.parents)):
         state = member.lstat()
         require(not (state.st_file_attributes & 0x400), f"Reparse path: {member}")
 
@@ -178,6 +204,12 @@ class FILE_INFO(ctypes.Structure):
     ]
 
 
+class EntryRefusal(RuntimeError):
+    def __init__(self, details):
+        super().__init__("No-follow entry ownership/reparse/link refusal")
+        self.details = details
+
+
 class Windows:
     """Atomic creation-time job assignment; no unowned fork/assignment gap."""
 
@@ -218,9 +250,11 @@ class Windows:
             limits.job_memory = 3 * GiB
             self.check(self.k.SetInformationJobObject(self.job, 9, ctypes.byref(limits),
                                                       ctypes.sizeof(limits)), "SetJobLimits")
-        except BaseException:
-            self.k.CloseHandle(self.job)
+        except BaseException as error:
+            handle = self.job
             self.job = None
+            if not self.k.CloseHandle(handle):
+                raise OSError(ctypes.get_last_error(), "Job construction close failed; no retry") from error
             raise
 
     @staticmethod
@@ -261,12 +295,19 @@ class Windows:
         try:
             state = FILE_INFO()
             self.check(self.k.GetFileInformationByHandle(handle, ctypes.byref(state)), "FileIdentity")
-            require(not state.attributes & 0x400, "Cleanup refuses reparse point")
-            require(state.links == 1, "Cleanup refuses multiple hard links")
             identity = [state.volume, state.index_high, state.index_low, state.attributes]
+            if state.attributes & 0x400 or state.links != 1:
+                raise EntryRefusal({"identity": identity, "links": state.links,
+                                    "reparse": bool(state.attributes & 0x400), "target_read": False})
             return handle, identity
-        except BaseException:
-            self.k.CloseHandle(handle)
+        except BaseException as error:
+            closed = bool(self.k.CloseHandle(handle))
+            if isinstance(error, EntryRefusal):
+                error.details["original_handle_closed"] = closed
+                if not closed:
+                    error.details["close_error"] = ctypes.get_last_error()
+            elif not closed:
+                raise OSError(ctypes.get_last_error(), "Rejected original handle close failed; no retry") from error
             raise
 
     def delete_handle(self, handle):
@@ -276,8 +317,9 @@ class Windows:
 
     def close(self):
         if self.job:
-            self.check(self.k.CloseHandle(self.job), "CloseJob")
+            handle = self.job
             self.job = None
+            self.check(self.k.CloseHandle(handle), "CloseJob; no retry")
 
 
 class Run:
@@ -286,6 +328,12 @@ class Run:
         self.start = time.monotonic()
         self.sequence = 0
         self.command_results = []
+        self.logs, self.xml_paths, self.rejections = [], {}, []
+        self.case_results = {name: {"state": "UNSTARTED"} for name in CASES}
+        self.compiler_cohort = False
+        self.job_settled = False
+        self.close_failures = []
+        self.cleanup_cancellation_seen = False
         self.environment = {
             name: os.environ[name] for name in (
                 "SystemRoot", "WINDIR", "COMSPEC", "PATH", "PATHEXT",
@@ -304,57 +352,159 @@ class Run:
         })
 
     def event(self, kind, **value):
-        with (self.evidence / "journal.jsonl").open("a", encoding="utf-8", newline="\n") as output:
-            output.write(json.dumps({"time": time.time(), "event": kind, **value}, sort_keys=True) + "\n")
+        entry = json.dumps({"time": time.time(), "event": kind, **value}, sort_keys=True) + "\n"
+        path = self.evidence / "journal.jsonl"
+        length = len(entry.encode("utf-8"))
+        require(length <= 16384 and (path.stat().st_size if path.exists() else 0) + length <= LOG_LIMIT,
+                "Compact journal bound exceeded")
+        with path.open("a", encoding="utf-8", newline="\n") as output:
+            output.write(entry)
             output.flush()
             os.fsync(output.fileno())
 
-    def retain_log(self, path):
-        if not path.exists():
-            return
-        settled = self.win.active() == 0
-        size = path.stat().st_size
-        with path.open("rb") as source:
-            prefix = source.read(LOG_LIMIT)
-            full_digest = hashlib.sha256(prefix)
-            if settled:
-                while block := source.read(1024 ** 2):
-                    full_digest.update(block)
-        # Raw logs are inside the generated cleanup root, never uploaded.
-        # Only this bounded prefix is an evidence *.log file. Hash the complete
-        # settled raw file before deletion; an unsettled stream has no full hash.
-        target = self.evidence / path.name
-        with target.open("xb") as output:
-            output.write(prefix)
-            output.flush()
-            os.fsync(output.fileno())
-        write_json(self.evidence / (path.stem + "-retention.json"), {
-            "log": path.name, "observed_raw_bytes": size, "retained_bytes": len(prefix),
-            "retained_sha256": hashlib.sha256(prefix).hexdigest(),
-            "settled_full_sha256": full_digest.hexdigest() if settled else None,
-            "truncated": size > len(prefix), "owned_job_settled": settled,
-        })
+    def file_state(self, handle):
+        state = FILE_INFO()
+        self.win.check(self.win.k.GetFileInformationByHandle(handle, ctypes.byref(state)), "OutputIdentity")
+        return {"identity": [state.volume, state.index_high, state.index_low, state.attributes],
+                "links": state.links, "size": (state.size_high << 32) | state.size_low,
+                "written": [state.written.dwHighDateTime, state.written.dwLowDateTime]}
 
-    def command(self, arguments, budget, label):
+    def log_state(self, entry):
+        state = self.file_state(entry["handle"])
+        require(not state["identity"][3] & (0x400 | 0x10) and state["links"] == 1,
+                "Log is not a plain single-linked file")
+        if entry["identity"] is None:
+            entry["identity"] = state["identity"]
+        require(state["identity"][:3] == entry["identity"][:3], "Original log identity changed")
+        return state
+
+    def check_outputs(self):
+        # Every original stdout handle remains live: old compiler descendants
+        # can still write earlier logs while the next phase's parent runs.
+        require(len(self.logs) <= 24, "Command log count exceeded")
+        total = 0
+        for entry in self.logs:
+            size = self.log_state(entry)["size"]
+            require(size <= LOG_LIMIT, f"Compact per-log limit exceeded: {entry['path'].name}")
+            total += size
+        require(total <= LOG_TOTAL_LIMIT, "Aggregate command log limit exceeded")
+        for path in self.xml_paths.values():
+            try:
+                state = path.lstat()
+            except FileNotFoundError:
+                continue
+            plain_path(path)
+            require(stat.S_ISREG(state.st_mode) and state.st_nlink == 1 and state.st_size <= XML_LIMIT,
+                    "CTest XML is not a bounded plain single-linked file")
+
+    def close_original(self, handle, label):
+        if not self.win.k.CloseHandle(handle):
+            self.close_failures.append({"handle_scope": label, "error": ctypes.get_last_error(),
+                                        "retry": "FORBIDDEN"})
+            raise RuntimeError(f"Original {label} handle close failed; no retry")
+
+    def close_logs(self):
+        for entry in self.logs:
+            handle, entry["handle"] = entry["handle"], None
+            if handle is not None:
+                try:
+                    self.close_original(handle, entry["path"].name)
+                except RuntimeError:
+                    pass  # All failures remain in close_failures; close others once.
+
+    def retain_outputs(self):
+        errors, remaining = [], LOG_TOTAL_LIMIT
+        for entry in self.logs:
+            path = entry["path"]
+            try:
+                self.cleanup_time()
+                self.win.check(self.win.k.FlushFileBuffers(entry["handle"]), "FlushRetainedLog")
+                before = self.log_state(entry)
+                plain_path(path)
+                with path.open("rb") as source:
+                    prefix = source.read(min(LOG_LIMIT, remaining))
+                after = self.log_state(entry)
+                remaining -= len(prefix)
+                complete = self.job_settled and before == after and len(prefix) == after["size"]
+                with (self.evidence / path.name).open("xb") as output:
+                    output.write(prefix)
+                    output.flush()
+                    os.fsync(output.fileno())
+                write_json(self.evidence / (path.stem + "-retention.json"), {
+                    "log": path.name, "original_identity": entry["identity"],
+                    "observed_raw_bytes_before": before["size"], "observed_raw_bytes_after": after["size"],
+                    "retained_bytes": len(prefix), "retained_sha256": hashlib.sha256(prefix).hexdigest(),
+                    "settled_full_sha256": hashlib.sha256(prefix).hexdigest() if complete else None,
+                    "complete": complete, "owned_job_settled": self.job_settled,
+                    "qualification": "Settled exact bytes" if complete else "UNADJUDICATED bounded prefix only",
+                })
+                require(complete, "Log evidence incomplete/unsettled; filesystem HOLD")
+            except BaseException as error:
+                errors.append(f"{path.name}: {type(error).__name__}: {error}")
+        for name, path in self.xml_paths.items():
+            handle = None
+            try:
+                self.cleanup_time()
+                require(self.job_settled, "Raw XML retained only after observed Job zero")
+                try:
+                    path.lstat()
+                except FileNotFoundError:
+                    self.case_results[name]["raw_xml"] = "MISSING"
+                    raise RuntimeError("Missing raw XML; no case outcome inferred")
+                handle, _identity = self.open_output(path)
+                before = self.file_state(handle)
+                require(not before["identity"][3] & 0x10 and 0 < before["size"] <= XML_LIMIT,
+                        "Missing, empty or oversized raw XML")
+                plain_path(path)
+                with path.open("rb") as source:
+                    raw = source.read(XML_LIMIT + 1)
+                require(before == self.file_state(handle) and len(raw) == before["size"], "Raw XML changed")
+                with (self.evidence / path.name).open("xb") as output:
+                    output.write(raw)
+                    output.flush()
+                    os.fsync(output.fileno())
+                self.case_results[name].update({"raw_xml": path.name, "xml_bytes": len(raw),
+                                                "xml_sha256": hashlib.sha256(raw).hexdigest(),
+                                                "xml_scoring": "NOT_PERFORMED; independent actual-case review required"})
+            except BaseException as error:
+                errors.append(f"{path.name}: {type(error).__name__}: {error}")
+            finally:
+                if handle is not None:
+                    try:
+                        self.close_original(handle, path.name)
+                    except BaseException as error:
+                        errors.append(str(error))
+        return errors
+
+    def command(self, arguments, budget, label, case=None):
         require(not CANCELLED, "Cancellation is sticky; no new command")
-        require(time.monotonic() < self.start + 900, "Global budget exhausted; no new command")
-        require(self.win.active() == 0, "Prior owned workers not settled; no new command")
+        require(time.monotonic() < self.start + COMMAND_SECONDS, "Global budget exhausted; no new command")
+        if not self.compiler_cohort:
+            require(self.win.active() == 0, "Read-only preflight Job not empty; no new command")
+        self.check_outputs()
         self.event("resources", observation=self.win.resources([self.workspace, self.temp], launch=True))
         self.sequence += 1
         log = self.temp / "logs" / f"{self.sequence:02d}-{label}.log"
         argv = [str(arg) for arg in arguments]
+        record = {"argv": argv, "log": log.name, "state": "INTENT", "exit_code": None}
+        self.command_results.append(record)
+        if case is not None:
+            self.case_results[case]["state"] = "LAUNCH_ATTEMPT; TEST_START_UNKNOWN"
         self.event("command_intent", argv=argv, seconds=budget, log=log.name,
                    stop_obligation="WINDOWS_JOB_SETTLEMENT; no Gradle was launched")
         info = PROCESS_INFORMATION()
         handles = []
         process_attributes = None
         attributes_initialized = False
-        result = None
         try:
             attributes = SECURITY_ATTRIBUTES(ctypes.sizeof(SECURITY_ATTRIBUTES), None, True)
-            output = self.win.k.CreateFileW(str(log), 0x40000000, 1, ctypes.byref(attributes), 1, 0x80, None)
+            output = self.win.k.CreateFileW(str(log), 0x40000000 | 0x80, 1,
+                                           ctypes.byref(attributes), 1, 0x80, None)
             require(output not in (None, ctypes.c_void_p(-1).value), "Exclusive log creation failed")
-            handles.append(output)
+            # Retain immediately, including if later launch preparation fails.
+            entry = {"path": log, "handle": output, "identity": None}
+            self.logs.append(entry)
+            self.log_state(entry)
             stdin = self.win.k.CreateFileW("NUL", 0x80000000, 3, ctypes.byref(attributes), 3, 0x80, None)
             require(stdin not in (None, ctypes.c_void_p(-1).value), "NUL input creation failed")
             handles.append(stdin)
@@ -373,8 +523,8 @@ class Run:
             handle_list = (wt.HANDLE * 2)(stdin, output)
             # PROC_THREAD_ATTRIBUTE_JOB_LIST binds the job atomically with
             # creation, before even a suspended child could escape parent death.
-            # HANDLE_LIST excludes the job, source/cleanup handles and all other
-            # parent handles from inheritance.
+            # HANDLE_LIST excludes the Job, source/cleanup handles AND earlier
+            # logs. Only this command's NUL/stdout handles are inherited.
             for attribute, values in ((0x0002000D, job_list), (0x00020002, handle_list)):
                 self.win.check(self.win.k.UpdateProcThreadAttribute(
                     process_attributes, 0, attribute, values, ctypes.sizeof(values), None, None),
@@ -384,98 +534,223 @@ class Run:
             ) + "\0\0")
             command_line = ctypes.create_unicode_buffer(subprocess.list2cmdline(argv))
             require(not CANCELLED, "Cancellation before suspended launch")
-            require(time.monotonic() < self.start + 900, "Global budget exhausted before suspended launch")
+            require(time.monotonic() < self.start + COMMAND_SECONDS, "Global budget exhausted before suspended launch")
             self.win.check(self.win.k.CreateProcessW(
                 argv[0], command_line, None, None, True,
                 0x00000004 | 0x00000400 | 0x08000000 | 0x00080000,
                 block, str(self.workspace), ctypes.byref(startup), ctypes.byref(info)), "CreateSuspendedProcess")
-            self.event("command_bound", pid=info.pid, tid=info.tid)
+            record.update({"state": "PROCESS_CREATED_SUSPENDED", "pid": info.pid, "tid": info.tid})
+            if label == "configure":
+                self.compiler_cohort = True
+            if case is not None:
+                self.case_results[case]["state"] = "CTEST_PROCESS_CREATED; TEST_START_UNKNOWN"
+            self.event("command_bound", pid=info.pid, tid=info.tid, compiler_cohort=self.compiler_cohort)
             require(not CANCELLED, "Cancellation before resume")
-            require(time.monotonic() < self.start + 900, "Global budget exhausted before resume")
+            require(time.monotonic() < self.start + COMMAND_SECONDS, "Global budget exhausted before resume")
             require(self.win.k.ResumeThread(info.thread) != 0xffffffff, "ResumeThread failed")
-            deadline = min(time.monotonic() + budget, self.start + 900)
+            record["state"] = "PROCESS_RESUMED"
+            deadline = min(time.monotonic() + budget, self.start + COMMAND_SECONDS)
             last_sample = 0.0
             while True:
                 waited = self.win.k.WaitForSingleObject(info.process, 500)
                 require(waited in (0, 258), "Process wait failed")
+                if waited == 0:
+                    code = wt.DWORD()
+                    self.win.check(self.win.k.GetExitCodeProcess(info.process, ctypes.byref(code)), "ProcessExit")
+                    # Persist the actual immediate-parent exit before any Job
+                    # query, resource/log check, parsing or final cohort drain.
+                    record.update({"state": "PARENT_EXIT_OBSERVED", "exit_code": code.value})
+                    if case is not None:
+                        self.case_results[case].update({"state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+                                                        "ctest_exit_code": code.value})
+                    self.event("parent_exit", **record)
+                    break
                 require(not CANCELLED, "Cancellation requested")
                 require(time.monotonic() < deadline, "Command/global time budget exceeded")
-                require(log.stat().st_size <= LOG_LIMIT, "Compact log limit exceeded")
+                self.check_outputs()
                 if time.monotonic() - last_sample >= 5:
                     self.event("resources", observation=self.win.resources([self.workspace, self.temp]))
                     last_sample = time.monotonic()
-                if waited == 0:
-                    break
-            code = wt.DWORD()
-            self.win.check(self.win.k.GetExitCodeProcess(info.process, ctypes.byref(code)), "ProcessExit")
-            # MSBuild node reuse is disabled; unknown/lingering descendants are
-            # an operational failure, not assumed harmless by their names.
-            settle_deadline = time.monotonic() + 10
-            while self.win.active() and time.monotonic() < settle_deadline:
-                time.sleep(0.1)
-            require(self.win.active() == 0, "Owned descendants remain after command")
+            require(not CANCELLED, "Cancellation after observed parent exit")
+            require(time.monotonic() < deadline, "Command/global budget expired at parent exit")
+            self.check_outputs()
+            record["job_active_after_parent"] = self.win.active()
+            self.event("cohort_after_parent", log=log.name, active=record["job_active_after_parent"],
+                       qualification="Point accounting only; not final Job settlement")
+            if not self.compiler_cohort:
+                require(record["job_active_after_parent"] == 0, "Read-only command left owned descendants")
             self.win.check(self.win.k.FlushFileBuffers(output), "FlushCommandLog")
-            require(log.stat().st_size <= LOG_LIMIT, "Late descendant log burst exceeds compact limit")
             with log.open("rb") as completed_log:
                 captured_output = completed_log.read(LOG_LIMIT + 1)
             require(len(captured_output) <= LOG_LIMIT, "Completed log exceeds bounded read")
-            result = {"argv": argv, "exit_code": code.value, "log": log.name,
-                      "sha256": digest(log), "workers": 0}
-            self.command_results.append(result)
-            self.event("command_exit", **result)
-            require(code.value == 0, f"Command failed ({code.value}); no automatic retry: {label}")
+            record["parent_output_snapshot_sha256"] = hashlib.sha256(captured_output).hexdigest()
+            record["snapshot_qualification"] = "Not a settled-log hash; owned descendants may still write"
+            require(record["exit_code"] == 0, f"Command failed ({record['exit_code']}); no automatic retry: {label}")
             return captured_output.decode("utf-8", errors="replace")
         except BaseException as error:
-            self.event("command_failure", error=f"{type(error).__name__}: {error}")
+            record["failure"] = f"{type(error).__name__}: {error}"
+            try:
+                self.event("command_failure", log=log.name, error=record["failure"])
+            except BaseException as journal_error:
+                record["failure_journal_error"] = str(journal_error)
             raise
         finally:
             close_errors = []
+            if attributes_initialized:
+                self.win.k.DeleteProcThreadAttributeList(process_attributes)
+            # A still-running/suspended process remains owned by the Job after
+            # its original process/thread handles close. Finalization alone
+            # drains/terminates that one cohort; never per-command termination.
+            for handle in [info.thread, info.process, *handles]:
+                if handle:
+                    try:
+                        self.close_original(handle, f"command-{self.sequence}")
+                    except BaseException as error:
+                        close_errors.append(str(error))
+            if close_errors:
+                record["close_errors"] = close_errors
+                raise RuntimeError("Command original-handle close failure; filesystem HOLD")
+
+    def settle(self, normal):
+        errors = []
+        try:
+            if normal and not CANCELLED:
+                deadline = min(time.monotonic() + 10, self.start + CLEANUP_SECONDS)
+                last_sample = 0.0
+                while True:
+                    self.check_outputs()
+                    if self.win.active() == 0:
+                        self.job_settled = True
+                        break
+                    require(not CANCELLED, "Cancellation during final natural cohort drain")
+                    if time.monotonic() >= deadline:
+                        break
+                    if time.monotonic() - last_sample >= 5:
+                        self.event("resources", observation=self.win.resources([self.workspace, self.temp]))
+                        last_sample = time.monotonic()
+                    time.sleep(0.1)
+        except BaseException as error:
+            errors.append(f"Natural drain {type(error).__name__}: {error}")
+        finally:
+            # A failed journal/resource/output check can never veto the one
+            # original-Job stop. Query failure also cannot suppress containment.
+            if not self.job_settled:
+                try:
+                    self.job_settled = self.win.active() == 0
+                except BaseException as error:
+                    errors.append(f"Job query {type(error).__name__}: {error}")
+                if not self.job_settled:
+                    try:
+                        self.event("final_stop_intent", boundary="original non-breakaway Job", attempt=1)
+                    except BaseException as error:
+                        errors.append(f"Stop-intent journal {type(error).__name__}: {error}")
+                    try:
+                        self.win.terminate_once()
+                    except BaseException as error:
+                        errors.append(f"Job termination {type(error).__name__}: {error}")
+                    try:
+                        deadline = min(time.monotonic() + 10, self.start + CLEANUP_SECONDS)
+                        monitor_error_seen = False
+                        while self.win.active() != 0 and time.monotonic() < deadline:
+                            try:
+                                self.check_outputs()
+                            except BaseException as error:
+                                if not monitor_error_seen:
+                                    errors.append(f"Post-stop output monitor {type(error).__name__}: {error}")
+                                    monitor_error_seen = True
+                            time.sleep(0.1)
+                        self.job_settled = self.win.active() == 0
+                    except BaseException as error:
+                        errors.append(f"Post-stop observation {type(error).__name__}: {error}")
+            if not self.job_settled:
+                errors.append("Owned Job zero unobserved; kill-on-close is not settlement proof")
             try:
-                if info.process and result is None:
-                    self.win.terminate_once()
-                    require(self.win.k.WaitForSingleObject(info.process, 10000) == 0, "Child termination unsettled")
-                    self.event("command_aborted", pid=info.pid, assigned_to_job=True)
-            finally:
-                if attributes_initialized:
-                    self.win.k.DeleteProcThreadAttributeList(process_attributes)
-                for handle in [info.thread, info.process, *handles]:
-                    if handle and not self.win.k.CloseHandle(handle):
-                        close_errors.append(ctypes.get_last_error())
-                self.retain_log(log)
-                if close_errors:
-                    self.event("handle_close_failed", errors=close_errors)
-                    raise RuntimeError("Command handles did not all close; no automatic close retry")
+                self.event("final_job_observation", observed_zero=self.job_settled,
+                           termination_attempted=self.win.termination_attempted)
+            except BaseException as error:
+                errors.append(f"Settlement journal {type(error).__name__}: {error}")
+        return {"observed_zero": self.job_settled, "termination_attempted": self.win.termination_attempted,
+                "errors": errors}
+
+    def cleanup_time(self):
+        require(time.monotonic() < self.start + CLEANUP_SECONDS, "540-second cleanup cutoff; filesystem HOLD")
+        if CANCELLED and not self.cleanup_cancellation_seen:
+            self.cleanup_cancellation_seen = True
+            self.event("cancellation_cleanup_only", qualification="No new command; bounded evidence/owned cleanup only")
+
+    def open_output(self, path, delete=False):
+        plain_path(path.parent)
+        try:
+            return self.win.open_owned(path, delete=delete)
+        except EntryRefusal as error:
+            relative = str(path.relative_to(self.temp))
+            detail = {"owned_relative": relative if len(relative) <= 1024 else None,
+                      "owned_relative_characters": len(relative),
+                      "owned_relative_sha256": hashlib.sha256(relative.encode("utf-8")).hexdigest(),
+                      "disposition": "HOLD; no target read/follow/delete", **error.details}
+            self.rejections.append(detail)  # Keep before any fallible journaling.
+            if not detail["original_handle_closed"]:
+                self.close_failures.append({"handle_scope": "rejected entry", "error": detail.get("close_error"),
+                                            "retry": "FORBIDDEN"})
+            self.event("entry_refused", **detail)
+            raise
+
+    def settled_file(self, path, reader):
+        self.cleanup_time()
+        require(self.job_settled, "Final generated-file read requires observed Job zero")
+        handle, _identity = self.open_output(path)
+        try:
+            before = self.file_state(handle)
+            require(not before["identity"][3] & 0x10, "Expected a generated regular file")
+            plain_path(path)
+            value = reader(path)
+            require(before == self.file_state(handle), "Generated file changed during settled read")
+            return value
+        finally:
+            self.close_original(handle, path.name)
 
     def cleanup(self, root_handle, root_identity):
-        require(self.win.active() == 0, "Cleanup HOLD: owned job still has processes")
+        require(self.job_settled and self.win.active() == 0, "Cleanup HOLD: owned Job zero not observed")
+        require(not self.close_failures, "Cleanup HOLD: original handle close failure")
+        self.cleanup_time()
+        require(self.file_state(root_handle)["identity"] == root_identity, "Original generated-root identity changed")
         handles = []
-        close_attempted = []
+        close_attempted = set()
         try:
             # Retain every original descendant handle before any deletion. No
             # path-based recursive delete and no following reparse/hard links.
             stack = [self.temp]
             while stack:
+                self.cleanup_time()
                 parent = stack.pop()
                 with os.scandir(parent) as entries:
                     for entry in entries:
+                        self.cleanup_time()
                         path = Path(entry.path)
                         require(len(handles) < 5000, "Cleanup entry cap exceeded")
-                        handle, identity = self.win.open_owned(path)
+                        handle, identity = self.open_output(path, delete=True)
                         handles.append((path, handle, identity))
                         if identity[3] & 0x10:
                             stack.append(path)
             for path, handle, identity in sorted(handles, key=lambda item: len(item[0].parts), reverse=True):
+                self.cleanup_time()
                 self.event("delete_intent", path=str(path.relative_to(self.temp)), identity=identity)
                 self.win.delete_handle(handle)
-                close_attempted.append(handle)
-                self.win.check(self.win.k.CloseHandle(handle), "CloseDeletedEntry")
+                close_attempted.add(handle)
+                self.close_original(handle, "deleted entry")
+            self.cleanup_time()
             self.event("delete_root_intent", identity=root_identity)
             self.win.delete_handle(root_handle)
             return len(handles)
         finally:
             for _path, handle, _identity in handles:
                 if handle not in close_attempted:
-                    self.win.k.CloseHandle(handle)
+                    close_attempted.add(handle)
+                    try:
+                        self.close_original(handle, "gathered entry")
+                    except RuntimeError:
+                        pass
+            require(not self.close_failures, "Original cleanup-handle close failure; filesystem HOLD")
 
 
 def executable(name):
@@ -508,12 +783,12 @@ def validated_inputs(workspace):
             "Root cross-local/CI build-slot attestation required")
     require(re.fullmatch(r"[0-9a-f]{32}", request.get("nonce", "")) is not None, "Invalid request nonce")
     require(request.get("case_names") == CASES, "Exact ordered 14 cases required")
-    require(request.get("sdk") == SDK and request.get("max_seconds") == 900, "Changed target/resource contract")
+    require(request.get("sdk") == SDK and request.get("max_seconds") == COMMAND_SECONDS,
+            "Changed target/resource contract")
     require(all(re.fullmatch(r"[0-9a-f]{40}", request.get(key, "")) for key in ("source_commit", "source_tree")),
             "Exact source identity required")
     captures = {}
-    for key, path in (("helper_sha256", HELPER), ("workflow_sha256", WORKFLOW),
-                      ("source_bindings_sha256", BINDINGS)):
+    for key, path in (("helper_sha256", HELPER), ("workflow_sha256", WORKFLOW), ("scope_sha256", SCOPE)):
         data = frozen_bytes(workspace / path)
         require(request.get(key) == hashlib.sha256(data).hexdigest(), f"Request hash mismatch: {path}")
         captures[path] = data
@@ -524,11 +799,13 @@ def validated_inputs(workspace):
     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
     require(review.get("reviewer") == "/root/native_review" and
-            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_ADMISSION", "Missing genuine accepting review")
-    for key in ("helper_sha256", "workflow_sha256", "source_bindings_sha256"):
+            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_COHORT_ADMISSION", "Missing genuine accepting review")
+    for key in ("helper_sha256", "workflow_sha256", "scope_sha256"):
         require(review.get(key) == request.get(key), "Acceptance does not bind the exact candidate")
-    binding = json.loads(captures[BINDINGS], object_pairs_hook=no_duplicate_keys)
-    require(binding["suite"] == SUITE and binding["case_names"] == CASES, "Binding case map changed")
+    # Inline current native inputs are bound by the reviewed helper bytes. The
+    # old request/SOURCE_BINDINGS remain historical, never reused or modified.
+    binding = {"suite": SUITE, "case_names": CASES,
+               "files": [{"path": path, "sha256": expected} for path, expected in INPUTS.items()]}
     for member in binding["files"]:
         data = frozen_bytes(workspace / member["path"])
         require(hashlib.sha256(data).hexdigest() == member["sha256"], "Native source binding changed")
@@ -554,23 +831,34 @@ def main():
     plain_path(workspace)
     plain_path(runner_temp)
     require(Path(__file__).resolve() == workspace / HELPER, "Unexpected helper location")
-    signal.signal(signal.SIGINT, cancel)
-    signal.signal(signal.SIGTERM, cancel)
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGBREAK):
+        signal.signal(number, cancel)
     request, binding, captures = validated_inputs(workspace)
     require(not CANCELLED, "Cancellation before allocation")
-    temp = runner_temp / f"passvault-native-{run_id}-1"
-    evidence = runner_temp / f"passvault-native-evidence-{run_id}-1"
-    require(not temp.exists() and not evidence.exists(), "Namespace already exists; no adoption/recovery")
+    temp = runner_temp / f"passvault-windows-cohort-{run_id}-1-{request['nonce']}"
+    evidence = runner_temp / f"passvault-windows-cohort-{run_id}-1-evidence"
+    require_absent(temp)
+    require_absent(evidence)
     evidence.mkdir()
     win = None
     run = None
     root_handle = None
     root_identity = None
     parent_handles = []
-    result = {"suite": SUITE, "passed_cases_machine_scored": 0, "operational_status": "FAILED_OR_INCOMPLETE",
+    configured = False
+    build_returned = False
+    commands_returned = False
+    result = {"suite": SUITE, "case_scoring": "NOT_PERFORMED; raw XML requires independent actual-case review",
+              "operational_status": "FAILED_OR_INCOMPLETE",
               "cleanup": "NOT_STARTED", "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
               "hello_hardware": "BLOCKED: not exercised", "failures": []}
     try:
+        # Enable upload only after this run's exclusive evidence mkdir. A
+        # refused/preexisting namespace never becomes an upload source.
+        with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8", newline="\n") as output:
+            output.write("evidence_owned=true\n")
+            output.flush()
+            os.fsync(output.fileno())
         win = Windows()
         first_resources = win.resources([workspace, runner_temp], launch=True)
         for path in (workspace, runner_temp):
@@ -597,9 +885,12 @@ def main():
         require(len(identity) == 4 and identity[0] == os.environ.get("GITHUB_SHA"), "Request HEAD mismatch")
         require(identity[2] == request["source_commit"] and identity[3] == request["source_tree"],
                 "Request must directly follow the exact reviewed source commit/tree")
-        changed = run.command(git_prefix + ["diff", "--name-only", "HEAD^", "HEAD", "--"],
+        parents = run.command(git_prefix + ["rev-list", "--parents", "-n", "1", "HEAD"],
+                              30, "one-parent").split()
+        require(parents == [identity[0], identity[2]], "Activation must have exactly one reviewed parent")
+        changed = run.command(git_prefix + ["diff", "--name-status", "HEAD^", "HEAD", "--"],
                               30, "request-only-diff").splitlines()
-        require(changed == [REQUEST], "Activation commit may change only the request")
+        require(changed == ["A\t" + REQUEST], "Activation must only add the fresh request; modification/reuse forbidden")
         status = run.command(git_prefix + ["status", "--porcelain=v1", "--untracked-files=all"],
                              30, "clean-source")
         require(not status.strip(), "Source checkout is not clean")
@@ -611,7 +902,7 @@ def main():
         require(cmake.parent == ctest.parent, "CMake/CTest must use the same installed toolchain")
         sdk_header = Path(os.environ["ProgramFiles(x86)"]) / "Windows Kits/10/Include" / SDK / "um/webauthn.h"
         plain_path(sdk_header)
-        header = sdk_header.read_text(encoding="utf-8", errors="strict")
+        header = frozen_bytes(sdk_header).decode("utf-8", errors="strict")
         for required in ("WEBAUTHN_API_VERSION_8", "WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_8",
                          "WEBAUTHN_HMAC_SECRET_SALT", "pPRFGlobalEval"):
             require(required in header, "Installed Windows SDK lacks required reviewed WebAuthn declarations")
@@ -627,74 +918,118 @@ def main():
         native = workspace / "app-desktop/native/biometric-bridge"
         run.command([cmake, "-S", native, "-B", build, "-G", "Visual Studio 17 2022", "-A", "x64",
                      f"-DCMAKE_SYSTEM_VERSION={SDK}", "-DBUILD_TESTING=ON"], 120, "configure")
-        # Generated configuration is compact evidence, not a compiler success claim.
-        cache = (build / "CMakeCache.txt").read_text(encoding="utf-8")
+        configured = True
+        # Bounded pre-build snapshots, not settled generated-file identities or
+        # evidence of the effective product compilation. Final hashes follow
+        # whole-cohort settlement; verbose compiler output remains necessary.
+        cache = frozen_bytes(build / "CMakeCache.txt").decode("utf-8")
         selected_cache = [line for line in cache.splitlines() if re.match(
             r"CMAKE_(CXX_FLAGS|CXX_COMPILER|C_COMPILER|GENERATOR|VS_WINDOWS_TARGET_PLATFORM_VERSION|SYSTEM_VERSION)", line)]
         projects = {}
         for name in ("passvault_biometric", "passvault_biometric_windows_security_test"):
             project = build / f"{name}.vcxproj"
-            text = project.read_text(encoding="utf-8-sig")
+            project_bytes = frozen_bytes(project)
+            text = project_bytes.decode("utf-8-sig")
             for token in ("stdcpp20", "<ExceptionHandling>Sync</ExceptionHandling>",
                           "<WarningLevel>Level4</WarningLevel>", "<TreatWarningAsError>true</TreatWarningAsError>",
                           "<SDLCheck>true</SDLCheck>", "<ControlFlowGuard>Guard</ControlFlowGuard>"):
                 require(token in text, f"Required compiler configuration absent: {name}: {token}")
-            projects[name] = {"sha256": digest(project), "required_compile_predicates": "PRESENT"}
-        write_json(evidence / "compile-configuration.json", {"cache": selected_cache, "projects": projects})
+            projects[name] = {"snapshot_sha256": hashlib.sha256(project_bytes).hexdigest(),
+                              "required_compile_predicates": "PRESENT"}
+        write_json(evidence / "compile-configuration-snapshot.json", {
+            "qualification": "Pre-build bounded snapshots; not settled-file or effective compiler proof",
+            "cache": selected_cache, "projects": projects,
+        })
         run.command([cmake, "--build", build, "--config", "Release", "--target",
                      "passvault_biometric_windows_security_test", "passvault_biometric_abi_test",
-                     "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 420, "build")
-        binaries = [build / "Release" / name for name in (
-            "passvault_biometric.dll", "passvault_biometric_windows_security_test.exe", "passvault_biometric_abi_test.exe")]
-        write_json(evidence / "native-artifacts.json", {"binaries": [pe_identity(path) for path in binaries]})
+                     "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 240, "build")
+        build_returned = True
         inventory = json.loads(run.command([ctest, "--test-dir", build, "-C", "Release", "--show-only=json-v1"],
                                           30, "ctest-inventory"))
         require(sorted(test["name"] for test in inventory["tests"]) == sorted(CASES), "CTest inventory differs from 14")
         write_json(evidence / "ctest-inventory.json", inventory)
         for index, name in enumerate(CASES, 1):
-            xml = evidence / f"case-{index:02d}.xml"
+            xml = temp / "logs" / f"case-{index:02d}.xml"
+            run.xml_paths[name] = xml
             run.command([ctest, "--test-dir", build, "-C", "Release", "--parallel", "1",
                          "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit", xml,
-                         "-R", "^" + re.escape(name) + "$"], 45, f"case-{index:02d}")
-            require(xml.is_file() and 0 < xml.stat().st_size <= 1024 ** 2, "Missing or oversized CTest XML")
-            tree = ET.parse(xml)
-            tests = list(tree.iter("testcase"))
-            require(len(tests) == 1 and tests[0].get("name") == name, "CTest XML does not contain the exact single case")
-            require(not any(list(tree.iter(tag)) for tag in ("failure", "error", "skipped")), "Case did not pass")
-            result["passed_cases_machine_scored"] += 1
-        for path, expected in captures.items():
-            require(hashlib.sha256(frozen_bytes(workspace / path)).hexdigest() == expected,
-                    "Source/authority drifted during execution")
+                         "-R", "^" + re.escape(name) + "$"], 45, f"case-{index:02d}", case=name)
         require(not CANCELLED, "Cancellation before result/cleanup")
-        result["operational_status"] = "TESTS_EXECUTED_AWAITING_INDEPENDENT_RESULT_REVIEW"
+        commands_returned = True
     except BaseException as error:
         result["failures"].append(f"{type(error).__name__}: {error}")
     finally:
         if win is not None:
             try:
-                if win.active():
-                    win.terminate_once()
-                    deadline = time.monotonic() + 10
-                    while win.active() and time.monotonic() < deadline:
-                        time.sleep(0.1)
-                require(win.active() == 0, "Owned worker settlement remains incomplete")
-                result["owned_workers"] = 0
-                if run is not None and root_handle is not None:
-                    count = run.cleanup(root_handle, root_identity)
-                    to_close = root_handle
-                    root_handle = None
-                    win.check(win.k.CloseHandle(to_close), "CloseDeletedRoot")
-                    require(not temp.exists(), "Generated root removal not settled")
-                    run.event("cleanup_settled", removed_entries=count, root_removed=True)
-                    result["cleanup"] = "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"
-                elif temp.exists():
-                    result["cleanup"] = "HOLD_PARTIAL_ALLOCATION; no adoption or automatic retry"
+                if run is None:
+                    # No command can have launched before Run exists.
+                    result["owned_job_zero_observed"] = win.active() == 0
+                    result["cleanup"] = "HOLD_NO_BOUND_RUN; no adoption or automatic retry"
+                else:
+                    settlement = run.settle(normal=commands_returned and not result["failures"])
+                    result["job_settlement"] = settlement
+                    result["failures"].extend(settlement["errors"])
+                    evidence_ready = run.job_settled
+                    if run.job_settled:
+                        try:
+                            run.cleanup_time()
+                            final_inputs = {}
+                            for path, expected in captures.items():
+                                run.cleanup_time()
+                                actual = hashlib.sha256(frozen_bytes(workspace / path)).hexdigest()
+                                final_inputs[path] = actual
+                                require(actual == expected, f"Source/authority drifted: {path}")
+                            write_json(evidence / "final-source-inputs.json", final_inputs)
+                            if configured:
+                                project_hashes = {}
+                                for name in ("passvault_biometric", "passvault_biometric_windows_security_test"):
+                                    path = temp / "build" / f"{name}.vcxproj"
+                                    project_hashes[path.name] = run.settled_file(
+                                        path, lambda item: hashlib.sha256(frozen_bytes(item)).hexdigest())
+                                write_json(evidence / "settled-project-hashes.json", project_hashes)
+                            if build_returned:
+                                binaries = [temp / "build/Release" / name for name in (
+                                    "passvault_biometric.dll", "passvault_biometric_windows_security_test.exe",
+                                    "passvault_biometric_abi_test.exe")]
+                                write_json(evidence / "native-artifacts.json", {
+                                    "owned_job_settled": True,
+                                    "binaries": [run.settled_file(path, pe_identity) for path in binaries],
+                                })
+                        except BaseException as error:
+                            evidence_ready = False
+                            result["failures"].append(f"Settled evidence {type(error).__name__}: {error}")
+                    try:
+                        retention_errors = run.retain_outputs()
+                        result["failures"].extend(retention_errors)
+                        evidence_ready = evidence_ready and not retention_errors
+                    except BaseException as error:
+                        evidence_ready = False
+                        result["failures"].append(f"Retention {type(error).__name__}: {error}")
+                    finally:
+                        # Original stdout handles close only after final raw
+                        # evidence capture, including on retention failure.
+                        run.close_logs()
+                    if evidence_ready and not run.close_failures and root_handle is not None:
+                        count = run.cleanup(root_handle, root_identity)
+                        to_close, root_handle = root_handle, None
+                        run.close_original(to_close, "deleted generated root")
+                        require_absent(temp)
+                        run.event("cleanup_settled", removed_entries=count, root_removed=True)
+                        result["cleanup"] = "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"
+                    else:
+                        result["cleanup"] = "HOLD_UNSETTLED_OR_EVIDENCE_OR_HANDLE_FAILURE; no generated-root deletion"
             except BaseException as error:
                 result["failures"].append(f"Cleanup {type(error).__name__}: {error}")
                 result["cleanup"] = "HOLD; hosted runner disposal is not an observed cleanup pass"
             finally:
+                if run is not None:
+                    # Slots already cleared by an earlier close are skipped;
+                    # this covers exceptional finalization before retention.
+                    run.close_logs()
                 if root_handle is not None:
-                    win.k.CloseHandle(root_handle)
+                    to_close, root_handle = root_handle, None
+                    if not win.k.CloseHandle(to_close):
+                        result["failures"].append("Original generated-root handle close failed; no automatic retry")
                 for _path, handle, _identity in parent_handles:
                     if not win.k.CloseHandle(handle):
                         result["failures"].append("Original parent handle close failed; no automatic retry")
@@ -705,13 +1040,20 @@ def main():
         if CANCELLED:
             result["failures"].append("Cancellation observed before terminal evidence commit")
         result["commands"] = run.command_results if run is not None else []
+        result["cases"] = run.case_results if run is not None else {name: {"state": "UNSTARTED"} for name in CASES}
+        result["entry_refusals"] = run.rejections if run is not None else []
+        result["original_handle_close_failures"] = run.close_failures if run is not None else []
         result["source_qualification"] = "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof"
-        if result["failures"] or result["cleanup"] != "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED":
-            result["operational_status"] = "FAILED_OR_INCOMPLETE"
+        if (commands_returned and not result["failures"] and not result["original_handle_close_failures"]
+                and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
+            result["operational_status"] = "COMMANDS_RETURNED_WITH_RAW_XML_AWAITING_INDEPENDENT_RESULT_REVIEW"
         write_json(evidence / "result.json", result)
         print(json.dumps(result, sort_keys=True))
-    # Signals/hard termination after this terminal boundary can prevent artifact
-    # upload; Actions cancellation is never represented as a verification pass.
+    # No custom cancellation handler may swallow a signal after the last
+    # sticky-flag check and permit successful process exit. Hard termination
+    # can still prevent evidence/upload; hosted disposal is not cleanup proof.
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGBREAK):
+        signal.signal(number, signal.SIG_DFL)
     return 0 if not CANCELLED and result["operational_status"] != "FAILED_OR_INCOMPLETE" else 1
 
 

@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T15:01:27.773123+00:00",
+  "review": "reviews/baseline-coverage/CHECKPOINT-8-PUBLICATION-SCOPE-ASSESSMENT.json",
+  "review_sha256": "faaed72ad81a487f2561cf95a5e4e0fdef21e6733b99529d0907f2ea959cfe88",
+  "disposition": "ADOPT_NEW_PROSPECTIVE_TWO_PHASE_PUBLICATION_SCOPE_CONDITIONAL_ON_REVIEWED_SELECTION_AND_ACTUAL_GATES",
+  "phases": [
+    "one nonactivating selected source/report commit+dedicated fastforward push",
+    "one independently admitted source-bound request-only commit+dedicated fastforward push"
+  ],
+  "ref": "refs/heads/codex/audit-continuation-linux-20260908",
+  "source_predecessor": "c184bfbde0a7c04e3162537973cac91f70fdfcd4",
+  "activation_path": "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-02.json",
+  "bounds": {
+    "each_phase_seconds": 600,
+    "read_stage_commit_command_seconds": 60,
+    "each_push_seconds": 120,
+    "object_inventory_files": 100000,
+    "object_inventory_logical_bytes": 536870912
+  },
+  "preservation": "Original820+recordedC7additions92 files; original246+C7added3 directories;7 ancestors; fresh before each phase and after staging/commit/push comparisons. Each new admitted addition becomes protected for next phase. Only exact independently approved loose/exactpack timestamp deltas; strict priorFAIL/causeUNKNOWN retained. Unexpected drift STOP, no fix/automaticretry.",
+  "exclusions": [
+    "all old held runtimes/cache/helpers",
+    "all protected refs/tags/settings/identity/version/dependencies/signing/Store/build1017001",
+    "unselected macos native helper/workflow",
+    "new active Linux isolated02 source files"
+  ],
+  "cleanup": "Foreground bounded transport/report work only, no Gradle/test job from phase1; phase2 must already have its independent Windows Job/evidence/cleanup admission before push. No shared caches/toolchains or permanent source/reports deleted."
+}

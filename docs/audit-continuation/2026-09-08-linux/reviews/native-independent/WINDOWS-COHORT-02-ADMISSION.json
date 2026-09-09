@@ -1,0 +1,84 @@
+{
+  "actual_product_cases_executed": 0,
+  "additional_scope": "Existing synthetic Windows CNG roundtrip/tamper compatibility sibling; no PVU-008 experiment.",
+  "author": "/root/native",
+  "case_names": [
+    "passvault_biometric_windows_file_success",
+    "passvault_biometric_windows_file_validation_failure",
+    "passvault_biometric_windows_file_dacl_failure",
+    "passvault_biometric_windows_file_collision",
+    "passvault_biometric_windows_file_empty_payload",
+    "passvault_biometric_windows_file_oversized_payload",
+    "passvault_biometric_windows_file_empty_suffix",
+    "passvault_biometric_windows_file_rename_failure",
+    "passvault_biometric_windows_secret_normal_scope",
+    "passvault_biometric_windows_secret_early_return",
+    "passvault_biometric_windows_secret_allocation_exception",
+    "passvault_biometric_windows_secret_nested_exception",
+    "passvault_biometric_abi",
+    "passvault_biometric_windows_security"
+  ],
+  "disposition": "ACCEPT_WINDOWS_NATIVE_14_COHORT_ADMISSION",
+  "execution_performed": false,
+  "finding_ids": [
+    "PVA-036",
+    "PVA-037",
+    "PVA-014"
+  ],
+  "fresh_instance_conditions": [
+    "Root alone reserves and reconciles one audit-owned local/CI slot; Boolean attestation is not a lock.",
+    "Fresh request addition on exact continuation branch, attempt1, one reviewed parent; exact source/tree and helper/workflow/scope/review hashes.",
+    "Unchanged14 ordered cases, fixed preinstalled target/toolchain, bounds and owned cleanup contract.",
+    "Observe whole-Job zero separately from parent exits; one final termination is not natural exit or test success.",
+    "Reconcile helper/job exit, all failures, final source hashes, effective compilation, actual complete raw XML and cleanup independently.",
+    "No old helper/evidence replay, recovery, automatic retry or restricted-scope bypass."
+  ],
+  "helper_sha256": "4bbb467ef222292071f693df22cd4fb3af467749d1f05dc3ea07cb94edb19e9a",
+  "intended_parent_invocations": 22,
+  "limitations": [
+    "Cooperative fresh hosted namespace; sampled resource/output bounds; hard interruption may prevent cleanup/evidence.",
+    "Final PE hashes are settled-byte evidence, not by themselves proof of each earlier executing image.",
+    "Late parent/Job handle-close failures can coexist with specific generated-root removal but remain overall failure.",
+    "No historical red controls, production allocation-cut injection, fixed CNG vector, PVU-008 content contract, actual Hello/prompt or physical hardware evidence."
+  ],
+  "new_closures": 0,
+  "preserved_predecessor": {
+    "attempt": 1,
+    "cause_diagnosed": false,
+    "retry_authorized": false,
+    "run_id": "34284083351",
+    "status": "FAIL/filesystem HOLD",
+    "unstarted_cases": 14
+  },
+  "qualification": "Prospective source-level acceptance only; root must admit and reserve one fresh exact-source instance. No automatic retry, execution result, test pass or HOLD release.",
+  "review_note": {
+    "bytes": 7134,
+    "lf": 105,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/WINDOWS-COHORT-02-SOURCE-REVIEW.md",
+    "sha256": "0e65ddd888e865f1b52bcc9e8e73cd7b314d19f50440fcefb90170e2de74dded"
+  },
+  "reviewer": "/root/native_review",
+  "schema": 1,
+  "scope_sha256": "0bcea8071094d849d013760c46bbb02e7668623763bea7e6e88a2ae5d221c3ee",
+  "source_inspection": {
+    "cmake_lf": 187,
+    "cmake_sha256": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "full_native_source_review_claimed": false,
+    "helper_lf": 1061,
+    "previous_test_scope_sha256": "8159311732ae671fce99d4bdaa71d8ae634b031d96c5f930867b26de5a157f86",
+    "scope_lf": 200,
+    "seven_inline_hashes_match": true,
+    "source_commit_binding": "Deferred to fresh exact single-parent request and actual Git evidence; no Git inquiry by reviewer.",
+    "workflow_lf": 54
+  },
+  "suite": "windows-native-14-cohort-v2",
+  "unchanged_restrictions": [
+    "PVU-007 STOP",
+    "PVU-011 NO RETRY",
+    "PVA-029 FAIL/no automatic retry",
+    "G7/G8 CLOSED",
+    "all prior FAIL/HOLD scopes",
+    "protected refs/tags; Store identities/versions/dependencies; signing/publication; occupied1017001"
+  ],
+  "workflow_sha256": "ac14ac156b2aab5906064f3f6d6a915d6fda43972b2d8faac52461901723cf01"
+}

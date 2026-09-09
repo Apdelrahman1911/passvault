@@ -1,5 +1,22 @@
 # Bounded team ownership
 
+## Current C8 continuation
+
+- Root remains sole build/test/CI/Git and central-ledger owner. Windows02 source
+  publication and later request-only activation have separate admission gates.
+- `native` authored the Windows02 helper/workflow/scope; `native_review` performs
+  independent source and actual-result review. Neither executes builds or CI.
+- `storage` authored the isolated Linux inner/init; `editor` authored the outer;
+  `verification` independently reviewed exact source, actual instance and the
+  consumed preallocation host-conflict result. Root released scheduling only.
+- The same authors prepare fresh Linux02 path/hash-only source copies, outside
+  the C8 publication selection. `verification` reviews only the changed bindings
+  plus a future genuine external-state instance; no redundant whole-body audit
+  or automatic retry. Old01 sources and evidence stay intact.
+- `baseline_coverage` reviews C8's bounded publication exception and final
+  coverage/report selection independently. Source/hardware/closure credit is
+  not supplied by a report review or publication.
+
 ## Current C7 continuation (supersedes earlier preparation status)
 
 - Root owns actual02 receipts, scheduling-only release, central ledgers and C7

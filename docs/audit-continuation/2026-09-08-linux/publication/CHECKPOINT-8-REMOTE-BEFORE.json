@@ -1,0 +1,86 @@
+{
+  "utc": "2026-09-09T15:07:59.467303+00:00",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "c184bfbde0a7c04e3162537973cac91f70fdfcd4\n985c0614d1a182de62ee687c129fabc430c67f01\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "exit": 0,
+      "stdout": "refs/heads/codex/audit-continuation-linux-20260908 c184bfbde0a7c04e3162537973cac91f70fdfcd4\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 c184bfbde0a7c04e3162537973cac91f70fdfcd4\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "ls-remote",
+        "--refs",
+        "origin",
+        "refs/heads/main",
+        "refs/heads/testing",
+        "refs/heads/release",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "exit": 0,
+      "stdout": "c184bfbde0a7c04e3162537973cac91f70fdfcd4\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr": ""
+    }
+  ],
+  "expected_refs": {
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/codex/audit-continuation-linux-20260908": "c184bfbde0a7c04e3162537973cac91f70fdfcd4",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "result": "C7_DEDICATED_AND_ALL_RELEVANT_PROTECTED_HANDOFF_CANDIDATE_REFS_UNCHANGED",
+  "qualification": "Read-only transport identity; no fetch needed for unchanged refs, no source/test/readiness or Store inference."
+}

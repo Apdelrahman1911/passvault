@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "owner": "/root",
-  "state": "IDLE_AFTER_ISOLATED_BATCH01_PREALLOCATION_HOLD_SCHEDULING_ONLY",
-  "updated_utc": "2026-09-09T15:01:27.773123+00:00",
+  "state": "IDLE_AFTER_NAMESPACE01_CONSUMED_FAIL_SCHEDULING_RELEASE_ONLY",
+  "updated_utc": "2026-09-09T12:37:33.443454+00:00",
   "branch": "codex/audit-continuation-linux-20260908",
-  "all_other_agents": "ASSIGNED_SOURCE_DATA_ONLY_NO_BUILD_TEST_CI",
+  "all_other_agents": "SOURCE_AND_DATA_REVIEW_ONLY_NO_EXECUTION",
   "last_controls02": {
     "scope": "linux-runner-controls-02",
     "result": "22PASS/0FAIL/0unstarted; originalsyntheticcleanupandprocesssettled",
@@ -23,7 +23,7 @@
   "windows_run": 34284083351,
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
   "local_execution": "Linux02 consumed FAIL during wrapper bootstrap after verified C4 source-before:ordinary143/originalstop0;0 application tests/all166+1 UNSTARTED. Source-after/ownedsettlement/cleanupHOLD retained; no automatic retry.",
-  "next_gate": "Windows02 exact source/instance/activation admission; then new Linux02 source-delta and genuine external-state admission. No automatic retries.",
+  "next_gate": "New narrower source-corrected admission needed; no standalone probe or build successor automatically authorized.",
   "historical_locks": "NOT_ADOPTED_OR_RECREATED",
   "release_of_slot_is_not_release_publication": true,
   "last_e_bootstrap": {
@@ -99,27 +99,5 @@
     "product_tests": 0,
     "consumed": true,
     "feasibility_pass": false
-  },
-  "last_linux_isolated_batch01": {
-    "run_id": "linux-isolated-batch01",
-    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
-    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
-    "source_representation": "RAW_GIT_BLOBS_PLANNED_NOT_MATERIALIZED",
-    "request_sha256": "e15e29322dc3a6f018b3abfc053ee7cc0fb2d000f7ad878144055958bbeaf58f",
-    "approval_sha256": "e266daffd496e3612f26379d60462e09e27fb68076bdbf730c5f61ab06347122",
-    "operational_result": "CONSUMED_PREALLOCATION_HOST_CONFLICT_HOLD_NO_RETRY",
-    "external_exit": 70,
-    "actual_children": 0,
-    "product_tests": 0,
-    "unstarted_regression_methods": 166,
-    "unstarted_fixture_producers": 1,
-    "xml_captures": 0,
-    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
-    "cleanup": "NOT_APPLICABLE_NO_RUNTIME_ALLOCATED; INDEPENDENT_FRESH_R_E_ABSENCE_POINT",
-    "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH01-ACTUAL-RESULT-REVIEW.json",
-    "independent_review_sha256": "e09558d86e30dc4ff9ec294cc6e2fc2568eea75d80abd0c5b3b1b6f633e0295e",
-    "external_receipt": "reviews/isolated-batch/EXTERNAL-RESULT.json",
-    "consumed": true,
-    "limits": "Candidate java389 owner/activity not established; no probe/signal/adoption authority. Original preterminal receipt and actual external70 support scheduling release only, not global idleness, host feasibility, final-close API proof or new admission."
   }
 }

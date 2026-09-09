@@ -1,0 +1,143 @@
+{
+  "format": "passvault-linux-isolated-batch01-independent-actual-review-v1",
+  "reviewer": "/root/verification",
+  "date_utc": "2026-09-09",
+  "run_id": "linux-isolated-batch01",
+  "disposition": "CONSUMED_PREALLOCATION_HOST_CONFLICT_HOLD_NO_RETRY",
+  "scheduling_only_release_supported": true,
+  "decision_scope": "Release only this consumed, completed, no-child admission scheduling slot. This is not global-idle evidence, execution admission, cleanup/adoption authority or an old HOLD release.",
+  "request_sha256": "e15e29322dc3a6f018b3abfc053ee7cc0fb2d000f7ad878144055958bbeaf58f",
+  "genuine_approval_sha256": "e266daffd496e3612f26379d60462e09e27fb68076bdbf730c5f61ab06347122",
+  "exact_admission_consumed": true,
+  "same_request_or_approval_replay_permitted": false,
+  "retained_evidence": [
+    {
+      "path": "reviews/isolated-batch/ROOT-ACTUAL-ADMISSION.json",
+      "sha256": "0ed13c58082fb617f5f99f180f79b2541463d6c4b7ea5193ddb486b5df9e04a8",
+      "bytes": 9673,
+      "dev": 24,
+      "ino": 14283104
+    },
+    {
+      "path": "reviews/isolated-batch/OUTER-STDOUT.json",
+      "sha256": "c4b1a6056e228fc5795c98615e16133df924c253dfacafe1a9648547334a0cd4",
+      "bytes": 894,
+      "dev": 24,
+      "ino": 14283106
+    },
+    {
+      "path": "reviews/isolated-batch/EXTERNAL-RESULT.json",
+      "sha256": "e21b1ba64337144c0f857a181ec3a238f02f01795e277690d7b3af2f5f991b6d",
+      "bytes": 1996,
+      "dev": 24,
+      "ino": 14283107
+    }
+  ],
+  "retained_file_shape": "All three independently stable-read as regular0600/UID0/nlink1; paths relative to continuation directory. External tool output bytes exactly equal retained OUTER-STDOUT.json.",
+  "independent_data_reconciliation": {
+    "tool": "5bab97",
+    "exit": 0,
+    "source_tool_image_tuples_matched": 13,
+    "original_parent_identity_tuples_matched": 4,
+    "request_and_approval_full_images_match_root_admission": true,
+    "original_lock_full_pin_matches_request_and_admission": true,
+    "new_runtime_name": "/root/projects/PassVault/audit-runtime-linux-isolated-batch01",
+    "new_evidence_name": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-isolated-batch01",
+    "both_new_names_absent_under_original_parent_descriptors": true,
+    "runtime_parent": {
+      "dev": 23,
+      "ino": 498323,
+      "uid": 0,
+      "mode": "0755"
+    },
+    "evidence_parent": {
+      "dev": 23,
+      "ino": 642474,
+      "uid": 0,
+      "mode": "0700"
+    },
+    "no_lock_acquisition_process_namespace_mount_ci_or_unowned_pid_probe": true,
+    "qualification": "Name absence is a scoped post-result point observation, not permission to retry or proof of all historical/global filesystem state. Four-field directory identity deliberately excludes mutable nlink."
+  },
+  "actual": {
+    "external_tool": "9e146c",
+    "external_exit": 70,
+    "external_session_id": null,
+    "external_tool_reported_wall_time_seconds": 0.007854231,
+    "outer_reported_elapsed_seconds": 0.097,
+    "timing_qualification": "Retain tool-wait and outer monotonic reports separately; no hard-deadline experiment or equivalence claim.",
+    "reason": "RuntimeError:host buildlike conflict: 389:java",
+    "outer_status": "HOLD",
+    "receipt_preterminal": true,
+    "children": [],
+    "inner_started": false,
+    "cleanup": "NOT_ATTEMPTED",
+    "signal_mask_before_children": [],
+    "parent_entry_equals_under_lock": true,
+    "recorded_parent": {
+      "pid": 13528,
+      "ppid": 28638,
+      "start": 16823040,
+      "namespaces": {
+        "pid": "pid:[4026531836]",
+        "mnt": "mnt:[4026531841]"
+      }
+    },
+    "recorded_resource_point": {
+      "disk_available": 19098714112,
+      "MemAvailable": 35144220672,
+      "MemTotal": 67435888640
+    },
+    "unclassified_host_churn": 0,
+    "candidate_origin_owner_and_actual_build_activity": "NOT_ESTABLISHED. java is a positive name-screen candidate, not proof that PID389 is running a build. It was not created by this no-child invocation; no probe, signal, adoption or reclassification is authorized."
+  },
+  "source_order_reconciliation": {
+    "outer_sha256": "c5e0a4b5ca35a9dced05e2b3a2795d9a0d4169629c8ce85b2d963b28a4cce405",
+    "source_read_tool": "367230",
+    "source_read_exit": 0,
+    "before_refusal": "Lines477-513 perform fixed intake, genuine approval binding, original flock, parent/13 input checks and authority(). Line514 watch(entry=True) reaches screen after the resource floor.",
+    "refusal": "Lines206-214 require positive comm and stable repeated identity, then refuse an unowned candidate. With child=None this emits the exact recorded reason; raw candidate birth/namespaces were not retained, so no further origin claim is made.",
+    "not_reached": "Fresh-name check516, allocation518-520, Git archive drive536, materialization547, and all unshare/inner/Gradle/stop/XML/cleanup paths were not reached.",
+    "stdout_instead_of_E": "The catch latches the reason without creating CANCEL because E was never registered. Final602 prints the preterminal receipt instead of writing an E receipt. External exit70 corroborates termination; no child-supervision path applies.",
+    "binding_qualification": "Early stdout lacks packet-image fields assigned only after allocation521. Exact binding comes from root external admission/tool record, the frozen source, and independently unchanged request/approval/13 image tuples, not an invented stdout attestation.",
+    "settlement_qualification": "External tool completion plus no-child source/receipt/absence evidence supports scheduling-only release. Individual final close success is not separately reported by an already-exit70 process. No global worker-settlement or arbitrary descendant/kernel-cleanup test occurred."
+  },
+  "verification_counts": {
+    "outer_invocations_consumed": 1,
+    "git_archive_invocations": 0,
+    "namespace_invocations": 0,
+    "gradle_build_or_test_invocations": 0,
+    "wrapper_stop_invocations": 0,
+    "wrapper_stop_status": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
+    "regressions_unstarted": 166,
+    "fixture_producers_unstarted": 1,
+    "product_cases_executed": 0,
+    "xml_captures": 0,
+    "all_five_phases": "UNSTARTED",
+    "materialized_C4_archive": "NOT_CREATED",
+    "source_commit_declared_not_executed": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree_declared_not_materialized": "cf0a8a702e7cd6948236be18b491bb5a21b5886e"
+  },
+  "boundaries": {
+    "retry": "NO_AUTOMATIC_RETRY. Fresh R/E absence does not reopen the consumed admission; preserve this result and obtain separately reviewed fresh authority for any future execution.",
+    "cleanup": "No new runtime or workers were allocated by this attempt; no deletion/stop is needed or authorized for this result. Permanent evidence is retained. No old runtime, shared cache, SDK, toolchain or unowned process may be touched.",
+    "external_gate": "The positive unowned Java candidate remains an unresolved coordination/classification gate; scheduling release neither clears it nor establishes global idleness.",
+    "unchanged_restrictions": [
+      "PVU-007 STOP",
+      "PVU-011 NO RETRY",
+      "PVA-029 recorded failure/no automatic retry",
+      "G7/G8 CLOSED",
+      "Linux01/02 HOLD/consumed",
+      "namespace01 consumed FAIL/no retry",
+      "Windows/macOS failed-run restrictions"
+    ],
+    "closure_counts_unchanged": {
+      "original_confirmed": "19/25",
+      "all_confirmed": "22/38",
+      "original_suspicions": "2/12",
+      "PVD_explanations_separate": 8
+    },
+    "no_hardware_native_or_compatibility_completion_credit": true
+  },
+  "reviewer_housekeeping": "Only this compact permanent report was exclusively written and fsynced/read back. Source/data-only readers completed; no subject import/syntax/runner execution, namespace/process probe, build, cleanup, temporary files or owned background workers."
+}

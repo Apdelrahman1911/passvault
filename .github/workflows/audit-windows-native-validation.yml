@@ -1,4 +1,4 @@
-name: Audit Windows native validation (non-publishing)
+name: Audit Windows native cohort 02 (non-publishing)
 
 # Deliberately inert until root commits a separately reviewed one-shot request.
 # Changes to source, this workflow, helpers, or ordinary reports do not run it.
@@ -6,7 +6,7 @@ on:
   push:
     branches: [codex/audit-continuation-linux-20260908]
     paths:
-      - docs/audit-continuation/2026-09-08-linux/requests/windows-native.json
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-02.json
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
       github.event_name == 'push' && !github.event.deleted &&
       github.run_attempt == 1
     runs-on: windows-2022
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - name: Read-only exact request checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -35,19 +35,20 @@ jobs:
           lfs: false
 
       - name: Run the admitted native-only request
+        id: validate
         shell: pwsh
         run: python -I -B scripts/audit/windows_native_validation.py
 
       - name: Preserve compact evidence, never application binaries
-        if: always()
+        if: always() && steps.validate.outputs.evidence_owned == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: audit-windows-native-${{ github.run_id }}-${{ github.run_attempt }}
+          name: audit-windows-cohort-02-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ runner.temp }}/passvault-native-evidence-${{ github.run_id }}-${{ github.run_attempt }}/*.json
-            ${{ runner.temp }}/passvault-native-evidence-${{ github.run_id }}-${{ github.run_attempt }}/*.jsonl
-            ${{ runner.temp }}/passvault-native-evidence-${{ github.run_id }}-${{ github.run_attempt }}/*.log
-            ${{ runner.temp }}/passvault-native-evidence-${{ github.run_id }}-${{ github.run_attempt }}/*.xml
+            ${{ runner.temp }}/passvault-windows-cohort-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+            ${{ runner.temp }}/passvault-windows-cohort-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+            ${{ runner.temp }}/passvault-windows-cohort-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
+            ${{ runner.temp }}/passvault-windows-cohort-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
           retention-days: 3
           compression-level: 9
           if-no-files-found: error
