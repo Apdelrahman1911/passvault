@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T08:19:34.331798+00:00",
+  "status": "ADMIT_ONE_IOS_FOCUSED01_REQUEST_ONLY_ACTIVATION_AND_TARGET_RUN",
+  "source_commit": "6220812e4602369d4853b763465a92e6291bb971",
+  "source_tree": "3defb2a459ffbbddb51b3baa0f088d438edf74c3",
+  "request_sha256": "71451b24f0331d9d7d9d15976422d145c4a3781cb9ec9b7c2370b563ac42c2b4",
+  "independent_instance_review": "reviews/storage/IOS01-INSTANCE-REVIEW.json",
+  "independent_instance_review_sha256": "1c8a99a3b058e3fcd7087f3707eaf1f230f497b309623a1fb49db2e8fca787ee",
+  "instance_packet": "reviews/ios-focused01/SOURCE-INSTANCE-01.json",
+  "instance_packet_sha256": "2400fc6a2864c835c39b241da719bccb1c719abd4aba0b134816ab2ac88d40db",
+  "finding_ids": [
+    "PVA-008",
+    "PVA-014",
+    "PVA-038"
+  ],
+  "why_target": "Real Foundation attachment files, iOS native AEAD and LAContext prompt properties need Apple runtime; Linux cannot execute them. Simulator is not physical iPhone security or authentication evidence.",
+  "runner": "macos-15 ARM64/image20260829.0321.1; observed Python3.14.7/Xcode16.4/iOS18.5/new iPhone16 simulator/installed JDK17 ARM64; hard drift refusal, no install/fallback.",
+  "commands": [
+    ":core:crypto:iosSimulatorArm64Test --tests com.passvault.core.crypto.SecurityTest.VEK wrapping roundtrip --tests com.passvault.core.crypto.SecurityTest.wrong KEK fails VEK unwrapping --device <new-bound-UDID>",
+    ":shared:iosSimulatorArm64Test --tests com.passvault.shared.platform.IosAttachmentFileStoreTest --tests com.passvault.shared.platform.IosBiometricPromptStringsTest --device <same-new-bound-UDID>"
+  ],
+  "command_qualification": "Exact argv, original wrapperstop/status per attempted module and task graph are in accepted helper61f7e\u2026/plan; strings here are descriptions, not shell invocations. No new source changes or broad test tasks.",
+  "expected_evidence": "10 once-each real XML cases: crypto2 +attachment7 +prompt-property1. Raw outcomes/commands/identity/guest-parent receipts and qualified cleanup independently reconciled; skip/unstarted/failure not normalized.",
+  "bounds": {
+    "job_minutes": 30,
+    "work_seconds": 1440,
+    "absolute_cleanup_seconds": 1620,
+    "workers": 1,
+    "retention_days": 7,
+    "evidence_bytes_max": 16777216
+  },
+  "cleanup": "Accepted original-descriptor disposable raw source/private Gradle+Konan+HOME/temp roots; mandatory owned Foundation parent/newUDID binding before synthetic file access; original wrapper stop/status per attempted module; nonzero/forced/uncertain prevents next module/private deletion. Bounded owned-device shutdown/delete only. No real vault/clipboard/cache/toolchain/shared-service access or kills. Hard interruption HOLD, no retry.",
+  "sole_slot": {
+    "state": "RESERVED_IOS_FOCUSED01_AWAITING_ACTIVATION",
+    "sha256": "ddbee92a0146c966830b3aea6617ce43e69cfe5b2f5774a026660cfe6d0bee1f",
+    "local_audit_build": "NONE; all agents source-only; no local execution until actual CI result and independent settlement",
+    "fresh_ci_path": "reviews/ios-focused01/CI-STATE-AT-ACTIVATION.json",
+    "fresh_ci_sha256": "92b0155afd2950045664c48184733133e385d9235be8411ac008c7eb6a18df02",
+    "all_terminal": true,
+    "rows": 7,
+    "qualification": "Fresh complete branch point observation plus shared non-cancelling Actions concurrency; not global/external idleness."
+  },
+  "local_resources": {
+    "disk_available_bytes": 19582078976,
+    "ram_available_bytes": 34680762368,
+    "ram_total_bytes": 67435888640
+  },
+  "activation_recipe_sha256": "57347b91dd6af7d03ad71f094fe3b7d3dafa53468f359f27667521c1d69713ac",
+  "publication": "One sole-parent child adding ONLY exact ios-focused-01.json; dedicated branch/nonforce/immutable actions/read-only permission/no signing/store/release/protected refs or build1017001.",
+  "all_prior_fences": "PVU007STOP/PVU011NORETRY/PVA029FAILandnoautoretry/G7G8CLOSED/alloldWindowsLinuxHOLDs and PVD/hardware/EOL/missing-tool qualifiers unchanged",
+  "hard_interruption": "May prevent final evidence/cleanup; retain HOLD, no automatic retry or old-scope recovery."
+}

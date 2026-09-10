@@ -1,8 +1,24 @@
+## Post-C12 active ownership — 2026-09-10
+
+Root alone: Git in the new publication store, central ledgers, execution/CI/cleanup.
+Editor: Main/production Compose loop + one new child-JVM regression; native_review challenges it.
+Android32: one new shared Desktop real-Room editor regression; native_review independently reviews it.
+Build_config: final three-case inner/init; native_review independently accepted final batch delta.
+Verification: outer delta author; editor_review independently accepted it.
+Android32: next full-NavHost draft only in its review directory; editor: PVU003 admission design
+in its separate review directory. These drafts are excluded from C13/current build source.
+Storage: exact iOS01 instance/actual-result review completed; consumed failure and scheduler-only
+release preserve the unmet evidence-close qualification. Storage also independently reviews the
+future exact Desktop execution instance. Baseline_coverage: final coverage/report review.
+No agent may build/test/launch a service or modify another owner's files. Active code
+is outside the frozen C12 source registry until the next explicit publication freeze.
+All previous HOLDs, consumed admissions and STOP/NO-RETRY/CLOSED scopes remain.
+
 # Bounded team ownership
 
-## Live continuation toward C12 — root-owned update
+## Historical continuation toward C12 — root-owned update
 
-Published HEAD is the Windows05 request-only activation
+Published HEAD at this historical stage was the Windows05 request-only activation
 `b825df973ac3e3392dd99b251b8bb7fd48fecce6` /
 `92304c125be2e19a1badfb7540c39d4b7c82b6ab`. Both Windows05 and GUI02 used C11
 workload source `0d06721b7f8bdc17513a6ab51ffbc5523e68b230` /
@@ -36,7 +52,7 @@ No old held scope is adopted. Consult the current EXECUTION_SLOT.json, not an
 older paragraph, for scheduling. All existing STOP/NO-RETRY/CLOSED restrictions
 and source/evidence/hardware qualifications remain unchanged.
 
-## Current C11 continuation
+## Historical C11 continuation
 
 - Root remains sole build/test/CI/Git and central-ledger owner. Windows04 failure
   and filesystem HOLD are preserved; Mac02's5CTests/qualified cleanup are

@@ -1,0 +1,24 @@
+﻿2026-09-10T08:19:56.1369650Z ##[group]Run # The pinned public image documents Python3, not an absolute launcher
+2026-09-10T08:19:56.1370310Z [36;1m# The pinned public image documents Python3, not an absolute launcher[0m
+2026-09-10T08:19:56.1370710Z [36;1m# path. Observe the installed launcher; never reuse the Intel path.[0m
+2026-09-10T08:19:56.1371050Z [36;1mpython_launcher="$(command -v python3)"[0m
+2026-09-10T08:19:56.1371340Z [36;1mcase "${python_launcher}" in /*) ;; *) exit 1 ;; esac[0m
+2026-09-10T08:19:56.1371610Z [36;1mexec /usr/bin/env -i \[0m
+2026-09-10T08:19:56.1371880Z [36;1m  PATH='/usr/bin:/bin:/usr/sbin:/sbin' LANG=C LC_ALL=C TZ=UTC \[0m
+2026-09-10T08:19:56.1372280Z [36;1m  PV_REPOSITORY="${PV_REPOSITORY}" PV_REF="${PV_REF}" PV_EVENT="${PV_EVENT}" \[0m
+2026-09-10T08:19:56.1372730Z [36;1m  PV_SHA="${PV_SHA}" PV_RUN_ID="${PV_RUN_ID}" PV_ATTEMPT="${PV_ATTEMPT}" \[0m
+2026-09-10T08:19:56.1373220Z [36;1m  PV_WORKSPACE="${GITHUB_WORKSPACE}" PV_RUNNER_TEMP="${RUNNER_TEMP}" PV_OUTPUT="${GITHUB_OUTPUT}" \[0m
+2026-09-10T08:19:56.1373670Z [36;1m  PV_JAVA_HOME_17="${JAVA_HOME_17_arm64:?}" \[0m
+2026-09-10T08:19:56.1374000Z [36;1m  PV_IMAGE_OS="${ImageOS:?}" PV_IMAGE_VERSION="${ImageVersion:?}" \[0m
+2026-09-10T08:19:56.1374400Z [36;1m  "${python_launcher}" -I -B scripts/audit/ios_focused_validation.py[0m
+2026-09-10T08:19:56.1421270Z shell: /bin/bash --noprofile --norc -euo pipefail {0}
+2026-09-10T08:19:56.1421620Z env:
+2026-09-10T08:19:56.1421850Z   PV_REPOSITORY: Apdelrahman1911/passvault
+2026-09-10T08:19:56.1422180Z   PV_REF: refs/heads/codex/audit-continuation-linux-20260908
+2026-09-10T08:19:56.1422480Z   PV_EVENT: push
+2026-09-10T08:19:56.1422780Z   PV_SHA: d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:56.1423090Z   PV_RUN_ID: 34454557777
+2026-09-10T08:19:56.1423410Z   PV_ATTEMPT: 1
+2026-09-10T08:19:56.1423560Z ##[endgroup]
+2026-09-10T08:19:58.2996870Z {"cancelled": false, "cleanup": "NO_PRIVATE_RUNTIME_ALLOCATED", "device_cleanup": "NOT_CREATED", "errors": ["Hold: handoff resource floor not met using kernel-free-equivalent reading"], "exit": 1, "settlement_uncertain": false, "status": "FAIL_OR_HOLD_NO_AUTOMATIC_RETRY"}
+2026-09-10T08:19:58.3054610Z ##[error]Process completed with exit code 1.

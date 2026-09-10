@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "reviewer": "/root/storage",
+  "author_reviewed": "/root",
+  "utc": "2026-09-10T08:42:32.530058+00:00",
+  "disposition": "ACCEPT_IOS01_ACTUAL_PREALLOCATION_RESOURCE_FAILURE_SCHEDULING_RELEASE_ONLY",
+  "source_commit": "6220812e4602369d4853b763465a92e6291bb971",
+  "source_tree": "3defb2a459ffbbddb51b3baa0f088d438edf74c3",
+  "activation_commit": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+  "activation_tree": "291a75853d8f81c5b1da5b4dfe653896cf79a1bc",
+  "request_sha256": "71451b24f0331d9d7d9d15976422d145c4a3781cb9ec9b7c2370b563ac42c2b4",
+  "instance_review_sha256": "1c8a99a3b058e3fcd7087f3707eaf1f230f497b309623a1fb49db2e8fca787ee",
+  "run_id": 34454557777,
+  "attempt": 1,
+  "job_id": 102797810556,
+  "operational_status": "CONSUMED_FAIL_LAUNCH_RESOURCE_GATE_BEFORE_XCODE_OR_PRIVATE_RUNTIME",
+  "consumed": true,
+  "actual_helper_exit": 1,
+  "workflow": {
+    "status": "completed",
+    "conclusion": "failure",
+    "updated_at": "2026-09-10T08:20:04Z",
+    "job_completed_at": "2026-09-10T08:20:03Z",
+    "one_job": true,
+    "selected_step_failed": true,
+    "artifact_upload_succeeded": true
+  },
+  "bound_evidence": [
+    {
+      "path": "runs/ios-focused01/DOWNLOAD-RECEIPT.json",
+      "sha256": "c4075b769ee0dfcfef4274cd57a12919373a7da71fce62f9d3c483d04b0d8505",
+      "bytes": 5559
+    },
+    {
+      "path": "runs/ios-focused01/ARTIFACT-DOWNLOAD-RECEIPT.json",
+      "sha256": "9acb4752a5a7a7e4d725620398b0e44255637716888e638f3527c3cb50ba266f",
+      "bytes": 1257
+    },
+    {
+      "path": "runs/ios-focused01/RUN.json",
+      "sha256": "5b578327aa528eb3bbc8c117c20629ddfc78eb2dda9506e1c5186cedc24c259b",
+      "bytes": 12905
+    },
+    {
+      "path": "runs/ios-focused01/JOBS.json",
+      "sha256": "7872f40faae42253d6cf644455ceff4eeea8be2c31be3a956547f93bb48d39a3",
+      "bytes": 2098
+    },
+    {
+      "path": "runs/ios-focused01/ARTIFACTS.json",
+      "sha256": "13c0bb71d11eceb19c6df6b19c5473e77c145294cf37207cf5906e49bba46d29",
+      "bytes": 771
+    },
+    {
+      "path": "runs/ios-focused01/artifact/intent.json",
+      "sha256": "da2c7e9d8d3bd10e7aa57f7d39f0456ed3e3defdabce405b466a58834f2d5e27",
+      "bytes": 4080
+    },
+    {
+      "path": "runs/ios-focused01/artifact/result.json",
+      "sha256": "ff5c54e508b71c3ec04765005e9d96b1379b6eae5bc39a04cb362986f50a31d1",
+      "bytes": 5024
+    },
+    {
+      "path": "runs/ios-focused01/artifact/xcode-version.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "runs/ios-focused01/workflow-logs/ios-ten/3_Run only the separately admitted focused iOS cycle.txt",
+      "sha256": "f197908e6a140c3bc7ef5a4c1bc982718f478fa3e94122150d4844849653972d",
+      "bytes": 2273
+    },
+    {
+      "path": "runs/ios-focused01/workflow-logs/ios-ten/1_Set up job.txt",
+      "sha256": "e0595b12d7752da96d5d0e76f1284c4153297cf433b8f2dbc83dbe1dc3a95373",
+      "bytes": 2086
+    },
+    {
+      "path": "publication/IOS-01-ACTIVATION-PUBLISHED.json",
+      "sha256": "23536f4847d7c670303a26fc71002d89f9e425d4a268d94e5be3fe81eb83a067",
+      "bytes": 27236
+    }
+  ],
+  "evidence_reconciliation": [
+    "All11 files listed by the metadata/log receipt and all3 compact artifact files match their retained raw sizes/SHA256. Intent and result declare the same ten unique case tuples. Artifact contains no XML. No archive was reopened/extracted by this reviewer; root recorded3942B archive digest matches ARTIFACTS metadata and was not retained.",
+    "RUN/JOBS identify exactly34454557777/attempt1/job102797810556 on the dedicated branch and actual d4b72e0... activation/tree291a758...; terminal failure is observed, not inferred from helper JSON alone. Root activation receipt23536f... binds sole parent6220812.../tree3defb2... and only added request; all23 captured publication Git commands report normal exit0/direct-child reaped. These are retained root observations, not fresh Git/API checks.",
+    "The actual workflow step records the final helper JSON exit1 followed by Process completed with exit code1. Final stdout repeats only the resource-floor error, cancelled false and settlement_uncertain false; no close error is reported there. Successful artifact upload and post-checkout steps do not change the failed workload conclusion.",
+    "Setup log reports macos-15-arm64/image20260829.0321.1/macOS15.7.9. Result records Python3.14.7 at the observed ARM launcher. No Xcode/SDK/simctl/JDK release/provider availability pass follows: the first version command was not launched."
+  ],
+  "source_order": {
+    "helper_path": "scripts/audit/ios_focused_validation.py",
+    "helper_sha256": "61f7e3627758c95eed5d03aa2dd8e165e3b6fab6f3e7be7a6d3da244d1e88fc9",
+    "hash_check": "Unchanged raw helper hash checked in both W and the nominated publication clone; only relevant source-order/finalization contexts were read, not imported or executed.",
+    "command_intent_not_launch": "Lines322-331 append the xcode-version command record with exitnull/settlementUNKNOWN, initialize process=None, then call launch resources. The exact Hold message occurs at319-320; subprocess.Popen at336 is unreachable on that path. Finally379 does not terminate/wait a nonexistent command child, and401 writes the empty log. This UNKNOWN is an unlaunched intent record, not evidence of an unknown live xcodebuild process.",
+    "metadata_did_execute": "prepare408-467 precedes that gate: platform/request/activation and selected byte checks, bounded ACL/Git metadata, evidence allocation/exposure, sysctl total and vm_stat sampling occur. os_read177-191 synchronously checks metadata return codes/bounds. Thus zero product/Gradle/Xcode executions is not zero shell processes, Git operations, metadata commands or allocations across the workflow.",
+    "workload_not_reached": "prepare467 calls preflight_tools whose first command is xcode-version524; the failure prevents allocate_private_runtime468/595-615. main1180-1181 never enters run982-985: no raw disposable source copy, device creation, synthetic Foundation parent or either Gradle module. No private-runtime allocation marker/UDID/tools result is present.",
+    "finalization": "finish1121-1171 skips wrapper stop because no module attempted, settle_device989-998 records NOT_CREATED, and cleanup1080-1087 records NO_PRIVATE_RUNTIME_ALLOCATED when the allocation attempt flag is false. The evidence directory and Actions checkout did exist; this label does not mean no files/descriptors were created."
+  },
+  "resource_observation": {
+    "elapsed_seconds": 1.779,
+    "disk_free_bytes": 45334519808,
+    "launch_disk_floor_bytes": 12884901888,
+    "disk_floor_met": true,
+    "page_size_bytes": 16384,
+    "printed_free_pages": 9386,
+    "printed_speculative_pages": 2005,
+    "free_physical_bytes": 153780224,
+    "kernel_free_equivalent_bytes": 186630144,
+    "total_physical_bytes": 7516192768,
+    "kernel_free_equivalent_percent": 2.4830409458705356,
+    "required_launch_percent": 25,
+    "required_launch_ram_bytes": 1879048192,
+    "qualification": "Recorded arithmetic reconciles:16384*(9386+2005)=186630144, about2.483% of7516192768, below25%;45334519808 disk bytes exceeds12GiB. Failure is this one launch observation, not malformed-page parsing, disk exhaustion, application OOM, measured project RAM use, causal host-process diagnosis or proof that every Apple runner is infeasible. No metric/floor relaxation or speculative retry follows."
+  },
+  "case_accounting": {
+    "PASS": 0,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIPPED": 0,
+    "UNSTARTED": 10,
+    "XML_files": 0,
+    "modules": {
+      "crypto": {
+        "status": "UNSTARTED"
+      },
+      "shared": {
+        "status": "UNSTARTED"
+      }
+    },
+    "unstarted_by_group": {
+      "crypto": 2,
+      "attachment": 7,
+      "prompt_property": 1
+    },
+    "meaning": "Operational run failure is not ten failed product tests. Ten exact declarations are unstarted, not executed/assertion/task counts. No fixture, provider, protection, locale, native lifecycle, build or compilation evidence was obtained."
+  },
+  "cleanup_and_settlement": {
+    "private_runtime": "NO_PRIVATE_RUNTIME_ALLOCATED; source-qualified for this exact preallocation path, not an independent live filesystem-absence probe.",
+    "device": "NOT_CREATED; no owned simulator allocation/deletion or shared-service settlement was observed or claimed.",
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_OR_GRADLE_ATTEMPTED; no stop/recovery invocation is authorized now.",
+    "evidence_and_ancestor_close": "Artifact retains PENDING_REQUIRE_ACTUAL_HELPER_EXIT_ZERO. Actual helperexit1 does not meet that contract. Final stdout reports no close error, but neither a complete close/cleanup PASS nor a descriptor-close failure is proven by exit1; preserve the unmet closure qualification.",
+    "owned_settlement_limits": "Known helper step and exact job terminated. No xcodebuild/product child was launched on the source-qualified path; completed bounded metadata calls are not arbitrary-descendant/global-idleness proof. settlement_uncertain false is not a host process census. Generic Actions Cleaning up orphan processes log is not application settlement evidence, and hosted disposal is not cleanup proof.",
+    "local_receipt_cleanup": "Root download records show four metadata/log API direct children and one artifact API child exit0/reaped, compact raw data retained and no archive/temp/cache/background child retained. This is recorded root custody, not reviewer live process verification."
+  },
+  "scheduling_release": {
+    "supported": true,
+    "scope": "Only scheduling release of the exact consumed iOS01 reservation, conditional on root confirming no other audit-owned local/CI job occupies the slot. Exact terminal run/job plus the source-qualified preallocation path support no continuing selected workload. This reviewer does not edit EXECUTION_SLOT.json.",
+    "not_granted": "No filesystem/evidence-ancestor-close PASS, historical HOLD clearance, global host idleness, runner feasibility, publication readiness, source repair, new job admission, replay/recovery/cancel/delete authority or reuse of any consumed helper/request.",
+    "no_retry": "This exact failed run/attempt/request is consumed. No unchanged rerun, automatic retry, resource-floor change, simulator allocation or follow-up CI probe is admitted. A genuinely different justified future scope would need separate fresh review and root admission."
+  },
+  "coverage": "PVA-008/PVA-014/PVA-038 execution gaps remain; no additional qualified closure, conclusive suspicion resolution or PVD decision. C11 remains frozen, all current denominators unchanged. Physical iPhone/security-device gaps remain BLOCKED.",
+  "preserved_fences": "PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED, all old Windows/Linux/consumed/HOLD scopes, original C12 failure, EOL/missing-tool qualifications and eight PVD owner decisions remain. No protected-ref/tag/protection/dependency/version/identity/signing/store/release/build1017001 change.",
+  "operations": "Retained source/JSON/log reads, raw hash/shape/arithmetic comparisons, coordination and this new permanent review only. No Git/API/network/polling, helper import/execution, build/test/CI, simulator, runtime/cache/process probe, signal/deletion, archive/temp/cache/background workload. No new cleanup duty.",
+  "additional_test_executions": 0,
+  "additional_closures": 0
+}

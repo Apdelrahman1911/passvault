@@ -1,0 +1,545 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "purpose": "C13 non-activating source/evidence publication; accepted Desktop fix and3-case preparation, actual consumed IOS01 failure; no CI request",
+  "parent_commit": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+  "parent_tree": "291a75853d8f81c5b1da5b4dfe653896cf79a1bc",
+  "files": [
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt",
+      "sha256": "fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac",
+      "bytes": 402,
+      "git_mode": "100644"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+      "sha256": "9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93",
+      "bytes": 7614,
+      "git_mode": "100644"
+    },
+    {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt",
+      "sha256": "422cbfd7b85a08585b99519b94f41296ed24ea1dce133f47f4fdab2ddf5a85b9",
+      "bytes": 9659,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_13.md",
+      "sha256": "978b6cf49f216d6b531a09fb9661e0d31c9d9ed13ec00c195762e4fc0ced9baa",
+      "bytes": 9930,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+      "sha256": "4053e86fe428121f3003d0722c2f5b1ad6a169e64bbe4fd2f6f78ec747fb5b2f",
+      "bytes": 166744,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+      "sha256": "1bc85c2b566b93c40afbaaa3f3613a48f87c50a5bd58e63e1bb4368ae89fd147",
+      "bytes": 37699,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "sha256": "d042392fe4412d20259d002e96e840d040b5208e123ba0b18c2daf37215f4961",
+      "bytes": 149357,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+      "sha256": "d663320e8ceaa7e0d4d6eb5bee6dc3a29195b2c4c172738ad790b704857be317",
+      "bytes": 26221,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/README.md",
+      "sha256": "2180c0d526c97cac6d1f3c7796f2ea7adcb99b002a295c832c08e4e43f3563c9",
+      "bytes": 16786,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+      "sha256": "559a35d5c161d6695e6aba0a86cd758dad872d94f0c506f409030cee620d82c2",
+      "bytes": 125135,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/findings/PVA-039.json",
+      "sha256": "42e3c0e162563b6c20474f1931c33eb231cb2199f3dd9914868e21181304fc78",
+      "bytes": 2905,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-12-CONFIG.json",
+      "sha256": "ff23e39106b9dcdbc8267799cf131f79615d8dd2770637a7b240bb2df326bac9",
+      "bytes": 1744,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-12-FINALIZE-CONFIG.json",
+      "sha256": "8c0268e0edd1bf171bfb744809e3ae71a942a80f3e7cb335dabfcf220875f475",
+      "bytes": 2932,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-12-FINALIZED-PUBLISHED.json",
+      "sha256": "1c731b5405baaa1630560f5d81dd4e9e9b23269a4644c0a940f0156ba2c1954b",
+      "bytes": 25231,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-13-PUBLISH.py",
+      "sha256": "8e53fd2f0e141152e16854852f6ef5d9e270a11a665a722ccf35ca58d451237b",
+      "bytes": 16752,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/IOS-01-ACTIVATION-PUBLISHED.json",
+      "sha256": "23536f4847d7c670303a26fc71002d89f9e425d4a268d94e5be3fe81eb83a067",
+      "bytes": 27236,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/IOS-01-ACTIVATION-WHITESPACE.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/IOS-01-CONFIG.json",
+      "sha256": "5b081370b2bb3ed1929779d1d503b0cf171cf48a87fdcb34123b84f3135606ff",
+      "bytes": 4380,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/EDITOR-ROOM-INTEGRATION-FEASIBILITY.md",
+      "sha256": "9f5cbf27d79652e2e2481fee6d134a726e1f62767c4ccf9ea22dd3e3c9bed8d6",
+      "bytes": 4248,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/EDITOR-ROOM-INTEGRATION-SOURCE.md",
+      "sha256": "b754e9ac36f8735fedf34d778be5d1bdd72c9ee65ec264c8f10343cf27243d7c",
+      "bytes": 3980,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-12-ACTUAL-FINALIZATION-REVIEW.json",
+      "sha256": "c127d60be8f470f1ecc5f6c2ee66c6d978e336147cd715633cda0839025e04a5",
+      "bytes": 1483,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/REMAINING-WORK-AFTER-IOS01.md",
+      "sha256": "fed393ead8e8c51e79a9ef42d01c6e6c0fe2abd8589a8f80ce3f31738268552c",
+      "bytes": 11476,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/PLAN.md",
+      "sha256": "9e3a0d25ff19643e570e0526dedb89a1690aec5c6e31903de9686152fb4fac4f",
+      "bytes": 34077,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/HTTP-RECEIPTS.jsonl",
+      "sha256": "1af390f0851826ec37367f3f346150df5e84ea5a0db91cd85c2d3c84dccc4482",
+      "bytes": 13556,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfce4-panel-4.18.4--migrate--main.c.txt",
+      "sha256": "12ff06f4c00c065d215085883aab0129965b0c3f748a68f3a3973efbf15bbb2f",
+      "bytes": 4360,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfce4-panel-4.18.4--panel--main.c.txt",
+      "sha256": "255726bac57af29602f152fe7260e6c4c628f27283348ad45690d5bd3a42b6f0",
+      "bytes": 15381,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfce4-panel-4.18.4--panel--panel-application.c.txt",
+      "sha256": "6156ad7043a517b79203fe56d801d4cd11a250750d37f3fc94b14596650aff58",
+      "bytes": 59148,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfce4-panel-4.18.4--panel--panel-module.c.txt",
+      "sha256": "3be31d306f13e26ff715414b0bbb97aef641d49fbb47fd76e00df422ac6b08e9",
+      "bytes": 18875,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfce4-panel-4.18.4--panel--panel-plugin-external-wrapper.c.txt",
+      "sha256": "78d5611bde817b24271425828223b7373e9814be4c4b06206ca462e909111d10",
+      "bytes": 16241,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfce4-panel-4.18.4--panel--panel-plugin-external.c.txt",
+      "sha256": "dd8b36c996ce8bf70db1639324192958e2a44b95aac113a2b488e9bcd573714b",
+      "bytes": 45569,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-inner/source-grounding/xfconf-4.18.1--xfconf-query--main.c.txt",
+      "sha256": "24fa9e45090a5a402602e97c829839d8e5a4dc0d4a81035bbe81f47c81b9d73f",
+      "bytes": 17623,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-outer/DELTA-TRAY-LIFECYCLE-ROOM.md",
+      "sha256": "f05929a88f3fc7e49c387b10a2ca9992b7c7f4f841d77d01bb16f6bf04bd3183",
+      "bytes": 6226,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-outer/LAUNCH.py",
+      "sha256": "bf109d60c3c1a94071b0cfb21dc6b78db4d6aedc2cea00408756b1416af411dc",
+      "bytes": 45542,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray-outer/PLAN.md",
+      "sha256": "5aff66a93e5700ce0e5b8a7f9d1e3a301f53b808c3ca1a1af4dbbf7a60f8c7c7",
+      "bytes": 10026,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-TRAY01-FINAL-BATCH-OUTER-DELTA-REVIEW.md",
+      "sha256": "6365f799c17f0abfdc2beda43c9398f9c1a54aac71fa5b7131736c83c84875db",
+      "bytes": 7686,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-TRAY01-OUTER-SOURCE-DELTA-REVIEW.md",
+      "sha256": "96ceeaa3560454f5d1786b5c43aeb776492783ab3a1912dc6a75a4e0b33a904f",
+      "bytes": 11587,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/pvu006-compose-application-source/RECEIPT.json",
+      "sha256": "ccd2a3724275a514a4cfca5bed076c6e2c908bce9fa004d4da6ca6e441401a9d",
+      "bytes": 19289,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/pvu006-compose-application-source/desktopMain__androidx__compose__ui__window__Application.desktop.kt.txt",
+      "sha256": "27fd8bbb1b7618be7579e08afbce349f67a08c9a31719f39ad93a0e532a3765e",
+      "bytes": 10369,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/DESKTOP-APPLICATION-LIFECYCLE-SOURCE-NOTE.md",
+      "sha256": "13d28f9b1f4f3a56640d5f15e81a35bd6a36c6f7f1c768a015c1dd89e7d4f584",
+      "bytes": 13974,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/PVA027-SETTINGS-TRAY-CHAIN-SOURCE-CHALLENGE.md",
+      "sha256": "fb9640a19f637efa9b9f8f3e92d6466e50f7fb5870361b366a960b484f623e3b",
+      "bytes": 4916,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/ACTIVATED-RUN-OBSERVATION.json",
+      "sha256": "e03f68efc78f41d62853ea7bca45bdcb619edbf9be1e4ba859cd9419f9f78efc",
+      "bytes": 1241,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/CI-STATE-AT-ACTIVATION.json",
+      "sha256": "92b0155afd2950045664c48184733133e385d9235be8411ac008c7eb6a18df02",
+      "bytes": 3765,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/CI-STATE-AT-RELEASE.json",
+      "sha256": "5e1e7fc44f073b53e14547b05d31a487088f0ac1a0b327f9b6dbd81fac55ee12",
+      "bytes": 4249,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/CI-STATE-BEFORE-01.json",
+      "sha256": "cd393a735a4399d9a3a6670642cdf6fe4e4d4d8ff4a0e33dfb6e4f2234bd89b5",
+      "bytes": 3685,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/ROOT-ADMISSION.json",
+      "sha256": "8e05ba9d1295f440b8b93d0a786f6a42e019085cbfdbc2dbafc43cf756042ebe",
+      "bytes": 4103,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/SLOT-RELEASE.json",
+      "sha256": "c84e657518aae1320eab5a28fc0430d549485be0bf504c83a95cfb7dabe13cd6",
+      "bytes": 6024,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/ios-focused01/SOURCE-INSTANCE-01.json",
+      "sha256": "2400fc6a2864c835c39b241da719bccb1c719abd4aba0b134816ab2ac88d40db",
+      "bytes": 6943,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/DESKTOP-TRAY01-FINAL-BATCH-INNER-INDEPENDENT.md",
+      "sha256": "88ff2340264392628215791714a1f9c88fc285de6ddf29151abd56d8bca53726",
+      "bytes": 10551,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/EDITOR-ROOM-INTEGRATION-INDEPENDENT.md",
+      "sha256": "01472b3e745ea108d586df0bd6bfb530a023d009396973209bcb9ab141d6ab1c",
+      "bytes": 12130,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/PVA039-GROUPING-INDEPENDENT.md",
+      "sha256": "a67270f1619e7ecb964f16c644db211ffe5731be03317157960859a599fd6456",
+      "bytes": 4531,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/PVA039-IMPLEMENTATION-REGRESSION-INDEPENDENT.md",
+      "sha256": "beb2d3e5578fd4d232b6999e2055a8790d741d57fa9a3185c861f30c921af379",
+      "bytes": 13090,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/PVU006-COMPOSE-EXIT-DEFAULT-INDEPENDENT.md",
+      "sha256": "01e681a426e0e868bdea6f4efa19a400bb6c1d4d4c66c57ec594f2381c9a5579",
+      "bytes": 10295,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json",
+      "sha256": "59bb624896d25ab72edf4d2f05310f24bf8296a9e58379875aa5e2de20ca850d",
+      "bytes": 11476,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/IOS01-INSTANCE-REVIEW.json",
+      "sha256": "1c8a99a3b058e3fcd7087f3707eaf1f230f497b309623a1fb49db2e8fca787ee",
+      "bytes": 17494,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DESKTOP-TRAY01-INNER-CLI-SOURCE-DELTA-REVIEW.md",
+      "sha256": "44b3412fa818ff67574e4a218337c4cddbd9530def9dfae62341ccf37404c96b",
+      "bytes": 11923,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/ARTIFACT-DOWNLOAD-RECEIPT.json",
+      "sha256": "9acb4752a5a7a7e4d725620398b0e44255637716888e638f3527c3cb50ba266f",
+      "bytes": 1257,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/ARTIFACTS.json",
+      "sha256": "13c0bb71d11eceb19c6df6b19c5473e77c145294cf37207cf5906e49bba46d29",
+      "bytes": 771,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/DOWNLOAD-RECEIPT.json",
+      "sha256": "c4075b769ee0dfcfef4274cd57a12919373a7da71fce62f9d3c483d04b0d8505",
+      "bytes": 5559,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/JOBS.json",
+      "sha256": "7872f40faae42253d6cf644455ceff4eeea8be2c31be3a956547f93bb48d39a3",
+      "bytes": 2098,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/RUN.json",
+      "sha256": "5b578327aa528eb3bbc8c117c20629ddfc78eb2dda9506e1c5186cedc24c259b",
+      "bytes": 12905,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/artifact/intent.json",
+      "sha256": "da2c7e9d8d3bd10e7aa57f7d39f0456ed3e3defdabce405b466a58834f2d5e27",
+      "bytes": 4080,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/artifact/result.json",
+      "sha256": "ff5c54e508b71c3ec04765005e9d96b1379b6eae5bc39a04cb362986f50a31d1",
+      "bytes": 5024,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/artifact/xcode-version.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/0_ios-ten.txt",
+      "sha256": "37666b7a7fa0a124c3bf72f6758fb0250e8233fe2d271d411c3ecb0993b2ff4a",
+      "bytes": 19778,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/1_Set up job.txt",
+      "sha256": "e0595b12d7752da96d5d0e76f1284c4153297cf433b8f2dbc83dbe1dc3a95373",
+      "bytes": 2086,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/2_Check out exact activation source without retained credentials.txt",
+      "sha256": "5d9c6cd156776fa1df0dad0b187d28557f01a8c000ed0f34f8b9494920bc48ca",
+      "bytes": 11483,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/3_Run only the separately admitted focused iOS cycle.txt",
+      "sha256": "f197908e6a140c3bc7ef5a4c1bc982718f478fa3e94122150d4844849653972d",
+      "bytes": 2273,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/4_Retain only newly owned compact synthetic evidence.txt",
+      "sha256": "07b99e4b810bfd1e3450a9eb13f16465c1f12719c5b51f6b3deee2ae7813111e",
+      "bytes": 1929,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/8_Post Check out exact activation source without retained credentials.txt",
+      "sha256": "1b4815c7c2d498e6a5dfcd12b57f4196a29c0766015d5fc773a66bbfca2570e2",
+      "bytes": 1961,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/9_Complete job.txt",
+      "sha256": "0dd16ca0da8014978a4acde1742b1dad702f9f97bd81b38b1675957866ac9b74",
+      "bytes": 61,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/ios-focused01/workflow-logs/ios-ten/system.txt",
+      "sha256": "04f9a414b8080a0f9d109cea8d4733623533b954baf0a39f00cc5e430dd9e6a5",
+      "bytes": 1143,
+      "git_mode": "100644"
+    },
+    {
+      "path": "scripts/audit/desktop_tray_01.init.gradle",
+      "sha256": "5b875cad3086f7b0f700ab531e02bccf50d0b3d4d401fa9f63e88d65ecb81560",
+      "bytes": 10830,
+      "git_mode": "100644"
+    },
+    {
+      "path": "scripts/audit/linux_desktop_tray_01.py",
+      "sha256": "994602c5df621a9f7a775921968338fca9415d895a5cb1fcb50a534edc84fb10",
+      "bytes": 87116,
+      "git_mode": "100644"
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "sha256": "a67ba81ad875a4c611208d30b51e40caf87cf5381622f5d6ababf38d2953cff9",
+      "bytes": 36660,
+      "git_mode": "100644"
+    }
+  ],
+  "authored_whitespace_paths": [
+    "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt",
+    "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+    "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt",
+    "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_13.md",
+    "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+    "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+    "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+    "docs/audit-continuation/2026-09-08-linux/README.md",
+    "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-13-PUBLISH.py",
+    "scripts/audit/desktop_tray_01.init.gradle",
+    "scripts/audit/linux_desktop_tray_01.py",
+    "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt"
+  ],
+  "whitespace_qualification": "Check only authored source/current report. Preserve raw historical logs/XML/upstream captures without reformatting or repeating known unchanged raw-evidence diagnostics. Prior C12FAIL remains.",
+  "companions": [
+    "this canonical payload",
+    "independent reviews/baseline-coverage/CHECKPOINT-13-REVIEW.json; exact tuples later bound in CONFIG"
+  ],
+  "excluded": [
+    {
+      "path": ".github/workflows/audit-macos-native-validation.yml",
+      "reason": "Old unadmitted Mac source, not a new CI trigger"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-CLONE-CONTINUATION-PUBLISHED.json",
+      "reason": "Large/redundant historical C10 receipt lane; compact PRIOR-C10-PUBLICATION-SUMMARY.json already published"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-MACOS02-ACTIVATION-PUBLISHED.json",
+      "reason": "Large/redundant historical C10 receipt lane; compact PRIOR-C10-PUBLICATION-SUMMARY.json already published"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-STAGED-FINALIZATION-ADOPTION.json",
+      "reason": "Large/redundant historical C10 receipt lane; compact PRIOR-C10-PUBLICATION-SUMMARY.json already published"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-STAGED-FINALIZATION-PUBLISHED.json",
+      "reason": "Large/redundant historical C10 receipt lane; compact PRIOR-C10-PUBLICATION-SUMMARY.json already published"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-WINDOWS04-ACTIVATION-PUBLISHED.json",
+      "reason": "Large/redundant historical C10 receipt lane; compact PRIOR-C10-PUBLICATION-SUMMARY.json already published"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/CredentialNavHostRoomIntegrationTest.kt",
+      "reason": "Active future source-only navigation/admission draft; excluded current batch/freeze"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CACHED-CHECK-INDENT-REVIEW.json",
+      "reason": "Historical C10 binding/review; summarized published C10 receipts remain; no new current C13 claim"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-DRIFT-ASSESSMENT.json",
+      "reason": "Historical C10 binding/review; summarized published C10 receipts remain; no new current C13 claim"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-REBIND-REVIEW.json",
+      "reason": "Historical C10 binding/review; summarized published C10 receipts remain; no new current C13 claim"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/pvu003-draft/PVU003-NATIVE-ADMISSION-OBSERVATION.md",
+      "reason": "Active future source-only navigation/admission draft; excluded current batch/freeze"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/PVU003-PREPOP-CANCELLATION-NARROWING.md",
+      "reason": "Ongoing separate PVU003 draft lane; not runtime or current-source acceptance"
+    },
+    {
+      "path": "reviews/build-config/DETEKT-ISOLATED-INVENTORY-DESIGN.md",
+      "reason": "Old mislocated design; current accepted Detekt source is already published"
+    },
+    {
+      "path": "scripts/audit/macos_native_validation.py",
+      "reason": "Old unadmitted Mac helper, not replayed or selected"
+    }
+  ],
+  "coverage": {
+    "original_closures": "19/25(76%)",
+    "all_closures": "26/39(66.7%)",
+    "suspicions": "2/12(16.7%)",
+    "application_native_regression_investigation_and_historical_events": 196,
+    "infrastructure_fixture_cases": 3,
+    "producer_cases": 1,
+    "xml_elements": 200,
+    "new_closures_this_checkpoint": 0,
+    "source_registry_paths": 28,
+    "prospective_Desktop_JUnit_cases": 3,
+    "limits": "New independent PVA039 family not a closure; zero fresh application executions. Source-only and calculated identities are not runtime/hardware/overall readiness."
+  }
+}

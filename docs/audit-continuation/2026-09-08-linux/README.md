@@ -4,9 +4,41 @@ Resume from this directory **and** `../../../AUDIT_HANDOFF.md`. The frozen
 `docs/audit-handoff/` and `docs/audit-publication/` payloads are preserved. Their
 old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
+## Live C13 source/evidence checkpoint (not a release)
+
+C12 is published at `6220812e4602369d4853b763465a92e6291bb971` /
+`3defb2a459ffbbddb51b3baa0f088d438edf74c3`. Its initial raw-XML whitespace
+publication failure is preserved; the separately reviewed staged finalization
+succeeded without repeating application checks.
+
+New independent finding **PVA-039**: Compose normal exit bypasses Main's cleanup
+wait. Minimal production correction and one real child-JVM regression are now
+independently source-accepted, not yet executed. This adds a family, not a closure: **26/39 (66.7%)**,
+13 remain; original confirmed **19/25 (76%)**, suspicions **2/12 (16.7%)** unchanged.
+It does not conclusively resolve PVU-006 or prove data loss/all cleanup absent.
+iOS01 was activated at `d4b72e0a30e2b53283a3f23b13b942afc6cbd38b` /
+`291a75853d8f81c5b1da5b4dfe653896cf79a1bc`. Run34454557777 failed its launch
+RAM floor before Xcode/private runtime/Gradle: **10 UNSTARTED, zero XML**.
+Independent actual review supports scheduling-only release; the retained
+actual-exit0 evidence/ancestor-close qualification remains unmet. No automatic
+retry or floor relaxation. This is one runner observation, not all-Apple
+infeasibility or hardware evidence.
+
+The next focused Linux batch is three cases/three XML across two Test tasks:
+native tray, real child-JVM lifecycle and real-Room editor Save/reopen. Source
+review and fresh execution admission remain separate. No local build overlaps CI.
+Current state is in the three ledgers and slot.
+
 ## Current continuation checkpoint
 
-**Latest: `CHECKPOINT_12.md` (non-activating source/evidence checkpoint).**
+**Latest selection: `CHECKPOINT_13.md` (non-activating source/evidence checkpoint).**
+PVA039 production repair and focused tray/lifecycle/realRoom3 source are independently
+accepted, not executed. IOS01 failed preallocation;10UNSTARTED/0XML and unmet evidence-close
+qualification remain. Actual publication identity belongs in its receipt. Future
+NavHost/PVU003 drafts are excluded from this selection;28 application/test byte tuples
+are not whole-project source coverage. Continue through the exact remaining-work report.
+
+**Historical: `CHECKPOINT_12.md` (non-activating source/evidence checkpoint).**
 Windows05 passed24 CTests but failed cleanup safely: whole-root HOLD/no retry.
 GUI02 passed four real native-input/rendering cases; nine synthetic PNGs and
 original runtime/worker cleanup independently reconciled. Editor persistence is
@@ -206,18 +238,18 @@ At that initial observation no project build/test had run. One JSON read-only su
 `AttributeError` because the issue ledger is a list; a corrected data-only read
 succeeded. This is an inspection-tool failure, not an application test.
 
-## Current defined denominators
+## Defined denominators (live; historical checkpoint prose above retains its scope)
 
 | Measure | Qualified/conclusive | Remaining |
 | --- | ---: | ---: |
 | Original confirmed PVA-001–025 | 19/25 (76%) | 6 |
-| All confirmed PVA-001–038 | 26/38 (68.4%) | 12 |
+| All confirmed PVA-001–039 | 26/39 (66.7%) | 13 |
 | Original PVU-001–012 | 2/12 (16.7%) | 10 |
 | PVD-001–008 explanations | 8/8 documented | Owner choices separate |
 
-The all-confirmed denominator increased by one source-confirmed family, PVA-038;
-Linux03 later supplied four independently supported qualified closures.
-Frozen reports with22/37 or22/38 retain their historical scope, not the current
+The continuation added source-confirmed families PVA-038 and PVA-039;
+Linux03 supplied four independently supported qualified closures. PVA-039 is
+not yet a closure. Frozen reports with22/37,22/38 or26/38 retain their historical scope, not the current
 total. These are separate denominators, not overall readiness. Historical passes,
 failures, rejected concerns, grouped variants and coverage qualifications remain
 in the handoff. Pending work is not silently dropped because Linux lacks a

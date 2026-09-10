@@ -1,0 +1,212 @@
+﻿2026-09-10T08:19:50.3959380Z Current runner version: '2.337.0'
+2026-09-10T08:19:50.3974190Z ##[group]Runner Image Provisioner
+2026-09-10T08:19:50.3974760Z Hosted Compute Agent
+2026-09-10T08:19:50.3975140Z Version: 20260828.587
+2026-09-10T08:19:50.3975570Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-10T08:19:50.3976040Z Build Date: 2026-08-28T16:44:25Z
+2026-09-10T08:19:50.3976510Z Worker ID: {bddc79fc-862c-4162-a330-58c2cab7bb0e}
+2026-09-10T08:19:50.3976970Z Azure Region: westus
+2026-09-10T08:19:50.3977350Z ##[endgroup]
+2026-09-10T08:19:50.3978510Z ##[group]Operating System
+2026-09-10T08:19:50.3979130Z macOS
+2026-09-10T08:19:50.3979480Z 15.7.9
+2026-09-10T08:19:50.3979830Z 24G830
+2026-09-10T08:19:50.3980180Z ##[endgroup]
+2026-09-10T08:19:50.3980560Z ##[group]Runner Image
+2026-09-10T08:19:50.3980990Z Image: macos-15-arm64
+2026-09-10T08:19:50.3981380Z Version: 20260829.0321.1
+2026-09-10T08:19:50.3982270Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20260829.0321/images/macos/macos-15-arm64-Readme.md
+2026-09-10T08:19:50.3983330Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20260829.0321
+2026-09-10T08:19:50.3984010Z ##[endgroup]
+2026-09-10T08:19:50.3984800Z ##[group]GITHUB_TOKEN Permissions
+2026-09-10T08:19:50.3986500Z Contents: read
+2026-09-10T08:19:50.3986890Z Metadata: read
+2026-09-10T08:19:50.3987290Z ##[endgroup]
+2026-09-10T08:19:50.3988920Z Secret source: Actions
+2026-09-10T08:19:50.3989590Z Cache mode: write
+2026-09-10T08:19:50.3990160Z Prepare workflow directory
+2026-09-10T08:19:50.4368040Z Prepare all required actions
+2026-09-10T08:19:50.4406310Z Getting action download info
+2026-09-10T08:19:50.7273360Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-09-10T08:19:51.0943920Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+2026-09-10T08:19:51.2747570Z Complete job name: ios-ten
+2026-09-10T08:19:51.3315770Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-10T08:19:51.3316640Z with:
+2026-09-10T08:19:51.3317010Z   ref: d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:51.3317440Z   fetch-depth: 2
+2026-09-10T08:19:51.3317790Z   persist-credentials: false
+2026-09-10T08:19:51.3318150Z   clean: false
+2026-09-10T08:19:51.3318470Z   lfs: false
+2026-09-10T08:19:51.3318790Z   submodules: false
+2026-09-10T08:19:51.3319140Z   repository: Apdelrahman1911/passvault
+2026-09-10T08:19:51.3321850Z   token: ***
+2026-09-10T08:19:51.3322180Z   ssh-strict: true
+2026-09-10T08:19:51.3322500Z   ssh-user: git
+2026-09-10T08:19:51.3322840Z   sparse-checkout-cone-mode: true
+2026-09-10T08:19:51.3323230Z   fetch-tags: false
+2026-09-10T08:19:51.3323570Z   show-progress: true
+2026-09-10T08:19:51.3323920Z   set-safe-directory: true
+2026-09-10T08:19:51.3324300Z   allow-unsafe-pr-checkout: false
+2026-09-10T08:19:51.3324940Z ##[endgroup]
+2026-09-10T08:19:51.9005000Z Syncing repository: Apdelrahman1911/passvault
+2026-09-10T08:19:51.9016620Z ##[group]Getting Git version info
+2026-09-10T08:19:51.9019120Z Working directory is '/Users/runner/work/passvault/passvault'
+2026-09-10T08:19:51.9022060Z [command]/opt/homebrew/bin/git version
+2026-09-10T08:19:51.9024520Z git version 2.55.0
+2026-09-10T08:19:51.9036200Z ##[endgroup]
+2026-09-10T08:19:51.9041930Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/5c17724f-d0de-4a0c-bead-6a3401dc5c5b/.gitconfig'
+2026-09-10T08:19:51.9061960Z Temporarily overriding HOME='/Users/runner/work/_temp/5c17724f-d0de-4a0c-bead-6a3401dc5c5b' before making global git config changes
+2026-09-10T08:19:51.9063150Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T08:19:51.9064060Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/passvault/passvault
+2026-09-10T08:19:51.9127510Z Deleting the contents of '/Users/runner/work/passvault/passvault'
+2026-09-10T08:19:51.9205070Z ##[group]Determining repository object format
+2026-09-10T08:19:51.9237960Z ##[endgroup]
+2026-09-10T08:19:51.9243130Z ##[group]Initializing the repository
+2026-09-10T08:19:51.9258550Z [command]/opt/homebrew/bin/git init /Users/runner/work/passvault/passvault
+2026-09-10T08:19:51.9498930Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-10T08:19:51.9552750Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-10T08:19:51.9566090Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-10T08:19:51.9592300Z hint: call:
+2026-09-10T08:19:51.9606090Z hint:
+2026-09-10T08:19:51.9619360Z hint: 	git config --global init.defaultBranch <name>
+2026-09-10T08:19:51.9633410Z hint:
+2026-09-10T08:19:51.9650980Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-10T08:19:51.9656900Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-10T08:19:51.9662740Z hint:
+2026-09-10T08:19:51.9716120Z hint: 	git branch -m <name>
+2026-09-10T08:19:51.9727450Z hint:
+2026-09-10T08:19:51.9738200Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-10T08:19:51.9739370Z Initialized empty Git repository in /Users/runner/work/passvault/passvault/.git/
+2026-09-10T08:19:51.9741680Z [command]/opt/homebrew/bin/git remote add origin https://github.com/Apdelrahman1911/passvault
+2026-09-10T08:19:51.9743560Z ##[endgroup]
+2026-09-10T08:19:51.9744220Z ##[group]Disabling automatic garbage collection
+2026-09-10T08:19:51.9744820Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-09-10T08:19:51.9775050Z ##[endgroup]
+2026-09-10T08:19:51.9775860Z ##[group]Setting up auth
+2026-09-10T08:19:51.9776360Z Removing SSH command configuration
+2026-09-10T08:19:51.9779000Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T08:19:51.9781710Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T08:19:52.1141700Z Removing HTTP extra header
+2026-09-10T08:19:52.1145610Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T08:19:52.1330770Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T08:19:52.3065810Z Removing includeIf entries pointing to credentials config files
+2026-09-10T08:19:52.3076670Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T08:19:52.3122490Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T08:19:52.4442830Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-10T08:19:52.4485980Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/passvault/passvault/.git.path /Users/runner/work/_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:52.4490670Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/passvault/passvault/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:52.4494600Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:52.4498700Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:52.4502320Z ##[endgroup]
+2026-09-10T08:19:52.4503130Z ##[group]Fetching the repository
+2026-09-10T08:19:52.4504960Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:54.8997710Z From https://github.com/Apdelrahman1911/passvault
+2026-09-10T08:19:54.8999600Z  * branch            d4b72e0a30e2b53283a3f23b13b942afc6cbd38b -> FETCH_HEAD
+2026-09-10T08:19:54.9009790Z [command]/opt/homebrew/bin/git rev-parse --verify --quiet d4b72e0a30e2b53283a3f23b13b942afc6cbd38b^{object}
+2026-09-10T08:19:54.9146520Z d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:54.9159410Z ##[endgroup]
+2026-09-10T08:19:54.9162170Z ##[group]Determining the checkout info
+2026-09-10T08:19:54.9164930Z ##[endgroup]
+2026-09-10T08:19:54.9167640Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-09-10T08:19:54.9255550Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-10T08:19:54.9345090Z ##[group]Checking out the ref
+2026-09-10T08:19:54.9347380Z [command]/opt/homebrew/bin/git checkout --progress --force d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:55.5935590Z HEAD is now at d4b72e0 Validate focused iOS attachment and crypto contracts
+2026-09-10T08:19:55.5951490Z ##[endgroup]
+2026-09-10T08:19:55.6136660Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-09-10T08:19:55.6244860Z d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:55.6260460Z ##[group]Removing auth
+2026-09-10T08:19:55.6261120Z Removing SSH command configuration
+2026-09-10T08:19:55.6268200Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T08:19:55.6431550Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T08:19:55.7961130Z Removing HTTP extra header
+2026-09-10T08:19:55.8063470Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T08:19:55.8256010Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T08:19:55.8935830Z Removing includeIf entries pointing to credentials config files
+2026-09-10T08:19:55.8942700Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T08:19:55.9063910Z includeif.gitdir:/Users/runner/work/passvault/passvault/.git.path
+2026-09-10T08:19:55.9065370Z includeif.gitdir:/Users/runner/work/passvault/passvault/.git/worktrees/*.path
+2026-09-10T08:19:55.9066930Z includeif.gitdir:/github/workspace/.git.path
+2026-09-10T08:19:55.9068250Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-10T08:19:55.9076990Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/passvault/passvault/.git.path
+2026-09-10T08:19:55.9187830Z /Users/runner/work/_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:55.9446870Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/passvault/passvault/.git.path \/Users\/runner\/work\/_temp\/git\-credentials\-b78482e6\-f39f\-4f50\-9041\-67803cb469fc\.config
+2026-09-10T08:19:55.9626210Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/passvault/passvault/.git/worktrees/*.path
+2026-09-10T08:19:55.9627170Z /Users/runner/work/_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:55.9628950Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/passvault/passvault/.git/worktrees/*.path \/Users\/runner\/work\/_temp\/git\-credentials\-b78482e6\-f39f\-4f50\-9041\-67803cb469fc\.config
+2026-09-10T08:19:55.9700040Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-10T08:19:55.9814500Z /github/runner_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:55.9830710Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-b78482e6\-f39f\-4f50\-9041\-67803cb469fc\.config
+2026-09-10T08:19:55.9911180Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-10T08:19:56.0021910Z /github/runner_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config
+2026-09-10T08:19:56.0033950Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-b78482e6\-f39f\-4f50\-9041\-67803cb469fc\.config
+2026-09-10T08:19:56.0143070Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T08:19:56.1135330Z Removing credentials config '/Users/runner/work/_temp/git-credentials-b78482e6-f39f-4f50-9041-67803cb469fc.config'
+2026-09-10T08:19:56.1144760Z ##[endgroup]
+2026-09-10T08:19:56.1369710Z ##[group]Run # The pinned public image documents Python3, not an absolute launcher
+2026-09-10T08:19:56.1370310Z [36;1m# The pinned public image documents Python3, not an absolute launcher[0m
+2026-09-10T08:19:56.1370710Z [36;1m# path. Observe the installed launcher; never reuse the Intel path.[0m
+2026-09-10T08:19:56.1371060Z [36;1mpython_launcher="$(command -v python3)"[0m
+2026-09-10T08:19:56.1371340Z [36;1mcase "${python_launcher}" in /*) ;; *) exit 1 ;; esac[0m
+2026-09-10T08:19:56.1371610Z [36;1mexec /usr/bin/env -i \[0m
+2026-09-10T08:19:56.1371880Z [36;1m  PATH='/usr/bin:/bin:/usr/sbin:/sbin' LANG=C LC_ALL=C TZ=UTC \[0m
+2026-09-10T08:19:56.1372280Z [36;1m  PV_REPOSITORY="${PV_REPOSITORY}" PV_REF="${PV_REF}" PV_EVENT="${PV_EVENT}" \[0m
+2026-09-10T08:19:56.1372730Z [36;1m  PV_SHA="${PV_SHA}" PV_RUN_ID="${PV_RUN_ID}" PV_ATTEMPT="${PV_ATTEMPT}" \[0m
+2026-09-10T08:19:56.1373250Z [36;1m  PV_WORKSPACE="${GITHUB_WORKSPACE}" PV_RUNNER_TEMP="${RUNNER_TEMP}" PV_OUTPUT="${GITHUB_OUTPUT}" \[0m
+2026-09-10T08:19:56.1373670Z [36;1m  PV_JAVA_HOME_17="${JAVA_HOME_17_arm64:?}" \[0m
+2026-09-10T08:19:56.1374000Z [36;1m  PV_IMAGE_OS="${ImageOS:?}" PV_IMAGE_VERSION="${ImageVersion:?}" \[0m
+2026-09-10T08:19:56.1374400Z [36;1m  "${python_launcher}" -I -B scripts/audit/ios_focused_validation.py[0m
+2026-09-10T08:19:56.1421280Z shell: /bin/bash --noprofile --norc -euo pipefail {0}
+2026-09-10T08:19:56.1421620Z env:
+2026-09-10T08:19:56.1421850Z   PV_REPOSITORY: Apdelrahman1911/passvault
+2026-09-10T08:19:56.1422190Z   PV_REF: refs/heads/codex/audit-continuation-linux-20260908
+2026-09-10T08:19:56.1422490Z   PV_EVENT: push
+2026-09-10T08:19:56.1422810Z   PV_SHA: d4b72e0a30e2b53283a3f23b13b942afc6cbd38b
+2026-09-10T08:19:56.1423090Z   PV_RUN_ID: 34454557777
+2026-09-10T08:19:56.1423410Z   PV_ATTEMPT: 1
+2026-09-10T08:19:56.1423570Z ##[endgroup]
+2026-09-10T08:19:58.2997220Z {"cancelled": false, "cleanup": "NO_PRIVATE_RUNTIME_ALLOCATED", "device_cleanup": "NOT_CREATED", "errors": ["Hold: handoff resource floor not met using kernel-free-equivalent reading"], "exit": 1, "settlement_uncertain": false, "status": "FAIL_OR_HOLD_NO_AUTOMATIC_RETRY"}
+2026-09-10T08:19:58.3054640Z ##[error]Process completed with exit code 1.
+2026-09-10T08:19:58.3269180Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-10T08:19:58.3269690Z with:
+2026-09-10T08:19:58.3269920Z   name: ios-focused-01-34454557777-1
+2026-09-10T08:19:58.3270800Z   path: /Users/runner/work/_temp/passvault-ios-focused-01-34454557777-1-evidence/*.json
+/Users/runner/work/_temp/passvault-ios-focused-01-34454557777-1-evidence/*.log
+/Users/runner/work/_temp/passvault-ios-focused-01-34454557777-1-evidence/*.xml
+
+2026-09-10T08:19:58.3271760Z   if-no-files-found: error
+2026-09-10T08:19:58.3272120Z   retention-days: 7
+2026-09-10T08:19:58.3272780Z   compression-level: 6
+2026-09-10T08:19:58.3272960Z   include-hidden-files: false
+2026-09-10T08:19:58.3273290Z   overwrite: false
+2026-09-10T08:19:58.3273530Z   archive: true
+2026-09-10T08:19:58.3273790Z ##[endgroup]
+2026-09-10T08:19:58.5373520Z With the provided path, there will be 3 files uploaded
+2026-09-10T08:19:58.5374450Z Artifact name is valid!
+2026-09-10T08:19:58.5375220Z Root directory input is valid!
+2026-09-10T08:19:58.9234720Z Uploading artifact: ios-focused-01-34454557777-1.zip
+2026-09-10T08:19:58.9297770Z Beginning upload of artifact content to blob storage
+2026-09-10T08:19:59.0399070Z Uploaded bytes 3942
+2026-09-10T08:19:59.0799430Z Finished uploading artifact content to blob storage!
+2026-09-10T08:19:59.0803840Z SHA256 digest of uploaded artifact is bf3a59eb3729094f59e00bcf2b83dd1ec2a02a7f90f2a8dff8b6759a36ba3656
+2026-09-10T08:19:59.0804950Z Finalizing artifact upload
+2026-09-10T08:19:59.5582590Z Artifact ios-focused-01-34454557777-1 successfully finalized. Artifact ID 10142907806
+2026-09-10T08:19:59.5583570Z Artifact ios-focused-01-34454557777-1 has been successfully uploaded! Final size is 3942 bytes. Artifact ID is 10142907806
+2026-09-10T08:19:59.5584730Z Artifact download URL: https://github.com/Apdelrahman1911/passvault/actions/runs/34454557777/artifacts/10142907806
+2026-09-10T08:19:59.5717360Z Post job cleanup.
+2026-09-10T08:19:59.7589230Z [command]/opt/homebrew/bin/git version
+2026-09-10T08:19:59.7721270Z git version 2.55.0
+2026-09-10T08:19:59.7803810Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/9d5ce0a8-06a2-44b3-8bae-a4eef9ffd68b/.gitconfig'
+2026-09-10T08:19:59.7813930Z Temporarily overriding HOME='/Users/runner/work/_temp/9d5ce0a8-06a2-44b3-8bae-a4eef9ffd68b' before making global git config changes
+2026-09-10T08:19:59.7815650Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-10T08:19:59.7817230Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/passvault/passvault
+2026-09-10T08:19:59.7873010Z Removing SSH command configuration
+2026-09-10T08:19:59.7877470Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-10T08:19:59.7955630Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-10T08:19:59.9237230Z Removing HTTP extra header
+2026-09-10T08:19:59.9244340Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-10T08:19:59.9318290Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-10T08:20:00.0885170Z Removing includeIf entries pointing to credentials config files
+2026-09-10T08:20:00.0986490Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-10T08:20:00.1289710Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-10T08:20:00.2855750Z Cleaning up orphan processes

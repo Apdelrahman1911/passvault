@@ -1,0 +1,29 @@
+{
+  "id": "PVA-039",
+  "title": "Compose normal exit bypasses the Desktop-owned terminal finalizer and cleanup wait",
+  "status": "CONFIRMED_SOURCE_DEFECT_IMPLEMENTATION_AND_REAL_REGRESSION_IN_PROGRESS",
+  "source_commit": "6220812e4602369d4853b763465a92e6291bb971",
+  "source_tree": "3defb2a459ffbbddb51b3baa0f088d438edf74c3",
+  "finding_author": "/root",
+  "dependency_contract_investigator": "/root/editor_review",
+  "independent_finding_reviewer": "/root/native_review",
+  "source_before": {
+    "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+    "sha256": "9457f71fefe63de14ddd80d91b14b5b281175ee7c9bcdb113ac6a8ae15452616"
+  },
+  "dependency_capture": "reviews/editor-independent/pvu006-compose-application-source/RECEIPT.json",
+  "dependency_capture_sha256": "ccd2a3724275a514a4cfca5bed076c6e2c908bce9fa004d4da6ca6e441401a9d",
+  "finding_review": "reviews/native-independent/PVU006-COMPOSE-EXIT-DEFAULT-INDEPENDENT.md",
+  "finding_review_sha256": "01e681a426e0e868bdea6f4efa19a400bb6c1d4d4c66c57ec594f2381c9a5579",
+  "grouping_review": "reviews/native-independent/PVA039-GROUPING-INDEPENDENT.md",
+  "grouping_review_sha256": "a67270f1619e7ecb964f16c644db211ffe5731be03317157960859a599fd6456",
+  "reachability": "Production Main invokes bare Compose application. Pinned1.11.1 published source defaults exitProcessOnExit=true and calls exitProcess(0) after awaitApplication returns. Normal window/tray close reaches real Compose exit; process exit does not execute Main outer finally/finishDesktopRuntime2500ms wait.",
+  "counterguards": "requestClose already starts cleanup jobs; some may finish first. Compose disposes composition and the real clipboard service has its own ownership-aware JVM shutdown hook. Not a claim that all cleanup is absent, observed data loss, late onboarding work or authentication bypass.",
+  "grouping": "Distinct from PVA010 native context/cancellation lifetime and original PVU006 terminal late work; original PVU006 remains unresolved. Original25/suspicion12 denominators unchanged; all confirmed38→39 only.",
+  "patch_author": "/root/editor",
+  "planned_fix": "Explicit exitProcessOnExit=false through a small production loop seam; retain existing Main finally, coordinator timeout/once-only logic, clipboard hook and outer System.exit.",
+  "planned_regression": "One case with serial fresh JVM historical-default control and real production Compose loop; actual normal exit must return through finally and reach explicit outer continuation. No interception/mock of Compose/System.exit. Source-only, independently reviewed before execution.",
+  "application_cases_executed": 0,
+  "new_qualified_closures": 0,
+  "limits": "Published-source/JAR-coordinate association is not executed bytecode equivalence. Real child-process regression and independent patch review remain pending; no full app/Koin/Room/provider/device/no-flash claim."
+}

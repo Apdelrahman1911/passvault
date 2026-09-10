@@ -1,0 +1,179 @@
+{
+  "owner": "/root",
+  "utc": "2026-09-10T08:28:47.069003+00:00",
+  "run_id": 34454557777,
+  "status": "EXACT_TERMINAL_RUN_METADATA_AND_LOGS_CAPTURED",
+  "scope": "Read-only exact newly completed iOS01 run metadata/logs, no rerun/cancel/device access",
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs/34454557777"
+      ],
+      "status": "COMPLETED",
+      "owned_pid": 8889,
+      "exit": 0,
+      "stdout_bytes": 12905,
+      "stdout_sha256": "5b578327aa528eb3bbc8c117c20629ddfc78eb2dda9506e1c5186cedc24c259b",
+      "stderr": "",
+      "direct_child_reaped": true
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs/34454557777/jobs?per_page=100"
+      ],
+      "status": "COMPLETED",
+      "owned_pid": 8905,
+      "exit": 0,
+      "stdout_bytes": 2098,
+      "stdout_sha256": "7872f40faae42253d6cf644455ceff4eeea8be2c31be3a956547f93bb48d39a3",
+      "stderr": "",
+      "direct_child_reaped": true
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs/34454557777/artifacts?per_page=100"
+      ],
+      "status": "COMPLETED",
+      "owned_pid": 8952,
+      "exit": 0,
+      "stdout_bytes": 771,
+      "stdout_sha256": "13c0bb71d11eceb19c6df6b19c5473e77c145294cf37207cf5906e49bba46d29",
+      "stderr": "",
+      "direct_child_reaped": true
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs/34454557777/logs"
+      ],
+      "status": "COMPLETED",
+      "owned_pid": 8969,
+      "exit": 0,
+      "stdout_bytes": 12305,
+      "stdout_sha256": "f80c0e80dcc124d00de33807ca3582cdbbfbddeaab07ebec9a21593b9abd5c9f",
+      "stderr": "",
+      "direct_child_reaped": true
+    }
+  ],
+  "files": [
+    {
+      "path": "RUN.json",
+      "bytes": 12905,
+      "sha256": "5b578327aa528eb3bbc8c117c20629ddfc78eb2dda9506e1c5186cedc24c259b"
+    },
+    {
+      "path": "JOBS.json",
+      "bytes": 2098,
+      "sha256": "7872f40faae42253d6cf644455ceff4eeea8be2c31be3a956547f93bb48d39a3"
+    },
+    {
+      "path": "ARTIFACTS.json",
+      "bytes": 771,
+      "sha256": "13c0bb71d11eceb19c6df6b19c5473e77c145294cf37207cf5906e49bba46d29"
+    },
+    {
+      "path": "workflow-logs/0_ios-ten.txt",
+      "bytes": 19778,
+      "sha256": "37666b7a7fa0a124c3bf72f6758fb0250e8233fe2d271d411c3ecb0993b2ff4a"
+    },
+    {
+      "path": "workflow-logs/ios-ten/system.txt",
+      "bytes": 1143,
+      "sha256": "04f9a414b8080a0f9d109cea8d4733623533b954baf0a39f00cc5e430dd9e6a5"
+    },
+    {
+      "path": "workflow-logs/ios-ten/1_Set up job.txt",
+      "bytes": 2086,
+      "sha256": "e0595b12d7752da96d5d0e76f1284c4153297cf433b8f2dbc83dbe1dc3a95373"
+    },
+    {
+      "path": "workflow-logs/ios-ten/2_Check out exact activation source without retained credentials.txt",
+      "bytes": 11483,
+      "sha256": "5d9c6cd156776fa1df0dad0b187d28557f01a8c000ed0f34f8b9494920bc48ca"
+    },
+    {
+      "path": "workflow-logs/ios-ten/3_Run only the separately admitted focused iOS cycle.txt",
+      "bytes": 2273,
+      "sha256": "f197908e6a140c3bc7ef5a4c1bc982718f478fa3e94122150d4844849653972d"
+    },
+    {
+      "path": "workflow-logs/ios-ten/4_Retain only newly owned compact synthetic evidence.txt",
+      "bytes": 1929,
+      "sha256": "07b99e4b810bfd1e3450a9eb13f16465c1f12719c5b51f6b3deee2ae7813111e"
+    },
+    {
+      "path": "workflow-logs/ios-ten/8_Post Check out exact activation source without retained credentials.txt",
+      "bytes": 1961,
+      "sha256": "1b4815c7c2d498e6a5dfcd12b57f4196a29c0766015d5fc773a66bbfca2570e2"
+    },
+    {
+      "path": "workflow-logs/ios-ten/9_Complete job.txt",
+      "bytes": 61,
+      "sha256": "0dd16ca0da8014978a4acde1742b1dad702f9f97bd81b38b1675957866ac9b74"
+    }
+  ],
+  "log_archive": {
+    "bytes": 12305,
+    "sha256": "f80c0e80dcc124d00de33807ca3582cdbbfbddeaab07ebec9a21593b9abd5c9f",
+    "retained": false,
+    "uncompressed_retained_bytes": 40714
+  },
+  "conclusion": "failure",
+  "jobs": [
+    {
+      "id": 102797810556,
+      "name": "ios-ten",
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check out exact activation source without retained credentials",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run only the separately admitted focused iOS cycle",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Retain only newly owned compact synthetic evidence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Check out exact activation source without retained credentials",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 10142907806,
+      "name": "ios-focused-01-34454557777-1",
+      "size_in_bytes": 3942,
+      "expired": false
+    }
+  ],
+  "cleanup": "All foreground API direct children reaped/streams closed; bounded ZIP only in memory, no archive/cache/build/service or temporary file retained. Source/report data retained. No owned runner cleanup inferred.",
+  "elapsed_seconds": 2.9618107529822737
+}

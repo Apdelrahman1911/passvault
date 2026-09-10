@@ -1,6 +1,5 @@
 package com.passvault.desktop
 
-import androidx.compose.ui.window.application
 import com.passvault.desktop.di.desktopModule
 import com.passvault.shared.PassVaultApp
 import kotlinx.coroutines.CoroutineScope
@@ -115,7 +114,7 @@ private fun initializeKoin() {
  * Launch the desktop application window.
  */
 private fun launchApplication(shutdownCoordinator: DesktopShutdownCoordinator) {
-    application {
+    runDesktopApplicationLoop {
         PassVaultDesktopWindow(
             shutdownCoordinator = shutdownCoordinator,
             onCloseRequest = { exitApplication() },

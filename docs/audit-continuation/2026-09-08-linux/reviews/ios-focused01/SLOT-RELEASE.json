@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T08:55:03.834816+00:00",
+  "status": "RELEASE_IOS01_SCHEDULING_ONLY_AFTER_INDEPENDENT_ACTUAL_RECONCILIATION",
+  "slot_before_sha256": "ddbee92a0146c966830b3aea6617ce43e69cfe5b2f5774a026660cfe6d0bee1f",
+  "independent_review": "reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json",
+  "independent_review_sha256": "59bb624896d25ab72edf4d2f05310f24bf8296a9e58379875aa5e2de20ca850d",
+  "ci_observation": "reviews/ios-focused01/CI-STATE-AT-RELEASE.json",
+  "ci_observation_sha256": "5e1e7fc44f073b53e14547b05d31a487088f0ac1a0b327f9b6dbd81fac55ee12",
+  "root_no_other_audit_job": "Eight observed branch runs terminal; root has started no local build since consumed GUI02; all agents restricted to source-only tasks; no live root tool/API/Git session. Point scheduling evidence, not global host idleness.",
+  "actual": {
+    "source_commit": "6220812e4602369d4853b763465a92e6291bb971",
+    "source_tree": "3defb2a459ffbbddb51b3baa0f088d438edf74c3",
+    "activation_commit": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+    "activation_tree": "291a75853d8f81c5b1da5b4dfe653896cf79a1bc",
+    "request_sha256": "71451b24f0331d9d7d9d15976422d145c4a3781cb9ec9b7c2370b563ac42c2b4",
+    "run_id": 34454557777,
+    "attempt": 1,
+    "job_id": 102797810556,
+    "operational_status": "CONSUMED_FAIL_LAUNCH_RESOURCE_GATE_BEFORE_XCODE_OR_PRIVATE_RUNTIME",
+    "consumed": true,
+    "actual_helper_exit": 1,
+    "workflow": {
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-09-10T08:20:04Z",
+      "job_completed_at": "2026-09-10T08:20:03Z",
+      "one_job": true,
+      "selected_step_failed": true,
+      "artifact_upload_succeeded": true
+    },
+    "resource_observation": {
+      "elapsed_seconds": 1.779,
+      "disk_free_bytes": 45334519808,
+      "launch_disk_floor_bytes": 12884901888,
+      "disk_floor_met": true,
+      "page_size_bytes": 16384,
+      "printed_free_pages": 9386,
+      "printed_speculative_pages": 2005,
+      "free_physical_bytes": 153780224,
+      "kernel_free_equivalent_bytes": 186630144,
+      "total_physical_bytes": 7516192768,
+      "kernel_free_equivalent_percent": 2.4830409458705356,
+      "required_launch_percent": 25,
+      "required_launch_ram_bytes": 1879048192,
+      "qualification": "Recorded arithmetic reconciles:16384*(9386+2005)=186630144, about2.483% of7516192768, below25%;45334519808 disk bytes exceeds12GiB. Failure is this one launch observation, not malformed-page parsing, disk exhaustion, application OOM, measured project RAM use, causal host-process diagnosis or proof that every Apple runner is infeasible. No metric/floor relaxation or speculative retry follows."
+    },
+    "case_accounting": {
+      "PASS": 0,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIPPED": 0,
+      "UNSTARTED": 10,
+      "XML_files": 0,
+      "modules": {
+        "crypto": {
+          "status": "UNSTARTED"
+        },
+        "shared": {
+          "status": "UNSTARTED"
+        }
+      },
+      "unstarted_by_group": {
+        "crypto": 2,
+        "attachment": 7,
+        "prompt_property": 1
+      },
+      "meaning": "Operational run failure is not ten failed product tests. Ten exact declarations are unstarted, not executed/assertion/task counts. No fixture, provider, protection, locale, native lifecycle, build or compilation evidence was obtained."
+    },
+    "cleanup_and_settlement": {
+      "private_runtime": "NO_PRIVATE_RUNTIME_ALLOCATED; source-qualified for this exact preallocation path, not an independent live filesystem-absence probe.",
+      "device": "NOT_CREATED; no owned simulator allocation/deletion or shared-service settlement was observed or claimed.",
+      "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_OR_GRADLE_ATTEMPTED; no stop/recovery invocation is authorized now.",
+      "evidence_and_ancestor_close": "Artifact retains PENDING_REQUIRE_ACTUAL_HELPER_EXIT_ZERO. Actual helperexit1 does not meet that contract. Final stdout reports no close error, but neither a complete close/cleanup PASS nor a descriptor-close failure is proven by exit1; preserve the unmet closure qualification.",
+      "owned_settlement_limits": "Known helper step and exact job terminated. No xcodebuild/product child was launched on the source-qualified path; completed bounded metadata calls are not arbitrary-descendant/global-idleness proof. settlement_uncertain false is not a host process census. Generic Actions Cleaning up orphan processes log is not application settlement evidence, and hosted disposal is not cleanup proof.",
+      "local_receipt_cleanup": "Root download records show four metadata/log API direct children and one artifact API child exit0/reaped, compact raw data retained and no archive/temp/cache/background child retained. This is recorded root custody, not reviewer live process verification."
+    },
+    "independent_review": "reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "59bb624896d25ab72edf4d2f05310f24bf8296a9e58379875aa5e2de20ca850d",
+    "evidence": "runs/ios-focused01/",
+    "result_sha256": "ff5c54e508b71c3ec04765005e9d96b1379b6eae5bc39a04cb362986f50a31d1",
+    "new_family_closures": 0,
+    "new_conclusive_suspicions": 0,
+    "release": "reviews/ios-focused01/SLOT-RELEASE.json",
+    "limits": "Ten declarations UNSTARTED, zero Gradle/product/Xcode launches or XML. Bounded metadata/checkout/evidence creation did occur. Raw exit:null/settlement:UNKNOWN command intent preserved; resource gate precedes Popen. Pending actual-exit0 evidence/ancestor-close contract remains unmet, not cleanup PASS/proven close failure. No retry, floor change, physical-device or all-Apple infeasibility inference; all old HOLDs unchanged."
+  },
+  "remaining_closure_qualification": "PENDING_REQUIRE_ACTUAL_HELPER_EXIT_ZERO retained; actual helper exit1 does not discharge it. No global filesystem/process cleanup PASS.",
+  "next": "Fresh source-bound three-case Linux Desktop batch admission; no automatic IOS01 rerun or old scope recovery."
+}

@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "reviewer": "/root/storage",
+  "authors_reviewed": [
+    "/root",
+    "/root/android32"
+  ],
+  "utc": "2026-09-10T08:14:18.908066+00:00",
+  "disposition": "ACCEPT_IOS_FOCUSED01_INSTANCE_CONDITIONAL_ON_ROOT_ADMISSION_AND_EXACT_REQUEST_ONLY_ACTIVATION",
+  "source_commit": "6220812e4602369d4853b763465a92e6291bb971",
+  "source_tree": "3defb2a459ffbbddb51b3baa0f088d438edf74c3",
+  "request_sha256": "71451b24f0331d9d7d9d15976422d145c4a3781cb9ec9b7c2370b563ac42c2b4",
+  "request_path": "docs/audit-continuation/2026-09-08-linux/requests/ios-focused-01.json",
+  "request": {
+    "source_commit": "6220812e4602369d4853b763465a92e6291bb971",
+    "source_tree": "3defb2a459ffbbddb51b3baa0f088d438edf74c3",
+    "nonce": "8a5dafb409329455b04d9e856c98029e"
+  },
+  "qualification": "Genuine narrow source/retained-data instance review. Accept only the exact request and unchanged accepted IOS10/activation tuple, conditional on root-owned fresh admission, actual original coordination/namespace checks and exclusive slot. No execution, publication, cleanup, test pass or family closure is established by this seal.",
+  "bound_records": {
+    "source_instance": {
+      "path": "reviews/ios-focused01/SOURCE-INSTANCE-01.json",
+      "sha256": "2400fc6a2864c835c39b241da719bccb1c719abd4aba0b134816ab2ac88d40db"
+    },
+    "c12_publication_receipt": {
+      "path": "publication/CHECKPOINT-12-FINALIZED-PUBLISHED.json",
+      "sha256": "1c731b5405baaa1630560f5d81dd4e9e9b23269a4644c0a940f0156ba2c1954b"
+    },
+    "c12_finalization_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-12-STAGED-FINALIZATION-REVIEW.json",
+      "sha256": "3a30c983a39c3a8dccb71cb59248e3047959a9a57e5d322d80dfad1d75d72a6a"
+    },
+    "helper_workflow_review": {
+      "path": "reviews/storage/IOS10-HELPER-WORKFLOW-INDEPENDENT.md",
+      "sha256": "f3cf067598a7ddb4fb7dcb1c0b93cc94f95765dd65944a13e63846328fe7ba4c"
+    },
+    "activation_source_delta_review": {
+      "path": "reviews/storage/IOS01-ACTIVATION-SOURCE-DELTA-REVIEW.md",
+      "sha256": "4fc12f7f93ce151ab1224c818c81e784ee451dc7cc57fae1cd9a74a793e98b57"
+    },
+    "ci_observation": {
+      "path": "reviews/ios-focused01/CI-STATE-BEFORE-01.json",
+      "sha256": "cd393a735a4399d9a3a6670642cdf6fe4e4d4d8ff4a0e33dfb6e4f2234bd89b5"
+    },
+    "published_pre_reservation_slot_sha256": "1d43cc4635a1141538d8320a56658f6ec2daa51b141e45405a56544de00909e8",
+    "reserved_slot_sha256": "ddbee92a0146c966830b3aea6617ce43e69cfe5b2f5774a026660cfe6d0bee1f"
+  },
+  "source_inputs": [
+    {
+      "path": "scripts/audit/ios_focused_validation.py",
+      "sha256": "61f7e3627758c95eed5d03aa2dd8e165e3b6fab6f3e7be7a6d3da244d1e88fc9",
+      "bytes": 68219,
+      "git_mode": "100644"
+    },
+    {
+      "path": ".github/workflows/audit-ios-focused-validation.yml",
+      "sha256": "d1a1b3b5c06b46446e935ce3ff2e75ec2a829d9d6179df0b90f75ddf7c2a9dfa",
+      "bytes": 3097,
+      "git_mode": "100644"
+    },
+    {
+      "path": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+      "sha256": "406c47fd2ea71afe50a57acfbc5050bcda05a3050e94a16c5555a5e053bdc337",
+      "bytes": 12028,
+      "git_mode": "100644"
+    },
+    {
+      "path": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosBiometricPromptStringsTest.kt",
+      "sha256": "9e18f0bd193ba3308982ec05b45ab6d025e40f9b8b35baf880aa9ff66d640400",
+      "bytes": 1002,
+      "git_mode": "100644"
+    },
+    {
+      "path": "core/crypto/src/commonTest/kotlin/com/passvault/core/crypto/SecurityTest.kt",
+      "sha256": "867a98c43713ce879e129953e4fcdd4c314f3e737a85a5b7e7b78ed5360639f6",
+      "bytes": 14111,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/IOS-01-ACTIVATE.py",
+      "sha256": "57347b91dd6af7d03ad71f094fe3b7d3dafa53468f359f27667521c1d69713ac",
+      "bytes": 16664,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/IOS10-HELPER-WORKFLOW-INDEPENDENT.md",
+      "sha256": "f3cf067598a7ddb4fb7dcb1c0b93cc94f95765dd65944a13e63846328fe7ba4c",
+      "bytes": 10447,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/IOS01-ACTIVATION-SOURCE-DELTA-REVIEW.md",
+      "sha256": "4fc12f7f93ce151ab1224c818c81e784ee451dc7cc57fae1cd9a74a793e98b57",
+      "bytes": 4450,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/IOS-FOCUSED-VALIDATION-PLAN.md",
+      "sha256": "da3f69651b706991a3a53b886b1faaa020db243873cb7ec2092e3f3493f511f2",
+      "bytes": 15867,
+      "git_mode": "100644"
+    },
+    {
+      "path": "gradlew",
+      "sha256": "a5a5c199ba02189ae8c46a334223371a20599d9c298ef65e7540ede4a3f72d59",
+      "bytes": 8656,
+      "git_mode": "100755"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d",
+      "bytes": 47505,
+      "git_mode": "100644"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "245b6dba5960c9c54a8495bf16195fbebe2d91a825238edbde1ac2b858c86f6f",
+      "bytes": 370,
+      "git_mode": "100644"
+    },
+    {
+      "path": ".gitattributes",
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+      "bytes": 270,
+      "git_mode": "100644"
+    }
+  ],
+  "independent_instance_checks": [
+    "Read the complete6943B source-instance packet and exact174B request as data. Duplicate-rejecting JSON parsing found exactly source_commit/source_tree/nonce, matching the packet;40-lowercase-hex source identities and32-lowercase-hex synthetic nonce are concrete, not placeholders. No Windows suite/owner/exclusive_build_slot fields are present.",
+    "All13 nominated source rows were point-read independently from both W and the named publication clone T: raw SHA256 and size match the packet and unchanged accepted tuple. W executable-bit classification agrees with Git100644/100755 rows; actual private W modes0600/0700 are not falsely reported as checkout0644/0755. No Git store was read or queried by this reviewer. Root captured publication/full-tree evidence and activation must establish actual Git tuples; filesystem point hashes alone are not a fresh Git/remote proof.",
+    "Read/hash-checked the complete root publication receipt. All20 recorded Git commands are COMPLETED/exit0/direct_child_reaped. Retained inline stdout bytes agree with their lengths/hashes; recorded actual commit/tree and sole parent match the source packet. Recorded remote-after names C12 on only the dedicated continuation ref; protected refs/handoff/tag are unchanged in that capture. Hashed-but-not-retained full tree/index stdout was not reconstructed here; baseline review and root recipe retain their separate qualifications.",
+    "Original C12 whitespace FAIL and consumed publisher remain preserved. Successful separately admitted staged finalization does not convert raw XML whitespace or the original execution into PASS.",
+    "Compared the frozen published pre-slot bytes1d43... with current reserved bytesddbee... as retained coordination data. Only state, updated_utc, next_gate and the new ios_focused01 object differ. All older reservations/HOLD/result entries are semantically unchanged; iOS01 is the only reservation_active true, with exact source/request and local_build_admitted false.",
+    "Reused the prior full source/delta reviews because helper/workflow/fixture/activation hashes are unchanged. Checked focused existing workload/tool/flag contexts and all ten selected declarations; no new full helper review. The aligned plan da3f... was hash-checked, not newly given full semantic-review credit."
+  ],
+  "ci_and_coordination": {
+    "captured_utc": "2026-09-10T07:47:22.378858+00:00",
+    "captured_runs": 7,
+    "captured_nonterminal": 0,
+    "scope": "Root-owned retained branch-list capture, exit0/direct child reaped. NONE_STARTED local build is root testimony, not this reviewer process census. No live Git/API/process/coordination-lock probe occurred.",
+    "mandatory_activation_refresh": "Root must record a fresh continuation-branch CI-state observation at activation showing no conflicting nonterminal audit run, confirm no local audit build, and retain sole build ownership. The07:47 capture is not perpetual idle authority. Do not cancel unrelated jobs or inspect/retry consumed scopes.",
+    "required_reserved_state": "RESERVED_IOS_FOCUSED01_AWAITING_ACTIVATION",
+    "required_reserved_hash": "ddbee92a0146c966830b3aea6617ce43e69cfe5b2f5774a026660cfe6d0bee1f",
+    "after_activation": "Reservation remains pending actual target result and independent settlement. No other local/CI audit-owned build may start until the scheduling gate is separately released."
+  },
+  "workload": {
+    "finding_ids": [
+      "PVA-008",
+      "PVA-014",
+      "PVA-038"
+    ],
+    "why_apple": "Real Foundation attachment files, iOS native AEAD and LAContext properties cannot execute on Linux. This is important native evidence, not a speculative platform matrix.",
+    "serial_module_tasks": [
+      {
+        "task": ":core:crypto:iosSimulatorArm64Test",
+        "filters": [
+          "com.passvault.core.crypto.SecurityTest.VEK wrapping roundtrip",
+          "com.passvault.core.crypto.SecurityTest.wrong KEK fails VEK unwrapping"
+        ],
+        "declarations": 2
+      },
+      {
+        "task": ":shared:iosSimulatorArm64Test",
+        "filters": [
+          "com.passvault.shared.platform.IosAttachmentFileStoreTest",
+          "com.passvault.shared.platform.IosBiometricPromptStringsTest"
+        ],
+        "declarations": 8
+      }
+    ],
+    "attachment_methods": [
+      "cancelled return after move removes the adopted plaintext directory",
+      "cancelled return after copy fallback removes both plaintext locations",
+      "successful adoption transfers directory cleanup to source close",
+      "destination protection failure removes the moved file and owned directory",
+      "cancelled admission removes the original picker copy without adopting it",
+      "picker copy is protected before the import path is returned",
+      "picker copy is deleted when immediate protection fails"
+    ],
+    "prompt_method": "both native prompt operations receive the selected English or Arabic text",
+    "counting": "Ten selected existing declarations, not two tests or actionable-task counts. Same newly created and bound UDID for both serial modules. These source declarations are all unstarted by this review; exact-once raw XML reconciliation is a later independent task."
+  },
+  "target_and_isolation": {
+    "required_target": "One macos-15 ARM64 job; image20260829.0321.1; Xcode16.4/build16F6; iphonesimulator18.5/iOS18.5/iPhone16; installed ARM JDK17.0.20 and Python3.14.7 expectations of the bound helper. These are required observations, not current runner-availability proof.",
+    "drift": "Fixed help/version/runtime/type preflight occurs within this one job before allocation/workload. Image/tool/help/runtime drift refuses; no installer/latest/Intel/alternative-device/matrix/retry fallback.",
+    "source": "Fresh complete raw git cat-file --batch replica with framing/OID/payload/mode inventory checks, not archive/text normalization/borrowed .git. Private HOME/tmp/Gradle/Konan/project caches; Room schema output remains inside disposable source. No original checkout, permanent schemas/tests/reports, shared cache or toolchain deletion.",
+    "guest_storage": "Fresh create-returned UDID, absent baseline inventory and uniquely bound post-create canonical data path; explicit new0700/no-ACL empty synthetic parent passvault-ios-test-parent-8a5dafb409329455b04d9e856c98029e. SIMCTL_CHILD_PASSVAULT_IOS_TEST_PARENT and SIMCTL_CHILD_TMPDIR forwarded. Mandatory fixture check binds actual same-process Foundation temp before file access; missing forwarding fails closed. Seven bounded parent receipts and fixture-empty check remain required.",
+    "execution_flags": "Checked-in wrapper/JDK17; strict dependency verification; one worker; non-daemon; no parallel/CoD/configuration cache/build cache; in-process Kotlin. Exact accepted helper argv/init task-graph guard, not shell parsing of descriptive packet command strings.",
+    "resources": "2GiB Gradle heap,512MiB child default,768MiB Gradle metaspace are not a total native-memory cap.12GiB launch/8GiB running disk and25%/20% kernel-free-equivalent RAM include the bound device volume. Work1440s, absolute cleanup1620s, job30min; bounded16MiB compact evidence, seven-day retention; no large app artifacts."
+  },
+  "important_cleanup_conditions": [
+    "Installed signal/finalization handling precedes preparation. Before each once-only wrapper --stop and --status, verify copied wrapper bytes/mode, using only its private Gradle home. Stop/status failure, altered source, forced/signalled/nonzero module or cancellation leaves uncertainty; no next module or private generated-tree deletion.",
+    "Empty version-specific Gradle registry is not a native compiler/LLVM/guest/shared-service process census. Normal original child return/EOF is qualified only to this fixed trusted synchronous workload; arbitrary-descendant settlement is not claimed.",
+    "Only the actual owned UDID may be shut down if necessary, observed Shutdown, deleted once and checked absent from registry/dataPath. Unbound creation does not permit name-based recovery, preexisting-device erase or a device sweep. Shared CoreSimulator services are not signalled or claimed settled.",
+    "Allowlisted deletion is limited to original bound disposable root and synthetic fixture/device state after qualified settlement, with existing depth32/count200000 guards. Forced/ambiguous settlement, failed deletion or hard interruption stays HOLD; runner disposal is not cleanup proof and no automatic retry is admitted."
+  ],
+  "remaining_activation_conditions": [
+    "Root alone creates final config/admission after this seal. Config must bind this genuine review hash, agreed disposition, actual source_commit/source_tree, exact request hash and the13 source rows above without widening their paths/bytes/modes. No self-reference or provisional review is substituted.",
+    "Root admission must be owner /root, status ADMIT_ONE_IOS_FOCUSED01_REQUEST_ONLY_ACTIVATION_AND_TARGET_RUN, exact request hash, and preserve all scope/resource/cleanup conditions. Its future existence is not inferred here.",
+    "Before any activation, accepted57347... source must actually pass original publication clone/.git/coordination-parent/lock identity, resource, source, complete index/tree, remote and exact reserved-slot checks, including under-lock/precommit/prepush drift gates. Historical namespace/lock numbers are not execution authority; this reviewer made no live identity probe.",
+    "Only one sole-parent child of6220812... adding exactly the duplicate-free174B request may be committed/pushed nonforce to codex/audit-continuation-linux-20260908. No review/config/source addition may slip into that activation tree. Restrictive push/request/attempt1 workflow, shared concurrency without auto-cancel, read-only contents, immutable actions, unavailable signing/store secrets and compact artifact allowlist remain unchanged.",
+    "A new activation publication failure is HOLD/no automatic retry. Publication success is only PUBLISHED_EXACT_IOS01_REQUEST_ONLY_ACTIVATION; it supplies no simulator execution/pass/cleanup evidence. Do not reuse C12/Windows/old validation helpers or old held execution namespaces."
+  ],
+  "result_limits": [
+    "Helper exit0/evidence-captured does not mean ten passes. Independently match raw exact10 cases once each, failure/error/skipped/unstarted/duplicate/unexpected names and actual selected tasks. Do not normalize unexpected method decorations or authorize another run to repair evidence.",
+    "Crypto positive wrapping and typed wrong-KEK rejection are useful real-provider compatibility, not typed tag-tamper, provider-init/operational fault preservation, repository/session enrollment-deletion evidence or complete PVA-038 closure.",
+    "The single LAContext property case does not display a biometric prompt or authenticate four times. Attachment copy/protection seams are not observed physical iPhone failures. Physical iPhone/security-device behavior remains BLOCKED.",
+    "C11 stays frozen. No new denominator/qualified-closure/conclusive-suspicion/PVD-owner-decision credit arises from this review; current ledgers are root-managed."
+  ],
+  "preserved_fences": "PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 recorded failure/no automatic retry, G7/G8 CLOSED, all consumed/old Windows/Linux/HOLD scopes, eight PVD limitations and separate owner decisions, historical EOL/source/missing-tool/hardware qualifications remain. No protected-branch/tag/protection/version/dependency/app-identity change, signing/store/release publication or candidate/build1017001 replacement.",
+  "operations": "Only named source/retained-data reads, JSON shape/comparison/hash checks, coordination and this exclusively created permanent review. No Git/API/network, helper import/execution, build/test/CI, runtime/cache/process/lock probe, simulator, temporary/generated/cache/background workload, signal or deletion. No new build cleanup duty was created.",
+  "additional_tests": 0,
+  "additional_passes": 0,
+  "additional_closures": 0
+}
