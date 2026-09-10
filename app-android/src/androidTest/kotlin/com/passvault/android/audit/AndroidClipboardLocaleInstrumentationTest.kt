@@ -87,12 +87,7 @@ class AndroidClipboardLocaleInstrumentationTest : Instrumentation() {
 
     override fun onCreate(arguments: Bundle?) {
         super.onCreate(arguments)
-        val allowed = setOf(ISOLATION_ARGUMENT, "additionalTestOutputDir")
-        if (arguments == null || arguments.getString(ISOLATION_ARGUMENT) != ISOLATION_VALUE ||
-            arguments.keySet().any { it !in allowed } ||
-            (arguments.containsKey("additionalTestOutputDir") &&
-                arguments.getString("additionalTestOutputDir")?.let { it.length <= 4096 } != true)
-        ) {
+        if (arguments == null || hasUnsupportedArguments(arguments)) {
             finishFailure("Missing isolation acknowledgement or unsupported fixed-selection arguments")
             return
         }
@@ -100,48 +95,23 @@ class AndroidClipboardLocaleInstrumentationTest : Instrumentation() {
         start()
     }
 
+    private fun hasUnsupportedArguments(arguments: Bundle): Boolean {
+        val allowed = setOf(ISOLATION_ARGUMENT, "additionalTestOutputDir")
+        return arguments.getString(ISOLATION_ARGUMENT) != ISOLATION_VALUE ||
+            arguments.keySet().any { it !in allowed } || hasUnsupportedOutputMetadata(arguments)
+    }
+
+    private fun hasUnsupportedOutputMetadata(arguments: Bundle): Boolean =
+        arguments.containsKey("additionalTestOutputDir") &&
+            arguments.getString("additionalTestOutputDir")?.let { it.length <= 4096 } != true
+
     override fun onStart() {
         super.onStart()
         var problem: Throwable? = null
         var failureStage: String? = null
         try {
-            stage = "DEBUG_TARGET_ADMISSION"
-            if (Thread.currentThread().isInterrupted) throw InterruptedException("Interrupted before setup")
-            requireEvidence(Build.VERSION.SDK_INT >= 29, "Requires API29+ for this fixed selection")
-            requireEvidence(targetContext.packageName == DEBUG_PACKAGE, "Wrong target package")
-            requireEvidence(BuildConfig.DEBUG && BuildConfig.BUILD_TYPE == "debug" &&
-                !BuildConfig.STORE_SCREENSHOT_MODE, "Only the ordinary Debug variant is permitted")
-            onMain {
-                originalLocales = LocaleList.getDefault()
-                originalLocale = Locale.getDefault()
-                originalDisplayLocale = Locale.getDefault(Locale.Category.DISPLAY)
-                originalFormatLocale = Locale.getDefault(Locale.Category.FORMAT)
-                originalLocaleIndex = requireNotNull(originalLocales).indexOf(requireNotNull(originalLocale))
-                requireEvidence(originalLocaleIndex >= 0, "Original default is absent from the process locale list")
-                // A process-local initial control, before the first Main/provider composition only.
-                overrideLocale = Locale.ENGLISH
-                defaultsTouched = true
-                LocaleList.setDefault(LocaleList(Locale.ENGLISH))
-                Locale.setDefault(Locale.ENGLISH)
-                application = (targetContext.applicationContext as Application).also {
-                    it.registerActivityLifecycleCallbacks(callbacks)
-                }
-            }
-            for (case in cases) {
-                startedCases++
-                sendStatus(1, caseStatus(case))
-                try {
-                    runBlocking { withTimeout(90_000) { case.body() } }
-                } catch (error: Throwable) {
-                    // Unsatisfied runtime conditions are errors, never passes or fabricated skips.
-                    sendStatus(if (error is AssertionError) -2 else -1, caseStatus(case).apply {
-                        putString("stack", "$stage: ${error.javaClass.simpleName}")
-                    })
-                    throw error
-                }
-                passedCases++
-                sendStatus(0, caseStatus(case))
-            }
+            admitDebugTargetAndPrepare()
+            runFixedCases()
         } catch (error: Throwable) {
             recordFailure(stage, error)
             problem = error
@@ -164,7 +134,7 @@ class AndroidClipboardLocaleInstrumentationTest : Instrumentation() {
         }
         terminalProblem = problem
         try {
-            if (problem != null || interruptionObserved || startedCases != 2 || passedCases != 2) {
+            if (problem != null || interruptionObserved || hasIncompleteCaseInventory()) {
                 finishFailure("${failureStage ?: stage}: ${problem?.javaClass?.simpleName ?: "IncompleteInventory"}")
             } else {
                 finish(Activity.RESULT_OK, summary().apply { putString("stream", "\nOK (2 fixed Android cases)\n") })
@@ -173,6 +143,51 @@ class AndroidClipboardLocaleInstrumentationTest : Instrumentation() {
             if (interruptionObserved) Thread.currentThread().interrupt()
         }
     }
+
+    private fun admitDebugTargetAndPrepare() {
+        stage = "DEBUG_TARGET_ADMISSION"
+        if (Thread.currentThread().isInterrupted) throw InterruptedException("Interrupted before setup")
+        requireEvidence(Build.VERSION.SDK_INT >= 29, "Requires API29+ for this fixed selection")
+        requireEvidence(targetContext.packageName == DEBUG_PACKAGE, "Wrong target package")
+        requireEvidence(BuildConfig.DEBUG && BuildConfig.BUILD_TYPE == "debug" &&
+            !BuildConfig.STORE_SCREENSHOT_MODE, "Only the ordinary Debug variant is permitted")
+        onMain {
+            originalLocales = LocaleList.getDefault()
+            originalLocale = Locale.getDefault()
+            originalDisplayLocale = Locale.getDefault(Locale.Category.DISPLAY)
+            originalFormatLocale = Locale.getDefault(Locale.Category.FORMAT)
+            originalLocaleIndex = requireNotNull(originalLocales).indexOf(requireNotNull(originalLocale))
+            requireEvidence(originalLocaleIndex >= 0, "Original default is absent from the process locale list")
+            // A process-local initial control, before the first Main/provider composition only.
+            overrideLocale = Locale.ENGLISH
+            defaultsTouched = true
+            LocaleList.setDefault(LocaleList(Locale.ENGLISH))
+            Locale.setDefault(Locale.ENGLISH)
+            application = (targetContext.applicationContext as Application).also {
+                it.registerActivityLifecycleCallbacks(callbacks)
+            }
+        }
+    }
+
+    private fun runFixedCases() {
+        for (case in cases) {
+            startedCases++
+            sendStatus(1, caseStatus(case))
+            try {
+                runBlocking { withTimeout(90_000) { case.body() } }
+            } catch (error: Throwable) {
+                // Unsatisfied runtime conditions are errors, never passes or fabricated skips.
+                sendStatus(if (error is AssertionError) -2 else -1, caseStatus(case).apply {
+                    putString("stack", "$stage: ${error.javaClass.simpleName}")
+                })
+                throw error
+            }
+            passedCases++
+            sendStatus(0, caseStatus(case))
+        }
+    }
+
+    private fun hasIncompleteCaseInventory(): Boolean = startedCases != 2 || passedCases != 2
 
     override fun newActivity(loader: ClassLoader, className: String, intent: Intent): Activity =
         super.newActivity(loader, className, intent).also { activity ->
@@ -321,7 +336,6 @@ class AndroidClipboardLocaleInstrumentationTest : Instrumentation() {
     private fun focused(activity: MainActivity?): Boolean = activity != null && resumed === activity &&
         onMain { !activity.isDestroyed && !activity.isFinishing && activity.hasWindowFocus() }
 
-    @Suppress("DEPRECATION") // recycle() releases API29-32 nodes; newer frameworks make it a no-op.
     private suspend fun observeInitialReadyOnboarding() {
         stage = "INITIAL_READY_ONBOARDING_AX"
         evidence.putString("passvault.axConnectionSettlement", "INSTRUMENTATION_FINISH_AND_OUTER_OWNER_REQUIRED")
@@ -330,34 +344,45 @@ class AndroidClipboardLocaleInstrumentationTest : Instrumentation() {
         awaitCondition("Ready-only English onboarding not observed", precondition = true) {
             if (!focused(current)) return@awaitCondition false
             val root = automation.rootInActiveWindow ?: return@awaitCondition false
-            var nodes = 0
-            var headings = 0
-            var buttons = 0
-            val window = root.windowId
-            fun visit(node: AccessibilityNodeInfo, depth: Int) {
-                var primary: Throwable? = null
-                try {
-                    requireEvidence(node.packageName?.toString() == DEBUG_PACKAGE && node.windowId == window,
-                        "Readiness node is outside the Debug window") // Before any text or child traversal.
-                    requireEvidence(++nodes <= 128 && depth <= 20 && node.childCount <= 32,
-                        "Owned readiness tree exceeded its fixed bound")
-                    if (node.isVisibleToUser && node.text?.toString() == "Welcome to PassVault" && node.isHeading) {
-                        headings++
-                    }
-                    if (node.isVisibleToUser && node.text?.toString() == "Get started" &&
-                        node.isClickable && node.isEnabled) buttons++
-                    for (index in 0 until node.childCount) node.getChild(index)?.let { visit(it, depth + 1) }
-                } catch (error: Throwable) { primary = error; throw error }
-                finally {
-                    try { node.recycle() } catch (error: Throwable) {
-                        if (primary == null) throw error else mergeFailure(primary, error)
-                    }
-                }
-            }
-            visit(root, 0)
-            requireEvidence(headings <= 1 && buttons <= 1, "Ambiguous ready-only onboarding nodes")
-            headings == 1 && buttons == 1 && focused(current)
+            hasReadyOnboardingNodes(root) && focused(current)
         }
+    }
+
+    private fun hasReadyOnboardingNodes(root: AccessibilityNodeInfo): Boolean {
+        var nodes = 0
+        var headings = 0
+        var buttons = 0
+        val window = root.windowId
+        fun visit(node: AccessibilityNodeInfo, depth: Int) {
+            withRecycledReadinessNode(node) {
+                requireEvidence(node.packageName?.toString() == DEBUG_PACKAGE && node.windowId == window,
+                    "Readiness node is outside the Debug window") // Before any text or child traversal.
+                requireEvidence(++nodes <= 128 && depth <= 20 && node.childCount <= 32,
+                    "Owned readiness tree exceeded its fixed bound")
+                if (hasVisibleText(node, "Welcome to PassVault") && node.isHeading) headings++
+                if (isGetStartedButton(node)) buttons++
+                for (index in 0 until node.childCount) node.getChild(index)?.let { visit(it, depth + 1) }
+            }
+        }
+        visit(root, 0)
+        requireEvidence(headings <= 1 && buttons <= 1, "Ambiguous ready-only onboarding nodes")
+        return headings == 1 && buttons == 1
+    }
+
+    private fun hasVisibleText(node: AccessibilityNodeInfo, expected: String): Boolean =
+        node.isVisibleToUser && node.text?.toString() == expected
+
+    private fun isGetStartedButton(node: AccessibilityNodeInfo): Boolean =
+        hasVisibleText(node, "Get started") && node.isClickable && node.isEnabled
+
+    @Suppress("DEPRECATION") // recycle() releases API29-32 nodes; newer frameworks make it a no-op.
+    private fun withRecycledReadinessNode(node: AccessibilityNodeInfo, read: () -> Unit) {
+        var primary: Throwable? = null
+        try { read() } catch (error: Throwable) { primary = error }
+        finally {
+            try { node.recycle() } catch (error: Throwable) { primary = mergeFailure(primary, error) }
+        }
+        primary?.let { throw it } // Same primary/suppressed precedence, outside finally.
     }
 
     private suspend fun cleanup() {

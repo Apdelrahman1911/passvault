@@ -1,0 +1,36 @@
+{
+  "accepted_correction": "Only explicit initial no-follow os.stat entry lookups under a separately validated parent descriptor may establish absence, and never when the missing entry was already pinned as a directory. Directory validation/read ENOENT and observed-entry identity changes are collection uncertainty, not absence. Observed directory identity is checked at descriptor admission; observed file pin must match stable Files.read result.",
+  "after": {
+    "bytes": 55245,
+    "lf": 955,
+    "path": "scripts/audit/linux_detekt_02.py",
+    "sha256": "e5b2352080d4eafc2d22c3a50a7d3f4b31f4b324672cab1e59bdef8b91a2d294"
+  },
+  "author": "/root/build_config",
+  "before": {
+    "bytes": 53977,
+    "lf": 937,
+    "path": "scripts/audit/linux_detekt_02.py",
+    "sha256": "2cc2bb7ab582bcf75893ddd6c52343646b4cfcdc077939d027e0f3c56309a1b6"
+  },
+  "challenger": "/root/editor",
+  "counterexample": "Catch-all FileNotFoundError around Files.read classified disappearance after stat/open/read, or pinned-parent drift, as an initial absent report; final Files.verify need not retain a descriptor for that uncaptured generated leaf. Parent/source guards alone do not rule this out.",
+  "format": "passvault-linux-detekt02-finite-review-correction-v1",
+  "inverse_byte_equality": true,
+  "patch": {
+    "bytes": 2038,
+    "lf": 34,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/REVIEW-CORRECTION.patch",
+    "sha256": "93ae4c2b75b9c4700531b15abe2c3add2a3c1957a8068f50d0edbdfdc0aef297"
+  },
+  "preservation": "Original DELTA.json/SUCCESSOR-DELTA.patch/CONTROL-SPEC.md are preserved as the challenged pre-correction generation. This record supersedes their inner after-image hash only; consumed01 remains unchanged. No test/control/helper/import/runtime action executed.",
+  "pure_parser_unchanged": {
+    "bytes": 1853,
+    "first_line": 124,
+    "last_line": 163,
+    "lf": 40,
+    "sha256": "cb30e52bf1c4c1c622a22794158cd6631cbe8542631d46aa748d4f8501294e90"
+  },
+  "scope": "Only the finite retention-loop presence/read block. Files, parser, source/index/stop/settlement/final safety mechanics, namespace bindings, command/init, report budgets and 87/96 completed-file accounting unchanged. Unsafe-read bytes are not fabricated as retained; uncertainty keeps original runtime/evidence HOLD for root.",
+  "status": "SOURCE_ONLY_CORRECTION_PENDING_REVIEW_NOT_EXECUTED"
+}

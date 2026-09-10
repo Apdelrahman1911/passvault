@@ -1,0 +1,173 @@
+{
+  "author": "/root/build_config",
+  "caps": {
+    "combined_capture_bytes_unchanged": 33554432,
+    "combined_capture_files": 67,
+    "detekt_per_file_bytes_unchanged": 4194304,
+    "detekt_report_files_unchanged": 66,
+    "diagnostic_evidence_relative_path": "reports/gradle-problems.html",
+    "diagnostic_per_file_bytes": 1048576,
+    "extra_diagnostic_files": 1,
+    "extra_diagnostic_relative_path": "build/reports/problems/problems-report.html",
+    "failed_partial_writes_charged": true,
+    "fixed_nonreport_inner_files": {
+      "command_intents": 6,
+      "command_logs": 6,
+      "other_json": 8
+    },
+    "previous_maximum_completed_inner_files": 86,
+    "qualification": "Maximum completed inner-owned files, not actual outputs/tasks/cases; outer-created files require separate root accounting.",
+    "successor_maximum_completed_inner_files": 87,
+    "whole_inner_evidence_bytes_unchanged": 67108864,
+    "whole_inner_evidence_files_unchanged": 96
+  },
+  "collector": {
+    "bytes": 8866,
+    "first_line": 688,
+    "last_line": 822,
+    "predecessor_after_namespace_substitution_sha256": "2739e935fc15d44a6ac59abf18b7661ab301221ecd39559922b0204154004872",
+    "semantics": "Fixed raw capture before report/log/inventory validation. Collection uncertainty blocks safe cleanup; semantic mapping failure alone does not discharge or invalidate successful original safety proofs.",
+    "sha256": "13682c237a8d6750ddb30d935972891f8f0740b499ba91b86075aec9acb4fb2f"
+  },
+  "control_spec": {
+    "bytes": 6914,
+    "lf": 95,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/CONTROL-SPEC.md",
+    "sha256": "95a1e5ffff580c341eae097db06e675b1ac8cdd9da904d38486cfbf328b4b387"
+  },
+  "date": "2026-09-10",
+  "execution": "No helper/parser/import/project/build/test/runtime/SDK/process probe executed; data-only source transformation checks are not test cases.",
+  "format": "passvault-linux-detekt02-author-delta-v1",
+  "holds": [
+    "COMMIT/TREE/MEMBERS/FROZEN[SOURCE]/EXCLUDE_STATE remain None",
+    "SOURCE pathname is a placeholder for root C16 binding",
+    "Fresh outer/instance/source-index/store/coordination/cleanup admission remains root-owned",
+    "Consumed01 failure/no-replay and GUI03 freeze unchanged",
+    "Five parser controls await independent exact extraction/admission and root-only execution"
+  ],
+  "inert_diff": {
+    "bytes": 24579,
+    "lf": 402,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/SUCCESSOR-DELTA.patch",
+    "sha256": "05658c156620434a54dadcd56aab582d8f511d5a6c97ade6d8df9d479ca2c112"
+  },
+  "init_literal_substitutions": [
+    [
+      "if (start.taskNames != [':detekt'] || !start.excludedTaskNames.empty ||",
+      "if (start.taskNames != [':detekt'] || !start.continueOnFailure || !start.excludedTaskNames.empty ||"
+    ],
+    [
+      "Detekt02 requires only root :detekt, one worker, serial strict verification",
+      "Detekt02 requires only root :detekt --continue, one worker, serial strict verification"
+    ]
+  ],
+  "inner_literal_substitutions": [
+    [
+      "SOURCE = B / 'reviews/desktop-integration03/source-prepare01/SOURCE.json'",
+      "SOURCE = B / 'reviews/detekt02/source-prepare01/SOURCE.json'"
+    ],
+    [
+      "COMMIT = '8f42274b04e206ff7254ca33d686a9666fce6723'\nTREE = '3a8f53dddd54f5c42c34f772975f02619be118d5'\nMEMBERS = 2757",
+      "COMMIT = None\nTREE = None\nMEMBERS = None"
+    ],
+    [
+      "EXCLUDE_STATE = 'INFO_ABSENT'",
+      "EXCLUDE_STATE = None"
+    ],
+    [
+      "FROZEN = {SOURCE: '1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97'}",
+      "FROZEN = {SOURCE: None, INIT: '2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6'}"
+    ],
+    [
+      "COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), ':detekt'] + FLAGS",
+      "COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), ':detekt', '--continue'] + FLAGS"
+    ]
+  ],
+  "namespace_substitutions": [
+    [
+      "detekt01",
+      "detekt02"
+    ],
+    [
+      "detekt_01",
+      "detekt_02"
+    ],
+    [
+      "Detekt01",
+      "Detekt02"
+    ],
+    [
+      "DETEKT01",
+      "DETEKT02"
+    ]
+  ],
+  "predecessors": [
+    {
+      "bytes": 47751,
+      "lf": 821,
+      "path": "scripts/audit/linux_detekt_01.py",
+      "sha256": "fceab30448da506edd3010d432bc489e238defcaa6f01f455ba205b095d2e2f7"
+    },
+    {
+      "bytes": 2799,
+      "lf": 55,
+      "path": "scripts/audit/detekt_01.init.gradle",
+      "sha256": "5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97"
+    }
+  ],
+  "pure_parser": {
+    "bytes": 1853,
+    "dependencies": [
+      "re.fullmatch",
+      "standard builtins only"
+    ],
+    "end_before": "\\n\\ndef proc_read(path, cap):",
+    "first_line": 124,
+    "last_line": 163,
+    "lf": 40,
+    "qualification": "Pure header normalization only; not report retention, mapping PASS, Gradle or runtime evidence.",
+    "result_keys": [
+      "events",
+      "outcomes",
+      "errors",
+      "header_count",
+      "unique_tasks"
+    ],
+    "sha256": "cb30e52bf1c4c1c622a22794158cd6631cbe8542631d46aa748d4f8501294e90",
+    "signature": "parse_task_headers(lines, allowed)",
+    "start_marker": "def parse_task_headers(lines, allowed):\\n"
+  },
+  "reverse_proof": {
+    "classification": "Source-text construction/inverse equality, zero executed parser controls.",
+    "init_byte_equal": true,
+    "init_recovered_sha256": "5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97",
+    "inner_byte_equal": true,
+    "inner_recovered_sha256": "fceab30448da506edd3010d432bc489e238defcaa6f01f455ba205b095d2e2f7",
+    "method": "Remove exactly the parser plus its two separator LF; restore predecessor preserve_reports block after 01->02 label substitutions; invert the five literal substitutions and namespace labels. Init inverses its two literal substitutions and namespace labels."
+  },
+  "status": "SOURCE_ONLY_IMPLEMENTED_UNBOUND_UNADMITTED",
+  "successors": [
+    {
+      "bytes": 53977,
+      "lf": 937,
+      "path": "scripts/audit/linux_detekt_02.py",
+      "sha256": "2cc2bb7ab582bcf75893ddd6c52343646b4cfcdc077939d027e0f3c56309a1b6"
+    },
+    {
+      "bytes": 2838,
+      "lf": 55,
+      "path": "scripts/audit/detekt_02.init.gradle",
+      "sha256": "2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6"
+    }
+  ],
+  "unchanged": [
+    "FLAGS including resource/toolchain/dependency verification",
+    "STOP command/body other than fresh R-derived identity",
+    "task/module allowlists",
+    "Files read/write/verify guards",
+    "namespace/Git/index/resource/pidfd/settlement lifecycle",
+    "3600s Gradle and600s original-stop deadlines",
+    "init graph/coverage/source/report-format guards except requiring continueOnFailure",
+    "final source/stops/settlement/evidence/Git safety conjunction and nonzero failure result"
+  ]
+}

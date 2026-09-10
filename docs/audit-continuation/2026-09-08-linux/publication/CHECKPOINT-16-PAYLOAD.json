@@ -1,0 +1,871 @@
+{
+  "authored_whitespace_paths": [
+    "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt",
+    "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+    "scripts/audit/linux_desktop_integration_03.py",
+    "scripts/audit/desktop_integration_03.init.gradle",
+    "scripts/audit/linux_detekt_01.py",
+    "scripts/audit/linux_detekt_02.py",
+    "scripts/audit/detekt_02.init.gradle",
+    "docs/audit-continuation/2026-09-08-linux/README.md",
+    "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_16.md",
+    "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+    "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+    "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+    "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-16-PUBLISH.py"
+  ],
+  "checkpoint": 16,
+  "claims": "Defined counts19/25,26/39,2/12 unchanged;199+3+1=203XML unchanged;5 pure-parser infrastructure controls separate. Current31sourcepath registry, not33/whole-project review. Old EOL/reference/coverage/failure/HOLD qualifications retained.",
+  "comparison": "Root publication-only bounded regular-file byte/mode comparison against existing standalone T working source, no Git operation; publisher independently verifies actualHEAD/index/rawbase/protectedrefs/selectedbytes before writes. Not an application or whole-project audit.",
+  "excluded_in_progress": [
+    "reviews/detekt01-closeout02/ source-only current temporary remainder cleanup draft, independently unadmitted. Original remainder remains HOLD; no new old-scope access."
+  ],
+  "files": [
+    {
+      "bytes": 8143,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_16.md",
+      "sha256": "7ee7f7fe4c79bbab3163d41b9a505a371d36ab49e2165a8e5827c678036157d8"
+    },
+    {
+      "bytes": 225631,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+      "sha256": "e9cb9cab76f6b4f4a591eac20ce13509c9998e0f8593d72c766f58d4d4549110"
+    },
+    {
+      "bytes": 43649,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+      "sha256": "32767426c8f13e22d2a9523170c10f3577d9fc65f8e8b27e499e20b630c28135"
+    },
+    {
+      "bytes": 208091,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "sha256": "52c6c7090f7d71e445d8108a54c4844084c02dae2778522cb33cb76381545407"
+    },
+    {
+      "bytes": 33141,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+      "sha256": "9f8854148700fa5dede436f5d0e7709fbdb47e2988c49720725d5b64093fc22f"
+    },
+    {
+      "bytes": 22112,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/README.md",
+      "sha256": "a091315c6ddce61e56b842b0064580a39633121f7d79f611525c4894e342c4a3"
+    },
+    {
+      "bytes": 180553,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+      "sha256": "f2a6639fd7158bd08b4306cdc4a4b51a359e8b0091ae71bdd2d0372634e23061"
+    },
+    {
+      "bytes": 1372199,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-CLONE-CONTINUATION-PUBLISHED.json",
+      "sha256": "984e9f896a4e6c626244405a3cf4f733568a747e7d953531532644045335331c"
+    },
+    {
+      "bytes": 1174393,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-MACOS02-ACTIVATION-PUBLISHED.json",
+      "sha256": "bd36d64a33b1f32c17bd0da55c8e34204e2a5ded18ccf85e51ad624adfc11e75"
+    },
+    {
+      "bytes": 3033,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-STAGED-FINALIZATION-ADOPTION.json",
+      "sha256": "de330df4efac409199bc35fc771a322b02979266356a71819108085ddc3704ad"
+    },
+    {
+      "bytes": 1447091,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-STAGED-FINALIZATION-PUBLISHED.json",
+      "sha256": "7998da2b841b016a8839af9dea116a08cd8e5ec233a24dd3474fa590e5754c40"
+    },
+    {
+      "bytes": 1173849,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-WINDOWS04-ACTIVATION-PUBLISHED.json",
+      "sha256": "4e40dd3e4743b8f1f13dcc8b8634ef397b146dcba110b5993d262c44a0141663"
+    },
+    {
+      "bytes": 2644,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-15-CONFIG.json",
+      "sha256": "c69134e5b775324408c44983ff7a92541b52b96794981383bfdc279d7ace0be9"
+    },
+    {
+      "bytes": 51545,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-15-PUBLISHED.json",
+      "sha256": "d596b0a69f4a158943365eaef8a3088e169aec441dbacd7b3d9c13421164b3ca"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-15-WHITESPACE.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 16752,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-16-PUBLISH.py",
+      "sha256": "ec66e49ac549530319a740de5f4ab2895ec2b9ce9d95e961d9bd4f4aaf3fe970"
+    },
+    {
+      "bytes": 5787,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/detekt01/ANDROID-CLIPBOARD-LOCALE-DETEKT01-DELTA.md",
+      "sha256": "ae515b86fa23c4f6546d7079f78fd3520d5e022f9f4fbcb4e21f7c6fcf4abe2b"
+    },
+    {
+      "bytes": 11967,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/detekt01/ANDROID-CLIPBOARD-LOCALE-DETEKT01.patch.txt",
+      "sha256": "8517df83cd9d45cfac06a30d49ad6ba038e523c6df53b28f15bcdd247cef5c98"
+    },
+    {
+      "bytes": 38728,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "7eee7bc045abcb60660203f965a33a71e6e791d9ba2c22509a52ee615040ec9d"
+    },
+    {
+      "bytes": 47819,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/CredentialNavHostRoomIntegrationTest.kt",
+      "sha256": "e4778ee2415b89688834ecb72865ae7aa94dffff696dc05733284f17288fd2d5"
+    },
+    {
+      "bytes": 11463,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/pva027-followup/PVA027-MAIN-SETTINGS-FOLLOWUP-ASSESSMENT.md",
+      "sha256": "9ba6efb54360d6fc92f0030429be28a5ae1f416f1bed171f8926f271abc1d08d"
+    },
+    {
+      "bytes": 5790,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/pva027-followup/PVA027-MAIN-SETTINGS-PROPAGATION.kt.txt",
+      "sha256": "fe8beaecef2a6155a582383347dc3abe6edabd1498ed3eda4679df54caf3dcd9"
+    },
+    {
+      "bytes": 10720,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/C16-RESIDUAL-SOFTWARE-PRIORITIES.md",
+      "sha256": "0a91946dbc833fd69743d6c4ce9e59404a279fb7a77e53e0dc7607117b970b56"
+    },
+    {
+      "bytes": 7798,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CACHED-CHECK-INDENT-REVIEW.json",
+      "sha256": "bb2e08f6461bbb855d575db909d8550e0f5a76539ff851dcb6830b85aa855937"
+    },
+    {
+      "bytes": 9261,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-DRIFT-ASSESSMENT.json",
+      "sha256": "24a1b261208bd56ef97615115973c4ee0a5f8cc2921f023cf65f0708adcbab38"
+    },
+    {
+      "bytes": 11007,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-REBIND-REVIEW.json",
+      "sha256": "376642fc86becdf4820b9b16de75d3619c6d82d609378fc84d0bb8567d45fd56"
+    },
+    {
+      "bytes": 6342,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-15-ACTUAL-REVIEW.json",
+      "sha256": "f0e9112a437a49272337dcaf3c10f52fb6146e7510576d71d1e74d52a83fe7a3"
+    },
+    {
+      "bytes": 10650,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/DETEKT01-SUCCESSOR-PARSER-PROPOSAL.md",
+      "sha256": "9b839c21b132011ab7c36c2beb4f746a5c52c7d4e9d478d1963a113d63352166"
+    },
+    {
+      "bytes": 6876,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt01-c15-bindings.json",
+      "sha256": "e3253e581f557f734b8d3d98f12323641edf1d5c569b2b1ea88c17cb90b4b0b9"
+    },
+    {
+      "bytes": 6914,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/CONTROL-SPEC.md",
+      "sha256": "95a1e5ffff580c341eae097db06e675b1ac8cdd9da904d38486cfbf328b4b387"
+    },
+    {
+      "bytes": 6944,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/DELTA.json",
+      "sha256": "389486f3e84067b7bf68fd8f3a8d4a6cc913bef8f8d7cd02e4ba1445aecec76a"
+    },
+    {
+      "bytes": 2407,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/REVIEW-CORRECTION.json",
+      "sha256": "42f4d348a7ad5608b0e24a0c050a93fb28c9f8c940b57412c7ab04b0d7d32ad0"
+    },
+    {
+      "bytes": 2038,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/REVIEW-CORRECTION.patch",
+      "sha256": "93ae4c2b75b9c4700531b15abe2c3add2a3c1957a8068f50d0edbdfdc0aef297"
+    },
+    {
+      "bytes": 24579,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/SUCCESSOR-DELTA.patch",
+      "sha256": "05658c156620434a54dadcd56aab582d8f511d5a6c97ade6d8df9d479ca2c112"
+    },
+    {
+      "bytes": 10960,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/integration03/C15-ROOM-FIRST-BINDING.json",
+      "sha256": "9f9d61fc66da03863523b3913e8ed9ffb18a727e43e3d777f3d5aeeb03727f11"
+    },
+    {
+      "bytes": 4518,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/SOURCE-STORE-ADMISSION.json",
+      "sha256": "d6019b8fd192d8db6bb472c725fa451b06aec5bb2e7385979fd0fd62e326a3fb"
+    },
+    {
+      "bytes": 5807,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/source-prepare01/ACTUAL-STDOUT.json",
+      "sha256": "7052641d2444743aeab792aef2a84bdc036a35c42ad420f26c97f732e32c526b"
+    },
+    {
+      "bytes": 5807,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/source-prepare01/SOURCE-CAPTURE.json",
+      "sha256": "7052641d2444743aeab792aef2a84bdc036a35c42ad420f26c97f732e32c526b"
+    },
+    {
+      "bytes": 17766,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/source-prepare01/SOURCE-PREPARE.py",
+      "sha256": "677f3f675bd8df24e436535712e96acd94ee9c28eeb2309d1b4895f67bcd62b9"
+    },
+    {
+      "bytes": 1504175,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/source-prepare01/SOURCE.json",
+      "sha256": "1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23"
+    },
+    {
+      "bytes": 7977,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/BUILD-WINDOW-02.json",
+      "sha256": "fd047199d6b88d1192d802131e4340b67f920d37fdd9dc45e188ed6ee2952de9"
+    },
+    {
+      "bytes": 575,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/CI-OBSERVATION.json",
+      "sha256": "ca9156b2ba2ee0aa1d5f6af88351ed6a5d7ac66791e1da153b14b616db90c90f"
+    },
+    {
+      "bytes": 1469,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/CI-ROWS.json",
+      "sha256": "d7a18e514bb9e323bd1a54dcadd4b33f9bbfddd2a609763433d8889f9a0da76e"
+    },
+    {
+      "bytes": 8032,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/EXTERNAL-RESULT.json",
+      "sha256": "e7ffb842fa14d6dfc8ef971a2f647594d563a6f3f1fc6fb776e64e0d5e37beaf"
+    },
+    {
+      "bytes": 1735,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/FINAL-PREFLIGHT-FAILURE.json",
+      "sha256": "a0af2ca3d570d5d42617e50edbf090148038d6716e676b9281784a5ce7e7ef7f"
+    },
+    {
+      "bytes": 400,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/HOST-POINT.json",
+      "sha256": "59a2412dc7a11271fa1808fe2be3a75ab47f97726a4a87ed87088e36aa4e3104"
+    },
+    {
+      "bytes": 8498,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/INDEX-SOURCE-CAPTURE.json",
+      "sha256": "330ff4ea8845c09803b534b46141d2bc5ad4331f8b461ef45ac2b94d5395ef96"
+    },
+    {
+      "bytes": 369011,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/INDEX-STAGE0.raw",
+      "sha256": "a914f896c12929b810ad5f00f23f41b3dc788cd6be60b13d09e615b16fb68ebe"
+    },
+    {
+      "bytes": 5132,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/INSTANCE-PLAN.json",
+      "sha256": "50a7198f2c8622da7cfc2a75dd1b8b6e8e0f09eecb51efd307a03f7f7f2d6535"
+    },
+    {
+      "bytes": 658,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/INVOCATION.json",
+      "sha256": "077392eb2dc9cde5ee32da1ef19bf67826816134bd71b50f33e6a167966e2ce3"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/OUTER-ACTUAL-STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 6352,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/REQUEST-CONSUMED.json.txt",
+      "sha256": "f7120a80c95eacddf3d2f9d31ea1d2f866a574050707f972e3932b446172d5c1"
+    },
+    {
+      "bytes": 3062,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "be9d039e8c8f3219b6556a6fa2b601b484090be39a11b899b63f6002428acc2c"
+    },
+    {
+      "bytes": 41178,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/SLOT-BEFORE-DETEKT01.json",
+      "sha256": "f3e13528d7addaf29b33b5ca00b8c3617d7fc8180b095ab302e1463dbd508261"
+    },
+    {
+      "bytes": 2139,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01/c15-preflight/SLOT-RELEASE.json",
+      "sha256": "dfb683efea321a591e51aa4aeb5ad391fda47e964a2510a65724bae1a3c0530f"
+    },
+    {
+      "bytes": 284,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/ACCEPT.json",
+      "sha256": "d52f5a601ddc29c94cb00c4617df1f98468c3927e1b114326a983381a7ce879d"
+    },
+    {
+      "bytes": 23272,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/ACTUAL-REVIEW.json",
+      "sha256": "2c926d2ccaf6c2238e0426dcd0b035509812c4e63c04ee4be241b93888dd1fa4"
+    },
+    {
+      "bytes": 1745,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/ADOPTION.json",
+      "sha256": "0976c56a52398251176f208a5459e793e65427014f834010d7fbcd9362e16150"
+    },
+    {
+      "bytes": 22448,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/CLOSEOUT.py",
+      "sha256": "709c30fdcee98c562f5f8c6199251c88d86a0e9748c44dc486ba6a9ada556fa5"
+    },
+    {
+      "bytes": 1190,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/EXTERNAL-RESULT.json",
+      "sha256": "7ffd8f0473f5285710b2d85d89c0fc12d1b13838c138abba02b9a1f92ea37381"
+    },
+    {
+      "bytes": 22129,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/REJECTED-SOURCE.py.txt",
+      "sha256": "2085b830dbe0d3d87a530a48ae185369edb208db4947065b8807154deae48012"
+    },
+    {
+      "bytes": 2928,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/REQUEST-CONSUMED.json.txt",
+      "sha256": "781bf4d7096e2de073ea03a3d15d00d11d9e7c70fb8cd0c32ec4c35785705d77"
+    },
+    {
+      "bytes": 2678,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/REQUEST-REJECTED.json.txt",
+      "sha256": "0ea332b29501e281b643f43bcdd65ba1e73e05040876c7f8a77e40dea93d9add"
+    },
+    {
+      "bytes": 4268,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/REVIEW.md",
+      "sha256": "4c566338cd1311d9b786082a892a26c904a1c8bc2d4566d33aa5440f767421f4"
+    },
+    {
+      "bytes": 1222,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-closeout01/ROOT-ADMISSION.json",
+      "sha256": "272a0c09bae0c5a70a3c7518637eb03ad99413a8151349b22544b7ffecead702"
+    },
+    {
+      "bytes": 53689,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt01-outer/LAUNCH.py",
+      "sha256": "a0be29d62dfaab5db7b8b4638cc28b70829bd84750a9f403181ac9f42c0cc091"
+    },
+    {
+      "bytes": 214,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/ACCEPT.json",
+      "sha256": "a08df58152ef8c2d8b0e96e2c05e2ce0a08d0893a7ddc76489c8dfad352cac70"
+    },
+    {
+      "bytes": 5034,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/ACTUAL-REVIEW.json",
+      "sha256": "67cb2b79e7a17b6a7cd3e7299ef9d501211e082cb0cb40dabab0ba535bd5aa88"
+    },
+    {
+      "bytes": 752,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/EXTERNAL-RESULT.json",
+      "sha256": "cb9d698a6692062fe2ad5efe9a4341571576c3163993b0cc0e7cd90a0ff63d0a"
+    },
+    {
+      "bytes": 13613,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/RESULT.json",
+      "sha256": "4d855b09cb4c3ca4f2586c7043da0caae8cdf727ad44a02a22c2e21d40b6cb73"
+    },
+    {
+      "bytes": 6269,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/REVIEW.md",
+      "sha256": "b480baa113d4ee84091991c642ef9cc2afea11c6df1424f2515514aa7da43ed6"
+    },
+    {
+      "bytes": 1324,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/ROOT-ADMISSION.json",
+      "sha256": "e5937f9591042e6731655de3e3cbc9e4dfbefa6fb803855175f561c24bd710a1"
+    },
+    {
+      "bytes": 6790,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02/parser-controls01/RUN.py",
+      "sha256": "a79b3c557013d3acc6da74c146a6a68174c6b3636defbe8e615f0b0b2dbe5824"
+    },
+    {
+      "bytes": 6623,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02-outer/DELTA.json",
+      "sha256": "dbab82d50b659bfd650b32245d05fd631ed6c363f1d894981bfb0ce25bc64f85"
+    },
+    {
+      "bytes": 53397,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt02-outer/LAUNCH.py",
+      "sha256": "545de8da07253be6153533d8e97b583aab3b1c78f9d39f0c399d277509d4ce3a"
+    },
+    {
+      "bytes": 17311,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/detekt02/PARSER-CONTROLS.json",
+      "sha256": "341a26c350d77604a957f433e72fb116fd2532d254dbabf02f5c8c762a1607f2"
+    },
+    {
+      "bytes": 6853,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/detekt02/PARSER-INDEPENDENT.md",
+      "sha256": "2aa1a21ff2f20d75f28219b1a2024d02f2542839a1aeabc793b920579d7efdae"
+    },
+    {
+      "bytes": 3819,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/detekt02/SOURCE-INVERSE.json",
+      "sha256": "80ecd9c0a1de3626ed23015e06a70b97e459e8e8fb3dda330917c75c70247da4"
+    },
+    {
+      "bytes": 9255,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/detekt02/SUCCESSOR-INDEPENDENT.md",
+      "sha256": "a47d10edbfa41f0775192c82f27d26f42515933b1dea2b602ec80859ae004857"
+    },
+    {
+      "bytes": 9247,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/pvu003-followup/PVU003-GUI03-MAPPING-DELTA.md",
+      "sha256": "e7ce54d87e21fcdee2fff7856885b13ce8925b8603f8697f0b8a7d98b34fed5f"
+    },
+    {
+      "bytes": 5574,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/ANDROID-CLIPBOARD-LOCALE-DETEKT01-INDEPENDENT.md",
+      "sha256": "add5f99382ceddd5be14e62a65e28230441c48d1fcc10bbfc7f5003f587cd043"
+    },
+    {
+      "bytes": 5867,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/PVA027-MAIN-SETTINGS-PROPAGATION-INDEPENDENT.md",
+      "sha256": "fa96cf398f55fd93db07bbc33aac1adc1cb3b6e8f4f432cb3f53da11b754b80a"
+    },
+    {
+      "bytes": 6593,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/PVU001-PVU002-MAIN-FIXTURE-FEASIBILITY-INDEPENDENT.md",
+      "sha256": "6c00719f5736ccec9a919d5dbfe1df6a840cfcda3ff5d860090abf0d74c28234"
+    },
+    {
+      "bytes": 3380,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/ROOM-EDITABLE-TEXT-FINAL-DELTA-INDEPENDENT.md",
+      "sha256": "30136b76753040cdbf79c6f904e226d781b6c1730bd08877a63a45f23ca33ebf"
+    },
+    {
+      "bytes": 4734,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/ROOM-EDITABLE-TEXT-NARROWING-SOURCE-REVIEW.md",
+      "sha256": "e02eb94d48c4ed5c7bf7275dd217a5aa959c979e48b59bec07a837502fabd9dd"
+    },
+    {
+      "bytes": 8063,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/integration03/C15-ROOM-FIRST-BINDING-INDEPENDENT.md",
+      "sha256": "e6cc7292e9476ce44e12bb0241e966c4685e4f338ae1cd23290af18af13fe59a"
+    },
+    {
+      "bytes": 6127,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/pvu003-followup/PVU003-ACTUAL-MAIN-ADOPTION-INDEPENDENT.md",
+      "sha256": "a2eb8d102a3dd1efbfb8a6dc2de484c505e643eaa00bd10b8fe990c521426c8a"
+    },
+    {
+      "bytes": 1563,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/room-editable-text/ROOM-EDITABLE-TEXT.patch.txt",
+      "sha256": "28d1e3dbd1ea83cbd9d3348d5725489dc930141efb194943e7bf91f44cd1479b"
+    },
+    {
+      "bytes": 1866,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/room-editable-text/SOURCE-DELTA.json",
+      "sha256": "03a403e2996d71780059112c9a3b611697dfa1255c2188f5dfe950a313a3ecd5"
+    },
+    {
+      "bytes": 5658,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/DETEKT01-CLOSEOUT01-EXACT-REVIEW-HOLD-2085b830.md",
+      "sha256": "fb3c1e0e6e179ee3731648c3182b4b49279d4b45c1b2aff4b53252b08f929191"
+    },
+    {
+      "bytes": 8515,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/DETEKT01-CLOSEOUT01-EXACT-SCOPE.md",
+      "sha256": "d808a65bcbf4dbeedab71a1dc8a3120c3bc43cba7a1ff555048b00c285e9f226"
+    },
+    {
+      "bytes": 8506,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/DETEKT01-CURRENT-CLOSEOUT-CONTRACT.md",
+      "sha256": "29e321dd7cbf7dac73f8102373f02adfe681c4dea9661d1678b286f2d1af77a2"
+    },
+    {
+      "bytes": 7045,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/PVU001-PVU002-MAIN-FIXTURE-NEXT-EVIDENCE.md",
+      "sha256": "7c8ca9608c167a64761a51e66740fe317ed7ee60d9c7922a5364c0ecb8ea959c"
+    },
+    {
+      "bytes": 7816,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/C15-SOURCE-PREPARE01-DELTA-ACCEPTANCE.md",
+      "sha256": "a7ba0b1f856a5ca5a2593a2b5b6220d7f445cc4f98970c9fe2ac502821720112"
+    },
+    {
+      "bytes": 15471,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DETEKT01-C15-ACTUAL-RESULT-REVIEW.json",
+      "sha256": "83f5c80bf1934177c7de042b88d327da46929d3b9de21198f918dfb2b813ca05"
+    },
+    {
+      "bytes": 4897,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DETEKT01-C15-BUILD-WINDOW02-REVIEW.json",
+      "sha256": "abedd20449d6f6be73276f0010cd3d229f45d57e261f24f95f2e2fef7a9c00bb"
+    },
+    {
+      "bytes": 11022,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DETEKT01-C15-INSTANCE-REVIEW.md",
+      "sha256": "224a0bec398466bcecc9c1f735b3c0a4052b3ee0771f6ab949c2ab9c7ab5c372"
+    },
+    {
+      "bytes": 4415,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DETEKT01-C15-PREFLIGHT-REFUSAL-REVIEW.json",
+      "sha256": "10ed7048e0650c9629920542c1d0b1cd060caa726bbad2396a4bb69819e87bb0"
+    },
+    {
+      "bytes": 960,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DETEKT01-INSTANCE-ACCEPT.json",
+      "sha256": "2209377ba543ca6c9ccec8c95dccd3105820b35757c4ec1d3feed37730e6a531"
+    },
+    {
+      "bytes": 9753,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/LINUX-DETEKT02-OUTER-DELTA-REVIEW.md",
+      "sha256": "0afae9eb0de75f840b4530d4e8f330f5397b38c6b27d8190a89e93033247bb55"
+    },
+    {
+      "bytes": 89,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/CANCEL",
+      "sha256": "d83d2fcbee76dbb630ea290d4380c9d8a93f68e1864b09fa6d8aa35e86a2e931"
+    },
+    {
+      "bytes": 1765,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/GIT-PREFLIGHT.json",
+      "sha256": "c0000e802884e23d9528e6e93991229963554f60ac35cfe31126ca91a43367c4"
+    },
+    {
+      "bytes": 167,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/INNER-PREFLIGHT.json",
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    {
+      "bytes": 7623,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/INNER-RESULT.json",
+      "sha256": "aa8813acebfc2d9308926d179845a37303f85ef7652cf0c97aee8849883cfc46"
+    },
+    {
+      "bytes": 3109,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/OUTER-ALLOCATION.json",
+      "sha256": "52216e32746c8614ee15d078274c505d31f3d689bb0974b0b958107fc15892f8"
+    },
+    {
+      "bytes": 703,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/OUTER-INDEX-COPY.json",
+      "sha256": "9890bd33ce8cc24101cbec327f0f7e54bb4972923ff988105318cfc7a0aaa60f"
+    },
+    {
+      "bytes": 12900,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/OUTER-INTENT.json",
+      "sha256": "48f262c5dec4237492d231989d5e299dd75a9ffbb329f525c4404879ae934c69"
+    },
+    {
+      "bytes": 9406,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/OUTER-RECEIPT.json",
+      "sha256": "6fa674ea620303612d0f71290a1210368dcc1bae98ac4be0c62e1b88edf3caa6"
+    },
+    {
+      "bytes": 2049,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/PHASE-detekt.json",
+      "sha256": "1263a51c670738f796d0129768ab9dd28cd2a4165670b09bc2f4b1da60c4da5a"
+    },
+    {
+      "bytes": 2397,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/PHASE-git-isolation.json",
+      "sha256": "8e2849d4abd74a45995d8fc7b5ba9e1916163ffd9ed8609b2f2b36d040edc2c0"
+    },
+    {
+      "bytes": 1333,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/SOURCE-AFTER.json",
+      "sha256": "a71df23efdc330470cf1c71ce34e5344893473da0efa6506d5d4f699352237bc"
+    },
+    {
+      "bytes": 1333,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/SOURCE-BEFORE.json",
+      "sha256": "a71df23efdc330470cf1c71ce34e5344893473da0efa6506d5d4f699352237bc"
+    },
+    {
+      "bytes": 1531217,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/closeout01/INVENTORY.json",
+      "sha256": "cfd3cda2771e353665d7ca957dfdb2437029d04195909e7d4e260a5fda3c1f2b"
+    },
+    {
+      "bytes": 6241,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/closeout01/RESULT.json",
+      "sha256": "d90d706927b235572df9ffdbdd46990b63d26e821cc36ca7b9ebce817316a381"
+    },
+    {
+      "bytes": 19392,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/closeout01/reports/app-android-detekt.html",
+      "sha256": "95c40045cc08f49e3ac7e534ff842db31ff8c92df16779712b06937db284d9a6"
+    },
+    {
+      "bytes": 128664,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/closeout01/reports/app-android-detekt.sarif",
+      "sha256": "8595923bb3164cb5d114e255c9fcc3fa7674f7e694f250becb52153ab373f4b5"
+    },
+    {
+      "bytes": 1725,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/closeout01/reports/app-android-detekt.xml",
+      "sha256": "31685320e0bb164cb8c8c254b086d7af0c5164f4a8b63a5054bcff60c3d56b8d"
+    },
+    {
+      "bytes": 130495,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/closeout01/reports/problems-report.html",
+      "sha256": "077cc100c8a55fe02d644fa03f22eebbbaea0ff26a556d3c521ead8c8b1185bc"
+    },
+    {
+      "bytes": 894,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/detekt-INTENT.json",
+      "sha256": "8d6222b92d840295d2e9dd6f40c117ffe61b6f429b6bfaffd8a2ac15f8452000"
+    },
+    {
+      "bytes": 797,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/detekt-stop-INTENT.json",
+      "sha256": "920f020abf27f7c09fdfeea3cead474d150e002d27f5b87cb995db2fe3f1234f"
+    },
+    {
+      "bytes": 425,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/index-bind-INTENT.json",
+      "sha256": "3b2ba89a5a46e1d2ca407eae621e65b0f7529682dfb2ba908fe40370addd79c8"
+    },
+    {
+      "bytes": 456,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/index-readonly-INTENT.json",
+      "sha256": "822374efd20a4c3c868f5cb5be97cb6cf607bd84e9ea0833cdf065d1602d3821"
+    },
+    {
+      "bytes": 406,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/detekt-stop.log",
+      "sha256": "e99efde14fa98d945008d4e456023a6830343bd898e2dbd476436f3ca61691b4"
+    },
+    {
+      "bytes": 71728,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/detekt.log",
+      "sha256": "13c30804b78f425f8ec21b204ed117ba3143990f0b99a232b073bde1342e4218"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/index-bind.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/index-readonly.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/metadata-bind.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/metadata-readonly.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/outer-git.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/outer-unshare.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/logs/outer-unshare.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 428,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/metadata-bind-INTENT.json",
+      "sha256": "3261c905638e095cd5c5b4c9b53581160f41e07528fb9a73108501773af24d41"
+    },
+    {
+      "bytes": 462,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01/metadata-readonly-INTENT.json",
+      "sha256": "faeba627bbfba192e227b2d4f760c07a5de864d2a7a2a36724b0ae99b64214ee"
+    },
+    {
+      "bytes": 29184,
+      "git_mode": "100644",
+      "path": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt",
+      "sha256": "580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d"
+    },
+    {
+      "bytes": 36796,
+      "git_mode": "100644",
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "sha256": "291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57"
+    },
+    {
+      "bytes": 85087,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_desktop_integration_03.py",
+      "sha256": "42e4968552fafbecf032211dbd385cac9821e7bc7b79a7b59fa2864d38f55da6"
+    },
+    {
+      "bytes": 10645,
+      "git_mode": "100644",
+      "path": "scripts/audit/desktop_integration_03.init.gradle",
+      "sha256": "2b9aec1c7366bff5d39a62f9b1aaefb60e4884866fca3ac309dc4b00940c43fb"
+    },
+    {
+      "bytes": 47751,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_detekt_01.py",
+      "sha256": "fceab30448da506edd3010d432bc489e238defcaa6f01f455ba205b095d2e2f7"
+    },
+    {
+      "bytes": 55245,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_detekt_02.py",
+      "sha256": "e5b2352080d4eafc2d22c3a50a7d3f4b31f4b324672cab1e59bdef8b91a2d294"
+    },
+    {
+      "bytes": 2838,
+      "git_mode": "100644",
+      "path": "scripts/audit/detekt_02.init.gradle",
+      "sha256": "2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6"
+    }
+  ],
+  "parent_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+  "parent_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+  "purpose": "NONACTIVATING_SOURCE_EVIDENCE_CHECKPOINT_NO_BUILD_NO_RELEASE",
+  "schema": 1
+}

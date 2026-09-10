@@ -561,7 +561,9 @@ class CredentialEditorRoomIntegrationTest {
                     val size = component?.size
                     if (position != null && size != null) Rectangle(position, size) else null
                 } catch (_: IllegalComponentStateException) { null }
-                val text = context.accessibleText?.let { content ->
+                // Only editable values are consumed; other selectors use accessibility metadata.
+                val editableText = context.accessibleEditableText
+                val text = editableText?.let { content ->
                     val length = content.charCount
                     assertTrue(length in 0..256, "ROOM_EDITOR_SYNTHETIC_TEXT_BOUND")
                     buildString { repeat(length) { append(content.getAtIndex(AccessibleText.CHARACTER, it)) } }
@@ -570,7 +572,7 @@ class CredentialEditorRoomIntegrationTest {
                 val states = context.accessibleStateSet
                 result += Ax(
                     index, parent, context, owner, context.accessibleRole, context.accessibleName, text,
-                    context.accessibleEditableText != null, component?.isEnabled == true,
+                    editableText != null, component?.isEnabled == true,
                     states.contains(AccessibleState.FOCUSED), states.contains(AccessibleState.CHECKED), screen,
                 )
                 val count = context.accessibleChildrenCount

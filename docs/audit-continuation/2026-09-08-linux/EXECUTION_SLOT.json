@@ -226,6 +226,32 @@
       "xml_files": 2
     }
   },
+  "last_linux_desktop_tray01": {
+    "cleanup": "NOT_ATTEMPTED_ORIGINAL_RUNTIME_HOLD",
+    "consumed": true,
+    "external_exit": 70,
+    "external_receipt": "reviews/desktop-tray/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9c482168c4f6a565533592a9bce991d223f1e18d1b5633e1be3ff11acccd3b16",
+    "independent_review": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "917be8a879db6ebf76fef0abf5e2ebae20de4a5bfbc1480a1be251f4bfe601b7",
+    "limits": "Original owned-domain/direct child settlement supports scheduling only. Unknown host Java identity/cause/settlement and later instability remain unknown; no source-after/final evidence acceptance, runtime cleanup, retry, old-scope release or product credit.",
+    "original_applicable_stop_exits": [
+      0
+    ],
+    "product_cases": {
+      "FAIL": 0,
+      "PASS": 0,
+      "UNSTARTED": 3,
+      "XML_files": 0
+    },
+    "release": "reviews/desktop-tray/SLOT-RELEASE.json",
+    "run_id": "linux-desktop-tray01",
+    "source_after": false,
+    "source_before": true,
+    "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+    "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+    "status": "CONSUMED_PREPARE_CANCELLED_HOST_CONFLICT_RUNTIME_HOLD"
+  },
   "last_linux_isolated_batch01": {
     "actual_children": 0,
     "approval_sha256": "e266daffd496e3612f26379d60462e09e27fb68076bdbf730c5f61ab06347122",
@@ -406,6 +432,8 @@
     "scheduling_release": "reviews/storage/NAMESPACE01-SLOT-RELEASE.json",
     "signal_attempted": false
   },
+  "last_release": "reviews/detekt01/c15-preflight/SLOT-RELEASE.json",
+  "last_release_sha256": "dfb683efea321a591e51aa4aeb5ad391fda47e964a2510a65724bae1a3c0530f",
   "last_windows_cohort02": {
     "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
     "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
@@ -637,20 +665,93 @@
     "source_tree": "dd04904c1deb691bd6aeed756dd6ceab8ea97837",
     "status": "CONSUMED_FOUR_ACTUAL_CASES_PASS_ORIGINAL_CLEANUP_RECONCILED"
   },
+  "linux_desktop_integration02": {
+    "actual_cases": {
+      "FAIL_fixture_driver": 1,
+      "PASS": 2,
+      "UNSTARTED": 1,
+      "XML": 3
+    },
+    "approval_sha256": "712d38ba140467ca20995d63fb6ba8848669f336867441d0848f6d49ed202cb0",
+    "cases_planned": 4,
+    "consumed": true,
+    "external_exit": 1,
+    "independent_review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+    "old_holds_unchanged": true,
+    "release": "reviews/desktop-integration02/SLOT-RELEASE.json",
+    "release_sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227",
+    "request_sha256": "c95f09329aa193d946b5b56a0d0eb29777e2a8e2e06fe688d43c68af5cca46b7",
+    "reservation_active": false,
+    "root_admission_sha256": "8f4b7cc03954f1d630bb7fea35254994ed1a8e477396bdb1d833862d72af59b8",
+    "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+    "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+    "state": "CONSUMED_VALIDATION_FAILED_CLEANED_SCHEDULING_RELEASED",
+    "tests_executed_by_reservation": 0,
+    "transient_T_reader_freeze": "RELEASED_ONLY_FOR_COMPLETED_INTEGRATION02"
+  },
   "linux_desktop_tray01": {
+    "actual_review_sha256": "917be8a879db6ebf76fef0abf5e2ebae20de4a5bfbc1480a1be251f4bfe601b7",
     "approval_sha256": "0d5f8b20ff70546cd8937bb3d35b2465c2661182c64e53990382cfa60454359b",
     "cases_planned": 3,
+    "external_exit": 70,
+    "old_holds_unchanged": true,
     "request_sha256": "79617b87818ef7b2b9b5ccbd142bb90d0446f9876c0c4ab9a04f3a2fbf30d6a8",
+    "reservation_active": false,
     "root_admission_sha256": "1a73095a64d36347953fd77dd3bb544fea9c9901229aacd73bec9800637d86a3",
+    "scheduling_release": "reviews/desktop-tray/SLOT-RELEASE.json",
     "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
     "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
     "state": "CONSUMED_FAIL_SCHEDULING_RELEASED_RUNTIME_HOLD",
-    "tests_executed_by_reservation": 0,
-    "reservation_active": false,
+    "tests_executed_by_reservation": 0
+  },
+  "linux_detekt01": {
+    "actual_static_tasks": {
+      "analyzer_fail": 1,
+      "analyzers_unstarted": 21,
+      "coverage_pass": 1
+    },
+    "application_cases": 0,
+    "approval_sha256": "2209377ba543ca6c9ccec8c95dccd3105820b35757c4ec1d3feed37730e6a531",
+    "cleanup": "HOLD_NOT_ATTEMPTED",
+    "consumed": true,
     "external_exit": 70,
-    "actual_review_sha256": "917be8a879db6ebf76fef0abf5e2ebae20de4a5bfbc1480a1be251f4bfe601b7",
-    "scheduling_release": "reviews/desktop-tray/SLOT-RELEASE.json",
-    "old_holds_unchanged": true
+    "gradle_exit": 1,
+    "independent_review": "reviews/verification/LINUX-DETEKT01-C15-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "83f5c80bf1934177c7de042b88d327da46929d3b9de21198f918dfb2b813ca05",
+    "old_holds_unchanged": true,
+    "original_stop_exit": 0,
+    "planned_application_cases": 0,
+    "planned_static_task_events": 23,
+    "release": "reviews/detekt01/c15-preflight/SLOT-RELEASE.json",
+    "release_sha256": "dfb683efea321a591e51aa4aeb5ad391fda47e964a2510a65724bae1a3c0530f",
+    "request_sha256": "f7120a80c95eacddf3d2f9d31ea1d2f866a574050707f972e3932b446172d5c1",
+    "reservation_active": false,
+    "root_admission_sha256": "be9d039e8c8f3219b6556a6fa2b601b484090be39a11b899b63f6002428acc2c",
+    "source_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "source_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+    "state": "CONSUMED_FAILED_STATIC_AND_COLLECTOR_RUNTIME_HOLD_SCHEDULING_RELEASED"
+  },
+  "linux_detekt01_generated_closeout01": {
+    "consumed": true,
+    "external": "reviews/detekt01-closeout01/EXTERNAL-RESULT.json",
+    "external_exit": 0,
+    "external_sha256": "7ffd8f0473f5285710b2d85d89c0fc12d1b13838c138abba02b9a1f92ea37381",
+    "qualification": "New generated-only cleanup; logical byte accounting, not net space reclaimed. Four retained reports and original pins reconcile; XML/SARIF7diagnostics agree. Original failed Detekt flags/history unchanged; source/blob/index/metadata R remainder and every old HOLD retained. Three resource point observations, not continuous1s coverage. No build/test/new stop or other process was created.",
+    "removed_directories": 3975,
+    "removed_files": 5657,
+    "removed_logical_bytes": 737938566,
+    "report_bytes": 280276,
+    "reports_preserved": 4,
+    "retained_evidence_bytes": 1817734,
+    "retained_evidence_files": 6,
+    "review": "reviews/detekt01-closeout01/ACTUAL-REVIEW.json",
+    "review_sha256": "2c926d2ccaf6c2238e0426dcd0b035509812c4e63c04ee4be241b93888dd1fa4",
+    "roots_absent": 21,
+    "roots_removed": 14,
+    "selected_roots": 35,
+    "session": 21919,
+    "status": "CURRENT_GENERATED_ONLY_CLEANUP_INDEPENDENTLY_RECONCILED_SOURCE_REMAINDER_HELD"
   },
   "linux_isolated_batch03": {
     "approval_sha256": "2041281fcc1a43bef77768ba3abfa2010901b360ac0d0b5348ac5ccf9becc4a4",
@@ -668,7 +769,7 @@
     "status": "COMPLETED_RECONCILED_SLOT_RELEASED",
     "tool_session_id": 14364
   },
-  "local_execution": "Integration02 consumed; original scheduling and transient T-reader freeze released after independent actual/cleanup review. Slot idle; no Detekt01 or integration03 execution admitted.",
+  "local_execution": "No audit build admitted. Current Detekt01 generated-only cleanup independently reconciled; source remainder separately held. Root sole owner.",
   "macos_focused02": {
     "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
     "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
@@ -683,7 +784,7 @@
     "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
     "status": "COMPLETED_RECONCILED_SLOT_RELEASED"
   },
-  "next_gate": "Fresh independently reviewed Detekt01 or other materially justified exact instance; current host idleness not inferred.",
+  "next_gate": "Fresh exact report closeout or new static02/GUI03 source+instance admission; no old scope replay.",
   "owner": "/root",
   "previous_controls01": {
     "external_receipt": "reviews/verification/CONTROL-LAUNCH-RECEIPT.json",
@@ -696,7 +797,7 @@
   "release_of_slot_is_not_release_publication": true,
   "schema": 1,
   "state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
-  "updated_utc": "2026-09-10T17:07:54.219594+00:00",
+  "updated_utc": "2026-09-10T20:32:35.938571+00:00",
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
   "windows_cohort03": {
     "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
@@ -741,58 +842,5 @@
     "source_tree": "dd04904c1deb691bd6aeed756dd6ceab8ea97837",
     "status": "COMPLETED_RECONCILED_SCHEDULING_RELEASED_FILESYSTEM_HOLD"
   },
-  "windows_run": 34284083351,
-  "last_linux_desktop_tray01": {
-    "run_id": "linux-desktop-tray01",
-    "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
-    "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
-    "external_exit": 70,
-    "consumed": true,
-    "status": "CONSUMED_PREPARE_CANCELLED_HOST_CONFLICT_RUNTIME_HOLD",
-    "product_cases": {
-      "PASS": 0,
-      "FAIL": 0,
-      "UNSTARTED": 3,
-      "XML_files": 0
-    },
-    "original_applicable_stop_exits": [
-      0
-    ],
-    "source_before": true,
-    "source_after": false,
-    "cleanup": "NOT_ATTEMPTED_ORIGINAL_RUNTIME_HOLD",
-    "independent_review": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json",
-    "independent_review_sha256": "917be8a879db6ebf76fef0abf5e2ebae20de4a5bfbc1480a1be251f4bfe601b7",
-    "external_receipt": "reviews/desktop-tray/EXTERNAL-RESULT.json",
-    "external_receipt_sha256": "9c482168c4f6a565533592a9bce991d223f1e18d1b5633e1be3ff11acccd3b16",
-    "release": "reviews/desktop-tray/SLOT-RELEASE.json",
-    "limits": "Original owned-domain/direct child settlement supports scheduling only. Unknown host Java identity/cause/settlement and later instability remain unknown; no source-after/final evidence acceptance, runtime cleanup, retry, old-scope release or product credit."
-  },
-  "linux_desktop_integration02": {
-    "state": "CONSUMED_VALIDATION_FAILED_CLEANED_SCHEDULING_RELEASED",
-    "reservation_active": false,
-    "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
-    "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
-    "request_sha256": "c95f09329aa193d946b5b56a0d0eb29777e2a8e2e06fe688d43c68af5cca46b7",
-    "approval_sha256": "712d38ba140467ca20995d63fb6ba8848669f336867441d0848f6d49ed202cb0",
-    "root_admission_sha256": "8f4b7cc03954f1d630bb7fea35254994ed1a8e477396bdb1d833862d72af59b8",
-    "cases_planned": 4,
-    "tests_executed_by_reservation": 0,
-    "old_holds_unchanged": true,
-    "consumed": true,
-    "external_exit": 1,
-    "actual_cases": {
-      "PASS": 2,
-      "FAIL_fixture_driver": 1,
-      "UNSTARTED": 1,
-      "XML": 3
-    },
-    "independent_review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
-    "independent_review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
-    "release": "reviews/desktop-integration02/SLOT-RELEASE.json",
-    "release_sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227",
-    "transient_T_reader_freeze": "RELEASED_ONLY_FOR_COMPLETED_INTEGRATION02"
-  },
-  "last_release": "reviews/desktop-integration02/SLOT-RELEASE.json",
-  "last_release_sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227"
+  "windows_run": 34284083351
 }

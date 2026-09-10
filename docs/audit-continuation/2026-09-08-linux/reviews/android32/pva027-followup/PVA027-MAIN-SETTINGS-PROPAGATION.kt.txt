@@ -1,0 +1,96 @@
+// INERT MEMBER FRAGMENT ONLY — not a compilation unit, adopted case or execution admission.
+// Insert members into NativeMainNav only after a separately reviewed fixed-case adapter exists.
+// Required new imports: java.awt.SystemTray, java.awt.TrayIcon, java.awt.PopupMenu,
+// java.awt.MenuItem, java.awt.event.ActionListener,
+// com.passvault.feature.settings.presentation.SettingsViewModel, org.koin.core.context.GlobalContext.
+// Reuses actual Main, parent roles, corrected AX snapshot, native input, deadlines and terminal ownership.
+// Does NOT exercise native tray input, displayed tooltips, callbacks, lock/exit, or settings-save settlement.
+
+private fun settingsTrayPropagationOnlyScenario() {
+    val originalFrame = frame
+    replaceText("Master password", PASSWORD, readable = false)
+    click(button("Unlock vault"))
+    await("PVA027_MAIN_UNLOCK", 30) { onEdt { credentialCard(snapshot()) != null } }
+    click(tab("Settings"))
+    click { nodes -> unique(nodes.filter { node ->
+        node.actionCount > 0 &&
+            (node.name == "App language" || node.name?.startsWith("App language, ") == true)
+    }) }
+
+    fun languageOption(label: String): (List<MainNavAx>) -> MainNavAx? = { nodes ->
+        unique(nodes.filter { node ->
+            node.role == AccessibleRole.RADIO_BUTTON &&
+                (node.name == label || node.name?.startsWith("$label, ") == true)
+        })
+    }
+    await("PVA027_REAL_APPEARANCE") { onEdt { languageOption("English")(snapshot()) != null } }
+    // The real Appearance route already consumes this singleton. No early bootstrap/VM injection.
+    val settings = onEdt { GlobalContext.get().get<SettingsViewModel>() }
+    onEdt { assertEquals(SettingsViewModel.AppLanguage.SYSTEM, settings.state.value.language) }
+
+    data class Owner(
+        val icon: TrayIcon,
+        val popup: PopupMenu,
+        val items: List<MenuItem>,
+        val iconListeners: List<ActionListener>,
+        val itemListeners: List<List<ActionListener>>,
+    )
+    var observed: Owner? = null
+    await("PVA027_ACTUAL_MAIN_TRAY_INSTALLED") { onEdt {
+        assertTrue(SystemTray.isSupported(), "PVA027_NATIVE_TRAY_UNSUPPORTED")
+        val icons = SystemTray.getSystemTray().trayIcons
+        assertTrue(icons.size <= 1, "PVA027_EXTRA_PROCESS_TRAY_ICON")
+        val icon = icons.singleOrNull() ?: return@onEdt false
+        val popup = assertNotNull(icon.popupMenu)
+        assertEquals(5, popup.itemCount, "PVA027_POPUP_STRUCTURE")
+        val items = listOf(popup.getItem(0), popup.getItem(2), popup.getItem(4))
+        val iconListeners = icon.actionListeners.toList()
+        val itemListeners = items.map { it.actionListeners.toList() }
+        assertTrue(iconListeners.isNotEmpty() && itemListeners.all { it.isNotEmpty() }, "PVA027_NO_LISTENERS")
+        observed = Owner(icon, popup, items, iconListeners, itemListeners)
+        true
+    } }
+    val owner = assertNotNull(observed)
+    fun sameListeners(expected: List<ActionListener>, actual: List<ActionListener>): Boolean =
+        expected.size == actual.size && expected.zip(actual).all { (before, after) -> before === after }
+
+    fun trayPropertiesMatch(expected: List<String>): Boolean = onEdt {
+        assertTrue(frame === originalFrame && frame.isDisplayable, "PVA027_MAIN_WINDOW_REPLACED")
+        assertNativeWindow(originalFrame)
+        val icons = SystemTray.getSystemTray().trayIcons
+        assertTrue(icons.size == 1 && icons.single() === owner.icon, "PVA027_INSTALLED_ICON_REPLACED")
+        assertTrue(owner.icon.popupMenu === owner.popup, "PVA027_INSTALLED_POPUP_REPLACED")
+        assertEquals(5, owner.popup.itemCount, "PVA027_POPUP_STRUCTURE_CHANGED")
+        val items = listOf(owner.popup.getItem(0), owner.popup.getItem(2), owner.popup.getItem(4))
+        items.forEachIndexed { index, item ->
+            assertTrue(item === owner.items[index] && item.isEnabled, "PVA027_MENU_ITEM_CHANGED_OR_DISABLED")
+            assertTrue(sameListeners(owner.itemListeners[index], item.actionListeners.toList()),
+                "PVA027_MENU_LISTENER_REPLACED")
+        }
+        assertTrue(sameListeners(owner.iconListeners, owner.icon.actionListeners.toList()),
+            "PVA027_ICON_LISTENER_REPLACED")
+        listOf(owner.icon.toolTip, items[0].label, items[1].label, items[2].label) == expected
+    }
+
+    val english = listOf("PassVault Password Manager", "Show PassVault", "Lock Vault", "Exit")
+    val arabic = listOf("مدير كلمات المرور PassVault", "إظهار PassVault", "قفل الخزنة", "خروج")
+    await("PVA027_INITIAL_EN_PROPERTIES") { trayPropertiesMatch(english) }
+    val choices = listOf(
+        Triple("English", SettingsViewModel.AppLanguage.ENGLISH, english),
+        Triple("Arabic", SettingsViewModel.AppLanguage.ARABIC, arabic),
+        Triple("الإنجليزية", SettingsViewModel.AppLanguage.ENGLISH, english),
+    )
+    choices.forEachIndexed { stage, (label, choice, expected) ->
+        click(languageOption(label)) // Real radio input; never call onEvent/setup or publish an environment.
+        await("PVA027_SETTINGS_TO_INSTALLED_TRAY_$stage") {
+            val choiceObserved = onEdt {
+                settings.state.value.language == choice && settings.state.value.errorMessage == null
+            }
+            choiceObserved && trayPropertiesMatch(expected)
+        }
+        // Distinct case contract must admit these three literal receipts, never the original EVENTS map.
+        trace.record(listOf("PVA027_MAIN_TRAY_EN1", "PVA027_MAIN_TRAY_AR", "PVA027_MAIN_TRAY_EN2")[stage])
+    }
+    // No tray/image/listener/window mutation to restore. Original Main terminal cleanup remains its owner.
+    // Matching state/labels does not establish preference-save, visual tooltip or native callback settlement.
+}

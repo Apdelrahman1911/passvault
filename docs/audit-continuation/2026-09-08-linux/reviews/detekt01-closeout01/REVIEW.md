@@ -1,0 +1,21 @@
+# Detekt01 closeout01 — independent exact acceptance
+
+2026-09-10, reviewer `/root/storage`. **ACCEPT_EXACT_ONCE** for root's new generated-only closeout request, with the source-enforced gates and cooperative frozen-instance qualifications below. No helper was executed/imported and no R data, process, namespace or mount was probed by this reviewer.
+
+- `CLOSEOUT.py`:22448B/454LF,SHA256 `709c30fdcee98c562f5f8c6199251c88d86a0e9748c44dc486ba6a9ada556fa5`.
+- `REQUEST.json`:2928B,SHA256 `781bf4d7096e2de073ea03a3d15d00d11d9e7c70fb8cd0c32ec4c35785705d77`.
+- Rejected source2085/request0ea3 remain at `REJECTED-SOURCE.py.txt` / `REQUEST-REJECTED.json.txt`. Independent HOLD reasoning is `../storage/DETEKT01-CLOSEOUT01-EXACT-REVIEW-HOLD-2085b830.md`,5658B,SHA256 `fb3c1e0e6e179ee3731648c3182b4b49279d4b45c1b2aff4b53252b08f929191`.
+
+The full prior source/request and retained original terminal/review/release evidence were independently read. The final exact diff contains only the two requested repairs, verified-buffer manifest parsing and matching request metadata. Terminal receipt/close errors now explicitly report HOLD and both uncertainty fields; absence now applies only to a generated leaf, never a missing bound parent. No unresolved blocker remains for this exact one-shot scope.
+
+## Challenge outcome
+
+- Admission binds exact source/request/independent reviewer, current parent namespaces, original lock/idle-slot hash and root's original-R writer freeze before descendant access. Fresh original R/E AND parent descriptors are acquired, not inherited from the closed outer. Parent mount absence gates traversal and deletion. Empty mount SOURCE is parsed as a real empty field; encoded mountpoint whitespace is decoded before R-prefix rejection.
+- Exactly four nonempty reports,4MiB each/16MiB aggregate:3 app-android Detekt reports and the known Problems HTML. Original source pins link to the inventory; exclusive copies are fsynced/read back and their parent entries made durable before deletion. Missing/changed/unexpected report evidence is HOLD. No new report search or HTML rendering.
+- Exactly35 disjoint roots match the prior contract:11 private generated/cache/temp roots plus24 manifest-disjoint checkout prefixes. Manifest is now decoded directly from the hash-verified buffer. Full bounded snapshot precedes any unlink; per-entry original checks and bottom-up deletion retain source/T/E/shared toolchains outside scope. Cached source-report FDs may become unlinked but are never reused through directory() after removal; they are closed at terminal settlement.
+-40000 inventory entries/16MiB encoded inventory, per-directory listing/depth limits,300s cooperative deadline and1s resource observations are explicit. Launch12GiB/25% and ongoing8GiB/20% floors are checked. These are not hostile-root isolation, atomic inode-conditional deletion, a kernel-stall hard timeout or a hard RSS claim.
+- Cancellation, main failure and repaired terminal receipt/close failure consume this single attempt and leave HOLD; there is no automatic retry. Retained RESULT is preterminal. Root must retain stdout plus actual external completion and independently reconcile report hashes/inventory/removal counts before declaring generated-only cleanup complete. External code1, missing terminal evidence or uncertainty is not success even if some directories were removed.
+
+Only `/root` may invoke the exact admitted command once: `/usr/bin/python3.12 -I -S -B <this-directory>/CLOSEOUT.py`. This does not authorize another build, second stop, process signal, Git/CI, mount action, archived helper, whole-R deletion or source-materialization cleanup. The unchanged source/blob/index/metadata remainder stays held for separate admission. No live runtime content or current free capacity is certified by this source review; the execution gates must actually pass.
+
+Original Detekt exit1/seven issues,21 unstarted analyzers, original stop0 and failed report/cleanup flags remain unchanged. All older HOLDs, PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 no automatic retry, TRAY01 and G7/G8 CLOSED survive. Zero application cases, qualified closures or readiness credit. All review reader descriptors were closed; only these permanent review/acceptance files were authored.

@@ -1,0 +1,90 @@
+{
+  "format": "passvault-detekt02-independent-source-inverse-v1",
+  "reviewer": "/root/editor",
+  "date": "2026-09-10",
+  "classification": "Bounded source text/data inversion and hash equality only; zero helper/parser/project/test/runtime execution. This is not execution or cleanup admission.",
+  "inputs": [
+    {
+      "path": "scripts/audit/linux_detekt_01.py",
+      "sha256": "fceab30448da506edd3010d432bc489e238defcaa6f01f455ba205b095d2e2f7",
+      "bytes": 47751,
+      "lf": 821
+    },
+    {
+      "path": "scripts/audit/linux_detekt_02.py",
+      "sha256": "e5b2352080d4eafc2d22c3a50a7d3f4b31f4b324672cab1e59bdef8b91a2d294",
+      "bytes": 55245,
+      "lf": 955
+    },
+    {
+      "path": "scripts/audit/detekt_01.init.gradle",
+      "sha256": "5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97",
+      "bytes": 2799,
+      "lf": 55
+    },
+    {
+      "path": "scripts/audit/detekt_02.init.gradle",
+      "sha256": "2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6",
+      "bytes": 2838,
+      "lf": 55
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/DELTA.json",
+      "sha256": "389486f3e84067b7bf68fd8f3a8d4a6cc913bef8f8d7cd02e4ba1445aecec76a",
+      "bytes": 6944,
+      "lf": 173
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/SUCCESSOR-DELTA.patch",
+      "sha256": "05658c156620434a54dadcd56aab582d8f511d5a6c97ade6d8df9d479ca2c112",
+      "bytes": 24579,
+      "lf": 402
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/REVIEW-CORRECTION.patch",
+      "sha256": "93ae4c2b75b9c4700531b15abe2c3add2a3c1957a8068f50d0edbdfdc0aef297",
+      "bytes": 2038,
+      "lf": 34
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/detekt02/REVIEW-CORRECTION.json",
+      "sha256": "42f4d348a7ad5608b0e24a0c050a93fb28c9f8c940b57412c7ab04b0d7d32ad0",
+      "bytes": 2407,
+      "lf": 36
+    }
+  ],
+  "correction_inverse": {
+    "recovered_initial_inner_sha256": "2cc2bb7ab582bcf75893ddd6c52343646b4cfcdc077939d027e0f3c56309a1b6",
+    "bytes": 53977,
+    "lf": 937,
+    "initial_pin_equal": true,
+    "independently_reconstructed_single_diff_equal": true
+  },
+  "original_inverse": {
+    "inner_byte_equal": true,
+    "inner_recovered_sha256": "fceab30448da506edd3010d432bc489e238defcaa6f01f455ba205b095d2e2f7",
+    "init_byte_equal": true,
+    "init_recovered_sha256": "5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97",
+    "independently_reconstructed_two_file_diff_equal": true,
+    "method": "Inverse one correction hunk; remove exact parser plus two separator LF; replace initial collector with namespace-normalized predecessor; inverse five fixed literals and four namespace labels. Init inverse two fixed literals and labels. No patch applied to source."
+  },
+  "corrected_collector": {
+    "sha256": "b200d1da3da63898503ea7bc97e3df259eebe609e94946cc7e80d741241c6b41",
+    "bytes": 10134,
+    "lf": 153,
+    "first_line": 688
+  },
+  "unchanged_parser": {
+    "sha256": "cb30e52bf1c4c1c622a22794158cd6631cbe8542631d46aa748d4f8501294e90",
+    "bytes": 1853,
+    "lf": 40,
+    "first_line": 124,
+    "last_line": 163
+  },
+  "qualifications": [
+    "Original DELTA and SUCCESSOR-DELTA are retained pre-correction evidence, not the current whole-helper pin.",
+    "Correction changes only source-level absence/read classification; no observed runtime drift is alleged.",
+    "Source/index/Files/stop/settlement/final gate bodies have no delta beyond the enumerated namespace, identity, parser, collector and continue contract.",
+    "All final source and outer/instance/tool/store/coordination/cleanup identity admission remains root-owned; unbound None gates remain."
+  ]
+}

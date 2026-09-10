@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_EXACT_TWO_EXISTING_RAW_WHITESPACE_KINDS_AND_ONE_SEPARATELY_ADOPTED_STAGED170_FINALIZATION; NO_PAYLOAD_CHANGE_OR_CACHED_CHECK_REPLAY",
+  "scope": "Independent bounded receipt/qualification/HTML data classification only. Existing raw14 qualification already covers these whitespace bytes; this admits only the exact two parser cases, not another file or generic diagnostic waiver.",
+  "inputs": {
+    "failed_staged_attempt": {
+      "path": "publication/CHECKPOINT-10-CLONE-CONTINUATION-PUBLISHED.json",
+      "sha256": "984e9f896a4e6c626244405a3cf4f733568a747e7d953531532644045335331c",
+      "bytes": 1372199
+    },
+    "raw14": {
+      "path": "publication/CHECKPOINT-10-RAW-LOG-QUALIFICATION.json",
+      "sha256": "7dbd9258d938253eaf4fbedbe5247d0d7d79e32c5083a02b29d9a4395939b4c3",
+      "bytes": 10084
+    },
+    "HTML": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/xfwm4-docs/response.html",
+      "sha256": "1f2a0877db9a6deb8f77a64d082eb6e8168bd64f343d34c320fe9a1ea56c2287",
+      "bytes": 18352,
+      "git_mode": "100644"
+    },
+    "active_clone_contract": {
+      "path": "reviews/baseline-coverage/CLONE-INVENTORY-CONTRACT-REVIEW.json",
+      "sha256": "df27f979b9c34a41e4bafbeb6b3dd34f7d66c168b7b8d9adc6f09d29c8845004"
+    },
+    "original_final_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-10-REVIEW.json",
+      "sha256": "271ae3259a5dbcb7193f76aa31ffce792af3941043c331a7249fe6bcc8f71db6"
+    }
+  },
+  "independent_result": {
+    "data_tool": "b9c4fc exit0; complete hash-bound JSON/HTML read with stable component-no-follow regular-file guards; no clone/Git access.",
+    "prior_scope": "Proposal policy preserves exact14 raw-file bytes INCLUDING whitespace and stops diagnostics outside those files. Final review further requires attribution to exact frozen bytes. Neither restricts qualification to the parser's trailing-whitespace/new-blank-line vocabulary. potential_whitespace_lines was a trailing-only pre-screen, not an exhaustive diagnostic-kind list.",
+    "exact_new_parser_cases": [
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/xfwm4-docs/response.html",
+        "line": 26,
+        "kind": "space before tab in indent."
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/xfwm4-docs/response.html",
+        "line": 211,
+        "kind": "space before tab in indent."
+      }
+    ],
+    "raw_counterexample": "Both hash-bound source lines start hex2020202009: four spaces then TAB before HTML markup. They are fetched raw source evidence, not edited application code. The recorded diagnostics are attributable to those exact bytes. No trim, normalization, re-fetch or HTML execution is needed.",
+    "limit": "Only these exact path/hash/line/kind cases augment the parser. Every other unknown kind, path, line or changed byte remains STOP. Existing399 trailing-whitespace observations remain unchanged."
+  },
+  "actual_cached_check": {
+    "command": "git diff --cached --check with the exact recorded disabled-hook/fsmonitor/maintenance/signing controls",
+    "exit": 2,
+    "stderr_bytes": 0,
+    "stdout_bytes": 96036,
+    "stdout_sha256": "13ad16264fca8657101f34caca5be9ecf951045c95fda4f1d897937520ea66d1",
+    "headers": 401,
+    "trailing_whitespace": 399,
+    "space_before_tab_in_indent": 2,
+    "headers_outside_raw14": 0,
+    "other_header_kinds": 0,
+    "status": "Actual FAIL, not PASS. Complete output remains in the failed receipt; preserve it and the parser refusal.",
+    "binding": "Saved post-stage ls-files --stage -z stdout272866B/SHA1ab892a0a1ab6dcf8e1cafa73807d3e76a02a9ef7f345919b0b67725d2be5fea supplies the recorded complete index image for fresh equality checks. Base ls-tree raw stdout254597B/SHAafaa110d5837b9640a830974e7fa8a04d4cebafb61c497c499d1c67a9a708c2d remains bound to b2e/cf59."
+  },
+  "preserved_execution_extent": "Receipt has17 completed commands:16exit0, cached-check2; original direct children recorded reaped. Corrected initial inventory1936files/776dirs/109089665B,170 raw source/index entries and170 changed paths are recorded; no commit/push occurred. These are retained receipt facts, not fresh clone/runtime observations or product cases.",
+  "one_conditional_finalization": [
+    "Root explicitly adopts this NEW bounded finalization scope before action. Continue only original clone /root/projects/PassVault/passvault-publication-20260910-01 with original root[23,1080545,0,16832], original lock/ownership/typed-inventory/resource/process guards. No re-clone/fetch/recreation/unknown-root adoption, original-store access, recopy, hash-object, restage/reset or new payload paths.",
+    "Require the exact original170 canonical input/copy SHA256/Git-mode tuples and complete staged index/raw mapping unchanged; all unselected base blobs/modes and actual changed-path set remain exact. HEADb2e826fd534be8fefede169d28e30c22e37530a9/treecf59082d4fa090415ac8d8660432dd63ba409e4f, branch/shallow/common-dir/origin/config/local+protected remote refs and .gitattributes must satisfy the unchanged existing guards.",
+    "Use root's proposed worktree proof: exact raw170 source/copy hash+mode reads; git diff --name-only -z may name only those170 paths, and git ls-files --others --exclude-standard -z must be empty. Unselected content remains clean under unchanged attributes. Do not misclassify filter-visible raw170 differences as permission to rewrite them.",
+    "After those equalities, REUSE the exact saved401-header/96036B cached output and exit2. Reconcile only the two literal added cases above plus existing399; retain full actual output/error/status. No unchanged cached-check rerun is necessary or authorized merely for reassurance. Changed state/config/attributes, unrecognized text, truncation or any other guard error means STOP/new review, not automatic restage or rerun.",
+    "Commit only that exact unchanged index, with one exact-base parent; preserve commit-local Codex/codex@openai.com fallback, removed ambient author overrides and disabled hooks/signing/maintenance. Then verify raw committed tree/parent/selected and unselected mappings, dedicated fast-forward unsigned/no-tags/no-submodules push and fresh remote identity. No intermediate commit, extra source edit, force or protected-ref change.",
+    "Carry original600s phase/60s ordinary commands/120s push,512MiB namespace ceiling and disk/RAM/owned-settlement checks. Retain clone for already stated upcoming scopes; no deletion here. Any failure is consumed/no automatic retry.",
+    "Keep this failure receipt, new independent review and root adoption UNSELECTED for the next checkpoint; the current170 staged paths do not grow. Windows04 then Mac02 request-only phases still need independent instance/execution/cleanup admission and exact sequential parents, with Windows settlement/slot release before Mac02. No CI activation authority here."
+  ],
+  "reporting_and_fences": "Preserve parser refusal and all earlier clone/borrowed-store failures, UNKNOWN causes/HOLDs, raw14 FAIL and source/EOL qualifications. PVU007 STOP,PVU011 NO-RETRY,PVA029 failure/no automatic retry,G7/G8 CLOSED; PVD/owner/hardware, protected-ref/tag/dependency/version/identity/signing/store/1017001 limits unchanged. Publication/diagnostic classification adds zero product tests/findings/closures/readiness.",
+  "reviewer_cleanup": "Only this compact permanent review written exclusively0600/fsynced/read back. Inert data reads only; no Git/network/clone/runtime probe, helper execution, build/test, temporary/cache outputs, workers, signals or deletions. No Gradle-stop duty. Quiescent on delivery.",
+  "utc": "2026-09-10T01:34:46.820988+00:00"
+}

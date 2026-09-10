@@ -64,28 +64,28 @@ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release',
           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
 # Root must capture a fresh complete raw-blob manifest and independent source/
 # instance admission. Historical GUI02 publication/tool/lock identities do not apply.
-COMMIT = None
-TREE = None
-MEMBERS = None
+COMMIT = '8f42274b04e206ff7254ca33d686a9666fce6723'
+TREE = '3a8f53dddd54f5c42c34f772975f02619be118d5'
+MEMBERS = 2757
 RUN_ID = 'linux-desktop-integration03'
 FROZEN = {
-    SOURCE: None,
-    INIT: None,
+    SOURCE: '1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23',
+    INIT: '2b9aec1c7366bff5d39a62f9b1aaefb60e4884866fca3ac309dc4b00940c43fb',
 }
 MIB, GIB = 1024 ** 2, 1024 ** 3
 SELECTIONS = (
-    {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
-     'class': 'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',
-     'suite': 'CredentialMainNavHostRoomIntegrationTest[desktop]',
-     'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),
-     'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
-     'sha256': None},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.
     {'module': 'shared', 'task': ':shared:desktopTest', 'worker': 'editor-room',
      'class': 'com.passvault.shared.credential.CredentialEditorRoomIntegrationTest',
      'suite': 'CredentialEditorRoomIntegrationTest[desktop]',
      'methods': ('native capacity draft persists through page Save and a fresh Room database reopen',),
      'fixture': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt',
      'sha256': 'a67ba81ad875a4c611208d30b51e40caf87cf5381622f5d6ababf38d2953cff9'},
+    {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+     'class': 'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',
+     'suite': 'CredentialMainNavHostRoomIntegrationTest[desktop]',
+     'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),
+     'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+     'sha256': '32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5'},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.
 )
 PRODUCTION_SOURCE = {
     'app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt':

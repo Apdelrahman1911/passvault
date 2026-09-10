@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "author": "/root",
+  "source": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+  "before_sha256": "a67ba81ad875a4c611208d30b51e40caf87cf5381622f5d6ababf38d2953cff9",
+  "after_sha256": "291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57",
+  "after_bytes": 36796,
+  "patch": {
+    "path": "ROOM-EDITABLE-TEXT.patch.txt",
+    "bytes": 1563,
+    "sha256": "28d1e3dbd1ea83cbd9d3348d5725489dc930141efb194943e7bf91f44cd1479b"
+  },
+  "basis": "Independent source recommendation reviews/editor-independent/ROOM-EDITABLE-TEXT-NARROWING-SOURCE-REVIEW.md e02eb94d48c4ed5c7bf7275dd217a5aa959c979e48b59bec07a837502fabd9dd; same unused noneditable payload exposure as corrected Main, not an observed Room NPE.",
+  "change": "Capture accessibleEditableText once and use it for consumed character payload and editable flag. Only noneditable payload/character-bound reads cease. Metadata, editable0..256 bound, native input, persistence/capacity assertions and cleanup unchanged.",
+  "counterexamples_and_limits": "GUI02 analogous form succeeded. Room remained unstarted in integration02; no claim its old image crashed. Editable provider/getAtIndex and metadata faults are not universally prevented; no broad catch or assertion relaxation for consumed inputs.",
+  "validation": "Inverse substitutions recover exact prior source hash; independent final-byte review pending. Meaningful pending Room native/persistence case will cover adoption; no dedicated new test or fullbuild.",
+  "source_freeze": "Only W future source edited. C15/T and consumed Detekt01 scripts/request/source-manifest/runtime untouched. GUI03 future fixture hash must be rebound before any invocation.",
+  "status": "FIXTURE_ONLY_NARROWING_IMPLEMENTED_INDEPENDENT_DELTA_REVIEW_PENDING",
+  "case_or_family_count_delta": 0
+}

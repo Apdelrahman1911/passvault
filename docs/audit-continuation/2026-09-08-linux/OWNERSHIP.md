@@ -462,3 +462,19 @@ tests, reviews, compact failed evidence and shared SDK/toolchains are not garbag
 - Root owns C5 ledgers/report/explicit Git selection; `baseline_coverage` supplies
   the independent checkpoint coverage/report review. Source-only agents quiesce
   transient tools during real local process-sensitive execution.
+
+## C16 bounded ownership
+
+Root remains sole build/Git/CI/central-ledger/cleanup owner. Android32 authored the
+Android fixture decomposition; editor_review independently accepted it and root's
+Room editable-only delta. Build_config authored Detekt02 inner/init/outer;
+editor reviewed inner/init and supplied five parser controls; verification reviewed
+the outer. Root's separate memory-only five-control capsule and generated-only
+Detekt01 closeout were independently admitted and actually reconciled by editor
+and storage respectively. No other agent launched a build or touched held runtimes.
+
+Storage authors only a new current Detekt01 temporary-source-remainder closeout02;
+verification is its independent reviewer. This remains separate source work,
+not old-runtime adoption or current execution permission. Baseline_coverage owns
+the independent final C16 ledger/report/publication review. All original author,
+reviewer, rejected-source, evidence and non-replay qualifications remain preserved.

@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "CONFIRM_CONSUMED_C10_PRESTAGE_IDENTITY_FAIL; EXACT_INFO_REBIND_CANDIDATE_ONLY_PENDING_FULL_PROTECTED_UNION_COMPARISON_AND_SEPARATE_ADMISSION",
+  "scope": "Compact independent receipt/data and one bounded read-only parent/leaf observation. No payload re-audit, Git/network execution, object-body inventory, metadata mutation, GC, runtime access or retry authorization.",
+  "sources": {
+    "failed_attempt": {
+      "path": "publication/CHECKPOINT-10-SOURCE-PUBLISHED.json",
+      "sha256": "379a34ad8eaa8bcf836d1d4f3bbb6bb5208896a3906e88c6699a43dc3dd123bf",
+      "bytes": 7739,
+      "read_tool": "cd7199 exit0"
+    },
+    "existing_scope": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-10-PUBLICATION-SCOPE-ASSESSMENT.json",
+      "sha256": "491d6d0ecb65afb2f78bf943ead329448f593fb8b3fca70896da44152f9246a7",
+      "read_tool": "3d9c02 exit0"
+    },
+    "prior_exact_info_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-9-INFO-REBIND-REVIEW.json",
+      "sha256": "2624c66cd7ba120c1b7cddb7b5903e5a57387baf293bc0614e4bfa2dd36f7000",
+      "read_tool": "84c290 exit0"
+    },
+    "prior_root_adoption": {
+      "path": "publication/CHECKPOINT-9-INFO-REBIND-ROOT-ADOPTION.json",
+      "sha256": "df53e5090ecc1db5447586238ee357233410ca55495612e97ce2b856793e4dfe"
+    },
+    "prior_comparison": {
+      "path": "publication/CHECKPOINT-9-POSTFAIL-OBJECT-COMPARISON.json",
+      "sha256": "5cb05013e95c38095c9e7f9069d69c51ae581c4d011bf27e7d2c41aef537a322"
+    }
+  },
+  "receipt_assessment": {
+    "original_tool": "248d31 exit1, as reported by root; receipt status FAIL_HOLD_NO_AUTOMATIC_RETRY",
+    "recorded_commands": 6,
+    "command_exits": "All six read-only Git commands completed0; includes ls-remote. No stage, commit, cached whitespace check or push.",
+    "recorded_error": "RuntimeError:original exact empty info drift",
+    "object_checks": [],
+    "implication": "No completed retained full protected-union comparison in this receipt. Earlier partial work is not a completed object-check PASS. Old source attempt is consumed and must remain failed.",
+    "identity": "Recorded dedicated branch codex/audit-continuation-linux-20260908 HEADb2e826fd534be8fefede169d28e30c22e37530a9/treecf59082d4fa090415ac8d8660432dd63ba409e4f; handoff9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed/tree05014e9f635131d5db06701e4013b4b5a746465a. Receipt point observations, not newly probed by reviewer.",
+    "raw_whitespace": "Root adopted prior exact14 qualification, but cached check was not reached; no actual C10 whitespace PASS/FAIL from this failed attempt."
+  },
+  "observation": {
+    "tool": "065b3b exit0",
+    "utc": "2026-09-10T00:08:34.057057+00:00",
+    "object_root": "/root/projects/PassVault/passvault/.git/objects",
+    "method": "Component-no-follow O_PATH ancestry; original opened objects/info directory descriptors with O_NOATIME and no fallback; info immediate-entry enumeration capped16/time5s. No object-root fanout enumeration or file-byte reads. All descriptors closed.",
+    "row_schema": [
+      "relative_path",
+      "st_dev",
+      "st_ino",
+      "st_uid",
+      "st_mode"
+    ],
+    "protected_old_row": [
+      "info",
+      23,
+      895075,
+      0,
+      16832
+    ],
+    "schema_correct_current_row": [
+      "info",
+      23,
+      1004769,
+      0,
+      16832
+    ],
+    "actual_specified_row_difference": {
+      "ino": {
+        "old": 895075,
+        "observed": 1004769
+      }
+    },
+    "info_metadata": {
+      "dev": 23,
+      "ino": 1004769,
+      "mode": 16832,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 2,
+      "size": 4096,
+      "atime_ns": 1788989357306059000,
+      "mtime_ns": 1788899259003429400,
+      "ctime_ns": 1788899259003429400,
+      "blocks": 8
+    },
+    "info_entries": [],
+    "info_enumeration_complete": true,
+    "path_open_end_path_and_parent_samples_stable": true,
+    "git_parent_metadata": {
+      "dev": 23,
+      "ino": 504168,
+      "mode": 16832,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 9,
+      "size": 4096,
+      "atime_ns": 1788995028992721000,
+      "mtime_ns": 1788908068713904000,
+      "ctime_ns": 1788908068713904000,
+      "blocks": 8
+    },
+    "objects_parent_metadata": {
+      "dev": 23,
+      "ino": 504175,
+      "mode": 16832,
+      "uid": 0,
+      "gid": 0,
+      "nlink": 256,
+      "size": 4096,
+      "atime_ns": 1788978795506688500,
+      "mtime_ns": 1788978795472688600,
+      "ctime_ns": 1788978795472688600,
+      "blocks": 8
+    },
+    "preserved_old_fields": "dev23,uid0,mode16832,nlink2 and empty entries match. The prior C9 exact observation already had size4096 and mtime/ctime1788899259003429274, also matching current values. The old five-element row does NOT encode directory size.",
+    "parent_limit": "Parent samples were stable during this bounded observation. They were not compared to the complete original ancestor/directory inventory here; no claim all other bindings or1068 object bytes are presently unchanged.",
+    "cause": "UNKNOWN. Empty entries and retained timestamps do not establish replacement cause, benign filesystem behavior, responsible process, unknown open-handle absence, past contents or continuous stability."
+  },
+  "reviewer_correction": {
+    "superseded_message": "Initial tool-derived row and preliminary root message interpreted fourth old-row element0 as size and claimed size0→4096. That was a reviewer schema error.",
+    "correction": "Prior hash-bound C9 review explicitly identifies uid0 and existing size4096. The correct current protected row is [info,23,1004769,0,16832], so only inode895075→1004769 differs. Corrected root message sent before sealing; raw named metadata from065b3b remains valid.",
+    "prohibited_inference": "Do not turn the withdrawn size claim into another finding, exception or runtime cause."
+  },
+  "narrow_prospective_option": {
+    "disposition": "Support CONSIDERATION of only this exact empty info leaf rebind; NOT adopted or activated here.",
+    "candidate_old": [
+      "info",
+      23,
+      895075,
+      0,
+      16832
+    ],
+    "candidate_new": [
+      "info",
+      23,
+      1004769,
+      0,
+      16832
+    ],
+    "necessary_next_evidence": "A separately scoped read-only complete protected-union comparison against baseline plus EVERY C8/C9 stage/commit addition:1068 files/255 directories/7 ancestors/38437361 logical bytes. Require all original file bytes/hash/path/dev/inode/mode/uid/nlink and all other ancestor/directory bindings; record any differences rather than accept-current. This bounded leaf review supplies none of that full-union evidence.",
+    "conditional_review": "Only if that complete comparison independently reconciles with this sole info inode difference (plus explicitly retained original loose-file/exact-pack mtime/ctime qualifications), root may seek separate prospective exact-leaf rebind and publication admission. A changed info row or other mismatch requires new challenge/STOP, not this candidate's reuse.",
+    "leaf_limits": "Future admitted gates must bind original no-follow opened info to exact candidate row, nlink2 and complete empty entry set before and after every permitted publication step. No arbitrary next inode, generic inode/size/time waiver, info children/alternates/commit-graph, symlink/permission exception, metadata restoration or object repair.",
+    "other_invariants": "Every1068 original object remains protected; no regular file lies inside info in the recorded baseline/prior incremental scope. Full comparison must verify no new unexpected info child or other object/ancestor/directory change. Only separately admitted legitimate loose objects/fanouts may be added and then become protected. No GC/prune/repack/mutation is proposed.",
+    "publication_limit": "This review invents no new phase/attempt count or retry scope. The failed C10 attempt and prior C9 failures stay consumed. Exact payload/final review, source/branch/index/ref/remote guards, raw14 diagnostics, bounds/coordination and four publication-boundary object checks remain subject to a newly explicit narrow admission. Windows04/Mac02 activation remains separately gated and unexecuted by this work.",
+    "preservation": "Keep historical expected inode798164, prior accepted895075, current observed1004769, strict failure receipts and UNKNOWN causes as distinct evidence. Do not edit sealed prior reports/manifest or call the failed attempt PASS. This new diagnostic report is not automatically part of the old158-path selection."
+  },
+  "fences": "PVU007 STOP; PVU011 NO-RETRY; PVA029 recorded failure/no automatic retry; G7/G8 CLOSED; old runtime/cleanup HOLDs and source-store restrictions; protected refs/tags/dependencies/versions/identities/signing/Store/occupied1017001 and PVD/hardware boundaries unchanged. No new product cases/findings/closures or build duty.",
+  "reviewer_cleanup": "Only this new permanent assessment created; bounded reads and one exact leaf observation, no temporary/cache/build/runtime outputs, persistent workers, signals/deletions or Gradle invocation. Report exclusively0600, original-file and parent fsynced, exact readback. Quiescent on delivery.",
+  "utc": "2026-09-10T00:14:12.355578+00:00"
+}

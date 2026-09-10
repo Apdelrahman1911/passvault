@@ -1,0 +1,402 @@
+--- frozen01/scripts/audit/linux_detekt_01.py
++++ new02/scripts/audit/linux_detekt_02.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3
+-"""NEW fixed Detekt01 PID1 source, NOT execution admission.
++"""NEW fixed Detekt02 PID1 source, NOT execution admission.
+ 
+ Text-reuses Linux03 Files/resource/pidfd/stop/settlement and GUI02's distinction
+ between namespace setup and Gradle commands. No old helper import or replay.
+@@ -23,27 +23,27 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-detekt01')
+-E = B / 'runs/linux-detekt01'
++R = Path('/root/projects/PassVault/audit-runtime-linux-detekt02')
++E = B / 'runs/linux-detekt02'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = W / 'scripts/audit/linux_detekt_01.py', W / 'scripts/audit/detekt_01.init.gradle'
+-SOURCE = B / 'reviews/desktop-integration03/source-prepare01/SOURCE.json'
++SELF, INIT = W / 'scripts/audit/linux_detekt_02.py', W / 'scripts/audit/detekt_02.init.gradle'
++SOURCE = B / 'reviews/detekt02/source-prepare01/SOURCE.json'
+ JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
+ PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
+ # Final published snapshot and exact regular tool/alias/optional-exclude identities
+ # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
+-COMMIT = '8f42274b04e206ff7254ca33d686a9666fce6723'
+-TREE = '3a8f53dddd54f5c42c34f772975f02619be118d5'
+-MEMBERS = 2757
++COMMIT = None
++TREE = None
++MEMBERS = None
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+-EXCLUDE_STATE = 'INFO_ABSENT'
+-FROZEN = {SOURCE: '1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97'}
++EXCLUDE_STATE = None
++FROZEN = {SOURCE: None, INIT: '2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6'}
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
+ GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
+-RUN_ID = 'linux-detekt01'
++RUN_ID = 'linux-detekt02'
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -65,7 +65,7 @@
+          '-Pkotlin.compiler.execution.strategy=in-process', '-Pandroid.builder.sdkDownload=false',
+          '-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8', '-Dorg.gradle.java.installations.auto-download=false',
+          '-Dorg.gradle.java.installations.auto-detect=false', '-Dorg.gradle.java.installations.paths=' + str(JAVA)]
+-COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), ':detekt'] + FLAGS
++COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), ':detekt', '--continue'] + FLAGS
+ STOP = [str(CHECKOUT / 'gradlew'), '--stop'] + FLAGS
+ ENV = {'PATH': str(JAVA / 'bin') + ':/usr/bin:/bin', 'JAVA_HOME': str(JAVA), 'LANG': 'C.UTF-8',
+        'LC_ALL': 'C.UTF-8', 'TZ': 'UTC', 'HOME': str(R / 'home'), 'GRADLE_USER_HOME': str(R / 'gradle-home'),
+@@ -119,6 +119,48 @@
+             errors.append(value)
+         elif len(errors) == 127:
+             errors.append('Additional errors omitted at the 128-entry evidence bound')
++
++
++def parse_task_headers(lines, allowed):
++    """Pure bounded log normalization; BARE is evidence, never standalone PASS."""
++    allowed = set(allowed)
++    if not 1 <= len(allowed) <= 23:
++        raise ValueError('fixed static task identity bound')
++    events, errors, counts = [], [], {}
++    outcomes = {task: 'UNSTARTED' for task in sorted(allowed)}
++    header_count = 0
++
++    def reject(reason):
++        if reason not in errors and len(errors) < 64:
++            errors.append(reason)
++
++    for number, line in enumerate(lines, 1):
++        if not line.startswith('> Task '):
++            continue
++        header_count += 1
++        if header_count > 2 * len(allowed):
++            reject('Gradle task header count bound')
++            continue
++        match = re.fullmatch(
++            r'> Task (:[A-Za-z0-9:_-]+)(?: (NO-SOURCE|UP-TO-DATE|FROM-CACHE|SKIPPED|FAILED))?', line)
++        if match is None:
++            reject('Malformed Gradle task header at line ' + str(number))
++            continue
++        task, suffix = match.groups()
++        if task not in allowed:
++            reject('Unknown Gradle task identity at line ' + str(number))
++            continue
++        events.append({'line': number, 'task': task, 'suffix': suffix})
++        previous_count = counts.get(task, 0)
++        counts[task] = previous_count + 1
++        if previous_count == 0 or (previous_count == 1 and outcomes[task] == 'BARE' and suffix is not None):
++            outcomes[task] = 'BARE' if suffix is None else suffix
++        else:
++            reject('Illegal Gradle task header transition at line ' + str(number))
++        if suffix == 'FAILED':
++            outcomes[task] = 'FAILED'  # A later header can never launder a recorded failure.
++    return {'events': events, 'outcomes': outcomes, 'errors': errors,
++            'header_count': header_count, 'unique_tasks': len(counts)}
+ 
+ 
+ def proc_read(path, cap):
+@@ -254,7 +296,7 @@
+     return {'parent': parent, 'self': current, 'nonpropagating_mounts': True, 'mount_rows': len(lines)}
+ 
+ 
+-class Detekt01:
++class Detekt02:
+     def __init__(self, files, parent):
+         self.f, self.parent, self.started = files, parent, time.monotonic()
+         self.errors, self.phases, self.inputs = [], [], {}
+@@ -279,10 +321,10 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = self.outer = json.loads(data)
+-        require(value['format'] == 'passvault-linux-detekt01-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-detekt02-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent,
+-                'fixed fresh Detekt01 intake; not independent execution admission')
++                'fixed fresh Detekt02 intake; not independent execution admission')
+         self.f.expected = dict(value['directories'])
+         # Do not compare the future mounted alias against its outer empty-directory inode.
+         self.f.expected.pop(str(GIT_DIR), None)
+@@ -644,64 +686,138 @@
+         require(state.get('setup_ok') and state['settled'] and not self.cancelled(), 'Git isolation incomplete')
+ 
+     def preserve_reports(self, state):
+-        data, _ = self.f.read(E / 'logs/detekt.log', 4 * MIB)
+-        lines = data.decode('utf-8', errors='replace').splitlines()
+-        prefix = 'PASSVAULT_DETEKT01_TASK='
+-        planned = [json.loads(line[len(prefix):]) for line in lines if line.startswith(prefix)]
+-        require(len(planned) <= len(TASKS) and len({r['task'] for r in planned}) == len(planned),
+-                'bounded unique static task inventory')
+-        events = [match.groups() for line in lines if (match := re.fullmatch(
+-            r'> Task (:[A-Za-z0-9:_-]+)(?: (NO-SOURCE|UP-TO-DATE|FROM-CACHE|SKIPPED|FAILED))?', line))]
+-        require(len(events) <= len(TASKS) + 1 and len({p for p, _ in events}) == len(events),
+-                'bounded unique Gradle task events; not test cases')
+-        actual = dict(events)
+-        all_tasks = set(TASKS) | {':verifyStaticAnalysisCoverage'}
+-        mapping = set(actual) == all_tasks and actual.get(':verifyStaticAnalysisCoverage', 'MISSING') is None
+-        mapping = mapping and {r['task'] for r in planned} == set(TASKS)
+-        captures, total, findings, source_sets = [], 0, 0, {}
+-        for row in planned:
+-            require(row['task'] in TASKS and set(row['reports']) == {'checkstyle', 'html', 'sarif'},
+-                    'only generic Detekt report inventory')
+-            module = TASKS[row['task']]
+-            excluded = {'build', '.gradle', '.kotlin', 'generated', 'resources'} | ({'.idea'} if not module else set())
+-            expected = sorted(r['path'] for r in self.source['files']
+-                if not (set(Path(r['path']).parts) & excluded)
+-                and ((not module and r['path'].endswith('.gradle.kts'))
+-                     or (module and r['path'].startswith(module + '/src/')
+-                         and r['path'].endswith(('.kt', '.kts')))))
+-            require(row['sources'] == expected, 'exact raw-snapshot planned Detekt source set')
+-            source_sets[row['task']] = expected
+-            outcome = actual.get(row['task'], 'UNSTARTED')
+-            mapping = mapping and outcome == (None if expected else 'NO-SOURCE')
+-            for kind, relative in sorted(row['reports'].items()):
+-                path = Path(relative)
+-                report_root = Path(module) / 'build/reports/detekt'
+-                require(not path.is_absolute() and '..' not in path.parts and path.is_relative_to(report_root)
+-                        and path.suffix == {'checkstyle': '.xml', 'html': '.html', 'sarif': '.sarif'}[kind],
+-                        'compact report must remain inside its exact project report directory')
+-                try:
+-                    report, original = self.f.read(CHECKOUT / path, 4 * MIB)
+-                except FileNotFoundError:
+-                    mapping = mapping and not expected
+-                    continue
+-                total += len(report)
+-                require(total <= 32 * MIB and report, 'nonempty bounded aggregate static reports')
+-                name = (module.replace('/', '-') if module else 'root') + '-' + kind + path.suffix
+-                saved = self.f.write(E / 'reports' / name, report)
+-                captures.append({'task': row['task'], 'kind': kind, 'source': relative,
+-                                 'original': original, 'saved': saved})
++        # Capture fixed allowlisted bytes FIRST. Log/schema/task failures are not
++        # permission to discard available reports or invent a successful analysis.
++        formats = {'checkstyle': '.xml', 'html': '.html', 'sarif': '.sarif'}
++        report_paths, candidates = {}, []
++        for task, module in TASKS.items():
++            report_paths[task] = {}
++            for kind, suffix in formats.items():
++                relative = Path(module) / 'build/reports/detekt' / ('detekt' + suffix)
++                report_paths[task][kind] = str(relative)
++                candidates.append((task, kind, relative, 4 * MIB))
++        # Explicit extra diagnostic: 66 Detekt files + one <=1MiB Gradle HTML,
++        # sharing the original combined 32MiB capture budget, not extending it.
++        candidates.append((None, 'problems_html', Path('build/reports/problems/problems-report.html'), MIB))
++        require(len(candidates) == 67, 'fixed 66 static reports plus one bounded diagnostic')
++        captures, absent, collection_errors, validation_errors = [], [], [], []
++        charged = 0
++        for task, kind, relative, cap in candidates:
++            try:
++                report, original = self.f.read(CHECKOUT / relative, cap)
++            except FileNotFoundError:
++                absent.append({'task': task, 'kind': kind, 'source': str(relative)})
++                continue
++            except Exception as error:
++                note(collection_errors, 'capture ' + str(relative) + ': ' + str(error))
++                continue
++            if charged + len(report) > 32 * MIB:
++                note(collection_errors, 'combined static/diagnostic capture byte bound; remaining paths uninspected')
++                break
++            charged += len(report)  # Failed/partial writes still consume this budget.
++            name = ('gradle-problems.html' if task is None else
++                    (TASKS[task].replace('/', '-') if TASKS[task] else 'root') + '-' + kind + formats[kind])
++            destination = 'reports/' + name
++            try:
++                saved = self.f.write(E / destination, report)
++                captures.append({'task': task, 'kind': kind, 'source': str(relative), 'destination': destination,
++                                 'original': original, 'saved': saved, 'diagnostic_only': task is None})
++            except Exception as error:
++                note(collection_errors, 'preserve ' + str(relative) + ': ' + str(error))
++
++        # Semantic failures below cannot bypass the preceding retention pass.
++        valid_reports, findings, parsed_checkstyle = set(), 0, 0
++        for capture in captures:
++            if capture['diagnostic_only']:
++                continue  # Opaque retained diagnostic; no analyzer/report-format credit.
++            task, kind = capture['task'], capture['kind']
++            try:
++                report, actual = self.f.read(E / capture['destination'], 4 * MIB)
++                require(actual == capture['saved'], 'retained report image drift')
++            except Exception as error:
++                note(collection_errors, 'retained report ' + capture['destination'] + ': ' + str(error))
++                continue
++            try:
++                require(report, 'nonempty static report required')
+                 if kind == 'checkstyle':
+                     require(b'<!DOCTYPE' not in report and b'<!ENTITY' not in report, 'declaring static XML rejected')
+                     document = ET.fromstring(report)
+                     require(document.tag == 'checkstyle', 'static Checkstyle XML, never Test XML')
+                     findings += len(document.findall('./file/error'))
++                    parsed_checkstyle += 1
+                 elif kind == 'sarif':
+                     require(isinstance(json.loads(report), dict), 'SARIF JSON object required')
+-        state['reports'] = {'captures': captures, 'bytes': total, 'checkstyle_findings': findings,
+-            'planned_source_sets': source_sets, 'task_events_not_test_cases': events,
+-            'mapping_ok': bool(mapping), 'preserved': True}
++                valid_reports.add((task, kind))
++            except Exception as error:
++                note(validation_errors, task + ' ' + kind + ': ' + str(error))
++
++        all_tasks = set(TASKS) | {':verifyStaticAnalysisCoverage'}
++        headers = parse_task_headers([], all_tasks)
++        lines, source_sets, valid_plans, plan_count = [], {}, set(), 0
++        try:
++            data, _ = self.f.read(E / 'logs/detekt.log', 4 * MIB)
++            lines = data.decode('utf-8', errors='replace').splitlines()
++            headers = parse_task_headers(lines, all_tasks)
++        except Exception as error:
++            note(collection_errors, 'preserved static log uncertainty: ' + str(error))
++        try:
++            for task, module in TASKS.items():
++                excluded = {'build', '.gradle', '.kotlin', 'generated', 'resources'} | ({'.idea'} if not module else set())
++                source_sets[task] = sorted(r['path'] for r in self.source['files']
++                    if not (set(Path(r['path']).parts) & excluded)
++                    and ((not module and r['path'].endswith('.gradle.kts'))
++                         or (module and r['path'].startswith(module + '/src/')
++                             and r['path'].endswith(('.kt', '.kts')))))
++            prefix = 'PASSVAULT_DETEKT02_TASK='
++            seen = set()
++            for line in lines:
++                if not line.startswith(prefix):
++                    continue
++                plan_count += 1
++                if plan_count > len(TASKS):
++                    note(validation_errors, 'static task inventory row bound')
++                    continue
++                try:
++                    row = json.loads(line[len(prefix):])
++                    require(isinstance(row, dict) and set(row) == {'task', 'sources', 'reports'},
++                            'exact generic Detekt inventory fields')
++                    task = row['task']
++                    require(isinstance(task, str) and task in TASKS and task not in seen,
++                            'known unique static task inventory')
++                    seen.add(task)
++                    require(row['sources'] == source_sets[task], 'exact raw-snapshot planned Detekt source set')
++                    require(row['reports'] == report_paths[task], 'exact fixed generic Detekt report paths')
++                    valid_plans.add(task)
++                except Exception as error:
++                    note(validation_errors, 'static task inventory row ' + str(plan_count) + ': ' + str(error))
++        except Exception as error:
++            note(validation_errors, 'static source/inventory mapping: ' + str(error))
++        if plan_count != len(TASKS) or valid_plans != set(TASKS):
++            note(validation_errors, 'full exact 22-task static inventory missing or invalid')
++        if headers['outcomes'][':verifyStaticAnalysisCoverage'] != 'BARE':
++            note(validation_errors, 'Ruby coverage guard lacks expected bare task evidence')
++        for task, expected in source_sets.items():
++            if headers['outcomes'][task] != ('BARE' if expected else 'NO-SOURCE'):
++                note(validation_errors, task + ': outcome ' + headers['outcomes'][task] + '; not qualified success')
++            if expected and any((task, kind) not in valid_reports for kind in formats):
++                note(validation_errors, task + ': required nonempty valid report triplet incomplete')
++        preserved = not collection_errors
++        mapping = (preserved and not validation_errors and not headers['errors']
++                   and set(source_sets) == set(TASKS) and headers['unique_tasks'] == len(all_tasks))
++        state['reports'] = {'captures': captures, 'absent': absent,
++            'bytes': sum(c['saved']['pin']['bytes'] for c in captures), 'budget_bytes_charged': charged,
++            'capture_file_limit': 67, 'capture_bytes_limit': 32 * MIB, 'diagnostic_file_bytes_limit': MIB,
++            'checkstyle_findings': findings, 'parsed_checkstyle_reports': parsed_checkstyle,
++            'findings_scope': 'Subtotal in successfully parsed retained Checkstyle reports only; not full coverage',
++            'planned_source_sets': source_sets, 'planned_inventory_rows': plan_count,
++            'task_events_not_test_cases': headers['events'], 'task_outcomes_not_test_cases': headers['outcomes'],
++            'task_header_count': headers['header_count'], 'observed_unique_tasks': headers['unique_tasks'],
++            'collection_errors': collection_errors, 'header_errors': headers['errors'],
++            'validation_errors': validation_errors, 'mapping_ok': bool(mapping), 'preserved': preserved}
+         self.f.write(E / 'STATIC-REPORTS.json', canonical(state['reports']))
+-        self.reports_preserved, self.mapping_ok = True, bool(mapping)
++        self.reports_preserved, self.mapping_ok = preserved, bool(mapping)
++        if not preserved:
++            self.note('Static report/log retention uncertain; not safe cleanup evidence')
+         if not mapping:
+             self.note('Static task/input/report mapping incomplete; no success from task count or compilation')
+ 
+@@ -729,7 +845,7 @@
+                 self.note('static report/settlement uncertainty: ' + str(error))
+             state['record_image'] = self.f.write(E / 'PHASE-detekt.json', canonical(state))
+         require(state['build_ok'] and state['stop_ok'] and state['settled'] and self.mapping_ok
+-                and not self.cancelled(), 'Detekt01 failed; no automatic retry')
++                and not self.cancelled(), 'Detekt02 failed; no automatic retry')
+ 
+ 
+ def main():
+@@ -748,7 +864,7 @@
+     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+         signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+     files = Files()
+-    batch = Detekt01(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
++    batch = Detekt02(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
+     settled, code = False, 70
+     try:
+         batch.intake()
+@@ -786,7 +902,7 @@
+                 and (not attempted or batch.reports_preserved))
+         passed = safe and attempted and batch.mapping_ok and all(
+             p.get('setup_ok') if p['phase'] == 'git-isolation' else p['build_ok'] for p in batch.phases)
+-        result = {'format': 'passvault-linux-detekt01-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
++        result = {'format': 'passvault-linux-detekt02-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
+             'parent_namespaces': batch.parent, 'source_before': batch.before, 'source_after': batch.after,
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+             'git_bindings_established': batch.git_bound, 'git_bindings_stable': batch.git_stable,
+
+--- frozen01/scripts/audit/detekt_01.init.gradle
++++ new02/scripts/audit/detekt_02.init.gradle
+@@ -3,14 +3,14 @@
+ import org.gradle.api.artifacts.verification.DependencyVerificationMode
+ import org.gradle.api.tasks.testing.Test
+ 
+-// NEW Detekt01 scope guard/metadata only; not execution admission. No Test
++// NEW Detekt02 scope guard/metadata only; not execution admission. No Test
+ // selection, alternate analyzer, source exclusion, dependency or rule changes.
+ def start = gradle.startParameter
+-if (start.taskNames != [':detekt'] || !start.excludedTaskNames.empty ||
++if (start.taskNames != [':detekt'] || !start.continueOnFailure || !start.excludedTaskNames.empty ||
+         start.parallelProjectExecutionEnabled || start.configureOnDemand ||
+         start.maxWorkerCount != 1 || start.buildCacheEnabled ||
+         start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
+-    throw new GradleException('Detekt01 requires only root :detekt, one worker, serial strict verification')
++    throw new GradleException('Detekt02 requires only root :detekt --continue, one worker, serial strict verification')
+ }
+ 
+ gradle.taskGraph.whenReady { graph ->
+@@ -21,32 +21,32 @@
+             graph.allTasks.any { it instanceof Test } || !coverage.enabled ||
+             coverage.commandLine != ['ruby', 'scripts/verify-static-analysis-coverage.rb'] ||
+             coverage.workingDir.canonicalFile != root.projectDir.canonicalFile) {
+-        throw new GradleException('Detekt01 forbids graph expansion, tests, or an altered inventory guard')
++        throw new GradleException('Detekt02 forbids graph expansion, tests, or an altered inventory guard')
+     }
+ 
+     def sourceRoot = root.projectDir.canonicalFile.toPath()
+     def relative = { File file ->
+         def path = file.canonicalFile.toPath()
+         if (!path.startsWith(sourceRoot)) {
+-            throw new GradleException('Detekt01 input/report escaped the disposable source snapshot')
++            throw new GradleException('Detekt02 input/report escaped the disposable source snapshot')
+         }
+         sourceRoot.relativize(path).toString().replace(File.separator, '/')
+     }
+     detektTasks.sort { it.path }.each { task ->
+         if (!task.enabled || task.project.extensions.getByName('detekt').parallel.get() ||
+                 task.jvmTarget.get() != '17') {
+-            throw new GradleException('Detekt01 requires enabled serial generic Detekt with JVM target 17')
++            throw new GradleException('Detekt02 requires enabled serial generic Detekt with JVM target 17')
+         }
+         def reports = [:]
+         ['checkstyle', 'html', 'sarif'].each { kind ->
+             def report = task.reports."${kind}"
+             if (!report.required.get()) {
+-                throw new GradleException('Detekt01 requires the existing compact static-report formats')
++                throw new GradleException('Detekt02 requires the existing compact static-report formats')
+             }
+             reports[kind] = relative(report.outputLocation.get().asFile)
+         }
+         // Planned task inputs are not per-file engine visitation or test cases.
+-        println('PASSVAULT_DETEKT01_TASK=' + JsonOutput.toJson([
++        println('PASSVAULT_DETEKT02_TASK=' + JsonOutput.toJson([
+             task: task.path,
+             sources: task.source.files.collect { relative(it) }.sort(),
+             reports: reports,

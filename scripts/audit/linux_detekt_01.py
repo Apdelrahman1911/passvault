@@ -27,20 +27,20 @@ R = Path('/root/projects/PassVault/audit-runtime-linux-detekt01')
 E = B / 'runs/linux-detekt01'
 CHECKOUT = R / 'checkout'
 SELF, INIT = W / 'scripts/audit/linux_detekt_01.py', W / 'scripts/audit/detekt_01.init.gradle'
-SOURCE = B / 'reviews/desktop-tray/source-prepare02/SOURCE.json'
+SOURCE = B / 'reviews/desktop-integration03/source-prepare01/SOURCE.json'
 JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
 PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
 GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
 # Final published snapshot and exact regular tool/alias/optional-exclude identities
 # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
-COMMIT = 'd3d46db51d9fa69a4060250e71e0477c6b930d3a'
-TREE = '245160648cb79873f41da41969a5b48d4c2057e1'
-MEMBERS = 2495
+COMMIT = '8f42274b04e206ff7254ca33d686a9666fce6723'
+TREE = '3a8f53dddd54f5c42c34f772975f02619be118d5'
+MEMBERS = 2757
 GIT_IMAGE = Path('/usr/bin/git')
 RUBY_IMAGE = Path('/usr/bin/ruby3.2')
 EXCLUDE_STATE = 'INFO_ABSENT'
-FROZEN = {SOURCE: 'ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97'}
+FROZEN = {SOURCE: '1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97'}
 INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
 GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
 RUN_ID = 'linux-detekt01'

@@ -17,10 +17,10 @@ def evidenceRoot = '/root/projects/PassVault/passvault-linux/docs/audit-continua
         '2026-09-08-linux/runs/linux-desktop-integration03'
 def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
 def selections = [
-    [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'mainnav',
-     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],
     [project: ':shared', task: ':shared:desktopTest', worker: 'editor-room',
      selectedClasses: ['com.passvault.shared.credential.CredentialEditorRoomIntegrationTest'], timeoutSeconds: 360],
+    [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'mainnav',
+     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],
 ]
 
 gradle.beforeProject { project ->
@@ -117,8 +117,8 @@ gradle.projectsEvaluated {
         if (project == null) throw new GradleException('Fixed INTEGRATION03 project missing: ' + selected.project)
         [(selected.task): project.tasks.named('desktopTest', Test)]
     }
-    selectedTests[':shared:desktopTest'].configure {
-        mustRunAfter(selectedTests[':app-desktop:desktopTest'])
+    selectedTests[':app-desktop:desktopTest'].configure {
+        mustRunAfter(selectedTests[':shared:desktopTest'])
     }
     gradle.rootProject.tasks.register('auditDesktopIntegration03Prepare') {
         // Lazy dependency-bearing collections only: depending on Test itself

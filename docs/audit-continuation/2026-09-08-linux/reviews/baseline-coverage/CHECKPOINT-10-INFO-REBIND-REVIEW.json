@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_ONE_PROSPECTIVE_C10_SUCCESSOR_SOURCE_PHASE_WITH_EXACT_EMPTY_INFO_REBIND_AND_EXACT_THREE_DOCUMENT_DELTA; ROOT_ADOPTION_AND_FULL_PRESTAGE_COMPARISON_REQUIRED",
+  "scope": "Explicit successor-scope request from root only; not automatic retry, retroactive PASS, inode waiver, root-cause finding, product credit, runtime/CI/cleanup admission or modification of historical evidence.",
+  "references": {
+    "original_C10_scope": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-10-PUBLICATION-SCOPE-ASSESSMENT.json",
+      "sha256": "491d6d0ecb65afb2f78bf943ead329448f593fb8b3fca70896da44152f9246a7"
+    },
+    "original_C10_manifest": {
+      "path": "publication/CHECKPOINT-10-PAYLOAD.json",
+      "sha256": "23f641bcab4e42166b03982780ac82836873b410f42231fd83a6ff047873fbf1",
+      "bytes": 43718
+    },
+    "original_C10_final_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-10-REVIEW.json",
+      "sha256": "271ae3259a5dbcb7193f76aa31ffce792af3941043c331a7249fe6bcc8f71db6",
+      "bytes": 19486
+    },
+    "failed_attempt": {
+      "path": "publication/CHECKPOINT-10-SOURCE-PUBLISHED.json",
+      "sha256": "379a34ad8eaa8bcf836d1d4f3bbb6bb5208896a3906e88c6699a43dc3dd123bf",
+      "bytes": 7739
+    },
+    "prior_exact_info_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-9-INFO-REBIND-REVIEW.json",
+      "sha256": "2624c66cd7ba120c1b7cddb7b5903e5a57387baf293bc0614e4bfa2dd36f7000"
+    },
+    "prior_exact_info_root_adoption": {
+      "path": "publication/CHECKPOINT-9-INFO-REBIND-ROOT-ADOPTION.json",
+      "sha256": "df53e5090ecc1db5447586238ee357233410ca55495612e97ce2b856793e4dfe"
+    },
+    "raw14_qualification": {
+      "path": "publication/CHECKPOINT-10-RAW-LOG-QUALIFICATION.json",
+      "sha256": "7dbd9258d938253eaf4fbedbe5247d0d7d79e32c5083a02b29d9a4395939b4c3"
+    }
+  },
+  "independent_challenge": {
+    "receipt": "Hash-bound receipt records six read-only Git commands all0, then RuntimeError:original exact empty info drift; object_checks[]; no stage/commit/cached-whitespace-check/push. Original tool248d31 exit1 is root's completion report. No full protected-object PASS is retained. Consumed FAIL_HOLD_NO_AUTOMATIC_RETRY remains.",
+    "direct_observation": {
+      "tool": "065b3b exit0",
+      "utc": "2026-09-10T00:08:34.057057+00:00",
+      "object_root": "/root/projects/PassVault/passvault/.git/objects",
+      "row_schema": [
+        "relative_path",
+        "st_dev",
+        "st_ino",
+        "st_uid",
+        "st_mode"
+      ],
+      "historical_protected": [
+        "info",
+        23,
+        895075,
+        0,
+        16832
+      ],
+      "observed": [
+        "info",
+        23,
+        1004769,
+        0,
+        16832
+      ],
+      "sole_specified_row_difference": {
+        "inode": {
+          "before": 895075,
+          "observed": 1004769
+        }
+      },
+      "nlink": 2,
+      "immediate_entries": [],
+      "enumeration_complete": true,
+      "size": 4096,
+      "mtime_ns": 1788899259003429400,
+      "ctime_ns": 1788899259003429400,
+      "stable_path_original_open_end_path": true,
+      "stable_parent_during_observation": {
+        "git": [
+          23,
+          504168,
+          0,
+          16832
+        ],
+        "objects": [
+          23,
+          504175,
+          0,
+          16832
+        ]
+      },
+      "method": "Only component-no-follow parent/leaf metadata and capped immediate info entries; O_NOATIME/no fallback. No object-root enumeration/body reads. Closed descriptors."
+    },
+    "schema_correction": "Initial provisional reviewer output misread fourth row column0 as size; withdrawn before sealing. Row is path/dev/ino/uid/mode. Prior hash-bound review already records size4096 and identical mtime/ctime. Thus only inode drift is supported, not size drift. Raw named-field observations remain valid.",
+    "cause": "UNKNOWN. Matching empty entries/metadata does not establish responsible actor, benign filesystem behavior, old handle absence, historic contents or continuous stability.",
+    "limits": "This bounded observation is not a full1068-file or all-other-directory/ancestor comparison. Reused accepted payload/source/runtime reviews are not re-audited. Fresh full comparison is an unsatisfied BEFORE-STAGE gate, not credit supplied by this report.",
+    "data_reads": "cd7199 failed receipt;3d9c02 existing scope;84c290 prior exact info review/adoption/comparison; all exit0. No Git/network by reviewer."
+  },
+  "exact_additive_payload": {
+    "preserved_base": "Original158 manifest-selected tuples unchanged, plus exact original manifest and original final review =160 unchanged paths. Reuse their accepted byte/mode/source/raw14 qualifications. Do not rewrite the manifest/final review to erase failure or update its old count.",
+    "additional_only": [
+      "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-SOURCE-PUBLISHED.json",
+      "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-REBIND-REVIEW.json",
+      "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-INFO-REBIND-ROOT-ADOPTION.json"
+    ],
+    "total_paths": 163,
+    "no_other_delta": "Only these3 permanent records augment original160. Root adoption must bind original manifest/final-review, failed receipt, this genuine review and exact additive paths/bytes before stage; no new product/helper/workflow/request/source edits or normalization. Preliminary CHECKPOINT-10-INFO-DRIFT-ASSESSMENT.json remains unselected, as does all other future/unadmitted work.",
+    "hash_gate": "Fresh exact selected-byte/Git-mode validation under root coordination is required before staging; this scope does not claim all160 currently rehashed. Any changed base tuple or extra/missing path requires STOP/new bounded review."
+  },
+  "sole_prospective_rebinding": {
+    "object_root": "/root/projects/PassVault/passvault/.git/objects",
+    "path": "info",
+    "historical_expected": [
+      "info",
+      23,
+      895075,
+      0,
+      16832
+    ],
+    "prospective_expected": [
+      "info",
+      23,
+      1004769,
+      0,
+      16832
+    ],
+    "required_nlink": 2,
+    "required_complete_entries": [],
+    "limit": "Only this exact leaf identity is rebound after all gates. No generic accept-current, next-inode waiver, directory size/time waiver, other ancestor/dir/file exemption, info child/alternates/commit-graph, symlink/permission waiver, mutation/restoration or repair. Renewed drift stops; it is not accepted by this report."
+  },
+  "before_action_gates": [
+    "Root explicitly adopts this new narrow successor scope before any new stage operation. Original failed phase remains consumed and preserved. At most ONE successor C10 source commit and dedicated fast-forward push; a failure has no automatic retry. This is not an extra intermediate commit before source.",
+    "BEFORE STAGE, complete the original bounded protected-union comparison:1068files/255dirs/7ancestors/38437361B from baseline plus EVERY C8/C9 stage/commit addition. Require all original bytes/hash/path/dev/inode/mode/uid/nlink; all other directory/ancestor bindings must match. Record strict old-info difference separately and apply only this exact prospective row. No current-identity blanket adoption or incomplete comparison PASS.",
+    "Existing explicitly scoped mtime/ctime-only qualification applies only to regular loose hex paths and exact original pack/pack-244144b04072fe6c0e09e599c5f176705a70ad5f.pack with bytes/all non-time invariants preserved and actual deltas recorded. No info/ancestor/permission exemption follows. Any other mismatch, new child, unsafe read, timeout or error means STOP/HOLD.",
+    "Pin original no-follow info directory/path to exact1004769 row,nlink2,complete empty entries and retain original parent/ancestor gates. Repeat full protected-object comparisons afterstage/beforecommit, aftercommit/beforepush and afterpush; legitimate new loose/fanout additions from only the admitted operation become protected. No GC/prune/repack/delete or metadata restoration.",
+    "Fresh original source/branch/index/protected-ref/remote/selection guards must still hold: parentb2e826fd534be8fefede169d28e30c22e37530a9/treecf59082d4fa090415ac8d8660432dd63ba409e4f; dedicated codex/audit-continuation-linux-20260908 only; both future Windows04/Mac02 request paths absent/excluded. Empty index and no unrelated-work overwrite; literal exact163 pathspecs only.",
+    "Retain exactly the already independently accepted14 raw-evidence path/hash/size/mode qualification. Cached check has not run. Preserve complete bounded actual stdout/stderr/exit and actual FAIL; only diagnostics attributable to those frozen bytes qualify. Changed tuple, other diagnostic/path/error or truncation stops. No evidence trimming/normalization or config/attribute suppression.",
+    "Original bounded Git-only controls remain: per-command hooks/fsmonitor/auto-GC/maintenance/signing disabled, no force/protected refs/tags/config/identity changes; dedicated push with no signing/follow-tags/submodules.600s phase/60s read-stage-commit commands/120s push and original inventory/resource/coordination/foreground settlement limits; no build/old-runtime activity."
+  ],
+  "subsequent_phases": {
+    "windows04": "After actual successor source publication and fresh independent instance/root execution/coordination/cleanup admission, original one A-only Windows04 request child binds that actual source commit/tree. No activation is authorized merely by this review.",
+    "mac02": "Only after Windows04 actual settlement is independently reconciled and sole build-slot reservation released, original one A-only Mac02 request child binds actual immediately preceding Windows04 ACTIVATION commit/tree, not earlier C10 source. Existing Windows04 request unchanged; no reactivation.",
+    "unchanged_limits": "Original branch-restricted nonpublishing workflows, pinned minimal permissions/artifacts/runner/time requirements, request/source/nonce and attempt1 guards, root sole local/CI slot, exact sequential parent chain and hardware gaps survive. No extra phase/run, intermediate edit or automatic retry."
+  },
+  "preserved": "Keep all historical inode798164/895075 and current1004769 observations, C9/C10 strict failures/UNKNOWN causes, prior pack/time qualifications, successful evidence, rejected findings/grouped variants and old HOLDs. PVU007 STOP,PVU011 NO-RETRY,PVA029 recorded failure/no automatic retry,G7/G8 CLOSED; PVD/owner/hardware/protected-ref/tag/dependency/version/identity/signing/store/1017001 fences unchanged. No new test/finding/closure/readiness credit.",
+  "cleanup": "Only this new permanent review is exclusively0600/fsynced/read back. No Git/network/helper execution/import, build/test/CI, temp/cache/runtime outputs, signals/deletions or persistent workers. No new wrapper-stop duty. Quiescent after delivery.",
+  "utc": "2026-09-10T00:20:45.546431+00:00"
+}

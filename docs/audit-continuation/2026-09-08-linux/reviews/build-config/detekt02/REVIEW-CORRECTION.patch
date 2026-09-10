@@ -1,0 +1,34 @@
+--- reviewed-before/scripts/audit/linux_detekt_02.py
++++ corrected-after/scripts/audit/linux_detekt_02.py
+@@ -704,10 +704,28 @@
+         charged = 0
+         for task, kind, relative, cap in candidates:
+             try:
++                # Only an initial entry lookup may establish absence. ENOENT
++                # from directory validation or an observed file read is drift.
++                parent, absent_entry = CHECKOUT, None
++                for index, part in enumerate(relative.parts):
++                    parent_fd = self.f.directory(parent)  # Outside the absence catch.
++                    child = parent / part
++                    try:
++                        observed = pin(os.stat(part, dir_fd=parent_fd, follow_symlinks=False))
++                    except FileNotFoundError:
++                        require(child not in self.f.dirs, 'previously pinned report parent disappeared')
++                        absent_entry = str(child.relative_to(CHECKOUT))
++                        break
++                    if index + 1 < len(relative.parts):
++                        descriptor = self.f.directory(child)
++                        require(directory_identity(pin(os.fstat(descriptor), True)) == directory_identity(observed),
++                                'report parent changed after initial lookup')
++                        parent = child
++                if absent_entry is not None:
++                    absent.append({'task': task, 'kind': kind, 'source': str(relative), 'absent_entry': absent_entry})
++                    continue
+                 report, original = self.f.read(CHECKOUT / relative, cap)
+-            except FileNotFoundError:
+-                absent.append({'task': task, 'kind': kind, 'source': str(relative)})
+-                continue
++                require(original['pin'] == observed, 'report changed after initial entry lookup')
+             except Exception as error:
+                 note(collection_errors, 'capture ' + str(relative) + ': ' + str(error))
+                 continue

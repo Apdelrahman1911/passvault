@@ -1,6 +1,28 @@
 # Linux continuation — in progress, not a release
 
-## Current C15 checkpoint
+## Current C16 checkpoint
+
+Read `CHECKPOINT_16.md`, the three current ledgers and slot. Detekt01 is consumed:
+coverage1PASS, Android analyzer1FAIL/seven diagnostics,21analyzersUNSTARTED,
+zero application cases. Its collector failed before report retention. A separately
+admitted closeout preserved four reports and independently reconciled generated-only
+cleanup; original failure flags and source-remainder/older HOLDs survive.
+
+Android decomposition and Room editable-only observation are independently
+source-accepted, not yet compiled/executed. New Detekt02 source is independently
+accepted; five narrow parser controls passed, with actual reconciliation retained
+separately. Bind C16 before the next static cycle, then run only Room-first/Main
+integration03. No repeat of passing lifecycle/tray cases. Remaining software
+witnesses, external gates and conditional **2–4 engineering week** estimate are
+explicit in C16; Android32 stays the highest-risk license/target-blocked item.
+
+Counts remain **19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**;
+**199 +3 infrastructure +1 producer =203 XML testcase elements**, not199 passes.
+Parser controls are separate infrastructure, not additional XML/application cases.
+C15 parent is `8f42274b04e206ff7254ca33d686a9666fce6723`; actual C16 identity belongs
+in its subsequent publication receipt. No release approval or old-scope retry.
+
+## Historical C15 checkpoint
 
 Read `CHECKPOINT_15.md` and the current three ledgers/slot. Integration02 actually
 finished **2 PASS / 1 fixture-driver FAIL / 1 UNSTARTED**, independently reconciled
@@ -84,7 +106,7 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest report: `CHECKPOINT_15.md`; current summary above supersedes historical pending statuses.**
+**Latest report: `CHECKPOINT_16.md`; current summary above supersedes historical pending statuses.**
 
 **Historical: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
 One additional Desktop test plus two Android instrumentation cases and minimal

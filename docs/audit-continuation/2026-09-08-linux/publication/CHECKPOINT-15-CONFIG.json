@@ -1,0 +1,49 @@
+{
+  "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+  "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+  "namespace_parent": [
+    23,
+    498323,
+    0,
+    16877
+  ],
+  "selection_sha256": "eccf95658173fb60a4cd2bab060aebfe956d633579359506498f40bbf711ab67",
+  "review_path": "reviews/baseline-coverage/CHECKPOINT-15-REVIEW.json",
+  "review_sha256": "a92188a054acc6069b416ee990ccce895a8c2fc8055a3e26630689409887490e",
+  "companions": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-15-PAYLOAD.json",
+      "sha256": "eccf95658173fb60a4cd2bab060aebfe956d633579359506498f40bbf711ab67",
+      "bytes": 47845,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-15-REVIEW.json",
+      "sha256": "a92188a054acc6069b416ee990ccce895a8c2fc8055a3e26630689409887490e",
+      "bytes": 8858,
+      "git_mode": "100644"
+    }
+  ],
+  "slot_sha256": "f3e13528d7addaf29b33b5ca00b8c3617d7fc8180b095ab302e1463dbd508261",
+  "slot_state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
+  "remotes": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "f7f3ca91cef14b7b2341114c44c460907061f883",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "receipt_name": "CHECKPOINT-15-PUBLISHED.json",
+  "commit_message": "Preserve Desktop validation results and narrow remaining integration checks",
+  "root_admission": {
+    "owner": "/root",
+    "utc": "2026-09-10T17:51:38.064668+00:00",
+    "purpose": "ONE_C15_SOURCE_PUBLICATION_ONLY",
+    "publisher_sha256": "39d3003ece4671b153bc8fe8fd49b404c911dc3bf226d9b1ddd697e467785a9f",
+    "selection_files": 157,
+    "total_with_companions": 159,
+    "commands": "Exact independently source-reviewed newC15 publisher only; under-lock source/parent/index/refs/slot/resource checks precede writes and one nonforce dedicated-branch push. All agents completed/quiescent. No request/CI/build/test/wrapper/SDK/held-scope action or automatic retry.",
+    "cleanup": "Existing600s total/60s ordinaryGit/120s push deadlines and installed signal/reaping/fsync handling. Necessary T/source/evidence retained; no disposable build/cache/runtime/service created. Abnormal descendants/hard-interruption uncertainty remains HOLD; no unrelated signal/delete."
+  }
+}

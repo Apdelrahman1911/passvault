@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_C16_SOURCE_PUBLICATION",
+  "selection_sha256": "9d2b6f4a12a9852741018457d44cd7e26cfea4ff97ac0acd14b76ef02f3477f4",
+  "selection_bytes": 37378,
+  "parent_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+  "parent_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+  "publisher_sha256": "ec66e49ac549530319a740de5f4ab2895ec2b9ce9d95e961d9bd4f4aaf3fe970",
+  "publisher_bytes": 16752,
+  "publisher_physical_LF": 244,
+  "scope": "Exact source-publication/ledger/report review only. No actual publication, build/test/admission or whole-project coverage claim.",
+  "selection": {
+    "paths": 140,
+    "bytes": 10803096,
+    "with_manifest_and_review": 142,
+    "all_unique_relative_regular_and_hash_size_mode_matched": true,
+    "authored_whitespace_paths": 15,
+    "whitespace_subset": true,
+    "workflow_paths": 0,
+    "active_request_paths": 0,
+    "source_delta": "Two existing fixtures/five audit inner-init sources; no production/dependency/version/identity/release change.",
+    "excluded": "closeout02 remainder draft explicitly excluded/unadmitted; new main-followups17/source-prepare work is outside this frozen selection.",
+    "limit": "W-only checks, no T/Git. Root's W/T comparison selected paths; publisher must verify actual HEAD/index/base/protected refs. Large selected payloads are metadata, not app binaries."
+  },
+  "input_pins": {
+    "CHECKPOINT_16.md": "7ee7f7fe4c79bbab3163d41b9a505a371d36ab49e2165a8e5827c678036157d8",
+    "README.md": "a091315c6ddce61e56b842b0064580a39633121f7d79f611525c4894e342c4a3",
+    "OWNERSHIP.md": "9f8854148700fa5dede436f5d0e7709fbdb47e2988c49720725d5b64093fc22f",
+    "ISSUE_LEDGER.json": "52c6c7090f7d71e445d8108a54c4844084c02dae2778522cb33cb76381545407",
+    "VERIFICATION_LEDGER.json": "f2a6639fd7158bd08b4306cdc4a4b51a359e8b0091ae71bdd2d0372634e23061",
+    "COVERAGE_DELTA.json": "e9cb9cab76f6b4f4a591eac20ce13509c9998e0f8593d72c766f58d4d4549110",
+    "EXECUTION_SLOT.json": "32767426c8f13e22d2a9523170c10f3577d9fc65f8e8b27e499e20b630c28135"
+  },
+  "coverage": {
+    "current_registry": 31,
+    "unique_paths": 31,
+    "path_set_preserved": true,
+    "all_current_sha256_bytes_LF_match": true,
+    "changed_rows": [
+      {
+        "path": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt",
+        "sha256": "580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d",
+        "review_sha256": "add5f99382ceddd5be14e62a65e28230441c48d1fcc10bbfc7f5003f587cd043"
+      },
+      {
+        "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+        "sha256": "291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57",
+        "review_sha256": "30136b76753040cdbf79c6f904e226d781b6c1730bd08877a63a45f23ca33ebf"
+      }
+    ],
+    "both_complete_prior_rows_preserved_exactly": true,
+    "new_cases": 0,
+    "new_semantic_LF_credit": 0,
+    "limits": "Independent reviewers differ from authors. Android diagnostic decomposition and Room editable-only narrowing remain uncompiled/unexecuted; no observed Room-NPE repair.31 current paths, not33 or semantic coverage.",
+    "history": "All39 identities/titles/statuses/base hashes,12 suspicion statuses, historical coverage/policy/registries/runs preserved.63 old gates unchanged+3 distinct additions;39 old slot fields unchanged. Five family continuation lists append only. Shared C16 blocks agree."
+  },
+  "accounting": {
+    "original_confirmed": "19/25 (76%);6 remain",
+    "all_confirmed": "26/39 (66.7%);13 remain",
+    "original_suspicions": "2/12 (16.7%);10 remain",
+    "design": "8/8 explanations; owner decisions separate",
+    "application_intended_events": 199,
+    "infrastructure_XML_controls": 3,
+    "fixture_producers": 1,
+    "XML_elements": 203,
+    "C16_new_application_JUnit_cases": 0,
+    "C16_new_closures": 0,
+    "C16_conclusive_suspicions": 0,
+    "separate_pure_parser_controls": "5 PASS/0 FAIL;0 XML/application cases",
+    "qualification": "Not199/203 passes or readiness percentages. Includes historical controls and Main's driver-limited failure. Detekt/checkstyle XML and658 inventory targets are not JUnit cases."
+  },
+  "evidence": {
+    "detekt01": {
+      "review": "reviews/verification/LINUX-DETEKT01-C15-ACTUAL-RESULT-REVIEW.json",
+      "sha256": "83f5c80bf1934177c7de042b88d327da46929d3b9de21198f918dfb2b813ca05",
+      "result": "Consumed C15:2 distinct tasks=coverage1PASS+Android1FAIL/7diagnostics;21 analyzers UNSTARTED. Gradle1/stop0/external70. Bare/FAILED headers are one task. Collector/report-retention failure and original false safety flags/HOLD retained; no Desktop/PVA039 static credit."
+    },
+    "generated_closeout": {
+      "review": "reviews/detekt01-closeout01/ACTUAL-REVIEW.json",
+      "sha256": "2c926d2ccaf6c2238e0426dcd0b035509812c4e63c04ee4be241b93888dd1fa4",
+      "result": "New consumed generated-only closeout:external0/4.066s;35roots=14removed+21absent;5657files+3975dirs;737938566 logical bytes.4reports/280276B;6closeout files/1817734B.",
+      "limit": "Reuse accepted inventory/report/terminal reconciliation, not live absence probe. Selected report hashes match; XML/SARIF retain7diagnostics. Not net disk recovery or continuous resource monitoring. Source/blob/index/metadata remainder/all old HOLDs remain; no build/test/new stop."
+    },
+    "parser_controls": {
+      "review": "reviews/detekt02/parser-controls01/ACTUAL-REVIEW.json",
+      "sha256": "67cb2b79e7a17b6a7cd3e7299ef9d501211e082cb0cb40dabab0ba535bd5aa88",
+      "result_sha256": "4d855b09cb4c3ca4f2586c7043da0caae8cdf727ad44a02a22c2e21d40b6cb73",
+      "literal_function_sha256": "cb30e52bf1c4c1c622a22794158cd6631cbe8542631d46aa748d4f8501294e90",
+      "result": "Five full retained actual objects equal independent expected values;1853B/40LF literal parser matches. Root external0/0.006220107956323773s; actual bare/FAILED, full projection, blocked root, sticky failure and unknown/malformed controls.",
+      "limit": "Data/text checks only here; root's memory-only controls are not full collector/filesystem/Detekt/application evidence. No helper import/AST/compile/execution or added reviewer cases."
+    }
+  },
+  "pending": {
+    "static": "Detekt02 inner/init/outer source-accepted, C16/instance unbound. Retention-before-mapping and absence-race objection/correction retained; static-only --continue is not an application retry policy.",
+    "application": "2cases/2XML/2serial tasks:current Room first then Main, fail-fast. C15 binding historical after Room change; no passing lifecycle/tray replay. PVU003/PVA027 proposals remain unadopted/unadmitted.",
+    "external": "All13 confirmed/10 suspicion gaps retained, including PVU004. Android32 target/license highest priority; genuine hardware/owner/PVD gaps and missing validate_evidence_ledger.py remain, no substituted tooling."
+  },
+  "report_review": {
+    "disposition": "ACCEPT_AFTER_ONE_ADMISSION_WORDING_CORRECTION",
+    "initial_selection_sha256": "87bd56c42e4f87d9663000d18e5b7302cf87d5ce23dd990525d8c15f2c107df2",
+    "correction": "Verified sole report delta: 'admitted two-case selection' became 'pending two-case source selection'.140 paths unchanged; selected bytes+6. Final binding above.",
+    "history": "README only adds/current-labels C16; OWNERSHIP appends C16 roles; historical prose retained.",
+    "ETA": "2–4 engineering weeks is conditional planning, not a release promise; external waits/prohibited work/new defects excluded. Software gaps not mislabeled hardware-only."
+  },
+  "publication": {
+    "delta": "Seven identity/name-only lines; exact inverse recovers consumed C15 SHA39d3003ece4671b153bc8fe8fd49b404c911dc3bf226d9b1ddd697e467785a9f. Reuse accepted mechanics, not execution/replay.",
+    "next": "Root must bind fresh config to this selection/review/C15 parent/idle slot and140+2 companions. Retain genuine-review/source/index/tree/changed-path/15-path-whitespace/resource/child guards and one nonforce dedicated-branch push with protected-ref checks. No live Git verification here; T is not a build workspace.",
+    "slot": "32767426… records IDLE_NO_AUDIT_BUILD_ADMITTED; no remainder/old-HOLD release."
+  },
+  "permanent_limits": "PVU007 STOP/no reformulation; PVU011 NO RETRY/no procedure inquiry; PVA02949checks/44PASS/5FAIL/no automatic retry; G7/G8 CLOSED; all consumed/HOLD/retired-store boundaries unchanged. Preserve PVD/hex/hardware, protected refs and occupied1017001. No dependency/version/identity/signing/Store/release change. Root sole build/CI/Git/cleanup owner.",
+  "reviewer_activity": "Named inert W reads, hashes and data/text comparisons; only this review written. No T/Git/network/helper import/AST/execution/build/test/runtime/held-target/signal/deletion activity or caches/workers; wrapper stop N/A. Inspection truncation/argv/list-shape errors were resolved by bounded reads, not project retries."
+}

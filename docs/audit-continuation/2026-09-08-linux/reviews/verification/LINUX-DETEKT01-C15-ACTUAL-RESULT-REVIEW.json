@@ -1,0 +1,258 @@
+{
+  "collector_and_reports": {
+    "counterexample": "The same app-android task has one bare announcement and one FAILED terminal header around its diagnostics, while Gradle counts two total executed tasks including coverage. Thus treating the two app-android headers as two executions is independently rejected. The reported unique-event collector rejection is consistent with this actual sequence; precise parser-source/patch review remains in independent source lanes, not silently completed here.",
+    "flags": {
+      "cleanup_safe": false,
+      "independent_semantic_acceptance": false,
+      "static_mapping_ok": false,
+      "static_reports_preserved": false,
+      "validation_mapping_ok": false
+    },
+    "observed_error": "static report/settlement uncertainty: bounded unique Gradle task events; not test cases",
+    "outer": "Outer records RuntimeError:child failure/uncertain finalization, emits matching CANCEL reason and remains HOLD/NOT_ATTEMPTED. CANCEL is not evidence of a user cancellation. Failed static analysis and failed report collection remain separate retained outcomes.",
+    "reports": "Lines75-77 announce HTML/SARIF/Checkstyle under held R/app-android/build/reports/detekt. Current E/reports is independently empty. Announcement is not proof of present/readable/valid report payload or preservation; no held report was opened. Do not claim7 recovered XML findings or that reports are absent from R.",
+    "secondary_error": "RuntimeError: Detekt01 failed; no automatic retry"
+  },
+  "commands": {
+    "inner_setup": [
+      [
+        "metadata-bind",
+        0
+      ],
+      [
+        "metadata-readonly",
+        0
+      ],
+      [
+        "index-bind",
+        0
+      ],
+      [
+        "index-readonly",
+        0
+      ]
+    ],
+    "inner_static": [
+      [
+        "detekt",
+        1
+      ],
+      [
+        "detekt-stop",
+        0
+      ]
+    ],
+    "linkage": "All6 inner command intents match phase argv; each started/complete/errors[] and log hash/size reconciles. Both PHASE files equal embedded inner phases apart from record_image, whose hashes/sizes match. Actual wrapper :detekt and original --stop arrays exactly match sealed INSTANCE-PLAN: JDK17/one worker/non-daemon/serial/CoD off/strict verification/private storage. Four mount commands are setup, not Gradle tasks and have no stop duty.",
+    "outer": "One admitted env-isolated Python3.12 outer; retained original raw Git cat-file child exit0 and unshare child exit70, neither records a pidfd kill attempt. No additional outer child appears.",
+    "stop": "Original stop required/attempted/ok=true; 406-byte log says No Gradle daemons are running. Gradle itself reported a single-use daemon, compatible with --no-daemon. Original stop0 is evidence, not permission or need to repeat it."
+  },
+  "date": "2026-09-10",
+  "diagnostics": {
+    "kind": "Seven retained console diagnostics, not recovered Checkstyle XML findings.",
+    "qualification": "Real lint failures in one instrumentation-test source. This does not establish a production defect, validate a proposed code fix, or execute that instrumentation test.",
+    "rows": [
+      {
+        "column": 13,
+        "limit": 3,
+        "line": 91,
+        "log_line": 78,
+        "observed": 5,
+        "rule": "ComplexCondition"
+      },
+      {
+        "column": 17,
+        "limit": 3,
+        "line": 167,
+        "log_line": 79,
+        "observed": 4,
+        "rule": "ComplexCondition"
+      },
+      {
+        "column": 25,
+        "limit": 3,
+        "line": 347,
+        "log_line": 80,
+        "observed": 4,
+        "rule": "ComplexCondition"
+      },
+      {
+        "column": 18,
+        "function": "onStart",
+        "limit": 14,
+        "line": 103,
+        "log_line": 81,
+        "observed": 21,
+        "rule": "CyclomaticComplexMethod"
+      },
+      {
+        "column": 25,
+        "function": "observeInitialReadyOnboarding",
+        "limit": 14,
+        "line": 325,
+        "log_line": 82,
+        "observed": 22,
+        "rule": "CyclomaticComplexMethod"
+      },
+      {
+        "column": 18,
+        "function": "onStart",
+        "limit": 60,
+        "line": 103,
+        "log_line": 83,
+        "observed": 71,
+        "rule": "LongMethod"
+      },
+      {
+        "column": 46,
+        "line": 353,
+        "log_line": 84,
+        "rule": "ThrowingExceptionFromFinally"
+      }
+    ],
+    "source_path": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+  },
+  "disposition": "ACCEPT_CONSUMED_ACTUAL_FAILURE_MAPPING_WITH_HELD_RUNTIME; SUPPORT_CONDITIONAL_SCHEDULING_ONLY_RELEASE",
+  "evidence": {
+    "E_inventory": "Independently enumerated only current E plus logs/reports directories: exactly27 single-link regular files/118470B; every size/hash equals sealed external catalog. reports/ is empty. No R path was opened.",
+    "E_root": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01",
+    "approval_sha256": "2209377ba543ca6c9ccec8c95dccd3105820b35757c4ec1d3feed37730e6a531",
+    "external": {
+      "bytes": 8032,
+      "path": "reviews/detekt01/c15-preflight/EXTERNAL-RESULT.json",
+      "sha256": "e7ffb842fa14d6dfc8ef971a2f647594d563a6f3f1fc6fb776e64e0d5e37beaf"
+    },
+    "invocation": {
+      "bytes": 658,
+      "path": "reviews/detekt01/c15-preflight/INVOCATION.json",
+      "sha256": "077392eb2dc9cde5ee32da1ef19bf67826816134bd71b50f33e6a167966e2ce3"
+    },
+    "key_E_hashes": {
+      "INNER-RESULT.json": "aa8813acebfc2d9308926d179845a37303f85ef7652cf0c97aee8849883cfc46",
+      "OUTER-ALLOCATION.json": "52216e32746c8614ee15d078274c505d31f3d689bb0974b0b958107fc15892f8",
+      "OUTER-INTENT.json": "48f262c5dec4237492d231989d5e299dd75a9ffbb329f525c4404879ae934c69",
+      "OUTER-RECEIPT.json": "6fa674ea620303612d0f71290a1210368dcc1bae98ac4be0c62e1b88edf3caa6",
+      "PHASE-detekt.json": "1263a51c670738f796d0129768ab9dd28cd2a4165670b09bc2f4b1da60c4da5a",
+      "PHASE-git-isolation.json": "8e2849d4abd74a45995d8fc7b5ba9e1916163ffd9ed8609b2f2b36d040edc2c0",
+      "SOURCE-AFTER.json": "a71df23efdc330470cf1c71ce34e5344893473da0efa6506d5d4f699352237bc",
+      "SOURCE-BEFORE.json": "a71df23efdc330470cf1c71ce34e5344893473da0efa6506d5d4f699352237bc",
+      "logs/detekt-stop.log": "e99efde14fa98d945008d4e456023a6830343bd898e2dbd476436f3ca61691b4",
+      "logs/detekt.log": "13c30804b78f425f8ec21b204ed117ba3143990f0b99a232b073bde1342e4218"
+    },
+    "request_sha256": "f7120a80c95eacddf3d2f9d31ea1d2f866a574050707f972e3932b446172d5c1",
+    "root_admission": {
+      "bytes": 3062,
+      "path": "reviews/detekt01/c15-preflight/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "be9d039e8c8f3219b6556a6fa2b601b484090be39a11b899b63f6002428acc2c"
+    }
+  },
+  "preservation": "PVA-039 remains statically unqualified; zero new family closures, suspicions resolved, application cases or readiness credit. Preserve C13/C15 preflight and metadata refusals with unretained operands, every prior successful/rejected/grouped result, PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED, all consumed/HOLD recovery scopes, eight PVD boundaries, physical hardware gaps and publication/signing/store/occupied1017001 fences.",
+  "resources": {
+    "first_elapsed": 0.099,
+    "incomplete_resource_samples": 0,
+    "inner_traversals": 7,
+    "last_directories": 4449,
+    "last_elapsed": 150.922,
+    "last_examined_entries": 12651,
+    "last_files": 8203,
+    "maximum_recorded_runtime_logical_bytes": 827813841,
+    "mem_total_bytes": 67435888640,
+    "minimum_recorded_disk_available_bytes": 18013392896,
+    "minimum_recorded_mem_available_bytes": 26970845184,
+    "outer_elapsed": 158.716,
+    "outer_samples": 6,
+    "qualification": "All recorded inner traversals finished with zero vanished entries/directories. These are point/traversal data, not continuous bounds, current free-space/worker observations, ownership proof or permission to delete827813841B.",
+    "recorded_sample_floors": "Entry12GiB/25% and subsequent8GiB/20% all pass; last7.794s has no later retained outer sample."
+  },
+  "reviewer": "/root/verification",
+  "reviewer_activity": "Only bounded no-follow current-E and sealed preflight/packet data reads, inventory/hashes/text/JSON arithmetic and this exclusive0600 fsynced/read-back report. No R/T/store/index/tool/process probe, helper execution/import/AST/syntax test, Gradle/stop, session poll, CI, signal, lock/slot edit, source mutation or deletion. Initial inert comparison0b0062 incorrectly expected15-only outer_images; e08a54 proved the sole legal sealed-copy addition and8c8e30 checked exact15+copy. This reviewer-side assumption failure is retained, not an additional project invocation. No workers/temp/runtime owned.",
+  "run_id": "linux-detekt01",
+  "scheduling_and_freeze_disposition": {
+    "held_runtime": "/root/projects/PassVault/audit-runtime-linux-detekt01; original allocation dev23/ino1304148 recorded only, not presently probed. E allocation dev23/ino1304147 retained. No held directory or output was accessed or deleted by reviewer.",
+    "prerequisites": [
+      "Bind the original reservation to this run/request/admission and external terminal70; mark the exact invocation/request/approval consumed and retain E plus this independent failure review. Reconcile only the original foreground consumer/phase/stop evidence above; no extra stop, finished-session poll, PID adoption or signal.",
+      "Root must compare/transition only its original current audit reservation under the unchanged original lock, without replacing another owner. If original ownership or terminal linkage is uncertain, leave scheduling HOLD.",
+      "Retain immutable C15 identities and exact consumed control-source/packet evidence. Root may then explicitly release named ordinary W source-authoring lanes and T active-reader freeze only; this is not publication/Git/new-runtime permission. Do not rewrite consumed helper/request evidence or claim future inputs still match C15.",
+      "Preserve original R allocation as a separate consumed cleanup/report-retention HOLD. Any report recovery or generated-output cleanup needs a fresh narrowly scoped independently reviewed admission; do not access R, re-run outer/inner or transfer old recovery authority under a scheduling release.",
+      "Any future build needs a new permitted instance and fresh source/binding/tool/resource/coordination/cleanup admission. Terminal evidence is not a continuing free-capacity/no-CI lease."
+    ],
+    "supported": "Scheduling and active-reader freeze release ONLY may be recorded by root after the prerequisites below. This review does not itself mutate a slot or grant a new build, T mutation, report recovery or runtime cleanup."
+  },
+  "schema": 1,
+  "source": {
+    "commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "manifest_sha256": "1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23",
+    "members": 2757,
+    "raw_bytes": 87770345,
+    "tree": "3a8f53dddd54f5c42c34f772975f02619be118d5"
+  },
+  "source_index_settlement": {
+    "index": "Original and sealed-copy SHA2561392f1447fdeacafda591a7da33cf3c16d46daa794a322adf15687061aa37798 match across request, copy receipt, intent and Git preflight. Copy0400/440654B; inner reports sealed_index_unchanged and git_bindings_established/stable true. Both alias mounts record ro,nosuid,nodev,noexec.",
+    "intake": "OUTER-INTENT outer_images equals all15 exact request images plus precisely the admitted0400 runtime index copy; original aliases and inventory binding equal request. Allocation/intent/receipt source and packet identities agree. No source/index/tool re-probe was performed.",
+    "limits": "These are retained original-domain observations, not new live PID/mount proof, generic-interpreter/no-escape assurance, arbitrary-descendant settlement, parent mount-absence verification or cleanup authorization. Preserve preterminal versus actual-exit distinctions.",
+    "raw_transport": "Outer records one original raw cat-file response87913727B,2757members, two complete verification passes and113037B ordered OID requests. Source-before/after records are byte-identical1333B and report87770345 raw Git bytes,2757members and both historical EOL qualifications. This run's recorded raw transport is distinct from the earlier checkout-derived preparation; reviewer did not open held raw buffers.",
+    "settlement": "Both phases record settled=true; all_required_stops_ok and namespace_empty_before_exit=true. The unshare-owned pid:[4026532116]/mnt:[4026532115] matches INNER-PREFLIGHT; original parent namespaces match request. Original foreground Git/unshare exits0/70 plus external outer70 support completion of the admitted consumer scope."
+  },
+  "static_mapping": {
+    "accounting": "Two distinct actionable tasks (coverage plus failing analyzer), not three executions from three headers. The21 remaining analyzers, including two zero-source planned projects, are UNSTARTED, not NO-SOURCE successes. Planned paths are not proof of engine visitation. Zero application/JUnit/hardware test cases.",
+    "actual_headers": [
+      {
+        "log_line": 71,
+        "suffix": "",
+        "task": ":verifyStaticAnalysisCoverage"
+      },
+      {
+        "log_line": 74,
+        "suffix": "",
+        "task": ":app-android:detekt"
+      },
+      {
+        "log_line": 87,
+        "suffix": "FAILED",
+        "task": ":app-android:detekt"
+      }
+    ],
+    "analyzer": "Exactly one distinct generic analyzer reached execution: app-android (25 planned source paths). Its seven console diagnostics and IssuesFound stack trace corroborate real failed analysis, not a mock assertion.",
+    "coverage": "Line72: Static-analysis coverage floor is satisfied (658 security-analysis targets). It completed sufficiently for its dependent analyzer to run. This is the unchanged Ruby inventory/floor guard, not OpenGrep execution,658 tests or a whole static PASS.",
+    "declared_selector": ":detekt",
+    "final_console": "BUILD FAILED in 2m26s; 2 actionable tasks: 2 executed.",
+    "planned_analyzer_records": 22,
+    "planned_record_lines": [
+      48,
+      69
+    ],
+    "unstarted_analyzers": [
+      ":app-desktop:detekt",
+      ":core:crypto:detekt",
+      ":core:database:detekt",
+      ":core:designsystem:detekt",
+      ":core:detekt",
+      ":core:domain:detekt",
+      ":core:navigation:detekt",
+      ":core:otp:detekt",
+      ":core:security:detekt",
+      ":core:testing:detekt",
+      ":detekt",
+      ":feature:backup:detekt",
+      ":feature:credential:detekt",
+      ":feature:detekt",
+      ":feature:generator:detekt",
+      ":feature:health:detekt",
+      ":feature:onboarding:detekt",
+      ":feature:settings:detekt",
+      ":feature:unlock:detekt",
+      ":feature:vault:detekt",
+      ":shared:detekt"
+    ]
+  },
+  "terminal": {
+    "external_exit": 70,
+    "launch_tool": "8e93e2",
+    "outer_cleanup": "NOT_ATTEMPTED",
+    "outer_elapsed_seconds": 158.716,
+    "outer_status": "HOLD",
+    "qualification": "External completion is root-recorded original tool evidence, separately reconciled with preterminal OUTER-RECEIPT. INVOCATION's earlier RUNNING_NO_FINAL_RESULT is historical, not an active-session claim. Scope/request/approval are now CONSUMED_NO_AUTOMATIC_RETRY: no additional poll, stop or helper replay.",
+    "terminal_tool": "831806",
+    "tool_session_complete": true,
+    "tool_session_id": 42545
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "author": "/root",
+  "utc": "2026-09-10T18:19:54.560841+00:00",
+  "status": "EXACT_STATIC_REQUEST_CREATED_INDEPENDENT_REVIEW_AND_FINAL_QUIESCENCE_PENDING",
+  "finding_ids": [
+    "PVA-039",
+    "PVA-007",
+    "PVA-031",
+    "PVA-033",
+    "PVA-034",
+    "PVA-035",
+    "PVA-038"
+  ],
+  "purpose": "Outstanding changed-source static gate, especially PVA039 final static qualification; not another runtime test/full build or old failed scope. Exactly22generic Detekt analyzers+1coverage task,zero application/JUnit cases. No prior successful Detekt execution to repeat.",
+  "source": {
+    "commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+    "members": 2757,
+    "manifest_sha256": "1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23",
+    "raw_source_bytes": 87770345
+  },
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-DETEKT-01.json",
+    "sha256": "f7120a80c95eacddf3d2f9d31ea1d2f866a574050707f972e3932b446172d5c1",
+    "bytes": 6352
+  },
+  "source_preparation_actual": {
+    "tool_chunk": "6f4f03",
+    "external_exit": 0,
+    "tool_wall_seconds": 0.799155067,
+    "capture_and_stdout_sha256": "7052641d2444743aeab792aef2a84bdc036a35c42ad420f26c97f732e32c526b",
+    "independent_source_review": "reviews/verification/C15-SOURCE-PREPARE01-DELTA-ACCEPTANCE.md",
+    "independent_source_review_sha256": "a7ba0b1f856a5ca5a2593a2b5b6220d7f445cc4f98970c9fe2ac502821720112",
+    "cleanup": "Original two Git children reaped, no runtime/cache/temp/build or stop duty. Scope consumed."
+  },
+  "expected_commands": [
+    [
+      "/root/projects/PassVault/audit-runtime-linux-detekt01/checkout/gradlew",
+      "--init-script",
+      "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_01.init.gradle",
+      ":detekt",
+      "--no-daemon",
+      "--max-workers=1",
+      "--console=plain",
+      "--no-parallel",
+      "--no-configure-on-demand",
+      "--no-configuration-cache",
+      "--no-build-cache",
+      "--dependency-verification=strict",
+      "--stacktrace",
+      "-Pkotlin.compiler.execution.strategy=in-process",
+      "-Pandroid.builder.sdkDownload=false",
+      "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+      "-Dorg.gradle.java.installations.auto-download=false",
+      "-Dorg.gradle.java.installations.auto-detect=false",
+      "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+    ],
+    [
+      "/root/projects/PassVault/audit-runtime-linux-detekt01/checkout/gradlew",
+      "--stop",
+      "--no-daemon",
+      "--max-workers=1",
+      "--console=plain",
+      "--no-parallel",
+      "--no-configure-on-demand",
+      "--no-configuration-cache",
+      "--no-build-cache",
+      "--dependency-verification=strict",
+      "--stacktrace",
+      "-Pkotlin.compiler.execution.strategy=in-process",
+      "-Pandroid.builder.sdkDownload=false",
+      "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+      "-Dorg.gradle.java.installations.auto-download=false",
+      "-Dorg.gradle.java.installations.auto-detect=false",
+      "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+    ]
+  ],
+  "expected_evidence": "22 generic Detekt task outcomes + coverage guard outcome; compact logs, Checkstyle/SARIF, exact source/index before/after, original stop/namespace/cleanup. No application cases/XML-test count.",
+  "bounds": {
+    "outer_total_seconds": 6000,
+    "work_seconds": 5250,
+    "drain_seconds": 750,
+    "detekt_seconds": 3600,
+    "original_stop_seconds": 600,
+    "runtime_limit_bytes": 6442450944,
+    "inner_evidence_files": 96,
+    "inner_evidence_bytes": 67108864
+  },
+  "cleanup": "Installed reviewed outer/inner own original PID/mount namespaces and all new R outputs. One applicable original wrapper stop. Bound original generated-only cleanup, mounted new-T metadata readonly and not deletable; logs/reports outside R retained. Unknown stop/source/mount/evidence/process remains HOLD; no automatic retry. All older TRAY01/other HOLDs and retired W-store restrictions remain.",
+  "toolchain": "Linux x86_64 JDK17,checked-in wrapper,one worker,non-daemon,CoD disabled,serial Detekt,dependency verification strict,no SDK/toolchain downloads. Exact tool images/direct aliases in request and index capture.",
+  "coordination_semantics": "Request True values are conjunctive FUTURE intake obligations, not assertion all source reviewers have stopped at this preparation timestamp. Root must observe all other agents completed/quiescent and independently accepted packet before reservation/launch. T/store/index/config/excludes and exact W input images frozen now; no CI activation by root. Last CI sample8terminal/noactivation; final host/resources under lock rechecked by launcher. No release of old HOLDs or retroactive authority.",
+  "prior_preflight_preserved": "C13 HOST_OR_RESOURCE_HOLD_NO_REQUEST_CREATED is historical; no old Detekt request/runtime/helper/task ever started. This is first actual exact request, not automatic replay of a failed invocation."
+}

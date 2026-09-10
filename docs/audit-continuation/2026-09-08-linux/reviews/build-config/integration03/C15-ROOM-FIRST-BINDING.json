@@ -1,0 +1,153 @@
+{
+  "activity": {
+    "background_workers": 0,
+    "builds_or_tests": 0,
+    "git_or_network_commands": 0,
+    "helper_import_or_execution": 0,
+    "host_tool_sdk_process_cache_runtime_probes": 0,
+    "new_cases_or_family_closures": 0,
+    "temporary_runtime_or_cache_outputs": 0
+  },
+  "author": "/root/build_config",
+  "changes": [
+    {
+      "after_bytes": 10645,
+      "after_lf": 184,
+      "after_sha256": "2b9aec1c7366bff5d39a62f9b1aaefb60e4884866fca3ac309dc4b00940c43fb",
+      "before_bytes": 10645,
+      "before_lf": 184,
+      "before_sha256": "9bf2cc5f32af4447f9ad38c4104b486b30a40e18cf2e0757da1e4e465d02637d",
+      "inverse_recovers_exact_before": true,
+      "mode": "0600",
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/desktop_integration_03.init.gradle",
+      "substitutions": [
+        {
+          "after": "    [project: ':shared', task: ':shared:desktopTest', worker: 'editor-room',\n     selectedClasses: ['com.passvault.shared.credential.CredentialEditorRoomIntegrationTest'], timeoutSeconds: 360],\n    [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'mainnav',\n     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],\n",
+          "before": "    [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'mainnav',\n     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],\n    [project: ':shared', task: ':shared:desktopTest', worker: 'editor-room',\n     selectedClasses: ['com.passvault.shared.credential.CredentialEditorRoomIntegrationTest'], timeoutSeconds: 360],\n",
+          "key": "selections order only"
+        },
+        {
+          "after": "    selectedTests[':app-desktop:desktopTest'].configure {\n        mustRunAfter(selectedTests[':shared:desktopTest'])\n    }\n",
+          "before": "    selectedTests[':shared:desktopTest'].configure {\n        mustRunAfter(selectedTests[':app-desktop:desktopTest'])\n    }\n",
+          "key": "mustRunAfter edge reversal only"
+        }
+      ]
+    },
+    {
+      "after_bytes": 85087,
+      "after_lf": 1403,
+      "after_sha256": "42e4968552fafbecf032211dbd385cac9821e7bc7b79a7b59fa2864d38f55da6",
+      "before_bytes": 84825,
+      "before_lf": 1403,
+      "before_sha256": "86cd40c4681665cc723afeb3c38f3fda3f82c56bda233c284cd802d55212b4c0",
+      "inverse_recovers_exact_before": true,
+      "mode": "0600",
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_desktop_integration_03.py",
+      "substitutions": [
+        {
+          "after": "    {'module': 'shared', 'task': ':shared:desktopTest', 'worker': 'editor-room',\n     'class': 'com.passvault.shared.credential.CredentialEditorRoomIntegrationTest',\n     'suite': 'CredentialEditorRoomIntegrationTest[desktop]',\n     'methods': ('native capacity draft persists through page Save and a fresh Room database reopen',),\n     'fixture': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt',\n     'sha256': 'a67ba81ad875a4c611208d30b51e40caf87cf5381622f5d6ababf38d2953cff9'},\n    {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',\n     'class': 'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',\n     'suite': 'CredentialMainNavHostRoomIntegrationTest[desktop]',\n     'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),\n     'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',\n     'sha256': None},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.\n",
+          "before": "    {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',\n     'class': 'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',\n     'suite': 'CredentialMainNavHostRoomIntegrationTest[desktop]',\n     'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),\n     'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',\n     'sha256': None},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.\n    {'module': 'shared', 'task': ':shared:desktopTest', 'worker': 'editor-room',\n     'class': 'com.passvault.shared.credential.CredentialEditorRoomIntegrationTest',\n     'suite': 'CredentialEditorRoomIntegrationTest[desktop]',\n     'methods': ('native capacity draft persists through page Save and a fresh Room database reopen',),\n     'fixture': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt',\n     'sha256': 'a67ba81ad875a4c611208d30b51e40caf87cf5381622f5d6ababf38d2953cff9'},\n",
+          "key": "SELECTIONS order only (COMMANDS uses these two indexes)"
+        },
+        {
+          "after": "COMMIT = '8f42274b04e206ff7254ca33d686a9666fce6723'",
+          "before": "COMMIT = None",
+          "key": "COMMIT"
+        },
+        {
+          "after": "TREE = '3a8f53dddd54f5c42c34f772975f02619be118d5'",
+          "before": "TREE = None",
+          "key": "TREE"
+        },
+        {
+          "after": "MEMBERS = 2757",
+          "before": "MEMBERS = None",
+          "key": "MEMBERS"
+        },
+        {
+          "after": "    SOURCE: '1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23',",
+          "before": "    SOURCE: None,",
+          "key": "FROZEN[SOURCE]"
+        },
+        {
+          "after": "    INIT: '2b9aec1c7366bff5d39a62f9b1aaefb60e4884866fca3ac309dc4b00940c43fb',",
+          "before": "    INIT: None,",
+          "key": "FROZEN[INIT]"
+        },
+        {
+          "after": "     'sha256': '32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5'},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.",
+          "before": "     'sha256': None},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.",
+          "key": "corrected Main fixture hash"
+        }
+      ]
+    }
+  ],
+  "corrected_main_fixture": {
+    "bytes": 40561,
+    "lf": 755,
+    "matches_c15_manifest_raw_and_checkout_sha256": true,
+    "path": "/root/projects/PassVault/passvault-linux/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+    "sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5"
+  },
+  "handoff_qualification": "This exact binding/order record supersedes only the original03 PLAN app-first order and unbound source/Main/init fields. Existing planning prose/old source-only hashes remain historical; source identity is now bound but route/instance/execution admission remains unbound. Root handles outer alignment separately.",
+  "independence_and_limits": "Separate existing Test JVM/worker HOME and Main role/home/evidence roots remain unchanged. Task-time classpath forwarding and source/Test graph guards remain. This order change is not a claim of process settlement between Test tasks; original wrapper stop and whole owned namespace settlement still follow rendering. Root alone owns any eventual launch/admission/cleanup.",
+  "member_ceiling": 3196,
+  "members": 2757,
+  "ordering": {
+    "after": [
+      ":shared:desktopTest",
+      ":app-desktop:desktopTest"
+    ],
+    "before": [
+      ":app-desktop:desktopTest",
+      ":shared:desktopTest"
+    ],
+    "continue_not_added": true,
+    "expected_cases": 2,
+    "expected_test_tasks": 2,
+    "expected_xml_suites": 2,
+    "fail_fast_unchanged": true,
+    "mechanism": "Reverse only SELECTIONS/init-selections and the matching app.mustRunAfter(shared) edge. Existing indexed COMMANDS automatically names shared then app; its body is unchanged.",
+    "selected_classes_after": [
+      "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest",
+      "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest"
+    ]
+  },
+  "preservation": "Detekt host refusal remains before helper/slot and its scope is unconsumed/frozen; no admission follows from this GUI preparation. Preserve prior successes/failures/rejections/grouped variants,PVU-007 STOP,PVU-011 NO-RETRY,PVA-029 failure/no automatic retry,G7/G8 CLOSED,consumed/HOLD/retired-store restrictions,native-agent refusal,PVD/hardware/publication/occupied1017001 boundaries. No old cleanup obligation discharged.",
+  "raw_source_qualification": "Immutable published C15/SOURCE remains unchanged. These W control-helper after-images are separately bound controls, not a claim that C15 raw helper payload bytes changed. Detekt, its exact inputs, outer03, application source, T/store/index and all held scopes were not written.",
+  "risk_and_work_saved": "Run the previously UNSTARTED independent Room task first so another corrected-Main fixture-driver failure cannot again prevent that Room task from starting. This can avoid a further full bootstrap solely for still-unstarted Room; no measured time saving or promise of PASS is claimed. Room failure can still leave Main UNSTARTED under the unchanged fail-fast contract.",
+  "schema": 1,
+  "source_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+  "source_manifest": {
+    "bytes": 1504175,
+    "checkout_eol_qualifications": 2,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/source-prepare01/SOURCE.json",
+    "sha256": "1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23",
+    "unique_members": 2757
+  },
+  "source_path_literal_already_correct_no_edit": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/source-prepare01/SOURCE.json",
+  "source_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+  "status": "C15_ROOM_FIRST_GUI03_SOURCE_DELTA_PENDING_INDEPENDENT_REVIEW_AND_FRESH_INSTANCE_ADMISSION",
+  "unchanged_contracts": {
+    "case_names_classes_suites_oracles_xml_mapping": true,
+    "deadlines_seconds": {
+      "app_test": 600,
+      "each_original_wrapper_stop": 600,
+      "inner": 6000,
+      "outer_drain": 750,
+      "outer_total": 6000,
+      "outer_work": 5250,
+      "prepare": 3600,
+      "render": 1100,
+      "shared_test": 360
+    },
+    "gui_environment_setup_pidfd_stop_settlement_cleanup": "unchanged",
+    "init_changes_only_two_recorded_order_substitutions": true,
+    "inner_evidence": "84 success files/93 cap,112MiB cap; unchanged",
+    "inner_functional_body_after_def_require_byte_identical": true,
+    "main_receipts_roles_events_crash_preservation": "9 required files,3 serial roles,13 ordered events,up to3 bounded crash texts; unchanged",
+    "panel_route_admitted": null,
+    "resource_floors": "12/8GiB free disk and25/20% available RAM; unchanged"
+  },
+  "utc": "2026-09-10T18:41:58.860988+00:00"
+}

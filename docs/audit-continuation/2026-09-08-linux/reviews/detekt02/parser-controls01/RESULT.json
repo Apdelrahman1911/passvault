@@ -1,0 +1,470 @@
+{
+  "application_cases": 0,
+  "cleanup": "Memory-only; no subprocess/Gradle/cache/temp/runtime. Stop NOT_APPLICABLE.",
+  "controls": [
+    {
+      "actual": {
+        "errors": [],
+        "events": [
+          {
+            "line": 1,
+            "suffix": null,
+            "task": ":verifyStaticAnalysisCoverage"
+          },
+          {
+            "line": 2,
+            "suffix": null,
+            "task": ":app-android:detekt"
+          },
+          {
+            "line": 3,
+            "suffix": "FAILED",
+            "task": ":app-android:detekt"
+          }
+        ],
+        "header_count": 3,
+        "outcomes": {
+          ":app-android:detekt": "FAILED",
+          ":app-desktop:detekt": "UNSTARTED",
+          ":core:crypto:detekt": "UNSTARTED",
+          ":core:database:detekt": "UNSTARTED",
+          ":core:designsystem:detekt": "UNSTARTED",
+          ":core:detekt": "UNSTARTED",
+          ":core:domain:detekt": "UNSTARTED",
+          ":core:navigation:detekt": "UNSTARTED",
+          ":core:otp:detekt": "UNSTARTED",
+          ":core:security:detekt": "UNSTARTED",
+          ":core:testing:detekt": "UNSTARTED",
+          ":detekt": "UNSTARTED",
+          ":feature:backup:detekt": "UNSTARTED",
+          ":feature:credential:detekt": "UNSTARTED",
+          ":feature:detekt": "UNSTARTED",
+          ":feature:generator:detekt": "UNSTARTED",
+          ":feature:health:detekt": "UNSTARTED",
+          ":feature:onboarding:detekt": "UNSTARTED",
+          ":feature:settings:detekt": "UNSTARTED",
+          ":feature:unlock:detekt": "UNSTARTED",
+          ":feature:vault:detekt": "UNSTARTED",
+          ":shared:detekt": "UNSTARTED",
+          ":verifyStaticAnalysisCoverage": "BARE"
+        },
+        "unique_tasks": 2
+      },
+      "id": "P1",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "errors": [],
+        "events": [
+          {
+            "line": 1,
+            "suffix": null,
+            "task": ":verifyStaticAnalysisCoverage"
+          },
+          {
+            "line": 2,
+            "suffix": null,
+            "task": ":detekt"
+          },
+          {
+            "line": 3,
+            "suffix": null,
+            "task": ":app-android:detekt"
+          },
+          {
+            "line": 4,
+            "suffix": null,
+            "task": ":app-desktop:detekt"
+          },
+          {
+            "line": 5,
+            "suffix": null,
+            "task": ":shared:detekt"
+          },
+          {
+            "line": 6,
+            "suffix": "NO-SOURCE",
+            "task": ":core:detekt"
+          },
+          {
+            "line": 7,
+            "suffix": "NO-SOURCE",
+            "task": ":feature:detekt"
+          },
+          {
+            "line": 8,
+            "suffix": null,
+            "task": ":core:domain:detekt"
+          },
+          {
+            "line": 9,
+            "suffix": null,
+            "task": ":core:database:detekt"
+          },
+          {
+            "line": 10,
+            "suffix": null,
+            "task": ":core:crypto:detekt"
+          },
+          {
+            "line": 11,
+            "suffix": null,
+            "task": ":core:security:detekt"
+          },
+          {
+            "line": 12,
+            "suffix": null,
+            "task": ":core:designsystem:detekt"
+          },
+          {
+            "line": 13,
+            "suffix": null,
+            "task": ":core:navigation:detekt"
+          },
+          {
+            "line": 14,
+            "suffix": null,
+            "task": ":core:otp:detekt"
+          },
+          {
+            "line": 15,
+            "suffix": null,
+            "task": ":core:testing:detekt"
+          },
+          {
+            "line": 16,
+            "suffix": null,
+            "task": ":feature:onboarding:detekt"
+          },
+          {
+            "line": 17,
+            "suffix": null,
+            "task": ":feature:unlock:detekt"
+          },
+          {
+            "line": 18,
+            "suffix": null,
+            "task": ":feature:vault:detekt"
+          },
+          {
+            "line": 19,
+            "suffix": null,
+            "task": ":feature:credential:detekt"
+          },
+          {
+            "line": 20,
+            "suffix": null,
+            "task": ":feature:generator:detekt"
+          },
+          {
+            "line": 21,
+            "suffix": null,
+            "task": ":feature:health:detekt"
+          },
+          {
+            "line": 22,
+            "suffix": null,
+            "task": ":feature:settings:detekt"
+          },
+          {
+            "line": 23,
+            "suffix": null,
+            "task": ":feature:backup:detekt"
+          }
+        ],
+        "header_count": 23,
+        "outcomes": {
+          ":app-android:detekt": "BARE",
+          ":app-desktop:detekt": "BARE",
+          ":core:crypto:detekt": "BARE",
+          ":core:database:detekt": "BARE",
+          ":core:designsystem:detekt": "BARE",
+          ":core:detekt": "NO-SOURCE",
+          ":core:domain:detekt": "BARE",
+          ":core:navigation:detekt": "BARE",
+          ":core:otp:detekt": "BARE",
+          ":core:security:detekt": "BARE",
+          ":core:testing:detekt": "BARE",
+          ":detekt": "BARE",
+          ":feature:backup:detekt": "BARE",
+          ":feature:credential:detekt": "BARE",
+          ":feature:detekt": "NO-SOURCE",
+          ":feature:generator:detekt": "BARE",
+          ":feature:health:detekt": "BARE",
+          ":feature:onboarding:detekt": "BARE",
+          ":feature:settings:detekt": "BARE",
+          ":feature:unlock:detekt": "BARE",
+          ":feature:vault:detekt": "BARE",
+          ":shared:detekt": "BARE",
+          ":verifyStaticAnalysisCoverage": "BARE"
+        },
+        "unique_tasks": 23
+      },
+      "id": "P2",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "errors": [],
+        "events": [
+          {
+            "line": 1,
+            "suffix": null,
+            "task": ":verifyStaticAnalysisCoverage"
+          },
+          {
+            "line": 2,
+            "suffix": null,
+            "task": ":app-android:detekt"
+          },
+          {
+            "line": 3,
+            "suffix": "FAILED",
+            "task": ":app-android:detekt"
+          },
+          {
+            "line": 4,
+            "suffix": null,
+            "task": ":app-desktop:detekt"
+          },
+          {
+            "line": 5,
+            "suffix": null,
+            "task": ":shared:detekt"
+          },
+          {
+            "line": 6,
+            "suffix": "NO-SOURCE",
+            "task": ":core:detekt"
+          },
+          {
+            "line": 7,
+            "suffix": "NO-SOURCE",
+            "task": ":feature:detekt"
+          },
+          {
+            "line": 8,
+            "suffix": null,
+            "task": ":core:domain:detekt"
+          },
+          {
+            "line": 9,
+            "suffix": null,
+            "task": ":core:database:detekt"
+          },
+          {
+            "line": 10,
+            "suffix": null,
+            "task": ":core:crypto:detekt"
+          },
+          {
+            "line": 11,
+            "suffix": null,
+            "task": ":core:security:detekt"
+          },
+          {
+            "line": 12,
+            "suffix": null,
+            "task": ":core:designsystem:detekt"
+          },
+          {
+            "line": 13,
+            "suffix": null,
+            "task": ":core:navigation:detekt"
+          },
+          {
+            "line": 14,
+            "suffix": null,
+            "task": ":core:otp:detekt"
+          },
+          {
+            "line": 15,
+            "suffix": null,
+            "task": ":core:testing:detekt"
+          },
+          {
+            "line": 16,
+            "suffix": null,
+            "task": ":feature:onboarding:detekt"
+          },
+          {
+            "line": 17,
+            "suffix": null,
+            "task": ":feature:unlock:detekt"
+          },
+          {
+            "line": 18,
+            "suffix": null,
+            "task": ":feature:vault:detekt"
+          },
+          {
+            "line": 19,
+            "suffix": null,
+            "task": ":feature:credential:detekt"
+          },
+          {
+            "line": 20,
+            "suffix": null,
+            "task": ":feature:generator:detekt"
+          },
+          {
+            "line": 21,
+            "suffix": null,
+            "task": ":feature:health:detekt"
+          },
+          {
+            "line": 22,
+            "suffix": null,
+            "task": ":feature:settings:detekt"
+          },
+          {
+            "line": 23,
+            "suffix": null,
+            "task": ":feature:backup:detekt"
+          }
+        ],
+        "header_count": 23,
+        "outcomes": {
+          ":app-android:detekt": "FAILED",
+          ":app-desktop:detekt": "BARE",
+          ":core:crypto:detekt": "BARE",
+          ":core:database:detekt": "BARE",
+          ":core:designsystem:detekt": "BARE",
+          ":core:detekt": "NO-SOURCE",
+          ":core:domain:detekt": "BARE",
+          ":core:navigation:detekt": "BARE",
+          ":core:otp:detekt": "BARE",
+          ":core:security:detekt": "BARE",
+          ":core:testing:detekt": "BARE",
+          ":detekt": "UNSTARTED",
+          ":feature:backup:detekt": "BARE",
+          ":feature:credential:detekt": "BARE",
+          ":feature:detekt": "NO-SOURCE",
+          ":feature:generator:detekt": "BARE",
+          ":feature:health:detekt": "BARE",
+          ":feature:onboarding:detekt": "BARE",
+          ":feature:settings:detekt": "BARE",
+          ":feature:unlock:detekt": "BARE",
+          ":feature:vault:detekt": "BARE",
+          ":shared:detekt": "BARE",
+          ":verifyStaticAnalysisCoverage": "BARE"
+        },
+        "unique_tasks": 22
+      },
+      "id": "P3",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "errors": [
+          "Illegal Gradle task header transition at line 3"
+        ],
+        "events": [
+          {
+            "line": 1,
+            "suffix": null,
+            "task": ":app-android:detekt"
+          },
+          {
+            "line": 2,
+            "suffix": "FAILED",
+            "task": ":app-android:detekt"
+          },
+          {
+            "line": 3,
+            "suffix": null,
+            "task": ":app-android:detekt"
+          }
+        ],
+        "header_count": 3,
+        "outcomes": {
+          ":app-android:detekt": "FAILED",
+          ":app-desktop:detekt": "UNSTARTED",
+          ":core:crypto:detekt": "UNSTARTED",
+          ":core:database:detekt": "UNSTARTED",
+          ":core:designsystem:detekt": "UNSTARTED",
+          ":core:detekt": "UNSTARTED",
+          ":core:domain:detekt": "UNSTARTED",
+          ":core:navigation:detekt": "UNSTARTED",
+          ":core:otp:detekt": "UNSTARTED",
+          ":core:security:detekt": "UNSTARTED",
+          ":core:testing:detekt": "UNSTARTED",
+          ":detekt": "UNSTARTED",
+          ":feature:backup:detekt": "UNSTARTED",
+          ":feature:credential:detekt": "UNSTARTED",
+          ":feature:detekt": "UNSTARTED",
+          ":feature:generator:detekt": "UNSTARTED",
+          ":feature:health:detekt": "UNSTARTED",
+          ":feature:onboarding:detekt": "UNSTARTED",
+          ":feature:settings:detekt": "UNSTARTED",
+          ":feature:unlock:detekt": "UNSTARTED",
+          ":feature:vault:detekt": "UNSTARTED",
+          ":shared:detekt": "UNSTARTED",
+          ":verifyStaticAnalysisCoverage": "UNSTARTED"
+        },
+        "unique_tasks": 1
+      },
+      "id": "P4",
+      "status": "PASS"
+    },
+    {
+      "actual": {
+        "errors": [
+          "Unknown Gradle task identity at line 1",
+          "Malformed Gradle task header at line 2"
+        ],
+        "events": [],
+        "header_count": 2,
+        "outcomes": {
+          ":app-android:detekt": "UNSTARTED",
+          ":app-desktop:detekt": "UNSTARTED",
+          ":core:crypto:detekt": "UNSTARTED",
+          ":core:database:detekt": "UNSTARTED",
+          ":core:designsystem:detekt": "UNSTARTED",
+          ":core:detekt": "UNSTARTED",
+          ":core:domain:detekt": "UNSTARTED",
+          ":core:navigation:detekt": "UNSTARTED",
+          ":core:otp:detekt": "UNSTARTED",
+          ":core:security:detekt": "UNSTARTED",
+          ":core:testing:detekt": "UNSTARTED",
+          ":detekt": "UNSTARTED",
+          ":feature:backup:detekt": "UNSTARTED",
+          ":feature:credential:detekt": "UNSTARTED",
+          ":feature:detekt": "UNSTARTED",
+          ":feature:generator:detekt": "UNSTARTED",
+          ":feature:health:detekt": "UNSTARTED",
+          ":feature:onboarding:detekt": "UNSTARTED",
+          ":feature:settings:detekt": "UNSTARTED",
+          ":feature:unlock:detekt": "UNSTARTED",
+          ":feature:vault:detekt": "UNSTARTED",
+          ":shared:detekt": "UNSTARTED",
+          ":verifyStaticAnalysisCoverage": "UNSTARTED"
+        },
+        "unique_tasks": 0
+      },
+      "id": "P5",
+      "status": "PASS"
+    }
+  ],
+  "controls_sha256": "341a26c350d77604a957f433e72fb116fd2532d254dbabf02f5c8c762a1607f2",
+  "elapsed_seconds": 0.006220107956323773,
+  "holder_sha256": "e5b2352080d4eafc2d22c3a50a7d3f4b31f4b324672cab1e59bdef8b91a2d294",
+  "parser_sha256": "cb30e52bf1c4c1c622a22794158cd6631cbe8542631d46aa748d4f8501294e90",
+  "purpose": "DETEKT02_PURE_PARSER_FIVE_CONTROLS_ONCE",
+  "resources": [
+    {
+      "disk_available": 20934492160,
+      "launch": true,
+      "memory_available": 25918320640,
+      "memory_total": 67435888640
+    },
+    {
+      "disk_available": 20934492160,
+      "launch": false,
+      "memory_available": 25917288448,
+      "memory_total": 67435888640
+    }
+  ],
+  "status": "PASS"
+}

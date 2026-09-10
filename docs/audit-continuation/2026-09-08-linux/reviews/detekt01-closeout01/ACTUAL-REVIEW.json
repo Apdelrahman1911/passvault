@@ -1,0 +1,685 @@
+{
+  "accounting": {
+    "application_cases_delta": 0,
+    "builds_tests_stops": 0,
+    "qualification": "Report recovery/cleanup only. No Detekt PASS, product fix verification, hardware assurance or readiness credit.",
+    "qualified_closures_delta": 0,
+    "suspicion_resolutions_delta": 0
+  },
+  "date": "2026-09-10",
+  "diagnostics": {
+    "agreement": "Exact multiset equality for source, normalized rule, start line/column and message; positions agree with original retained console vector. Full SARIF rule IDs preserved below. These are7 static diagnostics, not application tests or new analyzer executions.",
+    "original_outcome": "Original app-android Detekt exit1 remains failed; other21 planned analyzers remain UNSTARTED. Original report/cleanup false flags are unchanged; recovery is recorded separately here.",
+    "rows": [
+      {
+        "column": 13,
+        "line": 91,
+        "message": "This condition is too complex (5). The defined maximum number of allowed conditions is set to '3'",
+        "rule": "ComplexCondition",
+        "sarif_rule_id": "detekt.complexity.ComplexCondition",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      },
+      {
+        "column": 17,
+        "line": 167,
+        "message": "This condition is too complex (4). The defined maximum number of allowed conditions is set to '3'",
+        "rule": "ComplexCondition",
+        "sarif_rule_id": "detekt.complexity.ComplexCondition",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      },
+      {
+        "column": 25,
+        "line": 347,
+        "message": "This condition is too complex (4). The defined maximum number of allowed conditions is set to '3'",
+        "rule": "ComplexCondition",
+        "sarif_rule_id": "detekt.complexity.ComplexCondition",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      },
+      {
+        "column": 18,
+        "line": 103,
+        "message": "The function onStart appears to be too complex based on Cyclomatic Complexity (complexity: 21). The maximum allowed complexity for methods is set to '14'",
+        "rule": "CyclomaticComplexMethod",
+        "sarif_rule_id": "detekt.complexity.CyclomaticComplexMethod",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      },
+      {
+        "column": 25,
+        "line": 325,
+        "message": "The function observeInitialReadyOnboarding appears to be too complex based on Cyclomatic Complexity (complexity: 22). The maximum allowed complexity for methods is set to '14'",
+        "rule": "CyclomaticComplexMethod",
+        "sarif_rule_id": "detekt.complexity.CyclomaticComplexMethod",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      },
+      {
+        "column": 18,
+        "line": 103,
+        "message": "The function onStart is too long (71). The maximum length is 60.",
+        "rule": "LongMethod",
+        "sarif_rule_id": "detekt.complexity.LongMethod",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      },
+      {
+        "column": 46,
+        "line": 353,
+        "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing.",
+        "rule": "ThrowingExceptionFromFinally",
+        "sarif_rule_id": "detekt.exceptions.ThrowingExceptionFromFinally",
+        "source": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt"
+      }
+    ],
+    "sarif_count": 7,
+    "xml_count": 7
+  },
+  "disposition": "ACCEPT_COMPLETED_CURRENT_GENERATED_ONLY_CLOSEOUT_PRESERVE_SOURCE_REMAINDER_HOLD",
+  "evidence": [
+    {
+      "bytes": 22448,
+      "path": "reviews/detekt01-closeout01/CLOSEOUT.py",
+      "sha256": "709c30fdcee98c562f5f8c6199251c88d86a0e9748c44dc486ba6a9ada556fa5"
+    },
+    {
+      "bytes": 2928,
+      "path": "reviews/detekt01-closeout01/REQUEST.json",
+      "sha256": "781bf4d7096e2de073ea03a3d15d00d11d9e7c70fb8cd0c32ec4c35785705d77"
+    },
+    {
+      "bytes": 284,
+      "path": "reviews/detekt01-closeout01/ACCEPT.json",
+      "sha256": "d52f5a601ddc29c94cb00c4617df1f98468c3927e1b114326a983381a7ce879d"
+    },
+    {
+      "bytes": 4268,
+      "path": "reviews/detekt01-closeout01/REVIEW.md",
+      "sha256": "4c566338cd1311d9b786082a892a26c904a1c8bc2d4566d33aa5440f767421f4"
+    },
+    {
+      "bytes": 1222,
+      "path": "reviews/detekt01-closeout01/ROOT-ADMISSION.json",
+      "sha256": "272a0c09bae0c5a70a3c7518637eb03ad99413a8151349b22544b7ffecead702"
+    },
+    {
+      "bytes": 1190,
+      "path": "reviews/detekt01-closeout01/EXTERNAL-RESULT.json",
+      "sha256": "7ffd8f0473f5285710b2d85d89c0fc12d1b13838c138abba02b9a1f92ea37381"
+    },
+    {
+      "bytes": 6241,
+      "path": "runs/linux-detekt01/closeout01/RESULT.json",
+      "sha256": "d90d706927b235572df9ffdbdd46990b63d26e821cc36ca7b9ebce817316a381"
+    },
+    {
+      "bytes": 1531217,
+      "path": "runs/linux-detekt01/closeout01/INVENTORY.json",
+      "sha256": "cfd3cda2771e353665d7ca957dfdb2437029d04195909e7d4e260a5fda3c1f2b"
+    },
+    {
+      "bytes": 1725,
+      "path": "runs/linux-detekt01/closeout01/reports/app-android-detekt.xml",
+      "sha256": "31685320e0bb164cb8c8c254b086d7af0c5164f4a8b63a5054bcff60c3d56b8d"
+    },
+    {
+      "bytes": 19392,
+      "path": "runs/linux-detekt01/closeout01/reports/app-android-detekt.html",
+      "sha256": "95c40045cc08f49e3ac7e534ff842db31ff8c92df16779712b06937db284d9a6"
+    },
+    {
+      "bytes": 128664,
+      "path": "runs/linux-detekt01/closeout01/reports/app-android-detekt.sarif",
+      "sha256": "8595923bb3164cb5d114e255c9fcc3fa7674f7e694f250becb52153ab373f4b5"
+    },
+    {
+      "bytes": 130495,
+      "path": "runs/linux-detekt01/closeout01/reports/problems-report.html",
+      "sha256": "077cc100c8a55fe02d644fa03f22eebbbaea0ff26a556d3c521ead8c8b1185bc"
+    }
+  ],
+  "external": {
+    "actual_exit": 0,
+    "launch_tool": "d68416",
+    "qualification": "Root-retained actual tool completion0 is separately bound to preterminal RESULT. Reviewer did not poll any finished session or probe runtime/processes. No receipt/descriptor uncertainty or main error is recorded.",
+    "session": 21919,
+    "stdout": {
+      "descriptor_close_uncertainty": false,
+      "error": null,
+      "external_pending_code": 0,
+      "qualification": "Final receipt precedes descriptor close and actual tool exit; no automatic retry.",
+      "receipt_error": null,
+      "removed_directories": 3975,
+      "removed_files": 5657,
+      "status": "GENERATED_ONLY_CLEANED_PENDING_INDEPENDENT_RECONCILIATION"
+    },
+    "stdout_sha256": "fe50a304cf63198d1ff343985b1b9efb7b5e288f871aeba95b6ce16501623b51",
+    "terminal_tool": "0296cd"
+  },
+  "generated_cleanup": {
+    "absent_roots": 21,
+    "allowlist_roots": 35,
+    "checks": [
+      "All9632 inventory paths belong to exactly one selected present root;21 absent roots have no inventory members.",
+      "Every nonroot inventory entry has an inventoried directory parent; no duplicate JSON path or dev/inode identity.",
+      "Directories dev23/uid0/directory mode and files dev24/uid0/regular/single-link satisfy reviewed type and non-writable-by-group/other guards.",
+      "All14 selected-root pins equal their inventory directory pins; only the four admitted report/test leaves exist in inventory.",
+      "File/directory counts sum9632; file-size sum737938566 equals completed result/stdout mapping.",
+      "Exactly35 ordered roots match the accepted11-private+24-manifest-disjoint-prefix scope; source, R itself, metadata/index/blobs/OIDs, W/T and retained E are outside removal."
+    ],
+    "inventory_bytes": 1531217,
+    "inventory_entries": 9632,
+    "inventory_sha256": "cfd3cda2771e353665d7ca957dfdb2437029d04195909e7d4e260a5fda3c1f2b",
+    "qualification": "Accepted retained execution evidence of generated-only cleanup, not a new live R-absence scan.737938566B is removed logical file size, not proof of physical disk bytes reclaimed. No source-materialization cleanup or old-HOLD discharge.",
+    "removed_directories": 3975,
+    "removed_files": 5657,
+    "removed_logical_bytes": 737938566,
+    "removed_roots": 14,
+    "root_rows": [
+      {
+        "directories": 2,
+        "entries": 3,
+        "files": 1,
+        "logical_file_bytes": 127,
+        "relative": "home",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "tmp",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "jna",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "sqlite",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 3946,
+        "entries": 9581,
+        "files": 5635,
+        "logical_file_bytes": 737399107,
+        "relative": "gradle-home",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "konan",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "android-user",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "xdg-cache",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "xdg-config",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "xdg-data",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 1,
+        "entries": 1,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "xdg-state",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 12,
+        "entries": 29,
+        "files": 17,
+        "logical_file_bytes": 259056,
+        "relative": "checkout/.gradle",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/.kotlin",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 3,
+        "entries": 4,
+        "files": 1,
+        "logical_file_bytes": 130495,
+        "relative": "checkout/build",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 3,
+        "entries": 6,
+        "files": 3,
+        "logical_file_bytes": 149781,
+        "relative": "checkout/app-android/build",
+        "state": "REMOVED"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/app-desktop/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/shared/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/domain/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/database/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/crypto/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/security/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/designsystem/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/navigation/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/otp/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/core/testing/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/onboarding/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/unlock/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/vault/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/credential/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/generator/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/health/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/settings/build",
+        "state": "ABSENT"
+      },
+      {
+        "directories": 0,
+        "entries": 0,
+        "files": 0,
+        "logical_file_bytes": 0,
+        "relative": "checkout/feature/backup/build",
+        "state": "ABSENT"
+      }
+    ]
+  },
+  "mount_and_origin": {
+    "new_descriptor_reacquisition": true,
+    "original_root_pins": {
+      "/root/projects/PassVault": [
+        23,
+        498323,
+        0,
+        16877
+      ],
+      "/root/projects/PassVault/audit-runtime-linux-detekt01": [
+        23,
+        1304148,
+        0,
+        16832
+      ],
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs": [
+        23,
+        642474,
+        0,
+        16832
+      ],
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-detekt01": [
+        23,
+        1304147,
+        0,
+        16832
+      ]
+    },
+    "qualification": "Recorded original-root/parent and three10-row mount-absence summaries bind the accepted execution. Raw mount tables were not retained for independent reparsing; no current mount/namespace probe was performed. Source-reviewed parser and cooperative freeze qualifications remain.",
+    "three_recorded_mount_guards": [
+      {
+        "mount_rows": 10,
+        "runtime_mounts": 0,
+        "sha256": "c4348933a0c5fb769f70594efeb2b2f82787474c3adcad91573e81bae623385a"
+      },
+      {
+        "mount_rows": 10,
+        "runtime_mounts": 0,
+        "sha256": "c4348933a0c5fb769f70594efeb2b2f82787474c3adcad91573e81bae623385a"
+      },
+      {
+        "mount_rows": 10,
+        "runtime_mounts": 0,
+        "sha256": "c4348933a0c5fb769f70594efeb2b2f82787474c3adcad91573e81bae623385a"
+      }
+    ]
+  },
+  "protected_remainder": {
+    "qualification": "Original temporary C15 source checkout outside24 generated prefixes, R itself, source.blobs/source.oids, git-index and git-metadata remain held. Their present sizes/contents were not probed; separate future allowlist/admission would be required. No blanket runtime closure.",
+    "state": "UNTOUCHED_HELD"
+  },
+  "purpose": "ONE_CURRENT_DETEKT01_GENERATED_CLOSEOUT01",
+  "resources": {
+    "elapsed_seconds": 4.066,
+    "entry_and_encoded_inventory_caps_satisfied": true,
+    "maximum_observed_sample_gap_seconds": 2.336,
+    "minimum_disk_available_bytes": 20208316416,
+    "minimum_memory_available_bytes": 25843077120,
+    "qualification": "Point observations at0,2.336,3.336s;1s is a polling threshold, not continuous coverage. No hard RSS/kernel-stall/current-host-capacity claim. No build/test/stop or daemon was created by this closer.",
+    "recorded_resource_floors_satisfied": true,
+    "samples": [
+      {
+        "disk_available_bytes": 20208328704,
+        "elapsed_seconds": 0.0,
+        "launch": true,
+        "memory_available_bytes": 25860894720,
+        "memory_total_bytes": 67435888640
+      },
+      {
+        "disk_available_bytes": 20208316416,
+        "elapsed_seconds": 2.336,
+        "launch": false,
+        "memory_available_bytes": 25846861824,
+        "memory_total_bytes": 67435888640
+      },
+      {
+        "disk_available_bytes": 20556328960,
+        "elapsed_seconds": 3.336,
+        "launch": false,
+        "memory_available_bytes": 25843077120,
+        "memory_total_bytes": 67435888640
+      }
+    ],
+    "unobserved_final_interval_seconds": 0.73
+  },
+  "restrictions": "Preserve original Detekt failure/false safety flags and all successful/rejected/grouped evidence, old HOLD/consumed scopes, PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 failure/no automatic retry, TRAY01 and G7/G8 CLOSED. No replay, extra stop, signal, source deletion or publication authorized.",
+  "retention": {
+    "bytes_in_closeout": 1817734,
+    "files_in_closeout": 6,
+    "qualification": "Exact retained directory names, no-follow single-link regular bytes, hashes and original/named pins checked. XML/SARIF parsed inertly; both HTML payloads only retained/hashed, never rendered/executed.",
+    "report_bytes": 280276,
+    "report_count": 4,
+    "reports": [
+      {
+        "original_pin": [
+          24,
+          13784402,
+          0,
+          33152,
+          1,
+          1725,
+          1789066894293437432,
+          1789066894293437432
+        ],
+        "original_pin_matches_inventory": true,
+        "retained": {
+          "bytes": 1725,
+          "path": "closeout01/reports/app-android-detekt.xml",
+          "pin": [
+            24,
+            14171795,
+            0,
+            33152,
+            1,
+            1725,
+            1789071292738175264,
+            1789071292738175264
+          ],
+          "sha256": "31685320e0bb164cb8c8c254b086d7af0c5164f4a8b63a5054bcff60c3d56b8d"
+        },
+        "retained_named_pin_matches": true,
+        "source": "app-android/build/reports/detekt/detekt.xml"
+      },
+      {
+        "original_pin": [
+          24,
+          13784400,
+          0,
+          33152,
+          1,
+          19392,
+          1789066894166437439,
+          1789066894166437439
+        ],
+        "original_pin_matches_inventory": true,
+        "retained": {
+          "bytes": 19392,
+          "path": "closeout01/reports/app-android-detekt.html",
+          "pin": [
+            24,
+            14171797,
+            0,
+            33152,
+            1,
+            19392,
+            1789071292740175264,
+            1789071292740175264
+          ],
+          "sha256": "95c40045cc08f49e3ac7e534ff842db31ff8c92df16779712b06937db284d9a6"
+        },
+        "retained_named_pin_matches": true,
+        "source": "app-android/build/reports/detekt/detekt.html"
+      },
+      {
+        "original_pin": [
+          24,
+          13784401,
+          0,
+          33152,
+          1,
+          128664,
+          1789066894288437432,
+          1789066894288437432
+        ],
+        "original_pin_matches_inventory": true,
+        "retained": {
+          "bytes": 128664,
+          "path": "closeout01/reports/app-android-detekt.sarif",
+          "pin": [
+            24,
+            14171798,
+            0,
+            33152,
+            1,
+            128664,
+            1789071292742175264,
+            1789071292742175264
+          ],
+          "sha256": "8595923bb3164cb5d114e255c9fcc3fa7674f7e694f250becb52153ab373f4b5"
+        },
+        "retained_named_pin_matches": true,
+        "source": "app-android/build/reports/detekt/detekt.sarif"
+      },
+      {
+        "original_pin": [
+          24,
+          13784156,
+          0,
+          33152,
+          1,
+          130495,
+          1789066894407437425,
+          1789066894409437425
+        ],
+        "original_pin_matches_inventory": true,
+        "retained": {
+          "bytes": 130495,
+          "path": "closeout01/reports/problems-report.html",
+          "pin": [
+            24,
+            14171804,
+            0,
+            33152,
+            1,
+            130495,
+            1789071292744175263,
+            1789071292744175263
+          ],
+          "sha256": "077cc100c8a55fe02d644fa03f22eebbbaea0ff26a556d3c521ead8c8b1185bc"
+        },
+        "retained_named_pin_matches": true,
+        "source": "build/reports/problems/problems-report.html"
+      }
+    ]
+  },
+  "reviewer": "/root/storage",
+  "reviewer_activity": "Only bounded retained source/packet/receipt/report/inventory reads, data-only JSON/XML/hash/arithmetic reconciliation and exact retained-directory names; no R access, namespace/process probe, target import/execution, helper control run, Gradle/Git/CI/stop, deletion or background worker. Reader descriptors closed; only this permanent actual review authored.",
+  "schema": 1,
+  "source": {
+    "approval_sha256": "d52f5a601ddc29c94cb00c4617df1f98468c3927e1b114326a983381a7ce879d",
+    "closer_lines": 454,
+    "closer_source_sha256": "709c30fdcee98c562f5f8c6199251c88d86a0e9748c44dc486ba6a9ada556fa5",
+    "original_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "original_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+    "qualification": "Current closeout only; original raw/checkout-EOL qualifications retained. Root-admission prose450line is approximate; exact accepted source hash binds454LF.",
+    "request_sha256": "781bf4d7096e2de073ea03a3d15d00d11d9e7c70fb8cd0c32ec4c35785705d77",
+    "root_admission_sha256": "272a0c09bae0c5a70a3c7518637eb03ad99413a8151349b22544b7ffecead702"
+  }
+}
