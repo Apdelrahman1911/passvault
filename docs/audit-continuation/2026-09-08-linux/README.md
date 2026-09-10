@@ -4,7 +4,43 @@ Resume from this directory **and** `../../../AUDIT_HANDOFF.md`. The frozen
 `docs/audit-handoff/` and `docs/audit-publication/` payloads are preserved. Their
 old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
-## Live C13 source/evidence checkpoint (not a release)
+## Live C14 continuation (not a release)
+
+C14's published parent is C13: `d3d46db51d9fa69a4060250e71e0477c6b930d3a` /
+`245160648cb79873f41da41969a5b48d4c2057e1`. The containing Git commit/tree identify
+this checkpoint after publication. Its subsequent receipt records the actual push;
+preparing this report alone does not publish or activate it.
+
+TRAY01 ended with **external70, zero executed cases, three UNSTARTED, zero XML**.
+The original preparation wrapper stop succeeded; rendering never started.
+Source-before/raw transport succeeded, source-after did not complete. Runtime
+cleanup remains **HOLD / NOT_ATTEMPTED**; do not probe, adopt, clean or retry it.
+Independent review released scheduling and only the new store's active-use freeze.
+Detekt's later host preflight saw positive Java names of unknown ownership but
+launched no request, helper or task. The unused prospective input freeze is
+released, not a build gate.
+An uninterrupted VPS build window remains needed; no unrelated process is touched.
+
+One permanent actual-Main/native-NavHost/real-Room test is independently
+source-accepted after fixing a fixture terminal-input false-pass race.
+**Not compiled or run.** The fresh integration02 source proposal combines it with
+the three unstarted cases into four cases/four XML/two serial Test tasks; exact
+source/instance/cleanup admission remains separate. The PVU003 chooser snippet
+is inert source work, not another executed test or a confirmed deadlock.
+
+Two Android clipboard/locale instrumentation cases and a one-line test-runner
+setting are independently source-accepted, **not compiled or executed**. They
+require fresh synthetic whole-device/user/Debug-data and framework-connection
+cleanup admission. No extra dependencies, production identity/version changes,
+device-global locale alteration, displayed prompt or hardware proof. Android32
+remains the first risk priority when its license/target access is available.
+
+Qualified counts remain **26/39 (66.7%)**, original **19/25 (76%)**, suspicions
+**2/12 (16.7%)**. Actual XML events remain **196 +3 infrastructure +1 producer
+=200**, with their original scope qualifications. No overall-readiness percentage.
+Use `CHECKPOINT_14.md`, current ledgers and slot for next work and conditional ETA.
+
+## Historical C13 source/evidence checkpoint (not a release)
 
 C12 is published at `6220812e4602369d4853b763465a92e6291bb971` /
 `3defb2a459ffbbddb51b3baa0f088d438edf74c3`. Its initial raw-XML whitespace
@@ -31,7 +67,14 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest selection: `CHECKPOINT_13.md` (non-activating source/evidence checkpoint).**
+**Latest report: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
+One additional Desktop test plus two Android instrumentation cases and minimal
+runner wiring are source-reviewed; no new product execution or closure.
+TRAY01 failure and cleanup HOLD, Detekt no-request preflight block, Android license/
+target and genuine platform/device gaps remain explicit. The 31-path byte registry
+is not whole-project semantic coverage. No current source work bypasses an old hold.
+
+**Historical: `CHECKPOINT_13.md` (non-activating source/evidence checkpoint).**
 PVA039 production repair and focused tray/lifecycle/realRoom3 source are independently
 accepted, not executed. IOS01 failed preallocation;10UNSTARTED/0XML and unmet evidence-close
 qualification remain. Actual publication identity belongs in its receipt. Future

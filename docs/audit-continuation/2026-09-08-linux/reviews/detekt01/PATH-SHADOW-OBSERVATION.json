@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "author": "/root",
+  "utc": "2026-09-10T12:08:23.480296+00:00",
+  "scope": "DETEKT01_EARLIER_JDK_BIN_TOOL_SHADOW_AND_FIXED_ALIAS_OBSERVATION_ONLY",
+  "effective_path": "/usr/lib/jvm/java-17-openjdk-amd64/bin:/usr/bin:/bin",
+  "rows": [
+    {
+      "path": "/usr/lib/jvm/java-17-openjdk-amd64/bin/git",
+      "state": "ABSENT"
+    },
+    {
+      "path": "/usr/lib/jvm/java-17-openjdk-amd64/bin/ruby",
+      "state": "ABSENT"
+    },
+    {
+      "path": "/usr/bin/git",
+      "alias_pin": {
+        "dev": 25,
+        "ino": 864,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "size": 4066232,
+        "mtime_ns": 1751487822000000000,
+        "ctime_ns": 1787292627848100156
+      },
+      "readlink": null,
+      "resolved_image": "/usr/bin/git",
+      "image_sha256": "2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+      "image_bytes": 4066232
+    },
+    {
+      "path": "/usr/bin/ruby",
+      "alias_pin": {
+        "dev": 24,
+        "ino": 12720240,
+        "uid": 0,
+        "mode": 41471,
+        "nlink": 1,
+        "size": 7,
+        "mtime_ns": 1708346947000000000,
+        "ctime_ns": 1788854600318091139
+      },
+      "readlink": "ruby3.2",
+      "resolved_image": "/usr/bin/ruby3.2",
+      "image_sha256": "ead53704d7da35c85a28db19070d34e7ecef9461ecf8ae5e9d51ae79125bb731",
+      "image_bytes": 14488
+    }
+  ],
+  "qualification": "Data-only current observation, no Git/Ruby executable invocation or request/instance/coordination/cleanup admission. Only fixed git and ruby commands under the exact selected PATH are covered; not a generic PATH/security inventory. No temporary/cache/background output created."
+}

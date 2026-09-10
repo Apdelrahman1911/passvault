@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "author": "/root",
+  "utc": "2026-09-10T12:21:39.946870+00:00",
+  "status": "HOST_OR_RESOURCE_HOLD_NO_REQUEST_CREATED",
+  "purpose": "Pending C13 static-analysis gate;23 task events/0product cases, not a TRAY01/PVA029 retry. Do not repeat successful Linux03/GUI02/Mac02/Windows05.",
+  "source": {
+    "commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+    "tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+    "members": 2495,
+    "manifest_sha256": "ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc"
+  },
+  "request_sha256": null,
+  "host_point": {
+    "comm_rows": 317,
+    "positive_candidates": [
+      {
+        "pid": "18602",
+        "comm": "java"
+      },
+      {
+        "pid": "18658",
+        "comm": "java"
+      }
+    ],
+    "prepositive_disappearance": 0,
+    "resources": {
+      "disk_available": 18974146560,
+      "MemTotal": 67435888640,
+      "MemAvailable": 33542905856
+    },
+    "limits": "Point observation, not ownership/no-escape/global-idleness lease. No candidate identity or unrelated process details probed."
+  },
+  "ci": {
+    "path": "reviews/detekt01/CI-BEFORE-DETEKT01.json",
+    "sha256": "d7a18e514bb9e323bd1a54dcadd4b33f9bbfddd2a609763433d8889f9a0da76e",
+    "tool_chunk": "509d47",
+    "exit": 0,
+    "rows": 8,
+    "all_terminal": true,
+    "new_root_activations": 0
+  },
+  "expected_commands": [
+    [
+      "/root/projects/PassVault/audit-runtime-linux-detekt01/checkout/gradlew",
+      "--init-script",
+      "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_01.init.gradle",
+      ":detekt",
+      "--no-daemon",
+      "--max-workers=1",
+      "--console=plain",
+      "--no-parallel",
+      "--no-configure-on-demand",
+      "--no-configuration-cache",
+      "--no-build-cache",
+      "--dependency-verification=strict",
+      "--stacktrace",
+      "-Pkotlin.compiler.execution.strategy=in-process",
+      "-Pandroid.builder.sdkDownload=false",
+      "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+      "-Dorg.gradle.java.installations.auto-download=false",
+      "-Dorg.gradle.java.installations.auto-detect=false",
+      "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+    ],
+    [
+      "/root/projects/PassVault/audit-runtime-linux-detekt01/checkout/gradlew",
+      "--stop",
+      "--no-daemon",
+      "--max-workers=1",
+      "--console=plain",
+      "--no-parallel",
+      "--no-configure-on-demand",
+      "--no-configuration-cache",
+      "--no-build-cache",
+      "--dependency-verification=strict",
+      "--stacktrace",
+      "-Pkotlin.compiler.execution.strategy=in-process",
+      "-Pandroid.builder.sdkDownload=false",
+      "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+      "-Dorg.gradle.java.installations.auto-download=false",
+      "-Dorg.gradle.java.installations.auto-detect=false",
+      "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+    ]
+  ],
+  "expected_evidence": "22 generic Detekt task outcomes + coverage guard outcome; compact logs, Checkstyle/SARIF, exact source/index before/after, original stop/namespace/cleanup. No application cases/XML-test count.",
+  "bounds": {
+    "outer_total_seconds": 6000,
+    "work_seconds": 5250,
+    "drain_seconds": 750,
+    "detekt_seconds": 3600,
+    "original_stop_seconds": 600,
+    "runtime_limit_bytes": 6442450944,
+    "inner_evidence_files": 96,
+    "inner_evidence_bytes": 67108864
+  },
+  "cleanup": "Installed reviewed outer/inner own original PID/mount namespaces and all new R outputs. One applicable original wrapper stop. Bound original generated-only cleanup, mounted new-T metadata readonly and not deletable; logs/reports outside R retained. Unknown stop/source/mount/evidence/process remains HOLD; no automatic retry. All older TRAY01/other HOLDs and retired W-store restrictions remain.",
+  "coordination_semantics": "Request true values are conjunctive FUTURE INTAKE obligations, not assertion that source reviewers are already quiescent at capture. Source-only agents still active. Root must establish full quiescence/fresh final gate and independently accepted packet before reservation/launch. New T/index/helpers frozen against writes from this capture through admitted result review; excluded W drafts/central records may still be authored before execution."
+}

@@ -1,0 +1,49 @@
+--- accepted-8ffefea/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ private-bus-guard/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -104,6 +104,8 @@
+             "TMP" to tmp.path.toString(), "TEMP" to tmp.path.toString(),
+             "DISPLAY" to display, "XAUTHORITY" to authority.toString(),
+         )
++        // env.clear() must not discard the outer owner's private bus/bridge guards.
++        environment.putAll(privateSessionEnvironment(authority))
+         for (kind in listOf("CACHE", "CONFIG", "DATA", "STATE")) {
+             environment["XDG_${kind}_HOME"] = phase.child("xdg-${kind.lowercase()}").path.toString()
+         }
+@@ -663,6 +665,29 @@
+     // The real app owns SQLite file permissions; the fixture requires the private 0700 ancestor, not a new mode policy.
+     return requireNotNull(attributes.fileKey()).toString()
+ }
++/** Validate only the outer owner's exact private-session contract; never select or connect to a bus. */
++private fun privateSessionEnvironment(authority: Path): Map<String, String> {
++    assertTrue(authority.isAbsolute && authority.normalize() == authority)
++    assertTrue(Files.isRegularFile(authority, NOFOLLOW_LINKS))
++    assertEquals("Xauthority", authority.fileName.toString())
++    val session = MainNavDirectory.acquire(requireNotNull(authority.parent).toString(), empty = false)
++    val sessionRuntime = MainNavDirectory.acquire(session.path.resolve("runtime").toString(), empty = false)
++    val noSystemBus = sessionRuntime.path.resolve("no-system-bus")
++    val expected = mapOf(
++        "XDG_RUNTIME_DIR" to sessionRuntime.path.toString(),
++        "DBUS_SESSION_BUS_ADDRESS" to "unix:path=${session.path.resolve("bus")}",
++        "DBUS_SYSTEM_BUS_ADDRESS" to "unix:path=$noSystemBus",
++        "NO_AT_BRIDGE" to "1", // Native GTK bridge suppression, not Java AccessibleContext suppression.
++    )
++    val inherited = expected.mapValues { (name, value) ->
++        requireNotNull(System.getenv(name)) { "MAIN_NAV_MISSING_PRIVATE_ENV_$name" }.also {
++            assertTrue(it == value, "MAIN_NAV_INVALID_PRIVATE_ENV_$name")
++        }
++    }
++    assertTrue(Files.notExists(noSystemBus, NOFOLLOW_LINKS), "MAIN_NAV_SYSTEM_BUS_GUARD_NOT_ABSENT")
++    session.checkBound(); sessionRuntime.checkBound()
++    return inherited // Original parent values, not inferred/default bus authority.
++}
+ private fun checkPlatform(display: String) {
+     assertEquals("Linux", System.getProperty("os.name"))
+     assertEquals(17, Runtime.version().feature())
+@@ -671,6 +696,7 @@
+     assertTrue(System.getenv("WAYLAND_DISPLAY").isNullOrBlank())
+     assertTrue(System.getProperty("compose.accessibility.enable") != "false")
+     assertEquals(null, System.getenv("COMPOSE_DISABLE_ACCESSIBILITY"))
++    privateSessionEnvironment(Path.of(requireNotNull(System.getenv("XAUTHORITY"))))
+ }
+ private fun property(name: String): String =
+     requireNotNull(System.getProperty(PREFIX + name)) { "MAIN_NAV_PROPERTY_$name" }

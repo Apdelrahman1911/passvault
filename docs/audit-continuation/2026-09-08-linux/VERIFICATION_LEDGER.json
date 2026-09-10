@@ -550,12 +550,49 @@
       "new_conclusive_suspicions": 0,
       "release": "reviews/ios-focused01/SLOT-RELEASE.json",
       "limits": "Ten declarations UNSTARTED, zero Gradle/product/Xcode launches or XML. Bounded metadata/checkout/evidence creation did occur. Raw exit:null/settlement:UNKNOWN command intent preserved; resource gate precedes Popen. Pending actual-exit0 evidence/ancestor-close contract remains unmet, not cleanup PASS/proven close failure. No retry, floor change, physical-device or all-Apple infeasibility inference; all old HOLDs unchanged."
+    },
+    {
+      "kind": "ACTUAL_LINUX_PREPARATION_CANCELLED_NO_PRODUCT_EXECUTION",
+      "platform": "Linux x86_64/JDK17",
+      "application_test_cases": 0,
+      "run_id": "linux-desktop-tray01",
+      "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+      "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+      "external_exit": 70,
+      "consumed": true,
+      "status": "CONSUMED_PREPARE_CANCELLED_HOST_CONFLICT_RUNTIME_HOLD",
+      "product_cases": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNSTARTED": 3,
+        "XML_files": 0
+      },
+      "original_applicable_stop_exits": [
+        0
+      ],
+      "source_before": true,
+      "source_after": false,
+      "cleanup": "NOT_ATTEMPTED_ORIGINAL_RUNTIME_HOLD",
+      "independent_review": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json",
+      "independent_review_sha256": "917be8a879db6ebf76fef0abf5e2ebae20de4a5bfbc1480a1be251f4bfe601b7",
+      "external_receipt": "reviews/desktop-tray/EXTERNAL-RESULT.json",
+      "external_receipt_sha256": "9c482168c4f6a565533592a9bce991d223f1e18d1b5633e1be3ff11acccd3b16",
+      "release": "reviews/desktop-tray/SLOT-RELEASE.json",
+      "limits": "Original owned-domain/direct child settlement supports scheduling only. Unknown host Java identity/cause/settlement and later instability remain unknown; no source-after/final evidence acceptance, runtime cleanup, retry, old-scope release or product credit.",
+      "elapsed_seconds": 153.47,
+      "raw_source_members": 2495,
+      "raw_transport_passes": 2,
+      "evidence_files": 18,
+      "evidence_bytes": 46837,
+      "new_family_closures": 0,
+      "new_conclusive_suspicions": 0,
+      "evidence": "runs/linux-desktop-tray01/"
     }
   ],
   "continuation_application_test_cases": 196,
-  "pending_selected_source_methods": 3,
-  "pending_selected_classes": 3,
-  "pending_selected_files": 3,
+  "pending_selected_source_methods": 4,
+  "pending_selected_classes": 4,
+  "pending_selected_files": 4,
   "gates": [
     {
       "id": "PINNED_HANDOFF_COMMIT_TREE",
@@ -979,6 +1016,37 @@
       "status": "PASS",
       "scope": "One native-input/production form+VM/realRoom close+reopen fixture source only; unexecuted",
       "evidence": "reviews/native-independent/EDITOR-ROOM-INTEGRATION-INDEPENDENT.md"
+    },
+    {
+      "id": "LINUX_DESKTOP_TRAY01_EXECUTION",
+      "status": "FAIL",
+      "reason": "Prepare cancelled after host positive conflict;0PASS0FAIL3UNSTARTED,0XML,original stop0; source-after/final-evidence/cleanup HOLD.",
+      "evidence": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json"
+    },
+    {
+      "id": "LINUX_DESKTOP_TRAY01_CLEANUP",
+      "status": "BLOCKED",
+      "reason": "Original runtime cleanup not attempted; no automatic retry, adoption, repeated stop or deletion. Scheduling/new-T active use only released.",
+      "evidence": "reviews/desktop-tray/SLOT-RELEASE.json"
+    },
+    {
+      "id": "LINUX_DETEKT01_PREFLIGHT",
+      "status": "BLOCKED",
+      "reason": "Host conflict prevents request/intake;0tasks,0cases,no Detekt runtime. No consumer created; unused prospective freeze separately released.",
+      "evidence": "reviews/verification/LINUX-DETEKT01-PREFLIGHT01-DISPOSITION.md"
+    },
+    {
+      "id": "MAIN_NAVHOST_ROOM_SOURCE",
+      "status": "PASS",
+      "scope": "Independent source acceptance and permanent opt-in adoption only;1prospective case,3roles,13events,0executions.",
+      "evidence": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-ROOM-INDEPENDENT-SOURCE-REVIEW.md"
+    },
+    {
+      "id": "ANDROID_CLIPBOARD_LOCALE_SOURCE",
+      "status": "PASS",
+      "scope": "Independent source acceptance of two prospective bare-framework cases and one runner line only; zero compilation, execution, XML or closure; no target/cleanup admission.",
+      "evidence": "reviews/editor/PVA009-PVA030-INSTRUMENTATION-INDEPENDENT.md",
+      "evidence_sha256": "f731206327042f1e02a53260a7cb0d64c930114d70932256e27dbf98fd46ed16"
     }
   ],
   "missing_skill_tool": {
@@ -986,7 +1054,7 @@
     "status": "NOT_SUPPLIED_NOT_RUN",
     "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
   },
-  "updated_utc": "2026-09-10T09:52:05.220923+00:00",
+  "updated_utc": "2026-09-10T15:04:11.273093+00:00",
   "continuation_infrastructure_runs": [
     {
       "id": "LINUX_SOURCE_CAPTURE_01",
@@ -1220,13 +1288,22 @@
     "status": "UNCHANGED_IMMUTABLE_SOURCE_SELECTION_SUPERSEDED_FOR_SCHEDULING_NOT_DISCARDED"
   },
   "pending_selected_scope": {
-    "status": "IOS01_CONSUMED_FAIL_10_UNSTARTED; DESKTOP_FOCUSED3_AND_SETTLED_DETEKT_PENDING_FRESH_ADMISSION",
-    "regression_methods": 3,
+    "status": "INTEGRATION02_FOUR_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED; DETEKT_PREFLIGHT_HOLD",
+    "regression_methods": 4,
     "fixture_producers": 0,
     "historical_pre_gui02_status": "C4_SELECTION_COMPLETE; GUI_AND_PLATFORM_FRESH_SCOPES_NOT_YET_ADMITTED",
     "expected_test_tasks": 2,
-    "expected_xml_files": 3,
-    "qualification": "Pending current tray+lifecycle+realRoom selection only; not executed cases. Lifecycle two serial fresh child controls are inside one JUnit case. Detekt23task events separate/zero application cases."
+    "expected_xml_files": 4,
+    "qualification": "Four prospective Desktop cases/classes/files in two serial Test tasks/four XML, not an admitted selection or executions. Source-only integration02 is distinct from consumedTRAY01; exact current bindings and instance admission still needed. Detekt23task events are separate and unexecuted.",
+    "historical_tray01_before_actual": {
+      "status": "IOS01_CONSUMED_FAIL_10_UNSTARTED; DESKTOP_FOCUSED3_AND_SETTLED_DETEKT_PENDING_FRESH_ADMISSION",
+      "regression_methods": 3,
+      "fixture_producers": 0,
+      "historical_pre_gui02_status": "C4_SELECTION_COMPLETE; GUI_AND_PLATFORM_FRESH_SCOPES_NOT_YET_ADMITTED",
+      "expected_test_tasks": 2,
+      "expected_xml_files": 3,
+      "qualification": "Pending current tray+lifecycle+realRoom selection only; not executed cases. Lifecycle two serial fresh child controls are inside one JUnit case. Detekt23task events separate/zero application cases."
+    }
   },
   "windows_cohort02_source": {
     "suite": "windows-native-14-cohort-v2",
@@ -2031,7 +2108,7 @@
     "review_sha256": "7259ac8a3d3ff28b1ac6613325da676f4246f07a6460d5e9f228c536436256c8",
     "author": "/root/editor_review",
     "reviewer": "/root",
-    "remaining": "Fresh grounded minimal single-systray session/helper/source/tool/instance/cleanup admission and actual three-PNG/native-callback reconciliation. Helper drafts outside C12 selection.",
+    "remaining": "HISTORICAL PRE-C13 SOURCE-STAGE NOTE (superseded for scheduling by desktop_tray01_execution; no new admission): Fresh grounded minimal single-systray session/helper/source/tool/instance/cleanup admission and actual three-PNG/native-callback reconciliation. Helper drafts outside C12 selection.",
     "limits": "Real production resolver/public tray/same icon prospective case, not actual Settings/publisher chain, product-icon/visual-tooltip/all-actions/native text shaping/packaged/non-Linux/hardware evidence."
   },
   "detekt01_source": {
@@ -2065,7 +2142,7 @@
     "application_cases_executed": 0,
     "original_suspicion_credit": 0,
     "qualification": "requestClose already starts cleanup jobs; some may finish first. Compose disposes composition and the real clipboard service has its own ownership-aware JVM shutdown hook. Not a claim that all cleanup is absent, observed data loss, late onboarding work or authentication bypass.",
-    "current_source_work": "Editor-authored Main/loop/test bytes are active outside publishedC12 source; no equal-line/executed coverage credit. Frozen C12 registry remains a historical source identity until next reviewed freeze."
+    "current_source_work": "HISTORICAL PRE-C13 SOURCE-STAGE NOTE (superseded for scheduling by desktop_tray01_execution; no new admission): Editor-authored Main/loop/test bytes are active outside publishedC12 source; no equal-line/executed coverage credit. Frozen C12 registry remains a historical source identity until next reviewed freeze."
   },
   "checkpoint12_publication": {
     "status": "PUBLISHED_EXACT_C12_STAGED_SOURCE",
@@ -2211,7 +2288,7 @@
     "limits": "No full NavHost/IME/mobile/real rejected backend timing, fake crypto/database, clipboard or screenshots. Private fresh home/display/runtime mapping and full build/execution/cleanup admission pending. Source review corrected secondary interruption restoration without losing primary/suppressed errors; no runtime result."
   },
   "desktop_focused3_source": {
-    "status": "FINAL_INDEPENDENT_SOURCE_ACCEPTANCE_UNBOUND_UNEXECUTED",
+    "status": "SOURCE_ACCEPTED_BUT_ORIGINAL_EXECUTION_CONSUMED_FAIL_ALL3_UNSTARTED",
     "inner": "scripts/audit/linux_desktop_tray_01.py",
     "inner_sha256": "994602c5df621a9f7a775921968338fca9415d895a5cb1fcb50a534edc84fb10",
     "init": "scripts/audit/desktop_tray_01.init.gradle",
@@ -2236,7 +2313,341 @@
     "total_success_files": 93,
     "conservative_total_file_cap": 101,
     "inner_aggregate_byte_cap": 117440512,
-    "remaining": "Publish accepted source, bind actual source/store/tool/lock/parents and private panel route, obtain genuine storage instance review/root admission, then execute exactly once with original cleanup. No repeated GUI02 cases/Detekt in this batch.",
-    "limits": "Native tray direct labels/input not full Settings chain; lifecycle synthetic caller-finally not full Main/provider; Room real persistence not full NavHost/race/IME/mobile. New best-effort NO_AT_BRIDGE suppression is not proof of no activation/accessibility descendants. Evidence counting caps are not test counts/global byte cap."
+    "remaining": "HISTORICAL THREE-CASE SOURCE STAGE CONSUMED AS TRAY01: actual execution is recorded in desktop_tray01_execution; all3UNSTARTED, original runtime/attempt inputsHOLD, no original replay/adoption/cleanup. Any future justified use of unchanged fixtures needs a distinct independently reviewed source/instance/cleanup admission. New integration02 source preparation is separate, not admitted.",
+    "limits": "Native tray direct labels/input not full Settings chain; lifecycle synthetic caller-finally not full Main/provider; Room real persistence not full NavHost/race/IME/mobile. New best-effort NO_AT_BRIDGE suppression is not proof of no activation/accessibility descendants. Evidence counting caps are not test counts/global byte cap.",
+    "actual_result_review": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json",
+    "historical_remaining_before_TRAY01": "Publish accepted source, bind actual source/store/tool/lock/parents and private panel route, obtain genuine storage instance review/root admission, then execute exactly once with original cleanup. No repeated GUI02 cases/Detekt in this batch."
+  },
+  "checkpoint13_publication": {
+    "status": "PUBLISHED_SEPARATE_CONTINUATION_NO_ACTIVATION",
+    "commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+    "tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+    "parent": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+    "receipt": "publication/CHECKPOINT-13-PUBLISHED.json",
+    "receipt_sha256": "7eefeced815586aa0d5fc6e359be7faa26c1f5ee9bdbef02979af11df863176c",
+    "independent_actual_review": "reviews/baseline-coverage/CHECKPOINT-13-ACTUAL-REVIEW.json",
+    "independent_actual_review_sha256": "b43b6321c5c306727f3cd763f9ddb0bda981b82e16bca45e81e3874c8e00de5d",
+    "selected_paths": 76,
+    "commands_exit0_reaped": 22,
+    "nonforce_pushes": 1,
+    "new_cases_closures": 0
+  },
+  "desktop_tray01_execution": {
+    "run_id": "linux-desktop-tray01",
+    "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+    "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+    "external_exit": 70,
+    "consumed": true,
+    "status": "CONSUMED_PREPARE_CANCELLED_HOST_CONFLICT_RUNTIME_HOLD",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 3,
+      "XML_files": 0
+    },
+    "original_applicable_stop_exits": [
+      0
+    ],
+    "source_before": true,
+    "source_after": false,
+    "cleanup": "NOT_ATTEMPTED_ORIGINAL_RUNTIME_HOLD",
+    "independent_review": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "917be8a879db6ebf76fef0abf5e2ebae20de4a5bfbc1480a1be251f4bfe601b7",
+    "external_receipt": "reviews/desktop-tray/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9c482168c4f6a565533592a9bce991d223f1e18d1b5633e1be3ff11acccd3b16",
+    "release": "reviews/desktop-tray/SLOT-RELEASE.json",
+    "limits": "Original owned-domain/direct child settlement supports scheduling only. Unknown host Java identity/cause/settlement and later instability remain unknown; no source-after/final evidence acceptance, runtime cleanup, retry, old-scope release or product credit.",
+    "elapsed_seconds": 153.47,
+    "raw_source_members": 2495,
+    "raw_transport_passes": 2,
+    "evidence_files": 18,
+    "evidence_bytes": 46837,
+    "new_family_closures": 0,
+    "new_conclusive_suspicions": 0,
+    "evidence": "runs/linux-desktop-tray01/"
+  },
+  "detekt01_preflight": {
+    "status": "PREPARATION_HOLD_HOST_CONFLICT_NO_REQUEST_OR_RUN",
+    "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+    "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+    "source_members": 2495,
+    "index_sha256": "a6d0cc478dc014fe6668988296ea623fc304dad00534e23bd79174d0c0b4ece4",
+    "metadata_review": "reviews/verification/LINUX-DETEKT01-INDEX-CONSTANTS-REVIEW.md",
+    "metadata_review_sha256": "b7dfd133511db63f3cc8ff9a492f42f0256f904c90fbe12b42833ccc17b3c6a8",
+    "preflight": "reviews/detekt01/INSTANCE-PREFLIGHT-01.json",
+    "preflight_sha256": "a07cb9397d0906b0dbf828ba9438e0b5517f533464f58bedba1e074044f02cee",
+    "independent_preflight_review": "reviews/verification/LINUX-DETEKT01-PREFLIGHT01-DISPOSITION.md",
+    "independent_preflight_review_sha256": "54c990f956fb293256eb05091fb84e9174eac072673317c424a84d558661b553",
+    "prospective_freeze_release": "reviews/detekt01/PREFLIGHT01-FREEZE-RELEASE.json",
+    "prospective_freeze_release_sha256": "36e021b97b9d54703f0b644308165a2fa0c21756d800f41eee7d56dbba34dd83",
+    "prospective_task_events": 23,
+    "actual_task_events": 0,
+    "application_cases": 0,
+    "host_point": {
+      "comm_rows": 317,
+      "positive_candidates": [
+        {
+          "pid": "18602",
+          "comm": "java"
+        },
+        {
+          "pid": "18658",
+          "comm": "java"
+        }
+      ],
+      "prepositive_disappearance": 0,
+      "resources": {
+        "disk_available": 18974146560,
+        "MemTotal": 67435888640,
+        "MemAvailable": 33542905856
+      },
+      "limits": "Point observation, not ownership/no-escape/global-idleness lease. No candidate identity or unrelated process details probed."
+    },
+    "limits": "Two positive Java names prevent intake, not owned identities or proof of present liveness. No Detekt request/build/runtime consumed; no stop/cleanup needed for unlaunched work. Fresh source-bound admission and uninterrupted host scheduling required. Later source must not inherit C13 index/source identity. No blind repeated preflight or old-scope retry."
+  },
+  "main_navhost_room_source": {
+    "status": "PERMANENT_OPT_IN_TEST_SOURCE_ADOPTED_UNCOMPILED_UNEXECUTED",
+    "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+    "sha256": "7a0dd50d7caa6cf3cfad729f7393a0e1802fbf65b57d3cceae7c5c64ac94961f",
+    "bytes": 40423,
+    "physical_lf": 753,
+    "author": "/root/android32",
+    "independent_reviewer": "/root/editor_review",
+    "declarations": 1,
+    "serial_child_roles": 3,
+    "ordered_stage_events": 13,
+    "executed_cases": 0,
+    "correction": "Independent test-oracle review found terminal FutureTask timeout could race Main System.exit; single asynchronous EDT terminal block now records failures before queued key handler. Rejected eaaa720 identity remains reproducible by exact retained reverse patch; no new product defect. Separately, storage challenged child env.clear losing private bus/XDG/no-AT controls; minimal26-line inheritance/validation correction independently accepted with original8ffefea before-image retained. This is fixture isolation source, not a new product finding.",
+    "limits": "Actual Main/native NavHost/real Room final durable-state scenario only; no transient-write, concurrent lock, picker, IME/RTL/mobile or hardware proof. Initial root adoption changed two comments; later26-line child-environment delta has separate independent acceptance. Address/nonexistence checks do not authenticate endpoints or guarantee no host-bus activation. Fresh classpath/property/route/X/WM/resource/cleanup admission remains. Excluded .kt drafts are preserved through mapped inert .kt.txt snapshots, not accidental compilation inputs.",
+    "initial_source_review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-ROOM-INDEPENDENT-SOURCE-REVIEW.md",
+    "initial_source_review_sha256": "c0b1e1ea6cc6ad2f9347769c79753ba5c1466d1910c965fb2469ba5a221c219e",
+    "independent_review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-PRIVATE-BUS-INDEPENDENT-DELTA.md",
+    "independent_review_sha256": "9d57dec6c8ce1165bea243a2937dc36a027c85d25e3577a3283348d50e9e404a",
+    "initial_adoption": "reviews/android32/navhost-draft/MODULE-ADOPTION.json",
+    "initial_adoption_sha256": "9d434cac299cbda298c370015b457527aa4c056b01cd7ecae78046668ec870cc",
+    "adoption": "reviews/android32/navhost-draft/MODULE-BUS-DELTA-ADOPTION.json",
+    "adoption_sha256": "9fd1a87bd7e82af7b4ad866b8e1408b911318920abb3d817e58be22ee166674c"
+  },
+  "post_c13_source_preparation": {
+    "source_prepare01": {
+      "status": "CONSUMED_METADATA_FAIL_BEFORE_GIT",
+      "record": "reviews/desktop-tray/SOURCE-PREPARE01-ACTUAL.json",
+      "limits": "Missing optional ancestor handling failed; exact historical failing path unknown. Earlier root .git/objects/info guess was unproved. No replay."
+    },
+    "source_prepare02": {
+      "status": "CONSUMED_READONLY_METADATA_SUCCESS",
+      "record": "reviews/desktop-tray/source-prepare02/ACTUAL-RESULT.json",
+      "review": "reviews/storage/TRAY01-SOURCE-PREPARE02-REVIEW.json",
+      "limits": "Two read-only Git children exit0/reaped; checkout-derived OID-qualified raw identities, not actual cat-file transport until later TRAY01."
+    },
+    "tray_prelaunch_hold": {
+      "record": "reviews/desktop-tray/PRELAUNCH-HOLD-01.json",
+      "review": "reviews/storage/TRAY01-PRELAUNCH-HOLD-01-INDEPENDENT-REVIEW.json",
+      "renewal_review": "reviews/storage/TRAY01-SCHEDULING-RESUME-01-REVIEW.json",
+      "limits": "Prelaunch assertion failure did not launch outer or allocate runtime; independently renewed scheduling later consumed once as TRAY01. Unknown unrelated process state never inferred."
+    }
+  },
+  "ios_same_ten_intel_feasibility": {
+    "status": "SOURCE_QUALIFIED_INTEL_LABEL_ALONE_CANNOT_RUN_SAME_TEN",
+    "author_note": "reviews/build-config/ios-next-feasibility/INTEL-SAME-TEN.md",
+    "author_note_sha256": "ef55795e8b0d6cc0c9f73e6f7158eb789fc6ee53234c4939364e6cbefd277ac7",
+    "independent_reviewer": "/root",
+    "basis": "Independently read ARM64-only shared/crypto declarations, crypto cinterop, database KSP targets, settings without included convention, and ARM64 JDK workflow contract. Intel Mac02 native success is not existing iOS simulator evidence.",
+    "limits": "No alternative CI run, target/dependency/metric/floor change or all-Apple infeasibility claim. IOS01 remains consumed failure,10UNSTARTED/0XML with unmet evidence-close qualification. Actual iPhone behavior hardware-BLOCKED."
+  },
+  "pvu003_chooser_source": {
+    "status": "INDEPENDENTLY_SOURCE_ACCEPTED_INERT_FRAGMENT_NOT_ADOPTED_OR_EXECUTED",
+    "author": "/root/editor",
+    "independent_reviewer": "/root/native_review",
+    "snippet": {
+      "path": "reviews/editor/pvu003-draft/PVU003-CHOOSER-HOME-CANCEL.kt.txt",
+      "sha256": "76d198977e09cfd38e664cd957f5c3aa159c76488843e4b4dad36667b175cbd3",
+      "bytes": 9951
+    },
+    "author_note": {
+      "path": "reviews/editor/pvu003-draft/PVU003-CHOOSER-HOME-CANCEL-SOURCE-NOTE.md",
+      "sha256": "a9caf50f56f7b239f146cc6ae895a48485f7d7ff6ba5a7e51a9ea2dbb451305f",
+      "bytes": 9870
+    },
+    "independent_review": {
+      "path": "reviews/native-independent/pvu003-draft/PVU003-CHOOSER-HOME-CANCEL-INDEPENDENT.md",
+      "sha256": "4d44120da698cf75d99805a008b17d11453ed98586848ada4505f970d8ef4f33",
+      "bytes": 7164
+    },
+    "scope": "Actual Export/native modal chooser, one native Home attempt, native Escape cancellation; no chosen destination/output/deletion/lock cycle or fake DAO stall. A future separately named scenario/receipt would be required before adoption.",
+    "observations": "Normal returned DTO only sampled Home selection and four passive AWT frame-input bits before/after chooser hide; not Compose callback/action admission, lifecycle/Job survival, mutex ownership or deadlock proof.",
+    "cleanup_limit": "Inherited150s driver deadline also caps cleanup await and may prevent Escape. Ambiguous/unfocused chooser, failed input/listener/EDT cleanup requires original admitted outer hard-settlement/HOLD, not guaranteed cancellation or success by forced shutdown.",
+    "compiled_cases": 0,
+    "executed_cases": 0,
+    "new_findings": 0,
+    "new_closures": 0,
+    "remaining": "PVU003 unresolved. Preserve earlier guard/cancellation/source reviews. No permanent-test mutation, new case selection, request or runtime admission."
+  },
+  "historical_initial_main_navhost_room_source": {
+    "status": "PERMANENT_OPT_IN_TEST_SOURCE_ADOPTED_UNCOMPILED_UNEXECUTED",
+    "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+    "sha256": "8ffefea4952f393b9bf8ef467b143109d660f9f5ffc58bf05803be30211922a9",
+    "bytes": 38703,
+    "physical_lf": 727,
+    "author": "/root/android32",
+    "independent_reviewer": "/root/editor_review",
+    "independent_review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-ROOM-INDEPENDENT-SOURCE-REVIEW.md",
+    "independent_review_sha256": "c0b1e1ea6cc6ad2f9347769c79753ba5c1466d1910c965fb2469ba5a221c219e",
+    "adoption": "reviews/android32/navhost-draft/MODULE-ADOPTION.json",
+    "adoption_sha256": "9d434cac299cbda298c370015b457527aa4c056b01cd7ecae78046668ec870cc",
+    "declarations": 1,
+    "serial_child_roles": 3,
+    "ordered_stage_events": 13,
+    "executed_cases": 0,
+    "correction": "Independent test-oracle review found terminal FutureTask timeout could race Main System.exit; single asynchronous EDT terminal block now records failures before queued key handler. Rejected eaaa720 identity remains reproducible by exact retained reverse patch; no new product defect.",
+    "limits": "Actual Main/native NavHost/real Room final durable-state scenario only; no transient-write, concurrent lock, picker, IME/RTL/mobile or hardware proof. Root adoption changes only two documentation lines from independently accepted7eee727 bytes. Fresh classpath/property/X/WM/resource/cleanup admission remains; excluded source drafts are published as explicitly mapped inert .kt.txt snapshots only."
+  },
+  "desktop_integration02_source": {
+    "status": "INDEPENDENTLY_SOURCE_ACCEPTED_UNBOUND_UNCOMPILED_UNEXECUTED_UNADMITTED",
+    "authors": {
+      "inner_init": "/root/build_config",
+      "outer": "/root/verification"
+    },
+    "independent_reviewers": {
+      "inner_init": "/root/storage",
+      "outer": "/root/editor_review"
+    },
+    "sources": [
+      {
+        "path": "scripts/audit/linux_desktop_integration_02.py",
+        "sha256": "bb9dfafaa3906bf34c1aaaf05b52364ce8b52564323cc6602f38dbf2fec3acac",
+        "bytes": 95212,
+        "physical_lf": 1551
+      },
+      {
+        "path": "scripts/audit/desktop_integration_02.init.gradle",
+        "sha256": "3ba456dcc48d956eb2ff266ccfb31138ce3612f2b6aa5674194f09b0d563b8ef",
+        "bytes": 11470,
+        "physical_lf": 193
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/PLAN.md",
+        "sha256": "711a5d669098e73476e72638f1d0fe9e1c7df62a90b6217337518b391d0de232",
+        "bytes": 13609,
+        "physical_lf": 200
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02-outer/LAUNCH.py",
+        "sha256": "492d7166f390691f0dbc96a4e24be5447da66f55155c4d2b33f2c9576ab13f6f",
+        "bytes": 46250,
+        "physical_lf": 781
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02-outer/PLAN.md",
+        "sha256": "43530d90c292645e19fe8b042e2a0f45c1bbecd42c13d261a579044f3555eba0",
+        "bytes": 10042,
+        "physical_lf": 42
+      }
+    ],
+    "independent_reviews": [
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/INTEGRATION02-INNER-INIT-FINAL-DELTA-REVIEW.json",
+        "sha256": "018fa30647d060f9bf052eaf6e1c84fe10329cc338f512e794a6a5303908cd87",
+        "bytes": 6393,
+        "physical_lf": 57
+      },
+      {
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-INTEGRATION02-OUTER-DELTA-REVIEW.md",
+        "sha256": "c5d0b2f9fedd9d030157255910517dc13438314ad7dbbf37e25306307716d2b6",
+        "bytes": 9429,
+        "physical_lf": 144
+      }
+    ],
+    "selection": {
+      "cases": 4,
+      "classes": 4,
+      "test_tasks": 2,
+      "xml_files": 4,
+      "scope": "Native tray1 + actual Compose child-JVM lifecycle1 + shared realRoom editor1 + actual-Main/NavHost/Room1. Three TRAY01 declarations remain UNSTARTED historically; future use requires this distinct reviewed instance, not replay of original scope."
+    },
+    "fresh_source_store_device_lock_and_frozen_bindings": "ALL_UNBOUND_NONE; no request/instance/runtime/slot reservation",
+    "classpath": "Actual Test.classpath.asPath forwarded at task execution into lifecycle/Main child properties; not launcher java.class.path or Gradle-client -D inheritance.",
+    "main_child_environment": "Accepted7a0dd50d fixture explicitly validates/forwards original private D-Bus/XDG/no-AT values; initial omission and exact26-line correction preserved. This is not actual endpoint/no-host-bus/activation proof.",
+    "display": "New1280x1024x24 tuple respects unchanged tray<=1280x1024 guard and source-calculated freshMain1200x800 origin(40,112). Prior1024x768 can startMain atx=-88; rejected1600x1000 exceeds tray width cap. No product/fixture guard widening; actual WM/native geometry still unobserved and fail-closed.",
+    "bounds": {
+      "app_test_seconds": 600,
+      "shared_test_seconds": 360,
+      "render_seconds": 1100,
+      "outer_seconds": 6000,
+      "outer_work_seconds": 5250,
+      "outer_drain_seconds": 750,
+      "meaning": "Subordinate ceilings, not reservations that every phase can exhaust. Existing launch/running/resource/process/stop/retention safeguards unchanged."
+    },
+    "evidence_contract": {
+      "main_role_files": 9,
+      "serial_main_roles": 3,
+      "ordered_main_events": 13,
+      "expected_global_files": 104,
+      "failure_file_cap": 114,
+      "inner_owned_evidence_cap_bytes": 117440512,
+      "meaning": "Source expectations, not observed files or cases;112MiB is inner-owned only. No database/binary/archive upload; bounded logs/traces/exit/crash evidence only."
+    },
+    "preserved_before_review": "reviews/storage/INTEGRATION02-INNER-INIT-BEFORE-REVIEW.json",
+    "executed_cases": 0,
+    "new_family_closures": 0,
+    "remaining": "Fresh current committed-source/instance/toolchain/route/coordination/cleanup independent admission and uninterrupted host window. No original TRAY01 probe/adoption/cleanup/retry; all old HOLDs remain. Do not add Detekt to this no-Git-inventory workload without separately reviewed scope."
+  },
+  "android_clipboard_locale_source": {
+    "status": "INDEPENDENTLY_SOURCE_ACCEPTED_AND_WIRED_UNCOMPILED_UNEXECUTED_UNADMITTED",
+    "finding_ids": [
+      "PVA-009",
+      "PVA-030"
+    ],
+    "authors": {
+      "fixture": "/root/android32",
+      "runner_line": "/root"
+    },
+    "independent_reviewer": "/root/editor",
+    "sources": [
+      {
+        "path": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt",
+        "sha256": "3762edc0f9ac2d26ba9ab68249a55004fd4cb3f08e01a2d337d23d3fbb1aab1f",
+        "bytes": 28533,
+        "physical_lf": 504
+      },
+      {
+        "path": "app-android/build.gradle.kts",
+        "sha256": "c7a382773cb11383d583b6fd1dcead85aac30ccc0a38f81995f535dc1029da42",
+        "bytes": 30600,
+        "physical_lf": 828,
+        "delta": "Exactly one defaultConfig testInstrumentationRunner line; removing it reproduces bc4aef06f156617d15b41bfbf41d58cc4b455c4fcd15152f8ed31a4b8fcc7625"
+      }
+    ],
+    "independent_review": "reviews/editor/PVA009-PVA030-INSTRUMENTATION-INDEPENDENT.md",
+    "independent_review_sha256": "f731206327042f1e02a53260a7cb0d64c930114d70932256e27dbf98fd46ed16",
+    "author_delta": "reviews/android32/ANDROID-CLIPBOARD-LOCALE-CORRECTED-DELTA.md",
+    "author_delta_sha256": "af27e317612a31ae5aef6074f9ded8f7a2f39cd05c882b632dc75cb05ad71fc6",
+    "selection": {
+      "prospective_instrumentation_cases": 2,
+      "case_names": [
+        "realClipboardOwnershipAndForegroundRetry",
+        "frameworkLocaleRecreationAndExplicitToSystem"
+      ],
+      "not_junit_methods": true,
+      "separate_from": "Desktop integration02 four cases and existing core Android32 four instrumentation cases"
+    },
+    "observed_boundary_if_executed": "Actual Main/Koin/ClipboardManager replacement ownership and stopped/no-focus/unavailable endpoint observations, real foreground callbacks; real Main recreation and SettingsViewModel/store EN/AR/SYSTEM/default prompt-input behavior.",
+    "finite_corrections": "No duplicate active bootstrap retry; bounded read-only ready-only onboarding AX gate; preserve primary/suppressed cleanup and observed interruption; record replacement label before write; anchor5.5s interval after first stopped/null endpoint; snapshot/restore LocaleList selected index plus general/DISPLAY/FORMAT defaults.",
+    "rejected_source": {
+      "path": "reviews/android32/ANDROID-CLIPBOARD-LOCALE-REJECTED-A2ED698.kt.txt",
+      "sha256": "a2ed69836a68a1291f6673cc87ffc708cfc1594fc0387381585ff08fa067dbf1",
+      "bytes": 22445,
+      "physical_lf": 407,
+      "historical_author_note_sha256": "dc0146d197a217984818c130852ec2d22399f8afe3c139a144ca037f37e8e914",
+      "intermediate": "Unaccepted e56a01a791b6b5aa566d6d366fc493639fe51a181ce724f3df8220f4d0fd28e0 is reproducible from the exact final four-edit delta in the independent review; zero execution."
+    },
+    "admission": "Fresh synthetic whole-device/user/clipboard including host sharing and ordinary Debug app data BEFORE Application/Koin; exact source/APK/target and independently reviewed outer bounds, UiAutomation/app-worker settlement and allowlisted storage cleanup required. Bundle/package/DEBUG flags cannot prove isolation.",
+    "limits": "Two unavailable clipboard endpoints are not continuous denial or private-timer causality; null may mean absence and onStop may clear. Missing required ownership/endpoint interval is non-pass. Same-UID replacement not external-UID proof. Test-only Activity config/recreation is not cold-process/device-global locale propagation, rendered RTL/displayed prompt, store-job settlement or hardware security. AX merge/viewport mapping and framework finish/connection cleanup unobserved; per-case PASS alone is insufficient without aggregate terminal cleanup and outer reconciliation.",
+    "tool_and_history_gap": "Original packed reviews were not freshly read in this lane after the supplied viewer mixed-device refusal; no bypass reader or archived execution. Detailed current issue rows and new independently reviewed source support prospective tests only.",
+    "actual_executions": 0,
+    "xml_elements": 0,
+    "new_findings": 0,
+    "qualified_closures": 0,
+    "remaining": "Compile on admitted target, then separately admitted actual fixed selection and independent aggregate/outer cleanup reconciliation. SDK-license/target access unanswered; Android32 remains first risk priority. No dependency/version/identity/build-type/manifest/Store change."
   }
 }

@@ -1,0 +1,26 @@
+--- eaaa21fc720LF/CredentialMainNavHostRoomIntegrationTest.kt
++++ terminal-edt-correction/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -265,11 +265,18 @@
+             scenario()
+             releaseInput()
+             trace.record("DRIVER_ASSERTIONS_COMPLETE")
+-            onEdt {
+-                assertNativeWindow(frame)
+-                // EDT cannot handle the queued Ctrl+Q until these calls (including releases) finish.
+-                withKey(KeyEvent.VK_CONTROL) { withKey(KeyEvent.VK_Q) { } }
+-                trace.record("QUIT_KEY_CALLS_COMPLETE") // Issuance, not physical key-state or graceful-cleanup proof.
++            SwingUtilities.invokeLater {
++                try {
++                    assertNativeWindow(frame)
++                    // EDT cannot handle queued Ctrl+Q before DOWN/UP and this receipt finish.
++                    withKey(KeyEvent.VK_CONTROL) { withKey(KeyEvent.VK_Q) { } }
++                    trace.record("QUIT_KEY_CALLS_COMPLETE") // Issuance, not physical key-state/cleanup proof.
++                } catch (error: Throwable) {
++                    // Report INSIDE EDT, before queued Quit can System.exit; no timed driver wait races this receipt.
++                    System.err.println("MAIN_NAV_FAILURE")
++                    error.printStackTrace(System.err)
++                    runCatching { trace.record("DRIVER_FAILURE") }
++                }
+             }
+         } catch (error: Throwable) { failures.add(error) }
+         finally { if (failures.failed) failures.release { releaseInput() } }

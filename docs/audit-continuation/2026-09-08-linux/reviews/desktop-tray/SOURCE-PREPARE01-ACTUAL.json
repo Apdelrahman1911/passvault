@@ -1,0 +1,107 @@
+{
+  "at_utc": "2026-09-10T11:06:40.446098+00:00",
+  "build_admission": false,
+  "execution": {
+    "exit": 70,
+    "provenance": "Root transcription from retained tool outcome and continuation summary, not new execution or raw stdout capture. No Git child or build ran.",
+    "raw_stdout_file": null,
+    "raw_stdout_hash": null,
+    "stdout_as_transcribed_from_prior_tool_record": {
+      "commands": [],
+      "error": "FileNotFoundError:[Errno 2] No such file or directory: 'info'",
+      "resources": [],
+      "status": "HOLD_NO_AUTOMATIC_RETRY",
+      "tests": 0
+    },
+    "tool_chunk": "bf015d"
+  },
+  "failed_root_followup": {
+    "error": "AssertionError",
+    "exit": 1,
+    "provenance": "Prior bounded passive observation command failed at first assertion expecting objects to exist and objects/info absent. It printed no observations and wrote no receipt. The objects/info attribution was unproved and is not adopted."
+  },
+  "kind": "SOURCE_PREPARE01_ACTUAL_AND_SUBSEQUENT_PASSIVE_OBSERVATION",
+  "observations_now": [
+    {
+      "bytes": 4096,
+      "dev": 23,
+      "exists": true,
+      "ino": 1080546,
+      "mode": 16832,
+      "nlink": 5,
+      "path": "/root/projects/PassVault/passvault-publication-20260910-01/.git",
+      "symlink": false,
+      "uid": 0
+    },
+    {
+      "bytes": 4096,
+      "dev": 23,
+      "exists": true,
+      "ino": 1080550,
+      "mode": 16832,
+      "nlink": 246,
+      "path": "/root/projects/PassVault/passvault-publication-20260910-01/.git/objects",
+      "symlink": false,
+      "uid": 0
+    },
+    {
+      "bytes": 4096,
+      "dev": 23,
+      "exists": true,
+      "ino": 1125516,
+      "mode": 16832,
+      "nlink": 2,
+      "path": "/root/projects/PassVault/passvault-publication-20260910-01/.git/objects/info",
+      "symlink": false,
+      "uid": 0
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/passvault-publication-20260910-01/.git/objects/info/alternates"
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/passvault-publication-20260910-01/.git/info"
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/passvault-publication-20260910-01/.git/info/attributes"
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray/SOURCE.json"
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray/SOURCE-CAPTURE.json"
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/audit-runtime-linux-desktop-tray01"
+    },
+    {
+      "errno": 2,
+      "error": "FileNotFoundError",
+      "exists": false,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-tray01"
+    }
+  ],
+  "qualification": "Current lstat observations, not proof of filesystem state at the earlier failure. Source-preparation01 is consumed; no replay/import or old output adoption. No product tests or closure credit.",
+  "schema": 1,
+  "source": {
+    "path": "reviews/desktop-tray/SOURCE-PREPARE.py",
+    "sha256": "ddd721eaad5e831bef2aa8716e50df760f404876bb1a7f3385def6dca27bd8bd"
+  }
+}

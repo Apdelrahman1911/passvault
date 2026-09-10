@@ -1,0 +1,49 @@
+{
+  "source_commit": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+  "source_tree": "291a75853d8f81c5b1da5b4dfe653896cf79a1bc",
+  "namespace_parent": [
+    23,
+    498323,
+    0,
+    16877
+  ],
+  "selection_sha256": "51388553f100eb7967891ba58015eae0269384a2bc0984e5b4afad1104ba7d02",
+  "review_path": "reviews/baseline-coverage/CHECKPOINT-13-REVIEW.json",
+  "review_sha256": "632e4060c318badc8b6d3e91941e5240b15dcb0dbbdf77d266652e925e427b71",
+  "companions": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-13-PAYLOAD.json",
+      "sha256": "51388553f100eb7967891ba58015eae0269384a2bc0984e5b4afad1104ba7d02",
+      "bytes": 24635,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-13-REVIEW.json",
+      "sha256": "632e4060c318badc8b6d3e91941e5240b15dcb0dbbdf77d266652e925e427b71",
+      "bytes": 10542,
+      "git_mode": "100644"
+    }
+  ],
+  "slot_sha256": "1bc85c2b566b93c40afbaaa3f3613a48f87c50a5bd58e63e1bb4368ae89fd147",
+  "slot_state": "IDLE_NO_BUILD_ADMITTED",
+  "remotes": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "receipt_name": "CHECKPOINT-13-PUBLISHED.json",
+  "commit_message": "Repair Desktop application exit and prepare focused regressions",
+  "root_admission": {
+    "owner": "/root",
+    "utc": "2026-09-10T10:14:42.106530+00:00",
+    "purpose": "ONE_C13_SOURCE_PUBLICATION_ONLY",
+    "publisher_sha256": "8e53fd2f0e141152e16854852f6ef5d9e270a11a665a722ccf35ca58d451237b",
+    "selection_files": 74,
+    "total_with_companions": 76,
+    "commands": "Exact reviewed publisher; fresh under-lock parent/index/refs/resource checks precede writes, no new request/CI/build. No retry after failure.",
+    "cleanup": "Reviewed normal Git-child reaping; no build/wrapper/runtime allocation. Preserve original T and old HOLDs; abnormal uncertainty retained, no unrelated signals/deletion."
+  }
+}

@@ -1,4 +1,40 @@
-## Post-C12 active ownership — 2026-09-10
+## Current C14 continuation ownership — 2026-09-10
+
+Root alone owns builds/tests/CI, Git in `passvault-publication-20260910-01`,
+central ledgers, admission and cleanup. Ordinary source edits remain in
+`passvault-linux`; its retired Git store and all old held runtimes are untouched.
+TRAY01 is consumed: external70, three UNSTARTED, original applicable stop0,
+cleanup HOLD. Only scheduling and the new publication store's active-use freeze
+were released. Detekt preflight created no request/runtime/job; its unused
+prospective input freeze was separately released. Neither result admits a build.
+
+- `android32` authored the permanent actual-Main/NavHost/Room test;
+  `editor_review` independently accepted its corrected terminal-input oracle.
+  Root initially adopted only two documentation-line changes; a later storage
+  challenge led to a separately accepted26-line private child-environment fix.
+  Initial snapshots/reviews remain preserved. One declaration, zero runs.
+- `build_config` authors only fresh integration02 inner/init/plan;
+  `storage` independently challenges its delta. `verification` authors only
+  integration02 outer/plan; `editor_review` independently challenges that delta.
+  Four prospective cases share two serial Test tasks. No request is admitted.
+- `editor` authors the inert PVU003 chooser/Home/cancel snippet;
+  `native_review` challenges it. No permanent test adoption or runtime witness.
+- `android32` authored the two-case PVA009/PVA030 Android instrumentation fixture;
+  `editor` independently accepted its finite source corrections. Root applied the
+  independently reviewed one-line test-runner setting. Both are selected for C14
+  source publication only, not execution. Existing Android32 harness is unchanged;
+  license/target authority remains unanswered and no SDK/device action follows.
+- `baseline_coverage` independently reviews the final C14 ledgers/report and
+  explicit publication selection. Root owns the new publication recipe/config;
+  the consumed C13 publisher must never be replayed.
+- `native`'s recorded platform refusal remains unchanged, not retried/rephrased.
+
+No agent may launch builds/tests, Git, CI, services, helper imports, process probes
+or touch another owner's files. Review only material deltas; reuse prior successful
+evidence. All STOP/NO-RETRY/CLOSED/HOLD restrictions and independent admission
+requirements remain. No competing workload is stopped or adopted by the audit.
+
+## Historical post-C12 ownership — 2026-09-10
 
 Root alone: Git in the new publication store, central ledgers, execution/CI/cleanup.
 Editor: Main/production Compose loop + one new child-JVM regression; native_review challenges it.

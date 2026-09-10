@@ -33,7 +33,7 @@ R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-tray01')
 E = B / 'runs/linux-desktop-tray01'
 CHECKOUT = R / 'checkout'
 SELF, INIT = W / 'scripts/audit/linux_desktop_tray_01.py', W / 'scripts/audit/desktop_tray_01.init.gradle'
-SOURCE = B / 'reviews/desktop-tray/SOURCE.json'
+SOURCE = B / 'reviews/desktop-tray/source-prepare02/SOURCE.json'
 JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
 XVFB, XAUTH, WM, DBUS = (Path('/usr/bin/' + n) for n in ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon'))
 MOUNT, IP, XDPYINFO, XPROP = (Path('/usr/bin/' + n) for n in ('mount', 'ip', 'xdpyinfo', 'xprop'))
@@ -58,18 +58,18 @@ PANEL_CONFIG = (
     ('/plugins/plugin-6', 'string', 'systray', False),
     ('/plugins/plugin-6/square-icons', 'bool', 'true', False),
 )
-PANEL_ROUTE_ADMITTED = None
+PANEL_ROUTE_ADMITTED = True
 INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release',
           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
 # Root must capture a fresh complete raw-blob manifest and independent source/
 # instance admission. Historical GUI02 publication/tool/lock identities do not apply.
-COMMIT = None
-TREE = None
-MEMBERS = None
+COMMIT = 'd3d46db51d9fa69a4060250e71e0477c6b930d3a'
+TREE = '245160648cb79873f41da41969a5b48d4c2057e1'
+MEMBERS = 2495
 RUN_ID = 'linux-desktop-tray01'
 FROZEN = {
-    SOURCE: None,
-    INIT: None,
+    SOURCE: 'ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc',
+    INIT: '5b875cad3086f7b0f700ab531e02bccf50d0b3d4d401fa9f63e88d65ecb81560',
 }
 MIB, GIB = 1024 ** 2, 1024 ** 3
 SELECTIONS = (

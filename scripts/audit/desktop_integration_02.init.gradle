@@ -1,0 +1,193 @@
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+import java.time.Duration
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.testing.Test
+
+// NEW fixed INTEGRATION02 source only; not execution admission. Tray/lifecycle/Room/Main:
+// four cases in two serial Test tasks, after separately stopped preparation.
+// No Detekt: the raw-blob source snapshot has no admitted Git inventory.
+def mode = gradle.startParameter.projectProperties['passvault.audit.desktopIntegration02Mode']
+if (!(mode in ['prepare', 'render'])) {
+    throw new GradleException('Explicit desktop-integration02 prepare/render mode required')
+}
+def runtime = '/root/projects/PassVault/audit-runtime-linux-desktop-integration02'
+def displayRoot = '/tmp/passvault-desktop-integration02'
+def evidenceRoot = '/root/projects/PassVault/passvault-linux/docs/audit-continuation/' +
+        '2026-09-08-linux/runs/linux-desktop-integration02'
+def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+def selections = [
+    [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'desktop-tray',
+     selectedClasses: ['com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest',
+                      'com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest',
+                      'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],
+    [project: ':shared', task: ':shared:desktopTest', worker: 'editor-room',
+     selectedClasses: ['com.passvault.shared.credential.CredentialEditorRoomIntegrationTest'], timeoutSeconds: 360],
+]
+
+gradle.beforeProject { project ->
+    def selected = selections.find { it.project == project.path }
+    if (selected == null) return
+    def workerRoot = runtime + '/workers/' + selected.worker
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.name != 'desktopTest') return
+        test.executable = jdk + '/bin/java'
+        test.maxHeapSize = '512m'
+        test.maxParallelForks = 1
+        test.forkEvery = 0
+        test.ignoreFailures = false
+        test.jvmArgs('-XX:-UsePerfData')
+        test.systemProperty('file.encoding', 'UTF-8')
+        test.systemProperty('user.home', workerRoot + '/home')
+        test.systemProperty('jna.tmpdir', workerRoot + '/jna')
+        test.systemProperty('org.sqlite.tmpdir', workerRoot + '/sqlite')
+        test.systemProperty('java.io.tmpdir', workerRoot + '/tmp')
+
+        // Root supplies the allowlisted client. Do not forward its JVM flags,
+        // an ambient GUI session or the unrelated provider-fault fixture.
+        def workerEnvironment = new LinkedHashMap(test.environment)
+        ['JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'JAVA_OPTS', 'GRADLE_OPTS',
+         'PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE',
+         'DISPLAY', 'XAUTHORITY', 'WAYLAND_DISPLAY', 'SESSION_MANAGER', 'XDG_RUNTIME_DIR',
+         'DBUS_SESSION_BUS_ADDRESS', 'DBUS_SYSTEM_BUS_ADDRESS', 'COMPOSE_DISABLE_ACCESSIBILITY'].each {
+            workerEnvironment.remove(it)
+        }
+        workerEnvironment.putAll([
+            'JAVA_HOME': jdk, 'HOME': workerRoot + '/home',
+            'TMPDIR': workerRoot + '/tmp', 'TMP': workerRoot + '/tmp', 'TEMP': workerRoot + '/tmp',
+            'SQLITE_TMPDIR': workerRoot + '/sqlite',
+            'XDG_CACHE_HOME': workerRoot + '/xdg-cache', 'XDG_CONFIG_HOME': workerRoot + '/xdg-config',
+            'XDG_DATA_HOME': workerRoot + '/xdg-data', 'XDG_STATE_HOME': workerRoot + '/xdg-state',
+        ])
+        if (mode == 'render') {
+            workerEnvironment.putAll([
+                'DISPLAY': ':88', 'XAUTHORITY': displayRoot + '/Xauthority',
+                'XDG_RUNTIME_DIR': displayRoot + '/runtime',
+                'DBUS_SESSION_BUS_ADDRESS': 'unix:path=' + displayRoot + '/bus',
+                'DBUS_SYSTEM_BUS_ADDRESS': 'unix:path=' + displayRoot + '/runtime/no-system-bus',
+                // New best-effort native GTK bridge suppression; NOT accessibility or no-activation proof.
+                'NO_AT_BRIDGE': '1',
+            ])
+            if (selected.project == ':app-desktop') {
+                workerEnvironment.putAll([
+                    'HOME': displayRoot + '/home',
+                    'TMPDIR': displayRoot + '/runtime', 'TMP': displayRoot + '/runtime', 'TEMP': displayRoot + '/runtime',
+                    'XDG_CONFIG_HOME': displayRoot + '/config', 'XDG_CACHE_HOME': displayRoot + '/cache',
+                    'XDG_DATA_HOME': displayRoot + '/data', 'XDG_STATE_HOME': displayRoot + '/state',
+                ])
+                test.systemProperty('user.home', displayRoot + '/home')
+                test.systemProperty('java.io.tmpdir', displayRoot + '/runtime')
+                test.systemProperty('passvault.pva027.syntheticDisplay', ':88')
+                test.systemProperty('passvault.pva027.evidenceDir', evidenceRoot + '/tray-pixels')
+                test.systemProperty('passvault.pva027.privateSessionDir', displayRoot)
+                test.systemProperty('passvault.lifecycle.syntheticDisplay', ':88')
+                test.systemProperty('passvault.lifecycle.runtimeDir', runtime + '/lifecycle')
+                test.systemProperty('passvault.lifecycle.evidenceDir', evidenceRoot + '/lifecycle-evidence')
+                test.systemProperty('passvault.mainnav.syntheticDisplay', ':88')
+                test.systemProperty('passvault.mainnav.runtimeDir', runtime + '/mainnav')
+                test.systemProperty('passvault.mainnav.evidenceDir', evidenceRoot + '/mainnav-evidence')
+                test.doFirst {
+                    // Actual complete Test runtime, resolved before worker startup; never java.class.path.
+                    def childClasspath = test.classpath.asPath
+                    if (childClasspath.isEmpty()) throw new GradleException('Lifecycle/Main Test runtime classpath missing')
+                    test.systemProperty('passvault.lifecycle.childClasspath', childClasspath)
+                    test.systemProperty('passvault.mainnav.childClasspath', childClasspath)
+                }
+            } else {
+                // Keep the initially empty Room JVM HOME distinct from panel/tray and lifecycle homes.
+                test.systemProperty('passvault.editor.syntheticDisplay', ':88')
+                test.systemProperty('passvault.editor.roomHome', workerRoot + '/home')
+                test.systemProperty('compose.accessibility.enable', 'true')
+            }
+            // Startup properties, never Gradle-client -D or a shared in-process HOME switch.
+            test.systemProperty('user.language', 'en')
+            test.systemProperty('user.country', 'US')
+            test.systemProperty('user.variant', '')
+            test.systemProperty('java.awt.headless', 'false')
+            test.systemProperty('sun.java2d.xrender', 'true')
+            test.systemProperty('awt.useSystemAAFontSettings', 'on')
+            test.systemProperty('swing.aatext', 'true')
+            test.timeout.set(Duration.ofSeconds(selected.timeoutSeconds))
+            // App600s = tray60 + lifecycle70 + Main395 +75 overhead; shared360s.
+            // Task ceilings, not native/EDT/process guarantees or additive reservations:
+            // unchanged outer5250/6000s cancellation/settlement remains authoritative.
+            test.outputs.upToDateWhen { false }
+            test.outputs.cacheIf { false }
+        }
+        test.setEnvironment(workerEnvironment)
+        test.filter.setIncludePatterns(*selected.selectedClasses)
+        test.filter.failOnNoMatchingTests = true
+    }
+}
+
+gradle.projectsEvaluated {
+    def selectedTests = selections.collectEntries { selected ->
+        def project = gradle.rootProject.findProject(selected.project)
+        if (project == null) throw new GradleException('Fixed INTEGRATION02 project missing: ' + selected.project)
+        [(selected.task): project.tasks.named('desktopTest', Test)]
+    }
+    selectedTests[':shared:desktopTest'].configure {
+        mustRunAfter(selectedTests[':app-desktop:desktopTest'])
+    }
+    gradle.rootProject.tasks.register('auditDesktopIntegration02Prepare') {
+        // Lazy dependency-bearing collections only: depending on Test itself
+        // would wrongly execute application tests in the online preparation.
+        dependsOn { selectedTests.values().collect { it.get().testClassesDirs } }
+        dependsOn { selectedTests.values().collect { it.get().classpath } }
+        doLast {
+            selections.each { selected ->
+                def test = selectedTests[selected.task].get()
+                def classRoots = test.testClassesDirs.files
+                def classpath = test.classpath.files
+                selected.selectedClasses.each { selectedClass ->
+                    def relativeClass = selectedClass.replace('.', '/') + '.class'
+                    if (!classRoots.any { new File(it, relativeClass).isFile() }) {
+                        throw new GradleException('Compiled selected INTEGRATION02 fixture missing: ' + selectedClass)
+                    }
+                }
+                if (classpath.size() > 512) throw new GradleException('Runtime classpath count bound')
+                def rows = []
+                classpath.each { File file ->
+                    if (file.isFile()) {
+                        if (file.length() > 256L * 1024 * 1024) {
+                            throw new GradleException('Runtime artifact size bound')
+                        }
+                        def digest = MessageDigest.getInstance('SHA-256')
+                        long count = 0
+                        file.withInputStream { stream ->
+                            byte[] buffer = new byte[65536]
+                            int n
+                            while ((n = stream.read(buffer)) != -1) {
+                                count += n
+                                if (count > 256L * 1024 * 1024) {
+                                    throw new GradleException('Runtime artifact growth bound')
+                                }
+                                digest.update(buffer, 0, n)
+                            }
+                        }
+                        rows.add([name: file.name, bytes: count, sha256: digest.digest().encodeHex().toString()])
+                    } else {
+                        // An empty/NO-SOURCE resource directory is not a compile failure.
+                        rows.add([name: file.name, directory: true, exists: file.isDirectory()])
+                    }
+                }
+                rows.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+                println('DESKTOP_INTEGRATION02_RUNTIME_CLASSPATH=' + JsonOutput.toJson([
+                    selectedTask: selected.task, selectedClasses: selected.selectedClasses,
+                    entries: classpath.size(), artifacts: rows,
+                    qualification: 'Resolved Test runtime artifacts, not an executed test or native-loader proof',
+                ]))
+            }
+        }
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def tests = graph.allTasks.findAll { it instanceof Test }
+    if (mode == 'prepare' && !tests.isEmpty()) {
+        throw new GradleException('Preparation must not schedule any Test task')
+    }
+    if (mode == 'render' && tests.collect { it.path }.sort() != selections.collect { it.task }.sort()) {
+        throw new GradleException('Only the two fixed serial INTEGRATION02 Test tasks may run')
+    }
+}

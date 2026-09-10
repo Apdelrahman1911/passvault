@@ -1,0 +1,65 @@
+{
+  "at_utc": "2026-09-10T11:41:35.695643+00:00",
+  "author": "/root",
+  "changes": [
+    {
+      "after_sha256": "a7895c455f7cf01577a46890d9fc0b72aca94bfc7766c6b9cd9bde299f03140b",
+      "before_sha256": "13894d0354fb0e607f588981cb2d12276a5fbba28bc23e890f843ad7202b918e",
+      "bytes": 47742,
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_01.py",
+      "substitutions": [
+        {
+          "after": "SOURCE = B / 'reviews/desktop-tray/source-prepare02/SOURCE.json'",
+          "before": "SOURCE = B / 'reviews/detekt01/SOURCE.json'"
+        },
+        {
+          "after": "COMMIT = 'd3d46db51d9fa69a4060250e71e0477c6b930d3a'\nTREE = '245160648cb79873f41da41969a5b48d4c2057e1'\nMEMBERS = 2495\nGIT_IMAGE = Path('/usr/bin/git')\nRUBY_IMAGE = Path('/usr/bin/ruby3.2')\nEXCLUDE_STATE = 'INFO_ABSENT'",
+          "before": "COMMIT = TREE = MEMBERS = GIT_IMAGE = RUBY_IMAGE = EXCLUDE_STATE = None"
+        },
+        {
+          "after": "FROZEN = {SOURCE: 'ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97'}",
+          "before": "FROZEN = {SOURCE: None, INIT: None}"
+        }
+      ]
+    },
+    {
+      "after_sha256": "4422ae62c1fd461de9f66b2b880567c8cd52bfc2b8cab159ee9692f3d64cae2c",
+      "before_sha256": "1c5755bcda9c6eb3d83ce6827ec42c0d1cebdc468512593096b391b5391670b6",
+      "bytes": 53680,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt01-outer/LAUNCH.py",
+      "substitutions": [
+        {
+          "after": "SOURCE = B / 'reviews/desktop-tray/source-prepare02/SOURCE.json'",
+          "before": "SOURCE = B / 'reviews/detekt01/SOURCE.json'"
+        },
+        {
+          "after": "GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')\nINDEX_SOURCE = GITDIR / 'index'\nGIT_IMAGE = Path('/usr/bin/git')\nRUBY_IMAGE = Path('/usr/bin/ruby3.2')\nEXCLUDE_STATE = 'INFO_ABSENT'",
+          "before": "GITDIR = INDEX_SOURCE = GIT_IMAGE = RUBY_IMAGE = EXCLUDE_STATE = None"
+        },
+        {
+          "after": "COMMIT = 'd3d46db51d9fa69a4060250e71e0477c6b930d3a'\nTREE = '245160648cb79873f41da41969a5b48d4c2057e1'\nMEMBERS = 2495  # Exact published C13 source and full stage0 index; not execution admission.",
+          "before": "COMMIT = TREE = MEMBERS = None  # Await exact published source and independently matched full index."
+        },
+        {
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}\nEXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Exact original identity; no execution admission.",
+          "before": "DEVICE = EXPECTED_LOCK = None  # Fresh directory/file devices and original lock are NOT yet admitted."
+        },
+        {
+          "after": "FROZEN = {INNER: 'a7895c455f7cf01577a46890d9fc0b72aca94bfc7766c6b9cd9bde299f03140b', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97', SOURCE: 'ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc'}",
+          "before": "FROZEN = {INNER: None, INIT: None, SOURCE: None}"
+        }
+      ]
+    }
+  ],
+  "index_capture_sha256": "164330da94ae2675c6e20b3af975698dcdba15a92899526d430d3f0c08dea959",
+  "limits": "No test/build/static runner execution; source P and publication store frozen untouched. Reuse exact source02 manifest already captured and independently reviewed; outer will verify raw payloads and complete copied index. Fresh independent metadata/constant review and subsequent exact request/coordination/tool/cleanup admission required. Focused3 remains higher scheduling priority; unrelated Java conflict not probed/signalled. All historical scopes/holds unchanged.",
+  "members": 2495,
+  "schema": 1,
+  "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+  "source_manifest": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray/source-prepare02/SOURCE.json",
+    "sha256": "ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc"
+  },
+  "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+  "status": "DETEKT_SOURCE_CONSTANTS_BOUND_NOT_EXECUTION_ADMITTED"
+}

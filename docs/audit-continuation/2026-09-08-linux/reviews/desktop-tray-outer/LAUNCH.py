@@ -30,16 +30,16 @@ APPROVAL = B / 'reviews/storage/LINUX-DESKTOP-TRAY01-INSTANCE-ACCEPT.json'
 LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
 # Fresh source-store path and original directory pin await publication/instance
 # review. Never borrow GUI02's consumed source-store or instance authority.
-GITDIR = None
+GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
 INNER, INIT = W / 'scripts/audit/linux_desktop_tray_01.py', W / 'scripts/audit/desktop_tray_01.init.gradle'
-SOURCE = B / 'reviews/desktop-tray/SOURCE.json'
+SOURCE = B / 'reviews/desktop-tray/source-prepare02/SOURCE.json'
 JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
 RELEASE = JAVA.parent.parent / 'release'
 PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
 RUN, PURPOSE = 'linux-desktop-tray01', 'ONE_LINUX_DESKTOP_TRAY01'
-COMMIT = None
-TREE = None
-MEMBERS = None
+COMMIT = 'd3d46db51d9fa69a4060250e71e0477c6b930d3a'
+TREE = '245160648cb79873f41da41969a5b48d4c2057e1'
+MEMBERS = 2495
 ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
                   ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon', 'mount', 'ip', 'xdpyinfo', 'xprop', 'xfce4-panel', 'xfconf-query')) + (
@@ -49,12 +49,12 @@ GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
 REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE) + GUI_TOOLS
 IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
 PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
-DEVICE = None
-EXPECTED_LOCK = None
+DEVICE = {'directory_device': 23, 'regular_file_device': 24}
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}
 FROZEN = {
-    INNER: None,
-    INIT: None,
-    SOURCE: None,
+    INNER: '94c747e2558afe541da37dd162c47dc2440f6041170fccb9d220126cbf1c26e9',
+    INIT: '5b875cad3086f7b0f700ab531e02bccf50d0b3d4d401fa9f63e88d65ecb81560',
+    SOURCE: 'ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc',
 }
 TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers lifecycle'.split()
 WORKERS = ['desktop-tray', 'editor-room']

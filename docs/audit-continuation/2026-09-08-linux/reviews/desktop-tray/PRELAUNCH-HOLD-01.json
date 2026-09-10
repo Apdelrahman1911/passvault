@@ -1,0 +1,52 @@
+{
+  "at_utc": "2026-09-10T11:33:44.620024+00:00",
+  "current_absence": {
+    "/root/projects/PassVault/audit-runtime-linux-desktop-tray01": true,
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray/ROOT-EXECUTION-ADMISSION.json": true,
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-tray/SLOT-BEFORE-TRAY01.json": true,
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-tray01": true
+  },
+  "current_buildlike_point_observation": [
+    {
+      "comm": "java",
+      "namespaces": {
+        "mnt": "mnt:[4026531841]",
+        "pid": "pid:[4026531836]"
+      },
+      "pid": 4224,
+      "ppid": 4205,
+      "start_ticks": 30895432,
+      "state": "S"
+    },
+    {
+      "comm": "java",
+      "namespaces": {
+        "mnt": "mnt:[4026531841]",
+        "pid": "pid:[4026531836]"
+      },
+      "pid": 4264,
+      "ppid": 4224,
+      "start_ticks": 30895508,
+      "state": "S"
+    }
+  ],
+  "resources": {
+    "MemAvailable": 32101728256,
+    "MemTotal": 67435888640,
+    "free_disk": 19208232960
+  },
+  "restriction": "No signal/probe/ownership of any unrelated process. Retain failed preflight. No automatic reattempt; explicit fresh observed state/reviewer decision required before slot reservation. No old scope adopted.",
+  "root_prelaunch_command": {
+    "exit": 1,
+    "failure": "AssertionError at inline source line24: assert not c (buildlike point screen)",
+    "limits": "The failed command did not retain c or identify its observed candidate. Subsequent observations below are current, not a recreation of that exact vanished/transient set. It had not reached any receipt/slot writes, helper/build/CI launch or cleanup.",
+    "tool_chunk": "d60928"
+  },
+  "schema": 1,
+  "slot": {
+    "sha256": "1bc85c2b566b93c40afbaaa3f3613a48f87c50a5bd58e63e1bb4368ae89fd147",
+    "state": "IDLE_NO_BUILD_ADMITTED"
+  },
+  "status": "PRELAUNCH_HOLD_NO_BUILD_OR_OUTER_ATTEMPT",
+  "unclassified_disappearances": []
+}

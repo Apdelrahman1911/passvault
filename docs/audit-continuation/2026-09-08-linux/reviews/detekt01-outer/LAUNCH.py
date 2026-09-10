@@ -28,22 +28,29 @@ APPROVAL = B / 'reviews/verification/LINUX-DETEKT01-INSTANCE-ACCEPT.json'
 LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
 # Actual source/store/index/tool/exclude identities require root's fresh review.
 # Paths or old receipts alone never admit the retired source store or an index.
-GITDIR = INDEX_SOURCE = GIT_IMAGE = RUBY_IMAGE = EXCLUDE_STATE = None
+GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+INDEX_SOURCE = GITDIR / 'index'
+GIT_IMAGE = Path('/usr/bin/git')
+RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+EXCLUDE_STATE = 'INFO_ABSENT'
 GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 INNER, INIT = W / 'scripts/audit/linux_detekt_01.py', W / 'scripts/audit/detekt_01.init.gradle'
-SOURCE = B / 'reviews/detekt01/SOURCE.json'
+SOURCE = B / 'reviews/desktop-tray/source-prepare02/SOURCE.json'
 JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
 RELEASE = JAVA.parent.parent / 'release'
 PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'
 RUN, PURPOSE = 'linux-detekt01', 'ONE_LINUX_DETEKT01'
-COMMIT = TREE = MEMBERS = None  # Await exact published source and independently matched full index.
+COMMIT = 'd3d46db51d9fa69a4060250e71e0477c6b930d3a'
+TREE = '245160648cb79873f41da41969a5b48d4c2057e1'
+MEMBERS = 2495  # Exact published C13 source and full stage0 index; not execution admission.
 ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 BASE_REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE, Path('/usr/bin/mount'))
 REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE)
 IMAGES = ()  # Final fixed set includes the externally reviewed optional exclude only when present.
 PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
-DEVICE = EXPECTED_LOCK = None  # Fresh directory/file devices and original lock are NOT yet admitted.
-FROZEN = {INNER: None, INIT: None, SOURCE: None}
+DEVICE = {'directory_device': 23, 'regular_file_device': 24}
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Exact original identity; no execution admission.
+FROZEN = {INNER: 'a7895c455f7cf01577a46890d9fc0b72aca94bfc7766c6b9cd9bde299f03140b', INIT: '5beb8165ae491258c0fae5a5a4f119cbe778157d6a577aacff79fe93fc33ae97', SOURCE: 'ee9361f96da7cc7de04b8949453acf971027640144527961af0d38388a561ffc'}
 REVIEW_ASSERTIONS = (
     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',

@@ -530,6 +530,7 @@ android {
 
     defaultConfig {
         applicationId = "com.passvault.android"
+        testInstrumentationRunner = "com.passvault.android.audit.AndroidClipboardLocaleInstrumentationTest"
 
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
