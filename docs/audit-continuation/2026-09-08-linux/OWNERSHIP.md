@@ -1,4 +1,58 @@
-## Current C14 continuation ownership — 2026-09-10
+## Current C15 continuation ownership — 2026-09-10
+
+Root remains sole build/test/CI/Git/ledger/admission/cleanup owner. Integration02
+actually finished external1: two XML passes, one failed Main driver and one
+unstarted Room case. `storage` independently reconciled actual/visual/cleanup
+evidence; root released only its scheduling and transient T-reader/source-use
+freeze. `baseline_coverage` independently reconciles accounting and the final
+report. No further stop, old-runtime probe or replay is needed.
+
+- `android32` authored the Main accessibility-payload correction;
+  `editor_review` independently accepted it and root adopted the exact delta
+  after freeze release. No production-defect or resolution inference from the NPE.
+- `build_config` authors only NEW integration03 inner/init and its plan;
+  `verification` authors only NEW integration03 outer/plan. These reuse reviewed
+  infrastructure but select only corrected Main and unstarted Room. Successful
+  lifecycle/tray tests are not repeated. `storage` reviews inner/init and
+  `editor_review` outer deltas; instance review and a fresh published source
+  identity remain prerequisites.
+- `editor` prepares only an inert PVU003 adoption proposal in its own review
+  directory; no new fixture adoption, case, execution or conclusive outcome.
+- Root authors the fresh C15 publication source/selection. No consumed publisher
+  is replayed. Ordinary edits use W; Git uses only T, never W's retired store.
+
+No subagent builds, imports helpers, probes processes or touches held runtimes,
+caches, SDKs or another author's files. All STOP/NO-RETRY/CLOSED/HOLD and hardware,
+PVD and publication restrictions remain. Review only material deltas; no new
+runner framework or repetition of unchanged successful checks.
+
+## Historical post-C14 focused validation ownership — 2026-09-10
+
+Root remains the sole build/test/CI/Git/central-ledger/admission/cleanup owner.
+C14 is published at `f7f3ca91cef14b7b2341114c44c460907061f883` /
+`4b405be08458c035b9dd61807acab66659ccd864`; its actual receipt is independently
+reconciled. T and its store/checkout are cooperatively frozen for fresh C14
+source preparation and the prospective integration02 raw reader. W's retired
+store and every old held runtime remain untouched.
+
+- One C14 metadata-only scheduling screen was negative and independently accepted
+  for preparation only. It is not continuing idleness or execution permission.
+- Root authors only fresh C14 metadata and the minimal existing integration02
+  constant bindings; `editor_review` independently challenges source preparation
+  and the exact final instance. No new runner architecture or index machinery.
+- `storage` independently reviewed the scheduling record and can reconcile actual
+  source/results; `build_config` and `verification` supplied the unchanged-source
+  binding checklists. They do not build or inspect live processes.
+- `baseline_coverage` maps actual closure prerequisites and independently reviews
+  final results/coverage. No prospective case or task earns closure credit.
+- All other lanes are quiescent. `native`'s recorded refusal is not revisited.
+
+No build is admitted until a genuine exact-instance review, root slot reservation,
+final team quiescence and fresh under-lock checks. Four Desktop cases share two
+serial Test tasks; Android32 remains target/license-blocked. Every earlier STOP,
+NO-RETRY, CLOSED, HOLD, PVD, hardware and publication boundary stays intact.
+
+## Historical C14 continuation ownership — 2026-09-10
 
 Root alone owns builds/tests/CI, Git in `passvault-publication-20260910-01`,
 central ledgers, admission and cleanup. Ordinary source edits remain in

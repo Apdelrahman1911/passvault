@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T15:48:29.249663+00:00",
+  "purpose": "Bounded read-only audit-branch CI scheduling observation; no activation or cancellation",
+  "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+  "argv": [
+    "/usr/bin/gh",
+    "api",
+    "--method",
+    "GET",
+    "repos/Apdelrahman1911/passvault/actions/runs?branch=codex/audit-continuation-linux-20260908&per_page=20",
+    "--jq",
+    "[.workflow_runs[] | {id,run_attempt,name,head_sha,status,conclusion,event}]"
+  ],
+  "deadline_seconds": 30,
+  "exit": 0,
+  "stdout_bytes": 1661,
+  "stdout_sha256": "0f164f036473a94a70761af3c4818d31f6eef2554f8ced92cea999b975ed5a81",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "runs": [
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
+      "id": 34454557777,
+      "name": "Audit focused iOS validation 01 (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "b825df973ac3e3392dd99b251b8bb7fd48fecce6",
+      "id": 34439762763,
+      "name": "Audit Windows native cohort 05 (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "event": "push",
+      "head_sha": "7b288271d6c139921812caf5050b7f994f5ce1b2",
+      "id": 34430921453,
+      "name": "Audit focused macOS native validation 02 (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "6838961e966975532c714d60fd72e3f590f0c8ab",
+      "id": 34427448784,
+      "name": "Audit Windows native cohort 04 (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "b2e826fd534be8fefede169d28e30c22e37530a9",
+      "id": 34391056257,
+      "name": "Audit Windows native cohort 03 (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+      "id": 34372394480,
+      "name": "Audit Windows native cohort 02 (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+      "id": 34333087199,
+      "name": "Audit focused macOS native validation (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "event": "push",
+      "head_sha": "a1fbdf0d5f0663225a459838d37b072a65e334f6",
+      "id": 34284083351,
+      "name": "Audit Windows native validation (non-publishing)",
+      "run_attempt": 1,
+      "status": "completed"
+    }
+  ],
+  "all_returned_completed": true,
+  "limits": "At most20 returned runs for this branch; completed does not mean passed or global CI idleness. No other branch was inspected or cancelled.",
+  "direct_child_reaped": true
+}

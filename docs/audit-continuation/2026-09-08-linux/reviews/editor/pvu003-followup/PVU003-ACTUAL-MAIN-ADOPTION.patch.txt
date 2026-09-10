@@ -1,0 +1,367 @@
+diff --git a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -14,6 +14,15 @@
+ import com.passvault.desktop.di.desktopModule
+ import com.passvault.desktop.security.biometric.DesktopBiometricHost
+ import com.passvault.shared.di.AppModule
++import com.passvault.feature.backup.presentation.BackupViewModel
++import java.awt.AWTEvent
++import java.awt.Dialog
++import java.awt.FileDialog
++import java.awt.Toolkit
++import java.awt.event.AWTEventListener
++import java.awt.event.MouseEvent
++import java.util.concurrent.atomic.AtomicInteger
++import org.koin.core.context.GlobalContext
+ import java.awt.Frame
+ import java.awt.GraphicsEnvironment
+ import java.awt.IllegalComponentStateException
+@@ -57,7 +66,7 @@
+ import kotlin.time.Instant
+ 
+ /**
+- * Opt-in Linux integration: one case, three serial fresh JVM roles.
++ * Opt-in Linux integration: each case uses three serial fresh JVM roles.
+  * Real Main/Window/NavHost/native input, then real Room reopen after Main process exit.
+  * No test-worker home mutation, fake providers, lifecycle locals, direct UI callbacks or Main graph cleanup.
+  * Root must admit actual Test classpath/property forwarding, private X/WM, fresh roots and external cleanup.
+@@ -66,7 +75,16 @@
+  */
+ class CredentialMainNavHostRoomIntegrationTest {
+     @Test
+-    fun `actual Main guards dirty Back tab and Add without changing durable Room tuples`() {
++    fun `actual Main guards dirty Back tab and Add without changing durable Room tuples`() =
++        runCase(MainNavCase.CREDENTIAL)
++
++    internal fun runPvu003Chooser() {
++        require(property("pvu003Chooser") == "true")
++        requireNotNull(System.getProperty(PREFIX + "syntheticDisplay")) // Opted-in misconfiguration must fail.
++        runCase(MainNavCase.PVU003_CHOOSER)
++    }
++
++    private fun runCase(case: MainNavCase) {
+         val display = System.getProperty(PREFIX + "syntheticDisplay")
+         assumeTrue("Requires separately admitted synthetic X display", display != null)
+         checkPlatform(requireNotNull(display)) // Metadata only: parent never initializes AWT, Koin or Room.
+@@ -80,7 +98,9 @@
+         var databaseKey: String? = null
+         for (role in listOf("seed", "main", "verify")) {
+             if (role != "seed") assertEquals(databaseKey, databaseIdentity(home))
+-            runRole(role, runtime, evidence, home, classpath, display, authority, databaseKey.orEmpty())
++            runRole(
++                role, runtime, evidence, home, classpath, display, authority, databaseKey.orEmpty(), case,
++            )
+             if (role == "seed") databaseKey = databaseIdentity(home)
+             else assertEquals(databaseKey, databaseIdentity(home), "MAIN_NAV_DATABASE_REPLACED")
+         } // No next role after any assertion, child, cleanup, log or receipt failure.
+@@ -88,7 +108,7 @@
+ 
+     private fun runRole(
+         role: String, runtime: MainNavDirectory, evidence: MainNavDirectory, home: MainNavDirectory,
+-        classpath: String, display: String, authority: Path, databaseKey: String,
++        classpath: String, display: String, authority: Path, databaseKey: String, case: MainNavCase,
+     ) {
+         val phase = runtime.child(role)
+         val tmp = phase.child("tmp")
+@@ -119,8 +139,9 @@
+             "-Djna.tmpdir=${tmp.path}", "-Dorg.sqlite.tmpdir=${tmp.path}",
+             "-D${PREFIX}syntheticDisplay=$display", "-D${PREFIX}home=${home.path}",
+             "-D${PREFIX}phase=${phase.path}", "-D${PREFIX}evidenceDir=${evidence.path}",
++            "-D${PREFIX}pvu003Chooser=${case == MainNavCase.PVU003_CHOOSER}",
+             "-D${PREFIX}ownedChild=true", "-cp", classpath, CredentialMainNavHostRoomProbe::class.java.name,
+-            role, trace.toString(), traceKey, databaseKey,
++            role, trace.toString(), traceKey, databaseKey, case.name,
+         ).directory(phase.path.toFile()).redirectErrorStream(true).redirectOutput(log.toFile())
+         builder.environment().clear()
+         builder.environment().putAll(environment)
+@@ -142,7 +163,7 @@
+             assertEquals(0, running.exitValue(), "MAIN_NAV_${role}_EXIT_SEE_LOG")
+             val output = Files.readString(log)
+             FORBIDDEN_LOGS.forEach { assertFalse(output.contains(it), "MAIN_NAV_TERMINAL_DIAGNOSTIC_$it") }
+-            assertEquals(EVENTS.getValue(role), Files.readAllLines(trace), "MAIN_NAV_${role}_ORDERED_EVIDENCE")
++            assertMainNavEvents(role, case, Files.readAllLines(trace))
+         } catch (error: Throwable) { failures.add(error) }
+         finally {
+             failures.release {
+@@ -161,13 +182,27 @@
+     }
+ }
+ 
++/** Separate observation case: absent opt-in is an ignored test, never admitted/passing PVU003 evidence. */
++class Pvu003NativeChooserAdmissionIntegrationTest {
++    @Test
++    fun `actual Main samples Home while the export chooser is modal then cancels`() {
++        assumeTrue(
++            "Requires separate PVU003 chooser admission; not integration02",
++            System.getProperty(PREFIX + "pvu003Chooser") == "true",
++        )
++        CredentialMainNavHostRoomIntegrationTest().runPvu003Chooser()
++    }
++}
++
+ /** Each role is a fresh JVM. Actual Main, not this fixture, owns the application role's terminal cleanup. */
+ internal object CredentialMainNavHostRoomProbe {
+     @JvmStatic
+     fun main(args: Array<String>) {
+         try {
+-            require(args.size == 4 && args[0] in EVENTS && property("ownedChild") == "true")
++            require(args.size == 5 && args[0] in EVENTS && property("ownedChild") == "true")
+             val role = args[0]
++            val case = MainNavCase.valueOf(args[4])
++            require(case != MainNavCase.PVU003_CHOOSER || property("pvu003Chooser") == "true")
+             checkPlatform(property("syntheticDisplay"))
+             val home = MainNavDirectory.acquire(property("home"), empty = role == "seed")
+             val phase = MainNavDirectory.acquire(property("phase"), empty = false)
+@@ -181,12 +216,12 @@
+                 val owned = MainNavDirectory.acquire(phase.path.resolve(directory).toString(), empty = true)
+                 assertEquals(owned.path.toString(), System.getProperty(property))
+             }
+-            val trace = MainNavTrace(role, Path.of(args[1]), args[2])
++            val trace = MainNavTrace(role, Path.of(args[1]), args[2], case)
+             if (role == "main") {
+                 assertEquals(args[3], databaseIdentity(home))
+                 assertFalse(GraphicsEnvironment.isHeadless())
+                 Thread({
+-                    try { NativeMainNav(trace).run() }
++                    try { NativeMainNav(trace, case).run() }
+                     catch (error: Throwable) {
+                         System.err.println("MAIN_NAV_FAILURE")
+                         error.printStackTrace(System.err)
+@@ -247,7 +282,7 @@
+     trace.record(if (role == "seed") "SEED_ROOM_CLOSED" else "VERIFY_ROOM_CLOSED")
+ }
+ 
+-private class NativeMainNav(private val trace: MainNavTrace) {
++private class NativeMainNav(private val trace: MainNavTrace, private val case: MainNavCase) {
+     private lateinit var frame: Frame
+     private lateinit var robot: Robot
+     private val pressedKeys = mutableSetOf<Int>()
+@@ -264,7 +299,17 @@
+         robot = Robot().apply { autoDelay = 8; isAutoWaitForIdle = false }
+         val failures = MainNavFailures()
+         try {
+-            scenario()
++            if (case == MainNavCase.PVU003_CHOOSER) {
++                val observed = pvu003ChooserHomeThenCancel() // Returns only after its native/listener cleanup.
++                require(observed.frameDeliveryBits in 0..15)
++                trace.record(
++                    "PVU003_CHOOSER_HOME=${if (observed.homeSelectedWhileChooserShowing) 1 else 0};" +
++                        "AFTER_CANCEL=${if (observed.homeSelectedAfterNativeCancel) 1 else 0};" +
++                        "FRAME_DELIVERY=${observed.frameDeliveryBits.toString(16)}",
++                )
++            } else {
++                scenario()
++            }
+             releaseInput()
+             trace.record("DRIVER_ASSERTIONS_COMPLETE")
+             SwingUtilities.invokeLater {
+@@ -285,6 +330,162 @@
+         failures.throwIfPresent() // Main may already System.exit; no post-Main receipt/finalizer is relied upon.
+     }
+ 
++    private data class Pvu003ChooserObservation(
++        val homeSelectedWhileChooserShowing: Boolean,
++        val homeSelectedAfterNativeCancel: Boolean,
++        // 1/2: frame press/release delivered while chooser showing; 4/8: delivered after hiding.
++        // Zero is NOT proof that native input was absent or that a specific gate rejected it.
++        val frameDeliveryBits: Int,
++    )
++
++    private fun pvu003ChooserHomeThenCancel(): Pvu003ChooserObservation {
++        val failures = MainNavFailures()
++        val delivery = AtomicInteger()
++        var chooser: FileDialog? = null
++        var model: BackupViewModel? = null
++        var listener: AWTEventListener? = null
++        var exportAttempted = false
++        var homeDuring = false
++        var homeAfter = false
++        try {
++            replaceText("Master password", PASSWORD, readable = false)
++            click(button("Unlock vault"))
++            await("PVU003_NATIVE_UNLOCK", 30) { onEdt { credentialCard(snapshot()) != null } }
++            click(tab("Settings"))
++            await("PVU003_NATIVE_SETTINGS") { onEdt { tab("Settings")(snapshot())?.selected == true } }
++            click(named("Data Management"))
++            click(button("Export"))
++            val passphrase = "jveoqzxvcuomndkrpsghwaxyfitbel" // Synthetic; a..z native driver; not the master.
++            replaceText("Backup passphrase", passphrase, readable = false)
++            val backup = onEdt { GlobalContext.get().get<BackupViewModel>() }.also { model = it }
++            await("PVU003_REAL_EXPORT_POLICY") { onEdt {
++                val state = backup.state.value
++                state.canExport && state.exportPassword == passphrase
++            } }
++            onEdt { assertEquals(null, pvu003VisibleChooser(), "PVU003_PREEXISTING_CHOOSER") }
++            exportAttempted = true // Capture possible input ownership even if click/release throws.
++            click(button("Save encrypted backup"))
++            await("PVU003_ACTUAL_CHOOSER") { onEdt {
++                pvu003VisibleChooser()?.also { chooser = it } != null
++            } }
++            val dialog = requireNotNull(chooser)
++            val home = onEdt { pvu003ModalHomeTarget(dialog) }
++            val rectangle = Rectangle(assertNotNull(home.screen))
++            assertFalse(home.selected, "PVU003_HOME_ALREADY_SELECTED")
++            onEdt { assertTrue(backup.state.value.isExporting, "PVU003_NOT_EXPORTING") }
++            val observer = AWTEventListener { event ->
++                if (event is MouseEvent && event.button == MouseEvent.BUTTON1 &&
++                    (event.id == MouseEvent.MOUSE_PRESSED || event.id == MouseEvent.MOUSE_RELEASED)
++                ) {
++                    val source = event.component
++                    val owner = (source as? AwtWindow) ?: SwingUtilities.getWindowAncestor(source)
++                    if (owner === frame && rectangle.contains(event.xOnScreen, event.yOnScreen)) {
++                        val pressed = event.id == MouseEvent.MOUSE_PRESSED
++                        val bit = if (dialog.isShowing) { if (pressed) 1 else 2 } else { if (pressed) 4 else 8 }
++                        delivery.getAndUpdate { it or bit } // Passive, constant-memory, no logging or native input.
++                    }
++                }
++            }
++            listener = observer // Registration may finish after a timed-out onEdt; preserve removal ownership.
++            onEdt { Toolkit.getDefaultToolkit().addAWTEventListener(observer, AWTEvent.MOUSE_EVENT_MASK) }
++            robot.mouseMove(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2)
++            onEdt {
++                val current = pvu003ModalHomeTarget(dialog)
++                assertTrue(current.context === home.context && current.screen == rectangle, "PVU003_MOVED_HOME")
++                assertFalse(current.selected, "PVU003_HOME_CHANGED_BEFORE_INPUT")
++                assertTrue(backup.state.value.isExporting, "PVU003_EXPORT_CHANGED_BEFORE_INPUT")
++            }
++            assertFalse(mousePressed)
++            assertTrue(pressedKeys.isEmpty())
++            val input = MainNavFailures()
++            mousePressed = true
++            try { robot.mousePress(InputEvent.BUTTON1_DOWN_MASK) } catch (error: Throwable) { input.add(error) }
++            finally { input.release { robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false } }
++            input.throwIfPresent() // Exactly one native Home press/release; no active-frame click/focus bypass.
++            repeat(20) {
++                pvu003ObservationPause()
++                onEdt {
++                    assertTrue(dialog.owner === frame && dialog.isShowing, "PVU003_CHOOSER_LEFT_OBSERVATION")
++                    assertTrue(backup.state.value.isExporting, "PVU003_EXPORT_LEFT_OBSERVATION")
++                    val selected = assertNotNull(tab("Home")(snapshot().filter { it.window === frame })).selected
++                    homeDuring = homeDuring || selected
++                }
++            }
++        } catch (error: Throwable) { failures.add(error) }
++        finally {
++            if (exportAttempted) failures.release {
++                // One bounded cleanup, not another scenario. Never select a file, Save, invoke a callback,
++                // send OnCancelOperation, change modality, call dispose, or act on an unowned window.
++                val dialog = chooser ?: onEdt { pvu003VisibleChooser() }
++                assertNotNull(dialog, "PVU003_NO_SAFE_NATIVE_CANCEL_TARGET")
++                await("PVU003_CANCEL_TARGET_FOCUS") { onEdt {
++                    assertTrue(dialog.owner === frame && dialog in ownedWindows(), "PVU003_CANCEL_OWNER_CHANGED")
++                    assertEquals(FileDialog.SAVE, dialog.mode)
++                    assertEquals("Save encrypted backup", dialog.title)
++                    dialog.isShowing && dialog.isActive && dialog.isFocused
++                } }
++                assertNativeWindow(dialog)
++                withKey(KeyEvent.VK_ESCAPE) { } // Exactly one Escape; no retry or synthesized Cancel callback.
++                await("PVU003_NATIVE_CHOOSER_CANCELLED") { onEdt { !dialog.isShowing } }
++                onEdt { assertEquals(null, dialog.file, "PVU003_UNEXPECTED_FILE_SELECTION") }
++                if (!failures.failed) {
++                    val backup = requireNotNull(model)
++                    await("PVU003_EXPORT_IDLE_AFTER_CANCEL") { onEdt {
++                        frame.isShowing && frame.isActive && !backup.state.value.hasActiveOperation
++                    } }
++                    repeat(10) {
++                        pvu003ObservationPause()
++                        onEdt {
++                            assertFalse(dialog.isShowing)
++                            val state = backup.state.value
++                            assertFalse(state.hasActiveOperation)
++                            assertEquals(null, state.successMessage, "PVU003_UNEXPECTED_EXPORT_SUCCESS")
++                            val selected = assertNotNull(tab("Home")(snapshot().filter { it.window === frame })).selected
++                            homeAfter = homeAfter || selected
++                        }
++                    }
++                }
++            }
++            listener?.let { owned -> failures.release {
++                onEdt { Toolkit.getDefaultToolkit().removeAWTEventListener(owned) }
++            } }
++        }
++        failures.throwIfPresent() // Cancellation/listener failures preserve primary and suppressed errors.
++        return Pvu003ChooserObservation(homeDuring, homeAfter, delivery.get())
++    }
++
++    // EDT-only source observation. Ambiguity/unsupported toolkit geometry is a failure, not permission to move windows.
++    private fun pvu003VisibleChooser(): FileDialog? {
++        check(SwingUtilities.isEventDispatchThread())
++        val candidates = ownedWindows().filterIsInstance<FileDialog>().filter { it.isShowing }
++        assertTrue(candidates.size <= 1, "PVU003_AMBIGUOUS_CHOOSER")
++        return candidates.singleOrNull()
++    }
++
++    private fun pvu003ModalHomeTarget(dialog: FileDialog): MainNavAx {
++        check(SwingUtilities.isEventDispatchThread())
++        val visible = ownedWindows().filter { it.isShowing }
++        assertTrue(visible.size == 2 && frame in visible && dialog in visible, "PVU003_UNEXPECTED_OWNED_SURFACE")
++        assertTrue(dialog.owner === frame && frame.isShowing && frame.isDisplayable, "PVU003_WRONG_CHOOSER_OWNER")
++        assertEquals(FileDialog.SAVE, dialog.mode)
++        assertEquals("Save encrypted backup", dialog.title)
++        assertTrue(dialog.isModal && dialog.isActive && dialog.isFocused, "PVU003_CHOOSER_NOT_FOCUSED_MODAL")
++        assertEquals(Dialog.ModalityType.APPLICATION_MODAL, dialog.modalityType)
++        assertEquals(Dialog.ModalExclusionType.NO_EXCLUDE, frame.modalExclusionType)
++        clientBounds(dialog) // Existing admitted-display/client-size preconditions; never change window bounds.
++        val home = assertNotNull(tab("Home")(snapshot().filter { it.window === frame }))
++        val rectangle = assertNotNull(home.screen)
++        assertTrue(home.enabled && rectangle.width > 0 && rectangle.height > 0, "PVU003_HOME_NOT_LIVE")
++        assertTrue(clientBounds(frame).contains(rectangle), "PVU003_HOME_OUTSIDE_CLIENT")
++        val chooserArea = Rectangle(dialog.locationOnScreen, dialog.size).apply { grow(16, 16) }
++        assertFalse(chooserArea.intersects(rectangle), "PVU003_HOME_OCCLUDED_BY_CHOOSER")
++        return home
++    }
++
++    private fun pvu003ObservationPause() {
++        assertTrue(System.nanoTime() < deadline, "PVU003_DRIVER_DEADLINE")
++        Thread.sleep(20) // Poll spacing only, never an acknowledgement of Compose/frame/coroutine progress.
++    }
+     private fun scenario() {
+         replaceText("Master password", PASSWORD, readable = false)
+         click(button("Unlock vault"))
+@@ -625,15 +826,18 @@
+     fun throwIfPresent() { restoreInterrupt(); first?.let { throw it } }
+ }
+ 
+-private class MainNavTrace(role: String, private val path: Path, private val key: String) {
++private class MainNavTrace(
++    role: String, private val path: Path, private val key: String, case: MainNavCase,
++) {
+     private val parent = MainNavDirectory.acquire(property("evidenceDir"), empty = false)
+-    private val allowed = EVENTS.getValue(role) + "DRIVER_FAILURE"
++    private val allowed = mainNavExpectedEvents(role, case) + "DRIVER_FAILURE"
++    private val allowPvu003Observation = case == MainNavCase.PVU003_CHOOSER && role == "main"
+     init {
+         assertEquals(parent.path.resolve("$role.events"), path)
+         checkedFile(path, key, 0)
+     }
+     fun record(event: String) {
+-        require(event in allowed)
++        require(event in allowed || (allowPvu003Observation && PVU003_OBSERVATION_RECEIPT.matches(event)))
+         parent.checkBound()
+         checkedFile(path, key, 8192)
+         FileChannel.open(path, WRITE, APPEND, NOFOLLOW_LINKS).use { channel ->
+@@ -736,6 +940,23 @@
+     MainNavTuple("synthetic-main-nav-one", "originalname", "originalvalue", false),
+     MainNavTuple("synthetic-main-nav-two", "survivorname", "survivorvalue", true),
+ )
++private enum class MainNavCase { CREDENTIAL, PVU003_CHOOSER }
++private val PVU003_MAIN_TERMINAL_EVENTS = listOf("DRIVER_ASSERTIONS_COMPLETE", "QUIT_KEY_CALLS_COMPLETE")
++private val PVU003_OBSERVATION_RECEIPT = Regex(
++    "PVU003_CHOOSER_HOME=[01];AFTER_CANCEL=[01];FRAME_DELIVERY=[0-9a-f]",
++)
++private fun mainNavExpectedEvents(role: String, case: MainNavCase): List<String> =
++    if (case == MainNavCase.PVU003_CHOOSER && role == "main") PVU003_MAIN_TERMINAL_EVENTS else EVENTS.getValue(role)
++
++private fun assertMainNavEvents(role: String, case: MainNavCase, events: List<String>) {
++    val terminal = if (case == MainNavCase.PVU003_CHOOSER && role == "main") {
++        assertEquals(3, events.size, "PVU003_EXACT_OBSERVATION_AND_TERMINAL_COUNT")
++        assertTrue(PVU003_OBSERVATION_RECEIPT.matches(events.first()), "PVU003_OBSERVATION_SHAPE")
++        events.drop(1)
++    } else events
++    assertEquals(mainNavExpectedEvents(role, case), terminal, "MAIN_NAV_${role}_ORDERED_EVIDENCE")
++}
++
+ private val EVENTS = mapOf(
+     "seed" to listOf("SEED_ORIGINAL_TUPLES", "SEED_ROOM_CLOSED"),
+     "main" to listOf(

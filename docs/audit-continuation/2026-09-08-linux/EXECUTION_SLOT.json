@@ -668,7 +668,7 @@
     "status": "COMPLETED_RECONCILED_SLOT_RELEASED",
     "tool_session_id": 14364
   },
-  "local_execution": "TRAY01 consumed exit70; scheduling only released. No new heavy job admitted.",
+  "local_execution": "Integration02 consumed; original scheduling and transient T-reader freeze released after independent actual/cleanup review. Slot idle; no Detekt01 or integration03 execution admitted.",
   "macos_focused02": {
     "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
     "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
@@ -696,7 +696,7 @@
   "release_of_slot_is_not_release_publication": true,
   "schema": 1,
   "state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
-  "updated_utc": "2026-09-10T12:11:03.194670+00:00",
+  "updated_utc": "2026-09-10T17:07:54.219594+00:00",
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
   "windows_cohort03": {
     "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
@@ -767,5 +767,32 @@
     "external_receipt_sha256": "9c482168c4f6a565533592a9bce991d223f1e18d1b5633e1be3ff11acccd3b16",
     "release": "reviews/desktop-tray/SLOT-RELEASE.json",
     "limits": "Original owned-domain/direct child settlement supports scheduling only. Unknown host Java identity/cause/settlement and later instability remain unknown; no source-after/final evidence acceptance, runtime cleanup, retry, old-scope release or product credit."
-  }
+  },
+  "linux_desktop_integration02": {
+    "state": "CONSUMED_VALIDATION_FAILED_CLEANED_SCHEDULING_RELEASED",
+    "reservation_active": false,
+    "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+    "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+    "request_sha256": "c95f09329aa193d946b5b56a0d0eb29777e2a8e2e06fe688d43c68af5cca46b7",
+    "approval_sha256": "712d38ba140467ca20995d63fb6ba8848669f336867441d0848f6d49ed202cb0",
+    "root_admission_sha256": "8f4b7cc03954f1d630bb7fea35254994ed1a8e477396bdb1d833862d72af59b8",
+    "cases_planned": 4,
+    "tests_executed_by_reservation": 0,
+    "old_holds_unchanged": true,
+    "consumed": true,
+    "external_exit": 1,
+    "actual_cases": {
+      "PASS": 2,
+      "FAIL_fixture_driver": 1,
+      "UNSTARTED": 1,
+      "XML": 3
+    },
+    "independent_review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+    "release": "reviews/desktop-integration02/SLOT-RELEASE.json",
+    "release_sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227",
+    "transient_T_reader_freeze": "RELEASED_ONLY_FOR_COMPLETED_INTEGRATION02"
+  },
+  "last_release": "reviews/desktop-integration02/SLOT-RELEASE.json",
+  "last_release_sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227"
 }

@@ -1,5 +1,22 @@
 # Linux continuation — in progress, not a release
 
+## Current C15 checkpoint
+
+Read `CHECKPOINT_15.md` and the current three ledgers/slot. Integration02 actually
+finished **2 PASS / 1 fixture-driver FAIL / 1 UNSTARTED**, independently reconciled
+with qualified original cleanup. Corrected Main accessibility observation is
+source-accepted but unexecuted; next integration03 selects only Main and Room.
+Do not repeat successful lifecycle/tray checks. Serial Detekt is still pending.
+
+Qualified counts: **26/39 (66.7%)**, original **19/25 (76%)**, original suspicions
+**2/12 (16.7%)**. No new closures. **199 execution events +3 infrastructure controls
++1 producer =203 XML elements**, including the failed Main attempt, not203 passes.
+Android32 remains highest risk and license/target-blocked. Other software,
+platform/hardware and owner/release gaps are listed with conditional estimates
+in C15; they are not all hardware-only. All old HOLD/STOP/NO-RETRY/CLOSED fences
+remain. C14 parent is `f7f3ca91cef14b7b2341114c44c460907061f883`; C15 actual identity
+belongs in its subsequent publication receipt, not a prepublication promise.
+
 Resume from this directory **and** `../../../AUDIT_HANDOFF.md`. The frozen
 `docs/audit-handoff/` and `docs/audit-publication/` payloads are preserved. Their
 old commands, locks, runtimes and cleanup receipts are not Linux authority.
@@ -67,7 +84,9 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest report: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
+**Latest report: `CHECKPOINT_15.md`; current summary above supersedes historical pending statuses.**
+
+**Historical: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
 One additional Desktop test plus two Android instrumentation cases and minimal
 runner wiring are source-reviewed; no new product execution or closure.
 TRAY01 failure and cleanup HOLD, Detekt no-request preflight block, Android license/

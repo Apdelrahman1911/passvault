@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-09-10T15:04:11.273093+00:00",
+  "updated_utc": "2026-09-10T17:12:42.246435+00:00",
   "status": "IN_PROGRESS_NOT_READY",
   "base_commit": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
   "base_tree": "05014e9f635131d5db06701e4013b4b5a746465a",
@@ -343,7 +343,41 @@
         "No new status change. Preserve exact historical evidence, grouped variants and remaining requirements.",
         "Checkpoint12: one new real installed AWT tray EN→AR→EN fixture independently source-accepted by root. Native runtime/visual evidence and fresh minimal session/cleanup admission remain; no execution/closure.",
         "C14: originalTRAY01 consumed external70, all3UNSTARTED/0XML, original stop0 and cleanupHOLD; no closure. Fresh integration02 four-case source is independently accepted only, including actualMain/NavHost/Room fixture, private-child environment fix and source-compatible1280x1024 display. No request/run admission; see desktop_tray01_execution and desktop_integration02_source."
-      ]
+      ],
+      "current_verification": {
+        "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+        "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+        "review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+        "review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+        "basis": {
+          "result": "PASS_TARGETED_REAL_NATIVE_TRAY",
+          "xml_sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d",
+          "observed": "EN->AR->EN; native show callbacks0/1/2, rightPresses1/2/3, popupDismissed=true; ownedTrayRemoved=true, ownedFrameDisposed=true; stagesCompleted3; scenarioAndOwnedCleanupStatusPASS.",
+          "visual_review": "All three original PNGs explicitly viewed. English crops show complete Show PassVault / Lock Vault / Exit; Arabic crop shows إظهار PassVault / قفل الخزنة / خروج with readable joined glyphs and preserved mixed Latin word. No visible clipped labels in these crops. Native first-row outline/highlight is visible; tiny synthetic colored tray icon is not product-icon proof.",
+          "png_bindings": [
+            {
+              "path": "tray-pixels/01-native-en.png",
+              "geometry": "130x100",
+              "bytes": 862,
+              "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c"
+            },
+            {
+              "path": "tray-pixels/02-native-ar.png",
+              "geometry": "126x100",
+              "bytes": 901,
+              "sha256": "7d8407002b316a3e3685a7539bfd8986f6f77294d65728b6597de6caa95f72fa"
+            },
+            {
+              "path": "tray-pixels/03-native-en.png",
+              "geometry": "130x100",
+              "bytes": 862,
+              "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c"
+            }
+          ],
+          "limits": "Targeted PVA-027 evidence, not full Settings publisher/window chain, visual tooltip or product-icon proof. Actual application lock/exit actions were not established by show callbacks. Finite-resolution Linux assessment, not exhaustive fonts/RTL/a11y assurance; images alone do not establish input sequence."
+        },
+        "remaining_requirements": "Full Settings→publisher→window-effect→tray propagation, displayed tooltip and actual lock/exit actions, other platform/packaged behavior remain outside the endpoint case."
+      }
     },
     {
       "id": "PVA-028",
@@ -659,7 +693,7 @@
     {
       "id": "PVA-039",
       "title": "Compose normal exit bypasses the Desktop-owned terminal finalizer and cleanup wait",
-      "status": "IMPLEMENTED — INDEPENDENT SOURCE ACCEPTED; RUNTIME PENDING",
+      "status": "IMPLEMENTED — LINUX COMPOSE RETURN VERIFIED; STATIC CHECKS PENDING",
       "base_row_index": null,
       "base_row_canonical_sha256": null,
       "introduced_in_continuation": true,
@@ -672,15 +706,15 @@
         "requestClose already starts cleanup jobs; some may finish first. Compose disposes composition and the real clipboard service has its own ownership-aware JVM shutdown hook. Not a claim that all cleanup is absent, observed data loss, late onboarding work or authentication bypass.",
         "Distinct from PVA010 native context/cancellation lifetime and original PVU006 terminal late work; original PVU006 remains unresolved. Original25/suspicion12 denominators unchanged; all confirmed38→39 only.",
         "Minimal production wrapper and real child-JVM regression independently source-accepted; compilation/execution still pending, no closure. reviews/native-independent/PVA039-IMPLEMENTATION-REGRESSION-INDEPENDENT.md",
-        "C14: originalTRAY01 consumed external70, all3UNSTARTED/0XML, original stop0 and cleanupHOLD; no closure. Fresh integration02 four-case source is independently accepted only, including actualMain/NavHost/Room fixture, private-child environment fix and source-compatible1280x1024 display. No request/run admission; see desktop_tray01_execution and desktop_integration02_source."
+        "C14: originalTRAY01 consumed external70, all3UNSTARTED/0XML, original stop0 and cleanupHOLD; no closure. Fresh integration02 four-case source is independently accepted only, including actualMain/NavHost/Room fixture, private-child environment fix and source-compatible1280x1024 display. No request/run admission; see desktop_tray01_execution and desktop_integration02_source.",
+        "C15 adopts integration02 actual lifecycle1PASS through production Compose helper against default-exit control, with independently qualified cleanup. Full Main driver failed; it does not supply full Main/Room/terminal verification or PVU006 closure. Serial Detekt pending."
       ],
       "remaining_requirements": [
-        "Meaningful real child-JVM execution through the production Compose loop",
-        "Independent actual-result/cleanup reconciliation and affected source static checks"
+        "Affected-source static checks remain unexecuted; no qualified closure yet."
       ],
       "qualified_closure": false,
       "implementation": {
-        "status": "IMPLEMENTED_INDEPENDENT_SOURCE_ACCEPTANCE_RUNTIME_PENDING",
+        "status": "SOURCE_ACCEPTED_TARGETED_LIFECYCLE_PASS_STATIC_PENDING",
         "author": "/root/editor",
         "reviewer": "/root/native_review",
         "source_files": {
@@ -692,16 +726,32 @@
         "review_sha256": "beb2d3e5578fd4d232b6999e2055a8790d741d57fa9a3185c861f30c921af379",
         "prospective_junit_methods": 1,
         "max_serial_child_jvms": 2,
-        "actual_executions": 0,
+        "actual_executions": 1,
         "qualified_closures": 0,
-        "change": "Production wrapper disables Compose exitProcessOnExit; Main retains existing finally/coordinator wait and outer exit. Fresh real-Compose JVM default-vs-production control is unexecuted.",
-        "limits": "Synthetic caller-finally marker, not full Main/Koin/provider cleanup or original PVU006 harmful-late-work evidence. Existing guards and historical cleanup timeout semantics preserved; frozen C12 does not contain these edits."
+        "change": "Production wrapper disables Compose exitProcessOnExit; Main retains existing finally/coordinator wait and outer exit. The real-Compose default-vs-production control passed once in integration02; affected static checks remain pending, no closure.",
+        "limits": "Synthetic caller-finally marker, not full Main/Koin/provider cleanup or original PVU006 harmful-late-work evidence. Existing guards and historical cleanup timeout semantics preserved; frozen C12 does not contain these edits.",
+        "historical_initial_change": "Production wrapper disables Compose exitProcessOnExit; Main retains existing finally/coordinator wait and outer exit. Fresh real-Compose JVM default-vs-production control is unexecuted."
       },
       "initial_requirements_at_finding": [
         "Independent patch/regression source review",
         "Meaningful real child-JVM execution through the production Compose loop",
         "Independent actual-result/cleanup reconciliation and affected source static checks"
-      ]
+      ],
+      "current_verification": {
+        "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+        "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+        "review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+        "review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+        "basis": {
+          "result": "PASS_TARGETED_REAL_COMPOSE_SEAM",
+          "xml_sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+          "observed": "Default child: WINDOW_READY,CLOSE_REQUEST; exit0. Production-helper child: WINDOW_READY,CLOSE_REQUEST,CALLER_CLEANUP,CONTINUATION; exit23. Six receipts present; mapping true.",
+          "limits": "Meaningful PVA-039 return/finally/continuation seam evidence, not full Main/Koin/provider cleanup, a hard2.5s bound, hardware evidence or PVU-006 resolution. Both logs retain Linux GL-context fallback warnings; no proven GL backend."
+        },
+        "remaining_requirements": [
+          "Affected-source static checks remain unexecuted; no qualified closure yet."
+        ]
+      }
     }
   ],
   "denominators": {
@@ -795,9 +845,10 @@
         "Bounded editor/lifecycle source investigation completed with grouped PVA007 variants, not conclusive PVU resolution. Original unresolved outcome and missing rendered/lifecycle/device evidence retained; see reviews/editor/REPORT.md.",
         "Checkpoint5 source narrowing independently accepted: normal Desktop has one Koin runtime followed by intended System.exit, not shipped in-process rebuild. This is not guaranteed process death or a2.5s bound; incomplete cleanup skips scope cancel/stopKoin. Singleton VM lifetime and real Desktop preferences IO retained as candidates; harmful late work unproved. Remains unresolved; no patch/test/closure.",
         "Real automatic onboarding create→unlock caller reaches a candidate terminal interstage handoff. Create owns session mutex throughout and has no explicit interstage yield; terminal lock intent, real clearForLock/cancellation, Room I/O/close and actual process death are counterguards. No harmful schedule observed. Bare Compose application default exit semantics are not verified from repository source alone. Smallest meaningful actual synthetic Desktop terminal trace keeps real observer/disposal/coordinator/bootstrap/Room and nonsecret ordering markers; do not insert fake interstage stalls/omit observer/mock post-close DAO success. Fresh admission needed. This is a software witness gap, not hardware-only.",
-        "Original harmful late terminal/onboarding schedule remains unproved; prior guards/reviews preserved. The separate default Compose-exit question is now source-confirmed as new PVA039, independently grouped, not a conclusive PVU006 outcome. Current patch/real child regression in progress; no new test/closure."
+        "Original harmful late terminal/onboarding schedule remains unproved; prior guards/reviews preserved. The separate default Compose-exit question is now source-confirmed as new PVA039, independently grouped, not a conclusive PVU006 outcome. Current patch/real child regression in progress; no new test/closure.",
+        "Original harmful late terminal/onboarding schedule remains unproved. Separate Compose default-exit question is PVA039, whose repair/lifecycle regression is independently source-accepted but unexecuted; not a conclusive PVU006 outcome. Main/Room integration02 remains source-only; actual terminal/Room witness still required."
       ],
-      "continuation": "Original harmful late terminal/onboarding schedule remains unproved. Separate Compose default-exit question is PVA039, whose repair/lifecycle regression is independently source-accepted but unexecuted; not a conclusive PVU006 outcome. Main/Room integration02 remains source-only; actual terminal/Room witness still required.",
+      "continuation": "Original harmful late terminal/onboarding schedule remains unproved. Separate PVA039 production return seam has one independently accepted integration02 lifecycle pass, static pending; full Main attempt failed in observation before meaningful navigation/terminal/durable verification. Not a conclusive PVU006 outcome.",
       "reviews": [
         "reviews/verification/PVU006-CURRENT-SOURCE.md",
         "reviews/build-config/PVU006-CURRENT-SOURCE-REVIEW.md",
@@ -996,14 +1047,10 @@
     }
   ],
   "current_regression_scheduling": {
-    "selection": "CURRENT_C4_TARGETED167_COMPLETED_NO_REDUNDANT_RERUN",
-    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
-    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
-    "executed_regression_methods": 166,
-    "executed_fixture_producers": 1,
-    "xml_files": 17,
-    "actual_result_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
-    "next": "No current run admitted. TRAY01 consumed with3UNSTARTED; new Main/NavHost/Room test adds1 unexecuted declaration. Detekt preflight no-request HOLD from host interference. Preserve successful prior checks; fresh justified source-bound admission needed."
+    "state": "NO_BUILD_ADMITTED_SOURCE_PREPARATION",
+    "next": "Fresh settled-source Detekt01 (23 prospective static task events, zero cases), then integration03 corrected Main plus unstarted shared Room. Share source manifest where unchanged; separate runtimes/admissions; no passing-case reruns.",
+    "slot": "EXECUTION_SLOT.json",
+    "constraints": "Root sole build owner; new exact source/instance/cleanup admission, one local/CI job; every old HOLD unchanged."
   },
   "windows_cohort02_source": {
     "suite": "windows-native-14-cohort-v2",
@@ -1884,7 +1931,7 @@
     "limits": "Ten declarations UNSTARTED, zero Gradle/product/Xcode launches or XML. Bounded metadata/checkout/evidence creation did occur. Raw exit:null/settlement:UNKNOWN command intent preserved; resource gate precedes Popen. Pending actual-exit0 evidence/ancestor-close contract remains unmet, not cleanup PASS/proven close failure. No retry, floor change, physical-device or all-Apple infeasibility inference; all old HOLDs unchanged."
   },
   "pva039_implementation": {
-    "status": "IMPLEMENTED_INDEPENDENT_SOURCE_ACCEPTANCE_RUNTIME_PENDING",
+    "status": "SOURCE_ACCEPTED_TARGETED_LIFECYCLE_PASS_STATIC_PENDING",
     "author": "/root/editor",
     "reviewer": "/root/native_review",
     "source_files": {
@@ -1896,10 +1943,13 @@
     "review_sha256": "beb2d3e5578fd4d232b6999e2055a8790d741d57fa9a3185c861f30c921af379",
     "prospective_junit_methods": 1,
     "max_serial_child_jvms": 2,
-    "actual_executions": 0,
+    "actual_executions": 1,
     "qualified_closures": 0,
-    "change": "Production wrapper disables Compose exitProcessOnExit; Main retains existing finally/coordinator wait and outer exit. Fresh real-Compose JVM default-vs-production control is unexecuted.",
-    "limits": "Synthetic caller-finally marker, not full Main/Koin/provider cleanup or original PVU006 harmful-late-work evidence. Existing guards and historical cleanup timeout semantics preserved; frozen C12 does not contain these edits."
+    "change": "Production wrapper disables Compose exitProcessOnExit; Main retains existing finally/coordinator wait and outer exit. The real-Compose default-vs-production control passed once in integration02; affected static checks remain pending, no closure.",
+    "limits": "Synthetic caller-finally marker, not full Main/Koin/provider cleanup or original PVU006 harmful-late-work evidence. Existing guards and historical cleanup timeout semantics preserved; frozen C12 does not contain these edits.",
+    "actual_review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+    "actual_review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+    "historical_initial_change": "Production wrapper disables Compose exitProcessOnExit; Main retains existing finally/coordinator wait and outer exit. Fresh real-Compose JVM default-vs-production control is unexecuted."
   },
   "desktop_room01_source": {
     "status": "INDEPENDENT_SOURCE_ACCEPTED_ONE_CASE_UNEXECUTED",
@@ -2035,27 +2085,33 @@
     "limits": "Two positive Java names prevent intake, not owned identities or proof of present liveness. No Detekt request/build/runtime consumed; no stop/cleanup needed for unlaunched work. Fresh source-bound admission and uninterrupted host scheduling required. Later source must not inherit C13 index/source identity. No blind repeated preflight or old-scope retry."
   },
   "main_navhost_room_source": {
-    "status": "PERMANENT_OPT_IN_TEST_SOURCE_ADOPTED_UNCOMPILED_UNEXECUTED",
+    "status": "CORRECTED_SOURCE_ACCEPTED_UNEXECUTED",
     "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
-    "sha256": "7a0dd50d7caa6cf3cfad729f7393a0e1802fbf65b57d3cceae7c5c64ac94961f",
-    "bytes": 40423,
-    "physical_lf": 753,
+    "sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
+    "bytes": 40561,
+    "physical_lf": 755,
     "author": "/root/android32",
     "independent_reviewer": "/root/editor_review",
     "declarations": 1,
     "serial_child_roles": 3,
     "ordered_stage_events": 13,
     "executed_cases": 0,
-    "correction": "Independent test-oracle review found terminal FutureTask timeout could race Main System.exit; single asynchronous EDT terminal block now records failures before queued key handler. Rejected eaaa720 identity remains reproducible by exact retained reverse patch; no new product defect. Separately, storage challenged child env.clear losing private bus/XDG/no-AT controls; minimal26-line inheritance/validation correction independently accepted with original8ffefea before-image retained. This is fixture isolation source, not a new product finding.",
+    "correction": "Exact fixture-only editable-text payload selection; navigation metadata/assertions/input/terminal/persistence behavior unchanged. Original integration02 failure retained. No proven dependency root cause, current run/pass, product-family finding or retry authority.",
     "limits": "Actual Main/native NavHost/real Room final durable-state scenario only; no transient-write, concurrent lock, picker, IME/RTL/mobile or hardware proof. Initial root adoption changed two comments; later26-line child-environment delta has separate independent acceptance. Address/nonexistence checks do not authenticate endpoints or guarantee no host-bus activation. Fresh classpath/property/route/X/WM/resource/cleanup admission remains. Excluded .kt drafts are preserved through mapped inert .kt.txt snapshots, not accidental compilation inputs.",
     "initial_source_review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-ROOM-INDEPENDENT-SOURCE-REVIEW.md",
     "initial_source_review_sha256": "c0b1e1ea6cc6ad2f9347769c79753ba5c1466d1910c965fb2469ba5a221c219e",
-    "independent_review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-PRIVATE-BUS-INDEPENDENT-DELTA.md",
-    "independent_review_sha256": "9d57dec6c8ce1165bea243a2937dc36a027c85d25e3577a3283348d50e9e404a",
+    "independent_review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-EDITABLE-TEXT-ONLY-INDEPENDENT.md",
+    "independent_review_sha256": "a0d82c94eedfa710bf8e3ba2c21fee97c0f8c8d5d817485354e008149d6727e5",
     "initial_adoption": "reviews/android32/navhost-draft/MODULE-ADOPTION.json",
     "initial_adoption_sha256": "9d434cac299cbda298c370015b457527aa4c056b01cd7ecae78046668ec870cc",
-    "adoption": "reviews/android32/navhost-draft/MODULE-BUS-DELTA-ADOPTION.json",
-    "adoption_sha256": "9fd1a87bd7e82af7b4ad866b8e1408b911318920abb3d817e58be22ee166674c"
+    "adoption": "reviews/android32/navhost-draft/MODULE-EDITABLE-TEXT-ADOPTION.json",
+    "adoption_sha256": "3a0c80ad26325a0745b739c9bde1be58e95daad3ccd9f904960f946fa0c1f997",
+    "preimage_execution": "C14 source7a0dd50d executed once in integration02 and FAILED driver observation; seed0, main137, verify UNSTARTED. See desktop_integration02_execution.",
+    "previous_sha256": "7a0dd50d7caa6cf3cfad729f7393a0e1802fbf65b57d3cceae7c5c64ac94961f",
+    "prior_adoption": {
+      "path": "reviews/android32/navhost-draft/MODULE-BUS-DELTA-ADOPTION.json",
+      "sha256": "9fd1a87bd7e82af7b4ad866b8e1408b911318920abb3d817e58be22ee166674c"
+    }
   },
   "post_c13_source_preparation": {
     "source_prepare01": {
@@ -2132,7 +2188,7 @@
     "limits": "Actual Main/native NavHost/real Room final durable-state scenario only; no transient-write, concurrent lock, picker, IME/RTL/mobile or hardware proof. Root adoption changes only two documentation lines from independently accepted7eee727 bytes. Fresh classpath/property/X/WM/resource/cleanup admission remains; excluded source drafts are published as explicitly mapped inert .kt.txt snapshots only."
   },
   "desktop_integration02_source": {
-    "status": "INDEPENDENTLY_SOURCE_ACCEPTED_UNBOUND_UNCOMPILED_UNEXECUTED_UNADMITTED",
+    "status": "CONSUMED_SEE_DESKTOP_INTEGRATION02_EXECUTION",
     "authors": {
       "inner_init": "/root/build_config",
       "outer": "/root/verification"
@@ -2217,9 +2273,10 @@
       "meaning": "Source expectations, not observed files or cases;112MiB is inner-owned only. No database/binary/archive upload; bounded logs/traces/exit/crash evidence only."
     },
     "preserved_before_review": "reviews/storage/INTEGRATION02-INNER-INIT-BEFORE-REVIEW.json",
-    "executed_cases": 0,
+    "executed_cases": 3,
     "new_family_closures": 0,
-    "remaining": "Fresh current committed-source/instance/toolchain/route/coordination/cleanup independent admission and uninterrupted host window. No original TRAY01 probe/adoption/cleanup/retry; all old HOLDs remain. Do not add Detekt to this no-Git-inventory workload without separately reviewed scope."
+    "remaining": "Consumed attempt, no replay. Corrected Main plus unstarted Room require fresh03 exact source/instance admission; passing lifecycle/tray not repeated.",
+    "historical_status_before_execution": "INDEPENDENTLY_SOURCE_ACCEPTED_UNBOUND_UNCOMPILED_UNEXECUTED_UNADMITTED"
   },
   "android_clipboard_locale_source": {
     "status": "INDEPENDENTLY_SOURCE_ACCEPTED_AND_WIRED_UNCOMPILED_UNEXECUTED_UNADMITTED",
@@ -2278,5 +2335,180 @@
     "new_findings": 0,
     "qualified_closures": 0,
     "remaining": "Compile on admitted target, then separately admitted actual fixed selection and independent aggregate/outer cleanup reconciliation. SDK-license/target access unanswered; Android32 remains first risk priority. No dependency/version/identity/build-type/manifest/Store change."
+  },
+  "desktop_integration02_execution": {
+    "run_id": "linux-desktop-integration02",
+    "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+    "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+    "status": "CONSUMED_VALIDATION_FAILED_CLEANED",
+    "consumed": true,
+    "external_exit": 1,
+    "elapsed_seconds": 510.849,
+    "cases": {
+      "declared": 4,
+      "XML": 3,
+      "PASS": 2,
+      "FAIL_fixture_driver": 1,
+      "UNSTARTED": 1,
+      "SKIPPED": 0
+    },
+    "case_details": {
+      "prospective": 4,
+      "executed": 3,
+      "pass": 2,
+      "fail": 1,
+      "unstarted": 1,
+      "basis": "Independently parsed three XML suites, each tests=1, errors=0, skipped=0. Two prospective serial Test tasks are not extra cases.",
+      "main_navhost": {
+        "result": "FAIL_FIXTURE_DRIVER",
+        "xml_sha256": "c3e7b3f0aa2afa4468915381d20972a2e04098db617d8453de253fb4e5a1402d",
+        "fixture_sha256": "7a0dd50d7caa6cf3cfad729f7393a0e1802fbf65b57d3cceae7c5c64ac94961f",
+        "observed": "Seed receipts SEED_ORIGINAL_TUPLES, SEED_ROOM_CLOSED; seed exit 0. Main DRIVER_FAILURE, exit 137. Verify role UNSTARTED; 6/9 prospective role files preserved.",
+        "failure": "ExecutionException caused by NullPointerException in ComposeAccessibleText.getCharCount (ComposeAccessible.kt:589), through snapshot$visit fixture line432 and scenario line291: polling after Unlock click, before any MAIN_NATIVE_EDIT receipt.",
+        "interpretation": "Fixture catches/records DRIVER_FAILURE; parent throws MAIN_NAV_DRIVER_FAILED and finally forcibly destroys a still-live child before recording exit. Exit137 is consistent with this containment, not proof of OOM or a product-exit defect; exact signal attribution is not independently retained. No successful unlock, dirty-editor result, final Room reopen, verify-role or passing Main-cleanup credit.",
+        "next_boundary": "Independently investigate the fixture/framework observation contract before any fix/new admission; do not swallow arbitrary failures. No automatic retry."
+      },
+      "lifecycle": {
+        "result": "PASS_TARGETED_REAL_COMPOSE_SEAM",
+        "xml_sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+        "observed": "Default child: WINDOW_READY,CLOSE_REQUEST; exit0. Production-helper child: WINDOW_READY,CLOSE_REQUEST,CALLER_CLEANUP,CONTINUATION; exit23. Six receipts present; mapping true.",
+        "limits": "Meaningful PVA-039 return/finally/continuation seam evidence, not full Main/Koin/provider cleanup, a hard2.5s bound, hardware evidence or PVU-006 resolution. Both logs retain Linux GL-context fallback warnings; no proven GL backend."
+      },
+      "native_tray": {
+        "result": "PASS_TARGETED_REAL_NATIVE_TRAY",
+        "xml_sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d",
+        "observed": "EN->AR->EN; native show callbacks0/1/2, rightPresses1/2/3, popupDismissed=true; ownedTrayRemoved=true, ownedFrameDisposed=true; stagesCompleted3; scenarioAndOwnedCleanupStatusPASS.",
+        "visual_review": "All three original PNGs explicitly viewed. English crops show complete Show PassVault / Lock Vault / Exit; Arabic crop shows إظهار PassVault / قفل الخزنة / خروج with readable joined glyphs and preserved mixed Latin word. No visible clipped labels in these crops. Native first-row outline/highlight is visible; tiny synthetic colored tray icon is not product-icon proof.",
+        "png_bindings": [
+          {
+            "path": "tray-pixels/01-native-en.png",
+            "geometry": "130x100",
+            "bytes": 862,
+            "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c"
+          },
+          {
+            "path": "tray-pixels/02-native-ar.png",
+            "geometry": "126x100",
+            "bytes": 901,
+            "sha256": "7d8407002b316a3e3685a7539bfd8986f6f77294d65728b6597de6caa95f72fa"
+          },
+          {
+            "path": "tray-pixels/03-native-en.png",
+            "geometry": "130x100",
+            "bytes": 862,
+            "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c"
+          }
+        ],
+        "limits": "Targeted PVA-027 evidence, not full Settings publisher/window chain, visual tooltip or product-icon proof. Actual application lock/exit actions were not established by show callbacks. Finite-resolution Linux assessment, not exhaustive fonts/RTL/a11y assurance; images alone do not establish input sequence."
+      },
+      "shared_room": {
+        "result": "UNSTARTED_AFTER_APP_TEST_FAILURE",
+        "limits": "Neither pass nor skip; no durability/transaction closure from this attempt."
+      },
+      "family_closure_recommendation": "NONE; root owns ledger adoption and existing denominators/qualifications."
+    },
+    "source_before": true,
+    "source_after": true,
+    "source_representation": "2607 raw Git members in two transport passes; existing checkout-EOL qualifications retained",
+    "original_wrapper_stop_exits": [
+      0,
+      0
+    ],
+    "cleanup": "QUALIFIED_ORIGINAL_RUNTIME_REMOVED_25132_ENTRIES",
+    "evidence": "runs/linux-desktop-integration02",
+    "retained_files": 100,
+    "retained_bytes": 269330,
+    "external_receipt": "reviews/desktop-integration02/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9bf8da5015a9ced2acaa35538e51a79eed1e08c13a964c067a4d524e457b8574",
+    "independent_review": "reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+    "accounting_review": "reviews/baseline-coverage/C15-INTEGRATION02-ACCOUNTING-REVIEW.json",
+    "accounting_review_sha256": "2d11ec2b499559f2b3e0c1268b4eb408c08fce0ce803cfa8f79d8bb6724dada1",
+    "release": "reviews/desktop-integration02/SLOT-RELEASE.json",
+    "release_sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227",
+    "request_inert_alias": "reviews/desktop-integration02/REQUEST-CONSUMED.json.txt",
+    "request_sha256": "c95f09329aa193d946b5b56a0d0eb29777e2a8e2e06fe688d43c68af5cca46b7",
+    "new_family_closures": 0,
+    "new_conclusive_suspicions": 0,
+    "limits": "Fixture-driver failure is an executed application-intended attempt, not a proved product defect or completed navigation/durable-state test. Shared Room was unstarted, not skipped. Lifecycle return seam and native tray endpoint do not establish full Main cleanup, full Settings propagation, every action or hardware behavior. Every earlier HOLD/STOP/NO-RETRY/CLOSED restriction survives."
+  },
+  "main_navhost_editable_text_correction": {
+    "owner": "/root",
+    "utc": "2026-09-10T17:07:54.427007+00:00",
+    "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+    "before_sha256": "7a0dd50d7caa6cf3cfad729f7393a0e1802fbf65b57d3cceae7c5c64ac94961f",
+    "after_sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
+    "bytes": 40561,
+    "physical_lf": 755,
+    "author": "/root/android32",
+    "independent_reviewer": "/root/editor_review",
+    "review": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-EDITABLE-TEXT-ONLY-INDEPENDENT.md",
+    "review_sha256": "a0d82c94eedfa710bf8e3ba2c21fee97c0f8c8d5d817485354e008149d6727e5",
+    "patch": "reviews/android32/navhost-draft/MAIN-NAVHOST-EDITABLE-TEXT-ONLY.patch",
+    "patch_sha256": "7f883bdbb31478d2b1fa9d5a8dfad7bae148c84c3ec5904fa57e21f87a8ff046",
+    "scope": "Exact fixture-only editable-text payload selection; navigation metadata/assertions/input/terminal/persistence behavior unchanged. Original integration02 failure retained. No proven dependency root cause, current run/pass, product-family finding or retry authority.",
+    "status": "INDEPENDENT_SOURCE_ACCEPTED_ADOPTED_UNEXECUTED",
+    "new_cases": 0,
+    "new_findings": 0,
+    "new_closures": 0,
+    "adoption": "reviews/android32/navhost-draft/MODULE-EDITABLE-TEXT-ADOPTION.json",
+    "adoption_sha256": "3a0c80ad26325a0745b739c9bde1be58e95daad3ccd9f904960f946fa0c1f997"
+  },
+  "checkpoint14_publication": {
+    "status": "PUBLISHED_INDEPENDENTLY_RECONCILED",
+    "commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+    "tree": "4b405be08458c035b9dd61807acab66659ccd864",
+    "receipt": "publication/CHECKPOINT-14-PUBLISHED.json",
+    "receipt_sha256": "66a11e7715628f6cd8b405b4e90b5191572bb14fdb8334996b60d03adf59d784",
+    "independent_actual_review": "reviews/baseline-coverage/CHECKPOINT-14-ACTUAL-REVIEW.json",
+    "independent_actual_review_sha256": "df311818cfcfcda2d4b95e20434ff2655e3cb5cf06ba6b1addaa8a5c748844e2",
+    "selected_paths": 123,
+    "commands_exit0_reaped": 22,
+    "nonforce_pushes": 1,
+    "new_cases_closures": 0
+  },
+  "desktop_integration03_source": {
+    "status": "INDEPENDENT_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
+    "authors": [
+      "/root/build_config",
+      "/root/verification"
+    ],
+    "reviewers": [
+      "/root/storage",
+      "/root/editor_review"
+    ],
+    "sources": {
+      "scripts/audit/linux_desktop_integration_03.py": "86cd40c4681665cc723afeb3c38f3fda3f82c56bda233c284cd802d55212b4c0",
+      "scripts/audit/desktop_integration_03.init.gradle": "9bf2cc5f32af4447f9ad38c4104b486b30a40e18cf2e0757da1e4e465d02637d",
+      "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py": "e59be5da85e9f52e3e6e0f6e9b764fe3b12e01da023b4f838bcfbf9c6fa65ca2"
+    },
+    "reviews": {
+      "reviews/storage/INTEGRATION03-INNER-INIT-DELTA-REVIEW.json": "0e81899f8b2d0a1455e5d251bcca4cc1628b5b8c8ec873ba4d85d63192ce164e",
+      "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-OUTER-DELTA-REVIEW.md": "c4adac6a4c2e05d71ab1e514f01e7284133fb0e406e47fa37e697efe528a98b4"
+    },
+    "selection": {
+      "cases": 2,
+      "xml_suites": 2,
+      "serial_test_tasks": [
+        ":app-desktop:desktopTest",
+        ":shared:desktopTest"
+      ],
+      "classes": [
+        "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+        "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest"
+      ]
+    },
+    "main_after_image_sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
+    "unbound": "Exact new commit/tree/source manifest/member count/Main fixture/source/init/route/tool/store/lock/request/approval remain to bind after publication; source acceptance is not instance admission.",
+    "preserved": "Same GUI/panel/1280x1024 infrastructure, clocks, strict dependencies, JDK17, one worker, stop/settlement/cleanup guards. No lifecycle/tray case replay.",
+    "evidence_cap": {
+      "inner_baseline_files": 84,
+      "inner_max_files": 93,
+      "outer_normal_files": 90,
+      "conservative_total_files": 100
+    },
+    "actual_cases": 0,
+    "new_closures": 0,
+    "static": "Separate existing Detekt01 source/index rebind; prefer static first before GUI compilation if source diagnostics may change the frozen input."
   }
 }

@@ -1,0 +1,49 @@
+{
+  "source_commit": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+  "source_tree": "245160648cb79873f41da41969a5b48d4c2057e1",
+  "namespace_parent": [
+    23,
+    498323,
+    0,
+    16877
+  ],
+  "selection_sha256": "a23434e62095a0e1a98a1296c86ff5b80bb0567ad747b1f57be3e44269fef679",
+  "review_path": "reviews/baseline-coverage/CHECKPOINT-14-REVIEW.json",
+  "review_sha256": "754d2b12ea4c82fe44feb4f4d8991cb1599d57c26b5c061029e1b273c5e97f71",
+  "companions": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-14-PAYLOAD.json",
+      "sha256": "a23434e62095a0e1a98a1296c86ff5b80bb0567ad747b1f57be3e44269fef679",
+      "bytes": 37909,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-14-REVIEW.json",
+      "sha256": "754d2b12ea4c82fe44feb4f4d8991cb1599d57c26b5c061029e1b273c5e97f71",
+      "bytes": 8429,
+      "git_mode": "100644"
+    }
+  ],
+  "slot_sha256": "bb2e931b9412af93ea5c8ffccb17006565e8780b011e21330277734662b391e9",
+  "slot_state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
+  "remotes": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "d3d46db51d9fa69a4060250e71e0477c6b930d3a",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "receipt_name": "CHECKPOINT-14-PUBLISHED.json",
+  "commit_message": "Add focused Desktop and Android regression coverage and preserve audit outcomes",
+  "root_admission": {
+    "owner": "/root",
+    "utc": "2026-09-10T15:27:50.422817+00:00",
+    "purpose": "ONE_C14_SOURCE_PUBLICATION_ONLY",
+    "publisher_sha256": "e1dcfaf045583ef6a50183f72638903fdb93d6824f4db0868d925a3aa2ac9fe1",
+    "selection_files": 121,
+    "total_with_companions": 123,
+    "commands": "Exact independently reviewed publisher only; fresh under-lock source/parent/index/refs/slot/resource gates precede writes, one nonforce dedicated-branch push. No request, CI, build, test, wrapper, SDK or held-scope action. No automatic retry after failure.",
+    "cleanup": "Reviewed 600s overall/60s ordinary Git/120s push limits, signal handling and normal direct-child reaping before terminal receipt. Retain necessary T; no disposable runtime/cache allocated. Abnormal descendant/hard-interruption uncertainty stays HOLD; no unrelated signals or deletion."
+  }
+}

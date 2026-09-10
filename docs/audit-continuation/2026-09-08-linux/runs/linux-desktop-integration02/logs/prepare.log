@@ -1,0 +1,384 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx512m -XX:-UsePerfData -Dfile.encoding=UTF-8 -Duser.home=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/home -Djava.io.tmpdir=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/tmp -Djna.tmpdir=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/jna -Dorg.sqlite.tmpdir=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/sqlite
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-9.7.1-bin.zip
+..............10%..............20%...............30%..............40%...............50%..............60%...............70%..............80%..............90%...............100%
+
+Welcome to Gradle 9.7.1!
+
+Here are the highlights of this release:
+ - Isolated Projects graduates to incubating
+ - Broader Configuration Cache compatibility
+ - Resilient Sync helps you fix broken builds
+ - More source locations in problem reports
+
+For more details see https://docs.gradle.org/9.7.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :shared
+w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (linux-x86_64).
+Reason: simulator tests require macOS
+Solution: To suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.
+
+
+> Configure project :core:crypto
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosSimulatorArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosSimulatorArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Disabled Kotlin/Native Targets
+The following Kotlin/Native targets cannot be built on this machine and are disabled:
+iosArm64, iosSimulatorArm64
+Solution: To hide this message, add 'kotlin.native.ignoreDisabledTargets=true' to the Gradle properties.
+
+
+> Task :app-desktop:checkDesktopMainComposeLibrariesCompatibility
+> Task :app-desktop:kmpPartiallyResolvedDependenciesChecker
+> Task :app-desktop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForCommonMain SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForDesktopMain SKIPPED
+> Task :app-desktop:generateActualResourceCollectorsForDesktopMain SKIPPED
+> Task :app-desktop:generateComposeResClass SKIPPED
+> Task :app-desktop:generateExpectResourceCollectorsForCommonMain SKIPPED
+> Task :shared:checkDesktopMainComposeLibrariesCompatibility
+> Task :shared:kmpPartiallyResolvedDependenciesChecker
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :shared:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :shared:generateActualResourceCollectorsForDesktopMain
+> Task :shared:generateComposeResClass
+> Task :shared:generateExpectResourceCollectorsForCommonMain
+> Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileKotlinDesktop
+> Task :core:crypto:compileDesktopMainJava NO-SOURCE
+> Task :core:crypto:desktopProcessResources NO-SOURCE
+> Task :core:crypto:processDesktopMainResources SKIPPED
+> Task :core:crypto:desktopMainClasses
+> Task :core:crypto:desktopJar
+> Task :core:database:kmpPartiallyResolvedDependenciesChecker
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:compileKotlinDesktop
+> Task :core:domain:compileDesktopMainJava NO-SOURCE
+> Task :core:domain:desktopProcessResources NO-SOURCE
+> Task :core:domain:processDesktopMainResources SKIPPED
+> Task :core:domain:desktopMainClasses
+> Task :core:domain:desktopJar
+> Task :core:security:kmpPartiallyResolvedDependenciesChecker
+> Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:security:compileKotlinDesktop
+> Task :core:security:compileDesktopMainJava NO-SOURCE
+> Task :core:security:desktopProcessResources NO-SOURCE
+> Task :core:security:processDesktopMainResources SKIPPED
+> Task :core:security:desktopMainClasses
+> Task :core:security:desktopJar
+> Task :core:database:kspKotlinDesktop
+
+> Task :core:database:compileKotlinDesktop
+w: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/core/database/build/generated/ksp/desktop/desktopMain/kotlin/com/passvault/core/database/AppDatabaseConstructor.kt:5:8 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. Consider using the '-Xexpect-actual-classes' flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
+
+> Task :core:database:copyRoomSchemas NO-SOURCE
+> Task :core:database:compileDesktopMainJava NO-SOURCE
+> Task :core:database:desktopProcessResources NO-SOURCE
+> Task :core:database:processDesktopMainResources SKIPPED
+> Task :core:database:desktopMainClasses
+> Task :core:database:desktopJar
+> Task :core:designsystem:checkDesktopMainComposeLibrariesCompatibility
+> Task :core:designsystem:kmpPartiallyResolvedDependenciesChecker
+> Task :core:designsystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:designsystem:convertXmlValueResourcesForCommonMain
+> Task :core:designsystem:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForCommonMain
+> Task :core:designsystem:generateResourceAccessorsForCommonMain
+> Task :core:designsystem:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateActualResourceCollectorsForDesktopMain
+> Task :core:designsystem:generateComposeResClass
+> Task :core:designsystem:generateExpectResourceCollectorsForCommonMain
+> Task :core:designsystem:compileKotlinDesktop
+> Task :core:designsystem:compileDesktopMainJava NO-SOURCE
+> Task :core:designsystem:assembleDesktopMainResources
+> Task :core:designsystem:desktopProcessResources
+> Task :core:designsystem:processDesktopMainResources SKIPPED
+> Task :core:designsystem:desktopMainClasses
+> Task :core:designsystem:desktopJar
+> Task :core:navigation:kmpPartiallyResolvedDependenciesChecker
+> Task :core:navigation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:navigation:compileKotlinJvm
+> Task :core:navigation:compileJvmMainJava NO-SOURCE
+> Task :core:navigation:jvmProcessResources NO-SOURCE
+> Task :core:navigation:processJvmMainResources SKIPPED
+> Task :core:navigation:jvmMainClasses
+> Task :core:navigation:jvmJar
+> Task :core:otp:kmpPartiallyResolvedDependenciesChecker
+> Task :core:otp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:otp:compileKotlinDesktop
+> Task :core:otp:compileDesktopMainJava NO-SOURCE
+> Task :core:otp:desktopProcessResources NO-SOURCE
+> Task :core:otp:processDesktopMainResources SKIPPED
+> Task :core:otp:desktopMainClasses
+> Task :core:otp:desktopJar
+> Task :feature:backup:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:backup:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:backup:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:backup:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:backup:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:backup:generateActualResourceCollectorsForDesktopMain
+> Task :feature:backup:generateComposeResClass
+> Task :feature:backup:generateExpectResourceCollectorsForCommonMain
+> Task :feature:backup:compileKotlinDesktop
+> Task :feature:backup:compileDesktopMainJava NO-SOURCE
+> Task :feature:backup:assembleDesktopMainResources
+> Task :feature:backup:desktopProcessResources
+> Task :feature:backup:processDesktopMainResources SKIPPED
+> Task :feature:backup:desktopMainClasses
+> Task :feature:backup:desktopJar
+> Task :feature:credential:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:credential:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:credential:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:credential:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:credential:generateActualResourceCollectorsForDesktopMain
+> Task :feature:credential:generateComposeResClass
+> Task :feature:credential:generateExpectResourceCollectorsForCommonMain
+> Task :feature:credential:compileKotlinDesktop
+> Task :feature:credential:compileDesktopMainJava NO-SOURCE
+> Task :feature:credential:assembleDesktopMainResources
+> Task :feature:credential:desktopProcessResources
+> Task :feature:credential:processDesktopMainResources SKIPPED
+> Task :feature:credential:desktopMainClasses
+> Task :feature:credential:desktopJar
+> Task :feature:generator:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:generator:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:generator:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:generator:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:generator:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:generator:generateActualResourceCollectorsForDesktopMain
+> Task :feature:generator:generateComposeResClass
+> Task :feature:generator:generateExpectResourceCollectorsForCommonMain
+> Task :feature:generator:compileKotlinDesktop
+> Task :feature:generator:compileDesktopMainJava NO-SOURCE
+> Task :feature:generator:assembleDesktopMainResources
+> Task :feature:generator:desktopProcessResources
+> Task :feature:generator:processDesktopMainResources SKIPPED
+> Task :feature:generator:desktopMainClasses
+> Task :feature:generator:desktopJar
+> Task :feature:health:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:health:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:health:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:health:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:health:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:health:generateActualResourceCollectorsForDesktopMain
+> Task :feature:health:generateComposeResClass
+> Task :feature:health:generateExpectResourceCollectorsForCommonMain
+> Task :feature:health:compileKotlinDesktop
+> Task :feature:health:compileDesktopMainJava NO-SOURCE
+> Task :feature:health:assembleDesktopMainResources
+> Task :feature:health:desktopProcessResources
+> Task :feature:health:processDesktopMainResources SKIPPED
+> Task :feature:health:desktopMainClasses
+> Task :feature:health:desktopJar
+> Task :feature:onboarding:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:onboarding:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:onboarding:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:onboarding:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateActualResourceCollectorsForDesktopMain
+> Task :feature:onboarding:generateComposeResClass
+> Task :feature:onboarding:generateExpectResourceCollectorsForCommonMain
+> Task :feature:onboarding:compileKotlinDesktop
+> Task :feature:onboarding:compileDesktopMainJava NO-SOURCE
+> Task :feature:onboarding:assembleDesktopMainResources
+> Task :feature:onboarding:desktopProcessResources
+> Task :feature:onboarding:processDesktopMainResources SKIPPED
+> Task :feature:onboarding:desktopMainClasses
+> Task :feature:onboarding:desktopJar
+> Task :feature:settings:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:settings:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:settings:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:settings:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:settings:generateActualResourceCollectorsForDesktopMain
+> Task :feature:settings:generateComposeResClass
+> Task :feature:settings:generateExpectResourceCollectorsForCommonMain
+> Task :feature:settings:compileKotlinDesktop
+> Task :feature:settings:compileDesktopMainJava NO-SOURCE
+> Task :feature:settings:assembleDesktopMainResources
+> Task :feature:settings:desktopProcessResources
+> Task :feature:settings:processDesktopMainResources SKIPPED
+> Task :feature:settings:desktopMainClasses
+> Task :feature:settings:desktopJar
+> Task :feature:unlock:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:unlock:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:unlock:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:unlock:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:unlock:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateActualResourceCollectorsForDesktopMain
+> Task :feature:unlock:generateComposeResClass
+> Task :feature:unlock:generateExpectResourceCollectorsForCommonMain
+> Task :feature:unlock:compileKotlinDesktop
+> Task :feature:unlock:compileDesktopMainJava NO-SOURCE
+> Task :feature:unlock:assembleDesktopMainResources
+> Task :feature:unlock:desktopProcessResources
+> Task :feature:unlock:processDesktopMainResources SKIPPED
+> Task :feature:unlock:desktopMainClasses
+> Task :feature:unlock:desktopJar
+> Task :feature:vault:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:vault:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:vault:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:vault:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:vault:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:vault:generateActualResourceCollectorsForDesktopMain
+> Task :feature:vault:generateComposeResClass
+> Task :feature:vault:generateExpectResourceCollectorsForCommonMain
+> Task :feature:vault:compileKotlinDesktop
+> Task :feature:vault:compileDesktopMainJava NO-SOURCE
+> Task :feature:vault:assembleDesktopMainResources
+> Task :feature:vault:desktopProcessResources
+> Task :feature:vault:processDesktopMainResources SKIPPED
+> Task :feature:vault:desktopMainClasses
+> Task :feature:vault:desktopJar
+> Task :shared:compileKotlinDesktop
+> Task :shared:compileDesktopMainJava NO-SOURCE
+> Task :shared:assembleDesktopMainResources
+> Task :shared:desktopProcessResources
+> Task :shared:processDesktopMainResources SKIPPED
+> Task :shared:desktopMainClasses
+> Task :shared:desktopJar
+> Task :app-desktop:compileKotlinDesktop
+> Task :app-desktop:compileDesktopMainJava NO-SOURCE
+> Task :app-desktop:checkDesktopTestComposeLibrariesCompatibility
+> Task :app-desktop:assembleDesktopMainResources
+> Task :app-desktop:desktopProcessResources
+> Task :app-desktop:processDesktopMainResources SKIPPED
+> Task :app-desktop:desktopMainClasses
+> Task :app-desktop:desktopJar
+> Task :app-desktop:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForCommonTest SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForDesktopTest SKIPPED
+
+> Task :app-desktop:compileTestKotlinDesktop
+w: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:267:60 Unnecessary safe call on a non-null receiver of type 'DesktopCurtainRenderingTest.InputObservation'.
+w: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:275:58 Unnecessary safe call on a non-null receiver of type 'DesktopCurtainRenderingTest.InputObservation'.
+w: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:280:66 Unnecessary safe call on a non-null receiver of type 'Throwable'.
+
+> Task :app-desktop:compileDesktopTestJava NO-SOURCE
+> Task :app-desktop:assembleDesktopTestResources
+> Task :app-desktop:desktopTestProcessResources
+> Task :app-desktop:processDesktopTestResources SKIPPED
+> Task :app-desktop:desktopTestClasses
+> Task :shared:checkDesktopTestComposeLibrariesCompatibility
+> Task :shared:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :shared:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :shared:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :shared:generateResourceAccessorsForDesktopTest NO-SOURCE
+> Task :core:testing:kmpPartiallyResolvedDependenciesChecker
+> Task :core:testing:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:testing:compileKotlinDesktop
+> Task :core:testing:compileDesktopMainJava NO-SOURCE
+> Task :core:testing:desktopProcessResources NO-SOURCE
+> Task :core:testing:processDesktopMainResources SKIPPED
+> Task :core:testing:desktopMainClasses
+> Task :core:testing:desktopJar
+> Task :shared:compileTestKotlinDesktop
+> Task :shared:compileDesktopTestJava NO-SOURCE
+> Task :shared:assembleDesktopTestResources
+> Task :shared:desktopTestProcessResources
+> Task :shared:processDesktopTestResources SKIPPED
+> Task :shared:desktopTestClasses
+
+> Task :auditDesktopIntegration02Prepare
+DESKTOP_INTEGRATION02_RUNTIME_CLASSPATH={"selectedTask":":app-desktop:desktopTest","selectedClasses":["com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest","com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest","com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest"],"entries":107,"artifacts":[{"name":"animation-core-desktop-1.11.1.jar","bytes":389121,"sha256":"1b3af8d20627b01101d827f72e26dbadccc8d212c0ffc0c02ff2a6fc967a6ca8"},{"name":"animation-desktop-1.11.1.jar","bytes":412677,"sha256":"bb41c6c550a471c68c51185c3bb0458482a4e803ee074bf215adc8832e2007e1"},{"name":"annotation-jvm-1.9.1.jar","bytes":60577,"sha256":"1e343917ebf27ba96fe4dc52b1cad7fd32b738fbc6355bb6cd5b3b305d7212d0"},{"name":"annotations-23.0.0.jar","bytes":29371,"sha256":"7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"},{"name":"atomicfu-jvm-0.28.0.jar","bytes":48578,"sha256":"39576ec46b83412ff7a2909d24cccbba90400e91f9aa67b250309bc0872ecf52"},{"name":"backup-desktop.jar","bytes":185520,"sha256":"d8e0ef19ac86658df7a0f5b89478d66bc03d02e60450e5374d429a5b1bb4ed63"},{"name":"collection-jvm-1.5.0.jar","bytes":877998,"sha256":"70b35924e4babcdffa37d0e575ee039c56a2d97123342624c48b603233704341"},{"name":"core-3.5.4.jar","bytes":610364,"sha256":"71de5d89341b5fcf5dd89da7f44e84d825d0e084cdf3ec77c9abe26b0f0ceb13"},{"name":"core-common-2.2.0.jar","bytes":11657,"sha256":"65308a06b1c00ee186cb9e19321383f043b993813f1522c47f4a3e3303bdba41"},{"name":"credential-desktop.jar","bytes":486505,"sha256":"66724139e1684abdf6f046aa113f5ee70c0499de56fcc1a81da4ab5719b83722"},{"name":"crypto-desktop.jar","bytes":104782,"sha256":"cf398356a76a8d789b8bf3227d26cf45ad4554bd3112cf75b0860272f6685de6"},{"name":"database-desktop.jar","bytes":1298737,"sha256":"71d238834b66967c10c93d41bcb69a39670889e8330949f9db561144e24c976f"},{"name":"designsystem-desktop.jar","bytes":261737,"sha256":"dce6b1649ed08962d07c5bf9a9b0c9388b15ad2be5ef3d36790f987aee441dc4"},{"name":"desktop-jvm-1.11.1.jar","bytes":9179,"sha256":"9f3d221e1accd6c7c64ac2a0d7c8053537bc7f49592c44d72b766434dfce7440"},{"name":"desktopMain","directory":true,"exists":false},{"name":"desktopTest","directory":true,"exists":false},{"name":"domain-desktop.jar","bytes":246316,"sha256":"2a79a39c84e0d19e087567b94d772a90a11d17367bbff188808f27c563e674b6"},{"name":"foundation-desktop-1.11.1.jar","bytes":4551980,"sha256":"32601653637e47cc442fa77c9e5dd95a557a0533a5304ba5200cc72c565f074a"},{"name":"foundation-layout-desktop-1.11.1.jar","bytes":671113,"sha256":"d79929b45521dff0c77d3184412007b3b9695755c8b1933d5ff9e4f1e93fa131"},{"name":"generator-desktop.jar","bytes":147704,"sha256":"84fdf3f61bed54ea07f930fa5d01a38f17258765b46bd6f924f9f9cdd87833e3"},{"name":"hamcrest-core-1.3.jar","bytes":45024,"sha256":"66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"},{"name":"health-desktop.jar","bytes":223693,"sha256":"97302ee28c1e330ac56076f14d5aed410fa393ed4d6b3ef82b0fad82285edbe1"},{"name":"jbr-api-1.9.0.jar","bytes":50453,"sha256":"7e37284e33b5b304ee6174dcaa92db949b257cc4c8991ca865e7daf5113d8279"},{"name":"jna-5.19.1.jar","bytes":1950853,"sha256":"4fb141dd8ef6b0585ffceea4bc49602fbc6312fa977e2c488794ea3e6aafecae"},{"name":"jspecify-1.0.0.jar","bytes":3819,"sha256":"1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"},{"name":"junit-4.13.2.jar","bytes":384581,"sha256":"8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3"},{"name":"koin-compose-jvm-4.2.2.jar","bytes":39990,"sha256":"3b5c7be96d33fecb377337333c8ff913da636c506d66ef0c7976a0bd72694b1c"},{"name":"koin-compose-viewmodel-jvm-4.2.2.jar","bytes":124229,"sha256":"cc969f5b145f75dac413d9cdbb8d7f7664e893cc5a679a4ac8803a5ce1e2fa18"},{"name":"koin-core-jvm-4.2.2.jar","bytes":435897,"sha256":"6d88966bbd7e65631f6a962f46a959b857e39e6fcc45b4088997b1d54fef0004"},{"name":"koin-core-viewmodel-jvm-4.2.2.jar","bytes":140592,"sha256":"8348eeb545105b8a345b3625f4700c9cd75e089981150bb39adcd29837c382ba"},{"name":"kotlin-stdlib-2.4.10.jar","bytes":1841933,"sha256":"4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"},{"name":"kotlin-stdlib-jdk7-1.9.23.jar","bytes":961,"sha256":"34b1dff7ee4e42af452dca1e3c001e352bcd9e9ec27dfdd478bb7e76e7bfa3e1"},{"name":"kotlin-stdlib-jdk8-1.9.23.jar","bytes":968,"sha256":"d624c60cc1b472a1dcbee3ad1ec4ea95f2fba0032152ddb15905c6207f7718ec"},{"name":"kotlin-test-2.4.10.jar","bytes":101517,"sha256":"5d334a7b17ce9b223e4db35e355f0082fb0551d36c0424a599bf35686ba2ab7b"},{"name":"kotlin-test-junit-2.4.10.jar","bytes":5208,"sha256":"197cb7a42ff773eb0c76fd747f259dd15589790364d1559ff2d38e098d506401"},{"name":"kotlinx-coroutines-core-jvm-1.11.0.jar","bytes":1577052,"sha256":"d1d75aa01dffbb4d1c520e67e4c4e7f5f6174718e7cb4632412503f2f0e604fa"},{"name":"kotlinx-coroutines-swing-1.11.0.jar","bytes":8825,"sha256":"7f658fe952b56176111faad8ac275268904608915d6c79374fa0c80fb288fb60"},{"name":"kotlinx-coroutines-test-jvm-1.11.0.jar","bytes":105295,"sha256":"d4f7ee71da708af4719dceb6d3200c8f9dc5146ea1a812cb628ed53c64196f96"},{"name":"kotlinx-datetime-jvm-0.7.1.jar","bytes":694336,"sha256":"3b8b98657c9aff3be7f6b4b575e9f3fb9a3a1f452a801da0f438901734acdade"},{"name":"kotlinx-serialization-core-jvm-1.11.0.jar","bytes":404509,"sha256":"f4a801c647d4351327cd9e1ac4113e2be9ea37a64ab0abae269c25a52e28f35d"},{"name":"kotlinx-serialization-json-jvm-1.11.0.jar","bytes":294166,"sha256":"563a25b4eb5c9128ae9c2479f3d1a5c44dcd176112b91cf03682e906eba5c935"},{"name":"library-desktop-1.11.1.jar","bytes":228082,"sha256":"05e1cad77c8ede7930ad21223b819932b70d7ad969ebfef97ddf272fc1a7bc39"},{"name":"lifecycle-common-jvm-2.11.0.jar","bytes":4939,"sha256":"50a826ef0d1bd27ff384e4dd9d147bd1f343cc78d044f7b32a7ec6ce9b3fd2ba"},{"name":"lifecycle-common-jvm-2.11.0.jar","bytes":65749,"sha256":"e6a66e67b9f63a0fb6344f165c1d872376e5fe6d235bffb138af45122cf452a9"},{"name":"lifecycle-runtime-compose-desktop-2.11.0.jar","bytes":4993,"sha256":"4c94a5fa98b838a34b84eecb0fca5b291b417ab3af8518862b488f85868a2195"},{"name":"lifecycle-runtime-compose-desktop-2.11.0.jar","bytes":52000,"sha256":"d5336753ea4d5881ccfb8b0613e034eb241f0d8b4349536df1cd0ec86cf63664"},{"name":"lifecycle-runtime-desktop-2.11.0.jar","bytes":4945,"sha256":"3e5b56c54c826dbc2a8d8162af4d020840dbd3e742b8be3bf78546afdc2f7376"},{"name":"lifecycle-runtime-desktop-2.11.0.jar","bytes":52884,"sha256":"09f75a4a8d763cee5d6af36f422139a0205d3f6df2e2c5288cae42836f0b36ea"},{"name":"lifecycle-viewmodel-compose-desktop-2.11.0.jar","bytes":34551,"sha256":"1b4c58125c7b3693444f40c8ab76881d17fa74726860c24872a3dec3e0fad34b"},{"name":"lifecycle-viewmodel-compose-desktop-2.11.0.jar","bytes":5005,"sha256":"b44ae28c255709eba43719179ab5a4a27b7a8d2075e20030e2e265211f320a0f"},{"name":"lifecycle-viewmodel-desktop-2.11.0.jar","bytes":4957,"sha256":"38384ad114f3231a5bfe04608c2c514747574fff3e347a7266e12e6ad35a6a1c"},{"name":"lifecycle-viewmodel-desktop-2.11.0.jar","bytes":61420,"sha256":"175c349266ccbb6a2036615725b7066ee3f3319665c98af42206ab3a582a43c3"},{"name":"lifecycle-viewmodel-navigation3-desktop-2.11.0.jar","bytes":16096,"sha256":"0699ad378acfd0da7e951126cdd260476019c6af8a2c094f94bf5f7bb1b80756"},{"name":"lifecycle-viewmodel-navigation3-desktop-2.11.0.jar","bytes":5029,"sha256":"c0397740f4a35b0262f692f78fa08890b1fb74337bda20f50653d7156e819f87"},{"name":"lifecycle-viewmodel-savedstate-desktop-2.11.0.jar","bytes":5023,"sha256":"5dbf963e5be555b61ce47e18f8dfa82fad3b5c0e79cbeed7c9dca6c556f53847"},{"name":"lifecycle-viewmodel-savedstate-desktop-2.11.0.jar","bytes":60307,"sha256":"ca21720ce7f370cb21cabb5329b959eda624107ec06282e3bdc92582917b1d27"},{"name":"main","directory":true,"exists":true},{"name":"main","directory":true,"exists":true},{"name":"material-desktop-1.11.1.jar","bytes":1473829,"sha256":"fcd881213628bf50b1e278925db892f552c23bd63bc7edb99b968790c9e097f8"},{"name":"material-icons-core-desktop-1.7.3.jar","bytes":878084,"sha256":"bcf6c853b6db2ff148d2d3aad3b7a7ea54d93fc7b42e0afd840eb6daf1a1c681"},{"name":"material-icons-extended-desktop-1.7.3.jar","bytes":37768805,"sha256":"dc55d383dca8279e353917e5c5a93d192a95e7ca4f926ee55ee0b4627f99d860"},{"name":"material-ripple-desktop-1.11.1.jar","bytes":77135,"sha256":"e24ed0a740438508cc83eb3cb07dc55d83b0a2e25f233f48ffc2a0782a72e007"},{"name":"material3-desktop-1.9.0.jar","bytes":4436970,"sha256":"78f0787a1c6d20f9b2460a387f51ecf554e211d3c874b22d66530a540390b811"},{"name":"multiplatform-crypto-libsodium-bindings-jvm-0.9.5.jar","bytes":1061494,"sha256":"63d7b2ea35c6fa57636931977f25929d4f2cac9513411f16337a244b7ddc239b"},{"name":"navigation-jvm.jar","bytes":150044,"sha256":"9c7402454ff03cfef37bd4dcf081aa7b47014b687f0f3e0c0bad16a61f97dd0d"},{"name":"navigation3-runtime-desktop-1.1.4.jar","bytes":61195,"sha256":"09c59eb28850d4736a825c52494294a36b049a4d531cb6939e26fb3125adcecb"},{"name":"navigation3-ui-desktop-1.1.1.jar","bytes":110548,"sha256":"76469ac9c180555470b7d22f9537385a0509a4f88c3958e3e9dede30b098b1bb"},{"name":"navigationevent-compose-desktop-1.0.1.jar","bytes":28484,"sha256":"8b48f88c88eda621ec8635db20ebf530dea91faf2fbcc3c76e07b6330b56c732"},{"name":"navigationevent-desktop-1.1.2.jar","bytes":45586,"sha256":"4c92508d4bd3b9cafb2785e8211057d39ed8465b529660223864a19625cedb5b"},{"name":"okio-jvm-3.18.1.jar","bytes":392463,"sha256":"b97b640557a650d15411f2be29aef558c4e422a83653cb18ba494311dbed18be"},{"name":"onboarding-desktop.jar","bytes":157242,"sha256":"278d9b1f4799a32ec9dd507988e7b956cbffd963806bcec19e65fab694d5bb3b"},{"name":"otp-desktop.jar","bytes":41929,"sha256":"1ed910aa91fafd2b290662dc7188f5df01f25aab8c754a167683eaa1d55a7c30"},{"name":"resource-loader-2.0.2.jar","bytes":26600,"sha256":"b2b482975158a38162d7eecbc1c105f4f187fe6fded1784004906f9dc941ba11"},{"name":"room-common-jvm-2.8.4.jar","bytes":62722,"sha256":"dc7b4e1a75a790f29c97afd5516b8bf8002d9b6e83e295bc569b33566f3b1ec0"},{"name":"room-runtime-jvm-2.8.4.jar","bytes":312041,"sha256":"de8b2064b7da20b09df6e563d05a001fa13f4c07a0ea6f398a9d37e7becaa903"},{"name":"runtime-annotation-jvm-1.11.2.jar","bytes":9377,"sha256":"e286a8520709d7bdc66481c272660c2a8d26b12740f76102543ce45704370396"},{"name":"runtime-desktop-1.11.1.jar","bytes":4711,"sha256":"bceb2c506e4209934be01ac0f45332b0c12b7886ee00dc390c7bbdfbf58f4217"},{"name":"runtime-desktop-1.11.2.jar","bytes":1944796,"sha256":"69551aee8f92114921816f3d9aaa66062104db228ed5710a6666f7adbdfafe3c"},{"name":"runtime-retain-desktop-1.11.2.jar","bytes":53421,"sha256":"9b7e62a7df333c33eff9e1a6d6c2508a4d8fe4b7a43778075538fe3da4bc4485"},{"name":"runtime-saveable-desktop-1.11.1.jar","bytes":4765,"sha256":"7696c15dd23de0140d8150f1115f59d2a211331e3baa243f418474477e98971c"},{"name":"runtime-saveable-desktop-1.11.2.jar","bytes":53810,"sha256":"b1a17e6c226debb42ca227f580459d9d9dea62d42aa8e685ef56cd7ce770b1a1"},{"name":"savedstate-compose-desktop-1.4.0.jar","bytes":15494,"sha256":"c02a98b0c2b35cdde245c0bfe6e7ff453c7b6d06a5eb8681d25b7f54b874ea48"},{"name":"savedstate-compose-desktop-1.4.0.jar","bytes":438,"sha256":"0f3d045c5fd7e1301ab6c38cd0778067b0484cf39acac1233be71a723a6a8075"},{"name":"savedstate-desktop-1.4.0.jar","bytes":82073,"sha256":"e965ed7a011be83a271ac7d82249a776368479ee3a2b07948c3445b51d640856"},{"name":"security-desktop.jar","bytes":97530,"sha256":"35bed3cba902877a6fac228291a48c3495c5d124da4c4f650ce5a90649f2ef51"},{"name":"settings-desktop.jar","bytes":275665,"sha256":"849cc7f0ca3a6925b8d8447330df5f4b5828dfb7d9680ee8a3c20276ba4dea60"},{"name":"shared-desktop.jar","bytes":453186,"sha256":"e5da57c0be681775fb8ffbd71f7f3df7fe5bcf7fb0fe9343aa8c0e94deecac07"},{"name":"skiko-awt-0.144.6.jar","bytes":1256588,"sha256":"57420122ed01fef05cdb4941576c98ea6225c525f37380c216a3c046b2b5529d"},{"name":"skiko-awt-runtime-linux-x64-0.144.6.jar","bytes":12290341,"sha256":"3ed16be373ccbba7fbdca9acd7747ff2ed3d441764ac070aa20682c84764a671"},{"name":"slf4j-api-2.0.0-alpha1.jar","bytes":56383,"sha256":"8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"},{"name":"sqlite-bundled-jvm-2.6.2.jar","bytes":4703947,"sha256":"e61efb0647288b486e595950724cc53c4f15eeeca03ce2184751d02de3cfaa17"},{"name":"sqlite-jvm-2.6.2.jar","bytes":11262,"sha256":"53b050b80e666228a12a0ae72d49531b3d69615ba8fb62733f697f8fdc7fd6f3"},{"name":"stately-concurrency-jvm-2.1.0.jar","bytes":11382,"sha256":"86739675892fb1c17d6bd36d05347e89ff313957421bb01a45a743ce774e8e29"},{"name":"stately-concurrent-collections-jvm-2.1.0.jar","bytes":72445,"sha256":"0e0d9e7f20eaee18f7862309064c8db58ce6a3a861d8871f561546af63df1893"},{"name":"stately-strict-jvm-2.1.0.jar","bytes":1607,"sha256":"581070db2802cbad81f6e6e2d9d2494835443153b314458d53aa43c68260c9fa"},{"name":"test","directory":true,"exists":true},{"name":"test","directory":true,"exists":true},{"name":"ui-backhandler-desktop-1.11.1.jar","bytes":28720,"sha256":"007fb9a83fa405b8bfe1ddbefef3dd929dea2be42953e6510ce46f85ff635e30"},{"name":"ui-desktop-1.11.1.jar","bytes":3444688,"sha256":"442d4a2f0d95054453b68191304dca995267e72fcdcbbc0a63997bff4dcdf949"},{"name":"ui-geometry-desktop-1.11.1.jar","bytes":60981,"sha256":"ad6d5557572708aceebf1aa626c5900e8fce61f040a6d5d971b1adca5869ab8c"},{"name":"ui-graphics-desktop-1.11.1.jar","bytes":635273,"sha256":"c7d7620c78f0e64052f1f28df54a969b36cf4918e7965b566875855569346e59"},{"name":"ui-text-desktop-1.11.1.jar","bytes":718950,"sha256":"c1a8ceb1e875c6f1bb2e67eca8778fc04027dd618f31a69f886368cbdd35eeec"},{"name":"ui-tooling-preview-desktop-1.11.1.jar","bytes":27553,"sha256":"60d3a913e550a4076248d62105cd0a8b5c6c807cf09c5de72cbaf4288dc52a90"},{"name":"ui-unit-desktop-1.11.1.jar","bytes":88263,"sha256":"9c91868b0bd967d64f726edc319c895e359871a44ef7e75dc69ff0cad46ac0da"},{"name":"ui-util-desktop-1.11.1.jar","bytes":23149,"sha256":"73d04930a91fb9a2044f2c198ec6e3f1da61696ccb59a288d1ff0a15bab08eed"},{"name":"unlock-desktop.jar","bytes":88996,"sha256":"4dba0b757d1679384c9993f38c8dc2c41297f3159056a27193f2f75d9b4e7c7e"},{"name":"vault-desktop.jar","bytes":371488,"sha256":"34cf9e75d4ed30c216e085b8d8beb1f0789a9c432e58276212a2050c12d84627"}],"qualification":"Resolved Test runtime artifacts, not an executed test or native-loader proof"}
+DESKTOP_INTEGRATION02_RUNTIME_CLASSPATH={"selectedTask":":shared:desktopTest","selectedClasses":["com.passvault.shared.credential.CredentialEditorRoomIntegrationTest"],"entries":114,"artifacts":[{"name":"Turbine-jvm.jar","bytes":86713,"sha256":"d1a853be08d6c3562fdfef98ac25b7048e669d9cb1203a42fc36c56d17c037d5"},{"name":"animation-core-desktop-1.11.1.jar","bytes":389121,"sha256":"1b3af8d20627b01101d827f72e26dbadccc8d212c0ffc0c02ff2a6fc967a6ca8"},{"name":"animation-desktop-1.11.1.jar","bytes":412677,"sha256":"bb41c6c550a471c68c51185c3bb0458482a4e803ee074bf215adc8832e2007e1"},{"name":"annotation-jvm-1.9.1.jar","bytes":60577,"sha256":"1e343917ebf27ba96fe4dc52b1cad7fd32b738fbc6355bb6cd5b3b305d7212d0"},{"name":"annotations-23.0.0.jar","bytes":29371,"sha256":"7b0f19724082cbfcbc66e5abea2b9bc92cf08a1ea11e191933ed43801eb3cd05"},{"name":"assertk-jvm-0.28.1.jar","bytes":300480,"sha256":"0f8ec47cd657d47e36675d2e7f1e3a6ffc242399c1c6f2a6cd03fafb22fef3e3"},{"name":"atomicfu-jvm-0.28.0.jar","bytes":48578,"sha256":"39576ec46b83412ff7a2909d24cccbba90400e91f9aa67b250309bc0872ecf52"},{"name":"backup-desktop.jar","bytes":185520,"sha256":"d8e0ef19ac86658df7a0f5b89478d66bc03d02e60450e5374d429a5b1bb4ed63"},{"name":"collection-jvm-1.5.0.jar","bytes":877998,"sha256":"70b35924e4babcdffa37d0e575ee039c56a2d97123342624c48b603233704341"},{"name":"core-3.5.4.jar","bytes":610364,"sha256":"71de5d89341b5fcf5dd89da7f44e84d825d0e084cdf3ec77c9abe26b0f0ceb13"},{"name":"core-common-2.2.0.jar","bytes":11657,"sha256":"65308a06b1c00ee186cb9e19321383f043b993813f1522c47f4a3e3303bdba41"},{"name":"credential-desktop.jar","bytes":486505,"sha256":"66724139e1684abdf6f046aa113f5ee70c0499de56fcc1a81da4ab5719b83722"},{"name":"crypto-desktop.jar","bytes":104782,"sha256":"cf398356a76a8d789b8bf3227d26cf45ad4554bd3112cf75b0860272f6685de6"},{"name":"database-desktop.jar","bytes":1298737,"sha256":"71d238834b66967c10c93d41bcb69a39670889e8330949f9db561144e24c976f"},{"name":"designsystem-desktop.jar","bytes":261737,"sha256":"dce6b1649ed08962d07c5bf9a9b0c9388b15ad2be5ef3d36790f987aee441dc4"},{"name":"desktop-jvm-1.11.1.jar","bytes":9179,"sha256":"9f3d221e1accd6c7c64ac2a0d7c8053537bc7f49592c44d72b766434dfce7440"},{"name":"desktopMain","directory":true,"exists":false},{"name":"desktopTest","directory":true,"exists":false},{"name":"domain-desktop.jar","bytes":246316,"sha256":"2a79a39c84e0d19e087567b94d772a90a11d17367bbff188808f27c563e674b6"},{"name":"foundation-desktop-1.11.1.jar","bytes":4551980,"sha256":"32601653637e47cc442fa77c9e5dd95a557a0533a5304ba5200cc72c565f074a"},{"name":"foundation-layout-desktop-1.11.1.jar","bytes":671113,"sha256":"d79929b45521dff0c77d3184412007b3b9695755c8b1933d5ff9e4f1e93fa131"},{"name":"generator-desktop.jar","bytes":147704,"sha256":"84fdf3f61bed54ea07f930fa5d01a38f17258765b46bd6f924f9f9cdd87833e3"},{"name":"hamcrest-core-1.3.jar","bytes":45024,"sha256":"66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"},{"name":"health-desktop.jar","bytes":223693,"sha256":"97302ee28c1e330ac56076f14d5aed410fa393ed4d6b3ef82b0fad82285edbe1"},{"name":"jbr-api-1.9.0.jar","bytes":50453,"sha256":"7e37284e33b5b304ee6174dcaa92db949b257cc4c8991ca865e7daf5113d8279"},{"name":"jna-5.19.1.jar","bytes":1950853,"sha256":"4fb141dd8ef6b0585ffceea4bc49602fbc6312fa977e2c488794ea3e6aafecae"},{"name":"jspecify-1.0.0.jar","bytes":3819,"sha256":"1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"},{"name":"junit-4.13.2.jar","bytes":384581,"sha256":"8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3"},{"name":"koin-compose-jvm-4.2.2.jar","bytes":39990,"sha256":"3b5c7be96d33fecb377337333c8ff913da636c506d66ef0c7976a0bd72694b1c"},{"name":"koin-compose-viewmodel-jvm-4.2.2.jar","bytes":124229,"sha256":"cc969f5b145f75dac413d9cdbb8d7f7664e893cc5a679a4ac8803a5ce1e2fa18"},{"name":"koin-core-annotations-jvm-4.2.2.jar","bytes":2073,"sha256":"50079c79a7dbbb6bebebf5922a63ba4759fd9286dcdb5d502a383cb7c0bc60c0"},{"name":"koin-core-jvm-4.2.2.jar","bytes":435897,"sha256":"6d88966bbd7e65631f6a962f46a959b857e39e6fcc45b4088997b1d54fef0004"},{"name":"koin-core-viewmodel-jvm-4.2.2.jar","bytes":140592,"sha256":"8348eeb545105b8a345b3625f4700c9cd75e089981150bb39adcd29837c382ba"},{"name":"koin-test-jvm-4.2.2.jar","bytes":76525,"sha256":"6f5e5a257a0370b03e5d4e229b2d991a3c9043af70f7955bda96ffebd19334f2"},{"name":"kotlin-reflect-2.3.20.jar","bytes":3631428,"sha256":"e346fa3c3ff4451f5f707a312887fd4c8555da48cc15fa9db2ba93c33f89f813"},{"name":"kotlin-stdlib-2.4.10.jar","bytes":1841933,"sha256":"4ec0293bc3751423b203f1d8493251c57c42e73eb6377a6b8560d0974ff0a6df"},{"name":"kotlin-stdlib-jdk7-1.9.23.jar","bytes":961,"sha256":"34b1dff7ee4e42af452dca1e3c001e352bcd9e9ec27dfdd478bb7e76e7bfa3e1"},{"name":"kotlin-stdlib-jdk8-1.9.23.jar","bytes":968,"sha256":"d624c60cc1b472a1dcbee3ad1ec4ea95f2fba0032152ddb15905c6207f7718ec"},{"name":"kotlin-test-2.4.10.jar","bytes":101517,"sha256":"5d334a7b17ce9b223e4db35e355f0082fb0551d36c0424a599bf35686ba2ab7b"},{"name":"kotlin-test-junit-2.4.10.jar","bytes":5208,"sha256":"197cb7a42ff773eb0c76fd747f259dd15589790364d1559ff2d38e098d506401"},{"name":"kotlinx-coroutines-core-jvm-1.11.0.jar","bytes":1577052,"sha256":"d1d75aa01dffbb4d1c520e67e4c4e7f5f6174718e7cb4632412503f2f0e604fa"},{"name":"kotlinx-coroutines-swing-1.11.0.jar","bytes":8825,"sha256":"7f658fe952b56176111faad8ac275268904608915d6c79374fa0c80fb288fb60"},{"name":"kotlinx-coroutines-test-jvm-1.11.0.jar","bytes":105295,"sha256":"d4f7ee71da708af4719dceb6d3200c8f9dc5146ea1a812cb628ed53c64196f96"},{"name":"kotlinx-datetime-jvm-0.7.1.jar","bytes":694336,"sha256":"3b8b98657c9aff3be7f6b4b575e9f3fb9a3a1f452a801da0f438901734acdade"},{"name":"kotlinx-serialization-core-jvm-1.11.0.jar","bytes":404509,"sha256":"f4a801c647d4351327cd9e1ac4113e2be9ea37a64ab0abae269c25a52e28f35d"},{"name":"kotlinx-serialization-json-jvm-1.11.0.jar","bytes":294166,"sha256":"563a25b4eb5c9128ae9c2479f3d1a5c44dcd176112b91cf03682e906eba5c935"},{"name":"library-desktop-1.11.1.jar","bytes":228082,"sha256":"05e1cad77c8ede7930ad21223b819932b70d7ad969ebfef97ddf272fc1a7bc39"},{"name":"lifecycle-common-jvm-2.11.0.jar","bytes":4939,"sha256":"50a826ef0d1bd27ff384e4dd9d147bd1f343cc78d044f7b32a7ec6ce9b3fd2ba"},{"name":"lifecycle-common-jvm-2.11.0.jar","bytes":65749,"sha256":"e6a66e67b9f63a0fb6344f165c1d872376e5fe6d235bffb138af45122cf452a9"},{"name":"lifecycle-runtime-compose-desktop-2.11.0.jar","bytes":4993,"sha256":"4c94a5fa98b838a34b84eecb0fca5b291b417ab3af8518862b488f85868a2195"},{"name":"lifecycle-runtime-compose-desktop-2.11.0.jar","bytes":52000,"sha256":"d5336753ea4d5881ccfb8b0613e034eb241f0d8b4349536df1cd0ec86cf63664"},{"name":"lifecycle-runtime-desktop-2.11.0.jar","bytes":4945,"sha256":"3e5b56c54c826dbc2a8d8162af4d020840dbd3e742b8be3bf78546afdc2f7376"},{"name":"lifecycle-runtime-desktop-2.11.0.jar","bytes":52884,"sha256":"09f75a4a8d763cee5d6af36f422139a0205d3f6df2e2c5288cae42836f0b36ea"},{"name":"lifecycle-viewmodel-compose-desktop-2.11.0.jar","bytes":34551,"sha256":"1b4c58125c7b3693444f40c8ab76881d17fa74726860c24872a3dec3e0fad34b"},{"name":"lifecycle-viewmodel-compose-desktop-2.11.0.jar","bytes":5005,"sha256":"b44ae28c255709eba43719179ab5a4a27b7a8d2075e20030e2e265211f320a0f"},{"name":"lifecycle-viewmodel-desktop-2.11.0.jar","bytes":4957,"sha256":"38384ad114f3231a5bfe04608c2c514747574fff3e347a7266e12e6ad35a6a1c"},{"name":"lifecycle-viewmodel-desktop-2.11.0.jar","bytes":61420,"sha256":"175c349266ccbb6a2036615725b7066ee3f3319665c98af42206ab3a582a43c3"},{"name":"lifecycle-viewmodel-navigation3-desktop-2.11.0.jar","bytes":16096,"sha256":"0699ad378acfd0da7e951126cdd260476019c6af8a2c094f94bf5f7bb1b80756"},{"name":"lifecycle-viewmodel-navigation3-desktop-2.11.0.jar","bytes":5029,"sha256":"c0397740f4a35b0262f692f78fa08890b1fb74337bda20f50653d7156e819f87"},{"name":"lifecycle-viewmodel-savedstate-desktop-2.11.0.jar","bytes":5023,"sha256":"5dbf963e5be555b61ce47e18f8dfa82fad3b5c0e79cbeed7c9dca6c556f53847"},{"name":"lifecycle-viewmodel-savedstate-desktop-2.11.0.jar","bytes":60307,"sha256":"ca21720ce7f370cb21cabb5329b959eda624107ec06282e3bdc92582917b1d27"},{"name":"main","directory":true,"exists":true},{"name":"main","directory":true,"exists":true},{"name":"material-desktop-1.11.1.jar","bytes":1473829,"sha256":"fcd881213628bf50b1e278925db892f552c23bd63bc7edb99b968790c9e097f8"},{"name":"material-icons-core-desktop-1.7.3.jar","bytes":878084,"sha256":"bcf6c853b6db2ff148d2d3aad3b7a7ea54d93fc7b42e0afd840eb6daf1a1c681"},{"name":"material-icons-extended-desktop-1.7.3.jar","bytes":37768805,"sha256":"dc55d383dca8279e353917e5c5a93d192a95e7ca4f926ee55ee0b4627f99d860"},{"name":"material-ripple-desktop-1.11.1.jar","bytes":77135,"sha256":"e24ed0a740438508cc83eb3cb07dc55d83b0a2e25f233f48ffc2a0782a72e007"},{"name":"material3-desktop-1.9.0.jar","bytes":4436970,"sha256":"78f0787a1c6d20f9b2460a387f51ecf554e211d3c874b22d66530a540390b811"},{"name":"multiplatform-crypto-libsodium-bindings-jvm-0.9.5.jar","bytes":1061494,"sha256":"63d7b2ea35c6fa57636931977f25929d4f2cac9513411f16337a244b7ddc239b"},{"name":"navigation-jvm.jar","bytes":150044,"sha256":"9c7402454ff03cfef37bd4dcf081aa7b47014b687f0f3e0c0bad16a61f97dd0d"},{"name":"navigation3-runtime-desktop-1.1.4.jar","bytes":61195,"sha256":"09c59eb28850d4736a825c52494294a36b049a4d531cb6939e26fb3125adcecb"},{"name":"navigation3-ui-desktop-1.1.1.jar","bytes":110548,"sha256":"76469ac9c180555470b7d22f9537385a0509a4f88c3958e3e9dede30b098b1bb"},{"name":"navigationevent-compose-desktop-1.0.1.jar","bytes":28484,"sha256":"8b48f88c88eda621ec8635db20ebf530dea91faf2fbcc3c76e07b6330b56c732"},{"name":"navigationevent-desktop-1.1.2.jar","bytes":45586,"sha256":"4c92508d4bd3b9cafb2785e8211057d39ed8465b529660223864a19625cedb5b"},{"name":"okio-jvm-3.18.1.jar","bytes":392463,"sha256":"b97b640557a650d15411f2be29aef558c4e422a83653cb18ba494311dbed18be"},{"name":"onboarding-desktop.jar","bytes":157242,"sha256":"278d9b1f4799a32ec9dd507988e7b956cbffd963806bcec19e65fab694d5bb3b"},{"name":"opentest4j-1.3.0.jar","bytes":14304,"sha256":"48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b"},{"name":"opentest4k-jvm-1.3.0.jar","bytes":3245,"sha256":"67bebae94b0cfcd01d97093ea100b68551afc3a4024be19f7341252556fea32f"},{"name":"otp-desktop.jar","bytes":41929,"sha256":"1ed910aa91fafd2b290662dc7188f5df01f25aab8c754a167683eaa1d55a7c30"},{"name":"resource-loader-2.0.2.jar","bytes":26600,"sha256":"b2b482975158a38162d7eecbc1c105f4f187fe6fded1784004906f9dc941ba11"},{"name":"room-common-jvm-2.8.4.jar","bytes":62722,"sha256":"dc7b4e1a75a790f29c97afd5516b8bf8002d9b6e83e295bc569b33566f3b1ec0"},{"name":"room-runtime-jvm-2.8.4.jar","bytes":312041,"sha256":"de8b2064b7da20b09df6e563d05a001fa13f4c07a0ea6f398a9d37e7becaa903"},{"name":"runtime-annotation-jvm-1.11.2.jar","bytes":9377,"sha256":"e286a8520709d7bdc66481c272660c2a8d26b12740f76102543ce45704370396"},{"name":"runtime-desktop-1.11.1.jar","bytes":4711,"sha256":"bceb2c506e4209934be01ac0f45332b0c12b7886ee00dc390c7bbdfbf58f4217"},{"name":"runtime-desktop-1.11.2.jar","bytes":1944796,"sha256":"69551aee8f92114921816f3d9aaa66062104db228ed5710a6666f7adbdfafe3c"},{"name":"runtime-retain-desktop-1.11.2.jar","bytes":53421,"sha256":"9b7e62a7df333c33eff9e1a6d6c2508a4d8fe4b7a43778075538fe3da4bc4485"},{"name":"runtime-saveable-desktop-1.11.1.jar","bytes":4765,"sha256":"7696c15dd23de0140d8150f1115f59d2a211331e3baa243f418474477e98971c"},{"name":"runtime-saveable-desktop-1.11.2.jar","bytes":53810,"sha256":"b1a17e6c226debb42ca227f580459d9d9dea62d42aa8e685ef56cd7ce770b1a1"},{"name":"savedstate-compose-desktop-1.4.0.jar","bytes":15494,"sha256":"c02a98b0c2b35cdde245c0bfe6e7ff453c7b6d06a5eb8681d25b7f54b874ea48"},{"name":"savedstate-compose-desktop-1.4.0.jar","bytes":438,"sha256":"0f3d045c5fd7e1301ab6c38cd0778067b0484cf39acac1233be71a723a6a8075"},{"name":"savedstate-desktop-1.4.0.jar","bytes":82073,"sha256":"e965ed7a011be83a271ac7d82249a776368479ee3a2b07948c3445b51d640856"},{"name":"security-desktop.jar","bytes":97530,"sha256":"35bed3cba902877a6fac228291a48c3495c5d124da4c4f650ce5a90649f2ef51"},{"name":"settings-desktop.jar","bytes":275665,"sha256":"849cc7f0ca3a6925b8d8447330df5f4b5828dfb7d9680ee8a3c20276ba4dea60"},{"name":"skiko-awt-0.144.6.jar","bytes":1256588,"sha256":"57420122ed01fef05cdb4941576c98ea6225c525f37380c216a3c046b2b5529d"},{"name":"skiko-awt-runtime-linux-x64-0.144.6.jar","bytes":12290341,"sha256":"3ed16be373ccbba7fbdca9acd7747ff2ed3d441764ac070aa20682c84764a671"},{"name":"slf4j-api-2.0.0-alpha1.jar","bytes":56383,"sha256":"8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"},{"name":"sqlite-bundled-jvm-2.6.2.jar","bytes":4703947,"sha256":"e61efb0647288b486e595950724cc53c4f15eeeca03ce2184751d02de3cfaa17"},{"name":"sqlite-jvm-2.6.2.jar","bytes":11262,"sha256":"53b050b80e666228a12a0ae72d49531b3d69615ba8fb62733f697f8fdc7fd6f3"},{"name":"stately-concurrency-jvm-2.1.0.jar","bytes":11382,"sha256":"86739675892fb1c17d6bd36d05347e89ff313957421bb01a45a743ce774e8e29"},{"name":"stately-concurrent-collections-jvm-2.1.0.jar","bytes":72445,"sha256":"0e0d9e7f20eaee18f7862309064c8db58ce6a3a861d8871f561546af63df1893"},{"name":"stately-strict-jvm-2.1.0.jar","bytes":1607,"sha256":"581070db2802cbad81f6e6e2d9d2494835443153b314458d53aa43c68260c9fa"},{"name":"test","directory":true,"exists":true},{"name":"test","directory":true,"exists":true},{"name":"testing-desktop.jar","bytes":159779,"sha256":"cd8a5991427aa93d77e35888ff4f797a9233c95d4323611a7e4902226caff690"},{"name":"ui-backhandler-desktop-1.11.1.jar","bytes":28720,"sha256":"007fb9a83fa405b8bfe1ddbefef3dd929dea2be42953e6510ce46f85ff635e30"},{"name":"ui-desktop-1.11.1.jar","bytes":3444688,"sha256":"442d4a2f0d95054453b68191304dca995267e72fcdcbbc0a63997bff4dcdf949"},{"name":"ui-geometry-desktop-1.11.1.jar","bytes":60981,"sha256":"ad6d5557572708aceebf1aa626c5900e8fce61f040a6d5d971b1adca5869ab8c"},{"name":"ui-graphics-desktop-1.11.1.jar","bytes":635273,"sha256":"c7d7620c78f0e64052f1f28df54a969b36cf4918e7965b566875855569346e59"},{"name":"ui-text-desktop-1.11.1.jar","bytes":718950,"sha256":"c1a8ceb1e875c6f1bb2e67eca8778fc04027dd618f31a69f886368cbdd35eeec"},{"name":"ui-tooling-preview-desktop-1.11.1.jar","bytes":27553,"sha256":"60d3a913e550a4076248d62105cd0a8b5c6c807cf09c5de72cbaf4288dc52a90"},{"name":"ui-unit-desktop-1.11.1.jar","bytes":88263,"sha256":"9c91868b0bd967d64f726edc319c895e359871a44ef7e75dc69ff0cad46ac0da"},{"name":"ui-util-desktop-1.11.1.jar","bytes":23149,"sha256":"73d04930a91fb9a2044f2c198ec6e3f1da61696ccb59a288d1ff0a15bab08eed"},{"name":"unlock-desktop.jar","bytes":88996,"sha256":"4dba0b757d1679384c9993f38c8dc2c41297f3159056a27193f2f75d9b4e7c7e"},{"name":"vault-desktop.jar","bytes":371488,"sha256":"34cf9e75d4ed30c216e085b8d8beb1f0789a9c432e58276212a2050c12d84627"}],"qualification":"Resolved Test runtime artifacts, not an executed test or native-loader proof"}
+
+[Incubating] Problems report is available at: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 7m 36s
+130 actionable tasks: 130 executed

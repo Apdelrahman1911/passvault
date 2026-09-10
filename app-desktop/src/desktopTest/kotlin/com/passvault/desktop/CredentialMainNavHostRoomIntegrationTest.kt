@@ -428,7 +428,9 @@ private class NativeMainNav(private val trace: MainNavTrace) {
             val rectangle = try {
                 component?.locationOnScreen?.let { Rectangle(it, component.size) }
             } catch (_: IllegalComponentStateException) { null }
-            val text = context.accessibleText?.let { content ->
+            // Only editable values are consumed; navigation selectors use metadata, not text payloads.
+            val editableText = context.accessibleEditableText
+            val text = editableText?.let { content ->
                 val length = content.charCount
                 assertTrue(length in 0..1024, "NAV_A11Y_TEXT_BOUND")
                 buildString { repeat(length) { append(content.getAtIndex(AccessibleText.CHARACTER, it)) } }
@@ -437,7 +439,7 @@ private class NativeMainNav(private val trace: MainNavTrace) {
             val states = context.accessibleStateSet
             result += MainNavAx(
                 index, parent, context, owner, context.accessibleRole, context.accessibleName, text,
-                context.accessibleEditableText != null, component?.isEnabled == true,
+                editableText != null, component?.isEnabled == true,
                 states.contains(AccessibleState.FOCUSED), states.contains(AccessibleState.CHECKED),
                 states.contains(AccessibleState.SELECTED), context.accessibleAction?.accessibleActionCount ?: 0,
                 rectangle,

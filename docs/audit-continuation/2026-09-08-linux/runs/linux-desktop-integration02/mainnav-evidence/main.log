@@ -1,0 +1,53 @@
+Sep 10, 2026 4:29:05 PM java.util.prefs.FileSystemPreferences$1 run
+INFO: Created user preferences directory.
+[SKIKO] warn: Fallback to next API
+org.jetbrains.skiko.RenderException: Cannot create Linux GL context
+MAIN_NAV_FAILURE
+java.util.concurrent.ExecutionException: java.lang.NullPointerException
+	at java.base/java.util.concurrent.FutureTask.report(FutureTask.java:122)
+	at java.base/java.util.concurrent.FutureTask.get(FutureTask.java:205)
+	at com.passvault.desktop.CredentialMainNavHostRoomIntegrationTestKt.onEdt(CredentialMainNavHostRoomIntegrationTest.kt:718)
+	at com.passvault.desktop.CredentialMainNavHostRoomIntegrationTestKt.access$onEdt(CredentialMainNavHostRoomIntegrationTest.kt:1)
+	at com.passvault.desktop.NativeMainNav.scenario$lambda$0(CredentialMainNavHostRoomIntegrationTest.kt:291)
+	at com.passvault.desktop.NativeMainNav.await(CredentialMainNavHostRoomIntegrationTest.kt:482)
+	at com.passvault.desktop.NativeMainNav.scenario(CredentialMainNavHostRoomIntegrationTest.kt:291)
+	at com.passvault.desktop.NativeMainNav.run(CredentialMainNavHostRoomIntegrationTest.kt:267)
+	at com.passvault.desktop.CredentialMainNavHostRoomProbe.main$lambda$0(CredentialMainNavHostRoomIntegrationTest.kt:189)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.lang.NullPointerException
+	at androidx.compose.ui.platform.a11y.ComposeAccessible$ComposeAccessibleComponent$ComposeAccessibleText.getCharCount(ComposeAccessible.kt:589)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:432)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot$visit(CredentialMainNavHostRoomIntegrationTest.kt:447)
+	at com.passvault.desktop.NativeMainNav.snapshot(CredentialMainNavHostRoomIntegrationTest.kt:449)
+	at com.passvault.desktop.NativeMainNav.scenario$lambda$0$0(CredentialMainNavHostRoomIntegrationTest.kt:291)
+	at com.passvault.desktop.CredentialMainNavHostRoomIntegrationTestKt.onEdt$lambda$0(CredentialMainNavHostRoomIntegrationTest.kt:716)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#noProviders for further details.

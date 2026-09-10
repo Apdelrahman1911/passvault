@@ -1,0 +1,526 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx512m -XX:-UsePerfData -Dfile.encoding=UTF-8 -Duser.home=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/home -Djava.io.tmpdir=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/tmp -Djna.tmpdir=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/jna -Dorg.sqlite.tmpdir=/root/projects/PassVault/audit-runtime-linux-desktop-integration02/sqlite
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :shared
+w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (linux-x86_64).
+Reason: simulator tests require macOS
+Solution: To suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.
+
+
+> Configure project :core:crypto
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosSimulatorArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosSimulatorArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Disabled Kotlin/Native Targets
+The following Kotlin/Native targets cannot be built on this machine and are disabled:
+iosArm64, iosSimulatorArm64
+Solution: To hide this message, add 'kotlin.native.ignoreDisabledTargets=true' to the Gradle properties.
+
+
+> Task :app-desktop:checkDesktopMainComposeLibrariesCompatibility
+> Task :app-desktop:kmpPartiallyResolvedDependenciesChecker
+> Task :app-desktop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForCommonMain SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForDesktopMain SKIPPED
+> Task :app-desktop:generateActualResourceCollectorsForDesktopMain SKIPPED
+> Task :app-desktop:generateComposeResClass SKIPPED
+> Task :app-desktop:generateExpectResourceCollectorsForCommonMain SKIPPED
+> Task :shared:checkDesktopMainComposeLibrariesCompatibility
+> Task :shared:kmpPartiallyResolvedDependenciesChecker
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :shared:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :shared:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :shared:generateComposeResClass UP-TO-DATE
+> Task :shared:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileKotlinDesktop UP-TO-DATE
+> Task :core:crypto:compileDesktopMainJava NO-SOURCE
+> Task :core:crypto:desktopProcessResources NO-SOURCE
+> Task :core:crypto:processDesktopMainResources SKIPPED
+> Task :core:crypto:desktopMainClasses UP-TO-DATE
+> Task :core:crypto:desktopJar UP-TO-DATE
+> Task :core:database:kmpPartiallyResolvedDependenciesChecker
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:compileKotlinDesktop UP-TO-DATE
+> Task :core:domain:compileDesktopMainJava NO-SOURCE
+> Task :core:domain:desktopProcessResources NO-SOURCE
+> Task :core:domain:processDesktopMainResources SKIPPED
+> Task :core:domain:desktopMainClasses UP-TO-DATE
+> Task :core:domain:desktopJar UP-TO-DATE
+> Task :core:security:kmpPartiallyResolvedDependenciesChecker
+> Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:security:compileKotlinDesktop UP-TO-DATE
+> Task :core:security:compileDesktopMainJava NO-SOURCE
+> Task :core:security:desktopProcessResources NO-SOURCE
+> Task :core:security:processDesktopMainResources SKIPPED
+> Task :core:security:desktopMainClasses UP-TO-DATE
+> Task :core:security:desktopJar UP-TO-DATE
+> Task :core:database:kspKotlinDesktop UP-TO-DATE
+> Task :core:database:compileKotlinDesktop UP-TO-DATE
+> Task :core:database:copyRoomSchemas NO-SOURCE
+> Task :core:database:compileDesktopMainJava NO-SOURCE
+> Task :core:database:desktopProcessResources NO-SOURCE
+> Task :core:database:processDesktopMainResources SKIPPED
+> Task :core:database:desktopMainClasses UP-TO-DATE
+> Task :core:database:desktopJar UP-TO-DATE
+> Task :core:designsystem:checkDesktopMainComposeLibrariesCompatibility
+> Task :core:designsystem:kmpPartiallyResolvedDependenciesChecker
+> Task :core:designsystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:designsystem:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :core:designsystem:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :core:designsystem:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :core:designsystem:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :core:designsystem:generateComposeResClass UP-TO-DATE
+> Task :core:designsystem:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :core:designsystem:compileKotlinDesktop UP-TO-DATE
+> Task :core:designsystem:compileDesktopMainJava NO-SOURCE
+> Task :core:designsystem:assembleDesktopMainResources UP-TO-DATE
+> Task :core:designsystem:desktopProcessResources UP-TO-DATE
+> Task :core:designsystem:processDesktopMainResources SKIPPED
+> Task :core:designsystem:desktopMainClasses UP-TO-DATE
+> Task :core:designsystem:desktopJar UP-TO-DATE
+> Task :core:navigation:kmpPartiallyResolvedDependenciesChecker
+> Task :core:navigation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:navigation:compileKotlinJvm UP-TO-DATE
+> Task :core:navigation:compileJvmMainJava NO-SOURCE
+> Task :core:navigation:jvmProcessResources NO-SOURCE
+> Task :core:navigation:processJvmMainResources SKIPPED
+> Task :core:navigation:jvmMainClasses UP-TO-DATE
+> Task :core:navigation:jvmJar UP-TO-DATE
+> Task :core:otp:kmpPartiallyResolvedDependenciesChecker
+> Task :core:otp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:otp:compileKotlinDesktop UP-TO-DATE
+> Task :core:otp:compileDesktopMainJava NO-SOURCE
+> Task :core:otp:desktopProcessResources NO-SOURCE
+> Task :core:otp:processDesktopMainResources SKIPPED
+> Task :core:otp:desktopMainClasses UP-TO-DATE
+> Task :core:otp:desktopJar UP-TO-DATE
+> Task :feature:backup:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:backup:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:backup:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:backup:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:backup:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:backup:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:backup:generateComposeResClass UP-TO-DATE
+> Task :feature:backup:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:backup:compileKotlinDesktop UP-TO-DATE
+> Task :feature:backup:compileDesktopMainJava NO-SOURCE
+> Task :feature:backup:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:backup:desktopProcessResources UP-TO-DATE
+> Task :feature:backup:processDesktopMainResources SKIPPED
+> Task :feature:backup:desktopMainClasses UP-TO-DATE
+> Task :feature:backup:desktopJar UP-TO-DATE
+> Task :feature:credential:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:credential:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:credential:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:credential:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:credential:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:credential:generateComposeResClass UP-TO-DATE
+> Task :feature:credential:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:credential:compileKotlinDesktop UP-TO-DATE
+> Task :feature:credential:compileDesktopMainJava NO-SOURCE
+> Task :feature:credential:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:credential:desktopProcessResources UP-TO-DATE
+> Task :feature:credential:processDesktopMainResources SKIPPED
+> Task :feature:credential:desktopMainClasses UP-TO-DATE
+> Task :feature:credential:desktopJar UP-TO-DATE
+> Task :feature:generator:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:generator:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:generator:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:generator:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:generator:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:generator:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:generator:generateComposeResClass UP-TO-DATE
+> Task :feature:generator:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:generator:compileKotlinDesktop UP-TO-DATE
+> Task :feature:generator:compileDesktopMainJava NO-SOURCE
+> Task :feature:generator:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:generator:desktopProcessResources UP-TO-DATE
+> Task :feature:generator:processDesktopMainResources SKIPPED
+> Task :feature:generator:desktopMainClasses UP-TO-DATE
+> Task :feature:generator:desktopJar UP-TO-DATE
+> Task :feature:health:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:health:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:health:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:health:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:health:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:health:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:health:generateComposeResClass UP-TO-DATE
+> Task :feature:health:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:health:compileKotlinDesktop UP-TO-DATE
+> Task :feature:health:compileDesktopMainJava NO-SOURCE
+> Task :feature:health:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:health:desktopProcessResources UP-TO-DATE
+> Task :feature:health:processDesktopMainResources SKIPPED
+> Task :feature:health:desktopMainClasses UP-TO-DATE
+> Task :feature:health:desktopJar UP-TO-DATE
+> Task :feature:onboarding:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:onboarding:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:onboarding:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:onboarding:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:onboarding:generateComposeResClass UP-TO-DATE
+> Task :feature:onboarding:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:onboarding:compileKotlinDesktop UP-TO-DATE
+> Task :feature:onboarding:compileDesktopMainJava NO-SOURCE
+> Task :feature:onboarding:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:onboarding:desktopProcessResources UP-TO-DATE
+> Task :feature:onboarding:processDesktopMainResources SKIPPED
+> Task :feature:onboarding:desktopMainClasses UP-TO-DATE
+> Task :feature:onboarding:desktopJar UP-TO-DATE
+> Task :feature:settings:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:settings:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:settings:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:settings:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:settings:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:settings:generateComposeResClass UP-TO-DATE
+> Task :feature:settings:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:settings:compileKotlinDesktop UP-TO-DATE
+> Task :feature:settings:compileDesktopMainJava NO-SOURCE
+> Task :feature:settings:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:settings:desktopProcessResources UP-TO-DATE
+> Task :feature:settings:processDesktopMainResources SKIPPED
+> Task :feature:settings:desktopMainClasses UP-TO-DATE
+> Task :feature:settings:desktopJar UP-TO-DATE
+> Task :feature:unlock:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:unlock:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:unlock:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:unlock:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:unlock:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:unlock:generateComposeResClass UP-TO-DATE
+> Task :feature:unlock:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:unlock:compileKotlinDesktop UP-TO-DATE
+> Task :feature:unlock:compileDesktopMainJava NO-SOURCE
+> Task :feature:unlock:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:unlock:desktopProcessResources UP-TO-DATE
+> Task :feature:unlock:processDesktopMainResources SKIPPED
+> Task :feature:unlock:desktopMainClasses UP-TO-DATE
+> Task :feature:unlock:desktopJar UP-TO-DATE
+> Task :feature:vault:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:vault:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:vault:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:vault:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:vault:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:vault:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :feature:vault:generateComposeResClass UP-TO-DATE
+> Task :feature:vault:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :feature:vault:compileKotlinDesktop UP-TO-DATE
+> Task :feature:vault:compileDesktopMainJava NO-SOURCE
+> Task :feature:vault:assembleDesktopMainResources UP-TO-DATE
+> Task :feature:vault:desktopProcessResources UP-TO-DATE
+> Task :feature:vault:processDesktopMainResources SKIPPED
+> Task :feature:vault:desktopMainClasses UP-TO-DATE
+> Task :feature:vault:desktopJar UP-TO-DATE
+> Task :shared:compileKotlinDesktop UP-TO-DATE
+> Task :shared:compileDesktopMainJava NO-SOURCE
+> Task :shared:assembleDesktopMainResources UP-TO-DATE
+> Task :shared:desktopProcessResources UP-TO-DATE
+> Task :shared:processDesktopMainResources SKIPPED
+> Task :shared:desktopMainClasses UP-TO-DATE
+> Task :shared:desktopJar UP-TO-DATE
+> Task :app-desktop:compileKotlinDesktop UP-TO-DATE
+> Task :app-desktop:compileDesktopMainJava NO-SOURCE
+> Task :app-desktop:checkDesktopTestComposeLibrariesCompatibility
+> Task :app-desktop:assembleDesktopMainResources UP-TO-DATE
+> Task :app-desktop:desktopProcessResources UP-TO-DATE
+> Task :app-desktop:processDesktopMainResources SKIPPED
+> Task :app-desktop:desktopMainClasses UP-TO-DATE
+> Task :app-desktop:desktopJar UP-TO-DATE
+> Task :app-desktop:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForCommonTest SKIPPED
+> Task :app-desktop:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :app-desktop:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :app-desktop:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :app-desktop:generateResourceAccessorsForDesktopTest SKIPPED
+> Task :app-desktop:compileTestKotlinDesktop UP-TO-DATE
+> Task :app-desktop:compileDesktopTestJava NO-SOURCE
+> Task :app-desktop:assembleDesktopTestResources UP-TO-DATE
+> Task :app-desktop:desktopTestProcessResources UP-TO-DATE
+> Task :app-desktop:processDesktopTestResources SKIPPED
+> Task :app-desktop:desktopTestClasses UP-TO-DATE
+
+> Task :app-desktop:desktopTest
+
+CredentialMainNavHostRoomIntegrationTest[desktop] > actual Main guards dirty Back tab and Add without changing durable Room tuples[desktop] FAILED
+    java.lang.AssertionError at CredentialMainNavHostRoomIntegrationTest.kt:139
+
+3 tests completed, 1 failed
+
+> Task :app-desktop:desktopTest FAILED
+
+[Incubating] Problems report is available at: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app-desktop:desktopTest'.
+> There were failing tests. See the report at: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/app-desktop/build/reports/tests/desktopTest/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app-desktop:desktopTest'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:135)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:288)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:133)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:121)
+	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:41)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.DefaultNodeExecutor.executeLocalTaskNode(DefaultNodeExecutor.java:55)
+	at org.gradle.execution.plan.DefaultNodeExecutor.execute(DefaultNodeExecutor.java:34)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:355)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:343)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:339)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:84)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:339)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:328)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.execution.plan.DefaultPlanExecutor.process(DefaultPlanExecutor.java:111)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph.executeWithServices(DefaultTaskExecutionGraph.java:146)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph.execute(DefaultTaskExecutionGraph.java:131)
+	at org.gradle.execution.SelectedTaskExecutionAction.execute(SelectedTaskExecutionAction.java:35)
+	at org.gradle.execution.BuildOperationFiringBuildWorkerExecutor$ExecuteTasks.call(BuildOperationFiringBuildWorkerExecutor.java:54)
+	at org.gradle.execution.BuildOperationFiringBuildWorkerExecutor$ExecuteTasks.call(BuildOperationFiringBuildWorkerExecutor.java:43)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.execution.BuildOperationFiringBuildWorkerExecutor.execute(BuildOperationFiringBuildWorkerExecutor.java:40)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$executeTasks$0(DefaultBuildLifecycleController.java:323)
+	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:324)
+	at org.gradle.internal.model.StateTransitionController.lambda$tryTransition$0(StateTransitionController.java:235)
+	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:45)
+	at org.gradle.internal.model.StateTransitionController.tryTransition(StateTransitionController.java:235)
+	at org.gradle.internal.build.DefaultBuildLifecycleController.executeTasks(DefaultBuildLifecycleController.java:314)
+	at org.gradle.internal.build.DefaultBuildWorkGraphController$DefaultBuildWorkGraph.runWork(DefaultBuildWorkGraphController.java:220)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$runAndReleaseLocks$0(DefaultWorkerLeaseService.java:302)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAndReleaseLocks(DefaultWorkerLeaseService.java:300)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:296)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:288)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:131)
+	at org.gradle.composite.internal.DefaultBuildController.doRun(DefaultBuildController.java:182)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.lambda$run$0(DefaultBuildController.java:199)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:84)
+	at org.gradle.composite.internal.DefaultBuildController$BuildOpRunnable.run(DefaultBuildController.java:199)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:65)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There were failing tests. See the report at: file:///root/projects/PassVault/audit-runtime-linux-desktop-integration02/checkout/app-desktop/build/reports/tests/desktopTest/index.html
+	at org.gradle.api.tasks.testing.AbstractTestTask.executeTests(AbstractTestTask.java:616)
+	at org.gradle.api.tasks.testing.Test.executeTests(Test.java:772)
+	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:125)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.doExecute(StandardTaskAction.java:58)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:51)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:29)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:259)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:244)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:227)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:210)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:176)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:167)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:47)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:137)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:134)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:134)
+	at org.gradle.internal.execution.steps.ExecuteStep$Mutable.execute(ExecuteStep.java:80)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithTimeout(TimeoutStep.java:63)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:53)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:51)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:29)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:67)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.executeMutable(RemovePreviousOutputsStep.java:39)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:42)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:24)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.executeMutable(ResolveInputChangesStep.java:28)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:76)
+	at org.gradle.internal.Either$Right.fold(Either.java:176)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:74)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:49)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.executeMutable(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:70)
+	at org.gradle.internal.execution.steps.ResolveMutableCachingStateStep.executeDelegate(ResolveMutableCachingStateStep.java:32)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:69)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:37)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:63)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.executeMutable(ResolveChangesStep.java:34)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:79)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.executeDelegate(ValidateStep.java:65)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:105)
+	at org.gradle.internal.execution.steps.ValidateStep$Mutable.execute(ValidateStep.java:65)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.executeMutable(CaptureMutableStateBeforeExecutionStep.java:86)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:65)
+	at org.gradle.internal.execution.steps.CaptureMutableStateBeforeExecutionStep.execute(CaptureMutableStateBeforeExecutionStep.java:45)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeWithNonEmptySources(SkipEmptyMutableWorkStep.java:210)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:90)
+	at org.gradle.internal.execution.steps.SkipEmptyMutableWorkStep.executeMutable(SkipEmptyMutableWorkStep.java:53)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.executeMutable(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:77)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.executeMutable(HandleStaleOutputsStep.java:43)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$executeMutable$0(AssignMutableWorkspaceStep.java:34)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:305)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:30)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.executeMutable(AssignMutableWorkspaceStep.java:21)
+	at org.gradle.internal.execution.steps.MutableStep.execute(MutableStep.java:26)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:56)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:38)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:68)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:132)
+	... 61 more
+
+
+BUILD FAILED in 34s
+123 actionable tasks: 30 executed, 93 up-to-date

@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T16:03:31.169573+00:00",
+  "status": "EXACT_C14_CONSTANTS_SOURCE_BOUND_NOT_INSTANCE_OR_EXECUTION_ADMISSION",
+  "source_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+  "source_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+  "source_members": 2607,
+  "source_manifest_sha256": "2a577c7ac8dae718fab4620cc62d3757c4cbde0dba76109fa844fd6fd1286ee9",
+  "source_only_route_review_sha256": "c5c4f928d376f0e04b5a78fa614695c5590cff781132486fb42e23a8cec8600a",
+  "unchanged_init_sha256": "3ba456dcc48d956eb2ff266ccfb31138ce3612f2b6aa5674194f09b0d563b8ef",
+  "changes": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_desktop_integration_02.py",
+      "before_sha256": "bb9dfafaa3906bf34c1aaaf05b52364ce8b52564323cc6602f38dbf2fec3acac",
+      "after_sha256": "b9ad05c2b2d18abd64cf801220ca513fc89d343411194d0fba2dfff79dc7c6e2",
+      "before_bytes": 95212,
+      "after_bytes": 95412,
+      "literal_replacements": [
+        {
+          "before": "PANEL_ROUTE_ADMITTED = None",
+          "after": "PANEL_ROUTE_ADMITTED = True"
+        },
+        {
+          "before": "COMMIT = None",
+          "after": "COMMIT = 'f7f3ca91cef14b7b2341114c44c460907061f883'"
+        },
+        {
+          "before": "TREE = None",
+          "after": "TREE = '4b405be08458c035b9dd61807acab66659ccd864'"
+        },
+        {
+          "before": "MEMBERS = None",
+          "after": "MEMBERS = 2607"
+        },
+        {
+          "before": "    SOURCE: None,",
+          "after": "    SOURCE: '2a577c7ac8dae718fab4620cc62d3757c4cbde0dba76109fa844fd6fd1286ee9',"
+        },
+        {
+          "before": "    INIT: None,",
+          "after": "    INIT: '3ba456dcc48d956eb2ff266ccfb31138ce3612f2b6aa5674194f09b0d563b8ef',"
+        }
+      ]
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02-outer/LAUNCH.py",
+      "before_sha256": "492d7166f390691f0dbc96a4e24be5447da66f55155c4d2b33f2c9576ab13f6f",
+      "after_sha256": "cc21a3a15d7079a2541cbdd6351c9349e66755f97d1bc76fcc8e85b2d26be721",
+      "before_bytes": 46250,
+      "after_bytes": 46765,
+      "literal_replacements": [
+        {
+          "before": "GITDIR = None",
+          "after": "GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')"
+        },
+        {
+          "before": "COMMIT = None",
+          "after": "COMMIT = 'f7f3ca91cef14b7b2341114c44c460907061f883'"
+        },
+        {
+          "before": "TREE = None",
+          "after": "TREE = '4b405be08458c035b9dd61807acab66659ccd864'"
+        },
+        {
+          "before": "MEMBERS = None",
+          "after": "MEMBERS = 2607"
+        },
+        {
+          "before": "DEVICE = None",
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}"
+        },
+        {
+          "before": "EXPECTED_LOCK = None",
+          "after": "EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}"
+        },
+        {
+          "before": "FROZEN = {INNER: None, INIT: None, SOURCE: None}",
+          "after": "FROZEN = {INNER: 'b9ad05c2b2d18abd64cf801220ca513fc89d343411194d0fba2dfff79dc7c6e2', INIT: '3ba456dcc48d956eb2ff266ccfb31138ce3612f2b6aa5674194f09b0d563b8ef', SOURCE: '2a577c7ac8dae718fab4620cc62d3757c4cbde0dba76109fa844fd6fd1286ee9'}"
+        }
+      ]
+    }
+  ],
+  "qualification": "Six inner and seven outer single-occurrence literal replacements; complete inverse reconstructs source-accepted C14 inputs. No functional/init/fixture/command/task/geometry/budget/cleanup change. T and committed C14 retain unbound helper images; these external W helper bindings have separate exact identities. Final24-image request and genuine independent instance approval remain absent. No execution/import or old scope action."
+}

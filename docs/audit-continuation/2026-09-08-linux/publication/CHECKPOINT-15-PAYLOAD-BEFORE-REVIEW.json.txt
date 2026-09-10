@@ -1,0 +1,1045 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "purpose": "C15 non-activating continuation: independently reconciled integration02 results/cleanup; fixture-only observation correction; independently source-accepted unbound integration03; remaining work/report. No request, CI or build activation.",
+  "parent_commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+  "parent_tree": "4b405be08458c035b9dd61807acab66659ccd864",
+  "authored_whitespace_paths": [
+    "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+    "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_15.md",
+    "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+    "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+    "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+    "docs/audit-continuation/2026-09-08-linux/README.md",
+    "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-15-PUBLISH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py",
+    "scripts/audit/linux_desktop_integration_03.py",
+    "scripts/audit/desktop_integration_03.init.gradle"
+  ],
+  "whitespace_qualification": "Check only changed authored source/current reports. Preserve raw XML/logs/diffs/upstream bytes and all prior evidence-wide FAIL; no repeated expensive validation.",
+  "companions": [
+    "this canonical payload",
+    "independent reviews/baseline-coverage/CHECKPOINT-15-REVIEW.json; exact tuples bound in CONFIG after acceptance"
+  ],
+  "excluded": [
+    {
+      "path": ".github/workflows/audit-macos-native-validation.yml",
+      "reason": "Old unadmitted Mac workflow, not a new validation trigger; no workflow selected."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-CLONE-CONTINUATION-PUBLISHED.json",
+      "reason": "Previously excluded redundant large C10 receipts; compact published PRIOR-C10-PUBLICATION-SUMMARY.json remains. No deletion or inferred new result."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-MACOS02-ACTIVATION-PUBLISHED.json",
+      "reason": "Previously excluded redundant large C10 receipts; compact published PRIOR-C10-PUBLICATION-SUMMARY.json remains. No deletion or inferred new result."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-STAGED-FINALIZATION-ADOPTION.json",
+      "reason": "Previously excluded redundant large C10 receipts; compact published PRIOR-C10-PUBLICATION-SUMMARY.json remains. No deletion or inferred new result."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-STAGED-FINALIZATION-PUBLISHED.json",
+      "reason": "Previously excluded redundant large C10 receipts; compact published PRIOR-C10-PUBLICATION-SUMMARY.json remains. No deletion or inferred new result."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-WINDOWS04-ACTIVATION-PUBLISHED.json",
+      "reason": "Previously excluded redundant large C10 receipts; compact published PRIOR-C10-PUBLICATION-SUMMARY.json remains. No deletion or inferred new result."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/requests/LINUX-DESKTOP-TRAY-01.json",
+      "reason": "Consumed original request/attempt inputs remain HOLD. Exact inert reviews/desktop-tray/REQUEST-CONSUMED.json.txt plus mapping selected instead; no activation authority."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/CredentialMainNavHostRoomIntegrationTest.kt",
+      "reason": "Unadopted documentation draft; exact mapped inert .kt.txt snapshot/patch and review are selected instead. Not accidental source discovery."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/CredentialNavHostRoomIntegrationTest.kt",
+      "reason": "Unadopted documentation draft; exact mapped inert .kt.txt snapshot/patch and review are selected instead. Not accidental source discovery."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CACHED-CHECK-INDENT-REVIEW.json",
+      "reason": "Previously excluded redundant C10 binding/review, preserved locally and represented by published compact summary."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-DRIFT-ASSESSMENT.json",
+      "reason": "Previously excluded redundant C10 binding/review, preserved locally and represented by published compact summary."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-10-INFO-REBIND-REVIEW.json",
+      "reason": "Previously excluded redundant C10 binding/review, preserved locally and represented by published compact summary."
+    },
+    {
+      "path": "reviews/build-config/DETEKT-ISOLATED-INVENTORY-DESIGN.md",
+      "reason": "Old mislocated design; accepted current source/reviews retained elsewhere."
+    },
+    {
+      "path": "scripts/audit/macos_native_validation.py",
+      "reason": "Old unadmitted helper; not imported, replayed or selected."
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/requests/LINUX-DESKTOP-INTEGRATION-02.json",
+      "reason": "Consumed request preserved at identical bytes as reviews/desktop-integration02/REQUEST-CONSUMED.json.txt, not a new activation."
+    }
+  ],
+  "coverage": {
+    "original_closures": "19/25(76%)",
+    "all_closures": "26/39(66.7%)",
+    "suspicions": "2/12(16.7%)",
+    "application_intended_native_investigation_historical_events": 199,
+    "infrastructure_fixture_cases": 3,
+    "producer_cases": 1,
+    "xml_elements": 203,
+    "new_executed_XML_this_checkpoint": 3,
+    "new_PASS": 2,
+    "new_FAIL_fixture_driver": 1,
+    "unstarted_not_counted": 1,
+    "new_closures": 0,
+    "source_registry_paths": 31,
+    "next_integration03_cases": 2,
+    "limits": "Events are not pass totals, unique behaviors, assertions, tasks, hardware or readiness. Old qualifications and all restrictions survive."
+  },
+  "execution_tooling_status": "Integration02 helpers/request are consumed historical evidence, never replay. Integration03 source is unbound/no instance admitted. Detekt01 remains unexecuted with staleC13 source bindings; no current-source pass. No production patch or test follows from publication.",
+  "files": [
+    {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
+      "bytes": 40561,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_15.md",
+      "sha256": "2b66b4b3f9bb84093d7d84906f50796d859b753432a0f9826988eac40d17c1f5",
+      "bytes": 8218,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+      "sha256": "fd16aa9ef47c3b9b2df4ff33fc938ee95b80221ea30e73fc200ecaab78ef035f",
+      "bytes": 207589,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+      "sha256": "8b1df8cff4f64a5bb5a8b1388261354b931f838fc6614c60b984e281bcd4cde2",
+      "bytes": 41071,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "sha256": "791fb4970851c2003f07a7430d443ebdf3fd60a1d0623cfb0471d498ffa6cc59",
+      "bytes": 191118,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+      "sha256": "a291e135683beb576e9278f14f02e02f71bee26d3f4c643a5053a07785dd2251",
+      "bytes": 32139,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/README.md",
+      "sha256": "89bb3b71601db841b2b2b3505b525514cb0bf5bece83eefab44034c53922433e",
+      "bytes": 20723,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+      "sha256": "257fa28de093b58f8ef4f92cf8454a8627faad58586aacc0d38ea530d46d24fa",
+      "bytes": 163164,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-14-CONFIG.json",
+      "sha256": "0b2925e2ef2f3b59aff712e14af5c9e6446b6f6b2b12ddeaa42aed7331d7de64",
+      "bytes": 2630,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-14-PUBLISHED.json",
+      "sha256": "66a11e7715628f6cd8b405b4e90b5191572bb14fdb8334996b60d03adf59d784",
+      "bytes": 46445,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-14-WHITESPACE.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-15-PUBLISH.py",
+      "sha256": "39d3003ece4671b153bc8fe8fd49b404c911dc3bf226d9b1ddd697e467785a9f",
+      "bytes": 16752,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/SCHEDULING-C14-01.json",
+      "sha256": "ac3f1ab56c3218e8a1d24105bdeb4644935eb82ee5997508290b4d4a1e5da887",
+      "bytes": 1299,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/MAIN-NAVHOST-EDITABLE-TEXT-ONLY-PROPOSAL.md",
+      "sha256": "ab83f01adec9356a6a94be6cd7ea4abb64b7bd7148cfdfa63e6eaaf10e6f169b",
+      "bytes": 8144,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/MAIN-NAVHOST-EDITABLE-TEXT-ONLY.patch",
+      "sha256": "7f883bdbb31478d2b1fa9d5a8dfad7bae148c84c3ec5904fa57e21f87a8ff046",
+      "bytes": 1856,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/MODULE-EDITABLE-TEXT-ADOPTION.json",
+      "sha256": "3a0c80ad26325a0745b739c9bde1be58e95daad3ccd9f904960f946fa0c1f997",
+      "bytes": 1114,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/C15-INTEGRATION02-ACCOUNTING-REVIEW.json",
+      "sha256": "2d11ec2b499559f2b3e0c1268b4eb408c08fce0ce803cfa8f79d8bb6724dada1",
+      "bytes": 10010,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-14-ACTUAL-REVIEW.json",
+      "sha256": "df311818cfcfcda2d4b95e20434ff2655e3cb5cf06ba6b1addaa8a5c748844e2",
+      "bytes": 3233,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/integration03/PLAN.md",
+      "sha256": "31c3e98929ddaa42713adac411f661d2090840a508fee3925a9560a3f86def66",
+      "bytes": 16981,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02-outer/LAUNCH.py",
+      "sha256": "cc21a3a15d7079a2541cbdd6351c9349e66755f97d1bc76fcc8e85b2d26be721",
+      "bytes": 46765,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/CI-BEFORE-INTEGRATION02.json",
+      "sha256": "ddf9fcbee7d048b0e194f6e3ae00df34ac3317e23d4d5baca96e189fb66a1d18",
+      "bytes": 3209,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/EXTERNAL-RESULT.json",
+      "sha256": "9bf8da5015a9ced2acaa35538e51a79eed1e08c13a964c067a4d524e457b8574",
+      "bytes": 19652,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/INSTANCE-CONSTANTS-BINDING.json",
+      "sha256": "604cfdee7cf9790ce3136c5cc10e9c44812586bfeb9efca191e31db8eba4c7ec",
+      "bytes": 3958,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/INVOCATION.json",
+      "sha256": "37c0d7fe1aa8b57f1a79fc9fd4186ce85d47616d02aa8edd301b8ebbed613f51",
+      "bytes": 705,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/OUTER-ACTUAL-STDOUT.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/REQUEST-CAPTURE.json",
+      "sha256": "d83b6ac6c0283c7eef8e02a0908775732b84a9079cd1a8907a62be2581a6bce9",
+      "bytes": 2296,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/REQUEST-CONSUMED.json.txt",
+      "sha256": "c95f09329aa193d946b5b56a0d0eb29777e2a8e2e06fe688d43c68af5cca46b7",
+      "bytes": 7455,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "8f4b7cc03954f1d630bb7fea35254994ed1a8e477396bdb1d833862d72af59b8",
+      "bytes": 2316,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/RUN-INTENT.json",
+      "sha256": "1d944158dea795e786b261ee7468b233c2b888dd5267282276271666083fcee4",
+      "bytes": 7238,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/SLOT-BEFORE-INTEGRATION02.json",
+      "sha256": "bb2e931b9412af93ea5c8ffccb17006565e8780b011e21330277734662b391e9",
+      "bytes": 39682,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/SLOT-RELEASE.json",
+      "sha256": "ff15ded57bc66ff375be7925daaa72555b0250370d80cbf97652ba0b07d6b227",
+      "bytes": 1458,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/SLOT-RESERVED-ACTUAL.json",
+      "sha256": "5a85e59c9c97128f849393d7266bbb5a9a3530252254ea5f5351e54b2ad0d774",
+      "bytes": 40306,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/SOURCE-STORE-ADMISSION.json",
+      "sha256": "1cd6b0392848d71e7727d36d9b7cbe8c3bcfe638f77209ab4f5c5f3a58d14017",
+      "bytes": 3843,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/TOOL-HOST-OBSERVATION.json",
+      "sha256": "f37527d1b623b38cbff7fbba85789a298fddbe75fbc3004f86fbd444f8baebcf",
+      "bytes": 10195,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/source-prepare01/ACTUAL-RESULT.json",
+      "sha256": "d00157de33424b4895f086c6ebe51889f9cfa26b5af003d7cf920e8957788943",
+      "bytes": 1822,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/source-prepare01/ACTUAL-STDOUT.json",
+      "sha256": "468b89d4461a2b8d917e5499bc747759552fa029f479ddd778f880ee3e87e678",
+      "bytes": 5729,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/source-prepare01/SOURCE-CAPTURE.json",
+      "sha256": "468b89d4461a2b8d917e5499bc747759552fa029f479ddd778f880ee3e87e678",
+      "bytes": 5729,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/source-prepare01/SOURCE-PREPARE.py",
+      "sha256": "999261dcda91b1ce28480d539c621065d4c640f0e0aca070d096386610c57a41",
+      "bytes": 17751,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration02/source-prepare01/SOURCE.json",
+      "sha256": "2a577c7ac8dae718fab4620cc62d3757c4cbde0dba76109fa844fd6fd1286ee9",
+      "bytes": 1420768,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py",
+      "sha256": "e59be5da85e9f52e3e6e0f6e9b764fe3b12e01da023b4f838bcfbf9c6fa65ca2",
+      "bytes": 45722,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/PLAN.md",
+      "sha256": "0a04165ea4b64634d143a2fe461f76a9768a6a9e39cf112cf151176a614a04ad",
+      "bytes": 6851,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03/SOURCE-SYNTAX.json",
+      "sha256": "576c5d4af5cf36480c2beeb73181a6b49d73433bd9bad6a5a90b0d4a4d660b67",
+      "bytes": 932,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/INTEGRATION02-SOURCE-PREPARE01-REVIEW.json",
+      "sha256": "d6c9b357fa37cedc821220cd622bb3f1faef61f92027bed147501a2b09fa71bc",
+      "bytes": 6867,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-INTEGRATION02-INSTANCE-ACCEPT.json",
+      "sha256": "712d38ba140467ca20995d63fb6ba8848669f336867441d0848f6d49ed202cb0",
+      "bytes": 1039,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-INTEGRATION02-INSTANCE-RATIONALE.json",
+      "sha256": "16e2fb47a5919156dba21bedcbd5c92c71b5cd0274b795f571b8f55515c0d4b8",
+      "bytes": 7237,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-OUTER-DELTA-REVIEW.md",
+      "sha256": "c4adac6a4c2e05d71ab1e514f01e7284133fb0e406e47fa37e697efe528a98b4",
+      "bytes": 7410,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/navhost-draft/MAIN-NAVHOST-EDITABLE-TEXT-ONLY-INDEPENDENT.md",
+      "sha256": "a0d82c94eedfa710bf8e3ba2c21fee97c0f8c8d5d817485354e008149d6727e5",
+      "bytes": 5990,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/pvu003-followup/PVU003-ACTUAL-MAIN-ADOPTION-NOTE.md",
+      "sha256": "8a8a027f5dfeaa91ce044eceee812303a7434644e6d699957bffe03fc83bc5ff",
+      "bytes": 10576,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/pvu003-followup/PVU003-ACTUAL-MAIN-ADOPTION.patch.txt",
+      "sha256": "1bec90498dfee2375b74bcab23053214755a9a504fe943352c538084d04de23a",
+      "bytes": 21002,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+      "sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+      "bytes": 9843,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/INTEGRATION02-SOURCE01-ACTUAL-ROUTE-REVIEW.json",
+      "sha256": "c5c4f928d376f0e04b5a78fa614695c5590cff781132486fb42e23a8cec8600a",
+      "bytes": 8095,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/INTEGRATION03-INNER-INIT-DELTA-REVIEW.json",
+      "sha256": "0e81899f8b2d0a1455e5d251bcca4cc1628b5b8c8ec873ba4d85d63192ce164e",
+      "bytes": 8611,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/SCHEDULING-C14-01-DISPOSITION.json",
+      "sha256": "7c4f7994ccc5d2a085899f6fd1282d0822f48522b25c781e8e7799f446f5a54c",
+      "bytes": 3856,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/GUI-CLEANUP.json",
+      "sha256": "ae41035ed9c08855d31539c04564ad75313e269f4f952dbed031ef4a25e56253",
+      "bytes": 2807,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/GUI-PREFLIGHT.json",
+      "sha256": "9df78bdc66f834b3023dc92f670f8ffd716b6057e129dd5349630605c9c21c4b",
+      "bytes": 620,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/GUI-READINESS.json",
+      "sha256": "d94007e0587caef583b592a2ec97bc21e53682d7e0062613aa9e6b6558896338",
+      "bytes": 1338,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/INNER-PREFLIGHT.json",
+      "sha256": "3746965cb3f95b0c5d91cdca6bb79ba894f4bd0c519e3747c75ae8ef6d5fe3c3",
+      "bytes": 225,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/INNER-RESULT.json",
+      "sha256": "ea01bf2556e1a18dd22e372a7f32390e967b6777a3f4b04a57953b730f6af2b5",
+      "bytes": 24199,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/LIFECYCLE-RESULT.json",
+      "sha256": "7fbb37d42070671f9740592f117642bd2ce15cc1e0f70d87b1100e42a7e8b445",
+      "bytes": 1750,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/MAINNAV-RESULT.json",
+      "sha256": "08a061edfa56feafc10a1a75eb1d73000460412e66128fdb2e4a9dcd3833c864",
+      "bytes": 1830,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/OUTER-ALLOCATION.json",
+      "sha256": "8356493327a0e69121a3d9ed60622d1375094eb2d236dbe50ab5f1bd4da8afbb",
+      "bytes": 3240,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/OUTER-INTENT.json",
+      "sha256": "88a51302815e37eb528ab0ef403c76e4cf018eedf55c3fbf22961cf846d08aeb",
+      "bytes": 18700,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/OUTER-RECEIPT.json",
+      "sha256": "d03526fd0507fa735e1449826fbe088043733262131150b782edfaa3c87fb72e",
+      "bytes": 11830,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/PANEL-CONFIG.json",
+      "sha256": "80bb23eb3d1629e02361396b59c2117ee052adbab37844de5a530edb0479c0e9",
+      "bytes": 714,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/PHASE-gui-start.json",
+      "sha256": "b410a01fea88b4d7a483709366731067a38c72c244b3bf6a5095601a9f7bed47",
+      "bytes": 7884,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/PHASE-isolation.json",
+      "sha256": "c78422268bd19bbb5117e665ea232217fcd5c62422adf0ce68e1576e0331e588",
+      "bytes": 1376,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/PHASE-prepare.json",
+      "sha256": "929a25cb48bac1b1c31f0ee18365747327c1e555e5d843f0936fd08dc6a70b87",
+      "bytes": 2430,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/PHASE-render.json",
+      "sha256": "4e72b192d203a135648c946b5ae823cc36a4038d062569ce25d444a1f9e2fd04",
+      "bytes": 2504,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/PIXEL-RESULT.json",
+      "sha256": "9810af4dbdab3012121f3e0dc1b716a3664213f166998f6f128c3c5dce93bffd",
+      "bytes": 1351,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/RUNTIME-CLASSPATH.json",
+      "sha256": "5726419a5fcb3aa604b7a42cb8a18be931f318336ef51be9b7dd34d9494f580d",
+      "bytes": 28743,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/SOURCE-AFTER.json",
+      "sha256": "7a493834772849a8b8bd01e204cc31a6e4e5c6798f2c8503a219d68c3a1a87d5",
+      "bytes": 1333,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/SOURCE-BEFORE.json",
+      "sha256": "7a493834772849a8b8bd01e204cc31a6e4e5c6798f2c8503a219d68c3a1a87d5",
+      "bytes": 1333,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/XML-RESULT.json",
+      "sha256": "8e767ad68ffa16cf1ae6ae06fe6d636c7703ddcb0edb1eacc2bd4f44093d288c",
+      "bytes": 2353,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/display-readiness-INTENT.json",
+      "sha256": "368bbc9d2038dcafd711adc398da8ad0d7b03d4b45b13a013aa8a2ecf537821d",
+      "bytes": 258,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/helper-dbus-INTENT.json",
+      "sha256": "93ed94191b5907b56f67b527a5b9efa4b3019c266629d13f5107c87447c67ffd",
+      "bytes": 384,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/helper-panel-INTENT.json",
+      "sha256": "73e73ee5411fb8bd1b6922d36a96574d3cdaf9540b8aad6e6cac8b1c336fea43",
+      "bytes": 284,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/helper-wm-INTENT.json",
+      "sha256": "d1e3933e315c7cb589388fddd57cb4314b7d0b7a11d049df06454b749a4a13b9",
+      "bytes": 278,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/helper-xvfb-INTENT.json",
+      "sha256": "da599463d2267fa8364411be1ad7194799e3b14b60b3ceea7cf2c166cb2bacd9",
+      "bytes": 388,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/lifecycle-evidence/default.events",
+      "sha256": "5dee6109ac7fa400a9542453c3c56246fde6c6c0d03b3c42a0030bed81ca009e",
+      "bytes": 27,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/lifecycle-evidence/default.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/lifecycle-evidence/default.log",
+      "sha256": "3410eff0be38934bcba2ce291b3c639265d1111e7509555e1bf3a56fd6fcdd9c",
+      "bytes": 103,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/lifecycle-evidence/production.events",
+      "sha256": "def934616ed479916df99ed6387a391dbe0d54212bb5fd9606e3d7b9e484c581",
+      "bytes": 55,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/lifecycle-evidence/production.exit",
+      "sha256": "076320a2a08267b4c026d06573bba408ea68841e73cdc20e62cce59de165ece3",
+      "bytes": 3,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/lifecycle-evidence/production.log",
+      "sha256": "3410eff0be38934bcba2ce291b3c639265d1111e7509555e1bf3a56fd6fcdd9c",
+      "bytes": 103,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/display-readiness.log",
+      "sha256": "a3e2f232d31e65e054dd703e6e82e535408a5b27e89f12c2d98cc02b99d86d8a",
+      "bytes": 26028,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/helper-dbus.log",
+      "sha256": "d0a0a4711c8ab9db156d266dfbefa1a0fe027e5ca8f87b121c7ecc03839e4116",
+      "bytes": 390,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/helper-panel.log",
+      "sha256": "03a26172615dc7b6e229bf685303ab569e946cdfa27e4d21e4d325db31ea2a30",
+      "bytes": 142,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/helper-wm.log",
+      "sha256": "0d408bac3db99006048c5788cf94b5733da1693a73420d97802d331a7850c5e9",
+      "bytes": 272,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/helper-xvfb.log",
+      "sha256": "b987a262609a3720f450ab6815ed90b2069dd47b7b012959ca19c325aebf5d55",
+      "bytes": 2348,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/loopback-readback.log",
+      "sha256": "4afb245c482c9e8603cdc29aa5b91c7ed9499f765b63fcd45f523d5bc13378d5",
+      "bytes": 163,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/loopback-up.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/outer-git.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/outer-unshare.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/outer-unshare.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-array-01.log",
+      "sha256": "2a29b56af6df934946a85b00894d308caba2a083f446947033c88d4683fa938c",
+      "bytes": 35,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-array-07.log",
+      "sha256": "7cf1431c9fc1118817f1937f4fee3e3074adf19670e569a074b40681b2e9c0ce",
+      "bytes": 35,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-channel-empty.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-channel-readback.log",
+      "sha256": "7acf0644704d717892ddde92d99a290638ff14ed19e4586e11540a9bad06e232",
+      "bytes": 404,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-00.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-03.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-04.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-05.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-06.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-07.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-08.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/panel-property-09.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/prepare-stop.log",
+      "sha256": "5195e2b3e272f184cdf675e49ca1a6cfa857c2faebc532841ad73f63ff3faa0d",
+      "bytes": 458,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/prepare.log",
+      "sha256": "4c345037c6400f08ce6dd82370ecb4e7d7bce68944179e4b10681ba9edada8e4",
+      "bytes": 52769,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/private-tmpfs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/render-stop.log",
+      "sha256": "5195e2b3e272f184cdf675e49ca1a6cfa857c2faebc532841ad73f63ff3faa0d",
+      "bytes": 458,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/render.log",
+      "sha256": "aa6b98aea78b4a9c5fcbde7e2dbb7b9cdcb66ef28e431574ede5ae2dc1617a58",
+      "bytes": 41109,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/wm-root-readiness.log",
+      "sha256": "03d982c289b13ea92d1ceba047de76fc119ec86fefabfb6f67567bbadd41e34c",
+      "bytes": 55,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/wm-self-readiness.log",
+      "sha256": "7c3aa6eea1ae34038b60c3fba4920f24668add5b5120150a76caec9f39a6a0cd",
+      "bytes": 91,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/logs/xauthority.log",
+      "sha256": "c482ed4d29f1334765b7fb0f9dab88a143a0e9f547286e7413f8a6aa19246125",
+      "bytes": 85,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/loopback-readback-INTENT.json",
+      "sha256": "f7b78f2cc2056d847153a14796176a47505488d11cfbeaeb7594f9a5007284bf",
+      "bytes": 271,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/loopback-up-INTENT.json",
+      "sha256": "d0e16f2cc999ab372f3c42fa57a67ab0ffa7e0882749174f58834620ba84cb20",
+      "bytes": 275,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/mainnav-evidence/main.events",
+      "sha256": "754fa55f77c58e383fb54678a2318a181c76767995971876fe67d16e68fe500d",
+      "bytes": 15,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/mainnav-evidence/main.exit",
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c",
+      "bytes": 4,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/mainnav-evidence/main.log",
+      "sha256": "5435f264d33ed527a3b5162757a94435f5c1ef6abd48b2ba90d22e13b1a55797",
+      "bytes": 4707,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/mainnav-evidence/seed.events",
+      "sha256": "301dbb801ed4dca09f62a056917b63f5a0184680976de4e362b1eff88798082e",
+      "bytes": 38,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/mainnav-evidence/seed.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/mainnav-evidence/seed.log",
+      "sha256": "6592844c6fd8042db0dedfa6a937b42582873effa9baf939d4d1ddbb462f2fbc",
+      "bytes": 176,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-array-01-INTENT.json",
+      "sha256": "4d12405fb2bcb210817be2c51c9fcfbf4f897017a487077f9fb457e11cfff676",
+      "bytes": 311,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-array-07-INTENT.json",
+      "sha256": "a0bdfc1e87cc8fd0c72adc7904441e51052432bc4f55c65044ea1d044b460df7",
+      "bytes": 330,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-channel-empty-INTENT.json",
+      "sha256": "1ebbbfc10064ec4d15d8fbdc64a1e1f00d2e2d3d2cc1281669c941f2c306daf0",
+      "bytes": 297,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-channel-readback-INTENT.json",
+      "sha256": "d003816d467284dacf5a3fb591360d5cb088c91512dbe3a84fa1da306b40fa86",
+      "bytes": 309,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-00-INTENT.json",
+      "sha256": "dd767b75ad48e38f8df55b4d9a19d3467193c7ea91a59b0534b3aa262bee09fe",
+      "bytes": 352,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-01-INTENT.json",
+      "sha256": "dfb82a82f67f0fdf01d9e880ca9dd70e9ddf62c3deec1aa938e723e88fa47523",
+      "bytes": 365,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-02-INTENT.json",
+      "sha256": "58a428478f1899ede74131c79926bcd58742374aa853fb1c2e517fd9818c1917",
+      "bytes": 379,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-03-INTENT.json",
+      "sha256": "353ff1f6f2cb3ec0cb7ccad9b75de5034ace531cc893e3b969ece89584d63076",
+      "bytes": 367,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-04-INTENT.json",
+      "sha256": "affd546d98f62998da66fca1bd3722e539f478ed5d3a34ba28071a4a678015cd",
+      "bytes": 377,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-05-INTENT.json",
+      "sha256": "05f2d92e38e59d13092b9b9919e62841401d8335005f4f68004271d79bbd1e54",
+      "bytes": 369,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-06-INTENT.json",
+      "sha256": "f965fdfb8cdd4d309e648a57d3d63cbb1eb2ef59a1b0eff22603f55759aaf6e2",
+      "bytes": 364,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-07-INTENT.json",
+      "sha256": "7cd7b58d1c5346ba82f8bf4e782491d1877775367bcc6038d1fd801b0e2802ae",
+      "bytes": 384,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-08-INTENT.json",
+      "sha256": "50cd39526f420e831cb253fb75b8c9a160bca8ddc365aa91811b87df6a092a33",
+      "bytes": 368,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/panel-property-09-INTENT.json",
+      "sha256": "1e6fed0ba18a4fa8854a552634a90aa89a313e361e8f5e10b259117529ca7d1b",
+      "bytes": 376,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/prepare-INTENT.json",
+      "sha256": "40d1e3eaa844a989248fc2a1ac0a5dee1260f241777d09d2358df814956b3480",
+      "bytes": 1032,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/prepare-stop-INTENT.json",
+      "sha256": "6ce004dab04dbcc32316032c1ce90bef49c933f133d4faecbbc7a16c28317ce4",
+      "bytes": 843,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/private-tmpfs-INTENT.json",
+      "sha256": "58b7db4b7e4f6a899f57ee2d955d2f0811c277cc75ca7fb83fee2b08a5c70b19",
+      "bytes": 418,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/render-INTENT.json",
+      "sha256": "e42120a56965a4b4bb823bea4bc041fcb7b00734d6e7c2374f02b389878b0b28",
+      "bytes": 1366,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/render-stop-INTENT.json",
+      "sha256": "f7f8cf7e9e7ee0c20b69c7a095c38629e9f3d75a7b73971dc062d1f53b766a15",
+      "bytes": 843,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/tray-pixels/01-native-en.png",
+      "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c",
+      "bytes": 862,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/tray-pixels/02-native-ar.png",
+      "sha256": "7d8407002b316a3e3685a7539bfd8986f6f77294d65728b6597de6caa95f72fa",
+      "bytes": 901,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/tray-pixels/03-native-en.png",
+      "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c",
+      "bytes": 862,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/tray-pixels/observations.txt",
+      "sha256": "b1da4ea080258488a97093998dca9e9468d5e22e9050b4a769bb49a02e3be76b",
+      "bytes": 898,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/wm-root-readiness-INTENT.json",
+      "sha256": "40a465d43c6792aa1bd3c3409f1cdc26d3ba4defee3635b266cd85783a26c1ff",
+      "bytes": 290,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/wm-self-readiness-INTENT.json",
+      "sha256": "91390428c4d19eafdd5f2526f6cea12bec970eb94d87e7f5888cf8550933c972",
+      "bytes": 314,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/xauthority-INTENT.json",
+      "sha256": "f6164d368cbf94d5333c1f7b51a0cfca5092f5515236b4d29bedbf23ce0786f8",
+      "bytes": 330,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+      "sha256": "c3e7b3f0aa2afa4468915381d20972a2e04098db617d8453de253fb4e5a1402d",
+      "bytes": 5614,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/xml/app-desktop--TEST-com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest.xml",
+      "sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+      "bytes": 505,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-integration02/xml/app-desktop--TEST-com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest.xml",
+      "sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d",
+      "bytes": 529,
+      "git_mode": "100644"
+    },
+    {
+      "path": "scripts/audit/desktop_integration_03.init.gradle",
+      "sha256": "9bf2cc5f32af4447f9ad38c4104b486b30a40e18cf2e0757da1e4e465d02637d",
+      "bytes": 10645,
+      "git_mode": "100644"
+    },
+    {
+      "path": "scripts/audit/linux_desktop_integration_02.py",
+      "sha256": "b9ad05c2b2d18abd64cf801220ca513fc89d343411194d0fba2dfff79dc7c6e2",
+      "bytes": 95412,
+      "git_mode": "100644"
+    },
+    {
+      "path": "scripts/audit/linux_desktop_integration_03.py",
+      "sha256": "86cd40c4681665cc723afeb3c38f3fda3f82c56bda233c284cd802d55212b4c0",
+      "bytes": 84825,
+      "git_mode": "100644"
+    }
+  ],
+  "unselected_active_work": "Independent PVU003 followup review is still active; any subsequently written review is outside this exact selection. Included author patch/note are inert and explicitly unadopted. No permanent fixture or immediate integration03 scope change."
+}

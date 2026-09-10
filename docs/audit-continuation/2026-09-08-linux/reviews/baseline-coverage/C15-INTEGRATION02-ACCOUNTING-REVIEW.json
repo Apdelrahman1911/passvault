@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "scope": "C15 bounded integration02 XML accounting and unchanged closure-requirement mapping; not whole-run cleanup, visual acceptance, failure root-cause review or new execution admission",
+  "outcome": "ACCEPT_3_CASE_CENSUS_WITH_EXPLICIT_1_FAILED_APPLICATION_INTEGRATION_EVENT",
+  "external_result": {
+    "path": "reviews/desktop-integration02/EXTERNAL-RESULT.json",
+    "sha256": "9bf8da5015a9ced2acaa35538e51a79eed1e08c13a964c067a4d524e457b8574",
+    "bytes": 19652,
+    "status": "VALIDATION_FAILED_CLEANED",
+    "external_exit": 1,
+    "qualification": "Status/exit are frozen root receipt claims; original tool was not polled. Storage reviewer separately adjudicates semantic visual evidence and cleanup."
+  },
+  "source_identity": {
+    "commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+    "tree": "4b405be08458c035b9dd61807acab66659ccd864",
+    "before_and_after_sha256": "7a493834772849a8b8bd01e204cc31a6e4e5c6798f2c8503a219d68c3a1a87d5",
+    "qualification": "Named source-before/after receipts agree; not independent Git reconstruction. RAW_GIT_BLOBS_NOT_CHECKOUT_EOL and both PowerShell raw/Git/checkout EOL qualifications retained."
+  },
+  "frozen_baseline_ledgers": {
+    "ISSUE_LEDGER.json": {
+      "sha256": "094ddfb9646e2c722df157f3e44240e96694a5b1350fc33b61ecb9c5dd133beb",
+      "bytes": 175943
+    },
+    "VERIFICATION_LEDGER.json": {
+      "sha256": "a90e5640da188ba58245e8859b5390fb6a1667c3df3adbe642644306f3056b95",
+      "bytes": 151593
+    },
+    "COVERAGE_DELTA.json": {
+      "sha256": "e20a3a31a725dea056c98e99fe1d658fa140ad878004dd1847ba7ee944981b0b",
+      "bytes": 193573
+    }
+  },
+  "independently_parsed_xml": [
+    {
+      "path": "xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+      "sha256": "c3e7b3f0aa2afa4468915381d20972a2e04098db617d8453de253fb4e5a1402d",
+      "bytes": 5614,
+      "case": "actual Main guards dirty Back tab and Add without changing durable Room tuples[desktop]",
+      "classname": "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+      "result": "FAIL",
+      "failure": "java.lang.AssertionError: MAIN_NAV_DRIVER_FAILED"
+    },
+    {
+      "path": "xml/app-desktop--TEST-com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest.xml",
+      "sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+      "bytes": 505,
+      "case": "composeExitReturnsThroughCleanupBeforeOwningJvmExit[desktop]",
+      "classname": "com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest",
+      "result": "PASS",
+      "failure": null
+    },
+    {
+      "path": "xml/app-desktop--TEST-com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest.xml",
+      "sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d",
+      "bytes": 529,
+      "case": "same real tray refreshes English Arabic English and accepts native popup input[desktop]",
+      "classname": "com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest",
+      "result": "PASS",
+      "failure": null
+    }
+  ],
+  "batch_census": {
+    "declared_cases": 4,
+    "actual_xml_testcase_elements": 3,
+    "xml_pass": 2,
+    "xml_fail": 1,
+    "xml_skipped": 0,
+    "unstarted_cases": 1,
+    "unstarted_case": "CredentialEditorRoomIntegrationTest",
+    "qualification": "Three files each contain one testcase. Two selected Gradle Test tasks, two lifecycle children, three planned Main roles, tray language stages, assertions and123 actionable Gradle tasks are not case counts. Render log has app desktopTest FAILED and no shared desktopTest execution; subsequent Room case is UNSTARTED, not skipped or passed."
+  },
+  "recommended_central_accounting": {
+    "application_intended_native_regression_investigation_historical_control_execution_events": 199,
+    "derivation": "prior196 +2 new XML PASS +1 Main/NavHost application-intended integration XML FAIL =199",
+    "unchanged_infrastructure_fixture_controls": 3,
+    "unchanged_fixture_producer": 1,
+    "total_xml_testcase_elements": 203,
+    "semantics": "Execution events, not pass count, completed product scenarios, unique behaviors, assertions, tasks, hardware or readiness. Main remains explicitly failed; do not relabel it as a successful control or an infrastructure test.",
+    "optional_disaggregated_display": "198 prior/new application/native/control events excluding this failed attempt (prior196 +2 new XML PASS) +1 failed application-intended integration attempt; do not describe198 as the total execution count or derive a historical pass total from it.",
+    "qualified_closure_delta": 0
+  },
+  "main_failure_scope": {
+    "observed_failure": "MAIN_NAV_DRIVER_FAILED in XML; main.log shows ExecutionException caused by NullPointerException in ComposeAccessibleText.getCharCount, reached through NativeMainNav.snapshot/await.",
+    "events": "Seed events SEED_ORIGINAL_TUPLES and SEED_ROOM_CLOSED, exit0; main events only DRIVER_FAILURE, exit137; verifier role not reached.",
+    "interpretation": "Fixture-observation-limited failed application-integration attempt. The supplied classification does not establish root cause or prove a production defect; it also does not rule out a separate accessibility defect.",
+    "no_credit": [
+      "Dirty Back/tab/Add behavioral assertions",
+      "Normal Main terminal exit or caller-finalizer behavior",
+      "Final durable Room tuple verification",
+      "Room50 persistence or any combined save50/cold-restart-Main story"
+    ]
+  },
+  "closure_map": {
+    "unchanged": true,
+    "PVA039": "Only prospective closure candidate: actual real-loop lifecycle evidence may meet runtime requirement after independent acceptance; affected-source static checks remain, and this review adds no static or full-Main/provider cleanup credit.",
+    "PVA027": "Tray XML PASS requires the separate exact/native/visual adjudication; Settings-to-publisher/window-effect chain, displayed tooltip/all-actions, packaging and other-platform requirements remain.",
+    "PVA007_PVA031": "Main FAIL and Room UNSTARTED supply no new successful navigation/Room verification; retain prior GUI02 evidence and all timing/IME/repeat/a11y/RTL/mobile/backend-rejection/ack requirements.",
+    "suspicions": "No conclusive outcome; especially no harmful onboarding interstage/late-work coverage for PVU006. PVU001/002/003/005 unchanged.",
+    "unchanged_denominators": "19/25 original closures;26/39 all confirmed closures;2/12 conclusive original suspicions; eight documented PVD explanations remain separate."
+  },
+  "retained_limits": "PVU007 STOP, PVU011 NO RETRY/no procedure inquiry, PVA029 failure/no automatic retry, G7/G8 CLOSED and prior consumed/HOLD/retired stores remain unchanged. This review neither clears any old HOLD nor authorizes a retry.",
+  "read_attestations": {
+    "SOURCE-BEFORE.json": {
+      "sha256": "7a493834772849a8b8bd01e204cc31a6e4e5c6798f2c8503a219d68c3a1a87d5",
+      "bytes": 1333,
+      "matches_external": true
+    },
+    "SOURCE-AFTER.json": {
+      "sha256": "7a493834772849a8b8bd01e204cc31a6e4e5c6798f2c8503a219d68c3a1a87d5",
+      "bytes": 1333,
+      "matches_external": true
+    },
+    "XML-RESULT.json": {
+      "sha256": "8e767ad68ffa16cf1ae6ae06fe6d636c7703ddcb0edb1eacc2bd4f44093d288c",
+      "bytes": 2353,
+      "matches_external": true
+    },
+    "LIFECYCLE-RESULT.json": {
+      "sha256": "7fbb37d42070671f9740592f117642bd2ce15cc1e0f70d87b1100e42a7e8b445",
+      "bytes": 1750,
+      "matches_external": true
+    },
+    "MAINNAV-RESULT.json": {
+      "sha256": "08a061edfa56feafc10a1a75eb1d73000460412e66128fdb2e4a9dcd3833c864",
+      "bytes": 1830,
+      "matches_external": true
+    },
+    "mainnav-evidence/main.log": {
+      "sha256": "5435f264d33ed527a3b5162757a94435f5c1ef6abd48b2ba90d22e13b1a55797",
+      "bytes": 4707,
+      "matches_external": true
+    },
+    "mainnav-evidence/main.events": {
+      "sha256": "754fa55f77c58e383fb54678a2318a181c76767995971876fe67d16e68fe500d",
+      "bytes": 15,
+      "matches_external": true
+    },
+    "mainnav-evidence/main.exit": {
+      "sha256": "e3b9c2844b5a5c2677b3a2279db2ec8487491dd9a23d6b22fac153391b3bb63c",
+      "bytes": 4,
+      "matches_external": true
+    },
+    "mainnav-evidence/seed.events": {
+      "sha256": "301dbb801ed4dca09f62a056917b63f5a0184680976de4e362b1eff88798082e",
+      "bytes": 38,
+      "matches_external": true
+    },
+    "mainnav-evidence/seed.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2,
+      "matches_external": true
+    },
+    "xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml": {
+      "sha256": "c3e7b3f0aa2afa4468915381d20972a2e04098db617d8453de253fb4e5a1402d",
+      "bytes": 5614,
+      "matches_external": true
+    },
+    "xml/app-desktop--TEST-com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest.xml": {
+      "sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+      "bytes": 505,
+      "matches_external": true
+    },
+    "xml/app-desktop--TEST-com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest.xml": {
+      "sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d",
+      "bytes": 529,
+      "matches_external": true
+    },
+    "PHASE-render.json": {
+      "sha256": "4e72b192d203a135648c946b5ae823cc36a4038d062569ce25d444a1f9e2fd04",
+      "bytes": 2504,
+      "matches_external": true
+    },
+    "logs/render.log": {
+      "sha256": "aa6b98aea78b4a9c5fcbde7e2dbb7b9cdcb66ef28e431574ede5ae2dc1617a58",
+      "bytes": 41109,
+      "matches_external": true
+    }
+  },
+  "reviewer_activity": "Named inert evidence/ledger reads and JSON/XML/hash reconciliation only; source scripts were not imported/executed/parsed as code. No Git/network/build/test/CI/helper/runtime/process/store probe, signal, deletion or old-runtime access. No central ledger edits or background/temp/cache workload."
+}

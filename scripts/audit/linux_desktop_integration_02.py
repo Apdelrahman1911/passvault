@@ -58,18 +58,18 @@ PANEL_CONFIG = (
     ('/plugins/plugin-6', 'string', 'systray', False),
     ('/plugins/plugin-6/square-icons', 'bool', 'true', False),
 )
-PANEL_ROUTE_ADMITTED = None
+PANEL_ROUTE_ADMITTED = True
 INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release',
           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
 # Root must capture a fresh complete raw-blob manifest and independent source/
 # instance admission. Historical GUI02 publication/tool/lock identities do not apply.
-COMMIT = None
-TREE = None
-MEMBERS = None
+COMMIT = 'f7f3ca91cef14b7b2341114c44c460907061f883'
+TREE = '4b405be08458c035b9dd61807acab66659ccd864'
+MEMBERS = 2607
 RUN_ID = 'linux-desktop-integration02'
 FROZEN = {
-    SOURCE: None,
-    INIT: None,
+    SOURCE: '2a577c7ac8dae718fab4620cc62d3757c4cbde0dba76109fa844fd6fd1286ee9',
+    INIT: '3ba456dcc48d956eb2ff266ccfb31138ce3612f2b6aa5674194f09b0d563b8ef',
 }
 MIB, GIB = 1024 ** 2, 1024 ** 3
 SELECTIONS = (

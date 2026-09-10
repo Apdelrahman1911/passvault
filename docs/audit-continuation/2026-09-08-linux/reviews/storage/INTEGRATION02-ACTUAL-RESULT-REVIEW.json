@@ -1,0 +1,121 @@
+{
+  "schema": "passvault-independent-actual-result-review/v1",
+  "reviewer": "/root/storage",
+  "review_date_utc": "2026-09-10",
+  "scope": "Consumed linux-desktop-integration02 actual-result reconciliation only; no execution, live probes, cleanup or central-ledger mutation by reviewer.",
+  "disposition": "ACCEPT_CONSUMED_VALIDATION_FAILURE_OWNED_CLEANUP_WITH_QUALIFICATIONS",
+  "evidence_base": "docs/audit-continuation/2026-09-08-linux",
+  "evidence_binding": {
+    "external_result": {
+      "path": "reviews/desktop-integration02/EXTERNAL-RESULT.json",
+      "sha256": "9bf8da5015a9ced2acaa35538e51a79eed1e08c13a964c067a4d524e457b8574",
+      "bytes": 19652,
+      "status": "VALIDATION_FAILED_CLEANED",
+      "external_exit": 1,
+      "elapsed_seconds": 510.849,
+      "launch_chunk": "7baa52",
+      "terminal_chunk": "15a87c",
+      "session": "10629 FINISHED; never poll or replay",
+      "qualification": "Actual external completion is root-attributed retained evidence, not an independent live observation."
+    },
+    "inventory": {
+      "path": "runs/linux-desktop-integration02",
+      "regular_single_link_files": 100,
+      "bytes": 269330,
+      "all_path_size_sha256_entries_match_external_record": true,
+      "canonical_sha256": "c6ef7846b5b1523d9a9617130f67fce7c0337638dfa1505e3f4e168bb68ec6cf",
+      "canonical_encoding": "Path-sorted array of {path,bytes,sha256}; json.dumps(rows,sort_keys=True,separators=(',', ':'),ensure_ascii=False).encode(); no LF.",
+      "method": "Bounded original no-follow descriptors, stable metadata and unchanged directory listings; tool c76c0d. Hash reconciliation is not semantic review of every generic log line."
+    },
+    "executed_source": {
+      "checkpoint": "C14",
+      "commit": "f7f3ca91cef14b7b2341114c44c460907061f883",
+      "tree": "4b405be08458c035b9dd61807acab66659ccd864",
+      "members": 2607,
+      "raw_payload_bytes": 85397292,
+      "inner_sha256": "b9ad05c2b2d18abd64cf801220ca513fc89d343411194d0fba2dfff79dc7c6e2",
+      "outer_sha256": "cc21a3a15d7079a2541cbdd6351c9349e66755f97d1bc76fcc8e85b2d26be721",
+      "init_sha256": "3ba456dcc48d956eb2ff266ccfb31138ce3612f2b6aa5674194f09b0d563b8ef",
+      "source_manifest_sha256": "2a577c7ac8dae718fab4620cc62d3757c4cbde0dba76109fa844fd6fd1286ee9",
+      "independent_instance_accept_sha256": "712d38ba140467ca20995d63fb6ba8848669f336867441d0848f6d49ed202cb0"
+    }
+  },
+  "actual_cases": {
+    "prospective": 4,
+    "executed": 3,
+    "pass": 2,
+    "fail": 1,
+    "unstarted": 1,
+    "basis": "Independently parsed three XML suites, each tests=1, errors=0, skipped=0. Two prospective serial Test tasks are not extra cases.",
+    "main_navhost": {
+      "result": "FAIL_FIXTURE_DRIVER",
+      "xml_sha256": "c3e7b3f0aa2afa4468915381d20972a2e04098db617d8453de253fb4e5a1402d",
+      "fixture_sha256": "7a0dd50d7caa6cf3cfad729f7393a0e1802fbf65b57d3cceae7c5c64ac94961f",
+      "observed": "Seed receipts SEED_ORIGINAL_TUPLES, SEED_ROOM_CLOSED; seed exit 0. Main DRIVER_FAILURE, exit 137. Verify role UNSTARTED; 6/9 prospective role files preserved.",
+      "failure": "ExecutionException caused by NullPointerException in ComposeAccessibleText.getCharCount (ComposeAccessible.kt:589), through snapshot$visit fixture line432 and scenario line291: polling after Unlock click, before any MAIN_NATIVE_EDIT receipt.",
+      "interpretation": "Fixture catches/records DRIVER_FAILURE; parent throws MAIN_NAV_DRIVER_FAILED and finally forcibly destroys a still-live child before recording exit. Exit137 is consistent with this containment, not proof of OOM or a product-exit defect; exact signal attribution is not independently retained. No successful unlock, dirty-editor result, final Room reopen, verify-role or passing Main-cleanup credit.",
+      "next_boundary": "Independently investigate the fixture/framework observation contract before any fix/new admission; do not swallow arbitrary failures. No automatic retry."
+    },
+    "lifecycle": {
+      "result": "PASS_TARGETED_REAL_COMPOSE_SEAM",
+      "xml_sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59",
+      "observed": "Default child: WINDOW_READY,CLOSE_REQUEST; exit0. Production-helper child: WINDOW_READY,CLOSE_REQUEST,CALLER_CLEANUP,CONTINUATION; exit23. Six receipts present; mapping true.",
+      "limits": "Meaningful PVA-039 return/finally/continuation seam evidence, not full Main/Koin/provider cleanup, a hard2.5s bound, hardware evidence or PVU-006 resolution. Both logs retain Linux GL-context fallback warnings; no proven GL backend."
+    },
+    "native_tray": {
+      "result": "PASS_TARGETED_REAL_NATIVE_TRAY",
+      "xml_sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d",
+      "observed": "EN->AR->EN; native show callbacks0/1/2, rightPresses1/2/3, popupDismissed=true; ownedTrayRemoved=true, ownedFrameDisposed=true; stagesCompleted3; scenarioAndOwnedCleanupStatusPASS.",
+      "visual_review": "All three original PNGs explicitly viewed. English crops show complete Show PassVault / Lock Vault / Exit; Arabic crop shows إظهار PassVault / قفل الخزنة / خروج with readable joined glyphs and preserved mixed Latin word. No visible clipped labels in these crops. Native first-row outline/highlight is visible; tiny synthetic colored tray icon is not product-icon proof.",
+      "png_bindings": [
+        {
+          "path": "tray-pixels/01-native-en.png",
+          "geometry": "130x100",
+          "bytes": 862,
+          "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c"
+        },
+        {
+          "path": "tray-pixels/02-native-ar.png",
+          "geometry": "126x100",
+          "bytes": 901,
+          "sha256": "7d8407002b316a3e3685a7539bfd8986f6f77294d65728b6597de6caa95f72fa"
+        },
+        {
+          "path": "tray-pixels/03-native-en.png",
+          "geometry": "130x100",
+          "bytes": 862,
+          "sha256": "19202a421ccfd3cd4bfe9940a49549b1996063177a3cc48bbcbffb2c0a57cd9c"
+        }
+      ],
+      "limits": "Targeted PVA-027 evidence, not full Settings publisher/window chain, visual tooltip or product-icon proof. Actual application lock/exit actions were not established by show callbacks. Finite-resolution Linux assessment, not exhaustive fonts/RTL/a11y assurance; images alone do not establish input sequence."
+    },
+    "shared_room": {
+      "result": "UNSTARTED_AFTER_APP_TEST_FAILURE",
+      "limits": "Neither pass nor skip; no durability/transaction closure from this attempt."
+    },
+    "family_closure_recommendation": "NONE; root owns ledger adoption and existing denominators/qualifications."
+  },
+  "settlement_and_cleanup": {
+    "inner_result_sha256": "ea01bf2556e1a18dd22e372a7f32390e967b6777a3f4b04a57953b730f6af2b5",
+    "outer_receipt_sha256": "d03526fd0507fa735e1449826fbe088043733262131150b782edfaa3c87fb72e",
+    "source_before_after_sha256": "7a493834772849a8b8bd01e204cc31a6e4e5c6798f2c8503a219d68c3a1a87d5",
+    "reconciled": [
+      "Prepare0, original prepare-stop0, render1, original render-stop0; commands complete without transport errors. Both original stops say No Gradle daemons are running. Actionable-task counts are not case counts.",
+      "SOURCE-BEFORE/AFTER byte-identical; raw2607-member/85397292-byte representation and historical EOL qualifications match manifest. Two raw-stream passes are source-qualified receipt evidence, not independent reopening of deleted response bytes.",
+      "GUI-CLEANUP settles all four owned helpers (Xvfb0,D-Bus0,WM1,panel1); term_sent=true,kill_sent=false,unexpected_exit=false. Captured xfconf/systray-wrapper descriptors terminal and closed; remaining original descendants empty; namespace_empty=true. Earlier GUI-start settled=false is historical, not final.",
+      "INNER source/stops/namespace/cleanup/preservation safety true; validation/XML/Main mapping false with three validation errors. OUTER reasons empty, unclassified_host_churn0, REMOVED_ORIGINAL_RUNTIME, snapshot_entries=removed25132; evidence retained outside removal.",
+      "Focused accepted-source mapping confirms original-descriptor bounded allowlisted snapshot/rechecks/removal and failure exit70 for safety/final-close failures. Expected external1 qualifies retained preterminal cleanup receipt under that contract, not merely status wording."
+    ],
+    "qualification": "Qualified retained-evidence/source acceptance of this consumed attempt only. Not a live filesystem check, independent per-deleted-entry audit, global-idleness claim, arbitrary descendant/no-escape guarantee, hostile-root proof or hard-loss proof. Retain GUI/session/compositor and GL warnings without attributing them to unrelated host activity."
+  },
+  "release_recommendation": {
+    "root_may_release": [
+      "integration02 scheduling reservation only",
+      "integration02 transient active T-reader/source-use freeze only"
+    ],
+    "T": "/root/projects/PassVault/passvault-publication-20260910-01",
+    "not_authorized": "No replay, automatic retry, namespace reuse, new build admission, old runtime cleanup or retired-store release. Root alone adopts this disposition and changes coordination/ledgers.",
+    "preserve": "Consumed helpers/request/approval/E and every historical HOLD, including TRAY01 failure/HOLD; PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED, retired-store freezes, hardware/PVD limitations and non-publishing/build1017001 boundaries."
+  },
+  "reviewer_activity_note": "Tool81738a completed data comparisons then exited1 on reviewer KeyError sha256 from treating receipt allocation as a hash record. Corrected bounded data-only check f6db87 established embedded allocation equality and matching request/approval. Inspection-expression error only; no subject execution or mutation, helper/application replay or new probe."
+}
