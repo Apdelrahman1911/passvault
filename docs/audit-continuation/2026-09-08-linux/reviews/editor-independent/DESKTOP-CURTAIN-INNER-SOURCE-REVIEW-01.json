@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "reviewer": "/root/editor_review",
+  "utc": "2026-09-09T19:53:00.658593+00:00",
+  "verdict": "ACCEPT_BOUNDED_INNER_SOURCE_AND_PIXEL_DURABILITY_FIX_ONLY; fresh outer rebinding/instance/execution/actual evidence still required",
+  "subject": {
+    "inner": {
+      "path": "scripts/audit/linux_desktop_curtain_01.py",
+      "sha256": "212443a73b052feb00be5154a0414a5063af99cbd7e405cb6aa91df2d6961cf5",
+      "bytes": 63807,
+      "LF": 1094
+    },
+    "init": {
+      "path": "scripts/audit/desktop_curtain.init.gradle",
+      "sha256": "dc9d54532ae155a8c5a9ee6d1b54f37b63b4859e34cb4621e9f6eae30a539703"
+    },
+    "plan": {
+      "path": "reviews/desktop-curtain-inner/PLAN.md",
+      "sha256": "8dbbaaee3eda45cf091b4a4a681fcce047144917909b16ea50e96ff86e3c6283"
+    },
+    "inert_beforeimage": {
+      "path": "reviews/desktop-curtain-inner/INNER-BEFORE-PIXEL-FSYNC.txt",
+      "sha256": "45c0784e27650ea185efb82c84a96bd69a212ca93badcf79d0d618a9565eb756"
+    },
+    "C5": {
+      "commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+      "tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+      "source_manifest_sha256": "7051258b17dcc93365d1625c8e361612c4ece8bc0b287147e7a83e113451b699",
+      "members": 1727,
+      "source_representation": "RAW_GIT_BLOBS",
+      "checkout_EOL_qualifications": 2
+    }
+  },
+  "reused_reviews": {
+    "reviews/editor-independent/DESKTOP-CURTAIN-INIT-SOURCE-REVIEW-01.json": "87ab8368e7c0135c50f97934a6e6b027f2f6d43d6e556d2c3b2fc62dfa2a2722",
+    "reviews/editor/PVU005-LINUX-FIXTURE-SOURCE-REVIEW.md": "34e3d9e2d02cb8c31ef3cf9f98906d273dbf6285d497a85fef4c32cf14bda4ad",
+    "reviews/verification/HISTORICAL-XML-MAPPING.json": "4d03849a0fd8d4566f0e69e054e47bac2eb4e0003a95411996720fe620c3a65e"
+  },
+  "extent": "Material GUI/two-phase/readiness/cleanup/result deltas and their surrounding command/File interfaces; full sealed PLAN and sole16-line source delta. Reuses accepted fixture semantics and established primitives, not a fresh generic runner/raw-transport audit. Outer b1e71871090d97b9021dc3442a92d8e01bea85c2c8d1c72c09048d5ec107a204 was read only for the pixel durability integration question, not independently accepted as a whole or admitted.",
+  "independent_challenges": [
+    {
+      "local_id": "G01",
+      "topic": "Missing original helper pidfd",
+      "finder": "/root/editor",
+      "fix_author": "/root/android32",
+      "independent_fix_review": "/root/editor_review",
+      "result": "Accepted source correction already present in45c and unchanged in2124. Reachable counterexample is Popen succeeding then pidfd_open failing before cleanup. Every helper poll/terminal gate requires original pidfd; first cleanup loop latches uncertainty, direct-terminal/own-wait checks remain false, later namespace settlement cannot clear it. Original pidfd_captured evidence remains; no numeric-PID rescue. No failure was executed."
+    },
+    {
+      "local_id": "G02",
+      "topic": "Direct-to-evidence pixel durability",
+      "finder": "/root/editor_review",
+      "independent_challengers": [
+        "/root/android32",
+        "/root/editor"
+      ],
+      "fix_author": "/root/android32",
+      "independent_fix_review": "/root/editor_review",
+      "before": "45c preserve_pixels stable-read originals then assigned f.evidence directly. Files.verify only re-read hashes, fixture capture351-359 closed CREATE_NEW/WRITE streams without force/sync, and outer capture/authority/removal had no downstream pixel file/parent fsync. Thus durable preservation before cleanup was unestablished; no observed data loss or product defect is claimed.",
+      "delta": "Exactly16 inserted lines in preserve_pixels987-1002; all other inner bytes unchanged by complete text diff. Reopens each original file descriptor-relatively with NOFOLLOW/NONBLOCK/CLOEXEC, compares full original fstat/path pin, fsyncs original file and pinned parent, rechecks pin, and explicitly closes once before adoption. No rewrite, renamed copy, dependency, fixture, command, init, XML or framework change.",
+      "failure_challenge": "Open/reopen-pin/file-fsync/parent-fsync/recheck/close errors exit before evidence adoption for that file and before pixels_preserved. Partial prior images cannot repair the false preservation/evidence gate; main returns70/HOLD. A later PIXEL-RESULT write/verification failure also cannot earn evidence_ok. Close uncertainty is not retried. Successful path preserves original exact bytes and identity; fsync does not decode or validate pixels."
+    }
+  ],
+  "focused_source_findings": [
+    "Prepare uses dependency-bearing selectedTest FileCollections without depending on Test itself; task graph rejects every Test online. Online artifact evidence requires resolved Linux Skiko/JNA names and hashes, not compile-only assumptions. Original wrapper stop and empty private PID namespace gate transition away from the original online network.",
+    "Fresh PID1/private proc and nonpropagating mount preflight precede work. New private net/loopback and distinct empty64MiB/4096inode tmpfs are checked before GUI-PREFLIGHT and gui_attempted. No cached host /tmp descriptor is reused. Original R/E and tool/input identities remain outer-instance prerequisites; raw transport is a separate reviewed responsibility.",
+    "Synthetic Xauthority is created only in private tmpfs; no -ac/xhost, ambient X/DBus, cookie argv/content retention or renderer override. Original live Xvfb pidfd, private socket and matching lock PID precede authenticated xdpyinfo screen/depth checks. Foreground bus and bare WM must remain live; root EWMH supporting-window property, self-check and Xfwm4 name establish startup, not iconification/rendering success.",
+    "Render is the single filtered real GUI Test, offline, using fixed worker HOME/TMP/JNA/XDG and startup AWT properties. Worker roots must be unused. Original once-only wrapper stop remains in finally; no extra stop obligation is fabricated for non-Gradle setup queries. Unexpected helper exits cannot earn validation success.",
+    "Partial auth/helper startup and failed render reach once-only finish_gui. Original WM/bus/Xvfb signals use original pidfds. Remaining descendant capture is confined to the positively established initially empty private PID/mount/net domain, with stable birth/namespace/exe/cwd and original pidfd checks; no host-name/PGID kill, unknown numeric rescue, socket deletion or cleanup of an old namespace. Capture disappearance alone is not signalling authority; final whole-namespace emptiness remains necessary.",
+    "Final cleanup safety is distinct from test success. Missing stop/completeness/source-after/evidence/pixel-preservation/isolation/settlement or cancellation prevents cleanup authority. A safely settled prepare/setup/test failure can report exit1 without claiming GUI success; uncertainty remains70/HOLD. Namespace destruction and outer original-child wait/allowlisted R deletion remain separately controlled.",
+    "Exact XML suite simpleClass[desktop], FQCN classname and literalMethod[desktop] convention is supported by stable C5-bound HISTORICAL-XML-MAPPING, normalization none; not a guessed bare-name fallback or current runtime proof. One non-skipped exact testcase plus all five PNGs and observations are required for mapping success. Partial captures survive failures; hashes/file presence do not replace independent visual review."
+  ],
+  "limits_and_remaining": [
+    "No imports, syntax/AST checks, controls, tool probes, help campaign, Git/build/test/GUI execution, held-runtime access, signals or cleanup occurred in this reviewer lane. Source API/CLI shape is prospective; bare xfwm4 foreground behavior and xdpyinfo/xprop parser compatibility still require actual essential-run evidence.",
+    "Actual namespace/mount permissions, authenticated helper readiness, compile API, offline graph/cache completeness, loaded native/renderer identities and one-case XML/pixels remain unproved. Prior fixture semantics were reused, not re-counted as a pass. Physical hardware/full-app authentication/transient-zero-leak claims remain outside this Linux fixture.",
+    "JDK17/checked-in wrapper/strict verification/one worker remain;512m Test heap and2min Test timeout do not hard-bound native/EDT/kernel stalls. Overall6000s envelope and per-phase stops/setup/settlement bounds require original outer supervision.64MiB private tmpfs and4MiB GUI-helper per-file caps do not relax existing disk/RAM floors or substitute for owned cleanup.",
+    "Outer must rebind accepted inner212443a7 and PLAN8dbbaaee as appropriate; old outer binding is not current execution admission. Fresh independently reviewed exact request/tool/lock/source/directory/coordination/cleanup admission remains required before any execution. No held cache/runtime adoption, source-store freeze exception or replay/retry authority follows."
+  ],
+  "coverage": "Exactly one previously reviewed GUI test declaration; zero executions or new application findings/fixes/closures from this review. PVU-005 remains unresolved pending genuine evidence. G01/G02 are local validation-source corrections, not PVA families or added tests. Closure denominators unchanged; eight PVD explanations/owner decisions remain separate.",
+  "restrictions": "PVU-007 STOP; PVU-011 NO-RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; old consumed execution/recovery restrictions; protected refs, dependency/version/identity/signing/store/occupied1017001/publication boundaries unchanged.",
+  "read_receipts": [
+    "acbc05:sealed source index/fullPLAN",
+    "42078d:new command/phase/interfaces",
+    "0f8eef:private setup/auth/readiness",
+    "f2b3ef:cleanup/render/XML/pixels/main",
+    "55110a:new preservation/resource interface",
+    "d909d5:historical XML convention/C5 member",
+    "f0163e:bounded outer durability integration",
+    "b5dc63:fixture output-boundary only",
+    "389fbc:complete16-line diff/PLAN correction; all exit0"
+  ],
+  "reviewer_resource_cleanup": "Only source/data reads and permanent review reports. No temporary/cache/runtime outputs or persistent processes created; no reviewer wrapper-stop obligation. This report uses exclusive0600 write, file+parent fsync and exact readback."
+}

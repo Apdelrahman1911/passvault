@@ -1,4 +1,4 @@
-name: Audit focused macOS native validation (non-publishing)
+name: Audit focused macOS native validation 02 (non-publishing)
 
 # SOURCE PREPARATION. Root separately admits/fills the new one-shot request.
 on:
@@ -6,7 +6,7 @@ on:
     branches:
       - codex/audit-continuation-linux-20260908
     paths:
-      - docs/audit-continuation/2026-09-08-linux/requests/macos-focused-01.json
+      - docs/audit-continuation/2026-09-08-linux/requests/macos-focused-02.json
 
 permissions:
   contents: read
@@ -57,7 +57,7 @@ jobs:
         if: ${{ always() && steps.focused.outputs.evidence_path != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: macos-focused-${{ github.run_id }}-${{ github.run_attempt }}
+          name: macos-focused-02-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ steps.focused.outputs.evidence_path }}/*.json
             ${{ steps.focused.outputs.evidence_path }}/*.log

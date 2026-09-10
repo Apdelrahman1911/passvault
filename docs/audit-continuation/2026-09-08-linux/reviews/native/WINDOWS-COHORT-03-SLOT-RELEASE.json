@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T19:48:48.229080+00:00",
+  "disposition": "RELEASE_SCHEDULING_ONLY_AFTER_INDEPENDENT_ACTUAL_RECONCILIATION",
+  "actual": {
+    "run_id": 34391056257,
+    "attempt": 1,
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+    "operational_status": "CONSUMED_FAIL_SDK_FROZEN_READ_GUARD_BEFORE_CMAKE",
+    "helper_exit": 1,
+    "metadata_parent_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "initial_job_counts": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "readonly_zero_records": 4,
+    "first_readonly_interval_seconds": 0.10607099533081055,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_10_ENTRIES_AND_ORIGINAL_GENERATED_ROOT_REMOVED",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_ATTEMPTED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "5bef23de89a4fd804daea7e83501c7c71ee96689552ea97c5fbe0d4acfc8f5fc",
+    "evidence": "runs/windows-cohort03/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "a494b604db3be1df1c8296f6634d14ef89f595b6ea45b5ef23bab3191cdfefb5",
+    "error": "RuntimeError: Frozen input changed during read",
+    "limits": "SDK call-site is source-order inference only. Failing path/metadata tuples/differing field/SDK bytes/hash/traceback absent; exact cause UNKNOWN. No content mutation, stat/fstat mismatch, writer, cache or timing cause inferred. Readonly Job drain observed about106ms is not child lifetime/identity/benignity or product evidence. Only this run scheduling and qualified original cleanup settle; no retry, old HOLD release, hardware/Hello/PVU008/red-control/production-cut proof.",
+    "consumed": true,
+    "release": "reviews/native/WINDOWS-COHORT-03-SLOT-RELEASE.json"
+  },
+  "no_retry": true,
+  "prior_scopes_unchanged": true,
+  "next": "Fresh Linux03 request/independent instance admission. Windows04 is separately authored SDK-reader source only; no activation/run authority."
+}

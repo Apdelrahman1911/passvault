@@ -1,0 +1,101 @@
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.testing.Test
+
+// Isolated-batch03 Test wiring only; root separately admits source, commands,
+// original directories, namespace ownership, evidence and cleanup. No mkdir/I/O.
+def mode = gradle.startParameter.projectProperties['passvault.audit.mode']
+def providerClass = 'com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest'
+def providerMethods = [
+    'prepare': 'prepare public synthetic fixture in a separate provider process',
+    'success': 'fresh real provider authenticates the fixture and retains password fallback',
+    'wrong-key': 'fresh real provider rejects a wrong key with typed authentication failure',
+    'loader-io': 'actual cold resource loader IO failure keeps a valid enrollment',
+]
+if (mode != 'ordinary' && !providerMethods.containsKey(mode)) {
+    throw new GradleException('Explicit isolated-batch03 mode required; no default or whole-suite mode')
+}
+def fixture = System.getenv('PASSVAULT_PVA038_FIXTURE')
+def consumer = mode in ['success', 'wrong-key', 'loader-io']
+if (consumer && (fixture == null || !fixture.matches(
+        'pva038-v1:[0-9a-f]{104}:[0-9a-f]{48}:[0-9a-f]{104}:[0-9a-f]{48}'))) {
+    throw new GradleException('Consumer requires the exact bound 317-character synthetic producer fixture')
+}
+if (!consumer && fixture != null) {
+    throw new GradleException('Do not supply a provider fixture to ordinary or prepare mode')
+}
+
+def runtime = '/root/projects/PassVault/audit-runtime-linux-isolated-batch03'
+def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+def repository = 'com.passvault.core.database.repository.'
+def backup = 'com.passvault.core.database.backup.'
+def credential = 'com.passvault.feature.credential.presentation.'
+def navigation = 'com.passvault.shared.navigation.'
+def selections = [
+    ':core:database': [worker: 'database', classes: [
+        backup + 'BackupPaginationTest', backup + 'VaultBackupUnicodePaginationTest',
+        repository + 'BiometricUnlockFreshnessIntegrationTest',
+        repository + 'RepositorySecurityIntegrationTest', backup + 'VaultBackupStreamingTest',
+        repository + 'VaultUnlockPreemptionIntegrationTest',
+        repository + 'RepositoryBiometricSecurityIntegrationTest',
+        repository + 'BiometricVerificationFailureIntegrationTest',
+    ]],
+    ':feature:credential': [worker: 'credential', classes: [
+        credential + 'CredentialCustomFieldSaveFreshnessTest',
+        credential + 'CredentialCustomFieldDraftTest', credential + 'CredentialCustomFieldCapacityTest',
+    ]],
+    ':shared': [worker: 'shared', classes: [
+        navigation + 'NavigationBackCoordinatorTest', navigation + 'CredentialBackFreshnessCompositionTest',
+    ]],
+]
+
+gradle.beforeProject { project ->
+    def selection = selections[project.path]
+    if (selection == null) return
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.name != 'desktopTest') return
+        def cold = mode != 'ordinary' && project.path == ':core:database'
+        def workerRoot = runtime + '/workers/' + (cold ? 'pva038-' + mode : selection.worker)
+        def temporary = workerRoot + (cold && mode == 'loader-io' ? '/tmp-blocker' : '/tmp')
+        test.executable = jdk + '/bin/java'
+        test.maxHeapSize = '512m'
+        test.maxParallelForks = 1
+        test.forkEvery = 0
+        test.ignoreFailures = false
+        test.jvmArgs('-XX:-UsePerfData')
+        // Test.systemProperty creates worker STARTUP -D arguments, not client flags.
+        test.systemProperty('file.encoding', 'UTF-8')
+        test.systemProperty('user.home', workerRoot + '/home')
+        test.systemProperty('jna.tmpdir', workerRoot + '/jna')
+        test.systemProperty('java.io.tmpdir', temporary)
+
+        // Root supplies a clean allowlisted client environment. Do not forward its
+        // JVM-option variables or stale provider mode/root/fixture to test workers.
+        def workerEnvironment = new LinkedHashMap(test.environment)
+        ['JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'JAVA_OPTS', 'GRADLE_OPTS',
+         'PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].each {
+            workerEnvironment.remove(it)
+        }
+        workerEnvironment.putAll([
+            'JAVA_HOME': jdk, 'HOME': workerRoot + '/home',
+            'TMPDIR': workerRoot + '/tmp', 'TMP': workerRoot + '/tmp', 'TEMP': workerRoot + '/tmp',
+            'SQLITE_TMPDIR': workerRoot + '/sqlite',
+            'XDG_CACHE_HOME': workerRoot + '/xdg-cache', 'XDG_CONFIG_HOME': workerRoot + '/xdg-config',
+            'XDG_DATA_HOME': workerRoot + '/xdg-data', 'XDG_STATE_HOME': workerRoot + '/xdg-state',
+        ])
+        if (cold) {
+            workerEnvironment['PASSVAULT_PVA038_MODE'] = mode
+            workerEnvironment['PASSVAULT_PVA038_RUN_ROOT'] = workerRoot
+            if (consumer) workerEnvironment['PASSVAULT_PVA038_FIXTURE'] = fixture
+        }
+        test.setEnvironment(workerEnvironment)
+
+        def patterns = cold ? [providerClass + '.' + providerMethods[mode]] : selection.classes
+        test.filter.setIncludePatterns(patterns as String[])
+        test.filter.failOnNoMatchingTests = true
+        if (cold) {
+            // Force this one Test task, not its compilation/dependency task graph.
+            test.outputs.upToDateWhen { false }
+            test.outputs.cacheIf { false }
+        }
+    }
+}

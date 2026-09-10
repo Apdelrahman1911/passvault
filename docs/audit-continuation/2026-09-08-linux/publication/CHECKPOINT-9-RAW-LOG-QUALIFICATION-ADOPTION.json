@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T18:15:14.537746+00:00",
+  "decision": "ADOPT_EXACT_C9_RAW_CI_WHITESPACE_QUALIFICATION_BEFORE_PHASE1",
+  "review_sha256": "99ee6547a4bddb3c3e79d212f975fa1ae7a358271b52bf905eafcbc147bc89bc",
+  "manifest_sha256": "631064ff5d31950c2f25d599cb54b6e14d1a7771ea836b58ab5523f84e781bfa",
+  "exact_allowlist": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/0_native.txt",
+      "sha256": "6310cba30b02cddb725ce0468f66a1ab3e4d4bb47b03bb570d4f35def8ec10cb",
+      "bytes": 20410,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/1_Set up job.txt",
+      "sha256": "bae05998bf959ecf449e9a01b5c8501daf036b9b7c3ce45d608b90cc7ee7a191",
+      "bytes": 2085,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/2_Read-only exact request checkout.txt",
+      "sha256": "a0577414b35606ff1565fdacbaac52bb8b940e63e10a7df7d89940279fd6c589",
+      "bytes": 11766,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/3_Run the admitted native-only request.txt",
+      "sha256": "fcdd387cebb7ba8aed8446e810889d048cabea019ff603fdd7616b24705392ab",
+      "bytes": 2569,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/4_Preserve compact evidence, never application binaries.txt",
+      "sha256": "2dc3f299081ff403d81c8b9b01bec8a3ae9f8a9dff5621779a0f9a65fb5595be",
+      "bytes": 2013,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/8_Post Read-only exact request checkout.txt",
+      "sha256": "14084cab4318d2740d873b7ee2606653b31e65e12ae4dd34602fcaf253f321f1",
+      "bytes": 1930,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/9_Complete job.txt",
+      "sha256": "2aec9654490a6a6df5f1cd30bab8776bc5154008ec0325a659006f0fadf11443",
+      "bytes": 62,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort02/ci-logs/native/system.txt",
+      "sha256": "5ba67e49f69bcad39a338963e84259df10aaa83dfce58d83bc48947257225f0f",
+      "bytes": 1129,
+      "git_mode": "100644"
+    }
+  ],
+  "conditions": "Root explicitly adopts this narrow qualification beforephase1. Capture complete bounded future git diff --cached --check stdout/stderr/exit and preserve actualFAIL. Qualify only whitespace diagnostics attributable to these exact frozen raw CRLF/trailing-space bodies, with every diagnostic path in this explicit hash-bound list. Reject truncation, changed bytes/modes, diagnostics outside the list or any other error; STOP rather than proceed.",
+  "forbidden": "No normalization of retained evidence, attribute/config/global whitespace suppression, source-whitespace exemption, blanket ci-logs wildcard, retroactivePASS, or inference that BOM itself is a whitespace diagnostic. This report has not reviewed the not-yet-produced cached diagnostics.",
+  "scope": "Only C9 source/report phase; retain actual complete cached FAIL; no source exemption, normalization, retry or runtime authority."
+}

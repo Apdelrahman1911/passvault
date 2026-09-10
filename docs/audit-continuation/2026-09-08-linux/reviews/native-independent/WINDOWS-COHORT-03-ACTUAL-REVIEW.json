@@ -1,0 +1,146 @@
+{
+  "cleanup": {
+    "all_four_retention_records_complete": true,
+    "delete_intents": 10,
+    "disposition": "ACCEPT_QUALIFIED_EXACT_OWNED_GENERATED_ROOT_REMOVAL",
+    "entry_refusals": [],
+    "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+    "journal_event_count": 39,
+    "original_handle_close_failures": [],
+    "original_root_identity": [
+      2118232298,
+      65536,
+      2996,
+      16
+    ],
+    "qualification": "Four original log identities match deletion records; six generated directories plus four logs were gathered before deletion. Source-ordered cleanup_settled/result follows successful handle dispositions, root close and absence check; no later parent/Job close failure is reported. Intent alone and generic Actions orphan-cleanup text are not used as proof. Only this fresh cooperative namespace/Job is discharged; old HOLDs and adversarial/isolation limitations remain.",
+    "removed_descendants": 10,
+    "removed_root": true,
+    "settled_log_bytes": [
+      164,
+      82,
+      75,
+      0
+    ],
+    "settlement_errors": []
+  },
+  "disposition": "CONFIRMED_OPERATIONAL_FAIL_14_UNSTARTED_QUALIFIED_OWNED_CLEANUP_SETTLED",
+  "evidence": {
+    "all_receipt_file_hashes_match": true,
+    "archive_qualification": "Root declared/download receipt and actual uploader digest agree. No reviewer refetch or archive recreation.",
+    "artifact_archive_bytes": 9082,
+    "artifact_declared_download_uploader_sha256": "770dd146c57ac5616d754f34a81c27784e0857a73695363c939b36105937c4ad",
+    "artifact_expanded_bytes": 23031,
+    "artifact_file_count": 14,
+    "artifact_id": 10119638602,
+    "content_review": "All14 artifact files; runner setup, helper, upload and final-job CI step logs. Other CI logs hashed only. Bounded unchanged helper intervals87-102 and901-935 read for failure placement; no full-body reaudit.",
+    "directory": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort03",
+    "download_receipt_sha256": "a494b604db3be1df1c8296f6634d14ef89f595b6ea45b5ef23bab3191cdfefb5",
+    "final_source_inputs_sha256": "093b6f9dcc751450e095fa5497f414dbd2fe93841506214c5ffe952aed5f4342",
+    "helper_step_log_sha256": "b099b9cd3e2b11df6b15868bd4323c2268731f5ff283df368a3a619be0fdb4e8",
+    "journal_sha256": "63100bf32a5eddf55d3e5c38f6d9dc78b2d8a7e516d399732f6493360a0553fc",
+    "receipt_files_hashed": 22,
+    "result_sha256": "32e829597440f3c201865aa3d988d5e02aa2681437f4c24e17b956f8ce1ec717"
+  },
+  "execution_reconciliation": {
+    "final_job_zero": true,
+    "finalization_qualification": "Main failure leaves commands_returned false; settle(normal=False) separately observes final Job zero, without termination. Earlier readonly zero is not silently promoted to final settlement.",
+    "first_initial_nonzero_timestamp": 1788979598.0653653,
+    "first_journal_interval_seconds": 0.10607099533081055,
+    "first_readonly_zero_timestamp": 1788979598.1714363,
+    "initial_job_counts": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "normal_final_natural_drain_loop_entered": false,
+    "parent_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "parents_launched": 4,
+    "qualification": "About106ms between the two journal records shows the admitted bounded readonly wait was exercised and later metadata commands reached. It is not an exact process lifetime, identity/benignity/cause proof, product regression case or overall runner success. Remaining readonly observations began at0. No compiler cohort or CTest began.",
+    "readonly_zero_records": 4,
+    "successful_Run_command_returns": 4,
+    "termination_attempted": false
+  },
+  "failure": {
+    "basis": "Four Git command returns, request/source-bindings writes and absence of05cmake/toolchain evidence bracket the sole main-path frozen_bytes call there. Final-source capture succeeded separately; failure is unprefixed, not a settled-evidence error.",
+    "compared_fields_from_source": [
+      "st_dev",
+      "st_ino",
+      "st_size",
+      "st_mtime_ns",
+      "st_ctime_ns"
+    ],
+    "qualification": "Call-site placement is source-order inference, not a captured stack/path. The generic guard failure does not identify which composite element disagreed or establish SDK content mutation, a writer, path replacement, timestamp change, stat/fstat semantic mismatch or any exact cause. Do not relax/retry a guard based on this record.",
+    "raw_diagnostics": "No failing pathname, before/opened/finished/after metadata tuples, exact differing field, SDK byte digest or traceback was retained.",
+    "recorded_error": "RuntimeError: Frozen input changed during read",
+    "source_order_location": "Exact helper line920 frozen_bytes(sdk_header), selected from fixed SDK10.0.26100.0 um/webauthn.h at918; composite identity guard at99."
+  },
+  "preserved_predecessors": "Windows01 FAIL/filesystem HOLD14UNSTARTED; Windows02 operationalFAIL14UNSTARTED/0XML with qualified own cleanup/scheduling release only. No old cause or failure is reclassified.",
+  "product_evidence": {
+    "actual_executed_cases": 0,
+    "authored_cases": 14,
+    "cmake_version": "UNSTARTED",
+    "configure": "UNSTARTED",
+    "ctest_inventory": "UNSTARTED",
+    "failed_product_cases": 0,
+    "intended_parent_invocations": 22,
+    "native_build": "UNSTARTED",
+    "new_closures": 0,
+    "qualification": "Four metadata commands and14 artifact files are not product tests. This is an operational refusal, not14 failing cases, platform/hardware proof or a PVA closure.",
+    "remaining_parent_invocations_unstarted": 18,
+    "unstarted_cases": 14,
+    "xml_files": 0
+  },
+  "resources_and_toolchain": {
+    "image_version": "20260830.290.1",
+    "initial_available_ram_bytes": 14740643840,
+    "initial_minimum_free_disk_bytes": 157740044288,
+    "initial_total_ram_bytes": 17174360064,
+    "journal_resource_samples": 5,
+    "os": "Windows Server2022 10.0.20348",
+    "qualification": "Initial/command-launch and first readonly-drain samples clear declared resource floors. The SDK stable-byte read did not complete; required declarations/toolchain JSON/CMake version/configuration/effective compiler evidence remain unestablished.",
+    "runner": "windows-2022"
+  },
+  "reviewer": "/root/native_review",
+  "reviewer_operations": "Inert fresh evidence reads/hashes/reconciliation, one bounded source-placement read and this permanent note only. No Git/API, helper import/execution, build/test/CI, process probe, old-runtime traversal, source delta/admission or cleanup operation.",
+  "run": {
+    "attempt": 1,
+    "helper_exit_code": 1,
+    "id": 34391056257,
+    "job_id": 102599170304,
+    "metadata_qualification": "The download receipt references root API observation/toolchunk a270ae; separate raw completed-run/jobs API JSON is not in this packet. Reviewer did not query API. Helper exit1 and completed upload/final-job steps are directly retained.",
+    "status": "completed failure per root exact-run metadata and completed CI logs"
+  },
+  "scheduling_decision": {
+    "automatic_retry_allowed": false,
+    "basis": "Exact original-Job zero, successful own-root cleanup and helper exit are reconciled; root reports the sole exact CI job/run completed and complete final logs are retained. Root may release this reservation only.",
+    "new_execution_admitted": false,
+    "old_holds_released": false,
+    "scheduling_only_release_supported": true,
+    "source_fix_admitted": false
+  },
+  "schema": 1,
+  "source_identity": {
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "captured_input_count": 12,
+    "helper_sha256": "153d20b008896810b1929be2f4b2d97ef7d8699a46989e05a5dd9ac65982f7e5",
+    "instance_review_sha256": "69bdd3350ab09b00d262680290cbcc7e0aab814ac4ba88a5c6bef5ac589a7b92",
+    "preallocation_final_input_hash_maps_equal": true,
+    "qualification": "Exact12 captured input hashes, including seven inline native/.gitattributes files; not whole-tree checkout-EOL certification or the failed SDK read identity.",
+    "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+    "runtime_identity_checks": "Four actual retained Git outputs match activation/tree/source/tree, exactly one parent, sole new03 request A delta and clean checkout. These checks completed, unlike02.",
+    "scope_sha256": "9f20d0e2b933590dc54144ab989558465b7456855bec0e7a6cdf6119e88d9ca3",
+    "source_acceptance_sha256": "96779f5141e5eba719efcb6481bcd2cb799572895398ca12382e55746a18b018",
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+    "workflow_sha256": "a547a24a547f8bef8d983212741556528f8d424b14fb14f8568a8bc31560a088"
+  },
+  "unchanged_restrictions": "All prior FAIL/HOLD; PVU-007 STOP; PVU-011 NO RETRY; PVA-029 failure/no automatic retry; G7/G8 CLOSED; PVD/hardware/Hello/PVU-008/red-control/production-cut/fixed-vector gaps; protected-ref/tag/version/identity/dependency/signing/publication/occupied1017001 fences."
+}

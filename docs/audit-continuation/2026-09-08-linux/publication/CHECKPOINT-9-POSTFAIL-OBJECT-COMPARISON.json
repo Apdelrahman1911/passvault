@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T18:20:29.202790+00:00",
+  "scope": "ONE_READ_ONLY_FULL_PROTECTED_OBJECT_COMPARISON_AFTER_PRESTAGE_FAIL_NOT_PUBLICATION_RETRY",
+  "baseline_sha256": "19133c18ac993afc2598e6b55f0fdeac0cf75db063aed35b8ab03957449bb573",
+  "incremental_receipts": [
+    "CHECKPOINT-8-SOURCE-PUBLISHED.json",
+    "CHECKPOINT-8-WINDOWS-ACTIVATION-PUBLISHED.json"
+  ],
+  "files": 976,
+  "directories": 253,
+  "ancestors": 7,
+  "logical_bytes": 38178667,
+  "file_non_time_mismatches": [],
+  "directory_identity_mismatches": [
+    {
+      "before": [
+        "info",
+        23,
+        798164,
+        0,
+        16832
+      ],
+      "observed": [
+        "info",
+        23,
+        895075,
+        0,
+        16832
+      ]
+    }
+  ],
+  "ancestor_identity_mismatches": [],
+  "file_timestamp_differences": [
+    {
+      "path": "4e/5655111f0df99e24e9e9761258ccd42f181ffc",
+      "before_mtime_ctime_ns": [
+        1788960461009781350,
+        1788960461009781350
+      ],
+      "observed_mtime_ctime_ns": [
+        1788967550331358794,
+        1788967550331358794
+      ]
+    }
+  ],
+  "added_files": [],
+  "added_directories": [],
+  "info_children": [],
+  "result": "STRICT_FAIL_DIRECTORY_IDENTITY_DRIFT",
+  "cause": "UNKNOWN; no rebind/publication/cleanup permission supplied by this observation",
+  "no_git_or_runtime_execution": true
+}

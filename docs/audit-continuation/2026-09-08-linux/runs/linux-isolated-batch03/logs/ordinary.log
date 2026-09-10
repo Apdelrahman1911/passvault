@@ -1,0 +1,675 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx512m -XX:-UsePerfData -Dfile.encoding=UTF-8 -Duser.home=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/home -Djava.io.tmpdir=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/tmp -Djna.tmpdir=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/jna -Dorg.sqlite.tmpdir=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/sqlite
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-9.7.1-bin.zip
+..............10%..............20%...............30%..............40%...............50%..............60%...............70%..............80%..............90%...............100%
+
+Welcome to Gradle 9.7.1!
+
+Here are the highlights of this release:
+ - Isolated Projects graduates to incubating
+ - Broader Configuration Cache compatibility
+ - Resilient Sync helps you fix broken builds
+ - More source locations in problem reports
+
+For more details see https://docs.gradle.org/9.7.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :shared
+w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (linux-x86_64).
+Reason: simulator tests require macOS
+Solution: To suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.
+
+
+> Configure project :core:crypto
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosSimulatorArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosSimulatorArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Disabled Kotlin/Native Targets
+The following Kotlin/Native targets cannot be built on this machine and are disabled:
+iosArm64, iosSimulatorArm64
+Solution: To hide this message, add 'kotlin.native.ignoreDisabledTargets=true' to the Gradle properties.
+
+
+> Task :core:crypto:tasks
+
+------------------------------------------------------------
+Tasks runnable from project ':core:crypto'
+------------------------------------------------------------
+
+Build tasks
+-----------
+allMetadataJar - Assembles a jar archive containing the metadata for all Kotlin source sets.
+androidSourcesJar - Assembles a jar archive containing the sources of target 'android'.
+assemble - Assembles the outputs of this project.
+assembleAndroidTest - Assembles all the Test applications.
+assembleUnitTest - Assembles all the unit test applications.
+build - Assembles and tests this project.
+buildDependents - Assembles and tests this project and all projects that depend on it.
+buildKotlinToolingMetadata - Build metadata json file containing information about the used Kotlin tooling
+buildNeeded - Assembles and tests this project and all projects it depends on.
+clean - Deletes the build directory.
+cleanAllTests - Deletes all the test results.
+compileAndroidDeviceTestSources
+compileAndroidHostTestSources
+compileAppleMainKotlinMetadata - Compiles a klibrary from the 'appleMain' compilation in target 'metadata'.
+compileIosMainKotlinMetadata - Compiles a klibrary from the 'iosMain' compilation in target 'metadata'.
+compileKotlinIosArm64 - Compiles a klibrary from the 'main' compilation in target 'iosArm64'.
+compileKotlinIosSimulatorArm64 - Compiles a klibrary from the 'main' compilation in target 'iosSimulatorArm64'.
+compileNativeMainKotlinMetadata - Compiles a klibrary from the 'nativeMain' compilation in target 'metadata'.
+compileTestKotlinIosArm64 - Compiles a klibrary from the 'test' compilation in target 'iosArm64'.
+compileTestKotlinIosSimulatorArm64 - Compiles a klibrary from the 'test' compilation in target 'iosSimulatorArm64'.
+desktopJar - Assembles an archive containing the main classes.
+desktopMainClasses - Assembles outputs for compilation 'main' of target 'desktop'
+desktopSourcesJar - Assembles a jar archive containing the sources of target 'desktop'.
+desktopTestClasses - Assembles outputs for compilation 'test' of target 'desktop'
+embedSwiftExportForXcode - Embed swift export library as requested by Xcode's environment variables
+extractAndroidMainAnnotations - Extracts Android annotations for the androidMain variant into the archive file
+iosArm64Binaries - Assembles outputs for target 'iosArm64'.
+iosArm64MainBinaries - Links all binaries for compilation 'main' of target 'iosArm64'.
+iosArm64MainKlibrary - Assembles outputs for compilation 'main' of target 'iosArm64'
+iosArm64MetadataElements - Assembles Kotlin metadata of target 'iosArm64'.
+iosArm64SourcesJar - Assembles a jar archive containing the sources of target 'iosArm64'.
+iosArm64TestBinaries - Links all binaries for compilation 'test' of target 'iosArm64'.
+iosArm64TestKlibrary - Assembles outputs for compilation 'test' of target 'iosArm64'
+iosSimulatorArm64Binaries - Assembles outputs for target 'iosSimulatorArm64'.
+iosSimulatorArm64MainBinaries - Links all binaries for compilation 'main' of target 'iosSimulatorArm64'.
+iosSimulatorArm64MainKlibrary - Assembles outputs for compilation 'main' of target 'iosSimulatorArm64'
+iosSimulatorArm64MetadataElements - Assembles Kotlin metadata of target 'iosSimulatorArm64'.
+iosSimulatorArm64SourcesJar - Assembles a jar archive containing the sources of target 'iosSimulatorArm64'.
+iosSimulatorArm64TestBinaries - Links all binaries for compilation 'test' of target 'iosSimulatorArm64'.
+iosSimulatorArm64TestKlibrary - Assembles outputs for compilation 'test' of target 'iosSimulatorArm64'
+linkDebugTestIosArm64 - Links a test executable 'debugTest' for a target 'iosArm64'.
+linkDebugTestIosSimulatorArm64 - Links a test executable 'debugTest' for a target 'iosSimulatorArm64'.
+linkIosArm64 - Links all binaries for target 'iosArm64'.
+linkIosSimulatorArm64 - Links all binaries for target 'iosSimulatorArm64'.
+metadataAppleMainClasses - Assembles outputs for compilation 'appleMain' of target 'metadata'
+metadataCommonMainClasses - Assembles outputs for compilation 'commonMain' of target 'metadata'
+metadataIosMainClasses - Assembles outputs for compilation 'iosMain' of target 'metadata'
+metadataMainClasses - Assembles outputs for compilation 'main' of target 'metadata'
+metadataNativeMainClasses - Assembles outputs for compilation 'nativeMain' of target 'metadata'
+metadataSourcesJar - Assembles a jar archive containing the sources of target 'metadata'.
+sourcesJar - Assembles a jar archive containing the sources of target 'kotlin'.
+
+Help tasks
+----------
+artifactTransforms - Displays the Artifact Transforms that can be executed in project ':core:crypto'.
+buildEnvironment - Displays all buildscript dependencies declared in project ':core:crypto'.
+dependencies - Displays all dependencies declared in project ':core:crypto'.
+dependencyInsight - Displays the insight into a specific dependency in project ':core:crypto'.
+help - Displays a help message.
+javaToolchains - Displays the detected java toolchains.
+kotlinDslAccessorsReport - Prints the Kotlin code for accessing the currently available project extensions.
+outgoingVariants - Displays the outgoing variants of project ':core:crypto'.
+projects - Displays the sub-projects of project ':core:crypto'.
+properties - Displays the properties of project ':core:crypto'.
+resolvableConfigurations - Displays the configurations that can be resolved in project ':core:crypto'.
+tasks - Displays the tasks runnable from project ':core:crypto'.
+
+Ide tasks
+---------
+resolveIdeDependencies - Debugging/Diagnosing task that will resolve dependencies for the IDE
+
+Install tasks
+-------------
+androidUninstallAll - Uninstall all applications.
+installAndroidDeviceTest - Installs the Kotlin multiplatform android plugin.
+uninstallAndroidDeviceTest - Uninstalls the Kotlin multiplatform android plugin.
+
+Interop tasks
+-------------
+cinteropRawSodiumIosArm64 - Generates Kotlin/Native interop library 'rawSodium' for compilation 'main'of target 'ios_arm64'.
+cinteropRawSodiumIosSimulatorArm64 - Generates Kotlin/Native interop library 'rawSodium' for compilation 'main'of target 'ios_simulator_arm64'.
+cleanNativeDistributionCommonization - Deletes all previously commonized klib's from the Kotlin/Native distribution
+commonize - Aggregator task for all c-interop & Native distribution commonizer tasks
+commonizeCInterop - Invokes the commonizer on c-interop bindings of the project
+commonizeNativeDistribution - Invokes the commonizer on platform libraries provided by the Kotlin/Native distribution
+copyCommonizeCInteropForIde - Copies the output of commonizeCInterop into the root projects .gradle folder for the IDE
+runCommonizer - [Deprecated: Use 'commonize' instead]
+
+Run tasks
+---------
+desktopRun - Jvm Run task for target 'desktop' and compilation 'main'. This task can act as carrier for the IDE to execute jvm based code
+
+Verification tasks
+------------------
+allTests - Runs the tests for all targets and create aggregated report
+androidConnectedCheck - Runs all device checks on currently connected devices.
+androidDeviceCheck - Runs all device checks using Device Providers and Test Servers.
+check - Runs all checks.
+checkKotlinGradlePluginConfigurationErrors - Checks that Kotlin Gradle Plugin hasn't reported project configuration errors, failing otherwise. This task always runs before compileKotlin* or similar tasks.
+connectedAndroidDeviceTest - Installs and runs the tests for androidMain on connected devices.
+connectedAndroidTest - Installs and runs instrumentation tests for all flavors on connected devices.
+desktopTest - Runs the tests of the test test run.
+detekt
+detektAndroidDeviceTestSourceSet - Run detekt analysis for androidDeviceTest source set
+detektAndroidHostTestSourceSet - Run detekt analysis for androidHostTest source set
+detektAndroidMainSourceSet - Run detekt analysis for androidMain source set
+detektAppleMainSourceSet - Run detekt analysis for appleMain source set
+detektAppleTestSourceSet - Run detekt analysis for appleTest source set
+detektBaseline - Creates a detekt baseline on the given --baseline path.
+detektBaselineAndroidDeviceTestSourceSet - Creates detekt baseline for androidDeviceTest source set
+detektBaselineAndroidHostTestSourceSet - Creates detekt baseline for androidHostTest source set
+detektBaselineAndroidMainSourceSet - Creates detekt baseline for androidMain source set
+detektBaselineAppleMainSourceSet - Creates detekt baseline for appleMain source set
+detektBaselineAppleTestSourceSet - Creates detekt baseline for appleTest source set
+detektBaselineCommonMainSourceSet - Creates detekt baseline for commonMain source set
+detektBaselineCommonTestSourceSet - Creates detekt baseline for commonTest source set
+detektBaselineDesktopMainSourceSet - Creates detekt baseline for desktopMain source set
+detektBaselineDesktopTestSourceSet - Creates detekt baseline for desktopTest source set
+detektBaselineDeviceTestAndroid - Creates detekt baseline for compilation deviceTest on target android with type resolution
+detektBaselineHostTestAndroid - Creates detekt baseline for compilation hostTest on target android with type resolution
+detektBaselineIosArm64MainSourceSet - Creates detekt baseline for iosArm64Main source set
+detektBaselineIosArm64TestSourceSet - Creates detekt baseline for iosArm64Test source set
+detektBaselineIosMainSourceSet - Creates detekt baseline for iosMain source set
+detektBaselineIosSimulatorArm64MainSourceSet - Creates detekt baseline for iosSimulatorArm64Main source set
+detektBaselineIosSimulatorArm64TestSourceSet - Creates detekt baseline for iosSimulatorArm64Test source set
+detektBaselineIosTestSourceSet - Creates detekt baseline for iosTest source set
+detektBaselineMainAndroid - Creates detekt baseline for compilation main on target android with type resolution
+detektBaselineMainDesktop - Creates detekt baseline for compilation main on target desktop with type resolution
+detektBaselineNativeMainSourceSet - Creates detekt baseline for nativeMain source set
+detektBaselineNativeTestSourceSet - Creates detekt baseline for nativeTest source set
+detektBaselineTestDesktop - Creates detekt baseline for compilation test on target desktop with type resolution
+detektCommonMainSourceSet - Run detekt analysis for commonMain source set
+detektCommonTestSourceSet - Run detekt analysis for commonTest source set
+detektDesktopMainSourceSet - Run detekt analysis for desktopMain source set
+detektDesktopTestSourceSet - Run detekt analysis for desktopTest source set
+detektDeviceTestAndroid - Run detekt analysis for compilation deviceTest on target android with type resolution
+detektGenerateConfig - Generate a detekt configuration file inside your project.
+detektHostTestAndroid - Run detekt analysis for compilation hostTest on target android with type resolution
+detektIosArm64MainSourceSet - Run detekt analysis for iosArm64Main source set
+detektIosArm64TestSourceSet - Run detekt analysis for iosArm64Test source set
+detektIosMainSourceSet - Run detekt analysis for iosMain source set
+detektIosSimulatorArm64MainSourceSet - Run detekt analysis for iosSimulatorArm64Main source set
+detektIosSimulatorArm64TestSourceSet - Run detekt analysis for iosSimulatorArm64Test source set
+detektIosTestSourceSet - Run detekt analysis for iosTest source set
+detektMainAndroid - Run detekt analysis for compilation main on target android with type resolution
+detektMainDesktop - Run detekt analysis for compilation main on target desktop with type resolution
+detektNativeMainSourceSet - Run detekt analysis for nativeMain source set
+detektNativeTestSourceSet - Run detekt analysis for nativeTest source set
+detektTestDesktop - Run detekt analysis for compilation test on target desktop with type resolution
+deviceAndroidTest - Installs and runs instrumentation tests using all Device Providers.
+iosSimulatorArm64Test - Executes Kotlin/Native unit tests for target iosSimulatorArm64.
+testAndroid - Run unit tests for all variants.
+testAndroidHostTest - Run unit tests for the androidMain build.
+
+Other tasks
+-----------
+androidCompileLintChecks
+androidCreateMockableJar
+androidJar
+androidPreBuild
+assembleAndroidDeviceTest - Assembles main Android output for variant <androidDeviceTest>
+assembleAndroidHostTest - Assembles main Android output for variant <androidHostTest>
+assembleAndroidMain - Assembles main Android output for variant <androidMain>
+bundleAndroidMainAar
+bundleAndroidMainClassesToCompileJar
+bundleAndroidMainClassesToRuntimeJar
+bundleAndroidMainLocalLintAar
+bundleLibRuntimeToDirAndroidMain
+checkAndroidDeviceTestAarMetadata
+checkAndroidDeviceTestDuplicateClasses
+checkAndroidMainAarMetadata
+compileAndroidDeviceTest - Compiles the compilation 'deviceTest' in target 'android'.
+compileAndroidDeviceTestNavigationResources
+compileAndroidHostTest - Compiles the compilation 'hostTest' in target 'android'.
+compileAndroidMain - Compiles the compilation 'main' in target 'android'.
+compileCommonMainKotlinMetadata - Compiles the kotlin sources in compilation 'commonMain' in target 'metadata' to Metadata.
+compileDesktopMainJava - Compiles desktop main Java source.
+compileDesktopTestJava - Compiles desktop test Java source.
+compileKotlinDesktop - Compiles the compilation 'main' in target 'desktop'.
+compileKotlinMetadata - Compiles the kotlin sources in compilation 'main' in target 'metadata' to Metadata.
+compileLint
+compileTestKotlinDesktop - Compiles the compilation 'test' in target 'desktop'.
+compressAndroidDeviceTestAssets
+computeLocalPackageDependencyInputFiles
+consumeConfigAttr
+convertSyntheticImportProjectIntoDefFileIphoneos
+convertSyntheticImportProjectIntoDefFileIphonesimulator
+copyAndroidMainJniLibsProjectOnly
+createAndroidDeviceTestApkListingFileRedirect
+createFullJarAndroidMain
+desktopProcessResources - Processes file collection.
+desktopTestProcessResources - Processes file collection.
+desugarAndroidDeviceTestFileDependencies
+dexBuilderAndroidDeviceTest
+downloadKotlinNativeDistribution
+exportAndroidMainConsumerProguardFiles
+exportCommonSourceSetsMetadataLocationsForMetadataApiElements
+exportCrossCompilationMetadataForIosArm64ApiElements
+exportCrossCompilationMetadataForIosSimulatorArm64ApiElements
+exportRootPublicationCoordinatesForMetadataApiElements
+exportTargetPublicationCoordinatesForAndroidApiElements
+exportTargetPublicationCoordinatesForAndroidRuntimeElements
+exportTargetPublicationCoordinatesForDesktopApiElements
+exportTargetPublicationCoordinatesForDesktopRuntimeElements
+exportTargetPublicationCoordinatesForIosArm64ApiElements
+exportTargetPublicationCoordinatesForIosSimulatorArm64ApiElements
+extractProguardFiles
+fetchSyntheticImportProjectPackages
+generateAndroidDeviceTestAssets
+generateAndroidDeviceTestResources
+generateAndroidDeviceTestRFile
+generateAndroidDeviceTestSources
+generateAndroidHostTestAssets
+generateAndroidHostTestLintModel
+generateAndroidHostTestResources
+generateAndroidHostTestSources
+generateAndroidMainEmptyResourceFiles
+generateProjectStructureMetadata - Generates serialized project structure metadata of the current project (for tooling)
+generateSyntheticLinkageSwiftPMImportProjectForCinteropsAndLdDump
+generateSyntheticLinkageSwiftPMImportProjectForEmbedAndSignLinkage
+generateSyntheticLinkageSwiftPMImportProjectForLinkageForCli
+integrateEmbedAndSign
+integrateLinkagePackage
+iosArm64Cinterop-rawSodiumKlib
+iosArm64Klib
+iosArm64ProcessResources - Processes file collection.
+iosArm64TestProcessResources - Processes file collection.
+iosSimulatorArm64Cinterop-rawSodiumKlib
+iosSimulatorArm64Klib
+iosSimulatorArm64ProcessResources - Processes file collection.
+iosSimulatorArm64TestProcessResources - Processes file collection.
+kmpPartiallyResolvedDependenciesChecker
+lintAnalyzeAndroidHostTest - Run lint analysis on the androidHostTest component
+mapAndroidDeviceTestSourceSetPaths
+mergeAndroidDeviceTestAssets
+mergeAndroidDeviceTestGeneratedProguardFiles
+mergeAndroidDeviceTestJavaResource
+mergeAndroidDeviceTestJniLibFolders
+mergeAndroidDeviceTestManifest
+mergeAndroidDeviceTestNativeLibs
+mergeAndroidDeviceTestResources
+mergeAndroidMainConsumerProguardFiles
+mergeAndroidMainGeneratedProguardFiles
+mergeAndroidMainJavaResource
+mergeAndroidMainJniLibFolders
+mergeAndroidMainNativeLibs
+mergeExtDexAndroidDeviceTest
+mergeLibDexAndroidDeviceTest
+mergeProjectDexAndroidDeviceTest
+metadataAppleMainProcessResources - Processes file collection.
+metadataCommonMainProcessResources - Processes file collection.
+metadataIosMainProcessResources - Processes file collection.
+metadataNativeMainProcessResources - Processes file collection.
+metadataProcessResources - Processes file collection.
+packageAndroidDeviceTest
+packageAndroidDeviceTestResources
+parseAndroidDeviceTestLocalResources
+preAndroidDeviceTestBuild
+preAndroidHostTestBuild
+preAndroidMainBuild
+prepareAndroidMainArtProfile
+prepareKotlinIdeaImport - Umbrella for all tasks required to run before IDEA/Gradle import
+prepareLintJarForPublish
+processAndroidDeviceTestJavaRes
+processAndroidDeviceTestManifest
+processAndroidDeviceTestNavigationResources
+processAndroidDeviceTestResources
+processAndroidHostTestJavaRes
+processAndroidMainJavaRes
+processAndroidMainManifest
+processDesktopMainResources - Processes desktop main resources.
+processDesktopTestResources - Processes desktop test resources.
+resolveConfigAttr
+serializeSwiftPMDependenciesMetadataForLockFiles
+setupLldbScript - Generate lldbinit file with imported konan_lldb.py script
+signingConfigWriterAndroidDeviceTest
+stripAndroidDeviceTestDebugSymbols
+syncAndroidMainLibJars
+syncPersistedPackageResolvedToSynthetic
+syncSyntheticPackageResolvedToPersisted
+transformAppleMainCInteropDependenciesMetadata
+transformAppleMainDependenciesMetadata - Generates serialized dependencies metadata for compilation 'appleMain' (for tooling)
+transformCommonMainDependenciesMetadata - Generates serialized dependencies metadata for compilation 'commonMain' (for tooling)
+transformDependenciesMetadata
+transformIosMainCInteropDependenciesMetadata
+transformIosMainDependenciesMetadata - Generates serialized dependencies metadata for compilation 'iosMain' (for tooling)
+transformNativeMainCInteropDependenciesMetadata
+transformNativeMainDependenciesMetadata - Generates serialized dependencies metadata for compilation 'nativeMain' (for tooling)
+validateSigningAndroidDeviceTest
+writeAndroidDeviceTestSigningConfigVersions
+writeAndroidMainAarMetadata
+xcodeVersion
+
+Rules
+-----
+Pattern: clean<TaskName>: Cleans the output files of a task.
+Pattern: build<ConfigurationName>: Assembles the artifacts of a configuration.
+
+> Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileKotlinDesktop
+> Task :core:crypto:compileDesktopMainJava NO-SOURCE
+> Task :core:crypto:desktopProcessResources NO-SOURCE
+> Task :core:crypto:processDesktopMainResources SKIPPED
+> Task :core:crypto:desktopMainClasses
+> Task :core:crypto:desktopJar
+> Task :core:database:kmpPartiallyResolvedDependenciesChecker
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:compileKotlinDesktop
+> Task :core:domain:compileDesktopMainJava NO-SOURCE
+> Task :core:domain:desktopProcessResources NO-SOURCE
+> Task :core:domain:processDesktopMainResources SKIPPED
+> Task :core:domain:desktopMainClasses
+> Task :core:domain:desktopJar
+> Task :core:security:kmpPartiallyResolvedDependenciesChecker
+> Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:security:compileKotlinDesktop
+> Task :core:security:compileDesktopMainJava NO-SOURCE
+> Task :core:security:desktopProcessResources NO-SOURCE
+> Task :core:security:processDesktopMainResources SKIPPED
+> Task :core:security:desktopMainClasses
+> Task :core:security:desktopJar
+> Task :core:database:kspKotlinDesktop
+
+> Task :core:database:compileKotlinDesktop
+w: file:///root/projects/PassVault/audit-runtime-linux-isolated-batch03/checkout/core/database/build/generated/ksp/desktop/desktopMain/kotlin/com/passvault/core/database/AppDatabaseConstructor.kt:5:8 'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta. Consider using the '-Xexpect-actual-classes' flag to suppress this warning. Also see: https://youtrack.jetbrains.com/issue/KT-61573
+
+> Task :core:database:compileDesktopMainJava NO-SOURCE
+> Task :core:database:desktopProcessResources NO-SOURCE
+> Task :core:database:processDesktopMainResources SKIPPED
+> Task :core:database:desktopMainClasses
+> Task :core:testing:kmpPartiallyResolvedDependenciesChecker
+> Task :core:testing:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:testing:compileKotlinDesktop
+> Task :core:testing:compileDesktopMainJava NO-SOURCE
+> Task :core:testing:desktopProcessResources NO-SOURCE
+> Task :core:testing:processDesktopMainResources SKIPPED
+> Task :core:testing:desktopMainClasses
+> Task :core:testing:desktopJar
+> Task :core:database:kspTestKotlinDesktop SKIPPED
+> Task :core:database:copyRoomSchemas NO-SOURCE
+> Task :core:database:desktopJar
+> Task :core:database:compileTestKotlinDesktop
+> Task :core:database:compileDesktopTestJava NO-SOURCE
+> Task :core:database:desktopTestProcessResources
+> Task :core:database:processDesktopTestResources SKIPPED
+> Task :core:database:desktopTestClasses
+> Task :core:database:desktopTest
+> Task :core:designsystem:checkDesktopMainComposeLibrariesCompatibility
+> Task :core:designsystem:kmpPartiallyResolvedDependenciesChecker
+> Task :core:designsystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:designsystem:convertXmlValueResourcesForCommonMain
+> Task :core:designsystem:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForCommonMain
+> Task :core:designsystem:generateResourceAccessorsForCommonMain
+> Task :core:designsystem:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :core:designsystem:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :core:designsystem:generateActualResourceCollectorsForDesktopMain
+> Task :core:designsystem:generateComposeResClass
+> Task :core:designsystem:generateExpectResourceCollectorsForCommonMain
+> Task :core:designsystem:compileKotlinDesktop
+> Task :core:designsystem:compileDesktopMainJava NO-SOURCE
+> Task :core:designsystem:assembleDesktopMainResources
+> Task :core:designsystem:desktopProcessResources
+> Task :core:designsystem:processDesktopMainResources SKIPPED
+> Task :core:designsystem:desktopMainClasses
+> Task :core:designsystem:desktopJar
+> Task :core:otp:kmpPartiallyResolvedDependenciesChecker
+> Task :core:otp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:otp:compileKotlinDesktop
+> Task :core:otp:compileDesktopMainJava NO-SOURCE
+> Task :core:otp:desktopProcessResources NO-SOURCE
+> Task :core:otp:processDesktopMainResources SKIPPED
+> Task :core:otp:desktopMainClasses
+> Task :core:otp:desktopJar
+> Task :feature:credential:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:credential:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:credential:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:credential:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:credential:generateActualResourceCollectorsForDesktopMain
+> Task :feature:credential:generateComposeResClass
+> Task :feature:credential:generateExpectResourceCollectorsForCommonMain
+> Task :feature:credential:compileKotlinDesktop
+> Task :feature:credential:compileDesktopMainJava NO-SOURCE
+> Task :feature:credential:checkDesktopTestComposeLibrariesCompatibility
+> Task :feature:credential:assembleDesktopMainResources
+> Task :feature:credential:desktopProcessResources
+> Task :feature:credential:processDesktopMainResources SKIPPED
+> Task :feature:credential:desktopMainClasses
+> Task :feature:credential:desktopJar
+> Task :feature:credential:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :feature:credential:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :feature:credential:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :feature:credential:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :feature:credential:generateResourceAccessorsForDesktopTest NO-SOURCE
+> Task :feature:credential:compileTestKotlinDesktop
+> Task :feature:credential:compileDesktopTestJava NO-SOURCE
+> Task :feature:credential:assembleDesktopTestResources
+> Task :feature:credential:desktopTestProcessResources
+> Task :feature:credential:processDesktopTestResources SKIPPED
+> Task :feature:credential:desktopTestClasses
+> Task :feature:credential:desktopTest
+> Task :shared:checkDesktopMainComposeLibrariesCompatibility
+> Task :shared:kmpPartiallyResolvedDependenciesChecker
+> Task :shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :shared:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :shared:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :shared:generateActualResourceCollectorsForDesktopMain
+> Task :shared:generateComposeResClass
+> Task :shared:generateExpectResourceCollectorsForCommonMain
+> Task :core:navigation:kmpPartiallyResolvedDependenciesChecker
+> Task :core:navigation:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:navigation:compileKotlinJvm
+> Task :core:navigation:compileJvmMainJava NO-SOURCE
+> Task :core:navigation:jvmProcessResources NO-SOURCE
+> Task :core:navigation:processJvmMainResources SKIPPED
+> Task :core:navigation:jvmMainClasses
+> Task :core:navigation:jvmJar
+> Task :feature:backup:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:backup:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:backup:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:backup:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:backup:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:backup:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:backup:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:backup:generateActualResourceCollectorsForDesktopMain
+> Task :feature:backup:generateComposeResClass
+> Task :feature:backup:generateExpectResourceCollectorsForCommonMain
+> Task :feature:backup:compileKotlinDesktop
+> Task :feature:backup:compileDesktopMainJava NO-SOURCE
+> Task :feature:backup:assembleDesktopMainResources
+> Task :feature:backup:desktopProcessResources
+> Task :feature:backup:processDesktopMainResources SKIPPED
+> Task :feature:backup:desktopMainClasses
+> Task :feature:backup:desktopJar
+> Task :feature:generator:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:generator:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:generator:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:generator:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:generator:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:generator:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:generator:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:generator:generateActualResourceCollectorsForDesktopMain
+> Task :feature:generator:generateComposeResClass
+> Task :feature:generator:generateExpectResourceCollectorsForCommonMain
+> Task :feature:generator:compileKotlinDesktop
+> Task :feature:generator:compileDesktopMainJava NO-SOURCE
+> Task :feature:generator:assembleDesktopMainResources
+> Task :feature:generator:desktopProcessResources
+> Task :feature:generator:processDesktopMainResources SKIPPED
+> Task :feature:generator:desktopMainClasses
+> Task :feature:generator:desktopJar
+> Task :feature:health:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:health:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:health:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:health:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:health:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:health:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:health:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:health:generateActualResourceCollectorsForDesktopMain
+> Task :feature:health:generateComposeResClass
+> Task :feature:health:generateExpectResourceCollectorsForCommonMain
+> Task :feature:health:compileKotlinDesktop
+> Task :feature:health:compileDesktopMainJava NO-SOURCE
+> Task :feature:health:assembleDesktopMainResources
+> Task :feature:health:desktopProcessResources
+> Task :feature:health:processDesktopMainResources SKIPPED
+> Task :feature:health:desktopMainClasses
+> Task :feature:health:desktopJar
+> Task :feature:onboarding:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:onboarding:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:onboarding:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:onboarding:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:onboarding:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:onboarding:generateActualResourceCollectorsForDesktopMain
+> Task :feature:onboarding:generateComposeResClass
+> Task :feature:onboarding:generateExpectResourceCollectorsForCommonMain
+> Task :feature:onboarding:compileKotlinDesktop
+> Task :feature:onboarding:compileDesktopMainJava NO-SOURCE
+> Task :feature:onboarding:assembleDesktopMainResources
+> Task :feature:onboarding:desktopProcessResources
+> Task :feature:onboarding:processDesktopMainResources SKIPPED
+> Task :feature:onboarding:desktopMainClasses
+> Task :feature:onboarding:desktopJar
+> Task :feature:settings:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:settings:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:settings:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:settings:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:settings:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:settings:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:settings:generateActualResourceCollectorsForDesktopMain
+> Task :feature:settings:generateComposeResClass
+> Task :feature:settings:generateExpectResourceCollectorsForCommonMain
+> Task :feature:settings:compileKotlinDesktop
+> Task :feature:settings:compileDesktopMainJava NO-SOURCE
+> Task :feature:settings:assembleDesktopMainResources
+> Task :feature:settings:desktopProcessResources
+> Task :feature:settings:processDesktopMainResources SKIPPED
+> Task :feature:settings:desktopMainClasses
+> Task :feature:settings:desktopJar
+> Task :feature:unlock:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:unlock:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:unlock:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:unlock:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:unlock:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:unlock:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:unlock:generateActualResourceCollectorsForDesktopMain
+> Task :feature:unlock:generateComposeResClass
+> Task :feature:unlock:generateExpectResourceCollectorsForCommonMain
+> Task :feature:unlock:compileKotlinDesktop
+> Task :feature:unlock:compileDesktopMainJava NO-SOURCE
+> Task :feature:unlock:assembleDesktopMainResources
+> Task :feature:unlock:desktopProcessResources
+> Task :feature:unlock:processDesktopMainResources SKIPPED
+> Task :feature:unlock:desktopMainClasses
+> Task :feature:unlock:desktopJar
+> Task :feature:vault:checkDesktopMainComposeLibrariesCompatibility
+> Task :feature:vault:kmpPartiallyResolvedDependenciesChecker
+> Task :feature:vault:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:vault:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :feature:vault:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :feature:vault:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :feature:vault:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :feature:vault:generateActualResourceCollectorsForDesktopMain
+> Task :feature:vault:generateComposeResClass
+> Task :feature:vault:generateExpectResourceCollectorsForCommonMain
+> Task :feature:vault:compileKotlinDesktop
+> Task :feature:vault:compileDesktopMainJava NO-SOURCE
+> Task :feature:vault:assembleDesktopMainResources
+> Task :feature:vault:desktopProcessResources
+> Task :feature:vault:processDesktopMainResources SKIPPED
+> Task :feature:vault:desktopMainClasses
+> Task :feature:vault:desktopJar
+> Task :shared:compileKotlinDesktop
+> Task :shared:compileDesktopMainJava NO-SOURCE
+> Task :shared:checkDesktopTestComposeLibrariesCompatibility
+> Task :shared:assembleDesktopMainResources
+> Task :shared:desktopProcessResources
+> Task :shared:processDesktopMainResources SKIPPED
+> Task :shared:desktopMainClasses
+> Task :shared:desktopJar
+> Task :shared:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :shared:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :shared:convertXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :shared:copyNonXmlValueResourcesForDesktopTest NO-SOURCE
+> Task :shared:prepareComposeResourcesTaskForDesktopTest NO-SOURCE
+> Task :shared:generateResourceAccessorsForDesktopTest NO-SOURCE
+> Task :shared:compileTestKotlinDesktop
+> Task :shared:compileDesktopTestJava NO-SOURCE
+> Task :shared:assembleDesktopTestResources
+> Task :shared:desktopTestProcessResources
+> Task :shared:processDesktopTestResources SKIPPED
+> Task :shared:desktopTestClasses
+> Task :shared:desktopTest
+
+[Incubating] Problems report is available at: file:///root/projects/PassVault/audit-runtime-linux-isolated-batch03/checkout/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 8m 35s
+129 actionable tasks: 129 executed

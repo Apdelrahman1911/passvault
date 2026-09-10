@@ -1,0 +1,133 @@
+{
+  "ci_compact_runs": [
+    {
+      "conclusion": "failure",
+      "created_at": "2026-09-09T15:46:00Z",
+      "event": "push",
+      "head_sha": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+      "id": 34372394480,
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "run_attempt": 1,
+      "status": "completed",
+      "updated_at": "2026-09-09T15:46:21Z"
+    },
+    {
+      "conclusion": "failure",
+      "created_at": "2026-09-09T09:09:09Z",
+      "event": "push",
+      "head_sha": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+      "id": 34333087199,
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "run_attempt": 1,
+      "status": "completed",
+      "updated_at": "2026-09-09T09:09:31Z"
+    },
+    {
+      "conclusion": "failure",
+      "created_at": "2026-09-08T22:05:27Z",
+      "event": "push",
+      "head_sha": "a1fbdf0d5f0663225a459838d37b072a65e334f6",
+      "id": 34284083351,
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "run_attempt": 1,
+      "status": "completed",
+      "updated_at": "2026-09-08T22:06:10Z"
+    }
+  ],
+  "ci_complete_branch_listing": true,
+  "ci_exit": 0,
+  "ci_read_argv": [
+    "gh",
+    "api",
+    "--method",
+    "GET",
+    "repos/Apdelrahman1911/passvault/actions/runs?branch=codex%2Faudit-continuation-linux-20260908&per_page=100"
+  ],
+  "ci_stdout_sha256": "55f11da0d2e823d5c26db86ce1b7f2c66b300f9288c07170e8b918451e8675c7",
+  "ci_total_count": 3,
+  "cleanup": "Only synchronous bounded read-only Git/API and small permanent request/receipt; no temp/cache/build/worker or Gradle stop duty; no automatic retry.",
+  "coordination": "Root sole build/test/CI/Git owner. No running local audit job; all agents source/data-only. This point CI listing and source acceptance are not Windows runtime resource admission. Reserve shared slot after independent instance acceptance, before activation push.",
+  "git_read_commands": [
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225\n169fa589648d9d00ea4e8cd2edb6af4888f86230\n"
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "symbolic-ref",
+        "--short",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "codex/audit-continuation-linux-20260908\n"
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "nonterminal_runs": [],
+  "owner": "/root",
+  "request": "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json",
+  "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+  "resources_linux_only": {
+    "disk_available_bytes": 21062811648,
+    "ram_available_bytes": 36664766464,
+    "ram_total_bytes": 67435888640
+  },
+  "schema": 1,
+  "slot_before_sha256": "6c1d26428c43922c231ce903867c5dec7b3a91780e85cc7acf4502149a184cbe",
+  "slot_before_state": "IDLE_AFTER_LINUX_ISOLATED_BATCH02_CONSUMED_FAILURE_RECONCILED",
+  "source_publication_receipt": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-9-SOURCE-PUBLISHED-AFTER-INFO-REVIEW.json",
+  "source_publication_sha256": "cf81e74bd3a58d00fd6140318af6038160c1d7c26a8b400cf12d38bb2313f07d",
+  "utc": "2026-09-09T18:36:57.792459+00:00"
+}

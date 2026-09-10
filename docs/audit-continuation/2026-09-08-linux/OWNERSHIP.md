@@ -1,5 +1,53 @@
 # Bounded team ownership
 
+## Current C10 continuation
+
+- Root is sole build/test/CI/Git and central-ledger owner. Linux03 is consumed,
+  independently reconciled PASS166regressions+1producer; original cleanup and
+  scheduling released only. No new build is admitted by that release.
+- `native` owns bounded future PVA036/037 missing-control source feasibility,
+  outside frozen Windows04/Mac02. `native_review` independently accepted those
+  two frozen native execution-source deltas; fresh instances remain separate.
+- `editor` owns bounded future rendered-editor test feasibility/new-file proposal;
+  `editor_review` challenges accessibility/input semantics. No production seam,
+  dependency change or frozen GUI01 edit is authorized by that assignment.
+- `storage` and `editor_review` narrowed PVU002 real-input feasibility without a
+  new finding/test/closure. True shared-host inactivity and native-host curtain
+  routes remain distinct; a partial artificial locked-delete fixture is rejected.
+- `android32` reconciled the actual Linux03 task names only. License/usable32bit
+  target and graph/package/runtime admission remain separate. No SDK or emulator
+  action is authorized by task discovery.
+- `baseline_coverage` independently reviews exact C10 payload and coverage.
+  Source/evidence publication precedes separately admitted Windows04 then Mac02
+  request-only children, with one cross-host slot and independent settlement.
+  All other agents stay bounded source/data-only; no competing build/probe/CI,
+  Git/object-store mutation, held-runtime/cache/SDK access or background service.
+
+## Historical continuation after C9 publication
+
+- Root remains sole build/test/CI/Git and central-ledger owner. Windows03 is a
+  consumed pre-CMake failure: all14 UNSTARTED; independent actual-result review
+  supports only its own qualified cleanup and scheduling release. No retry.
+- Linux03 raw-blob transport and the explicit scoped-coordination delta are
+  independently source-accepted. A fresh exact request is being independently
+  reviewed; no execution follows until root's final under-lock adoption.
+- While Linux03 holds the slot, other agents may perform only assigned,
+  non-overlapping inert source/data reads/edits outside every frozen03 input,
+  request/approval, Git/object store, R/E/lock, SDK/toolchain and shared cache.
+  They may not run Git, builds/tests/CI, helper imports/probes, network commands,
+  services or heavy/background work. This explicit scope replaces the old
+  unqualified all-agents-NO_TOOLS assertion only for fresh03; old admissions
+  remain unchanged. Root performs no Git mutation or CI activation during03.
+- `native` has frozen Windows04's SDK-only original-handle reader; `native_review`
+  independently challenges only that delta. No04 instance/activation is admitted.
+- `android32` has frozen the Desktop pixel-durability correction independently
+  accepted by `editor_review`; `editor` rebound the GUI outer, for secondary
+  review by `verification`. No GUI instance or execution is admitted.
+- `build_config` and `storage` independently support the tiny prospective Mac04
+  public-source capture recipe adjustment. Returned API URLs are receipt data,
+  never request authority. Mac03 failed and is consumed; root04 admission and
+  actual source accounting interpretation remain separate.
+
 ## Current C9 continuation
 
 - Root remains sole build/test/CI/Git and central-ledger owner. Both Windows02

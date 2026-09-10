@@ -1,0 +1,197 @@
+﻿2026-09-09T18:46:26.5469073Z Current runner version: '2.337.0'
+2026-09-09T18:46:26.5493204Z ##[group]Runner Image Provisioner
+2026-09-09T18:46:26.5494032Z Hosted Compute Agent
+2026-09-09T18:46:26.5494580Z Version: 20260828.587
+2026-09-09T18:46:26.5495149Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-09T18:46:26.5495828Z Build Date: 2026-08-28T16:44:25Z
+2026-09-09T18:46:26.5496445Z Worker ID: {a0425209-fb5b-4b9b-90c0-4e76e4560798}
+2026-09-09T18:46:26.5497101Z Azure Region: northcentralus
+2026-09-09T18:46:26.5497664Z ##[endgroup]
+2026-09-09T18:46:26.5498937Z ##[group]Operating System
+2026-09-09T18:46:26.5499568Z Microsoft Windows Server 2022
+2026-09-09T18:46:26.5500147Z 10.0.20348
+2026-09-09T18:46:26.5500619Z Datacenter
+2026-09-09T18:46:26.5501108Z ##[endgroup]
+2026-09-09T18:46:26.5501596Z ##[group]Runner Image
+2026-09-09T18:46:26.5502122Z Image: windows-2022
+2026-09-09T18:46:26.5502641Z Version: 20260830.290.1
+2026-09-09T18:46:26.5504093Z Included Software: https://github.com/actions/runner-images/blob/win22/20260830.290/images/windows/Windows2022-Readme.md
+2026-09-09T18:46:26.5505583Z Image Release: https://github.com/actions/runner-images/releases/tag/win22%2F20260830.290
+2026-09-09T18:46:26.5506475Z ##[endgroup]
+2026-09-09T18:46:26.5507498Z ##[group]GITHUB_TOKEN Permissions
+2026-09-09T18:46:26.5509281Z Contents: read
+2026-09-09T18:46:26.5509845Z Metadata: read
+2026-09-09T18:46:26.5510335Z ##[endgroup]
+2026-09-09T18:46:26.5512321Z Secret source: Actions
+2026-09-09T18:46:26.5513181Z Cache mode: write
+2026-09-09T18:46:26.5513839Z Prepare workflow directory
+2026-09-09T18:46:26.5990528Z Prepare all required actions
+2026-09-09T18:46:26.6062246Z Getting action download info
+2026-09-09T18:46:26.8394956Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-09-09T18:46:26.9917579Z Download action repository 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+2026-09-09T18:46:27.2281345Z Complete job name: native
+2026-09-09T18:46:27.3933586Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-09-09T18:46:27.3935042Z with:
+2026-09-09T18:46:27.3935608Z   ref: b2e826fd534be8fefede169d28e30c22e37530a9
+2026-09-09T18:46:27.3936312Z   fetch-depth: 2
+2026-09-09T18:46:27.3936851Z   persist-credentials: false
+2026-09-09T18:46:27.3937434Z   submodules: false
+2026-09-09T18:46:27.3937925Z   lfs: false
+2026-09-09T18:46:27.3938433Z   repository: Apdelrahman1911/passvault
+2026-09-09T18:46:27.3943301Z   token: ***
+2026-09-09T18:46:27.3943699Z   ssh-strict: true
+2026-09-09T18:46:27.3944101Z   ssh-user: git
+2026-09-09T18:46:27.3944484Z   clean: true
+2026-09-09T18:46:27.3944910Z   sparse-checkout-cone-mode: true
+2026-09-09T18:46:27.3945401Z   fetch-tags: false
+2026-09-09T18:46:27.3945812Z   show-progress: true
+2026-09-09T18:46:27.3946243Z   set-safe-directory: true
+2026-09-09T18:46:27.3946711Z   allow-unsafe-pr-checkout: false
+2026-09-09T18:46:27.3947433Z ##[endgroup]
+2026-09-09T18:46:27.5289464Z Syncing repository: Apdelrahman1911/passvault
+2026-09-09T18:46:27.5291192Z ##[group]Getting Git version info
+2026-09-09T18:46:27.5291838Z Working directory is 'D:\a\passvault\passvault'
+2026-09-09T18:46:27.6458214Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-09T18:46:28.1074121Z git version 2.55.0.windows.5
+2026-09-09T18:46:28.1118827Z ##[endgroup]
+2026-09-09T18:46:28.1136170Z Temporarily overriding HOME='D:\a\_temp\e3afeea1-fa54-47ed-8417-ba3836c581e2' before making global git config changes
+2026-09-09T18:46:28.1138819Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-09T18:46:28.1147264Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-09T18:46:28.1735057Z Deleting the contents of 'D:\a\passvault\passvault'
+2026-09-09T18:46:28.1739115Z ##[group]Determining repository object format
+2026-09-09T18:46:28.1741289Z ##[endgroup]
+2026-09-09T18:46:28.1745511Z ##[group]Initializing the repository
+2026-09-09T18:46:28.1751831Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\passvault\passvault
+2026-09-09T18:46:28.2492880Z Initialized empty Git repository in D:/a/passvault/passvault/.git/
+2026-09-09T18:46:28.2525334Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Apdelrahman1911/passvault
+2026-09-09T18:46:28.3127466Z ##[endgroup]
+2026-09-09T18:46:28.3128454Z ##[group]Disabling automatic garbage collection
+2026-09-09T18:46:28.3135928Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-09-09T18:46:28.3352707Z ##[endgroup]
+2026-09-09T18:46:28.3353503Z ##[group]Setting up auth
+2026-09-09T18:46:28.3354114Z Removing SSH command configuration
+2026-09-09T18:46:28.3368137Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-09T18:46:28.3606388Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-09T18:46:29.8897772Z Removing HTTP extra header
+2026-09-09T18:46:29.8907157Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-09T18:46:29.9129877Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-09T18:46:30.3137991Z Removing includeIf entries pointing to credentials config files
+2026-09-09T18:46:30.3149189Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-09T18:46:30.3380117Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-09T18:46:30.7675823Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-09-09T18:46:30.7904698Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git.path D:\a\_temp\git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:30.8123391Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D:\a\_temp\git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:30.8389648Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:30.8610290Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:30.8873566Z ##[endgroup]
+2026-09-09T18:46:30.8874197Z ##[group]Fetching the repository
+2026-09-09T18:46:30.8885166Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin b2e826fd534be8fefede169d28e30c22e37530a9
+2026-09-09T18:46:33.5948975Z From https://github.com/Apdelrahman1911/passvault
+2026-09-09T18:46:33.5950672Z  * branch            b2e826fd534be8fefede169d28e30c22e37530a9 -> FETCH_HEAD
+2026-09-09T18:46:33.5989226Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse --verify --quiet b2e826fd534be8fefede169d28e30c22e37530a9^{object}
+2026-09-09T18:46:33.6253041Z b2e826fd534be8fefede169d28e30c22e37530a9
+2026-09-09T18:46:33.6278381Z ##[endgroup]
+2026-09-09T18:46:33.6279047Z ##[group]Determining the checkout info
+2026-09-09T18:46:33.6279778Z ##[endgroup]
+2026-09-09T18:46:33.6287366Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-09-09T18:46:33.6680229Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-09-09T18:46:33.6903172Z ##[group]Checking out the ref
+2026-09-09T18:46:33.6911381Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force b2e826fd534be8fefede169d28e30c22e37530a9
+2026-09-09T18:46:34.3222752Z Note: switching to 'b2e826fd534be8fefede169d28e30c22e37530a9'.
+2026-09-09T18:46:34.3223318Z 
+2026-09-09T18:46:34.3223661Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-09T18:46:34.3224507Z changes and commit them, and you can discard any commits you make in this
+2026-09-09T18:46:34.3225270Z state without impacting any branches by switching back to a branch.
+2026-09-09T18:46:34.3225753Z 
+2026-09-09T18:46:34.3226050Z If you want to create a new branch to retain commits you create, you may
+2026-09-09T18:46:34.3226773Z do so (now or later) by using -c with the switch command. Example:
+2026-09-09T18:46:34.3256438Z 
+2026-09-09T18:46:34.3256720Z   git switch -c <new-branch-name>
+2026-09-09T18:46:34.3257511Z 
+2026-09-09T18:46:34.3257674Z Or undo this operation with:
+2026-09-09T18:46:34.3257948Z 
+2026-09-09T18:46:34.3258072Z   git switch -
+2026-09-09T18:46:34.3258268Z 
+2026-09-09T18:46:34.3259375Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-09T18:46:34.3260336Z 
+2026-09-09T18:46:34.3261516Z HEAD is now at b2e826f Run the reviewed Windows native cohort without publishing
+2026-09-09T18:46:34.3375844Z ##[endgroup]
+2026-09-09T18:46:34.3828463Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-09-09T18:46:34.4035729Z b2e826fd534be8fefede169d28e30c22e37530a9
+2026-09-09T18:46:34.4062414Z ##[group]Removing auth
+2026-09-09T18:46:34.4062678Z Removing SSH command configuration
+2026-09-09T18:46:34.4070573Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-09T18:46:34.4292177Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-09T18:46:34.8528136Z Removing HTTP extra header
+2026-09-09T18:46:34.8537146Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-09T18:46:34.8762264Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-09T18:46:35.3074940Z Removing includeIf entries pointing to credentials config files
+2026-09-09T18:46:35.3081600Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-09T18:46:35.3276263Z includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-09T18:46:35.3277123Z includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-09T18:46:35.3278124Z includeif.gitdir:/github/workspace/.git.path
+2026-09-09T18:46:35.3278912Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-09T18:46:35.3318412Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git.path
+2026-09-09T18:46:35.3517028Z D:\a\_temp\git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:35.3550121Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git.path D\:\\a\\_temp\\git\-credentials\-15dc3033\-3eb9\-4a73\-b6be\-e9723b52baf1\.config
+2026-09-09T18:46:35.3781919Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path
+2026-09-09T18:46:35.3976350Z D:\a\_temp\git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:35.4008282Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/passvault/passvault/.git/worktrees/*.path D\:\\a\\_temp\\git\-credentials\-15dc3033\-3eb9\-4a73\-b6be\-e9723b52baf1\.config
+2026-09-09T18:46:35.4296092Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-09-09T18:46:35.4535741Z /github/runner_temp/git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:35.4563928Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-15dc3033\-3eb9\-4a73\-b6be\-e9723b52baf1\.config
+2026-09-09T18:46:35.4787553Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-09-09T18:46:35.4976800Z /github/runner_temp/git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config
+2026-09-09T18:46:35.5004097Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-15dc3033\-3eb9\-4a73\-b6be\-e9723b52baf1\.config
+2026-09-09T18:46:35.5222086Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-09T18:46:35.9272494Z Removing credentials config 'D:\a\_temp\git-credentials-15dc3033-3eb9-4a73-b6be-e9723b52baf1.config'
+2026-09-09T18:46:35.9282266Z ##[endgroup]
+2026-09-09T18:46:35.9582473Z ##[group]Run python -I -B scripts/audit/windows_native_validation.py
+2026-09-09T18:46:35.9583065Z [36;1mpython -I -B scripts/audit/windows_native_validation.py[0m
+2026-09-09T18:46:36.1438743Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-09-09T18:46:36.1439195Z ##[endgroup]
+2026-09-09T18:46:38.6545792Z {"case_scoring": "NOT_PERFORMED; raw XML requires independent actual-case review", "cases": {"passvault_biometric_abi": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_collision": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_dacl_failure": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_empty_payload": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_empty_suffix": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_oversized_payload": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_rename_failure": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_success": {"state": "UNSTARTED"}, "passvault_biometric_windows_file_validation_failure": {"state": "UNSTARTED"}, "passvault_biometric_windows_secret_allocation_exception": {"state": "UNSTARTED"}, "passvault_biometric_windows_secret_early_return": {"state": "UNSTARTED"}, "passvault_biometric_windows_secret_nested_exception": {"state": "UNSTARTED"}, "passvault_biometric_windows_secret_normal_scope": {"state": "UNSTARTED"}, "passvault_biometric_windows_security": {"state": "UNSTARTED"}}, "cleanup": "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED", "commands": [{"argv": ["C:\\Program Files\\Git\\bin\\git.exe", "-c", "core.hooksPath=NUL", "-c", "core.fsmonitor=false", "-c", "gc.auto=0", "rev-parse", "HEAD", "HEAD^{tree}", "HEAD^", "HEAD^^{tree}"], "exit_code": 0, "job_active_after_parent": 1, "log": "01-git-identity.log", "parent_output_snapshot_sha256": "e95c4d82739425581a7060b68a503d16971dbe64b4c70415d831e445156ebe6e", "pid": 1188, "readonly_job_zero_observed": true, "snapshot_qualification": "Not a settled-log hash; owned descendants may still write", "state": "PARENT_EXIT_OBSERVED", "tid": 5404}, {"argv": ["C:\\Program Files\\Git\\bin\\git.exe", "-c", "core.hooksPath=NUL", "-c", "core.fsmonitor=false", "-c", "gc.auto=0", "rev-list", "--parents", "-n", "1", "HEAD"], "exit_code": 0, "job_active_after_parent": 0, "log": "02-one-parent.log", "parent_output_snapshot_sha256": "fdc5a7a3bc93f9b413ba48eba3d3330d0f4d80a2e13c58176e4cd7ed8a5cf496", "pid": 3824, "readonly_job_zero_observed": true, "snapshot_qualification": "Not a settled-log hash; owned descendants may still write", "state": "PARENT_EXIT_OBSERVED", "tid": 1008}, {"argv": ["C:\\Program Files\\Git\\bin\\git.exe", "-c", "core.hooksPath=NUL", "-c", "core.fsmonitor=false", "-c", "gc.auto=0", "diff", "--name-status", "HEAD^", "HEAD", "--"], "exit_code": 0, "job_active_after_parent": 0, "log": "03-request-only-diff.log", "parent_output_snapshot_sha256": "75de4c14b41143deee826de1fe4a597d236c463e45a4cc789f8016ac89b9a5c9", "pid": 6260, "readonly_job_zero_observed": true, "snapshot_qualification": "Not a settled-log hash; owned descendants may still write", "state": "PARENT_EXIT_OBSERVED", "tid": 7472}, {"argv": ["C:\\Program Files\\Git\\bin\\git.exe", "-c", "core.hooksPath=NUL", "-c", "core.fsmonitor=false", "-c", "gc.auto=0", "status", "--porcelain=v1", "--untracked-files=all"], "exit_code": 0, "job_active_after_parent": 0, "log": "04-clean-source.log", "parent_output_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "pid": 5828, "readonly_job_zero_observed": true, "snapshot_qualification": "Not a settled-log hash; owned descendants may still write", "state": "PARENT_EXIT_OBSERVED", "tid": 7944}], "entry_refusals": [], "failures": ["RuntimeError: Frozen input changed during read"], "gradle_stop": "NOT_APPLICABLE: no Gradle invocation", "hello_hardware": "BLOCKED: not exercised", "job_settlement": {"errors": [], "observed_zero": true, "termination_attempted": false}, "operational_status": "FAILED_OR_INCOMPLETE", "original_handle_close_failures": [], "request_commit": "b2e826fd534be8fefede169d28e30c22e37530a9", "request_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f", "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225", "source_qualification": "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof", "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230", "suite": "windows-native-14-cohort-v3"}
+2026-09-09T18:46:38.7731318Z ##[error]Process completed with exit code 1.
+2026-09-09T18:46:38.8023484Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+2026-09-09T18:46:38.8023968Z with:
+2026-09-09T18:46:38.8024186Z   name: audit-windows-cohort-03-34391056257-1
+2026-09-09T18:46:38.8025642Z   path: D:\a\_temp/passvault-windows-cohort-03-34391056257-1-evidence/*.json
+D:\a\_temp/passvault-windows-cohort-03-34391056257-1-evidence/*.jsonl
+D:\a\_temp/passvault-windows-cohort-03-34391056257-1-evidence/*.log
+D:\a\_temp/passvault-windows-cohort-03-34391056257-1-evidence/*.xml
+
+2026-09-09T18:46:38.8027068Z   retention-days: 3
+2026-09-09T18:46:38.8027261Z   compression-level: 9
+2026-09-09T18:46:38.8027472Z   if-no-files-found: error
+2026-09-09T18:46:38.8027678Z   overwrite: false
+2026-09-09T18:46:38.8027870Z   include-hidden-files: false
+2026-09-09T18:46:38.8028077Z   archive: true
+2026-09-09T18:46:38.8028250Z ##[endgroup]
+2026-09-09T18:46:38.9991456Z With the provided path, there will be 14 files uploaded
+2026-09-09T18:46:38.9997254Z Artifact name is valid!
+2026-09-09T18:46:38.9999002Z Root directory input is valid!
+2026-09-09T18:46:39.2666834Z Uploading artifact: audit-windows-cohort-03-34391056257-1.zip
+2026-09-09T18:46:39.2713679Z Beginning upload of artifact content to blob storage
+2026-09-09T18:46:39.4419382Z Uploaded bytes 9082
+2026-09-09T18:46:39.4757862Z Finished uploading artifact content to blob storage!
+2026-09-09T18:46:39.4759297Z SHA256 digest of uploaded artifact is 770dd146c57ac5616d754f34a81c27784e0857a73695363c939b36105937c4ad
+2026-09-09T18:46:39.4760962Z Finalizing artifact upload
+2026-09-09T18:46:39.7448229Z Artifact audit-windows-cohort-03-34391056257-1 successfully finalized. Artifact ID 10119638602
+2026-09-09T18:46:39.7449417Z Artifact audit-windows-cohort-03-34391056257-1 has been successfully uploaded! Final size is 9082 bytes. Artifact ID is 10119638602
+2026-09-09T18:46:39.7456428Z Artifact download URL: https://github.com/Apdelrahman1911/passvault/actions/runs/34391056257/artifacts/10119638602
+2026-09-09T18:46:39.7784776Z Post job cleanup.
+2026-09-09T18:46:40.0005421Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-09-09T18:46:40.0254352Z git version 2.55.0.windows.5
+2026-09-09T18:46:40.0311827Z Temporarily overriding HOME='D:\a\_temp\967a15e2-9485-4da9-a255-e8069dbd8ab0' before making global git config changes
+2026-09-09T18:46:40.0313052Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-09T18:46:40.0323451Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\passvault\passvault
+2026-09-09T18:46:40.0552514Z Removing SSH command configuration
+2026-09-09T18:46:40.0565387Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-09-09T18:46:40.0793760Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-09-09T18:46:40.5613661Z Removing HTTP extra header
+2026-09-09T18:46:40.5623506Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-09T18:46:40.5897781Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-09-09T18:46:41.0272700Z Removing includeIf entries pointing to credentials config files
+2026-09-09T18:46:41.0283674Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-09T18:46:41.0539210Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-09-09T18:46:41.5334396Z Cleaning up orphan processes

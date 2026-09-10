@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "phase": "C10_SOURCE",
+  "utc": "2026-09-10T00:25:32.958643+00:00",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout": "b2e826fd534be8fefede169d28e30c22e37530a9\ncf59082d4fa090415ac8d8660432dd63ba409e4f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "symbolic-ref",
+        "HEAD"
+      ],
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout": "refs/heads/codex/audit-continuation-linux-20260908\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-only",
+        "-z"
+      ],
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout": "refs/heads/codex/audit-continuation-linux-20260908 b2e826fd534be8fefede169d28e30c22e37530a9\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 b2e826fd534be8fefede169d28e30c22e37530a9\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout": "b2e826fd534be8fefede169d28e30c22e37530a9\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/root/projects/PassVault/passvault",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\n05014e9f635131d5db06701e4013b4b5a746465a\n",
+      "stderr": ""
+    }
+  ],
+  "object_checks": [],
+  "status": "FAIL_HOLD_NO_AUTOMATIC_RETRY",
+  "transport_additional_tests": 0,
+  "transport_additional_closures": 0,
+  "root_info_rebind": {
+    "historical": [
+      "info",
+      23,
+      895075,
+      0,
+      16832
+    ],
+    "prospective": [
+      "info",
+      23,
+      1004769,
+      0,
+      16832
+    ],
+    "review_sha256": "b7609292072e5b2c6441298d922c0b09c399cddb5a5646bc399428ed98c6f5bf",
+    "root_adoption_sha256": "61af0d76328ba9538978b209dacedce9c29d3a9f135e7894be9b55336041a1ea",
+    "cause": "UNKNOWN; strict earlier failure preserved; no generic waiver"
+  },
+  "review_sha256": "271ae3259a5dbcb7193f76aa31ffce792af3941043c331a7249fe6bcc8f71db6",
+  "root_adopts_exact14_whitespace_qualification_before_stage": {
+    "proposal_sha256": "7dbd9258d938253eaf4fbedbe5247d0d7d79e32c5083a02b29d9a4395939b4c3",
+    "independent_review_sha256": "271ae3259a5dbcb7193f76aa31ffce792af3941043c331a7249fe6bcc8f71db6",
+    "scope": "Only frozen14 evidence path/hash/size/mode tuples; keep actual FAIL and full diagnostics. No other diagnostic, suppression, normalization or changed byte qualifies."
+  },
+  "resources": {
+    "disk_available_bytes": 19819945984,
+    "ram_available_bytes": 36042649600,
+    "ram_total_bytes": 67435888640
+  },
+  "refs_before": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/remotes/origin/HEAD": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/remotes/origin/codex/audit-continuation-linux-20260908": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "refs/remotes/origin/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/remotes/origin/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/remotes/origin/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/remotes/origin/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.1": "cdb2f812bf32aa78cbddf2025d5da8d5bfff9379",
+    "refs/tags/v1.0.2-rc.1000031": "cff313b7a9c6b628d183fb5dd8f79952aaf39673",
+    "refs/tags/v1.0.3-rc.1009001": "94455acc2080916615e45e95eaa16ea4959d290e",
+    "refs/tags/v1.0.4-rc.1011001": "a252036ae2f3729cca08c1f3fa401faf84f9946a",
+    "refs/tags/v1.0.5-rc.1013001": "c109a33b3c8133ec32edc14152e2b97aa5c118fb",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "remote_before": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "error": "RuntimeError:protected directory drift:01",
+  "elapsed_seconds": 0.9616018699598499,
+  "cleanup": "Foreground bounded Git/data operations; no build/test/cache/temp/runtime output, worker or new Gradle-stop duty. Normal direct commands reaped; abnormal residuals if any explicitly recorded. No deletion, oldHOLD discharge or automatic retry."
+}

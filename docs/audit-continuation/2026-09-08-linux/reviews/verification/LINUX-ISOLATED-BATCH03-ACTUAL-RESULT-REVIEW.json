@@ -1,0 +1,595 @@
+{
+  "schema": 1,
+  "reviewer": "/root/verification",
+  "utc": "2026-09-09T21:49:30.524348+00:00",
+  "run_id": "linux-isolated-batch03",
+  "disposition": "ACCEPT_ACTUAL_FOCUSED_RESULTS_AND_SUPPORT_CONSUMED_SLOT_RELEASE_ONLY",
+  "independence": "Reviewer authored neither the product patches/tests nor the Linux03 launcher/inner/init. Reused already accepted bounded source proofs; independently parsed actual evidence. No product, runner or helper was executed/imported by reviewer.",
+  "scheduling": {
+    "recommendation": "Root may release the consumed03 scheduling slot after adopting this result. No retry, new execution admission, live global-idle claim or old-HOLD discharge.",
+    "coordination": {
+      "sole_build_owner": "/root",
+      "other_agents_audit_execution_quiescent": true,
+      "parallel_source_work": "BOUNDED_NONOVERLAPPING_INERT_ONLY",
+      "no_ci": true
+    },
+    "scope": "Only bounded assigned inert source work was permitted concurrently, outside frozen03 images/packet/Git/object store/R/E/lock/SDK/toolchain/cache authority. This was not an all-agents-NO_TOOLS assertion.",
+    "future_use": "Any later Linux/CI cohort needs its own current slot, source/instance/coordination/cleanup admission; GUI01 strict agents_quiescent guard is not retroactively changed."
+  },
+  "source": {
+    "commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "representation": "1572_RAW_GIT_BLOBS_NOT_CHECKOUT_NORMALIZED",
+    "publication_head_is_not_tested_workload": true,
+    "request_and_admission_and_intent_all13_image_tuples_equal": true,
+    "original_request_and_genuine_approval_pins_reconciled": true,
+    "selected_classes": 14,
+    "selected_source_files": 12,
+    "selected_source_hashes_match_sealed_C4_manifest_and_current_readback": true,
+    "prior17_bounded_source_bindings_unchanged_except": [
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt"
+    ],
+    "changed_production_binding": "VaultRepositoryImpl is covered by storage independent PVA038 patch review c0b3cb9432b65d7a0da9c83c19d125ce2bdceab226be09ff6621b347d9ca9286 and exact C4/current SHA aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630.",
+    "raw_transport": {
+      "complete_stream_passes": 2,
+      "format": "git-cat-file-batch-raw-blobs",
+      "members": 1572,
+      "ordered_request": {
+        "/root/projects/PassVault/audit-runtime-linux-isolated-batch03/source.oids": {
+          "pin": {
+            "bytes": 64452,
+            "ctime_ns": 1788985591935283430,
+            "dev": 24,
+            "ino": 14296335,
+            "mode": 33152,
+            "mtime_ns": 1788985591935283430,
+            "nlink": 1,
+            "uid": 0
+          },
+          "sha256": "7e93f8e2916adeacb766b74381c42446517faf1d21da870b7fbc8d5ca98e1735"
+        }
+      },
+      "response": {
+        "/root/projects/PassVault/audit-runtime-linux-isolated-batch03/source.blobs": {
+          "pin": {
+            "bytes": 68767537,
+            "ctime_ns": 1788985592323283407,
+            "dev": 24,
+            "ino": 14296336,
+            "mode": 33152,
+            "mtime_ns": 1788985592323283407,
+            "nlink": 1,
+            "uid": 0
+          },
+          "sha256": "63059d2bad86703f0498e553e85e05610373bf4866eee6ffab7cd599bb0e3371"
+        }
+      },
+      "stdin_original_verified_before_after": true
+    },
+    "source_before_after_record_sha256": "7e4d51c9ba243bc1d6d69bfef1c8417a5a91fe5071504f84b5fb10f735867ed8",
+    "source_before_after_records_identical": true,
+    "raw_bytes_recorded": 68685701,
+    "checkout_eol_qualifications": [
+      {
+        "path": "scripts/test-windows-checksum-boundary.ps1",
+        "raw_copy": "docs/audit-handoff/raw-source/test-windows-checksum-boundary.ps1.raw",
+        "raw_bytes": 11703,
+        "raw_sha256": "17e5d8e8a30ec0ececf31fd20453938a904ab657573b80cccaee72fe35943141",
+        "git_blob_bytes": 11703,
+        "git_blob_sha256": "17e5d8e8a30ec0ececf31fd20453938a904ab657573b80cccaee72fe35943141",
+        "checkout_bytes": 11940,
+        "checkout_sha256": "7c9dae59e786612de3852b28ee8bb1ee64ba3b97d31af8d9f3d50f0617c818c7",
+        "qualification": "Exact raw-to-LF-Git-to-CRLF-checkout only; no inherited raw-byte coverage/runtime pass."
+      },
+      {
+        "path": "scripts/update-desktop-biometric-checksum.ps1",
+        "raw_copy": "docs/audit-handoff/raw-source/update-desktop-biometric-checksum.ps1.raw",
+        "raw_bytes": 4213,
+        "raw_sha256": "3d7221596a01c46b23100f7f05b6c0ebd246af141ce943b3f63f4704be19a396",
+        "git_blob_bytes": 4132,
+        "git_blob_sha256": "aa399f28b78df8a81a46e3be198022e8dce34dfd8bd7b57e91b71a3e5a7ed203",
+        "checkout_bytes": 4221,
+        "checkout_sha256": "855c8f71a8437d2469917ff75dc6d17b3ac34c041d3cfbc8d8b6e15410541aa1",
+        "qualification": "Exact raw-to-LF-Git-to-CRLF-checkout only; no inherited raw-byte coverage/runtime pass."
+      }
+    ],
+    "calculated_non_normalized_windows_paths_count": 15,
+    "qualification": "Reconciles admitted manifest, raw transport/source-check receipts and accepted source ordering. Removed R/source streams were not reread, reconstructed or probed; no transfer of Windows raw-byte historical runtime credit."
+  },
+  "evidence": {
+    "directory": "runs/linux-isolated-batch03",
+    "files": 53,
+    "bytes": 202742,
+    "all_paths_sizes_and_sha256_recomputed": true,
+    "all_retained_files_nofollow_regular_single_link_and_stable_read": true,
+    "full_inventory_reference": "reviews/isolated-batch03/EXTERNAL-RESULT.json#evidence_files",
+    "independently_recomputed_inventory_canonical_sha256": "3dc63a71e09eda05150980596f142dfd1a861befe4d9b18e591fb8cb365c1ff8",
+    "inventory_canonicalization": "Python JSON ensure_ascii=true sort_keys=true separators comma/colon plus one LF; list in lexical relative-path order.",
+    "saved_phase_log_and_xml_file_pins_match_original_retained_images": true,
+    "original_and_saved_XML_hashes_sizes_match": true,
+    "references": {
+      "reviews/isolated-batch03/EXTERNAL-RESULT.json": {
+        "bytes": 20273,
+        "sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98"
+      },
+      "reviews/isolated-batch03/ROOT-ACTUAL-ADMISSION.json": {
+        "bytes": 10130,
+        "sha256": "27dbda31ea720c3dc131f583678f254d78332e224c28419b49bd80e683f4beea"
+      },
+      "reviews/isolated-batch03/LAUNCH.py": {
+        "bytes": 41040,
+        "sha256": "27f7a42d029e33aeb03700f90e215d64dd9cb781163e8f57529744789a6fd88e"
+      },
+      "requests/LINUX-ISOLATED-BATCH-03.json": {
+        "bytes": 6902,
+        "sha256": "c383fbb952f4b125769bba2cffdb2a477a1dbadaafb9bbfd59a0dc0e48391435"
+      },
+      "reviews/verification/LINUX-ISOLATED-BATCH03-INSTANCE-ACCEPT.json": {
+        "bytes": 1031,
+        "sha256": "2041281fcc1a43bef77768ba3abfa2010901b360ac0d0b5348ac5ccf9becc4a4"
+      },
+      "reviews/verification/LINUX-ISOLATED-BATCH03-INSTANCE-REVIEW.md": {
+        "bytes": 4239,
+        "sha256": "e453c217e6202608ffbdb0efb788a8805a6506aaff3b7fa7bc56600c31fe6829"
+      },
+      "reviews/verification/LINUX-ISOLATED-BATCH03-SOURCE-DELTA-REVIEW.md": {
+        "bytes": 8963,
+        "sha256": "847006f2526300a17f1fc55687bcedbacef9516d249a4ae667ab19493c31a074"
+      },
+      "reviews/verification/LINUX-ISOLATED-BATCH03-COORDINATION-DELTA-REVIEW.md": {
+        "bytes": 2915,
+        "sha256": "b3e05279c6eeb674269f7f0f4dc90abfd23c6a234e83ab524bcf90675a550745"
+      },
+      "reviews/current-cycle/SOURCE.json": {
+        "bytes": 506313,
+        "sha256": "2e8b82c91215bbfee9cf4a2a3f09bad386fc8515d7fd20263fbbfa5fe1217003"
+      },
+      "reviews/build-config/current-cycle01/CLASSES.tsv": {
+        "bytes": 5891,
+        "sha256": "95e6ed4f8e5cbb92e4e6840a08e16613b14674555f7f99cd24e34b3ddcd18bda"
+      },
+      "reviews/build-config/current-cycle01/METHODS.tsv": {
+        "bytes": 13981,
+        "sha256": "10cb11cd6392e43ab7ec3e94e2f348ccd2caf6cd2127830fe9e1287ea10210be"
+      },
+      "reviews/verification/SOURCE-REVIEW.md": {
+        "bytes": 12796,
+        "sha256": "92e9975ee52ad70f2b55bd59eb0dc14c0414b6642efcef290ffbb6c1c5349b19"
+      },
+      "reviews/verification/SOURCE-BINDINGS.json": {
+        "bytes": 11772,
+        "sha256": "02104ab5cc81776f7ebbf627d361968fb2ebf8ae689286b41f5f60249bd5fca5"
+      },
+      "reviews/verification/METHOD-MAPPING-REVIEW.json": {
+        "bytes": 8177,
+        "sha256": "0d57268fb29e7c4ce9ade0d11231e321651b2307c2faef6e456af6e50c4587c5"
+      },
+      "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json": {
+        "bytes": 8327,
+        "sha256": "c0b3cb9432b65d7a0da9c83c19d125ce2bdceab226be09ff6621b347d9ca9286"
+      },
+      "reviews/biometric-confirmation/ROOT-PVA-038-REVIEW.json": {
+        "bytes": 14400,
+        "sha256": "8cd66918d13af25d14bda9cfd2c113fa0b57cf69f65aaeaa5551b866fe7781d5"
+      },
+      "runs/linux-isolated-batch03/OUTER-RECEIPT.json": {
+        "bytes": 11601,
+        "sha256": "45789520a6d15e45b7516b8240f93d59407dce2dfa78d99954afbae1e4432261"
+      },
+      "runs/linux-isolated-batch03/INNER-RESULT.json": {
+        "bytes": 28543,
+        "sha256": "84e02f488ab1c3419e42a02f206b356359232e23f0954260d0f9d54f46c5f327"
+      },
+      "runs/linux-isolated-batch03/INNER-PREFLIGHT.json": {
+        "bytes": 167,
+        "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+      },
+      "runs/linux-isolated-batch03/SOURCE-BEFORE.json": {
+        "bytes": 1333,
+        "sha256": "7e4d51c9ba243bc1d6d69bfef1c8417a5a91fe5071504f84b5fb10f735867ed8"
+      },
+      "runs/linux-isolated-batch03/SOURCE-AFTER.json": {
+        "bytes": 1333,
+        "sha256": "7e4d51c9ba243bc1d6d69bfef1c8417a5a91fe5071504f84b5fb10f735867ed8"
+      }
+    }
+  },
+  "external_result": {
+    "actual_exit": 0,
+    "actual_output": "",
+    "reported_by_root_tool_completion": "3eee9e",
+    "session": 14364,
+    "entry_tool_chunk": "c28c96",
+    "root_observed_completed_utc": "2026-09-09T20:51:38.960313+00:00",
+    "elapsed_seconds": 611.287,
+    "outer_receipt_preterminal_preserved": true,
+    "qualification": "External0 is separately retained owner tool evidence, not inferred from preterminal JSON. Together with exact finalization source it excludes a reported later descriptor-close exit70 in this invocation; not an independent live process probe."
+  },
+  "execution": {
+    "phase_order": [
+      "ordinary",
+      "prepare",
+      "success",
+      "wrong-key",
+      "loader-io"
+    ],
+    "phases": [
+      {
+        "phase": "ordinary",
+        "command_count": 2,
+        "build_exit": 0,
+        "stop_exit": 0,
+        "environment_sha256": "ed890d1c7f6460ee2d07490cf63295de207469abc403378d4886156c4e98dbfb",
+        "direct_namespace_pids": [
+          2,
+          819
+        ]
+      },
+      {
+        "phase": "prepare",
+        "command_count": 2,
+        "build_exit": 0,
+        "stop_exit": 0,
+        "environment_sha256": "ed890d1c7f6460ee2d07490cf63295de207469abc403378d4886156c4e98dbfb",
+        "direct_namespace_pids": [
+          861,
+          1100
+        ]
+      },
+      {
+        "phase": "success",
+        "command_count": 2,
+        "build_exit": 0,
+        "stop_exit": 0,
+        "environment_sha256": "07f8dcdc41201b9c37c2e7edbd34d9bd41c5486c224b7bba5d98ca26fac6f81b",
+        "direct_namespace_pids": [
+          1142,
+          1359
+        ]
+      },
+      {
+        "phase": "wrong-key",
+        "command_count": 2,
+        "build_exit": 0,
+        "stop_exit": 0,
+        "environment_sha256": "07f8dcdc41201b9c37c2e7edbd34d9bd41c5486c224b7bba5d98ca26fac6f81b",
+        "direct_namespace_pids": [
+          1401,
+          1621
+        ]
+      },
+      {
+        "phase": "loader-io",
+        "command_count": 2,
+        "build_exit": 0,
+        "stop_exit": 0,
+        "environment_sha256": "07f8dcdc41201b9c37c2e7edbd34d9bd41c5486c224b7bba5d98ca26fac6f81b",
+        "direct_namespace_pids": [
+          1663,
+          1886
+        ]
+      }
+    ],
+    "build_invocations": 5,
+    "original_wrapper_stops": 5,
+    "selected_Gradle_Test_tasks": 7,
+    "literal_all10_commands_and_recomputed_clean_environment_hashes_match": true,
+    "toolchain": "Pinned JDK17; checked-in wrapper; one worker/no-daemon/no-parallel; configure-on-demand/configuration-cache/build-cache disabled; strict dependency verification; in-process Kotlin; no SDK/JDK auto-download. No Detekt run claimed.",
+    "client_environment_hash_ordinary_prepare": "ed890d1c7f6460ee2d07490cf63295de207469abc403378d4886156c4e98dbfb",
+    "client_environment_hash_consumers": "07f8dcdc41201b9c37c2e7edbd34d9bd41c5486c224b7bba5d98ca26fac6f81b",
+    "isolated_worker_environment": "Accepted init sets fresh per-phase worker HOME/tmp/JNA/SQLite/XDG and explicit worker startup properties; strips inherited JVM-option/provider variables. Provider tests assert exact JDK17/startup arguments and cold provider state, not just client -D flags.",
+    "logs": "Five BUILD SUCCESSFUL results, five original stop logs saying no Gradle daemons. Each selected Test task executed; provider compilation/up-to-date work is intentionally reused while each selected Test is forced.",
+    "android_task_discovery_only": {
+      "source": "logs/ordinary.log :core:crypto:tasks --all",
+      "connectedAndroidDeviceTest_line": 156,
+      "assembleAndroidDeviceTest_line": 217,
+      "compileAndroidDeviceTest_line": 228,
+      "qualification": "Actual task-name discovery, not Android compilation/device-test execution or Android32 derivation evidence."
+    },
+    "task_count_qualification": "129/19 actionable-task summaries are not regression case counts; metadata parsers/assertions in this review are not additional product tests."
+  },
+  "actual_tests": {
+    "xml_files": 17,
+    "exact_cases": 167,
+    "regressions": 166,
+    "separate_fixture_producers": 1,
+    "ordinary_regressions": 163,
+    "original_database_selection_and_siblings": 105,
+    "editor_navigation_regressions": 49,
+    "pva038_routing_regressions": 9,
+    "pva038_cold_provider_regressions": 3,
+    "missing": 0,
+    "unexpected": 0,
+    "duplicates": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "mapping_rule": "Exact phase/FQCN/literal source-method+[desktop]; exact simple-suite+[desktop], no aliasing/posthoc normalization. Explicit absence of failure/error/skipped elements and empty testcase children checked in addition to numeric totals.",
+    "mapping_sha256": "db81ae5b89708f93c49a37187ad877bdfca9acf30d3b1fa8edd109a3db202a93",
+    "mapping_canonicalization": "Sorted list of [phase,FQCN,literal decorated method], ensure_ascii=false JSON comma/colon separators, no trailing LF.",
+    "per_class_phase": [
+      {
+        "invocation": "ordinary",
+        "class_id": "D01",
+        "fqcn": "com.passvault.core.database.backup.BackupPaginationTest",
+        "cases": 13,
+        "kind": "regression",
+        "xml_sha256": "aef4877a3b38826b70d909fb743d317453bff047e59f0eaedf8d74bc7ff31c0f"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D02",
+        "fqcn": "com.passvault.core.database.backup.VaultBackupUnicodePaginationTest",
+        "cases": 6,
+        "kind": "regression",
+        "xml_sha256": "d04959182e54265017611ecbd165fea49e1daa795f7010112c4188e0b23d7050"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D03",
+        "fqcn": "com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest",
+        "cases": 12,
+        "kind": "regression",
+        "xml_sha256": "634bedc13ac6038c72d34887b791971e20550eef8413ccfc8b8d7fb775c333c8"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D04",
+        "fqcn": "com.passvault.core.database.repository.RepositorySecurityIntegrationTest",
+        "cases": 17,
+        "kind": "regression",
+        "xml_sha256": "51017c789d705d58530e25d1217901b8d18356107e2378fa7461b79c15a2e751"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D05",
+        "fqcn": "com.passvault.core.database.backup.VaultBackupStreamingTest",
+        "cases": 39,
+        "kind": "regression",
+        "xml_sha256": "954c66f084a4a235c4381092ef80a74aa1ffb0b19135ed29a8e53930c5848fa9"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D06",
+        "fqcn": "com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest",
+        "cases": 7,
+        "kind": "regression",
+        "xml_sha256": "c3e9f197bb5af46b3138f1ad00a72c6dea35e1641bcfe4575fb7da5c42413ca1"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D07",
+        "fqcn": "com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest",
+        "cases": 11,
+        "kind": "regression",
+        "xml_sha256": "0751c006d81af45c2b98c64a7f961c5de01c95a1eaa5b87bb1367a4eaaa3a467"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "D08",
+        "fqcn": "com.passvault.core.database.repository.BiometricVerificationFailureIntegrationTest",
+        "cases": 9,
+        "kind": "regression",
+        "xml_sha256": "280c1776a99889983bef88118527303ce41e4a3dc01696a29607156f3a62f713"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "C01",
+        "fqcn": "com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest",
+        "cases": 11,
+        "kind": "regression",
+        "xml_sha256": "e0f7b8092853452cd13d2808106a2f2aa1e48b56671f762dd25cc5582fcf9b42"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "C02",
+        "fqcn": "com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest",
+        "cases": 13,
+        "kind": "regression",
+        "xml_sha256": "16520c20e9f4465b635e6d22d9fb2b5841c1eb002c7ae16288163f19a6e1cb40"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "C03",
+        "fqcn": "com.passvault.feature.credential.presentation.CredentialCustomFieldCapacityTest",
+        "cases": 7,
+        "kind": "regression",
+        "xml_sha256": "a4823377e8012d29de7fba266188f0ba10cdd14e996caa5eb6bd7e4951f8d2a1"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "S01",
+        "fqcn": "com.passvault.shared.navigation.NavigationBackCoordinatorTest",
+        "cases": 11,
+        "kind": "regression",
+        "xml_sha256": "8c9b3710bf0bd6cf479e086c85ec26edf6015a2a94ef2ff730b1e6fed4030f48"
+      },
+      {
+        "invocation": "ordinary",
+        "class_id": "S02",
+        "fqcn": "com.passvault.shared.navigation.CredentialBackFreshnessCompositionTest",
+        "cases": 7,
+        "kind": "regression",
+        "xml_sha256": "cf82bbd13efa2a078fb6da9166b09fac828013428f1b8a82ffbbcdd5eb706887"
+      },
+      {
+        "invocation": "prepare",
+        "class_id": "P01",
+        "fqcn": "com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest",
+        "cases": 1,
+        "kind": "fixture_producer",
+        "xml_sha256": "58423d3a86330bd3adf3031ccb2620d10ef38b85724fce72a33142bf8a5a6a0d"
+      },
+      {
+        "invocation": "success",
+        "class_id": "P01",
+        "fqcn": "com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest",
+        "cases": 1,
+        "kind": "regression",
+        "xml_sha256": "817ff1c3e022a79620a1346fa0282225fa3fca97397b9082729d053828e65665"
+      },
+      {
+        "invocation": "wrong-key",
+        "class_id": "P01",
+        "fqcn": "com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest",
+        "cases": 1,
+        "kind": "regression",
+        "xml_sha256": "c828b844256654b93d9ff77c8c6bb864c41ced7ac200fae25072f9d13e678f9a"
+      },
+      {
+        "invocation": "loader-io",
+        "class_id": "P01",
+        "fqcn": "com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest",
+        "cases": 1,
+        "kind": "regression",
+        "xml_sha256": "162451c19b824c05a8972c0153fe8e764804deaf2546524f7409c325bcf70d36"
+      }
+    ],
+    "fixture": {
+      "characters_without_LF": 317,
+      "sha256_without_LF": "c24a61dcd814d61c93d6eec4858f7be73bc6731b779c7a994a68cc402a595e3e",
+      "retained_file_bytes_with_LF": 318,
+      "retained_file_sha256": "a5a49da0f453d6ba64fb4953cdfac8ae775a561e8a7964cb836e72fa673ac9a6",
+      "producer_XML_and_all3_consumer_phase_hashes_and_environment_hashes_match": true,
+      "loader_stdout_witness": "PVA038_PROVIDER_FAULT=ResourceLoaderException/IOException/createMainTempDirectory",
+      "qualification": "Separate fresh provider JVMs, synthetic public fixture, real JVM crypto initialization/authentication. In-memory metadata and controlled key-release component, not native biometric authentication. Source assertions establish ResourceLoaderException/IOException/createMainTempDirectory and Files.createTempDirectory frames, no publication/deletion and wiping; only compact marker, not a full raw stack trace, retained."
+    }
+  },
+  "settlement_cleanup": {
+    "original_children": [
+      {
+        "kind": "git_cat_file",
+        "birth": {
+          "pid": 32678,
+          "ppid": 32672,
+          "start": 25460820
+        },
+        "exit": 0,
+        "pidfd_kill_attempted": false
+      },
+      {
+        "kind": "unshare_inner",
+        "birth": {
+          "pid": 32714,
+          "ppid": 32672,
+          "start": 25461139
+        },
+        "exit": 0,
+        "pidfd_kill_attempted": false
+      }
+    ],
+    "original_namespace_preflight": {
+      "mount_rows": 11,
+      "nonpropagating_mounts": true,
+      "parent": {
+        "mnt": "mnt:[4026531841]",
+        "pid": "pid:[4026531836]"
+      },
+      "self": {
+        "mnt": "mnt:[4026532115]",
+        "pid": "pid:[4026532116]"
+      }
+    },
+    "inner_all_required_stops_settled_and_before_after_source_gates_true": true,
+    "outer_final_source_comparison_authority_and_host_screen_before_cleanup": "Reconciled at sealed LAUNCH.py:668-684; original live-child namespace pair equals captured inner preflight. No unclassified host churn recorded, not global-idle proof.",
+    "cleanup": {
+      "removed": 36753,
+      "snapshot_entries": 36753,
+      "status": "REMOVED_ORIGINAL_RUNTIME"
+    },
+    "root_absence_point_reported": true,
+    "cleanup_order": "After terminal original child, exact inner/preflight/source/authority acceptance: parent mount guard; complete original FD-bound allowlisted snapshot; second mount check before deletion; each original entry type/owner/device/name identity checked; 36753 descendant entries removed; original R emptied/rmdir/parent fsync/root-FD nlink0 and path absence verified. External0 separately covers final close/exit.",
+    "parent_mount_guard": {
+      "qualification": "Cooperative quiescent host only; not protection against concurrent hostile-root mount mutation.",
+      "rows": 10,
+      "sha256": "c4348933a0c5fb769f70594efeb2b2f82787474c3adcad91573e81bae623385a"
+    },
+    "no_live_R_probe_or_old_HOLD_traversal_by_reviewer": true,
+    "qualification": "Only the original new03 R was disposable. Original R absence point is not ownership proof for any other path; cooperative/nonhostile-root model, nonexhaustive comm screen/generic-interpreter blind spot, no no-escape/global-idle/hard-parent-loss-cleanup guarantee. Historical process/lock IDs are evidence only."
+  },
+  "resources": {
+    "outer_point_samples": 21,
+    "min_sample_disk_available_bytes": 20362739712,
+    "min_sample_mem_available_bytes": 32570023936,
+    "min_sample_mem_available_fraction": 0.4829776042527138,
+    "inner_live_inventory_samples": 23,
+    "max_sample_runtime_logical_bytes": 1349153496,
+    "incomplete_samples": [
+      {
+        "index_0_based": 10,
+        "directories": 6449,
+        "examined_entries": 19858,
+        "files": 13409,
+        "logical_bytes": 1084053942,
+        "traversal_finished": true,
+        "vanished_entries": 0,
+        "vanished_scan_directories": 1
+      }
+    ],
+    "qualification": "One live inventory sample had one vanished scan directory despite traversal_finished=true; retained as incomplete, never cleanup or ownership authority.21 resource points remained above running8GiB/20percent gates; samples are not continuous resource guarantees. Authoritative settled cleanup snapshot is separate."
+  },
+  "issue_dispositions": {
+    "PVA-033": {
+      "recommendation": "SUPPORT_QUALIFIED_REPOSITORY_FRESHNESS_DEFECT_SCOPE_CLOSURE",
+      "basis": "12 actual freshness cases plus35 repository/security/preemption/biometric siblings and the rest of the original105 selection pass at C4; accepted source proof covers stale/foreign/invalid/already-open guards, wipe/publication ordering and final-write INTERNAL_ERROR distinction. Actual results independently reconciled; no contrary sibling result.",
+      "remaining": "Physical OS prompt/key-release/cancellation, late native prompt and device no-flash behavior remain separate gates; no hardware closure."
+    },
+    "PVA-034": {
+      "recommendation": "SUPPORT_QUALIFIED_TEST_ORACLE_DEFECT_SCOPE_CLOSURE",
+      "basis": "The exact stream-validator identifier-budget method passes among39 streaming siblings. Reused source proof requires real valid encrypted tag, independent4-byte positive and3-byte exact-diagnostic negative budgets; unchanged production schema/format/KDF.",
+      "remaining": "Optional omit-tag-charge mutant was NOT executed; it remains a source counterfactual. Accept-only oracle is not complete-snapshot/whole-restore proof."
+    },
+    "PVA-035": {
+      "recommendation": "SUPPORT_QUALIFIED_SHARED_PAGINATION_AND_LINUX_ROOM_DEFECT_SCOPE_CLOSURE",
+      "basis": "13 pagination cases and6 real file-backed Room/SQLite regressions pass, including UTF8/UTF16LE/UTF16BE order, all8DAO routes, relationships/history/managed content, legacy logical reexport and ASCII/empty controls;39 streaming siblings also pass. Prior reviewed production callers/order propagation unchanged.",
+      "remaining": "Finite vectors, copied-buffer adapters and selected roundtrips, not exhaustive Unicode or external-provider coverage, schema1-4 migration, cross-pass snapshot guarantee, Android/iOS native-provider parity or loaded-native-binary provenance."
+    },
+    "PVA-038": {
+      "recommendation": "SUPPORT_QUALIFIED_NARROW_DESKTOP_COLD_PROVIDER_AND_ROUTING_COMPONENT_CLOSURE",
+      "basis": "9 routing cases plus3 real cold fresh-JVM consumer regressions pass with separate producer and bound fixture/startup flags. Successful real provider/password fallback and wrong-key/tag controls remain; actual loader IO witness retains enrollment, never publishes a session and wipes transferred material. Accepted independent source proof covers current shared catch/guards.",
+      "remaining": "Linux biometrics are unavailable and key release is synthetic; no macOS/Windows native authentication, Hello/Keychain or device claim. Exact iOS/Kotlin-Native AEAD dependency source/runtime and genuine hardware behavior remain distinct OPEN/BLOCKED gates, not silently waived. No fresh full dependency-graph/source-binary equivalence or Detekt evidence is inferred."
+    },
+    "PVA-007": {
+      "recommendation": "KEEP_FAMILY_OPEN_RENDERED_IME_DEVICE_VERIFICATION",
+      "basis": "49 editor/navigation logical/Composition cases now actual, not rendered UI evidence.",
+      "remaining": [
+        "Rendered Compose edit→Save/reopen/row Save/Cancel and actual dirty Back/navigation integration, including edit→Back/tab/forward before SideEffect registration.",
+        "Physical Android system/predictive Back, iOS interactive LTR/RTL, Desktop delivered key/repeat and lifecycle/IME behavior remain unverified; current logical controls do not replace them."
+      ]
+    },
+    "PVA-031": {
+      "recommendation": "KEEP_FAMILY_OPEN_RENDERED_INPUT_CAPACITY_VERIFICATION",
+      "basis": "7 capacity and13 draft siblings now execute successfully in the separately admitted current environment. Historical plugin failure/cause stays preserved; this is not diagnosis/replay of that failure.",
+      "remaining": "Rendered full-capacity/add/remove/save, still-composed-input retention and rapid/keyboard/a11y/LTR-RTL behavior remain. No universal retention after owner disposal or concurrent-editor/backend-ack guarantee."
+    },
+    "counting": "These are independent scoped recommendations, not central-ledger edits. Root alone applies qualified closure/count updates; independent final coverage review remains separate. No overall readiness percentage or original-suspicion resolution inferred."
+  },
+  "restrictions_preserved": [
+    "PVU-007 STOP",
+    "PVU-011 NO RETRY",
+    "PVA-029 actual failure/no automatic retry",
+    "G7/G8 CLOSED",
+    "All prior Linux/namespace/Windows/macOS FAIL/HOLD outcomes unchanged; no old runtime cleanup/adoption",
+    "No Android32 test/hardware proof, physical iPhone security, rendered Desktop, Windows Hello or Apple/Windows native evidence from this batch",
+    "No archived helper or unadmitted runner execution/import",
+    "No protected refs/tags/protections/version/identity/dependency changes or production signing/stores/publication",
+    "Occupied/candidate mobile1017001 untouched",
+    "Eight PVD explanations/owner decisions remain separate"
+  ],
+  "inspection_qualifications": [
+    "Early combined JSON/ledger displays exceeded output bounds; relevant fields were subsequently projected/read fully and assertions independently reconciled. No unviewed historical whole-row/whole-project review is claimed.",
+    "Reused SOURCE-REVIEW.md and PVA038 independent patch review rather than reauditing unchanged bodies.12selected source files rehashed; exact one changed prior production binding mapped to the already reviewed patch.",
+    "All review activity was bounded inert no-follow file/hash/JSON/TSV/XML inspection plus this permanent exclusive0600/fsynced/readback report. No Git/CI/build/test/helper import/process/namespace/mount probe, temporary cache/runtime, persistent worker, signal or deletion by reviewer. Reader descriptors closed."
+  ],
+  "review_control_tool_chunks": [
+    "85bd05",
+    "2e8f64",
+    "277b43",
+    "ac4e2a",
+    "a2d4a2"
+  ],
+  "handoff_remaining_requirements_source": {
+    "path": "docs/audit-handoff/current/issue-to-fix.json",
+    "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+  }
+}

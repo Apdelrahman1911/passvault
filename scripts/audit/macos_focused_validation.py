@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Focused NON-PUBLISHING native-five cycle; source is not execution admission.
+"""Focused02 NON-PUBLISHING native-five cycle; source is not execution admission.
 
 Only the newly admitted Actions instance may run this file. No old runner,
 capture or recovery helper is imported. Normal settlement trusts synchronous
@@ -21,7 +21,7 @@ import sys
 import time
 
 
-REQUEST = "docs/audit-continuation/2026-09-08-linux/requests/macos-focused-01.json"
+REQUEST = "docs/audit-continuation/2026-09-08-linux/requests/macos-focused-02.json"
 SCRIPT = "scripts/audit/macos_focused_validation.py"
 WORKFLOW = ".github/workflows/audit-macos-focused-validation.yml"
 BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
@@ -216,18 +216,43 @@ class Cycle:
         return hashlib.sha256(raw).hexdigest()
 
     def resources(self, launching=False):
-        output = self.os_read(["/usr/bin/vm_stat"]).decode("ascii", "strict")
-        page = re.search(r"page size of ([0-9]+) bytes", output)
-        free = re.search(r"^Pages free:\s+([0-9]+)\.\s*$", output, re.MULTILINE)
-        if page is None or free is None:
-            raise Hold("unrecognized OS free-physical-page reading")
-        free_ram = int(page[1]) * int(free[1])  # Conservative free pages only; no reclaimability formula.
-        disk = min(shutil.disk_usage(self.workspace).free, shutil.disk_usage(self.temp_path).free)
-        self.result["resources"].append({"elapsed_s": round(time.monotonic() - self.started, 3),
-                                         "disk_free_bytes": disk, "free_physical_bytes": free_ram})
         disk_floor, percent = (12 * GIB, 25) if launching else (8 * GIB, 20)
-        if free_ram > self.total_ram or disk < disk_floor or free_ram * 100 < self.total_ram * percent:
-            raise Hold("handoff resource floor not met using conservative free-physical reading")
+        record = {"elapsed_s": round(time.monotonic() - self.started, 3),
+                  "phase": "launch" if launching else "running", "total_physical_bytes": self.total_ram,
+                  "memory_metric": "kernel_free_equivalent", "page_size_bytes": None,
+                  "printed_free_pages": None, "printed_speculative_pages": None,
+                  "free_physical_bytes": None, "kernel_free_equivalent_bytes": None,
+                  "disk_free_bytes": None, "disk_floor_bytes": disk_floor, "memory_floor_percent": percent}
+        self.result["resources"].append(record)  # Preserve available observations even when a guard fails.
+        output = self.os_read(["/usr/bin/vm_stat"]).decode("ascii", "strict")
+        lines, invalid = output.splitlines(), []
+        for name, prefix, pattern in (
+            ("page_size_bytes", "Mach Virtual Memory Statistics",
+             r"Mach Virtual Memory Statistics: \(page size of ([0-9]+) bytes\)"),
+            ("printed_free_pages", "Pages free", r"Pages free:[ \t]+([0-9]+)\.[ \t]*"),
+            ("printed_speculative_pages", "Pages speculative", r"Pages speculative:[ \t]+([0-9]+)\.[ \t]*"),
+        ):
+            candidates = [line for line in lines if line.lstrip().startswith(prefix)]
+            parsed = re.fullmatch(pattern, candidates[0]) if len(candidates) == 1 else None
+            if parsed is None:
+                invalid.append(name + ": " + str(len(candidates)) + " matching rows")
+            else:
+                record[name] = int(parsed[1])
+        if invalid:
+            record["invalid_fields"] = invalid
+            raise Hold("missing, duplicate or malformed OS free/speculative-page reading")
+        page_size = record["page_size_bytes"]
+        free_ram = page_size * record["printed_free_pages"]
+        # Default vm_stat subtracts speculative from printed free. Reconstruct
+        # the kernel free_count, not a sum of potentially reclaimable categories.
+        kernel_free_ram = page_size * (record["printed_free_pages"] + record["printed_speculative_pages"])
+        record.update({"free_physical_bytes": free_ram, "kernel_free_equivalent_bytes": kernel_free_ram})
+        if page_size <= 0:
+            raise Hold("invalid OS physical page size")
+        disk = min(shutil.disk_usage(self.workspace).free, shutil.disk_usage(self.temp_path).free)
+        record["disk_free_bytes"] = disk
+        if kernel_free_ram > self.total_ram or disk < disk_floor or kernel_free_ram * 100 < self.total_ram * percent:
+            raise Hold("handoff resource floor not met using kernel-free-equivalent reading")
 
     def command(self, label, argv, seconds, case=None, require_zero=True):
         self.resources(launching=True)
@@ -346,7 +371,7 @@ class Cycle:
         for name, digest in NATIVE_INPUTS.items():
             if hashlib.sha256(self.read_leaf(workspace_fd, SOURCE + "/" + name, 262144)).hexdigest() != digest:
                 raise Hold("reviewed native input/checkout-EOL mismatch: " + name)
-        stem = "passvault-macos-focused-" + run_id + "-1"
+        stem = "passvault-macos-focused-02-" + run_id + "-1"
         self.evidence_path = self.temp_path + "/" + stem + "-evidence"
         os.mkdir(stem + "-evidence", 0o700, dir_fd=self.temp["fd"])
         self.evidence = self.open_dir(stem + "-evidence", self.temp)
@@ -397,6 +422,7 @@ class Cycle:
                          "XDG_CACHE_HOME": self.root_path + "/cache", "CMAKE_BUILD_PARALLEL_LEVEL": "1",
                          "CTEST_PARALLEL_LEVEL": "1", "PASSVAULT_NATIVE_TEST_PARENT": self.root_path + "/native-parent"})
         self.total_ram = int(self.os_read(["/usr/sbin/sysctl", "-n", "hw.memsize"]).strip())
+        self.result["total_physical_bytes"] = self.total_ram
         if self.total_ram <= 0:
             raise Hold("invalid physical RAM total")
 

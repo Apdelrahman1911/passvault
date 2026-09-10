@@ -1,6 +1,6 @@
 """Fresh Windows native-14 cohort; no automatic retry, general runner or recovery.
 
-Author: /root/native. Read WINDOWS-COHORT-03-SCOPE.md before admitting a new run.
+Author: /root/native. Read WINDOWS-COHORT-04-SCOPE.md before admitting a new run.
 Only root may activate this helper with an independently accepted request. No
 Gradle, signing, installation, credential inventory, or Hello operation is run.
 One Job encloses all commands; a command return is not whole-cohort settlement.
@@ -26,12 +26,12 @@ import time
 
 BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
 BASE = "docs/audit-continuation/2026-09-08-linux"
-REQUEST = f"{BASE}/requests/windows-cohort-03.json"
+REQUEST = f"{BASE}/requests/windows-cohort-04.json"
 HELPER = "scripts/audit/windows_native_validation.py"
 WORKFLOW = ".github/workflows/audit-windows-native-validation.yml"
-SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-03-SCOPE.md"
-REVIEW = f"{BASE}/reviews/native-independent/WINDOWS-COHORT-03-ADMISSION.json"
-SUITE = "windows-native-14-cohort-v3"
+SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-04-SCOPE.md"
+REVIEW = f"{BASE}/reviews/native-independent/WINDOWS-COHORT-04-ADMISSION.json"
+SUITE = "windows-native-14-cohort-v4"
 SDK = "10.0.26100.0"
 NATIVE = "app-desktop/native/biometric-bridge/"
 INPUTS = {
@@ -226,6 +226,7 @@ class Windows:
                                             ctypes.c_size_t, wt.LPVOID, wt.LPVOID], wt.BOOL),
             "DeleteProcThreadAttributeList": ([wt.LPVOID], None),
             "CreateFileW": ([wt.LPCWSTR, wt.DWORD, wt.DWORD, wt.LPVOID, wt.DWORD, wt.DWORD, wt.HANDLE], wt.HANDLE),
+            "ReadFile": ([wt.HANDLE, wt.LPVOID, wt.DWORD, wt.LPVOID, wt.LPVOID], wt.BOOL),
             "CreateProcessW": ([wt.LPCWSTR, wt.LPWSTR, wt.LPVOID, wt.LPVOID, wt.BOOL, wt.DWORD,
                                 wt.LPVOID, wt.LPCWSTR, wt.LPVOID, wt.LPVOID], wt.BOOL),
             "ResumeThread": ([wt.HANDLE], wt.DWORD),
@@ -335,6 +336,7 @@ class Run:
         self.job_settled = False
         self.close_failures = []
         self.cleanup_cancellation_seen = False
+        self.sdk_header_observation = None
         self.environment = {
             name: os.environ[name] for name in (
                 "SystemRoot", "WINDIR", "COMSPEC", "PATH", "PATHEXT",
@@ -369,6 +371,76 @@ class Run:
         return {"identity": [state.volume, state.index_high, state.index_low, state.attributes],
                 "links": state.links, "size": (state.size_high << 32) | state.size_low,
                 "written": [state.written.dwHighDateTime, state.written.dwLowDateTime]}
+
+    def read_sdk_header(self, path):
+        """SDK-only stable read; never equate Path.lstat and os.fstat tuples."""
+        record = {"path": str(path), "stage": "path_guard", "before": None, "after": None,
+                  "read_validated": False, "read_bytes": None, "read_bytes_sha256": None,
+                  "original_handle_close": "NOT_OPENED", "sharing": "READ only; deny WRITE/DELETE"}
+        self.sdk_header_observation = record
+        handle = None
+
+        def snapshot():
+            state = FILE_INFO()
+            self.win.check(self.win.k.GetFileInformationByHandle(handle, ctypes.byref(state)), "SDKFileIdentity")
+            return {"identity": [state.volume, state.index_high, state.index_low, state.attributes],
+                    "links": state.links, "size": (state.size_high << 32) | state.size_low,
+                    "created": [state.created.dwHighDateTime, state.created.dwLowDateTime],
+                    "written": [state.written.dwHighDateTime, state.written.dwLowDateTime]}
+
+        try:
+            require(not CANCELLED and time.monotonic() < self.start + COMMAND_SECONDS,
+                    "SDK read cancelled or command/global deadline exhausted")
+            plain_path(path.parent)
+            record["stage"] = "open"
+            handle = self.win.k.CreateFileW(str(path), 0x80000000 | 0x80, 0x1, None, 3, 0x00200000, None)
+            if handle in (None, ctypes.c_void_p(-1).value):
+                error_code, handle = ctypes.get_last_error(), None
+                raise OSError(error_code, "OpenSDKHeader; no fallback or retry")
+            record["original_handle_close"] = "PENDING"
+            record["stage"] = "pre_read_state"
+            before = record["before"] = snapshot()
+            self.event("sdk_header_observation", **record)
+            require(not before["identity"][3] & (0x400 | 0x10) and before["links"] == 1,
+                    "SDK header is not a non-reparse regular single-linked file")
+            require(before["size"] <= 1024 ** 2, "SDK header exceeds one MiB")
+            buffer = ctypes.create_string_buffer(before["size"] + 1)
+            read = wt.DWORD()
+            record["stage"] = "read"
+            ok = self.win.k.ReadFile(handle, buffer, len(buffer), ctypes.byref(read), None)
+            error_code = ctypes.get_last_error() if not ok else None
+            record.update({"read_returned": bool(ok), "read_bytes": read.value, "read_error": error_code})
+            require(read.value <= len(buffer), "SDK ReadFile returned an invalid byte count")
+            data = buffer.raw[:read.value]
+            record["read_bytes_sha256"] = hashlib.sha256(data).hexdigest()
+            record["stage"] = "post_read_state"
+            after = record["after"] = snapshot()
+            self.event("sdk_header_observation", **record)
+            if not ok:
+                raise OSError(error_code, "ReadSDKHeader; no fallback or retry")
+            require(before == after and len(data) == before["size"], "SDK original-handle state/length changed")
+            require(not CANCELLED and time.monotonic() < self.start + COMMAND_SECONDS,
+                    "SDK read cancelled or command/global deadline exhausted")
+            record.update({"stage": "read_validated", "read_validated": True})
+            return data
+        except BaseException as error:
+            record["failure"] = f"{type(error).__name__}: {error}"
+            try:
+                self.event("sdk_header_failure", **record)
+            except BaseException as journal_error:
+                record["failure_journal_error"] = str(journal_error)
+            raise
+        finally:
+            if handle is not None:
+                to_close, handle = handle, None
+                record["original_handle_close"] = "ATTEMPTED_ONCE"
+                try:
+                    self.close_original(to_close, "SDK header")
+                    record["original_handle_close"] = "SUCCEEDED"
+                except BaseException as error:
+                    record["original_handle_close"] = "FAILED; no retry"
+                    record["close_failure"] = f"{type(error).__name__}: {error}"
+                    raise
 
     def log_state(self, entry):
         state = self.file_state(entry["handle"])
@@ -809,12 +881,12 @@ def validated_inputs(workspace):
         require(request.get(key) == hashlib.sha256(data).hexdigest(), f"Request hash mismatch: {path}")
         captures[path] = data
     review_path = request.get("independent_review_path", "")
-    require(review_path == REVIEW, "Wrong cohort-03 independent-review path")
+    require(review_path == REVIEW, "Wrong cohort-04 independent-review path")
     review_data = frozen_bytes(workspace / review_path)
     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
     require(review.get("reviewer") == "/root/native_review" and
-            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_COHORT_03_ADMISSION", "Missing genuine accepting review")
+            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_COHORT_04_ADMISSION", "Missing genuine accepting review")
     for key in ("helper_sha256", "workflow_sha256", "scope_sha256"):
         require(review.get(key) == request.get(key), "Acceptance does not bind the exact candidate")
     # Inline current native inputs are bound by the reviewed helper bytes. The
@@ -850,8 +922,8 @@ def main():
         signal.signal(number, cancel)
     request, binding, captures = validated_inputs(workspace)
     require(not CANCELLED, "Cancellation before allocation")
-    temp = runner_temp / f"passvault-windows-cohort-03-{run_id}-1-{request['nonce']}"
-    evidence = runner_temp / f"passvault-windows-cohort-03-{run_id}-1-evidence"
+    temp = runner_temp / f"passvault-windows-cohort-04-{run_id}-1-{request['nonce']}"
+    evidence = runner_temp / f"passvault-windows-cohort-04-{run_id}-1-evidence"
     require_absent(temp)
     require_absent(evidence)
     evidence.mkdir()
@@ -916,8 +988,8 @@ def main():
         cmake, ctest = executable("cmake.exe"), executable("ctest.exe")
         require(cmake.parent == ctest.parent, "CMake/CTest must use the same installed toolchain")
         sdk_header = Path(os.environ["ProgramFiles(x86)"]) / "Windows Kits/10/Include" / SDK / "um/webauthn.h"
-        plain_path(sdk_header)
-        header = frozen_bytes(sdk_header).decode("utf-8", errors="strict")
+        header_bytes = run.read_sdk_header(sdk_header)
+        header = header_bytes.decode("utf-8", errors="strict")
         for required in ("WEBAUTHN_API_VERSION_8", "WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_8",
                          "WEBAUTHN_HMAC_SECRET_SALT", "pPRFGlobalEval"):
             require(required in header, "Installed Windows SDK lacks required reviewed WebAuthn declarations")
@@ -925,7 +997,7 @@ def main():
             "runner": "windows-2022", "architecture": "x64", "sdk": SDK,
             "image_version": os.environ.get("ImageVersion"), "python": sys.version,
             "tools": [{"path": str(path), "sha256": digest(path)} for path in (Path(sys.executable), git, cmake, ctest)],
-            "webauthn_header_sha256": digest(sdk_header),
+            "webauthn_header_sha256": hashlib.sha256(header_bytes).hexdigest(),
             "child_environment_names": sorted(run.environment),
         })
         run.command([cmake, "--version"], 30, "cmake-version")
@@ -1058,6 +1130,7 @@ def main():
         result["cases"] = run.case_results if run is not None else {name: {"state": "UNSTARTED"} for name in CASES}
         result["entry_refusals"] = run.rejections if run is not None else []
         result["original_handle_close_failures"] = run.close_failures if run is not None else []
+        result["sdk_header_observation"] = run.sdk_header_observation if run is not None else None
         result["source_qualification"] = "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof"
         if (commands_returned and not result["failures"] and not result["original_handle_close_failures"]
                 and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):

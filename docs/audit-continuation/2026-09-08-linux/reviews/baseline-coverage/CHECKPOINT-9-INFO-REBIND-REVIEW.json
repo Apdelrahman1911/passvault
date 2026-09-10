@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "utc": "2026-09-09T18:26:49.029454+00:00",
+  "disposition": "ACCEPT_ONE_PROSPECTIVE_C9_REMAINING_SOURCE_ATTEMPT_WITH_EXACT_EMPTY_INFO_REBIND",
+  "qualification": "New narrow publication-only exception, not automatic continuation, retroactivePASS, cause diagnosis, object repair, runtime/cleanup admission or product credit. Root must explicitly adopt before the new attempt. Old source/final reviews remain sealed; all other gates survive.",
+  "evidence": {
+    "failed_source_attempt": {
+      "path": "publication/CHECKPOINT-9-SOURCE-PUBLISHED.json",
+      "sha256": "0b427fc50ec7d4ccc37b1ef533e3ec1155d9f0a03a921dcd1ffd72da58a5bd55",
+      "status": "FAILED_HOLD_NO_AUTOMATIC_RETRY"
+    },
+    "exact_info_observation": {
+      "path": "publication/CHECKPOINT-9-INFO-DIRECTORY-OBSERVATION.json",
+      "sha256": "0f636307cf34e6f28e9357e687192017736eb860b72f112c81b52c2eee2542f6"
+    },
+    "complete_postfail_comparison": {
+      "path": "publication/CHECKPOINT-9-POSTFAIL-OBJECT-COMPARISON.json",
+      "sha256": "5cb05013e95c38095c9e7f9069d69c51ae581c4d011bf27e7d2c41aef537a322",
+      "status": "STRICT_FAIL_DIRECTORY_IDENTITY_DRIFT"
+    },
+    "c8_baseline_sha256": "19133c18ac993afc2598e6b55f0fdeac0cf75db063aed35b8ab03957449bb573",
+    "c8_source_incremental_sha256": "73580dd444d8309f987b52fe0c39342a948278904c0767cc3db404500d049f66",
+    "c8_activation_incremental_sha256": "64635afb1bab3d3230f39134d51cd045b7d5a0b5e93b7ab7dcad05f8e023f015",
+    "unchanged_c9_manifest_sha256": "631064ff5d31950c2f25d599cb54b6e14d1a7771ea836b58ab5523f84e781bfa",
+    "unchanged_c9_final_review_sha256": "99ee6547a4bddb3c3e79d212f975fa1ae7a358271b52bf905eafcbc147bc89bc"
+  },
+  "independent_challenge": [
+    "Tool e7244f hash-checked/read the failed receipt and exact observation, and read the baseline data. Four recorded read-only Git commands exited0; empty cached-name listing, then pre-stage protected-dir failure. No stage/commit/push attempted. Its object_checks list is empty: root's report of earlier976 file checks is not a completed retained full-comparison PASS.",
+    "Baseline has only info=[info,23,798164,0,16832], no file or descendant directory under info. Tool678b93 hash-checked/read the complete new comparison and checked all C8 incremental file/directory path additions: none is info or under info. Therefore no retained protected object file/byte or alternate/pack/commit-graph metadata inside info is being waived. This does not prove absence of historical open handles, unknown users or unrecorded earlier contents.",
+    "Complete root comparison covers976files/253dirs/7ancestors/38178667B: no file non-time/hash mismatches, no ancestor differences or new files/dirs. Sole directory mismatch is info inode798164 to895075. The sole file timestamp delta is the already retained C8 loose4e/5655111f0df99e24e9e9761258ccd42f181ffc qualification, not new evidence of benign cause.",
+    "Exact observation has matching lstat/original-open fstat dev23 ino895075 uid0 mode16832, nlink2, size4096, mtime/ctime1788899259003429274 and zero direct child names. Current empty-directory identity can be pinned prospectively without deleting/restoring any object or old directory. Cause and identity history remain UNKNOWN.",
+    "These are independent inert-record checks, not a repeated physical inventory or continuous hostile-writer guarantee. Fresh before-action and between-publication-step checks remain essential."
+  ],
+  "sole_rebinding": {
+    "object_root": "/root/projects/PassVault/passvault/.git/objects",
+    "relative_path": "info",
+    "historical_expected": [
+      "info",
+      23,
+      798164,
+      0,
+      16832
+    ],
+    "new_prospective_expected": [
+      "info",
+      23,
+      895075,
+      0,
+      16832
+    ],
+    "new_identity_must_remain_empty": true,
+    "limits": "Only the expected identity of this exact empty regular directory changes. No inode waiver for any other directory/ancestor, no generic accept-current rule, no arbitrary replacement after another drift, no new info entries/alternates, symlink or permission waiver. Historical baseline/receipts are not edited."
+  },
+  "before_action_gates": [
+    "Root explicitly admits at most one NEW remaining C9 source-phase attempt under the original time/resource/command bounds and original Linux coordination lock. Failure remains consumed; no automatic retry or extra commit/run is authorized.",
+    "Recheck the exact current info path and original opened directory as no-follow directory, matching new row/nlink2 and empty child set; preserve parent/ancestor and every other existing file/directory identity/byte/mode invariant. Retain the original expected row as a recorded qualification alongside new comparisons, never rewrite priorFAIL.",
+    "Keep the exact64-path nonactivating payload, source parent7b716ce8c693fa480bfb99d518acd9d4c8f9cfab/tree22fc4394711f7a7265ddf0d0ced965aade9112fb, source hashes, absent Windows03 request and all stage/commit/push guards. Repeat original bounded object comparisons beforestage, afterstage, aftercommit and afterpush; only legitimate admitted object/fanout additions and the previously scoped timestamp exceptions remain permissible. Newly accepted info identity is protected, not a continuing exemption.",
+    "Any other mismatch, info child, renewed identity drift, unsafe/unstable observation or command/cleanup failure means STOP/HOLD; no deletion, metadata restoration, evidence normalization, new broad exemption or automatic retry.",
+    "Exact raw-CI-log whitespace qualification remains unchanged. Stage/cached whitespace checking was never reached in the failed attempt; actual future bounded complete diagnostics andFAIL must still be retained and classified against the exact allowlist before proceeding.",
+    "Retain failed attempt, observation, complete comparison, this genuine review and root adoption for the next continuation report. Current immutable payload is not represented as already containing these later receipts. Future Windows03 instance/execution and request-only publication gates remain separate."
+  ],
+  "preserved": "All old runtime/cleanupHOLDs, strict pack timestampFAIL/UNKNOWN, PVU007 STOP, PVU011 NO RETRY, PVA029 failure/no automatic retry, G7/G8 CLOSED, PVD/hardware/platform and protected-ref/tag/dependency/version/identity/signing/Store/1017001 fences. No product findings/tests/closures or missing-tool execution credit.",
+  "cleanup": "Only this newly authorized compact permanent review was exclusively created0600 and fsynced. No Git, helper execution/import, build/test/CI, object-store or old-runtime access, probes, temporary/cache output, deletion or persistent workers. No new wrapper-stop duty; old duties remain."
+}

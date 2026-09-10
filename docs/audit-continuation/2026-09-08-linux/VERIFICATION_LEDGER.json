@@ -187,12 +187,118 @@
       "evidence_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
       "limits": "Initial counter1/later0 neither identifies a child nor proves accounting lag/benignity/duration. Finalization after failed command sawzero without normal-drain loop; no retry or old HOLD release. Actual Hello/provider/hardware and historicalred/productionallocation-cut gaps remain.",
       "release": "reviews/native/WINDOWS-COHORT-02-SLOT-RELEASE.json"
+    },
+    {
+      "run_id": 34391056257,
+      "attempt": 1,
+      "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+      "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+      "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+      "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+      "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+      "operational_status": "CONSUMED_FAIL_SDK_FROZEN_READ_GUARD_BEFORE_CMAKE",
+      "helper_exit": 1,
+      "metadata_parent_exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "initial_job_counts": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "readonly_zero_records": 4,
+      "first_readonly_interval_seconds": 0.10607099533081055,
+      "final_job_zero_observed": true,
+      "termination_attempted": false,
+      "normal_final_drain_loop_executed": false,
+      "cleanup": "SETTLED_ALLOWLISTED_10_ENTRIES_AND_ORIGINAL_GENERATED_ROOT_REMOVED",
+      "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_ATTEMPTED",
+      "product_cases": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNSTARTED": 14
+      },
+      "xml_files": 0,
+      "new_closures": 0,
+      "independent_review": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json",
+      "independent_review_sha256": "5bef23de89a4fd804daea7e83501c7c71ee96689552ea97c5fbe0d4acfc8f5fc",
+      "evidence": "runs/windows-cohort03/DOWNLOAD-RECEIPT.json",
+      "evidence_sha256": "a494b604db3be1df1c8296f6634d14ef89f595b6ea45b5ef23bab3191cdfefb5",
+      "error": "RuntimeError: Frozen input changed during read",
+      "limits": "SDK call-site is source-order inference only. Failing path/metadata tuples/differing field/SDK bytes/hash/traceback absent; exact cause UNKNOWN. No content mutation, stat/fstat mismatch, writer, cache or timing cause inferred. Readonly Job drain observed about106ms is not child lifetime/identity/benignity or product evidence. Only this run scheduling and qualified original cleanup settle; no retry, old HOLD release, hardware/Hello/PVU008/red-control/production-cut proof.",
+      "consumed": true,
+      "release": "reviews/native/WINDOWS-COHORT-03-SLOT-RELEASE.json"
+    },
+    {
+      "kind": "ACTUAL_FOCUSED_LINUX_REGRESSIONS",
+      "platform": "Linuxx86_64",
+      "application_test_cases": 166,
+      "fixture_producer_cases": 1,
+      "run_id": "linux-isolated-batch03",
+      "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+      "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+      "source_representation": "1572_RAW_GIT_BLOBS_NOT_CHECKOUT_NORMALIZED",
+      "status": "PASS_FOCUSED_REGRESSION_SCOPE_CONSUMED",
+      "external_exit": 0,
+      "elapsed_seconds": 611.287,
+      "regression_methods": 166,
+      "fixture_producers": 1,
+      "total_xml_cases": 167,
+      "xml_files": 17,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "missing_extra_duplicate": 0,
+      "regressions_by_boundary": {
+        "original_database_selection": 105,
+        "editor_navigation": 49,
+        "pva038_routing": 9,
+        "pva038_cold_provider": 3
+      },
+      "wrapper_build_invocations": 5,
+      "original_wrapper_stop_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "selected_gradle_test_tasks": 7,
+      "cleanup": "REMOVED_ORIGINAL_RUNTIME_36753_ENTRIES; FIVE_ORIGINAL_STOPS0; ORIGINAL_NAMESPACE_AND_EXTERNAL0_RECONCILED",
+      "retained_evidence_files": 53,
+      "retained_evidence_bytes": 202742,
+      "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+      "independent_review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45",
+      "external_receipt": "reviews/isolated-batch03/EXTERNAL-RESULT.json",
+      "external_receipt_sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98",
+      "scheduling_release": "reviews/isolated-batch03/SLOT-RELEASE.json",
+      "scheduling_release_sha256": "2a5c8929264fa8d5638be430586ebf11eea61ff1ca1185f2dbd2a9183cfeddb1",
+      "android_task_inventory_only": [
+        "connectedAndroidDeviceTest",
+        "compileAndroidDeviceTest",
+        "assembleAndroidDeviceTest"
+      ],
+      "qualified_family_closures": [
+        "PVA-033",
+        "PVA-034",
+        "PVA-035",
+        "PVA-038"
+      ],
+      "remain_open": [
+        "PVA-007",
+        "PVA-031"
+      ],
+      "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
     }
   ],
-  "continuation_application_test_cases": 0,
-  "pending_selected_source_methods": 167,
-  "pending_selected_classes": 14,
-  "pending_selected_files": 12,
+  "continuation_application_test_cases": 166,
+  "pending_selected_source_methods": 0,
+  "pending_selected_classes": 0,
+  "pending_selected_files": 0,
   "gates": [
     {
       "id": "PINNED_HANDOFF_COMMIT_TREE",
@@ -213,10 +319,16 @@
     },
     {
       "id": "LOCAL_DATABASE_RUNNER_ADMISSION",
-      "status": "BLOCKED",
-      "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
-      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
-      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
+      "status": "PASS",
+      "reason": "Exact fresh Linux03 admission consumed and actual focused C4 batch independently reconciled; this is not current/future admission or old runner/HOLD clearance.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+      "history_before_linux03": {
+        "status": "BLOCKED",
+        "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
+        "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
+        "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
+      }
     },
     {
       "id": "WINDOWS_NATIVE_ADMISSION",
@@ -288,9 +400,14 @@
     },
     {
       "id": "PVA038_REGRESSION",
-      "status": "BLOCKED",
-      "reason": "Production patch and9 routing+1 producer+3 fresh-provider consumer declarations independently source accepted at exact three-file tuple, all uncompiled/unexecuted. Actual startup flags/fixture transfer, cold native provider witness, sibling compatibility and platform gaps remain. Handoff105 selection does not test this patch.",
-      "evidence": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
+      "status": "PASS",
+      "reason": "9 routing and3 real cold-JVM provider regressions PASS plus separate producer; narrow Desktop component qualified only. iOS/Kotlin-Native, actual OS authentication and hardware remain distinct OPEN/BLOCKED.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+      "history_before_linux03": {
+        "status": "BLOCKED",
+        "reason": "Production patch and9 routing+1 producer+3 fresh-provider consumer declarations independently source accepted at exact three-file tuple, all uncompiled/unexecuted. Actual startup flags/fixture transfer, cold native provider witness, sibling compatibility and platform gaps remain. Handoff105 selection does not test this patch.",
+        "evidence": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
+      }
     },
     {
       "id": "MACOS_SYNTHETIC_FIXTURE",
@@ -318,10 +435,16 @@
     },
     {
       "id": "CURRENT_C4_TARGETED167",
-      "status": "BLOCKED",
-      "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
-      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
-      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
+      "status": "PASS",
+      "reason": "166 regressions plus one distinct producer executed successfully,17 exactXML,no failures/errors/skips/extras/missing/duplicates. No rendered/hardware or overall-readiness claim.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+      "history_before_linux03": {
+        "status": "BLOCKED",
+        "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
+        "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
+        "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
+      }
     },
     {
       "id": "PVU006_SOURCE_NARROWING",
@@ -355,12 +478,17 @@
     },
     {
       "id": "LINUX_ISOLATED_EXECUTION_FEASIBILITY",
-      "status": "BLOCKED",
-      "reason": "One newly admitted finite namespace01 reached PID1/distinctNS/selfstatus but failed mountinfo-fields parser; no final feasibility PASS. Independent actual reconciliation permits scheduling release only. Empty SOURCE format defect separately source-supported; a compact new private-domain workload is being prepared, not admitted. No automatic probe/03 retry or old HOLD reclassification.",
-      "evidence": [
-        "reviews/verification/LINUX-CONTAINMENT-FEASIBILITY.md",
-        "reviews/native-independent/LINUX-CONTAINMENT-FEASIBILITY-REVIEW.md"
-      ]
+      "status": "PASS",
+      "reason": "Exact Linux03 workload successfully executed in separately admitted private namespace; older failed feasibility/cleanup scopes retained. Not blanket host/external/escape/security guarantee or automatic successor admission.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+      "history_before_linux03": {
+        "status": "BLOCKED",
+        "reason": "One newly admitted finite namespace01 reached PID1/distinctNS/selfstatus but failed mountinfo-fields parser; no final feasibility PASS. Independent actual reconciliation permits scheduling release only. Empty SOURCE format defect separately source-supported; a compact new private-domain workload is being prepared, not admitted. No automatic probe/03 retry or old HOLD reclassification.",
+        "evidence": [
+          "reviews/verification/LINUX-CONTAINMENT-FEASIBILITY.md",
+          "reviews/native-independent/LINUX-CONTAINMENT-FEASIBILITY-REVIEW.md"
+        ]
+      }
     },
     {
       "id": "PVU008_CONTENT_LIFETIME",
@@ -423,6 +551,60 @@
       "status": "FAIL",
       "reason": "CONSUMED_MATERIALIZATION_FAIL_BEFORE_INNER_RUNTIME_HOLD",
       "evidence": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
+    },
+    {
+      "id": "LINUX_ISOLATED_BATCH03_EXECUTION",
+      "status": "PASS",
+      "reason": "Exact166 regressions+1producer reconciled; all5originalstops0 and original disposable runtime removed. Consumed only.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
+    },
+    {
+      "id": "WINDOWS_COHORT03_EXECUTION",
+      "status": "FAIL",
+      "reason": "Consumed SDK frozen-read refusal before CMake,14UNSTARTED/0XML; original cleanup and scheduling released only. Exact cause UNKNOWN.",
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json"
+    },
+    {
+      "id": "PVA007_RENDERED_INPUT",
+      "status": "BLOCKED",
+      "reason": "49 logical/Composition editor/navigation cases now pass; rendered edit/Save/reopen and native Back/IME/device behavior remain required.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
+    },
+    {
+      "id": "PVA031_RENDERED_CAPACITY",
+      "status": "BLOCKED",
+      "reason": "7capacity+13draft cases pass in fresh admitted environment; historical setup failure cause remains unknown, rendered retained-input/capacity behavior pending.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
+    },
+    {
+      "id": "PVA038_IOS_NATIVE_AEAD",
+      "status": "BLOCKED",
+      "reason": "Shared catch change source-reviewed; exact iOS/Kotlin-Native AEAD dependency exception source/runtime and real platform authentication not established by Linux JVM results.",
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
+    },
+    {
+      "id": "WINDOWS_COHORT04_SOURCE",
+      "status": "PASS",
+      "reason": "Source-only SDK handle/diagnostic correction accepted; no actual instance/run/case.",
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-04-ADMISSION.json"
+    },
+    {
+      "id": "MACOS_FOCUSED02_SOURCE",
+      "status": "PASS",
+      "reason": "Source-only metric/parser/pre-guard correction accepted, same floors; no actual instance/run/case.",
+      "evidence": "reviews/native-independent/MACOS-FOCUSED-02-SOURCE-REVIEW.json"
+    },
+    {
+      "id": "MACOS_MEMORY_CAPTURE03",
+      "status": "FAIL",
+      "reason": "One200/352B response rejected, exact fieldUNKNOWN; consumed.",
+      "evidence": "reviews/build-config/macos-memory-capture03/RESULT.json"
+    },
+    {
+      "id": "MACOS_MEMORY_CAPTURE04",
+      "status": "PASS",
+      "reason": "Six200 inert public-source responses support prospective metric semantics only; no installed Mac/runtime proof.",
+      "evidence": "reviews/build-config/MACOS-MEMORY-CAPTURE04-SEMANTICS.md"
     }
   ],
   "missing_skill_tool": {
@@ -430,7 +612,7 @@
     "status": "NOT_SUPPLIED_NOT_RUN",
     "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
   },
-  "updated_utc": "2026-09-09T17:21:20.372103+00:00",
+  "updated_utc": "2026-09-09T22:34:15.944912+00:00",
   "continuation_infrastructure_runs": [
     {
       "id": "LINUX_SOURCE_CAPTURE_01",
@@ -664,6 +846,194 @@
     "status": "UNCHANGED_IMMUTABLE_SOURCE_SELECTION_SUPERSEDED_FOR_SCHEDULING_NOT_DISCARDED"
   },
   "pending_selected_scope": {
+    "status": "C4_SELECTION_COMPLETE; GUI_AND_PLATFORM_FRESH_SCOPES_NOT_YET_ADMITTED",
+    "regression_methods": 0,
+    "fixture_producers": 0
+  },
+  "windows_cohort02_source": {
+    "suite": "windows-native-14-cohort-v2",
+    "status": "SOURCE_CONTRACT_INDEPENDENTLY_ACCEPTED_NOT_ACTIVATED",
+    "helper_sha256": "4bbb467ef222292071f693df22cd4fb3af467749d1f05dc3ea07cb94edb19e9a",
+    "workflow_sha256": "ac14ac156b2aab5906064f3f6d6a915d6fda43972b2d8faac52461901723cf01",
+    "scope_sha256": "0bcea8071094d849d013760c46bbb02e7668623763bea7e6e88a2ae5d221c3ee",
+    "review": "reviews/native-independent/WINDOWS-COHORT-02-ADMISSION.json",
+    "review_sha256": "475113c9b8658d3137437aa460b5a3e06ddb70ec2b97ea3a1e1a22524f6d3ec5",
+    "declared_cases": 14,
+    "executed_cases": 0,
+    "source_qualification": "One new ownedJob cohort; originalparentexit before settlement diagnostics; finalonly hashes/log retention; strict no-reparse cleanup. Unchanged14 cases; no historicalred/provider/hardware/CNGcontent test added. Actual source/request/rootcoordination admission remains separate."
+  },
+  "windows_cohort02_execution": {
+    "run_id": 34372394480,
+    "attempt": 1,
+    "source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
+    "source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
+    "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+    "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
+    "request_sha256": "65d4777974947ca1bfd62808b0ff60762a151d9611c53df59dbb91860578633b",
+    "operational_status": "CONSUMED_FAIL_READONLY_IMMEDIATE_JOB_ACCOUNTING_GATE",
+    "helper_exit": 1,
+    "first_parent_exit": 0,
+    "initial_job_active": 1,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_7_ENTRIES_AND_GENERATED_ROOT_REMOVED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-02-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "0ab0a9908e2af20710996183fdc633b6cfa68989eaaa5ccebf8d2a5fcf20baea",
+    "evidence": "runs/windows-cohort02/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
+    "limits": "Initial counter1/later0 neither identifies a child nor proves accounting lag/benignity/duration. Finalization after failed command sawzero without normal-drain loop; no retry or old HOLD release. Actual Hello/provider/hardware and historicalred/productionallocation-cut gaps remain.",
+    "release": "reviews/native/WINDOWS-COHORT-02-SLOT-RELEASE.json"
+  },
+  "linux_isolated_batch02_execution": {
+    "run_id": "linux-isolated-batch02",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "external_exit": 70,
+    "operational_status": "CONSUMED_MATERIALIZATION_FAIL_BEFORE_INNER_RUNTIME_HOLD",
+    "reason": "RuntimeError:raw Git blob mismatch",
+    "git_archive_child_exit": 0,
+    "inner_started": false,
+    "source_before": false,
+    "source_after": false,
+    "product_tests": 0,
+    "unstarted_regressions": 166,
+    "unstarted_fixture_producers": 1,
+    "xml_files": 0,
+    "cleanup": "NOT_ATTEMPTED_HOLD",
+    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
+    "review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+    "review_sha256": "d34f4e9890a35a72aa54a36c9dcbf09511396d49f2c4b8b95f5e5e4fb9379eca",
+    "external_receipt": "reviews/isolated-batch02/EXTERNAL-RESULT.json",
+    "consumed": true,
+    "limits": "Generic failed path/cause unknown; raw source certification not reached. Direct-child/outer settlement supports scheduling only; preterminal receipt does not establish final FD-close API success. No retry, held-runtime adoption/deletion or old-HOLD release.",
+    "release": "reviews/isolated-batch02/SLOT-RELEASE.json"
+  },
+  "windows_cohort03_source": {
+    "helper_sha256": "153d20b008896810b1929be2f4b2d97ef7d8699a46989e05a5dd9ac65982f7e5",
+    "workflow_sha256": "a547a24a547f8bef8d983212741556528f8d424b14fb14f8568a8bc31560a088",
+    "scope": "reviews/native/WINDOWS-COHORT-03-SCOPE.md",
+    "scope_sha256": "9f20d0e2b933590dc54144ab989558465b7456855bec0e7a6cdf6119e88d9ca3",
+    "review": "reviews/native-independent/WINDOWS-COHORT-03-ADMISSION.json",
+    "review_sha256": "96779f5141e5eba719efcb6481bcd2cb799572895398ca12382e55746a18b018",
+    "status": "SOURCE_ACCEPTED_FRESH_REQUEST_AND_EXECUTION_ADMISSION_REQUIRED",
+    "cases": 14,
+    "executed": 0,
+    "delta": "Bounded natural read-only Job drain within existing deadline; no added time/termination/oracle exemptions. Exact03 bindings, credential/Hello-excluded scope acknowledging real synthetic CNG sibling. Old02 failure retained.",
+    "python_syntax": "PASS_in_memory_ast_only_not_target_runtime"
+  },
+  "windows_cohort03_execution": {
+    "run_id": 34391056257,
+    "attempt": 1,
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+    "operational_status": "CONSUMED_FAIL_SDK_FROZEN_READ_GUARD_BEFORE_CMAKE",
+    "helper_exit": 1,
+    "metadata_parent_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "initial_job_counts": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "readonly_zero_records": 4,
+    "first_readonly_interval_seconds": 0.10607099533081055,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_10_ENTRIES_AND_ORIGINAL_GENERATED_ROOT_REMOVED",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_ATTEMPTED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "5bef23de89a4fd804daea7e83501c7c71ee96689552ea97c5fbe0d4acfc8f5fc",
+    "evidence": "runs/windows-cohort03/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "a494b604db3be1df1c8296f6634d14ef89f595b6ea45b5ef23bab3191cdfefb5",
+    "error": "RuntimeError: Frozen input changed during read",
+    "limits": "SDK call-site is source-order inference only. Failing path/metadata tuples/differing field/SDK bytes/hash/traceback absent; exact cause UNKNOWN. No content mutation, stat/fstat mismatch, writer, cache or timing cause inferred. Readonly Job drain observed about106ms is not child lifetime/identity/benignity or product evidence. Only this run scheduling and qualified original cleanup settle; no retry, old HOLD release, hardware/Hello/PVU008/red-control/production-cut proof.",
+    "consumed": true,
+    "release": "reviews/native/WINDOWS-COHORT-03-SLOT-RELEASE.json"
+  },
+  "linux_isolated_batch03_execution": {
+    "run_id": "linux-isolated-batch03",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "source_representation": "1572_RAW_GIT_BLOBS_NOT_CHECKOUT_NORMALIZED",
+    "status": "PASS_FOCUSED_REGRESSION_SCOPE_CONSUMED",
+    "external_exit": 0,
+    "elapsed_seconds": 611.287,
+    "regression_methods": 166,
+    "fixture_producers": 1,
+    "total_xml_cases": 167,
+    "xml_files": 17,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "missing_extra_duplicate": 0,
+    "regressions_by_boundary": {
+      "original_database_selection": 105,
+      "editor_navigation": 49,
+      "pva038_routing": 9,
+      "pva038_cold_provider": 3
+    },
+    "wrapper_build_invocations": 5,
+    "original_wrapper_stop_exits": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "selected_gradle_test_tasks": 7,
+    "cleanup": "REMOVED_ORIGINAL_RUNTIME_36753_ENTRIES; FIVE_ORIGINAL_STOPS0; ORIGINAL_NAMESPACE_AND_EXTERNAL0_RECONCILED",
+    "retained_evidence_files": 53,
+    "retained_evidence_bytes": 202742,
+    "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45",
+    "external_receipt": "reviews/isolated-batch03/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98",
+    "scheduling_release": "reviews/isolated-batch03/SLOT-RELEASE.json",
+    "scheduling_release_sha256": "2a5c8929264fa8d5638be430586ebf11eea61ff1ca1185f2dbd2a9183cfeddb1",
+    "android_task_inventory_only": [
+      "connectedAndroidDeviceTest",
+      "compileAndroidDeviceTest",
+      "assembleAndroidDeviceTest"
+    ],
+    "qualified_family_closures": [
+      "PVA-033",
+      "PVA-034",
+      "PVA-035",
+      "PVA-038"
+    ],
+    "remain_open": [
+      "PVA-007",
+      "PVA-031"
+    ],
+    "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
+  },
+  "continuation_fixture_producer_cases": 1,
+  "continuation_total_xml_testcases": 167,
+  "historical_c4_pending_scope_before_linux03": {
     "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
     "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
     "selection": "CURRENT_C4_TARGETED167_NOT_RETARGETED_HANDOFF105",
@@ -752,83 +1122,127 @@
     "actual_external_receipt": "reviews/current-cycle02/EXTERNAL-FINAL-RECEIPT-02.json",
     "successor": "No03 admitted. Only minimal source/metadata feasibility of a genuinely isolated process domain; unchanged sampling guards/HOLDs are not relaxed."
   },
-  "windows_cohort02_source": {
-    "suite": "windows-native-14-cohort-v2",
-    "status": "SOURCE_CONTRACT_INDEPENDENTLY_ACCEPTED_NOT_ACTIVATED",
-    "helper_sha256": "4bbb467ef222292071f693df22cd4fb3af467749d1f05dc3ea07cb94edb19e9a",
-    "workflow_sha256": "ac14ac156b2aab5906064f3f6d6a915d6fda43972b2d8faac52461901723cf01",
-    "scope_sha256": "0bcea8071094d849d013760c46bbb02e7668623763bea7e6e88a2ae5d221c3ee",
-    "review": "reviews/native-independent/WINDOWS-COHORT-02-ADMISSION.json",
-    "review_sha256": "475113c9b8658d3137437aa460b5a3e06ddb70ec2b97ea3a1e1a22524f6d3ec5",
-    "declared_cases": 14,
-    "executed_cases": 0,
-    "source_qualification": "One new ownedJob cohort; originalparentexit before settlement diagnostics; finalonly hashes/log retention; strict no-reparse cleanup. Unchanged14 cases; no historicalred/provider/hardware/CNGcontent test added. Actual source/request/rootcoordination admission remains separate."
-  },
-  "windows_cohort02_execution": {
-    "run_id": 34372394480,
-    "attempt": 1,
-    "source_commit": "735f5596877ce4a9a5c015e2aa8036451a708392",
-    "source_tree": "ab502aad492688957640202b8e36ac69e30f08d2",
-    "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
-    "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
-    "request_sha256": "65d4777974947ca1bfd62808b0ff60762a151d9611c53df59dbb91860578633b",
-    "operational_status": "CONSUMED_FAIL_READONLY_IMMEDIATE_JOB_ACCOUNTING_GATE",
-    "helper_exit": 1,
-    "first_parent_exit": 0,
-    "initial_job_active": 1,
-    "final_job_zero_observed": true,
-    "termination_attempted": false,
-    "normal_final_drain_loop_executed": false,
-    "cleanup": "SETTLED_ALLOWLISTED_7_ENTRIES_AND_GENERATED_ROOT_REMOVED",
-    "product_cases": {
-      "PASS": 0,
-      "FAIL": 0,
-      "UNSTARTED": 14
-    },
-    "xml_files": 0,
-    "new_closures": 0,
-    "independent_review": "reviews/native-independent/WINDOWS-COHORT-02-ACTUAL-REVIEW.json",
-    "independent_review_sha256": "0ab0a9908e2af20710996183fdc633b6cfa68989eaaa5ccebf8d2a5fcf20baea",
-    "evidence": "runs/windows-cohort02/DOWNLOAD-RECEIPT.json",
-    "evidence_sha256": "215a6ac160e890904f2a8d6e2edc9309c006ea33a2606ece739680e824ebd601",
-    "limits": "Initial counter1/later0 neither identifies a child nor proves accounting lag/benignity/duration. Finalization after failed command sawzero without normal-drain loop; no retry or old HOLD release. Actual Hello/provider/hardware and historicalred/productionallocation-cut gaps remain.",
-    "release": "reviews/native/WINDOWS-COHORT-02-SLOT-RELEASE.json"
-  },
-  "linux_isolated_batch02_execution": {
-    "run_id": "linux-isolated-batch02",
+  "completed_selected_scope": {
+    "run_id": "linux-isolated-batch03",
     "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
     "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
-    "external_exit": 70,
-    "operational_status": "CONSUMED_MATERIALIZATION_FAIL_BEFORE_INNER_RUNTIME_HOLD",
-    "reason": "RuntimeError:raw Git blob mismatch",
-    "git_archive_child_exit": 0,
-    "inner_started": false,
-    "source_before": false,
-    "source_after": false,
-    "product_tests": 0,
-    "unstarted_regressions": 166,
-    "unstarted_fixture_producers": 1,
-    "xml_files": 0,
-    "cleanup": "NOT_ATTEMPTED_HOLD",
-    "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
-    "review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
-    "review_sha256": "d34f4e9890a35a72aa54a36c9dcbf09511396d49f2c4b8b95f5e5e4fb9379eca",
-    "external_receipt": "reviews/isolated-batch02/EXTERNAL-RESULT.json",
-    "consumed": true,
-    "limits": "Generic failed path/cause unknown; raw source certification not reached. Direct-child/outer settlement supports scheduling only; preterminal receipt does not establish final FD-close API success. No retry, held-runtime adoption/deletion or old-HOLD release.",
-    "release": "reviews/isolated-batch02/SLOT-RELEASE.json"
+    "source_representation": "1572_RAW_GIT_BLOBS_NOT_CHECKOUT_NORMALIZED",
+    "status": "PASS_FOCUSED_REGRESSION_SCOPE_CONSUMED",
+    "external_exit": 0,
+    "elapsed_seconds": 611.287,
+    "regression_methods": 166,
+    "fixture_producers": 1,
+    "total_xml_cases": 167,
+    "xml_files": 17,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "missing_extra_duplicate": 0,
+    "regressions_by_boundary": {
+      "original_database_selection": 105,
+      "editor_navigation": 49,
+      "pva038_routing": 9,
+      "pva038_cold_provider": 3
+    },
+    "wrapper_build_invocations": 5,
+    "original_wrapper_stop_exits": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "selected_gradle_test_tasks": 7,
+    "cleanup": "REMOVED_ORIGINAL_RUNTIME_36753_ENTRIES; FIVE_ORIGINAL_STOPS0; ORIGINAL_NAMESPACE_AND_EXTERNAL0_RECONCILED",
+    "retained_evidence_files": 53,
+    "retained_evidence_bytes": 202742,
+    "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45",
+    "external_receipt": "reviews/isolated-batch03/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98",
+    "scheduling_release": "reviews/isolated-batch03/SLOT-RELEASE.json",
+    "scheduling_release_sha256": "2a5c8929264fa8d5638be430586ebf11eea61ff1ca1185f2dbd2a9183cfeddb1",
+    "android_task_inventory_only": [
+      "connectedAndroidDeviceTest",
+      "compileAndroidDeviceTest",
+      "assembleAndroidDeviceTest"
+    ],
+    "qualified_family_closures": [
+      "PVA-033",
+      "PVA-034",
+      "PVA-035",
+      "PVA-038"
+    ],
+    "remain_open": [
+      "PVA-007",
+      "PVA-031"
+    ],
+    "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
   },
-  "windows_cohort03_source": {
-    "helper_sha256": "153d20b008896810b1929be2f4b2d97ef7d8699a46989e05a5dd9ac65982f7e5",
-    "workflow_sha256": "a547a24a547f8bef8d983212741556528f8d424b14fb14f8568a8bc31560a088",
-    "scope": "reviews/native/WINDOWS-COHORT-03-SCOPE.md",
-    "scope_sha256": "9f20d0e2b933590dc54144ab989558465b7456855bec0e7a6cdf6119e88d9ca3",
-    "review": "reviews/native-independent/WINDOWS-COHORT-03-ADMISSION.json",
-    "review_sha256": "96779f5141e5eba719efcb6481bcd2cb799572895398ca12382e55746a18b018",
-    "status": "SOURCE_ACCEPTED_FRESH_REQUEST_AND_EXECUTION_ADMISSION_REQUIRED",
-    "cases": 14,
-    "executed": 0,
-    "delta": "Bounded natural read-only Job drain within existing deadline; no added time/termination/oracle exemptions. Exact03 bindings, credential/Hello-excluded scope acknowledging real synthetic CNG sibling. Old02 failure retained.",
-    "python_syntax": "PASS_in_memory_ast_only_not_target_runtime"
+  "windows_cohort04_source": {
+    "status": "SOURCE_ACCEPTED_NO_INSTANCE_OR_EXECUTION",
+    "helper": "scripts/audit/windows_native_validation.py",
+    "helper_sha256": "31f0a4f003ef919d3978b9df82f5a740e1ff9da390d3f7a664914dda12d3c8af",
+    "workflow_sha256": "4a499b417ce592788a7c3f7a8f863e09db50ee6d422a28b0d6cc80b2e2a16ab8",
+    "scope": "reviews/native/WINDOWS-COHORT-04-SCOPE.md",
+    "scope_sha256": "859eefd36c61ddca63ce13c34e6ae88ce965b503759e9fdb62a82e61d78ab7ad",
+    "review": "reviews/native-independent/WINDOWS-COHORT-04-ADMISSION.json",
+    "review_sha256": "6344458ed6aa1546cc3201c2af60f1f0e6895eb724c1b8cbb332d76a3d532e95",
+    "change": "SDK-header-only original Win32 read handle, same-representation before/after metadata, exact returned-byte digest and pre-guard diagnostics; other frozen_bytes callers unchanged. Exact03 cause remains UNKNOWN.",
+    "case_count": 14,
+    "actual_cases": 0,
+    "remaining": "Publish exact source, separate fresh request/instance/root admission and serial Windows2022x64 target run. Real Hello/hardware, historical red/valid controls and production allocation-cut evidence separate."
+  },
+  "macos_focused02_source": {
+    "status": "SOURCE_ACCEPTED_NO_INSTANCE_OR_EXECUTION",
+    "helper": "scripts/audit/macos_focused_validation.py",
+    "helper_sha256": "afef956d911ccafef3d4adc7b62487fc30df28833e0868a683b58c7b392c06ef",
+    "workflow_sha256": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b",
+    "plan": "reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md",
+    "plan_sha256": "d39fa7951ed9d3f0a0acef84d20e1008769de5cbafb58eff9ee85d1a4de81839",
+    "review": "reviews/native-independent/MACOS-FOCUSED-02-SOURCE-REVIEW.json",
+    "review_sha256": "22c77315c4d42ae2f7afa92ad404f63939c2a10913484b7633167508e4593160",
+    "change": "Preserve printed-free-only field; strictly parse free/speculative/page-size, record operands/floors before guards and add (printedFree+printedSpeculative)*pageSize as separately labeled kernel-free-equivalent metric. Same25/20percent and12/8GiB floors, tests and cleanup.",
+    "case_count": 5,
+    "actual_cases": 0,
+    "remaining": "Separate source/instance/root admission after Windows04 scheduling settlement; bind actual immediate Windows04 activation parent. Captured upstream semantics are not installed runner-version matching or availability; physical device/provider proof separate."
+  },
+  "macos_memory_source_capture": {
+    "capture03": {
+      "status": "FAIL_CONSUMED_NO_RETRY",
+      "http_requests": 1,
+      "http_status": 200,
+      "body_bytes": 352,
+      "exact_rejecting_field": "UNKNOWN",
+      "result": "reviews/build-config/macos-memory-capture03/RESULT.json",
+      "sha256": "ec0ea90031336458754a14f1fa1dacd6a13292970d97ff77f05125a3b514f3fe"
+    },
+    "capture04": {
+      "status": "PASS_INERT_PUBLIC_SOURCE_CAPTURE_ONLY",
+      "http_requests": 6,
+      "all_http_status": 200,
+      "aggregate_body_bytes": 214480,
+      "retained_source_texts": 3,
+      "result": "reviews/build-config/macos-memory-capture04/RESULT.json",
+      "sha256": "0f3ffaffa63395abdcfe760f2217313e436026dbff729d1ec9ff50422ce04235",
+      "semantics": "reviews/build-config/MACOS-MEMORY-CAPTURE04-SEMANTICS.md",
+      "semantics_sha256": "b78ab6dc110cdfa12c1772f1a7d0ec1349d8193f8e39c199bb10fedf13e5dd44"
+    },
+    "limits": "Returned API metadata URLs are receipt data, not request authority. No downloaded program execution, native API or installed-runner availability/version evidence. No retry03; no prior failure/cleanup reclassification."
+  },
+  "desktop_curtain01_source": {
+    "status": "SOURCE_ACCEPTED_NO_INSTANCE_OR_EXECUTION",
+    "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "source_tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+    "declared_cases": 1,
+    "actual_cases": 0,
+    "inner_sha256": "212443a73b052feb00be5154a0414a5063af99cbd7e405cb6aa91df2d6961cf5",
+    "outer_sha256": "795e36a0b4bd12beafe2dd1ee66fb9c93497bec8ed65dff005e8e8c92a82d818",
+    "reviews": [
+      "reviews/editor-independent/DESKTOP-CURTAIN-INNER-SOURCE-REVIEW-01.json",
+      "reviews/verification/LINUX-DESKTOP-CURTAIN01-OUTER-SOURCE-REVIEW.md"
+    ],
+    "change": "Original helper pidfd required; original-file/parent pixel fsync/pin/close required before preservation acceptance. Fresh original Xvfb/WM/privateDBus/network domain, exact one production-curtain rendering/input case.",
+    "limits": "Strict agents_quiescent guard unchanged. No GUI request, allocation, pixels, native input or conclusive PVU005 outcome. Future batching may supersede scheduling, not erase unexecuted01 source/history."
   }
 }

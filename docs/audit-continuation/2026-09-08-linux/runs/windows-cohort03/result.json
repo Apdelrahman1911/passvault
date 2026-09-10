@@ -1,0 +1,167 @@
+{
+  "case_scoring": "NOT_PERFORMED; raw XML requires independent actual-case review",
+  "cases": {
+    "passvault_biometric_abi": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_collision": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_dacl_failure": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_empty_payload": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_empty_suffix": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_oversized_payload": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_rename_failure": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_success": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_validation_failure": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_allocation_exception": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_early_return": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_nested_exception": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_normal_scope": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_security": {
+      "state": "UNSTARTED"
+    }
+  },
+  "cleanup": "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^",
+        "HEAD^^{tree}"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "01-git-identity.log",
+      "parent_output_snapshot_sha256": "e95c4d82739425581a7060b68a503d16971dbe64b4c70415d831e445156ebe6e",
+      "pid": 1188,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 5404
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "02-one-parent.log",
+      "parent_output_snapshot_sha256": "fdc5a7a3bc93f9b413ba48eba3d3330d0f4d80a2e13c58176e4cd7ed8a5cf496",
+      "pid": 3824,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 1008
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "diff",
+        "--name-status",
+        "HEAD^",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "03-request-only-diff.log",
+      "parent_output_snapshot_sha256": "75de4c14b41143deee826de1fe4a597d236c463e45a4cc789f8016ac89b9a5c9",
+      "pid": 6260,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7472
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "04-clean-source.log",
+      "parent_output_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pid": 5828,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7944
+    }
+  ],
+  "entry_refusals": [],
+  "failures": [
+    "RuntimeError: Frozen input changed during read"
+  ],
+  "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+  "hello_hardware": "BLOCKED: not exercised",
+  "job_settlement": {
+    "errors": [],
+    "observed_zero": true,
+    "termination_attempted": false
+  },
+  "operational_status": "FAILED_OR_INCOMPLETE",
+  "original_handle_close_failures": [],
+  "request_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+  "request_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+  "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+  "source_qualification": "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof",
+  "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+  "suite": "windows-native-14-cohort-v3"
+}

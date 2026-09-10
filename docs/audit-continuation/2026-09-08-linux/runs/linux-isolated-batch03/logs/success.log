@@ -1,0 +1,88 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx512m -XX:-UsePerfData -Dfile.encoding=UTF-8 -Duser.home=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/home -Djava.io.tmpdir=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/tmp -Djna.tmpdir=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/jna -Dorg.sqlite.tmpdir=/root/projects/PassVault/audit-runtime-linux-isolated-batch03/sqlite
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :shared
+w: ⚠️ Native task 'iosSimulatorArm64Test' is disabled
+Task 'iosSimulatorArm64Test' for target 'ios_simulator_arm64' cannot run on the current host (linux-x86_64).
+Reason: simulator tests require macOS
+Solution: To suppress this warning, add 'kotlin.native.ignoreDisabledTargets=true' to gradle.properties.
+
+
+> Configure project :core:crypto
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Cross Compilation with Cinterop Not Supported in Project 'crypto'
+In project 'crypto', cross compilation to target 'iosSimulatorArm64' has been disabled because it contains cinterops: 'rawSodium' which cannot be processed on host 'linux_x64'.
+Cinterop libraries require platform-specific native toolchains that aren't available on the current host system.
+Solutions:
+ * Remove the cinterop dependencies 'rawSodium' from target 'iosSimulatorArm64'
+ * Build on a compatible host platform for this target/cinterop combination
+ * To disable klib cross compilation entirely, add 'kotlin.native.enableKlibsCrossCompilation=false' to your Gradle properties
+
+w: ⚠️ Disabled Kotlin/Native Targets
+The following Kotlin/Native targets cannot be built on this machine and are disabled:
+iosArm64, iosSimulatorArm64
+Solution: To hide this message, add 'kotlin.native.ignoreDisabledTargets=true' to the Gradle properties.
+
+
+> Task :core:crypto:kmpPartiallyResolvedDependenciesChecker
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileKotlinDesktop UP-TO-DATE
+> Task :core:crypto:compileDesktopMainJava NO-SOURCE
+> Task :core:crypto:desktopProcessResources NO-SOURCE
+> Task :core:crypto:processDesktopMainResources SKIPPED
+> Task :core:crypto:desktopMainClasses UP-TO-DATE
+> Task :core:crypto:desktopJar UP-TO-DATE
+> Task :core:database:kmpPartiallyResolvedDependenciesChecker
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:kmpPartiallyResolvedDependenciesChecker
+> Task :core:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:domain:compileKotlinDesktop UP-TO-DATE
+> Task :core:domain:compileDesktopMainJava NO-SOURCE
+> Task :core:domain:desktopProcessResources NO-SOURCE
+> Task :core:domain:processDesktopMainResources SKIPPED
+> Task :core:domain:desktopMainClasses UP-TO-DATE
+> Task :core:domain:desktopJar UP-TO-DATE
+> Task :core:security:kmpPartiallyResolvedDependenciesChecker
+> Task :core:security:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:security:compileKotlinDesktop UP-TO-DATE
+> Task :core:security:compileDesktopMainJava NO-SOURCE
+> Task :core:security:desktopProcessResources NO-SOURCE
+> Task :core:security:processDesktopMainResources SKIPPED
+> Task :core:security:desktopMainClasses UP-TO-DATE
+> Task :core:security:desktopJar UP-TO-DATE
+> Task :core:database:kspKotlinDesktop UP-TO-DATE
+> Task :core:database:compileKotlinDesktop UP-TO-DATE
+> Task :core:database:compileDesktopMainJava NO-SOURCE
+> Task :core:database:desktopProcessResources NO-SOURCE
+> Task :core:database:processDesktopMainResources SKIPPED
+> Task :core:database:desktopMainClasses UP-TO-DATE
+> Task :core:testing:kmpPartiallyResolvedDependenciesChecker
+> Task :core:testing:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:testing:compileKotlinDesktop UP-TO-DATE
+> Task :core:testing:compileDesktopMainJava NO-SOURCE
+> Task :core:testing:desktopProcessResources NO-SOURCE
+> Task :core:testing:processDesktopMainResources SKIPPED
+> Task :core:testing:desktopMainClasses UP-TO-DATE
+> Task :core:testing:desktopJar UP-TO-DATE
+> Task :core:database:kspTestKotlinDesktop SKIPPED
+> Task :core:database:copyRoomSchemas NO-SOURCE
+> Task :core:database:desktopJar UP-TO-DATE
+> Task :core:database:compileTestKotlinDesktop UP-TO-DATE
+> Task :core:database:compileDesktopTestJava NO-SOURCE
+> Task :core:database:desktopTestProcessResources UP-TO-DATE
+> Task :core:database:processDesktopTestResources SKIPPED
+> Task :core:database:desktopTestClasses UP-TO-DATE
+> Task :core:database:desktopTest
+
+[Incubating] Problems report is available at: file:///root/projects/PassVault/audit-runtime-linux-isolated-batch03/checkout/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 16s
+19 actionable tasks: 6 executed, 13 up-to-date

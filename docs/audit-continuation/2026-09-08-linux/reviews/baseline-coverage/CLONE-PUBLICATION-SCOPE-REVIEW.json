@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_PROSPECTIVE_ISOLATED_PUBLICATION_CLONE_AND_EXACT166_PATH_SOURCE_PHASE; EXPLICIT_ROOT_ADOPTION_AND_BEFORE_ACTION_GATES_REQUIRED",
+  "scope": "Replace the consumed original borrowed-object WRITE exception with one fresh standalone publication-only clone. No further original directory rebind, accept-current inode waiver, full-packet re-audit, runtime admission or automatic retry.",
+  "evidence": {
+    "original_manifest": {
+      "path": "publication/CHECKPOINT-10-PAYLOAD.json",
+      "sha256": "23f641bcab4e42166b03982780ac82836873b410f42231fd83a6ff047873fbf1"
+    },
+    "original_final_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-10-REVIEW.json",
+      "sha256": "271ae3259a5dbcb7193f76aa31ffce792af3941043c331a7249fe6bcc8f71db6"
+    },
+    "first_consumed_failure": {
+      "path": "publication/CHECKPOINT-10-SOURCE-PUBLISHED.json",
+      "sha256": "379a34ad8eaa8bcf836d1d4f3bbb6bb5208896a3906e88c6699a43dc3dd123bf",
+      "bytes": 7739,
+      "result": "tool248d31 exit1; exact info drift;6read-onlyGit0; no stage/commit/push; object_checks[]"
+    },
+    "second_consumed_failure": {
+      "path": "publication/CHECKPOINT-10-SOURCE-PUBLISHED-AFTER-INFO-REVIEW.json",
+      "sha256": "0f108367e9e118196e05f1fd007ffc59802ce2b6c4093a03cf67f1a45600e54e",
+      "bytes": 8200,
+      "result": "tool97442c exit1; protected directory drift:01;6read-onlyGit0; no stage/commit/push; object_checks[]; actual differing field and cause UNKNOWN"
+    },
+    "prior_three_document_delta": {
+      "review_path": "reviews/baseline-coverage/CHECKPOINT-10-INFO-REBIND-REVIEW-v2.json",
+      "review_sha256": "b7609292072e5b2c6441298d922c0b09c399cddb5a5646bc399428ed98c6f5bf",
+      "review_bytes": 12302,
+      "adoption_path": "publication/CHECKPOINT-10-INFO-REBIND-ROOT-ADOPTION.json",
+      "adoption_sha256": "61af0d76328ba9538978b209dacedce9c29d3a9f135e7894be9b55336041a1ea",
+      "adoption_bytes": 3633
+    },
+    "latest_read": "9f959d exit0: hash-bound second failure and prior adoption, bounded stable no-follow file reads. No original directory01/object/namespace probe.",
+    "qualification": "No completed full original object comparison is retained by either failed attempt. Neither failure is repaired or reclassified. Prior info row-schema and lossy-ns corrections remain; no new cause diagnosis."
+  },
+  "fixed_clone": {
+    "namespace": "/root/projects/PassVault/passvault-publication-20260910-01",
+    "canonical_editing_workspace": "/root/projects/PassVault/passvault-linux",
+    "url": "https://github.com/Apdelrahman1911/passvault.git",
+    "branch": "codex/audit-continuation-linux-20260908",
+    "base_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "base_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "required_clone_options": [
+      "--depth=1",
+      "--single-branch",
+      "--no-tags",
+      "--no-local",
+      "--no-hardlinks"
+    ],
+    "role": "Derived publication copy only, never a second unrecorded source author or build workspace. Root records source-copy mapping back to canonical editing files. Depth1 supports new children of exact base; it does not prove old C4/C5 object availability or admit future transport/fetch."
+  },
+  "exact_selection": {
+    "arithmetic": "Original158 manifest-selected paths plus unchanged manifest/final review =160; prior failed receipt/v2 review/prior adoption =3; new failed receipt/this scope/new adoption =3; total166.",
+    "old160": "Same accepted path/SHA256/size/Git-mode tuples; no original manifest, final report, source, helper, workflow or raw-evidence edits.",
+    "prior3": "Exactly the previously bound first failure, INFO-REBIND-REVIEW-v2 and INFO-REBIND-ROOT-ADOPTION above; retained as consumed history, not current borrowed-store authority.",
+    "new3": [
+      "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-SOURCE-PUBLISHED-AFTER-INFO-REVIEW.json",
+      "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CLONE-PUBLICATION-SCOPE-REVIEW.json",
+      "docs/audit-continuation/2026-09-08-linux/publication/CLONE-PUBLICATION-ROOT-ADOPTION.json"
+    ],
+    "total": 166,
+    "gate": "Root adoption binds this genuine review and the exact added tuples before copying/staging. Freshly hash/mode-check all166 canonical inputs and independent copied outputs. Selected count is not a fabricated changed-path/test count: actual index delta must equal the sealed before/after mapping, with no change outside166.",
+    "excluded": "Preliminary info diagnostic/v1, active rendered-editor/future fixture work, old unadmitted Mac runner, new PVU002/future native proposals and all other unselected work. Both future Windows04/Mac02 activation request paths remain absent from the source publication."
+  },
+  "independent_challenges_and_gates": [
+    "Root explicitly adopts this NEW isolated-clone scope. Before clone, verify the fixed namespace is absent under a validated root-owned no-follow parent, then capture its original created identity. Existing namespace or unsafe parent is STOP, not reuse/rename/delete. Original clone/editing worktree/held runtimes remain in place; never issue Git commands against or copy object files from their Git stores under this scope.",
+    "One HTTPS clone of only the exact URL/branch with the required options; no --shared/--reference/alternates/local object shortcut, partial/promisor clone or hardlinks. Remove inherited Git directory/worktree/index/object/alternate/config/template overrides that could redirect writes. Disable hooks/fsmonitor/auto-GC/maintenance/signing per command, use an empty clone template, retain only approved credential handling without exposing secrets. No global config changes.",
+    "Before input copying or Git mutation beyond clone, verify actual base commit/tree and branch, exact origin and sole push destination, fresh internal .git/common object directory, absence of alternates/http-alternates/external commondir/promisor wiring and no hardlinked regular clone files. Root-owned path safety is checked in the NEW namespace only; no old-store inventory or inode rebinding is substituted. Shallow status is recorded.",
+    "Copy only the166 allowlisted paths as independent bytes through validated regular no-follow source reads into validated fresh clone paths; no move/link/filter/import/execution or original-file edits. Check size/SHA256/Git mode after copy and before staging. Bind base raw blob IDs/modes to exact expected base tree; preserve documented checkout-EOL qualifications rather than treating normalized checkout bytes as raw Git proof.",
+    "Accept either exact-path git add with full raw staged-blob verification, or the explicitly requested raw staging in NEW clone only: one bounded git hash-object -w --no-filters -- <166 literal paths>, then one bounded git update-index --add -z --index-info input. Validate every returned SHA1 against canonical blob-header+raw bytes and every index entry against exact path/mode/OID mapping. Initialize/retain the base index; no arbitrary index entries or166-process loop. Raw staging preserves evidence; it does not suppress whitespace checks or alter .gitattributes.",
+    "Before commit and after commit, verify all selected index/commit raw blobs/modes and the exact staged delta; every unselected path/blob/mode remains identical to base. New source commit has one parent, exactb2e base. A hash, path, mode, parent, remote or tool discrepancy stops this scope rather than accepting current state.",
+    "Carry exact14 raw-evidence qualification7dbd9258d938253eaf4fbedbe5247d0d7d79e32c5083a02b29d9a4395939b4c3 and independent final-review conditions. Capture complete bounded actual cached --check stdout/stderr/exit and retain FAIL. Only diagnostics attributable to those frozen14 raw files qualify; any other diagnostic, changed tuple, truncation or error stops. No normalization, attributes/config suppression or source-whitespace waiver.",
+    "Fresh remote observations before source push must retain the exact expected dedicated base and protected refs. Push only the dedicated branch, fast-forward, unsigned, no tags/submodules/force; no merge or protected-branch/environment mutation. Verify actual dedicated remote commit/tree after push and retain compact command/source/copy/blob/ref receipts in the canonical editing handoff, not only inside the disposable clone. If remote advanced, STOP/revalidate; do not reset/force/fetch-loop."
+  ],
+  "phase_and_ownership": {
+    "source": "One fresh clone and one nonactivating C10 source commit/dedicated push under this scope; no automatic retry of clone/copy/stage/commit/push failure. The old store-write/rebind route is retired, not a fallback.",
+    "windows04": "Original separately source-bound independent instance and root execution/coordination/cleanup admission precede one A-only Windows04 request child of actual new source commit, using retained publication clone.",
+    "mac02": "Only after independently reconciled Windows04 settlement/slot release, original separately admitted A-only Mac02 request child binds actual immediately preceding Windows04 ACTIVATION commit, not earlier source. No request reactivation or extra intermediate commit.",
+    "controls": "Same original root coordination lock, root sole Git/build/CI owner and one audit-owned build/test job at a time. This Git-only scope launches no Gradle, application/native test, simulator, packaging or old helper. Future GUI publication/transport and any extra fetch require their own exact scope.",
+    "bounds": "600s source phase,180s clone,60s ordinary Git/data commands,120s push; one operation at a time. Carry existing Git resource floors, check disk/RAM before/after and during long clone/push. Cap new namespace logical data at512MiB with bounded observations; stop rather than reclaim shared/old data or silently enlarge bounds. Resource samples are not a hard OS/RAM guarantee."
+  },
+  "retention_and_cleanup": {
+    "now": "Retain the new namespace on success because Windows04/Mac02 and next GUI source publication genuinely need it. Record original root identity, size, purpose and owned command settlement. No success-path deletion is authorized or claimed here.",
+    "processes": "Install cleanup handling before operations; reap/stop only captured audit-owned Git/helper processes. Never kill by generic process name or adopt old processes. Failure/interruption uncertainty is recorded; no promise of hard-loss cleanup or automatic retry.",
+    "later": "When no longer needed, obtain a separate bounded own-root cleanup scope. It must verify original namespace/parent, owned process settlement, no links/mount escape/unexpected foreign work, validate allowlisted generated clone contents and durably retain receipts/source copies/remote publication proof outside deletion. Never remove canonical source/permanent reports/tests, shared caches, SDKs, toolchains or any held runtime. No recursive-delete authority is imported from retired G7/G8 scopes.",
+    "reviewer": "Only this permanent report is written exclusively0600/fsynced/read back. No clone/Git/network, original object access, runtime probe, temp/cache/build output, process or deletion by reviewer; no wrapper-stop duty. Quiescent on delivery."
+  },
+  "preserved": "Both C10 failures, old C9 failures/UNKNOWN causes, all1068 original protected object bytes/non-time bindings and all other original ancestor/dir restrictions remain historical and unwritten here; this scope does not certify their present integrity. Prior successes/rejects/grouped variants, PVA029 failure/no automatic retry, PVU007 STOP,PVU011 NO-RETRY,G7/G8 CLOSED, old HOLDs, PVD/owner/hardware gaps and protected-ref/tag/dependency/version/identity/signing/store/1017001 fences survive. Git publication adds zero product tests/findings/closures/readiness.",
+  "utc": "2026-09-10T00:43:42.608128+00:00"
+}

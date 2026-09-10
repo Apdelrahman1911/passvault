@@ -1,0 +1,136 @@
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+import java.time.Duration
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.testing.Test
+
+// NEW fixed C5 PVU-005 wiring only. Not execution admission. The original
+// desktopTest runs ONCE, offline, after a separately stopped online preparation.
+def mode = gradle.startParameter.projectProperties['passvault.audit.desktopCurtainMode']
+if (!(mode in ['prepare', 'render'])) {
+    throw new GradleException('Explicit desktop-curtain prepare/render mode required')
+}
+def runtime = '/root/projects/PassVault/audit-runtime-linux-desktop-curtain01'
+def workerRoot = runtime + '/workers/desktop-curtain'
+def displayRoot = '/tmp/passvault-desktop-curtain01'
+def evidence = '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-desktop-curtain01/pixels'
+def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+def selectedClass = 'com.passvault.desktop.security.DesktopCurtainRenderingTest'
+
+gradle.beforeProject { project ->
+    if (project.path != ':app-desktop') return
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.name != 'desktopTest') return
+        test.executable = jdk + '/bin/java'
+        test.maxHeapSize = '512m'
+        test.maxParallelForks = 1
+        test.forkEvery = 0
+        test.ignoreFailures = false
+        test.jvmArgs('-XX:-UsePerfData')
+        test.systemProperty('file.encoding', 'UTF-8')
+        test.systemProperty('user.home', workerRoot + '/home')
+        test.systemProperty('jna.tmpdir', workerRoot + '/jna')
+        test.systemProperty('java.io.tmpdir', workerRoot + '/tmp')
+
+        // Do not forward client JVM flags, an ambient display/session, or the
+        // unrelated provider-fault fixture. Root supplies an allowlisted client.
+        def workerEnvironment = new LinkedHashMap(test.environment)
+        ['JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'JAVA_OPTS', 'GRADLE_OPTS',
+         'PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE',
+         'DISPLAY', 'XAUTHORITY', 'WAYLAND_DISPLAY', 'SESSION_MANAGER', 'XDG_RUNTIME_DIR',
+         'DBUS_SESSION_BUS_ADDRESS', 'DBUS_SYSTEM_BUS_ADDRESS'].each { workerEnvironment.remove(it) }
+        workerEnvironment.putAll([
+            'JAVA_HOME': jdk, 'HOME': workerRoot + '/home',
+            'TMPDIR': workerRoot + '/tmp', 'TMP': workerRoot + '/tmp', 'TEMP': workerRoot + '/tmp',
+            'SQLITE_TMPDIR': workerRoot + '/sqlite',
+            'XDG_CACHE_HOME': workerRoot + '/xdg-cache', 'XDG_CONFIG_HOME': workerRoot + '/xdg-config',
+            'XDG_DATA_HOME': workerRoot + '/xdg-data', 'XDG_STATE_HOME': workerRoot + '/xdg-state',
+        ])
+        if (mode == 'render') {
+            workerEnvironment.putAll([
+                'DISPLAY': ':88', 'XAUTHORITY': displayRoot + '/Xauthority',
+                'XDG_RUNTIME_DIR': displayRoot + '/runtime',
+                'DBUS_SESSION_BUS_ADDRESS': 'unix:path=' + displayRoot + '/runtime/bus',
+                'DBUS_SYSTEM_BUS_ADDRESS': 'unix:path=' + displayRoot + '/runtime/no-system-bus',
+            ])
+            // Worker STARTUP properties, not Gradle-client -D or late AWT setup.
+            test.systemProperty('passvault.pvu005.syntheticDisplay', ':88')
+            test.systemProperty('passvault.pvu005.evidenceDir', evidence)
+            test.systemProperty('java.awt.headless', 'false')
+            test.systemProperty('sun.java2d.xrender', 'true')
+            test.systemProperty('awt.useSystemAAFontSettings', 'on')
+            test.systemProperty('swing.aatext', 'true')
+            test.timeout.set(Duration.ofMinutes(2))
+            // Force ONLY this Test, not its compile dependencies. Native/EDT or
+            // kernel stalls still require the independent outer supervisor.
+            test.outputs.upToDateWhen { false }
+            test.outputs.cacheIf { false }
+        }
+        test.setEnvironment(workerEnvironment)
+        test.filter.setIncludePatterns(selectedClass)
+        test.filter.failOnNoMatchingTests = true
+    }
+}
+
+gradle.projectsEvaluated {
+    def project = gradle.rootProject.findProject(':app-desktop')
+    if (project == null) throw new GradleException('Fixed app-desktop project missing')
+    def selectedTest = project.tasks.named('desktopTest', Test)
+    project.tasks.register('auditDesktopCurtainPrepare') {
+        // Keep these FileCollections lazy and preserve their builtBy edges.
+        // Depending on selectedTest itself would wrongly execute the test online.
+        dependsOn { selectedTest.get().testClassesDirs }
+        dependsOn { selectedTest.get().classpath }
+        doLast {
+            def test = selectedTest.get()
+            def classRoots = test.testClassesDirs.files
+            def classpath = test.classpath.files
+            def relativeClass = selectedClass.replace('.', '/') + '.class'
+            if (!classRoots.any { new File(it, relativeClass).isFile() }) {
+                throw new GradleException('Compiled selected rendering fixture missing')
+            }
+            if (classpath.size() > 512) throw new GradleException('Runtime classpath count bound')
+            def rows = []
+            classpath.each { File file ->
+                if (file.isFile()) {
+                    if (file.length() > 256L * 1024 * 1024) {
+                        throw new GradleException('Runtime artifact size bound')
+                    }
+                    def digest = MessageDigest.getInstance('SHA-256')
+                    long count = 0
+                    file.withInputStream { stream ->
+                        byte[] buffer = new byte[65536]
+                        int n
+                        while ((n = stream.read(buffer)) != -1) {
+                            count += n
+                            if (count > 256L * 1024 * 1024) {
+                                throw new GradleException('Runtime artifact growth bound')
+                            }
+                            digest.update(buffer, 0, n)
+                        }
+                    }
+                    rows.add([name: file.name, bytes: count, sha256: digest.digest().encodeHex().toString()])
+                } else {
+                    // Empty/NO-SOURCE resource directories are legitimate. Do
+                    // not turn their absence into a false compilation failure.
+                    rows.add([name: file.name, directory: true, exists: file.isDirectory()])
+                }
+            }
+            rows.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+            println('PVU005_RUNTIME_CLASSPATH=' + JsonOutput.toJson([
+                selectedClass: selectedClass, entries: classpath.size(), artifacts: rows,
+                qualification: 'Resolved Test runtime artifacts, not an executed test or native-loader proof',
+            ]))
+        }
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def tests = graph.allTasks.findAll { it instanceof Test }
+    if (mode == 'prepare' && !tests.isEmpty()) {
+        throw new GradleException('Preparation must not schedule any Test task')
+    }
+    if (mode == 'render' && (tests.size() != 1 || tests[0].path != ':app-desktop:desktopTest')) {
+        throw new GradleException('Only the single admitted desktop Test task may run')
+    }
+}

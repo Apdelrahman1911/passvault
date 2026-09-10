@@ -6,7 +6,19 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-**Latest: `CHECKPOINT_9.md` (non-activating source/report checkpoint).**
+**Latest: `CHECKPOINT_10.md` (non-activating source/evidence checkpoint).**
+Linux03 actually passed **166 regressions plus one separate fixture producer**,
+independently reconciled against17 exact XMLs. Four additional qualified
+defect-scope closures give **26/38 (68.4%)**; PVA-007/031 rendered/device and other
+native/hardware/owner gates remain. Five original stops succeeded and only the
+new03 runtime was removed; old HOLDs survive. Windows03 failed before CMake,
+zero tests; fresh Windows04/Mac02 source is accepted, **not execution-admitted**.
+Use the current ledgers and slot before any action; do not repeat successful
+Linux03 or treat publication as activation. Later request-only CI children need
+separate admission and serial settlement. Active new GUI/source investigations
+remain outside the frozen publication unless explicitly selected/reviewed.
+
+**Historical: `CHECKPOINT_9.md` (non-activating source/report checkpoint).**
 Windows02 and Linux isolated02 are consumed, independently reconciled failures;
 zero product tests/XML or new closures. Windows02's own allowlisted cleanup
 settled; Linux02's partial materialization remains HOLD. Windows03 source is
@@ -178,13 +190,14 @@ succeeded. This is an inspection-tool failure, not an application test.
 | Measure | Qualified/conclusive | Remaining |
 | --- | ---: | ---: |
 | Original confirmed PVA-001–025 | 19/25 (76%) | 6 |
-| All confirmed PVA-001–038 | 22/38 (57.9%) | 16 |
+| All confirmed PVA-001–038 | 26/38 (68.4%) | 12 |
 | Original PVU-001–012 | 2/12 (16.7%) | 10 |
 | PVD-001–008 explanations | 8/8 documented | Owner choices separate |
 
-The all-confirmed denominator increased by one source-confirmed family; no new
-qualified closure occurred. Frozen reports with 22/37 retain their historical
-scope, not the current global total. These are separate denominators, not overall readiness. Historical passes,
+The all-confirmed denominator increased by one source-confirmed family, PVA-038;
+Linux03 later supplied four independently supported qualified closures.
+Frozen reports with22/37 or22/38 retain their historical scope, not the current
+total. These are separate denominators, not overall readiness. Historical passes,
 failures, rejected concerns, grouped variants and coverage qualifications remain
 in the handoff. Pending work is not silently dropped because Linux lacks a
 target or sufficient disk.

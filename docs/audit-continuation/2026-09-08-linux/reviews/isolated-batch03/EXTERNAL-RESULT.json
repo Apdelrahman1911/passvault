@@ -1,0 +1,598 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "observed_completed_utc": "2026-09-09T20:51:38.960313+00:00",
+  "scope": "ONCE_ONLY_LINUX_ISOLATED_BATCH03_ACTUAL_EXTERNAL_RESULT_PENDING_INDEPENDENT_RECONCILIATION",
+  "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+  "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+  "root_admission_sha256": "27dbda31ea720c3dc131f583678f254d78332e224c28419b49bd80e683f4beea",
+  "entry_tool_chunk": "c28c96",
+  "completion_tool_chunk": "3eee9e",
+  "tool_session_id": 14364,
+  "actual_external_exit": 0,
+  "actual_external_output": "",
+  "outer_result": {
+    "bytes": 11601,
+    "sha256": "45789520a6d15e45b7516b8240f93d59407dce2dfa78d99954afbae1e4432261"
+  },
+  "inner_result": {
+    "bytes": 28543,
+    "sha256": "84e02f488ab1c3419e42a02f206b356359232e23f0954260d0f9d54f46c5f327"
+  },
+  "elapsed_seconds_reported": 611.287,
+  "status_reported": "COMPLETED_PENDING_INDEPENDENT_RECONCILIATION",
+  "inner_safety_booleans": {
+    "source_before": true,
+    "source_after": true,
+    "all_required_stops_ok": true,
+    "namespace_empty_before_exit": true,
+    "cleanup_safe": true,
+    "validation_mapping_ok": true
+  },
+  "phase_outcomes": [
+    {
+      "phase": "ordinary",
+      "build_ok": true,
+      "stop_attempted": true,
+      "stop_ok": true,
+      "settled": true,
+      "xml_mapping_ok": true,
+      "commands": [
+        {
+          "label": "ordinary",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        },
+        {
+          "label": "ordinary-stop",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "phase": "prepare",
+      "build_ok": true,
+      "stop_attempted": true,
+      "stop_ok": true,
+      "settled": true,
+      "xml_mapping_ok": true,
+      "commands": [
+        {
+          "label": "prepare",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        },
+        {
+          "label": "prepare-stop",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "phase": "success",
+      "build_ok": true,
+      "stop_attempted": true,
+      "stop_ok": true,
+      "settled": true,
+      "xml_mapping_ok": true,
+      "commands": [
+        {
+          "label": "success",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        },
+        {
+          "label": "success-stop",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "phase": "wrong-key",
+      "build_ok": true,
+      "stop_attempted": true,
+      "stop_ok": true,
+      "settled": true,
+      "xml_mapping_ok": true,
+      "commands": [
+        {
+          "label": "wrong-key",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        },
+        {
+          "label": "wrong-key-stop",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "phase": "loader-io",
+      "build_ok": true,
+      "stop_attempted": true,
+      "stop_ok": true,
+      "settled": true,
+      "xml_mapping_ok": true,
+      "commands": [
+        {
+          "label": "loader-io",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        },
+        {
+          "label": "loader-io-stop",
+          "exit": 0,
+          "complete": true,
+          "errors": []
+        }
+      ]
+    }
+  ],
+  "raw_xml_root_count": {
+    "cases": 167,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "regression_fixture_distinction": "166 expected regressions plus1 synthetic fixture producer; this root raw167 count alone is not independent semantic mapping or qualified closure.",
+  "xml_files": [
+    {
+      "path": "xml/loader-io-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "suite": "BiometricProviderInitializationFaultIntegrationTest[desktop]",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 810,
+      "sha256": "162451c19b824c05a8972c0153fe8e764804deaf2546524f7409c325bcf70d36"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.backup.BackupPaginationTest.xml",
+      "suite": "BackupPaginationTest[desktop]",
+      "cases": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2697,
+      "sha256": "aef4877a3b38826b70d909fb743d317453bff047e59f0eaedf8d74bc7ff31c0f"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.backup.VaultBackupStreamingTest.xml",
+      "suite": "VaultBackupStreamingTest[desktop]",
+      "cases": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 7764,
+      "sha256": "954c66f084a4a235c4381092ef80a74aa1ffb0b19135ed29a8e53930c5848fa9"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.xml",
+      "suite": "VaultBackupUnicodePaginationTest[desktop]",
+      "cases": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 1474,
+      "sha256": "d04959182e54265017611ecbd165fea49e1daa795f7010112c4188e0b23d7050"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml",
+      "suite": "BiometricUnlockFreshnessIntegrationTest[desktop]",
+      "cases": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2727,
+      "sha256": "634bedc13ac6038c72d34887b791971e20550eef8413ccfc8b8d7fb775c333c8"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.BiometricVerificationFailureIntegrationTest.xml",
+      "suite": "BiometricVerificationFailureIntegrationTest[desktop]",
+      "cases": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2169,
+      "sha256": "280c1776a99889983bef88118527303ce41e4a3dc01696a29607156f3a62f713"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest.xml",
+      "suite": "RepositoryBiometricSecurityIntegrationTest[desktop]",
+      "cases": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2625,
+      "sha256": "0751c006d81af45c2b98c64a7f961c5de01c95a1eaa5b87bb1367a4eaaa3a467"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.RepositorySecurityIntegrationTest.xml",
+      "suite": "RepositorySecurityIntegrationTest[desktop]",
+      "cases": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 3665,
+      "sha256": "51017c789d705d58530e25d1217901b8d18356107e2378fa7461b79c15a2e751"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest.xml",
+      "suite": "VaultUnlockPreemptionIntegrationTest[desktop]",
+      "cases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 1764,
+      "sha256": "c3e9f197bb5af46b3138f1ad00a72c6dea35e1641bcfe4575fb7da5c42413ca1"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldCapacityTest.xml",
+      "suite": "CredentialCustomFieldCapacityTest[desktop]",
+      "cases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 1752,
+      "sha256": "a4823377e8012d29de7fba266188f0ba10cdd14e996caa5eb6bd7e4951f8d2a1"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.xml",
+      "suite": "CredentialCustomFieldDraftTest[desktop]",
+      "cases": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2931,
+      "sha256": "16520c20e9f4465b635e6d22d9fb2b5841c1eb002c7ae16288163f19a6e1cb40"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.xml",
+      "suite": "CredentialCustomFieldSaveFreshnessTest[desktop]",
+      "cases": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2717,
+      "sha256": "e0f7b8092853452cd13d2808106a2f2aa1e48b56671f762dd25cc5582fcf9b42"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.shared.navigation.CredentialBackFreshnessCompositionTest.xml",
+      "suite": "CredentialBackFreshnessCompositionTest[desktop]",
+      "cases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 1721,
+      "sha256": "cf82bbd13efa2a078fb6da9166b09fac828013428f1b8a82ffbbcdd5eb706887"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.shared.navigation.NavigationBackCoordinatorTest.xml",
+      "suite": "NavigationBackCoordinatorTest[desktop]",
+      "cases": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 2361,
+      "sha256": "8c9b3710bf0bd6cf479e086c85ec26edf6015a2a94ef2ff730b1e6fed4030f48"
+    },
+    {
+      "path": "xml/prepare-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "suite": "BiometricProviderInitializationFaultIntegrationTest[desktop]",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 1061,
+      "sha256": "58423d3a86330bd3adf3031ccb2620d10ef38b85724fce72a33142bf8a5a6a0d"
+    },
+    {
+      "path": "xml/success-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "suite": "BiometricProviderInitializationFaultIntegrationTest[desktop]",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 740,
+      "sha256": "817ff1c3e022a79620a1346fa0282225fa3fca97397b9082729d053828e65665"
+    },
+    {
+      "path": "xml/wrong-key-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "suite": "BiometricProviderInitializationFaultIntegrationTest[desktop]",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "bytes": 738,
+      "sha256": "c828b844256654b93d9ff77c8c6bb864c41ced7ac200fae25072f9d13e678f9a"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "INNER-PREFLIGHT.json",
+      "bytes": 167,
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    {
+      "path": "INNER-RESULT.json",
+      "bytes": 28543,
+      "sha256": "84e02f488ab1c3419e42a02f206b356359232e23f0954260d0f9d54f46c5f327"
+    },
+    {
+      "path": "OUTER-ALLOCATION.json",
+      "bytes": 3118,
+      "sha256": "c44062088c18cfdaace895adab73a77b0940ba93f547a818de3e910707c02fe6"
+    },
+    {
+      "path": "OUTER-INTENT.json",
+      "bytes": 19216,
+      "sha256": "2967047a7f8891a079c1e94f73929ff7b74b3149dbe94646f6562a4cfbc42373"
+    },
+    {
+      "path": "OUTER-RECEIPT.json",
+      "bytes": 11601,
+      "sha256": "45789520a6d15e45b7516b8240f93d59407dce2dfa78d99954afbae1e4432261"
+    },
+    {
+      "path": "PHASE-loader-io.json",
+      "bytes": 2974,
+      "sha256": "0bcdfb563a397ac6e9c0ae2cec9c8ed242d5ac3f2fc1af5c2d7489b964e901ed"
+    },
+    {
+      "path": "PHASE-ordinary.json",
+      "bytes": 10888,
+      "sha256": "e0b948e0abe93523c283acc28f8b78f382cd8a2cc80e792b235490b89be06a5e"
+    },
+    {
+      "path": "PHASE-prepare.json",
+      "bytes": 2883,
+      "sha256": "49043027dcaefd09fdeb3420435e8616ee119fd805226d38e0bcfa36b77a1415"
+    },
+    {
+      "path": "PHASE-success.json",
+      "bytes": 2966,
+      "sha256": "438024a1043d8d140324887121bb10fc5bf75a5cf45d42fc124f0a0b00cda95e"
+    },
+    {
+      "path": "PHASE-wrong-key.json",
+      "bytes": 2974,
+      "sha256": "93fdd8a058c3b7563d9d8425d1a93b97dff50b8cf0003cab36ac9a6e33934c5c"
+    },
+    {
+      "path": "PVA038-FIXTURE.txt",
+      "bytes": 318,
+      "sha256": "a5a49da0f453d6ba64fb4953cdfac8ae775a561e8a7964cb836e72fa673ac9a6"
+    },
+    {
+      "path": "SOURCE-AFTER.json",
+      "bytes": 1333,
+      "sha256": "7e4d51c9ba243bc1d6d69bfef1c8417a5a91fe5071504f84b5fb10f735867ed8"
+    },
+    {
+      "path": "SOURCE-BEFORE.json",
+      "bytes": 1333,
+      "sha256": "7e4d51c9ba243bc1d6d69bfef1c8417a5a91fe5071504f84b5fb10f735867ed8"
+    },
+    {
+      "path": "loader-io-INTENT.json",
+      "bytes": 989,
+      "sha256": "8326ec0ac3ce3c9fe4eb9ca74878fe7afd1a880172d4d336d42e345d9b5cc854"
+    },
+    {
+      "path": "loader-io-stop-INTENT.json",
+      "bytes": 813,
+      "sha256": "6dd3242c5027df0cb9e4018cccbfde12a8c0d26f9b1a0c74878557ec0ccf9a53"
+    },
+    {
+      "path": "logs/loader-io-stop.log",
+      "bytes": 438,
+      "sha256": "3ebfb77e9826fca2d57137ec3f06465c6efef9dc2e3c89796f0fdfda95a9074e"
+    },
+    {
+      "path": "logs/loader-io.log",
+      "bytes": 5566,
+      "sha256": "43413e5fff0b7e3afcab6c91d0b0f810042c7d2707227e0a713eab36ef7dc684"
+    },
+    {
+      "path": "logs/ordinary-stop.log",
+      "bytes": 438,
+      "sha256": "3ebfb77e9826fca2d57137ec3f06465c6efef9dc2e3c89796f0fdfda95a9074e"
+    },
+    {
+      "path": "logs/ordinary.log",
+      "bytes": 41179,
+      "sha256": "e79ed666f239eed08e4cfe606fcb1f41b19069301c3b768c40d42ab00aaaca5b"
+    },
+    {
+      "path": "logs/outer-git.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/outer-unshare.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/outer-unshare.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "logs/prepare-stop.log",
+      "bytes": 438,
+      "sha256": "3ebfb77e9826fca2d57137ec3f06465c6efef9dc2e3c89796f0fdfda95a9074e"
+    },
+    {
+      "path": "logs/prepare.log",
+      "bytes": 5566,
+      "sha256": "43413e5fff0b7e3afcab6c91d0b0f810042c7d2707227e0a713eab36ef7dc684"
+    },
+    {
+      "path": "logs/success-stop.log",
+      "bytes": 438,
+      "sha256": "3ebfb77e9826fca2d57137ec3f06465c6efef9dc2e3c89796f0fdfda95a9074e"
+    },
+    {
+      "path": "logs/success.log",
+      "bytes": 5566,
+      "sha256": "327e0baede846a7504ce5aa1b59522b8994ea1633a73fe7ac59d8a1e8821f2f4"
+    },
+    {
+      "path": "logs/wrong-key-stop.log",
+      "bytes": 438,
+      "sha256": "3ebfb77e9826fca2d57137ec3f06465c6efef9dc2e3c89796f0fdfda95a9074e"
+    },
+    {
+      "path": "logs/wrong-key.log",
+      "bytes": 5566,
+      "sha256": "e99bf6c05f1f0b7a2254bc16d7d3c10ac4604e7b43c1f7474488d0cdb07d311a"
+    },
+    {
+      "path": "ordinary-INTENT.json",
+      "bytes": 1062,
+      "sha256": "2ecc9ff338bf146d9bac6bcd71ac6003d8119c7792d5f22ede0c437d8e7997f0"
+    },
+    {
+      "path": "ordinary-stop-INTENT.json",
+      "bytes": 813,
+      "sha256": "0690f08390d49934e441e7aa1b628ef56df57e77a929691fa624da7b445c4956"
+    },
+    {
+      "path": "prepare-INTENT.json",
+      "bytes": 987,
+      "sha256": "62887a22107c960eb932de6ad3fb39c7545875e0997968764453e3fdf8be5b5a"
+    },
+    {
+      "path": "prepare-stop-INTENT.json",
+      "bytes": 813,
+      "sha256": "0690f08390d49934e441e7aa1b628ef56df57e77a929691fa624da7b445c4956"
+    },
+    {
+      "path": "success-INTENT.json",
+      "bytes": 987,
+      "sha256": "b250974bd2961d62122094e5e6bb753ea17d94f0b5df779dca9e03419acda587"
+    },
+    {
+      "path": "success-stop-INTENT.json",
+      "bytes": 813,
+      "sha256": "6dd3242c5027df0cb9e4018cccbfde12a8c0d26f9b1a0c74878557ec0ccf9a53"
+    },
+    {
+      "path": "wrong-key-INTENT.json",
+      "bytes": 989,
+      "sha256": "1cd50a0d4b8e35f9a464cc75482b88554a87789e9801018c0b6eb12de3faa977"
+    },
+    {
+      "path": "wrong-key-stop-INTENT.json",
+      "bytes": 813,
+      "sha256": "6dd3242c5027df0cb9e4018cccbfde12a8c0d26f9b1a0c74878557ec0ccf9a53"
+    },
+    {
+      "path": "xml/loader-io-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "bytes": 810,
+      "sha256": "162451c19b824c05a8972c0153fe8e764804deaf2546524f7409c325bcf70d36"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.backup.BackupPaginationTest.xml",
+      "bytes": 2697,
+      "sha256": "aef4877a3b38826b70d909fb743d317453bff047e59f0eaedf8d74bc7ff31c0f"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.backup.VaultBackupStreamingTest.xml",
+      "bytes": 7764,
+      "sha256": "954c66f084a4a235c4381092ef80a74aa1ffb0b19135ed29a8e53930c5848fa9"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.xml",
+      "bytes": 1474,
+      "sha256": "d04959182e54265017611ecbd165fea49e1daa795f7010112c4188e0b23d7050"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml",
+      "bytes": 2727,
+      "sha256": "634bedc13ac6038c72d34887b791971e20550eef8413ccfc8b8d7fb775c333c8"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.BiometricVerificationFailureIntegrationTest.xml",
+      "bytes": 2169,
+      "sha256": "280c1776a99889983bef88118527303ce41e4a3dc01696a29607156f3a62f713"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest.xml",
+      "bytes": 2625,
+      "sha256": "0751c006d81af45c2b98c64a7f961c5de01c95a1eaa5b87bb1367a4eaaa3a467"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.RepositorySecurityIntegrationTest.xml",
+      "bytes": 3665,
+      "sha256": "51017c789d705d58530e25d1217901b8d18356107e2378fa7461b79c15a2e751"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest.xml",
+      "bytes": 1764,
+      "sha256": "c3e9f197bb5af46b3138f1ad00a72c6dea35e1641bcfe4575fb7da5c42413ca1"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldCapacityTest.xml",
+      "bytes": 1752,
+      "sha256": "a4823377e8012d29de7fba266188f0ba10cdd14e996caa5eb6bd7e4951f8d2a1"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.xml",
+      "bytes": 2931,
+      "sha256": "16520c20e9f4465b635e6d22d9fb2b5841c1eb002c7ae16288163f19a6e1cb40"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.xml",
+      "bytes": 2717,
+      "sha256": "e0f7b8092853452cd13d2808106a2f2aa1e48b56671f762dd25cc5582fcf9b42"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.shared.navigation.CredentialBackFreshnessCompositionTest.xml",
+      "bytes": 1721,
+      "sha256": "cf82bbd13efa2a078fb6da9166b09fac828013428f1b8a82ffbbcdd5eb706887"
+    },
+    {
+      "path": "xml/ordinary-TEST-com.passvault.shared.navigation.NavigationBackCoordinatorTest.xml",
+      "bytes": 2361,
+      "sha256": "8c9b3710bf0bd6cf479e086c85ec26edf6015a2a94ef2ff730b1e6fed4030f48"
+    },
+    {
+      "path": "xml/prepare-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "bytes": 1061,
+      "sha256": "58423d3a86330bd3adf3031ccb2620d10ef38b85724fce72a33142bf8a5a6a0d"
+    },
+    {
+      "path": "xml/success-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "bytes": 740,
+      "sha256": "817ff1c3e022a79620a1346fa0282225fa3fca97397b9082729d053828e65665"
+    },
+    {
+      "path": "xml/wrong-key-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+      "bytes": 738,
+      "sha256": "c828b844256654b93d9ff77c8c6bb864c41ced7ac200fae25072f9d13e678f9a"
+    }
+  ],
+  "evidence_bytes": 202742,
+  "cleanup_reported": {
+    "removed": 36753,
+    "snapshot_entries": 36753,
+    "status": "REMOVED_ORIGINAL_RUNTIME"
+  },
+  "fresh_runtime_absent_point": true,
+  "qualifications": "Outer preterminal receipt remains preterminal; actual external exit0 observed separately. Inner inventory resource sample recorded one vanished scan directory during live work; not authoritative cleanup inventory. No old-HOLD discharge, hardware/Android32/GUI/Candidate proof; all actual claims pending independent reconciliation."
+}

@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "reviewer": "/root/editor_review",
+  "utc": "2026-09-09T17:10:20.000985+00:00",
+  "verdict": "ACCEPT_BOUNDED_INIT_SOURCE_ONLY_PENDING_INNER_INSTANCE_AND_ACTUAL_GRAPH_RUNTIME",
+  "scope": "Full136-line init and focused app-desktop dependency/native task guards; no unchanged full-runner or fixture semantic re-audit",
+  "inputs": {
+    "scripts/audit/desktop_curtain.init.gradle": "dc9d54532ae155a8c5a9ee6d1b54f37b63b4859e34cb4621e9f6eae30a539703",
+    "reviews/desktop-curtain/SOURCE.json": "7051258b17dcc93365d1625c8e361612c4ece8bc0b287147e7a83e113451b699",
+    "reviews/editor/PVU005-LINUX-FIXTURE-SOURCE-REVIEW.md": "34e3d9e2d02cb8c31ef3cf9f98906d273dbf6285d497a85fef4c32cf14bda4ad",
+    "reviews/android32/PVU005-LINUX-RENDER-SCOPE.md": "864089972054889f1fec2496eabfaebfdfff00e615381b3a398a17a7f5c4bec2"
+  },
+  "C5": {
+    "commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+    "members": 1727,
+    "fixture_checkout_sha256": "6e5f8190e94008f3e3c41b62b3d1d75cdca471057e2de57497829d5c42191c57",
+    "qualification": "C5 manifest binds unchanged reviewed fixture/build inputs. New init bytes are separately bound; no claim they belong to C5 tree."
+  },
+  "challenges": [
+    {
+      "topic": "Online prepare does not run tests",
+      "source": "init75-125,128-136",
+      "result": "Both lazy dependsOn closures return dependency-bearing Test FileCollections; they do not depend on selectedTest itself or strip builtBy edges through early .files conversion. Class output and runtime classpath .files are read only in doLast after dependencies. Prepare task graph rejects every Test; render graph requires exactly app-desktop:desktopTest. This is source wiring evidence; actual realized graph remains unobserved."
+    },
+    {
+      "topic": "Runtime artifacts, not compile-only fallback",
+      "source": "app-desktop1052-1082;init82-123",
+      "result": "desktopMain declares compose.desktop.currentOs and existing JNA; desktopTest inherits main plus Kotlin test/coroutines test. Preparation resolves selected Test runtime classpath and hashes bounded regular artifacts, checking compiled selected class. It intentionally does not claim native loading, render API, complete directory hashing or an executed test. Root must retain actual Skiko/JNA identities from resolved evidence; no new dependency or renderer substitution."
+    },
+    {
+      "topic": "No native/package scope expansion",
+      "source": "app-desktop864-877,992-1031",
+      "result": "Linux nativeBiometricPlatform is null; stage/test native bridge hooks are guarded by non-null stage task. Packaging/publisher edges attach packaging/distributable tasks, not selected Test FileCollection preparation. Fixed outer task argv and actual graph still require admission; this is not a generic guarantee about arbitrary requested tasks."
+    },
+    {
+      "topic": "Isolated single worker",
+      "source": "init20-72",
+      "result": "Explicit JDK17 executable,512m,one fork,no ignored failures,selected class/fail-on-empty. Worker HOME/JNA/TMP/SQLite/XDG redirected; inherited option and ambient display/session/DBus keys removed. Render installs fixed :88/auth/private runtime bus paths and startup non-headless/Java2D/AA properties. Root allowlisted client environment and original directory/display identities are necessary surrounding guards; properties alone confer no ownership."
+    },
+    {
+      "topic": "Once-only GUI execution",
+      "source": "init49-68,128-136",
+      "result": "Render forces this Test only out of up-to-date/cache reuse, without rerunning dependencies. Two-minute Test timeout cannot bound native/EDT/kernel stalls; independent outer supervision, original once-only stop, helper settlement and bounded cleanup remain mandatory. Preparing classpath is not a GUI attempt."
+    }
+  ],
+  "remaining": "Await inner source review for two-phase private PID/mount boundary, stopped/empty transition, offline private-network64MiB/tmp render, Xvfb:88/xfwm4 actual readiness and pidfd/cleanup gates. No execution/import/build/probe/Git or held-runtime access was performed.",
+  "coverage": "One previously reviewed declared real GUI testcase;0 executions in this review. PVU-005 remains unresolved/verification blocked. No closure denominator change, no original STOP/NO-RETRY/CLOSED or source-store freeze exception.",
+  "reviewer_outputs": "This permanent report only; no temporary/cache/runtime outputs or persistent processes. Exclusive0600, fsync file/parent and exact readback; no wrapper-stop obligation for source-only reads."
+}

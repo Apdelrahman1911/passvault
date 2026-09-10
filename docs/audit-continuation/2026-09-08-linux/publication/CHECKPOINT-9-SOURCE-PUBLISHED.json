@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "phase": "CHECKPOINT9_NONACTIVATING_SOURCE_REPORT",
+  "utc": "2026-09-09T18:15:14.540743+00:00",
+  "manifest_sha256": "631064ff5d31950c2f25d599cb54b6e14d1a7771ea836b58ab5523f84e781bfa",
+  "review_sha256": "99ee6547a4bddb3c3e79d212f975fa1ae7a358271b52bf905eafcbc147bc89bc",
+  "raw_log_adoption_sha256": "5be29a246eb419e7ebf962edea197d91cb0f81a855df99b69f0ba001fc774454",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab\n22fc4394711f7a7265ddf0d0ced965aade9112fb\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-only",
+        "-z"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "exit": 0,
+      "stdout": "refs/heads/codex/audit-continuation-linux-20260908 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 7b716ce8c693fa480bfb99d518acd9d4c8f9cfab\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "exit": 0,
+      "stdout": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr": ""
+    }
+  ],
+  "object_checks": [],
+  "status": "FAILED_HOLD_NO_AUTOMATIC_RETRY",
+  "new_application_tests": 0,
+  "new_closures": 0,
+  "protected_union": {
+    "baseline_sha256": "19133c18ac993afc2598e6b55f0fdeac0cf75db063aed35b8ab03957449bb573",
+    "incremental_receipts": [
+      "73580dd444d8309f987b52fe0c39342a948278904c0767cc3db404500d049f66",
+      "64635afb1bab3d3230f39134d51cd045b7d5a0b5e93b7ab7dcad05f8e023f015"
+    ],
+    "files": 976,
+    "directories": 253,
+    "logical_bytes": 38178667
+  },
+  "resources": {
+    "disk_available_bytes": 21139369984,
+    "ram_available_bytes": 36727910400,
+    "ram_total_bytes": 67435888640
+  },
+  "error": "RuntimeError:protected dir drift info",
+  "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 131, in <module>\n  File \"<stdin>\", line 103, in check_objects\n  File \"<stdin>\", line 9, in require\nRuntimeError: protected dir drift info\n",
+  "finished_utc": "2026-09-09T18:15:15.287886+00:00",
+  "elapsed_seconds": 0.7510321680165362,
+  "prior_failures_retained": "All historical FAIL/HOLD, strict pack timestamp FAIL/causeUNKNOWN and preliminary raw-log exit3 remain; no runtime or cleanup authority.",
+  "cleanup": "Only foreground Git/data operations; no temporary/build/cache/Gradle work created. No new wrapper-stop duty. No source/object/cache deletion; old duties retained."
+}

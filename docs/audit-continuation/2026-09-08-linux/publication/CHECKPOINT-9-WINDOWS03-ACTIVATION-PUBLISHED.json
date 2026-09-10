@@ -1,0 +1,651 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "phase": "C9_WINDOWS03_REQUEST_ONLY_ACTIVATION",
+  "utc": "2026-09-09T18:46:16.976450+00:00",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225\n169fa589648d9d00ea4e8cd2edb6af4888f86230\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-only",
+        "-z"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "exit": 0,
+      "stdout": "refs/heads/codex/audit-continuation-linux-20260908 80766c8c4b42e2e42c45527f62aa86f6ed0c1225\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 80766c8c4b42e2e42c45527f62aa86f6ed0c1225\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "exit": 0,
+      "stdout": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "add",
+        "--",
+        "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-status"
+      ],
+      "exit": 0,
+      "stdout": "A\tdocs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "show",
+        ":docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"case_names\": [\n    \"passvault_biometric_windows_file_success\",\n    \"passvault_biometric_windows_file_validation_failure\",\n    \"passvault_biometric_windows_file_dacl_failure\",\n    \"passvault_biometric_windows_file_collision\",\n    \"passvault_biometric_windows_file_empty_payload\",\n    \"passvault_biometric_windows_file_oversized_payload\",\n    \"passvault_biometric_windows_file_empty_suffix\",\n    \"passvault_biometric_windows_file_rename_failure\",\n    \"passvault_biometric_windows_secret_normal_scope\",\n    \"passvault_biometric_windows_secret_early_return\",\n    \"passvault_biometric_windows_secret_allocation_exception\",\n    \"passvault_biometric_windows_secret_nested_exception\",\n    \"passvault_biometric_abi\",\n    \"passvault_biometric_windows_security\"\n  ],\n  \"exclusive_build_slot\": true,\n  \"helper_sha256\": \"153d20b008896810b1929be2f4b2d97ef7d8699a46989e05a5dd9ac65982f7e5\",\n  \"independent_review_path\": \"docs/audit-continuation/2026-09-08-linux/reviews/native-independent/WINDOWS-COHORT-03-ADMISSION.json\",\n  \"independent_review_sha256\": \"96779f5141e5eba719efcb6481bcd2cb799572895398ca12382e55746a18b018\",\n  \"max_seconds\": 480,\n  \"nonce\": \"023d8a352e3d26335239c92fb96b8aef\",\n  \"owner\": \"/root\",\n  \"schema\": 1,\n  \"scope_sha256\": \"9f20d0e2b933590dc54144ab989558465b7456855bec0e7a6cdf6119e88d9ca3\",\n  \"sdk\": \"10.0.26100.0\",\n  \"source_commit\": \"80766c8c4b42e2e42c45527f62aa86f6ed0c1225\",\n  \"source_tree\": \"169fa589648d9d00ea4e8cd2edb6af4888f86230\",\n  \"suite\": \"windows-native-14-cohort-v3\",\n  \"workflow_sha256\": \"a547a24a547f8bef8d983212741556528f8d424b14fb14f8568a8bc31560a088\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "-m",
+        "Run the reviewed Windows native cohort without publishing"
+      ],
+      "exit": 0,
+      "stdout": "[codex/audit-continuation-linux-20260908 b2e826f] Run the reviewed Windows native cohort without publishing\n 1 file changed, 32 insertions(+)\n create mode 100644 docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit": 0,
+      "stdout": "b2e826fd534be8fefede169d28e30c22e37530a9\ncf59082d4fa090415ac8d8660432dd63ba409e4f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "b2e826fd534be8fefede169d28e30c22e37530a9 80766c8c4b42e2e42c45527f62aa86f6ed0c1225\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--name-status",
+        "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+        "HEAD",
+        "--"
+      ],
+      "exit": 0,
+      "stdout": "A\tdocs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "push",
+        "--no-signed",
+        "--no-follow-tags",
+        "--recurse-submodules=no",
+        "origin",
+        "HEAD:refs/heads/codex/audit-continuation-linux-20260908"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "To https://github.com/Apdelrahman1911/passvault.git\n   80766c8..b2e826f  HEAD -> codex/audit-continuation-linux-20260908\n"
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "exit": 0,
+      "stdout": "b2e826fd534be8fefede169d28e30c22e37530a9\trefs/heads/codex/audit-continuation-linux-20260908\n9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\trefs/heads/codex/remediation-handoff-20260908\n0dbc12c7f1b7770e75963c751c8c67af6e8b057a\trefs/heads/main\n61f55216302023d9872aba17546126450e5fbad3\trefs/heads/release\n2ae65df7111a9c5493740e8b772932be77eb98bc\trefs/heads/testing\n61f55216302023d9872aba17546126450e5fbad3\trefs/tags/v1.0.7-rc.1017001\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "exit": 0,
+      "stdout": "refs/heads/codex/audit-continuation-linux-20260908 b2e826fd534be8fefede169d28e30c22e37530a9\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 b2e826fd534be8fefede169d28e30c22e37530a9\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+      "stderr": ""
+    }
+  ],
+  "object_checks": [
+    {
+      "phase": "before_stage",
+      "protected_files_preserved": 1061,
+      "protected_directories_preserved": 255,
+      "ancestors_preserved": 7,
+      "result": "PRESERVED_WITH_EXACT_TIME_AND_EMPTY_INFO_PROSPECTIVE_QUALIFICATIONS",
+      "timestamp_changes": [
+        {
+          "path": "4e/5655111f0df99e24e9e9761258ccd42f181ffc",
+          "before_mtime_ctime_ns": [
+            1788960461009781350,
+            1788960461009781350
+          ],
+          "observed_mtime_ctime_ns": [
+            1788967550331358794,
+            1788967550331358794
+          ]
+        },
+        {
+          "path": "pack/pack-244144b04072fe6c0e09e599c5f176705a70ad5f.pack",
+          "before_mtime_ctime_ns": [
+            1788960461019781349,
+            1788960461019781349
+          ],
+          "observed_mtime_ctime_ns": [
+            1788978795330688539,
+            1788978795330688539
+          ]
+        },
+        {
+          "path": "2a/df85601ce0a48904c6b0034564cd8fbed43a21",
+          "before_mtime_ctime_ns": [
+            1788967550316358794,
+            1788967550316358794
+          ],
+          "observed_mtime_ctime_ns": [
+            1788978795328688539,
+            1788978795328688539
+          ]
+        },
+        {
+          "path": "d9/6a0a2dee3e4fe3b6c7cfef14917a2f6d570cd6",
+          "before_mtime_ctime_ns": [
+            1788967550309358795,
+            1788967550309358795
+          ],
+          "observed_mtime_ctime_ns": [
+            1788978795328688539,
+            1788978795328688539
+          ]
+        },
+        {
+          "path": "e9/6e44fdfc927805741369c8eb1aa26b74c2bcb6",
+          "before_mtime_ctime_ns": [
+            1788967550332358793,
+            1788967550332358793
+          ],
+          "observed_mtime_ctime_ns": [
+            1788978795328688539,
+            1788978795328688539
+          ]
+        }
+      ],
+      "additive_files": [],
+      "additive_directories": [],
+      "current_files": 1061,
+      "current_directories": 255,
+      "logical_bytes": 38432797,
+      "info_expected": [
+        "info",
+        23,
+        895075,
+        0,
+        16832
+      ],
+      "info_nlink": 2,
+      "info_empty": true
+    },
+    {
+      "phase": "after_stage_before_commit",
+      "protected_files_preserved": 1061,
+      "protected_directories_preserved": 255,
+      "ancestors_preserved": 7,
+      "result": "PRESERVED_WITH_EXACT_TIME_AND_EMPTY_INFO_PROSPECTIVE_QUALIFICATIONS",
+      "timestamp_changes": [],
+      "additive_files": [
+        [
+          "12/467670b05f7ea5b59970ac112481793296c268",
+          "0ee03db7c7845eddd0e89142a56fee7c613a4a7d50e746c405f4f6d4d7cffa46",
+          24,
+          14290665,
+          0,
+          33024,
+          1,
+          710,
+          1788979577670641908,
+          1788979577670641908
+        ]
+      ],
+      "additive_directories": [],
+      "current_files": 1062,
+      "current_directories": 255,
+      "logical_bytes": 38433507,
+      "info_expected": [
+        "info",
+        23,
+        895075,
+        0,
+        16832
+      ],
+      "info_nlink": 2,
+      "info_empty": true
+    },
+    {
+      "phase": "after_commit_before_push",
+      "protected_files_preserved": 1062,
+      "protected_directories_preserved": 255,
+      "ancestors_preserved": 7,
+      "result": "PRESERVED_WITH_EXACT_TIME_AND_EMPTY_INFO_PROSPECTIVE_QUALIFICATIONS",
+      "timestamp_changes": [],
+      "additive_files": [
+        [
+          "51/98aa123ee74ceb41b82e1cb9e4417bb2f08b1f",
+          "1e34c9677f27665cfc4e214de1f63c0bbc0630c871b4026288365fcefb35a495",
+          24,
+          14290668,
+          0,
+          33024,
+          1,
+          1186,
+          1788979577779641902,
+          1788979577779641902
+        ],
+        [
+          "73/a55ba4eb2cb5c8d8ce63b1e707a5cc8b59e83b",
+          "5eb8f6bf996d91b7ee2f855144f59e260fbe850148849898ee3a00e84f8c9a7e",
+          24,
+          14290666,
+          0,
+          33024,
+          1,
+          614,
+          1788979577779641902,
+          1788979577779641902
+        ],
+        [
+          "a3/f038bfdba12b14b514514fd993b108068a4076",
+          "d528fc04c5f75915809246bde4cf7c7b4dcd4ea846c51c87d56a64f5f98842c1",
+          24,
+          14290667,
+          0,
+          33024,
+          1,
+          133,
+          1788979577779641902,
+          1788979577779641902
+        ],
+        [
+          "b2/e826fd534be8fefede169d28e30c22e37530a9",
+          "f79dfa65b127a88a5d6e11a18a3883df7e37e024e2a9f4e2a2ef8516a186703b",
+          24,
+          14290670,
+          0,
+          33024,
+          1,
+          219,
+          1788979577783641901,
+          1788979577783641901
+        ],
+        [
+          "cf/59082d4fa090415ac8d8660432dd63ba409e4f",
+          "71777056f736cc11ef88c08f0dc2133a35b8874497130459f9d5b880317a8a94",
+          24,
+          14290669,
+          0,
+          33024,
+          1,
+          1378,
+          1788979577780641902,
+          1788979577780641902
+        ],
+        [
+          "fc/5a6a75414fe496a5289a3dbfebd0e49342436f",
+          "c79ea90f44927198f4d5134422b1ffe70de9f86d1aa49df3cc5c2aed650134b3",
+          24,
+          13771939,
+          0,
+          33024,
+          1,
+          324,
+          1788979577779641902,
+          1788979577779641902
+        ]
+      ],
+      "additive_directories": [],
+      "current_files": 1068,
+      "current_directories": 255,
+      "logical_bytes": 38437361,
+      "info_expected": [
+        "info",
+        23,
+        895075,
+        0,
+        16832
+      ],
+      "info_nlink": 2,
+      "info_empty": true
+    },
+    {
+      "phase": "after_push",
+      "protected_files_preserved": 1068,
+      "protected_directories_preserved": 255,
+      "ancestors_preserved": 7,
+      "result": "PRESERVED_WITH_EXACT_TIME_AND_EMPTY_INFO_PROSPECTIVE_QUALIFICATIONS",
+      "timestamp_changes": [],
+      "additive_files": [],
+      "additive_directories": [],
+      "current_files": 1068,
+      "current_directories": 255,
+      "logical_bytes": 38437361,
+      "info_expected": [
+        "info",
+        23,
+        895075,
+        0,
+        16832
+      ],
+      "info_nlink": 2,
+      "info_empty": true
+    }
+  ],
+  "status": "PUBLISHED_C9_WINDOWS03_REQUEST_ONLY_ACTIVATION",
+  "source_publication_sha256": "cf81e74bd3a58d00fd6140318af6038160c1d7c26a8b400cf12d38bb2313f07d",
+  "instance_review_sha256": "69bdd3350ab09b00d262680290cbcc7e0aab814ac4ba88a5c6bef5ac589a7b92",
+  "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+  "info_identity_carried_forward": [
+    "info",
+    23,
+    895075,
+    0,
+    16832
+  ],
+  "new_application_tests": 0,
+  "new_closures": 0,
+  "resources": {
+    "disk_available_bytes": 22377537536,
+    "ram_available_bytes": 36635529216,
+    "ram_total_bytes": 67435888640
+  },
+  "refs_before": "refs/heads/codex/audit-continuation-linux-20260908 80766c8c4b42e2e42c45527f62aa86f6ed0c1225\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 80766c8c4b42e2e42c45527f62aa86f6ed0c1225\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+  "root_admission_sha256": "2f881174e258f1a0382d7b0f1aa7aa4feda3ae3999418cbeb047399117421e34",
+  "slot_reserved_sha256": "f6f437ef61762ce2369305c200b7eeab47114c48df8bb75be5b980af560c431a",
+  "whitespace": {
+    "status": "PASS_EXIT0_REQUEST_ONLY"
+  },
+  "commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+  "tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+  "parent": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+  "selected_paths": [
+    "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-03.json"
+  ],
+  "remote_after": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "refs_after": "refs/heads/codex/audit-continuation-linux-20260908 b2e826fd534be8fefede169d28e30c22e37530a9\nrefs/heads/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/HEAD 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/codex/audit-continuation-linux-20260908 b2e826fd534be8fefede169d28e30c22e37530a9\nrefs/remotes/origin/codex/remediation-handoff-20260908 9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed\nrefs/remotes/origin/main 0dbc12c7f1b7770e75963c751c8c67af6e8b057a\nrefs/remotes/origin/release 61f55216302023d9872aba17546126450e5fbad3\nrefs/remotes/origin/testing 2ae65df7111a9c5493740e8b772932be77eb98bc\nrefs/tags/v1.0.1 cdb2f812bf32aa78cbddf2025d5da8d5bfff9379\nrefs/tags/v1.0.2-rc.1000031 cff313b7a9c6b628d183fb5dd8f79952aaf39673\nrefs/tags/v1.0.3-rc.1009001 94455acc2080916615e45e95eaa16ea4959d290e\nrefs/tags/v1.0.4-rc.1011001 a252036ae2f3729cca08c1f3fa401faf84f9946a\nrefs/tags/v1.0.5-rc.1013001 c109a33b3c8133ec32edc14152e2b97aa5c118fb\nrefs/tags/v1.0.7-rc.1017001 61f55216302023d9872aba17546126450e5fbad3\n",
+  "finished_utc": "2026-09-09T18:46:20.568390+00:00",
+  "elapsed_seconds": 3.599734544986859,
+  "cleanup": "Foreground Git/data operations only, no temp/cache/build/Gradle output or workers; no new wrapper-stop duty. No deletions; old duties remain."
+}

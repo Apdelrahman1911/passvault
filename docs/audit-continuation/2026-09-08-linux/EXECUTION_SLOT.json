@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "owner": "/root",
-  "state": "IDLE_AFTER_LINUX_ISOLATED_BATCH02_CONSUMED_FAILURE_RECONCILED",
-  "updated_utc": "2026-09-09T16:59:55.301897+00:00",
+  "state": "AVAILABLE_NO_AUDIT_BUILD_RUNNING_REQUIRES_FRESH_ADMISSION",
+  "updated_utc": "2026-09-09T22:04:51.346562+00:00",
   "branch": "codex/audit-continuation-linux-20260908",
-  "all_other_agents": "ASSIGNED_SOURCE_DATA_ONLY_NO_BUILD_TEST_CI",
+  "all_other_agents": "AUDIT_EXECUTION_QUIESCENT_BOUNDED_NONOVERLAPPING_INERT_SOURCE_ONLY",
   "last_controls02": {
     "scope": "linux-runner-controls-02",
     "result": "22PASS/0FAIL/0unstarted; originalsyntheticcleanupandprocesssettled",
@@ -22,8 +22,8 @@
   },
   "windows_run": 34284083351,
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
-  "local_execution": "Linux02 consumed FAIL during wrapper bootstrap after verified C4 source-before:ordinary143/originalstop0;0 application tests/all166+1 UNSTARTED. Source-after/ownedsettlement/cleanupHOLD retained; no automatic retry.",
-  "next_gate": "Correct and independently review raw-source transport; separately admit any fresh instance. Windows03/GUI source preparation may resume; no build/test/CI by agents.",
+  "local_execution": "Linux isolated03 exact C4 focused batch completed and independently reconciled:166 regressions+1producer PASS,17XML,all5stops0,original runtime removed. Older FAIL/HOLD scopes unchanged.",
+  "next_gate": "C10 exact nonactivating source/evidence publication; separately admitted Windows04 request-only activation. No automatic Linux03 rerun.",
   "historical_locks": "NOT_ADOPTED_OR_RECREATED",
   "release_of_slot_is_not_release_publication": true,
   "last_e_bootstrap": {
@@ -175,5 +175,138 @@
     "consumed": true,
     "limits": "Generic failed path/cause unknown; raw source certification not reached. Direct-child/outer settlement supports scheduling only; preterminal receipt does not establish final FD-close API success. No retry, held-runtime adoption/deletion or old-HOLD release.",
     "release": "reviews/isolated-batch02/SLOT-RELEASE.json"
+  },
+  "windows_cohort03": {
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+    "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+    "instance_review_sha256": "69bdd3350ab09b00d262680290cbcc7e0aab814ac4ba88a5c6bef5ac589a7b92",
+    "root_admission_sha256": "2f881174e258f1a0382d7b0f1aa7aa4feda3ae3999418cbeb047399117421e34",
+    "run_id": 34391056257,
+    "status": "completed",
+    "old_holds_unchanged": true,
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "run_attempt": 1,
+    "scheduling_release": "reviews/native/WINDOWS-COHORT-03-SLOT-RELEASE.json",
+    "reservation_active": false
+  },
+  "last_windows_cohort03": {
+    "run_id": 34391056257,
+    "attempt": 1,
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+    "operational_status": "CONSUMED_FAIL_SDK_FROZEN_READ_GUARD_BEFORE_CMAKE",
+    "helper_exit": 1,
+    "metadata_parent_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "initial_job_counts": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "readonly_zero_records": 4,
+    "first_readonly_interval_seconds": 0.10607099533081055,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_10_ENTRIES_AND_ORIGINAL_GENERATED_ROOT_REMOVED",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_ATTEMPTED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "5bef23de89a4fd804daea7e83501c7c71ee96689552ea97c5fbe0d4acfc8f5fc",
+    "evidence": "runs/windows-cohort03/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "a494b604db3be1df1c8296f6634d14ef89f595b6ea45b5ef23bab3191cdfefb5",
+    "error": "RuntimeError: Frozen input changed during read",
+    "limits": "SDK call-site is source-order inference only. Failing path/metadata tuples/differing field/SDK bytes/hash/traceback absent; exact cause UNKNOWN. No content mutation, stat/fstat mismatch, writer, cache or timing cause inferred. Readonly Job drain observed about106ms is not child lifetime/identity/benignity or product evidence. Only this run scheduling and qualified original cleanup settle; no retry, old HOLD release, hardware/Hello/PVU008/red-control/production-cut proof.",
+    "consumed": true,
+    "release": "reviews/native/WINDOWS-COHORT-03-SLOT-RELEASE.json"
+  },
+  "linux_isolated_batch03": {
+    "request_sha256": "c383fbb952f4b125769bba2cffdb2a477a1dbadaafb9bbfd59a0dc0e48391435",
+    "approval_sha256": "2041281fcc1a43bef77768ba3abfa2010901b360ac0d0b5348ac5ccf9becc4a4",
+    "root_admission_sha256": "27dbda31ea720c3dc131f583678f254d78332e224c28419b49bd80e683f4beea",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "status": "COMPLETED_RECONCILED_SLOT_RELEASED",
+    "old_holds_unchanged": true,
+    "tool_session_id": 14364,
+    "invocation_tool_chunk": "c28c96",
+    "external_exit": 0,
+    "external_result_sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98",
+    "reservation_active": false,
+    "scheduling_release": "reviews/isolated-batch03/SLOT-RELEASE.json",
+    "review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45"
+  },
+  "last_linux_isolated_batch03": {
+    "run_id": "linux-isolated-batch03",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "source_representation": "1572_RAW_GIT_BLOBS_NOT_CHECKOUT_NORMALIZED",
+    "status": "PASS_FOCUSED_REGRESSION_SCOPE_CONSUMED",
+    "external_exit": 0,
+    "elapsed_seconds": 611.287,
+    "regression_methods": 166,
+    "fixture_producers": 1,
+    "total_xml_cases": 167,
+    "xml_files": 17,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "missing_extra_duplicate": 0,
+    "regressions_by_boundary": {
+      "original_database_selection": 105,
+      "editor_navigation": 49,
+      "pva038_routing": 9,
+      "pva038_cold_provider": 3
+    },
+    "wrapper_build_invocations": 5,
+    "original_wrapper_stop_exits": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "selected_gradle_test_tasks": 7,
+    "cleanup": "REMOVED_ORIGINAL_RUNTIME_36753_ENTRIES; FIVE_ORIGINAL_STOPS0; ORIGINAL_NAMESPACE_AND_EXTERNAL0_RECONCILED",
+    "retained_evidence_files": 53,
+    "retained_evidence_bytes": 202742,
+    "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45",
+    "external_receipt": "reviews/isolated-batch03/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98",
+    "scheduling_release": "reviews/isolated-batch03/SLOT-RELEASE.json",
+    "scheduling_release_sha256": "2a5c8929264fa8d5638be430586ebf11eea61ff1ca1185f2dbd2a9183cfeddb1",
+    "android_task_inventory_only": [
+      "connectedAndroidDeviceTest",
+      "compileAndroidDeviceTest",
+      "assembleAndroidDeviceTest"
+    ],
+    "qualified_family_closures": [
+      "PVA-033",
+      "PVA-034",
+      "PVA-035",
+      "PVA-038"
+    ],
+    "remain_open": [
+      "PVA-007",
+      "PVA-031"
+    ],
+    "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
   }
 }

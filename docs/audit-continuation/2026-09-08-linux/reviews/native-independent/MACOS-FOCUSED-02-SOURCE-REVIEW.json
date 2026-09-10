@@ -1,0 +1,97 @@
+{
+  "author": "/root/native",
+  "captured_source_challenge": {
+    "body_sha256s_independently_matched": {
+      "system_cmds-vm_stat.c.txt": "62980e37ef86e48132e91395b67a5569eb703d3d4e28de5c0cfffea91a7e92eb",
+      "xnu-host.c.txt": "a935841c1b49e830c0baa99316e93a6c2004aa7ff65b56790f6a1efacf461198",
+      "xnu-vm_statistics.h.txt": "834b85450d28b76b657f451c9e3eadb35b39a561e269023dadf9e29ca51fd329"
+    },
+    "limits": "No inactive/purgeable/file-backed/compressor sum, all-reclaimable available-RAM claim, atomic whole-machine reservation or installed macOS15.7.9/kernel24G830 equivalence. Retained bodies/semantics were used without refetch; receipt/Git-blob reconciliation is attributed to build_config, not a new independent API-envelope/treegraph/transport certification.",
+    "proof": "Read vm_stat default-mode dispatch,129-135,157-160 and259-267: one HOST_VM_INFO64 response prints F=free_count-speculative_count, S=speculative_count, dynamic P and complete decimal rows with period. Header158-163 and host808,818,848 confirm S is already in raw free_count and the same local S is returned. Therefore (printedF+printedS)*P reconstructs this reported free class; rawfree+S would double-count."
+  },
+  "counts": {
+    "new_product_findings": 0,
+    "new_qualified_closures": 0,
+    "new_xml_files": 0,
+    "reviewer_executed_cases": 0
+  },
+  "exact01_reuse": {
+    "actual_review_sha256": "c6b9f37d076f64dd33ca6bab5a5626172937a4960f9b7d613019777bd2fa2d69",
+    "all_three_before_image_hashes_and_lengths_match": true,
+    "before_image_directory": "docs/audit-continuation/2026-09-08-linux/reviews/native/macos-focused-01-before/",
+    "helper": {
+      "bytes": 33401,
+      "lf": 617,
+      "sha256": "4448517d4615a34090d2acc61cd8eb872d3e8c1445fd711e8d7aa146f243b69c"
+    },
+    "method": "Full helper/workflow delta sections, complete02 plan, changed-path surrounding guards and prior source/result JSON read. Aggregate tool256994 truncated intervening preparation context; relevant total guard and stock-reader context were separately read untruncated in c79871. Unchanged workload/cleanup body is inherited, not redundantly reaudited.",
+    "mode_qualification": "Author records read-only/non-executable copies; this review did not independently stat their modes. Inert evidence is never execution/import authority.",
+    "plan": {
+      "bytes": 6615,
+      "lf": 102,
+      "sha256": "bfa26b13cdab4477b9f5e118b0b7369184be1af10b9c9c47441c66fabe9d9f07"
+    },
+    "source_review_v2_sha256": "703afe261bb4fadfdf901bfc45249eb7fbbe8cef7b8ac4f5c5f11f7615d8db62",
+    "workflow": {
+      "bytes": 2645,
+      "lf": 68,
+      "sha256": "3d9c947eaacaabec26a8bea26810305ec37021773a83edee38ee1887e1356ac5"
+    }
+  },
+  "independent_changed_path_challenges": [
+    "One unchanged default vm_stat invocation under C locale/strict ASCII supplies all fields. Prefix candidate counting plus fullmatch on the original line rejects missing fields, duplicate valid or malformed rows, leading-space/malformed rows, signed/negative/fractional/interval-suffixed counts and incomplete headers. Unsupported values never become zero; unrelated stock counters are intentionally ignored.",
+    "All three field iterations finish before ordinary malformed-field rejection: recognized values survive, invalid_fields records candidate counts, unrecognized values stay null. Counts are nonnegative decimal integers; page size is dynamic, not hardcoded4096.",
+    "P=0 yields retained computed zeros then explicit HOLD. NegativeP/F/S fail parsing first. F=S=0 cannot meet a positive total fraction. Python integer arithmetic has no floating rounding or fixed-width multiplication overflow.",
+    "Positive-total validation in prepare precedes run and every reachable resource call. Parsed zero/negative total is now retained before rejection. No claim that direct resources() use without prepare is an admitted interface or independently guards an arbitrary supplied total.",
+    "S=0 preserves old F*P exactly. NonzeroS is included once, while free_physical_bytes retains old F*P semantics and distinct kernel_free_equivalent_bytes/metric label identify the changed gate. NonnegativeS means the new<=total guard also bounds oldfree; impossible totals are not clamped into acceptance.",
+    "Gate remains strict < for disk and integer ratio: disk=min(workspacefree,tempfree),12GiB/25% at launch and8GiB/20% running. Equality passes, one byte below disk or a below-threshold integer RAM ratio rejects; derived>total rejects even if ratio would pass. The explicitly broader free-class numerator may admit previously rejected samples without silently lowering the percentages.",
+    "Resource record is appended before OS read, ASCII decoding, parser and gate. Attempt-start elapsed, phase,total,label,floors and null placeholders therefore survive failures reaching finalization; parsed values and derived bytes precede page-size/disk/floor checks. Disk-read failure leaves its combined reading unknown, not invented.",
+    "Malformed sysctl output or conversion/transport failure can occur before total assignment, leaving total absent rather than a measurement. Unexpected integer-conversion failure can retain only fields parsed so far; ordinary invalid_fields counts are not promised for every exception. No raw malformed OS output or complete transport-error transcript is added.",
+    "Earlier append/extra diagnostics do not change cancellation/time checks, metadata10s bound, global480s/cleanup540s/job600s, approximate5s sampling, output caps or sole finalization. In-memory observations are not durable until existing final evidence succeeds; hard termination/final-write/close failure can still prevent retention.",
+    "Only other helper edits are02 docstring, exact request and generated/evidence stem. Workflow name/request trigger/artifact02 match; repository/ref/event/attempt1 fences, shared concurrency, immutable pins, contents:read, no secrets/install/publish and7-day compact retention stay unchanged.",
+    "Same five names, NATIVE_INPUTS hashes, target/tool/version/architecture expectations, selectors, timeout behavior and source ancestry/A-only/clean-checkout guards remain. No app/provider path, dependency, native source, isolation, original-handle ownership or cleanup retry was added."
+  ],
+  "inherited_restrictions": "Actual exit0 plus independent raw XML/log/source/cleanup review still required; nonzero CTest uncertain, no later case/tree deletion. Native-parent residue never traversed/adopted/swept. All older FAIL/HOLD, PVU-007 STOP, PVU-011 NO RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED and eight separate PVD boundaries persist. No hardware/TouchID/iPhone/Hello/provider proof, protected-ref/tag/version/identity/dependency change, signing/publication or occupied1017001 replacement.",
+  "inputs": [
+    {
+      "bytes": 35129,
+      "lf": 643,
+      "path": "scripts/audit/macos_focused_validation.py",
+      "sha256": "afef956d911ccafef3d4adc7b62487fc30df28833e0868a683b58c7b392c06ef"
+    },
+    {
+      "bytes": 2651,
+      "lf": 68,
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "sha256": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b"
+    },
+    {
+      "bytes": 11686,
+      "lf": 178,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md",
+      "sha256": "d39fa7951ed9d3f0a0acef84d20e1008769de5cbafb58eff9ee85d1a4de81839"
+    },
+    {
+      "bytes": 6811,
+      "lf": 105,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/build-config/MACOS-MEMORY-CAPTURE04-SEMANTICS.md",
+      "sha256": "b78ab6dc110cdfa12c1772f1a7d0ec1349d8193f8e39c199bb10fedf13e5dd44"
+    }
+  ],
+  "preserved01_outcome": {
+    "capture03": "Consumed FAIL; exact rejecting field/cause UNKNOWN.",
+    "cleanup": "Qualified normal prelaunch original-root removal only. Final-exit-zero requirement unmet; no final-FD-state or arbitrary descendant proof. Scheduling-only release does not erase failure or grant retry/recovery.",
+    "helper_exit": 1,
+    "historical_fraction": "Unrecomputable: total and speculative count absent; no hypothetical corrected pass.",
+    "run_id": 34333087199,
+    "status": "FAIL_RESOURCE_GATE_BEFORE_PRODUCT_COMMAND;5UNSTARTED;0 product passes/failures"
+  },
+  "prospective_regression_evidence": "Parser/relationship/boundary branches above are source counterexamples and future regression requirements, NOT executed test cases, mock assertions or runtime proof. Target values, parser compatibility, compiler/test behavior and cleanup still need separately admitted actual evidence and independent reconciliation.",
+  "qualification": "No blocking changed-path defect under the inherited synchronous-stock-tool/closed-workload assumptions. Not execution, retry, request, CI instance or coordination/cleanup admission. Linux03 priority and pending C10 publication remain root responsibilities; no slot-state inference.",
+  "reviewer": "/root/native_review",
+  "reviewer_operations": "Only inert reads/hashes/passive diff and exclusive compact permanent own-note write. No helper execution/import/syntax probes, build/test/CI, network/Git, process probes/services, runtime/cache/toolchain/source edits or central-ledger writes. No background process or temporary/generated build output created.",
+  "root_next_admission": "Any future fresh02 requires exact source commit/tree and frozen inputs/review, new32-hex nonce and A-only single-parent request activation, independent instance review plus root shared-slot/execution/cleanup admission. No request or activation was created here.",
+  "schema": 1,
+  "scope": "MACOS_FOCUSED_02_NARROW_RESOURCE_AND_IDENTITY_DELTA_SOURCE_ONLY",
+  "verdict": "QUALIFIED_CONCRETE_SOURCE_ACCEPTANCE_FOR_SEPARATE_ROOT_ADMISSION"
+}

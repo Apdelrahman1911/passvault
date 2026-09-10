@@ -283,17 +283,17 @@
       "historical_equal_line_credit_carried": false
     }
   ],
-  "new_application_test_executions": 0,
-  "delta_freeze": "CHECKPOINT9: nineteen C5 application identities unchanged; Windows02 and Linux isolated02 actual operational failures independently reconciled with zero product executions/closures, preserving cleanup/HOLD distinctions. Windows03 exact source delta accepted but fresh activation/instance pending. Linux03/GUI preparation excluded. All prior failures and source/EOL/coverage qualifications retained.",
+  "new_application_test_executions": 166,
+  "delta_freeze": "CHECKPOINT10: nineteen C5 application identities preserved; exact C4 Linux03 actual166regressions+1producer/17XML pass, four narrowly qualified closures. Windows03 pre-CMake failure retained; Windows04/Mac02 source-only and later GUI scope distinct. Source/EOL/coverage, original failures and hardware/owner gates survive.",
   "additional_test_source_declarations": 20,
   "baseline_policy_review": "reviews/baseline-coverage/REVIEW.md",
   "independent_checkpoint_review": {
-    "reviewer": "/root/baseline_coverage",
-    "path": "reviews/baseline-coverage/CHECKPOINT-9-REVIEW.json",
-    "status": "PROSPECTIVE_REFERENCE_TO_GENUINE_INDEPENDENT_REVIEW_NOT_ROOT_ACCEPTANCE",
-    "scope": "Exact selected C9 source/report/ledger delta and publication qualifications only; not product execution or whole-project readiness."
+    "checkpoint": 10,
+    "path": "reviews/baseline-coverage/CHECKPOINT-10-REVIEW.json",
+    "status": "PENDING_FINAL_EXACT_PAYLOAD_REVIEW",
+    "scope": "Final coverage/report independent review required before C10 staging; not application verification."
   },
-  "additional_test_source_declarations_scope": "JUnit methods: nine Back plus eleven row/input; zero executed",
+  "additional_test_source_declarations_scope": "Twenty continuation Back/row/input declarations now executed inside Linux03 editor/navigation49; not20 additional to166, and not rendered/device proof.",
   "additional_android_instrumentation_cases": {
     "case_ids": 4,
     "kdf_case_ids": 3,
@@ -311,7 +311,7 @@
     "planned_ctest_cases_unstarted": 14,
     "independent_result_review": "reviews/native-independent/RESULT-REVIEW-01.json"
   },
-  "updated_utc": "2026-09-09T17:21:20.372103+00:00",
+  "updated_utc": "2026-09-09T22:45:43.250127+00:00",
   "infrastructure_evidence": {
     "not_original_811_denominator": true,
     "source_capture": {
@@ -657,14 +657,15 @@
     "patch_in_this_source_delta": true,
     "new_application_executions": 0,
     "new_semantic_LF_credit": 0,
-    "patch_review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
+    "patch_review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+    "scope": "HISTORICAL_CONFIRMATION_COUNTS; current26/38 afterLinux03 in issue ledger and exact current execution block"
   },
   "additional_pva038_source_declarations": {
     "routing_junit_methods": 9,
     "provider_fixture_producer_methods": 1,
     "fresh_provider_consumer_methods": 3,
-    "executed": 0,
-    "compiled": false,
+    "executed": 13,
+    "compiled": true,
     "default_provider_mode": "Absent explicit mode causes JUnit assumption skip, not PASS; no actual skip observed.",
     "separate_fresh_worker_modes": [
       "prepare",
@@ -672,7 +673,10 @@
       "wrong-key",
       "loader-io"
     ],
-    "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
+    "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
+    "executed_regressions": 12,
+    "executed_fixture_producers": 1,
+    "actual_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
   },
   "android_prerequisite_qualification": {
     "author_report": "reviews/android32/ANDROID32-ADMISSION-PREREQUISITES.md",
@@ -921,5 +925,203 @@
     "path": "reviews/baseline-coverage/CHECKPOINT-8-REVIEW.json",
     "status": "REFERENCE_TO_GENUINE_INDEPENDENT_REVIEW_NOT_ROOT_ACCEPTANCE",
     "scope": "Explicit frozen C8 source/report selection and central ledger delta only; no whole-project re-audit or runtime readiness."
+  },
+  "windows_cohort03_execution": {
+    "run_id": 34391056257,
+    "attempt": 1,
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "source_tree": "169fa589648d9d00ea4e8cd2edb6af4888f86230",
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "activation_tree": "cf59082d4fa090415ac8d8660432dd63ba409e4f",
+    "request_sha256": "a9921080cb57de57ee2e4a3bbba9773bd2a76a49a3a7bef8829281db6f8a0a14",
+    "operational_status": "CONSUMED_FAIL_SDK_FROZEN_READ_GUARD_BEFORE_CMAKE",
+    "helper_exit": 1,
+    "metadata_parent_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "initial_job_counts": [
+      1,
+      0,
+      0,
+      0
+    ],
+    "readonly_zero_records": 4,
+    "first_readonly_interval_seconds": 0.10607099533081055,
+    "final_job_zero_observed": true,
+    "termination_attempted": false,
+    "normal_final_drain_loop_executed": false,
+    "cleanup": "SETTLED_ALLOWLISTED_10_ENTRIES_AND_ORIGINAL_GENERATED_ROOT_REMOVED",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_ATTEMPTED",
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "5bef23de89a4fd804daea7e83501c7c71ee96689552ea97c5fbe0d4acfc8f5fc",
+    "evidence": "runs/windows-cohort03/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "a494b604db3be1df1c8296f6634d14ef89f595b6ea45b5ef23bab3191cdfefb5",
+    "error": "RuntimeError: Frozen input changed during read",
+    "limits": "SDK call-site is source-order inference only. Failing path/metadata tuples/differing field/SDK bytes/hash/traceback absent; exact cause UNKNOWN. No content mutation, stat/fstat mismatch, writer, cache or timing cause inferred. Readonly Job drain observed about106ms is not child lifetime/identity/benignity or product evidence. Only this run scheduling and qualified original cleanup settle; no retry, old HOLD release, hardware/Hello/PVU008/red-control/production-cut proof.",
+    "consumed": true,
+    "release": "reviews/native/WINDOWS-COHORT-03-SLOT-RELEASE.json"
+  },
+  "linux_isolated_batch03_execution": {
+    "run_id": "linux-isolated-batch03",
+    "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+    "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+    "source_representation": "1572_RAW_GIT_BLOBS_NOT_CHECKOUT_NORMALIZED",
+    "status": "PASS_FOCUSED_REGRESSION_SCOPE_CONSUMED",
+    "external_exit": 0,
+    "elapsed_seconds": 611.287,
+    "regression_methods": 166,
+    "fixture_producers": 1,
+    "total_xml_cases": 167,
+    "xml_files": 17,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "missing_extra_duplicate": 0,
+    "regressions_by_boundary": {
+      "original_database_selection": 105,
+      "editor_navigation": 49,
+      "pva038_routing": 9,
+      "pva038_cold_provider": 3
+    },
+    "wrapper_build_invocations": 5,
+    "original_wrapper_stop_exits": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "selected_gradle_test_tasks": 7,
+    "cleanup": "REMOVED_ORIGINAL_RUNTIME_36753_ENTRIES; FIVE_ORIGINAL_STOPS0; ORIGINAL_NAMESPACE_AND_EXTERNAL0_RECONCILED",
+    "retained_evidence_files": 53,
+    "retained_evidence_bytes": 202742,
+    "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+    "independent_review_sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45",
+    "external_receipt": "reviews/isolated-batch03/EXTERNAL-RESULT.json",
+    "external_receipt_sha256": "9f9b8228109392c90b575d6f545350544137d8dd643391f719350a0933bd9e98",
+    "scheduling_release": "reviews/isolated-batch03/SLOT-RELEASE.json",
+    "scheduling_release_sha256": "2a5c8929264fa8d5638be430586ebf11eea61ff1ca1185f2dbd2a9183cfeddb1",
+    "android_task_inventory_only": [
+      "connectedAndroidDeviceTest",
+      "compileAndroidDeviceTest",
+      "assembleAndroidDeviceTest"
+    ],
+    "qualified_family_closures": [
+      "PVA-033",
+      "PVA-034",
+      "PVA-035",
+      "PVA-038"
+    ],
+    "remain_open": [
+      "PVA-007",
+      "PVA-031"
+    ],
+    "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
+  },
+  "new_fixture_producer_executions": 1,
+  "new_xml_testcase_elements": 167,
+  "historical_delta_freeze_checkpoint9": "CHECKPOINT9: nineteen C5 application identities unchanged; Windows02 and Linux isolated02 actual operational failures independently reconciled with zero product executions/closures, preserving cleanup/HOLD distinctions. Windows03 exact source delta accepted but fresh activation/instance pending. Linux03/GUI preparation excluded. All prior failures and source/EOL/coverage qualifications retained.",
+  "historical_additional_test_source_declarations_scope": "JUnit methods: nine Back plus eleven row/input; zero executed",
+  "windows_cohort04_source": {
+    "status": "SOURCE_ACCEPTED_NO_INSTANCE_OR_EXECUTION",
+    "helper": "scripts/audit/windows_native_validation.py",
+    "helper_sha256": "31f0a4f003ef919d3978b9df82f5a740e1ff9da390d3f7a664914dda12d3c8af",
+    "workflow_sha256": "4a499b417ce592788a7c3f7a8f863e09db50ee6d422a28b0d6cc80b2e2a16ab8",
+    "scope": "reviews/native/WINDOWS-COHORT-04-SCOPE.md",
+    "scope_sha256": "859eefd36c61ddca63ce13c34e6ae88ce965b503759e9fdb62a82e61d78ab7ad",
+    "review": "reviews/native-independent/WINDOWS-COHORT-04-ADMISSION.json",
+    "review_sha256": "6344458ed6aa1546cc3201c2af60f1f0e6895eb724c1b8cbb332d76a3d532e95",
+    "change": "SDK-header-only original Win32 read handle, same-representation before/after metadata, exact returned-byte digest and pre-guard diagnostics; other frozen_bytes callers unchanged. Exact03 cause remains UNKNOWN.",
+    "case_count": 14,
+    "actual_cases": 0,
+    "remaining": "Publish exact source, separate fresh request/instance/root admission and serial Windows2022x64 target run. Real Hello/hardware, historical red/valid controls and production allocation-cut evidence separate."
+  },
+  "macos_focused02_source": {
+    "status": "SOURCE_ACCEPTED_NO_INSTANCE_OR_EXECUTION",
+    "helper": "scripts/audit/macos_focused_validation.py",
+    "helper_sha256": "afef956d911ccafef3d4adc7b62487fc30df28833e0868a683b58c7b392c06ef",
+    "workflow_sha256": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b",
+    "plan": "reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md",
+    "plan_sha256": "d39fa7951ed9d3f0a0acef84d20e1008769de5cbafb58eff9ee85d1a4de81839",
+    "review": "reviews/native-independent/MACOS-FOCUSED-02-SOURCE-REVIEW.json",
+    "review_sha256": "22c77315c4d42ae2f7afa92ad404f63939c2a10913484b7633167508e4593160",
+    "change": "Preserve printed-free-only field; strictly parse free/speculative/page-size, record operands/floors before guards and add (printedFree+printedSpeculative)*pageSize as separately labeled kernel-free-equivalent metric. Same25/20percent and12/8GiB floors, tests and cleanup.",
+    "case_count": 5,
+    "actual_cases": 0,
+    "remaining": "Separate source/instance/root admission after Windows04 scheduling settlement; bind actual immediate Windows04 activation parent. Captured upstream semantics are not installed runner-version matching or availability; physical device/provider proof separate."
+  },
+  "macos_memory_source_capture": {
+    "capture03": {
+      "status": "FAIL_CONSUMED_NO_RETRY",
+      "http_requests": 1,
+      "http_status": 200,
+      "body_bytes": 352,
+      "exact_rejecting_field": "UNKNOWN",
+      "result": "reviews/build-config/macos-memory-capture03/RESULT.json",
+      "sha256": "ec0ea90031336458754a14f1fa1dacd6a13292970d97ff77f05125a3b514f3fe"
+    },
+    "capture04": {
+      "status": "PASS_INERT_PUBLIC_SOURCE_CAPTURE_ONLY",
+      "http_requests": 6,
+      "all_http_status": 200,
+      "aggregate_body_bytes": 214480,
+      "retained_source_texts": 3,
+      "result": "reviews/build-config/macos-memory-capture04/RESULT.json",
+      "sha256": "0f3ffaffa63395abdcfe760f2217313e436026dbff729d1ec9ff50422ce04235",
+      "semantics": "reviews/build-config/MACOS-MEMORY-CAPTURE04-SEMANTICS.md",
+      "semantics_sha256": "b78ab6dc110cdfa12c1772f1a7d0ec1349d8193f8e39c199bb10fedf13e5dd44"
+    },
+    "limits": "Returned API metadata URLs are receipt data, not request authority. No downloaded program execution, native API or installed-runner availability/version evidence. No retry03; no prior failure/cleanup reclassification."
+  },
+  "desktop_curtain01_source": {
+    "status": "SOURCE_ACCEPTED_NO_INSTANCE_OR_EXECUTION",
+    "source_commit": "96f7758de9984528f4624944c0594d47fc20f14b",
+    "source_tree": "7167789b46cb29b198aed70eb5e21d9eabc4d5ec",
+    "declared_cases": 1,
+    "actual_cases": 0,
+    "inner_sha256": "212443a73b052feb00be5154a0414a5063af99cbd7e405cb6aa91df2d6961cf5",
+    "outer_sha256": "795e36a0b4bd12beafe2dd1ee66fb9c93497bec8ed65dff005e8e8c92a82d818",
+    "reviews": [
+      "reviews/editor-independent/DESKTOP-CURTAIN-INNER-SOURCE-REVIEW-01.json",
+      "reviews/verification/LINUX-DESKTOP-CURTAIN01-OUTER-SOURCE-REVIEW.md"
+    ],
+    "change": "Original helper pidfd required; original-file/parent pixel fsync/pin/close required before preservation acceptance. Fresh original Xvfb/WM/privateDBus/network domain, exact one production-curtain rendering/input case.",
+    "limits": "Strict agents_quiescent guard unchanged. No GUI request, allocation, pixels, native input or conclusive PVU005 outcome. Future batching may supersede scheduling, not erase unexecuted01 source/history."
+  },
+  "checkpoint9_publication_qualification": {
+    "source_commit": "80766c8c4b42e2e42c45527f62aa86f6ed0c1225",
+    "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",
+    "source_receipt": "publication/CHECKPOINT-9-SOURCE-PUBLISHED-AFTER-INFO-REVIEW.json",
+    "source_receipt_sha256": "cf81e74bd3a58d00fd6140318af6038160c1d7c26a8b400cf12d38bb2313f07d",
+    "activation_receipt": "publication/CHECKPOINT-9-WINDOWS03-ACTIVATION-PUBLISHED.json",
+    "activation_receipt_sha256": "cdf0e04ff222b35147062e182d777e70e10b744afc57161b072348540f1eb7a4",
+    "prior_failure": "Original before-stage info inode driftFAIL/causeUNKNOWN remains; exact separately reviewed empty-info895075 rebind only, no global waiver.",
+    "whitespace": "Actual cachedEXIT2,384 headers on eight exact rawWindows02CIlogs accepted only as unchanged evidence; never PASS or permission for new log paths.",
+    "limits": "Git publication/byte-preservation only, zero tests/closure credit from transport."
+  },
+  "historical_pva038_source_declarations_before_linux03": {
+    "routing_junit_methods": 9,
+    "provider_fixture_producer_methods": 1,
+    "fresh_provider_consumer_methods": 3,
+    "executed": 0,
+    "compiled": false,
+    "default_provider_mode": "Absent explicit mode causes JUnit assumption skip, not PASS; no actual skip observed.",
+    "separate_fresh_worker_modes": [
+      "prepare",
+      "success",
+      "wrong-key",
+      "loader-io"
+    ],
+    "review": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
   }
 }

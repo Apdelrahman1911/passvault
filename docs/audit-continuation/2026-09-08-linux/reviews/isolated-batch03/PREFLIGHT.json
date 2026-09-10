@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T20:04:05.355464+00:00",
+  "scope": "FRESH_ISOLATED_BATCH03_METADATA_REQUEST_ONLY_NOT_EXECUTION",
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=queued&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=in_progress&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=waiting&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=pending&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?status=requested&per_page=100",
+        "--jq",
+        "{total_count: .total_count, runs: [.workflow_runs[] | {id, name, status, head_branch, head_sha}]}"
+      ],
+      "exit": 0,
+      "stdout": "{\"runs\":[],\"total_count\":0}\n",
+      "stderr": ""
+    }
+  ],
+  "status": "FRESH_REQUEST_PREPARED_PENDING_GENUINE_INSTANCE_REVIEW_AND_ROOT_ENTRY_FREEZE",
+  "slot_before": {
+    "state": "IDLE_AFTER_WINDOWS03_RECONCILED_FAILURE",
+    "sha256": "ed22ee0d3bb6148169079a58a10100918aeee94c6357155241571099a918c8c9",
+    "pin": {
+      "dev": 24,
+      "ino": 13729127,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "bytes": 12888,
+      "mtime_ns": 1788983328234418357,
+      "ctime_ns": 1788983328234418357
+    }
+  },
+  "windows_actual_review_sha256": "5bef23de89a4fd804daea7e83501c7c71ee96689552ea97c5fbe0d4acfc8f5fc",
+  "windows_slot_release_sha256": "d9ee9b0cf35fe87bb1df22802174c64b2e0865d8ee662e69d13f62f92e305551",
+  "host_screen": {
+    "kind": "bounded point comm-only; no PID exemption/ownership/global-idle/signal inference",
+    "matches": [],
+    "unclassified_disappearances": 0,
+    "entries": 370,
+    "elapsed_seconds": 0.010438316006911919
+  },
+  "resources": {
+    "MemTotal": 67435888640,
+    "MemAvailable": 36455624704,
+    "disk_available": {
+      "/root/projects/PassVault": 21880827904,
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs": 21880827904,
+      "/tmp": 21294575616
+    }
+  },
+  "request_sha256": "c383fbb952f4b125769bba2cffdb2a477a1dbadaafb9bbfd59a0dc0e48391435",
+  "request_path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-ISOLATED-BATCH-03.json",
+  "fresh_runtime_evidence_absent": [
+    "/root/projects/PassVault/audit-runtime-linux-isolated-batch03",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-isolated-batch03"
+  ],
+  "cheap_source_syntax": {
+    "outer": "AST_ONLY_PASS_NO_IMPORT_OR_EXECUTION",
+    "inner": "AST_ONLY_PASS_NO_IMPORT_OR_EXECUTION"
+  },
+  "coordination": "Root sole build/test/CI/Git owner. Other agents: only explicitly assigned nonoverlapping inert source/data reads/edits outside all frozen03 source/request/approval/images, Git/object store, R/E/lock, SDK/toolchains/shared caches; no Git/build/test/CI/import/probe/network/service/background/heavy work. editor03 source lane frozen; Windows04 native review and GUI source rebind/review only; other lanes completed. Freeze persists through consumed execution and scheduling reconciliation. No root Git mutation/CI activation during Linux.",
+  "lock_snapshot": "Fresh original known Linux lock acquired nonblocking for image/request capture; no historical lock identity adopted or global lease claimed.",
+  "elapsed_seconds": 2.780455287982477,
+  "cleanup": "No runtime/evidence/build/cache/worker allocated. Finite gh metadata children completed under subprocess timeout; original lock and capture FDs closed. Only fresh inert request/permanent preflight retained; no old HOLD traversal/adoption/deletion."
+}
