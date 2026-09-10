@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T05:06:34.586402+00:00",
+  "status": "ADMIT_ONE_WINDOWS_COHORT05_REQUEST_ONLY_ACTIVATION_AND_TARGET_RUN",
+  "source_commit": "0d06721b7f8bdc17513a6ab51ffbc5523e68b230",
+  "source_tree": "dd04904c1deb691bd6aeed756dd6ceab8ea97837",
+  "finding_ids": [
+    "PVA-036",
+    "PVA-037",
+    "PVA-014 ABI sibling"
+  ],
+  "why_target": "Actual MSVC/Win32 file ownership and real CNG/live PRK native boundaries cannot execute on Linux. No Hello/authentication/production data or publishing.",
+  "request_sha256": "14017096650b03b30cbac8a606bc5bc2258bb7d4e285151fa92257a61459e05d",
+  "independent_instance_review": "reviews/native-independent/WINDOWS-COHORT-05-INSTANCE-REVIEW.json",
+  "independent_instance_review_sha256": "b83327523c5f5c00fe034c926e3573e7e50e785311899a891dff2eb624c26efd",
+  "source_review_sha256": "edda42e96e54ed423b81e87ed57ee5b01216562ca2855f63924c5ab8be3f1db1",
+  "preflight_sha256": "107ca3c77d855903b8b3de69a9ed1632d03fa37c89a8ba906fa175262ae9392f",
+  "activation_recipe_sha256": "35d1548bf2206e0adb9fc4db5d406c6ce90a6c166c8b2b0ac54dfc5077b20cbc",
+  "runner": "windows-2022 x64; installed Python>=3.11,CMake>=3.25,MSVC C++20,SDK10.0.26100.0; no installation",
+  "commands": "Exact helper35c14451... CASES ordered24; source-bound CMake configure with audit controls ON,4 selected test executables+normal DLL Release one worker/nodeReuse:false; exact24 serial ctest regex/XML. Full argv emitted by helper/journal.",
+  "bounds": {
+    "work_seconds": 480,
+    "cleanup_seconds": 540,
+    "job_minutes": 10,
+    "worker_parallelism": 1,
+    "job_memory_GiB": 3,
+    "job_processes": 16,
+    "artifact_retention_days": 3
+  },
+  "evidence": "24 actual case identities/outcomes and all XML, generated-reader observations, historical expected controls/live PRK, command logs/hashes/PE architecture; no large binaries. Unstarted/fail/skips separate.",
+  "cleanup": "Original Windows Job +handles, bounded observed settlement before validated allowlisted private-root cleanup; no global kill or oldHOLD access. Independently reconcile actual cleanup/CLI exit before release. Hard interruption remains possible HOLD/no retry; no local wrapper-stop duty.",
+  "sole_slot": {
+    "before_sha256": "d9355ad46a6bdc2d4adc5079b04d9a51315e038970d5c28488b2bc7efd93a686",
+    "reserved_sha256": "e0c27391d7d30f3679cf001b8a7e83d55566016e9299aaa6d5de0c3c9de9eb7a",
+    "state": "RESERVED_WINDOWS_COHORT05_AWAITING_ACTIVATION",
+    "root_local_audit_build": "NONE",
+    "agents": "SOURCE_ONLY_NO_BUILD_TEST_CI_GIT_OR_BACKGROUND_TASK",
+    "fresh_ci": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?branch=codex%2Faudit-continuation-linux-20260908&per_page=100"
+      ],
+      "exit": 0,
+      "stdout_sha256": "59517ea5629778ed920c96808e2b0045125bd2804ff70515951903506d18e72e",
+      "stdout_bytes": 77865,
+      "path": "reviews/native/WINDOWS-COHORT-05-CI-BEFORE-ACTIVATION.json",
+      "all_terminal": true,
+      "total": 6,
+      "qualification": "Fresh complete branch point observation, not hostile/global exclusivity."
+    }
+  },
+  "activation": "One sole-parent child of P adding ONLY fresh windows-cohort-05.json; no intervening source/report commit. Nonforce dedicated branch only, exact index/tree/refs/root/lock guards.",
+  "fences": "All STOP/NO_RETRY/CLOSED/PVA029FAIL/oldWindowsLinuxHOLDs/EOL/PVD/hardware retained; no protectedrefs/tags/protections/dependencies/versions/identity/signing/Store/1017001 changes."
+}

@@ -1,0 +1,1036 @@
+{
+  "artifact_references": [
+    {
+      "LF": 896,
+      "bytes": 49709,
+      "path": "reviews/windows-secret-array-guard-independent-platform-v1/RANGE-LEDGER.json",
+      "sha256": "72780e500569700d3ab4231a96d73632cf602aeb1802e4f8e30868b030fe1c02"
+    },
+    {
+      "LF": 229,
+      "bytes": 13458,
+      "path": "reviews/windows-secret-array-guard-independent-platform-v1/COUNTERPART-MAP.json",
+      "sha256": "3796efa1d5cbaf54e61d9fd2e973cdc9bb7dabb199c37ff1844aac6319204da2"
+    },
+    {
+      "LF": 736,
+      "bytes": 23121,
+      "path": "reviews/windows-secret-array-guard-independent-platform-v1/DISPLAY-RECEIPTS.json",
+      "sha256": "be77dd5b795e1501dd1db2b56a0585b6c25f39a22b3c81789e116a319c29d364"
+    }
+  ],
+  "baseline_applicability": {
+    "capture": "ab2a12",
+    "four_full_function_byte_identities": [
+      {
+        "baseline_range": [
+          229,
+          250
+        ],
+        "before_G11_range": [
+          229,
+          250
+        ],
+        "bytes": 958,
+        "exact_bytes_equal": true,
+        "function": "bool derive_wrapping_key(",
+        "semantic_credit": 0,
+        "sha256": "19e146a2b5eac4e45df03ddb22a5caad9f41471152baac391e7766507fb5ff98"
+      },
+      {
+        "baseline_range": [
+          728,
+          754
+        ],
+        "before_G11_range": [
+          750,
+          776
+        ],
+        "bytes": 1495,
+        "exact_bytes_equal": true,
+        "function": "std::vector<uint8_t> encode_envelope_aad(",
+        "semantic_credit": 0,
+        "sha256": "a4e377a66d0f53828340e48980e4e4e19f723c7fde866bc49bfa2cf25a4884f2"
+      },
+      {
+        "baseline_range": [
+          1731,
+          1977
+        ],
+        "before_G11_range": [
+          1753,
+          1999
+        ],
+        "bytes": 11015,
+        "exact_bytes_equal": true,
+        "function": "pv_bio_status create_windows_hello_credential(",
+        "semantic_credit": 0,
+        "sha256": "e6e01e0dece538bfc35f5faa620f29608d312599d0e4f07582d7b226096d209e"
+      },
+      {
+        "baseline_range": [
+          1979,
+          2176
+        ],
+        "before_G11_range": [
+          2001,
+          2198
+        ],
+        "bytes": 8373,
+        "exact_bytes_equal": true,
+        "function": "pv_bio_status retrieve_windows_hello_credential(",
+        "semantic_credit": 0,
+        "sha256": "9856574d794dc411e8a82e41debc97818f54480b67ca0bbf0ca6ae66e7a328a1"
+      }
+    ],
+    "limited_display_ranges": [
+      [
+        229,
+        250
+      ],
+      [
+        728,
+        754
+      ],
+      [
+        1912,
+        1928
+      ],
+      [
+        2145,
+        2161
+      ]
+    ],
+    "retained_baseline": {
+      "LF": 2489,
+      "bytes": 93957,
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-WINDOWS.cpp.txt",
+      "sha256": "68222a3020deea6167f809161412c3a5915742152947b4e985a5a7363571df94"
+    },
+    "scope": "Supports retained-source applicability only. Root capture provenance is not child Git/shipped/live proof and no baseline whole-file semantic coverage is claimed."
+  },
+  "decision_at_utc": "2026-09-08T04:23:28.293Z",
+  "finding": "PVA-037 / RN-C01",
+  "fresh_proposed_after_review": {
+    "all_reasoning_recorded_after_own_displays": true,
+    "central_coverage_increment": 0,
+    "files": [
+      {
+        "LF": 2571,
+        "bytes": 97737,
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows.cpp.txt",
+        "sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630",
+        "source": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp"
+      },
+      {
+        "LF": 549,
+        "bytes": 24747,
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows_security_test.cpp.txt",
+        "sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633",
+        "source": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp"
+      },
+      {
+        "LF": 179,
+        "bytes": 6177,
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/CMakeLists.txt.txt",
+        "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23",
+        "source": "app-desktop/native/biometric-bridge/CMakeLists.txt"
+      }
+    ],
+    "full_after_images_displayed": true,
+    "ledger_entry_count": 11,
+    "scope_note": "Count is local proposed-image review evidence only; repeated counterpart displays and prior G11 review are not added.",
+    "unique_lines": 3299
+  },
+  "full_after_review_started_utc": "2026-09-08T03:57:21.679Z",
+  "guard_implementation": {
+    "after_range": [
+      70,
+      86
+    ],
+    "registration_count": 5,
+    "secure_wipe_after_range": [
+      55,
+      68
+    ],
+    "source_evidence": [
+      "SW1"
+    ]
+  },
+  "independence": "Did not author this implementation or tests; originated RN-C01 and advised scope-bound noexcept cleanup previously. Root authored frozen patch; separate storage reviewer sustained LOW conditional source finding. This is implementation review, not independent rediscovery of candidate.",
+  "independent_challenges": [
+    {
+      "claim_challenged": "Allocation-free nonthrowing guard",
+      "conclusion": "SUSTAINED_SOURCE_ONLY",
+      "evidence": [
+        "SW1"
+      ],
+      "id": "C1",
+      "reason": "Class70..86 only binds an lvalue std::array reference; explicit noexcept constructor/destructor, deleted copy and move, no heap owner/callback/release state/secret copy. secure_wipe55..68 itself is not declared noexcept, so declaration traits alone are insufficient; actual array instantiation performs data/size/byte arithmetic, volatile stores and atomic signal fence with no ordinary throwing operation on a live array."
+    },
+    {
+      "claim_challenged": "No unguarded owned-key interval / dangling reference",
+      "conclusion": "SUSTAINED_SOURCE_ONLY",
+      "evidence": [
+        "SW1",
+        "SW6",
+        "SW7"
+      ],
+      "id": "C2",
+      "reason": "All five arrays are declared immediately before their guard and before being filled. Value initialization/reference binding do not throw normally; all arrays outlive their guard and never move or escape. No owning callable allocation is needed to establish cleanup."
+    },
+    {
+      "claim_challenged": "Original ordinary return/false/cancel paths not broken",
+      "conclusion": "SUSTAINED_SOURCE_ONLY",
+      "evidence": [
+        "SW6",
+        "SW7",
+        "SW8"
+      ],
+      "id": "C3",
+      "reason": "Original explicit wipes remain, so earliest normal cleanup timing and bool/status decisions do not move. Repeated zero stores at scope exit are safe. Early pre-copy cancellation holds no target local secret; late false/cancel paths retain guards. No new synchronization or cancellation/publication branch."
+    },
+    {
+      "claim_challenged": "C++ exception cleanup after realistic allocation cuts",
+      "conclusion": "SUSTAINED_CONDITIONAL_SOURCE_ONLY",
+      "evidence": [
+        "SW1",
+        "SW2",
+        "SW3",
+        "SW6",
+        "SW7",
+        "SW8"
+      ],
+      "id": "C4",
+      "reason": "AAD reserve sees guarded populated PRF and zero wrapping array; second-HMAC allocation sees guarded PRK plus outer PRF and zero output key; AES/later enrollment allocation sees guarded wrapping+PRF. Export catches occur only after acquisition stack unwinds. Actual production failure reachability and residue remain unexecuted."
+    },
+    {
+      "claim_challenged": "Caller key/output ownership and compatibility",
+      "conclusion": "SUSTAINED_SOURCE_ONLY",
+      "evidence": [
+        "SW1",
+        "SW6",
+        "SW7",
+        "SW8",
+        "ST2"
+      ],
+      "id": "C5",
+      "reason": "KDF guards its own PRK, never caller output. Enrollment never borrows const vault_key; retrieval never guards out_vault_key. Committed decrypted output survives. Valid-shape raw retrieval prezero/non-OK/catch wipes and localized validation prezero are unchanged. No ABI/format/KDF/AAD/credential identity/dependency/version/signing/release change; existing roundtrip source is not a known-answer result."
+    },
+    {
+      "claim_challenged": "Synthetic tests measure cleanup and isolate dispatch honestly",
+      "conclusion": "SUSTAINED_SOURCE_ONLY_NOT_EXECUTED",
+      "evidence": [
+        "ST1",
+        "ST2",
+        "SC1"
+      ],
+      "id": "C6",
+      "reason": "Tests instantiate production guard, observe arrays while lifetime persists, populate relevant arrays before exit and preserve unrelated0x91 buffer. Normal and early return populate PRF only; first-cut leaves wrapping/PRK zero; nested fills all three. Traits are uncompiled declarations. Four strict-token CTest branches return before baseline filesystem/provider fixtures; no production allocator/device proof."
+    }
+  ],
+  "input_records": [
+    {
+      "LF": 89,
+      "bytes": 3817,
+      "display_capture": "990343",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/PUBLICATION.json",
+      "role": "root proposal publication",
+      "sha256": "1f43913fe0aebc16f96d4a75b6a68b617b31340f451bf88e9138da35a64d099c"
+    },
+    {
+      "LF": 189,
+      "bytes": 8056,
+      "display_capture": "d42c59",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/PATCH.diff",
+      "role": "exact additive proposed delta",
+      "sha256": "daf09a6adce2b7d3ba4f4b1416612793929b624ba8fd61d7b3bdf350ddd6ba12"
+    },
+    {
+      "LF": 121,
+      "bytes": 7290,
+      "display_capture": "d42c59",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/AUTHOR-REVIEW.json",
+      "role": "author review, not independent evidence alone",
+      "sha256": "d032046cfd5f6ae3e01aea5d792ed9c62e80cff84d7117cbc1ede2bde1271538"
+    },
+    {
+      "LF": 79,
+      "bytes": 3371,
+      "display_capture": "d42c59",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/SOURCE-CHANGE-PLAN.json",
+      "role": "root source proposal with historical pending labels",
+      "sha256": "d3a4ed1ed5f8f5bd77e71cdf145c1ef83817d3df62eb0aa43cad168408c55aa0"
+    },
+    {
+      "LF": 2549,
+      "bytes": 96672,
+      "identity_capture": "ab2a12",
+      "mode_octal": "0600",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/windows.cpp.txt",
+      "role": "G11-designated before retained source",
+      "sha256": "a430d4e4a4936ec1047427174d8ed939989cbb31098e859309c572c0ab77c1b0",
+      "source": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp"
+    },
+    {
+      "LF": 2571,
+      "bytes": 97737,
+      "identity_capture": "ab2a12",
+      "mode_octal": "0600",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows.cpp.txt",
+      "role": "proposed after retained source, freshly reviewed in full",
+      "sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630",
+      "source": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp"
+    },
+    {
+      "LF": 457,
+      "bytes": 21179,
+      "identity_capture": "ab2a12",
+      "mode_octal": "0600",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/windows_security_test.cpp.txt",
+      "role": "G11-designated before retained source",
+      "sha256": "d54ec74b2146c7b242658fa5c660cb7288ebe120fc117a966cec86290bbc3583",
+      "source": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp"
+    },
+    {
+      "LF": 549,
+      "bytes": 24747,
+      "identity_capture": "ab2a12",
+      "mode_octal": "0600",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows_security_test.cpp.txt",
+      "role": "proposed after retained source, freshly reviewed in full",
+      "sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633",
+      "source": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp"
+    },
+    {
+      "LF": 170,
+      "bytes": 5743,
+      "identity_capture": "ab2a12",
+      "mode_octal": "0600",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/CMakeLists.txt.txt",
+      "role": "G11-designated before retained source",
+      "sha256": "b9f31caa2ff2570075a1c64443999b67666ccd7b883529626eb3f6b4f5a1dbef",
+      "source": "app-desktop/native/biometric-bridge/CMakeLists.txt"
+    },
+    {
+      "LF": 179,
+      "bytes": 6177,
+      "identity_capture": "ab2a12",
+      "mode_octal": "0600",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/CMakeLists.txt.txt",
+      "role": "proposed after retained source, freshly reviewed in full",
+      "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23",
+      "source": "app-desktop/native/biometric-bridge/CMakeLists.txt"
+    },
+    {
+      "LF": 2489,
+      "bytes": 93957,
+      "display_capture": "ab2a12",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-WINDOWS.cpp.txt",
+      "role": "root retained baseline source; limited context display and function identity only",
+      "sha256": "68222a3020deea6167f809161412c3a5915742152947b4e985a5a7363571df94"
+    },
+    {
+      "LF": 37,
+      "bytes": 985,
+      "display_capture": "d42c59",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-APPLICABILITY.json",
+      "role": "root baseline capture provenance statement, not child live Git observation",
+      "sha256": "4f3f7d26ef14c37ea1682d8c5814af254044deb9d30860f786a47b4e0230167f"
+    },
+    {
+      "LF": 76,
+      "bytes": 2062,
+      "display_capture": "d42c59",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-FUNCTION-IDENTITY.json",
+      "role": "author identity claims independently recomputed in ab2a12",
+      "sha256": "2e7ed6444b62909b3327484480443c90005d9a703873001fcd311b0ae5e618e9"
+    },
+    {
+      "LF": 176,
+      "bytes": 9771,
+      "display_capture": "990343",
+      "path": "reviews/g11-windows-prf-cleanup-independent-storage-v1/PUBLICATION.json",
+      "role": "separate source finding challenge, explicitly not patch review",
+      "sha256": "b836cdfdf698767a8c8edeb387d51f0e5bf23e224b078ccfcd701a6de3328b65"
+    },
+    {
+      "bytes": 4342,
+      "display_capture": "093161",
+      "path": "evidence/continuation-20260908T032738Z/NATIVE-INTEROP-SKILL.md",
+      "role": "captured operational skill only, not platform implementation proof",
+      "sha256": "00a586157a50ae912290199061a55c1568ce678de67c080b56ffd1bd89220d17"
+    },
+    {
+      "bytes": 5389,
+      "display_capture": "093161",
+      "path": "evidence/continuation-20260908T032738Z/BIOMETRIC-SKILL.md",
+      "role": "captured operational skill only, not platform implementation proof",
+      "sha256": "a51e396a5b44c4f2e63de7bde58fbc6bccb9bc39bc36bc215deb262de82d351a"
+    },
+    {
+      "bytes": 2535,
+      "display_capture": "dc7c72",
+      "path": "evidence/continuation-20260908T032738Z/NATIVE-INTEROP-CHECKLIST.md",
+      "role": "captured native checklist; all execution tasks deferred",
+      "sha256": "53b37dddba4a12df4e8d87639e8656d7f6fbc5ae285b415f9f836c2fe22289a6"
+    },
+    {
+      "bytes": 3071,
+      "display_capture": "dc7c72",
+      "path": "evidence/continuation-20260908T032738Z/BIOMETRIC-PLATFORM-SECURITY.md",
+      "role": "captured biometric reference; all provider/device tasks deferred",
+      "sha256": "4d5546a41e43e0732955c16c35a4bf103e344c94413fbb5b13cfeaad7781ff52"
+    }
+  ],
+  "limits": [
+    "Source-only review of the exact immutable proposed three-file after images and retained before/baseline captures. Proposal not applied by this reviewer; no live W/P or project tree, Git, artifact, process or resource state was inspected.",
+    "Acceptance is only of the bounded local-array cleanup correction under ordinary synchronous C++ return/unwinding with each referenced array alive and existing destructors completing normally. No SEH, terminate, hard kill, aborted unwind, stack/register/provider/OS copies or universal physical erasure guarantee.",
+    "No configure, syntax/AST check, compile, link, unit/CTest/ABI test, scanner, native/provider/Hello operation, runtime root allocation/cleanup, network or API call. All new tests are authored source, not passed tests.",
+    "Explicit std::bad_alloc tests exercise the actual guard on still-live synthetic arrays; they are not actual allocation exhaustion, production allocator injection, WebAuthn/CNG reachability, freed-memory inspection, hardware authentication or disclosure evidence.",
+    "Source preservation of caller KDF output and committed retrieval output is reasoned from distinct ownership and unchanged control flow, not an executed known-answer or end-to-end test.",
+    "Provider success/null conditional note, PVU008 opaque-buffer ordering and all PVD choices are unchanged. No new severity, closure or provider-contract decision is made.",
+    "G7/G8 remain CLOSED; PVU007 remains STOP with no investigation or reformulation; PVU011 and PVA029 remain NO RETRY.",
+    "Root alone owns source application, new freeze/G12 identity, central adoption/counts/coverage, runtime admission and closure. 3299 reviewed proposed-image lines are not an automatic central increment and do not establish a new source-tree identity."
+  ],
+  "operations": {
+    "W_or_P_reads": false,
+    "allowed": "Standalone /usr/bin/python3 -B from R with login:false; standard-library inert exact-name text/JSON/hash/diff/report processing only.",
+    "central_edits": false,
+    "git_network_api_calls": 0,
+    "live_skills_read": false,
+    "native_builds_or_tests": 0,
+    "output_namespace": "reviews/windows-secret-array-guard-independent-platform-v1/",
+    "process_or_resource_probes": 0,
+    "project_helpers_imported_or_executed": 0,
+    "runtime_allocation_or_cleanup": false,
+    "source_edits": false,
+    "syntax_ast_checks": 0
+  },
+  "preserved_decisions": [
+    "PVU008 opaque CNG buffer wipe-versus-handle-destroy order unchanged and unresolved.",
+    "Existing conditional WebAuthn success-with-null status note unchanged; reachability not investigated here.",
+    "All PVD choices unchanged; universal erasure caveat neither excuses nor is solved by this specific local-array cleanup.",
+    "G7/G8 CLOSED; PVU007 STOP/no investigation or reformulation; PVU011 NO RETRY; PVA029 NO RETRY."
+  ],
+  "production_registrations": [
+    {
+      "array_line": 253,
+      "complete_after_range": [
+        246,
+        268
+      ],
+      "first_mutation_lines": [
+        261,
+        262
+      ],
+      "function": "derive_wrapping_key",
+      "guard_line": 254,
+      "id": "PRK",
+      "lifetime": "info is later than guard; reverse destruction finishes info, then guard while PRK array still lives. output249 is caller-owned and not borrowed.",
+      "normal_wipe_line": 265,
+      "secret_cut": "After extract succeeds, expand's hmac_sha256 backing-vector allocation229 may throw; local PRK is guarded before either HMAC or info allocation256.",
+      "source_evidence": [
+        "SW1"
+      ]
+    },
+    {
+      "array_line": 1955,
+      "complete_after_range": [
+        1771,
+        2019
+      ],
+      "first_mutation_lines": [
+        1957,
+        1958
+      ],
+      "function": "create_windows_hello_credential",
+      "guard_line": 1956,
+      "id": "CREATE-PRF",
+      "lifetime": "Immediate mutable-array lvalue guard precedes copy; array and guard remain through complete function and precede older attestation/operation owner destruction.",
+      "normal_wipe_line": 2010,
+      "secret_cut": "First post-copy AAD call1961/reserve770..774, later KDF/AES/storage/cleanup allocations.",
+      "source_evidence": [
+        "SW6"
+      ]
+    },
+    {
+      "array_line": 1959,
+      "complete_after_range": [
+        1771,
+        2019
+      ],
+      "first_mutation_lines": [
+        1963,
+        1964
+      ],
+      "function": "create_windows_hello_credential",
+      "guard_line": 1960,
+      "id": "CREATE-WRAPPING",
+      "lifetime": "AAD and all later objects destroy before wrapping guard, then wrapping array; no return of this local key or transfer of guard.",
+      "normal_wipe_line": 2011,
+      "secret_cut": "Zero at first AAD failure; populated only after KDF success, protected at AES key_object301/ciphertext306 and later enrollment allocation cuts.",
+      "source_evidence": [
+        "SW1",
+        "SW6"
+      ]
+    },
+    {
+      "array_line": 2190,
+      "complete_after_range": [
+        2021,
+        2220
+      ],
+      "first_mutation_lines": [
+        2192,
+        2193
+      ],
+      "function": "retrieve_windows_hello_credential",
+      "guard_line": 2191,
+      "id": "RETRIEVE-PRF",
+      "lifetime": "Immediate guard precedes copy; PRF remains distinct from provider result and out_vault_key and guarded through commit/invalidation/tail.",
+      "normal_wipe_line": 2213,
+      "secret_cut": "Post-validation AAD call2196/reserve770..774, nested HMAC/AES and failure-invalidation allocations.",
+      "source_evidence": [
+        "SW7",
+        "SW8"
+      ]
+    },
+    {
+      "array_line": 2194,
+      "complete_after_range": [
+        2021,
+        2220
+      ],
+      "first_mutation_lines": [
+        2198,
+        2199
+      ],
+      "function": "retrieve_windows_hello_credential",
+      "guard_line": 2195,
+      "id": "RETRIEVE-WRAPPING",
+      "lifetime": "Later AAD dies before this guard; guard dies before its live array, then PRF guard/array; OperationGuard2071 finishes only afterward.",
+      "normal_wipe_line": 2214,
+      "secret_cut": "Zero at first AAD failure; populated before AES decrypt key_object354 allocation, protected until return/unwind.",
+      "source_evidence": [
+        "SW2",
+        "SW7",
+        "SW8"
+      ]
+    }
+  ],
+  "proposal_binding": {
+    "baseline_generation_designation": "G11 by root proposal, not independent live tree observation",
+    "before_after": [
+      {
+        "after": {
+          "LF": 2571,
+          "bytes": 97737,
+          "mode_octal": "0600",
+          "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows.cpp.txt",
+          "sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630"
+        },
+        "before": {
+          "LF": 2549,
+          "bytes": 96672,
+          "mode_octal": "0600",
+          "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/windows.cpp.txt",
+          "sha256": "a430d4e4a4936ec1047427174d8ed939989cbb31098e859309c572c0ab77c1b0"
+        },
+        "intended_source_mode_octal": "0644",
+        "source": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp"
+      },
+      {
+        "after": {
+          "LF": 549,
+          "bytes": 24747,
+          "mode_octal": "0600",
+          "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows_security_test.cpp.txt",
+          "sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633"
+        },
+        "before": {
+          "LF": 457,
+          "bytes": 21179,
+          "mode_octal": "0600",
+          "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/windows_security_test.cpp.txt",
+          "sha256": "d54ec74b2146c7b242658fa5c660cb7288ebe120fc117a966cec86290bbc3583"
+        },
+        "intended_source_mode_octal": "0644",
+        "source": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp"
+      },
+      {
+        "after": {
+          "LF": 179,
+          "bytes": 6177,
+          "mode_octal": "0600",
+          "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/CMakeLists.txt.txt",
+          "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23"
+        },
+        "before": {
+          "LF": 170,
+          "bytes": 5743,
+          "mode_octal": "0600",
+          "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/CMakeLists.txt.txt",
+          "sha256": "b9f31caa2ff2570075a1c64443999b67666ccd7b883529626eb3f6b4f5a1dbef"
+        },
+        "intended_source_mode_octal": "0644",
+        "source": "app-desktop/native/biometric-bridge/CMakeLists.txt"
+      }
+    ],
+    "exact_added_line_locations": {
+      "after_comparison_reasoning": "Exact inert line mapping agrees with123 additions/0 removals. Diff alignment attributes test5..7 and317..321 as added; semantic include/dispatch scopes are6..8 and318..322. Content-identity counterpart mapping of the old closing brace to317 remains valid and is not a unique diff-origin/positive-credit claim.",
+      "capture": "200a1d",
+      "central_credit": 0,
+      "reasoning_after_display_utc": "2026-09-08T04:31:21.006Z",
+      "records": [
+        {
+          "after_sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630",
+          "delta_ranges": [
+            {
+              "added": 17,
+              "after_added_inclusive": [
+                70,
+                86
+              ],
+              "before_zero_based_half_open": [
+                69,
+                69
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 1,
+              "after_added_inclusive": [
+                254,
+                254
+              ],
+              "before_zero_based_half_open": [
+                236,
+                236
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 1,
+              "after_added_inclusive": [
+                1956,
+                1956
+              ],
+              "before_zero_based_half_open": [
+                1937,
+                1937
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 1,
+              "after_added_inclusive": [
+                1960,
+                1960
+              ],
+              "before_zero_based_half_open": [
+                1940,
+                1940
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 1,
+              "after_added_inclusive": [
+                2191,
+                2191
+              ],
+              "before_zero_based_half_open": [
+                2170,
+                2170
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 1,
+              "after_added_inclusive": [
+                2195,
+                2195
+              ],
+              "before_zero_based_half_open": [
+                2173,
+                2173
+              ],
+              "kind": "insert",
+              "removed": 0
+            }
+          ],
+          "source": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp"
+        },
+        {
+          "after_sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633",
+          "delta_ranges": [
+            {
+              "added": 3,
+              "after_added_inclusive": [
+                5,
+                7
+              ],
+              "before_zero_based_half_open": [
+                4,
+                4
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 84,
+              "after_added_inclusive": [
+                228,
+                311
+              ],
+              "before_zero_based_half_open": [
+                224,
+                224
+              ],
+              "kind": "insert",
+              "removed": 0
+            },
+            {
+              "added": 5,
+              "after_added_inclusive": [
+                317,
+                321
+              ],
+              "before_zero_based_half_open": [
+                229,
+                229
+              ],
+              "kind": "insert",
+              "removed": 0
+            }
+          ],
+          "source": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp"
+        },
+        {
+          "after_sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23",
+          "delta_ranges": [
+            {
+              "added": 9,
+              "after_added_inclusive": [
+                153,
+                161
+              ],
+              "before_zero_based_half_open": [
+                152,
+                152
+              ],
+              "kind": "insert",
+              "removed": 0
+            }
+          ],
+          "source": "app-desktop/native/biometric-bridge/CMakeLists.txt"
+        }
+      ]
+    },
+    "exact_textual_delta": {
+      "additions": 123,
+      "capture": "ab2a12",
+      "patch_reconstructed_identically": true,
+      "removals": 0,
+      "scope": "Inert difflib comparison, not semantic or execution proof."
+    },
+    "patch": {
+      "LF": 189,
+      "bytes": 8056,
+      "display_capture": "d42c59",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/PATCH.diff",
+      "role": "exact additive proposed delta",
+      "sha256": "daf09a6adce2b7d3ba4f4b1416612793929b624ba8fd61d7b3bdf350ddd6ba12"
+    },
+    "publication": {
+      "LF": 89,
+      "bytes": 3817,
+      "display_capture": "990343",
+      "path": "reviews/windows-secret-array-guard-proposal-root-v1/PUBLICATION.json",
+      "role": "root proposal publication",
+      "sha256": "1f43913fe0aebc16f96d4a75b6a68b617b31340f451bf88e9138da35a64d099c"
+    },
+    "root_designated_canonical_sha256": "56c67ef81d1b70ba2f1bf5ebdfeef7b77688f43732d0c1c70baf2ff6be2a00fc"
+  },
+  "remaining_platform_proof": [
+    {
+      "id": "TARGET-COMPILE",
+      "requirement": "Authorized supported Windows/MSVC+SDK compile/link with reviewed C++20 and warning/hardening flags, confirming exception-unwind configuration and new guard/type-trait translation. No local compiler/toolchain availability probe performed.",
+      "status": "NOT_RUN_ADMISSION_CLOSED"
+    },
+    {
+      "id": "GUARD-UNITS",
+      "requirement": "Individually attributed target executions of all four named guard CTest cases, with separate exit results and exact applied-source/artifact identity. A passing case proves only its synthetic live-array path.",
+      "status": "NOT_RUN_ADMISSION_CLOSED"
+    },
+    {
+      "id": "NATIVE-REGRESSIONS",
+      "requirement": "Separately authorized existing Windows ABI/security/locale/writer/crypto regressions and known-output compatibility checks. Do not infer them from guard-only dispatch; they involve other native/provider/filesystem work.",
+      "status": "NOT_RUN_ADMISSION_CLOSED"
+    },
+    {
+      "id": "PRODUCTION-UNWIND",
+      "requirement": "Any claim of real production-cut behavior still needs separately reviewed bounded target fault injection at post-PRF AAD, populated-PRK second HMAC and post-KDF AES/later caller cuts with safe live-storage observations; not actual resource exhaustion or freed/private-memory probes.",
+      "status": "NOT_OBSERVED_NO_INJECTION_IMPLEMENTED"
+    },
+    {
+      "id": "HELLO-DEVICE",
+      "requirement": "Actual supported WebAuthn/Windows Hello creation/assertion protected PRF release, authenticated unwrap, valid/failure/cancellation/commit/output ownership and lifecycle behavior remain distinct target/provider/device evidence. No new hardware/provider assurance follows from scope tests or source review.",
+      "status": "NOT_OBSERVED_PLATFORM_GATE_UNCHANGED"
+    },
+    {
+      "id": "APPLICATION-IDENTITY",
+      "requirement": "Root must inspect this accepted seal, apply only exact bound proposal if authorized, establish a new source identity and reconcile coverage/PVA014/PVA036 coordinates. This child does not create or attest G12 or close PVA037.",
+      "status": "ROOT_ONLY_AFTER_SEAL_INSPECTION"
+    }
+  ],
+  "review_id": "windows-secret-array-guard-independent-platform-v1",
+  "reviewer": "/root/remed_platform",
+  "schema": "passvault.windows-secret-array-guard.independent-platform-review.v1",
+  "seal_preflight": {
+    "after_reasoning_temporal_order_checked": true,
+    "all_exact_named_inputs_revalidated": true,
+    "at_utc": "2026-09-08T04:34:16.744685+00:00",
+    "counterpart_byte_blocks_revalidated": 8,
+    "frozen_patch_reconstructed_identically": true,
+    "inputs": [
+      {
+        "LF": 89,
+        "bytes": 3817,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/PUBLICATION.json",
+        "sha256": "1f43913fe0aebc16f96d4a75b6a68b617b31340f451bf88e9138da35a64d099c"
+      },
+      {
+        "LF": 189,
+        "bytes": 8056,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/PATCH.diff",
+        "sha256": "daf09a6adce2b7d3ba4f4b1416612793929b624ba8fd61d7b3bdf350ddd6ba12"
+      },
+      {
+        "LF": 121,
+        "bytes": 7290,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/AUTHOR-REVIEW.json",
+        "sha256": "d032046cfd5f6ae3e01aea5d792ed9c62e80cff84d7117cbc1ede2bde1271538"
+      },
+      {
+        "LF": 79,
+        "bytes": 3371,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/SOURCE-CHANGE-PLAN.json",
+        "sha256": "d3a4ed1ed5f8f5bd77e71cdf145c1ef83817d3df62eb0aa43cad168408c55aa0"
+      },
+      {
+        "LF": 2549,
+        "bytes": 96672,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/windows.cpp.txt",
+        "sha256": "a430d4e4a4936ec1047427174d8ed939989cbb31098e859309c572c0ab77c1b0"
+      },
+      {
+        "LF": 2571,
+        "bytes": 97737,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows.cpp.txt",
+        "sha256": "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630"
+      },
+      {
+        "LF": 457,
+        "bytes": 21179,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/windows_security_test.cpp.txt",
+        "sha256": "d54ec74b2146c7b242658fa5c660cb7288ebe120fc117a966cec86290bbc3583"
+      },
+      {
+        "LF": 549,
+        "bytes": 24747,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/windows_security_test.cpp.txt",
+        "sha256": "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633"
+      },
+      {
+        "LF": 170,
+        "bytes": 5743,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/before/CMakeLists.txt.txt",
+        "sha256": "b9f31caa2ff2570075a1c64443999b67666ccd7b883529626eb3f6b4f5a1dbef"
+      },
+      {
+        "LF": 179,
+        "bytes": 6177,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/after/CMakeLists.txt.txt",
+        "sha256": "5db2d9b77a00a8308c00843ec28c5fa727e01fb292c34bf96b3e3b109bee2b23"
+      },
+      {
+        "LF": 2489,
+        "bytes": 93957,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-WINDOWS.cpp.txt",
+        "sha256": "68222a3020deea6167f809161412c3a5915742152947b4e985a5a7363571df94"
+      },
+      {
+        "LF": 37,
+        "bytes": 985,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-APPLICABILITY.json",
+        "sha256": "4f3f7d26ef14c37ea1682d8c5814af254044deb9d30860f786a47b4e0230167f"
+      },
+      {
+        "LF": 76,
+        "bytes": 2062,
+        "mode_octal": "0600",
+        "path": "reviews/windows-secret-array-guard-proposal-root-v1/BASELINE-FUNCTION-IDENTITY.json",
+        "sha256": "2e7ed6444b62909b3327484480443c90005d9a703873001fcd311b0ae5e618e9"
+      },
+      {
+        "LF": 176,
+        "bytes": 9771,
+        "mode_octal": "0600",
+        "path": "reviews/g11-windows-prf-cleanup-independent-storage-v1/PUBLICATION.json",
+        "sha256": "b836cdfdf698767a8c8edeb387d51f0e5bf23e224b078ccfcd701a6de3328b65"
+      },
+      {
+        "LF": 67,
+        "bytes": 4342,
+        "mode_octal": "0600",
+        "path": "evidence/continuation-20260908T032738Z/NATIVE-INTEROP-SKILL.md",
+        "sha256": "00a586157a50ae912290199061a55c1568ce678de67c080b56ffd1bd89220d17"
+      },
+      {
+        "LF": 83,
+        "bytes": 5389,
+        "mode_octal": "0600",
+        "path": "evidence/continuation-20260908T032738Z/BIOMETRIC-SKILL.md",
+        "sha256": "a51e396a5b44c4f2e63de7bde58fbc6bccb9bc39bc36bc215deb262de82d351a"
+      },
+      {
+        "LF": 51,
+        "bytes": 2535,
+        "mode_octal": "0600",
+        "path": "evidence/continuation-20260908T032738Z/NATIVE-INTEROP-CHECKLIST.md",
+        "sha256": "53b37dddba4a12df4e8d87639e8656d7f6fbc5ae285b415f9f836c2fe22289a6"
+      },
+      {
+        "LF": 41,
+        "bytes": 3071,
+        "mode_octal": "0600",
+        "path": "evidence/continuation-20260908T032738Z/BIOMETRIC-PLATFORM-SECURITY.md",
+        "sha256": "4d5546a41e43e0732955c16c35a4bf103e344c94413fbb5b13cfeaad7781ff52"
+      }
+    ],
+    "proposed_after_full_range_union": 3299,
+    "scope": "Inert report/source text integrity only, not syntax/AST, compilation, tests, native/provider operations, live source or central accounting."
+  },
+  "sealed_at_utc": "2026-09-08T04:34:16.744685+00:00",
+  "status": "SOURCE_ACCEPTED_PROPOSED_CORRECTION_NOT_APPLIED_NOT_RUNTIME_VERIFIED",
+  "synthetic_guard_tests": {
+    "cases": [
+      {
+        "argument": "normal_scope",
+        "executed": false,
+        "intent": "PRF stays populated while guard lives, then zero after ordinary block exit; unrelated remains0x91.",
+        "name": "passvault_biometric_windows_secret_normal_scope",
+        "test_after_ranges": [
+          [
+            266,
+            272
+          ],
+          [
+            301,
+            308
+          ]
+        ]
+      },
+      {
+        "argument": "early_return",
+        "executed": false,
+        "intent": "Borrowed PRF wiped as lambda returns true; observed outer array still lives.",
+        "name": "passvault_biometric_windows_secret_early_return",
+        "test_after_ranges": [
+          [
+            272,
+            278
+          ],
+          [
+            301,
+            308
+          ]
+        ]
+      },
+      {
+        "argument": "allocation_exception",
+        "executed": false,
+        "intent": "Explicit bad_alloc after PRF fill and zero wrapping guard; not a failing production reserve.",
+        "name": "passvault_biometric_windows_secret_allocation_exception",
+        "test_after_ranges": [
+          [
+            279,
+            288
+          ],
+          [
+            296,
+            308
+          ]
+        ]
+      },
+      {
+        "argument": "nested_exception",
+        "executed": false,
+        "intent": "Filled outer PRF/wrapping and inner PRK borrowed guards unwind before catch; no freed-storage observation.",
+        "name": "passvault_biometric_windows_secret_nested_exception",
+        "test_after_ranges": [
+          [
+            279,
+            308
+          ]
+        ]
+      }
+    ],
+    "cmake_after_range": [
+      153,
+      161
+    ],
+    "common_test_after_range": [
+      228,
+      310
+    ],
+    "dispatch_after_range": [
+      318,
+      322
+    ],
+    "executed_cases": 0,
+    "production_allocator_injection": false,
+    "real_provider_or_device_validation": false,
+    "static_assert_after_range": [
+      231,
+      238
+    ]
+  },
+  "unchanged_counterparts": {
+    "block_count": 8,
+    "closure_or_central_credit": 0,
+    "findings": [
+      "PVA-014",
+      "PVA-036"
+    ],
+    "kind": "G11-proposal-before to exact proposed-after retained bytes only",
+    "no_contiguous_pva036_test_claim": true,
+    "no_deletion_anchor_positive_credit": true
+  },
+  "verdict": {
+    "basis": "No source counterexample found after full proposed-after review and targeted lifetime/unwind/output challenges. Immediate nonthrowing borrowed guards cover exactly the five owned arrays identified by RN-C01 while retaining prior behavior.",
+    "new_confirmed_regressions": [],
+    "required_source_revisions": [],
+    "severity_scope": "Root reported source-only LOW PVA037 admission; central adoption artifact/status was not independently read. No new impact, disclosure, exploitability or closure finding.",
+    "source_correction": "ACCEPT"
+  }
+}

@@ -1,0 +1,75 @@
+name: Audit focused iOS validation 01 (non-publishing)
+
+# SOURCE PREPARATION. No request is created by this packet. Root must separately
+# admit source, the fixed ten cases, owned guest storage and one execution slot.
+on:
+  push:
+    branches:
+      - codex/audit-continuation-linux-20260908
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/ios-focused-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  cancel-in-progress: false
+
+jobs:
+  ios-ten:
+    if: >-
+      github.repository == 'Apdelrahman1911/passvault' &&
+      github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+      github.event_name == 'push' && github.event.deleted == false &&
+      github.run_attempt == 1
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact activation source without retained credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          clean: false
+          lfs: false
+          submodules: false
+
+      - name: Run only the separately admitted focused iOS cycle
+        id: focused
+        shell: bash --noprofile --norc -euo pipefail {0}
+        env:
+          PV_REPOSITORY: ${{ github.repository }}
+          PV_REF: ${{ github.ref }}
+          PV_EVENT: ${{ github.event_name }}
+          PV_SHA: ${{ github.sha }}
+          PV_RUN_ID: ${{ github.run_id }}
+          PV_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          # The pinned public image documents Python3, not an absolute launcher
+          # path. Observe the installed launcher; never reuse the Intel path.
+          python_launcher="$(command -v python3)"
+          case "${python_launcher}" in /*) ;; *) exit 1 ;; esac
+          exec /usr/bin/env -i \
+            PATH='/usr/bin:/bin:/usr/sbin:/sbin' LANG=C LC_ALL=C TZ=UTC \
+            PV_REPOSITORY="${PV_REPOSITORY}" PV_REF="${PV_REF}" PV_EVENT="${PV_EVENT}" \
+            PV_SHA="${PV_SHA}" PV_RUN_ID="${PV_RUN_ID}" PV_ATTEMPT="${PV_ATTEMPT}" \
+            PV_WORKSPACE="${GITHUB_WORKSPACE}" PV_RUNNER_TEMP="${RUNNER_TEMP}" PV_OUTPUT="${GITHUB_OUTPUT}" \
+            PV_JAVA_HOME_17="${JAVA_HOME_17_arm64:?}" \
+            PV_IMAGE_OS="${ImageOS:?}" PV_IMAGE_VERSION="${ImageVersion:?}" \
+            "${python_launcher}" -I -B scripts/audit/ios_focused_validation.py
+
+      - name: Retain only newly owned compact synthetic evidence
+        if: ${{ always() && steps.focused.outputs.evidence_path != '' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: ios-focused-01-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.focused.outputs.evidence_path }}/*.json
+            ${{ steps.focused.outputs.evidence_path }}/*.log
+            ${{ steps.focused.outputs.evidence_path }}/*.xml
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 6
+          include-hidden-files: false

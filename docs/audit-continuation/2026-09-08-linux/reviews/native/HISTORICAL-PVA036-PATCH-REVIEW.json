@@ -1,0 +1,1387 @@
+{
+  "schema": "pva036-patch-independent-platform-review-v1",
+  "reviewer": "/root/remed_platform",
+  "code_author": "/root",
+  "disposition": "ACCEPT_SOURCE_ONLY",
+  "finding": "PVA-036",
+  "review_local_original_lead": "QWIN001",
+  "acceptance_scope": "Exact sealed three-file R proposal for the bounded temporary-file acquisition/cleanup defect and its source-level regression oracles. Not W/application acceptance, finding closure, build proof, runtime admission, cleanup admission, or production readiness.",
+  "independence": "Reviewer gave prior source-design advice but did not author/edit the implementation, tests, CMake images, baseline instrumentation, or patch. Root's explanation was checked against actual source and inert byte comparisons.",
+  "required_revisions": [],
+  "blocking_findings": [],
+  "proposal_publication": {
+    "path": "reviews/pva036-patch-root-v1/PUBLICATION.json",
+    "bytes": 2587,
+    "lf_lines": 70,
+    "sha256": "6fa98df51eca54c2b18b80c1a4e642c0596421a9ec08355e6dd11aa6ae3b915f",
+    "retained_mode_octal": "0600"
+  },
+  "published_canonical_after_image_set_sha256": "57b460835f0a22f82d93bee18a651b0d93cb78608f60e95db10a0ef5beeb409b",
+  "accepted_sources": [
+    {
+      "source_path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "before_sha256": "81d36da2facee51a305711637a26344ea21b78f2db6732b3574757281858a84f",
+      "after_sha256": "a430d4e4a4936ec1047427174d8ed939989cbb31098e859309c572c0ab77c1b0",
+      "after_retained_path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+      "after_bytes": 96672,
+      "after_lf": 2549,
+      "intended_source_mode_octal": "0644",
+      "substantive_scope": [
+        [
+          626,
+          698
+        ]
+      ]
+    },
+    {
+      "source_path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "before_sha256": "eab2fec9c1b18a2d6a1a22d98491772d552aae165f08afe3415e59cd256859ad",
+      "after_sha256": "d54ec74b2146c7b242658fa5c660cb7288ebe120fc117a966cec86290bbc3583",
+      "after_retained_path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+      "after_bytes": 21179,
+      "after_lf": 457,
+      "intended_source_mode_octal": "0644",
+      "substantive_scope": [
+        [
+          38,
+          231
+        ]
+      ]
+    },
+    {
+      "source_path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before_sha256": "c29328c10e22f5ead9c27b23e67af4727f4081670cb7c945876418b06071f602",
+      "after_sha256": "b9f31caa2ff2570075a1c64443999b67666ccd7b883529626eb3f6b4f5a1dbef",
+      "after_retained_path": "reviews/pva036-patch-root-v1/after/CMakeLists.txt.txt",
+      "after_bytes": 5743,
+      "after_lf": 170,
+      "intended_source_mode_octal": "0644",
+      "substantive_scope": [
+        [
+          142,
+          152
+        ]
+      ]
+    }
+  ],
+  "source_verdict": [
+    {
+      "id": "S1",
+      "subject": "No acquired handle, no temporary-path cleanup",
+      "evidence": [
+        {
+          "path": "reviews/pva036-patch-root-v1/before/windows.cpp.txt",
+          "ranges": [
+            [
+              626,
+              648
+            ]
+          ]
+        },
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+          "ranges": [
+            [
+              630,
+              655
+            ]
+          ]
+        }
+      ],
+      "conclusion": "The original combined branch can delete an existing colliding path despite failed CREATE_NEW. The proposal returns immediately on invalid handle, before callbacks and deletion. Bounds, real parent validation, real random suffix through the production wrapper, CREATE_NEW and share zero are preserved."
+    },
+    {
+      "id": "S2",
+      "subject": "Acquired early failure closes before cleanup",
+      "evidence": [
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+          "ranges": [
+            [
+              387,
+              413
+            ],
+            [
+              646,
+              663
+            ]
+          ]
+        }
+      ],
+      "conclusion": "A valid acquired handle reaches short-circuit validation/protection. On failure, file.close() performs the actual CloseHandle and invalidates the wrapper; DeleteFileW is reached only if close succeeded. Return remains false. RAII cannot double-close that explicitly settled wrapper. No payload write has yet occurred."
+    },
+    {
+      "id": "S3",
+      "subject": "Later close uncertainty remains failure",
+      "evidence": [
+        {
+          "path": "reviews/pva036-patch-root-v1/before/windows.cpp.txt",
+          "ranges": [
+            [
+              650,
+              675
+            ]
+          ]
+        },
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+          "ranges": [
+            [
+              664,
+              689
+            ]
+          ]
+        }
+      ],
+      "conclusion": "Write/flush/rename operations and flags remain real. success requires both flush and successful close; rename requires that success. Later failure cleanup now also requires closed. Actual CloseHandle/DeleteFile failure can retain staging; this code does not claim cleanup succeeded or return true in that path."
+    },
+    {
+      "id": "S4",
+      "subject": "Small private seam, no weakened production path",
+      "evidence": [
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+          "ranges": [
+            [
+              30,
+              53
+            ],
+            [
+              521,
+              561
+            ],
+            [
+              626,
+              698
+            ]
+          ]
+        },
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+          "ranges": [
+            [
+              1,
+              4
+            ],
+            [
+              159,
+              180
+            ]
+          ]
+        }
+      ],
+      "conclusion": "The three callables occur only at suffix and staging validator/DACL calls. safe_directory still calls real safe_handle. The existing three-argument production wrapper hard-binds actual functions. No macro API replacement, global hook, null function pointer default, public ABI, alternate runtime configuration, privilege/sharing relaxation, or separate implementation copy was added."
+    },
+    {
+      "id": "S5",
+      "subject": "Production callers still reach the corrected wrapper",
+      "evidence": [
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+          "ranges": [
+            [
+              1934,
+              1998
+            ],
+            [
+              2206,
+              2241
+            ],
+            [
+              2365,
+              2380
+            ],
+            [
+              2412,
+              2428
+            ]
+          ]
+        }
+      ],
+      "conclusion": "The actual source binds the metadata destination under the checked absolute root/secured biometric child, uses the same wrapper for forward encrypted enrollment and cancellation rollback, and retains boolean error/cancellation handling and credential retirement. Those bytes are identical to G10 outside the writer. Higher-level Kotlin/JNA/restore reachability is reused only as retained root-finding context, not claimed freshly read here."
+    },
+    {
+      "id": "S6",
+      "subject": "No provider invocation on new file-case path",
+      "evidence": [
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+          "ranges": [
+            [
+              12,
+              36
+            ],
+            [
+              97,
+              111
+            ],
+            [
+              220,
+              231
+            ]
+          ]
+        },
+        {
+          "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+          "ranges": [
+            [
+              1342,
+              1345
+            ],
+            [
+              2238,
+              2241
+            ]
+          ]
+        }
+      ],
+      "conclusion": "Each file case uses a fresh synthetic root and leaves fixture.context null. pv_bio_destroy(nullptr) returns before provider work; WebAuthn is function-local lazy state, not invoked by this path. The selector returns the chosen case before old context/crypto tests. Real filesystem/security helpers may query the current process token; no personal vault or persisted credential is used."
+    }
+  ],
+  "test_oracle_review": {
+    "cases": [
+      {
+        "name": "success",
+        "counts": [
+          1,
+          1,
+          1
+        ],
+        "source_ranges": [
+          [
+            113,
+            122
+          ],
+          [
+            159,
+            180
+          ],
+          [
+            183,
+            212
+          ]
+        ],
+        "expected_baseline": "PASS under eligible real-Windows fixture conditions",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "Real production-wrapper seed succeeds; deterministic helper returns true; exact replacement bytes and only destination remain. Real wrapper then accepts/readbacks exactly kMaxEnvelopeBytes (16384). Original/replacement include NUL and high-bit bytes and have different lengths.",
+        "reachability": "Actual validation, zero-byte staging observation, actual DACL and NO_INHERITANCE required; setup/read/membership/cleanup checks must also pass.",
+        "ctest_name": "passvault_biometric_windows_file_success",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "validation_failure",
+        "counts": [
+          1,
+          1,
+          0
+        ],
+        "source_ranges": [
+          [
+            159,
+            171
+          ],
+          [
+            183,
+            205
+          ]
+        ],
+        "expected_baseline": "FAIL at test line 204 staging-absence check, not setup/availability",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "Real safe_handle and GetFileSizeEx establish a valid acquired empty file, then the local validator deliberately returns false. Old destination remains byte-identical; exact staging path absent and no extra entries before teardown.",
+        "reachability": "One validator call and saw_valid_empty_file are mandatory; DACL must not run. Parent/RNG/create failure cannot pass these assertions.",
+        "ctest_name": "passvault_biometric_windows_file_validation_failure",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "dacl_failure",
+        "counts": [
+          1,
+          1,
+          1
+        ],
+        "source_ranges": [
+          [
+            159,
+            180
+          ],
+          [
+            183,
+            205
+          ]
+        ],
+        "expected_baseline": "FAIL at test line 204 staging-absence check, not setup/availability",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "Actual validator succeeds; the DACL predicate sees zero-length staging and NO_INHERITANCE, then returns false without modifying/closing the file. Old bytes survive, staging is absent, membership is exact before teardown.",
+        "reachability": "Both callbacks must run once and both size/argument observations must hold. This forces a false DACL-helper result; it does not claim an observed OS ACL failure.",
+        "ctest_name": "passvault_biometric_windows_file_dacl_failure",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "collision",
+        "counts": [
+          1,
+          0,
+          0
+        ],
+        "source_ranges": [
+          [
+            124,
+            138
+          ],
+          [
+            159,
+            164
+          ],
+          [
+            183,
+            202
+          ]
+        ],
+        "expected_baseline": "FAIL at test line 201 sentinel byte-read check, not setup/availability",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "Production writer seeds a real sentinel at the exact fixed suffix, READONLY is ruled out, real DELETE access is proved and that probe explicitly closed. Subsequent scoped read completes before action. CREATE_NEW failure must preserve sentinel and old destination bytes and exact two-entry membership.",
+        "reachability": "Suffix once, no staging validator/DACL; a valid closed deletable synthetic collision supplies the unowned-path counterexample. Healthy real file/close semantics are preconditions, not mocked successes.",
+        "ctest_name": "passvault_biometric_windows_file_collision",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "empty_payload",
+        "counts": [
+          0,
+          0,
+          0
+        ],
+        "source_ranges": [
+          [
+            147,
+            151
+          ],
+          [
+            159,
+            205
+          ]
+        ],
+        "expected_baseline": "PASS under eligible real-Windows fixture conditions",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "Empty payload returns false, reaches no injected operation, leaves old bytes and only destination with no fixed staging path.",
+        "reachability": "Real seed/read positive controls and exact zero callback counts; source short circuit is before safe_directory/suffix/allocation.",
+        "ctest_name": "passvault_biometric_windows_file_empty_payload",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "oversized_payload",
+        "counts": [
+          0,
+          0,
+          0
+        ],
+        "source_ranges": [
+          [
+            147,
+            151
+          ],
+          [
+            159,
+            205
+          ]
+        ],
+        "expected_baseline": "PASS under eligible real-Windows fixture conditions",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "Payload is exactly kMaxEnvelopeBytes+1 (16385), false result, no injected operations, old bytes and fixture membership preserved. Maximum accepted size is covered in success.",
+        "reachability": "Same preallocation count/state checks as empty payload; no unbounded input allocation.",
+        "ctest_name": "passvault_biometric_windows_file_oversized_payload",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "empty_suffix",
+        "counts": [
+          1,
+          0,
+          0
+        ],
+        "source_ranges": [
+          [
+            159,
+            180
+          ],
+          [
+            183,
+            205
+          ]
+        ],
+        "expected_baseline": "PASS under eligible real-Windows fixture conditions",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "A valid payload and real safe_directory gate reach suffix once; empty suffix returns false before staging validation/protection. Exact destination and membership remain, with no stray .tmp entry of any name.",
+        "reachability": "Parent failure would leave suffix count zero and fail. Fixed-path absence is complemented by full owned-root membership, so a bare .tmp artifact is not missed.",
+        "ctest_name": "passvault_biometric_windows_file_empty_suffix",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      },
+      {
+        "name": "rename_failure",
+        "counts": [
+          1,
+          1,
+          1
+        ],
+        "source_ranges": [
+          [
+            140,
+            145
+          ],
+          [
+            159,
+            205
+          ],
+          [
+            214,
+            218
+          ]
+        ],
+        "expected_baseline": "PASS under eligible real-Windows fixture conditions",
+        "expected_fixed": "PASS under eligible real-Windows fixture conditions",
+        "oracle": "A real destination GENERIC_READ handle with FILE_SHARE_READ (no FILE_SHARE_DELETE) is held during the writer call. Writer must return false, preserve old bytes and remove staging. After checked blocker closure a real production-wrapper replacement must succeed.",
+        "reachability": "Staging is a distinct pathname and all callbacks/zero-size/NO_INHERITANCE checks must be reached. The blocker is closed at line 182 before state assertions; this is a synchronous blocked/unblocked outcome control, not a while-held observation or an instrumented record of the exact failing API.",
+        "ctest_name": "passvault_biometric_windows_file_rename_failure",
+        "source_test": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "counts_order": [
+          "suffix",
+          "validation",
+          "protection"
+        ],
+        "executed": false
+      }
+    ],
+    "general_controls": [
+      {
+        "evidence": {
+          "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+          "ranges": [
+            [
+              69,
+              95
+            ],
+            [
+              120,
+              145
+            ]
+          ]
+        },
+        "meaning": "Real exact-byte reads, non-readonly check and closed DELETE-access probe prevent the ordinary collision false pass; directory enumeration includes hidden entries and rejects unexpected members/errors."
+      },
+      {
+        "evidence": {
+          "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+          "ranges": [
+            [
+              159,
+              196
+            ]
+          ]
+        },
+        "meaning": "Exact callback counts, real safe_handle and same-handle zero-length observations prevent intended acquired-file cases from passing solely on parent/RNG/create failure. DACL argument NO_INHERITANCE is observed."
+      },
+      {
+        "evidence": {
+          "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+          "ranges": [
+            [
+              198,
+              221
+            ]
+          ]
+        },
+        "meaning": "Decisive sentinel/staging/membership checks precede fixture teardown. Positive completion additionally checks teardown and root absence. Failure returns remain nonzero even when the destructor subsequently cleans the test-owned root."
+      },
+      {
+        "evidence": {
+          "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+          "ranges": [
+            [
+              49,
+              67
+            ],
+            [
+              225,
+              231
+            ]
+          ]
+        },
+        "meaning": "Exactly eight names are selectable; malformed names/argument shapes reject. The original no-argument body is byte-identical after its selector."
+      },
+      {
+        "evidence": {
+          "path": "reviews/pva036-patch-root-v1/after/CMakeLists.txt.txt",
+          "ranges": [
+            [
+              99,
+              152
+            ]
+          ]
+        },
+        "meaning": "Exactly eight additional named CTest invocations select distinct processes/results on the existing Windows BUILD_TESTING executable. No new target, skipped old no-argument test, WILL_FAIL inversion, or cross-platform test registration was added."
+      }
+    ],
+    "non_claim": "Zero executed tests. Expected before/fixed failures require actual Windows evidence at the intended assertions, not any unrelated nonzero exit, setup failure, crash, timeout, or suite summary."
+  },
+  "baseline_control_review": {
+    "path": "reviews/pva036-patch-root-v1/baseline-instrumented/windows.cpp.txt",
+    "sha256": "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b",
+    "patch_path": "reviews/pva036-patch-root-v1/baseline-instrumentation-only.patch.txt",
+    "patch_sha256": "6cded6644e83589b446584b273d427b8b0e1d62b9cce8e75a2931e30a42ca61d",
+    "evidence": [
+      {
+        "path": "reviews/pva036-patch-root-v1/baseline-instrumented/windows.cpp.txt",
+        "ranges": [
+          [
+            626,
+            688
+          ]
+        ]
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/baseline-instrumentation-only.patch.txt",
+        "ranges": [
+          [
+            1,
+            51
+          ]
+        ]
+      }
+    ],
+    "conclusion": "The original body is byte-identical after reversing only make_suffix/validate_file/protect_file call-name substitutions. Its combined invalid/acquired branch still deletes before close; the late unconditional failure cleanup is also preserved. The production wrapper still supplies real functions. Both QWIN001 variants therefore remain in the historical control; this is disclosed instrumentation, not an original shipped binary or a deployable correction.",
+    "expected_distinguishing_cases": [
+      "validation_failure: test line 204",
+      "dacl_failure: test line 204",
+      "collision: test line 201"
+    ],
+    "executed": false,
+    "permitted_to_apply_to_W": false
+  },
+  "compile_and_abi_inspection": {
+    "status": "NO_NEW_OBVIOUS_SOURCE_LEVEL_COMPILATION_BLOCKER_IDENTIFIED_NOT_COMPILED",
+    "evidence": [
+      {
+        "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+        "ranges": [
+          [
+            1,
+            30
+          ],
+          [
+            629,
+            698
+          ]
+        ]
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "ranges": [
+          [
+            38,
+            231
+          ]
+        ]
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/after/CMakeLists.txt.txt",
+        "ranges": [
+          [
+            7,
+            10
+          ],
+          [
+            62,
+            137
+          ]
+        ]
+      }
+    ],
+    "considerations": [
+      "C++20 already enabled. std::filesystem, optional, string_view, algorithm and vector declarations are already included by the implementation; tests already intentionally include that implementation once.",
+      "Template argument deduction accepts actual C++ function pointers and local capturing lambdas with the matching wstring/HANDLE/DWORD/bool call shapes. Captures are used synchronously and not retained.",
+      "New counts compare int with int; directory counts and vector sizes use size_t; DWORD masks and LONGLONG zero-size checks avoid newly apparent width/narrowing mismatches. Literal byte initializers are representable uint8_t values.",
+      "No added unused parameters/locals, symbol collision, new library dependency, API calling-convention wrapper, duplicate implementation translation unit, or public header/ABI change was identified in the inspected source.",
+      "Production and test /W4 /WX, /guard:cf, /sdl, linker hardening and MSVC runtime settings remain unchanged. Source inspection cannot certify warnings, Windows SDK compatibility, linking, ABI, or runtime behavior."
+    ],
+    "header_binding": {
+      "path": "reviews/g10-remaining-source-root-input-v1/source/04-passvault_biometric.h.txt",
+      "bytes": 4540,
+      "lf_lines": 120,
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+      "retained_mode_octal": "0600"
+    },
+    "compiler_invoked": false,
+    "syntax_checked": false
+  },
+  "nonblocking_limits": [
+    {
+      "id": "L1",
+      "text": "Rename test closes the blocker at test line 182 before state assertions. It remains held throughout the synchronous writer call and the subsequent real-wrapper success is a valid paired control, but this is not an assertion made while the blocker remains held and does not record which real API failed under an unrelated transient I/O/DACL failure. Do not claim forced write/flush/close-failure coverage."
+    },
+    {
+      "id": "L2",
+      "text": "Collision setup relies on healthy real close semantics for the real reader's existing RAII handle as well as the explicit successful DELETE-probe close. It is not evidence about actual CloseHandle failure or hostile concurrent writers. The eventual instrumented-baseline collision must fail at the sentinel oracle; a baseline pass does not qualify."
+    },
+    {
+      "id": "L3",
+      "text": "Filesystem fixture remove_all is limited by its fresh-owned-root assumption, not an adversarial namespace sandbox. Root's explicit isolated TMP/TEMP and crash/cancellation/cleanup admission remains necessary; test teardown is not evidence of writer cleanup."
+    },
+    {
+      "id": "L4",
+      "text": "INPUTS.json lists the two C++ preimages but not CMake. The complete PUBLICATION and AUTHOR-REVIEW bind all three before/after images, and all three preimages were independently byte-compared with authorized G10 captures. This acceptance binds the explicit complete three-file tuple, not INPUTS.json alone."
+    },
+    {
+      "id": "L5",
+      "text": "Actual CloseHandle/DeleteFile failure may retain an owned temporary file, and the injected DACL-false test does not verify every internal security API failure/partial-ACL state. These are bounded source-control assertions, not a general filesystem recovery or credential-security proof."
+    }
+  ],
+  "remaining_windows_runtime_gate": {
+    "status": "OPEN_UNVERIFIED_NO_EXECUTION_ADMITTED",
+    "required_before_any_runtime_or_closure_claim": [
+      "Root applies/freezes only the accepted exact three-image tuple under a separate decision; application to W was not performed or verified by this reviewer.",
+      "Separately admitted real Windows compiler/SDK build and link under the existing /W4 /WX and hardening settings; no syntax/build success is inferred from this report.",
+      "Each of the eight fixed CTest selections actually executes and passes with per-case evidence; baseline instrumented validation_failure/dacl_failure/collision fail at their intended oracles, while the other five controls remain valid. Early setup/provider/host failures do not count.",
+      "Use isolated newly owned synthetic filesystem fixtures with actual Windows CreateFile/DeleteFile/CloseHandle sharing/DACL semantics, no Hello or personal metadata, bounded evidence, and separately admitted outer settlement/cleanup.",
+      "Retain exact source/compiler/artifact/case-status evidence, original and fixed control identity, and any remaining gates before root considers finding closure. This is not app/candidate/release approval."
+    ],
+    "tests_executed": 0,
+    "native_processes_started": 0,
+    "builds_started": 0,
+    "runtime_admitted": false,
+    "cleanup_admitted": false
+  },
+  "input_bindings": {
+    "proposal": [
+      {
+        "path": "reviews/pva036-patch-root-v1/PUBLICATION.json",
+        "bytes": 2587,
+        "lf_lines": 70,
+        "sha256": "6fa98df51eca54c2b18b80c1a4e642c0596421a9ec08355e6dd11aa6ae3b915f",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/INPUTS.json",
+        "bytes": 834,
+        "lf_lines": 23,
+        "sha256": "21141f70a31ef0a932574767ecd539a7fe89f594d2df6f952ebcd7c10ee3650e",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/before/windows.cpp.txt",
+        "bytes": 95541,
+        "lf_lines": 2527,
+        "sha256": "81d36da2facee51a305711637a26344ea21b78f2db6732b3574757281858a84f",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+        "bytes": 96672,
+        "lf_lines": 2549,
+        "sha256": "a430d4e4a4936ec1047427174d8ed939989cbb31098e859309c572c0ab77c1b0",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/before/windows_security_test.cpp.txt",
+        "bytes": 12715,
+        "lf_lines": 264,
+        "sha256": "eab2fec9c1b18a2d6a1a22d98491772d552aae165f08afe3415e59cd256859ad",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "bytes": 21179,
+        "lf_lines": 457,
+        "sha256": "d54ec74b2146c7b242658fa5c660cb7288ebe120fc117a966cec86290bbc3583",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/before/CMakeLists.txt.txt",
+        "bytes": 5192,
+        "lf_lines": 159,
+        "sha256": "c29328c10e22f5ead9c27b23e67af4727f4081670cb7c945876418b06071f602",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/after/CMakeLists.txt.txt",
+        "bytes": 5743,
+        "lf_lines": 170,
+        "sha256": "b9f31caa2ff2570075a1c64443999b67666ccd7b883529626eb3f6b4f5a1dbef",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/PATCH.diff",
+        "bytes": 12992,
+        "lf_lines": 292,
+        "sha256": "ed8030edbac6143c82514d9e366eeaeb808536e53aa10d224e35d3cbda63b8a0",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/baseline-instrumented/windows.cpp.txt",
+        "bytes": 96218,
+        "lf_lines": 2539,
+        "sha256": "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/baseline-instrumentation-only.patch.txt",
+        "bytes": 2287,
+        "lf_lines": 51,
+        "sha256": "6cded6644e83589b446584b273d427b8b0e1d62b9cce8e75a2931e30a42ca61d",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/AUTHOR-REVIEW.json",
+        "bytes": 10665,
+        "lf_lines": 238,
+        "sha256": "9d7bd8ccc22940df64ef36e34a36f7a9a4a89f15c42b2aaa2d78cbd2b4b6c663",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/pva036-patch-root-v1/REPORT.md",
+        "bytes": 1442,
+        "lf_lines": 8,
+        "sha256": "2a272f55394f08e01e0039a45a44a7b84ac7e15dd42f7dd20cc1a76a464b5d51",
+        "retained_mode_octal": "0600"
+      }
+    ],
+    "context": [
+      {
+        "path": "reviews/g10-remaining-source-root-input-v1/source/02-passvault_biometric_windows.cpp.txt",
+        "bytes": 95541,
+        "lf_lines": 2527,
+        "sha256": "81d36da2facee51a305711637a26344ea21b78f2db6732b3574757281858a84f",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/g10-remaining-source-root-input-v1/source/03-passvault_biometric_windows_security_test.cpp.txt",
+        "bytes": 12715,
+        "lf_lines": 264,
+        "sha256": "eab2fec9c1b18a2d6a1a22d98491772d552aae165f08afe3415e59cd256859ad",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/g10-remaining-source-root-input-v1/source/04-passvault_biometric.h.txt",
+        "bytes": 4540,
+        "lf_lines": 120,
+        "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/g10-remaining-source-root-input-v1/source/05-CMakeLists.txt.txt",
+        "bytes": 5192,
+        "lf_lines": 159,
+        "sha256": "c29328c10e22f5ead9c27b23e67af4727f4081670cb7c945876418b06071f602",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/g10-windows-temp-ownership-independent-root-v1/REPORT.md",
+        "bytes": 9428,
+        "lf_lines": 89,
+        "sha256": "458f98af08d0ea966af35e5dc44201308e1eef389513861c93deec4ac238e6e4",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/g10-windows-temp-ownership-independent-root-v1/REPORT.json",
+        "bytes": 4435,
+        "lf_lines": 130,
+        "sha256": "f92bfc44b371ff46ce15be914b236dae62e6850a0ee66f5f5324db3d80b0e4ac",
+        "retained_mode_octal": "0600"
+      },
+      {
+        "path": "reviews/g10-windows-temp-ownership-independent-root-v1/BASELINE-APPLICABILITY.json",
+        "bytes": 823,
+        "lf_lines": 24,
+        "sha256": "7c60640ef12bdca3d21a39c39938e0d23958abd1b42fdd0b2c41e0c253e7d11b",
+        "retained_mode_octal": "0600"
+      }
+    ]
+  },
+  "inert_text_integrity_comparison": {
+    "capture": "8bed59",
+    "checks": [
+      {
+        "check": "before_equals_authorized_G10_capture",
+        "sha256": "81d36da2facee51a305711637a26344ea21b78f2db6732b3574757281858a84f",
+        "source": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+        "value": true
+      },
+      {
+        "check": "before_equals_authorized_G10_capture",
+        "sha256": "eab2fec9c1b18a2d6a1a22d98491772d552aae165f08afe3415e59cd256859ad",
+        "source": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+        "value": true
+      },
+      {
+        "check": "before_equals_authorized_G10_capture",
+        "sha256": "c29328c10e22f5ead9c27b23e67af4727f4081670cb7c945876418b06071f602",
+        "source": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+        "value": true
+      },
+      {
+        "check": "PATCH.diff_matches_exact_three_image_diffs",
+        "sha256": "ed8030edbac6143c82514d9e366eeaeb808536e53aa10d224e35d3cbda63b8a0",
+        "value": true
+      },
+      {
+        "check": "baseline_instrumentation_patch_matches_exact_images",
+        "sha256": "6cded6644e83589b446584b273d427b8b0e1d62b9cce8e75a2931e30a42ca61d",
+        "value": true
+      },
+      {
+        "body_sha256": "3924bbc0c5b38f9213b7ba880228ba55e291ab9d8a0df49ed496c3ca2dcdbde9",
+        "check": "baseline_original_body_after_three_disclosed_call_name_substitutions_byte_identical",
+        "value": true
+      },
+      {
+        "check": "before_writer_matches_retained_main_applicability_function_hash",
+        "limit": "No Git or main source was reopened; main applicability itself remains the retained root finding's evidence.",
+        "value": true,
+        "writer_sha256": "757486604e0110ef4a1fa66e96e39d347745ff8cc5965884ccf9306419615df7"
+      }
+    ],
+    "finish_utc": "2026-09-08T00:30:00.551331+00:00",
+    "full_image_distinct_content_read_mapping": [
+      {
+        "byte_identical_reuse": [
+          {
+            "from": [
+              1,
+              625
+            ],
+            "image": "after/windows.cpp.txt",
+            "to": [
+              1,
+              625
+            ]
+          },
+          {
+            "from": [
+              677,
+              2527
+            ],
+            "image": "after/windows.cpp.txt",
+            "to": [
+              699,
+              2549
+            ]
+          }
+        ],
+        "direct_display": [
+          [
+            626,
+            676
+          ]
+        ],
+        "image": "before/windows.cpp.txt"
+      },
+      {
+        "byte_identical_reuse": [
+          {
+            "from": [
+              1,
+              625
+            ],
+            "image": "after/windows.cpp.txt",
+            "to": [
+              1,
+              625
+            ]
+          },
+          {
+            "from": [
+              689,
+              2539
+            ],
+            "image": "after/windows.cpp.txt",
+            "to": [
+              699,
+              2549
+            ]
+          }
+        ],
+        "direct_display": [
+          [
+            626,
+            688
+          ]
+        ],
+        "image": "baseline-instrumented/windows.cpp.txt"
+      },
+      {
+        "byte_identical_reuse": [
+          {
+            "from": [
+              1,
+              37
+            ],
+            "image": "after/windows_security_test.cpp.txt",
+            "to": [
+              1,
+              37
+            ]
+          },
+          {
+            "from": [
+              39,
+              264
+            ],
+            "image": "after/windows_security_test.cpp.txt",
+            "to": [
+              232,
+              457
+            ]
+          }
+        ],
+        "image": "before/windows_security_test.cpp.txt",
+        "previous_full_display": "ce888b, authorized G10 identical capture, 2026-09-07T23:55:15.692808+00:00 through .693811+00:00",
+        "unique_line_38": "int main() {"
+      },
+      {
+        "byte_identical_reuse": [
+          {
+            "from": [
+              1,
+              141
+            ],
+            "image": "after/CMakeLists.txt.txt",
+            "to": [
+              1,
+              141
+            ]
+          },
+          {
+            "from": [
+              142,
+              159
+            ],
+            "image": "after/CMakeLists.txt.txt",
+            "to": [
+              153,
+              170
+            ]
+          }
+        ],
+        "image": "before/CMakeLists.txt.txt",
+        "previous_full_display": "ce888b, authorized G10 identical capture, 2026-09-07T23:55:15.694153+00:00 through .694459+00:00"
+      }
+    ],
+    "method": "Standard-library inert byte/text comparison, not C++/CMake parsing, import, syntax-check, compilation, execution or testing.",
+    "start_utc": "2026-09-08T00:30:00.541353+00:00"
+  },
+  "read_ledger": {
+    "proposal_metadata": {
+      "capture": "0642f3",
+      "start_utc": "2026-09-08T00:16:33.523430+00:00",
+      "finish_utc": "2026-09-08T00:16:33.527068+00:00"
+    },
+    "direct_emissions": [
+      {
+        "capture": "d0daed",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/PUBLICATION.json",
+            "ranges": [
+              [
+                1,
+                70
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:15:33.293449+00:00",
+        "finish_utc": "2026-09-08T00:15:33.294003+00:00"
+      },
+      {
+        "capture": "08f59a",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/PATCH.diff",
+            "ranges": [
+              [
+                1,
+                292
+              ]
+            ]
+          },
+          {
+            "path": "reviews/pva036-patch-root-v1/baseline-instrumentation-only.patch.txt",
+            "ranges": [
+              [
+                1,
+                51
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:16:57.713041+00:00",
+        "finish_utc": "2026-09-08T00:16:57.713921+00:00"
+      },
+      {
+        "capture": "33af56",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                1,
+                350
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:20:04.385416+00:00",
+        "finish_utc": "2026-09-08T00:20:04.386593+00:00"
+      },
+      {
+        "capture": "2d3e56",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                351,
+                715
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:20:20.051850+00:00",
+        "finish_utc": "2026-09-08T00:20:20.052903+00:00"
+      },
+      {
+        "capture": "fa7ddc",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                716,
+                1080
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:20:44.928709+00:00",
+        "finish_utc": "2026-09-08T00:20:44.930131+00:00"
+      },
+      {
+        "capture": "2132fa",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                1081,
+                1450
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:21:00.809889+00:00",
+        "finish_utc": "2026-09-08T00:21:00.811059+00:00"
+      },
+      {
+        "capture": "9437f3",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                1451,
+                1820
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:21:27.729847+00:00",
+        "finish_utc": "2026-09-08T00:21:27.730774+00:00"
+      },
+      {
+        "capture": "902e28",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                1821,
+                2190
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:21:44.294131+00:00",
+        "finish_utc": "2026-09-08T00:21:44.294925+00:00"
+      },
+      {
+        "capture": "d0b40b",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+            "ranges": [
+              [
+                2191,
+                2549
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:22:09.471689+00:00",
+        "finish_utc": "2026-09-08T00:22:09.472851+00:00"
+      },
+      {
+        "capture": "2f2415",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+            "ranges": [
+              [
+                1,
+                250
+              ]
+            ]
+          },
+          {
+            "path": "reviews/pva036-patch-root-v1/after/CMakeLists.txt.txt",
+            "ranges": [
+              [
+                1,
+                170
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:23:17.784996+00:00",
+        "finish_utc": "2026-09-08T00:23:17.786176+00:00"
+      },
+      {
+        "capture": "761273",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+            "ranges": [
+              [
+                251,
+                457
+              ]
+            ]
+          },
+          {
+            "path": "reviews/pva036-patch-root-v1/before/windows.cpp.txt",
+            "ranges": [
+              [
+                626,
+                676
+              ]
+            ]
+          },
+          {
+            "path": "reviews/pva036-patch-root-v1/baseline-instrumented/windows.cpp.txt",
+            "ranges": [
+              [
+                626,
+                688
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:23:53.813215+00:00",
+        "finish_utc": "2026-09-08T00:23:53.815232+00:00"
+      },
+      {
+        "capture": "7d0981",
+        "files": [
+          {
+            "path": "reviews/pva036-patch-root-v1/INPUTS.json",
+            "ranges": [
+              [
+                1,
+                23
+              ]
+            ]
+          },
+          {
+            "path": "reviews/pva036-patch-root-v1/AUTHOR-REVIEW.json",
+            "ranges": [
+              [
+                1,
+                238
+              ]
+            ]
+          },
+          {
+            "path": "reviews/pva036-patch-root-v1/REPORT.md",
+            "ranges": [
+              [
+                1,
+                8
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:25:41.903523+00:00",
+        "finish_utc": "2026-09-08T00:25:41.904609+00:00"
+      },
+      {
+        "capture": "e8428d",
+        "files": [
+          {
+            "path": "reviews/g10-remaining-source-root-input-v1/source/02-passvault_biometric_windows.cpp.txt",
+            "ranges": [
+              [
+                1910,
+                1977
+              ],
+              [
+                2184,
+                2244
+              ],
+              [
+                2343,
+                2359
+              ],
+              [
+                2390,
+                2406
+              ]
+            ]
+          },
+          {
+            "path": "reviews/g10-remaining-source-root-input-v1/source/04-passvault_biometric.h.txt",
+            "ranges": [
+              [
+                1,
+                120
+              ]
+            ]
+          },
+          {
+            "path": "reviews/g10-windows-temp-ownership-independent-root-v1/REPORT.md",
+            "ranges": [
+              [
+                1,
+                89
+              ]
+            ]
+          }
+        ],
+        "start_utc": "2026-09-08T00:31:06.226609+00:00",
+        "finish_utc": "2026-09-08T00:31:06.228615+00:00"
+      }
+    ],
+    "complete_after_image_lines_directly_displayed": {
+      "windows_cpp": 2549,
+      "windows_security_test_cpp": 457,
+      "CMakeLists": 170
+    },
+    "full_before_and_baseline_method": "All named images were guarded-read in full. The entire after images were displayed/read for source context; the distinct original and instrumented writer bodies were also displayed directly. Exact byte-identical prefix/suffix mappings avoid redundant redisplay of unchanged before/baseline content. Prior complete G10 test/CMake displays are SHA-bound to the identical preimages. Full display, hashing, and contextual reading are not a claim of independent semantic line-by-line review of every unchanged line.",
+    "prior_context_reuse": "Retained root finding JSON/BASELINE-APPLICABILITY and prior full G10 test/CMake were displayed in 95a9f9/ce888b during the immediately preceding R-only design task and hash-bound again. Main applicability/host-resource observations remain historical, not new probes.",
+    "source_coverage_credit": "No new central numerical coverage or application readiness credit is asserted; this is an independent PVA-036 implementation/oracle review.",
+    "semantic_review_scope": {
+      "core_implementation": {
+        "path": "reviews/pva036-patch-root-v1/after/windows.cpp.txt",
+        "ranges": [
+          [
+            626,
+            698
+          ]
+        ]
+      },
+      "core_regression_oracles": {
+        "path": "reviews/pva036-patch-root-v1/after/windows_security_test.cpp.txt",
+        "ranges": [
+          [
+            38,
+            231
+          ]
+        ]
+      },
+      "core_registration": {
+        "path": "reviews/pva036-patch-root-v1/after/CMakeLists.txt.txt",
+        "ranges": [
+          [
+            142,
+            152
+          ]
+        ]
+      },
+      "supporting_evidence": "The precise helper, caller, fixture, header and build-setting ranges used for the bounded reasoning are listed in source_verdict, test_oracle_review, baseline_control_review and compile_and_abi_inspection. Those citations do not confer whole-function/whole-file security approval.",
+      "unchanged_content": "Remaining full-source content was read as context and checked for exact preservation, not independently re-audited semantic line by line. Existing tests were checked for preservation rather than all re-adjudicated.",
+      "central_coverage": "No new central numerical coverage, finding closure, full-platform security review, or application readiness credit."
+    }
+  },
+  "activity_limits": {
+    "only_new_namespace": "reviews/pva036-patch-independent-platform-v1/",
+    "commands": "Standalone /usr/bin/python3 -B standard-library exact-name read/hash/text/JSON/report processing, R cwd, login false.",
+    "no_actions": [
+      "No W/P/A/AR/U/private/live-skill reads or discovery.",
+      "No project/helper execution/import/syntax-check/compilation/test/CMake/Gradle/native/provider invocation.",
+      "No network/API/Git/resource/process/lock/cache probe.",
+      "No W/source/central changes, baseline application, runtime allocation, cleanup, adoption, freeze, gate reopening, or retry."
+    ],
+    "gates": [
+      "G7/G8 CLOSED",
+      "PVU007 STOP/no reformulation",
+      "PVU011 NO RETRY"
+    ],
+    "evidence_rules": "New report directory 0700; exclusive-create files 0600; fsync and guarded original-identity readback; no overwritten sealed artifacts.",
+    "final_authority": "Root alone owns application/freeze, runtime/build/cleanup admission, finding closure, and publication decisions."
+  },
+  "generated_utc": "2026-09-08T01:04:26.084379+00:00",
+  "prepublication_revalidation": {
+    "start_utc": "2026-09-08T01:04:26.076195+00:00",
+    "finish_utc": "2026-09-08T01:04:26.084373+00:00",
+    "input_count": 20,
+    "all_exact_hash_byte_LF_mode_checks_passed": true,
+    "guard": "No-follow relative directory descent; single-link bounded regular files; stable descriptor/path identities; exact SHA256/byte/LF/mode checks. No source execution or discovery."
+  },
+  "report_sealing_method": "Fresh exclusive directory0700 and O_EXCL files0600 in the sole authorized output namespace; retained directory/file descriptors; file/directory fsync; guarded named readback compared against each original settled descriptor identity. Successful completion is attested by the returned seal record; no overwrite or cleanup on failure.",
+  "markdown_binding": {
+    "path": "reviews/pva036-patch-independent-platform-v1/REPORT.md",
+    "bytes": 8526,
+    "lf_lines": 66,
+    "sha256": "5331baa87b02eb4de7a98fc1a7be6cc84b5b983c7fde0da6f70d6d9e411453a5",
+    "retained_mode_octal": "0600"
+  }
+}

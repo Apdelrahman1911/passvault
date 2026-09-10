@@ -5,6 +5,7 @@
 
 package com.passvault.shared.platform
 
+import kotlinx.cinterop.toKString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -16,10 +17,18 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileOwnerAccountID
+import platform.Foundation.NSFilePosixPermissions
 import platform.Foundation.NSFileProtectionComplete
 import platform.Foundation.NSFileProtectionKey
+import platform.Foundation.NSFileType
+import platform.Foundation.NSFileTypeDirectory
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSUUID
+import platform.posix.free
+import platform.posix.geteuid
+import platform.posix.getenv
+import platform.posix.realpath
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -200,8 +209,9 @@ class IosAttachmentFileStoreTest {
     }
 
     private fun withTemporaryFile(block: (NSFileManager, String) -> Unit) {
+        val temporaryDirectory = admittedTemporaryDirectory()
         val fileManager = NSFileManager.defaultManager
-        val path = "${NSTemporaryDirectory()}passvault-picker-${NSUUID.UUID().UUIDString}"
+        val path = "${temporaryDirectory}passvault-picker-${NSUUID.UUID().UUIDString}"
         assertTrue(fileManager.createFileAtPath(path, contents = null, attributes = null))
         try {
             block(fileManager, path)
@@ -211,8 +221,9 @@ class IosAttachmentFileStoreTest {
     }
 
     private suspend fun withAdoptionFixture(block: suspend (NSFileManager, String, String) -> Unit) {
+        val temporaryDirectory = admittedTemporaryDirectory()
         val fileManager = NSFileManager.defaultManager
-        val root = "${NSTemporaryDirectory()}passvault-adoption-test-${NSUUID.UUID().UUIDString}"
+        val root = "${temporaryDirectory}passvault-adoption-test-${NSUUID.UUID().UUIDString}"
         val cacheRoot = "$root/cache"
         val sourcePath = "$root/synthetic.txt"
         try {
@@ -222,6 +233,47 @@ class IosAttachmentFileStoreTest {
         } finally {
             fileManager.removeItemAtPath(root, error = null)
         }
+    }
+}
+
+/**
+ * The caller must create/own an empty private synthetic parent and arrange the
+ * guest's real Foundation temporary directory beneath it before these tests.
+ * This is mandatory even outside the audit: lost environment forwarding must
+ * fail before any fixture access, not silently use a host/default directory.
+ * The receipt is not creation ownership, cleanup or physical protection proof.
+ */
+private fun admittedTemporaryDirectory(): String {
+    val parent = checkNotNull(getenv("PASSVAULT_IOS_TEST_PARENT")) {
+        "An explicitly owned synthetic iOS test parent is required"
+    }.toKString()
+    check(parent.length <= 2048 && parent.startsWith('/'))
+    check(parent.all { it.isLetterOrDigit() || it in "/-._" })
+    check(parent.split('/').drop(1).none { it.isEmpty() || it == "." || it == ".." })
+    check(Regex("passvault-ios-test-parent-[0-9a-f]{32}").matches(parent.substringAfterLast('/')))
+
+    val resolvedParent = resolveFixturePath(parent)
+    check(resolvedParent == parent) { "The supplied synthetic parent must already be canonical" }
+    val temporaryDirectory = resolveFixturePath(NSTemporaryDirectory())
+    check(temporaryDirectory.length <= 2048 && temporaryDirectory.all { it.isLetterOrDigit() || it in "/-._" })
+    check(temporaryDirectory == parent || temporaryDirectory.startsWith("$parent/")) {
+        "Foundation temporary storage is outside the owned synthetic parent"
+    }
+
+    val attributes = checkNotNull(NSFileManager.defaultManager.attributesOfItemAtPath(parent, error = null))
+    check(attributes[NSFileType] == NSFileTypeDirectory)
+    check((attributes[NSFilePosixPermissions] as? Number)?.toInt() == 0b111000000)
+    check((attributes[NSFileOwnerAccountID] as? Number)?.toLong() == geteuid().toLong())
+    println("PASSVAULT_IOS_FIXTURE_PARENT\t$parent\t$temporaryDirectory")
+    return "$temporaryDirectory/"
+}
+
+private fun resolveFixturePath(path: String): String {
+    val resolved = checkNotNull(realpath(path, null)) { "The synthetic fixture directory is unavailable" }
+    return try {
+        resolved.toKString()
+    } finally {
+        free(resolved)
     }
 }
 

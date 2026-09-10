@@ -1,0 +1,38 @@
+{
+  "cache": [
+    "CMAKE_CXX_FLAGS:STRING=/DWIN32 /D_WINDOWS /EHsc",
+    "CMAKE_CXX_FLAGS_DEBUG:STRING=/Ob0 /Od /RTC1",
+    "CMAKE_CXX_FLAGS_MINSIZEREL:STRING=/O1 /Ob1 /DNDEBUG",
+    "CMAKE_CXX_FLAGS_RELEASE:STRING=/O2 /Ob2 /DNDEBUG",
+    "CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/O2 /Ob1 /DNDEBUG",
+    "CMAKE_SYSTEM_VERSION:UNINITIALIZED=10.0.26100.0",
+    "CMAKE_CXX_FLAGS-ADVANCED:INTERNAL=1",
+    "CMAKE_CXX_FLAGS_DEBUG-ADVANCED:INTERNAL=1",
+    "CMAKE_CXX_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1",
+    "CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1",
+    "CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1",
+    "CMAKE_GENERATOR:INTERNAL=Visual Studio 17 2022",
+    "CMAKE_GENERATOR_INSTANCE:INTERNAL=C:/Program Files/Microsoft Visual Studio/2022/Enterprise",
+    "CMAKE_GENERATOR_PLATFORM:INTERNAL=x64",
+    "CMAKE_GENERATOR_TOOLSET:INTERNAL="
+  ],
+  "projects": {
+    "passvault_biometric": {
+      "required_compile_predicates": "PRESENT",
+      "snapshot_sha256": "036275691288f521d32241210f5919004a354dde12d8342e12ed578d09d223a9"
+    },
+    "passvault_biometric_windows_historical_writer_test": {
+      "required_compile_predicates": "PRESENT",
+      "snapshot_sha256": "90b68d7785b48a95597a719a29006c6f3b9c228f146fe6235f63db59129ebebb"
+    },
+    "passvault_biometric_windows_prk_allocation_test": {
+      "required_compile_predicates": "PRESENT",
+      "snapshot_sha256": "488fd528119387e93161b2d726fe1e448a27a7b51ebc77075a6712aa668191bd"
+    },
+    "passvault_biometric_windows_security_test": {
+      "required_compile_predicates": "PRESENT",
+      "snapshot_sha256": "f22a6c6143ab052eb667a6e3167c8dfa8bdf60eedefad4ced4ccbab26264a201"
+    }
+  },
+  "qualification": "Pre-build bounded snapshots; not settled-file or effective compiler proof"
+}

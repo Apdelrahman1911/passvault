@@ -38,10 +38,12 @@ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release',
           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP)
 # Root must publish the editor fixture, capture a fresh complete raw-blob
 # manifest and obtain new source/instance admission before replacing these.
-COMMIT = TREE = MEMBERS = None
+COMMIT = '0d06721b7f8bdc17513a6ab51ffbc5523e68b230'
+TREE = 'dd04904c1deb691bd6aeed756dd6ceab8ea97837'
+MEMBERS = 2177
 RUN_ID = 'linux-desktop-gui02'
 FROZEN = {
-    SOURCE: None,
+    SOURCE: '6d593b947d76f0a7b3e7929a7ae54e6968cb0a36b69bf78d771b33226bd396ee',
     INIT: 'cdc6ffe9c5cef7e4d8cf156fd78fdf653f88f23dd8496f7a7ff616552d372c08',
 }
 MIB, GIB = 1024 ** 2, 1024 ** 3

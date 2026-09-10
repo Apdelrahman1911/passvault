@@ -28,14 +28,16 @@ APPROVAL = B / 'reviews/verification/LINUX-DESKTOP-GUI02-INSTANCE-ACCEPT.json'
 LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
 # Root is establishing a fresh publication-only store. Its eventual actual path
 # and request directory pin must be independently bound; never borrow GUI01's.
-GITDIR = None
+GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
 INNER, INIT = W / 'scripts/audit/linux_desktop_gui_02.py', W / 'scripts/audit/desktop_gui_02.init.gradle'
 SOURCE = B / 'reviews/desktop-gui02/SOURCE.json'
 JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
 RELEASE = JAVA.parent.parent / 'release'
 PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
 RUN, PURPOSE = 'linux-desktop-gui02', 'ONE_LINUX_DESKTOP_GUI02'
-COMMIT = TREE = MEMBERS = None  # Await root publication containing both frozen fixtures.
+COMMIT = '0d06721b7f8bdc17513a6ab51ffbc5523e68b230'
+TREE = 'dd04904c1deb691bd6aeed756dd6ceab8ea97837'
+MEMBERS = 2177
 ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
                   ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon', 'mount', 'ip', 'xdpyinfo', 'xprop')) + (
@@ -43,11 +45,12 @@ GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
 REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE) + GUI_TOOLS
 IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
 PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
-DEVICE = EXPECTED_LOCK = None  # Actual fresh device model and original lock pin are NOT yet admitted.
+DEVICE = {'directory_device': 23, 'regular_file_device': 24}
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}
 FROZEN = {
-    INNER: '4d7750ad6342ca85c036b81f111022c2fdb8ccaa7b3909500bbb9d668d2790de',
+    INNER: '4dc98da8134a12da8e6992348d7fd4a30b269e81350866b9b34f0b9f7905e676',
     INIT: 'cdc6ffe9c5cef7e4d8cf156fd78fdf653f88f23dd8496f7a7ff616552d372c08',
-    SOURCE: None,
+    SOURCE: '6d593b947d76f0a7b3e7929a7ae54e6968cb0a36b69bf78d771b33226bd396ee',
 }
 TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers'.split()
 WORKERS = ['desktop-curtain', 'desktop-editor']

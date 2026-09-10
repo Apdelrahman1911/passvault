@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-09T22:26:53.839255+00:00",
+  "scope": "Two exact allowed historical patch REPORTs as inert source data; existing independently accepted pinned Git reader, not original failed POSIX reader or packed helper execution",
+  "reader_sha256": "f1e0c83a50c1b9c327ff49c5c6444cefa9206fd3c1825ba37f80cc3b7794b304",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-B",
+        "-S",
+        "/root/projects/PassVault/passvault-linux/scripts/audit/read_handoff_git.py",
+        "show",
+        "remediation-reports/20260905T222925Z/reviews/pva036-patch-independent-platform-v1/REPORT.json"
+      ],
+      "wall_bound_seconds": 180,
+      "stdout_bound_expected_bytes": 50311,
+      "exit": 0,
+      "stdout_bytes": 50311,
+      "stdout_sha256": "18cdb223f9fb2b7d9eec7c5a9677ff7f304c5e98594b03bddc3f2e6921dac6ab",
+      "stderr": "",
+      "retained": "reviews/native/HISTORICAL-PVA036-PATCH-REVIEW.json"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-B",
+        "-S",
+        "/root/projects/PassVault/passvault-linux/scripts/audit/read_handoff_git.py",
+        "show",
+        "remediation-reports/20260905T222925Z/reviews/windows-secret-array-guard-independent-platform-v1/REPORT.json"
+      ],
+      "wall_bound_seconds": 180,
+      "stdout_bound_expected_bytes": 40450,
+      "exit": 0,
+      "stdout_bytes": 40450,
+      "stdout_sha256": "ce86e18c138d82b5639dcf005e3ec7bf520fe434772991d04eef8f1dd5fab9ff",
+      "stderr": "",
+      "retained": "reviews/native/HISTORICAL-PVA037-GUARD-REVIEW.json"
+    }
+  ],
+  "status": "PASS_TWO_EXACT_INERT_REPORT_CAPTURES",
+  "cleanup": "All admitted reader direct children completed/reaped; reader owns bounded Git plumbing cleanup. No build/Gradle/temp/cache/extraction/program import; only two permanent exact report copies and receipt. No old runtime access or deletion; hard-kill limitations unchanged."
+}

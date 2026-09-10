@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T02:07:16.663621+00:00",
+  "scope": "Read-only public actions/runner-images source metadata for one important iOS simulator evidence gap; no tool install/runtime/license action",
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "api",
+        "--method",
+        "GET",
+        "repos/actions/runner-images/commits/main",
+        "--jq",
+        ".sha"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout_file": "commit.txt",
+      "stdout_sha256": "dab2544a309a70b661a86b0ba891e8a04bfe3d25c4c5ae6d97c043b88f1bacae",
+      "direct_child_reaped": true
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "--method",
+        "GET",
+        "repos/actions/runner-images/contents/images/macos?ref=5b925cc19141e53ef8af6789f8a9de5e14bdf8a1"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout_file": "directory.json",
+      "stdout_sha256": "3f11f46ef014dda94235a8f50ecc12bdd32b03adc76f5d86ec4c1a0c73ab330e",
+      "direct_child_reaped": true
+    }
+  ],
+  "cleanup": "Synchronous bounded GH API children reaped; only small permanent public docs/receipts retained, no temp/cache/build/daemon",
+  "source_commit": "5b925cc19141e53ef8af6789f8a9de5e14bdf8a1"
+}

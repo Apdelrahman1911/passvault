@@ -1,5 +1,41 @@
 # Bounded team ownership
 
+## Live continuation toward C12 — root-owned update
+
+Published HEAD is the Windows05 request-only activation
+`b825df973ac3e3392dd99b251b8bb7fd48fecce6` /
+`92304c125be2e19a1badfb7540c39d4b7c82b6ab`. Both Windows05 and GUI02 used C11
+workload source `0d06721b7f8bdc17513a6ab51ffbc5523e68b230` /
+`dd04904c1deb691bd6aeed756dd6ceab8ea97837`. Root remains sole
+build/Git/CI/central-ledger owner; ordinary source edits use `passvault-linux`,
+Git only the new `passvault-publication-20260910-01` store.
+
+- `verification` completed GUI02 actual review; root adopted four passes and
+  original qualified cleanup and released scheduling only. It now authors only
+  the new tray outer/PLAN, outside C12 selection; root independently reviews it.
+- `build_config` authors only the new one-case tray inner/init/PLAN, outside C12.
+  Installed public panel/config source must ground the minimal session; no
+  speculative flags/default session or launch. `storage` will independently
+  challenge inner source and the future exact instance, not its own authorship.
+- `storage` independently accepted iOS10 source/plan and request-only activation
+  delta after duplicate-key correction. Root publishes then binds actual C12
+  source/nonce/CI-slot; storage independently reviews that exact future instance.
+- `editor_review` authored the new native tray fixture, independently accepted
+  by root and frozen for C12. It independently challenged `native_review`'s
+  PVU006 terminal-caller note: conditional source narrowing only; no finding,
+  patch, run or closure. Root preserves the actual software witness gap.
+- `native_review` completed Windows05 actual reconciliation; whole-root HOLD
+  survives scheduling release. Its PVU006 source note has the above independent
+  qualified challenge; no product edits, runtime authority or closure.
+- `baseline_coverage` independently reviews C12 publication delta and exact
+  selection/coverage/report. `android32`/`editor` rate-limit interruptions and
+  `native` refusal remain preserved, not retried or rephrased.
+
+Agents may not execute builds/tests, CI, Git, helpers or background services.
+No old held scope is adopted. Consult the current EXECUTION_SLOT.json, not an
+older paragraph, for scheduling. All existing STOP/NO-RETRY/CLOSED restrictions
+and source/evidence/hardware qualifications remain unchanged.
+
 ## Current C11 continuation
 
 - Root remains sole build/test/CI/Git and central-ledger owner. Windows04 failure

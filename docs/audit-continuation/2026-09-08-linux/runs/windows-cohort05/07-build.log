@@ -1,0 +1,201 @@
+Change Dir: 'D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build'
+
+Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/amd64/MSBuild.exe" passvault_biometric_windows_security_test.vcxproj /p:Configuration=Release /p:Platform=x64 /p:VisualStudioVersion=17.0 /m:1 /v:n /nodeReuse:false && 
+MSBuild version 17.14.51+25f168cee for .NET Framework
+Build started 9/10/2026 5:07:17 AM.
+
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_security_test.vcxproj" on node 1 (default targets).
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_security_test.vcxproj" (1) is building "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Release\ZERO_CHECK\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\".
+InitializeBuildStatus:
+  Creating "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+CustomBuild:
+  1>Checking Build System
+FinalizeBuildStatus:
+  Deleting file "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "passvault_biometric_windows_security_test.dir\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\".
+  Creating directory "passvault_biometric_windows_security_test.dir\Release\passvaul.9D4DC77B.tlog\".
+InitializeBuildStatus:
+  Creating "passvault_biometric_windows_security_test.dir\Release\passvaul.9D4DC77B.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "passvault_biometric_windows_security_test.dir\Release\passvaul.9D4DC77B.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"D:\a\passvault\passvault\app-desktop\native\biometric-bridge\include" /nologo /W4 /WX /diagnostics:column /sdl /O2 /Ob2 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D NOMINMAX /D UNICODE /D _UNICODE /D WIN32_LEAN_AND_MEAN /D WINVER=0x0A00 /D _WIN32_WINNT=0x0A00 /D PASSVAULT_BIOMETRIC_BUILD=1 /D "CMAKE_INTDIR=\"Release\"" /EHsc /MT /GS /guard:cf /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"passvault_biometric_windows_security_test.dir\Release\\" /Fd"passvault_biometric_windows_security_test.dir\Release\vc143.pdb" /external:W4 /Gd /TP /errorReport:queue "D:\a\passvault\passvault\app-desktop\native\biometric-bridge\tests\windows\passvault_biometric_windows_security_test.cpp"
+  passvault_biometric_windows_security_test.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_windows_security_test.exe" /INCREMENTAL:NO /NOLOGO advapi32.lib bcrypt.lib ole32.lib runtimeobject.lib windowsapp.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_security_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_security_test.lib" /MACHINE:X64 /guard:cf  /machine:x64 /HIGHENTROPYVA /guard:cf passvault_biometric_windows_security_test.dir\Release\passvault_biometric_windows_security_test.obj
+     Creating library D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_security_test.lib and object D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_security_test.exp
+  passvault_biometric_windows_security_test.vcxproj -> D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_windows_security_test.exe
+FinalizeBuildStatus:
+  Deleting file "passvault_biometric_windows_security_test.dir\Release\passvaul.9D4DC77B.tlog\unsuccessfulbuild".
+  Touching "passvault_biometric_windows_security_test.dir\Release\passvaul.9D4DC77B.tlog\passvault_biometric_windows_security_test.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_security_test.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:15.09
+"C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/amd64/MSBuild.exe" passvault_biometric_abi_test.vcxproj /p:Configuration=Release /p:Platform=x64 /p:VisualStudioVersion=17.0 /m:1 /v:n /nodeReuse:false && 
+MSBuild version 17.14.51+25f168cee for .NET Framework
+Build started 9/10/2026 5:07:32 AM.
+
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_abi_test.vcxproj" on node 1 (default targets).
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_abi_test.vcxproj" (1) is building "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+InitializeBuildStatus:
+  Creating "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+CustomBuild:
+  All outputs are up-to-date.
+FinalizeBuildStatus:
+  Deleting file "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (default targets).
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_abi_test.vcxproj" (1) is building "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric.vcxproj" (3) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "passvault_biometric.dir\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "passvault_biometric.dir\Release\passvaul.E7E8F64D.tlog\".
+InitializeBuildStatus:
+  Creating "passvault_biometric.dir\Release\passvaul.E7E8F64D.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "passvault_biometric.dir\Release\passvaul.E7E8F64D.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"D:\a\passvault\passvault\app-desktop\native\biometric-bridge\include" /nologo /W4 /WX /diagnostics:column /sdl /O2 /Ob2 /D _WINDLL /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D NOMINMAX /D UNICODE /D _UNICODE /D WIN32_LEAN_AND_MEAN /D WINVER=0x0A00 /D _WIN32_WINNT=0x0A00 /D PASSVAULT_BIOMETRIC_BUILD=1 /D "CMAKE_INTDIR=\"Release\"" /D passvault_biometric_EXPORTS /EHsc /MT /GS /guard:cf /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"passvault_biometric.dir\Release\\" /Fd"passvault_biometric.dir\Release\vc143.pdb" /external:W4 /Gd /TP /errorReport:queue "D:\a\passvault\passvault\app-desktop\native\biometric-bridge\src\windows\passvault_biometric_windows.cpp"
+  passvault_biometric_windows.cpp
+ResourceCompile:
+  C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\rc.exe /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D NOMINMAX /D UNICODE /D _UNICODE /D WIN32_LEAN_AND_MEAN /D WINVER=0x0A00 /D _WIN32_WINNT=0x0A00 /D PASSVAULT_BIOMETRIC_BUILD=1 /D "CMAKE_INTDIR=\\\"Release\\\"" /D passvault_biometric_EXPORTS /l"0x0409" /I"D:\a\passvault\passvault\app-desktop\native\biometric-bridge\include" /nologo /fo"passvault_biometric.dir\Release\passvault_biometric_windows.res" "D:\a\passvault\passvault\app-desktop\native\biometric-bridge\src\windows\passvault_biometric_windows.rc" 
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric.dll" /INCREMENTAL:NO /NOLOGO advapi32.lib bcrypt.lib ole32.lib runtimeobject.lib windowsapp.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric.lib" /MACHINE:X64 /guard:cf  /machine:x64 /HIGHENTROPYVA /guard:cf /DLL passvault_biometric.dir\Release\passvault_biometric_windows.res
+  passvault_biometric.dir\Release\passvault_biometric_windows.obj
+     Creating library D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric.lib and object D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric.exp
+  passvault_biometric.vcxproj -> D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric.dll
+FinalizeBuildStatus:
+  Deleting file "passvault_biometric.dir\Release\passvaul.E7E8F64D.tlog\unsuccessfulbuild".
+  Touching "passvault_biometric.dir\Release\passvaul.E7E8F64D.tlog\passvault_biometric.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "passvault_biometric_abi_test.dir\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "passvault_biometric_abi_test.dir\Release\passvaul.27FCC9B5.tlog\".
+InitializeBuildStatus:
+  Creating "passvault_biometric_abi_test.dir\Release\passvaul.27FCC9B5.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "passvault_biometric_abi_test.dir\Release\passvaul.27FCC9B5.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"D:\a\passvault\passvault\app-desktop\native\biometric-bridge\include" /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /D _MBCS /D WIN32 /D _WINDOWS /D NDEBUG /D "CMAKE_INTDIR=\"Release\"" /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"passvault_biometric_abi_test.dir\Release\\" /Fd"passvault_biometric_abi_test.dir\Release\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "D:\a\passvault\passvault\app-desktop\native\biometric-bridge\tests\passvault_biometric_abi_test.cpp"
+  passvault_biometric_abi_test.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_abi_test.exe" /INCREMENTAL:NO /NOLOGO Release\passvault_biometric.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_abi_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_abi_test.lib" /MACHINE:X64  /machine:x64 passvault_biometric_abi_test.dir\Release\passvault_biometric_abi_test.obj
+  passvault_biometric_abi_test.vcxproj -> D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_abi_test.exe
+FinalizeBuildStatus:
+  Deleting file "passvault_biometric_abi_test.dir\Release\passvaul.27FCC9B5.tlog\unsuccessfulbuild".
+  Touching "passvault_biometric_abi_test.dir\Release\passvaul.27FCC9B5.tlog\passvault_biometric_abi_test.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_abi_test.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.47
+"C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/amd64/MSBuild.exe" passvault_biometric_windows_historical_writer_test.vcxproj /p:Configuration=Release /p:Platform=x64 /p:VisualStudioVersion=17.0 /m:1 /v:n /nodeReuse:false && 
+MSBuild version 17.14.51+25f168cee for .NET Framework
+Build started 9/10/2026 5:07:37 AM.
+
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_historical_writer_test.vcxproj" on node 1 (default targets).
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_historical_writer_test.vcxproj" (1) is building "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+InitializeBuildStatus:
+  Creating "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+CustomBuild:
+  All outputs are up-to-date.
+FinalizeBuildStatus:
+  Deleting file "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "passvault_biometric_windows_historical_writer_test.dir\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "passvault_biometric_windows_historical_writer_test.dir\Release\passvaul.177E5E0A.tlog\".
+InitializeBuildStatus:
+  Creating "passvault_biometric_windows_historical_writer_test.dir\Release\passvaul.177E5E0A.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "passvault_biometric_windows_historical_writer_test.dir\Release\passvaul.177E5E0A.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"D:\a\passvault\passvault\app-desktop\native\biometric-bridge\include" /nologo /W4 /WX /diagnostics:column /sdl /O2 /Ob2 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST=1 /D "PASSVAULT_BIOMETRIC_PVA036_SOURCE=\"D:/a/passvault/passvault/app-desktop/native/biometric-bridge/../../../docs/audit-continuation/2026-09-08-linux/reviews/native/HISTORICAL-PVA036-WINDOWS.cpp.txt\"" /D NOMINMAX /D UNICODE /D _UNICODE /D WIN32_LEAN_AND_MEAN /D WINVER=0x0A00 /D _WIN32_WINNT=0x0A00 /D PASSVAULT_BIOMETRIC_BUILD=1 /D "CMAKE_INTDIR=\"Release\"" /EHsc /MT /GS /guard:cf /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"passvault_biometric_windows_historical_writer_test.dir\Release\\" /Fd"passvault_biometric_windows_historical_writer_test.dir\Release\vc143.pdb" /external:W4 /Gd /TP /errorReport:queue "D:\a\passvault\passvault\app-desktop\native\biometric-bridge\tests\windows\passvault_biometric_windows_security_test.cpp"
+  passvault_biometric_windows_security_test.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_windows_historical_writer_test.exe" /INCREMENTAL:NO /NOLOGO advapi32.lib bcrypt.lib ole32.lib runtimeobject.lib windowsapp.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_historical_writer_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_historical_writer_test.lib" /MACHINE:X64 /guard:cf  /machine:x64 /HIGHENTROPYVA /guard:cf passvault_biometric_windows_historical_writer_test.dir\Release\passvault_biometric_windows_security_test.obj
+     Creating library D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_historical_writer_test.lib and object D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_historical_writer_test.exp
+  passvault_biometric_windows_historical_writer_test.vcxproj -> D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_windows_historical_writer_test.exe
+FinalizeBuildStatus:
+  Deleting file "passvault_biometric_windows_historical_writer_test.dir\Release\passvaul.177E5E0A.tlog\unsuccessfulbuild".
+  Touching "passvault_biometric_windows_historical_writer_test.dir\Release\passvaul.177E5E0A.tlog\passvault_biometric_windows_historical_writer_test.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_historical_writer_test.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.31
+"C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/amd64/MSBuild.exe" passvault_biometric_windows_prk_allocation_test.vcxproj /p:Configuration=Release /p:Platform=x64 /p:VisualStudioVersion=17.0 /m:1 /v:n /nodeReuse:false
+MSBuild version 17.14.51+25f168cee for .NET Framework
+Build started 9/10/2026 5:07:41 AM.
+
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_prk_allocation_test.vcxproj" on node 1 (default targets).
+Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_prk_allocation_test.vcxproj" (1) is building "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+PrepareForBuild:
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+InitializeBuildStatus:
+  Creating "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+CustomBuild:
+  All outputs are up-to-date.
+FinalizeBuildStatus:
+  Deleting file "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+  Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\ZERO_CHECK.vcxproj" (default targets).
+PrepareForBuild:
+  Creating directory "passvault_biometric_windows_prk_allocation_test.dir\Release\".
+  Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+  Creating directory "passvault_biometric_windows_prk_allocation_test.dir\Release\passvaul.06AC7BD1.tlog\".
+InitializeBuildStatus:
+  Creating "passvault_biometric_windows_prk_allocation_test.dir\Release\passvaul.06AC7BD1.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+  Touching "passvault_biometric_windows_prk_allocation_test.dir\Release\passvaul.06AC7BD1.tlog\unsuccessfulbuild".
+CustomBuild:
+  Building Custom Rule D:/a/passvault/passvault/app-desktop/native/biometric-bridge/CMakeLists.txt
+ClCompile:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\CL.exe /c /I"D:\a\passvault\passvault\app-desktop\native\biometric-bridge\include" /nologo /W4 /WX /diagnostics:column /sdl /O2 /Ob2 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST=1 /D NOMINMAX /D UNICODE /D _UNICODE /D WIN32_LEAN_AND_MEAN /D WINVER=0x0A00 /D _WIN32_WINNT=0x0A00 /D PASSVAULT_BIOMETRIC_BUILD=1 /D "CMAKE_INTDIR=\"Release\"" /EHsc /MT /GS /guard:cf /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"passvault_biometric_windows_prk_allocation_test.dir\Release\\" /Fd"passvault_biometric_windows_prk_allocation_test.dir\Release\vc143.pdb" /external:W4 /Gd /TP /errorReport:queue "D:\a\passvault\passvault\app-desktop\native\biometric-bridge\tests\windows\passvault_biometric_windows_security_test.cpp"
+  passvault_biometric_windows_security_test.cpp
+Link:
+  C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_windows_prk_allocation_test.exe" /INCREMENTAL:NO /NOLOGO advapi32.lib bcrypt.lib ole32.lib runtimeobject.lib windowsapp.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_prk_allocation_test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_prk_allocation_test.lib" /MACHINE:X64 /guard:cf  /machine:x64 /HIGHENTROPYVA /guard:cf passvault_biometric_windows_prk_allocation_test.dir\Release\passvault_biometric_windows_security_test.obj
+     Creating library D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_prk_allocation_test.lib and object D:/a/_temp/passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7/build/Release/passvault_biometric_windows_prk_allocation_test.exp
+  passvault_biometric_windows_prk_allocation_test.vcxproj -> D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\Release\passvault_biometric_windows_prk_allocation_test.exe
+FinalizeBuildStatus:
+  Deleting file "passvault_biometric_windows_prk_allocation_test.dir\Release\passvaul.06AC7BD1.tlog\unsuccessfulbuild".
+  Touching "passvault_biometric_windows_prk_allocation_test.dir\Release\passvaul.06AC7BD1.tlog\passvault_biometric_windows_prk_allocation_test.lastbuildstate".
+Done Building Project "D:\a\_temp\passvault-windows-cohort-05-34439762763-1-be5f25d196d98cb0dc091b0228e3e4e7\build\passvault_biometric_windows_prk_allocation_test.vcxproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.09
+

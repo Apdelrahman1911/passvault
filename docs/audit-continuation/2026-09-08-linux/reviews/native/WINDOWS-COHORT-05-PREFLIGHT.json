@@ -1,0 +1,272 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T04:37:21.580525+00:00",
+  "status": "PREFLIGHT_COMPLETE_REQUEST_ONLY_SOURCE_NOT_ACTIVATED",
+  "source_commit": "0d06721b7f8bdc17513a6ab51ffbc5523e68b230",
+  "source_tree": "dd04904c1deb691bd6aeed756dd6ceab8ea97837",
+  "clone_root": [
+    23,
+    1080545,
+    0,
+    16832
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/root/projects/PassVault/passvault-publication-20260910-01",
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout_sha256": "ffc63988116799bbe6ce1f627b5e4351822c950c68dd464eef6f33929c129ce0",
+      "stdout_bytes": 82,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "ls-tree",
+        "-r",
+        "-z",
+        "--full-tree",
+        "HEAD"
+      ],
+      "cwd": "/root/projects/PassVault/passvault-publication-20260910-01",
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout_sha256": "f601143b93b8db3da8b3f5385029fc08a63e7b038ab318f1438a226a3faa4a7e",
+      "stdout_bytes": 292017,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "ls-remote",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "cwd": "/root/projects/PassVault/passvault-publication-20260910-01",
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout_sha256": "2913b5159e94a00b0efe4fa4568d32120c07f8242cc4460ceb8dd17726ed2111",
+      "stdout_bytes": 425,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "repos/Apdelrahman1911/passvault/actions/runs?branch=codex%2Faudit-continuation-linux-20260908&per_page=100"
+      ],
+      "cwd": "/root/projects/PassVault/passvault-publication-20260910-01",
+      "status": "COMPLETED",
+      "exit": 0,
+      "stdout_sha256": "59517ea5629778ed920c96808e2b0045125bd2804ff70515951903506d18e72e",
+      "stdout_bytes": 77865,
+      "stderr": ""
+    }
+  ],
+  "local_audit_build": "NONE_ROOT_SOLE_OWNER_ALL_AGENTS_SOURCE_ONLY",
+  "cleanup": "Read-only bounded foreground Git/API; direct children reaped. No build/temp/cache/service or wrapper-stop duty. Abnormal timeout/interruption does not prove descendant settlement and remains HOLD/no retry.",
+  "idle_slot_sha256": "d9355ad46a6bdc2d4adc5079b04d9a51315e038970d5c28488b2bc7efd93a686",
+  "immutable_clone_inputs": {
+    "scripts/audit/windows_native_validation.py": {
+      "sha256": "35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a",
+      "bytes": 70729,
+      "git_mode": "100644",
+      "git_blob": "9d308904c044c648901cbc2958ec02eadf79f68e"
+    },
+    ".github/workflows/audit-windows-native-validation.yml": {
+      "sha256": "d70ba4a276957158d2904a426e421c7303bea9c47de4fc7a96cf060ce2bb1d21",
+      "bytes": 2177,
+      "git_mode": "100644",
+      "git_blob": "183ca7301b11e3bfd608f1700673055286119289"
+    },
+    "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-COHORT-05-SCOPE.md": {
+      "sha256": "762b35f3354bc029afac6e7c84ca09086653f505fdf8d5a530e7612adb68d84c",
+      "bytes": 8100,
+      "git_mode": "100644",
+      "git_blob": "aa29827fd75008c58746bc9a1ed065e881db866e"
+    },
+    "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/WINDOWS-COHORT-05-ADMISSION.json": {
+      "sha256": "edda42e96e54ed423b81e87ed57ee5b01216562ca2855f63924c5ab8be3f1db1",
+      "bytes": 16536,
+      "git_mode": "100644",
+      "git_blob": "fd130e713f651fc8ef8a629e85af7d2eed636254"
+    },
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": {
+      "sha256": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8",
+      "bytes": 9363,
+      "git_mode": "100644",
+      "git_blob": "6a92a9500597fa5434b62c43bcece61457f7ce5b"
+    },
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": {
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+      "bytes": 4540,
+      "git_mode": "100644",
+      "git_blob": "eadf8d1c84c390bb297c0d1f2f5617dafafd29e0"
+    },
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": {
+      "sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+      "bytes": 99069,
+      "git_mode": "100644",
+      "git_blob": "1860f0572c397e3399ba22fff97d22d51fdb7b1e"
+    },
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": {
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+      "bytes": 812,
+      "git_mode": "100644",
+      "git_blob": "ed1a67cd931be88a4c030eef6e7a3e3b1cf2c914"
+    },
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": {
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+      "bytes": 826,
+      "git_mode": "100644",
+      "git_blob": "cd13ba632d597b370816d8f6da2bff28f09aa134"
+    },
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": {
+      "sha256": "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a",
+      "bytes": 37041,
+      "git_mode": "100644",
+      "git_blob": "0a9ab47b4463c3cbad9532519d95325da892b7f5"
+    },
+    "docs/audit-continuation/2026-09-08-linux/reviews/native/HISTORICAL-PVA036-WINDOWS.cpp.txt": {
+      "sha256": "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b",
+      "bytes": 96218,
+      "git_mode": "100644",
+      "git_blob": "b7afdd5efee2040fd5b563d70d8380ab68fc10b5"
+    },
+    "docs/audit-continuation/2026-09-08-linux/reviews/verification/WINDOWS-PVA036-037-DEFENSIVE-CONTROLS-SOURCE-REVIEW.md": {
+      "sha256": "4d2dbfa2fa9365995a6d578be6ae81ed3f6445831afd9cc2a8d6647d79aeb118",
+      "bytes": 15286,
+      "git_mode": "100644",
+      "git_blob": "d76e8af03b3d30738277703f49ae6664ef61b20d"
+    },
+    ".gitattributes": {
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+      "bytes": 270,
+      "git_mode": "100644",
+      "git_blob": "e9f66b75fb72556326ddd8aad29191f9a1b106e3"
+    }
+  },
+  "protected_refs": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "0d06721b7f8bdc17513a6ab51ffbc5523e68b230",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "ci_total_count": 6,
+  "ci_complete_branch_listing": true,
+  "ci_stdout_sha256": "59517ea5629778ed920c96808e2b0045125bd2804ff70515951903506d18e72e",
+  "ci_compact_runs": [
+    {
+      "id": 34430921453,
+      "run_attempt": 1,
+      "event": "push",
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "7b288271d6c139921812caf5050b7f994f5ce1b2",
+      "created_at": "2026-09-10T02:49:09Z",
+      "updated_at": "2026-09-10T02:50:15Z"
+    },
+    {
+      "id": 34427448784,
+      "run_attempt": 1,
+      "event": "push",
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "6838961e966975532c714d60fd72e3f590f0c8ab",
+      "created_at": "2026-09-10T01:56:17Z",
+      "updated_at": "2026-09-10T01:56:54Z"
+    },
+    {
+      "id": 34391056257,
+      "run_attempt": 1,
+      "event": "push",
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "b2e826fd534be8fefede169d28e30c22e37530a9",
+      "created_at": "2026-09-09T18:46:23Z",
+      "updated_at": "2026-09-09T18:46:44Z"
+    },
+    {
+      "id": 34372394480,
+      "run_attempt": 1,
+      "event": "push",
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
+      "created_at": "2026-09-09T15:46:00Z",
+      "updated_at": "2026-09-09T15:46:21Z"
+    },
+    {
+      "id": 34333087199,
+      "run_attempt": 1,
+      "event": "push",
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "17a19b0a36472e586851f5ea4185cefe9adaad71",
+      "created_at": "2026-09-09T09:09:09Z",
+      "updated_at": "2026-09-09T09:09:31Z"
+    },
+    {
+      "id": 34284083351,
+      "run_attempt": 1,
+      "event": "push",
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "a1fbdf0d5f0663225a459838d37b072a65e334f6",
+      "created_at": "2026-09-08T22:05:27Z",
+      "updated_at": "2026-09-08T22:06:10Z"
+    }
+  ],
+  "request_path": "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-05.json",
+  "request_sha256": "14017096650b03b30cbac8a606bc5bc2258bb7d4e285151fa92257a61459e05d",
+  "why_target": "PVA036 actual Windows writer controls;PVA037 live CNG/PRK guards;PVA014 ABI sibling. Windows2022/x64 installed MSVC SDK10.0.26100.0.24synthetic native cases,480s work540s cleanup10min job,3day compact artifacts,no binaries/Hello/authentication.",
+  "publication": "C11 published source; next activation must add ONLY this request as single-parent child. Independent instance/root admission and slot reservation required.",
+  "restrictions": "No oldHOLD/retry/stopped/protectedref/tag/dependency/version/identity/signing/Store/1017001 changes.0tests."
+}

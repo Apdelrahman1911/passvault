@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "parent_commit": "b825df973ac3e3392dd99b251b8bb7fd48fecce6",
+  "parent_tree": "92304c125be2e19a1badfb7540c39d4b7c82b6ab",
+  "branch": "codex/audit-continuation-linux-20260908",
+  "sole_selected_request": "docs/audit-continuation/2026-09-08-linux/requests/LINUX-DESKTOP-GUI-02.json",
+  "request_sha256": "753a200b5fa0f1d288b5ca18f5b3ef3df73c9d4ea0cd4597c74b560db732a70a",
+  "request_purpose": "consumed Linux-local GUI02 admission, inert data on GitHub; not a CI request",
+  "assessment": "Source publication matches no workflow trigger: CI only protected branches; release/store workflows manual/call; audit push paths exact lowercase windows-cohort-05, macos-focused-02, ios-focused-01 and none selected. No PR/tag/manual event requested. Independent final selection review still required.",
+  "workflow_count": 18,
+  "workflows": [
+    {
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b",
+      "bytes": 2651,
+      "trigger_LF_interval": [
+        4,
+        10
+      ],
+      "trigger_source": "on:\n  push:\n    branches:\n      - codex/audit-continuation-linux-20260908\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/macos-focused-02.json\n\n"
+    },
+    {
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "d70ba4a276957158d2904a426e421c7303bea9c47de4fc7a96cf060ce2bb1d21",
+      "bytes": 2177,
+      "trigger_LF_interval": [
+        5,
+        10
+      ],
+      "trigger_source": "on:\n  push:\n    branches: [codex/audit-continuation-linux-20260908]\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-05.json\n\n"
+    },
+    {
+      "path": ".github/workflows/candidate-readiness.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "b17a0d94f2e4a04f83a77fa99ff4a6300d3eaea4961bff31bb302ba6a667acd2",
+      "bytes": 15186,
+      "trigger_LF_interval": [
+        3,
+        10
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Testing candidate tag to verify\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "eddfa5917a77fa606c115c418b433a3aa04c4a061cd757af5040fbdd452d9af2",
+      "bytes": 10177,
+      "trigger_LF_interval": [
+        3,
+        8
+      ],
+      "trigger_source": "on:\n  push:\n    branches: [ main, testing, release ]\n  pull_request:\n    branches: [ main, testing, release ]\n\n"
+    },
+    {
+      "path": ".github/workflows/mobile-release-candidate.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "bc776feeadf166d5c7f3252f11b29a23a00149fa9307fb385886f273b6755760",
+      "bytes": 917,
+      "trigger_LF_interval": [
+        3,
+        19
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform to build once and upload to internal testing\n        required: true\n        default: android\n        type: choice\n        options:\n          - android\n          - ios\n          - both\n      confirmation:\n        description: candidate:<platform>:<version>:<build>\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/mobile-release-external-testing.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "fe250fea16e1fcf8ff4b74af591b43346af66bacc3dee0883c0e7c560c2f328b",
+      "bytes": 1118,
+      "trigger_LF_interval": [
+        3,
+        23
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform whose exact internal build should be promoted\n        required: true\n        default: android\n        type: choice\n        options:\n          - android\n          - ios\n          - both\n      candidate_run_id:\n        description: Successful candidate workflow run ID\n        required: true\n        type: string\n      confirmation:\n        description: external-testing:<platform>:<version>:<build>\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/mobile-release-preflight.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "15f25e2c07951a8481cb1203eb4076714699efdccd6e2712a043a53de76c51c9",
+      "bytes": 589,
+      "trigger_LF_interval": [
+        3,
+        15
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform to validate\n        required: true\n        default: android\n        type: choice\n        options:\n          - android\n          - ios\n          - both\n\n"
+    },
+    {
+      "path": ".github/workflows/mobile-store-release.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "fdefa6745a686e180f75102d671914951e3fa5df77b07f1d2838afa2fd31c558",
+      "bytes": 53353,
+      "trigger_LF_interval": [
+        3,
+        110
+      ],
+      "trigger_source": "on:\n  workflow_call:\n    inputs:\n      platform:\n        required: true\n        type: string\n      channel:\n        required: true\n        type: string\n      operation:\n        required: true\n        type: string\n      version:\n        required: true\n        type: string\n      build_number:\n        required: true\n        type: string\n      candidate_tag:\n        required: false\n        default: ''\n        type: string\n      candidate_commit:\n        required: false\n        default: ''\n        type: string\n      testflight_distribution:\n        required: false\n        default: email-list\n        type: string\n      production_confirmation:\n        required: false\n        default: ''\n        type: string\n      testing_confirmation:\n        required: false\n        default: ''\n        type: string\n      review_withdrawal_confirmation:\n        required: false\n        default: ''\n        type: string\n      pipeline_lock_held:\n        description: The protected caller already holds the repository-wide release-pipeline lock\n        required: false\n        default: false\n        type: boolean\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform to build and upload\n        required: true\n        default: both\n        type: choice\n        options:\n          - both\n          - android\n          - ios\n      channel:\n        description: Store destination\n        required: true\n        default: internal\n        type: choice\n        options:\n          - internal\n          - external\n          - production\n      operation:\n        description: Upload a new internal binary or promote the exact existing build\n        required: true\n        default: upload\n        type: choice\n        options:\n          - upload\n          - promote\n          - store-assets\n      version:\n        description: Exact marketing version; blank uses version.properties\n        required: false\n        type: string\n      build_number:\n        description: Exact committed Store build number from version.properties\n        required: true\n        type: string\n      candidate_tag:\n        description: Required readiness-approved candidate tag for production\n        required: false\n        type: string\n      testflight_distribution:\n        description: External iOS invitation method\n        required: true\n        default: email-list\n        type: choice\n        options:\n          - email-list\n      production_confirmation:\n        description: Type I_APPROVE_PRODUCTION only for a production upload\n        required: false\n        type: string\n      testing_confirmation:\n        description: Type I_CONFIRM_REQUIRED_TESTING_COMPLETED only after required store testing is complete\n        required: false\n        type: string\n      review_withdrawal_confirmation:\n        description: Type I_APPROVE_REVIEW_WITHDRAWAL to withdraw review and replace iOS store assets\n        required: false\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "3da09e8e67b8502cd2e9a311e890b96bdb874e85b490afd323d5925df045a933",
+      "bytes": 1758,
+      "trigger_LF_interval": [
+        3,
+        13
+      ],
+      "trigger_source": "on:\n  push:\n    branches:\n      - main\n    paths:\n      - '.github/workflows/pages.yml'\n      - 'site/**'\n      - 'scripts/build-public-site.rb'\n      - 'iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png'\n  workflow_dispatch:\n\n"
+    },
+    {
+      "path": ".github/workflows/play-access-check.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "f9f001ffffc7512a3da6e2b42b15cf539e25eb851cf35e2761ef5c5bbfca0040",
+      "bytes": 3196,
+      "trigger_LF_interval": [
+        3,
+        10
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      confirmation:\n        description: Type VERIFY_ONLY_NO_UPLOAD to run the disposable-edit check\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/production-release.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "3cf6b2ce6fc6270b007132777e0681a221d3fe3544ef39899f2917333f87d2c5",
+      "bytes": 8394,
+      "trigger_LF_interval": [
+        3,
+        27
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Readiness-approved candidate tag\n        required: true\n        type: string\n      platform:\n        description: Store to submit; choose one when retrying a partial failure\n        required: true\n        default: both\n        type: choice\n        options:\n          - both\n          - android\n          - ios\n      authorization_run_id:\n        description: Successful Request Mobile Production Release run ID\n        required: true\n        type: string\n      authorization_sha:\n        description: Exact protected-main SHA that authorized this child run\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/production-signing-validation.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "3d530176598e68a3332c47e72f43b5ff0120a6a12a669ec70f09e8a40aafa338",
+      "bytes": 5390,
+      "trigger_LF_interval": [
+        3,
+        10
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Readiness-approved candidate tag to sign without publishing\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/publish-stable-release.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "65d91bad705bbe9b3216d07fac954869d39f48ae6253c9a09b950a0bf0cad9f1",
+      "bytes": 11208,
+      "trigger_LF_interval": [
+        3,
+        10
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Production candidate whose stores are live\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "e6b842aad78a7eb8697d860265531fa606111b86e8ced44186ef64e5b0ec12b9",
+      "bytes": 59483,
+      "trigger_LF_interval": [
+        3,
+        12
+      ],
+      "trigger_source": "on:\n  workflow_call:\n    inputs:\n      version:\n        required: true\n        type: string\n      candidate_tag:\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/request-mobile-production.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "45525424359e72b37fbc0ec8fe38c92486211b486f5b859aed71361c122150f3",
+      "bytes": 3113,
+      "trigger_LF_interval": [
+        4,
+        24
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Readiness-approved mobile candidate tag\n        required: true\n        type: string\n      platform:\n        description: Store to promote; choose one only when retrying a partial failure\n        required: true\n        default: both\n        type: choice\n        options:\n          - both\n          - android\n          - ios\n      confirmation:\n        description: Type I_APPROVE_MOBILE_PRODUCTION\n        required: true\n        type: string\n\n"
+    },
+    {
+      "path": ".github/workflows/store-screenshots.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "6f0230f49c724372a352855a58edbf8234cd9253e58e0b839fde0ccbbb2bdeb5",
+      "bytes": 8010,
+      "trigger_LF_interval": [
+        3,
+        5
+      ],
+      "trigger_source": "on:\n  workflow_dispatch:\n\n"
+    },
+    {
+      "path": ".github/workflows/testing-release.yml",
+      "source": "published parent ordinary file; publication recipe will verify original parent/index",
+      "sha256": "b2df9bf0d52073dbcc7351f6847d2edb4e5e903a41eae04589b9b4bfbed9a6d4",
+      "bytes": 26346,
+      "trigger_LF_interval": [
+        3,
+        18
+      ],
+      "trigger_source": "on:\n  push:\n    branches: [ testing ]\n  workflow_dispatch:\n    inputs:\n      resume_existing_internal_uploads:\n        description: Reuse attested internal receipts instead of uploading Android/iOS again\n        required: true\n        type: boolean\n        default: false\n      resume_confirmation:\n        description: Required as resume:<version>:<build> when resuming existing internal uploads\n        required: false\n        type: string\n        default: ''\n\n"
+    },
+    {
+      "path": ".github/workflows/audit-ios-focused-validation.yml",
+      "source": "C12 selected new iOS workflow",
+      "sha256": "d1a1b3b5c06b46446e935ce3ff2e75ec2a829d9d6179df0b90f75ddf7c2a9dfa",
+      "bytes": 3097,
+      "trigger_LF_interval": [
+        5,
+        11
+      ],
+      "trigger_source": "on:\n  push:\n    branches:\n      - codex/audit-continuation-linux-20260908\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/ios-focused-01.json\n\n"
+    }
+  ],
+  "limit": "Bounded human/source trigger inspection, not execution or YAML engine test. Source/workflow bytes must remain exact in final selection/index."
+}

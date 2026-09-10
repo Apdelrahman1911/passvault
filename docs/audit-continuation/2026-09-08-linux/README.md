@@ -6,7 +6,17 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-**Latest: `CHECKPOINT_11.md` (non-activating source/evidence checkpoint).**
+**Latest: `CHECKPOINT_12.md` (non-activating source/evidence checkpoint).**
+Windows05 passed24 CTests but failed cleanup safely: whole-root HOLD/no retry.
+GUI02 passed four real native-input/rendering cases; nine synthetic PNGs and
+original runtime/worker cleanup independently reconciled. Editor persistence is
+fake; curtain backend is SOFTWARE_FAST/manual ACK. No new closure:26/38(68.4%),
+original19/25(76%), suspicions2/12(16.7%). Actual execution events196+3infra+1producer
+=200XML, not production-only or overall-readiness. iOS10/new native-tray case/
+Detekt source are reviewed but not executed; their exact next admissions remain
+separate. Preserve all old HOLDs and use only the new publication store for Git.
+
+**Historical: `CHECKPOINT_11.md` (non-activating source/evidence checkpoint).**
 Mac02 passed five exact CTests (two native cases plus three fixture controls),
 independently reconciled with qualified cleanup. Windows04 failed before product
 build:14 UNSTARTED/zero XML, exact generated-read cause UNKNOWN, filesystem HOLD.
