@@ -1,0 +1,118 @@
+{
+  "format": "passvault-gui03-four-case-delta-v1",
+  "author": "/root/editor",
+  "status": "ACTUAL_SOURCE_ONLY_PENDING_INDEPENDENT_REVIEW_UNCOMPILED_UNEXECUTED",
+  "sources": [
+    {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "before_image": "docs/audit-continuation/2026-09-08-linux/reviews/editor/gui03-four-case/CredentialMainNavHostRoomIntegrationTest.kt.before.txt",
+      "before_sha256": "96c995d0f74d7df8196fca26770e104ad2d2d2dbb9e1462790e4f7dcca294911",
+      "before_bytes": 66206,
+      "before_lf": 1208,
+      "sha256": "cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4",
+      "bytes": 66405,
+      "lf": 1212,
+      "literal_changes": 2,
+      "diff_hunks": 2,
+      "diff_forward_exact": true,
+      "diff_reverse_exact": true
+    },
+    {
+      "path": "scripts/audit/desktop_integration_03.init.gradle",
+      "before_image": "docs/audit-continuation/2026-09-08-linux/reviews/editor/gui03-four-case/desktop_integration_03.init.gradle.before.txt",
+      "before_sha256": "2b9aec1c7366bff5d39a62f9b1aaefb60e4884866fca3ac309dc4b00940c43fb",
+      "before_bytes": 10645,
+      "before_lf": 184,
+      "sha256": "45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292",
+      "bytes": 11662,
+      "lf": 194,
+      "literal_changes": 5,
+      "diff_hunks": 5,
+      "diff_forward_exact": true,
+      "diff_reverse_exact": true
+    },
+    {
+      "path": "scripts/audit/linux_desktop_integration_03.py",
+      "before_image": "docs/audit-continuation/2026-09-08-linux/reviews/editor/gui03-four-case/linux_desktop_integration_03.py.before.txt",
+      "before_sha256": "42e4968552fafbecf032211dbd385cac9821e7bc7b79a7b59fa2864d38f55da6",
+      "before_bytes": 85087,
+      "before_lf": 1403,
+      "sha256": "39909c06e6354f78dd4f51c2fa0eedd521bf5bb1c0a7f726499e1f56efb4eba8",
+      "bytes": 91328,
+      "lf": 1494,
+      "literal_changes": 26,
+      "diff_hunks": 22,
+      "diff_forward_exact": true,
+      "diff_reverse_exact": true
+    }
+  ],
+  "preserved_inner_blocks": [
+    {
+      "block": "owned_settlement_command_signal_resource",
+      "sha256": "efcf02e5fb2e0c4066e321dd505d3752f2e8f3a42e763c455b6621f885c9c77e",
+      "bytes": 8491,
+      "lf": 149,
+      "byte_equal": true
+    },
+    {
+      "block": "wrapper_stop",
+      "sha256": "e7a33f1446f4de9cf595b4e8bb321a87c4d490db4ad85ada06515dc06cbe7222",
+      "bytes": 429,
+      "lf": 9,
+      "byte_equal": true
+    },
+    {
+      "block": "native_isolation_setup_cleanup",
+      "sha256": "a1c065ee128335827d4c05fbe4e7fac12a507d2817df52eb7730a241966dbd05",
+      "bytes": 28595,
+      "lf": 446,
+      "byte_equal": true
+    }
+  ],
+  "accounting": {
+    "prospective_cases": 4,
+    "prospective_xml_suites": 4,
+    "existing_kmp_test_tasks": 2,
+    "main_cases": 3,
+    "main_child_roles": 9,
+    "main_required_files": 27,
+    "ordered_role_events_by_main_case": {
+      "mainnav": 13,
+      "pvu003": 7,
+      "pva027": 9
+    },
+    "new_test_methods": 0,
+    "executed_tests": 0,
+    "closures": 0
+  },
+  "combined_patch": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/gui03-four-case/FOUR-CASE.patch.txt",
+    "sha256": "e23e676484658fb0fe79137cf6fb2da62bf92ed5e37091ca3f7e4ff548fb4f51",
+    "bytes": 32904,
+    "lf": 477,
+    "classification": "Line/text forward and inverse proof only, not source AST/syntax/compiler or runtime validation."
+  },
+  "outer_deadline_interface": {
+    "source_path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py",
+    "sha256": "831c2017f7cb5bc53986b77ec9fac3371925a7e803033b1bc7773d52b0a12add",
+    "field": "OUTER-INTENT.work_deadline_monotonic_ns",
+    "producer": "int(original WORK_END * 1e9)",
+    "pre_gui_required_seconds": 3500,
+    "pre_render_required_seconds": 2900,
+    "outer_work_seconds": 5250,
+    "outer_terminal_seconds": 6000,
+    "not_hard_guarantees": true
+  },
+  "future_source_binding": {
+    "manifest_path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint17/source-prepare01/SOURCE.json",
+    "commit": null,
+    "tree": null,
+    "members": null,
+    "manifest_sha256": null
+  },
+  "authoring_failures_preserved": [
+    "One init literal-count guard rejected an in-memory change before init write; fixture delta had completed separately.",
+    "One inline data-transformation utility had a Python quoting SyntaxError before any file read/write; no project source was parsed/executed.",
+    "One inner literal-count guard rejected its in-memory final qualification replacement before inner write; corrected bounded text replacement later succeeded."
+  ]
+}

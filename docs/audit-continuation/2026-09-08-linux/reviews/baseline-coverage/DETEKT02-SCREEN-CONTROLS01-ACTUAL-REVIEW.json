@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_EIGHT_FIXED_STUB_CONTROLS_ACTUAL_FOR_SCHEDULING_ONLY_CLOSEOUT",
+  "scope": "One already-completed infrastructure-control run. Root may adopt this reconciliation for scheduling-only release; this note changes no slot and grants no build, live screen, cleanup or retry authority.",
+  "evidence_base": "reviews/build-config/detekt02-screen/controls01/",
+  "bindings": {
+    "CONTROL.py": {
+      "bytes": 7715,
+      "sha256": "0383be20aca819724d1bd2b5410a06ee6a2bd7daa96db47efaf247f97b46fe84"
+    },
+    "EXTERNAL-RESULT.json": {
+      "bytes": 870,
+      "sha256": "39ea8b14862f92933f01e0f0e10af8ccbe5599206f20aef9dceb480dd071e315"
+    },
+    "PRE-ADMISSION-BINDING-FAILURE.json": {
+      "bytes": 743,
+      "sha256": "68d83531674271612990c057e0c097ab155eee048a773660f611b61d5a8528e9"
+    },
+    "RESULT.json": {
+      "bytes": 4099,
+      "sha256": "1ba33d0f33dccfb48e8e5c7f585e528a9355eba17f7809b6104f5cf55a10a413"
+    },
+    "ROOT-ADMISSION.json": {
+      "bytes": 1741,
+      "sha256": "b3828438e5123c076c2231e4bc76d65f3e2fb490af2217878fef081ae35778a4"
+    },
+    "SCREEN.txt": {
+      "bytes": 7506,
+      "sha256": "b7e227cdb7accac627d70971d9295125cbefd689aaf9722f683e127ad115ccba"
+    }
+  },
+  "independent_source_review": {
+    "path": "reviews/build-config/detekt02-screen/ROOT-INDEPENDENT-REVIEW.json",
+    "sha256": "2da04d9f053163623e8de6a0387aadd4c7bdc6cd21a8f29a3b00980508cdc3a9",
+    "bytes": 1385,
+    "qualification": "Previously accepted root source challenge, not re-extracted or re-reviewed holder code in this scope."
+  },
+  "actual": {
+    "terminal_tool": "030d6a",
+    "external_actual_exit": 0,
+    "session": null,
+    "elapsed_seconds": 0.026616060989908874,
+    "controls": 8,
+    "control_assertion_failures": 0,
+    "application_cases": 0,
+    "junit_xml": 0,
+    "children_started_by_control": 0,
+    "scratch": "NONE",
+    "wrapper_stop": "NOT_APPLICABLE_NO_GRADLE_OR_CHILD",
+    "terminal_qualification": "Retained external record binds RESULT hash, counts and elapsed time to root-observed terminal0. Reviewer did not poll a session, inspect processes or independently observe interpreter execution."
+  },
+  "independent_data_reconciliation": {
+    "source_binding": "CONTROL/SCREEN raw SHA256 pins agree with admission, result/stdout and preserved pre-admission record. SCREEN retains exactly two trailing LF. The earlier correction is recorded as AST-span comparison plus unchanged raw pins, not interior normalization or source replacement.",
+    "serialized_rows": "Independently derived all8 complete scenario/outcome/failure-stage/trace objects from inert source, then compared structural equality with retained stdout.results. Exact8 unique rows match;2 ACCEPT-path and6 expected HOLD-path outcomes are eight passing controls, not six failed runs.",
+    "expected_results_canonical_sha256": "f3b5fd222b5a32122f23746b713e143c0e45faa10e67fd0ff3118fdf934c62d6",
+    "expected_results_canonical_bytes": 1577,
+    "cases": [
+      {
+        "failure_stage": null,
+        "outcome": "ACCEPT",
+        "scenario": "owned_enoent",
+        "trace_events": 15
+      },
+      {
+        "failure_stage": "reread-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "candidate_live",
+        "trace_events": 14
+      },
+      {
+        "failure_stage": "reread-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "owner_terminal",
+        "trace_events": 15
+      },
+      {
+        "failure_stage": "proof-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "preproof_enoent",
+        "trace_events": 6
+      },
+      {
+        "failure_stage": "proof-owned-domain",
+        "outcome": "HOLD",
+        "scenario": "foreign_namespace",
+        "trace_events": 8
+      },
+      {
+        "failure_stage": "reread-birth-first",
+        "outcome": "HOLD",
+        "scenario": "birth_mismatch",
+        "trace_events": 11
+      },
+      {
+        "failure_stage": null,
+        "outcome": "ACCEPT",
+        "scenario": "live_owned",
+        "trace_events": 16
+      },
+      {
+        "failure_stage": "reread-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "close_failure",
+        "trace_events": 15
+      }
+    ],
+    "reachability": "Traces distinguish ownership proof before tolerated terminal ENOENT; live candidate, terminal owner, preproof ENOENT and foreign namespace reject. Birth mismatch ends immediately before later synthetic disappearance can mask it. Live-owned completes final rereads; close failure converts the would-be exemption to HOLD. Each retained trace opens before comm and ends with one candidate-close call.",
+    "representation_limit": "Detailed internal diagnostic snapshots/errno/counter assertions are exercised by the admitted control source and reported zero assertions; RESULT retains summary traces/stages, not those full diagnostic objects. No independent claim that unretained objects were directly inspected."
+  },
+  "preserved_preadmission_failure": {
+    "path": "PRE-ADMISSION-BINDING-FAILURE.json",
+    "tool": "12e0ea",
+    "actual_exit": 1,
+    "control_executions": 0,
+    "admission_created": false,
+    "slot_changed": false,
+    "lock_opened": false,
+    "runtime_created": false,
+    "qualification": "Failed raw suffix comparison (two LF versus one) preceded admission/lock/control execution. Inputs were unchanged; the later admitted eight-invocation run is distinct. Preserve this failure, do not count it as a ninth control or erase it as a passing execution."
+  },
+  "resource_and_cleanup": {
+    "admitted_bounds": "Original interpreter CPU5s/address-space512MiB/core0/output64KiB; installed signal/finally handling and original metadata-lock close. No spawned worker, app/native/Gradle/runtime/cache/temp workload.",
+    "result": "Root's external record reports original lock closed and actual interpreter exit0; compact result4099B and elapsed0.026616s are consistent with the narrow run. No new stop/deletion action is needed in this reviewer scope.",
+    "limit": "Producer/terminal evidence, not a current process census, global-idleness proof or release of any held runtime. Hard-loss/cleanup uncertainty would remain HOLD/no retry."
+  },
+  "limits": "Fixed stubs replace every host-operation name used by the extracted screen: no real /proc, pidfd, namespace, owner descriptor, deadline progression or OS race behavior exercised. No holder/module execution, live scan proof, security-fix completion, old host-screen culprit resolution, application/XML coverage, closure or suspicion-resolution credit. Record these8 controls separately from all application and previous infrastructure denominators. Comm mismatch and other unexercised branches remain source-only/unverified. All consumed/STOP/NO-RETRY/HOLD/CLOSED, PVD/hardware/protected-ref/signing/Store/1017001 boundaries remain.",
+  "reviewer_activity": "Named inert W reads/hash/JSON/text and independently constructed expected-data comparisons only. No control rerun, helper import/AST/compilation, real proc/pidfd, process/runtime/T/Git/network probe, signal, deletion or temporary/background workload. Only this reviewer-owned artifact written; final ledger/source-selection review remains separate."
+}

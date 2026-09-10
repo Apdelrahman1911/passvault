@@ -478,3 +478,26 @@ verification is its independent reviewer. This remains separate source work,
 not old-runtime adoption or current execution permission. Baseline_coverage owns
 the independent final C16 ledger/report/publication review. All original author,
 reviewer, rejected-source, evidence and non-replay qualifications remain preserved.
+
+## C17 bounded ownership and efficient verification
+
+Root remains sole build/CI/Git/central-ledger/cleanup owner. Editor authors the
+four-case GUI03 fixture/init/inner delta; root authors the outer delta and
+native_review independently challenges the changed cross-file contracts.
+Build_config authors Detekt03 and the shared C17 source preparer; root reviews
+the static successor and baseline_coverage reviews the preparer and final
+coverage/report/selection. Source acceptance is not current execution admission.
+
+Editor_review authors the bounded Android crypto compile-only helper lane;
+android32 independently reviews it. This is not a device/native KDF validation
+or SDK license/install authority. Storage authored the fixed current Detekt02
+closer; verification independently reviewed source, exact instance and actual
+failure. Root adopted its zero-removal failure and released scheduling only.
+Eight fixed screen controls have separate independent actual reconciliation by
+baseline_coverage. No subagent launched a competing build or accessed held roots.
+
+Use the smallest meaningful checks and batch related cases. Do not repeat passing
+lifecycle/tray/native cases without affected behavior. Every original author,
+reviewer, failure, rejected-source and STOP/NO-RETRY/CLOSED qualification remains;
+the errored native-agent task is not retried or rephrased. Only root admits fresh
+execution, coordination and cleanup; source-only authors leave no background work.

@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_C17_PUBLISHER_REMOVAL_DELTA_ONLY_PENDING_FINAL_SELECTION_AND_ADMISSION",
+  "scope": "Narrow source-only successor delta and two completed W inert-capture moves. Not ACCEPT_C17_SOURCE_PUBLICATION, a live execution admission, a guard/analyzer pass or a historical audit restart.",
+  "bindings": {
+    "publisher": {
+      "path": "publication/CHECKPOINT-17-PUBLISH.py",
+      "sha256": "3232ee3a4fbc6efbfc691c94f2a5abe9f712336aabe0753a9ca866dfe61dfaf4",
+      "bytes": 18687,
+      "physical_LF": 266
+    },
+    "consumed_predecessor": {
+      "path": "publication/CHECKPOINT-16-PUBLISH.py",
+      "sha256": "ec66e49ac549530319a740de5f4ab2895ec2b9ce9d95e961d9bd4f4aaf3fe970",
+      "bytes": 16752
+    },
+    "root_failure_adoption": {
+      "path": "reviews/detekt02/c16-preflight/ROOT-FAILURE-ADOPTION.json",
+      "sha256": "f69beb86d126f7f28277a8a4ca6ef39c10d45df0c397cefbc902463dd539d120",
+      "bytes": 1297
+    },
+    "moves": {
+      "path": "reviews/android32/navhost-draft/INERT-DRAFT-MOVES-C17.json",
+      "sha256": "f12e20b0d731bc3036c7fe3bf7f1a0479b4c8b5d8b9e03b47557fe35e25a1d2e",
+      "bytes": 1586
+    },
+    "prior_rename_review_sha256": "7783f38783cac8463a39881334c8c3036f24a4c3d8a679f94f55ec94fada03f8",
+    "C16_commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "C16_tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8"
+  },
+  "source_inverse": "Nine explicit literal inverse blocks plus checkpoint-name substitutions recover consumed C16 bytes/hash exactly. Only checkpoint identities and the two-path removal/index/name-check delta changed. Neither publisher imported, parsed as AST, compiled or executed.",
+  "W_moves": [
+    {
+      "LF": 727,
+      "bytes": 38728,
+      "git_mode": "100644",
+      "new_path": "reviews/android32/navhost-draft/CredentialMainNavHostRoomIntegrationTest.kt.txt",
+      "old_path": "reviews/android32/navhost-draft/CredentialMainNavHostRoomIntegrationTest.kt",
+      "old_source_leaf_absent": true,
+      "sha256": "7eee7bc045abcb60660203f965a33a71e6e791d9ba2c22509a52ee615040ec9d"
+    },
+    {
+      "LF": 959,
+      "bytes": 47819,
+      "git_mode": "100644",
+      "new_path": "reviews/android32/navhost-draft/CredentialNavHostRoomIntegrationTest.kt.txt",
+      "old_path": "reviews/android32/navhost-draft/CredentialNavHostRoomIntegrationTest.kt",
+      "old_source_leaf_absent": true,
+      "sha256": "e4778ee2415b89688834ecb72865ae7aa94dffff696dc05733284f17288fd2d5"
+    }
+  ],
+  "independent_challenge": {
+    "allowed_removals": "Lines153-164 hard-limit exactly two unique full review paths, each alias path+.txt, with old row mode100644. Old W leaves must be absent; aliases must be selected and SHA-bound; old paths cannot also be selected. No basename match, recursive deletion or general removal facility.",
+    "preserve_before_remove": "All selected T copies and W sources are frozen first. For each old T leaf, exact base membership/mode, bounded single-linked regular-file identity, reviewed SHA/size and independently calculated Git-blob identity must agree. The new T alias must equal all old raw bytes. Original dev/ino/uid/mode/nlink/size/mtime/ctime are checked immediately before dirfd-relative unlink; parent is fsynced and old pathname checked absent.",
+    "index_and_commit": "Append exactly two mode-0/40-zero-OID NUL index-info removal records after selected add/update records. Whole expected index is base+selected minus those two; complete stage0 equality rejects any other tracked deletion/change. --no-renames cached name comparison includes both deleted and added paths. Sole-parent and complete committed-tree checks remain.",
+    "inherited_guards": "Original T/coordination identities, no sharing, clean index/worktree/untracked start, safe command environment/prefix, resource/deadline/reaping/descriptor handling, scoped whitespace and protected-ref/nonforce single-branch push checks are byte-unchanged. No added process/CI/API/build action or request-activation code.",
+    "history": "New aliases match previously challenged move tuples, including LF/size/mode; both old W source leaves are now absent. This does not rewrite frozen manifests/adoption/rejected archives, relabel old failure evidence or touch the distinct Main module source."
+  },
+  "qualification_and_next": {
+    "final_selection": "Still required: genuine frozen C17 manifest/companions/review/config rooted at exact C16. Removal rows must match move receipt path/to/SHA/bytes/mode; selected alias rows must also bind size and mode100644. These are final-selection obligations, not an unseen payload acceptance.",
+    "activation": "Final selected paths must exclude active REQUEST.json (including nested review lanes) and workflow activation. Inherited mechanical request guard checks only the dedicated requests/ prefix; it is not general proof about an arbitrary future selection.",
+    "partial_failure": "Removal completion is durably recorded after both unlinks, not a per-unlink intent/completion journal. Failure or hard loss mid-loop may leave partially changed T and must remain HOLD/no automatic retry, rollback, restoration or inference that neither unlink occurred. No descendant/hard-interruption or adversarial concurrent-writer proof is supplied; fresh sole-writer coordination remains required.",
+    "authority": "Root reports failure adoption releases scheduling/T-reader scope only and consumes the request; runtime HOLD is untouched. This note does not independently release that runtime or re-review already accepted failure evidence. Fresh root publication admission is still required.",
+    "accounting": "Zero new application tests, infrastructure cases, closures or suspicion resolutions. No static coverage/analyzer execution. All PVU-007 STOP, PVU-011 NO-RETRY/no procedure inquiry, PVA-029 failure/no automatic retry, G7/G8 CLOSED, other HOLD/consumed/PVD/hardware/protected-ref/signing/Store/1017001 limits remain."
+  },
+  "reviewer_activity": "Named inert W source/receipt reads, literal inverse/hash comparison, new alias tuple reads and two old W source-leaf absence checks only. Sole reviewer-owned artifact written; no central/source edits, Git/network/helper execution/T/runtime/process probe, signal, deletion, temporary cache/background workload or wrapper action."
+}

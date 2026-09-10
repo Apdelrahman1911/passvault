@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "utc": "2026-09-10T22:56:34.927887+00:00",
+  "purpose": "ONE_CURRENT_DETEKT02_WHOLE_R_CLOSEOUT01",
+  "source_sha256": "32a759cee52311edac2e08da4a26867ce7f85ced099d06c1ae6c883baa4d916c",
+  "limits": {
+    "seconds": 180,
+    "entry_count": 40000,
+    "inventory_bytes": 16777216,
+    "logical_bytes": 2147483648,
+    "runtime_hash_bytes": 268435456,
+    "receipt_bytes": 65536,
+    "launch_disk_GiB": 12,
+    "running_disk_GiB": 8,
+    "launch_mem_percent": 25,
+    "running_mem_percent": 20
+  },
+  "binding_complete": true,
+  "sole_owner": "/root",
+  "no_audit_build_or_ci": true,
+  "original_runtime_writer_freeze": true,
+  "original_settled_cohort_only": true,
+  "unidentified_churn_not_attributed_or_waived": true,
+  "acknowledged_original_failure_flags": {
+    "source_after": false,
+    "cleanup_safe": false,
+    "independent_semantic_acceptance": false
+  },
+  "lock_pin": [
+    24,
+    14189001,
+    0,
+    33152,
+    1,
+    0,
+    1788910891124735946,
+    1788910891124735946
+  ],
+  "slot_sha256": "26001ec7ca1eccd12884d0088aa5bf07a7f18005b221be4daf6722834a584571",
+  "parent_namespaces": {
+    "pid": "pid:[4026531836]",
+    "mnt": "mnt:[4026531841]"
+  },
+  "original_cohort_and_freeze": {
+    "root_attestation": "Root was and remains sole original Detekt02 runtime/build writer. Original terminal70, wrapper stop0, settled phases and namespace-empty evidence are independently reconciled. Root has launched no later audit build/CI, accessed no held R, or granted any other original R writer. All source agents are barred from R/process/build/Git/cleanup access; active authors notified. Root now freezes original R writes/access except this exact new closer through actual reconciliation. This is cooperative original-cohort assurance, not global-idle/no-escape or hostile-root proof.",
+    "original_terminal_record": "reviews/detekt02/c16-preflight/EXTERNAL-RESULT.json",
+    "original_terminal_sha256": "2cd877888c7b539208b4427c7e4992673c8709845a303aaf6e7e369e4407e4fa",
+    "actual_review": "reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md",
+    "actual_review_sha256": "722ad5bdf974bbaa06b5b37a597a5e91e4c12de25fa76bf9bbece4e62a541edb"
+  },
+  "prior_slot_sha256": "b37139288fbe181a178e88688746f8da0dc45470a03a417ffa21cc5292f2545e",
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt02-closeout01/CLOSEOUT.py"
+  ],
+  "resource_snapshot": {
+    "disk_available_bytes": 19585519616,
+    "memory": {
+      "MemTotal": 67435888640,
+      "MemAvailable": 25429667840
+    }
+  },
+  "source_review": "reviews/verification/DETEKT02-CLOSEOUT01-SOURCE-REVIEW.md",
+  "source_review_sha256": "64de3aa8e82ed4b0257eed0a47b67b09cfd193c1f8e3f8f8b2877bb735dd920c",
+  "evidence_and_cleanup": "New exclusive runs/linux-detekt02/closeout01 consumes attempt before R access. Full source/three buffers/Problems pins, mount exclusion, complete no-follow inventory and rechecks before any unlink. Preserve E/W/T and all earlier held roots. No new stop/child/runtime/test. Independent actual external/descriptor settlement reconciliation required. Failure/partial deletion HOLD/no automatic retry.",
+  "request_preparation_scope": "Only named inert W records, original lock lstat, current self namespace links and resource metadata; no R access or helper import/execution."
+}

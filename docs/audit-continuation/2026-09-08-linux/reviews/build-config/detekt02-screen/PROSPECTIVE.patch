@@ -1,0 +1,150 @@
+--- consumed-detekt02-f5dc403e/LAUNCH.py
++++ unadmitted-prospective/LAUNCH.py
+@@ -12,6 +12,7 @@
+ import os
+ from pathlib import Path
+ import re
++import select
+ import signal
+ import stat
+ import subprocess
+@@ -302,6 +303,28 @@
+ 
+ def screen():
+     global churn
++
++    def terminal(fd, diagnostic, label):
++        diagnostic['pidfd_observations'][label] = None
++        poller = select.poll()
++        poller.register(fd, select.POLLIN)
++        events = poller.poll(0)
++        diagnostic['pidfd_observations'][label] = [mask for _, mask in events]
++        require(not events or (len(events) == 1 and events[0][0] == fd and events[0][1] != 0
++                and not events[0][1] & ~(select.POLLIN | select.POLLHUP)), 'uncertain pidfd readiness')
++        return bool(events)
++
++    def error_record(error):
++        return {'type': type(error).__name__, 'errno': getattr(error, 'errno', None),
++                'message': str(error)[:256]}
++
++    def retain(key, diagnostic):
++        if len(encoded(diagnostic)) > 4096:
++            receipt.setdefault('host_screen_first_failure', {'pid': diagnostic['pid'],
++                'stage': diagnostic['stage'], 'diagnostic_overflow': True})
++            raise RuntimeError('host-screen diagnostic bound')
++        receipt.setdefault(key, decode(encoded(diagnostic)))
++
+     deadline = min(time.monotonic() + 5, END)
+     with os.scandir('/proc') as entries:
+         for index, entry in enumerate(entries):
+@@ -309,22 +332,96 @@
+             name = entry.name
+             if not name.isdecimal():
+                 continue
++            owner, fd = child, None
++            diagnostic = {'pid': int(name), 'owner_pid': None if owner is None else owner['p'].pid,
++                'comm': None, 'stage': 'pidfd-open', 'owned_proof': False,
++                'expected_namespaces': None if owned_domain is None else dict(owned_domain),
++                'pidfd_observations': {}}
+             try:
+-                comm = Path(f'/proc/{name}/comm').read_text().strip()
+-            except FileNotFoundError:
+-                churn += 1  # Unclassified disappearance BEFORE any positive indication; NOT benign/idle proof.
+-                continue
+-            except OSError:
+-                raise RuntimeError('live/unreadable potential host workload')
+-            if BUILDLIKE.fullmatch(comm):
+                 try:
+-                    row = identity(int(name))
+-                    require(Path(f'/proc/{name}/comm').read_text().strip() == comm and identity(int(name)) == row,
+-                            'positive process birth/namespace/comm changed')
+-                except (OSError, RuntimeError):
+-                    raise RuntimeError('positive buildlike process vanished/changed/unreadable')
+-                require(child is not None and child['p'].returncode is None and owned_domain == row['namespaces'],
+-                        'host buildlike conflict: ' + name + ':' + comm)
++                    try:
++                        fd = os.pidfd_open(int(name), 0)  # Pin BEFORE the first positive comm observation.
++                    except ProcessLookupError:
++                        churn += 1  # Pre-positive and unclassified; NOT benign/idle proof.
++                        continue
++                    diagnostic['stage'] = 'comm-initial'
++                    try:
++                        comm = Path(f'/proc/{name}/comm').read_text().strip()
++                    except FileNotFoundError:
++                        require(terminal(fd, diagnostic, 'prepositive-enoent'),
++                                'live/unreadable potential host workload')
++                        churn += 1  # Still pre-positive and unclassified.
++                        continue
++                    diagnostic['comm'] = comm
++                    if not BUILDLIKE.fullmatch(comm):
++                        continue
++
++                    # A complete, still-live original identity must precede any departure exemption.
++                    diagnostic['stage'] = 'proof-birth'
++                    row = birth(int(name))
++                    diagnostic['identity'] = row
++                    original_birth = dict(row)
++                    row['namespaces'] = {}
++                    for namespace in ('pid', 'mnt'):
++                        diagnostic['stage'] = 'proof-namespace:' + namespace
++                        row['namespaces'][namespace] = os.readlink(f'/proc/{name}/ns/{namespace}')
++                    diagnostic['stage'] = 'proof-birth-reread'
++                    diagnostic['observed_birth'] = birth(int(name))
++                    require(diagnostic['observed_birth'] == original_birth, 'unstable process identity')
++                    diagnostic['stage'] = 'proof-candidate-pidfd'
++                    require(not terminal(fd, diagnostic, 'candidate-proof'), 'positive exited before ownership proof')
++                    diagnostic['stage'] = 'proof-owned-domain'
++                    require(owner is not None and owner['p'].returncode is None and owner['fd'] is not None
++                            and diagnostic['expected_namespaces'] == row['namespaces'],
++                            'host buildlike conflict: ' + name + ':' + comm)
++                    diagnostic['stage'] = 'proof-owner-pidfd'
++                    require(not terminal(owner['fd'], diagnostic, 'owner-proof'), 'original namespace owner terminal')
++                    diagnostic['owned_proof'] = True
++
++                    try:
++                        # Compare every observation immediately; a later ENOENT must not hide a mismatch.
++                        diagnostic['stage'] = 'reread-comm'
++                        diagnostic['observed_comm'] = Path(f'/proc/{name}/comm').read_text().strip()
++                        require(diagnostic['observed_comm'] == comm, 'positive comm changed')
++                        diagnostic['stage'] = 'reread-birth-first'
++                        diagnostic['observed_birth'] = birth(int(name))
++                        require(diagnostic['observed_birth'] == original_birth, 'positive birth changed')
++                        diagnostic['observed_namespaces'] = {}
++                        for namespace in ('pid', 'mnt'):
++                            diagnostic['stage'] = 'reread-namespace:' + namespace
++                            observed = os.readlink(f'/proc/{name}/ns/{namespace}')
++                            diagnostic['observed_namespaces'][namespace] = observed
++                            require(observed == row['namespaces'][namespace], 'positive namespace changed')
++                        diagnostic['stage'] = 'reread-birth-last'
++                        diagnostic['observed_birth'] = birth(int(name))
++                        require(diagnostic['observed_birth'] == original_birth, 'positive birth changed')
++                    except FileNotFoundError as error:
++                        diagnostic['reread_enoent'] = error_record(error)
++                        require(terminal(fd, diagnostic, 'candidate-at-enoent'),
++                                'positive ENOENT without original terminal pidfd')
++                        require(not terminal(owner['fd'], diagnostic, 'owner-at-enoent'),
++                                'original namespace owner ended before departure exemption')
++                        retain('host_screen_first_owned_terminal_enoent', diagnostic)
++                        receipt['host_screen_owned_terminal_enoent_count'] = receipt.get(
++                            'host_screen_owned_terminal_enoent_count', 0) + 1
++                        continue
++                    diagnostic['stage'] = 'reread-candidate-pidfd'
++                    require(not terminal(fd, diagnostic, 'candidate-final'), 'positive exited during final rereads')
++                    diagnostic['stage'] = 'reread-owner-pidfd'
++                    require(not terminal(owner['fd'], diagnostic, 'owner-final'), 'original namespace owner terminal')
++                except Exception as error:
++                    diagnostic['error'] = error_record(error)
++                    raise
++                finally:
++                    if fd is not None:
++                        try:
++                            os.close(fd)  # One candidate close attempt; never signal or PID fallback.
++                        except OSError as error:
++                            diagnostic['close_error'] = error_record(error)
++                            raise
++            except Exception as error:
++                retain('host_screen_first_failure', diagnostic)
++                raise RuntimeError('host-screen candidate uncertainty: ' + name + ':' + diagnostic['stage']) from error
+     require(time.monotonic() < deadline, 'host-screen final time bound')
+ 
+ def watch(entry=False):

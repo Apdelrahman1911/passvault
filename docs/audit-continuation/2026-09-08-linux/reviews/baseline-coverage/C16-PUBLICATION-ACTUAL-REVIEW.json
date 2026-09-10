@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "disposition": "ACCEPT_C16_ACTUAL_PUBLICATION_RECEIPT",
+  "scope": "One consumed C16 source-publication result, reconciled from named retained W data only. No T access, Git/network/runtime probe, helper import/execution, application revalidation or cleanup action by reviewer.",
+  "bindings": {
+    "receipt": {
+      "path": "publication/CHECKPOINT-16-PUBLISHED.json",
+      "sha256": "6d5ec01b91b1db05bc4002c73c5b594a39c565b86b78de991851916033bdb30f",
+      "bytes": 48310
+    },
+    "config": {
+      "path": "publication/CHECKPOINT-16-CONFIG.json",
+      "sha256": "03480e4e8a18675d4a5a3d9ce809445c929e9dac4a44c420e25047d9b43b0831",
+      "bytes": 2691
+    },
+    "external": {
+      "path": "publication/CHECKPOINT-16-EXTERNAL.json",
+      "sha256": "d5955f2310504bdf6ace42d6204920a4362fab1c703d95a6976cff5b6b6dc895",
+      "bytes": 1097
+    },
+    "selection": {
+      "path": "publication/CHECKPOINT-16-PAYLOAD.json",
+      "sha256": "9d2b6f4a12a9852741018457d44cd7e26cfea4ff97ac0acd14b76ef02f3477f4",
+      "bytes": 37378
+    },
+    "source_review": {
+      "path": "reviews/baseline-coverage/CHECKPOINT-16-REVIEW.json",
+      "sha256": "6e807f71857d6f0122a182ce5546ffa32c27af11b25a6a9ac003e8f00f0ee4fa",
+      "bytes": 8992
+    },
+    "publisher_sha256": "ec66e49ac549530319a740de5f4ab2895ec2b9ce9d95e961d9bd4f4aaf3fe970",
+    "previous_C15_receipt_sha256": "d596b0a69f4a158943365eaef8a3088e169aec441dbacd7b3d9c13421164b3ca",
+    "selected_idle_slot_sha256": "32767426c8f13e22d2a9523170c10f3577d9fc65f8e8b27e499e20b630c28135"
+  },
+  "actual": {
+    "status": "PUBLISHED_EXACT_C16_SOURCE",
+    "commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+    "sole_parent": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "parent_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+    "elapsed_seconds": 7.577029203996062,
+    "terminal": {
+      "launch_tool": "a5835b",
+      "terminal_tool": "195bec",
+      "session_id": 62715,
+      "exit": 0,
+      "qualification": "Root's retained external terminal record binds this receipt and exact status/commit/tree/22-command stdout. Reviewer did not poll the finished session or directly observe its terminal."
+    },
+    "commands_completed_exit0_direct_child_reaped": 22,
+    "nonforce_dedicated_branch_pushes": 1,
+    "selected_paths": 142,
+    "changed_paths": 142
+  },
+  "independent_checks": {
+    "selection": "140 manifest paths (10803096B) plus exact payload and genuine accepted-review companions =142 paths/10849466B. All raw SHA256/size/Git-mode tuples rechecked. No workflow, active REQUEST.json, closeout02 or later source lane selected.",
+    "raw_blob_oids": "All142 SHA1(blob header + raw bytes) OIDs equal complete retained hash-object stdout.",
+    "raw_oid_output": {
+      "bytes": 5822,
+      "sha256": "922ef6121ec72a57b3cd33db56063c06f136287ede2e384c3fb116ddf1b3d115"
+    },
+    "exact_index_input": {
+      "bytes": 19626,
+      "sha256": "a1894a82ee5ae6a625e4ee6185d1908357ea548f1f7ac6f9195ccc17f6395cd7"
+    },
+    "exact_changed_names": {
+      "bytes": 12810,
+      "sha256": "ccb79a77b15a8cb55cf137e2b8f90f7be8df69a6339a0532cd1f67aaea4fbd6d"
+    },
+    "commands": "Exact22 argv vectors, common safe prefix/original T cwd, clean initial tracked/untracked output, commit message and sole nonforce dedicated push checked. All16 inline stdout hashes/byte counts verified. All22 distinct positive PIDs have owned_session==pid and recorded normal reaping/exit0; no abnormal/close-error fields.",
+    "ancestry": "Retained rev-parse/rev-list agree on exact C16 commit/tree and sole C15 parent. Before-tree/index byte/hash aggregates and original namespace identity equal the accepted C15 after values.",
+    "tree_index_aggregates": {
+      "before_tree": {
+        "bytes": 377282,
+        "sha256": "c4abd972d0b1d38fad451e313a098c1b11cb1774d8f79a23a5d3e71a78643b36"
+      },
+      "before_index": {
+        "bytes": 369011,
+        "sha256": "a914f896c12929b810ad5f00f23f41b3dc788cd6be60b13d09e615b16fb68ebe"
+      },
+      "after_index": {
+        "bytes": 387558,
+        "sha256": "2e1d74406734b3a2d2b7af3d37e1698b5c8afd2c5b376f7bf3f140af0b14d2a2"
+      },
+      "after_tree": {
+        "bytes": 396219,
+        "sha256": "554a6e16cb291a7828551104eb58bba28ab44ebc6f4e8bd1b8deee648139b1b2"
+      }
+    },
+    "whitespace": "Exactly15 accepted authored paths; exit0 and empty retained CHECKPOINT-16-WHITESPACE.log (e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855). Not an evidence-wide pass; prior raw-evidence whitespace failure remains.",
+    "representation_limit": "Whole tree/index listings are hash-only reviewed-publisher provenance, not independently rebuilt Git trees. Selected raw/index/name-list arithmetic is independently reproduced. Raw/Git/checkout EOL distinctions and the accepted source-review limits remain."
+  },
+  "captured_refs": {
+    "changed_only": "refs/heads/codex/audit-continuation-linux-20260908: 8f42274b04e206ff7254ca33d686a9666fce6723 -> e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "unchanged": {
+      "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+      "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+      "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+      "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+      "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+    },
+    "qualification": "Three pre-push and one post-push retained six-ref outputs reconcile with config/before/after maps and supplied push URL. No force/tags/protected-branch write. Captured observations are not a current lease, fresh GitHub query or protection inspection."
+  },
+  "resources_and_cleanup": {
+    "bounds": "600s total;60s ordinary Git;120s push. Launch disk>=12GiB/RAM>=25%; continuing disk>=8GiB/RAM>=20%; namespace<=100000files/512MiB. Actual elapsed7.577s and both retained samples/inventories satisfy bounds.",
+    "samples": [
+      {
+        "label": "before source publication",
+        "elapsed_seconds": 0.11084976501297206,
+        "disk_available_bytes": 20825772032,
+        "ram_available_bytes": 25791180800,
+        "ram_total_bytes": 67435888640
+      },
+      {
+        "label": "after source",
+        "elapsed_seconds": 7.576987395994365,
+        "disk_available_bytes": 20812050432,
+        "ram_available_bytes": 25786896384,
+        "ram_total_bytes": 67435888640
+      }
+    ],
+    "namespace_inventories": [
+      {
+        "label": "before source",
+        "files": 3864,
+        "directories": 1108,
+        "logical_bytes": 127758322
+      },
+      {
+        "label": "after source",
+        "files": 4177,
+        "directories": 1127,
+        "logical_bytes": 140519008
+      }
+    ],
+    "qualification": "Samples are point observations, not continuous/RSS/current-host/global-idleness proof; inventory bytes are logical, not disk reclamation. T remains necessary source/publication storage, not a build workspace.",
+    "terminal_cleanup": "Reviewed finally path closes original root/lock/parent descriptors; failures would retain close-error/FAIL_CLEANUP_HOLD. None recorded, and external exit0 reconciles. This is producer/terminal evidence, not reviewer descriptor probing. Normal direct-child reaping does not prove arbitrary descendants or hard-interruption settlement. No build/wrapper/SDK/cache/service/temp namespace created; wrapper stop N/A."
+  },
+  "accounting": {
+    "new_tests_or_closures_from_publication": 0,
+    "denominators": "19/25 original qualified closures;26/39 all confirmed families;2/12 conclusively resolved original suspicions. Eight PVD explanations and separate owner decisions unchanged.",
+    "retained_census": "199 application-intended/historical-control events +3 infrastructure controls +1 producer =203 XML, not pass/readiness/task counts. Five pure-parser controls remain separate/non-XML.",
+    "pending": "No C16 application/JUnit execution or suspicion-resolution credit. Detekt01 analyzer failure/unstarted checks and original collector/HOLD evidence remain. Detekt02 and integration03 source selections are pending fresh current-source/execution admission; neither a passing rerun nor later source work is retroactively selected."
+  },
+  "permanent_limits": "Consumed publisher/every earlier HOLD and retired-store boundary remain. PVU-007 STOP, PVU-011 NO-RETRY/no procedure inquiry, PVA-029 failure/no automatic retry, G7/G8 CLOSED, hardware/PVD/protected-ref/signing/Store/occupied1017001 restrictions unchanged. No new build/CI/request authority.",
+  "reviewer_activity": "Named inert read/hash/JSON/blob/index/name-list reconciliation only; sole reviewer-owned note written. An initial in-memory comparator transposed retained hash/ref rows; corrected before acceptance, with no subject retry. No central edit, Git/API/helper import/AST/build/test/process/held-root probe, signal, deletion, cache/temp/runtime/background workload."
+}

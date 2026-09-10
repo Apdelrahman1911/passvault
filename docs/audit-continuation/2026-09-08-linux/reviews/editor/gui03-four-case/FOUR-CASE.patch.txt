@@ -1,0 +1,477 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -101,8 +101,8 @@
+         val display = System.getProperty(PREFIX + "syntheticDisplay")
+         assumeTrue("Requires separately admitted synthetic X display", display != null)
+         checkPlatform(requireNotNull(display)) // Metadata only: parent never initializes AWT, Koin or Room.
+-        val runtime = MainNavDirectory.acquire(property("runtimeDir"), empty = true)
+-        val evidence = MainNavDirectory.acquire(property("evidenceDir"), empty = true)
++        val runtime = MainNavDirectory.acquire(property(case.runtimeProperty), empty = true)
++        val evidence = MainNavDirectory.acquire(property(case.evidenceProperty), empty = true)
+         assertFalse(runtime.path.startsWith(evidence.path) || evidence.path.startsWith(runtime.path))
+         val home = runtime.child("home")
+         val classpath = property("childClasspath").also { require(it.isNotBlank()) }
+@@ -1164,7 +1164,11 @@
+     MainNavTuple("synthetic-main-nav-one", "originalname", "originalvalue", false),
+     MainNavTuple("synthetic-main-nav-two", "survivorname", "survivorvalue", true),
+ )
+-private enum class MainNavCase { CREDENTIAL, PVU003_CHOOSER, PVA027_SETTINGS_TRAY }
++private enum class MainNavCase(val runtimeProperty: String, val evidenceProperty: String) {
++    CREDENTIAL("runtimeDir", "evidenceDir"),
++    PVU003_CHOOSER("pvu003RuntimeDir", "pvu003EvidenceDir"),
++    PVA027_SETTINGS_TRAY("pva027RuntimeDir", "pva027EvidenceDir"),
++}
+ private val PVU003_MAIN_TERMINAL_EVENTS = listOf("DRIVER_ASSERTIONS_COMPLETE", "QUIT_KEY_CALLS_COMPLETE")
+ private val PVU003_OBSERVATION_RECEIPT = Regex(
+     "PVU003_CHOOSER_HOME=[01];AFTER_CANCEL=[01];FRAME_DELIVERY=[0-9a-f]",
+--- a/scripts/audit/desktop_integration_03.init.gradle
++++ b/scripts/audit/desktop_integration_03.init.gradle
+@@ -4,8 +4,9 @@
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.testing.Test
+ 
+-// NEW fixed INTEGRATION03 source only; not execution admission. Corrected Main + UNSTARTED Room:
+-// two cases in two serial Test tasks; no rerun of the passed tray/lifecycle cases.
++// NEW explicitly expanded INTEGRATION03 source only; not execution admission.
++// Four cases in the SAME two serial KMP Test tasks: Room first, then three Main siblings.
++// App sibling class order is unspecified; no rerun of the passed tray/lifecycle cases.
+ // No Detekt: the raw-blob source snapshot has no admitted Git inventory.
+ def mode = gradle.startParameter.projectProperties['passvault.audit.desktopIntegration03Mode']
+ if (!(mode in ['prepare', 'render'])) {
+@@ -20,7 +21,9 @@
+     [project: ':shared', task: ':shared:desktopTest', worker: 'editor-room',
+      selectedClasses: ['com.passvault.shared.credential.CredentialEditorRoomIntegrationTest'], timeoutSeconds: 360],
+     [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'mainnav',
+-     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],
++     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',
++                       'com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest',
++                       'com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest'], timeoutSeconds: 1500],
+ ]
+ 
+ gradle.beforeProject { project ->
+@@ -67,6 +70,7 @@
+                 'NO_AT_BRIDGE': '1',
+             ])
+             if (selected.project == ':app-desktop') {
++                test.failFast = true // A failed sibling may leave later classes unstarted; never a class-order promise.
+                 workerEnvironment.putAll([
+                     'HOME': displayRoot + '/home',
+                     'TMPDIR': displayRoot + '/runtime', 'TMP': displayRoot + '/runtime', 'TEMP': displayRoot + '/runtime',
+@@ -78,6 +82,12 @@
+                 test.systemProperty('passvault.mainnav.syntheticDisplay', ':88')
+                 test.systemProperty('passvault.mainnav.runtimeDir', runtime + '/mainnav')
+                 test.systemProperty('passvault.mainnav.evidenceDir', evidenceRoot + '/mainnav-evidence')
++                test.systemProperty('passvault.mainnav.pvu003Chooser', 'true')
++                test.systemProperty('passvault.mainnav.pvu003RuntimeDir', runtime + '/pvu003')
++                test.systemProperty('passvault.mainnav.pvu003EvidenceDir', evidenceRoot + '/pvu003-evidence')
++                test.systemProperty('passvault.mainnav.pva027SettingsTray', 'true')
++                test.systemProperty('passvault.mainnav.pva027RuntimeDir', runtime + '/pva027')
++                test.systemProperty('passvault.mainnav.pva027EvidenceDir', evidenceRoot + '/pva027-evidence')
+                 test.doFirst {
+                     // Actual complete Test runtime, resolved before worker startup; never java.class.path.
+                     def childClasspath = test.classpath.asPath
+@@ -99,9 +109,9 @@
+             test.systemProperty('awt.useSystemAAFontSettings', 'on')
+             test.systemProperty('swing.aatext', 'true')
+             test.timeout.set(Duration.ofSeconds(selected.timeoutSeconds))
+-            // Retain app600s (Main nominal395s plus overhead) and shared360s ceilings.
+-            // Task ceilings, not native/EDT/process guarantees or additive reservations:
+-            // unchanged outer5250/6000s cancellation/settlement remains authoritative.
++            // App1500s covers three serial <=395s Main role chains plus315s allowance; shared stays360s.
++            // Inner prepare1800/render2000 and fresh outer-deadline reservations are independently bound.
++            // Cooperative ceilings, not native/EDT/process guarantees; outer5250/6000s remain authoritative.
+             test.outputs.upToDateWhen { false }
+             test.outputs.cacheIf { false }
+         }
+--- a/scripts/audit/linux_desktop_integration_03.py
++++ b/scripts/audit/linux_desktop_integration_03.py
+@@ -5,9 +5,10 @@
+ Root owns fresh source transport, original allocations/lock, outer admission,
+ pidfd/wait and disposable-copy cleanup. This program never deletes host files
+ or signals a host PID. All X/session sockets exist only in its private /tmp.
+-Two prospective cases: corrected actual Main/NavHost/Room and previously
+-unstarted real-Room editor. No tray/lifecycle rerun, Detekt, extra investigation
+-or borrowed execution identity; integration02's actual failure stays recorded.
++Four explicitly selected prospective cases in the same two KMP Test tasks:
++Room first, then original Main/PVU003 chooser/PVA027 Settings-property siblings.
++No passed tray/lifecycle rerun or Detekt; no inherited two-case admission or
++borrowed execution identity. Integration02's actual failure stays recorded.
+ Panel setup uses a fresh private Xfconf channel, never an assumed backend XML
+ path/default panel. Source publication and independent route/instance admission
+ remain UNBOUND; no earlier execution scope is reused.
+@@ -34,7 +35,7 @@
+ E = B / 'runs/linux-desktop-integration03'
+ CHECKOUT = R / 'checkout'
+ SELF, INIT = W / 'scripts/audit/linux_desktop_integration_03.py', W / 'scripts/audit/desktop_integration_03.init.gradle'
+-SOURCE = B / 'reviews/desktop-integration03/source-prepare01/SOURCE.json'
++SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+ XVFB, XAUTH, WM, DBUS = (Path('/usr/bin/' + n) for n in ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon'))
+ MOUNT, IP, XDPYINFO, XPROP = (Path('/usr/bin/' + n) for n in ('mount', 'ip', 'xdpyinfo', 'xprop'))
+@@ -64,13 +65,13 @@
+           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
+ # Root must capture a fresh complete raw-blob manifest and independent source/
+ # instance admission. Historical GUI02 publication/tool/lock identities do not apply.
+-COMMIT = '8f42274b04e206ff7254ca33d686a9666fce6723'
+-TREE = '3a8f53dddd54f5c42c34f772975f02619be118d5'
+-MEMBERS = 2757
++COMMIT = None
++TREE = None
++MEMBERS = None
+ RUN_ID = 'linux-desktop-integration03'
+ FROZEN = {
+-    SOURCE: '1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23',
+-    INIT: '2b9aec1c7366bff5d39a62f9b1aaefb60e4884866fca3ac309dc4b00940c43fb',
++    SOURCE: None,
++    INIT: '45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292',
+ }
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+ SELECTIONS = (
+@@ -79,13 +80,25 @@
+      'suite': 'CredentialEditorRoomIntegrationTest[desktop]',
+      'methods': ('native capacity draft persists through page Save and a fresh Room database reopen',),
+      'fixture': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt',
+-     'sha256': 'a67ba81ad875a4c611208d30b51e40caf87cf5381622f5d6ababf38d2953cff9'},
++     'sha256': '291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57'},
+     {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+      'class': 'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',
+      'suite': 'CredentialMainNavHostRoomIntegrationTest[desktop]',
+      'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': '32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5'},  # Root must bind the independently accepted corrected Main fixture, not failed02 bytes.
++     'sha256': 'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4'},
++    {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
++     'class': 'com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest',
++     'suite': 'Pvu003NativeChooserAdmissionIntegrationTest[desktop]',
++     'methods': ('actual Main samples Home while the export chooser is modal then cancels',),
++     'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
++     'sha256': 'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4'},
++    {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
++     'class': 'com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest',
++     'suite': 'Pva027MainSettingsTrayPropagationIntegrationTest[desktop]',
++     'methods': ('actual Main Settings updates installed tray properties through English Arabic English',),
++     'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
++     'sha256': 'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4'},
+ )
+ PRODUCTION_SOURCE = {
+     'app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt':
+@@ -93,7 +106,9 @@
+     'app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt':
+         'fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac',
+ }
+-MAINNAV_RUNTIME, MAINNAV_EVIDENCE = R / 'mainnav', E / 'mainnav-evidence'
++MAINNAV_CASES = ('mainnav', 'pvu003', 'pva027')
++MAINNAV_RUNTIME = {case: R / case for case in MAINNAV_CASES}
++MAINNAV_EVIDENCE = {case: E / (case + '-evidence') for case in MAINNAV_CASES}
+ MAINNAV_ROLES = ('seed', 'main', 'verify')
+ MAINNAV_FILES = {role + suffix: cap for role in MAINNAV_ROLES
+                  for suffix, cap in (('.events', 8192), ('.log', 256 * 1024), ('.exit', 16))}
+@@ -102,6 +117,24 @@
+     'main': ('MAIN_NATIVE_EDIT', 'PENDING_NATIVE_TUPLE', 'TOOLBAR_STAY', 'ESCAPE_STAY', 'TAB_STAY',
+              'ADD_DISCARD_DETAIL', 'CLEAN_TAB_DETAIL', 'DRIVER_ASSERTIONS_COMPLETE', 'QUIT_KEY_CALLS_COMPLETE'),
+     'verify': ('VERIFY_ORIGINAL_TUPLES', 'VERIFY_ROOM_CLOSED'),
++}
++MAINNAV_MAIN_EVENTS = {
++    'mainnav': MAINNAV_EVENTS['main'],
++    'pva027': ('PVA027_MAIN_TRAY_EN1', 'PVA027_MAIN_TRAY_AR', 'PVA027_MAIN_TRAY_EN2',
++               'DRIVER_ASSERTIONS_COMPLETE', 'QUIT_KEY_CALLS_COMPLETE'),
++}
++PVU003_MAIN_RECEIPT = (
++    rb'PVU003_CHOOSER_HOME=[01];AFTER_CANCEL=[01];FRAME_DELIVERY=[0-9a-f]\n'
++    rb'DRIVER_ASSERTIONS_COMPLETE\nQUIT_KEY_CALLS_COMPLETE\n'
++)
++MAINNAV_EVENT_COUNTS = {'mainnav': 13, 'pvu003': 7, 'pva027': 9}
++MAINNAV_QUALIFICATIONS = {
++    'mainnav': 'Actual Main/Window/NavHost native dirty Back/tab/Add and final durable Room tuples; '
++               'not transient-write exclusion, comprehensive navigation/cleanup, recovery, hardware or PVD proof.',
++    'pvu003': 'Bounded modal Home/cancel observation, not lock-cycle/deletion/deadlock proof or disproof; '
++              'receipt values must be interpreted, not forced to a suspected result.',
++    'pva027': 'Real Settings EN/AR/EN to installed tray properties; ordered non-atomic state/property samples, '
++              'not displayed tooltip, native callbacks, continuous ownership, persistence or packaging proof.',
+ }
+ MAINNAV_LOG_FAILURES = (
+     b'MAIN_NAV_FAILURE', b'Exception in thread', b'[ERROR]',
+@@ -114,8 +147,8 @@
+ WORKERS = ('mainnav', 'editor-room')
+ CHILDREN = ('home', 'tmp', 'jna', 'sqlite', 'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
+ PRIVATE = ('checkout', 'home', 'tmp', 'jna', 'sqlite', 'gradle-home', 'konan', 'android-user',
+-           'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state', 'workers', 'mainnav')
+-ORIGINAL_DIRS = (R, E, E / 'logs', E / 'xml', MAINNAV_EVIDENCE) + tuple(
++           'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state', 'workers', *MAINNAV_CASES)
++ORIGINAL_DIRS = (R, E, E / 'logs', E / 'xml', *MAINNAV_EVIDENCE.values()) + tuple(
+     R / p for p in PRIVATE) + tuple(
+     p for w in WORKERS for p in (R / 'workers' / w, *(R / 'workers' / w / c for c in CHILDREN)))
+ G = Path('/tmp/passvault-desktop-integration03')
+@@ -129,7 +162,8 @@
+                    '-Ppassvault.audit.desktopIntegration03Mode=' + mode] + tasks + FLAGS for mode, tasks in (
+     ('prepare', [':auditDesktopIntegration03Prepare']),
+     ('render', [SELECTIONS[0]['task'], '--tests', SELECTIONS[0]['class'],
+-                SELECTIONS[1]['task'], '--tests', SELECTIONS[1]['class'], '--offline']))}
++                SELECTIONS[1]['task'], '--tests', SELECTIONS[1]['class'],
++                '--tests', SELECTIONS[2]['class'], '--tests', SELECTIONS[3]['class'], '--offline']))}
+ STOP = [str(CHECKOUT / 'gradlew'), '--stop'] + FLAGS
+ ENV = {'PATH': str(JAVA / 'bin') + ':/usr/bin:/bin', 'JAVA_HOME': str(JAVA), 'LANG': 'C.UTF-8',
+        'LC_ALL': 'C.UTF-8', 'TZ': 'UTC', 'HOME': str(R / 'home'), 'GRADLE_USER_HOME': str(R / 'gradle-home'),
+@@ -151,6 +185,8 @@
+            # invariant or proof that no activation/accessibility process exists.
+            'NO_AT_BRIDGE': '1',
+            **DISPLAY_ENV}
++PREPARE_SECONDS, RENDER_SECONDS = 1800, 2000
++PRE_GUI_REQUIRED_SECONDS, PRE_RENDER_REQUIRED_SECONDS = 3500, 2900
+ CANCEL = set()
+ 
+ def require(ok, why):
+@@ -335,6 +371,8 @@
+         self.net_private = self.tmpfs_private = self.gui_settled = False
+         self.xml_preserved = self.xml_ok = False
+         self.mainnav_preserved = self.mainnav_ok = False
++        self.mainnav_collection_attempted, self.mainnav_cases = False, {}
++        self.work_deadline_ns = None
+         self.preserved_xml_suites = self.mainnav_crash_count = 0
+         self.xml_attempted = False
+         self.prepare_ok = self.render_ok = self.gui_readiness = False
+@@ -362,6 +400,10 @@
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent,
+                 'fixed fresh INTEGRATION03 outer intake; not independent execution admission')
++        deadline, now = value['work_deadline_monotonic_ns'], time.monotonic_ns()
++        require(type(deadline) is int and 0 < deadline - now <= 5250 * 1_000_000_000,
++                'original outer monotonic work deadline missing/expired/reset')
++        self.work_deadline_ns = deadline
+         self.f.expected = value['directories']
+         for path in ORIGINAL_DIRS:
+             require(str(path) in self.f.expected and self.f.expected[str(path)]['uid'] == os.getuid()
+@@ -388,8 +430,10 @@
+             require(len(selected) == 1 and selected[0]['checkout_sha256'] == digest,
+                     'frozen INTEGRATION03 fixture/production-loop source')
+         require(not os.path.lexists(CHECKOUT / '.git'), 'disposable raw source only; no borrowed repository')
+-        require(not os.listdir(self.f.directory(MAINNAV_RUNTIME))
+-                and not os.listdir(self.f.directory(MAINNAV_EVIDENCE)), 'original Main/NavHost directories must be empty')
++        for case in MAINNAV_CASES:
++            require(not os.listdir(self.f.directory(MAINNAV_RUNTIME[case]))
++                    and not os.listdir(self.f.directory(MAINNAV_EVIDENCE[case])),
++                    'original per-case Main directories must be empty: ' + case)
+ 
+     def check_inputs(self, stopping=False):
+         for path, image in self.inputs.items():
+@@ -643,7 +687,7 @@
+             require(self.settle() and os.readlink('/proc/self/ns/net') == self.parent['net'],
+                     'online preparation needs original net and an empty owned PID namespace')
+             self.resources(True)
+-            phase['build_ok'] = self.command('prepare', COMMANDS['prepare'], ENV, 3600, phase)
++            phase['build_ok'] = self.command('prepare', COMMANDS['prepare'], ENV, PREPARE_SECONDS, phase)
+         finally:
+             self.stop(phase, ENV)
+             phase['settled'] = self.settle()
+@@ -685,6 +729,21 @@
+         self.prepare_ok = (phase['build_ok'] and phase['stop_ok'] and phase['settled']
+                            and phase.get('runtime_resolved') is True and not self.cancelled())
+         require(self.prepare_ok, 'preparation failed; GUI/Test unstarted, no retry')
++
++    def admit_gui_budget(self):
++        require(self.prepare_ok and type(self.work_deadline_ns) is int, 'no GUI budget before successful preparation')
++        checked = time.monotonic_ns()
++        remaining = self.work_deadline_ns - checked
++        enough = remaining >= PRE_GUI_REQUIRED_SECONDS * 1_000_000_000
++        self.f.write(E / 'GUI-BUDGET.json', canonical({
++            'outer_work_deadline_monotonic_ns': self.work_deadline_ns, 'checked_monotonic_ns': checked,
++            'remaining_ns': remaining, 'required_seconds': PRE_GUI_REQUIRED_SECONDS, 'accepted': enough,
++            'allowances_seconds': {'render': 2000, 'render_stop': 600, 'isolation_gui': 600,
++                                   'source_after': 180, 'owned_settlement': 120},
++            'qualification': 'Cooperative reservation only; native/syscall/metadata drift can still defeat it. '
++                             'Reduced prepare or insufficient remainder leaves GUI unstarted; no automatic retry.',
++        }))
++        require(enough and not self.cancelled(), 'insufficient original outer budget; GUI unstarted/no retry')
+ 
+     def isolation(self):
+         phase = self.state('isolation')
+@@ -1143,15 +1202,19 @@
+                 require(set(os.listdir(self.f.directory(root))) == set(CHILDREN)
+                         and all(not os.listdir(self.f.directory(root / c)) for c in CHILDREN),
+                         'unused separate synthetic worker root')
+-            require(not os.listdir(self.f.directory(MAINNAV_RUNTIME))
+-                    and not os.listdir(self.f.directory(MAINNAV_EVIDENCE)), 'unused Main/NavHost runtime/evidence')
++            for case in MAINNAV_CASES:
++                require(not os.listdir(self.f.directory(MAINNAV_RUNTIME[case]))
++                        and not os.listdir(self.f.directory(MAINNAV_EVIDENCE[case])),
++                        'unused isolated Main runtime/evidence: ' + case)
+             self.live_helpers()
+             self.resources(True)
+             require(all(not owner['record']['unexpected_exit'] for owner in self.tray_owners),
+                     'original native-session owner exited before Test; no accepting a replacement')
++            require(self.work_deadline_ns - time.monotonic_ns() >= PRE_RENDER_REQUIRED_SECONDS * 1_000_000_000,
++                    'GUI setup consumed reserved render/stop/source/settlement time; no Test launch')
+             self.render_attempted = True  # Intent only; XML remains the executed-case authority.
+-            # App600 + shared360 +140s overhead; outer5250/6000 remain authoritative.
+-            phase['build_ok'] = self.command('render', COMMANDS['render'], env, 1100, phase)
++            # App1500 + shared360 +140s overhead; outer5250/6000 and both remainder guards are authoritative.
++            phase['build_ok'] = self.command('render', COMMANDS['render'], env, RENDER_SECONDS, phase)
+         finally:
+             self.stop(phase, env)
+             phase['settled'] = self.finish_gui()
+@@ -1167,8 +1230,8 @@
+         expected = {CHECKOUT / v['module'] / 'build/test-results/desktopTest' / ('TEST-' + v['class'] + '.xml'): v
+                     for v in SELECTIONS}
+         listings = []
+-        # One selected class per module; inventory/copy each module exactly once,
+-        # mapping each expected XML path to its own fixture oracle.
++        # One shared class plus three app classes in the SAME two KMP tasks. Inventory each module once;
++        # each distinct expected XML path retains its own class/method oracle, including failFast absences.
+         for module in dict.fromkeys(v['module'] for v in SELECTIONS):
+             directory = CHECKOUT / module / 'build/test-results/desktopTest'
+             task = next(v['task'] for v in SELECTIONS if v['module'] == module)
+@@ -1210,20 +1273,37 @@
+         self.xml_preserved, self.xml_ok = True, mapping and observed == set(expected)
+         self.f.write(E / 'XML-RESULT.json', canonical({
+             'captures': captures, 'preserved': True, 'mapping_ok': self.xml_ok,
+-            'declared_cases': 2, 'declared_xml_suites': 2, 'declared_test_tasks': 2,
++            'declared_cases': 4, 'declared_xml_suites': 4, 'declared_test_tasks': 2,
+             'preserved_xml_suites': self.preserved_xml_suites,
+-            'qualification': 'Two cases/two suites/two tasks; Main child roles/events are not extra cases',
++            'qualification': 'Four cases/four suites/two KMP tasks; app class order unspecified; '
++                             'failFast can leave siblings unstarted. Main roles/events are not extra cases',
+         }))
+         if not self.xml_ok:
+             self.note('missing/extra/failed/skipped rendering XML; no success from task counts or compilation')
+ 
+     def preserve_mainnav(self):
+-        require(self.gui_settled, 'no Main/NavHost evidence adoption before whole owned namespace settlement')
+-        observed = set(os.listdir(self.f.directory(MAINNAV_EVIDENCE)))
++        require(self.gui_settled, 'no Main evidence adoption before whole owned namespace settlement')
++        require(not self.mainnav_collection_attempted, 'Main evidence collection already attempted; no retry')
++        self.mainnav_collection_attempted = True
++        for case in MAINNAV_CASES:
++            try:
++                self.mainnav_cases[case] = self.preserve_mainnav_case(case)
++            except Exception as error:
++                self.mainnav_cases[case] = {'preserved': False, 'mapping_ok': False, 'crash_count': None}
++                self.note(case + ' evidence collection HOLD: ' + str(error))  # Preserve other cases once, never retry this one.
++        self.mainnav_preserved = all(row['preserved'] for row in self.mainnav_cases.values())
++        self.mainnav_ok = self.mainnav_preserved and all(row['mapping_ok'] for row in self.mainnav_cases.values())
++        self.mainnav_crash_count = sum(row['crash_count'] or 0 for row in self.mainnav_cases.values())
++        require(self.mainnav_preserved, 'one or more Main case collections uncertain; cleanup HOLD')
++
++    def preserve_mainnav_case(self, case):
++        require(case in MAINNAV_CASES, 'fixed Main case only')
++        runtime, evidence = MAINNAV_RUNTIME[case], MAINNAV_EVIDENCE[case]
++        observed = set(os.listdir(self.f.directory(evidence)))
+         require(observed <= set(MAINNAV_FILES), 'unexpected Main/NavHost producer evidence; cleanup HOLD')
+         contents, images, size = {}, {}, 0
+         for name in sorted(observed):
+-            path = MAINNAV_EVIDENCE / name
++            path = evidence / name
+             data, image = self.f.read(path, MAINNAV_FILES[name])
+             size += len(data)
+             require(size <= 811056 and path not in self.f.evidence, 'fixed nine Main/NavHost receipts/exclusive adoption')
+@@ -1247,11 +1327,11 @@
+ 
+         diagnostics = []
+         try:
+-            runtime_fd = self.f.directory(MAINNAV_RUNTIME)
++            runtime_fd = self.f.directory(runtime)
+             children = set(os.listdir(runtime_fd))
+             require(children <= {'home', *MAINNAV_ROLES}, 'unexpected Main/NavHost runtime child')
+             for child in sorted(children):
+-                directory = MAINNAV_RUNTIME / child
++                directory = runtime / child
+                 directory_fd = self.f.directory(directory)
+                 value = os.fstat(directory_fd)
+                 require(value.st_uid == os.getuid() and value.st_mode == stat.S_IFDIR | 0o700
+@@ -1269,29 +1349,38 @@
+                     decoded = data.decode('utf-8')
+                     require(decoded and all(c.isprintable() or c in '\t\r\n' for c in decoded),
+                             'Main/NavHost crash diagnostic must be bounded text, not binary/archive')
+-                    saved = self.f.write(MAINNAV_EVIDENCE / (child + '.hs-error.log'), data)
++                    saved = self.f.write(evidence / (child + '.hs-error.log'), data)
+                     diagnostics.append({'role': child, 'source': str(source), 'original': original, 'saved': saved})
+         except Exception as error:
+             raise RuntimeError('Main/NavHost crash preservation HOLD before runtime removal: ' + str(error)) from error
+ 
+-        expected = {role + '.events': ('\n'.join(MAINNAV_EVENTS[role]) + '\n').encode() for role in MAINNAV_ROLES}
++        expected = {role + '.events': ('\n'.join(MAINNAV_EVENTS[role]) + '\n').encode()
++                    for role in MAINNAV_ROLES if role != 'main'}
+         expected.update({role + '.exit': b'0\n' for role in MAINNAV_ROLES})
+-        self.mainnav_crash_count = len(diagnostics)
+-        self.mainnav_preserved = True
+-        self.mainnav_ok = (observed == set(MAINNAV_FILES) and not diagnostics
+-                           and all(contents.get(name) == value for name, value in expected.items())
+-                           and all(not any(marker in contents.get(role + '.log', b'') for marker in MAINNAV_LOG_FAILURES)
+-                                   for role in MAINNAV_ROLES))
+-        self.f.write(E / 'MAINNAV-RESULT.json', canonical({
++        observation = None
++        if case == 'pvu003':
++            main_receipt = contents.get('main.events', b'')
++            main_ok = re.fullmatch(PVU003_MAIN_RECEIPT, main_receipt) is not None
++            if main_ok:
++                observation = main_receipt.split(b'\n', 1)[0].decode('ascii')
++        else:
++            expected['main.events'] = ('\n'.join(MAINNAV_MAIN_EVENTS[case]) + '\n').encode()
++            main_ok = True
++        mapping = (observed == set(MAINNAV_FILES) and not diagnostics and main_ok
++                   and all(contents.get(name) == value for name, value in expected.items())
++                   and all(not any(marker in contents.get(role + '.log', b'') for marker in MAINNAV_LOG_FAILURES)
++                           for role in MAINNAV_ROLES))
++        saved = self.f.write(E / (case.upper() + '-RESULT.json'), canonical({
++            'case': case, 'runtime_directory': str(runtime), 'evidence_directory': str(evidence),
+             'required_images': images, 'required_bytes': size, 'required_present': observed == set(MAINNAV_FILES),
+-            'preserved': True, 'mapping_ok': self.mainnav_ok, 'crash_diagnostics': diagnostics,
+-            'declared_cases': 1, 'child_roles_planned': 3, 'ordered_events_required': 13,
+-            'qualification': 'Actual Main/Window/NavHost native dirty Back/tab/Add and final durable Room tuples '
+-                             'require this exact evidence plus XML; roles/events are not extra cases. Not transient '
+-                             'write exclusion, comprehensive navigation/cleanup, recovery, hardware or PVD proof.',
++            'preserved': True, 'mapping_ok': mapping, 'crash_diagnostics': diagnostics,
++            'declared_cases': 1, 'child_roles_planned': 3, 'ordered_events_required': MAINNAV_EVENT_COUNTS[case],
++            'bounded_observation_receipt': observation,
++            'qualification': MAINNAV_QUALIFICATIONS[case] + ' Exact receipts AND XML are required; roles/events are not cases.',
+         }))
+-        if not self.mainnav_ok and self.render_attempted:
+-            self.note('missing/mismatched Main/NavHost receipts, terminal diagnostic or retained crash; no Main pass')
++        if not mapping and self.render_attempted:
++            self.note(case + ': missing/mismatched receipts, terminal diagnostic or retained crash; no case pass')
++        return {'preserved': True, 'mapping_ok': mapping, 'crash_count': len(diagnostics), 'result_image': saved}
+ 
+ 
+ def main():
+@@ -1320,6 +1409,7 @@
+         batch.source_check('BEFORE')
+         batch.before = True
+         batch.prepare()
++        batch.admit_gui_budget()
+         batch.isolation()
+         batch.gui_start()
+         batch.render()
+@@ -1366,11 +1456,12 @@
+             'original_tray_owners_settled': batch.tray_owners_settled,
+             'original_tray_owners': [o['record'] for o in batch.tray_owners],
+             'gui_helpers': [h['record'] for h in batch.helpers], 'validation_mapping_ok': passed,
+-            'declared_rendering_cases': 2, 'declared_xml_suites': 2, 'declared_test_tasks': 2,
++            'declared_rendering_cases': 4, 'declared_xml_suites': 4, 'declared_test_tasks': 2,
+             'preserved_xml_suites': batch.preserved_xml_suites, 'executed_cases_require_exact_xml': True,
+             'mainnav_evidence_preserved': batch.mainnav_preserved, 'mainnav_mapping_ok': batch.mainnav_ok,
+-            'mainnav_crash_diagnostics': batch.mainnav_crash_count,
+-            'expected_mainnav_files': 9, 'mainnav_child_roles_planned': 3,
++            'mainnav_crash_diagnostics': batch.mainnav_crash_count, 'mainnav_case_results': batch.mainnav_cases,
++            'expected_mainnav_files': 27, 'mainnav_child_roles_planned': 9,
++            'outer_work_deadline_monotonic_ns': batch.work_deadline_ns,
+             'xml_preserved': batch.xml_preserved, 'xml_mapping_ok': batch.xml_ok,
+             'errors': batch.errors, 'phases': batch.phases,
+             'source_references': {'manifest_sha256': FROZEN[SOURCE],
+@@ -1379,12 +1470,12 @@
+                                   'init_sha256': FROZEN[INIT], 'representation': 'RAW_GIT_BLOBS'},
+             'resource_point_samples_not_ownership_or_cleanup_proof': batch.inventories,
+             'independent_semantic_acceptance': False,
+-            'qualification': 'Two Linux cases: corrected actual Main dirty Back/tab/Add/final durable Room tuples '
+-                             'and native editor page Save/encrypted Room reopen. Earlier tray/lifecycle passes '
+-                             'and failed02 Main evidence remain separate; no tray/lifecycle case is selected here. '
+-                             'Not transient-write exclusion, comprehensive Main/provider cleanup or navigation/'
+-                             'race/IME, general accessibility, inverse OS locale, packaged image, other platforms, '
+-                             'security hardware, other investigations or PVD proof'}
++            'qualification': 'Four Linux cases in two existing serial KMP tasks: real-Room editor first, then '
++                              'original Main/PVU003 chooser/PVA027 Settings-property siblings in unspecified class order. '
++                              'Earlier lifecycle/tray passes and failed02 Main evidence remain separate, not rerun. '
++                              'PVU003 is bounded observation; PVA027 is sampled property propagation, not closure. '
++                              'Not transient-write exclusion, comprehensive cleanup/navigation, race/IME, general AX, '
++                              'displayed tooltip/tray callbacks, persistence, packaging, other platforms/hardware or PVD proof'}
+         try:
+             files.write(E / 'INNER-RESULT.json', canonical(result))
+             files.verify()

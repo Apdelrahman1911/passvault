@@ -1,0 +1,49 @@
+{
+  "source_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+  "source_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+  "namespace_parent": [
+    23,
+    498323,
+    0,
+    16877
+  ],
+  "selection_sha256": "9d2b6f4a12a9852741018457d44cd7e26cfea4ff97ac0acd14b76ef02f3477f4",
+  "review_path": "reviews/baseline-coverage/CHECKPOINT-16-REVIEW.json",
+  "review_sha256": "6e807f71857d6f0122a182ce5546ffa32c27af11b25a6a9ac003e8f00f0ee4fa",
+  "companions": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-16-PAYLOAD.json",
+      "sha256": "9d2b6f4a12a9852741018457d44cd7e26cfea4ff97ac0acd14b76ef02f3477f4",
+      "bytes": 37378,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-16-REVIEW.json",
+      "sha256": "6e807f71857d6f0122a182ce5546ffa32c27af11b25a6a9ac003e8f00f0ee4fa",
+      "bytes": 8992,
+      "git_mode": "100644"
+    }
+  ],
+  "slot_sha256": "32767426c8f13e22d2a9523170c10f3577d9fc65f8e8b27e499e20b630c28135",
+  "slot_state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
+  "remotes": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "receipt_name": "CHECKPOINT-16-PUBLISHED.json",
+  "commit_message": "Preserve static diagnostics and prepare focused verification followups",
+  "root_admission": {
+    "owner": "/root",
+    "utc": "2026-09-10T21:07:48.698407+00:00",
+    "purpose": "ONE_C16_SOURCE_PUBLICATION_ONLY",
+    "publisher_sha256": "ec66e49ac549530319a740de5f4ab2895ec2b9ce9d95e961d9bd4f4aaf3fe970",
+    "selection_files": 140,
+    "total_with_companions": 142,
+    "commands": "Exact independent C16 source-publication acceptance and name-only publisher delta; locked source/parent/index/protected-ref/slot/resource checks before one nonforce dedicated-branch push. Source agents work only outside frozen selection, no module changes. No request/CI/build/test/wrapper/SDK/held-scope action or automatic retry.",
+    "cleanup": "Existing600s total/60s ordinaryGit/120s push deadlines and installed signal/reaping/fsync handling. Necessary T/source/evidence retained; no disposable build/cache/runtime/service created. Abnormal descendants/hard-interruption uncertainty stays HOLD; no unrelated signal/delete."
+  }
+}

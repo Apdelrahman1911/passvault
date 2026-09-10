@@ -1,0 +1,13 @@
+--- a/scripts/audit/linux_desktop_integration_03.py
++++ b/scripts/audit/linux_desktop_integration_03.py
+@@ -310,8 +310,8 @@
+         require(not self.pending and not self.write_close_failed, 'unfinished/uncertain original evidence files')
+         for path in tuple(self.dirs):
+             self.directory(path)
+-        # 84 success + at most 3 Main child crash texts + 6 extra XML (8 total XML).
+-        require(len(self.evidence) <= 93 and sum(v['pin']['bytes'] for v in self.evidence.values()) <= 112 * MIB,
++        # 107 success + at most 9 Main child crash texts + 4 extra XML (8 total XML) = 120 items.
++        require(len(self.evidence) <= 120 and sum(v['pin']['bytes'] for v in self.evidence.values()) <= 112 * MIB,
+                 'compact evidence aggregate bound')
+         for path, expected in self.evidence.items():
+             require(self.read(path, 4 * MIB)[1] == expected, 'preserved evidence drift')

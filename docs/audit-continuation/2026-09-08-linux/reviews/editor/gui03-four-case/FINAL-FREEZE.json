@@ -1,0 +1,151 @@
+{
+  "format": "passvault-gui03-four-case-final-freeze-v1",
+  "author": "/root/editor",
+  "status": "SOURCE_ONLY_PENDING_INDEPENDENT_REVIEW_UNCOMPILED_UNEXECUTED",
+  "correction_reason": "Root independently challenged the retained two-case Files.verify item ceiling. Author accepts exact fixed-location census and changes only its comment/count.",
+  "sources": [
+    {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4",
+      "bytes": 66405,
+      "lf": 1212
+    },
+    {
+      "path": "scripts/audit/desktop_integration_03.init.gradle",
+      "sha256": "45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292",
+      "bytes": 11662,
+      "lf": 194
+    },
+    {
+      "path": "scripts/audit/linux_desktop_integration_03.py",
+      "sha256": "d79fb973dacd13b9c2c4ba2b11336ca44ac5d4e73104208c96c9a9a1b56adf8d",
+      "bytes": 91342,
+      "lf": 1494
+    }
+  ],
+  "initial_review_artifacts_preserved": {
+    "before_manifest_sha256": "bff90acb34a582d1f8a3c0afad91b4dab2ea99aad36be1164dffa0f9c8747163",
+    "combined_patch_sha256": "e23e676484658fb0fe79137cf6fb2da62bf92ed5e37091ca3f7e4ff548fb4f51",
+    "delta_sha256": "a5df1c888d17686b89952d68dad61aef4bbd945684fc468576d225504c07e67f",
+    "author_note_sha256": "9b5b371b9e9a2a34c4d845d9cacb5f189c5975b87293a5a5451d79928fe2b755"
+  },
+  "cap_correction": {
+    "before_inner_sha256": "39909c06e6354f78dd4f51c2fa0eedd521bf5bb1c0a7f726499e1f56efb4eba8",
+    "after_inner_sha256": "d79fb973dacd13b9c2c4ba2b11336ca44ac5d4e73104208c96c9a9a1b56adf8d",
+    "patch_path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/gui03-four-case/EVIDENCE-CAP-CORRECTION.patch.txt",
+    "patch_sha256": "8dbd8f6cc343fdb91dad8b451f8bf05056e35557ab104c52352a0473d34fa5c7",
+    "literal_changes": 1,
+    "inverse_exact": true,
+    "supersedes_only_inner_pin_in_initial_artifacts": true
+  },
+  "fixed_success_census": {
+    "command_labels": [
+      "prepare",
+      "prepare-stop",
+      "loopback-up",
+      "loopback-readback",
+      "private-tmpfs",
+      "xauthority",
+      "display-readiness",
+      "panel-channel-empty",
+      "panel-property-00",
+      "panel-property-01",
+      "panel-property-02",
+      "panel-property-03",
+      "panel-property-04",
+      "panel-property-05",
+      "panel-property-06",
+      "panel-property-07",
+      "panel-property-08",
+      "panel-property-09",
+      "panel-channel-readback",
+      "panel-array-01",
+      "panel-array-07",
+      "wm-root-readiness",
+      "wm-self-readiness",
+      "render",
+      "render-stop"
+    ],
+    "command_outputs_per_label": [
+      "logs/{label}.log",
+      "{label}-INTENT.json"
+    ],
+    "command_item_count": 50,
+    "helper_roles": [
+      "xvfb",
+      "dbus",
+      "wm",
+      "panel"
+    ],
+    "helper_outputs_per_role": [
+      "logs/helper-{role}.log",
+      "helper-{role}-INTENT.json"
+    ],
+    "helper_item_count": 8,
+    "standalone_json": [
+      "SOURCE-BEFORE.json",
+      "SOURCE-AFTER.json",
+      "RUNTIME-CLASSPATH.json",
+      "PHASE-prepare.json",
+      "PHASE-isolation.json",
+      "PHASE-gui-start.json",
+      "PHASE-render.json",
+      "GUI-BUDGET.json",
+      "GUI-PREFLIGHT.json",
+      "PANEL-CONFIG.json",
+      "GUI-READINESS.json",
+      "GUI-CLEANUP.json",
+      "XML-RESULT.json",
+      "MAINNAV-RESULT.json",
+      "PVU003-RESULT.json",
+      "PVA027-RESULT.json",
+      "INNER-PREFLIGHT.json",
+      "INNER-RESULT.json"
+    ],
+    "standalone_json_count": 18,
+    "main_case_roots": [
+      "mainnav",
+      "pvu003",
+      "pva027"
+    ],
+    "main_roles": [
+      "seed",
+      "main",
+      "verify"
+    ],
+    "main_suffixes": [
+      ".events",
+      ".log",
+      ".exit"
+    ],
+    "main_raw_item_count": 27,
+    "selected_xml": [
+      "shared--TEST-com.passvault.shared.credential.CredentialEditorRoomIntegrationTest.xml",
+      "app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+      "app-desktop--TEST-com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest.xml",
+      "app-desktop--TEST-com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest.xml"
+    ],
+    "selected_xml_count": 4,
+    "unique_success_items": 107
+  },
+  "bounded_failure_additions": {
+    "main_role_crash_copies": 9,
+    "crash_paths_shape": "{case}-evidence/{role}.hs-error.log",
+    "extra_xml": 4,
+    "maximum_xml_total": 8,
+    "maximum_evidence_items": 120,
+    "classification": "Fixed-location cap, not a claim that all independent failure maxima are simultaneously reachable or observed."
+  },
+  "unchanged_bounds": {
+    "aggregate_bytes": 117440512,
+    "per_file_caps": "Unchanged",
+    "pending_or_uncertain_file": "HOLD, not counted as a completed file or retried",
+    "byte_qualification": "112MiB remains an independent aggregate ceiling; this count correction does not authorize simultaneous saturation of every individual byte cap."
+  },
+  "not_counted": [
+    "SOURCE-STOP is not written in wrapper_only source checks.",
+    "OUTER-INTENT and tool/source inputs are read inputs, not owned inner evidence writes.",
+    "Private GUI authority/configuration/runtime files are not evidence-map entries."
+  ],
+  "no_new_tests_or_execution": true
+}

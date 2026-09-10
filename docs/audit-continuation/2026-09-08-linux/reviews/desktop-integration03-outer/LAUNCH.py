@@ -4,9 +4,9 @@
 Root externally freezes REQUEST + genuine reviewer approval, including under the
 original lock. No old helper is imported. No hostile-root/global-idle/no-escape
 claim; blocked syscalls/kernel failure can defeat every userspace time bound.
-Two cases / two XML suites: corrected actual Main/NavHost/Room and previously
-unstarted real-Room editor. Two serial Test tasks in one prepare/render cycle;
-child roles are not cases. Successful lifecycle/tray cases are not rerun.
+Four cases / four XML suites: real-Room editor, corrected Main/NavHost/Room,
+PVU003 chooser/Home/cancel and PVA027 Settings-to-tray properties. Two serial
+Test tasks share one cycle; child roles are not cases. Passing cases are not rerun.
 No Detekt or old source-store/pin assumption. Future source only, not retry admission.
 """
 import fcntl
@@ -15,6 +15,7 @@ import json
 import os
 from pathlib import Path
 import re
+import select
 import signal
 import stat
 import subprocess
@@ -33,7 +34,7 @@ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.l
 # and fresh instance review. Never borrow consumed02, TRAY01 or GUI02 authority.
 GITDIR = None
 INNER, INIT = W / 'scripts/audit/linux_desktop_integration_03.py', W / 'scripts/audit/desktop_integration_03.init.gradle'
-SOURCE = B / 'reviews/desktop-integration03/source-prepare01/SOURCE.json'
+SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
 JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
 RELEASE = JAVA.parent.parent / 'release'
 PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
@@ -53,7 +54,7 @@ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
 DEVICE = None
 EXPECTED_LOCK = None
 FROZEN = {INNER: None, INIT: None, SOURCE: None}
-TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav'.split()
+TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav pvu003 pva027'.split()
 WORKERS = ['mainnav', 'editor-room']
 CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
 DIRS = TOP + [f'workers/{w}' for w in WORKERS] + [f'workers/{w}/{d}' for w in WORKERS for d in CHILDREN]
@@ -195,6 +196,28 @@ def identity(pid, namespaces=('pid', 'mnt')):
 
 def screen():
     global churn
+
+    def terminal(fd, diagnostic, label):
+        diagnostic['pidfd_observations'][label] = None
+        poller = select.poll()
+        poller.register(fd, select.POLLIN)
+        events = poller.poll(0)
+        diagnostic['pidfd_observations'][label] = [mask for _, mask in events]
+        require(not events or (len(events) == 1 and events[0][0] == fd and events[0][1] != 0
+                and not events[0][1] & ~(select.POLLIN | select.POLLHUP)), 'uncertain pidfd readiness')
+        return bool(events)
+
+    def error_record(error):
+        return {'type': type(error).__name__, 'errno': getattr(error, 'errno', None),
+                'message': str(error)[:256]}
+
+    def retain(key, diagnostic):
+        if len(encoded(diagnostic)) > 4096:
+            receipt.setdefault('host_screen_first_failure', {'pid': diagnostic['pid'],
+                'stage': diagnostic['stage'], 'diagnostic_overflow': True})
+            raise RuntimeError('host-screen diagnostic bound')
+        receipt.setdefault(key, decode(encoded(diagnostic)))
+
     deadline = min(time.monotonic() + 5, END)
     with os.scandir('/proc') as entries:
         for index, entry in enumerate(entries):
@@ -202,22 +225,96 @@ def screen():
             name = entry.name
             if not name.isdecimal():
                 continue
+            owner, fd = child, None
+            diagnostic = {'pid': int(name), 'owner_pid': None if owner is None else owner['p'].pid,
+                'comm': None, 'stage': 'pidfd-open', 'owned_proof': False,
+                'expected_namespaces': None if owned_domain is None else dict(owned_domain),
+                'pidfd_observations': {}}
             try:
-                comm = Path(f'/proc/{name}/comm').read_text().strip()
-            except FileNotFoundError:
-                churn += 1  # Unclassified disappearance BEFORE any positive indication; NOT benign/idle proof.
-                continue
-            except OSError:
-                raise RuntimeError('live/unreadable potential host workload')
-            if BUILDLIKE.fullmatch(comm):
                 try:
-                    row = identity(int(name))
-                    require(Path(f'/proc/{name}/comm').read_text().strip() == comm and identity(int(name)) == row,
-                            'positive process birth/namespace/comm changed')
-                except (OSError, RuntimeError):
-                    raise RuntimeError('positive buildlike process vanished/changed/unreadable')
-                require(child is not None and child['p'].returncode is None and owned_domain == row['namespaces'],
-                        'host buildlike conflict: ' + name + ':' + comm)
+                    try:
+                        fd = os.pidfd_open(int(name), 0)  # Pin BEFORE the first positive comm observation.
+                    except ProcessLookupError:
+                        churn += 1  # Pre-positive and unclassified; NOT benign/idle proof.
+                        continue
+                    diagnostic['stage'] = 'comm-initial'
+                    try:
+                        comm = Path(f'/proc/{name}/comm').read_text().strip()
+                    except FileNotFoundError:
+                        require(terminal(fd, diagnostic, 'prepositive-enoent'),
+                                'live/unreadable potential host workload')
+                        churn += 1  # Still pre-positive and unclassified.
+                        continue
+                    diagnostic['comm'] = comm
+                    if not BUILDLIKE.fullmatch(comm):
+                        continue
+
+                    # A complete, still-live original identity must precede any departure exemption.
+                    diagnostic['stage'] = 'proof-birth'
+                    row = birth(int(name))
+                    diagnostic['identity'] = row
+                    original_birth = dict(row)
+                    row['namespaces'] = {}
+                    for namespace in ('pid', 'mnt'):
+                        diagnostic['stage'] = 'proof-namespace:' + namespace
+                        row['namespaces'][namespace] = os.readlink(f'/proc/{name}/ns/{namespace}')
+                    diagnostic['stage'] = 'proof-birth-reread'
+                    diagnostic['observed_birth'] = birth(int(name))
+                    require(diagnostic['observed_birth'] == original_birth, 'unstable process identity')
+                    diagnostic['stage'] = 'proof-candidate-pidfd'
+                    require(not terminal(fd, diagnostic, 'candidate-proof'), 'positive exited before ownership proof')
+                    diagnostic['stage'] = 'proof-owned-domain'
+                    require(owner is not None and owner['p'].returncode is None and owner['fd'] is not None
+                            and diagnostic['expected_namespaces'] == row['namespaces'],
+                            'host buildlike conflict: ' + name + ':' + comm)
+                    diagnostic['stage'] = 'proof-owner-pidfd'
+                    require(not terminal(owner['fd'], diagnostic, 'owner-proof'), 'original namespace owner terminal')
+                    diagnostic['owned_proof'] = True
+
+                    try:
+                        # Compare every observation immediately; a later ENOENT must not hide a mismatch.
+                        diagnostic['stage'] = 'reread-comm'
+                        diagnostic['observed_comm'] = Path(f'/proc/{name}/comm').read_text().strip()
+                        require(diagnostic['observed_comm'] == comm, 'positive comm changed')
+                        diagnostic['stage'] = 'reread-birth-first'
+                        diagnostic['observed_birth'] = birth(int(name))
+                        require(diagnostic['observed_birth'] == original_birth, 'positive birth changed')
+                        diagnostic['observed_namespaces'] = {}
+                        for namespace in ('pid', 'mnt'):
+                            diagnostic['stage'] = 'reread-namespace:' + namespace
+                            observed = os.readlink(f'/proc/{name}/ns/{namespace}')
+                            diagnostic['observed_namespaces'][namespace] = observed
+                            require(observed == row['namespaces'][namespace], 'positive namespace changed')
+                        diagnostic['stage'] = 'reread-birth-last'
+                        diagnostic['observed_birth'] = birth(int(name))
+                        require(diagnostic['observed_birth'] == original_birth, 'positive birth changed')
+                    except FileNotFoundError as error:
+                        diagnostic['reread_enoent'] = error_record(error)
+                        require(terminal(fd, diagnostic, 'candidate-at-enoent'),
+                                'positive ENOENT without original terminal pidfd')
+                        require(not terminal(owner['fd'], diagnostic, 'owner-at-enoent'),
+                                'original namespace owner ended before departure exemption')
+                        retain('host_screen_first_owned_terminal_enoent', diagnostic)
+                        receipt['host_screen_owned_terminal_enoent_count'] = receipt.get(
+                            'host_screen_owned_terminal_enoent_count', 0) + 1
+                        continue
+                    diagnostic['stage'] = 'reread-candidate-pidfd'
+                    require(not terminal(fd, diagnostic, 'candidate-final'), 'positive exited during final rereads')
+                    diagnostic['stage'] = 'reread-owner-pidfd'
+                    require(not terminal(owner['fd'], diagnostic, 'owner-final'), 'original namespace owner terminal')
+                except Exception as error:
+                    diagnostic['error'] = error_record(error)
+                    raise
+                finally:
+                    if fd is not None:
+                        try:
+                            os.close(fd)  # One candidate close attempt; never signal or PID fallback.
+                        except OSError as error:
+                            diagnostic['close_error'] = error_record(error)
+                            raise
+            except Exception as error:
+                retain('host_screen_first_failure', diagnostic)
+                raise RuntimeError('host-screen candidate uncertainty: ' + name + ':' + diagnostic['stage']) from error
     require(time.monotonic() < deadline, 'host-screen final time bound')
 
 def watch(entry=False):
@@ -627,7 +724,8 @@ def main():
     output('OUTER-ALLOCATION.json', encoded(allocation))
     os.fsync(directory(E.parent))
     os.fsync(directory(R.parent))
-    for path in (E / 'logs', E / 'xml', E / 'mainnav-evidence', *(R / p for p in DIRS)):
+    for path in (E / 'logs', E / 'xml', E / 'mainnav-evidence', E / 'pvu003-evidence', E / 'pva027-evidence',
+                 *(R / p for p in DIRS)):
         directory(path, True)
     oid_data, oid_image = oid_requests(expected)
     receipt['raw_transport'] = {'format': 'git-cat-file-batch-raw-blobs', 'members': len(expected),
@@ -681,6 +779,7 @@ def main():
             authority()
             output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-desktop-integration03-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
                 'source_representation': 'RAW_GIT_BLOBS', 'source_members': MEMBERS, 'parent_namespaces': parent_ns,
+                'work_deadline_monotonic_ns': int(WORK_END * 1_000_000_000),
                 'directories': {str(p): v[1] for p, v in directories.items() if p == R or R in p.parents or p == E or E in p.parents},
                 'images': {str(p): images[str(p)] for p in REQUIRED}, 'outer_images': images,
                 'packet': {'request': request_image, 'approval': approval_image}, 'device_model': DEVICE, 'raw_source': before}))
@@ -698,6 +797,32 @@ def main():
             and value['initial_net'] == parent_ns['net'] and value['nonpropagating_mounts'] is True,
             'original live namespace/preflight binding absent')
     receipt['inner_preflight'] = preflight
+    require(type(result['outer_work_deadline_monotonic_ns']) is int
+            and result['outer_work_deadline_monotonic_ns'] == int(WORK_END * 1_000_000_000),
+            'inner must echo original outer deadline, not reset its remaining budget')
+    case_rows = result['mainnav_case_results']
+    require(isinstance(case_rows, dict) and set(case_rows) == {'mainnav', 'pvu003', 'pva027'},
+            'exact three Main case results required')
+    receipt['mainnav_case_results'] = {}
+    for case in ('mainnav', 'pvu003', 'pva027'):
+        row = case_rows[case]
+        require(isinstance(row, dict) and set(row) == {'preserved', 'mapping_ok', 'crash_count', 'result_image'}
+                and row['preserved'] is True and type(row['mapping_ok']) is bool
+                and type(row['crash_count']) is int and 0 <= row['crash_count'] <= 3,
+                'Main case preservation schema')
+        case_raw, case_image = capture(E / (case.upper() + '-RESULT.json'), MIB)
+        case_value = decode(case_raw)
+        require(case_image == row['result_image'] and case_value['case'] == case
+                and case_value['runtime_directory'] == str(R / case)
+                and case_value['evidence_directory'] == str(E / (case + '-evidence'))
+                and case_value['declared_cases'] == 1 and case_value['child_roles_planned'] == 3
+                and case_value['preserved'] is True and case_value['mapping_ok'] == row['mapping_ok']
+                and len(case_value['crash_diagnostics']) == row['crash_count'], 'Main case saved result binding')
+        if code == 0:
+            require(row['mapping_ok'] is True and row['crash_count'] == 0
+                    and case_value['required_present'] is True and len(case_value['required_images']) == 9,
+                    'successful Main case requires exact complete receipt set')
+        receipt['mainnav_case_results'][case] = case_image
     require(all(type(result[k]) is bool for k in ('gui_attempted', 'render_attempted', 'net_private_before_gui',
             'tmpfs_private_before_gui', 'gui_helpers_settled', 'mainnav_evidence_preserved'))
             and result['gui_helpers_settled'] is True and result['mainnav_evidence_preserved'] is True
@@ -713,6 +838,17 @@ def main():
                 and gui['tmpfs_inodes'] == 4096 and gui['display'] == ':88' and gui['screen'] == '1280x1024x24'
                 and gui['authority_path'] == '/tmp/passvault-desktop-integration03/Xauthority', 'GUI private preflight mismatch')
         receipt['gui_preflight'] = gui_preflight
+        budget_raw, budget_image = capture(E / 'GUI-BUDGET.json', 65536)
+        budget = decode(budget_raw)
+        require(budget['outer_work_deadline_monotonic_ns'] == int(WORK_END * 1_000_000_000)
+                and type(budget['checked_monotonic_ns']) is int and type(budget['remaining_ns']) is int
+                and budget['remaining_ns'] == budget['outer_work_deadline_monotonic_ns'] - budget['checked_monotonic_ns']
+                and budget['required_seconds'] == 3500 and budget['accepted'] is True
+                and budget['remaining_ns'] >= 3500 * 1_000_000_000
+                and budget['allowances_seconds'] == {'render': 2000, 'render_stop': 600,
+                    'isolation_gui': 600, 'source_after': 180, 'owned_settlement': 120},
+                'GUI launch requires original cooperative remaining-budget receipt')
+        receipt['gui_budget'] = budget_image
     else:
         require(code == 1 and result['render_attempted'] is False and result['gui_helpers'] == [],
                 'unstarted GUI cannot claim rendering/success/helpers')
@@ -724,12 +860,12 @@ def main():
                 and all(type(result[k]) is int for k in ('declared_rendering_cases', 'declared_xml_suites',
                 'declared_test_tasks', 'preserved_xml_suites', 'expected_mainnav_files',
                 'mainnav_child_roles_planned', 'mainnav_crash_diagnostics'))
-                and result['declared_rendering_cases'] == 2
-                and result['declared_xml_suites'] == result['preserved_xml_suites'] == 2
+                and result['declared_rendering_cases'] == 4
+                and result['declared_xml_suites'] == result['preserved_xml_suites'] == 4
                 and result['declared_test_tasks'] == 2
-                and result['expected_mainnav_files'] == 9 and result['mainnav_child_roles_planned'] == 3
+                and result['expected_mainnav_files'] == 27 and result['mainnav_child_roles_planned'] == 9
                 and result['mainnav_crash_diagnostics'] == 0,
-                'success requires exact corrected MainNavRoom1/previously unstarted realRoom1, two XML suites and MainNav evidence; '
+                'success requires four exact cases/four XML suites/two KMP tasks and three isolated Main receipt sets; '
                 'still pending independent reconciliation')
     receipt['gui_scope'] = {k: result[k] for k in ('gui_attempted', 'render_attempted', 'gui_helpers_settled', 'mainnav_evidence_preserved')}
     require(source_check(expected) == before, 'outer raw-source after mismatch')

@@ -1,0 +1,52 @@
+{
+  "at_utc": "2026-09-10T21:42:37.021042+00:00",
+  "ci_capture": "reviews/detekt02/c16-preflight/CI-CAPTURE.json",
+  "ci_capture_sha256": "ae6b747358e1fa578659d5227ec8063b6b3863ff17771f624fa95fcdd078cf82",
+  "coordination_note": "Request booleans are mandatory launch conditions, not an assertion all reviewers are idle while reviewing this request. Root must receive independent instance acceptance and quiesce every agent tool before actual launch; no CI initiated since captured settled list. Original shared lock rechecked by outer.",
+  "directories": {
+    "/root/projects/PassVault": {
+      "dev": 23,
+      "ino": 498323,
+      "mode": 16877,
+      "nlink": 10,
+      "uid": 0
+    },
+    "/root/projects/PassVault/.audit-coordination-linux-20260908": {
+      "dev": 23,
+      "ino": 661121,
+      "mode": 16832,
+      "nlink": 2,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs": {
+      "dev": 23,
+      "ino": 642474,
+      "mode": 16832,
+      "nlink": 20,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-publication-20260910-01/.git": {
+      "dev": 23,
+      "ino": 1080546,
+      "mode": 16832,
+      "nlink": 5,
+      "uid": 0
+    }
+  },
+  "namespace": {
+    "mnt": "mnt:[4026531841]",
+    "pid": "pid:[4026531836]"
+  },
+  "new_runtime_and_evidence_absent": true,
+  "original_lock_verified_and_briefly_held": true,
+  "owner": "/root",
+  "request": "requests/LINUX-DETEKT-02.json",
+  "request_sha256": "da68c5a571f5753aded5ba24e9111217637af9c104a0316fadb63dcc9e535c18",
+  "resource_sample": {
+    "disk_available_bytes": 20405690368,
+    "memory_available_bytes": 25795682304,
+    "memory_total_bytes": 67435888640
+  },
+  "scope": "Exact external bound02 runner/init; immutable C16 raw application/source snapshot+independently reviewed full index. No new Git/helper/build/test/SDK execution. All descriptors settled; no disposable outputs created.",
+  "status": "PRELAUNCH_BINDINGS_CAPTURED_NOT_FINAL_EXECUTION_ADMISSION"
+}

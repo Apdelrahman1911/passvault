@@ -1,6 +1,38 @@
 {
-  "all_other_agents": "BOUNDED_SOURCE_AND_RETAINED_DATA_WORK_ONLY_NO_HEAVY_JOB",
+  "all_other_agents": "BOUNDED_ASSIGNED_SOURCE_ONLY_WORK_ALLOWED_NO_BUILD_OR_RUNTIME_PROBES",
   "branch": "codex/audit-continuation-linux-20260908",
+  "detekt01_remainder_closeout02": {
+    "consumed": true,
+    "consumed_request": "reviews/detekt01-closeout02/REQUEST.CONSUMED.json",
+    "external": "reviews/detekt01-closeout02/EXTERNAL-RESULT.json",
+    "external_exit": 0,
+    "external_sha256": "704a97d34b32d0811ecbb255d2927069d4f03ed62db91ace13ef57ce1510fee3",
+    "inventory": "runs/linux-detekt01/closeout02/INVENTORY.json",
+    "inventory_sha256": "7d86f21ea5bc5ac8516a7d68464aff10e05d02132d50f40d3bd4d8ae0368233b",
+    "qualification": "Discharges only current Detekt01 temporary source/blob/index/metadata remainder HOLD. Original Gradle1/stop0/external70, failed safety flags, seven diagnostics and21unstarted analyzers remain historical; every unrelated older HOLD unchanged. Logical accounting is not net disk space. No subprocess,newstop,mount,signal or runtime replay. Raw mount summaries source-enforced, not independently rescanned.",
+    "removed_directories_including_runtime": 840,
+    "removed_entries": 3600,
+    "removed_files": 2760,
+    "removed_logical_bytes": 176237763,
+    "reports_retained": 4,
+    "request_sha256": "7e1d4d1679c70fcc3ca76f4252c62c496a0242ab7c5b6d205975701703ac5f3a",
+    "result": "runs/linux-detekt01/closeout02/RESULT.json",
+    "result_sha256": "d593653fe867658fbffdb3b5ad3f834ada1f27a8d06bbb55a4b2ed526218c1b1",
+    "review": "reviews/detekt01-closeout02/ACTUAL-REVIEW.json",
+    "review_sha256": "574f69ae854bf5c2ad6a86f9db24eb95aedfb6d271c2091ab765aee04bae4f5e",
+    "session": 45090,
+    "status": "CURRENT_DETEKT01_TEMPORARY_REMAINDER_REMOVED_INDEPENDENTLY_RECONCILED"
+  },
+  "detekt02_current_closeout01": {
+    "consumed": true,
+    "kind": "CLEANUP_ONLY_NOT_A_BUILD",
+    "old_holds_unchanged": true,
+    "owner": "/root",
+    "reservation_active": false,
+    "root_adoption": "reviews/detekt02-closeout01/ROOT-FAILURE-ADOPTION.json",
+    "root_adoption_sha256": "1350596f90ee58e79967683de0cf1e15488fb12ac5a9e60ed5797e2080e2d86f",
+    "state": "FAILURE_RECONCILED_SCHEDULING_RELEASED_RUNTIME_HOLD"
+  },
   "historical_locks": "NOT_ADOPTED_OR_RECREATED",
   "ios_focused01": {
     "activation_commit": "d4b72e0a30e2b53283a3f23b13b942afc6cbd38b",
@@ -432,8 +464,8 @@
     "scheduling_release": "reviews/storage/NAMESPACE01-SLOT-RELEASE.json",
     "signal_attempted": false
   },
-  "last_release": "reviews/detekt01/c15-preflight/SLOT-RELEASE.json",
-  "last_release_sha256": "dfb683efea321a591e51aa4aeb5ad391fda47e964a2510a65724bae1a3c0530f",
+  "last_release": "reviews/detekt02/c16-preflight/SLOT-RELEASE.json",
+  "last_release_sha256": "f10997df4693701cc24f6381cab6048d15636a61d434e052c35b1e4022402228",
   "last_windows_cohort02": {
     "activation_commit": "7b716ce8c693fa480bfb99d518acd9d4c8f9cfab",
     "activation_tree": "22fc4394711f7a7265ddf0d0ced965aade9112fb",
@@ -753,6 +785,45 @@
     "session": 21919,
     "status": "CURRENT_GENERATED_ONLY_CLEANUP_INDEPENDENTLY_RECONCILED_SOURCE_REMAINDER_HELD"
   },
+  "linux_detekt02": {
+    "actual_static_tasks": {
+      "analyzers_unstarted": 22,
+      "coverage_fail": 1
+    },
+    "application_cases": 0,
+    "approval_sha256": "63fa4d29fa9cbabe9dfab27b51e0a9f4eaba9d3166f5d62f5b172807547bafe3",
+    "cleanup": "HOLD_NOT_ATTEMPTED",
+    "cleanup_safe": false,
+    "consumed": true,
+    "consumed_request": "reviews/detekt02/c16-preflight/REQUEST.CONSUMED.json",
+    "distinct_executed_tasks": 1,
+    "elapsed_seconds": 128.151,
+    "evidence_root": "runs/linux-detekt02",
+    "external_exit": 70,
+    "external_result": "reviews/detekt02/c16-preflight/EXTERNAL-RESULT.json",
+    "external_result_sha256": "2cd877888c7b539208b4427c7e4992673c8709845a303aaf6e7e369e4407e4fa",
+    "failure": "Coverage guard rejects exactly two inert historical .kt drafts; independently latched host process vanished/changed/unreadable without identity. No causal ordering/ownership inference.",
+    "gradle_exit": 1,
+    "independent_review": "reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md",
+    "independent_review_sha256": "722ad5bdf974bbaa06b5b37a597a5e91e4c12de25fa76bf9bbece4e62a541edb",
+    "junit_xml": 0,
+    "limits": "No runtime cleanup/access, T integrity or source-after acceptance, global idleness, automatic retry or next execution admission. All older HOLD/STOP/NO-RETRY/CLOSED scopes unchanged.",
+    "new_closures": 0,
+    "original_stop_exit": 0,
+    "process_attribution": "UNKNOWN",
+    "release": "reviews/detekt02/c16-preflight/SLOT-RELEASE.json",
+    "release_sha256": "f10997df4693701cc24f6381cab6048d15636a61d434e052c35b1e4022402228",
+    "request_sha256": "da68c5a571f5753aded5ba24e9111217637af9c104a0316fadb63dcc9e535c18",
+    "reservation_active": false,
+    "root_admission": "reviews/detekt02/c16-preflight/ROOT-EXECUTION-ADMISSION.json",
+    "root_admission_sha256": "a60a7d1ee9cb80dc781431c0136e7d9641185680507a9edea9059d4bc16e33f8",
+    "source_after": false,
+    "source_before": true,
+    "source_commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "source_tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+    "state": "CONSUMED_FAIL_COVERAGE_UNKNOWN_HOST_SCREEN_RUNTIME_HOLD_SCHEDULING_RELEASED",
+    "status": "FAIL"
+  },
   "linux_isolated_batch03": {
     "approval_sha256": "2041281fcc1a43bef77768ba3abfa2010901b360ac0d0b5348ac5ccf9becc4a4",
     "external_exit": 0,
@@ -769,7 +840,7 @@
     "status": "COMPLETED_RECONCILED_SLOT_RELEASED",
     "tool_session_id": 14364
   },
-  "local_execution": "No audit build admitted. Current Detekt01 generated-only cleanup independently reconciled; source remainder separately held. Root sole owner.",
+  "local_execution": "No audit build/test/CI or cleanup active. Latest current Detekt02 closeout failed with zero removal; runtime stays HOLD/no automatic retry.",
   "macos_focused02": {
     "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
     "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
@@ -784,7 +855,7 @@
     "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
     "status": "COMPLETED_RECONCILED_SLOT_RELEASED"
   },
-  "next_gate": "Fresh exact report closeout or new static02/GUI03 source+instance admission; no old scope replay.",
+  "next_gate": "Publish source/evidence C17 then fresh shared source capture and bounded Android/static/GUI execution admission. No consumed-helper replay.",
   "owner": "/root",
   "previous_controls01": {
     "external_receipt": "reviews/verification/CONTROL-LAUNCH-RECEIPT.json",
@@ -796,8 +867,17 @@
   },
   "release_of_slot_is_not_release_publication": true,
   "schema": 1,
+  "screen_controls01": {
+    "consumed": true,
+    "reservation_active": false,
+    "root_admission": "reviews/build-config/detekt02-screen/controls01/ROOT-ADMISSION.json",
+    "root_admission_sha256": "b3828438e5123c076c2231e4bc76d65f3e2fb490af2217878fef081ae35778a4",
+    "root_adoption": "reviews/build-config/detekt02-screen/controls01/ROOT-ACTUAL-ADOPTION.json",
+    "root_adoption_sha256": "1fe9b623c34a24c4d49b0bdcde265c478f2e212791446b96933ba60d6a7d30ea",
+    "status": "COMPLETED_RECONCILED_SCHEDULING_RELEASED"
+  },
   "state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
-  "updated_utc": "2026-09-10T20:32:35.938571+00:00",
+  "updated_utc": "2026-09-10T23:04:32.393940+00:00",
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
   "windows_cohort03": {
     "activation_commit": "b2e826fd534be8fefede169d28e30c22e37530a9",

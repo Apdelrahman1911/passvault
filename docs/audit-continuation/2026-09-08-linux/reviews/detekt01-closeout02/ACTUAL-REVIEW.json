@@ -1,0 +1,205 @@
+{
+  "accounting": {
+    "analyzer_executions_delta": 0,
+    "application_cases_delta": 0,
+    "builds_tests_stops": 0,
+    "qualification": "Cleanup/evidence acceptance only, not static PASS,product fix verification,hardware assurance or readiness.",
+    "qualified_closures_delta": 0,
+    "suspicion_resolutions_delta": 0
+  },
+  "actual": {
+    "actual_exit": 0,
+    "descriptor_close_uncertainty": false,
+    "error": null,
+    "launch_tool": "1eec13",
+    "qualification": "Root-retained actual terminal0 and parsed final stdout agree with the exact preterminal RESULT. No finished-session poll occurred. Source's successful path requires original R emptiness/name binding, rmdir, parent fsync, unlinked original descriptor and absent name before final accounting. This is retained execution evidence, not a new live R-absence scan or a physical reclaimed-disk-byte measurement.",
+    "receipt_error": null,
+    "removed_R": true,
+    "removed_directories_including_R": 840,
+    "removed_files": 2760,
+    "removed_logical_file_bytes": 176237763,
+    "session": 45090,
+    "stdout_status": "TEMPORARY_REMAINDER_REMOVED_PENDING_INDEPENDENT_RECONCILIATION",
+    "terminal_tool": "cd6c16"
+  },
+  "date": "2026-09-10",
+  "disposition": "ACCEPT_COMPLETED_CURRENT_TEMPORARY_REMAINDER_CLOSEOUT02",
+  "evidence": [
+    {
+      "bytes": 26292,
+      "path": "reviews/detekt01-closeout02/CLOSEOUT.py",
+      "role": "closer",
+      "sha256": "878f2fe73eb5a667df3d0b6eab3d0f8cd9b3268e8395523018d3b18aafc7259d"
+    },
+    {
+      "bytes": 9239,
+      "path": "reviews/detekt01-closeout02/PLAN.md",
+      "role": "plan",
+      "sha256": "3d1cb4656fab0029242448b8965ef4515d8fd3103f789afcfe3807531ddcca69"
+    },
+    {
+      "bytes": 3563,
+      "path": "reviews/detekt01-closeout02/REQUEST.json",
+      "role": "request",
+      "sha256": "7e1d4d1679c70fcc3ca76f4252c62c496a0242ab7c5b6d205975701703ac5f3a"
+    },
+    {
+      "bytes": 299,
+      "path": "reviews/detekt01-closeout02/ACCEPT.json",
+      "role": "approval",
+      "sha256": "970c4bc88cf85e5df6da4b53c5bbf1b11f08923cbda71da9054a1b6eb81539fb"
+    },
+    {
+      "bytes": 10446,
+      "path": "reviews/detekt01-closeout02/REVIEW.md",
+      "role": "review",
+      "sha256": "a027b9e62adc0a48df6c0ef8f1ccbdfba77ea4684182f7ae4679b8771b7b973c"
+    },
+    {
+      "bytes": 1358,
+      "path": "reviews/detekt01-closeout02/EXTERNAL-RESULT.json",
+      "role": "external",
+      "sha256": "704a97d34b32d0811ecbb255d2927069d4f03ed62db91ace13ef57ce1510fee3"
+    },
+    {
+      "bytes": 3845,
+      "path": "runs/linux-detekt01/closeout02/RESULT.json",
+      "role": "result",
+      "sha256": "d593653fe867658fbffdb3b5ad3f834ada1f27a8d06bbb55a4b2ed526218c1b1"
+    },
+    {
+      "bytes": 728133,
+      "path": "runs/linux-detekt01/closeout02/INVENTORY.json",
+      "role": "inventory",
+      "sha256": "7d86f21ea5bc5ac8516a7d68464aff10e05d02132d50f40d3bd4d8ae0368233b"
+    },
+    {
+      "bytes": 1407,
+      "path": "reviews/detekt02/source-prepare01/EXTERNAL-RESULT.json",
+      "role": "prep_external",
+      "sha256": "5064262c160d51fa7910e2a9f11080497b54ada5e811eadb8db0309221b44651"
+    }
+  ],
+  "exact_inventory": {
+    "bytes": 728133,
+    "canonical_json": true,
+    "checks": [
+      "Exact set equality:2757 manifest source leaves,837 proper source ancestor directories,checkout,empty git-metadata,three fixed transport/index leaves,and R itself. No extra/missing member.",
+      "All source SHA256/raw sizes/exact Git modes agree with C15; directory dev23/uid0/0700 and file dev24/uid0/single-link/exact mode agree. All3600 dev/inode pairs are distinct; every nonroot parent is an inventoried directory.",
+      "Full source.oids/source.blobs/git-index original eight-field pins and hashes match unchanged outer receipt. Original R/checkout/git-metadata pins match allocation/intent and current inventory; all seven reported original roots/parents agree.",
+      "Count and byte sums independently equal actual result/stdout. Frozen successful code additionally requires per-source Git-blob hashing; inventory carries SHA256, not a second independently reread Git hash after deletion.",
+      "C15 raw source identity recomputed from exact manifest agrees with result/intent/outer. Observed T checkout pins were not substituted for R source identities; historical raw/checkout-EOL qualifications remain."
+    ],
+    "directories_including_R": 840,
+    "entries": 3600,
+    "files": 2760,
+    "logical_file_bytes": 176237763,
+    "raw_identity_sha256": "91697cd8898b32a6e4dcc8611e7da333a26baf699f6e28a9e9d8072c8f372806",
+    "retained_named_pin_matches": true,
+    "sha256": "7d86f21ea5bc5ac8516a7d68464aff10e05d02132d50f40d3bd4d8ae0368233b",
+    "source_commit": "8f42274b04e206ff7254ca33d686a9666fce6723",
+    "source_manifest_sha256": "1a501d764306c1729cef49a411207ca840740d5fe6e284555767182478b55b23",
+    "source_tree": "3a8f53dddd54f5c42c34f772975f02619be118d5",
+    "unique_dev_inode_pairs": 3600
+  },
+  "origin_mounts": {
+    "mount_rows_each": 10,
+    "mount_table_sha256_each": "c4348933a0c5fb769f70594efeb2b2f82787474c3adcad91573e81bae623385a",
+    "new_descriptor_reacquisition": true,
+    "observations": 3,
+    "qualification": "Before-traversal,before-delete,and after summaries match. Raw mount tables were not retained for independent reparsing; source-reviewed bounded parser and successful path support the recorded checks. No current namespace/mount/process/R probe, hostile-root safety, atomic inode-conditional unlink or inherited-FD continuity is claimed.",
+    "runtime_mounts_each": 0,
+    "seven_original_root_parent_pins_match": true,
+    "three_original_transport_index_pins_match": true
+  },
+  "prerequisite": {
+    "actual_exit": 0,
+    "later_cleanup_result_utc": "2026-09-10T21:22:00.654159+00:00",
+    "qualification": "The separately retained metadata-preparation terminal0 and root report satisfy the approval's scheduling prerequisite. This is not a review or rerun of that helper, new C16 source/index admission, or Detekt02 execution evidence.",
+    "retained_external_utc": "2026-09-10T21:21:46.061233+00:00",
+    "source_preparation_external_sha256": "5064262c160d51fa7910e2a9f11080497b54ada5e811eadb8db0309221b44651",
+    "tool": "2d88f8"
+  },
+  "purpose": "ONE_CURRENT_DETEKT01_TEMPORARY_REMAINDER_CLOSEOUT02",
+  "resources": {
+    "elapsed_seconds": 1.114,
+    "last_sample_to_preterminal_seconds": 0.112,
+    "max_sample_gap_seconds": 1.002,
+    "min_disk_available_bytes": 20771418112,
+    "min_memory_available_bytes": 25694564352,
+    "points": 2,
+    "qualification": "Two point observations satisfy recorded launch/running floors;1s is only a polling threshold. Elapsed1.114s and last sample1.002s leave0.112s unsampled before preterminal receipt. No hard RSS/kernel-stall/deadline,current-host-capacity or physical-space-reclaimed claim; this closer creates no build/test worker or wrapper-stop duty.",
+    "samples": [
+      {
+        "disk_available_bytes": 20771418112,
+        "elapsed_seconds": 0,
+        "launch": true,
+        "memory_available_bytes": 25702797312,
+        "memory_total_bytes": 67435888640
+      },
+      {
+        "disk_available_bytes": 20857262080,
+        "elapsed_seconds": 1.002,
+        "launch": false,
+        "memory_available_bytes": 25694564352,
+        "memory_total_bytes": 67435888640
+      }
+    ]
+  },
+  "restrictions": "Preserve original Detekt exit1/seven diagnostics/21 unstarted analyzers and original false safety flags; all successes,rejections,grouped variants,older HOLD/consumed scopes,PVU-007 STOP,PVU-011 NO-RETRY,PVA-029 recorded failure/no automatic retry,TRAY01,G7/G8 CLOSED,eight PVD boundaries,genuine hardware gaps,and protected refs/signing/store/publication/occupied1017001 fences.",
+  "retention": {
+    "all12_bound_original_inputs_unchanged": true,
+    "new_closeout_bytes": 731978,
+    "new_closeout_names": [
+      "INVENTORY.json",
+      "RESULT.json"
+    ],
+    "original_input_hash_set": "All12 current hashes equal RESULT.inputs_sha256 and the exact accepted source constants; this includes original failed outer/inner/terminal/review,source-before/after,C15 manifest/allocation/intent,and prior generated result/terminal/acceptance.",
+    "qualification": "Exact new retained directory membership and inventory image/pin checked. Four existing E report bytes/hashes/full named pins rechecked AFTER cleanup; no report was rendered/executed or recopied. Permanent W/T/E were never deletion targets; no broad W/T rescan was performed.",
+    "reports": [
+      {
+        "bytes": 1725,
+        "named_pin_matches": true,
+        "path": "closeout01/reports/app-android-detekt.xml",
+        "sha256": "31685320e0bb164cb8c8c254b086d7af0c5164f4a8b63a5054bcff60c3d56b8d"
+      },
+      {
+        "bytes": 19392,
+        "named_pin_matches": true,
+        "path": "closeout01/reports/app-android-detekt.html",
+        "sha256": "95c40045cc08f49e3ac7e534ff842db31ff8c92df16779712b06937db284d9a6"
+      },
+      {
+        "bytes": 128664,
+        "named_pin_matches": true,
+        "path": "closeout01/reports/app-android-detekt.sarif",
+        "sha256": "8595923bb3164cb5d114e255c9fcc3fa7674f7e694f250becb52153ab373f4b5"
+      },
+      {
+        "bytes": 130495,
+        "named_pin_matches": true,
+        "path": "closeout01/reports/problems-report.html",
+        "sha256": "077cc100c8a55fe02d644fa03f22eebbbaea0ff26a556d3c521ead8c8b1185bc"
+      }
+    ],
+    "retained_report_bytes": 280276,
+    "retained_report_count": 4
+  },
+  "reviewer": "/root/verification",
+  "reviewer_activity": {
+    "limits": "No R/T,live slot/lock/proc/tool/SDK/process/mount/resource/Git/CI access,finished-session polling,new stop,signal or deletion. Only this compact permanent ACTUAL-REVIEW.json created exclusively0600 with file/parent fsync and exact readback. Inert readers returned exit0 and created no cache,temp/build artifact or background worker.",
+    "method": "Bounded component-wise no-follow/single-link retained data reads; exact integer JSON parsing with duplicate/nonfinite rejection; hash,pin,allowlist,count and byte reconciliation.21 bound files plus four report payloads checked in the complete reconciliation; no target import/AST/syntax/execution or generic harness review.",
+    "tools": [
+      "6b87de",
+      "8d5c52"
+    ]
+  },
+  "schema": 1,
+  "scope": "Accepted actual removal of only this original current Detekt01 temporary C15 checkout/transport/index/empty underlying metadata and R. This discharges its remaining current cleanup HOLD, not original Detekt failure or any older HOLD.",
+  "slot_adoption": {
+    "basis": "Exact source/request/approval chain,root's maintained original writer freeze,source-enforced locked idle-slot/current-namespace checks,complete retained inventory and external terminal0 without finalization uncertainty.",
+    "limitations": "Reviewer did not inspect or modify the live slot. Root remains sole scheduling owner and must make any ledger/slot transition explicitly. This acceptance grants no new build/test/CI/static/GUI/native run,cleanup replay,new stop,signal,or access to any other held runtime. Closeout02 and its approval are consumed.",
+    "permitted": "Root may adopt this once-only current cleanup as completed/settled and discharge only its temporary-remainder cleanup HOLD. No current-R cleanup work remains under this exact admitted scope.",
+    "qualified": true
+  }
+}

@@ -590,8 +590,8 @@
     }
   ],
   "continuation_application_test_cases": 199,
-  "pending_selected_source_methods": 2,
-  "pending_selected_classes": 2,
+  "pending_selected_source_methods": 4,
+  "pending_selected_classes": 4,
   "pending_selected_files": 2,
   "gates": [
     {
@@ -1065,6 +1065,12 @@
       "status": "PASS",
       "scope": "5 isolated pure-parser infrastructure controls only,0 app/JUnit cases; consumed",
       "evidence": "reviews/detekt02/parser-controls01/ACTUAL-REVIEW.json"
+    },
+    {
+      "id": "LINUX_DETEKT02_EXECUTION",
+      "status": "FAIL",
+      "scope": "One coverage task FAILED;22 analyzers UNSTARTED;zero application/JUnit cases. Unknown positive-process change;source-after/cleanup HOLD.",
+      "evidence": "reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md"
     }
   ],
   "missing_skill_tool": {
@@ -1072,7 +1078,7 @@
     "status": "NOT_SUPPLIED_NOT_RUN",
     "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
   },
-  "updated_utc": "2026-09-10T20:40:38.082361+00:00",
+  "updated_utc": "2026-09-10T23:25:51.289830+00:00",
   "continuation_infrastructure_runs": [
     {
       "id": "LINUX_SOURCE_CAPTURE_01",
@@ -1306,12 +1312,12 @@
     "status": "UNCHANGED_IMMUTABLE_SOURCE_SELECTION_SUPERSEDED_FOR_SCHEDULING_NOT_DISCARDED"
   },
   "pending_selected_scope": {
-    "status": "INTEGRATION03_TWO_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
-    "regression_methods": 2,
+    "status": "GUI03_FOUR_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
+    "regression_or_investigation_methods": 4,
     "fixture_producers": 0,
     "expected_test_tasks": 2,
-    "expected_xml_files": 2,
-    "qualification": "Corrected Main + previously unstarted shared Room only, Room first; no passing lifecycle/tray repeat. C16 Room/source/instance binding pending. Detekt02 static-only continuation is separate from app test evidence."
+    "expected_xml_files": 4,
+    "qualification": "Shared realRoom+Main corrections and two bounded chooser/tray-property observations in distinct classes; no passing lifecycle/tray repeat. Source/instance admission absent; Detekt03/Android compilation not application cases."
   },
   "windows_cohort02_source": {
     "suite": "windows-native-14-cohort-v2",
@@ -2808,48 +2814,41 @@
     "new_cases_closures": 0
   },
   "desktop_integration03_source": {
-    "status": "INDEPENDENT_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
-    "authors": [
-      "/root/build_config",
-      "/root/verification"
-    ],
-    "reviewers": [
-      "/root/storage",
-      "/root/editor_review"
-    ],
+    "status": "INDEPENDENT_SOURCE_ACCEPTED_FOUR_CASES_UNBOUND_UNEXECUTED",
+    "authors": {
+      "fixture_init_inner": "/root/editor",
+      "outer": "/root"
+    },
+    "independent_reviewer": "/root/native_review",
     "sources": {
-      "scripts/audit/linux_desktop_integration_03.py": "86cd40c4681665cc723afeb3c38f3fda3f82c56bda233c284cd802d55212b4c0",
-      "scripts/audit/desktop_integration_03.init.gradle": "9bf2cc5f32af4447f9ad38c4104b486b30a40e18cf2e0757da1e4e465d02637d",
-      "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py": "e59be5da85e9f52e3e6e0f6e9b764fe3b12e01da023b4f838bcfbf9c6fa65ca2"
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt": "cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4",
+      "scripts/audit/desktop_integration_03.init.gradle": "45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292",
+      "scripts/audit/linux_desktop_integration_03.py": "d79fb973dacd13b9c2c4ba2b11336ca44ac5d4e73104208c96c9a9a1b56adf8d",
+      "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py": "9fb9d6a73f07fb928c1bfc7505d29d291f20a5ee5ef6b8524dbced4799ed538e"
     },
-    "reviews": {
-      "reviews/storage/INTEGRATION03-INNER-INIT-DELTA-REVIEW.json": "0e81899f8b2d0a1455e5d251bcca4cc1628b5b8c8ec873ba4d85d63192ce164e",
-      "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-OUTER-DELTA-REVIEW.md": "c4adac6a4c2e05d71ab1e514f01e7284133fb0e406e47fa37e697efe528a98b4"
-    },
+    "independent_review": "reviews/native-independent/gui03-four-case/GUI03-FOUR-CASE-INDEPENDENT.md",
+    "independent_review_sha256": "8de154f99b73d67f45af80872b7704d44322f3e3cbc37ab49ce3253853f0c6ec",
+    "root_adoption": "reviews/checkpoint17/GUI03-SOURCE-ADOPTION.json",
+    "root_adoption_sha256": "4e06a58c123326ec72c2ee20486c5678579ec9cd00a8d4d3236e1588390e5dc2",
     "selection": {
-      "cases": 2,
-      "xml_suites": 2,
+      "cases": 4,
+      "xml_suites": 4,
       "serial_test_tasks": [
-        ":app-desktop:desktopTest",
-        ":shared:desktopTest"
+        ":shared:desktopTest",
+        ":app-desktop:desktopTest"
       ],
       "classes": [
+        "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest",
         "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
-        "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest"
+        "com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest",
+        "com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest"
       ]
     },
-    "main_after_image_sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
-    "unbound": "Exact new commit/tree/source manifest/member count/Main fixture/source/init/route/tool/store/lock/request/approval remain to bind after publication; source acceptance is not instance admission.",
-    "preserved": "Same GUI/panel/1280x1024 infrastructure, clocks, strict dependencies, JDK17, one worker, stop/settlement/cleanup guards. No lifecycle/tray case replay.",
-    "evidence_cap": {
-      "inner_baseline_files": 84,
-      "inner_max_files": 93,
-      "outer_normal_files": 90,
-      "conservative_total_files": 100
-    },
+    "new_declarations": 2,
     "actual_cases": 0,
     "new_closures": 0,
-    "static": "Separate existing Detekt01 source/index rebind; prefer static first before GUI compilation if source diagnostics may change the frozen input."
+    "limits": "Cases3/4 add bounded actual chooser and Settings-to-same-tray-property observations. No universal race/deadlock, callback/visual-tooltip/hardware claims. Same112MiB evidence byte cap, fixed107 success/120 max inner items; four selected XML, bounded total8. WORK_END/3500/2900 cooperative budgeting not hard syscall guarantee. C17/index/tool/panel/instance bindings and independent execution admission still absent.",
+    "static": "Separate new Detekt03 for unstarted static checks. Shared fresh C17 capture; no unchanged application test reruns."
   },
   "historical_pending_selected_scope_before_integration02": {
     "status": "INTEGRATION02_FOUR_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED; DETEKT_PREFLIGHT_HOLD",
@@ -3056,6 +3055,12 @@
       "evidence": "detekt01_execution",
       "application_cases": 0,
       "status": "FAIL"
+    },
+    {
+      "id": "linux-detekt02",
+      "evidence": "detekt02_execution",
+      "application_cases": 0,
+      "status": "FAIL"
     }
   ],
   "detekt01_generated_closeout01": {
@@ -3131,5 +3136,222 @@
     },
     "actual_exit": 0,
     "qualification": "5 complete expected-object comparisons: actual01 header projection, complete static projection, dependency-blocked root, failure stickiness, unknown/malformed header. Exact isolated40LF pure function only; no holder/old-helper import, report filesystem test, Detekt, application or hardware evidence.0.00622s memory-only run; no child/temp/cache/runtime, no stop applicability. Original FD/lock settlement and terminal receipt/exit reconciled; no rerun."
+  },
+  "detekt01_remainder_closeout02": {
+    "status": "CURRENT_DETEKT01_TEMPORARY_REMAINDER_REMOVED_INDEPENDENTLY_RECONCILED",
+    "consumed": true,
+    "external_exit": 0,
+    "session": 45090,
+    "removed_files": 2760,
+    "removed_directories_including_runtime": 840,
+    "removed_entries": 3600,
+    "removed_logical_bytes": 176237763,
+    "reports_retained": 4,
+    "result": "runs/linux-detekt01/closeout02/RESULT.json",
+    "result_sha256": "d593653fe867658fbffdb3b5ad3f834ada1f27a8d06bbb55a4b2ed526218c1b1",
+    "inventory": "runs/linux-detekt01/closeout02/INVENTORY.json",
+    "inventory_sha256": "7d86f21ea5bc5ac8516a7d68464aff10e05d02132d50f40d3bd4d8ae0368233b",
+    "external": "reviews/detekt01-closeout02/EXTERNAL-RESULT.json",
+    "external_sha256": "704a97d34b32d0811ecbb255d2927069d4f03ed62db91ace13ef57ce1510fee3",
+    "review": "reviews/detekt01-closeout02/ACTUAL-REVIEW.json",
+    "review_sha256": "574f69ae854bf5c2ad6a86f9db24eb95aedfb6d271c2091ab765aee04bae4f5e",
+    "consumed_request": "reviews/detekt01-closeout02/REQUEST.CONSUMED.json",
+    "request_sha256": "7e1d4d1679c70fcc3ca76f4252c62c496a0242ab7c5b6d205975701703ac5f3a",
+    "qualification": "Discharges only current Detekt01 temporary source/blob/index/metadata remainder HOLD. Original Gradle1/stop0/external70, failed safety flags, seven diagnostics and21unstarted analyzers remain historical; every unrelated older HOLD unchanged. Logical accounting is not net disk space. No subprocess,newstop,mount,signal or runtime replay. Raw mount summaries source-enforced, not independently rescanned."
+  },
+  "checkpoint16_publication": {
+    "commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+    "receipt": "publication/CHECKPOINT-16-PUBLISHED.json",
+    "receipt_sha256": "6d5ec01b91b1db05bc4002c73c5b594a39c565b86b78de991851916033bdb30f",
+    "independent_actual_review": "reviews/baseline-coverage/C16-PUBLICATION-ACTUAL-REVIEW.json",
+    "independent_actual_review_sha256": "ca11d50d965a588de99094d1002e63f598c2a3c2565d1abdb135b26f335aab39",
+    "new_cases_or_closures": 0
+  },
+  "detekt02_execution": {
+    "state": "CONSUMED_FAIL_COVERAGE_UNKNOWN_HOST_SCREEN_RUNTIME_HOLD_SCHEDULING_RELEASED",
+    "reservation_active": false,
+    "source_commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "source_tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+    "request_sha256": "da68c5a571f5753aded5ba24e9111217637af9c104a0316fadb63dcc9e535c18",
+    "approval_sha256": "63fa4d29fa9cbabe9dfab27b51e0a9f4eaba9d3166f5d62f5b172807547bafe3",
+    "root_admission": "reviews/detekt02/c16-preflight/ROOT-EXECUTION-ADMISSION.json",
+    "root_admission_sha256": "a60a7d1ee9cb80dc781431c0136e7d9641185680507a9edea9059d4bc16e33f8",
+    "application_cases": 0,
+    "status": "FAIL",
+    "consumed": true,
+    "release": "reviews/detekt02/c16-preflight/SLOT-RELEASE.json",
+    "release_sha256": "f10997df4693701cc24f6381cab6048d15636a61d434e052c35b1e4022402228",
+    "independent_review": "reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md",
+    "independent_review_sha256": "722ad5bdf974bbaa06b5b37a597a5e91e4c12de25fa76bf9bbece4e62a541edb",
+    "external_result": "reviews/detekt02/c16-preflight/EXTERNAL-RESULT.json",
+    "external_result_sha256": "2cd877888c7b539208b4427c7e4992673c8709845a303aaf6e7e369e4407e4fa",
+    "external_exit": 70,
+    "gradle_exit": 1,
+    "original_stop_exit": 0,
+    "elapsed_seconds": 128.151,
+    "actual_static_tasks": {
+      "coverage_fail": 1,
+      "analyzers_unstarted": 22
+    },
+    "distinct_executed_tasks": 1,
+    "junit_xml": 0,
+    "new_closures": 0,
+    "source_before": true,
+    "source_after": false,
+    "cleanup_safe": false,
+    "cleanup": "HOLD_NOT_ATTEMPTED",
+    "process_attribution": "UNKNOWN",
+    "consumed_request": "reviews/detekt02/c16-preflight/REQUEST.CONSUMED.json",
+    "failure": "Coverage guard rejects exactly two inert historical .kt drafts; independently latched host process vanished/changed/unreadable without identity. No causal ordering/ownership inference.",
+    "evidence_root": "runs/linux-detekt02",
+    "limits": "No runtime cleanup/access, T integrity or source-after acceptance, global idleness, automatic retry or next execution admission. All older HOLD/STOP/NO-RETRY/CLOSED scopes unchanged."
+  },
+  "c17_inert_draft_moves": {
+    "receipt": "reviews/android32/navhost-draft/INERT-DRAFT-MOVES-C17.json",
+    "receipt_sha256": "f12e20b0d731bc3036c7fe3bf7f1a0479b4c8b5d8b9e03b47557fe35e25a1d2e",
+    "review": "reviews/baseline-coverage/DETEKT02-INERT-DRAFT-RENAME-REVIEW.md",
+    "review_sha256": "7783f38783cac8463a39881334c8c3036f24a4c3d8a679f94f55ec94fada03f8",
+    "status": "EXACT_BYTE_PRESERVING_INERT_DRAFT_MOVES_COMPLETED_NO_EXECUTED_GUARD_PASS",
+    "new_cases_or_closures": 0
+  },
+  "detekt02_screen_controls01": {
+    "status": "ACTUAL_REVIEW_ADOPTED_SCHEDULING_ONLY_RELEASE",
+    "controls": 8,
+    "passing_controls": 8,
+    "accept_paths": 2,
+    "expected_hold_paths": 6,
+    "application_cases": 0,
+    "junit_xml": 0,
+    "external_exit": 0,
+    "terminal_tool": "030d6a",
+    "elapsed_seconds": 0.026616060989908874,
+    "evidence": "reviews/build-config/detekt02-screen/controls01",
+    "independent_review": "reviews/baseline-coverage/DETEKT02-SCREEN-CONTROLS01-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "bf43e9c7fb2800241dd11a37e8d4149c8b7bd1a41da420a9ab52bd01480cc446",
+    "root_adoption": "reviews/build-config/detekt02-screen/controls01/ROOT-ACTUAL-ADOPTION.json",
+    "root_adoption_sha256": "1fe9b623c34a24c4d49b0bdcde265c478f2e212791446b96933ba60d6a7d30ea",
+    "counting": "Separate pure-synthetic infrastructure controls, not application/XML cases or additional closures. Do not rerun.",
+    "limits": "No live /proc/pidfd/namespace semantics or historical process attribution proved. Release only this completed scheduling reservation; every older HOLD/STOP/NO-RETRY/CLOSED restriction retained; no build, runtime access or next execution authority. Earlier LF pre-admission binding failure remains zero controls."
+  },
+  "detekt02_whole_r_closeout01": {
+    "schema": 1,
+    "status": "FAILURE_ADOPTED_SCHEDULING_ONLY_RELEASE_RUNTIME_HOLD",
+    "independent_review": "reviews/verification/DETEKT02-CLOSEOUT01-ACTUAL-REVIEW.md",
+    "independent_review_sha256": "f42d99a7b8765ada01c2e2ea13ed8b470ac5ff8832cc0263dc85b07f4787d0c9",
+    "external": "reviews/detekt02-closeout01/EXTERNAL-RESULT.json",
+    "external_sha256": "bf938ffa2ea7ed8a25beba9879643c62869f2784afb9aa2e47cd8d8abc4f9f22",
+    "result": "runs/linux-detekt02/closeout01/RESULT.json",
+    "result_sha256": "22d4438c3af0fae723e972e67ae67241675bdb68d3fdee74e5f7f47436df2bbb",
+    "actual_exit": 1,
+    "terminal_tool": "b60a4d",
+    "session": null,
+    "removed_files": 0,
+    "removed_directories": 0,
+    "removed_logical_bytes": 0,
+    "receipt_error": null,
+    "descriptor_close_uncertainty": false,
+    "refusal": "Unclassified report-like DIRECTORY gradle-home/caches/9.7.1/groovy-dsl/0e83c14c15243e8ec53a03bb45d86495/reports",
+    "scope": "Consumed current-only closeout stopped during inventory. Partial3935entries/99059975logical bytes are not complete inventory, source-after proof or deletion. Original Problems evidence preserved, original false flags and unidentified churn remain; no R access/reclassification/retry/successor or new stop. All other held runtimes/STOP/NO-RETRY/CLOSED scopes unchanged.",
+    "root_adoption": "reviews/detekt02-closeout01/ROOT-FAILURE-ADOPTION.json",
+    "root_adoption_sha256": "1350596f90ee58e79967683de0cf1e15488fb12ac5a9e60ed5797e2080e2d86f",
+    "request": "reviews/detekt02-closeout01/REQUEST.CONSUMED.json",
+    "request_sha256": "e2e641bf70590337fffbf14bc71c725344d0545aa597de111b8f3af7a3f82a2f",
+    "consumed": true,
+    "application_cases": 0,
+    "junit_xml": 0
+  },
+  "historical_gui03_two_case_source_before_c17": {
+    "status": "INDEPENDENT_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
+    "authors": [
+      "/root/build_config",
+      "/root/verification"
+    ],
+    "reviewers": [
+      "/root/storage",
+      "/root/editor_review"
+    ],
+    "sources": {
+      "scripts/audit/linux_desktop_integration_03.py": "86cd40c4681665cc723afeb3c38f3fda3f82c56bda233c284cd802d55212b4c0",
+      "scripts/audit/desktop_integration_03.init.gradle": "9bf2cc5f32af4447f9ad38c4104b486b30a40e18cf2e0757da1e4e465d02637d",
+      "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py": "e59be5da85e9f52e3e6e0f6e9b764fe3b12e01da023b4f838bcfbf9c6fa65ca2"
+    },
+    "reviews": {
+      "reviews/storage/INTEGRATION03-INNER-INIT-DELTA-REVIEW.json": "0e81899f8b2d0a1455e5d251bcca4cc1628b5b8c8ec873ba4d85d63192ce164e",
+      "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-OUTER-DELTA-REVIEW.md": "c4adac6a4c2e05d71ab1e514f01e7284133fb0e406e47fa37e697efe528a98b4"
+    },
+    "selection": {
+      "cases": 2,
+      "xml_suites": 2,
+      "serial_test_tasks": [
+        ":app-desktop:desktopTest",
+        ":shared:desktopTest"
+      ],
+      "classes": [
+        "com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest",
+        "com.passvault.shared.credential.CredentialEditorRoomIntegrationTest"
+      ]
+    },
+    "main_after_image_sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
+    "unbound": "Exact new commit/tree/source manifest/member count/Main fixture/source/init/route/tool/store/lock/request/approval remain to bind after publication; source acceptance is not instance admission.",
+    "preserved": "Same GUI/panel/1280x1024 infrastructure, clocks, strict dependencies, JDK17, one worker, stop/settlement/cleanup guards. No lifecycle/tray case replay.",
+    "evidence_cap": {
+      "inner_baseline_files": 84,
+      "inner_max_files": 93,
+      "outer_normal_files": 90,
+      "conservative_total_files": 100
+    },
+    "actual_cases": 0,
+    "new_closures": 0,
+    "static": "Separate existing Detekt01 source/index rebind; prefer static first before GUI compilation if source diagnostics may change the frozen input."
+  },
+  "detekt03_source": {
+    "status": "INDEPENDENT_SOURCE_DELTA_ACCEPTED_UNBOUND_C17_UNEXECUTED",
+    "author": "/root/build_config",
+    "independent_reviewer": "/root",
+    "review": "reviews/detekt03/ROOT-INDEPENDENT-REVIEW.json",
+    "review_sha256": "11b1e26838379250b5ab5a9fe3a416c834ef3d621db86f21d564cd1c8b291b60",
+    "sources": {
+      "scripts/audit/linux_detekt_03.py": "19766a81e97f2d8f7fe214356f6c5e3742b813387fde955de4b729b9198bca45",
+      "scripts/audit/detekt_03.init.gradle": "fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7",
+      "reviews/detekt03-outer/LAUNCH.py": "e7a568f3c00a7239e7fd5f51fcbd77a55ec422e94dfd50c19d46a6c36a197359"
+    },
+    "scope": "One :detekt --continue; coverage plus22 analyzers, zero application cases. Existing analysis/stop/report/resource/safety contracts retained. Exact reviewed screen, no historical unknown-churn attribution.",
+    "source_manifest": "reviews/checkpoint17/source-prepare01/SOURCE.json",
+    "source_binding": "NOT_YET_CREATED_OR_ADMITTED",
+    "actual_cases": 0,
+    "new_closures": 0
+  },
+  "android_crypto_compile01_source": {
+    "status": "ACCEPTED_NARROW_COMPILE_CANDIDATE_NOT_EXECUTED_INNER_OUTER_REVIEW_PENDING",
+    "finding_ids": [
+      "PVA-001"
+    ],
+    "selector": ":core:crypto:compileAndroidDeviceTest",
+    "task_envelope": 25,
+    "review": "reviews/android32/android-compile01/CANDIDATE02-INDEPENDENT-REVIEW.md",
+    "review_sha256": "a2c3ef3527834a97e787883cf2bfb0074c2ebd7b4b8a3eb813babb8955065446",
+    "SDK": "Already supplied platforms;android-37.0 API37/rev2/extension22 and build-tools36.0.0 metadata. Read-only ordinary use accepted; no new agreement or installation, link/rename or inferred AGP incompatibility.",
+    "limits": "Crypto instrumentation compile only; generic Gradle inputs are not compiler classpaths. No APK/native runtime/KDF/minification/business-flow/device/closure evidence. New API24image agreement/download/target gates remain unresolved."
+  },
+  "historical_pending_selected_scope_before_c17": {
+    "status": "INTEGRATION03_TWO_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
+    "regression_methods": 2,
+    "fixture_producers": 0,
+    "expected_test_tasks": 2,
+    "expected_xml_files": 2,
+    "qualification": "Corrected Main + previously unstarted shared Room only, Room first; no passing lifecycle/tray repeat. C16 Room/source/instance binding pending. Detekt02 static-only continuation is separate from app test evidence."
+  },
+  "c17_shared_source_preparer": {
+    "status": "SOURCE_DELTA_INDEPENDENTLY_ACCEPTED_UNBOUND_UNEXECUTED",
+    "source": "reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.py",
+    "source_sha256": "0042497f8972713653aa3374c2f2abeba936cc1102fd0e767edd113643fc73d2",
+    "review": "reviews/baseline-coverage/C17-SHARED-SOURCE-PREPARER-DELTA-REVIEW.json",
+    "review_sha256": "9a28609d1cbc3a78936c92ffc9f8047cdf59b7994b26fed4eda456fdf16fec09",
+    "scope": "One new C17 raw-source manifest shared by targeted GUI03/static03 and Android compile if applicable; no consumed preparer import/replay. Exact C17 publication/store bindings pending.",
+    "bounds": "4096 members explicitly increased from3000 after prospective3040-path census; raw/checkout128MiB each/perfile32MiB/listing2MiB/time/resource bounds unchanged. Final selected source count/bytes still independently checked.",
+    "actual_cases": 0,
+    "executions": 0,
+    "limits": "Original EOL/metadata/cooperative/direct-child/hard-interruption qualifications preserved. Data capture or syntax parse is not application test, code closure or future execution authority."
   }
 }

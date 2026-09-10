@@ -1,0 +1,44 @@
+{
+  "application_cases": 0,
+  "approval_sha256": "63fa4d29fa9cbabe9dfab27b51e0a9f4eaba9d3166f5d62f5b172807547bafe3",
+  "at_utc": "2026-09-10T21:57:11.290351+00:00",
+  "cleanup_before_execution": "Reviewed outer/inner install signal/finally handling, fixed original wrapper stop, positive namespace/pidfd settlement, evidence-before-allowlisted removal. Every older HOLD/STOP/NO-RETRY remains. No automatic retry after uncertainty.",
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt02-outer/LAUNCH.py"
+  ],
+  "coordination": {
+    "T_source_store_frozen": true,
+    "all_other_agents_tools_quiescent": true,
+    "no_ci_since_captured_terminal_list": true,
+    "original_lock_verified": true,
+    "sole_build_owner": "/root"
+  },
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "final_result": "PENDING_ACTUAL_EXTERNAL_EXIT_AND_INDEPENDENT_RECONCILIATION",
+  "host_screen": {
+    "positive_rows": [],
+    "qualification": "Bounded point screen, not global idleness or ownership proof; outer monitors actual launch and work.",
+    "unclassified_initial_disappearances": 0
+  },
+  "owner": "/root",
+  "planned_static_tasks_not_cases": 23,
+  "request_sha256": "da68c5a571f5753aded5ba24e9111217637af9c104a0316fadb63dcc9e535c18",
+  "resources": {
+    "disk_available_bytes": 20852940800,
+    "memory_available_bytes": 25811447808,
+    "memory_total_bytes": 67435888640
+  },
+  "source_commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+  "source_tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+  "status": "ADMIT_ONE_EXACT_LINUX_DETEKT02"
+}

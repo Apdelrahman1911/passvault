@@ -4,8 +4,9 @@ import java.time.Duration
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.testing.Test
 
-// NEW fixed INTEGRATION03 source only; not execution admission. Corrected Main + UNSTARTED Room:
-// two cases in two serial Test tasks; no rerun of the passed tray/lifecycle cases.
+// NEW explicitly expanded INTEGRATION03 source only; not execution admission.
+// Four cases in the SAME two serial KMP Test tasks: Room first, then three Main siblings.
+// App sibling class order is unspecified; no rerun of the passed tray/lifecycle cases.
 // No Detekt: the raw-blob source snapshot has no admitted Git inventory.
 def mode = gradle.startParameter.projectProperties['passvault.audit.desktopIntegration03Mode']
 if (!(mode in ['prepare', 'render'])) {
@@ -20,7 +21,9 @@ def selections = [
     [project: ':shared', task: ':shared:desktopTest', worker: 'editor-room',
      selectedClasses: ['com.passvault.shared.credential.CredentialEditorRoomIntegrationTest'], timeoutSeconds: 360],
     [project: ':app-desktop', task: ':app-desktop:desktopTest', worker: 'mainnav',
-     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest'], timeoutSeconds: 600],
+     selectedClasses: ['com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',
+                       'com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest',
+                       'com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest'], timeoutSeconds: 1500],
 ]
 
 gradle.beforeProject { project ->
@@ -67,6 +70,7 @@ gradle.beforeProject { project ->
                 'NO_AT_BRIDGE': '1',
             ])
             if (selected.project == ':app-desktop') {
+                test.failFast = true // A failed sibling may leave later classes unstarted; never a class-order promise.
                 workerEnvironment.putAll([
                     'HOME': displayRoot + '/home',
                     'TMPDIR': displayRoot + '/runtime', 'TMP': displayRoot + '/runtime', 'TEMP': displayRoot + '/runtime',
@@ -78,6 +82,12 @@ gradle.beforeProject { project ->
                 test.systemProperty('passvault.mainnav.syntheticDisplay', ':88')
                 test.systemProperty('passvault.mainnav.runtimeDir', runtime + '/mainnav')
                 test.systemProperty('passvault.mainnav.evidenceDir', evidenceRoot + '/mainnav-evidence')
+                test.systemProperty('passvault.mainnav.pvu003Chooser', 'true')
+                test.systemProperty('passvault.mainnav.pvu003RuntimeDir', runtime + '/pvu003')
+                test.systemProperty('passvault.mainnav.pvu003EvidenceDir', evidenceRoot + '/pvu003-evidence')
+                test.systemProperty('passvault.mainnav.pva027SettingsTray', 'true')
+                test.systemProperty('passvault.mainnav.pva027RuntimeDir', runtime + '/pva027')
+                test.systemProperty('passvault.mainnav.pva027EvidenceDir', evidenceRoot + '/pva027-evidence')
                 test.doFirst {
                     // Actual complete Test runtime, resolved before worker startup; never java.class.path.
                     def childClasspath = test.classpath.asPath
@@ -99,9 +109,9 @@ gradle.beforeProject { project ->
             test.systemProperty('awt.useSystemAAFontSettings', 'on')
             test.systemProperty('swing.aatext', 'true')
             test.timeout.set(Duration.ofSeconds(selected.timeoutSeconds))
-            // Retain app600s (Main nominal395s plus overhead) and shared360s ceilings.
-            // Task ceilings, not native/EDT/process guarantees or additive reservations:
-            // unchanged outer5250/6000s cancellation/settlement remains authoritative.
+            // App1500s covers three serial <=395s Main role chains plus315s allowance; shared stays360s.
+            // Inner prepare1800/render2000 and fresh outer-deadline reservations are independently bound.
+            // Cooperative ceilings, not native/EDT/process guarantees; outer5250/6000s remain authoritative.
             test.outputs.upToDateWhen { false }
             test.outputs.cacheIf { false }
         }

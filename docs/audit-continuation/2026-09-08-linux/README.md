@@ -1,6 +1,31 @@
 # Linux continuation — in progress, not a release
 
-## Current C16 checkpoint
+## Current C17 checkpoint
+
+Read `CHECKPOINT_17.md` and the three current ledgers. Counts remain
+**19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**; eight PVD explanations
+remain separate from owner decisions. No overall-readiness percentage.
+
+Detekt02 failed its coverage guard before all22 analyzers; two inert historical
+Kotlin drafts now have exact `.kt.txt` aliases, not analyzer exclusions. Eight
+synthetic host-screen controls passed independently; no live OS proof follows.
+The current Detekt02 cleanup stopped before deletion at unclassified report-like
+content and remains HOLD/no automatic retry. Detekt01's distinct temporary
+remainder was removed with independent reconciliation; its original failure stays.
+
+Next useful work is narrow Android crypto instrumentation compilation, one static
+cycle, and four GUI cases in two serial Test tasks. No repeated successful
+lifecycle/tray checks. Android32 target/image, genuine hardware/provider/owner
+and release gates remain explicit; unfinished local checks are not hardware-only.
+Use one fresh shared C17 source capture and separate exact execution admission.
+
+Application-related XML accounting remains **199 +3 infrastructure +1 producer
+=203 elements**, not199 passes. The earlier five parser and new eight screen
+controls are separate non-XML infrastructure. W is for edits; only T is for Git.
+All original restrictions survive. Conditional remaining effort: **2–4 engineering
+weeks**, excluding external waits/new findings; details and issue IDs are in C17.
+
+## Historical C16 checkpoint
 
 Read `CHECKPOINT_16.md`, the three current ledgers and slot. Detekt01 is consumed:
 coverage1PASS, Android analyzer1FAIL/seven diagnostics,21analyzersUNSTARTED,
@@ -106,7 +131,7 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest report: `CHECKPOINT_16.md`; current summary above supersedes historical pending statuses.**
+**Latest report: `CHECKPOINT_17.md`; current summary above supersedes historical pending statuses.**
 
 **Historical: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
 One additional Desktop test plus two Android instrumentation cases and minimal

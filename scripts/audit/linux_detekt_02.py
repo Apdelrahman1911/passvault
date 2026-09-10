@@ -34,13 +34,13 @@ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
 # Final published snapshot and exact regular tool/alias/optional-exclude identities
 # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
-COMMIT = None
-TREE = None
-MEMBERS = None
+COMMIT = 'e6738b17a7c783383a4f0ae0f17af726cffb9a40'
+TREE = 'c4009ab5f9ba23bb8097d64cc54328b131baa0c8'
+MEMBERS = 2887
 GIT_IMAGE = Path('/usr/bin/git')
 RUBY_IMAGE = Path('/usr/bin/ruby3.2')
-EXCLUDE_STATE = None
-FROZEN = {SOURCE: None, INIT: '2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6'}
+EXCLUDE_STATE = 'INFO_ABSENT'
+FROZEN = {SOURCE: '2af03198511f26cfafb0ddd01470e66585697507e95c654530e1621b5ce0831b', INIT: '2ff75e0d26f4bd2d7bca7a0c62d929fed9174115ad20b665e5b10caabe51b9e6'}
 INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
 GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
 RUN_ID = 'linux-detekt02'

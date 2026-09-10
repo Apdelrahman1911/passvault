@@ -1,0 +1,129 @@
+{
+  "format": "passvault-main-followups17-source-candidate-v1",
+  "author": "/root/editor",
+  "date": "2026-09-10",
+  "status": "CANDIDATE_ONLY_UNADOPTED_UNCOMPILED_UNEXECUTED_PENDING_INDEPENDENT_REVIEW",
+  "target_path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+  "base": {
+    "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+    "sha256": "32c01afedd2db1195ea6eede8db09ec064b798f8f642f762218f56cb3f124dc5",
+    "bytes": 40561,
+    "lf": 755
+  },
+  "accepted_pvu003_input": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/pvu003-followup/PVU003-ACTUAL-MAIN-ADOPTION.patch.txt",
+    "sha256": "1bec90498dfee2375b74bcab23053214755a9a504fe943352c538084d04de23a",
+    "bytes": 21002,
+    "lf": 367
+  },
+  "accepted_pvu003_intermediate": {
+    "sha256": "8a666a5df0c303d50ab57aa4ef51907f7c3a06ef69f6c7679519d5e992867f6c",
+    "bytes": 53492,
+    "lf": 976,
+    "applied_text_hunks": 14,
+    "written_as_source": false
+  },
+  "pva027_fragment": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/android32/pva027-followup/PVA027-MAIN-SETTINGS-PROPAGATION.kt.txt",
+    "sha256": "fe8beaecef2a6155a582383347dc3abe6edabd1498ed3eda4679df54caf3dcd9",
+    "bytes": 5790,
+    "lf": 96
+  },
+  "after_image": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/main-followups17/CredentialMainNavHostRoomIntegrationTest.kt.candidate.txt",
+    "sha256": "96c995d0f74d7df8196fca26770e104ad2d2d2dbb9e1462790e4f7dcca294911",
+    "bytes": 66206,
+    "lf": 1208
+  },
+  "combined_reversible_delta": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor/main-followups17/MAIN-FOLLOWUPS17.patch.txt",
+    "sha256": "3ffc0176b16f7168ed1c330f13b41fd4dd06bc8a9b8d877b5b59f25ca7c270d3",
+    "bytes": 34295,
+    "lf": 601,
+    "hunks": 13
+  },
+  "inverses": {
+    "new_literal_delta_recovers_exact_pvu003_intermediate": true,
+    "pvu003_inverse_recovers_exact_base": true,
+    "combined_forward_equals_candidate": true,
+    "combined_reverse_equals_base": true,
+    "classification": "Text/data equality, not executable-source validation or test cases."
+  },
+  "preserved_blocks": [
+    {
+      "block": "credential_scenario_and_original_native_primitives",
+      "sha256": "3011e24b7827b26c8b5a4c82b5464edcda1f1dc901aa97fd237ab8502fe01c7a",
+      "bytes": 10855,
+      "lf": 208,
+      "byte_equal": true
+    },
+    {
+      "block": "legacy_EVENTS_and_terminal_diagnostics",
+      "sha256": "6f8ce959f02efec0a0bd7b6a56c060fbc2560b686b943e02b4b6742d8bf17666",
+      "bytes": 858,
+      "lf": 17,
+      "byte_equal": true
+    },
+    {
+      "block": "room_role",
+      "sha256": "7cad7d0259a1584a8da61439eb6a4b70563fc1314fd23334986c22b55af5d48b",
+      "bytes": 2417,
+      "lf": 40,
+      "byte_equal": true
+    },
+    {
+      "block": "accepted_PVU003_observer_members",
+      "sha256": "6fc7f069ae03e240b37975f7aa52287a542ed152653637fff4318f149224f201",
+      "bytes": 9662,
+      "lf": 156,
+      "byte_equal": true
+    }
+  ],
+  "material_delta_purposes": [
+    "six additional existing-library imports; GlobalContext reused",
+    "explicit limited case documentation",
+    "new exact parent case adapter, same serial roles",
+    "explicit child opt-in derived only from fixed case",
+    "separate single-method class with absent-opt-in ignored, never passing evidence",
+    "new case requires its exact child guard",
+    "distinct native branch before unchanged terminal/input owner",
+    "property-only fragment plus PVA-only target-ancestor viewport/native-input locator",
+    "closed three-case registry, two separate followups",
+    "new exact five-line main receipt; legacy and PVU contracts preserved"
+  ],
+  "new_pva027_body": {
+    "sha256": "341359ad8ce874d788b7d65a8c07d9205966b94fa19cdda14a5b988a184798c1",
+    "bytes": 10989,
+    "lf": 194
+  },
+  "prospective_cases": [
+    {
+      "class": "Pvu003NativeChooserAdmissionIntegrationTest",
+      "opt_in": "passvault.mainnav.pvu003Chooser=true",
+      "case": "PVU003_CHOOSER",
+      "main_receipt": "one exact PVU003 observation shape plus two original terminal markers",
+      "role_events": 7
+    },
+    {
+      "class": "Pva027MainSettingsTrayPropagationIntegrationTest",
+      "opt_in": "passvault.mainnav.pva027SettingsTray=true",
+      "case": "PVA027_SETTINGS_TRAY",
+      "main_receipt": [
+        "PVA027_MAIN_TRAY_EN1",
+        "PVA027_MAIN_TRAY_AR",
+        "PVA027_MAIN_TRAY_EN2",
+        "DRIVER_ASSERTIONS_COMPLETE",
+        "QUIT_KEY_CALLS_COMPLETE"
+      ],
+      "role_events": 9
+    }
+  ],
+  "limits": [
+    "Exactly three source Test methods: one unchanged credential method contract and two independently opt-in followups. No new method is compiled/adopted/executed yet.",
+    "Same one serial seed-main-verify fixture, actual Main terminal owner, 90/200/90s parent role deadlines, one5s settlement each, shared150s native driver deadline,5s EDT waits.",
+    "PVA viewport lookup requires exactly one observed SCROLL_PANE ancestor of the selected target; no any-node or direct-event fallback. AX mapping/geometry remains runtime-unverified.",
+    "PVA polls state then installed properties in separate ordered EDT actions; no atomic/continuous identity, callback, tooltip visual, icon, persistence, packaging or other-platform proof.",
+    "PVU003 modality samples do not establish full admission/lock-cycle/deletion/deadlock/disproof; shared deadline can preclude Escape.",
+    "No source/module/Gradle/helper edits, source execution/AST/compile/build/test/Git/held-runtime/cache/process probes. Root owns adoption and all new source/class/opt-in/execution/cleanup admission; GUI03 selection unchanged."
+  ]
+}

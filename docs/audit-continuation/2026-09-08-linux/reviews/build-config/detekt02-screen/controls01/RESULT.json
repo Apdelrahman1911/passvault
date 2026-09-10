@@ -1,0 +1,179 @@
+{
+  "application_cases": 0,
+  "children_started_by_control": 0,
+  "control_assertion_failures": 0,
+  "control_sha256": "0383be20aca819724d1bd2b5410a06ee6a2bd7daa96db47efaf247f97b46fe84",
+  "controls": 8,
+  "elapsed_seconds": 0.026616060989908874,
+  "junit_xml": 0,
+  "preterminal_exit_intent": 0,
+  "scratch": "NONE",
+  "source_sha256": "b7e227cdb7accac627d70971d9295125cbefd689aaf9722f683e127ad115ccba",
+  "status": "EIGHT_SYNTHETIC_CONTROLS_PASS",
+  "stdout": {
+    "format": "prospective-screen-memory-controls-v1",
+    "qualification": "Eight synthetic branch controls only; no real proc/pidfd/namespace, application case, holder execution, retry or admission proof.",
+    "results": [
+      {
+        "failure_stage": null,
+        "outcome": "ACCEPT",
+        "scenario": "owned_enoent",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "poll:11",
+          "poll:22",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": "reread-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "candidate_live",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "poll:11",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": "reread-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "owner_terminal",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "poll:11",
+          "poll:22",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": "proof-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "preproof_enoent",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": "proof-owned-domain",
+        "outcome": "HOLD",
+        "scenario": "foreign_namespace",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": "reread-birth-first",
+        "outcome": "HOLD",
+        "scenario": "birth_mismatch",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "comm",
+          "birth",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": null,
+        "outcome": "ACCEPT",
+        "scenario": "live_owned",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "close"
+        ]
+      },
+      {
+        "failure_stage": "reread-namespace:mnt",
+        "outcome": "HOLD",
+        "scenario": "close_failure",
+        "trace": [
+          "open",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "birth",
+          "poll:11",
+          "poll:22",
+          "comm",
+          "birth",
+          "ns:pid",
+          "ns:mnt",
+          "poll:11",
+          "poll:22",
+          "close"
+        ]
+      }
+    ],
+    "screen_invocations": 8,
+    "source_sha256": "b7e227cdb7accac627d70971d9295125cbefd689aaf9722f683e127ad115ccba"
+  },
+  "utc": "2026-09-10T22:39:47.753810+00:00",
+  "wrapper_stop": "NOT_APPLICABLE_NO_GRADLE_OR_CHILD"
+}
