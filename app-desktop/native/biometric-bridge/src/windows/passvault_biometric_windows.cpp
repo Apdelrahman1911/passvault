@@ -67,6 +67,18 @@ template <typename Container> void secure_wipe(Container &value) {
               value.size() * sizeof(typename Container::value_type));
 }
 
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+// Only the opt-in, source-including test executable supplies these observers.
+// They cannot throw, allocate, mutate a secret, or replace a production wipe.
+void pva037_test_register_prk(const uint8_t *value, size_t length) noexcept;
+void pva037_test_array_wipe(const uint8_t *value, size_t length,
+                           bool after) noexcept;
+void pva037_test_before_hmac_allocation(const uint8_t *key, size_t key_length,
+                                       const uint8_t *output,
+                                       size_t object_length) noexcept;
+void pva037_test_after_hmac_allocation(const uint8_t *key) noexcept;
+#endif
+
 // Borrowed arrays must outlive their guard. Register before filling a secret so
 // both ordinary returns and C++ exception unwinding retain an erasure owner.
 // This allocation-free guard does not promise erasure of OS/runtime copies.
@@ -74,7 +86,15 @@ template <size_t Size> class ScopedArrayWipe final {
 public:
   explicit ScopedArrayWipe(std::array<uint8_t, Size> &value) noexcept
       : value_(value) {}
-  ~ScopedArrayWipe() noexcept { secure_wipe(value_); }
+  ~ScopedArrayWipe() noexcept {
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+    pva037_test_array_wipe(value_.data(), value_.size(), false);
+#endif
+    secure_wipe(value_);
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+    pva037_test_array_wipe(value_.data(), value_.size(), true);
+#endif
+  }
   ScopedArrayWipe(const ScopedArrayWipe &) = delete;
   ScopedArrayWipe &operator=(const ScopedArrayWipe &) = delete;
   ScopedArrayWipe(ScopedArrayWipe &&) = delete;
@@ -226,7 +246,13 @@ bool hmac_sha256(const uint8_t *key, size_t key_length, const uint8_t *data,
       object_length == 0) {
     return false;
   }
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+  pva037_test_before_hmac_allocation(key, key_length, output->data(), object_length);
+#endif
   std::vector<uint8_t> hash_object(object_length);
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+  pva037_test_after_hmac_allocation(key);
+#endif
   HashHandle hash;
   bool success = nt_success(BCryptCreateHash(
       algorithm.get(), hash.output(), hash_object.data(), object_length,
@@ -252,6 +278,9 @@ bool derive_wrapping_key(const std::array<uint8_t, kPrfBytes> &prf,
   }
   std::array<uint8_t, kHashBytes> pseudorandom_key{};
   const ScopedArrayWipe<kHashBytes> wipe_pseudorandom_key(pseudorandom_key);
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+  pva037_test_register_prk(pseudorandom_key.data(), pseudorandom_key.size());
+#endif
   std::vector<uint8_t> info;
   info.reserve(sizeof(kKdfInfo) - 1 + vault_hash.size() + 1);
   info.insert(info.end(), kKdfInfo, kKdfInfo + sizeof(kKdfInfo) - 1);

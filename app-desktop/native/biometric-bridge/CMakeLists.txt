@@ -111,38 +111,81 @@ elseif(WIN32)
         add_executable(passvault_biometric_windows_security_test
             tests/windows/passvault_biometric_windows_security_test.cpp
         )
-        target_include_directories(passvault_biometric_windows_security_test PRIVATE include)
-        target_compile_definitions(passvault_biometric_windows_security_test PRIVATE
-            NOMINMAX
-            UNICODE
-            _UNICODE
-            WIN32_LEAN_AND_MEAN
-            WINVER=0x0A00
-            _WIN32_WINNT=0x0A00
-            PASSVAULT_BIOMETRIC_BUILD=1
-        )
-        target_compile_options(passvault_biometric_windows_security_test PRIVATE
-            /W4
-            /WX
-            /guard:cf
-            /sdl
-        )
-        target_link_options(passvault_biometric_windows_security_test PRIVATE
-            /DYNAMICBASE
-            /HIGHENTROPYVA
-            /NXCOMPAT
-            /guard:cf
-        )
-        set_property(TARGET passvault_biometric_windows_security_test PROPERTY
-            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
-        )
-        target_link_libraries(passvault_biometric_windows_security_test PRIVATE
-            advapi32
-            bcrypt
-            ole32
-            runtimeobject
-            windowsapp
-        )
+        set(windows_security_targets passvault_biometric_windows_security_test)
+        option(PASSVAULT_AUDIT_PVA036_037_CONTROLS
+            "Build isolated historical-writer and live PRK allocation controls" OFF)
+        if(PASSVAULT_AUDIT_PVA036_037_CONTROLS)
+            if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+                message(FATAL_ERROR "The audit controls require MSVC x64")
+            endif()
+            # This is an additional, exact historical source input, not a
+            # reconstructed writer or a replacement for the production library.
+            set(pva036_source "${CMAKE_CURRENT_SOURCE_DIR}/../../../docs/audit-continuation/2026-09-08-linux/reviews/native/HISTORICAL-PVA036-WINDOWS.cpp.txt")
+            file(SHA256 "${pva036_source}" pva036_source_sha256)
+            if(NOT pva036_source_sha256 STREQUAL
+                "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b")
+                message(FATAL_ERROR "The reviewed historical writer source does not match")
+            endif()
+            foreach(control IN ITEMS historical_writer prk_allocation)
+                add_executable(passvault_biometric_windows_${control}_test
+                    tests/windows/passvault_biometric_windows_security_test.cpp)
+                list(APPEND windows_security_targets passvault_biometric_windows_${control}_test)
+            endforeach()
+            target_compile_definitions(passvault_biometric_windows_historical_writer_test PRIVATE
+                PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST=1
+                PASSVAULT_BIOMETRIC_PVA036_SOURCE="${pva036_source}")
+            target_compile_definitions(passvault_biometric_windows_prk_allocation_test PRIVATE
+                PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST=1)
+            foreach(file_case IN ITEMS
+                success validation_failure dacl_failure collision
+                empty_payload oversized_payload empty_suffix rename_failure
+            )
+                add_test(
+                    NAME passvault_biometric_windows_historical_${file_case}
+                    COMMAND passvault_biometric_windows_historical_writer_test --file-case ${file_case})
+            endforeach()
+            foreach(prk_case IN ITEMS unarmed allocation_cut)
+                add_test(
+                    NAME passvault_biometric_windows_prk_${prk_case}
+                    COMMAND passvault_biometric_windows_prk_allocation_test --prk-case ${prk_case})
+            endforeach()
+        endif()
+        # All isolated test images retain the current security target's flags;
+        # no observer or replacement allocator is linked into the normal DLL.
+        foreach(security_target IN LISTS windows_security_targets)
+            target_include_directories(${security_target} PRIVATE include)
+            target_compile_definitions(${security_target} PRIVATE
+                NOMINMAX
+                UNICODE
+                _UNICODE
+                WIN32_LEAN_AND_MEAN
+                WINVER=0x0A00
+                _WIN32_WINNT=0x0A00
+                PASSVAULT_BIOMETRIC_BUILD=1
+            )
+            target_compile_options(${security_target} PRIVATE
+                /W4
+                /WX
+                /guard:cf
+                /sdl
+            )
+            target_link_options(${security_target} PRIVATE
+                /DYNAMICBASE
+                /HIGHENTROPYVA
+                /NXCOMPAT
+                /guard:cf
+            )
+            set_property(TARGET ${security_target} PROPERTY
+                MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+            )
+            target_link_libraries(${security_target} PRIVATE
+                advapi32
+                bcrypt
+                ole32
+                runtimeobject
+                windowsapp
+            )
+        endforeach()
         add_test(
             NAME passvault_biometric_windows_security
             COMMAND passvault_biometric_windows_security_test

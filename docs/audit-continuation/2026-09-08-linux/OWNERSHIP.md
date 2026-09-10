@@ -1,6 +1,32 @@
 # Bounded team ownership
 
-## Current C10 continuation
+## Current C11 continuation
+
+- Root remains sole build/test/CI/Git and central-ledger owner. Windows04 failure
+  and filesystem HOLD are preserved; Mac02's5CTests/qualified cleanup are
+  independently reconciled. Their scheduling reservations are released, not
+  future execution admissions. No repeat of successful Linux03/Mac02 unchanged.
+- Windows defensive controls originated in partial `native` edits before its
+  platform refusal; root completed authorized CMake/Windows05 integration.
+  `verification` independently reviewed product controls; `native_review`
+  independently accepted the helper/workflow/scope. No retry of the refused task
+  or consumed Windows04; Windows05 requires fresh exact instance/root admission.
+- GUI02 fixture/inner source is independently reviewed by `editor_review` and
+  outer by `verification`. Root alone binds the actual new publication source,
+  new store, tools/parents/original lock and future request; independent binding
+  and actual-result review remain separate. GUI02 demands agent quiescence.
+- `android32` authors only the iOS10 helper/workflow/plan and isolated fixture
+  guard; `storage` challenges fixture/runner boundaries. Guard accepted;
+  incomplete helper excluded from C11, no simulator/runtime admission.
+- `build_config` authors Detekt01 inner/init; `editor` its outer/plan;
+  `verification` reviews the bounded Git-index/config/exclude/mount/command delta.
+  Pending source/store/index/tool bindings and admission remain explicit.
+- `baseline_coverage` independently reviews C11 facts/selection/coverage. Its
+  prior planning draft authorship is disclosed; estimates are conditional, not
+  independent measured delivery evidence. Source agents never build, run Git,
+  import helpers, mutate held roots/caches/SDKs or launch CI/services.
+
+## Historical C10 continuation
 
 - Root is sole build/test/CI/Git and central-ledger owner. Linux03 is consumed,
   independently reconciled PASS166regressions+1producer; original cleanup and

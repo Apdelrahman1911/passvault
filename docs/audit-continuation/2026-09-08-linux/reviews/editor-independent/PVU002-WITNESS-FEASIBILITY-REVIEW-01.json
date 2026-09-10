@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "reviewer": "/root/editor_review",
+  "utc": "2026-09-09T22:38:09.698814+00:00",
+  "finding": "PVU-002",
+  "scope": "Independent bounded source-only challenge of storage no-code feasibility proposal. No witness authored or executed; real persistence and newly post-lock UI admission are separate obligations.",
+  "verdict": "NO_QUALIFYING_FINITE_WITNESS_ESTABLISHED_WITHIN_CURRENTLY_ADMITTED_PARTIAL_WINDOW_SCOPE; leave suspicion unresolved and stop before fixture/code/execution",
+  "author_alignment": "Storage agreed to preserve distinct real-host timer and native manual/minimize/focus paths. A missed pre-clear input window is INCONCLUSIVE, not closed or source-refuted.",
+  "source_binding": {
+    "basis": "Prior complete/focused independent material reads b180ed and813190, with stable regular-file byte/hash rebind for this report. No Git operation or commit/tree claim; root owns exact-checkpoint mapping.",
+    "members": [
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CredentialAttachmentSection.kt",
+        "sha256": "0723eb3221bf09f5d8076040736a03fd96c2e508d37023ee914037bb7fd899f4",
+        "bytes": 12024,
+        "physical_lf": 320
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialAttachmentController.kt",
+        "sha256": "61f3d3a8b9c17baaef3d7def87919d5e831c48c6ac160ee0f6e5cb16cd92412c",
+        "bytes": 14219,
+        "physical_lf": 338
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+        "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+        "bytes": 25441,
+        "physical_lf": 590
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/di/AppModule.kt",
+        "sha256": "9b486df509202e65311caf92895ba8db6a44e6eae351266c8daa952bc553af25",
+        "bytes": 8995,
+        "physical_lf": 234
+      },
+      {
+        "path": "core/security/src/commonMain/kotlin/com/passvault/core/security/VaultUiSecurityCoordinator.kt",
+        "sha256": "1a6c7ac9be3cd4ca5979ab9b09eced6b323b0282d1529b1c7039175d6fbc19e4",
+        "bytes": 3806,
+        "physical_lf": 97
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt",
+        "sha256": "50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006",
+        "bytes": 26617,
+        "physical_lf": 647
+      },
+      {
+        "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt",
+        "sha256": "794a8fdbaea87edca986b2f729753dad3d434467f21e59ec1fcbb9027402e702",
+        "bytes": 17188,
+        "physical_lf": 454
+      },
+      {
+        "path": "core/security/src/desktopMain/kotlin/com/passvault/desktop/security/DesktopWindowProtection.kt",
+        "sha256": "92c473e21c262972983b111b61adc18610bc17fcea92c6cc2b7f65ea4d5ee128",
+        "bytes": 12362,
+        "physical_lf": 357
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/security/AutoLockTimer.kt",
+        "sha256": "811f38c29c0610d0d1b7538e59ff78b7a9ada82f8f3aa06b8ff9af27906b261d",
+        "bytes": 3143,
+        "physical_lf": 75
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/security/UserActivitySignal.kt",
+        "sha256": "fdbf32dd0a922f842fd296ed9989e2467d75bcd83014ba27c093f603e62891b6",
+        "bytes": 1294,
+        "physical_lf": 47
+      },
+      {
+        "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopSessionCleanup.kt",
+        "sha256": "865184fb667e705f43b4d8ab29f5b0b04024d0abd7c0d664aed09d5b439dc5d3",
+        "bytes": 2372,
+        "physical_lf": 62
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/LockTransitionCleanup.kt",
+        "sha256": "db7164ca5a916bc80a76f074c88bd8f84902e243213840b95a8cda0555429f3e",
+        "bytes": 1518,
+        "physical_lf": 39
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt",
+        "sha256": "75349af0300801f0cad87f72b6afe9701e54bd24dafdd8867d7509c776506737",
+        "bytes": 12108,
+        "physical_lf": 315
+      }
+    ]
+  },
+  "independent_challenge": [
+    {
+      "point": "Partial widget scope omits shipped guard",
+      "source": "CredentialAttachmentSection272-304; Controller161-183,258-268; CredentialViewModel314-336; AppModule205-234; Coordinator60-81",
+      "analysis": "A standalone delete dialog/section/controller/VM with fake, manual or delayed cleanup omits the real observer/owner lifecycle. Production DI registers the VM; clearForLock synchronously removes loaded credential/target and cancels tracked operations. Real deletion requires credentialId/target plus loaded/not-busy admission. Post-clear no-op is surrounding-guard evidence, not proof every possible pre-clear interval is safe."
+    },
+    {
+      "point": "Actual owner clearing occurs before clipboard and auth-root replacement",
+      "source": "PassVaultNavigationHost367-419; LockTransitionCleanup1-39",
+      "analysis": "The real session observer clears registered owners synchronously first. Copying this logic into a fixture or arbitrarily suspending it cannot establish a shipped timing window."
+    },
+    {
+      "point": "Native route has earlier guard but is not conclusively refuted",
+      "source": "DesktopWindowProtection98-108,139-173; PassVaultDesktopWindow238-275,312-344; DesktopSessionCleanup1-62",
+      "analysis": "Real native manual/minimize/focus protection enters locked state, installs curtain and iconifies before requesting content security; restoration is acknowledgement-gated. A faithful native-route witness cannot omit these actions. Source ordering alone does not prove all pending owned dialogs/native surfaces reject delivered input."
+    },
+    {
+      "point": "Real internal shared host is a legitimate smaller alternative",
+      "source": "PassVaultNavigationHost94-207,329-339,631-644; AutoLockTimer1-75; UserActivitySignal1-47; PassVaultApp startup/AppContent",
+      "analysis": "Shared auto-lock uses real activity/timer and repository lock directly. The internal PassVaultNavigationHost is accessible to shared desktopTest; full Desktop application is not mathematically required for every possible shared-auto-lock witness. But actual Koin/Nav3/lifecycle/registered-owner wiring and compatibility of omitted Desktop startup/focus policies remain to be justified. No admitted finite witness has been established."
+    },
+    {
+      "point": "Missing qualifying event and persistence",
+      "analysis": "New native confirmation must actually be delivered and admitted after locked-state publication but before actual registered-owner clear, followed by verified real DAO/file persistence outcomes. Direct locked repository delete, a pre-lock admitted or merely pre-lock queued action, fake recording invocation, arbitrary delayed cleanup or fixture-created scheduling gap does not establish this event."
+    },
+    {
+      "point": "Finite attempt need not be deterministic",
+      "analysis": "A future finite, separately admitted real-host/native-input attempt could be useful if actual ordering/effects are captured. A timing miss, timeout, post-clear click/no-op or inability to target the live dialog is INCONCLUSIVE. This report neither demands deterministic scheduling nor authorizes a future attempt, retry or alternative driver."
+    }
+  ],
+  "real_storage_qualification": "Storage reports public Desktop Room/bootstrap/checkpoint/fresh-reopen feasibility with isolated startup user.home. This separate bootstrap claim has NOT been independently proved by this reviewer and is not application-storage/execution admission. Future outcomes must distinguish persisted DAO deletion, physical object unlink and fresh-reopen observation. No real vaults, clipboard or preferences authorized.",
+  "disposition": {
+    "partial_window": "Not a qualifying witness under current scope.",
+    "real_shared_host_timer": "Genuine smaller source candidate, not source-refuted and not established/admitted.",
+    "full_native_desktop_host": "Possible future boundary with extra startup/service safety obligations; no inherited GUI01 admission.",
+    "credit": "Zero new confirmed families, conclusive suspicion resolutions, testcase passes or closure credit. Root owns denominators."
+  },
+  "restrictions": "Root alone owns builds, network/execution admission, coordination, central ledgers and publication. Preserve PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED, consumed execution restrictions and frozen GUI01. No arbitrary observer delays, production test seams, archived helper replay or unadmitted runner import.",
+  "review_operations": "Source/data/metadata reads and this permanent own report only. No network/Git/build/test/probe/import/controls/signals/cleanup or held-runtime access. No temporary/cache/generated-runtime outputs or persistent jobs. Exact nanosecond metadata compared as Python integers.",
+  "reader_failure_retained": "bf779a exit1: initial byte-rebind used incorrect inferred shared/security/LockTransitionCleanup.kt path, failed before report creation. Bounded filename-only discovery34a21b located actual shared/LockTransitionCleanup.kt; corrected exact path used here. Not a project test or execution-scope retry.",
+  "report_write_contract": "Exclusive0600 permanent file, file+parent fsync and exact readback; completion hash supplied separately."
+}

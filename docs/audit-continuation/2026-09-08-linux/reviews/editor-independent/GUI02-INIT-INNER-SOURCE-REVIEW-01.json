@@ -1,0 +1,259 @@
+{
+  "schema": "passvault-gui02-init-inner-independent-source-review-v1",
+  "reviewer": "/root/editor_review",
+  "author_reviewed": "/root/editor",
+  "utc": "2026-09-10T01:28:37.215562+00:00",
+  "verdict": "QUALIFIED_SOURCE_ONLY_ACCEPTANCE_PENDING_IDENTITY_BINDING_AND_FRESH_EXECUTION_ADMISSION",
+  "scope": "Bounded GUI02 init/inner textual delta review against independently accepted frozen GUI01 source, plus the exact PLAN and inert pending SOURCE placeholder. No unchanged full-runner re-audit, outer review, driver import/execution, syntax/AST check, Git/network/build/test, runtime access, controls or cleanup.",
+  "subject": [
+    {
+      "path": "scripts/audit/desktop_gui_02.init.gradle",
+      "sha256": "cdc6ffe9c5cef7e4d8cf156fd78fdf653f88f23dd8496f7a7ff616552d372c08",
+      "bytes": 8988,
+      "lf": 163,
+      "observed_stat": {
+        "dev": 24,
+        "ino": 13775283,
+        "mode": 33152,
+        "nlink": 1,
+        "uid": 0,
+        "gid": 0,
+        "size": 8988,
+        "mtime_ns": 1789002346758284765,
+        "ctime_ns": 1789002865081253870
+      }
+    },
+    {
+      "path": "scripts/audit/linux_desktop_gui_02.py",
+      "sha256": "4d7750ad6342ca85c036b81f111022c2fdb8ccaa7b3909500bbb9d668d2790de",
+      "bytes": 67912,
+      "lf": 1152,
+      "observed_stat": {
+        "dev": 24,
+        "ino": 13775276,
+        "mode": 33152,
+        "nlink": 1,
+        "uid": 0,
+        "gid": 0,
+        "size": 67912,
+        "mtime_ns": 1789002373307283182,
+        "ctime_ns": 1789002865081253870
+      }
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-gui02-inner/PLAN.md",
+      "sha256": "2d40c1f0e296071fbc12d20d703abfc5b236e16ade73feda8dc2f18babc107de",
+      "bytes": 10044,
+      "lf": 157,
+      "observed_stat": {
+        "dev": 24,
+        "ino": 13775368,
+        "mode": 33152,
+        "nlink": 1,
+        "uid": 0,
+        "gid": 0,
+        "size": 10044,
+        "mtime_ns": 1789002736500261534,
+        "ctime_ns": 1789002865081253870
+      }
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-gui02/SOURCE.json",
+      "sha256": "380921986806346adf572f67568d2bacf1d29bbc7bcf358d601439322a3988d8",
+      "bytes": 1371,
+      "lf": 25,
+      "observed_stat": {
+        "dev": 24,
+        "ino": 14292947,
+        "mode": 33152,
+        "nlink": 1,
+        "uid": 0,
+        "gid": 0,
+        "size": 1371,
+        "mtime_ns": 1789001605028328975,
+        "ctime_ns": 1789002865081253870
+      }
+    }
+  ],
+  "source_identity": {
+    "commit": null,
+    "tree": null,
+    "member_count": null,
+    "object_store": null,
+    "manifest_status": "The pinned SOURCE is passvault-linux-checkout-source-pending-v1, NOT a source manifest. Its commit/tree are null, files empty and checkout-EOL qualifications null.",
+    "guards": "Inner41-45 leaves COMMIT/TREE/MEMBERS and SOURCE hash unbound. Main1068-1071 rejects these before Files/intake/work. Intake327-338 separately requires complete passvault-linux-checkout-source-v1 identity, unique member count, both checkout-EOL qualifications, both frozen fixtures, no .git and both empty pixel directories.",
+    "qualification": "No old C5/C10 commit, tree, source store, lock, device or execution authority is borrowed. Observed metadata above is a source-read record, not a future instance admission; all ns values are integer-valued."
+  },
+  "reused_reviews_and_support": [
+    {
+      "path": "scripts/audit/desktop_curtain.init.gradle",
+      "sha256": "dc9d54532ae155a8c5a9ee6d1b54f37b63b4859e34cb4621e9f6eae30a539703",
+      "bytes": 7312,
+      "lf": 136
+    },
+    {
+      "path": "scripts/audit/linux_desktop_curtain_01.py",
+      "sha256": "212443a73b052feb00be5154a0414a5063af99cbd7e405cb6aa91df2d6961cf5",
+      "bytes": 63807,
+      "lf": 1094
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/DESKTOP-CURTAIN-INIT-SOURCE-REVIEW-01.json",
+      "sha256": "87ab8368e7c0135c50f97934a6e6b027f2f6d43d6e556d2c3b2fc62dfa2a2722",
+      "bytes": 4611,
+      "lf": 50
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/DESKTOP-CURTAIN-INNER-SOURCE-REVIEW-01.json",
+      "sha256": "31ea6e055a6d8c03c5130a55d7b4019d64a24d1e3b18ee506aaa03c74fadc7b0",
+      "bytes": 10237,
+      "lf": 93
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/EDITOR-RENDERING-FIXTURE-SOURCE-REVIEW-01.json",
+      "sha256": "b64b160ec2db158c9211d15c94cf2f99fae78a5bc959bd0c922acd0c77f05ffb",
+      "bytes": 14900,
+      "lf": 172
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "sha256": "6e505b6efc7b55bdd5485ed0786cc51e25e47c08569abcf6c82f247ef714f50a",
+      "bytes": 34363,
+      "lf": 694
+    },
+    {
+      "path": "shared/build.gradle.kts",
+      "sha256": "826cc234a59c05efdbbcd6a0ea62f25362f0a54d588e996582903f44d09949ad",
+      "bytes": 3296,
+      "lf": 101
+    },
+    {
+      "path": "core/designsystem/build.gradle.kts",
+      "sha256": "38e51bb1d16a35032a9b6d0d987b6e97ca98c4f062e41c8b4468e762fd369abb",
+      "bytes": 2484,
+      "lf": 82
+    },
+    {
+      "path": "core/crypto/build.gradle.kts",
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112",
+      "bytes": 2805,
+      "lf": 90
+    }
+  ],
+  "review_extent": [
+    "All163 GUI02 init lines reviewed. Inner changed-line opcodes and necessary context compared as inert text; complete new constants/intake/prepare/render/XML/pixel/main paths reviewed. Larger initial outputs that truncated were followed by bounded reads, not treated as fully visible.",
+    "Unchanged accepted command supervision, original pidfd-gated helper polls/terminal checks, private namespace/session, resource, stop/settlement and original-file adoption bodies remain source reuse, not new execution approval.",
+    "The separately accepted editor fixture remains unchanged. Its three declared methods, native input/accessible read-only locating, fake-repository persistence and controlled direct-VM capacity interference retain their earlier qualifications."
+  ],
+  "independent_challenges": [
+    {
+      "question": "Does preparing two Tests accidentally run them online, drop builtBy edges or admit additional Tests?",
+      "disposition": "No concrete source defect found. Init107-108 depends lazily on lists of original testClassesDirs/classpath FileCollections, not Test tasks; .files is materialized only in doLast. Init155-162 rejects every prepare Test and requires exactly the two fixed render Test paths. This is source review, not a witnessed Gradle graph."
+    },
+    {
+      "question": "Can shared:desktopTest resolve Linux native Skiko/JNA without borrowing the application Test classpath?",
+      "disposition": "Unsupported missing-dependency suspicion rejected at source level: shared commonMain exposes core:designsystem and core:crypto; their desktopMain implementations declare compose.desktop.currentOs (designsystem70-74) and libs.jna (crypto75-78). This is plausible existing runtime-variant transitivity, not actual resolution/loading proof. Preparation must emit exactly two correctly identified runtime records and independently find Linux-x64 Skiko and JNA in each. No dependency edit or classpath substitution authorized."
+    },
+    {
+      "question": "Can broad filtering, task concurrency, cached output or absent editor execution count as four passes?",
+      "disposition": "No: per-Test exact class filters, task-local --tests arguments, shared.mustRunAfter(app-desktop), one worker, one fork, no parallel/no cache/up-to-date Test reuse and no --continue are fixed. A first-task failure may leave all editor cases unstarted. Two selected tasks are not executed-case evidence; exact raw XML is required."
+    },
+    {
+      "question": "Can duplicate module XML names, extra/missing/skipped cases or a partial failure masquerade as success?",
+      "disposition": "No identified delta defect. Inner972-1020 retains readable XML with fixed module prefixes, aggregates at most8 XML files with2MiB per file, checks exact expected path/suite/FQCN and literal method[desktop] multiset, totals1+3 and zero suite/case failures/errors/skips. Missing or unexpected cases cannot pass. Readable unexpected XML is preserved before its mapping is rejected."
+    },
+    {
+      "question": "Do new editor captures violate the curtain empty-directory assumption or become cleanup authority before durable adoption?",
+      "disposition": "Separate original E/pixels and sibling E/editor-pixels start empty. Inner1022-1061 admits only five curtain PNGs plus observations (4MiB/member,12MiB group) and four editor PNGs (1MiB/member,4MiB group),16MiB aggregate under existing80-file/112MiB whole-evidence bound. Each original member reuses stable read, descriptor-relative reopen/pin, file+parent fsync, pin recheck and once-only close before adoption. Unsafe/oversized/unreadable evidence or uncertain close/settlement prevents preservation flags and remains HOLD, not deletion authority."
+    },
+    {
+      "question": "Can a safely settled failure, partial PNGs or readiness queries become semantic acceptance?",
+      "disposition": "No: safe settlement remains distinct from passed; missing allowed outputs may be preserved as failure, never success. Source-after, original stops, owned-worker settlement, evidence completeness/preservation remain required. GUI readiness is not native input/rendering proof; no PNG decode/oracle is supplied by this driver and independent_semantic_acceptance stays false. A failure may safely exit1; uncertainty remains70/HOLD, with no retry."
+    }
+  ],
+  "fixed_workload_and_limits": {
+    "findings": [
+      "PVU-005",
+      "PVA-007",
+      "PVA-031"
+    ],
+    "selections": [
+      {
+        "task": ":app-desktop:desktopTest",
+        "class": "com.passvault.desktop.security.DesktopCurtainRenderingTest",
+        "worker": "desktop-curtain",
+        "evidence": "E/pixels",
+        "declared_cases": 1,
+        "task_minutes": 2
+      },
+      {
+        "task": ":shared:desktopTest",
+        "class": "com.passvault.shared.credential.CredentialEditorRenderingTest",
+        "worker": "desktop-editor",
+        "evidence": "E/editor-pixels",
+        "declared_cases": 3,
+        "task_minutes": 8
+      }
+    ],
+    "phases": "One online :auditDesktopGui02Prepare (no Test); original wrapper stop and empty owned namespace; private authenticated network/tmpfs GUI; one offline Gradle invocation with the two serial Tests; original stop/settlement and evidence preservation. Separate workers isolate HOME/TMP/JNA/SQLite/XDG state.",
+    "toolchain": "JDK17/checked-in wrapper; one worker, non-daemon, no parallel/configure-on-demand/configuration/build cache, strict dependency verification, in-process compiler, no SDK/toolchain auto-download,2GiB build heap and512MiB per Test fork. Editor locale en_US/empty variant and Compose accessibility are startup properties; ambient JVM/session/disable variables are removed.",
+    "budgets": "Prepare3600s, render900s, each original wrapper stop600s are subordinate to outer6000s total/5250s work/750s drain. Entry disk/RAM12GiB/25%, running8GiB/20%, private R6GiB remain. Soft Test/native/EDT deadlines and resource samples do not prove hard syscall bounds, ownership or settlement.",
+    "detekt": "NOT INCLUDED. Required git ls-files coverage inventory is unadmitted for the Git-free raw source. No fallback/fake Git metadata or compilation-as-Detekt credit.",
+    "editor_scope": "Production form and real new VM, native Robot input and in-memory deep-copying repository. Not Room/disk, full NavHost, real second editor/external writer, deterministic pre-frame race, mobile/IME/RTL or hardware behavior."
+  },
+  "remaining_gates": [
+    "Root publication containing both exact frozen fixtures, complete raw Git blob/mode inventory and retained two checkout-EOL qualifications; independent actual source-store/commit/tree/member binding. Pending constants/manifest must change only with a focused new delta review.",
+    "Independent GUI02 outer source review plus fresh original directory/tool/device/lock/instance, coordination and cleanup admission; old GUI01 and other consumed/HOLD scopes remain frozen. This report neither grants source transport nor execution authority.",
+    "Root alone owns one local/CI build slot. GUI02 agents_quiescent:true and no_ci:true remain; no parallel-source interpretation or automatic budget extension/retry.",
+    "Actual resolved runtime classpaths, compile/graph behavior, original worker startup and accessible tree/native UI behavior remain unexecuted; missing bridge/controls/native loading is a fail-closed setup gap, not a skip/pass.",
+    "Any later admitted execution needs raw XML case accounting, compact captures/logs, independent semantic review and exact cleanup/settlement evidence. Screenshots supplement assertions, not pixel/OCR oracles; no closure follows from this source review."
+  ],
+  "coverage": {
+    "selected_test_tasks": 2,
+    "declared_cases": 4,
+    "executed_cases": 0,
+    "new_findings": 0,
+    "new_fixes": 0,
+    "new_qualified_closures": 0,
+    "denominators": "Unchanged; root owns central ledgers. Previously executed49 logical editor cases are not rerun or counted as rendering."
+  },
+  "restrictions": "PVU-007 STOP; PVU-011 NO-RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; all consumed/HOLD restrictions and frozen GUI01; PVD design/product boundaries. No replay/import of archived or unadmitted runners.",
+  "read_receipts": [
+    {
+      "chunk": "a16738",
+      "exit": 0,
+      "qualification": "Initial bound textual comparisons; long inner diff truncated, followed by focused reads."
+    },
+    {
+      "chunk": "ad4ab6",
+      "exit": 0,
+      "qualification": "Focused delta groups and prior reviews; later XML/pixel portion followed by bounded complete reads."
+    },
+    {
+      "chunk": "2da639",
+      "exit": 0,
+      "qualification": "Bounded source dependency discriminator; not runtime resolution."
+    },
+    {
+      "chunk": "ccfd77",
+      "exit": 0,
+      "qualification": "PLAN/pending SOURCE and complete prepare/render/XML/pixel/main sections; truncated earlier source ranges later reread."
+    },
+    {
+      "chunk": "162b39",
+      "exit": 0,
+      "qualification": "Fresh stable metadata/hash binding, full init and complete changed-opcode index."
+    },
+    {
+      "chunk": "0a8c31",
+      "exit": 0,
+      "qualification": "Complete constants/intake and changed readiness context; bounded inert source read."
+    },
+    {
+      "chunk": "850b8d",
+      "exit": 0,
+      "qualification": "Fresh PLAN/pending SOURCE and prior accepted review hash binding."
+    }
+  ],
+  "reviewer_resource_cleanup": "Only bounded in-memory data/metadata processing and this permanent exclusive0600 report; file and parent fsync plus exact readback. No temporary/runtime files, caches, builds, test servers or persistent workers intentionally created; no cleanup/control operation performed. No held-runtime, source-store or application-data access."
+}

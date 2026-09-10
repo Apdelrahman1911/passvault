@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "reviewer": "/root/editor_review",
+  "author": "/root/editor",
+  "utc": "2026-09-09T23:57:46.661654+00:00",
+  "verdict": "ACCEPT_FROZEN_FIXTURE_SOURCE_WITH_QUALIFICATIONS; no compilation, testcase PASS, runtime support, execution/cleanup admission or family closure",
+  "scope": "Independent bounded authored-source/API/reachability/oracle/ownership challenge for exactly3 prospective Linux rendered-editor regressions. Root remains sole build/execution/coordination/publication owner.",
+  "fixture": {
+    "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+    "sha256": "6e505b6efc7b55bdd5485ed0786cc51e25e47c08569abcf6c82f247ef714f50a",
+    "bytes": 34363,
+    "physical_lf": 694
+  },
+  "source_binding": {
+    "basis": "Stable regular-file checkout-byte reads only; exact commit/tree and future executed-source mapping remain root-owned. No Git commands used. Accepted framework adapter/cancellation primitives reused, not exhaustively re-audited.",
+    "other_members": [
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/CredentialEditScreen.kt",
+        "sha256": "22d878e85647fc3abb0522fccf3d8593aeb4671c5ba823d35501122c65edc4b4",
+        "bytes": 20997,
+        "physical_lf": 547
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+        "sha256": "dd60f4a65b4cf951a8ba94b2b6e4cab8440d1a33942eb046f1d74ccfcf9b31db",
+        "bytes": 15335,
+        "physical_lf": 446
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+        "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+        "bytes": 25441,
+        "physical_lf": 590
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+        "sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a",
+        "bytes": 17946,
+        "physical_lf": 401
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+        "sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c",
+        "bytes": 16843,
+        "physical_lf": 383
+      },
+      {
+        "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/fakes/FakeCredentialRepository.kt",
+        "sha256": "e23527840b0c9ffa1baa99bc70550c28115ea357fe213d5f436b568dfa76686a",
+        "bytes": 15123,
+        "physical_lf": 390
+      },
+      {
+        "path": "core/testing/src/commonMain/kotlin/com/passvault/core/testing/TestData.kt",
+        "sha256": "0ef930551068d29c657665894e776ecc79f3e5410398dfd531afc358ffb64cc6",
+        "bytes": 10585,
+        "physical_lf": 360
+      },
+      {
+        "path": "core/designsystem/src/commonMain/composeResources/values/strings.xml",
+        "sha256": "5605f102cca37a9fddf7fe50ecd598c5460168fd9eb6149d4d7a8318f644b118",
+        "bytes": 50416,
+        "physical_lf": 653
+      },
+      {
+        "path": "core/designsystem/src/commonMain/kotlin/com/passvault/core/designsystem/components/SecureTextField.kt",
+        "sha256": "5708b81cea22eba7dc6dddf6370469dcd6146e79dc14939ac21cc598d559cc5a",
+        "bytes": 6153,
+        "physical_lf": 167
+      },
+      {
+        "path": "shared/build.gradle.kts",
+        "sha256": "826cc234a59c05efdbbcd6a0ea62f25362f0a54d588e996582903f44d09949ad",
+        "bytes": 3296,
+        "physical_lf": 101
+      },
+      {
+        "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+        "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+        "bytes": 16583,
+        "physical_lf": 373
+      }
+    ]
+  },
+  "prior_contract": {
+    "path": "reviews/editor-independent/ACCESSIBILITY-SOURCE-RESULT-REVIEW-01.json",
+    "sha256": "a74d5d58a911f6c66f1a27e0f1358d3858848a54d83f00d542a59f4b64885a65",
+    "qualification": "Same-coordinate retained Compose1.11.1 source, not independently runtime-bytecode matched. Missing actual Skia/AWT accessible-root linkage remains setup evidence."
+  },
+  "declared_cases": [
+    {
+      "method": "native pending row draft survives page Save and a fresh rendered editor load",
+      "lines": "93-109",
+      "meaning": "Native Edit/type updates real owned draft, then native page Save WITHOUT row Save; replacement ViewModel reload from deep-copying fake repository must retain exact id/name/value/secret tuple and expose expected rendered accessible name/value."
+    },
+    {
+      "method": "native row Save commits its tuple and row Cancel does not persist later edits",
+      "lines": "111-138",
+      "meaning": "Native tuple edit and secret checkbox -> row Save commits tuple; native second edit/secret/value then row Cancel must preserve saved tuple; page Save + fresh VM reload preserves exact tuple and hidden-value semantic description."
+    },
+    {
+      "method": "native capacity Add and retained composed input survive a controlled capacity transition",
+      "lines": "140-191",
+      "meaning": "Full50 native disabled Add must not open dialog; native first-row removal preserves49 survivors; native dialog text persists while explicitly injected VM add returns capacity50 and confirm is disabled; injected removal re-enables; native confirm then page Save/fresh VM reload retains50 unique IDs and exact survivors/new tuple."
+    }
+  ],
+  "reachability_and_guards": [
+    "CredentialEditScreen80-98,113-175,194-208,325-330 renders real production form and CustomFieldsEditor; page Save is production onEvent plus canSave guard. No copied replacement UI, Koin/full navigation host or application entry is claimed.",
+    "CustomFieldsEditor74-112,125-178,183-267,344-439 binds production edit/name/value/secret/row Save/Cancel events and current canSave/canAdd guards. Dialog state uses production remember; confirm guard and dismissal remain production code. Actual callback type counters wrap/delegate the real production onEvent, not substitute actions.",
+    "CredentialEventRouter32-43 rejects busy edit mutations,154-165 routes actual draft/add/remove events,177 invokes save. CredentialViewModel206-227 commits pending drafts before validation/persistence; canSave/canAdd/hasUnsavedChanges are current-state guards479-487. CredentialFormSupport197-383 owns latest-draft tuple updates, cancellation, row/page commits,50-capacity check and sensitive replacement clearing.",
+    "FakeCredentialRepository46-62,117-137,317-335 deep-copies seed/get/save sensitive values. Clearing seed/old ViewModel does not itself mutate stored fake data; fresh VM reload is a meaningful fake repository round trip, NOT Room/disk durability. Tests assert survivor IDs/values rather than task success or callback count alone.",
+    "English string resources independently match Field Name/Value/Secret field/Add Custom Field/Title/Save/Edit/Remove/Cancel and hidden description. URL Remove is a different label and appears only for>1 URL; fixed one-URL seed is not a current accidental Remove-target counterexample."
+  ],
+  "independent_material_challenges_and_resolution": [
+    {
+      "old_source_sha256": "c611c67fbe3d0e87bd04655a834c4d178f4d8c25fbf72c0df8e6d476aaae6755",
+      "challenge": "Old key/mouse press occurred before try/finally; partial native failure could skip release. Author self-review and independent challenge converged.",
+      "resolution": "Final359-411 records only owned pressed inputs before press, installs finally before native call, preserves primary/release failures, and retains outstanding inputs for bounded close595-602. Accepted source correction, not observed runtime failure."
+    },
+    {
+      "challenge": "Old window-disposal forEach could abandon siblings after one throw, and later cleanup interruption was not restored; late in-flight EDT setup could invalidate mutable-list traversal.",
+      "resolution": "Final216-217 uses standard small CopyOnWrite owner lists; close581-623 requests individual releases/disposals/store clears/cancels before joins, retains entry and later interruptions, checks settled jobs on EDT before fake reset, and asserts no owned displayable windows. No global-window/process enumeration."
+    },
+    {
+      "challenge": "Old first/last button selector silently chose among tied or unexpected matches.",
+      "resolution": "Final658-675 constrains fixture-specific cardinalities (initial Remove50; page Save1..2; row Save2; otherwise1) and requires a unique extremal Y. This remains actual adapter setup, not an assumed perfect semantic tree."
+    },
+    {
+      "challenge": "Earlier target geometry could become stale or empty between stability polling and click; Java location/size may be null.",
+      "resolution": "Final386-420 refreshes context identity, current positive owned-client-contained rectangle and enabled state before move/press; snapshot496-500 tolerates absent geometry as setup failure. Native delivery is finite sampled evidence, never atomic input exclusivity or physical visibility proof."
+    },
+    {
+      "challenge": "Producer durability must occur before original file-channel closure and must not rely on later named-file adoption.",
+      "resolution": "Final550-569 opens fixed-name PNG exclusively with Linux0600, uses memory-only ImageIO output, flushes and forces the original channel while open, then forces parent. No source/directory cleanup or existing file replacement. Root still must independently admit/pin/adopt/hash evidence and settle workers; these source calls have not run."
+    }
+  ],
+  "api_and_targeting_qualification": [
+    "Existing shared desktop CredentialBackFreshnessCompositionTest uses the same ViewModelProvider.create(store,viewModelFactory)/real VM/fake constructor pattern; shared commonTest already depends on core:testing and Kotlin test, commonMain on Compose/lifecycle/coroutines. Standard JDK17 AWT/accessibility/FileChannel types need no new dependency. No source API mismatch identified, but NO compiler/linker compatibility PASS is claimed.",
+    "Tree reads are limited to fixture-owned showing native windows (<=8), depth40/nodes2048/children2048/text256; role/name/EditableText observations and fresh contexts target real controls. Modal Add is scoped by title plus exactly2 named editable controls. No AccessibleAction, text mutation, Accessible focus request, contains/getAccessibleAt or reflection is used.",
+    "LocationOnScreen/size are used without accumulating root-relative accessible bounds. Whole native client containment is an owned-input boundary, NOT ancestor clipping, occlusion, screenshot readability or popup correctness proof. Captured framework isShowing/contains/hit-test TODOs are not used as such proof. Actual selectors/labels/modal linkage/focus/geometry and rendering must pass opted-in setup.",
+    "Two real frame-clock waits and80ms geometry stability are not pixel/swap completion, IME or deterministic pre-frame timing proof. Native callbacks plus exact state/reload assertions provide prospective behavioral oracles; PNGs supplement them, not OCR/pixel oracles. Unexpected actual failures need independent classification, not automatic product-finding or closure credit."
+  ],
+  "bounded_resources_and_cleanup": {
+    "prospective_bounds": "Per-case120s logical deadline; each await/EDT request5s, each VM join3s; traversal/scroll caps; one800x640 owned Compose window plus bounded owned dialogs; at most2 VM stores/jobs per normal case. Four fixed synthetic cropped PNG names across3 cases, each post-write<=1MiB. No archive/cache/renderer dependency/output packaging introduced.",
+    "limits": "FutureTask.cancel(false) cancels pending tasks, not already-running EDT/native calls. Logical deadlines are NOT hard process/time bounds and cannot prove composition/Skiko thread settlement. Failed traversal/late resource creation/EDT or native stall/force failure must remain failure/HOLD as root admission defines. External root deadline, original worker tracking, wrapper--stop, evidence capture and allowlisted cleanup still required before ANY run.",
+    "claims": "No blanket daemon/process/owner-disposal retention guarantee; no held runtime or generated output touched in this review."
+  },
+  "evidence_status": {
+    "declared_test_methods": 3,
+    "executed_test_methods": 0,
+    "test_xml": 0,
+    "generated_pngs": 0,
+    "confirmed_families_added": 0,
+    "qualified_closures_added": 0,
+    "qualification": "Source-only prospective regression coverage; root owns current separate denominators. Controlled capacity add/remove are expressly synthetic VM injection, not native input, external-writer, backend-ack or race proof. No Android32/Room/post-lock/PVU002, mobile Back, IME, RTL, Apple/Windows/hardware or PVD decision closure."
+  },
+  "restrictions": "No production/dependency/application identity/version changes, frozen GUI01/harness mutation or execution scope reuse are admitted. Preserve PVU-007 STOP, PVU-011 NO-RETRY, PVA-029 failure/no automatic retry, G7/G8 CLOSED, consumed execution restrictions, source/publication boundaries and all hardware gaps.",
+  "failed_or_qualified_reader_receipts": [
+    "59ae0c exit0 output truncated; material production/fake/VM ranges re-read bounded in bbf6ad/c9d0d2; no claim based on unseen truncation.",
+    "5b75f5 exit1 stable actual6e505b6e differed from announced intermediate98cba619 during author-announced tiny cleanup. Read stopped before semantic output; author then confirmed final freeze. DATA IDENTITY MISMATCH, not a test/application failure. f49548/a4d20e bound final source.",
+    "1a787f exit1 after router ranges: inferred CredentialCustomFieldEditor.kt filename absent. Bounded filename discovery916fc5 and presentation source scan806e44 located actual CredentialFormSupport.kt. Source read correction only; no project execution or restricted-scope retry."
+  ],
+  "review_receipts": [
+    "2ed45b:initial fixture complete source",
+    "bbf6ad:production UI/fake/VM material ranges",
+    "c9d0d2:resources/SecureTextField/TestData/accepted GUI pattern",
+    "f1d687:existing shared API pattern",
+    "f49548/a4d20e:final frozen material source",
+    "916fc5/806e44:actual router guard/editor implementation"
+  ],
+  "reviewer_operations": "Bounded source/data/metadata reads and this permanent own report only; no network/Git/build/test/probe/import/AST/syntax check, process signals, cleanup or held-runtime access. No temporary/cache/runtime files or persistent process created. Nanosecond metadata compared as Python integers. Exclusive0600 report, file+parent fsync and exact readback; report hash supplied separately."
+}

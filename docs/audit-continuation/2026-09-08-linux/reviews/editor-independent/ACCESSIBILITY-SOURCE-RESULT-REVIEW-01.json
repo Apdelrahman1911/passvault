@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "reviewer": "/root/editor_review",
+  "utc": "2026-09-09T22:54:09.915266+00:00",
+  "verdict": "ACCEPT_NARROW_FAIL_CLOSED_TEST_AUTHORSHIP_CONTRACT_ONLY; actual Linux bridge/root linkage and execution remain unproved",
+  "scope": "Independent bounded retained-source/result semantic review for prospective at-most3 rendered PVA-007/PVA-031 editor cases. No exhaustive framework audit, extra source fetch, fixture authorship/compilation, runtime probe or execution admission.",
+  "capture_binding": {
+    "path": "reviews/editor/ACCESSIBILITY-SOURCE-CAPTURE-01.json",
+    "sha256": "4c5cffea634b9e0ba6332430693791c9b4cd902bc2d3c0fba1004430926518aa",
+    "bytes": 88413,
+    "archive_sha256": "b7bf3762c2f7220a780c65b9050ceb2ae760ac5ffc1869018b37fd53e0642b2e",
+    "archive_bytes": 1032410,
+    "members": [
+      {
+        "path": "desktopMain/androidx/compose/ui/awt/ComposeWindow.desktop.kt",
+        "sha256": "bb38c2f556b14da206cbc78e834ee8515d846e99b85680cca2354a7e62d6a4df",
+        "bytes": 13020,
+        "physical_lf": 345,
+        "capture": "integration_excerpts",
+        "retained_ranges": [],
+        "zero_matches": true,
+        "full_member_hash_qualification": "Root capture-reported; excerpts do not independently reconstruct full member."
+      },
+      {
+        "path": "desktopMain/androidx/compose/ui/platform/a11y/Accessibility.desktop.kt",
+        "sha256": "0133dbe96fe670790d9c09b931668394b95599b730cd5a57dbb7df96b3dc307d",
+        "bytes": 4211,
+        "physical_lf": 111,
+        "capture": "full",
+        "independently_verified_retained_bytes": true
+      },
+      {
+        "path": "desktopMain/androidx/compose/ui/platform/a11y/ComposeAccessible.kt",
+        "sha256": "2bd33a1086959404033f1f937e934bb8ab3eed8182eb309235629fc5abdc9730",
+        "bytes": 36983,
+        "physical_lf": 985,
+        "capture": "full",
+        "independently_verified_retained_bytes": true
+      },
+      {
+        "path": "desktopMain/androidx/compose/ui/platform/a11y/ComposeSceneAccessibility.kt",
+        "sha256": "8898a789a69f760dd7f46c011ebe94e2dc71b26da2634d4dc70e243edd37b1a5",
+        "bytes": 12344,
+        "physical_lf": 347,
+        "capture": "full",
+        "independently_verified_retained_bytes": true
+      },
+      {
+        "path": "desktopMain/androidx/compose/ui/platform/a11y/SemanticsOwnerAccessibility.kt",
+        "sha256": "3f7efdcb9867f9154390fb79911369c8906d3f19bb7a5f4ff04d553b865bcb6d",
+        "bytes": 22004,
+        "physical_lf": 593,
+        "capture": "full",
+        "independently_verified_retained_bytes": true
+      },
+      {
+        "path": "desktopMain/androidx/compose/ui/scene/ComposeContainer.desktop.kt",
+        "sha256": "5fd6b4a6cb4b141ac72230801545602256ce75c3632ca7f602f174c642d82acb",
+        "bytes": 19992,
+        "physical_lf": 543,
+        "capture": "integration_excerpts",
+        "retained_ranges": [],
+        "zero_matches": true,
+        "full_member_hash_qualification": "Root capture-reported; excerpts do not independently reconstruct full member."
+      },
+      {
+        "path": "desktopMain/androidx/compose/ui/scene/ComposeSceneMediator.desktop.kt",
+        "sha256": "cedfcf3c7fabcd657b64caede630796b3324b351357df37a91eaff7c7c3b7c02",
+        "bytes": 40699,
+        "physical_lf": 988,
+        "capture": "integration_excerpts",
+        "retained_ranges": [
+          [
+            49,
+            73
+          ],
+          [
+            139,
+            163
+          ],
+          [
+            264,
+            292
+          ],
+          [
+            758,
+            796
+          ]
+        ],
+        "zero_matches": false,
+        "full_member_hash_qualification": "Root capture-reported; excerpts do not independently reconstruct full member."
+      }
+    ]
+  },
+  "capture_result_qualification": "Root reports one HTTP200 request, exact pinned1032410B archive SHA b7bf3762c2f7220a780c65b9050ceb2ae760ac5ffc1869018b37fd53e0642b2e,594 ZIP members,149253 selected expanded bytes and in-memory cleanup. Reviewer independently reconciled retained report/full-source hashes, sizes, LF and excerpt structure only; no archive retained or re-fetched, no independent TLS/CRC/handle-cleanup replay. Same-coordinate Maven source is not independently bytecode-matched runtime proof.",
+  "source_challenge": [
+    {
+      "source": "ComposeSceneAccessibility57-72; Accessibility.desktop32-44,107-110",
+      "finding": "Default provider is enabled unless compose.accessibility.enable is exactly false or COMPOSE_DISABLE_ACCESSIBILITY exists. No Linux exclusion is present in this captured guard. Linux falls through the focus-helper OS workaround and resets the override; that is not disabling the scene tree. Do not invent flags or mutate activation/global preferences."
+    },
+    {
+      "source": "ComposeSceneMediator139-163,758-796; ComposeSceneAccessibility93-118,132-134,215-220",
+      "finding": "Mediator constructs scene accessibility with sceneRoot=skiaLayerComponent.contentRoot and forwards real semantics-owner events; scene exposes each owner root. Actual provider installation into SkiaLayerComponent and the instantiated ComposeWindow AWT accessible chain is not captured. ComposeWindow/ComposeContainer zero integration matches are not absence-of-bridge proof."
+    },
+    {
+      "source": "ComposeAccessible263-266,347-375,439-478,481-498,570-610,742-818",
+      "finding": "Public JDK adapters expose child traversal, role, semantic enabled/focused/editable state, text and screen geometry. accessibleName is ContentDescription or Text, NOT EditableText; field contents need bounded read-only AccessibleText access. Text adapter is lazily cached with an explicit stale-capability caveat. Blank dialog fields require unique scoped label/role selectors, not assumed name=current value."
+    },
+    {
+      "source": "ComposeAccessible178-179,237-260,362-385; ComposeSceneAccessibility187-205,227-251",
+      "finding": "Coordinates use current platform density conversion; location and bounds are root-relative, locationOnScreen separate. Do not sum bounds through Accessible parents or assume raw device pixels. isShowing=true/TODO, scene contains=true, and scene getAccessibleAt has explicit popup-underlay TODO. Neither SHOWING/VISIBLE state nor Accessible contains/hit testing proves clipping, occlusion, modal ownership or delivered native input."
+    },
+    {
+      "source": "SemanticsOwnerAccessibility81-92,339-358,364-404,429-450,492-493,534-563; ComposeAccessible124-137,476-478",
+      "finding": "Root/child lookup synchronizes invalid node mappings; role query notifies usage and schedules synchronization, not a synchronous rendering barrier. Removed nodes can return null context. Owner removal cancellation/active-instance finally are source cleanup mechanisms, not observed worker/coroutine settlement. Requery bounded current owned trees after transitions; do not retain stale contexts as liveness proof or pretend a query is a frame fence."
+    }
+  ],
+  "accepted_authorship_boundary": [
+    "At most3 small real production CredentialEditScreen/CustomFieldsEditor cases using real VM plus existing copied fake repository, actual native Robot ASCII/mouse/wheel input, no new dependency/framework or production test seam; frozen GUI01 untouched. Case-specific source review follows authorship.",
+    "AccessibleContext/Text/Component are read-only locators/observations from exactly the fixture-owned window/dialog tree. Bound traversal, polling, text length, node counts and uniqueness; use current synthetic identifiers, expected roles and locally provided English/LTR. No AccessibleAction, text/setValue/focus mutations, blind tab/coordinate fallback, reflection into Compose internals or global AppLanguageProvider/preferences.",
+    "Actual tree/root linkage, supported unique selectors, nonempty current geometry within owned native surfaces, native focus and actual rendering must be opted-in setup assertions. Missing linkage/support is TEST_SETUP failure, never assumed success or a product finding. No opt-in may skip; opting in cannot skip a missing bridge. Native targeting and real post-input UI/repository results need distinct observable evidence.",
+    "For bounded authorship only, it is reasonable to leave the missing Skia/AWT chain as a fail-closed setup obligation instead of demanding a broader fetch. This is not source proof of actual Linux bridge viability. Unexpected widget transitions after established setup remain declared behavior assertions; do not blanket-relabel all later product mismatches as setup.",
+    "Existing-row pending draft -> whole Save -> fresh VM reload; row Save then later row edit Cancel -> whole Save/reload; full50 disabled Add -> native remove/Add dialog, disclosed synthetic VM capacity add/remove while composed -> disabled/re-enabled confirm retaining input -> native confirm/Save/reload. Capacity injection is not external-writer/race proof. Exact authored selectors, oracles, teardown and method counts still need independent challenge."
+  ],
+  "non_claims": "No Android32/IME/pre-frame/mobile Back, RTL, Room/disk durability, hardware or full product closure; no proof native input succeeded; no actual testcase executed or passed. Fake repository reload must remain labeled fake, not persisted-storage proof. Test source compilation alone cannot close findings.",
+  "restrictions": "Root remains sole build/network/execution/coordination/cleanup admission and publication owner. Preserve all STOP/NO-RETRY/CLOSED, consumed scopes, PVA-029 failure/no automatic retry, PVU-007/PVU-011, G7/G8 and frozen GUI01. Future batch must have fresh independently reviewed source/execution/coordination/cleanup admission; this report grants none.",
+  "operations": "Source/data reads and this permanent report only; no network/Git/build/test/probe/import/controls/signals/cleanup or held-runtime access. No temporary/cache/runtime outputs or persistent processes. Exact nanosecond metadata comparisons remain Python integers. Zero findings/testcases/closure credit; root owns current denominators.",
+  "review_receipts": [
+    "21f4dc exit0:recipe/result metadata",
+    "34a21b exit0:captured activation/scene/integration source",
+    "afe702 exit0:bounded adapter/sync source",
+    "dfee64 exit0:density/usage source"
+  ],
+  "report_write_contract": "Exclusive0600 permanent report, file+parent fsync, exact readback; completion hash supplied separately."
+}

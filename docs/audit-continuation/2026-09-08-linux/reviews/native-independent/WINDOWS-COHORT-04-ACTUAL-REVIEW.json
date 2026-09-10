@@ -1,0 +1,240 @@
+{
+  "accounting": {
+    "actual_cases_executed": 0,
+    "failed_product_cases": 0,
+    "intended_case_names": [
+      "passvault_biometric_windows_file_success",
+      "passvault_biometric_windows_file_validation_failure",
+      "passvault_biometric_windows_file_dacl_failure",
+      "passvault_biometric_windows_file_collision",
+      "passvault_biometric_windows_file_empty_payload",
+      "passvault_biometric_windows_file_oversized_payload",
+      "passvault_biometric_windows_file_empty_suffix",
+      "passvault_biometric_windows_file_rename_failure",
+      "passvault_biometric_windows_secret_normal_scope",
+      "passvault_biometric_windows_secret_early_return",
+      "passvault_biometric_windows_secret_allocation_exception",
+      "passvault_biometric_windows_secret_nested_exception",
+      "passvault_biometric_abi",
+      "passvault_biometric_windows_security"
+    ],
+    "new_closures": 0,
+    "new_findings": 0,
+    "new_xml_files": 0,
+    "passed": 0,
+    "qualification": "The run failed operationally;14UNSTARTED is not14 failed tests or passes. Commands, snapshots, artifact members, review tasks and compiler probes are not test cases. No global coverage denominator or PVD owner decision changes.",
+    "skipped_product_cases": 0,
+    "unstarted": 14
+  },
+  "actual_execution": {
+    "compiler_probe_qualification": "CMake compiler identification/ABI probes occurred. No native product-target build, CTest inventory or CTest invocation occurred; do not say no compiler code ran or count probes as product cases.",
+    "helper_exit": 1,
+    "immediate_parents": 6,
+    "job_active_after_parent": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "missing_effective_evidence": "No compile-configuration snapshot, settled-project hashes, native binaries or XML retained.",
+    "operational_status": "FAILED_OR_INCOMPLETE",
+    "parent_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "qualification": "First4 Git commands and CMake version returned0 with readonly natural-zero observations. Configure returned0 under compiler-cohort semantics with1 Job member still observed. Member identity, benignity, file writes, lifetime and relationship to the read failure are UNKNOWN.",
+    "readonly_natural_zero_observations": 5,
+    "toolchain": {
+      "architecture": "x64",
+      "cmake": "3.31.6",
+      "compiler_identification": "MSVC19.44.35228.0",
+      "compiler_tool_path": "MSVC/14.44.35207/bin/Hostx64/x64/cl.exe",
+      "image_version": "20260830.290.1",
+      "python": "3.12.10",
+      "record": {
+        "bytes": 1533,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/toolchain.json",
+        "sha256": "a4f6607e6b9b1d27656d6ca1723d060b35ea94cfa993c42c94d83e82a719d88b"
+      },
+      "runner": "windows-2022",
+      "sdk": "10.0.26100.0"
+    }
+  },
+  "author": "/root/native; execution/evidence intake owner /root",
+  "disposition": "WINDOWS_COHORT_04_OPERATIONAL_FAIL; RECOMMEND_SCHEDULING_ONLY_RELEASE; FILESYSTEM_HOLD_REMAINS",
+  "evidence": {
+    "artifact": {
+      "all_member_lengths_and_sha256_independently_match_receipt": true,
+      "archive_bytes": 12784,
+      "archive_qualification": "ZIP metadata and download digest agree in retained root receipt/API artifact list; reviewer did not receive/recompute archive bytes. Root reports bounded-memory-only archive intake; exact member bytes were independently hashed.",
+      "archive_sha256": "47a940dbc77b034a669ce7cb0b906110a502c4bf1ebedc232bc8754f05681490",
+      "expanded_bytes": 32688,
+      "expires_at": "2026-09-13T01:56:50Z",
+      "id": 10133194600,
+      "members": 19,
+      "name": "audit-windows-cohort-04-34427448784-1"
+    },
+    "cli_reconciliation": "Entire result JSON extracted from FAILED-STEP.log equals artifact result.json. Failed-step log reports process exit1 at2026-09-10T01:56:49.8389214Z; retained RUN independently reports completed/failure for exact activation.",
+    "download_receipt": {
+      "bytes": 4616,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/DOWNLOAD-RECEIPT.json",
+      "sha256": "2cb4ae40fe1589c09a1442895ea77814fd7fab9b87967c7f21081ab92368e664"
+    },
+    "failed_step": {
+      "bytes": 6721,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/FAILED-STEP.log",
+      "sha256": "579e5082abffe7ac3eeed9e81940988b6ab052fbbdcc2d965473cde0d9c3fd08"
+    },
+    "intake": {
+      "bytes": 1196,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/INTAKE.json",
+      "sha256": "ba487e41c12c78922d7788f3c82cb19233312aae8490f52d789fde7095028741"
+    },
+    "intake_commands": "INTAKE contains exactly2 readonly commands: artifact-list GET and gh run view --log-failed. Separate DOWNLOAD receipt contains1 ZIP GET. Terminal RUN metadata/discovery is separate, not an invented6-command intake. Reviewer performed no network/API/Git call.",
+    "journal": {
+      "bytes": 11653,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/journal.jsonl",
+      "sha256": "2253770f0d520f9cb3bfcd44d7f134fbcaa56a4455df33bd36cb89889aef9d9b"
+    },
+    "result": {
+      "bytes": 7549,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/result.json",
+      "sha256": "3a6a322a03e7d5a88b4f332981e0d2d29c835ba24dd9cd1d6fc52c553e819701"
+    },
+    "reused_instance_review_sha256": "9fce4c0ce7f289d999972f86ba52b4811d6cd6c224d6736479dc5dc948399702",
+    "reused_source_admission_sha256": "6344458ed6aa1546cc3201c2af60f1f0e6895eb724c1b8cbb332d76a3d532e95",
+    "terminal_run": {
+      "bytes": 12893,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/windows-cohort04/RUN.json",
+      "sha256": "d330b200052a45df175c099179ee7aeff18c849528b5d207c4c5c1023a9d83a4"
+    }
+  },
+  "failure_localization": {
+    "cause": "UNKNOWN",
+    "failures": [
+      "RuntimeError: Frozen input changed during read",
+      "Settled evidence RuntimeError: Frozen input changed during read"
+    ],
+    "first": "After successful configure/configured=True(line1008), before snapshot write: one of CMakeCache.txt frozen_bytes(line1012) or either generated project frozen_bytes(line1018). Cannot select a path.",
+    "missing_diagnostics": "No rejecting path, before/opened/finished/after tuples, differing field or traceback retained. Actual mutation, cross-interface timestamp/API behavior and filesystem behavior remain unproved. Do not infer the observed Job member caused the failure or that the source was corrupt.",
+    "second": "Twelve final workspace/source captures were retained successfully and agree with allocation. Subsequent generic failure is one of two generated-project settled_file callbacks using frozen_bytes(line1075), not those twelve source captures.",
+    "source_identity": "Immutable publication clone scripts/audit/windows_native_validation.py SHA25631f0a4f003ef919d3978b9df82f5a740e1ff9da390d3f7a664914dda12d3c8af; reviewed as inert text, never imported or executed."
+  },
+  "generated_reader_source_assessment": [
+    "Concept only, not patch acceptance: a narrowly generalized coherent original-Win32-handle reader for generated cache/projects is reasonable without a cause claim. Preserve native identity/type/reparse/link/size, exact-byte-count, deadline/cancellation and original-handle-close gates; retain caller/path/stage/available states on failure.",
+    "settled_file already holds a native handle but the callback reopens by path via mixed Python stat/fstat. A generated-file reader should consume that original handle, not nest another pathname read. Prefer shared SDK/generated native-read logic over duplicate implementations; do not broadly change bootstrap source/request reading.",
+    "Configure returned with Job1; replacing the reader neither establishes producer settlement nor guarantees success. Share conflicts, mutations or mismatches must fail with no fallback/retry/ignored timestamps. Keep effective compiler/XML evidence distinct from optional prebuild snapshots; reduce duplication, not provenance or cleanup gates.",
+    "Any concrete source delta and future run require fresh independent source/instance/root admission. This note grants no unchanged14 replay, source change, relaxation or Windows03/04 cause assertion."
+  ],
+  "identity": {
+    "activation_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "activation_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "attempt": 1,
+    "branch": "codex/audit-continuation-linux-20260908",
+    "conclusion": "failure",
+    "event": "push",
+    "job_id": null,
+    "job_id_qualification": "Separate jobs metadata/job identifier not supplied in reviewed packet; do not invent one. Raw run terminal state is retained.",
+    "nonce": "71b20c5fcb7608191f6ba0114eb1ec38",
+    "run_id": 34427448784,
+    "source_commit": "c803d449222490ee784df571aa020db3ab14b1e0",
+    "source_tree": "968940927375adedd402551523216ff3ee3e5f04",
+    "suite": "windows-native-14-cohort-v4",
+    "terminal_status": "completed",
+    "updated_at": "2026-09-10T01:56:54Z",
+    "workflow_path": ".github/workflows/audit-windows-native-validation.yml"
+  },
+  "preserved_restrictions": "All prior FAIL/HOLDs remain, including Windows01 filesystemHOLD and Windows02/03 operationalFAIL; PVU-007 STOP; PVU-011 NO RETRY; PVA-029 recorded failure/no automatic retry; G7/G8 CLOSED; separate eight PVD decisions; real provider/Windows Hello/interactive and physical-hardware gaps. Protected refs/tags, dependency/version/build-number/application-identity/signing/publishing and occupied1017001 restrictions remain.",
+  "qualification": "Independent inert reconciliation of retained actual evidence, not another execution, retry, cleanup/recovery admission, source-fix approval or product test pass. Root remains sole local/CI slot owner.",
+  "reviewer": "/root/native_review",
+  "reviewer_operations": "Inert retained evidence/source bytes, JSON/hash/length/order reconciliation, and exclusive own permanent review only. No helper import/execution, syntax/test/build, Git/API/network, process probe, service/background worker, source/central-ledger edit, old-runtime or generated-root traversal/cleanup. No temporary archive/build/cache created. Earlier passive INTAKE display assumed stdout was a string and raised AttributeError; corrected reference-dict display completed with no input/evidence mutation. That reviewer display error is not a helper or product-test failure.",
+  "scheduling_recommendation": {
+    "basis": "Retained exact-run terminal completed/failure plus original owned Job final-zero evidence; filesystemHOLD remains separately recorded. This note does not claim machine-wide process settlement, supersede other audit ownership or itself reserve/launch Mac02.",
+    "conditions": "Root records this review and04 HOLD; confirms no other audit-owned build/test job; obtains fresh Mac02 request/identity/source/coordination/cleanup instance admission. No04 retry, recovery, cleanup replay or historical scope reopening.",
+    "recommendation": "Release04 shared scheduling reservation ONLY so root may freshly admit unrelated Mac02 instance."
+  },
+  "schema": 1,
+  "sdk_read_success": {
+    "observation": {
+      "after": {
+        "created": [
+          31231828,
+          3245702912
+        ],
+        "identity": [
+          16655526,
+          65536,
+          490651,
+          32
+        ],
+        "links": 1,
+        "size": 76998,
+        "written": [
+          31231828,
+          3245702912
+        ]
+      },
+      "before": {
+        "created": [
+          31231828,
+          3245702912
+        ],
+        "identity": [
+          16655526,
+          65536,
+          490651,
+          32
+        ],
+        "links": 1,
+        "size": 76998,
+        "written": [
+          31231828,
+          3245702912
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\webauthn.h",
+      "read_bytes": 76998,
+      "read_bytes_sha256": "fb575592ce15d8f672386aab5e6b3d3aac101f4ec11a8c52c8085cd6d59a9665",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    "qualification": "SDK original-handle native before/after states equal;76998 returned bytes pass length/type/link/state/declaration gates, hash agrees with toolchain record, and original handle close succeeded. Preserve this actual new harness evidence. It neither diagnoses03/04 cause nor proves other readers compatible or all later compiler reads bound. Journal entries are intermediate(read_validated=false/closePENDING); final result records validation and close success."
+  },
+  "settlement_and_cleanup": {
+    "cleanup": "HOLD_UNSETTLED_OR_EVIDENCE_OR_HANDLE_FAILURE; no generated-root deletion",
+    "filesystem_hold": "Settled-project read failure makes evidence_ready=false. No generated-root deletion and no cleanup_settled event; hosted-runner disposal is not cleanup proof. Retain explicit04 filesystemHOLD without traversal, adoption, recovery or retry. Empty close_failures is no blanket filesystem cleanup claim.",
+    "final_job": {
+      "errors": [],
+      "observed_zero": true,
+      "termination_attempted": true
+    },
+    "final_stop_intents": 1,
+    "generated_root": "D:\\a\\_temp\\passvault-windows-cohort-04-34427448784-1-71b20c5fcb7608191f6ba0114eb1ec38",
+    "gradle": "Not applicable: no Gradle invocation; reviewer launched none.",
+    "original_handle_close_failures": [],
+    "original_root_identity": [
+      3639584108,
+      65536,
+      3171,
+      16
+    ],
+    "qualification": "Main failed, so settle(normal=False) bypassed the normal natural-drain branch. Original non-breakaway Job termination was attempted once and final accounting observed zero with no reported settlement errors. Forced termination plus zero is not natural completion or a pass. Six logs were retained after observed zero.",
+    "resources": "Ten journal resource samples plus a separate allocation sample; no resource rejection recorded. These sampled checks are not continuous limit proof."
+  },
+  "source_and_log_reconciliation": [
+    "Actual Git identity log gives exact activation/source commit/tree; one-parent log has exactlyC10 parent. Request-only diff has sole A<TAB>docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-04.json; clean-source log is empty. No reviewer Git/graph reconstruction.",
+    "All12 final-source-input hashes equal the12 allocation captures, including exact requestb6691694 and admitted helper31f0a4f/workflow4a499b41/scope859eefd3/review6344458e. This is endpoint evidence, not continuous source immutability or effective compiler-input proof.",
+    "Six retained-log records report complete=true and owned_job_settled=true; before/after/retained lengths agree, and independently hashed retained bytes equal settled_full_sha256 and each parent snapshot SHA256. Parent snapshots alone were not treated as settlement.",
+    "Configure log891B SHA256b538ae598d7090e310aa614e036ae1b510249e370a09d9f1f213f3993dd7aa03 reports configure16.2s/generate0.1s. All19 artifact member hashes are bound by the download receipt."
+  ]
+}

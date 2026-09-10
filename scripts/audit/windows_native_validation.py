@@ -1,6 +1,6 @@
-"""Fresh Windows native-14 cohort; no automatic retry, general runner or recovery.
+"""Fresh Windows native-24 cohort; no automatic retry, general runner or recovery.
 
-Author: /root/native. Read WINDOWS-COHORT-04-SCOPE.md before admitting a new run.
+Authors: /root/native and /root. Read WINDOWS-COHORT-05-SCOPE.md before admitting a new run.
 Only root may activate this helper with an independently accepted request. No
 Gradle, signing, installation, credential inventory, or Hello operation is run.
 One Job encloses all commands; a command return is not whole-cohort settlement.
@@ -26,26 +26,28 @@ import time
 
 BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
 BASE = "docs/audit-continuation/2026-09-08-linux"
-REQUEST = f"{BASE}/requests/windows-cohort-04.json"
+REQUEST = f"{BASE}/requests/windows-cohort-05.json"
 HELPER = "scripts/audit/windows_native_validation.py"
 WORKFLOW = ".github/workflows/audit-windows-native-validation.yml"
-SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-04-SCOPE.md"
-REVIEW = f"{BASE}/reviews/native-independent/WINDOWS-COHORT-04-ADMISSION.json"
-SUITE = "windows-native-14-cohort-v4"
+SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-05-SCOPE.md"
+REVIEW = f"{BASE}/reviews/native-independent/WINDOWS-COHORT-05-ADMISSION.json"
+SUITE = "windows-native-24-cohort-v5"
 SDK = "10.0.26100.0"
 NATIVE = "app-desktop/native/biometric-bridge/"
 INPUTS = {
+    BASE + "/reviews/native/HISTORICAL-PVA036-WINDOWS.cpp.txt":
+        "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b",
     ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
-    NATIVE + "CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    NATIVE + "CMakeLists.txt": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8",
     NATIVE + "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
     NATIVE + "src/windows/passvault_biometric_windows.cpp":
-        "8ae2d6294ca523c763bf055bb3acee755b63e0867f7fb98e3926980c74fe6630",
+        "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
     NATIVE + "src/windows/passvault_biometric_windows.rc":
         "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
     NATIVE + "tests/passvault_biometric_abi_test.cpp":
         "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
     NATIVE + "tests/windows/passvault_biometric_windows_security_test.cpp":
-        "15d1f00afbd5f5be78c5abcfe7f8a6ea74ebbe15496154849a490a77138ab633",
+        "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a",
 }
 CASES = [
     "passvault_biometric_windows_file_" + name
@@ -58,7 +60,17 @@ CASES = [
     for name in (
         "normal_scope", "early_return", "allocation_exception", "nested_exception",
     )
-] + ["passvault_biometric_abi", "passvault_biometric_windows_security"]
+] + ["passvault_biometric_abi", "passvault_biometric_windows_security"] + [
+    "passvault_biometric_windows_historical_" + name
+    for name in (
+        "success", "validation_failure", "dacl_failure", "collision",
+        "empty_payload", "oversized_payload", "empty_suffix", "rename_failure",
+    )
+] + ["passvault_biometric_windows_prk_unarmed", "passvault_biometric_windows_prk_allocation_cut"]
+PROJECTS = (
+    "passvault_biometric", "passvault_biometric_windows_security_test",
+    "passvault_biometric_windows_historical_writer_test", "passvault_biometric_windows_prk_allocation_test",
+)
 GiB = 1024 ** 3
 LOG_LIMIT = 2 * 1024 ** 2
 LOG_TOTAL_LIMIT = 8 * 1024 ** 2
@@ -337,6 +349,7 @@ class Run:
         self.close_failures = []
         self.cleanup_cancellation_seen = False
         self.sdk_header_observation = None
+        self.generated_file_observations = []
         self.environment = {
             name: os.environ[name] for name in (
                 "SystemRoot", "WINDIR", "COMSPEC", "PATH", "PATHEXT",
@@ -442,6 +455,88 @@ class Run:
                     record["close_failure"] = f"{type(error).__name__}: {error}"
                     raise
 
+    def read_generated(self, path, settled=False):
+        """CMake text only: read and close one original no-write/delete-share handle."""
+        allowed = {"CMakeCache.txt", *(name + ".vcxproj" for name in PROJECTS)}
+        require(path.parent == self.temp / "build" and path.name in allowed,
+                "Generated reader accepts only this run's selected CMake text")
+        record = {"path": str(path), "settled": settled, "stage": "path_guard", "before": None,
+                  "after": None, "read_validated": False, "read_bytes": None,
+                  "read_bytes_sha256": None, "original_handle_close": "NOT_OPENED",
+                  "sharing": "READ only; deny WRITE/DELETE"}
+        self.generated_file_observations.append(record)
+        handle = None
+
+        def deadline():
+            if settled:
+                self.cleanup_time()
+                require(self.job_settled, "Final generated read requires observed Job zero")
+            else:
+                require(not CANCELLED and time.monotonic() < self.start + COMMAND_SECONDS,
+                        "Generated read cancelled or command/global deadline exhausted")
+
+        def snapshot():
+            state = FILE_INFO()
+            self.win.check(self.win.k.GetFileInformationByHandle(handle, ctypes.byref(state)),
+                           "GeneratedFileIdentity")
+            return {"identity": [state.volume, state.index_high, state.index_low, state.attributes],
+                    "links": state.links, "size": (state.size_high << 32) | state.size_low,
+                    "created": [state.created.dwHighDateTime, state.created.dwLowDateTime],
+                    "written": [state.written.dwHighDateTime, state.written.dwLowDateTime]}
+
+        try:
+            deadline()
+            plain_path(path.parent)
+            record["stage"] = "open"
+            handle = self.win.k.CreateFileW(str(path), 0x80000000 | 0x80, 0x1, None, 3, 0x00200000, None)
+            if handle in (None, ctypes.c_void_p(-1).value):
+                error_code, handle = ctypes.get_last_error(), None
+                raise OSError(error_code, "OpenGeneratedText; no fallback or retry")
+            record["original_handle_close"] = "PENDING"
+            record["stage"] = "pre_read_state"
+            before = record["before"] = snapshot()
+            self.event("generated_file_observation", **record)
+            require(not before["identity"][3] & (0x400 | 0x10) and before["links"] == 1,
+                    "Generated text is not a non-reparse regular single-linked file")
+            require(before["size"] <= 1024 ** 2, "Generated text exceeds one MiB")
+            buffer = ctypes.create_string_buffer(before["size"] + 1)
+            read = wt.DWORD()
+            record["stage"] = "read"
+            ok = self.win.k.ReadFile(handle, buffer, len(buffer), ctypes.byref(read), None)
+            error_code = ctypes.get_last_error() if not ok else None
+            record.update({"read_returned": bool(ok), "read_bytes": read.value, "read_error": error_code})
+            require(read.value <= len(buffer), "Generated ReadFile returned an invalid byte count")
+            data = buffer.raw[:read.value]
+            record["read_bytes_sha256"] = hashlib.sha256(data).hexdigest()
+            record["stage"] = "post_read_state"
+            after = record["after"] = snapshot()
+            self.event("generated_file_observation", **record)
+            if not ok:
+                raise OSError(error_code, "ReadGeneratedText; no fallback or retry")
+            require(before == after and len(data) == before["size"],
+                    "Generated original-handle state/length changed")
+            deadline()
+            record.update({"stage": "read_validated", "read_validated": True})
+            return data
+        except BaseException as error:
+            record["failure"] = f"{type(error).__name__}: {error}"
+            try:
+                self.event("generated_file_failure", **record)
+            except BaseException as journal_error:
+                record["failure_journal_error"] = str(journal_error)
+            raise
+        finally:
+            if handle is not None:
+                to_close, handle = handle, None
+                record["original_handle_close"] = "ATTEMPTED_ONCE"
+                try:
+                    self.close_original(to_close, "generated CMake text " + path.name)
+                    record["original_handle_close"] = "SUCCEEDED"
+                except BaseException as error:
+                    record["original_handle_close"] = "FAILED; no retry"
+                    record["close_failure"] = f"{type(error).__name__}: {error}"
+                    raise
+
     def log_state(self, entry):
         state = self.file_state(entry["handle"])
         require(not state["identity"][3] & (0x400 | 0x10) and state["links"] == 1,
@@ -454,7 +549,7 @@ class Run:
     def check_outputs(self):
         # Every original stdout handle remains live: old compiler descendants
         # can still write earlier logs while the next phase's parent runs.
-        require(len(self.logs) <= 24, "Command log count exceeded")
+        require(len(self.logs) <= 32, "Exact 24-case cohort command log count exceeded")
         total = 0
         for entry in self.logs:
             size = self.log_state(entry)["size"]
@@ -870,7 +965,7 @@ def validated_inputs(workspace):
     require(request.get("owner") == "/root" and request.get("exclusive_build_slot") is True,
             "Root cross-local/CI build-slot attestation required")
     require(re.fullmatch(r"[0-9a-f]{32}", request.get("nonce", "")) is not None, "Invalid request nonce")
-    require(request.get("case_names") == CASES, "Exact ordered 14 cases required")
+    require(request.get("case_names") == CASES, "Exact ordered 24 cases required")
     require(request.get("sdk") == SDK and request.get("max_seconds") == COMMAND_SECONDS,
             "Changed target/resource contract")
     require(all(re.fullmatch(r"[0-9a-f]{40}", request.get(key, "")) for key in ("source_commit", "source_tree")),
@@ -881,12 +976,12 @@ def validated_inputs(workspace):
         require(request.get(key) == hashlib.sha256(data).hexdigest(), f"Request hash mismatch: {path}")
         captures[path] = data
     review_path = request.get("independent_review_path", "")
-    require(review_path == REVIEW, "Wrong cohort-04 independent-review path")
+    require(review_path == REVIEW, "Wrong cohort-05 independent-review path")
     review_data = frozen_bytes(workspace / review_path)
     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
     require(review.get("reviewer") == "/root/native_review" and
-            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_14_COHORT_04_ADMISSION", "Missing genuine accepting review")
+            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_24_COHORT_05_ADMISSION", "Missing genuine accepting review")
     for key in ("helper_sha256", "workflow_sha256", "scope_sha256"):
         require(review.get(key) == request.get(key), "Acceptance does not bind the exact candidate")
     # Inline current native inputs are bound by the reviewed helper bytes. The
@@ -922,8 +1017,8 @@ def main():
         signal.signal(number, cancel)
     request, binding, captures = validated_inputs(workspace)
     require(not CANCELLED, "Cancellation before allocation")
-    temp = runner_temp / f"passvault-windows-cohort-04-{run_id}-1-{request['nonce']}"
-    evidence = runner_temp / f"passvault-windows-cohort-04-{run_id}-1-evidence"
+    temp = runner_temp / f"passvault-windows-cohort-05-{run_id}-1-{request['nonce']}"
+    evidence = runner_temp / f"passvault-windows-cohort-05-{run_id}-1-evidence"
     require_absent(temp)
     require_absent(evidence)
     evidence.mkdir()
@@ -1004,18 +1099,19 @@ def main():
         build = temp / "build"
         native = workspace / "app-desktop/native/biometric-bridge"
         run.command([cmake, "-S", native, "-B", build, "-G", "Visual Studio 17 2022", "-A", "x64",
-                     f"-DCMAKE_SYSTEM_VERSION={SDK}", "-DBUILD_TESTING=ON"], 120, "configure")
+                     f"-DCMAKE_SYSTEM_VERSION={SDK}", "-DBUILD_TESTING=ON",
+                     "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS=ON"], 120, "configure")
         configured = True
         # Bounded pre-build snapshots, not settled generated-file identities or
         # evidence of the effective product compilation. Final hashes follow
         # whole-cohort settlement; verbose compiler output remains necessary.
-        cache = frozen_bytes(build / "CMakeCache.txt").decode("utf-8")
+        cache = run.read_generated(build / "CMakeCache.txt").decode("utf-8")
         selected_cache = [line for line in cache.splitlines() if re.match(
             r"CMAKE_(CXX_FLAGS|CXX_COMPILER|C_COMPILER|GENERATOR|VS_WINDOWS_TARGET_PLATFORM_VERSION|SYSTEM_VERSION)", line)]
         projects = {}
-        for name in ("passvault_biometric", "passvault_biometric_windows_security_test"):
+        for name in PROJECTS:
             project = build / f"{name}.vcxproj"
-            project_bytes = frozen_bytes(project)
+            project_bytes = run.read_generated(project)
             text = project_bytes.decode("utf-8-sig")
             for token in ("stdcpp20", "<ExceptionHandling>Sync</ExceptionHandling>",
                           "<WarningLevel>Level4</WarningLevel>", "<TreatWarningAsError>true</TreatWarningAsError>",
@@ -1029,11 +1125,13 @@ def main():
         })
         run.command([cmake, "--build", build, "--config", "Release", "--target",
                      "passvault_biometric_windows_security_test", "passvault_biometric_abi_test",
+                     "passvault_biometric_windows_historical_writer_test",
+                     "passvault_biometric_windows_prk_allocation_test",
                      "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 240, "build")
         build_returned = True
         inventory = json.loads(run.command([ctest, "--test-dir", build, "-C", "Release", "--show-only=json-v1"],
                                           30, "ctest-inventory"))
-        require(sorted(test["name"] for test in inventory["tests"]) == sorted(CASES), "CTest inventory differs from 14")
+        require(sorted(test["name"] for test in inventory["tests"]) == sorted(CASES), "CTest inventory differs from exact 24")
         write_json(evidence / "ctest-inventory.json", inventory)
         for index, name in enumerate(CASES, 1):
             xml = temp / "logs" / f"case-{index:02d}.xml"
@@ -1069,15 +1167,17 @@ def main():
                             write_json(evidence / "final-source-inputs.json", final_inputs)
                             if configured:
                                 project_hashes = {}
-                                for name in ("passvault_biometric", "passvault_biometric_windows_security_test"):
+                                for name in PROJECTS:
                                     path = temp / "build" / f"{name}.vcxproj"
-                                    project_hashes[path.name] = run.settled_file(
-                                        path, lambda item: hashlib.sha256(frozen_bytes(item)).hexdigest())
+                                    project_hashes[path.name] = hashlib.sha256(
+                                        run.read_generated(path, settled=True)).hexdigest()
                                 write_json(evidence / "settled-project-hashes.json", project_hashes)
                             if build_returned:
                                 binaries = [temp / "build/Release" / name for name in (
                                     "passvault_biometric.dll", "passvault_biometric_windows_security_test.exe",
-                                    "passvault_biometric_abi_test.exe")]
+                                    "passvault_biometric_abi_test.exe",
+                                    "passvault_biometric_windows_historical_writer_test.exe",
+                                    "passvault_biometric_windows_prk_allocation_test.exe")]
                                 write_json(evidence / "native-artifacts.json", {
                                     "owned_job_settled": True,
                                     "binaries": [run.settled_file(path, pe_identity) for path in binaries],
@@ -1131,7 +1231,10 @@ def main():
         result["entry_refusals"] = run.rejections if run is not None else []
         result["original_handle_close_failures"] = run.close_failures if run is not None else []
         result["sdk_header_observation"] = run.sdk_header_observation if run is not None else None
-        result["source_qualification"] = "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof"
+        result["generated_file_observations"] = run.generated_file_observations if run is not None else []
+        result["source_qualification"] = ("Current14 plus8 exact instrumented historical writer controls and2 real-CNG PRK allocation cases; "
+                                          "not a shipped historical binary, fixed KDF vector, caller PRF/wrapping-array cuts, "
+                                          "provider-object lifetime or Hello hardware proof")
         if (commands_returned and not result["failures"] and not result["original_handle_close_failures"]
                 and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
             result["operational_status"] = "COMMANDS_RETURNED_WITH_RAW_XML_AWAITING_INDEPENDENT_RESULT_REVIEW"

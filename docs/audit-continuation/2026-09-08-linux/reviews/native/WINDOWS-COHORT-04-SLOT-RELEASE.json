@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T02:34:09.461209+00:00",
+  "status": "RELEASE_WINDOWS04_SCHEDULING_ONLY_PRESERVE_FILESYSTEM_HOLD",
+  "independent_review": "reviews/native-independent/WINDOWS-COHORT-04-ACTUAL-REVIEW.json",
+  "independent_review_sha256": "f07c9999fdfb43c328d29d79166ac5d839b55930570b33c1433a2eb1f1ef448e",
+  "run_id": 34427448784,
+  "terminal_status": "completed/failure",
+  "actual": {
+    "run_id": 34427448784,
+    "attempt": 1,
+    "source_commit": "c803d449222490ee784df571aa020db3ab14b1e0",
+    "source_tree": "968940927375adedd402551523216ff3ee3e5f04",
+    "activation_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "activation_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "request_sha256": "b66916948abfd968e113d69d0fb691c27a80ad29e2c8b4e628cc90b041c3e505",
+    "operational_status": "CONSUMED_FAIL_POST_CONFIGURE_GENERATED_READ_GUARD_BEFORE_PRODUCT_BUILD",
+    "helper_exit": 1,
+    "parent_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "sdk_header_read": {
+      "status": "SUCCESS_ORIGINAL_HANDLE_CLOSED",
+      "bytes": 76998,
+      "sha256": "fb575592ce15d8f672386aab5e6b3d3aac101f4ec11a8c52c8085cd6d59a9665"
+    },
+    "error": "RuntimeError: Frozen input changed during read",
+    "failure_localization": "Post-config/pre-build CMakeCache or one of two generated project reads; exact path, differing metadata field and cause UNKNOWN. Settled-project read also failed.",
+    "owned_job_termination_attempted": true,
+    "final_job_zero_observed": true,
+    "normal_drain_or_member_identity_proven": false,
+    "cleanup": "FILESYSTEM_HOLD_NO_GENERATED_ROOT_DELETION",
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-04-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "f07c9999fdfb43c328d29d79166ac5d839b55930570b33c1433a2eb1f1ef448e",
+    "evidence": "runs/windows-cohort04/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "2cb4ae40fe1589c09a1442895ea77814fd7fab9b87967c7f21081ab92368e664",
+    "terminal_run": "runs/windows-cohort04/RUN.json",
+    "terminal_run_sha256": "d330b200052a45df175c099179ee7aeff18c849528b5d207c4c5c1023a9d83a4",
+    "consumed": true,
+    "limits": "Six parent0 commands include compiler/configure probes, not product tests. Source12 final capture matches; final generated evidence failure keeps HOLD. No retry, no old-HOLD clearance, no native patch/closure/Hello/hardware claim.",
+    "release": "reviews/native/WINDOWS-COHORT-04-SLOT-RELEASE.json"
+  },
+  "next": "Mac02 only after its own source/request/CI/instance/root admission. No automatic retry or recovery, no local/CI competing build."
+}

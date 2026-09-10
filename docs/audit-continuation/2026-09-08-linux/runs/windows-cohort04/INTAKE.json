@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T01:58:56.491535+00:00",
+  "run_id": 34427448784,
+  "attempt": 1,
+  "commands": [
+    {
+      "argv": [
+        "gh",
+        "api",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34427448784/artifacts"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "direct_child_reaped": true,
+      "stdout": {
+        "path": "ARTIFACTS.json",
+        "sha256": "bd2a12b131685a710033d3a7d2b2e74681bf724f004253822a7328a5aa85f8cc",
+        "bytes": 781
+      }
+    },
+    {
+      "argv": [
+        "gh",
+        "run",
+        "view",
+        "34427448784",
+        "--repo",
+        "Apdelrahman1911/passvault",
+        "--log-failed"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "direct_child_reaped": true,
+      "stdout": {
+        "path": "FAILED-STEP.log",
+        "sha256": "579e5082abffe7ac3eeed9e81940988b6ab052fbbdcc2d965473cde0d9c3fd08",
+        "bytes": 6721
+      }
+    }
+  ],
+  "scope": "Terminal own-run read-only evidence intake; no retry/application/cleanup execution",
+  "cleanup": "Foreground GH children reaped; permanent compact evidence only,no local build/temp/cache/worker"
+}

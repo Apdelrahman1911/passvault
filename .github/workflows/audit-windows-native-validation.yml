@@ -1,4 +1,4 @@
-name: Audit Windows native cohort 04 (non-publishing)
+name: Audit Windows native cohort 05 (non-publishing)
 
 # Deliberately inert until root commits a separately reviewed one-shot request.
 # Changes to source, this workflow, helpers, or ordinary reports do not run it.
@@ -6,7 +6,7 @@ on:
   push:
     branches: [codex/audit-continuation-linux-20260908]
     paths:
-      - docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-04.json
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-05.json
 
 permissions:
   contents: read
@@ -43,12 +43,12 @@ jobs:
         if: always() && steps.validate.outputs.evidence_owned == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: audit-windows-cohort-04-${{ github.run_id }}-${{ github.run_attempt }}
+          name: audit-windows-cohort-05-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ runner.temp }}/passvault-windows-cohort-04-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
-            ${{ runner.temp }}/passvault-windows-cohort-04-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
-            ${{ runner.temp }}/passvault-windows-cohort-04-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
-            ${{ runner.temp }}/passvault-windows-cohort-04-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
+            ${{ runner.temp }}/passvault-windows-cohort-05-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+            ${{ runner.temp }}/passvault-windows-cohort-05-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+            ${{ runner.temp }}/passvault-windows-cohort-05-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
+            ${{ runner.temp }}/passvault-windows-cohort-05-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
           retention-days: 3
           compression-level: 9
           if-no-files-found: error

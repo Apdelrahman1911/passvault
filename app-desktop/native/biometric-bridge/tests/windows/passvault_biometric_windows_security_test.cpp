@@ -1,8 +1,17 @@
-// Intentionally compile the reviewed implementation into this test-only
-// executable. This keeps its anonymous-namespace crypto and parser helpers
-// directly testable without exporting a production test ABI.
+// Each target includes exactly one implementation; the opt-in historical target
+// uses the separately hash-bound full source image, never a reconstructed body.
+#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST) && \
+    defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+#error Historical writer and current PRK instrumentation are separate targets.
+#endif
+#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
+#include PASSVAULT_BIOMETRIC_PVA036_SOURCE
+#else
 #include "../../src/windows/passvault_biometric_windows.cpp"
+#endif
 
+#include <cstdio>
+#include <cstdlib>
 #include <new>
 #include <type_traits>
 
@@ -11,6 +20,250 @@
     if (!(condition))                                                          \
       return __LINE__;                                                         \
   } while (false)
+
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+#if !defined(_MSC_VER) || !defined(_M_X64) || _ITERATOR_DEBUG_LEVEL != 0
+#error The allocation-cut evidence requires admitted MSVC x64 with release iterators.
+#endif
+
+namespace {
+// Trivial TLS has no dynamic initializer. Only this test thread opens the
+// allocation window, immediately around the real std::vector construction.
+struct PrkAllocationProbe {
+  const uint8_t *prk;
+  const uint8_t *salt;
+  const uint8_t *output;
+  size_t expected_bytes;
+  size_t intercepted_bytes;
+  unsigned registrations;
+  unsigned hmac_sites;
+  unsigned first_ready;
+  unsigned target_sites;
+  unsigned target_ready;
+  unsigned allocations;
+  unsigned before_wipes;
+  unsigned after_wipes;
+  bool enabled;
+  bool inject;
+  bool window;
+  bool armed;
+  bool invalid;
+  bool live;
+  bool populated_at_target;
+  bool before_zero;
+  bool after_zero;
+  bool injected;
+};
+static_assert(std::is_trivial_v<PrkAllocationProbe> &&
+              std::is_standard_layout_v<PrkAllocationProbe>);
+thread_local PrkAllocationProbe prk_probe{};
+
+void disarm_prk_allocation() noexcept {
+  prk_probe.armed = false;
+  prk_probe.window = false;
+}
+} // namespace
+
+// This is a replacement allocation function in the dedicated test executable,
+// not a throwing callback at an approximate source boundary. Normal allocation
+// remains malloc/free-backed; no replacement is linked into the DLL or native14.
+void *operator new(size_t length) {
+  if (prk_probe.window) {
+    ++prk_probe.allocations;
+    prk_probe.intercepted_bytes = length;
+    if (prk_probe.allocations != 1 || length != prk_probe.expected_bytes ||
+        !prk_probe.live) {
+      prk_probe.invalid = true;
+      disarm_prk_allocation();
+      throw std::bad_alloc();
+    }
+    if (prk_probe.armed) {
+      prk_probe.injected = true;
+      disarm_prk_allocation(); // Nothing remains armed during C++ unwinding.
+      throw std::bad_alloc();
+    }
+  }
+  for (;;) {
+    if (void *memory = std::malloc(length == 0 ? 1 : length))
+      return memory;
+    // Genuine exhaustion is not this test's injected cut or a qualified pass.
+    disarm_prk_allocation();
+    const std::new_handler handler = std::get_new_handler();
+    if (handler == nullptr)
+      throw std::bad_alloc();
+    handler();
+  }
+}
+
+void *operator new[](size_t length) {
+  if (prk_probe.window) {
+    prk_probe.invalid = true; // std::allocator<uint8_t> must use scalar new.
+    disarm_prk_allocation();
+    throw std::bad_alloc();
+  }
+  return ::operator new(length);
+}
+void operator delete(void *memory) noexcept { std::free(memory); }
+void operator delete(void *memory, size_t) noexcept { std::free(memory); }
+void operator delete[](void *memory) noexcept { std::free(memory); }
+void operator delete[](void *memory, size_t) noexcept { std::free(memory); }
+
+namespace {
+bool all_zero(const uint8_t *value, size_t length) noexcept {
+  uint8_t combined = 0;
+  for (size_t index = 0; index < length; ++index)
+    combined |= value[index];
+  return combined == 0;
+}
+
+void pva037_test_register_prk(const uint8_t *value, size_t length) noexcept {
+  if (!prk_probe.enabled)
+    return;
+  ++prk_probe.registrations;
+  if (prk_probe.registrations != 1 || value == nullptr || length != kHashBytes) {
+    prk_probe.invalid = true;
+    return;
+  }
+  prk_probe.prk = value;
+  prk_probe.live = true;
+}
+
+void pva037_test_before_hmac_allocation(const uint8_t *key, size_t key_length,
+                                       const uint8_t *output,
+                                       size_t object_length) noexcept {
+  if (!prk_probe.enabled)
+    return;
+  ++prk_probe.hmac_sites;
+  if (prk_probe.hmac_sites == 1) {
+    if (!prk_probe.live || key != prk_probe.salt || key_length != kSaltBytes ||
+        output != prk_probe.prk || object_length == 0)
+      prk_probe.invalid = true;
+    return; // Extract must actually succeed before the second HMAC is called.
+  }
+  ++prk_probe.target_sites;
+  if (prk_probe.invalid || prk_probe.hmac_sites != 2 ||
+      prk_probe.target_sites != 1 || prk_probe.first_ready != 1 ||
+      !prk_probe.live || key != prk_probe.prk || key_length != kHashBytes ||
+      output != prk_probe.output || object_length == 0 || prk_probe.window) {
+    prk_probe.invalid = true;
+    return;
+  }
+  prk_probe.populated_at_target = !all_zero(key, key_length);
+  if (!prk_probe.populated_at_target) {
+    prk_probe.invalid = true;
+    return;
+  }
+  prk_probe.expected_bytes = object_length; // Real BCrypt object-size property.
+  prk_probe.window = true;
+  prk_probe.armed = prk_probe.inject;
+}
+
+void pva037_test_after_hmac_allocation(const uint8_t *key) noexcept {
+  if (!prk_probe.enabled)
+    return;
+  if (prk_probe.hmac_sites == 1 && key == prk_probe.salt) {
+    ++prk_probe.first_ready;
+    return;
+  }
+  ++prk_probe.target_ready;
+  if (key != prk_probe.prk || !prk_probe.window || prk_probe.armed ||
+      prk_probe.allocations != 1 || prk_probe.target_ready != 1)
+    prk_probe.invalid = true;
+  disarm_prk_allocation();
+}
+
+void pva037_test_array_wipe(const uint8_t *value, size_t length,
+                           bool after) noexcept {
+  if (!prk_probe.enabled)
+    return;
+  if (!prk_probe.live || value != prk_probe.prk || length != kHashBytes) {
+    prk_probe.invalid = true;
+    disarm_prk_allocation();
+    return;
+  }
+  if (!after) {
+    ++prk_probe.before_wipes;
+    if (prk_probe.window || prk_probe.armed)
+      prk_probe.invalid = true;
+    disarm_prk_allocation();
+    prk_probe.before_zero = all_zero(value, length);
+  } else {
+    ++prk_probe.after_wipes;
+    prk_probe.after_zero = all_zero(value, length);
+    prk_probe.live = false;
+    prk_probe.prk = nullptr; // Never inspect a departed stack object in the catch.
+  }
+}
+
+struct PrkProbeReset final {
+  ~PrkProbeReset() noexcept { prk_probe = {}; }
+};
+
+int test_prk_allocation(bool inject) {
+  std::array<uint8_t, kPrfBytes> prf;
+  std::array<uint8_t, kSaltBytes> salt;
+  std::array<uint8_t, kHashBytes> vault_hash;
+  std::array<uint8_t, kHashBytes> output;
+  std::array<uint8_t, kHashBytes> unrelated;
+  prf.fill(0xa5);
+  salt.fill(0x5a);
+  vault_hash.fill(0x3c);
+  output.fill(0x91);
+  unrelated.fill(0x6d);
+  const auto original_prf = prf;
+  const auto original_salt = salt;
+  const auto original_hash = vault_hash;
+  const auto original_output = output;
+  const auto original_unrelated = unrelated;
+  const PrkProbeReset reset;
+  prk_probe = {};
+  prk_probe.enabled = true;
+  prk_probe.inject = inject;
+  prk_probe.salt = salt.data();
+  prk_probe.output = output.data();
+
+  bool returned = false;
+  bool caught = false;
+  bool other_exception = false;
+  try {
+    returned = derive_wrapping_key(prf, salt, vault_hash, &output);
+  } catch (const std::bad_alloc &) {
+    caught = true;
+  } catch (...) {
+    other_exception = true;
+  }
+  // Saved flags/counters only; the PRK stack array has already ended its lifetime.
+  PV_TEST_CHECK(!prk_probe.invalid && !prk_probe.live && !other_exception);
+  PV_TEST_CHECK(!prk_probe.window && !prk_probe.armed);
+  PV_TEST_CHECK(prk_probe.registrations == 1 && prk_probe.hmac_sites == 2 &&
+                prk_probe.first_ready == 1 && prk_probe.target_sites == 1);
+  PV_TEST_CHECK(prk_probe.allocations == 1 && prk_probe.expected_bytes > 0 &&
+                prk_probe.intercepted_bytes == prk_probe.expected_bytes);
+  PV_TEST_CHECK(prk_probe.populated_at_target && prk_probe.before_wipes == 1 &&
+                prk_probe.after_wipes == 1 && prk_probe.after_zero);
+  PV_TEST_CHECK(prf == original_prf && salt == original_salt &&
+                vault_hash == original_hash && unrelated == original_unrelated);
+  if (inject) {
+    PV_TEST_CHECK(caught && !returned && prk_probe.injected &&
+                  prk_probe.target_ready == 0 && !prk_probe.before_zero);
+    PV_TEST_CHECK(output == original_output);
+  } else {
+    // Normal derive tail-wipes PRK before the guard: its before-wipe view is zero.
+    PV_TEST_CHECK(returned && !caught && !prk_probe.injected &&
+                  prk_probe.target_ready == 1 && prk_probe.before_zero);
+    PV_TEST_CHECK(output != original_output && !all_zero(output.data(), output.size()));
+  }
+  prk_probe.enabled = false;
+  PV_TEST_CHECK(std::printf(
+                    "PVA037_PRK case=%s allocator=scalar_new events=1 "
+                    "object_bytes=%zu populated=YES guard_wiped=YES disarmed=YES\n",
+                    inject ? "allocation_cut" : "unarmed", prk_probe.expected_bytes) > 0);
+  PV_TEST_CHECK(std::fflush(stdout) == 0);
+  return 0;
+}
+} // namespace
+
+#else // Current native14 or the strictly writer-only historical target.
 
 class TestContextFixture final {
 public:
@@ -77,6 +330,34 @@ bool file_has_bytes(const std::filesystem::path &path,
   secure_wipe(actual);
   return matches;
 }
+
+#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
+const char *file_writer_case_name(FileWriterTestCase test_case) {
+  switch (test_case) {
+  case FileWriterTestCase::success: return "success";
+  case FileWriterTestCase::validation_failure: return "validation_failure";
+  case FileWriterTestCase::dacl_failure: return "dacl_failure";
+  case FileWriterTestCase::collision: return "collision";
+  case FileWriterTestCase::empty_payload: return "empty_payload";
+  case FileWriterTestCase::oversized_payload: return "oversized_payload";
+  case FileWriterTestCase::empty_suffix: return "empty_suffix";
+  case FileWriterTestCase::rename_failure: return "rename_failure";
+  }
+  return "invalid";
+}
+
+bool historical_temporary_is_owned_empty(const std::filesystem::path &path) {
+  WindowsHandle file(CreateFileW(
+      path.c_str(), GENERIC_READ | READ_CONTROL, FILE_SHARE_READ, nullptr,
+      OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
+  if (!file.valid() || !safe_handle(file.get()))
+    return false;
+  LARGE_INTEGER size{};
+  const bool empty = GetFileSizeEx(file.get(), &size) && size.QuadPart == 0;
+  const bool closed = file.close();
+  return empty && closed;
+}
+#endif
 
 bool directory_has_only(const std::filesystem::path &directory,
                          const std::vector<std::filesystem::path> &expected) {
@@ -200,6 +481,23 @@ int test_atomic_writer(FileWriterTestCase test_case) {
 
   // These are the decisive cleanup/ownership assertions. They run BEFORE
   // fixture teardown, which must not erase a regression's evidence first.
+#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
+  const char *historical_oracle = "VALID_CONTROL";
+  if (test_case == FileWriterTestCase::validation_failure ||
+      test_case == FileWriterTestCase::dacl_failure) {
+    // Qualify the particular old red, not just a nonzero exit: the original
+    // destination and every callback/handle precondition have already passed.
+    PV_TEST_CHECK(std::filesystem::exists(temporary, error) && !error);
+    PV_TEST_CHECK(historical_temporary_is_owned_empty(temporary));
+    PV_TEST_CHECK(directory_has_only(root, {destination, temporary}));
+    historical_oracle = "RED_OWNED_TEMPORARY_RETAINED";
+  } else if (test_case == FileWriterTestCase::collision) {
+    PV_TEST_CHECK(!file_has_bytes(temporary, sentinel));
+    PV_TEST_CHECK(!std::filesystem::exists(temporary, error) && !error);
+    PV_TEST_CHECK(directory_has_only(root, {destination}));
+    historical_oracle = "RED_UNOWNED_SENTINEL_DELETED";
+  } else
+#endif
   if (test_case == FileWriterTestCase::collision) {
     PV_TEST_CHECK(file_has_bytes(temporary, sentinel));
     PV_TEST_CHECK(directory_has_only(root, {destination, temporary}));
@@ -222,9 +520,17 @@ int test_atomic_writer(FileWriterTestCase test_case) {
   }
   PV_TEST_CHECK(fixture.close());
   PV_TEST_CHECK(!std::filesystem::exists(root, error) && !error);
+#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
+  // No WILL_FAIL/regex inversion. Setup/oracle/cleanup failures above stay FAIL;
+  // only an exact observed red (or a valid old control) reaches this terminal record.
+  PV_TEST_CHECK(std::printf("PVA036_HISTORICAL case=%s oracle=%s cleanup=PASS\n",
+                            file_writer_case_name(test_case), historical_oracle) > 0);
+  PV_TEST_CHECK(std::fflush(stdout) == 0);
+#endif
   return 0;
 }
 
+#if !defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
 // These synthetic cases exercise the production guard with live caller-owned
 // arrays. Explicit bad_alloc is an unwind test, not real allocation exhaustion,
 // WebAuthn/CNG fault injection, or a probe of freed memory.
@@ -308,13 +614,26 @@ int test_scoped_array_wipe(SecretWipeTestCase test_case) {
                             [](uint8_t value) { return value == 0x91; }));
   return 0;
 }
+#endif // Not the historical source image: it has no ScopedArrayWipe declaration.
+#endif // Not the PRK-only target.
 
 int main(int argc, char *argv[]) {
+#if defined(PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST)
+  PV_TEST_CHECK(argc == 3 && std::string_view(argv[1]) == "--prk-case");
+  if (std::string_view(argv[2]) == "unarmed")
+    return test_prk_allocation(false);
+  if (std::string_view(argv[2]) == "allocation_cut")
+    return test_prk_allocation(true);
+  return __LINE__; // No no-argument, filesystem, guard-unit or provider route.
+#else
   if (argc == 3 && std::string_view(argv[1]) == "--file-case") {
     const auto test_case = parse_file_writer_case(argv[2]);
     PV_TEST_CHECK(test_case.has_value());
     return test_atomic_writer(*test_case);
   }
+#if defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
+  return __LINE__; // The historical executable accepts ONLY the eight writer cases.
+#else
   if (argc == 3 && std::string_view(argv[1]) == "--secret-wipe-case") {
     const auto test_case = parse_secret_wipe_case(argv[2]);
     PV_TEST_CHECK(test_case.has_value());
@@ -546,4 +865,6 @@ int main(int argc, char *argv[]) {
   secure_wipe(swapped_aad);
   wipe_envelope(&envelope);
   return 0;
+#endif // Current native14, not historical writer dispatch.
+#endif // Current/historical writer target, not PRK-only dispatch.
 }

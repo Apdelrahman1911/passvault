@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T02:47:51.986004+00:00",
+  "status": "ADMIT_ONE_MACOS_FOCUSED02_REQUEST_ONLY_ACTIVATION_AND_NATIVE_FIVE",
+  "source_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+  "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+  "finding_ids": [
+    "PVA-010",
+    "PVA-014",
+    "MAC-FIXTURE-001"
+  ],
+  "why_platform": "PVA010 native lifecycle/PVA014 LAContext+ABI and MAC-FIXTURE001 ownership evidence require Objective-C++ Foundation/LocalAuthentication/Mach-O on macOS; five synthetic CTests only, no Keychain/provider/prompt/hardware operations.",
+  "commands_and_cleanup_plan": "reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md",
+  "plan_sha256": "d39fa7951ed9d3f0a0acef84d20e1008769de5cbafb58eff9ee85d1a4de81839",
+  "bounds": "one macos-15-intel job10min; Xcode16.4/16F6 SDK15.5/x86_64 CMake4.4.2; commands480s cleanup540s; 7day compact XML/log/hash evidence; no Gradle/binaries/signing/publishing.",
+  "instance_review": "reviews/native-independent/MACOS-FOCUSED-02-INSTANCE-REVIEW.json",
+  "instance_review_sha256": "523d514e943c526117c16c87961438a16ab460961eca0dd63441b05926baafa4",
+  "source_review_sha256": "22c77315c4d42ae2f7afa92ad404f63939c2a10913484b7633167508e4593160",
+  "preflight_sha256": "8589d8fad048c44f705e12efb7e2e4c9de36d6d9ee8a0603d1949abc32867902",
+  "windows04_scheduling_release_sha256": "5b6b33d60e8584cac4443447ee4945fef2426f65f1fe096d1c1df3bc55c23dfe",
+  "request": {
+    "path": "docs/audit-continuation/2026-09-08-linux/requests/macos-focused-02.json",
+    "sha256": "2c5267b3e054a240305013a0de0c503f52fae56bf074848bb14450ff41d492f7",
+    "bytes": 174,
+    "git_mode": "100644"
+  },
+  "runtime_inputs": {
+    "scripts/audit/macos_focused_validation.py": "afef956d911ccafef3d4adc7b62487fc30df28833e0868a683b58c7b392c06ef",
+    ".github/workflows/audit-macos-focused-validation.yml": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b",
+    "docs/audit-continuation/2026-09-08-linux/reviews/native/MACOS-FOCUSED-VALIDATION-PLAN.md": "d39fa7951ed9d3f0a0acef84d20e1008769de5cbafb58eff9ee85d1a4de81839",
+    "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FOCUSED-02-SOURCE-REVIEW.json": "22c77315c4d42ae2f7afa92ad404f63939c2a10913484b7633167508e4593160",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "f72420bc39a5c5dad514b60eb0583880fc329e0a1a57a9b5dd12c8eeeb3c54e3",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/macos/passvault_biometric_macos.mm": "ba07db83b6ff8b482f4fd1d40afea2d10419c454d7856a6a1eb4ba92aa5542c9",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4"
+  },
+  "publication_clone": "/root/projects/PassVault/passvault-publication-20260910-01",
+  "clone_identity": [
+    23,
+    1080545,
+    0,
+    16832
+  ],
+  "publication_body_sha256": "6cbf6f8a3d76d1b5d07bb32b49467756247f6f58c882327c06b4778e5aab4cf3",
+  "publication_source_predecessor_sha256": "1444f90c12d92c5ed18c36a89ec236917f46c286361b4878dfefd2da117db7bd",
+  "publication_delta": "Only request-schema predicate changed from Windows owner/exclusive fields to exact Mac3-key source/nonce schema independently accepted; all root admission/hash, index, raw blob, original clone/lock, A-only/single-parent, protected refs and foreground child settlement guards unchanged. New CFG/request/receipt only; no original-store access.",
+  "coordination": "Root sole build/test/CI/Git owner; no local audit builds/services. Source-only nonoverlapping agents allowed outside frozen immutable CI inputs. Reserve shared slot until independently reconciled actual outcome/cleanup.",
+  "cleanup": "Reviewed original descriptors/allowlisted only new synthetic root after qualified synchronous normal workload; cancellation/uncertainty HOLD,no arbitrary-descendant or hardware proof. No Gradle in native5; --stop not applicable. All older HOLDs and no-retry/closed restrictions survive.",
+  "restrictions": "No protected branches/tags/protections/dependencies/version/identities/signing/store/publishing/1017001 change. No Mac01 replay, Windows04 retry or filesystemHOLD release. Canonical new native/GUI/iOS edits excluded from immutable native5 source."
+}

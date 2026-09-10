@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T03:12:28.117467+00:00",
+  "status": "RELEASE_MAC02_SCHEDULING_AFTER_QUALIFIED_ACTUAL_FIVE_AND_ORIGINAL_CLEANUP",
+  "actual": {
+    "run_id": 34430921453,
+    "attempt": 1,
+    "source_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
+    "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
+    "request_sha256": "2c5267b3e054a240305013a0de0c503f52fae56bf074848bb14450ff41d492f7",
+    "status": "QUALIFIED_PASS_FIVE_CTEST_CASES_INDEPENDENTLY_RECONCILED",
+    "helper_exit": 0,
+    "workload_parent_commands": 9,
+    "ctest_cases": {
+      "PASS": 5,
+      "FAIL": 0,
+      "SKIPPED": 0,
+      "DISABLED": 0,
+      "UNSTARTED": 0
+    },
+    "case_counting": {
+      "native_abi_security_cases": 2,
+      "synthetic_fixture_lifecycle_controls": 3,
+      "xml_files": 5,
+      "not_assertion_count_or_family_closures": true
+    },
+    "actual_names": [
+      "passvault_biometric_abi",
+      "passvault_biometric_macos_fixture_cpp_exception",
+      "passvault_biometric_macos_fixture_early_return",
+      "passvault_biometric_macos_fixture_normal",
+      "passvault_biometric_macos_security"
+    ],
+    "tools": {
+      "runner": "macos-15-intel",
+      "architecture": "x86_64",
+      "xcode": "16.4 /16F6",
+      "sdk": "15.5",
+      "cmake_ctest": "4.4.2"
+    },
+    "resource_samples": 24,
+    "cleanup": "QUALIFIED_GENERATED_ROOT_REMOVED_ORIGINAL_HANDLES; ACTUAL_HELPER_EXIT0_CLOSE_CONDITION_RECONCILED",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE",
+    "evidence": "runs/macos-focused02/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "667bb6ccbd88c07b7288d352d87eaf6a79c2fdd540f9a570dade4062f7f69e8e",
+    "result_sha256": "cd97b458a944810397ffe51b1ff6e3418322657e4e2c0f36428b3928c1d58241",
+    "workflow_log_sha256": "a71f22e81d57911dbd1e8a3294130fdb07f01d74c4c25edff4ecdb85b7fb2236",
+    "independent_review": "reviews/native-independent/MACOS-FOCUSED-02-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "73aef6e8b91a225594a378e812785c2e162f961ed62fde0be547516eae0b8285",
+    "new_family_closures": 0,
+    "consumed": true,
+    "limits": "Real Objective-C++/Foundation/LAContext/ABI and synthetic busy-destroy/filesystem controls only. Deliberate fixture assertion-return diagnostic reaches expected guard and clean outer0; not ignored failure. No displayed biometric prompt, Keychain/provider/enrollment, physical iPhone/TouchID, arbitrary descendant/sanitizer/packaged lifecycle or new Windows-source verification. Old Mac01/windows04/Linux HOLDs and failures preserved.",
+    "release": "reviews/native/MACOS-FOCUSED-02-SLOT-RELEASE.json"
+  },
+  "next": "Freshly source/instance/cleanup-admitted GUI02 or Windows05, serially. No old retry/recovery or hardware clearance."
+}

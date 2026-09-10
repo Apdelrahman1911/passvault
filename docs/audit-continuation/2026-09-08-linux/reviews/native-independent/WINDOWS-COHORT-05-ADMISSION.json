@@ -1,0 +1,149 @@
+{
+  "actual_cases_executed": 0,
+  "author": "/root/native initial defensive test source; /root helper/workflow/CMake integration and scope",
+  "before_images": {
+    "directory": "docs/audit-continuation/2026-09-08-linux/reviews/native/windows-cohort04-before/",
+    "helper_bytes": 64715,
+    "helper_lf": 1149,
+    "helper_sha256": "31f0a4f003ef919d3978b9df82f5a740e1ff9da390d3f7a664914dda12d3c8af",
+    "qualification": "Both independently hash/length matched exact04; stable-read regular single-link leaves, mode0400/read-only/non-executable observed. Inert evidence only, never import/execution authority.",
+    "workflow_bytes": 2177,
+    "workflow_lf": 54,
+    "workflow_sha256": "4a499b417ce592788a7c3f7a8f863e09db50ee6d422a28b0d6cc80b2e2a16ab8"
+  },
+  "cohort_integration": {
+    "authored_cases": 24,
+    "bounds": "Windows2022/x64 Python>=3.11, SDK10.0.26100.0, preinstalled CMake/MSVC with recorded actual versions. One worker;480s commands/540s cleanup/10-minute job;16-process/3GiB child Job caps;12GiB/25% launch and8GiB/20% running. Max32 logs,2MiB each/8MiB total,512KiB XML each and1MiB JSON;3-day flat compact artifacts only. No Gradle/wrapper/daemon/signing/install/packaging/publishing.",
+    "count_proof": "Existing8 real Win32 file+4 live-array guard+ABI/security=14, then8 historical+2 realPRK=24. Eight fixed parent command sites(Git4,CMakeversion,configure,build,inventory)+24 one-shot CTests=32; no retry or timeout budget expansion. Fewer may run on failure and UNSTARTED must remain explicit.",
+    "fixed_intended_parent_commands": 32,
+    "ordered_case_names": [
+      "passvault_biometric_windows_file_success",
+      "passvault_biometric_windows_file_validation_failure",
+      "passvault_biometric_windows_file_dacl_failure",
+      "passvault_biometric_windows_file_collision",
+      "passvault_biometric_windows_file_empty_payload",
+      "passvault_biometric_windows_file_oversized_payload",
+      "passvault_biometric_windows_file_empty_suffix",
+      "passvault_biometric_windows_file_rename_failure",
+      "passvault_biometric_windows_secret_normal_scope",
+      "passvault_biometric_windows_secret_early_return",
+      "passvault_biometric_windows_secret_allocation_exception",
+      "passvault_biometric_windows_secret_nested_exception",
+      "passvault_biometric_abi",
+      "passvault_biometric_windows_security",
+      "passvault_biometric_windows_historical_success",
+      "passvault_biometric_windows_historical_validation_failure",
+      "passvault_biometric_windows_historical_dacl_failure",
+      "passvault_biometric_windows_historical_collision",
+      "passvault_biometric_windows_historical_empty_payload",
+      "passvault_biometric_windows_historical_oversized_payload",
+      "passvault_biometric_windows_historical_empty_suffix",
+      "passvault_biometric_windows_historical_rename_failure",
+      "passvault_biometric_windows_prk_unarmed",
+      "passvault_biometric_windows_prk_allocation_cut"
+    ],
+    "selection": "Helper24 ordered names match CMake current/historical8, guard4, ABI/security and PRK2 declarations. Inventory must have exactly24 names; each subsequent regex is anchored and escaped. Actual inventory executable/selector/macro evidence and rawXML must still be independently reconciled, not inferred from names alone.",
+    "suite": "windows-native-24-cohort-v5",
+    "targets": "Configure explicitly opts into PASSVAULT_AUDIT_PVA036_037_CONTROLS=ON. CMake defaults OFF, requires MSVC/x64, hashes historical input and builds separate historical/PRK images. Build adds only those2 executables to existing security/ABI, with normal linked DLL. Four selected project snapshots and final hashes; five final PE identities. No observation macro/allocator in normal DLL or existing14.",
+    "unchanged_guards": "Same one non-breakaway original Job, suspended assignment/restrictive inheritance, readonly natural drain vs compiler cohort, one final settlement/termination, original stdout retention/close, final source captures, evidence_ready and allowlisted original-handle cleanup. Failure preserves no-retry/HOLDs."
+  },
+  "counterexample_limits": [
+    "Windows04 configure returned with Job1; neither that member identity/benignity nor cause of either generic read failure is known. A new coherent reader is not proof that every producer has settled, that05 succeeds or that03/04 was a timestamp bug.",
+    "FILE_SHARE_READ enforces normal sharing contracts, not absence of all mapped/privileged/metadata writers. Equal endpoint state is not continuous no-writer proof. Parent-check/open races retain cooperative hosted-namespace assumptions, not an adversarial same-user filesystem sandbox.",
+    "Normal native-state validation does not bind every later compiler read after handle close. Required project tokens are prebuild snapshot predicates, not proof of active Release flags or actual target macro isolation; verbose build/inventory/PE/XML evidence still needs independent review.",
+    "Actual installed MSVC/CNG allocation behavior, historical red observations, compatibility, timeout/failure handling and generated-reader behavior remain UNEXECUTED for05. Source proofs and prior SDK success are not new test cases or05 runtime evidence.",
+    "Hard termination or final evidence/close failure can prevent cleanup/upload. Forced termination plus Job zero is not natural settlement or a case pass; historicalHOLDs and cleanup failure consequences remain unchanged."
+  ],
+  "disposition": "ACCEPT_WINDOWS_NATIVE_24_COHORT_05_ADMISSION",
+  "generated_reader_challenges": [
+    "Closed call-site whitelist accepts only CMakeCache.txt and four fixed PROJECTS .vcxproj names with parent exactly this run temp/build. No source/request/SDK/PE caller is redirected and no arbitrary path reader/export is admitted.",
+    "Original handle opens GENERIC_READ|READ_ATTRIBUTES, FILE_SHARE_READ only, OPEN_EXISTING, OPEN_REPARSE_POINT, noninherited security attributes. Parent reparse guard remains. No data read occurs until native non-directory/non-reparse/single-link and<=1MiB gates pass. Sharing/open failure has no fallback or retry.",
+    "Both native states use the same original handle and FILE_INFO representation: volume/index/attributes, links,64-bit size, creation and last-write FILETIME. All fields must remain equal; creation/write equality is retained, not waived or compared against mixed Python stat/fstat tuples.",
+    "One ReadFile requests observed size+1, at most1MiB+1. Check returned count<=buffer, record return/error/count, hash actual returned bytes, capture after state, reject false return or any exact-length/native-state difference. EOF empty input can pass only the byte-state layer; caller UTF-8/configuration predicates remain required.",
+    "Record is appended before fallible open/read work (after fixed-path whitelist), retaining path, phase/settled flag, available states and read diagnostics. Journal before/post snapshots are intermediate, not final validation/close status. Failure records and final in-memory observations preserve available diagnostics; exceptions before allocation or hard/final-write loss cannot promise them.",
+    "finally clears its handle slot then attempts original close once; close_original appends any failure to global close_failures and propagates, retaining cleanupHOLD. read_validated=true describes byte-state gates only: close or later decoding/configuration validation can still fail. Partial-byte hash is never a complete accepted identity.",
+    "Prebuild mode checks sticky cancellation and480s global deadline before/after. Final mode uses existing cleanup_time540s and requires observed Job zero before/after; established cancellation-cleanup-only evidence work may continue, not new commands or a cancellation-ignoring successful run. Synchronous Win32 calls can outlast polling, as already qualified.",
+    "Final project hash now consumes bytes read from this one original native handle directly. It no longer holds settled_file handle while callback reopens pathname/frozen_bytes. Final PE readers still use unchanged settled_file/pe_identity; generated type/link failures now retain selected-reader observations rather than generic entry_refusals, with close/failure gates intact.",
+    "Five prebuild reads(cache+4projects) are bounded snapshots, not effective compilation/producer settlement. Four final-project reads occur only after original Job zero; no fallback on mutation or sharing conflict. Source endpoint capture, retained-log gates, cleanup evidence_ready and original-handle deletion remain unchanged.",
+    "SDK04 body is deliberately unchanged; the narrowly duplicated generated reader was compared against its native state/read/close pattern. Keeping it separate avoids expanding this delta into the actually exercised SDK body. Future divergence remains a maintenance consideration, not a reason to weaken either reader."
+  ],
+  "helper_sha256": "35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a",
+  "method": "Complete passive helper/workflow diffs against exact04 before-images, full05 scope and independent product review, selected reader/deadline/settlement/request/finalization and CMake contexts; final stable no-follow SHA/length/metadata checks. One aggregate display truncated intermediate unchanged SDK context; that context and surrounding guards were separately reread untruncated. No execution/syntax/AST proof is claimed.",
+  "new_closures": 0,
+  "new_findings": 0,
+  "new_xml_files": 0,
+  "preserved_provenance": {
+    "author_failure": "Scope and verification review retain root-reported native-agent platform cybersecurity-risk refusal after two partial edits. Root inspected already existing defensive source and completed integration; reviewer neither reissues/rephrases refused tool requests nor claims unobserved refusal internals or overrides that failure.",
+    "other_restrictions": "All earlier FAIL/HOLDs including Windows01 and Mac01; PVU-007 STOP; PVU-011 NO RETRY; PVA-029 failure/no automatic retry; G7/G8 CLOSED;8 separate PVD decisions; PVU008 content/provider and genuine hardware gaps. Protected refs/tags/Store versions/build numbers/application identities/dependencies/signing/publication and occupied1017001 fences persist.",
+    "windows04": "Run34427448784 operationalFAIL14UNSTARTED/0XML; SDK original-handle read actually succeeded, configure0/Job1, two generic generated-read failures exactcauseUNKNOWN. Original Job termination once/finalzero supported only scheduling release; filesystemHOLD/no generated-root deletion persists. Actual reviewf07c9999fdfb43c328d29d79166ac5d839b55930570b33c1433a2eb1f1ef448e remains unchanged."
+  },
+  "product_review_reuse": {
+    "additional_historical_source": {
+      "bytes": 96218,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/HISTORICAL-PVA036-WINDOWS.cpp.txt",
+      "qualification": "Full exact instrumented historical input, not merely a fourth edited application file, recreated convenient writer or shipped historical binary.",
+      "sha256": "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b"
+    },
+    "canonical_inputs": {
+      "app-desktop/native/biometric-bridge/CMakeLists.txt": {
+        "bytes": 9363,
+        "sha256": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8"
+      },
+      "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": {
+        "bytes": 99069,
+        "sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215"
+      },
+      "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": {
+        "bytes": 37041,
+        "sha256": "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a"
+      }
+    },
+    "historical_meaning": "Eight historical writer programs must observe3 particular expected old defects(validation/DACL empty owned residual and collision deletion) plus5 valid controls. Same selected writer for setup/max/post-blocker controls. Exact red-oracle and terminal cleanup records plus exit0/XML required; generic failure/nonzero/WILL_FAIL inversion is not a qualified red.",
+    "independent_integration_check": "Stable no-follow reads/hash/lengths of three canonical files and full historical input independently match verification review and helper INPUTS. Read complete product review; selected CMake target/option/macro/selector context checked against helper expansion. Reuse its full C++ reachability/oracle/compatibility challenge instead of duplicate authoring or whole-body reauditing.",
+    "limits": "No fixed KDF known-answer vector, caller PRF/wrapping-array cuts, provider-object lifetime, Windows Hello/interactive/physical behavior, process-exhaustion/termination recovery or universal erasure evidence. Default macro isolation is source compatibility, not compiled binary equivalence.",
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/WINDOWS-PVA036-037-DEFENSIVE-CONTROLS-SOURCE-REVIEW.md",
+    "prk_meaning": "Two isolated real-CNG derive cases(unarmed and actual second-HMAC scalar-new vector allocation cut). Live populated PRK, exact CNG object-size/call/allocation sequence and disarm-before-throw required; nonallocating/noexcept live destructor observations, canaries and fault output must satisfy reviewed checks. Catch reads flags only. Extra/elided/different allocation or unexpected exceptions fail qualification.",
+    "reviewer": "/root/verification",
+    "sha256": "4d2dbfa2fa9365995a6d578be6ae81ed3f6445831afd9cc2a8d6647d79aeb118",
+    "verdict": "ACCEPTED FOR SOURCE REVIEW ONLY with qualifications; no concrete source blocker"
+  },
+  "qualification": "Exact prospective SOURCE-only acceptance of changed generated-text reader/workflow and24-case integration, with independently accepted product-test review reused below. Not source publication, request/instance, execution, coordination/cleanup admission, automatic retry or a finding closure.",
+  "reviewed_inputs": {
+    "helper": {
+      "bytes": 70729,
+      "lf": 1252,
+      "path": "scripts/audit/windows_native_validation.py",
+      "sha256": "35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a"
+    },
+    "product_review": {
+      "bytes": 15286,
+      "lf": 74,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/WINDOWS-PVA036-037-DEFENSIVE-CONTROLS-SOURCE-REVIEW.md",
+      "sha256": "4d2dbfa2fa9365995a6d578be6ae81ed3f6445831afd9cc2a8d6647d79aeb118"
+    },
+    "scope": {
+      "bytes": 8100,
+      "lf": 125,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-COHORT-05-SCOPE.md",
+      "sha256": "762b35f3354bc029afac6e7c84ca09086653f505fdf8d5a530e7612adb68d84c"
+    },
+    "workflow": {
+      "bytes": 2177,
+      "lf": 54,
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "sha256": "d70ba4a276957158d2904a426e421c7303bea9c47de4fc7a96cf060ce2bb1d21"
+    }
+  },
+  "reviewer": "/root/native_review",
+  "reviewer_operations": "Only inert source/data reads and own exclusive permanent report. No helper import/execution, tests/builds/CI, Git/API/network, process probes/services, source/central-ledger edits, old runtime/root/store traversal or cleanup, background worker, temporary archive/build/cache or generated output.",
+  "schema": 1,
+  "scope_sha256": "762b35f3354bc029afac6e7c84ca09086653f505fdf8d5a530e7612adb68d84c",
+  "workflow_and_request_contract": {
+    "conditions": "Root must publish/bind exact source commit/tree, helper/workflow/scope/this genuine review hashes, fresh32hex nonce, exact24 names, SDK and480s max; source membership includes full historical image and accepted product review. Obtain fresh independent instance review/root exclusive local-CI slot/execution-cleanup admission before sole-parent A-only new-request activation. This source note grants none of those actions.",
+    "new_request_exists": false,
+    "request_path": "docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-05.json",
+    "review_path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/WINDOWS-COHORT-05-ADMISSION.json",
+    "workflow_delta": "Only05 workflow title/request trigger/artifact namespace replacement; exact repository/branch/push/attempt1 gates, shared concurrency/no unrelated cancellation, contents:read, immutable action pins and no signing/store secrets/publishing unchanged."
+  },
+  "workflow_sha256": "d70ba4a276957158d2904a426e421c7303bea9c47de4fc7a96cf060ce2bb1d21"
+}

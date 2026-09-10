@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T01:55:54.818019+00:00",
+  "status": "ADMIT_ONE_WINDOWS_COHORT04_REQUEST_ONLY_ACTIVATION_AND_TARGET_RUN",
+  "source_commit": "c803d449222490ee784df571aa020db3ab14b1e0",
+  "source_tree": "968940927375adedd402551523216ff3ee3e5f04",
+  "findings": [
+    "PVA-036",
+    "PVA-037",
+    "PVA-014 ABI sibling"
+  ],
+  "why_windows": "Real MSVC/Win32 writer ownership,live secret guards,CNG and ABI require Windows.14 synthetic native cases only; no Hello/credential inventory or actual authentication.",
+  "request_sha256": "b66916948abfd968e113d69d0fb691c27a80ad29e2c8b4e628cc90b041c3e505",
+  "independent_instance_review": "reviews/native-independent/WINDOWS-COHORT-04-INSTANCE-REVIEW.json",
+  "independent_instance_review_sha256": "9fce4c0ce7f289d999972f86ba52b4811d6cd6c224d6736479dc5dc948399702",
+  "source_review_sha256": "6344458ed6aa1546cc3201c2af60f1f0e6895eb724c1b8cbb332d76a3d532e95",
+  "preflight_sha256": "3ead1281d8f1caa37e9096b63a681da6661d86cdda5a85e166a7d23e725c17a5",
+  "runner": "windows-2022 x64; installed Python>=3.11,CMake>=3.25,MSVC C++20,SDK10.0.26100.0",
+  "commands": "Exact22-parent/14-case serial vectors in frozen WINDOWS-COHORT-04-SCOPE.md SHA859eefd36c61ddca63ce13c34e6ae88ce965b503759e9fdb62a82e61d78ab7ad and helper31f0a4f003ef919d3978b9df82f5a740e1ff9da390d3f7a664914dda12d3c8af. Fixed synthetic owned generated-root/working directories; no Gradle/JDK needed.",
+  "bounds": {
+    "commands_seconds": 480,
+    "cleanup_cutoff_seconds": 540,
+    "job_minutes": 10,
+    "parallelism": 1,
+    "job_child_memory_GiB": 3,
+    "artifact_retention_days": 3
+  },
+  "evidence": "Actual exact14CTests/XML+compact complete logs/toolchain/source/PE hashes; failures/skips/unstarted distinct. No binaries or build archives.",
+  "cleanup": "Original nonbreakaway Job and recorded direct handles, bounded read-only/final Job settlement; whole no-reparse inventory before original-handle allowlisted generated-root cleanup. Independent actual review before slot release. Hard loss/timeouts may prevent complete receipt/upload/cleanup; hosted disposal is not observed evidence. No local worker or wrapper-stop duty.",
+  "sole_slot": {
+    "before_sha256": "3e7165bc5fd6fa454028ff87b6c4ab4e3482a393d03b5c24d7667197f69a4069",
+    "reserved_sha256": "09c0d37df8adfd876dea1a33d978801d9870f7792303c577c82d8b135fe800fe",
+    "state": "RESERVED_WINDOWS_COHORT04_AWAITING_ACTIVATION",
+    "ci_observation": "4/4 complete branch history terminal at bound preflight; point observation, not global host guarantee",
+    "agents": "All source/data-only; root sole build/test/CI/Git owner"
+  },
+  "activation": "One exact request-only child of C10c803 on dedicated continuation branch, index/tree/parent/native input/remote guards. Original publication clone root[23,1080545,0,16832]; no original-store access. No intervening report/source commit.",
+  "activation_body_sha256": "1444f90c12d92c5ed18c36a89ec236917f46c286361b4878dfefd2da117db7bd",
+  "future_patch_separation": "Explicit source-only scheduling exception adopted: future canonical native3 may change while CI14 reads immutable C10 only. CI14 gives NO future-patch validation. Reconcile14 before future patch acceptance/run.",
+  "restrictions": "All PVU007STOP/PVU011NORETRY/PVA029FAIL-no automaticretry/G7G8CLOSED,previous failures/HOLDs/EOL/coverage/PVD/hardware qualifications unchanged. No protectedrefs/tags/protections/dependencies/versions/appidentity/signing/Store/occupied1017001 change."
+}

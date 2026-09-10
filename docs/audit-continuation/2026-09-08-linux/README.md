@@ -6,7 +6,18 @@ old commands, locks, runtimes and cleanup receipts are not Linux authority.
 
 ## Current continuation checkpoint
 
-**Latest: `CHECKPOINT_10.md` (non-activating source/evidence checkpoint).**
+**Latest: `CHECKPOINT_11.md` (non-activating source/evidence checkpoint).**
+Mac02 passed five exact CTests (two native cases plus three fixture controls),
+independently reconciled with qualified cleanup. Windows04 failed before product
+build:14 UNSTARTED/zero XML, exact generated-read cause UNKNOWN, filesystem HOLD.
+Windows05's24-case source and GUI02's four-case preparation are independently
+source-reviewed, not executed. Linux03 and26/38 qualified closures remain unchanged.
+Use only `passvault-publication-20260910-01` for Git; the old editing-worktree
+object store is retired. The new store is not a build workspace. See C11 for
+all twelve open families, remaining suspicions, external gaps and conditional
+estimates. Fresh source/instance/cleanup admission remains mandatory.
+
+**Historical: `CHECKPOINT_10.md` (non-activating source/evidence checkpoint).**
 Linux03 actually passed **166 regressions plus one separate fixture producer**,
 independently reconciled against17 exact XMLs. Four additional qualified
 defect-scope closures give **26/38 (68.4%)**; PVA-007/031 rendered/device and other

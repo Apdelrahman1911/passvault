@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "owner": "/root",
-  "state": "AVAILABLE_NO_AUDIT_BUILD_RUNNING_REQUIRES_FRESH_ADMISSION",
-  "updated_utc": "2026-09-09T22:04:51.346562+00:00",
+  "state": "IDLE_AFTER_MACOS_FOCUSED02_RECONCILIATION",
+  "updated_utc": "2026-09-10T03:12:28.117467+00:00",
   "branch": "codex/audit-continuation-linux-20260908",
   "all_other_agents": "AUDIT_EXECUTION_QUIESCENT_BOUNDED_NONOVERLAPPING_INERT_SOURCE_ONLY",
   "last_controls02": {
@@ -23,7 +23,7 @@
   "windows_run": 34284083351,
   "windows_cleanup": "HOLD unchanged; operationalFAIL/all14UNSTARTED; no retry",
   "local_execution": "Linux isolated03 exact C4 focused batch completed and independently reconciled:166 regressions+1producer PASS,17XML,all5stops0,original runtime removed. Older FAIL/HOLD scopes unchanged.",
-  "next_gate": "C10 exact nonactivating source/evidence publication; separately admitted Windows04 request-only activation. No automatic Linux03 rerun.",
+  "next_gate": "Publish reviewed C11 source/evidence, then separately admit GUI02/Windows05/remaining targeted work one at a time. No unchanged Linux03/Mac02 repetition.",
   "historical_locks": "NOT_ADOPTED_OR_RECREATED",
   "release_of_slot_is_not_release_publication": true,
   "last_e_bootstrap": {
@@ -308,5 +308,130 @@
       "PVA-031"
     ],
     "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
+  },
+  "windows_cohort04": {
+    "source_commit": "c803d449222490ee784df571aa020db3ab14b1e0",
+    "source_tree": "968940927375adedd402551523216ff3ee3e5f04",
+    "request_sha256": "b66916948abfd968e113d69d0fb691c27a80ad29e2c8b4e628cc90b041c3e505",
+    "instance_review_sha256": "9fce4c0ce7f289d999972f86ba52b4811d6cd6c224d6736479dc5dc948399702",
+    "reservation_active": false,
+    "status": "COMPLETED_RECONCILED_SCHEDULING_RELEASED_FILESYSTEM_HOLD",
+    "future_canonical_native_patch": "EXCLUDED_FROM_IMMUTABLE_CI14_SOURCE_AND_EVIDENCE",
+    "activation_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "activation_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "run_id": 34427448784,
+    "scheduling_release": "reviews/native/WINDOWS-COHORT-04-SLOT-RELEASE.json"
+  },
+  "last_windows_cohort04": {
+    "run_id": 34427448784,
+    "attempt": 1,
+    "source_commit": "c803d449222490ee784df571aa020db3ab14b1e0",
+    "source_tree": "968940927375adedd402551523216ff3ee3e5f04",
+    "activation_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "activation_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "request_sha256": "b66916948abfd968e113d69d0fb691c27a80ad29e2c8b4e628cc90b041c3e505",
+    "operational_status": "CONSUMED_FAIL_POST_CONFIGURE_GENERATED_READ_GUARD_BEFORE_PRODUCT_BUILD",
+    "helper_exit": 1,
+    "parent_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "product_cases": {
+      "PASS": 0,
+      "FAIL": 0,
+      "UNSTARTED": 14
+    },
+    "xml_files": 0,
+    "new_closures": 0,
+    "sdk_header_read": {
+      "status": "SUCCESS_ORIGINAL_HANDLE_CLOSED",
+      "bytes": 76998,
+      "sha256": "fb575592ce15d8f672386aab5e6b3d3aac101f4ec11a8c52c8085cd6d59a9665"
+    },
+    "error": "RuntimeError: Frozen input changed during read",
+    "failure_localization": "Post-config/pre-build CMakeCache or one of two generated project reads; exact path, differing metadata field and cause UNKNOWN. Settled-project read also failed.",
+    "owned_job_termination_attempted": true,
+    "final_job_zero_observed": true,
+    "normal_drain_or_member_identity_proven": false,
+    "cleanup": "FILESYSTEM_HOLD_NO_GENERATED_ROOT_DELETION",
+    "independent_review": "reviews/native-independent/WINDOWS-COHORT-04-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "f07c9999fdfb43c328d29d79166ac5d839b55930570b33c1433a2eb1f1ef448e",
+    "evidence": "runs/windows-cohort04/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "2cb4ae40fe1589c09a1442895ea77814fd7fab9b87967c7f21081ab92368e664",
+    "terminal_run": "runs/windows-cohort04/RUN.json",
+    "terminal_run_sha256": "d330b200052a45df175c099179ee7aeff18c849528b5d207c4c5c1023a9d83a4",
+    "consumed": true,
+    "limits": "Six parent0 commands include compiler/configure probes, not product tests. Source12 final capture matches; final generated evidence failure keeps HOLD. No retry, no old-HOLD clearance, no native patch/closure/Hello/hardware claim.",
+    "release": "reviews/native/WINDOWS-COHORT-04-SLOT-RELEASE.json"
+  },
+  "macos_focused02": {
+    "source_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "request_sha256": "2c5267b3e054a240305013a0de0c503f52fae56bf074848bb14450ff41d492f7",
+    "instance_review_sha256": "523d514e943c526117c16c87961438a16ab460961eca0dd63441b05926baafa4",
+    "root_admission_sha256": "fcb2035ebc697ca83c3e9b58754291b21ca704f8fd1f293bfe993a19332f05c8",
+    "reservation_active": false,
+    "status": "COMPLETED_RECONCILED_SLOT_RELEASED",
+    "old_holds_unchanged": true,
+    "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
+    "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
+    "run_id": 34430921453,
+    "scheduling_release": "reviews/native/MACOS-FOCUSED-02-SLOT-RELEASE.json"
+  },
+  "last_macos_focused02": {
+    "run_id": 34430921453,
+    "attempt": 1,
+    "source_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
+    "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
+    "request_sha256": "2c5267b3e054a240305013a0de0c503f52fae56bf074848bb14450ff41d492f7",
+    "status": "QUALIFIED_PASS_FIVE_CTEST_CASES_INDEPENDENTLY_RECONCILED",
+    "helper_exit": 0,
+    "workload_parent_commands": 9,
+    "ctest_cases": {
+      "PASS": 5,
+      "FAIL": 0,
+      "SKIPPED": 0,
+      "DISABLED": 0,
+      "UNSTARTED": 0
+    },
+    "case_counting": {
+      "native_abi_security_cases": 2,
+      "synthetic_fixture_lifecycle_controls": 3,
+      "xml_files": 5,
+      "not_assertion_count_or_family_closures": true
+    },
+    "actual_names": [
+      "passvault_biometric_abi",
+      "passvault_biometric_macos_fixture_cpp_exception",
+      "passvault_biometric_macos_fixture_early_return",
+      "passvault_biometric_macos_fixture_normal",
+      "passvault_biometric_macos_security"
+    ],
+    "tools": {
+      "runner": "macos-15-intel",
+      "architecture": "x86_64",
+      "xcode": "16.4 /16F6",
+      "sdk": "15.5",
+      "cmake_ctest": "4.4.2"
+    },
+    "resource_samples": 24,
+    "cleanup": "QUALIFIED_GENERATED_ROOT_REMOVED_ORIGINAL_HANDLES; ACTUAL_HELPER_EXIT0_CLOSE_CONDITION_RECONCILED",
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE",
+    "evidence": "runs/macos-focused02/DOWNLOAD-RECEIPT.json",
+    "evidence_sha256": "667bb6ccbd88c07b7288d352d87eaf6a79c2fdd540f9a570dade4062f7f69e8e",
+    "result_sha256": "cd97b458a944810397ffe51b1ff6e3418322657e4e2c0f36428b3928c1d58241",
+    "workflow_log_sha256": "a71f22e81d57911dbd1e8a3294130fdb07f01d74c4c25edff4ecdb85b7fb2236",
+    "independent_review": "reviews/native-independent/MACOS-FOCUSED-02-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "73aef6e8b91a225594a378e812785c2e162f961ed62fde0be547516eae0b8285",
+    "new_family_closures": 0,
+    "consumed": true,
+    "limits": "Real Objective-C++/Foundation/LAContext/ABI and synthetic busy-destroy/filesystem controls only. Deliberate fixture assertion-return diagnostic reaches expected guard and clean outer0; not ignored failure. No displayed biometric prompt, Keychain/provider/enrollment, physical iPhone/TouchID, arbitrary descendant/sanitizer/packaged lifecycle or new Windows-source verification. Old Mac01/windows04/Linux HOLDs and failures preserved.",
+    "release": "reviews/native/MACOS-FOCUSED-02-SLOT-RELEASE.json"
   }
 }

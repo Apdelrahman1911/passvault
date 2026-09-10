@@ -1,0 +1,253 @@
+{
+  "case_scoring": "NOT_PERFORMED; raw XML requires independent actual-case review",
+  "cases": {
+    "passvault_biometric_abi": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_collision": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_dacl_failure": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_empty_payload": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_empty_suffix": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_oversized_payload": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_rename_failure": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_success": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_file_validation_failure": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_allocation_exception": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_early_return": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_nested_exception": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_secret_normal_scope": {
+      "state": "UNSTARTED"
+    },
+    "passvault_biometric_windows_security": {
+      "state": "UNSTARTED"
+    }
+  },
+  "cleanup": "HOLD_UNSETTLED_OR_EVIDENCE_OR_HANDLE_FAILURE; no generated-root deletion",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^",
+        "HEAD^^{tree}"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "01-git-identity.log",
+      "parent_output_snapshot_sha256": "2c367b18d693553e91db3cb388fe47bbb319b48e3e084e065cd14eff92a888e3",
+      "pid": 1484,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4048
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "02-one-parent.log",
+      "parent_output_snapshot_sha256": "9f32ce0d0d94dbca4a6fb15945a44fd547c1a3b1003c96e7c92c5b1fa3a15d5c",
+      "pid": 524,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 964
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "diff",
+        "--name-status",
+        "HEAD^",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "03-request-only-diff.log",
+      "parent_output_snapshot_sha256": "c63feaf6c66c7a8fa40dee867a2b11bb7bb355eee438050076e95dd91386909b",
+      "pid": 7316,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7184
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "04-clean-source.log",
+      "parent_output_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pid": 5736,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 3168
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "--version"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "05-cmake-version.log",
+      "parent_output_snapshot_sha256": "f6e81c2559f3ce00c5fdad01d7b226c301f5d6b07ee04f65db6dbfdc1cc5970b",
+      "pid": 7916,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 1636
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "-S",
+        "D:\\a\\passvault\\passvault\\app-desktop\\native\\biometric-bridge",
+        "-B",
+        "D:\\a\\_temp\\passvault-windows-cohort-04-34427448784-1-71b20c5fcb7608191f6ba0114eb1ec38\\build",
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "x64",
+        "-DCMAKE_SYSTEM_VERSION=10.0.26100.0",
+        "-DBUILD_TESTING=ON"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "06-configure.log",
+      "parent_output_snapshot_sha256": "b538ae598d7090e310aa614e036ae1b510249e370a09d9f1f213f3993dd7aa03",
+      "pid": 1208,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 6452
+    }
+  ],
+  "entry_refusals": [],
+  "failures": [
+    "RuntimeError: Frozen input changed during read",
+    "Settled evidence RuntimeError: Frozen input changed during read"
+  ],
+  "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+  "hello_hardware": "BLOCKED: not exercised",
+  "job_settlement": {
+    "errors": [],
+    "observed_zero": true,
+    "termination_attempted": true
+  },
+  "operational_status": "FAILED_OR_INCOMPLETE",
+  "original_handle_close_failures": [],
+  "request_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+  "request_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+  "sdk_header_observation": {
+    "after": {
+      "created": [
+        31231828,
+        3245702912
+      ],
+      "identity": [
+        16655526,
+        65536,
+        490651,
+        32
+      ],
+      "links": 1,
+      "size": 76998,
+      "written": [
+        31231828,
+        3245702912
+      ]
+    },
+    "before": {
+      "created": [
+        31231828,
+        3245702912
+      ],
+      "identity": [
+        16655526,
+        65536,
+        490651,
+        32
+      ],
+      "links": 1,
+      "size": 76998,
+      "written": [
+        31231828,
+        3245702912
+      ]
+    },
+    "original_handle_close": "SUCCEEDED",
+    "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\webauthn.h",
+    "read_bytes": 76998,
+    "read_bytes_sha256": "fb575592ce15d8f672386aab5e6b3d3aac101f4ec11a8c52c8085cd6d59a9665",
+    "read_error": null,
+    "read_returned": true,
+    "read_validated": true,
+    "sharing": "READ only; deny WRITE/DELETE",
+    "stage": "read_validated"
+  },
+  "source_commit": "c803d449222490ee784df571aa020db3ab14b1e0",
+  "source_qualification": "Current 14 cases only; no historical red control, fixed KDF vector, production-cut injection, or Hello hardware proof",
+  "source_tree": "968940927375adedd402551523216ff3ee3e5f04",
+  "suite": "windows-native-14-cohort-v4"
+}

@@ -1,0 +1,223 @@
+{
+  "accounting": {
+    "actual_cases_executed": 5,
+    "disabled": 0,
+    "failed": 0,
+    "new_confirmed_family_closures_scored_by_this_note": 0,
+    "new_findings": 0,
+    "new_xml_files": 5,
+    "passed": 5,
+    "scope": "MAC-FIXTURE-001 targeted real-filesystem regression evidence is now present for3 intended cases; PVA-010/PVA-014 gain bounded native/ABI runtime evidence. Root must update ledger qualifications without equating these5 cases with family closures or changing separate PVD/coverage denominators.",
+    "skipped": 0,
+    "time_qualification": "Sum of testcase XML time attributes only, not workflow wall time, CPU time or a count of internal assertions. Suite integer time0 is not zero execution.",
+    "unstarted": 0,
+    "xml_testcase_time_sum_seconds": "0.64321317"
+  },
+  "actual_cases": [
+    {
+      "name": "passvault_biometric_macos_fixture_normal",
+      "verdict": "PASS",
+      "xml": "case-01.xml",
+      "xml_sha256": "0315f219e82f18148796ad7c865d7b6947bb8fe47098fff031a24aa910853242",
+      "xml_time_seconds": "0.00801377"
+    },
+    {
+      "name": "passvault_biometric_macos_fixture_early_return",
+      "verdict": "PASS",
+      "xml": "case-02.xml",
+      "xml_sha256": "ad8f172bfe838335abd5680d06e56f15c4f72458eea9b1b9e7f83466191d806e",
+      "xml_time_seconds": "0.00873623"
+    },
+    {
+      "name": "passvault_biometric_macos_fixture_cpp_exception",
+      "verdict": "PASS",
+      "xml": "case-03.xml",
+      "xml_sha256": "cf7d0363c026709b11fc55e8ce3b81388bc08a49f45750f3e242fca0196decc4",
+      "xml_time_seconds": "0.00818871"
+    },
+    {
+      "name": "passvault_biometric_abi",
+      "verdict": "PASS",
+      "xml": "case-04.xml",
+      "xml_sha256": "6080179426328f5fa9939b66c2c0f1d0beaa314642757b119fd3e2ed933acba1",
+      "xml_time_seconds": "0.00583446"
+    },
+    {
+      "name": "passvault_biometric_macos_security",
+      "verdict": "PASS",
+      "xml": "case-05.xml",
+      "xml_sha256": "d800dc7d274aad5f7bcf8ee0ea9fd51f179bebafc9f4c9332be2276af46aa230",
+      "xml_time_seconds": "0.61244"
+    }
+  ],
+  "author": "/root/native; execution/publication/evidence intake owner /root",
+  "case_reconciliation": [
+    "Exactly5 inventory tests with exact expected executable/fixture selector argv; independent XML parse finds1 testcase per file,5 distinct expected names/classnames, statusrun, no failure/error/skipped/disabled nodes, and zero corresponding suite counters. Every retained XML SHA matches both result and receipt.",
+    "All9 workload command records (configure, build, architecture, inventory,5 CTests) exit0 and every retained log hash matches result. Exact anchored -R selectors, parallel1, timeout30 and own case-NN.xml destinations match approved order. Metadata/tool subprocesses are additional;9 is not a total process count or case count.",
+    "The fixture early-return XML deliberately prints Native test check failed at line383. Frozen source946bda34 line383 is PV_TEST_CHECK(false) after reached_failure_point; caller asserts reached setup, expected return1 or matching synthetic exception, one cleanup attempt/child absence/closed descriptors, independent sibling absence plus stable metadata/content before sibling teardown. This is an expected real assertion-return oracle, not a ignored failure or XML-only mock.",
+    "PV_TEST_CHECK is a runtime conditional return macro, independent of NDEBUG; Release does not compile these checks away. Fixture normal/early-return/exception cases exercise real private filesystem objects and sibling sentinels. Fixture cleanup stdout is corroborating evidence, not additional test cases.",
+    "Security sibling includes the reviewed native implementation and bounded synthetic metadata/error mapping/LAContext property and native busy-destroy schedules; ABI links the actual shared library. Property/helper/native scheduling evidence is not displayed authentication UI, Keychain/provider/TouchID behavior or whole JVM/packaged lifecycle proof."
+  ],
+  "disposition": "QUALIFIED_PASS_FIVE_MACOS_NATIVE_CASES; RECOMMEND_SHARED_SCHEDULING_RELEASE_WITH_OLD_HOLDS_PRESERVED",
+  "evidence": {
+    "artifact": {
+      "all_member_lengths_and_sha256_independently_matched": true,
+      "archive_bytes": 11485,
+      "archive_sha256": "9d514fcee1ad38c7042b25032d71d01204a4e4cf1478e429fee77e952d6fa077",
+      "expanded_bytes": 40557,
+      "expires_at": "2026-09-17T02:50:10Z",
+      "id": 10134462147,
+      "member_count": 17,
+      "name": "macos-focused-02-34430921453-1",
+      "qualification": "Raw artifact-list metadata matches receipt/run/head/digest. Root reports verifying ZIP digest in bounded memory with no ZIP on disk; reviewer independently hashed17 retained members, not unretained ZIP bytes."
+    },
+    "artifact_list": {
+      "bytes": 774,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/ARTIFACTS.json",
+      "sha256": "269ddaefd6496903291e2ed33a8bd38e3221876789505d42da87beeda5f2964c"
+    },
+    "download_receipt": {
+      "bytes": 4051,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/DOWNLOAD-RECEIPT.json",
+      "sha256": "667bb6ccbd88c07b7288d352d87eaf6a79c2fdd540f9a570dade4062f7f69e8e"
+    },
+    "intake": "Download receipt contains2 foreground metadata commands (artifact list and ZIP), each exit0/reaped. Separate terminal-discovery and workflow-log capture receipts remain distinct; not product/build/test counts. LOG-CAPTURE cleanup text reports its foreground gh child reaped.",
+    "log_capture": {
+      "bytes": 381,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/LOG-CAPTURE.json",
+      "sha256": "7908bc722ad124d50a490592d706b06c717983d9d905b79bb0e9c640c718e8fd"
+    },
+    "result": {
+      "bytes": 26993,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/result.json",
+      "sha256": "cd97b458a944810397ffe51b1ff6e3418322657e4e2c0f36428b3928c1d58241"
+    },
+    "run_provenance": "RUN.json is explicitly a reserialization of the exact run object in retained MACOS-FOCUSED-02-RUN-START.json (5434c443dbff3a27ff3930d2103aa0fbd7d152e30fffc1953e708ca3521f85e0). Object equality independently verified; not raw run-endpoint bytes. The original list-response envelope is not retained, so its recorded response digest was not recomputed.",
+    "terminal_run": {
+      "bytes": 14227,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/RUN.json",
+      "sha256": "0ec617a7fee1392e8f885342ad28f6d16c71deb06ff0c7aebee782bf7696c335"
+    },
+    "workflow_log": {
+      "bytes": 34371,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/WORKFLOW.log",
+      "sha256": "a71f22e81d57911dbd1e8a3294130fdb07f01d74c4c25edff4ecdb85b7fb2236"
+    }
+  },
+  "identity": {
+    "activation_commit": "7b288271d6c139921812caf5050b7f994f5ce1b2",
+    "activation_tree": "d2a6b22bf39a13d5360aed31f879613660576a96",
+    "attempt": 1,
+    "branch": "codex/audit-continuation-linux-20260908",
+    "conclusion": "success",
+    "created_at": "2026-09-10T02:49:09Z",
+    "event": "push",
+    "helper_sha256": "afef956d911ccafef3d4adc7b62487fc30df28833e0868a683b58c7b392c06ef",
+    "job_id": null,
+    "job_id_qualification": "Separate jobs endpoint/identifier not retained; observed workflow-log job name and exact terminal run are bound, not an invented numeric job ID.",
+    "job_name": "native-five",
+    "nonce": "bb3bd531292ec4499b1efd5762835cf3",
+    "plan_sha256": "d39fa7951ed9d3f0a0acef84d20e1008769de5cbafb58eff9ee85d1a4de81839",
+    "request_sha256": "2c5267b3e054a240305013a0de0c503f52fae56bf074848bb14450ff41d492f7",
+    "run_id": 34430921453,
+    "source_commit": "6838961e966975532c714d60fd72e3f590f0c8ab",
+    "source_tree": "88f37c328a84322d6d97d04200711cde45ca98d4",
+    "terminal_status": "completed",
+    "updated_at": "2026-09-10T02:50:15Z",
+    "workflow_path": ".github/workflows/audit-macos-focused-validation.yml",
+    "workflow_sha256": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b"
+  },
+  "preserved_restrictions": "Mac01 failure/5UNSTARTED and unrecomputable fraction, earlier captures/failures/HOLDs, Windows01/04 filesystemHOLDs and Windows02/03 failures persist. PVU-007 STOP; PVU-011 NO RETRY; PVA-029 failure/no automatic retry; G7/G8 CLOSED; eight separate PVD owner decisions. Physical iPhone/TouchID/Hello/provider/displayed-language and full packaged lifecycle gaps remain outside/BLOCKED. Protected refs/tags, Store version/build number, identity/dependency, signing/publication and occupied1017001 boundaries unchanged.",
+  "qualification": "Actual independent raw-evidence reconciliation under the admitted synchronous stock-tool/closed-workload and original-handle cleanup assumptions. Five real CTests passed; not five finding closures, whole-app readiness or hardware evidence. No rerun/recovery/source edit performed.",
+  "resource_evidence": {
+    "disk_min_bytes": 116386357248,
+    "independent_arithmetic": "Every sample retains positiveP, nonnegativeF/S, unchanged25%/12GiB launch or20%/8GiB running floors and same positive total. Recomputed oldF*P and new(F+S)*P exactly match fields, new<=total and all disk/integer-ratio gates pass. All24 have positiveS.",
+    "kernel_free_max_bytes": 6169923584,
+    "kernel_free_min_bytes": 5666586624,
+    "kernel_free_percent_range_approx": [
+      37.69585746,
+      41.04420798
+    ],
+    "page_size_bytes": 4096,
+    "phases": {
+      "launch": 9,
+      "running": 15
+    },
+    "qualification": "For these actual02 samples only, oldF*P is below its corresponding floor; this demonstrates the meaningful changed numerator, not a rerun or hypothetical Mac01 pass. Mac01 total/S remain absent and its historical fraction unrecomputable. Parser accepted actual ordinary output on this image; malformed/duplicate/zero/boundary cases remain source counterexamples, not runtime-tested here. No raw Mach free+S double count, whole-system memory reservation/all-reclaimable claim or installed-kernel/source-revision equivalence follows.",
+    "samples": 24,
+    "total_physical_bytes": 15032385536
+  },
+  "reviewer": "/root/native_review",
+  "reviewer_operations": "Only inert source/publication/evidence reads, independent JSON/XML/hash/length/selector/arithmetic reconciliation and exclusive own permanent review. No helper import/execution/syntax/build/test/rerun, Git/API/network/process probe, runtime/root traversal, source/central-ledger edit or cleanup. No temporary archive/cache/build output, background worker or service created. Permanent compact source/evidence retained.",
+  "scheduling_recommendation": {
+    "basis": "Exact terminal successful run, five independently adjudicated passing cases, actual helper exit0 and qualified normal original-root cleanup. This note does not itself reserve/admit any next job or clear an older filesystemHOLD.",
+    "next_boundary": "Any future local/CI build requires its own source/request/instance/root admission and exclusive slot; no Mac02 rerun, unchanged retry, old-runtime adoption or cleanup/recovery replay.",
+    "recommendation": "Root may release Mac02 shared audit scheduling reservation after binding this actual report."
+  },
+  "schema": 1,
+  "settlement_cleanup_and_final_exit": {
+    "acl_accepted": "All48 NO_ACL; retained hashes of observations, not full raw ACL transcripts.",
+    "acl_observations": 48,
+    "actual_helper_exit": 0,
+    "cleanup_proof": "All workload commands return normally with EOF under trusted synchronous-tool/closed-workload assumptions. Reaching execution-complete traverses pre/post empty native-parent gates for5 cases. Once-only cleanup-start binds original private root; reviewed source sets QUALIFIED_GENERATED_ROOT_REMOVED only after allowlisted child removal, original-parent rmdir, observed named-root absence and root-handle close. Final result+CLI have errors[], cancelled=false and uncertainty=false.",
+    "cleanup_start": {
+      "bytes": 137,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/macos-focused02/cleanup-start.json",
+      "sha256": "666f830401b49f31bb19bfeefb15263db86bebc0a45e71c3fbe1c6c69d9a081a"
+    },
+    "exit_proof": "Workflow.log line178 final CLI exactly matches result cleanup/status/errors/cancellation/uncertainty plus exit0 after finish closes original descriptors. Observed exec step under -euo pipefail and terminal successful exact workflow, with no continue-on-error in frozen source, supports actual helper process exit0 rather than printed intention alone.",
+    "final_cli": {
+      "cancelled": false,
+      "cleanup": "QUALIFIED_GENERATED_ROOT_REMOVED_ORIGINAL_HANDLES",
+      "errors": [],
+      "exit": 0,
+      "settlement_uncertain": false,
+      "status": "EXECUTION_COMPLETE_INDEPENDENT_RESULT_REVIEW_REQUIRED"
+    },
+    "final_cli_utc": "2026-09-10T02:50:10.6417320Z",
+    "gradle": "Not applicable; this CMake-only cycle and reviewer launched no Gradle, wrapper, daemon, emulator or application service.",
+    "limits": "Qualified original-root cleanup and normal settlement, not arbitrary descendant/same-user sandbox proof. No forced stop, timeout, nonzero CTest or recovery path was credited. Generic hosted runner Cleaning up orphan processes text gives no member identity or proof any process was killed; no reliance on it or hosted disposal for this qualification. Older Windows/Mac/Linux HOLDs remain untouched.",
+    "original_root_identity": [
+      16777220,
+      12888347957,
+      16384,
+      501
+    ],
+    "pending_snapshot_qualification": "Raw result intentionally retains evidence_and_ancestor_close=PENDING_REQUIRE_ACTUAL_HELPER_EXIT_ZERO because it is written before final original closes. Do not rewrite artifact. This actual exit0 evidence satisfies the admitted normal-path final-close condition; it is not an independently enumerated final descriptor table.",
+    "recorded_cleanup": "QUALIFIED_GENERATED_ROOT_REMOVED_ORIGINAL_HANDLES",
+    "synthetic_root": "/Users/runner/work/_temp/passvault-macos-focused-02-34430921453-1-bb3bd531292ec4499b1efd5762835cf3"
+  },
+  "source_and_publication_binding": {
+    "boundaries": "Only inert publication record/source-byte reconciliation; no new Git/treegraph/object-store/utility execution or whole publication-admission audit. Root retained original clone; this activation has no intervening source/report commit. Future canonical Windows/native changes receive no evidence credit from these frozen Mac inputs.",
+    "independent_reconciliation": "Retained18 publication command records all exit0/reaped. Raw rev-parse/rev-list establish exact activation/tree/sole6838961 parent. Raw before/after ls-tree maps2085->2086 entries differ only exact request; independently computed request Git blob1b754fb224adee40ae7f51e2085ee734ef133a1c matches100644 addition. Nine frozen source/native/review file SHA256/lengths and computed Git blobs match retained tree entries. Protected refs unchanged in raw before/after; dedicated ref alone advances.",
+    "instance_review_sha256": "523d514e943c526117c16c87961438a16ab460961eca0dd63441b05926baafa4",
+    "publication_receipt": {
+      "bytes": 1174393,
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-10-MACOS02-ACTIVATION-PUBLISHED.json",
+      "sha256": "bd36d64a33b1f32c17bd0da55c8e34204e2a5ded18ccf85e51ad624adfc11e75"
+    },
+    "runtime_binding": "Result and prelaunch intent repeat exact source/request/activation/tree/run/nonce. Frozen helper gates single-parent A-only/clean checkout, source-parent helper/workflow byte equality and native5 LF hashes before allocation. Configuration/build/inventory/log evidence agrees. No full effective compiler-command transcript or hostile-writer immutability guarantee is claimed.",
+    "source_review_sha256": "22c77315c4d42ae2f7afa92ad404f63939c2a10913484b7633167508e4593160"
+  },
+  "toolchain_and_binaries": {
+    "architecture": "x86_64",
+    "binary_hashes_only": {
+      "libpassvault_biometric.dylib": "613360760ef2bbf5c1a10406af8bc2eef7c8253c78f3290aa392173db68eb7db",
+      "passvault_biometric_abi_test": "c4e20d50e2fdc5f2c15c0b7fab1d69234814c6135e482a579dff7c1c4b63d0a5",
+      "passvault_biometric_macos_security_test": "5bfd4e17d49b669bf447706b157aa28d8cf9c659345dbb0a21e6fd4345404762"
+    },
+    "binary_qualification": "Helper-captured hashes of newly built synthetic native outputs, not reviewer-rehashed binaries; no binaries retained/uploaded. Real build+case evidence is present, but hashes/compilation alone would not establish a fix.",
+    "cmake": "4.4.2",
+    "compiler": "AppleClang17.0.0.17000013",
+    "ctest": "4.4.2",
+    "image_version": "20260824.0482.1",
+    "observations": "Workflow setup reports OS build24G830, not a separately queried kernel revision. Result tools/configure argv pin Xcode paths and Unix Makefiles Release/x86_64; configure log identifies C/C++/ObjC++ AppleClang and completes18.6s/generate0.1s. Build log shows native security executable, shared dylib and ABI executable compiled/linked. Architecture log has exactly3 Mach-O64 x86_64 outputs.",
+    "os": "macOS15.7.9",
+    "os_build": "24G830",
+    "python": "3.14.7",
+    "reported_image": "macos-15",
+    "runner_label": "macos-15-intel",
+    "sdk": "15.5",
+    "xcode": "16.4/16F6"
+  }
+}

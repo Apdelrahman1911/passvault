@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-10T03:42:08.734089+00:00",
+  "checks": [
+    {
+      "path": "scripts/audit/windows_native_validation.py",
+      "sha256": "35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a",
+      "bytes": 70729,
+      "result": "PYTHON_AST_PARSE_ONLY_NO_IMPORT_OR_EXECUTION"
+    },
+    {
+      "path": "scripts/audit/linux_desktop_gui_02.py",
+      "sha256": "4d7750ad6342ca85c036b81f111022c2fdb8ccaa7b3909500bbb9d668d2790de",
+      "bytes": 67912,
+      "result": "PYTHON_AST_PARSE_ONLY_NO_IMPORT_OR_EXECUTION"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-gui02-outer/LAUNCH.py",
+      "sha256": "0390e12249d584c333656e80e83f8a353b111fb07ba07c7f6acbf4c32e627398",
+      "bytes": 44600,
+      "result": "PYTHON_AST_PARSE_ONLY_NO_IMPORT_OR_EXECUTION"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-11-PUBLISH.py",
+      "sha256": "26e14c6b29a78fc0ee5eb2dd52922e3e5bd3e3965ef52044cfc2b53a9e1a1860",
+      "bytes": 17012,
+      "result": "PYTHON_AST_PARSE_ONLY_NO_IMPORT_OR_EXECUTION"
+    }
+  ],
+  "application_tests": 0,
+  "limits": "Syntax parsing only, not runtime/platform/helper admission. No code imported, pycache/build/temp outputs or workers created."
+}
