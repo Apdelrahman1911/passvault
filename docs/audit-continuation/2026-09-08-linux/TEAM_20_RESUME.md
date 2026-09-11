@@ -1,4 +1,78 @@
+## Current checkpoint19 preparation — 2026-09-11
+
+**INCOMPLETE / NOT READY; no audit-owned build/test/CI is running.** Read
+`CHECKPOINT_19.md` and the current ledgers. Compile03 is independently accepted,
+compiler-only, with original stop0/runtime removal. Static04 and focused01 are
+consumed operational failures; both original stops returned0. Focused01 retains
+12 exact database XML-pass observations under overall source-after/cleanup HOLD;
+8 credential methods and Desktop test compilation remain unvalidated. Its
+scheduling reservation is released, not a pending launch. All held roots remain
+untouched; no extra stop or automatic retry.
+
+Counts remain **19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**; eight PVD
+explanations/owner decisions separate. Retained XML is **199 prior mixed events
++12 partial observations +3 infrastructure +1 producer =215**, not215 passes or
+a clean12/20-case cohort. Conditional remaining effort: **2–4 engineering weeks**,
+external waits excluded. Further builds need a genuinely quiet coordinated window;
+no screening exemption is justified. GUI04 is source-reviewed but inert/unbound.
+C19 is an evidence-only checkpoint being prepared on unchanged published C18
+product source. The narrow prospective publication-only freeze release is now independently
+reviewed and explicitly adopted; exact publication admission remains separate.
+Original C18 config/objects/index snapshots and every held root stay protected.
+All earlier paragraphs below are historical where their pending status differs.
+
+### Current bounded lanes
+
+- Root: exact ledger/report updates, publication selection/admission/Git and all
+  build/cleanup authority; no new build attempts while quiet-window-blocked.
+- android_fixture_review: completed focused01 actual and all20-method mapping.
+- android_compile_review: independent prospective C18 publication-freeze release;
+  no held-runtime release or Git/build execution.
+- android_compile_author / focused_validation_review: minimal inert C19 publisher
+  identity delta and independent challenge; root supplies exact new admission.
+- coverage_review: independent current coverage/report/selection review.
+- Other completed lanes remain quiescent/available for genuinely new bounded work.
+  Reuse the existing campaign; do not spawn duplicate tasks merely to occupy20.
+
+# Historical focused-validation preparation — 2026-09-11T13:11:38.833985+00:00
+
+SOURCE, corrected metadata02 and the full3432-member index capture are independently accepted and consumed. Metadata01 remains a preserved parser failure. Final AndroidCompile02, static04 and focused20/Desktopcompile requests are sealed under `reviews/team20/root/C18-FINAL-REQUEST-SEAL.json`; genuine final approvals and each root execution admission are pending. All20 were quiescent at seal; only the three final reviewers resumed. No build/test/CI is active and no counts changed. Earlier pending-source captions below are historical; never replay those captures.
+
 # Twenty-agent continuation — owner resumed 2026-09-11
+
+## Historical post-C18 assignments
+
+C18 is published at `6489252e88ad553a867d67578eff45a402e62a48` /
+`57d338a931ab0fb4e072aabcbbfd27bead8ef08a`. Its shared SOURCE capture has
+completed once; independent actual review is assigned to `database_review`.
+No build/test/CI is active. T/store/index/config remain frozen read-only.
+
+- `pva031_investigator` / `pva031_review`: implement and review the accepted
+  one-shot shared index/tool collector, not another audit or an old-helper replay.
+- `desktop_other_author` / `desktop_other_review`: minimal fresh, read-only
+  metadata observer for current index/tools/JDK and separately labeled existing
+  SDK metadata. Root alone may execute after review.
+- `android_compile_author` / `android_compile_review`: bind the three existing
+  Compile02 controls to C18. Root releases their known source/hash/read-root
+  fields only; use the ordered six-root envelope and `offline=false` with strict
+  dependency verification and SDK downloads disabled. Fresh device/lock/exclude
+  and request facts remain pending, not inherited.
+- `focused_validation_author` / `focused_validation_review`: bind the existing
+  three static04 controls and project the accepted unchanged-source reuse proof
+  onto exact C18 tuples. No unchanged analyzer rerun.
+- `android_fixture_author` / `android_fixture_review`: bind regression01 inner,
+  outer and only the three `CLASSES.tsv` source-hash cells. Root also releases
+  its single GITDIR selector to the existing T store. Preserve init/METHODS and
+  all selection columns; device/lock/request facts remain pending.
+- `coverage_review`: independently identify any unassigned, genuinely useful
+  permitted residual work and later review actual coverage/report changes.
+- Other existing lanes remain available for new substantive work or results;
+  do not create duplicate tasks or needless reviews merely to occupy agents.
+
+All bindings are reversible, separately hashed external controls; raw published
+C18 blobs stay unchanged. Authors preserve before-images/deltas in their own
+lanes. No subagent runs builds, Git, CI, helpers or live process/runtime/SDK/tool
+probes. Every old HOLD/STOP/NO-RETRY/CLOSED and native-refusal boundary survives.
 
 ## Current follow-on assignments
 

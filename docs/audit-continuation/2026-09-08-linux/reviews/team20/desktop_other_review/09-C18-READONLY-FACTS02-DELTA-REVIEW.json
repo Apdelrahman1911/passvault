@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "reviewer": "/root/desktop_other_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_EXACT_INERT_C18_READONLY_FACTS02_DELTA_PENDING_ROOT_PROMOTION_AND_SEPARATE_ADMISSION",
+  "material_blockers": [],
+  "bindings": {
+    "candidate": {
+      "path": "reviews/team20/desktop_other_author/c18-readonly-facts02/C18-READONLY-FACTS-02.py.txt",
+      "sha256": "e6899d29b8d9da5855c64c805f324339fcca9c66b30fb9ccd5deb4b3fbc5dc04",
+      "bytes": 21246
+    },
+    "unapplied_patch": {
+      "path": "reviews/team20/desktop_other_author/c18-readonly-facts02/01-TO-02-UNAPPLIED.patch.txt",
+      "sha256": "62eb2d3ed849253edfe46a9765f877447ced0cc401fe9b5ba606e6708865b1f7",
+      "bytes": 2350
+    },
+    "rationale": {
+      "path": "reviews/team20/desktop_other_author/c18-readonly-facts02/RATIONALE.md",
+      "sha256": "fad055d8533ab5bf6cfd51aa1ee0b4c61deaf8b14b66865f8f61d18bb48362e4",
+      "bytes": 2939
+    }
+  },
+  "baseline": {
+    "source_sha256": "203060e9a869c80f695c74b10a16cd19d679c7b8c1542441e54a08da1248331b",
+    "source_bytes": 21239,
+    "historical_source_review": "07-C18-READONLY-FACTS-SOURCE-REVIEW.json",
+    "historical_source_review_sha256": "c01ecfe20193554c33b98a9c82f623f2ba1487602cf5b8687091b99da33b2d21",
+    "failed_actual_review": "08-C18-READONLY-FACTS01-ACTUAL-REVIEW.json",
+    "failed_actual_review_sha256": "f94377d17bd377137a955a2126d0de27e7d4372cbb05d48d0f90fd24b866970f",
+    "qualification": "01 remains failed/consumed HOLD/no replay. My missed01 parser bug is acknowledged in08; no prior report or occupied evidence is changed."
+  },
+  "independent_text_delta": {
+    "six_literal_substitutions_only": true,
+    "changed_source_lines": [
+      14,
+      15,
+      186,
+      274,
+      314
+    ],
+    "candidate_lines": 420,
+    "byte_delta": 7,
+    "source_reconstruction": "Applying only the six reviewed string substitutions to exact promoted01 bytes reproduces02 byte-for-byte; each old/new literal occurs once. This is inert text comparison, not patch application or helper execution.",
+    "material_fix": "Line186 converts the already bounded <=65536-byte meminfo bytearray once to bytes before splitlines. Split/partition names consequently are immutable hashable bytes for name-not-in-values and values[name], correcting the exact concrete01 TypeError. Duplicate-field, decimal/kB schema, missing-field refusal and entry/final resource floors are unchanged; the extra copy is bounded by64KiB.",
+    "identity_changes": "Only SELF, INTENT and RESULT basenames plus the two report/intent format identifiers change01 to02. No other source logic, scope, path, bound, schema key, SDK member, preserved pin/hash or cleanup behavior changes."
+  },
+  "fresh_fixed_instance": {
+    "source": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02.py",
+    "intent": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02-INTENT.json",
+    "result": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02.json",
+    "result_format": "passvault-c18-readonly-facts-02-v1",
+    "intent_format": "passvault-c18-readonly-facts-02-intent-v1",
+    "source_derived_entry": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02.py"
+    ],
+    "qualification": "Fresh literal names, not reviewer-observed absence, promoted-file identity or command admission. Root must verify exact promoted bytes, preserve original T/store/lock/config/index/SOURCE freeze, refuse occupied02 outputs, and explicitly admit a new one-shot02 observation. Never replay/reuse/delete01."
+  },
+  "retained_limits": "Original noncreated lock; bounded nofollow/stable reads and first/final equality; six tools/JDK/direct aliases/shadows; separate exact SDK-five metadata; unchanged12GiB/25% and8GiB/20% points;180s cooperative clock; exclusive evidence/finally closure/no retry. Two observations are not continuous freeze/global idle/tool availability or full SDK provenance. No source/index semantic pass, SDK license/mount assertion, build/runtime/cleanup authority, test/closure/denominator credit or old HOLD/STOP/NO-RETRY/CLOSED/terminal repair.",
+  "actual_review_still_required": "Only a reconciled successful02 result plus original terminal/exit/no-session and descriptor settlement may support separate downstream facts binding. A serialized CAPTURED can precede final-close/stdout/external failure. Failed01 cannot be a consumer substitute; downstream consumers need explicit new02 binding and their own admission.",
+  "activity": "Only exact promoted01 and frozen02 source/patch/rationale read as inert text with standard-library hash/string comparisons. No full audit reopened, helper import/execution/AST/compile/syntax check, parser test/harness, live probe, replay, source edit or subdelegation. Only this new own-lane report written; root retains execution, central ledgers and notifications."
+}

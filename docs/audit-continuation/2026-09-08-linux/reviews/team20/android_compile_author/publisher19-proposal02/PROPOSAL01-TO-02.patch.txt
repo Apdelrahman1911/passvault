@@ -1,0 +1,46 @@
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/publisher19-proposal01/CHECKPOINT-19-PUBLISH-PROPOSAL.py.txt
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/publisher19-proposal02/CHECKPOINT-19-PUBLISH-PROPOSAL.py.txt
+@@ -14,9 +14,12 @@
+ BASE=CFG['source_commit']
+ BASE_TREE=CFG['source_tree']
+ REQUEST_PREFIX='docs/audit-continuation/2026-09-08-linux/requests/'
+-CONSUMED_LINUX_REQUESTS={REQUEST_PREFIX+n for n in (
++CONSUMED_OR_SUPERSEDED_LINUX_REQUESTS={REQUEST_PREFIX+n for n in (
+  'LINUX-DETEKT-03.json','LINUX-ANDROID-COMPILE-01.json','LINUX-DESKTOP-TRAY-01.json',
+- 'LINUX-DESKTOP-INTEGRATION-02.json','LINUX-DESKTOP-INTEGRATION-03.json')}
++ 'LINUX-DESKTOP-INTEGRATION-02.json','LINUX-DESKTOP-INTEGRATION-03.json',
++ 'LINUX-ANDROID-COMPILE-02.json','LINUX-ANDROID-COMPILE-03.json',
++ 'LINUX-DETEKT-04.json','LINUX-DETEKT-04-HOST02.json',
++ 'LINUX-FOCUSED-REGRESSION-01.json','LINUX-FOCUSED-REGRESSION-01-HOST02.json')}
+ START=time.monotonic();CANCEL=False;child=None;lockfd=None;parentfd=None;rootfd=None;recfd=None
+ rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'review_sha256':CFG['review_sha256'],'source_workspace':str(S),'publication_clone':str(T),'commands':[],'resource_samples':[],'selection_sha256':CFG['selection_sha256'],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
+ def req(ok,msg):
+@@ -164,7 +167,7 @@
+   req(isinstance(p,str) and p==str(rel) and p not in ('','.'),'noncanonical selected path')
+   req(not rel.is_absolute() and '..' not in rel.parts and '\n' not in p and '\0' not in p,'unsafe selected path')
+   req('.git' not in rel.parts and not p.startswith('.github/workflows/'),'retired-store/workflow path forbidden')
+-  req(not p.startswith(REQUEST_PREFIX) or p in CONSUMED_LINUX_REQUESTS,'only five exact consumed Linux request leaves permitted')
++  req(not p.startswith(REQUEST_PREFIX) or p in CONSUMED_OR_SUPERSEDED_LINUX_REQUESTS,'only eleven exact consumed or superseded evidence-only Linux request leaves permitted')
+  reviewraw,_=read_file(B/CFG['review_path'])
+  req(digest(reviewraw)==CFG['review_sha256'],'review changed')
+  review=json.loads(reviewraw)
+@@ -179,7 +182,7 @@
+      and whitespace_paths==selection['authored_whitespace_paths'],'invalid or unreviewed authored whitespace scope')
+  slotraw,_=read_file(B/'EXECUTION_SLOT.json')
+  req(digest(slotraw)==CFG['slot_sha256'] and json.loads(slotraw)['state']==CFG['slot_state'],'slot changed')
+- lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,661121,0,16832],'original coordination parent changed')
++ lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+  parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+  req((a.st_dev,a.st_ino,a.st_uid,a.st_mode,a.st_nlink,a.st_size)==(24,14189001,0,33152,1,0),'original lock changed')
+@@ -190,8 +193,8 @@
+  try:os.fsync(pfd)
+  finally:os.close(pfd)
+  resource('before source publication',launch=True)
+- req(dtuple(T.lstat())==[23,1080545,0,16832],'original publication clone changed')
+- rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,1080545,0,16832];root_check();inventory('before source')
++ req(dtuple(T.lstat())==[23,51357,0,16832],'original publication clone changed')
++ rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,51357,0,16832];root_check();inventory('before source')
+  gd=T/'.git'
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+  # Fixed retained release values; no config bytes are recorded in the receipt.

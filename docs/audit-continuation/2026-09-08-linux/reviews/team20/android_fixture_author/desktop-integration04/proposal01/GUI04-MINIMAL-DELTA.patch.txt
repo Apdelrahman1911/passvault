@@ -1,0 +1,370 @@
+--- /root/projects/PassVault/passvault-linux/scripts/audit/desktop_integration_03.init.gradle
++++ /root/projects/PassVault/passvault-linux/scripts/audit/desktop_integration_04.init.gradle
+@@ -5,16 +5,16 @@
+ import org.gradle.api.tasks.testing.Test
+ 
+-// NEW explicitly expanded INTEGRATION03 source only; not execution admission.
++// NEW distinct INTEGRATION04 source only; not execution admission.
+ // Four cases in the SAME two serial KMP Test tasks: Room first, then three Main siblings.
+ // App sibling class order is unspecified; no rerun of the passed tray/lifecycle cases.
+ // No Detekt: the raw-blob source snapshot has no admitted Git inventory.
+-def mode = gradle.startParameter.projectProperties['passvault.audit.desktopIntegration03Mode']
++def mode = gradle.startParameter.projectProperties['passvault.audit.desktopIntegration04Mode']
+ if (!(mode in ['prepare', 'render'])) {
+-    throw new GradleException('Explicit desktop-integration03 prepare/render mode required')
++    throw new GradleException('Explicit desktop-integration04 prepare/render mode required')
+ }
+-def runtime = '/root/projects/PassVault/audit-runtime-linux-desktop-integration03'
+-def displayRoot = '/tmp/passvault-desktop-integration03'
++def runtime = '/root/projects/PassVault/audit-runtime-linux-desktop-integration04'
++def displayRoot = '/tmp/passvault-desktop-integration04'
+ def evidenceRoot = '/root/projects/PassVault/passvault-linux/docs/audit-continuation/' +
+-        '2026-09-08-linux/runs/linux-desktop-integration03'
++        '2026-09-08-linux/runs/linux-desktop-integration04'
+ def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+ def selections = [
+@@ -125,5 +125,5 @@
+     def selectedTests = selections.collectEntries { selected ->
+         def project = gradle.rootProject.findProject(selected.project)
+-        if (project == null) throw new GradleException('Fixed INTEGRATION03 project missing: ' + selected.project)
++        if (project == null) throw new GradleException('Fixed INTEGRATION04 project missing: ' + selected.project)
+         [(selected.task): project.tasks.named('desktopTest', Test)]
+     }
+@@ -131,5 +131,5 @@
+         mustRunAfter(selectedTests[':shared:desktopTest'])
+     }
+-    gradle.rootProject.tasks.register('auditDesktopIntegration03Prepare') {
++    gradle.rootProject.tasks.register('auditDesktopIntegration04Prepare') {
+         // Lazy dependency-bearing collections only: depending on Test itself
+         // would wrongly execute application tests in the online preparation.
+@@ -144,5 +144,5 @@
+                     def relativeClass = selectedClass.replace('.', '/') + '.class'
+                     if (!classRoots.any { new File(it, relativeClass).isFile() }) {
+-                        throw new GradleException('Compiled selected INTEGRATION03 fixture missing: ' + selectedClass)
++                        throw new GradleException('Compiled selected INTEGRATION04 fixture missing: ' + selectedClass)
+                     }
+                 }
+@@ -174,5 +174,5 @@
+                 }
+                 rows.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+-                println('DESKTOP_INTEGRATION03_RUNTIME_CLASSPATH=' + JsonOutput.toJson([
++                println('DESKTOP_INTEGRATION04_RUNTIME_CLASSPATH=' + JsonOutput.toJson([
+                     selectedTask: selected.task, selectedClasses: selected.selectedClasses,
+                     entries: classpath.size(), artifacts: rows,
+@@ -190,5 +190,5 @@
+     }
+     if (mode == 'render' && tests.collect { it.path }.sort() != selections.collect { it.task }.sort()) {
+-        throw new GradleException('Only the two fixed serial INTEGRATION03 Test tasks may run')
++        throw new GradleException('Only the two fixed serial INTEGRATION04 Test tasks may run')
+     }
+ }
+--- /root/projects/PassVault/passvault-linux/scripts/audit/linux_desktop_integration_03.py
++++ /root/projects/PassVault/passvault-linux/scripts/audit/linux_desktop_integration_04.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/python3
+-"""NEW fixed integration03 PID1 source; NOT execution admission.
+-
+-Copies consumed integration02 source as text, never imports/runs an earlier helper.
++"""NEW fixed integration04 PID1 source; NOT execution admission.
++
++Copies held integration03 source as text, never imports/runs an earlier helper.
+ Root owns fresh source transport, original allocations/lock, outer admission,
+ pidfd/wait and disposable-copy cleanup. This program never deletes host files
+@@ -9,8 +9,8 @@
+ Room first, then original Main/PVU003 chooser/PVA027 Settings-property siblings.
+ No passed tray/lifecycle rerun or Detekt; no inherited two-case admission or
+-borrowed execution identity. Integration02's actual failure stays recorded.
++borrowed execution identity. Integration02/03 failures and old-runtime HOLDs remain.
+ Panel setup uses a fresh private Xfconf channel, never an assumed backend XML
+-path/default panel. Source publication and independent route/instance admission
+-remain UNBOUND; no earlier execution scope is reused.
++path/default panel. Shared C18 source is frozen; independent route/instance
++admission remains UNBOUND; no earlier execution scope is reused.
+ """
+ import collections
+@@ -32,9 +32,9 @@
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration03')
+-E = B / 'runs/linux-desktop-integration03'
++R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration04')
++E = B / 'runs/linux-desktop-integration04'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = W / 'scripts/audit/linux_desktop_integration_03.py', W / 'scripts/audit/desktop_integration_03.init.gradle'
+-SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
++SELF, INIT = W / 'scripts/audit/linux_desktop_integration_04.py', W / 'scripts/audit/desktop_integration_04.init.gradle'
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+ XVFB, XAUTH, WM, DBUS = (Path('/usr/bin/' + n) for n in ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon'))
+@@ -61,16 +61,16 @@
+     ('/plugins/plugin-6/square-icons', 'bool', 'true', False),
+ )
+-PANEL_ROUTE_ADMITTED = True
++PANEL_ROUTE_ADMITTED = 'UNBOUND'
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release',
+           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
+-# Root must capture a fresh complete raw-blob manifest and independent source/
+-# instance admission. Historical GUI02 publication/tool/lock identities do not apply.
+-COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'
+-TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'
+-MEMBERS = 3042
+-RUN_ID = 'linux-desktop-integration03'
++# Reuse the accepted shared C18 raw-blob manifest; do not recapture SOURCE.
++# Fresh GUI/tool/route/instance admission remains unbound; GUI03 authority is not reused.
++COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'
++TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
++MEMBERS = 3432
++RUN_ID = 'linux-desktop-integration04'
+ FROZEN = {
+-    SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f',
+-    INIT: '45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292',
++    SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3',
++    INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf',
+ }
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+@@ -81,5 +81,5 @@
+      'methods': ('native capacity draft persists through page Save and a fresh Room database reopen',),
+      'fixture': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt',
+-     'sha256': '291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57'},
++     'sha256': '109a0534da3023b7cc1f951ba6c4f8b57f8e0e78f718bef765f7d05cc3223417'},
+     {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+      'class': 'com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest',
+@@ -87,5 +87,5 @@
+      'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': 'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4'},
++     'sha256': '1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761'},
+     {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+      'class': 'com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest',
+@@ -93,5 +93,5 @@
+      'methods': ('actual Main samples Home while the export chooser is modal then cancels',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': 'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4'},
++     'sha256': '1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761'},
+     {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+      'class': 'com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest',
+@@ -99,5 +99,5 @@
+      'methods': ('actual Main Settings updates installed tray properties through English Arabic English',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': 'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4'},
++     'sha256': '1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761'},
+ )
+ PRODUCTION_SOURCE = {
+@@ -152,5 +152,5 @@
+     R / p for p in PRIVATE) + tuple(
+     p for w in WORKERS for p in (R / 'workers' / w, *(R / 'workers' / w / c for c in CHILDREN)))
+-G = Path('/tmp/passvault-desktop-integration03')
++G = Path('/tmp/passvault-desktop-integration04')
+ AUTH, BUS = G / 'Xauthority', G / 'bus'
+ FLAGS = ['--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel', '--no-configure-on-demand',
+@@ -160,6 +160,6 @@
+          '-Dorg.gradle.java.installations.auto-detect=false', '-Dorg.gradle.java.installations.paths=' + str(JAVA)]
+ COMMANDS = {mode: [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT),
+-                   '-Ppassvault.audit.desktopIntegration03Mode=' + mode] + tasks + FLAGS for mode, tasks in (
+-    ('prepare', [':auditDesktopIntegration03Prepare']),
++                   '-Ppassvault.audit.desktopIntegration04Mode=' + mode] + tasks + FLAGS for mode, tasks in (
++    ('prepare', [':auditDesktopIntegration04Prepare']),
+     ('render', [SELECTIONS[0]['task'], '--tests', SELECTIONS[0]['class'],
+                 SELECTIONS[1]['task'], '--tests', SELECTIONS[1]['class'],
+@@ -360,5 +360,5 @@
+ 
+ 
+-class DesktopIntegration03:
++class DesktopIntegration04:
+     def __init__(self, files, parent):
+         self.f, self.parent, self.started = files, parent, time.monotonic()
+@@ -397,8 +397,8 @@
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = json.loads(data)
+-        require(value['format'] == 'passvault-linux-desktop-integration03-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-desktop-integration04-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent,
+-                'fixed fresh INTEGRATION03 outer intake; not independent execution admission')
++                'fixed fresh INTEGRATION04 outer intake; not independent execution admission')
+         deadline, now = value['work_deadline_monotonic_ns'], time.monotonic_ns()
+         require(type(deadline) is int and 0 < deadline - now <= 5250 * 1_000_000_000,
+@@ -429,5 +429,5 @@
+             selected = [r for r in self.source['files'] if r['path'] == path]
+             require(len(selected) == 1 and selected[0]['checkout_sha256'] == digest,
+-                    'frozen INTEGRATION03 fixture/production-loop source')
++                    'frozen INTEGRATION04 fixture/production-loop source')
+         require(not os.path.lexists(CHECKOUT / '.git'), 'disposable raw source only; no borrowed repository')
+         for case in MAINNAV_CASES:
+@@ -454,5 +454,5 @@
+             require(hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == row['git_blob']
+                     and row['git_mode'] in ('100644', '100755')
+-                    and bool(image['pin']['mode'] & 0o111) == (row['git_mode'] == '100755'), 'INTEGRATION03 raw blob/mode drift')
++                    and bool(image['pin']['mode'] & 0o111) == (row['git_mode'] == '100755'), 'INTEGRATION04 raw blob/mode drift')
+             count, size = count + 1, size + len(data)
+         require(count == (3 if wrapper_only else MEMBERS), 'source member count')
+@@ -695,5 +695,5 @@
+                 if phase['settled'] and phase['build_ok']:
+                     data, _ = self.f.read(E / 'logs/prepare.log', 4 * MIB)
+-                    prefix = 'DESKTOP_INTEGRATION03_RUNTIME_CLASSPATH='
++                    prefix = 'DESKTOP_INTEGRATION04_RUNTIME_CLASSPATH='
+                     lines = [line[len(prefix):] for line in data.decode('utf-8', errors='replace').splitlines()
+                              if line.startswith(prefix)]
+@@ -705,5 +705,5 @@
+                     require(collections.Counter((v['selectedTask'], tuple(v['selectedClasses'])) for v in records)
+                             == collections.Counter(task_classes.items()),
+-                            'exact INTEGRATION03 runtime task/class selection')
++                            'exact INTEGRATION04 runtime task/class selection')
+                     for value in records:
+                         require(type(value['entries']) is int and 1 <= value['entries'] <= 512
+@@ -1389,7 +1389,7 @@
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated absolute root entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3196
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 3432
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'PENDING published INTEGRATION03 source identity/hashes: source-only, no execution admission')
++            'PENDING published INTEGRATION04 source identity/hashes: source-only, no execution admission')
+     require(PANEL_ROUTE_ADMITTED is True,
+             'PENDING independent panel route/instance admission; source/data grounding is not permission to run')
+@@ -1399,5 +1399,5 @@
+         signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+     files = Files()
+-    batch = DesktopIntegration03(files, dict(zip(('pid', 'mnt', 'net'), sys.argv[1:])))
++    batch = DesktopIntegration04(files, dict(zip(('pid', 'mnt', 'net'), sys.argv[1:])))
+     settled, code = False, 70
+     try:
+@@ -1445,5 +1445,5 @@
+                   and all(not o['record']['unexpected_exit'] for o in batch.tray_owners)
+                   and all(not h['record']['unexpected_exit'] for h in batch.helpers))
+-        result = {'format': 'passvault-linux-desktop-integration03-inner-v1', 'run_id': RUN_ID,
++        result = {'format': 'passvault-linux-desktop-integration04-inner-v1', 'run_id': RUN_ID,
+             'commit': COMMIT, 'tree': TREE, 'parent_namespaces': batch.parent,
+             'source_before': batch.before, 'source_after': batch.after, 'all_required_stops_ok': stops,
+--- /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py
++++ /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration04-outer/LAUNCH.py
+@@ -1,4 +1,4 @@
+ #!/usr/bin/python3.12
+-"""NEW INTEGRATION03 SOURCE ONLY, pending publication/store/instance admission.
++"""NEW INTEGRATION04 SOURCE ONLY, pending fresh GUI/store/instance admission.
+ 
+ Root externally freezes REQUEST + genuine reviewer approval, including under the
+@@ -25,22 +25,22 @@
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration03')
+-E = B / 'runs/linux-desktop-integration03'
+-SELF = B / 'reviews/desktop-integration03-outer/LAUNCH.py'
+-REQUEST = B / 'requests/LINUX-DESKTOP-INTEGRATION-03.json'
+-APPROVAL = B / 'reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-ACCEPT.json'
++R = Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration04')
++E = B / 'runs/linux-desktop-integration04'
++SELF = B / 'reviews/desktop-integration04-outer/LAUNCH.py'
++REQUEST = B / 'requests/LINUX-DESKTOP-INTEGRATION-04.json'
++APPROVAL = B / 'reviews/team20/android_fixture_review/desktop-integration04/INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+-# New source/store/tool images and original device/lock pins await publication
+-# and fresh instance review. Never borrow consumed02, TRAY01 or GUI02 authority.
++# Fresh GUI/tool/directory/original-lock identities remain unbound.
++# Never borrow GUI03 or other consumed-instance authority; old runtime HOLD remains.
+ GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+-INNER, INIT = W / 'scripts/audit/linux_desktop_integration_03.py', W / 'scripts/audit/desktop_integration_03.init.gradle'
+-SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
++INNER, INIT = W / 'scripts/audit/linux_desktop_integration_04.py', W / 'scripts/audit/desktop_integration_04.init.gradle'
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
+-RUN, PURPOSE = 'linux-desktop-integration03', 'ONE_LINUX_DESKTOP_INTEGRATION03'
+-COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'
+-TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'
+-MEMBERS = 3042
++RUN, PURPOSE = 'linux-desktop-integration04', 'ONE_LINUX_DESKTOP_INTEGRATION04'
++COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'
++TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
++MEMBERS = 3432
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+ GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
+@@ -52,7 +52,7 @@
+ IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+-DEVICE = {'directory_device': 23, 'regular_file_device': 24}
+-EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1788910891124735946, 'dev': 24, 'ino': 14189001, 'mode': 33152, 'mtime_ns': 1788910891124735946, 'nlink': 1, 'uid': 0}
+-FROZEN = {INNER: 'c2feebee723587d21c6fe32540f2d039ac564441f62a31c5f891ef059ed4cf2b', INIT: '45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292', SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f'}
++DEVICE = {'directory_device': 'UNBOUND', 'regular_file_device': 'UNBOUND'}
++EXPECTED_LOCK = 'UNBOUND'
++FROZEN = {INNER: 'f0f2879d479ae4fc215b5a138177e7372456504d6720ed579d92c0271b7c0b67', INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav pvu003 pva027'.split()
+ WORKERS = ['mainnav', 'editor-room']
+@@ -67,5 +67,5 @@
+ reasons, resources, churn, directories, images = [], [], 0, {}, {}
+ child, lock_fd, owned_domain, cancel_written = None, None, None, False
+-receipt = {'format': 'passvault-linux-desktop-integration03-outer-receipt-v1', 'run_id': RUN,
++receipt = {'format': 'passvault-linux-desktop-integration04-outer-receipt-v1', 'run_id': RUN,
+            'status': 'HOLD', 'inner_started': False, 'cleanup': 'NOT_ATTEMPTED', 'children': []}
+ 
+@@ -440,5 +440,5 @@
+ def oid_requests(expected):
+     data = b''.join(row['git_blob'].encode('ascii') + b'\n' for row in expected.values())
+-    require(len(data) == MEMBERS * 41 and len(data) <= 128 * 1024, 'canonical bounded OID input size')
++    require(len(data) == MEMBERS * 41 and len(data) <= 144 * 1024, 'canonical bounded OID input size')
+     fd = new(R / 'source.oids')
+     try:
+@@ -454,5 +454,5 @@
+         os.close(fd)
+     os.fsync(directory(R))
+-    actual, original = capture(R / 'source.oids', 128 * 1024)
++    actual, original = capture(R / 'source.oids', 144 * 1024)
+     require(actual == data and original['pin'] == written, 'original OID input changed before capture')
+     return data, original
+@@ -655,5 +655,5 @@
+             sys.flags.no_site and sys.dont_write_bytecode and dict(os.environ) == ENV and os.getuid() == os.geteuid() == 0, 'fixed entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3196
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 3432
+             and isinstance(GITDIR, Path) and GITDIR.is_absolute() and '..' not in GITDIR.parts
+             and isinstance(DEVICE, dict) and set(DEVICE) == {'directory_device', 'regular_file_device'}
+@@ -666,5 +666,5 @@
+             and EXPECTED_LOCK['nlink'] == 1 and EXPECTED_LOCK['bytes'] == 0
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'PENDING published INTEGRATION03 source/store/tool/device/lock binding: source-only, no execution admission')
++            'PENDING published INTEGRATION04 source/store/tool/device/lock binding: source-only, no execution admission')
+     raw, request_image = capture(REQUEST, MIB)
+     request = decode(raw)
+@@ -673,5 +673,5 @@
+     require(set(request) == {'format', 'run_id', 'purpose', 'commit', 'tree', 'parent_namespaces', 'directories',
+             'lock', 'images', 'coordination', 'device_model'} and request['device_model'] == DEVICE, 'request/device schema')
+-    require(request['format'] == 'passvault-linux-desktop-integration03-request-v1' and request['run_id'] == RUN and
++    require(request['format'] == 'passvault-linux-desktop-integration04-request-v1' and request['run_id'] == RUN and
+             request['purpose'] == PURPOSE and request['commit'] == COMMIT and request['tree'] == TREE, 'request purpose/source')
+     require(request['coordination'] == {'sole_build_owner': '/root', 'agents_quiescent': True, 'no_ci': True}, 'coordination not admitted')
+@@ -682,5 +682,5 @@
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-desktop-integration03-approval-v1' and approval['reviewer'] == '/root/editor_review' and
++            approval['format'] == 'passvault-linux-desktop-integration04-approval-v1' and approval['reviewer'] == '/root/android_fixture_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+@@ -714,5 +714,5 @@
+     directory(R, True)
+     receipt.update(request=request_image, approval=approval_image, parent_namespaces=parent_ns, device_model=DEVICE)
+-    allocation = {'format': 'passvault-linux-desktop-integration03-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
++    allocation = {'format': 'passvault-linux-desktop-integration04-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
+         'commit': COMMIT, 'tree': TREE, 'source_members': MEMBERS, 'source_representation': 'RAW_GIT_BLOBS',
+         'allocated_directories': {str(p): directories[p][1] for p in (E, R)},
+@@ -778,5 +778,5 @@
+             receipt['source_before'] = before
+             authority()
+-            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-desktop-integration03-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
++            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-desktop-integration04-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
+                 'source_representation': 'RAW_GIT_BLOBS', 'source_members': MEMBERS, 'parent_namespaces': parent_ns,
+                 'work_deadline_monotonic_ns': int(WORK_END * 1_000_000_000),
+@@ -789,5 +789,5 @@
+     result = decode(raw)
+     receipt.update(inner_exit=code, inner_result=result_image)
+-    require(code in (0, 1) and result['format'] == 'passvault-linux-desktop-integration03-inner-v1' and result['run_id'] == RUN and
++    require(code in (0, 1) and result['format'] == 'passvault-linux-desktop-integration04-inner-v1' and result['run_id'] == RUN and
+             result['commit'] == COMMIT and result['tree'] == TREE and result['parent_namespaces'] == parent_ns and all(result[k] is True for k in
+             ('source_before', 'source_after', 'all_required_stops_ok', 'namespace_empty_before_exit', 'cleanup_safe')), 'inner safety proofs incomplete')
+@@ -837,5 +837,5 @@
+                 and gui['loopback_up'] is True and gui['tmpfs_private'] is True and gui['tmpfs_bytes'] == 64 * MIB
+                 and gui['tmpfs_inodes'] == 4096 and gui['display'] == ':88' and gui['screen'] == '1280x1024x24'
+-                and gui['authority_path'] == '/tmp/passvault-desktop-integration03/Xauthority', 'GUI private preflight mismatch')
++                and gui['authority_path'] == '/tmp/passvault-desktop-integration04/Xauthority', 'GUI private preflight mismatch')
+         receipt['gui_preflight'] = gui_preflight
+         budget_raw, budget_image = capture(E / 'GUI-BUDGET.json', 65536)

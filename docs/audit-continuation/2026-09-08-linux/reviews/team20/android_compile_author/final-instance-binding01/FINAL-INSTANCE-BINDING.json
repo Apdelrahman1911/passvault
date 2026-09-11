@@ -1,0 +1,57 @@
+{
+  "format": "passvault-androidcompile02-final-literal-binding-v1",
+  "author": "/root/android_compile_author",
+  "status": "LITERALS_APPLIED_INERT_REQUEST_ONLY_NO_EXECUTION_ADMISSION",
+  "root_inputs": {
+    "actual02_sha256": "73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a",
+    "parent_point_sha256": "39950879fa8130a33db354efda60f68ac384fc9bc2dd34a5114829c6f25dcb6a",
+    "metadata_actual_acceptance_sha256_reported_by_root": "a5ec4243318a258f6074b29440baafeee41f384b719d426108e2faed3ffa0290"
+  },
+  "controls": [
+    {
+      "role": "init",
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/android_compile_02.init.gradle",
+      "before_sha256": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "after_sha256": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "bytes": 13511,
+      "literal_changes": 0,
+      "before_image": null
+    },
+    {
+      "role": "inner",
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_compile_02.py",
+      "before_sha256": "09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580",
+      "after_sha256": "028f8f660a4923a0ec9746fd2f9d3aa6a048b342915d6888872d5103a672e5e9",
+      "bytes": 64213,
+      "literal_changes": 1,
+      "before_image": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/final-instance-binding01/inner.before.txt"
+    },
+    {
+      "role": "outer",
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py",
+      "before_sha256": "153a4c6f19b61c940fc30d8f8819ee65b70af5803a28bf5252ebe9d2672d6c48",
+      "after_sha256": "093680180fbd4336a12ea4a29b4a665bcfac8ffae78765df25e95b759e2cccae",
+      "bytes": 64467,
+      "literal_changes": 4,
+      "before_image": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/final-instance-binding01/outer.before.txt"
+    }
+  ],
+  "delta": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/final-instance-binding01/FINAL-INSTANCE-BINDING.patch.txt",
+    "sha256": "d2d4429bca5da10373a0f7027af209e8032bc13ab57725673cb15ab0a59e1e7c",
+    "bytes": 3129
+  },
+  "inert_request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/final-instance-binding01/REQUEST.inert.json.txt",
+    "sha256": "69a235ee5548571dd94a1e9452243c7754879fc0b99c3d445180654d055e9939",
+    "bytes": 11984,
+    "complete_image_records": 20,
+    "unresolved": [
+      "git_inventory_binding.reviewed_assertions (all six)",
+      "coordination.agents_quiescent",
+      "coordination.no_ci"
+    ]
+  },
+  "verification": "Exact reversible 0/1/4 literal substitutions; full-byte readback; final released-W control byte/pin captures; supplied JSON-only projections; SOURCE/init and all other control bytes unchanged.",
+  "qualification": "Metadata acceptance is root-reported; full-index semantic/freeze acceptance and genuine exact-instance approval still gate execution. No helper parsed/imported/executed, no live T/SDK/host-tool probe, no live request/approval or ledger write; no retry/native/test/closure credit."
+}

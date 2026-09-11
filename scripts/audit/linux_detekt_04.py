@@ -34,13 +34,13 @@ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
 # Final published snapshot and exact regular tool/alias/optional-exclude identities
 # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
-COMMIT = None  # UNBOUND: exact new published source commit; root and independent review required.
-TREE = None  # UNBOUND: exact new published source tree; root and independent review required.
-MEMBERS = None  # UNBOUND: complete new source/index membership; root and independent review required.
+COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # C18 source only; not execution admission.
+TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # C18 source only; not execution admission.
+MEMBERS = 3432  # C18 source members only; fresh full index review still required.
 GIT_IMAGE = Path('/usr/bin/git')
 RUBY_IMAGE = Path('/usr/bin/ruby3.2')
-EXCLUDE_STATE = None  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
-FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: new04 source/init SHA256; no inherited admission.
+EXCLUDE_STATE = 'INFO_ABSENT'  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
+FROZEN = {SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3', INIT: 'a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d'}  # Known source/init hashes only; admission remains UNBOUND.
 INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
 GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
 RUN_ID = 'linux-detekt04'

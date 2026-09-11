@@ -1,0 +1,35 @@
+--- before/scripts/audit/linux_android_compile_02.py
++++ after/scripts/audit/linux_android_compile_02.py
+@@ -46,7 +46,7 @@
+ MEMBERS = 3432  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+-EXCLUDE_STATE = None  # UNBOUND: fresh02 store/index/config/exclude review.
++EXCLUDE_STATE = 'INFO_ABSENT'  # UNBOUND: fresh02 store/index/config/exclude review.
+ FROZEN = {SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3', INIT: '35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c'}  # UNBOUND: fresh02 helper/source SHA256 identities.
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX) + SDK_METADATA
+ RUN_ID = 'linux-android-compile02'
+--- before/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
++++ after/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
+@@ -34,7 +34,7 @@
+ INDEX_SOURCE = GITDIR / 'index'
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+-EXCLUDE_STATE = None  # UNBOUND: fresh02 store/index/config/exclude review.
++EXCLUDE_STATE = 'INFO_ABSENT'  # UNBOUND: fresh02 store/index/config/exclude review.
+ GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ INNER, INIT = W / 'scripts/audit/linux_android_compile_02.py', W / 'scripts/audit/android_compile_02.init.gradle'
+ SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'  # UNBOUND reference, not a created capture.
+@@ -57,9 +57,9 @@
+ REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE) + SDK_METADATA
+ IMAGES = ()  # Final fixed set includes the externally reviewed optional exclude only when present.
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+-DEVICE = None  # UNBOUND: fresh02 independently reviewed filesystem/instance model.
+-EXPECTED_LOCK = None  # UNBOUND: freshly verify the original existing lock; never recreate it.
+-FROZEN = {INNER: '09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580', INIT: '35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}  # UNBOUND: fresh02 helper/source SHA256 identities.
++DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # UNBOUND: fresh02 independently reviewed filesystem/instance model.
++EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # UNBOUND: freshly verify the original existing lock; never recreate it.
++FROZEN = {INNER: '028f8f660a4923a0ec9746fd2f9d3aa6a048b342915d6888872d5103a672e5e9', INIT: '35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}  # UNBOUND: fresh02 helper/source SHA256 identities.
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',

@@ -1,0 +1,11 @@
+--- outer.before.txt
++++ /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py
+@@ -42,6 +42,6 @@
+ IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+-DEVICE = {'directory_device': 'UNBOUND', 'regular_file_device': 'UNBOUND'}
+-EXPECTED_LOCK = 'UNBOUND'  # Bind the ORIGINAL existing lock; never create or replace it.
++DEVICE = {'directory_device': 23, 'regular_file_device': 24}
++EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1788910891124735946, 'dev': 24, 'ino': 14189001, 'mode': 33152, 'mtime_ns': 1788910891124735946, 'nlink': 1, 'uid': 0}  # Bind the ORIGINAL existing lock; never create or replace it.
+ FROZEN = {INNER: 'd84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715', INIT: 'e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3', CLASSES: 'c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53', METHODS: 'eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers'.split()

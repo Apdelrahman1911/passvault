@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-11T15:58:54.974868+00:00",
+  "status": "RELEASE_SCHEDULING_ONLY_CONSUMED_FOCUSED01_NEW_RUNTIME_HOLD",
+  "prior_slot_sha256": "02e699f23fe06695cff29a437f84479f46066da59ad02ebafe047c901b17e7cb",
+  "prior_slot_state": "RESERVED_ONE_LINUX_FOCUSED_REGRESSION01",
+  "original_root_admission": "reviews/focused-regression01-host02/ROOT-EXECUTION-ADMISSION.json",
+  "independent_review": {
+    "path": "reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md",
+    "sha256": "795475ee7949026066469761ab3866b9218d81c4b1b7097291d3ee110e4c0255"
+  },
+  "external": {
+    "path": "reviews/focused-regression01-host02/EXTERNAL-RESULT.json",
+    "sha256": "043c83d68807eea9fbfa11116083638ee85ecc83a858cc50ce138188e945a39d"
+  },
+  "original_external_terminal": {
+    "launch_chunk": "746cba",
+    "session_id": 93541,
+    "terminal_chunk": "2a0b2b",
+    "exit": 70,
+    "continuation_session": false
+  },
+  "actual": {
+    "focused_exit": 143,
+    "original_stop_exit": 0,
+    "namespace_empty_before_exit": true,
+    "source_before": true,
+    "source_after": false,
+    "cleanup_safe": false,
+    "cleanup": "NOT_ATTEMPTED_HOLD"
+  },
+  "case_observations": {
+    "retained_xml_files": 1,
+    "xml_pass_observations": 12,
+    "xml_failures": 0,
+    "xml_errors": 0,
+    "xml_skips": 0,
+    "methods_without_retained_outcome": 8,
+    "desktop_compile_success": false,
+    "clean_cohort_pass": false,
+    "new_case_declarations": 0,
+    "new_closures": 0
+  },
+  "release": "Retire only the consumed focused01 scheduling reservation using its original external terminal and independent reconciliation. No active audit-owned build/test/CI session; not global process-idle proof.",
+  "retained_runtime": "/root/projects/PassVault/audit-runtime-linux-focused-regression01",
+  "unchanged": "Original runtime HOLD, source-after/cleanup-safe false, all original source/index/config/control/evidence freezes until separate prospective assessment; every older HOLD/STOP/NO-RETRY/CLOSED preserved.",
+  "not_authorized": [
+    "Further stop",
+    "Runtime access/adoption/deletion",
+    "Historical-PID probe or signal",
+    "Consumed helper or capture replay",
+    "Next build or GUI admission",
+    "Publication freeze release"
+  ]
+}

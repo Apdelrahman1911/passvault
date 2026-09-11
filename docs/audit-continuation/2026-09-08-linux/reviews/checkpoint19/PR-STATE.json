@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-11T16:10:39.634552+00:00",
+  "purpose": "ONE_READONLY_CURRENT_BRANCH_PR_STATE_FOR_NONACTIVATING_C19_PUBLICATION",
+  "argv": [
+    "gh",
+    "api",
+    "--method",
+    "GET",
+    "repos/Apdelrahman1911/passvault/pulls",
+    "-f",
+    "state=open",
+    "-f",
+    "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+    "-f",
+    "per_page=100",
+    "--jq",
+    "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+  ],
+  "timeout_seconds": 45,
+  "scope": "PR metadata only; no bodies, comments, testers, credentials, CI dispatch, Git write, runtime probe or build. Current source trigger review requires excluding PR synchronization to protected bases. One bounded API call; no automatic retry.",
+  "cleanup": "Install direct-child and pipe settlement handling before call; no temporary/cache/runtime allocation or Gradle duty. Retain only compact result.",
+  "status": "POINT_NO_MATCHING_OPEN_PR",
+  "direct_child_reaped": true,
+  "pid": 2552,
+  "exit": 0,
+  "stdout": "[]\n",
+  "stderr": "",
+  "pull_requests": [],
+  "open_to_protected_bases": [],
+  "elapsed_seconds": 0.536
+}

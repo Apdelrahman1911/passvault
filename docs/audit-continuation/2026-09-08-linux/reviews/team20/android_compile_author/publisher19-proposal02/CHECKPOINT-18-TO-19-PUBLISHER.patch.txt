@@ -1,0 +1,106 @@
+--- a/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-18-PUBLISH.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/publisher19-proposal02/CHECKPOINT-19-PUBLISH-PROPOSAL.py.txt
+@@ -1,10 +1,10 @@
+ #!/usr/bin/python3
+-# New C18 source publication-only candidate; derived as TEXT from consumed C17.
++# New C19 source publication-only candidate; derived as TEXT from consumed C18.
+ # UNBOUND: root must bind final config/payload/review and separately admit one invocation.
+ # Never import/replay a predecessor. Scoped authored-source whitespace only; no build/CI.
+ 
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+-CFG=json.loads(pathlib.Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-18-CONFIG.json').read_bytes())
++CFG=json.loads(pathlib.Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-19-CONFIG.json').read_bytes())
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+ PUB=B/'publication'
+@@ -14,9 +14,12 @@
+ BASE=CFG['source_commit']
+ BASE_TREE=CFG['source_tree']
+ REQUEST_PREFIX='docs/audit-continuation/2026-09-08-linux/requests/'
+-CONSUMED_LINUX_REQUESTS={REQUEST_PREFIX+n for n in (
++CONSUMED_OR_SUPERSEDED_LINUX_REQUESTS={REQUEST_PREFIX+n for n in (
+  'LINUX-DETEKT-03.json','LINUX-ANDROID-COMPILE-01.json','LINUX-DESKTOP-TRAY-01.json',
+- 'LINUX-DESKTOP-INTEGRATION-02.json','LINUX-DESKTOP-INTEGRATION-03.json')}
++ 'LINUX-DESKTOP-INTEGRATION-02.json','LINUX-DESKTOP-INTEGRATION-03.json',
++ 'LINUX-ANDROID-COMPILE-02.json','LINUX-ANDROID-COMPILE-03.json',
++ 'LINUX-DETEKT-04.json','LINUX-DETEKT-04-HOST02.json',
++ 'LINUX-FOCUSED-REGRESSION-01.json','LINUX-FOCUSED-REGRESSION-01-HOST02.json')}
+ START=time.monotonic();CANCEL=False;child=None;lockfd=None;parentfd=None;rootfd=None;recfd=None
+ rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'review_sha256':CFG['review_sha256'],'source_workspace':str(S),'publication_clone':str(T),'commands':[],'resource_samples':[],'selection_sha256':CFG['selection_sha256'],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
+ def req(ok,msg):
+@@ -103,7 +106,7 @@
+   r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr=bytes(err).decode('utf-8','strict'))
+   if len(out)<=8192:r['stdout']=decoded
+   if args[:3]==['diff','--cached','--check']:
+-   p=PUB/'CHECKPOINT-18-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++   p=PUB/'CHECKPOINT-19-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+     view=memoryview(out)
+     while view:view=view[os.write(fd,view):]
+@@ -148,14 +151,14 @@
+  rec.setdefault('namespace_inventories',[]).append({'label':label,'files':count,'directories':directories,'logical_bytes':size})
+  durable()
+ try:
+- req((BASE,BASE_TREE)==('0563e31adc9a66aefc3e74b99b9a24d17bdcdd49','d1bd6ca5b18d08ff3ff15896d9a78af9016be799'),'C18 requires exact C17 predecessor from bound config')
+- raw,_=read_file(PUB/'CHECKPOINT-18-PAYLOAD.json')
++ req((BASE,BASE_TREE)==('6489252e88ad553a867d67578eff45a402e62a48','57d338a931ab0fb4e072aabcbbfd27bead8ef08a'),'C19 requires exact C18 predecessor from bound config')
++ raw,_=read_file(PUB/'CHECKPOINT-19-PAYLOAD.json')
+  req(digest(raw)==CFG['selection_sha256'],'selection changed')
+  selection=json.loads(raw)
+  req(selection['parent_commit']==BASE and selection['parent_tree']==BASE_TREE,'selection base')
+  selected=selection['files']
+  removals=selection['removals']
+- req(removals==[],'C18 permits no removals; C17 inert-draft removals are already consumed')
++ req(removals==[],'C19 permits no removals; C17 inert-draft removals are already consumed')
+  allrows=selected+CFG['companions']
+  req(0<len(allrows)<=450,'bounded selected and companion paths')
+  # Guard descriptor namespaces before reading any selected/companion source bytes.
+@@ -164,11 +167,11 @@
+   req(isinstance(p,str) and p==str(rel) and p not in ('','.'),'noncanonical selected path')
+   req(not rel.is_absolute() and '..' not in rel.parts and '\n' not in p and '\0' not in p,'unsafe selected path')
+   req('.git' not in rel.parts and not p.startswith('.github/workflows/'),'retired-store/workflow path forbidden')
+-  req(not p.startswith(REQUEST_PREFIX) or p in CONSUMED_LINUX_REQUESTS,'only five exact consumed Linux request leaves permitted')
++  req(not p.startswith(REQUEST_PREFIX) or p in CONSUMED_OR_SUPERSEDED_LINUX_REQUESTS,'only eleven exact consumed or superseded evidence-only Linux request leaves permitted')
+  reviewraw,_=read_file(B/CFG['review_path'])
+  req(digest(reviewraw)==CFG['review_sha256'],'review changed')
+  review=json.loads(reviewraw)
+- req(review['reviewer']=='/root/coverage_review' and review['disposition']=='ACCEPT_C18_SOURCE_PUBLICATION'
++ req(review['reviewer']=='/root/coverage_review' and review['disposition']=='ACCEPT_C19_SOURCE_PUBLICATION'
+      and review['selection_sha256']==CFG['selection_sha256'],'genuine exact independent review required')
+  expected=frozen(S,allrows)
+  req(len(expected)==len(allrows) and len(expected)<=450,'unique bounded selected paths')
+@@ -179,7 +182,7 @@
+      and whitespace_paths==selection['authored_whitespace_paths'],'invalid or unreviewed authored whitespace scope')
+  slotraw,_=read_file(B/'EXECUTION_SLOT.json')
+  req(digest(slotraw)==CFG['slot_sha256'] and json.loads(slotraw)['state']==CFG['slot_state'],'slot changed')
+- lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,661121,0,16832],'original coordination parent changed')
++ lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+  parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+  req((a.st_dev,a.st_ino,a.st_uid,a.st_mode,a.st_nlink,a.st_size)==(24,14189001,0,33152,1,0),'original lock changed')
+@@ -190,8 +193,8 @@
+  try:os.fsync(pfd)
+  finally:os.close(pfd)
+  resource('before source publication',launch=True)
+- req(dtuple(T.lstat())==[23,1080545,0,16832],'original publication clone changed')
+- rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,1080545,0,16832];root_check();inventory('before source')
++ req(dtuple(T.lstat())==[23,51357,0,16832],'original publication clone changed')
++ rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,51357,0,16832];root_check();inventory('before source')
+  gd=T/'.git'
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+  # Fixed retained release values; no config bytes are recorded in the receipt.
+@@ -256,7 +259,7 @@
+  config_after_pin=tuple(getattr(config_after_stat,'st_'+k) for k in config_fields)
+  rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':{('bytes' if k=='size' else k):v for k,v in zip(config_fields,config_after_pin)}};durable()
+  req(config_after_raw==config_before_raw and config_after_pin==config_before_pin,'original T config bytes/full pin changed during publication')
+- rec.update(status='PUBLISHED_EXACT_C18_SOURCE',clone_is_build_workspace=False,slot='UNCHANGED_IDLE_NO_BUILD_OR_CI_ADMITTED')
++ rec.update(status='PUBLISHED_EXACT_C19_SOURCE',clone_is_build_workspace=False,slot='UNCHANGED_IDLE_NO_BUILD_OR_CI_ADMITTED')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+ finally:
+@@ -271,4 +274,4 @@
+  durable()
+  if recfd is not None:os.close(recfd)
+  print(json.dumps({'status':rec['status'],'error':rec.get('error'),'commit':rec.get('commit'),'tree':rec.get('tree'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+- if rec['status']!='PUBLISHED_EXACT_C18_SOURCE':raise SystemExit(1)
++ if rec['status']!='PUBLISHED_EXACT_C19_SOURCE':raise SystemExit(1)

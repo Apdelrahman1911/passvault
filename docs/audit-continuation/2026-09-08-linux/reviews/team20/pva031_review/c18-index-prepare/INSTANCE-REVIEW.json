@@ -1,0 +1,211 @@
+{
+  "schema": 1,
+  "reviewer": "/root/pva031_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_EXACT_C18_INDEX_TOOL_INSTANCE_FOR_ROOT_ONLY_SINGLE_CAPTURE",
+  "material_blockers": [],
+  "scope": "Compact final literal promotion/binding/metadata-prerequisite instance review. Unchanged accepted source analysis is inherited; no repeat full implementation or metadata02 actual audit, and no index actual/result or consumer acceptance.",
+  "bindings": {
+    "accepted_candidate": {
+      "path": "reviews/team20/pva031_investigator/c18-index-prepare/INDEX-CAPTURE.facts02.py.txt",
+      "sha256": "d9febd44592c14ec72a61dff4ca7d3119f9c1c83dde6b0d876dffa5dff08b1ed",
+      "bytes": 26716,
+      "lf": 447
+    },
+    "promoted": {
+      "path": "reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py",
+      "sha256": "525dd35db0c1d4520cb03be3a5ceb33e2e5a6151a76623873a1057cecdb98e9c",
+      "bytes": 26778,
+      "lf": 447
+    },
+    "binding": {
+      "path": "reviews/checkpoint18/index-prepare01/BINDING.json",
+      "sha256": "28a04ebd335304397dd9f0d76ff00c6b5f26598177d1e5ff3ea811c0482b3d19",
+      "bytes": 940,
+      "lf": 13
+    },
+    "facts02": {
+      "path": "reviews/checkpoint18/C18-READONLY-FACTS-02.json",
+      "sha256": "73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a",
+      "bytes": 11172,
+      "lf": 1
+    },
+    "facts02_actual_review": {
+      "path": "reviews/team20/desktop_other_review/10-C18-READONLY-FACTS02-ACTUAL-REVIEW.json",
+      "sha256": "a5ec4243318a258f6074b29440baafeee41f384b719d426108e2faed3ffa0290",
+      "bytes": 8625,
+      "lf": 158
+    },
+    "selector_delta_review": {
+      "path": "reviews/team20/pva031_review/c18-index-prepare/FACTS02-DELTA-REVIEW.json",
+      "sha256": "12664c62993251dc6520149e42c2370aad94e92d86478da12613a9a3b1b8d46b",
+      "bytes": 6149,
+      "lf": 101
+    },
+    "source_review": {
+      "path": "reviews/team20/pva031_review/c18-index-prepare/SOURCE-REVIEW.json",
+      "sha256": "48b53891243c7d624d4a1ed7830285972e00811ba68bdc4bc8beeda0f200b958",
+      "bytes": 14336,
+      "lf": 312
+    },
+    "accepted_plan": {
+      "path": "reviews/team20/pva031_investigator/c18-index-prepare/PLAN.md",
+      "sha256": "881aa49dd90982536a5f907a9a7747716ba3b0a1b3982ac8700fadc2811e455b",
+      "bytes": 9233,
+      "lf": 55
+    },
+    "source_store_facts": {
+      "path": "reviews/checkpoint18/SOURCE-STORE-ADMISSION.json",
+      "sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+      "bytes": 4146,
+      "lf": 136
+    },
+    "shared_source": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE.json",
+      "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+      "bytes": 1879327,
+      "lf": 1
+    }
+  },
+  "promoted_image": {
+    "pin": {
+      "dev": 24,
+      "ino": 14316360,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "bytes": 26778,
+      "mtime_ns": 1789101464009376916,
+      "ctime_ns": 1789101464009376916
+    },
+    "sha256": "525dd35db0c1d4520cb03be3a5ceb33e2e5a6151a76623873a1057cecdb98e9c"
+  },
+  "exact_delta": {
+    "line": 22,
+    "replacement": "EXTRA_SHA=None -> quoted actual02 SHA25673465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a",
+    "forward_entire_candidate_match": true,
+    "inverse_entire_predecessor_match": true,
+    "every_other_byte_unchanged": true,
+    "candidate_bytes": 26716,
+    "promoted_bytes": 26778,
+    "both_lf": 447,
+    "comment_qualification": "Unchanged UNBOUND wording is historical source commentary; the literal is now hash-bound. No comment/control rewrite or behavioral delta beyond this binding occurred."
+  },
+  "binding_reconciliation": "BINDING exact candidate/promoted/facts02/source-review/selector-review hashes all match; owner/root and preserved freeze/no-execution scope remain. Its pending-state label is retained pre-review data, not a claim of index execution. Prior source-review and selector-delta chain match the unchanged accepted plan.",
+  "metadata02_prerequisite": {
+    "satisfied": true,
+    "review_sha256": "a5ec4243318a258f6074b29440baafeee41f384b719d426108e2faed3ffa0290",
+    "disposition": "ACCEPT_RETAINED_C18_READONLY_FACTS02_NORMAL_CAPTURE_CONSUMED_NOT_INDEX_OR_BUILD_ADMISSION",
+    "result_sha256": "73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a",
+    "original_terminal_chunk": "3da433",
+    "terminal_exit": 0,
+    "remaining_session": false,
+    "qualification": "Uses the exact independent accepted actual02 review and its eligible metadata result; does not repeat metadata source/external audit or convert fingerprints into index semantics/executable availability/global-idle proof. Failed01 remains sealed/consumed/no replay."
+  },
+  "mechanical_projection_checks": {
+    "current_retained_W_SOURCE_and_facts_full_pin_hash_equal_packet": true,
+    "full_source_members": 3432,
+    "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "original_config_image_equal_fresh_source_facts": true,
+    "source_capture_Git_image_equal": true,
+    "original_lock_input_equal": true,
+    "metadata4_and_INFO_ABSENT": true,
+    "ten_required_images_present_with_regular_full8_pin_hash_and_caps": true,
+    "exact_git_ruby_and_python3_alias_shapes": true,
+    "jdk": {
+      "home": "/usr/lib/jvm/java-17-openjdk-amd64",
+      "release_metadata": {
+        "JAVA_VERSION": "17.0.20",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "jdk_bin_shadow_absence": {
+      "git": true,
+      "ruby": true
+    },
+    "index_fingerprint_only": {
+      "pin": {
+        "bytes": 553274,
+        "ctime_ns": 1789097198612631153,
+        "dev": 24,
+        "ino": 14315508,
+        "mode": 33152,
+        "mtime_ns": 1789097198611631153,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "372f4404428ad77b58ca0bd5580318dcbe46b7ecba8de6231114c07d8eb360ef"
+    },
+    "qualification": "Retained JSON/W-input consistency only; no current T/index/tool/JDK/resource observation or full DIRC proof. SDK/other packet keys confer no selector/access/consumer authority."
+  },
+  "exact_root_launch": {
+    "argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py"
+    ],
+    "cwd": "/root/projects/PassVault/passvault-publication-20260910-01",
+    "interpreter_projection": {
+      "alias": {
+        "lstat": {
+          "bytes": 10,
+          "ctime_ns": 1787292627918100464,
+          "dev": 25,
+          "ino": 1087,
+          "mode": 41471,
+          "mtime_ns": 1762949744000000000,
+          "nlink": 1,
+          "uid": 0
+        },
+        "readlink": "python3.12",
+        "resolved_image": "/usr/bin/python3.12"
+      },
+      "resolved_image": {
+        "pin": {
+          "bytes": 8020928,
+          "ctime_ns": 1787292627933100530,
+          "dev": 25,
+          "ino": 1088,
+          "mode": 33261,
+          "mtime_ns": 1781873160000000000,
+          "nlink": 1,
+          "uid": 0
+        },
+        "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118"
+      }
+    },
+    "one_collector_invocation": true,
+    "one_git_child": true,
+    "git_subcommand": [
+      "ls-files",
+      "--stage",
+      "-z",
+      "--full-name"
+    ],
+    "full_git_argv_environment": "Byte-identical accepted CMD32-34/ENV28-31; no additional command, shell, inherited Git overrides, discovery/version/build/source-preparation or tool substitution.",
+    "work_seconds": 180,
+    "git_success_work_seconds": 30,
+    "qualification": "Root alone may admit/run this exact instance once under the maintained original lock/T/index/config/tool/input freeze. This reviewer does not execute. No new authority-file schema or global-idle prerequisite is added."
+  },
+  "unchanged_guards_and_actual_requirements": "All original no-follow/full-pin before/after checks; SOURCE/DIRC/listing full equality/count3500 ceiling; byte/output/resource limits; exclusive outputs; signal/owned-child/pipes/descriptors/original-lock settlement; HOLD/no retry remain. Current output vacancy is not independently probed here; admitted collector enforces it and exclusive creation. Any preservation/parser/resource/close/late-terminal uncertainty is HOLD. Original external terminal plus independent actual binary/listing/source/tool/config/exclude reconciliation remain required; preterminal receipt and stdout self-image projection are not alone exit proof. TREE is framing-only and deadlines/owned-child settlement are not hard-kernel/arbitrary-descendant proof.",
+  "authority": {
+    "named_instance_review_accepted": true,
+    "root_only_single_capture_eligible": true,
+    "reviewer_execution": false,
+    "index_actual_acceptance": false,
+    "consumer_admission": false,
+    "automatic_retry_cleanup_closure": false
+  },
+  "accounting": {
+    "reviewer_executions": 0,
+    "tests": 0,
+    "compile_or_static_tasks": 0,
+    "closures": 0,
+    "denominator_change": false
+  },
+  "activity": "Ten named retained W inputs only; bounded no-follow stable pin/hash reads, plain byte substitution and JSON/schema consistency. No helper import/AST/syntax/compile/execution/test, full source/metadata actual re-audit, live T/Git/proc/tool/JDK/SDK/resource/runtime/network probe, output-vacancy discovery, source edit, cleanup or capture allocation. One new own-lane exclusive0600 report with fsync/exact readback; input hashes/pins refreshed before/after. Root owns notifications and any execution.",
+  "boundaries": "No build/runtime/consumer request/assertion/index copy/GUI03 reuse or old-HOLD discharge. Failed metadata01, consumed metadata02, GUI03 observer/R HOLD, original C17 publisher-terminal qualification/config/objects/evidence, all STOP/NO-RETRY/CLOSED/HOLD/held-runtime/hardware/PVD/protected-ref/Store/occupied1017001 fences remain. Original415 frozen C18 payload files unchanged."
+}

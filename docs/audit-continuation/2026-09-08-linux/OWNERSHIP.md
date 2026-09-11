@@ -1,4 +1,24 @@
-## Current C18 preparation ownership — 2026-09-11
+## Current C19 evidence/publication ownership — 2026-09-11
+
+Root alone owns builds/tests/CI, Git in T, central ledgers, admission and cleanup.
+All three HOST02 cohorts are consumed; original stops completed. No audit-owned
+build/test/CI session runs. Source-after/cleanup HOLDs are not released by this
+scheduling state. No additional stop, historical-PID probe, signal or deletion.
+
+Reuse completed author/reviewer lanes in `TEAM_20_RESUME.md`. Focused01 actual
+review supports12 partial XML observations/8missing outcomes/0Desktop compile
+success, not a clean cohort. AndroidCompile03 is compiler-only success; static04
+has zero analyzer outputs. Quiet-host coordination is required before more builds.
+Root prepares a report-only C19 checkpoint; no product patch is reapplied.
+
+android_compile_review independently assesses prospective W/T-current-index
+publication release; android_compile_author prepares the minimal inert publisher
+and focused_validation_review challenges it. coverage_review independently reviews
+final current accounting/report/selection. Subagents have no T/Git, build, held-R,
+process or SDK probe authority. All original objects/config/index/control/evidence
+and old/current held roots remain protected. No fresh source capture is implied.
+
+## Historical C18 preparation ownership — 2026-09-11
 
 Root remains sole build/test/CI/Git/ledger/admission/cleanup owner. Reuse the
 existing twenty agents and bounded assignments in `TEAM_20_RESUME.md`; do not

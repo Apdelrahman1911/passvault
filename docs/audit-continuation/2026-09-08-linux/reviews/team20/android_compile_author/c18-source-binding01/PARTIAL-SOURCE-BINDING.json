@@ -1,0 +1,138 @@
+{
+  "format": "passvault-androidcompile02-partial-source-binding-v1",
+  "author": "/root/android_compile_author",
+  "status": "PARTIAL_SOURCE_BINDING_APPLIED_NO_EXECUTION_ADMISSION",
+  "authorization": "Root authorized only the three AndroidCompile02 policy/source literal bindings; instance/tool facts remain pending a fresh root packet.",
+  "source": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "members": 3432,
+    "unique_paths": 3432,
+    "readback_unchanged": true
+  },
+  "compile_binding": {
+    "readRoots": [
+      "/root/projects/PassVault/audit-runtime-linux-android-compile02/checkout",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile02/gradle-home",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile02/tmp",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile02/konan",
+      "/usr/lib/jvm/java-17-openjdk-amd64",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile02/sdk-readonly"
+    ],
+    "offline": false
+  },
+  "required_sources": [
+    {
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt",
+      "hash_field": "raw_sha256",
+      "raw_sha256": "2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57",
+      "raw_bytes": 13666
+    },
+    {
+      "path": "core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/RawPasswordHash.kt",
+      "hash_field": "raw_sha256",
+      "raw_sha256": "3fb16abe001752bf44b5a56039c58738ebed0e6ced5972e3ca0985d5a40586eb",
+      "raw_bytes": 2519
+    },
+    {
+      "path": "core/crypto/src/androidMain/kotlin/com/passvault/core/crypto/RawPasswordHash.android.kt",
+      "hash_field": "raw_sha256",
+      "raw_sha256": "d2c4bcd22df2cb89a97e10a4b591d651f224f0b1c5224bc6b5de10f407d0df1c",
+      "raw_bytes": 2837
+    },
+    {
+      "path": "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt",
+      "hash_field": "raw_sha256",
+      "raw_sha256": "9c4567e4a9cd1f6023534d3b5a40dfb21981cd49cc8eff0b4d1e453429246ca8",
+      "raw_bytes": 14600
+    }
+  ],
+  "controls": [
+    {
+      "role": "init",
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/android_compile_02.init.gradle",
+      "before_sha256": "fccb4952a892ca5d0a223a6484d63497000b76e4a08eae8dc260d8534729bcd9",
+      "before_bytes": 12826,
+      "before_image": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/c18-source-binding01/init.before.txt",
+      "after_sha256": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "after_bytes": 13511,
+      "lf_lines": 195,
+      "literal_replacements": 5,
+      "full_readback_matches": true,
+      "inverse_literal_delta_recovers_preimage": true
+    },
+    {
+      "role": "inner",
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_compile_02.py",
+      "before_sha256": "a62983080e04c638754973f4a6dfe16d21ccf6bb8f0cbb2582f334aa9b85f89a",
+      "before_bytes": 63315,
+      "before_image": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/c18-source-binding01/inner.before.txt",
+      "after_sha256": "09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580",
+      "after_bytes": 64204,
+      "lf_lines": 1038,
+      "literal_replacements": 9,
+      "full_readback_matches": true,
+      "inverse_literal_delta_recovers_preimage": true
+    },
+    {
+      "role": "outer",
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py",
+      "before_sha256": "3bfa5fff0a759c2fd11be99595949f1562f99f975ea323be1f25b2bd94eb02b6",
+      "before_bytes": 63569,
+      "before_image": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/c18-source-binding01/outer.before.txt",
+      "after_sha256": "153a4c6f19b61c940fc30d8f8819ee65b70af5803a28bf5252ebe9d2672d6c48",
+      "after_bytes": 64272,
+      "lf_lines": 1059,
+      "literal_replacements": 5,
+      "full_readback_matches": true,
+      "inverse_literal_delta_recovers_preimage": true
+    }
+  ],
+  "delta": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/c18-source-binding01/C18-SOURCE-BINDING.patch.txt",
+    "sha256": "fec92e1dc54069fa739ee06325b4fd2f48ffb3c99cdc6dc8ca6c78b4a9efae88",
+    "bytes": 9076
+  },
+  "external_hash_chain": {
+    "inner": {
+      "SOURCE": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+      "INIT": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c"
+    },
+    "outer": {
+      "INNER": "09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580",
+      "INIT": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "SOURCE": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3"
+    }
+  },
+  "remaining_unbound": {
+    "inner": [
+      "EXCLUDE_STATE"
+    ],
+    "outer": [
+      "EXCLUDE_STATE",
+      "DEVICE",
+      "EXPECTED_LOCK"
+    ],
+    "current_tool_and_instance_facts": "NOT_OBSERVED_OR_BOUND"
+  },
+  "published_unbound_helper_identities_from_source": [
+    {
+      "path": "scripts/audit/android_compile_02.init.gradle",
+      "raw_sha256": "fccb4952a892ca5d0a223a6484d63497000b76e4a08eae8dc260d8534729bcd9"
+    },
+    {
+      "path": "scripts/audit/linux_android_compile_02.py",
+      "raw_sha256": "a62983080e04c638754973f4a6dfe16d21ccf6bb8f0cbb2582f334aa9b85f89a"
+    }
+  ],
+  "verification": "Bounded full-byte reads; duplicate-free SOURCE JSON/member checks; unique exact text substitutions and reversal; SHA256/diff; full-byte readback only. No project-helper parsing, importing, running, build, test, or CI.",
+  "qualifications": [
+    "Published C18 raw helper blobs remain the UNBOUND source identities; the newly bound W controls are separately pinned external controls. No recapture or self-reference.",
+    "This lane did not access T/Git, SDK/tool targets, /proc, held runtimes, the original lock, or occupied1017001; no store/index/instance facts are asserted.",
+    "Strict verification, no SDK installation/license action, and all graph/task/resource/stop/cleanup logic remain byte-identical outside these literal replacements.",
+    "Original UNBOUND annotation comments are intentionally preserved for a reversible literal-only delta; the remaining_unbound fields above describe the active unresolved bindings.",
+    "No request or approval was created, no central ledger was edited, and no execution/native-case/closure credit is claimed. Independent partial-binding review is pending."
+  ]
+}

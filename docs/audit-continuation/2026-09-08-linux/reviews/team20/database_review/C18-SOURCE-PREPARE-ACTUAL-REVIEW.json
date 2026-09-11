@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "reviewer": "/root/database_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_RETAINED_C18_SHARED_SOURCE_CAPTURE_CONSUMED_NOT_CONSUMER_ADMISSION",
+  "material_blockers": [],
+  "bindings": {
+    "recipe": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+      "sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+      "bytes": 17797
+    },
+    "binding": {
+      "path": "reviews/checkpoint18/source-prepare01/BINDING.json",
+      "sha256": "768be8aa2f892fb30bea0f409b5cb3d4819c2777f2b4b48a81de662376ce200e",
+      "bytes": 2100
+    },
+    "root_admission": {
+      "path": "reviews/checkpoint18/source-prepare01/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "c398fa0f4763de0e27ff438a57d593178067607834a6c8e74442eb714b6b3516",
+      "bytes": 1548
+    },
+    "source": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE.json",
+      "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+      "bytes": 1879327
+    },
+    "capture": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE-CAPTURE.json",
+      "sha256": "04b8b3b7772a542d51393d4ac7dd482596fd4345576af8c7975a582c5f6cc755",
+      "bytes": 6198
+    },
+    "external": {
+      "path": "reviews/checkpoint18/source-prepare01/EXTERNAL-RESULT.json",
+      "sha256": "796240f954b2ce6994ba9bc377b9ab8203496b9bad787929ebdb2874138411b4",
+      "bytes": 7503
+    },
+    "facts": {
+      "path": "reviews/checkpoint18/SOURCE-STORE-ADMISSION.json",
+      "sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+      "bytes": 4146
+    },
+    "accepted_instance": {
+      "path": "reviews/team20/database_review/C18-SOURCE-PREPARE-INSTANCE-REVIEW.json",
+      "sha256": "bc26c20c2b790aff9a51d8cc08bdb4182bd22a0271a2a6232bedd8db86e872f8",
+      "bytes": 6600
+    },
+    "eol_source": {
+      "path": "reviews/desktop-gui02/SOURCE.json",
+      "sha256": "6d593b947d76f0a7b3e7929a7ae54e6968cb0a36b69bf78d771b33226bd396ee",
+      "bytes": 1007418
+    },
+    "eol_capture": {
+      "path": "reviews/desktop-gui02/SOURCE-CAPTURE.json",
+      "sha256": "5b89c5c90f40b34ff92a633fb2e93f3174a65451aaf8642ce8cdc4c9822fe0a9",
+      "bytes": 7331
+    }
+  },
+  "identity": {
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "members": 3432,
+    "raw_bytes": 113336811,
+    "checkout_bytes": 113338758
+  },
+  "instance_and_record_reconciliation": "Exact recipe/binding/facts hashes are unchanged from accepted instance. ROOT admission command and instance/control hashes agree with that review and the retained external/control observations. SOURCE hash/length match final capture; embedded SOURCE.capture equals final capture minus only source_sha256/source_bytes. External source_sha256 names the executed recipe, not the manifest. Fresh facts/publication hash/store/original shallow reconcile. BINDING pending-state text is historical pre-invocation data; this one actual invocation is now consumed.",
+  "independent_manifest_proof": {
+    "rows": "All3432 unique safe UTF-8 relative paths are byte-ordered, with exact row/pin field sets, regular100644/100755 modes,40-hex OIDs/64-hex hashes, nonnegative sizes, git_size=raw_size and coherent recorded root-owned/single-link/non-group/world-writable checkout pin sizes/executable bits.",
+    "mode_counts": {
+      "100644": 3358,
+      "100755": 74
+    },
+    "maximum_path_bytes": 182,
+    "maximum_raw_or_checkout_member_bytes": 11439084,
+    "recomputed_raw_bytes": 113336811,
+    "recomputed_checkout_bytes": 113338758,
+    "reconstructed_rev_parse_bytes": 82,
+    "reconstructed_rev_parse_sha256": "e10bf2720582ecdfa940ccc01ae720fceeb879bacf18ef206708705e73924b4f",
+    "reconstructed_ls_tree_bytes": 505154,
+    "reconstructed_ls_tree_sha256": "7ba281c165e0fd0a8a96077ccc7f1ccd4966c74df7aa4348ca3193025f016c98",
+    "tree_reconstruction": "Independently reconstructed932 Git tree nodes from all manifest mode/OID/path tuples; root SHA1 equals57d338a931ab0fb4e072aabcbbfd27bead8ef08a. Canonical ls-tree -l/NUL bytes reconstructed from those rows reproduce the retained stream length/hash, not merely collector booleans.",
+    "limit_of_proof": "This binds retained tuples/metadata to the tree and recorded streams, not an independent live checkout/blob-content rehash. Raw SHA256 and current checkout pin/byte observations remain the admitted executor capture of each buffer; no cat-file transport, atomic-checkout or hostile-root proof."
+  },
+  "eol_and_published_source": {
+    "different_rows": 15,
+    "checkout_minus_raw_bytes": 1947,
+    "proof": "Exactly15 rows differ between raw and checkout size/hash; their names exactly equal capture.derived_crlf_to_lf_paths and the pinned predecessor allowed set. Both historical qualification objects are unchanged, and both script/raw-copy pairs preserve all five git_mode/git_blob/git_size/raw_size/raw_sha256 fields against that exact predecessor.",
+    "qualification": "Current raw fields mean observed bytes or an exact Git OID/size/mode-verified CRLF-to-LF candidate. Historical raw-to-LF-Git-to-CRLF-checkout qualifications remain data, not inherited raw-byte coverage, Windows/hardware/runtime passes or current historical-checkout claims.",
+    "control_separation": "The manifest row for published checkpoint18/source-prepare01/SOURCE-PREPARE.py remains17678B/raw+checkout SHA424e30c470dd88b028bb39e007c72ca4ce7ad1b83f044eeead0db1c7eb048c20: published unbound source, separate from the17797B live W bound recipe31673e86... actually executed."
+  },
+  "actual_command_and_settlement": {
+    "invocations": 1,
+    "git_children": 2,
+    "command_proof": "Both exact argv/cwd records match accepted safety prefix and only rev-parse P P^{tree}, then ls-tree -r -z -l --full-tree P. Fixed clean Git environment remains the unchanged accepted recipe, not a separately captured environment dump. Both record complete=true,direct_child_reaped=true,exit0 and independently checked empty-stderr hashes.",
+    "launch_chunk": "6cae08",
+    "original_session": 70783,
+    "terminal_chunk": "666a39",
+    "terminal_exit": 0,
+    "remaining_session": false,
+    "terminal_proof": "Root-provided retained original terminal output is byte-for-byte the6198-byte SOURCE-CAPTURE.json; terminal0/no remaining session settles the accepted normal path beyond receipt-only success, including main finally/lock closure and final print. These are original external objects, not a reviewer live execution.",
+    "qualification": "Accepted only for the two owned normal foreground children and admitted descriptor/lock path. Not arbitrary-descendant/global-idleness/hardware proof; failure/interruption/close uncertainty still HOLD/no automatic retry. No build/runtime/cache/temp/Gradle duty arose. Old C17 publisher external-terminal gap and all old holds remain."
+  },
+  "bounds": {
+    "member_ceiling": 3500,
+    "raw_and_checkout_limit_each": 134217728,
+    "member_limit": 33554432,
+    "source_bytes": 1879327,
+    "capture_bytes": 6198,
+    "combined_source_capture_bytes": 1885525,
+    "source_or_capture_limit_each": 2097152,
+    "listing_bytes": 505154,
+    "recorded_resource_points": 30,
+    "minimum_disk_available": 18967289856,
+    "minimum_ram_available": 41499529216,
+    "ram_total": 67435888640,
+    "recorded_elapsed_seconds": 1.1190830319537781,
+    "qualification": "Every retained resource point meets its12GiB/25% entry or8GiB/20% active floor. Manifest/listing/member/raw/checkout/output bounds all reconcile.1.119083s is the recipe elapsed observation before final serialization/writes; external poll wall time is not the same clock. No separate per-child timing sample, continuous resource guarantee, full outer-wall/hard-kernel-deadline or post-record timing claim."
+  },
+  "preserved_metadata_qualification": "Facts hash unchangedcf92d678...; preserve the accepted instance original config/full lock/root identity qualification, including fresh workspace-parentnlink12 versus historical11. Successful exact guards and root freeze support the captured state; no independent live metadata/tool image or future-freeze certification. Recorded Git image4066232B/SHA2a8c18fb... remains an executor observation.",
+  "next_scope": "One consumed immutable shared SOURCE may support AndroidCompile02/static04/regression01 only after their independent current binding/admission and separate index/tool capture review. No recapture/replay, consumer execution, GUI03 continuation, old-runtime cleanup or closure authority.",
+  "accounting": {
+    "new_application_tests": 0,
+    "new_compile_tasks": 0,
+    "new_static_analyzers": 0,
+    "new_closures": 0,
+    "denominator_change": false
+  },
+  "activity_and_quiescence": "Only named W evidence/source bytes, inline standard-library JSON/text/hash/arithmetic and retained-tuple reconstruction; no helper import/AST/execution/replay, live T/Git/proc/runtime/tool/SDK/network probe, build, pre-existing evidence/source edit or cleanup. Wrote only this new review. Foreground readers closed; no reviewer session/job/T handle retained; quiescent after delivery.",
+  "boundaries": "PVU007 STOP,PVU011 NO RETRY,PVA029 failure/no automatic retry,G7/G8 CLOSED,all consumed/HOLD/native-refusal/held-runtime/hardware/PVD/protected-ref/Store/occupied1017001 fences remain. Root alone owns Git/admission/execution/publication/CI/cleanup/central ledgers and notifications."
+}

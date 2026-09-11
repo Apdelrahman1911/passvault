@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "reviewer": "/root/desktop_other_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "RECONCILED_FAILED_CONSUMED_C18_READONLY_FACTS01_HOLD_NO_REPLAY",
+  "bindings": {
+    "source": {
+      "path": "reviews/checkpoint18/C18-READONLY-FACTS-01.py",
+      "sha256": "203060e9a869c80f695c74b10a16cd19d679c7b8c1542441e54a08da1248331b",
+      "bytes": 21239
+    },
+    "intent": {
+      "path": "reviews/checkpoint18/C18-READONLY-FACTS-01-INTENT.json",
+      "sha256": "2e23e9325f070ecf94e277890e4cb29c1eabce925a8791508d72e4813649dacd",
+      "bytes": 945
+    },
+    "result": {
+      "path": "reviews/checkpoint18/C18-READONLY-FACTS-01.json",
+      "sha256": "2c6dd1e80133b23eac2d94d376eb69bdfd3bd34e99691dff3dc5b0e3471776da",
+      "bytes": 1969
+    },
+    "external": {
+      "path": "reviews/checkpoint18/C18-READONLY-FACTS-01-EXTERNAL.json",
+      "sha256": "82215cde4ce7ae6a17d52c59cf4b692bf59b211bae046773a326f718b9f97e6f",
+      "bytes": 983
+    },
+    "root_admission": {
+      "path": "reviews/checkpoint18/C18-READONLY-FACTS-01-ROOT-ADMISSION.json",
+      "sha256": "470b71304a66f27bed54ac5659dd0821863f0567871fd022e1a93d28c77ced5c",
+      "bytes": 1908
+    }
+  },
+  "retained_data_checks": {
+    "exact_admitted_command": true,
+    "exact_promoted_source": true,
+    "source_pin_agreement": true,
+    "intent_hash_agreement": true,
+    "result_target_agreement": true,
+    "terminal_summary_exact_bytes": true,
+    "terminal70_no_session": true,
+    "consumed_HOLD": true,
+    "expected_parser_error_only": true,
+    "no_completed_resource_points": true,
+    "only_pre_resource_images": true,
+    "owned_lock_parent_settlement": true,
+    "zero_tests_closures": true
+  },
+  "missed_concrete_source_bug": {
+    "source_lines": "177,186-192",
+    "cause": "resource_point accumulates bytearray data; bytearray.splitlines and partition retain mutable bytearray names. On a recognized MemTotal/MemAvailable line, name not in values requires hashing that bytearray and raises TypeError before a resource point can be recorded. A bytes conversion before splitlines addresses this concrete type mismatch.",
+    "evidence_limit": "Failure text and exact source/control flow reconcile; no traceback, helper replay, parser experiment or live meminfo read was performed by reviewer.",
+    "reviewer_acknowledgment": "My source review07 missed this deterministic parser bug. Its sealed historical source acceptance remains unchanged, but is not a successful execution claim or renewed01 admission; this actual review records the missed blocker and failed consumed outcome."
+  },
+  "reached_and_unreached_scope": {
+    "reached": "Exact admission and self images were read; original coordination/lock pin checks and nonblocking lock acquisition preceded exclusive INTENT creation. Bounded fixed meminfo reading reached the parser, then source finally paths ran and one HOLD RESULT was retained.",
+    "unreached": "No completed RAM/disk resource point or floor observation. Failure is before disk statvfs and store_guard/current config/HEAD/ref/shallow/index/exclude/shared SOURCE/tool/JDK/alias/shadow/SDK observations and all final comparison guards.",
+    "labels_not_observations": "Result source commit/tree/shared-SOURCE hash are bound labels, not a fresh shared-source/current-store/index observation in this failed attempt. Only the two actual images may be treated as image observations."
+  },
+  "actual_settlement": {
+    "terminal_chunk": "ac7b81",
+    "exit_code": 70,
+    "remaining_session": false,
+    "proof": "Retained original external summary is byte-for-byte the source-defined compact serialization of the retained HOLD result, with matching result SHA and sole parser error. The admitted source returned that SHA only after RESULT writer finally closures completed; original lock and coordination closures are recorded true. Nested resource finally closes the opened meminfo/proc descriptors before the error reaches main. This reconciles the owned foreground failure/descriptor path, not global idleness or arbitrary descendant proof.",
+    "origin": "Root states EXTERNAL was copied from the stored original exec response, not replayed or reconstructed; admission records all20 agents quiescent and the root freeze. Reviewer performed no live corroboration.",
+    "elapsed_seconds": 0.003221828956156969,
+    "timing_qualification": "Recorded helper elapsed precedes final result serialization; no hard-deadline or full external-wall claim."
+  },
+  "remaining_disposition": "01 source/intent/result/external/admission and report07 remain sealed. Occupied01 evidence names are consumed and may not be deleted/reused/replayed. The intended metadata capture is still unavailable. A corrected02 candidate requires its own exact source delta review, fresh fixed paths and separate root one-shot admission/actual reconciliation; this failure review grants none.",
+  "preservation": "No Git/build/test/CI/runtime/SDK modification, cleanup authority, test/closure/denominator credit or older HOLD/STOP/NO-RETRY/CLOSED/terminal-gap repair. Original store/lock/config freeze, held-runtime and protected-ref boundaries remain.",
+  "activity": "Read only the five named retained source/intent/result/external/admission files as inert text/data; standard-library JSON/hash comparisons only. No helper import/execution/AST/compile/syntax check, new harness, live probes, replay or existing-file edits. Only this new own-lane report written; root retains notifications and execution."
+}

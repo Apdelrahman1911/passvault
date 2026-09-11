@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "reviewer": "/root/pva031_review",
+  "disposition": "ACCEPT_C18_INDEX_TOOL_CAPTURE_CONSUMED_WITH_SIX_ASSERTION_BASES",
+  "material_blockers": [],
+  "inputs_sha256_relative_to_audit_base": {
+    "reviews/checkpoint18/index-prepare01/EXTERNAL-RESULT.json": "196b2c5677712f2ce591f6b9dbc08207154201799bf929e7c91e76f3a801f45c",
+    "reviews/checkpoint18/index-prepare01/ROOT-EXECUTION-ADMISSION.json": "1bc00a34c524cc71503b550dbed82025d7dfbc49e7b336cad77850cc59bada23",
+    "reviews/checkpoint18/index-prepare01/INDEX-CAPTURE-INTENT.json": "c2fabb9c07f16975ae6dd838bb1395f2159d79f2de5825f598aed4d82e944727",
+    "reviews/checkpoint18/index-prepare01/INDEX-SOURCE-CAPTURE.json": "55ca358eb980578e6b18ecc824b9bdb4fe19f6e2aa95686c8e56827bca3f9c9a",
+    "reviews/checkpoint18/index-prepare01/INDEX.bin": "372f4404428ad77b58ca0bd5580318dcbe46b7ecba8de6231114c07d8eb360ef",
+    "reviews/checkpoint18/index-prepare01/INDEX-STAGE0.raw": "72d49c5333ad9971bc64132133517c55fcde787a40fd969830422d4146f88c79",
+    "reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py": "525dd35db0c1d4520cb03be3a5ceb33e2e5a6151a76623873a1057cecdb98e9c",
+    "reviews/team20/pva031_review/c18-index-prepare/INSTANCE-REVIEW.json": "b46ec4dc2952b31a983d66ce78dfc924c4b1a64457a01e61126c03abb8603c80",
+    "reviews/checkpoint18/C18-READONLY-FACTS-02.json": "73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a",
+    "reviews/checkpoint18/SOURCE-STORE-ADMISSION.json": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+    "reviews/checkpoint18/source-prepare01/SOURCE.json": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "reviews/team20/desktop_other_review/10-C18-READONLY-FACTS02-ACTUAL-REVIEW.json": "a5ec4243318a258f6074b29440baafeee41f384b719d426108e2faed3ffa0290"
+  },
+  "actual": "Admission/intent/recipe/accepted instance/metadata02 hashes and retained input/output pins reconcile. Exactly one planned Git argv/cwd/clean env, exit0, complete/reaped/pipes_closed; original lock closed. Original external f3d61a exit0/no session.16771-byte stdout exactly equals the16526-byte receipt plus its own captured output-image entry; no late-failure fields. This invocation is consumed, not replayable.",
+  "independent_index_proof": {
+    "members": 3432,
+    "modes": {
+      "100644": 3358,
+      "100755": 74
+    },
+    "binary_bytes": 553274,
+    "stage_bytes": 467401,
+    "DIRC_version": 2,
+    "trailer_sha1": "b55f77a28e8b12d64423017a9b4d3da19cff274c",
+    "TREE": {
+      "signature": "TREE",
+      "offset": 520516,
+      "bytes": 32730,
+      "sha256": "e7a654a9f1f646b839c5bf9408c42882d47800e7e5862db7a548082b5093640f"
+    },
+    "proof": "Independent binary entry/header/flags/path/NUL/padding/order/trailer parse and independent canonical/NUL stage parse both equal all3432 tuples from hash-bound SOURCE; not capture booleans. TREE framing/hash only, not semantic cache-tree/object-closure proof."
+  },
+  "six_assertion_bases": {
+    "ordinary_full_stage0_index_matches_source": "Both retained representations independently match every unique SOURCE path/OID/regular mode;3432 entries, stage0, canonical listing SHA72d49c53… and original binary SHA372f4404….",
+    "no_split_sparse_unmerged_index": "Every DIRC v2 entry has zero upper flags and regular100644/100755 mode; exact count/order/padding/trailer; only one framed TREE extension. No extended/assume-valid/skip-worktree/intent-to-add/unmerged/split/sparse/unknown forms.",
+    "standalone_store_without_redirects": "Pinned source-store facts, exact original metadata/HEAD/ref/shallow and successful unchanged collector no-follow guards establish the admitted standalone T/.git and commondir/config.worktree/alternates/http-alternates exclusions before/after. Guard execution under freeze, not a new live census or object-closure claim.",
+    "local_config_and_excludes_reviewed": "Independently checked retained435-byte original config SHA036c10a0…: exactly core format0/filemode/bare=false/logallrefupdates plus ordinary public origin URL/tagOpt/fetch and branch remote/merge (nine assignments); no other syntax/keys. INFO_ABSENT before/after, so no local exclude file or external exclude selector.",
+    "no_external_git_config_or_executable_mechanisms": "Closed exact config has no include/includeIf/filter/helper/ssh/fsmonitor/hooks/attribute/exclude/alias executable mechanism. Exact clean Git env disables system/global config, attributes, lazy fetch/replacements/prompts; admitted argv disables hooks/fsmonitor/automatic gc-maintenance/protocols. Scope is these frozen inputs and independently admitted command environments, not arbitrary future Git commands.",
+    "publication_store_frozen_for_run": "Root execution admission freezes T/index/config/store/SOURCE/tools; root explicitly continues exact T/index/config/store freeze across all three serial cohorts. Original lock/guards and all ten pre/post images/aliases agree. Each separately admitted cohort must maintain its own applicable freeze, same-image rechecks and lock ownership; no future drift or mutation permission."
+  },
+  "preservation": "All before/after records identical and ten original images equal accepted metadata02, including original config/index; aliases, JDK17/x86_64 release and shadow absences agree. Retained W input pins/hashes rechecked. No consumer reviewed_assertions/request flags manufactured here; these are independent evidence bases for separately reviewed projections/controls.",
+  "bounds": {
+    "retained_four_output_bytes": 1039141,
+    "limit_bytes": 7340032,
+    "resource_points": 3,
+    "minimum_disk_bytes": 17375379456,
+    "minimum_available_ram_bytes": 41133809664,
+    "total_ram_bytes": 67435888640,
+    "floors": "All independently meet12GiB/25% entry and8GiB/20% active. SOURCE/stage2MiB,index4MiB,JSON64KiB/tool32MiB limits satisfied.",
+    "observation_seconds": 0.2363674799562432,
+    "before_receipt_seconds": 0.2380302189849317,
+    "external_tool_wall_seconds": 0.155585529,
+    "qualification": "Different measurement scopes, not interchangeable durations. Accepted30s Git/180s work checks and normal settlement, no independent per-child timestamp/hard-kernel/RSS/continuous-resource/arbitrary-descendant/global-idle guarantee."
+  },
+  "limits_and_activity": "Only bounded named W evidence reads and independent JSON/byte/index arithmetic; recipe hash checked, not rereviewed/imported/AST-checked/executed. No live T/Git/process/tool/JDK/SDK/resource/runtime probe or checkout walk. One own report; no helper replay/cleanup/source edit. Zero tests/builds/closures/denominator change. Failed metadata01 remains sealed HOLD/no replay; metadata02 consumed; GUI03 R and all older STOP/NO-RETRY/CLOSED/HOLD/C17 terminal/config/object/evidence/hardware/PVD/protected-ref/Store/1017001 fences remain. Not consumer/build/runtime admission."
+}

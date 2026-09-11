@@ -1,0 +1,54 @@
+{
+  "utc": "2026-09-11T15:35:10.516172+00:00",
+  "owner": "/root",
+  "purpose": "ONE_LINUX_FOCUSED_REGRESSION01",
+  "status": "ADMIT_FIRST_DISTINCT_REGRESSION_SCOPE_ONCE_CONDITIONED_ON_ALL_FRESH_ENTRY_AND_ONGOING_GUARDS",
+  "request_sha256": "04acb2f594a628970052d503f9e58af83eb48ed564248c8c069a74f414383b20",
+  "approval_sha256": "a1251f2a8f1031a179a9b7810e2fc5fd9163bb793d5bcb856cc9583a7a7fde56",
+  "outer_sha256": "7ff5cc456d36dab5f588810dcf782e29defc769a15e6ea3f7c11b4414f5d13a8",
+  "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+  "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+  "source_sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+  "argv": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01-host02/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "login": false,
+  "coordination": {
+    "root_sole_build_owner": true,
+    "all_live_subagents_completed_and_quiescent_after_reviews": true,
+    "no_other_audit_build_test_or_ci_job": true,
+    "source_and_control_freeze": "T C18/store/config/index and W product/request/approval controls unchanged. Agent tools remain quiescent until terminal/evidence capture; no parallel source or build work."
+  },
+  "fresh_host_admission_basis": {
+    "independent_shared_screen_review": "reviews/team20/desktop_other_review/13-DETEKT04-HOST-SCREEN-ASSESSMENT-REVIEW.json",
+    "sha256": "841c86fcf6b89ececc7aa77918a49a1e191f9fbdbb2a8a6e4e4b0c52ee2ade7b",
+    "finding": "No supported shared-screen defect. Original static04 saw a live candidate outside its domain; actor/purpose/current state unknown. That failure is not bypassed or retried.",
+    "current_condition": "Use unchanged regression entry original-lock/input/resource/host guards BEFORE any E/R allocation; do not infer current quiescence from old evidence, elapsed time or unanswered quiet-host notice. Failure/refusal consumes this first attempt, no automatic repeat. Continuing host screening remains fail-closed.",
+    "no_extra_observer": "Independent review establishes no additional generic collector prerequisite. HOST02/source/index collectors remain consumed and unreplayed."
+  },
+  "risk": "PVA007/PVA026 credential secret-owner CAS and PVA033 biometric session freshness after C18 corrections, plus compiler checking of changed Desktop production/test sources. These materially affected risks are not covered by unchanged historical passes.",
+  "scope": "12 existing real-Room biometric freshness methods +6 existing credential Save freshness +2 existing draft methods:20 expected cases/3XML suites/2Test tasks; :app-desktop:compileTestKotlinDesktop in the same cycle. No extra test methods, full-suite, GUI/native-provider/lifecycle/tray replay or static-task run.",
+  "expected_evidence": "Exact method-to-XML reconciliation with original failure/error/skip states, task/compile mapping, logs/source/exit hashes, original isolated wrapper stop, owned namespace settlement and only this new run generated/cache cleanup. Compilation and task counts are not test passes.",
+  "bounds": "Linux x86_64/JDK17 checked-in wrapper;1worker/non-daemon/no CoD/no build cache/strict dependencies. Build3600s, original isolated stop600s; original fixed outer6000s/work5250s and resource/sample/evidence caps unchanged. Synthetic isolated HOME/storage/tmp only.",
+  "resource_point": {
+    "utc": "2026-09-11T15:35:10.516172+00:00",
+    "disk_available_bytes": 16822272000,
+    "MemTotal": 67435888640,
+    "MemAvailable": 64919736320,
+    "scope": "Point only. Exact fresh lock/input/host/resource checks before allocation and continuing guards remain mandatory. No present foreign-state or global-idle claim."
+  },
+  "cleanup_before_start": "Existing independently accepted finally handling is installed before invocation: original isolated wrapper --stop, owned worker/namespace settlement, exact compact evidence preserved, descriptor-bound allowlisted only new R removal after safety proof. Failed/uncertain stop/ownership stays HOLD; no automatic retry, old namespace use, source/SDK/shared-cache/credential/permanent-report deletion.",
+  "separate_hold": "Static04 remains consumed143/stop0/70,all7nodesUNSTARTED,source-after/cleanup-safe false/newR HOLD. No static closure or new-R cleanup authority from this admission. Conditional cleanup/GUI04 preparation reports admit neither execution nor deletion.",
+  "fences": "PVU007 STOP, PVU011 NO RETRY, PVA029 original failure/no automatic retry, G7/G8 CLOSED, GUI03 and all other holds/native refusals remain. No protected refs/tags, release,1017001, version/dependency/identity/signing/store changes."
+}

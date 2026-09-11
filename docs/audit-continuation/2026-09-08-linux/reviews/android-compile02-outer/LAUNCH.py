@@ -34,7 +34,7 @@ GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
 INDEX_SOURCE = GITDIR / 'index'
 GIT_IMAGE = Path('/usr/bin/git')
 RUBY_IMAGE = Path('/usr/bin/ruby3.2')
-EXCLUDE_STATE = None  # UNBOUND: fresh02 store/index/config/exclude review.
+EXCLUDE_STATE = 'INFO_ABSENT'  # UNBOUND: fresh02 store/index/config/exclude review.
 GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 INNER, INIT = W / 'scripts/audit/linux_android_compile_02.py', W / 'scripts/audit/android_compile_02.init.gradle'
 SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'  # UNBOUND reference, not a created capture.
@@ -47,19 +47,19 @@ SDK_METADATA = tuple(SDK / p for p in ('platforms/android-37.0/source.properties
     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
 SDK_OPERATION = 'READ_ONLY_EXISTING_COMPILE_SDK_NO_COPY_INSTALL_LICENSE_CHANGES'
-COMPILE_BINDING = None  # UNBOUND: identical independently reviewed init/inner/outer readRoots and offline policy.
+COMPILE_BINDING = {'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-compile02/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile02/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile02/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile02/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile02/sdk-readonly'], 'offline': False}  # UNBOUND: identical independently reviewed init/inner/outer readRoots and offline policy.
 READ_ROOT_ENVELOPE = (R / 'checkout', R / 'gradle-home', R / 'tmp', R / 'konan', JAVA.parent.parent, SDK_VIEW)
-COMMIT = None  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
-TREE = None  # UNBOUND: final published source tree.
-MEMBERS = None  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
+COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
+TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # UNBOUND: final published source tree.
+MEMBERS = 3432  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
 ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 BASE_REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE, Path('/usr/bin/mount'))
 REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE) + SDK_METADATA
 IMAGES = ()  # Final fixed set includes the externally reviewed optional exclude only when present.
 PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
-DEVICE = None  # UNBOUND: fresh02 independently reviewed filesystem/instance model.
-EXPECTED_LOCK = None  # UNBOUND: freshly verify the original existing lock; never recreate it.
-FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: fresh02 helper/source SHA256 identities.
+DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # UNBOUND: fresh02 independently reviewed filesystem/instance model.
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # UNBOUND: freshly verify the original existing lock; never recreate it.
+FROZEN = {INNER: '028f8f660a4923a0ec9746fd2f9d3aa6a048b342915d6888872d5103a672e5e9', INIT: '35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}  # UNBOUND: fresh02 helper/source SHA256 identities.
 REVIEW_ASSERTIONS = (
     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',

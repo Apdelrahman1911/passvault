@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "reviewer": "/root/database_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_PROSPECTIVE_UNBOUND_C18_SOURCE_PREPARER_SINGLE_RECEIPT_CAP_DELTA_ONLY",
+  "baseline": {
+    "path": "reviews/team20/pva031_investigator/c18-source-prepare/SOURCE-PREPARE.py.txt",
+    "sha256": "424e30c470dd88b028bb39e007c72ca4ce7ad1b83f044eeead0db1c7eb048c20",
+    "bytes": 17678,
+    "lf": 288
+  },
+  "receipt_size_evidence": {
+    "path": "publication/CHECKPOINT-18-PUBLISHED.json",
+    "sha256": "b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6",
+    "bytes": 78785,
+    "content_or_external_terminal_recertified": false
+  },
+  "exact_delta": {
+    "line": 206,
+    "before": "        pub = json.loads(checked(PUB, PUB_SHA, 65536))",
+    "after": "        pub = json.loads(checked(PUB, PUB_SHA, 131072))",
+    "changed_physical_lines": [
+      206
+    ],
+    "all_other_bytes_identical": true,
+    "inverse_recovers_exact_baseline": true
+  },
+  "prospective_unbound_bytes": {
+    "sha256": "4360a4e872b8b5b9980a6c2d51ba6ceffbd13b1985e851f8c52b3ec0b07f60a3",
+    "bytes": 17679,
+    "lf": 288,
+    "emitted_or_applied": false
+  },
+  "arithmetic": {
+    "old_receipt_cap": 65536,
+    "new_receipt_cap": 131072,
+    "actual_receipt_bytes": 78785,
+    "old_cap_excess": 13249,
+    "new_cap_margin": 52287
+  },
+  "finding": "After proper binding, the retained78785-byte receipt cannot pass the old65536-byte read cap and fits the proposed128KiB cap. Only this one checked(PUB,...) argument changes. This is acceptance of exact prospective text, not execution or fit of other inputs.",
+  "preserved": "Common reader still checks regular/root/single-link/non-group-or-world-writable type, size<=cap, no-follow descriptor identity, streaming length<=cap, pre/post drift and close; checked still requires the exact SHA256. Publication commit/tree/clone/status binding and every other source/manifest/member/output/time/resource cap, command and guard remain byte-identical. The65536-byte read chunk and all other65536 arguments are unchanged.",
+  "unbound": "P,TREE,FACTS_SHA,PUB_SHA remain None. Initial checked(FACTS,None,65536) still refuses before lock/T/Git work; raising the later PUB cap does not authorize or enable an unbound invocation.",
+  "remaining_gates": "Root-only independent publisher actual/terminal reconciliation, fresh facts and exact P/TREE/FACTS_SHA/PUB_SHA binding/instance review follow separately. The reported publisher terminal0 and no attempted capture are root statements, not independently observed execution here. No promotion, capture/consumer admission, retry or cleanup authority.",
+  "activity": "Only known W source text and receipt length/hash reads, in-memory one-token text comparison/hashing/arithmetic, and this new report. No receipt-content recount, test/harness, helper import/execution/syntax check, Git/T/proc/runtime/tool/SDK probe, network, existing-file edit or future capture output. Foreground readers closed.",
+  "boundaries": "C18 frozen selected files and current helper unchanged. PVU007 STOP,PVU011 NO RETRY,PVA029 failure/no automatic retry,G7/G8 CLOSED,consumed/HOLD/native-refusal/held-runtime and protected-ref/Store/1017001 restrictions remain. Zero new cases/closures or denominator change."
+}

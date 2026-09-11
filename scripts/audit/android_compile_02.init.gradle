@@ -8,7 +8,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.security.MessageDigest
 
 // NEW execution02 proposal, not Compile01 candidate02. All source/instance bindings remain UNBOUND.
-final Map ADMITTED = null // UNBOUND: exact fresh02 readRoots/offline literal requires independent review.
+final Map ADMITTED = [readRoots: ['/root/projects/PassVault/audit-runtime-linux-android-compile02/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile02/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile02/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile02/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile02/sdk-readonly'], offline: false] // UNBOUND: exact fresh02 readRoots/offline literal requires independent review.
 // Finite source/registration scope, NOT proven-safe types; ordinary frozen-source/verified-plugin trust, no expansion.
 final Set ALLOWED = [
     'compileAndroidMain', 'compileAndroidDeviceTest', 'checkKotlinGradlePluginConfigurationErrors',
@@ -29,10 +29,10 @@ final String BASE = 'core/crypto/src/'
 final String PKG = 'kotlin/com/passvault/core/crypto/'
 // UNBOUND: bind all four final source hashes identically in this init and the new inner helper.
 def required = [(MAIN): [
-    (BASE + 'commonMain/' + PKG + 'LibsodiumCryptoEngine.kt'): null,
-    (BASE + 'commonMain/' + PKG + 'RawPasswordHash.kt'): null,
-    (BASE + 'androidMain/' + PKG + 'RawPasswordHash.android.kt'): null],
-    (DEVICE): [(BASE + 'androidDeviceTest/' + PKG + 'Android32KdfInstrumentation.kt'): null]]
+    (BASE + 'commonMain/' + PKG + 'LibsodiumCryptoEngine.kt'): '2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57',
+    (BASE + 'commonMain/' + PKG + 'RawPasswordHash.kt'): '3fb16abe001752bf44b5a56039c58738ebed0e6ced5972e3ca0985d5a40586eb',
+    (BASE + 'androidMain/' + PKG + 'RawPasswordHash.android.kt'): 'd2c4bcd22df2cb89a97e10a4b591d651f224f0b1c5224bc6b5de10f407d0df1c'],
+    (DEVICE): [(BASE + 'androidDeviceTest/' + PKG + 'Android32KdfInstrumentation.kt'): '9c4567e4a9cd1f6023534d3b5a40dfb21981cd49cc8eff0b4d1e453429246ca8']]
 def fail = { String why -> throw new GradleException('AndroidCompile02: ' + why) }
 long emitted = 0L
 def emit = { Map row ->

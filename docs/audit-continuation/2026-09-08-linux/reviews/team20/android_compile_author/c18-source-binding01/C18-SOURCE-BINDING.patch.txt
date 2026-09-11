@@ -1,0 +1,100 @@
+--- before/scripts/audit/android_compile_02.init.gradle
++++ after/scripts/audit/android_compile_02.init.gradle
+@@ -8,7 +8,7 @@
+ import java.security.MessageDigest
+ 
+ // NEW execution02 proposal, not Compile01 candidate02. All source/instance bindings remain UNBOUND.
+-final Map ADMITTED = null // UNBOUND: exact fresh02 readRoots/offline literal requires independent review.
++final Map ADMITTED = [readRoots: ['/root/projects/PassVault/audit-runtime-linux-android-compile02/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile02/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile02/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile02/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile02/sdk-readonly'], offline: false] // UNBOUND: exact fresh02 readRoots/offline literal requires independent review.
+ // Finite source/registration scope, NOT proven-safe types; ordinary frozen-source/verified-plugin trust, no expansion.
+ final Set ALLOWED = [
+     'compileAndroidMain', 'compileAndroidDeviceTest', 'checkKotlinGradlePluginConfigurationErrors',
+@@ -29,10 +29,10 @@
+ final String PKG = 'kotlin/com/passvault/core/crypto/'
+ // UNBOUND: bind all four final source hashes identically in this init and the new inner helper.
+ def required = [(MAIN): [
+-    (BASE + 'commonMain/' + PKG + 'LibsodiumCryptoEngine.kt'): null,
+-    (BASE + 'commonMain/' + PKG + 'RawPasswordHash.kt'): null,
+-    (BASE + 'androidMain/' + PKG + 'RawPasswordHash.android.kt'): null],
+-    (DEVICE): [(BASE + 'androidDeviceTest/' + PKG + 'Android32KdfInstrumentation.kt'): null]]
++    (BASE + 'commonMain/' + PKG + 'LibsodiumCryptoEngine.kt'): '2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57',
++    (BASE + 'commonMain/' + PKG + 'RawPasswordHash.kt'): '3fb16abe001752bf44b5a56039c58738ebed0e6ced5972e3ca0985d5a40586eb',
++    (BASE + 'androidMain/' + PKG + 'RawPasswordHash.android.kt'): 'd2c4bcd22df2cb89a97e10a4b591d651f224f0b1c5224bc6b5de10f407d0df1c'],
++    (DEVICE): [(BASE + 'androidDeviceTest/' + PKG + 'Android32KdfInstrumentation.kt'): '9c4567e4a9cd1f6023534d3b5a40dfb21981cd49cc8eff0b4d1e453429246ca8']]
+ def fail = { String why -> throw new GradleException('AndroidCompile02: ' + why) }
+ long emitted = 0L
+ def emit = { Map row ->
+--- before/scripts/audit/linux_android_compile_02.py
++++ after/scripts/audit/linux_android_compile_02.py
+@@ -34,20 +34,20 @@
+     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
+ SDK_OPERATION = 'READ_ONLY_EXISTING_COMPILE_SDK_NO_COPY_INSTALL_LICENSE_CHANGES'
+-COMPILE_BINDING = None  # UNBOUND: identical independently reviewed init/inner/outer readRoots and offline policy.
++COMPILE_BINDING = {'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-compile02/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile02/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile02/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile02/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile02/sdk-readonly'], 'offline': False}  # UNBOUND: identical independently reviewed init/inner/outer readRoots and offline policy.
+ READ_ROOT_ENVELOPE = (CHECKOUT, R / 'gradle-home', R / 'tmp', R / 'konan', JAVA, SDK_VIEW)
+ PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
+ # Final source, SDK metadata, compile read roots and regular tool/alias/exclude identities
+ # require root's fresh review. Each None is a hard pre-launch HOLD, not a fallback.
+-COMMIT = None  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
+-TREE = None  # UNBOUND: final published source tree.
+-MEMBERS = None  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
++COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
++TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # UNBOUND: final published source tree.
++MEMBERS = 3432  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = None  # UNBOUND: fresh02 store/index/config/exclude review.
+-FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: fresh02 helper/source SHA256 identities.
++FROZEN = {SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3', INIT: '35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c'}  # UNBOUND: fresh02 helper/source SHA256 identities.
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX) + SDK_METADATA
+ RUN_ID = 'linux-android-compile02'
+ REVIEW_ASSERTIONS = (
+@@ -76,14 +76,14 @@
+ REQUIRED_SOURCES = {
+     MAIN_TASK: {
+         'core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/LibsodiumCryptoEngine.kt':
+-            None,
++            '2b8dd21fe476735f16f1ab35543417a70202e7923dfac328f9064e31f5923b57',
+         'core/crypto/src/commonMain/kotlin/com/passvault/core/crypto/RawPasswordHash.kt':
+-            None,
++            '3fb16abe001752bf44b5a56039c58738ebed0e6ced5972e3ca0985d5a40586eb',
+         'core/crypto/src/androidMain/kotlin/com/passvault/core/crypto/RawPasswordHash.android.kt':
+-            None},
++            'd2c4bcd22df2cb89a97e10a4b591d651f224f0b1c5224bc6b5de10f407d0df1c'},
+     DEVICE_TASK: {
+         'core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt':
+-            None}}
++            '9c4567e4a9cd1f6023534d3b5a40dfb21981cd49cc8eff0b4d1e453429246ca8'}}
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+ FLAGS = ['--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel', '--no-configure-on-demand',
+          '--no-configuration-cache', '--no-build-cache', '--dependency-verification=strict', '--stacktrace',
+--- before/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
++++ after/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
+@@ -47,11 +47,11 @@
+     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
+ SDK_OPERATION = 'READ_ONLY_EXISTING_COMPILE_SDK_NO_COPY_INSTALL_LICENSE_CHANGES'
+-COMPILE_BINDING = None  # UNBOUND: identical independently reviewed init/inner/outer readRoots and offline policy.
++COMPILE_BINDING = {'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-compile02/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile02/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile02/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile02/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile02/sdk-readonly'], 'offline': False}  # UNBOUND: identical independently reviewed init/inner/outer readRoots and offline policy.
+ READ_ROOT_ENVELOPE = (R / 'checkout', R / 'gradle-home', R / 'tmp', R / 'konan', JAVA.parent.parent, SDK_VIEW)
+-COMMIT = None  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
+-TREE = None  # UNBOUND: final published source tree.
+-MEMBERS = None  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
++COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
++TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # UNBOUND: final published source tree.
++MEMBERS = 3432  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+ BASE_REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE, Path('/usr/bin/mount'))
+ REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE) + SDK_METADATA
+@@ -59,7 +59,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = None  # UNBOUND: fresh02 independently reviewed filesystem/instance model.
+ EXPECTED_LOCK = None  # UNBOUND: freshly verify the original existing lock; never recreate it.
+-FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: fresh02 helper/source SHA256 identities.
++FROZEN = {INNER: '09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580', INIT: '35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}  # UNBOUND: fresh02 helper/source SHA256 identities.
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',

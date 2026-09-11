@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-11T03:38:11.315872+00:00",
+  "state": "BOUND_PENDING_GENUINE_INSTANCE_REVIEW_NO_INVOCATION",
+  "published_unbound_sha256": "424e30c470dd88b028bb39e007c72ca4ce7ad1b83f044eeead0db1c7eb048c20",
+  "reviewed_receipt_cap_before_binding_sha256": "4360a4e872b8b5b9980a6c2d51ba6ceffbd13b1985e851f8c52b3ec0b07f60a3",
+  "bound_sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+  "bytes": 17797,
+  "exact_line_changes": [
+    {
+      "before": "P, TREE = None, None  # UNBOUND: root must supply the published C18 commit/tree.",
+      "after": "P, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # Bound C18; separate execution admission."
+    },
+    {
+      "before": "FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', None  # UNBOUND root admission hash.",
+      "after": "FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', 'cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a'"
+    },
+    {
+      "before": "PUB, PUB_SHA = B / 'publication/CHECKPOINT-18-PUBLISHED.json', None  # UNBOUND root publication hash.",
+      "after": "PUB, PUB_SHA = B / 'publication/CHECKPOINT-18-PUBLISHED.json', 'b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6'"
+    }
+  ],
+  "source_facts_sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+  "receipt_cap_review": "reviews/team20/database_review/C18-SOURCE-PREPARE-RECEIPT-CAP-REVIEW.json",
+  "receipt_cap_review_sha256": "651d7370aa81ba3784f9126f4ddc9b7b5f95a3c310c7c6f384a772248a69e6c3",
+  "original_publication_actual_review": "reviews/team20/desktop_other_review/06-C18-PUBLICATION-ACTUAL-REVIEW.json",
+  "original_publication_actual_review_sha256": "800beb809a80a108ccf69e321273d6159bada21f0a5a05d2ea887d3281f18808",
+  "limits": "Only three reviewed identity lines bound after single receipt cap change; unchanged3500/128MiB/2MiB/32MiB/deadline/resource/EOL/cleanup guards. No new capture, Git, build, runtime, stop or cleanup operation."
+}

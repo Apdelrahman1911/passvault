@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="BiometricUnlockFreshnessIntegrationTest[desktop]" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-09-11T15:39:30.282Z" hostname="(none)" time="4.589">
+  <properties/>
+  <testcase name="lock during the last access write still prevents biometric publication[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.802"/>
+  <testcase name="an already open session still succeeds without an intervening lock[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.412"/>
+  <testcase name="pending lock refuses admission without metadata or platform access[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.424"/>
+  <testcase name="admission precedes the platform enrollment lookup[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.281"/>
+  <testcase name="a genuinely fresh attempt after completed lock still opens the vault[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.279"/>
+  <testcase name="an admission from another repository cannot authorize this repository[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.318"/>
+  <testcase name="cancellation after key transfer propagates and wipes the received array[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.31"/>
+  <testcase name="completed lock rejects a key returned by an earlier biometric attempt[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.33"/>
+  <testcase name="a fresh invalid candidate still invalidates its enrollment[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.322"/>
+  <testcase name="admission precedes the biometric metadata lookup[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.332"/>
+  <testcase name="stale admission takes precedence over malformed candidate invalidation[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.331"/>
+  <testcase name="a stale completion cannot succeed against or relock a newer valid session[desktop]" classname="com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest" time="0.44"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#noProviders for further details.
+]]></system-err>
+</testsuite>

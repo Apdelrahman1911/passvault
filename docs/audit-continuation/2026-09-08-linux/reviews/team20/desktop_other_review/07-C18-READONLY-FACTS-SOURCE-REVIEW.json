@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "reviewer": "/root/desktop_other_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_EXACT_FROZEN_OBSERVER_SOURCE_PENDING_ROOT_PROMOTION_AND_ONE_SHOT_ADMISSION",
+  "material_blockers": [],
+  "bindings": {
+    "candidate": {
+      "path": "reviews/team20/desktop_other_author/c18-readonly-facts01/C18-READONLY-FACTS-01.py.txt",
+      "sha256": "203060e9a869c80f695c74b10a16cd19d679c7b8c1542441e54a08da1248331b",
+      "bytes": 21239
+    },
+    "rationale": {
+      "path": "reviews/team20/desktop_other_author/c18-readonly-facts01/RATIONALE.md",
+      "sha256": "5b56858b3a238da6a17633c250784c64b7c2b5f810f5c5d556436cde83562150",
+      "bytes": 5177
+    },
+    "source_hashes": {
+      "path": "reviews/team20/desktop_other_author/c18-readonly-facts01/SOURCE_HASHES.json",
+      "sha256": "91b64272273fcc862329f2f6f0911b3898e1397b4d65513924e31be699be9f78",
+      "bytes": 3176
+    },
+    "source_store_admission": {
+      "path": "reviews/checkpoint18/SOURCE-STORE-ADMISSION.json",
+      "sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+      "bytes": 4146
+    },
+    "shared_source": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE.json",
+      "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+      "bytes": 1879327
+    },
+    "shared_source_actual_review": {
+      "path": "reviews/team20/database_review/C18-SOURCE-PREPARE-ACTUAL-REVIEW.json",
+      "sha256": "0e15123442d58bfd38c0defe72a42246b40ece14287fc48f432ac82414132988",
+      "bytes": 9478
+    },
+    "source_preparer": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+      "sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+      "bytes": 17797
+    },
+    "source_preparer_root_admission": {
+      "path": "reviews/checkpoint18/source-prepare01/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "c398fa0f4763de0e27ff438a57d593178067607834a6c8e74442eb714b6b3516",
+      "bytes": 1548
+    },
+    "consumer_schema_source": {
+      "path": "scripts/audit/linux_android_compile_02.py",
+      "sha256": "09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580",
+      "bytes": 64204,
+      "scope": "SDK_METADATA and pin/alias/exclude literals only"
+    }
+  },
+  "candidate_lines": 420,
+  "fixed_future_instance": {
+    "source": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01.py",
+    "exclusive_intent": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01-INTENT.json",
+    "exclusive_result": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01.json",
+    "reviewed_entry_shape": [
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01.py"
+    ],
+    "qualification": "Entry shape is source-derived, not an admitted/executed command or observation of a promoted file. Root must verify exact promoted bytes and separately admit one invocation."
+  },
+  "retained_identity": {
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "format": "passvault-linux-checkout-source-v1",
+    "members": 3432,
+    "store": "/root/projects/PassVault/passvault-publication-20260910-01/.git",
+    "original_lock": {
+      "bytes": 0,
+      "ctime_ns": 1788910891124735946,
+      "dev": 24,
+      "ino": 14189001,
+      "mode": 33152,
+      "mtime_ns": 1788910891124735946,
+      "nlink": 1,
+      "uid": 0
+    },
+    "original_config": {
+      "pin": {
+        "bytes": 435,
+        "ctime_ns": 1789001766988319322,
+        "dev": 24,
+        "ino": 14293053,
+        "mode": 33152,
+        "mtime_ns": 1789001766988319322,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5"
+    },
+    "qualification": "Bound retained facts, not reviewer live store/tool/SDK observations. The accepted shared-source actual review remains the manifest proof; no full audit is repeated here."
+  },
+  "source_findings": [
+    {
+      "lines": "11-36,296-340",
+      "finding": "Scope is fixed to the original C18 T/store/lock, pinned admission/shared SOURCE, current index/config/exclude, six exact regular tools, JDK17 java/release, direct aliases/shadows and separately five SDK metadata leaves. No source-file traversal, Git/subprocess/executable invocation, runtime/cache/held-scope access, install/copy/license assent, deletion or protected-ref operation."
+    },
+    {
+      "lines": "48-167,216-233,307-333,371-380",
+      "finding": "Descriptor-relative O_DIRECTORY/NOFOLLOW path descent rejects symlink components and checks descendant owner/mode. Regular leaves require root ownership, single link, non-group/world writable mode, bounded size, nofollow/nonblocking opens, matching pre/open/end full8 pins and byte count, chunked hashes and stable parent checks. Exact aliases use lstat/readlink without following. Only FileNotFoundError counts as absence. Original lock opens without CREATE, must equal retained full pin and receives nonblocking flock. Original store/config/HEAD/ref/shallow/directory/absence bindings and first/final observations are compared; every captured image full pin/hash is reread. Facts/self start before lock and are reread under it; root freeze remains required."
+    },
+    {
+      "lines": "170-213,240-270,273-420",
+      "finding": "Outer cleanup exists before the first open; helpers close partially opened descriptors in finally. Entry/final RAM/disk points preserve12GiB/25% and8GiB/20% floors. Only the two fixed0600 records can be created, exclusively with bounded serialization and file/directory fsync. Existing outputs refuse; an owned partial intent permits one HOLD result attempt. Original lock and coordination descriptors settle before final result serialization; close/read/signal/deadline/write failures propagate to HOLD where observed, without retry/delete."
+    },
+    {
+      "lines": "274-281,338-380",
+      "finding": "Exact images={absolute path:{pin,sha256}}, tool_aliases and separate python3_alias={lstat,readlink,resolved_image}, metadata-directory4pin, info-directory5pin/exclude states and separate SDK-five projection agree with the inspected consumer schema. JDK17/x86_64 metadata and Git/Ruby shadow absences are observed, not tool availability. No reviewed_assertions, index/source-match/config/exclude semantic pass, full SDK provenance, read-only-mount assertion, global idle or downstream execution authority is invented."
+    }
+  ],
+  "material_qualifications": [
+    "Success means metadata captured only. This helper does not parse the index or independently certify its correspondence to SOURCE; index/tool consumer binding and review remain separate.",
+    "Two observations under the original lock plus the root freeze are not continuous immutability, hostile-root, namespace or future-state proof.",
+    "The180s clock is cooperative between bounded operations. Final evidence/descriptor settlement can follow that deadline; no hard kernel-I/O guarantee or full external-wall-time claim is accepted.",
+    "A serialized CAPTURED result can precede a result-close/stdout/external-terminal failure. Root must independently reconcile exact INTENT/result hashes, complete original terminal and exit/no-session settlement; result-only success is insufficient. Failure/partial evidence remains HOLD/no automatic retry.",
+    "No new test, compile, static-analyzer, application coverage, closure, denominator change, SDK acceptance or build/cleanup admission results from this source review."
+  ],
+  "preservation": "PVU007 STOP, PVU011 NO RETRY, PVA029 failure/no automatic retry, G7/G8 CLOSED, consumed/HOLD/native-refusal/held-runtime/hardware/PVD/protected-ref/original-store/occupied1017001 fences remain. Original C17 external-terminal gap is not repaired. Earlier reviewer reports04/05/06 remain sealed.",
+  "activity": "Only named W candidate/source/retained evidence bytes and inline standard-library text/JSON/hash/count comparisons; no helper import/execution/AST/compile/syntax check, live T/Git/SDK/tool/process/resource/runtime/network probe, build/test/CI, cleanup, selected-source edit or subdelegation. Only this new reviewer report written. Root retains notifications, admission, execution and central-ledger ownership."
+}

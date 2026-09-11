@@ -16,10 +16,10 @@ SELF = D / 'SOURCE-PREPARE.py'
 T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
 G = T / '.git'
 LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
-P, TREE = None, None  # UNBOUND: root must supply the published C18 commit/tree.
+P, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # Bound C18; separate execution admission.
 REF = 'refs/heads/codex/audit-continuation-linux-20260908'
-FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', None  # UNBOUND root admission hash.
-PUB, PUB_SHA = B / 'publication/CHECKPOINT-18-PUBLISHED.json', None  # UNBOUND root publication hash.
+FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', 'cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a'
+PUB, PUB_SHA = B / 'publication/CHECKPOINT-18-PUBLISHED.json', 'b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6'
 OLD = B / 'reviews/desktop-gui02'
 OLD_SHA = '6d593b947d76f0a7b3e7929a7ae54e6968cb0a36b69bf78d771b33226bd396ee'
 OLD_CAPTURE_SHA = '5b89c5c90f40b34ff92a633fb2e93f3174a65451aaf8642ce8cdc4c9822fe0a9'
@@ -203,7 +203,7 @@ def main():
         require(pin(os.fstat(lock)) == facts['original_lock'], 'original lock'); pinned[LOCK] = facts['original_lock']
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         require(absent(D / 'SOURCE.json') and absent(D / 'SOURCE-CAPTURE.json'), 'consumed output names')
-        pub = json.loads(checked(PUB, PUB_SHA, 65536))
+        pub = json.loads(checked(PUB, PUB_SHA, 131072))
         require((pub['commit'], pub['tree'], pub['publication_clone'], pub['status']) ==
                 (P, TREE, str(T), 'PUBLISHED_EXACT_C18_SOURCE'), 'publication binding')
         for name, key in (('config', 'config'), ('HEAD', 'head'), (REF, 'branch_ref'), ('shallow', 'shallow')):

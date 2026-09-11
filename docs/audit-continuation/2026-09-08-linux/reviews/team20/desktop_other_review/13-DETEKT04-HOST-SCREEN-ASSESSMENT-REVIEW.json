@@ -1,0 +1,134 @@
+{
+  "format": "passvault-team20-desktop-other-detekt04-host-screen-review-v1",
+  "reviewer": "/root/desktop_other_review",
+  "disposition": "ACCEPT_NO_SUPPORTED_CAUSAL_PATCH; REGRESSION_ADMISSION_REMAINS_ROOT_ONLY",
+  "reviewed_assessment": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/DETEKT04-HOST02-SCREEN-ASSESSMENT-01.json",
+    "bytes": 8788,
+    "sha256": "84751ad72a8fb15f4f1e61d0ea06f2aea45a3de05ac6469add6d24e63d3ab580"
+  },
+  "scope": "Independent bounded source/retained-data challenge, not a repeated full-helper audit or new product finding. Only named evidence/source bytes and standard-library JSON/hash/string comparisons; no live PID/proc/runtime/store/tool/SDK/network probes, helper execution/import/AST/compile, parser experiments, builds/tests, retries, cleanup, old-capture replay or delegation.",
+  "inputs": {
+    "static_outer": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-host02/LAUNCH.py",
+      "bytes": 61046,
+      "sha256": "0a42b59a5a14b3c8d607b4ca09a04ad6ca60ff340bf14006d07e7d3790c3a130"
+    },
+    "regression_outer": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01-host02/LAUNCH.py",
+      "bytes": 51420,
+      "sha256": "7ff5cc456d36dab5f588810dcf782e29defc769a15e6ea3f7c11b4414f5d13a8"
+    },
+    "inner_static": {
+      "path": "scripts/audit/linux_detekt_04.py",
+      "bytes": 56228,
+      "sha256": "baabb5fa66f36e83580a688b7ab13224790b5f0d99c994233e8476802e4e7c38"
+    },
+    "outer_receipt": {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt04/OUTER-RECEIPT.json",
+      "bytes": 9920,
+      "sha256": "375ddf97539c26b3eb0fb2e0d03707ae2050e43a176f4b1c89ceafe597564803"
+    },
+    "inner_result": {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt04/INNER-RESULT.json",
+      "bytes": 37232,
+      "sha256": "15c32402f1571485bed91c49a1f9000b2c0ac2dfba315b1959df00716a7c33f8"
+    },
+    "inner_preflight": {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt04/INNER-PREFLIGHT.json",
+      "bytes": 167,
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    "cancel": {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt04/CANCEL",
+      "bytes": 112,
+      "sha256": "046162cf6c06486be6ebf71c381709e21f532c6852ccb9a693f016bf01edcbc1"
+    },
+    "external": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-host02/EXTERNAL-RESULT.json",
+      "bytes": 326,
+      "sha256": "a082d32315cbe5eef67706008e16577e18c38a4d04bb75fa69f0eba7f2f94361"
+    },
+    "request": {
+      "path": "docs/audit-continuation/2026-09-08-linux/requests/LINUX-DETEKT-04-HOST02.json",
+      "bytes": 8836,
+      "sha256": "3ff2b04fa549d859a247dd14afed489a8df685c3fa9967bca91166dcaeb24bfb"
+    },
+    "approval": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_review/INSTANCE-ACCEPT-HOST02.json",
+      "bytes": 1021,
+      "sha256": "29474aa4604f95142dc92ab509b60bba659f9a322f9386bae988fcfd0662bee5"
+    }
+  },
+  "retained_byte_binding_checks": {
+    "request_bytes_match_captured_image": true,
+    "request_allocation_matches_outer": true,
+    "approval_bytes_match_captured_image": true,
+    "approval_allocation_matches_outer": true,
+    "approval_binds_request": true,
+    "static_outer_request_approval_allocation_hash_binding": true,
+    "inner_static_request_approval_allocation_hash_binding": true,
+    "cancel_matches_first_outer_reason": true
+  },
+  "binding_limit": "These are retained/current-byte bindings, not fresh filesystem-pin, descriptor, original-store or host admission.",
+  "shared_source_blocks": [
+    {
+      "begin": "BUILDLIKE = ",
+      "end_exclusive": "START = ",
+      "bytes": 287,
+      "sha256": "b76e6ff255865994a2f830d3ff88171d0c8d37c1a308e02a7c7154d6dd65f943",
+      "identical": true
+    },
+    {
+      "begin": "def screen():",
+      "end_exclusive": "def watch(",
+      "bytes": 7506,
+      "sha256": "b7e227cdb7accac627d70971d9295125cbefd689aaf9722f683e127ad115ccba",
+      "identical": true
+    },
+    {
+      "begin": "def birth(",
+      "end_exclusive": "def under(",
+      "bytes": 12628,
+      "sha256": "c52488268f59890b57776fee12c66cf1299789d9e3ab50cd0d5a1ef29f7da9d5",
+      "identical": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "first-supported-refusal",
+      "conclusion": "The first retained diagnostic supports outside-owned-domain refusal, not a demonstrated own-Java departure race or namespace-binding defect.",
+      "evidence": "OUTER screen observed comm=javac at pid 26628, stable birth (ppid 26609, start 891349), and a nonterminal candidate pidfd. Its mnt:[4026531841]/pid:[4026531836] pair equals the recorded parent pair, not expected mnt:[4026532115]/pid:[4026532116]. The latter matches both original unshare child owned_namespaces and INNER-PREFLIGHT.self.",
+      "reachability": "Static outer 386-405: namespace inequality fails proof-owned-domain at 399-402, before the original owner-pidfd test at 403-404 and owned_proof=True at 405. The recorded owner pid 23620 is not independent proof that owner liveness was reached. The nested error is OUTER RuntimeError: host buildlike conflict: 26628:javac; the generic candidate-uncertainty wrapper does not erase it.",
+      "limits": "No responsible user/agent, executable bytes, command line, complete ancestry, hostility, escape, external-workload attribution or present-liveness inference. Namespace inequality alone defeats this ownership proof even assuming remaining conjuncts true."
+    },
+    {
+      "id": "races-and-guards",
+      "conclusion": "No causal source correction is justified; stable positively owned candidates have a reachable acceptance path.",
+      "counterexamples": "A BUILDLIKE-positive candidate may exit or become unreadable before complete ownership proof and conservatively HOLD. A fully proved owned candidate may depart during the later re-read: the narrow ENOENT route additionally requires its original pidfd terminal and the original owner pidfd nonterminal. It cannot hide an already observed mismatch or admit an unproved positive departure. Neither hypothetical departure explains the retained first domain mismatch.",
+      "later_uncertainty": "Reasons for 26745:proof-owned-domain and 23883:proof-namespace:mnt lack the full first-only setdefault diagnostic and errno. Their cause and ownership remain uncertain. unclassified_host_churn=1 is pre-positive accounting, not an exemption for the positive javac observation.",
+      "patch": null,
+      "rejected_changes": "No Java/javac exception, parent-as-owned domain, PID fallback, expanded pre-proof terminal/ENOENT exemption or diagnostic-label-only claim of repair."
+    },
+    {
+      "id": "cancellation-and-hold",
+      "conclusion": "The outer failure coherently accounts for missing final acceptance; it is not proof of source corruption.",
+      "evidence": "CANCEL equals the first outer reason. Inner source 919-921 skips AFTER when cancelled; 927 rejects final evidence acceptance. Retained detekt exited 143; original detekt-stop exited 0; namespace_empty_before_exit=true, but source_after=false and cleanup_safe=false. Static outer 929 rejects reasons/child70 before later source-after/cleanup gates. No analyzer or regression result is inferred.",
+      "original_external": {
+        "final_chunk_id": "8247a0",
+        "exit_code": 70,
+        "final_contains_session_id": false,
+        "qualification": "Original retained final only; no current session/process probe."
+      },
+      "preserved": "One consumed static04 external70; new static R remains HOLD. Stop0/private namespace emptiness do not grant cleanup, retry, release or repair of any prior gap."
+    }
+  ],
+  "pending_regression": {
+    "mechanism": "No demonstrated shared-screen defect disqualifies the already approved unchanged UNUSED focused-regression01. This review does not reaccept the entire helper or grant execution.",
+    "admission_clarification": "Pause means genuine renewed root host/coordination admission, not a requirement to invent or replay a generic observer. Subject to owner instructions and the existing exact-instance protocol, renewed all-agent/no-other-audit-job coordination may conditionally rely on regression01's own fresh original-lock/input/resource/host entry guards and continuing guards.",
+    "source_support": "Regression outer 644-692 checks fixed entry/request/approval, original lock and input bindings; 694 watch(entry=True) precedes unused-name check 701 and E/R allocation 703-704. A refusal at this entry screen does not allocate E/R; 842-851 emits its receipt to stdout when E is not owned. Later supervision uses the same ownership screen. same_dir compares dev/ino/uid/mode, not nlink: the added static run directory is not by itself a demonstrated stale-directory blocker.",
+    "remaining_conditions": "Genuine current coordination and all existing entry requirements must hold; any owner decision remains the owner's. No additional collector prerequisite is established here. A sent/unanswered quiet-host request, old evidence, unchanged source or a different meaningful20-case scope does not establish present/future quiescence. The comm screen remains nonexhaustive with a generic-interpreter blind spot, not global-idle proof.",
+    "stop_rule": "No admission now. Refusal/conflict/uncertainty means stop, never bypass, exemption or automatic repeat. A root-authorized first execution of this distinct regression scope is not a static04 retry and cannot release static04 HOLD."
+  },
+  "authority_and_preservation": "Root alone decides admission/execution. No source/helper/request/approval edits. Only this new own-lane report is written; sealed reports04-12, all old HOLD/STOP/NO-RETRY/CLOSED states, protected refs, original-store/lock, held runtimes and terminal gaps remain unchanged."
+}

@@ -1,0 +1,147 @@
+{
+  "activity": "Standard-library source text, JSON, hashes and unified-diff data comparisons only. No project/helper import/compilation/AST/control tests, build/static analysis, Git/T/live tools/process/runtime/SDK/private data, application edits, requests or approvals.",
+  "author": "/root/focused_validation_author",
+  "controls": [
+    {
+      "before_bytes": 3931,
+      "before_image": {
+        "bytes": 3931,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01-init.before.txt",
+        "sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d"
+      },
+      "before_lf": 86,
+      "before_sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+      "exact_reversible_line_changes": [],
+      "path": "scripts/audit/detekt_04.init.gradle",
+      "proposed_after_bytes": 3931,
+      "proposed_after_lf": 86,
+      "proposed_after_sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+      "published_c18_git_blob": "cb9a1eea0b02a592b06cb1ecaa4e6182504e57ed",
+      "published_c18_git_mode": "100644",
+      "unchanged": true
+    },
+    {
+      "before_bytes": 56118,
+      "before_image": {
+        "bytes": 56118,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01-inner.before.txt",
+        "sha256": "d01236439dc9009c4d6a941f783d667d0d0e0267d48396643bdcde6de819fc27"
+      },
+      "before_lf": 973,
+      "before_sha256": "d01236439dc9009c4d6a941f783d667d0d0e0267d48396643bdcde6de819fc27",
+      "exact_reversible_line_changes": [
+        {
+          "after": "COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # C18 source only; not execution admission.\n",
+          "before": "COMMIT = None  # UNBOUND: exact new published source commit; root and independent review required.\n",
+          "field": "COMMIT"
+        },
+        {
+          "after": "TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # C18 source only; not execution admission.\n",
+          "before": "TREE = None  # UNBOUND: exact new published source tree; root and independent review required.\n",
+          "field": "TREE"
+        },
+        {
+          "after": "MEMBERS = 3432  # C18 source members only; fresh full index review still required.\n",
+          "before": "MEMBERS = None  # UNBOUND: complete new source/index membership; root and independent review required.\n",
+          "field": "MEMBERS"
+        },
+        {
+          "after": "FROZEN = {SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3', INIT: 'a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d'}  # Known source/init hashes only; admission remains UNBOUND.\n",
+          "before": "FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: new04 source/init SHA256; no inherited admission.\n",
+          "field": "FROZEN"
+        }
+      ],
+      "path": "scripts/audit/linux_detekt_04.py",
+      "proposed_after_bytes": 56219,
+      "proposed_after_lf": 973,
+      "proposed_after_sha256": "d1d5fb327d58dfbaddc252867539ed1ae5204df73ca1b8544857e686746c2372",
+      "published_c18_git_blob": "2061162fa68f7ccbd186d71d8ca592052d729107",
+      "published_c18_git_mode": "100644",
+      "unchanged": false
+    },
+    {
+      "before_bytes": 60669,
+      "before_image": {
+        "bytes": 60669,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01-outer.before.txt",
+        "sha256": "6d5687536832061f8c2d2e57a467eba30404e4d2282b981a994013671417b2a5"
+      },
+      "before_lf": 1040,
+      "before_sha256": "6d5687536832061f8c2d2e57a467eba30404e4d2282b981a994013671417b2a5",
+      "exact_reversible_line_changes": [
+        {
+          "after": "COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # C18 source only; not execution admission.\n",
+          "before": "COMMIT = None  # UNBOUND: exact new published source commit; root and independent review required.\n",
+          "field": "COMMIT"
+        },
+        {
+          "after": "TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # C18 source only; not execution admission.\n",
+          "before": "TREE = None  # UNBOUND: exact new published source tree; root and independent review required.\n",
+          "field": "TREE"
+        },
+        {
+          "after": "MEMBERS = 3432  # C18 source members only; fresh full index review still required.\n",
+          "before": "MEMBERS = None  # UNBOUND: complete new source/index membership; root and independent review required.\n",
+          "field": "MEMBERS"
+        },
+        {
+          "after": "FROZEN = {INNER: 'd1d5fb327d58dfbaddc252867539ed1ae5204df73ca1b8544857e686746c2372', INIT: 'a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}  # Known current images only; admission remains UNBOUND.\n",
+          "before": "FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: exact new04 controls and complete source.\n",
+          "field": "FROZEN"
+        }
+      ],
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py",
+      "proposed_after_bytes": 60836,
+      "proposed_after_lf": 1040,
+      "proposed_after_sha256": "5516d22e6199db3e97bcc09eb19f1edcec947f12d50d7537951cc71b4c908706",
+      "published_c18_git_blob": "dbc79a2f1906900536db32c17ec4a75016af7b5a",
+      "published_c18_git_mode": "100644",
+      "unchanged": false
+    }
+  ],
+  "created_utc": "2026-09-11T04:05:14.387140+00:00",
+  "deliberate_external_delta": "All3 W beforeimages equal exact published UNBOUND C18 members; saved inert beforeimages plus reversible8-line diff retain provenance. Published C18 SOURCE/commit/tree stay unchanged. These partial external control afterimages are not yet executable/admitted instance images; later inner index/exclude binding requires a new dependent outer INNER hash.",
+  "dependency_order": [
+    "1. Exact C18 SOURCE and unchanged reviewed init SHA256.",
+    "2. Bind inner COMMIT/TREE/MEMBERS and SOURCE/INIT FROZEN values; calculate resulting inner SHA256.",
+    "3. Bind outer COMMIT/TREE/MEMBERS and INNER/INIT/SOURCE FROZEN values using that exact resulting inner SHA256."
+  ],
+  "format": "passvault-detekt04-known-c18-source-binding-proposal-v1",
+  "known_identity": {
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "members": 3432,
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a"
+  },
+  "patch": {
+    "bytes": 3495,
+    "changed_files": 2,
+    "changed_init_lines": 0,
+    "explicit_whole_line_replacements": 8,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01.patch.txt",
+    "sha256": "83dea5633901f1462761f745baa24a790262c43f71ef98d130e3bdf213ca813f"
+  },
+  "projection": {
+    "bytes": 61494,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-REUSE-PROJECTION-01.json",
+    "sha256": "1916def6ce64296197d2b35d89ed0029a12411d8815e0649223d9c8255e1b625"
+  },
+  "required_after_apply": "Exact inverse and before/after readback receipt plus paired integration review; full fresh index/tool/config/exclude/device/original-lock packet, genuine exact request/INSTANCE-ACCEPT and root admission remain pending.",
+  "required_before_apply": "Genuine paired source review of exact proposed bytes and C18 projection; root already explicitly released these three paths for this bounded source-binding work.",
+  "source": {
+    "bytes": 1879327,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3"
+  },
+  "status": "PROPOSED_UNAPPLIED_PARTIAL_SOURCE_BINDINGS_ONLY_NO_INSTANCE_ADMISSION",
+  "unchanged_scope": "Init is byte-identical. No task graph, selected/omitted lists, helper logic, flags/STOP/ENV, source/rule/config exclusions, quiescence,3500/144KiB limits or other resource/report/stop/cleanup guards change. No blind/global None replacement.",
+  "unknown_fields_preserved": {
+    "fresh_index_packet": null,
+    "fresh_tool_alias_packet": null,
+    "inner_EXCLUDE_STATE": null,
+    "instance_acceptance": null,
+    "outer_DEVICE": null,
+    "outer_EXCLUDE_STATE": null,
+    "outer_EXPECTED_LOCK": null,
+    "request": null
+  }
+}

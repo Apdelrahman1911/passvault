@@ -1,0 +1,164 @@
+{
+  "all_unrelated_None_values_preserved": true,
+  "application_verified": false,
+  "author_packet_sha256": "7ebc2a0d40d5faa6034e8dc01d59b145b1a58f4cc96cb832a388d81751d72743",
+  "author_patch_sha256": "0821857df32152dfde1bfd4fcf2626931ddf918b8c69378ed62b2bc4692417c4",
+  "changed_files": [
+    {
+      "after_bytes": 1408,
+      "after_sha256": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+      "before_sha256": "88d5b0b1bb06a7795ea6f90e52c642c532add8d41abfa0c0671abc640930f810",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+      "role": "classes"
+    },
+    {
+      "after_bytes": 40158,
+      "after_sha256": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715",
+      "before_sha256": "b461fe6399e14ef0ed92789c451b428ce23e6c4edad804ff48317e89278c76a1",
+      "path": "scripts/audit/linux_focused_regression_01.py",
+      "role": "inner"
+    },
+    {
+      "after_bytes": 51279,
+      "after_sha256": "a855d2cf04727c39115e17b52c73ae7334edbe3d06971f99a4a9aab68b5f2eea",
+      "before_sha256": "4228261a5432b7a2bb582da03205736d0617a092a428121ed2ac451921ae24a9",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+      "role": "outer"
+    }
+  ],
+  "class_cells": [
+    {
+      "W_named_source_matches_capture": true,
+      "class_id": "D03",
+      "field": "checkout_sha256",
+      "selected_methods": 12,
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "value": "f25cd292184e1fca7d0cbb3d384dac66156683e5bc9f093876cfd3b487d85b99"
+    },
+    {
+      "W_named_source_matches_capture": true,
+      "class_id": "C01",
+      "field": "checkout_sha256",
+      "selected_methods": 6,
+      "source_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "value": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819"
+    },
+    {
+      "W_named_source_matches_capture": true,
+      "class_id": "C02",
+      "field": "checkout_sha256",
+      "selected_methods": 2,
+      "source_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "value": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2"
+    }
+  ],
+  "device_and_expected_lock_still_unbound": true,
+  "exact_author_diff_independently_regenerated": true,
+  "execution_or_live_probe_performed": false,
+  "format": "passvault-focused01-independent-c18-source-binding-check-v1",
+  "instance_approval_written": false,
+  "method": "Bounded standard-library text/TSV/JSON/hash comparison only. No helper import/execution/AST, builds/tests, Git/T/proc/runtime/SDK/network operation.",
+  "only_intended_constant_lines_and_three_cells_differ": true,
+  "qualification": "C18 raw published source describes UNBOUND helper/ledger blobs; future outer transports these raw bytes. Fresh W control images are separately hashed, supplied and reviewed outside the raw checkout. Do not substitute published-unbound hashes for bound-control hashes or recapture SOURCE to create a self-hash cycle. Later device/lock binding changes OUTER hash and requires fresh final packet/approval.",
+  "reviewer": "/root/android_fixture_review",
+  "scope": {
+    "app_desktop_compile_only": true,
+    "existing_methods": 20,
+    "new_tests": 0,
+    "test_tasks": 2,
+    "xml_suites": 3
+  },
+  "six_control_hash_dependency_order": [
+    "SOURCE + unchanged INIT/METHODS",
+    "three checkout_sha256 cells -> CLASSES",
+    "four input hashes + source identity -> INNER",
+    "INNER + four input hashes + source identity + explicitly allowed GITDIR selector -> OUTER"
+  ],
+  "six_controls": [
+    {
+      "fresh_control_bytes": 1879327,
+      "fresh_control_sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+      "manifest_described_published_unbound_control": null,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+      "role": "SOURCE"
+    },
+    {
+      "fresh_control_bytes": 9384,
+      "fresh_control_sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79",
+      "manifest_described_published_unbound_control": {
+        "before_bytes_match_manifest_described_blob": true,
+        "checkout_sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79",
+        "git_blob": "905724c7a972090d8398c649c9bfc402e4433d61"
+      },
+      "path": "scripts/audit/focused_regression_01.init.gradle",
+      "role": "INIT"
+    },
+    {
+      "fresh_control_bytes": 1650,
+      "fresh_control_sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+      "manifest_described_published_unbound_control": {
+        "before_bytes_match_manifest_described_blob": true,
+        "checkout_sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+        "git_blob": "431add0b2f35d3899ec127593428ced96d60245e"
+      },
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv",
+      "role": "METHODS"
+    },
+    {
+      "fresh_control_bytes": 1408,
+      "fresh_control_sha256": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+      "manifest_described_published_unbound_control": {
+        "before_bytes_match_manifest_described_blob": true,
+        "checkout_sha256": "88d5b0b1bb06a7795ea6f90e52c642c532add8d41abfa0c0671abc640930f810",
+        "git_blob": "77cdd1bf364ff4a0eee7dce95440bbb28090b3de"
+      },
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+      "role": "CLASSES"
+    },
+    {
+      "fresh_control_bytes": 40158,
+      "fresh_control_sha256": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715",
+      "manifest_described_published_unbound_control": {
+        "before_bytes_match_manifest_described_blob": true,
+        "checkout_sha256": "b461fe6399e14ef0ed92789c451b428ce23e6c4edad804ff48317e89278c76a1",
+        "git_blob": "fdf0788867d5526b2d883a4ccbf0d5ca4d26a898"
+      },
+      "path": "scripts/audit/linux_focused_regression_01.py",
+      "role": "INNER"
+    },
+    {
+      "fresh_control_bytes": 51279,
+      "fresh_control_sha256": "a855d2cf04727c39115e17b52c73ae7334edbe3d06971f99a4a9aab68b5f2eea",
+      "manifest_described_published_unbound_control": {
+        "before_bytes_match_manifest_described_blob": true,
+        "checkout_sha256": "4228261a5432b7a2bb582da03205736d0617a092a428121ed2ac451921ae24a9",
+        "git_blob": "c63791299750702a29e141693fc1e40abfd6fc8a"
+      },
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+      "role": "OUTER"
+    }
+  ],
+  "source": {
+    "bytes": 1879327,
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "eol_qualifications": 2,
+    "members": 3432,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a"
+  },
+  "source_manifest_outside_its_own_member_list": true,
+  "status": "ACCEPT_EXACT_PARTIAL_SOURCE_BINDING_ONLY_NOT_INSTANCE_APPROVAL",
+  "unchanged_files": {
+    "init": {
+      "bytes": 9384,
+      "path": "scripts/audit/focused_regression_01.init.gradle",
+      "sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79"
+    },
+    "methods": {
+      "bytes": 1650,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv",
+      "sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02.py
+@@ -11,8 +11,8 @@
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+ D = B / 'reviews/checkpoint18'
+-SELF = D / 'C18-READONLY-FACTS-01.py'
+-INTENT, RESULT = 'C18-READONLY-FACTS-01-INTENT.json', 'C18-READONLY-FACTS-01.json'
++SELF = D / 'C18-READONLY-FACTS-02.py'
++INTENT, RESULT = 'C18-READONLY-FACTS-02-INTENT.json', 'C18-READONLY-FACTS-02.json'
+ T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
+ G = T / '.git'
+ LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+@@ -183,7 +183,7 @@
+             data.extend(chunk)
+             require(len(data) <= 65536, 'meminfo byte cap')
+         values = {}
+-        for line in data.splitlines():
++        for line in bytes(data).splitlines():
+             name, separator, value = line.partition(b':')
+             if name in (b'MemAvailable', b'MemTotal'):
+                 fields = value.split()
+@@ -271,7 +271,7 @@
+ 
+ 
+ def main():
+-    report = {'format': 'passvault-c18-readonly-facts-01-v1', 'owner': '/root', 'status': 'HOLD_NO_AUTOMATIC_RETRY',
++    report = {'format': 'passvault-c18-readonly-facts-02-v1', 'owner': '/root', 'status': 'HOLD_NO_AUTOMATIC_RETRY',
+               'utc': datetime.now(timezone.utc).isoformat(), 'source_commit': COMMIT, 'source_tree': TREE,
+               'source_sha256': SOURCE_SHA, 'source_store_admission_sha256': FACTS_SHA,
+               'images': {}, 'resource_points': [], 'errors': [], 'additional_tests': 0, 'additional_closures': 0,
+@@ -311,7 +311,7 @@
+         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+         acquired = True
+         require(absent(D / INTENT) and absent(D / RESULT), 'consumed evidence names under lock')
+-        intent = {'format': 'passvault-c18-readonly-facts-01-intent-v1', 'owner': '/root',
++        intent = {'format': 'passvault-c18-readonly-facts-02-intent-v1', 'owner': '/root',
+                   'status': 'ONE_READONLY_OBSERVATION_INTENT_NOT_DOWNSTREAM_ADMISSION',
+                   'source': {'path': str(SELF), **report['images'][str(SELF)]},
+                   'source_store_admission_sha256': FACTS_SHA, 'source_sha256': SOURCE_SHA,

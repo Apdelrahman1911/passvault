@@ -1,0 +1,52 @@
+{
+  "checks": {
+    "all_other_bytes_identical": true,
+    "author_note_identity_and_delta_fields_match": true,
+    "author_patch_regenerated_byte_for_byte": true,
+    "changed_constants": [
+      "SELF",
+      "REQUEST",
+      "APPROVAL"
+    ],
+    "changed_lines": [
+      26,
+      27,
+      28
+    ],
+    "line_count_unchanged": 861,
+    "new_literal_lines": [
+      "SELF = B / 'reviews/focused-regression01-host02/LAUNCH.py'",
+      "REQUEST = B / 'requests/LINUX-FOCUSED-REGRESSION-01-HOST02.json'",
+      "APPROVAL = B / 'reviews/team20/android_fixture_review/focused-regression01/INSTANCE-ACCEPT-HOST02.json'"
+    ]
+  },
+  "completion": "Quiescent after delivery; no background session, runtime result, validation credit or new stop obligation.",
+  "disposition": "ACCEPT_INERT_THREE_PATH_DELTA_ONLY",
+  "evidence": {
+    "base": {
+      "bytes": 51399,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+      "sha256": "b67b336901b78934c66a17a29e18587cb94c2447d05dc9336bf67455feb7416e"
+    },
+    "candidate": {
+      "bytes": 51420,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/focused-regression01/host02-proposal01/LAUNCH-HOST02.py.txt",
+      "sha256": "7ff5cc456d36dab5f588810dcf782e29defc769a15e6ea3f7c11b4414f5d13a8"
+    },
+    "delta": {
+      "bytes": 846,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/focused-regression01/host02-proposal01/HOST02-THREE-PATH-DELTA.patch.txt",
+      "sha256": "8cb3107a0cea9ae51d0a97398ef1469827cfa31a2dd5236b4154c250385e421a"
+    },
+    "note": {
+      "bytes": 1761,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/focused-regression01/host02-proposal01/HOST02-NOTE.json",
+      "sha256": "ac06d8f54e4c832c82a9fd365f993a5c10a701cb45dbdd01b3fd676ef693b362"
+    }
+  },
+  "preservation": "Original outer independently matches its accepted hash. No original source/request/approval was written by this review; old request/approval were not traversed. All consumed runs, old HOLDs, GUI03 terminal70/zero tests/current-R HOLD, PVU007 STOP, PVU011 NO RETRY, PVA029 failure/no automatic retry, G7/G8 CLOSED, native refusal and occupied1017001 remain unchanged.",
+  "qualification": "Byte-preservation is not proof that original DEVICE/EXPECTED_LOCK or any old pins match the current host. Root supplies genuinely fresh current-host facts/request and separate independent exact-instance approval and root admission, including actual launch-time quiescence and original under-lock rechecks. This report is not HOST02 instance approval, permission to promote, execution admission, or runtime evidence.",
+  "reviewer": "/root/android_fixture_review",
+  "unchanged_scope": "All other bytes, including R/E/RUN/PURPOSE, DEVICE/EXPECTED_LOCK, fixed20 scope and safety gates, are unchanged. Prior substantive source review is reused; no full source re-review.",
+  "work_performed": "Only bounded inert text/JSON/hash/diff comparisons and creation/readback of this own report. No source edits, helper execution/import/AST, builds/tests, harnesses, live probes, Git/T/proc/runtime/SDK/network work, central-ledger edits, promotion, request writing or approval creation."
+}

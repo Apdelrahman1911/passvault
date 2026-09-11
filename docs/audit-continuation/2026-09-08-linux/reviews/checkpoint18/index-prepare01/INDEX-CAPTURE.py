@@ -1,0 +1,447 @@
+#!/usr/bin/python3
+"""C18 index/tool collector candidate: one read-only Git child, no validation run.
+EXTRA_SHA is deliberately UNBOUND. Root binding and independent exact instance
+admission are separate. No source preparation, SDK/device/runtime access,
+version probes, index copies for runs, mutations, cleanup or automatic retry.
+Receipts are observations, never external collector-exit or descendant proof.
+"""
+import fcntl, hashlib, json, os, re, selectors, signal, stat, struct, subprocess, sys, time
+from pathlib import Path
+
+W = Path('/root/projects/PassVault/passvault-linux')
+B = W / 'docs/audit-continuation/2026-09-08-linux'
+D = B / 'reviews/checkpoint18/index-prepare01'
+SELF = D / 'INDEX-CAPTURE.py'
+T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
+G = T / '.git'
+LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+REF = 'refs/heads/codex/audit-continuation-linux-20260908'
+P, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
+SOURCE, SOURCE_SHA = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json', 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'
+FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', 'cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a'
+EXTRA, EXTRA_SHA = B / 'reviews/checkpoint18/C18-READONLY-FACTS-02.json', '73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a'  # UNBOUND: fresh root metadata, never old pins.
+CONFIG_SHA = '036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'  # Exact fresh SOURCE-STORE-ADMISSION config.
+MIB = 1024 ** 2
+ODIR = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+REDIRECTS = ('commondir', 'config.worktree', 'objects/info/alternates', 'objects/info/http-alternates', 'info/attributes')
+FIXED_TOOLS = tuple(Path('/usr/bin') / name for name in ('git', 'ruby3.2', 'python3.12', 'env', 'mount', 'unshare'))
+ENV = {'PATH': '/usr/bin:/bin', 'HOME': '/nonexistent', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC',
+       'GIT_CONFIG_SYSTEM': '/dev/null', 'GIT_CONFIG_GLOBAL': '/dev/null', 'GIT_CONFIG_NOSYSTEM': '1',
+       'GIT_ATTR_NOSYSTEM': '1', 'GIT_NO_LAZY_FETCH': '1', 'GIT_NO_REPLACE_OBJECTS': '1',
+       'GIT_OPTIONAL_LOCKS': '0', 'GIT_TERMINAL_PROMPT': '0'}
+CMD = ['/usr/bin/git', '--no-pager', '--git-dir=' + str(G),
+       '-c', 'core.hooksPath=/dev/null', '-c', 'core.fsmonitor=false', '-c', 'gc.auto=0',
+       '-c', 'maintenance.auto=false', '-c', 'protocol.allow=never', 'ls-files', '--stage', '-z', '--full-name']
+CAPS = {'INDEX-CAPTURE-INTENT.json': 65536, 'INDEX.bin': 4 * MIB,
+        'INDEX-STAGE0.raw': 2 * MIB, 'INDEX-SOURCE-CAPTURE.json': 65536, 'INDEX-STDERR.raw': 65536}
+START, last_resource, cancelled = time.monotonic(), None, None
+output_bytes, output_directory, may_report = 0, None, False
+inputs = {}
+report = {'format': 'passvault-checkpoint18-index-tool-capture-v1', 'owner': '/root', 'status': 'HOLD',
+          'commit': P, 'tree': TREE, 'store': str(G), 'source_sha256': SOURCE_SHA,
+          'store_facts_sha256': FACTS_SHA, 'extra_facts_sha256': EXTRA_SHA,
+          'commands': [], 'resources': [], 'outputs': {}, 'tests': 0,
+          'qualification': 'Observations only; independent actual review and external collector terminal required. No consumer admission or reviewed_assertions; old HOLDs remain.'}
+
+def require(ok, why):
+    if not ok: raise RuntimeError(why)
+
+def pin(s, directory=False):
+    value = {k: getattr(s, 'st_' + k) for k in ('dev', 'ino', 'uid', 'mode', 'nlink')}
+    if not directory: value.update(bytes=s.st_size, mtime_ns=s.st_mtime_ns, ctime_ns=s.st_ctime_ns)
+    return value
+
+def od(path):
+    require(path.is_absolute(), 'absolute directory selector')
+    fd = os.open('/', ODIR)
+    try:
+        for part in path.parts[1:]:
+            require(part not in ('', '.', '..'), 'directory component')
+            child = os.open(part, ODIR, dir_fd=fd)
+            previous, fd = fd, child
+            os.close(previous)
+            s = os.fstat(fd)
+            require(s.st_uid == 0 and not s.st_mode & 0o022, 'directory owner/mode')
+        return fd
+    except BaseException:
+        os.close(fd); raise
+
+def directory(path):
+    fd = od(path)
+    try: return pin(os.fstat(fd), True)
+    finally: os.close(fd)
+
+def absent(path):
+    try: parent = od(path.parent)
+    except FileNotFoundError: return True
+    try:
+        try: os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        except FileNotFoundError: return True
+        return False
+    finally: os.close(parent)
+
+def tick():
+    require(cancelled is None and time.monotonic() - START < 180, 'cancelled/work deadline')
+
+def resources(force=False):
+    global last_resource
+    tick()
+    now = time.monotonic()
+    if not force and last_resource is not None and now - last_resource < 1: return
+    fd = os.open('/proc/meminfo', os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try: data = os.read(fd, 65537)
+    finally: os.close(fd)
+    require(len(data) <= 65536, 'meminfo bound')
+    fields = dict(line.split(b':', 1) for line in data.splitlines())
+    values = []
+    for name in (b'MemAvailable', b'MemTotal'):
+        match = re.fullmatch(rb'\s*([0-9]+) kB', fields[name])
+        require(match is not None, 'meminfo units'); values.append(int(match[1]) * 1024)
+    memory, total = values
+    disk = os.statvfs(D); free = disk.f_bavail * disk.f_frsize
+    initial = not report['resources']
+    require(0 <= memory <= total and total > 0 and free >= (12 if initial else 8) * 1024 * MIB
+            and 100 * memory >= total * (25 if initial else 20), 'original disk/RAM floors')
+    require(len(report['resources']) < 190, 'resource observation count')
+    report['resources'].append({'free_disk': free, 'available_ram': memory, 'total_ram': total})
+    last_resource = now
+
+def read_file(path, cap, keep=True, budget=True):
+    parent, fd = od(path.parent), None
+    try:
+        before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        require(stat.S_ISREG(before.st_mode) and before.st_uid == 0 and before.st_nlink == 1
+                and not before.st_mode & 0o022 and 0 <= before.st_size <= cap, 'file type/owner/bound: ' + str(path))
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC, dir_fd=parent)
+        require(pin(before) == pin(os.fstat(fd)), 'file open drift: ' + str(path))
+        digest, size, data = hashlib.sha256(), 0, bytearray()
+        while True:
+            if budget: resources()
+            chunk = os.read(fd, min(65536, cap + 1 - size))
+            if not chunk: break
+            size += len(chunk); require(size <= cap, 'file byte cap: ' + str(path)); digest.update(chunk)
+            if keep: data.extend(chunk)
+        require(size == before.st_size and pin(before) == pin(os.fstat(fd)) ==
+                pin(os.stat(path.name, dir_fd=parent, follow_symlinks=False)), 'file read drift: ' + str(path))
+        return bytes(data), {'pin': pin(before), 'sha256': digest.hexdigest()}
+    finally:
+        try:
+            if fd is not None: os.close(fd)
+        finally: os.close(parent)
+
+def checked(path, digest, cap):
+    data, image = read_file(path, cap)
+    require(image['sha256'] == digest, 'input SHA256: ' + str(path))
+    inputs[path] = (image, cap)
+    return data
+
+def guard(facts, lock):
+    tick()
+    require(pin(os.fstat(lock)) == facts['original_lock'], 'original lock descriptor')
+    parent = od(LOCK.parent)
+    try: require(pin(os.stat(LOCK.name, dir_fd=parent, follow_symlinks=False)) == facts['original_lock'], 'original lock path')
+    finally: os.close(parent)
+    for path, key in ((T, 'checkout_identity'), (G, 'store_identity'),
+                      (T.parent, 'workspace_parent_identity'), (LOCK.parent, 'coordination_parent_identity')):
+        require(directory(path) == facts[key], 'original directory: ' + str(path))
+    require(directory(D) == output_directory, 'capture directory drift')
+    require(all(facts['absence'][name] is True and absent(G / name) for name in REDIRECTS), 'redirect/config/attribute exclusion')
+    for path, (expected, cap) in inputs.items():
+        _, image = read_file(path, cap, False)
+        require(image == expected, 'pinned input drift: ' + str(path))
+
+def alias(path, target):
+    parent = od(path.parent)
+    try:
+        before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        require(before.st_uid == 0 and before.st_nlink == 1, 'alias owner/link count')
+        if stat.S_ISLNK(before.st_mode):
+            link = os.readlink(path.name, dir_fd=parent)
+            require(path != target and link in (str(target), target.name), 'fixed single-hop alias target')
+        else:
+            require(stat.S_ISREG(before.st_mode) and path == target and not before.st_mode & 0o022, 'regular alias selector')
+            link = None
+        require(pin(before) == pin(os.stat(path.name, dir_fd=parent, follow_symlinks=False)), 'alias drift')
+        return {'lstat': pin(before), 'readlink': link, 'resolved_image': str(target)}
+    finally: os.close(parent)
+
+def release_metadata(data):
+    result = {}
+    for line in data.decode('utf-8').splitlines():
+        if not line: continue
+        match = re.fullmatch(r'([A-Z][A-Z0-9_]*)="([^"\\]*)"', line)
+        require(match is not None and match[1] not in result, 'JDK release framing')
+        result[match[1]] = match[2]
+    require(re.fullmatch(r'17(?:\.[0-9]+)+(?:[+._a-zA-Z0-9-]*)', result.get('JAVA_VERSION', ''))
+            and result.get('OS_ARCH') == 'x86_64', 'JDK17/x86_64 release')
+    return result
+
+def snapshot(label, facts, extra, lock, jdk):
+    guard(facts, lock)
+    observed = {'images': {}, 'tool_aliases': {}, 'store_metadata': {}}
+    report[label] = observed
+    metadata = directory(G)
+    observed['metadata_directory'] = {k: metadata[k] for k in ('dev', 'ino', 'uid', 'mode')}
+    require(observed['metadata_directory'] == extra['metadata_directory'], 'fresh metadata directory')
+    for name, key in (('HEAD', 'head'), (REF, 'branch_ref'), ('shallow', 'shallow')):
+        data, image = read_file(G / name, 65536)
+        observed['store_metadata'][key] = image
+        require(image == {k: facts[key][k] for k in ('pin', 'sha256')}, 'original store file: ' + key)
+        expected = ('ref: ' + REF if key == 'head' else P if key == 'branch_ref' else facts[key]['boundary_commit']) + '\n'
+        require(data == expected.encode(), 'store metadata value: ' + key)
+    ex = extra['excludes']; require(ex['state'] in ('INFO_ABSENT', 'EXCLUDE_ABSENT', 'FILE'), 'exclude state')
+    if ex['state'] == 'INFO_ABSENT':
+        require(ex['info_directory'] is None and absent(G / 'info'), 'original info absence')
+        observed['excludes'] = {'state': 'INFO_ABSENT', 'info_directory': None}
+    else:
+        info = directory(G / 'info'); require(info == ex['info_directory'], 'original info directory')
+        observed['excludes'] = {'state': ex['state'], 'info_directory': info}
+        if ex['state'] == 'EXCLUDE_ABSENT': require(absent(G / 'info/exclude'), 'original exclude absence')
+    paths = (G / 'index', G / 'config') + ((G / 'info/exclude',) if ex['state'] == 'FILE' else ())
+    paths += FIXED_TOOLS + (jdk / 'bin/java', jdk / 'release')
+    index_data = None
+    for path in paths:
+        keep = path in (G / 'index', G / 'config', G / 'info/exclude', jdk / 'release')
+        cap = 4 * MIB if path == G / 'index' else 65536 if path in (G / 'config', G / 'info/exclude', jdk / 'release') else 32 * MIB
+        data, image = read_file(path, cap, keep)
+        observed['images'][str(path)] = image
+        require(image == extra['images'][str(path)], 'fresh image drift: ' + str(path))
+        if path == G / 'index': index_data = data
+        elif path == G / 'config':
+            require(image == facts['config'] and image['sha256'] == CONFIG_SHA, 'independently pinned original config')
+            observed['config_text'] = data.decode('utf-8')
+        elif path == G / 'info/exclude': observed['exclude_text'] = data.decode('utf-8')
+        elif path == jdk / 'release':
+            values = release_metadata(data)
+            expected = extra['jdk']['release_metadata']
+            require('JAVA_VERSION' in expected and 'OS_ARCH' in expected and all(values.get(k) == v for k, v in expected.items()), 'fresh JDK release metadata')
+            observed['jdk'] = {'home': str(jdk), 'release_metadata': values}
+    for name, target in (('git', Path('/usr/bin/git')), ('ruby', Path('/usr/bin/ruby3.2'))):
+        path = Path('/usr/bin') / name; value = alias(path, target)
+        observed['tool_aliases'][str(path)] = value
+        require(value == extra['tool_aliases'][str(path)], 'fresh tool alias: ' + name)
+    observed['python3_alias'] = alias(Path('/usr/bin/python3'), Path('/usr/bin/python3.12'))
+    require(observed['python3_alias'] == extra['python3_alias'], 'fresh python3 alias')
+    require(extra['jdk_bin_shadow_absence'] == {'git': True, 'ruby': True}
+            and absent(jdk / 'bin/git') and absent(jdk / 'bin/ruby'), 'earlier JDK-bin tool shadows')
+    observed['jdk_bin_shadow_absence'] = {'git': True, 'ruby': True}
+    guard(facts, lock)
+    return observed, index_data
+
+def pathname(value):
+    name = value.decode('utf-8')
+    require(0 < len(value) <= 1024 and not name.startswith('/') and all(c >= 32 and c != 127 for c in value)
+            and all(part not in ('', '.', '..', '.git') for part in name.split('/')), 'ordinary source pathname')
+    return value
+
+def source_entries(source):
+    require(source['format'] == 'passvault-linux-checkout-source-v1' and (source['commit'], source['tree']) == (P, TREE), 'shared SOURCE identity')
+    rows = source['files']; require(isinstance(rows, list) and 0 < len(rows) <= 3500, 'shared SOURCE count')
+    result = {}
+    for row in rows:
+        resources(); path = pathname(row['path'].encode('utf-8'))
+        mode, oid = row['git_mode'], row['git_blob']
+        require(path not in result and mode in ('100644', '100755') and re.fullmatch(r'[0-9a-f]{40}', oid), 'SOURCE path/mode/OID')
+        result[path] = (mode, oid)
+    require(source['capture']['members'] == len(result), 'shared SOURCE capture count')
+    return result
+
+def binary_index(data, source):
+    require(32 <= len(data) <= 4 * MIB and data[:4] == b'DIRC', 'DIRC header/bound')
+    version, count = struct.unpack('!II', data[4:12])
+    require(version == 2 and 0 < count <= 3500 and count == len(source), 'grounded ordinary v2/count')
+    end = len(data) - 20
+    require(hashlib.sha1(data[:end]).digest() == data[end:], 'DIRC SHA1 trailer')
+    offset, result, previous = 12, {}, None
+    for _ in range(count):
+        resources(); start = offset
+        require(start + 62 <= end, 'DIRC entry header')
+        fields = struct.unpack('!10I20sH', data[start:start + 62])
+        mode, oid, flags = fields[6], fields[10].hex(), fields[11]
+        length = flags & 0x0fff
+        require(flags & 0xf000 == 0 and 0 < length <= 1024, 'DIRC stage/assume-valid/extended/path flags')
+        require(mode in (0o100644, 0o100755), 'DIRC regular mode')
+        offset = start + ((62 + length + 1 + 7) // 8) * 8
+        require(offset <= end, 'DIRC entry boundary')
+        path = pathname(data[start + 62:start + 62 + length])
+        require(len(path) == length and data[start + 62 + length:offset]
+                and not any(data[start + 62 + length:offset]), 'DIRC NUL/padding/path length')
+        require(path not in result and (previous is None or previous < path), 'DIRC unique sorted paths')
+        result[path], previous = (format(mode, '06o'), oid), path
+    extensions = []
+    while offset < end:
+        require(offset + 8 <= end, 'DIRC extension header')
+        signature, length = data[offset:offset + 4], struct.unpack('!I', data[offset + 4:offset + 8])[0]
+        require(signature == b'TREE' and not extensions and offset + 8 + length <= end, 'only grounded TREE framing; no split/sparse/unknown extension')
+        payload = data[offset + 8:offset + 8 + length]
+        extensions.append({'signature': 'TREE', 'offset': offset, 'bytes': length, 'sha256': hashlib.sha256(payload).hexdigest()})
+        offset += 8 + length
+    require(offset == end and result == source, 'binary index/SOURCE exact path/OID/mode agreement')
+    return {'version': version, 'members': count, 'trailer_sha1': data[end:].hex(), 'extensions': extensions}
+
+def stage_listing(data, source):
+    require(len(data) <= 2 * MIB and data.endswith(b'\0'), 'bounded NUL stage listing')
+    records = data.split(b'\0'); require(records.pop() == b'' and len(records) == len(source) <= 3500, 'stage count')
+    result, previous = {}, None
+    for record in records:
+        resources(); header, separator, path = record.partition(b'\t'); fields = header.split(b' ')
+        require(separator and len(fields) == 3, 'stage record framing')
+        mode, oid, stage = fields
+        require(mode in (b'100644', b'100755') and re.fullmatch(rb'[0-9a-f]{40}', oid) and stage == b'0', 'stage mode/OID/zero')
+        path = pathname(path)
+        require(path not in result and (previous is None or previous < path), 'stage unique sorted paths')
+        result[path], previous = (mode.decode(), oid.decode()), path
+    require(result == source, 'stage listing/SOURCE exact path/OID/mode agreement')
+
+def encoded(value): return json.dumps(value, separators=(',', ':'), ensure_ascii=True, allow_nan=False).encode() + b'\n'
+
+def write_once(name, data):
+    global output_bytes
+    require(name in CAPS and len(data) <= CAPS[name] and output_bytes + len(data) <= 7 * MIB, 'output name/individual/total bound')
+    parent, fd = od(D), None
+    try:
+        require(pin(os.fstat(parent), True) == output_directory, 'original capture directory')
+        fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=parent)
+        output_bytes += len(data)
+        s = os.fstat(fd)
+        require(s.st_uid == 0 and s.st_nlink == 1 and s.st_mode == stat.S_IFREG | 0o600, 'original output image')
+        offset = 0
+        while offset < len(data):
+            count = os.write(fd, data[offset:]); require(count > 0, 'short output write'); offset += count
+        os.fsync(fd); os.fsync(parent)
+    finally:
+        try:
+            if fd is not None: os.close(fd)
+        finally: os.close(parent)
+    observed, image = read_file(D / name, CAPS[name], budget=False)
+    require(observed == data and directory(D) == output_directory, 'output readback/directory')
+    report['outputs'][name] = image
+
+def git_once():
+    require(not report['commands'], 'one Git invocation only')
+    resources(True)
+    item = {'argv': CMD, 'env': ENV, 'cwd': str(T), 'complete': False, 'direct_child_reaped': False, 'pipes_closed': False}
+    report['commands'].append(item)
+    child, selector, buffers = None, selectors.DefaultSelector(), [bytearray(), bytearray()]
+    deadline = time.monotonic() + 30
+    try:
+        child = subprocess.Popen(CMD, cwd=T, env=ENV, stdin=subprocess.DEVNULL,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True, start_new_session=True)
+        for number, stream in enumerate((child.stdout, child.stderr)):
+            os.set_blocking(stream.fileno(), False); selector.register(stream, selectors.EVENT_READ, number)
+        while selector.get_map():
+            resources(); require(time.monotonic() < deadline, 'Git time bound')
+            for key, _ in selector.select(0.1):
+                chunk = os.read(key.fileobj.fileno(), 65536)
+                if not chunk: selector.unregister(key.fileobj); continue
+                cap = 2 * MIB if key.data == 0 else 65536
+                remaining = cap - len(buffers[key.data]); buffers[key.data].extend(chunk[:remaining])
+                require(len(chunk) <= remaining, 'Git output bound; bounded prefix retained')
+        child.wait(timeout=max(0.01, min(deadline, START + 180) - time.monotonic()))
+        require(time.monotonic() <= deadline and child.returncode == 0 and not buffers[1], 'Git exit/stderr/time')
+        item['complete'] = True
+        return bytes(buffers[0])
+    except BaseException as error:
+        item['error'] = type(error).__name__ + ':' + str(error)[:512]; raise
+    finally:
+        try:
+            if child is not None and child.poll() is None:
+                item['abnormal_direct_child_cleanup'] = True
+                try: child.terminate(); child.wait(timeout=4)
+                except Exception:
+                    if child.poll() is None: child.kill(); child.wait(timeout=4)
+        finally:
+            try:
+                if child is not None: item.update(exit=child.poll(), direct_child_reaped=child.returncode is not None)
+            finally:
+                try:
+                    try:
+                        if child is not None and child.stdout is not None: child.stdout.close()
+                    finally:
+                        if child is not None and child.stderr is not None: child.stderr.close()
+                    item['pipes_closed'] = True
+                finally:
+                    selector.close()
+                    item['streams'] = [{'bytes': len(b), 'sha256': hashlib.sha256(b).hexdigest()} for b in buffers]
+                    if child is not None: write_once('INDEX-STAGE0.raw', bytes(buffers[0]))
+                    if buffers[1]: write_once('INDEX-STDERR.raw', bytes(buffers[1]))
+
+def main():
+    global output_directory, may_report
+    require(sys.argv == [str(SELF)] and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode
+            and os.getuid() == os.geteuid() == 0, 'fixed isolated root entry')
+    require(isinstance(EXTRA_SHA, str) and re.fullmatch(r'[0-9a-f]{64}', EXTRA_SHA), 'UNBOUND extra facts: no capture authority')
+    output_directory = directory(D); resources(True)
+    facts = json.loads(checked(FACTS, FACTS_SHA, 65536))
+    extra = json.loads(checked(EXTRA, EXTRA_SHA, 65536))
+    source = json.loads(checked(SOURCE, SOURCE_SHA, 2 * MIB))
+    _, self_image = read_file(SELF, 65536, False); inputs[SELF] = (self_image, 65536); report['recipe'] = self_image
+    require((facts['source_commit'], facts['source_tree'], facts['store']) == (P, TREE, str(G)), 'fresh source/store facts')
+    require(facts['config']['sha256'] == CONFIG_SHA and extra['images'][str(G / 'config')] == facts['config'], 'fresh exact config cross-binding')
+    require(source['capture']['store_facts_sha256'] == FACTS_SHA and source['capture']['publication_receipt_sha256'] == facts['publication_receipt']['sha256'], 'accepted SOURCE/publication/facts linkage')
+    require(extra['images']['/usr/bin/git'] == source['capture']['git_image'], 'same source-capture Git image')
+    for path in (SOURCE, FACTS):
+        if str(path) in extra['images']: require(extra['images'][str(path)] == inputs[path][0], 'fresh metadata input image')
+    require(isinstance(extra['jdk']['home'], str), 'bound JDK selector')
+    jdk = Path(extra['jdk']['home']); require(jdk.is_absolute() and '..' not in jdk.parts, 'fixed absolute JDK home')
+    expected = source_entries(source)
+    lock = None
+    try:
+        parent = od(LOCK.parent)
+        try: lock = os.open(LOCK.name, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+        finally: os.close(parent)
+        require(pin(os.fstat(lock)) == facts['original_lock'], 'original lock, never recreated')
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        guard(facts, lock)
+        require(all(absent(D / name) for name in CAPS), 'consumed output name: HOLD/no retry')
+        may_report = True
+        intent = {'format': report['format'], 'status': 'INTENT_ONLY_NO_EXIT_OR_CONSUMER_PROOF', 'commit': P, 'tree': TREE,
+                  'source_sha256': SOURCE_SHA, 'store_facts_sha256': FACTS_SHA, 'extra_facts_sha256': EXTRA_SHA,
+                  'recipe': self_image, 'argv': CMD, 'env': ENV, 'cwd': str(T), 'output_caps': CAPS,
+                  'members_max': 3500, 'git_seconds': 30, 'work_seconds': 180, 'total_output_bytes': 7 * MIB,
+                  'tool_image_bytes': 32 * MIB, 'lock': facts['original_lock'], 'qualification': report['qualification']}
+        write_once('INDEX-CAPTURE-INTENT.json', encoded(intent))
+        before, index_data = snapshot('before', facts, extra, lock, jdk)
+        write_once('INDEX.bin', index_data)
+        report['ordinary_index'] = binary_index(index_data, expected)
+        guard(facts, lock)
+        listing = git_once(); stage_listing(listing, expected)
+        after, final_index = snapshot('after', facts, extra, lock, jdk)
+        require(before == after and final_index == index_data, 'pre/post original source/index/config/tool/alias preservation')
+        require(binary_index(final_index, expected) == report['ordinary_index'], 'final independent index framing')
+        guard(facts, lock); resources(True)
+        report.update(members=len(expected), index_sha256=hashlib.sha256(index_data).hexdigest(),
+                      stage_sha256=hashlib.sha256(listing).hexdigest(), inputs={str(p): image for p, (image, _) in inputs.items()},
+                      observation_elapsed=time.monotonic() - START, status='INDEX_TOOL_OBSERVATIONS_REQUIRE_EXTERNAL_TERMINAL_AND_INDEPENDENT_REVIEW')
+    finally:
+        if lock is not None:
+            os.close(lock); report['original_lock_closed'] = True
+
+if __name__ == '__main__':
+    def cancel(number, _frame):
+        global cancelled
+        cancelled = number
+    signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP): signal.signal(number, cancel)
+    signal.pthread_sigmask(signal.SIG_SETMASK, set())
+    code = 70
+    try:
+        main(); tick(); code = 0
+    except BaseException as error:
+        report.update(status='HOLD_NO_AUTOMATIC_RETRY', error=type(error).__name__ + ':' + str(error)[:1024])
+    report['elapsed_before_final_receipt'] = time.monotonic() - START
+    if may_report:
+        try: write_once('INDEX-SOURCE-CAPTURE.json', encoded(report))
+        except BaseException as error:
+            code = 70
+            report.update(status='HOLD_NO_AUTOMATIC_RETRY', receipt_error=type(error).__name__ + ':' + str(error)[:1024])
+    if cancelled is not None or time.monotonic() - START >= 180:
+        code = 70; report.update(status='HOLD_NO_AUTOMATIC_RETRY', final_cancelled_or_deadline=True)
+    try:
+        data = encoded(report)
+        if len(data) > 65536:
+            code = 70; data = encoded({'status': 'HOLD_NO_AUTOMATIC_RETRY', 'error': 'bounded receipt/report overflow; retain partial outputs'})
+        sys.stdout.write(data.decode()); sys.stdout.flush()
+    except BaseException:
+        code = 70
+    sys.exit(code)

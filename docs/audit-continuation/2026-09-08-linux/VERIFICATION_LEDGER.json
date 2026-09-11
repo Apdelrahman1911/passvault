@@ -587,9 +587,26 @@
       "new_family_closures": 0,
       "new_conclusive_suspicions": 0,
       "evidence": "runs/linux-desktop-tray01/"
+    },
+    {
+      "kind": "PARTIAL_RETAINED_XML_OBSERVATIONS_UNDER_OPERATIONAL_SOURCE_AFTER_CLEANUP_HOLD",
+      "platform": "Linux x86_64/JDK17",
+      "run_id": "linux-focused-regression01",
+      "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+      "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+      "retained_xml_testcase_observations": 12,
+      "methods_without_retained_outcome": 8,
+      "clean_cohort_pass": false,
+      "external_exit": 70,
+      "original_stop_exit": 0,
+      "independent_review": {
+        "path": "reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md",
+        "sha256": "795475ee7949026066469761ab3866b9218d81c4b1b7097291d3ee110e4c0255"
+      },
+      "details": "focused_regression01_execution; separate prior runs remain historical; this list is not an exhaustive count of command attempts."
     }
   ],
-  "continuation_application_test_cases": 199,
+  "continuation_application_test_cases": 211,
   "pending_selected_source_methods": 4,
   "pending_selected_classes": 4,
   "pending_selected_files": 2,
@@ -1095,6 +1112,39 @@
       "status": "BLOCKED",
       "evidence": "reviews/team20/detekt_actual/gui03-actual/RECONCILIATION.json",
       "reason": "Original source_after/cleanup_safe false, cleanup NOT_ATTEMPTED/currentR HOLD. Fresh independently reviewed current-R-only closer needed; no replay or extra stop."
+    },
+    {
+      "id": "ANDROID_CRYPTO_COMPILE03_EXECUTION",
+      "status": "PASS",
+      "evidence": "reviews/team20/android_compile_review/COMPILE03-ACTUAL-REVIEW.md",
+      "evidence_sha256": "c385c30dff777e00b78c334ba07b6b4e7e954e089aaae5d9efe8e573db865606",
+      "scope": "Compiler-only main/device-source result;14graph nodes within26ceiling,0tests/XML/native32/KDF/APK. Original stop/newR removal qualified; no target/family closure."
+    },
+    {
+      "id": "LINUX_DETEKT04_EXECUTION",
+      "status": "FAIL",
+      "evidence": "reviews/team20/focused_validation_review/DETEKT04-HOST02-ACTUAL-REVIEW.json",
+      "evidence_sha256": "d91b3e6e51e34cc93685bbdbaa1e9fea472d6e0a8fd07a9b33169a83eafda734",
+      "scope": "Operational cancellation during bootstrap; all6analyzers+coverageguard UNSTARTED,0reports/0tests. Original stop0; source-after/cleanup HOLD, no retry."
+    },
+    {
+      "id": "LINUX_FOCUSED_REGRESSION01_EXECUTION",
+      "status": "FAIL",
+      "evidence": "reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md",
+      "evidence_sha256": "795475ee7949026066469761ab3866b9218d81c4b1b7097291d3ee110e4c0255",
+      "scope": "Operational focused143/stop0/terminal70; one exact D03 XML retains12pass observations under overall source-after/cleanup HOLD. Eight credential methods lack outcomes; Desktopcompile graph-only. No clean20/12cohort or closure."
+    },
+    {
+      "id": "LINUX_FOCUSED_REGRESSION01_CURRENT_CLEANUP",
+      "status": "BLOCKED",
+      "evidence": "reviews/focused-regression01-host02/SCHEDULING-RELEASE.json",
+      "scope": "Namespace-empty and original stop0 retained; source-after/cleanup-safe false, original R NOT_ATTEMPTED/HOLD. No extra stop, old observer/helper retry or deletion."
+    },
+    {
+      "id": "CURRENT_LINUX_BUILD_WINDOW",
+      "status": "BLOCKED",
+      "evidence": "reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md",
+      "scope": "Two latest independent actuals observe outside-owned Java/javac candidates. No causal screen patch supported. A genuinely quiet coordinated window is needed; point RAM/disk sufficiency is not exclusive use."
     }
   ],
   "missing_skill_tool": {
@@ -1102,7 +1152,7 @@
     "status": "NOT_SUPPLIED_NOT_RUN",
     "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
   },
-  "updated_utc": "2026-09-11T02:44:39.223988+00:00",
+  "updated_utc": "2026-09-11T16:15:11.392562+00:00",
   "continuation_infrastructure_runs": [
     {
       "id": "LINUX_SOURCE_CAPTURE_01",
@@ -1341,7 +1391,7 @@
     "fixture_producers": 0,
     "expected_test_tasks": 2,
     "expected_xml_files": 4,
-    "qualification": "Four Room/Main/chooser/tray-property requirements remain unmet after GUI03 pretest failure. No pending GUI03 invocation exists. A future successor requires current-R disposition and meaningful freshly reviewed source/coordination/admission, not renaming. Focused20 existing regression cases are a separate proposed scope, not new case declarations."
+    "qualification": "Four Room/Main/chooser/tray-property requirements remain unmet. GUI04 inert proposal accepted but not promoted/admitted; no GUI03 replay. Separate focused01 consumed with12partial DB observations/8unvalidated credential methods and missing Desktop-test compilation. Preserve partial evidence; any remaining exact source-assurance obligation must be assessed before selecting a new minimal run."
   },
   "windows_cohort02_source": {
     "suite": "windows-native-14-cohort-v2",
@@ -1525,7 +1575,7 @@
     "limits": "Exact C4 workload, not current publication HEAD runtime. Source EOL/historical coverage qualifications survive. Real Room/SQLite/Desktop crypto and cold JVM provider boundaries, controlled timing/key release, no real biometric/Hello/Keychain, rendered GUI, iOS/Kotlin-Native, Android32, physical device, exhaustive migration, full graph, packaged provenance or Detekt claim. One vanished live scan directory remains incomplete; settled cleanup inventory separate. Optional PVA034 mutant not executed. Earlier failures/HOLDs not replaced."
   },
   "continuation_fixture_producer_cases": 1,
-  "continuation_total_xml_testcases": 203,
+  "continuation_total_xml_testcases": 215,
   "historical_c4_pending_scope_before_linux03": {
     "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
     "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
@@ -1850,7 +1900,7 @@
       "xml_files": 5,
       "not_assertion_count_or_family_closures": true
     },
-    "units": "199 application-intended/native regression, investigation and historical-control execution events: prior196 plus lifecycle/tray2PASS and Main1fixture-limitedFAIL; +3 infrastructure controls+1 producer=203 XML elements. Not199passes, unique behaviors, assertion/task counts or hardware/readiness.",
+    "units": "211 mixed retained execution events =199 prior application-intended/native/regression/investigation/control events+12focused01 XML-pass observations under overall source-after/cleanup HOLD. +3infrastructure+1producer=215XML elements. Not211passes, unique behaviors, new test methods, clean12/20cohort, task/assertion counts, hardware/readiness or new closure.",
     "windows05": {
       "actual_cng_prk_controls": 2,
       "current_real_writer_cases": 8,
@@ -1876,6 +1926,20 @@
       "UNSTARTED_not_counted": 1,
       "xml_elements": 3,
       "new_family_closures": 0
+    },
+    "historical_units_before_focused01": "199 application-intended/native regression, investigation and historical-control execution events: prior196 plus lifecycle/tray2PASS and Main1fixture-limitedFAIL; +3 infrastructure controls+1 producer=203 XML elements. Not199passes, unique behaviors, assertion/task counts or hardware/readiness.",
+    "focused01": {
+      "partial_existing_method_xml_pass_observations_under_hold": 12,
+      "methods_without_retained_outcome": 8,
+      "xml_files": 1,
+      "xml_elements": 12,
+      "xml_failures_errors_skips": 0,
+      "desktop_test_compile_success": false,
+      "desktop_testcases": 0,
+      "clean_cohort_pass": false,
+      "new_methods": 0,
+      "new_closures": 0,
+      "review": "reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md"
     }
   },
   "windows_cohort05_source": {
@@ -3091,6 +3155,12 @@
       "evidence": "detekt03_execution",
       "application_cases": 0,
       "status": "FAIL"
+    },
+    {
+      "id": "linux-detekt04",
+      "evidence": "detekt04_execution",
+      "application_cases": 0,
+      "status": "OPERATIONAL_FAIL_ALL_SEVEN_NODES_UNSTARTED"
     }
   ],
   "detekt01_generated_closeout01": {
@@ -3519,7 +3589,7 @@
     "historical_preexecution_status": "EXACT_INSTANCE_ACCEPTED_NOT_INVOKED",
     "actual_result": "desktop_integration03_execution"
   },
-  "continuation_application_runs_semantics": "Historical/non-exhaustive run index; detailed execution blocks and continuation_case_accounting are authoritative for199 application-intended events,3 infrastructure+1 producer=203 XML elements. Index lacks Mac02 two and Integration02 three; no counter change.",
+  "continuation_application_runs_semantics": "Historical/non-exhaustive run index; detailed execution blocks and continuation_case_accounting are authoritative. Prior199 mixed events+12partial focused01 XML observations under HOLD=211; +3infrastructure+1producer=215retained XML elements. Not211passes or a clean12/20cohort. Index still lacks Mac02 two and Integration02 three; no double count or extra cases follows from this index.",
   "desktop_integration03_execution": {
     "status": "CONSUMED_FAIL_INDEPENDENTLY_RECONCILED_CURRENT_RUNTIME_HOLD",
     "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
@@ -3661,12 +3731,12 @@
     "new_closures": 0
   },
   "resumed_current_phase": {
-    "utc": "2026-09-11T02:33:03.362725+00:00",
-    "phase": "17reviewed application/test paths and11new helper inputs integrated, all execution bindings UNBOUND. Failed GUI03 observation reconciled; no cleanup admission. Source-only publication-release/preparer/publisher deltas underway.",
-    "existing_agents": 20,
+    "utc": "2026-09-11T15:58:54.974868+00:00",
+    "phase": "Compile03 accepted compiler-only; static04 and focused01 consumed operational failures. Focused01 retains12 partial XML-pass observations,8 unvalidated methods,0Desktop compile success. Original stops completed; held roots untouched. No active audit build/test/CI; further builds paused for real quiet-window coordination. Preparing nonactivating C19 handoff.",
     "owner": "/root",
-    "freeze": "OriginalGUI03 R/control/evidence and original T config/C17 objects unchanged. GUI03-only live T/working-tree/current-index publication freeze explicitly released prospectively; separate C18 command admission required.",
-    "next": "Finish exact C18 nonactivating publication selection/review; fresh shared source/index/tool/instance admission; smallest serial root validations. Runtime cleanup remains HOLD, not a prerequisite fabricated into publication."
+    "existing_team_plan": 20,
+    "freeze": "Root explicitly adopted narrow C18-cohort-only prospective W/T-current-index publication release; separate exact C19 publication admission pending. Original C18 objects/config/index/SOURCE/HOST02/control/actuals and every held R remain protected. W product source unchanged/frozen; no new build or cleanup authority.",
+    "next": "Prospective publication-only assessment independently accepted and root adopted. Finish independent C19 report/selection/minimal publisher-delta and exact Git admission, then publish dedicated-branch evidence checkpoint. Quiet-host build/custody blockers remain; no new build/cleanup or collector replay."
   },
   "historical_pending_selected_scope_before_gui03_execution": {
     "status": "GUI03_FOUR_CASES_EXACT_INSTANCE_ACCEPTED_NOT_INVOKED",
@@ -3798,5 +3868,491 @@
     "source_members_limit": 3500,
     "coupling": "3500*41=143500<=144KiB in downstream consumers only; source preparer has no OID-buffer reader/generator. Other caps unchanged.",
     "execution_admission": false
-  }
+  },
+  "checkpoint18_publication": {
+    "status": "PUBLISHED_REVIEWED_NONACTIVATING_SOURCE",
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "parent": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "source_files": 417,
+    "source_members_expected": 3432,
+    "source_raw_bytes_expected": 113336811,
+    "receipt": "publication/CHECKPOINT-18-PUBLISHED.json",
+    "receipt_sha256": "b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6",
+    "external": "publication/CHECKPOINT-18-EXTERNAL.json",
+    "external_sha256": "439794e081b11b7daf411542dd0dd0f82c66fd736e22be020bf9441b99ab5f4f",
+    "review": "reviews/team20/desktop_other_review/06-C18-PUBLICATION-ACTUAL-REVIEW.json",
+    "review_sha256": "800beb809a80a108ccf69e321273d6159bada21f0a5a05d2ea887d3281f18808",
+    "external_exit": 0,
+    "git_command_exits": "22/22 exit0; direct children reaped; no build/test/CI or old-runtime cleanup",
+    "protected_refs": "All six expected refs observed: only dedicated continuation branch advanced. Original handoff/main/testing/release/tag1017001 unchanged. Original T config fullpin/hash unchanged.",
+    "prior_limits": "C17 missing external terminal remains; every GUI03/observer/older HOLD, STOP/NO-RETRY/CLOSED and hardware/PVD boundary preserved.",
+    "new_application_cases": 0,
+    "new_closures": 0
+  },
+  "c18_shared_source_capture": {
+    "status": "CONSUMED_SHARED_SOURCE_CAPTURE_INDEPENDENTLY_RECONCILED_NOT_BUILD_ADMISSION",
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "members": 3432,
+    "raw_bytes": 113336811,
+    "checkout_bytes": 113338758,
+    "source": "reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "source_sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "capture_sha256": "04b8b3b7772a542d51393d4ac7dd482596fd4345576af8c7975a582c5f6cc755",
+    "external": "reviews/checkpoint18/source-prepare01/EXTERNAL-RESULT.json",
+    "external_sha256": "796240f954b2ce6994ba9bc377b9ab8203496b9bad787929ebdb2874138411b4",
+    "review": "reviews/team20/database_review/C18-SOURCE-PREPARE-ACTUAL-REVIEW.json",
+    "review_sha256": "0e15123442d58bfd38c0defe72a42246b40ece14287fc48f432ac82414132988",
+    "actual": "One consumed invocation; two read-only Git children reaped0, original terminal666a39 exit0. No build/test/runtime/cache/Gradle duty.",
+    "qualification": "15 CRLF candidates and original two handoff qualifications preserved; published unbound controls distinct from bound W. Metadata transport only, zero new application tests/static analyses/closures. Index/tools/current consumer admissions remain separate; no replay or old HOLD discharge."
+  },
+  "c18_readonly_facts01_execution": {
+    "status": "CONSUMED_METADATA_PRECAPTURE_FAILURE_INDEPENDENTLY_RECONCILED_NO_REPLAY",
+    "source": "reviews/checkpoint18/C18-READONLY-FACTS-01.py",
+    "source_sha256": "203060e9a869c80f695c74b10a16cd19d679c7b8c1542441e54a08da1248331b",
+    "root_admission_sha256": "470b71304a66f27bed54ac5659dd0821863f0567871fd022e1a93d28c77ced5c",
+    "result_sha256": "2c6dd1e80133b23eac2d94d376eb69bdfd3bd34e99691dff3dc5b0e3471776da",
+    "external": "reviews/checkpoint18/C18-READONLY-FACTS-01-EXTERNAL.json",
+    "external_sha256": "82215cde4ce7ae6a17d52c59cf4b692bf59b211bae046773a326f718b9f97e6f",
+    "external_exit": 70,
+    "external_chunk": "ac7b81",
+    "review": "reviews/team20/desktop_other_review/08-C18-READONLY-FACTS01-ACTUAL-REVIEW.json",
+    "review_sha256": "f94377d17bd377137a955a2126d0de27e7d4372cbb05d48d0f90fd24b866970f",
+    "failure": "resource parser used unhashable bytearray as dict key. Source-review miss acknowledged. Only admission/self captured; no resource point or metadata/index/tool/SDK observations.",
+    "settlement": {
+      "coordination_parent_closed": true,
+      "destructive_cleanup": "NONE",
+      "lock_descriptor_closed": true,
+      "original_lock_acquired": true
+    },
+    "tests": 0,
+    "closures": 0,
+    "next": "Distinct02 parser correction/fresh names under compact independent delta review, not a replay of01. All prior HOLDs retained."
+  },
+  "c18_readonly_facts02_execution": {
+    "status": "CONSUMED_ACCEPTED_METADATA_ONLY_NOT_PRODUCT_EVIDENCE",
+    "result": "reviews/checkpoint18/C18-READONLY-FACTS-02.json",
+    "result_sha256": "73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a",
+    "review": "reviews/team20/desktop_other_review/10-C18-READONLY-FACTS02-ACTUAL-REVIEW.json",
+    "review_sha256": "a5ec4243318a258f6074b29440baafeee41f384b719d426108e2faed3ffa0290",
+    "external": "reviews/checkpoint18/C18-READONLY-FACTS-02-EXTERNAL.json",
+    "external_sha256": "4b929d2a48cff80d35e1497695008d5751ffefc3f03e5b31d6c27df568476853",
+    "external_exit": 0,
+    "images": 16,
+    "separate_sdk_metadata_images": 5,
+    "scope": "Original bound store/lock/config/tool/JDK/aliases and separate SDK-five metadata, two resource points and descriptor settlement. No index semantic proof or SDK install/license/immutable mount/hardware/build authority. Failed01 retained."
+  },
+  "c18_shared_index_capture": {
+    "status": "CONSUMED_ACCEPTED_FULL_INDEX_STAGE_SOURCE_AGREEMENT_WITH_SCOPED_ASSERTION_BASES",
+    "result": "reviews/checkpoint18/index-prepare01/INDEX-SOURCE-CAPTURE.json",
+    "result_sha256": "55ca358eb980578e6b18ecc824b9bdb4fe19f6e2aa95686c8e56827bca3f9c9a",
+    "external": "reviews/checkpoint18/index-prepare01/EXTERNAL-RESULT.json",
+    "external_sha256": "196b2c5677712f2ce591f6b9dbc08207154201799bf929e7c91e76f3a801f45c",
+    "external_exit": 0,
+    "review": "reviews/team20/pva031_review/c18-index-prepare/ACTUAL-REVIEW.json",
+    "review_sha256": "0bfede7df3aefbfedc27da99399ad0927f4541cfa9095e097f3c0b870c613927",
+    "members": 3432,
+    "index_bytes": 553274,
+    "index_sha256": "372f4404428ad77b58ca0bd5580318dcbe46b7ecba8de6231114c07d8eb360ef",
+    "stage_bytes": 467401,
+    "stage_sha256": "72d49c5333ad9971bc64132133517c55fcde787a40fd969830422d4146f88c79",
+    "scope": "Independent DIRCv2/stage/SOURCE tuple agreement; TREE framing only. Nine exact basic/public config assignments and INFO_ABSENT; one Git exit0/reaped/pipesclosed, original lockclosed and external terminal0. Six assertion bases require continuing root freeze and per-run rechecks. No product/consumer/old-HOLD/cleanup credit. No replay."
+  },
+  "c18_final_request_preparation": {
+    "status": "FINAL_REQUESTS_SEALED_COUNTERPART_APPROVALS_AND_PER_RUN_ROOT_ADMISSION_PENDING",
+    "seal": "reviews/team20/root/C18-FINAL-REQUEST-SEAL.json",
+    "seal_sha256": "c313553300d956b534384f37bec3f966f1c8b0dc5f1cee13863a34e7a77d50d5",
+    "requests": [
+      {
+        "bytes": 11984,
+        "images": 20,
+        "inert_sha256": "69a235ee5548571dd94a1e9452243c7754879fc0b99c3d445180654d055e9939",
+        "only_null_to_true_boolean_fields": 8,
+        "request": "requests/LINUX-ANDROID-COMPILE-02.json",
+        "request_sha256": "317f9ce411b57c1755bbc333911e5081d93d7d788c2ffae4014ab69570d2928e",
+        "run_id": "linux-android-compile02",
+        "source": "reviews/team20/android_compile_author/final-instance-binding01/REQUEST.inert.json.txt"
+      },
+      {
+        "bytes": 8844,
+        "images": 15,
+        "inert_sha256": "e5828a619b738dae07e458b3066ffb44dc77e57f502c8bf4b66727c7941f13fc",
+        "only_null_to_true_boolean_fields": 8,
+        "request": "requests/LINUX-DETEKT-04.json",
+        "request_sha256": "6cea7c172cdb7b97d7eec1a954d561baf4d06fa8daf2799a92d271b423728450",
+        "run_id": "linux-detekt04",
+        "source": "reviews/team20/focused_validation_author/LINUX-DETEKT-04.INERT.json.txt"
+      },
+      {
+        "bytes": 6867,
+        "images": 13,
+        "inert_sha256": "6528fbda42b643cac1814b2b1d3c058b628e10c2642822103ab4f33d26cb024c",
+        "only_null_to_true_boolean_fields": 2,
+        "request": "requests/LINUX-FOCUSED-REGRESSION-01.json",
+        "request_sha256": "88da235c80fb4f6081eab0d13e255096b82769bcb9ad0e40d72dd022db3bb302",
+        "run_id": "linux-focused-regression01",
+        "source": "reviews/team20/android_fixture_author/focused-regression01/c18-instance-binding01/LINUX-FOCUSED-REGRESSION-01.INERT.json.txt"
+      }
+    ],
+    "execution_order": [
+      "linux-android-compile02",
+      "linux-detekt04",
+      "linux-focused-regression01"
+    ],
+    "scope": "Android crypto exact26-task compilation only; root+five affected static analyzers with accepted unchanged03 reuse;20 existing regression methods/3suites/2Test tasks plus Desktop test-source compilation. Zero new executed product tests or closures during preparation.",
+    "coordination": "All20 quiescent at seal; only final counterpart review turns reopened. Each build separately waits for all20 quiescent and original lock/resource/cleanup guards. No audit CI dispatched."
+  },
+  "android_crypto_compile02_execution": {
+    "status": "CONSUMED_PREALLOCATION_PARENT_REFUSAL_INDEPENDENTLY_RECONCILED",
+    "utc": "2026-09-11T13:46:51.325099+00:00",
+    "owner": "/root",
+    "consumed": true,
+    "reservation_active": false,
+    "external": "reviews/android-compile02-outer/EXTERNAL-RESULT.json",
+    "external_sha256": "e7f4e5d75ccc8cf92fced10d4c187fa21eefa7db3f67ee13702042881d1f602e",
+    "external_exit": 70,
+    "external_chunk": "ed15fe",
+    "external_session": null,
+    "review": "reviews/team20/android_compile_review/COMPILE02-PREALLOCATION-ACTUAL-REVIEW.md",
+    "review_sha256": "2b8ccebbb5cde396b7e480cd4c96cd15cea072cb25202117b1e928d823c92da5",
+    "failure": "RuntimeError:original parent mismatch; later diagnostic four directory inode mismatches, cause UNKNOWN.",
+    "runtime_allocated": false,
+    "inner_started": false,
+    "children": [],
+    "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_STARTED",
+    "cleanup": "NOT_APPLICABLE_NO_INVOCATION_RUNTIME_ALLOCATED",
+    "resource_points": 0,
+    "application_cases": 0,
+    "junit_xml": 0,
+    "new_closures": 0,
+    "scope": "Scheduling release only. All20 regular-image and original-lock intake checks source-implied before parent refusal; later authority/resource/SDK/topology checks were not reached. No global idle/old-HOLD clearance.",
+    "next": "One fresh independently reviewed directory/topology observation under existing unchanged lock; preserve C18 SOURCE/index semantic evidence. Android03 fresh controls; unused static04/regression01 host02 metadata-only packets. No replay.",
+    "scheduling_release": "reviews/android-compile02-outer/SCHEDULING-RELEASE.json",
+    "scheduling_release_sha256": "babb23ddd1f36622e31cdff77957e5c3676d4fb308583c9eb3f7541758567e04"
+  },
+  "c18_host02_facts": {
+    "status": "CONSUMED_CURRENT_HOST_FACTS_INDEPENDENTLY_RECONCILED_NOT_BUILD_ADMISSION",
+    "utc": "2026-09-11T14:18:44.226937+00:00",
+    "owner": "/root",
+    "consumed": true,
+    "source_sha256": "ffc9ecd62dfa278b879f2c502ac5b74353079c3134b827dd1daf35fbfc48d214",
+    "result": "reviews/checkpoint18/host02/HOST-FACTS.json",
+    "result_sha256": "fd433cbe13fb375fcc8711186d4e219d77b218d791839253c097008ba73dc581",
+    "external": "reviews/checkpoint18/host02/EXTERNAL-RESULT.json",
+    "external_sha256": "f0bd4559fb1ac85ed6d254ac14a8937939213fb5eb5d584edb45908dc5d05101",
+    "external_exit": 0,
+    "external_chunk": "8b080b",
+    "review": "reviews/team20/desktop_other_review/12-HOST02-ACTUAL-REVIEW.json",
+    "review_sha256": "345998bacba8997c2e57875629326bd1c5e05f5925d0eec4c9645a6eee0989b7",
+    "exact_images": 28,
+    "current_directories": 7,
+    "fixed_absences": 12,
+    "resource_points": 2,
+    "original_lock_unchanged": true,
+    "settlement": "Original foreground terminal0/no session, all read FDs closed; no child/runtime/Gradle or cleanup duty.",
+    "qualification": "Current pins/topology only; five projected directory inode differences including SDK57, cause UNKNOWN. Reuse unchanged C18SOURCE/index semantic proof under freeze; not a recapture or historical directory continuity assertion. New request/approval/per-run admission still required.",
+    "cases": 0,
+    "closures": 0
+  },
+  "c18_host02_final_requests": {
+    "status": "ALL_THREE_COHORTS_CONSUMED_INDEPENDENTLY_RECONCILED_STATIC04_FOCUSED01_RUNTIME_HOLD",
+    "utc": "2026-09-11T14:27:09.055762+00:00",
+    "owner": "/root",
+    "agents_quiescent_at_seal": true,
+    "no_audit_local_or_ci_job": true,
+    "common_host_actual_review": "reviews/team20/desktop_other_review/12-HOST02-ACTUAL-REVIEW.json",
+    "common_host_actual_review_sha256": "345998bacba8997c2e57875629326bd1c5e05f5925d0eec4c9645a6eee0989b7",
+    "rows": [
+      {
+        "request": "requests/LINUX-ANDROID-COMPILE-03.json",
+        "sha256": "c93cdbcf29c76d53c9ab040ca0021d24f94d4ccb451171cf6dc268302856bb45",
+        "bytes": 11973,
+        "inert_sha256": "13929b0a0d468232c189a25d87cc4be815fba5c456aa0a8513730b5fd21b12cf",
+        "only_seal_delta": "coordination.agents_quiescent:null->true",
+        "run_id": "linux-android-compile03"
+      },
+      {
+        "request": "requests/LINUX-DETEKT-04-HOST02.json",
+        "sha256": "3ff2b04fa549d859a247dd14afed489a8df685c3fa9967bca91166dcaeb24bfb",
+        "bytes": 8836,
+        "inert_sha256": "d0c93c6002b9a0cdb043e346012d1a10ecb93c11c28c37509bba371b9f972e7f",
+        "only_seal_delta": "coordination.agents_quiescent:null->true",
+        "run_id": "linux-detekt04"
+      },
+      {
+        "request": "requests/LINUX-FOCUSED-REGRESSION-01-HOST02.json",
+        "sha256": "04acb2f594a628970052d503f9e58af83eb48ed564248c8c069a74f414383b20",
+        "bytes": 6867,
+        "inert_sha256": "a48a8692a7d018e9c5488ed3e1410dd96bee568064ef6834c767e6d63796de04",
+        "only_seal_delta": "coordination.agents_quiescent:null->true",
+        "run_id": "linux-focused-regression01"
+      }
+    ],
+    "scope": "Only Android03 distinct control identities/hash chain and current-host directory projections; untouched static04/regression01 get host02 outer/request/approval metadata. C18/source/index proofs reused. Root all20 quiescence renewed after final review turns and before each serial launch. No tests or closures from sealing.",
+    "current_approvals": {
+      "linux-android-compile03": {
+        "path": "reviews/team20/android_compile_review/INSTANCE03-ACCEPT.json",
+        "sha256": "366f7c8a416d5d622f5051de795757f58f953e3d049cc0470430d96cb050d666",
+        "state": "CONSUMED_INDEPENDENTLY_RECONCILED"
+      },
+      "linux-detekt04": {
+        "path": "reviews/team20/focused_validation_review/INSTANCE-ACCEPT-HOST02.json",
+        "sha256": "29474aa4604f95142dc92ab509b60bba659f9a322f9386bae988fcfd0662bee5",
+        "state": "CONSUMED_FAILURE_INDEPENDENTLY_RECONCILED_NEW_RUNTIME_HOLD"
+      },
+      "linux-focused-regression01": {
+        "path": "reviews/team20/android_fixture_review/focused-regression01/INSTANCE-ACCEPT-HOST02.json",
+        "sha256": "a1251f2a8f1031a179a9b7810e2fc5fd9163bb793d5bcb856cc9583a7a7fde56",
+        "state": "CONSUMED_PARTIAL_XML_OPERATIONAL_FAILURE_NEW_RUNTIME_HOLD"
+      }
+    }
+  },
+  "android_crypto_compile03_execution": {
+    "status": "PASS_COMPILATION_ONLY_INDEPENDENTLY_RECONCILED_CONSUMED",
+    "utc": "2026-09-11T15:05:19.948980+00:00",
+    "run_id": "linux-android-compile03",
+    "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "source_manifest_sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "independent_review": "reviews/team20/android_compile_review/COMPILE03-ACTUAL-REVIEW.md",
+    "independent_review_sha256": "c385c30dff777e00b78c334ba07b6b4e7e954e089aaae5d9efe8e573db865606",
+    "release": "reviews/android-compile03-outer/SCHEDULING-RELEASE.json",
+    "release_sha256": "3dec41cae072723387dd986acbd113a8cdbc61ee0d20b73706af64199635c539",
+    "evidence": "runs/linux-android-compile03/",
+    "external": "reviews/android-compile03-outer/EXTERNAL-RESULT.json",
+    "external_sha256": "145ef33c07dab09a6e0ed5e9d6e72825b72683f1e4a5dd51c23c3e2b1dbfc0f6",
+    "external_exit": 0,
+    "compile_exit": 0,
+    "original_stop_exit": 0,
+    "graph_nodes": 14,
+    "allowed_task_names_ceiling": 26,
+    "task_headers": {
+      "bare": 10,
+      "UP-TO-DATE": 3,
+      "SKIPPED": 1
+    },
+    "allowlist_names_unstarted": 12,
+    "actionable_executed_footer": 10,
+    "selected_emitted_class_records": 27,
+    "retained_files": 42,
+    "retained_bytes": 659337,
+    "application_test_cases": 0,
+    "xml_testcases": 0,
+    "new_closures": 0,
+    "source_before_after": true,
+    "original_namespace_settlement": true,
+    "cleanup": {
+      "status": "REMOVED_ORIGINAL_RUNTIME",
+      "snapshot_descendants": 14298,
+      "removed_descendants": 14298,
+      "root_removed_separately": true
+    },
+    "qualification": "14 graph/header nodes within26-name ceiling:10 bare,3 UP-TO-DATE,1 SKIPPED;12 allowlist names unstarted. Main/device compilation and selected fresh-class records only. Zero runtime KDF/native32/APK/DEX/shrinker/GUI/hardware proof; classpath attribution NOT_ESTABLISHED. Host churn11, not global idleness. No extra stop/cleanup, old-runtime release, automatic replay or future admission. All existing fences preserved.",
+    "remaining": "PVA001 actual admitted32-bit ABI/KDF/create/unlock/backup and minified/ARM32 compatibility remain target/license-blocked; no compilation-derived closure."
+  },
+  "detekt04_execution": {
+    "status": "CONSUMED_CANCELLED_ATTEMPT_INDEPENDENTLY_RECONCILED_NEW_R_HOLD",
+    "utc": "2026-09-11T15:14:59.906555+00:00",
+    "run_id": "linux-detekt04",
+    "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "external": "reviews/detekt04-host02/EXTERNAL-RESULT.json",
+    "external_sha256": "a082d32315cbe5eef67706008e16577e18c38a4d04bb75fa69f0eba7f2f94361",
+    "external_exit": 70,
+    "original_session": 15959,
+    "final_chunk": "8247a0",
+    "evidence": "runs/linux-detekt04/",
+    "outer_receipt_sha256": "375ddf97539c26b3eb0fb2e0d03707ae2050e43a176f4b1c89ceafe597564803",
+    "inner_result_sha256": "15c32402f1571485bed91c49a1f9000b2c0ac2dfba315b1959df00716a7c33f8",
+    "observed_detekt_exit": 143,
+    "original_stop_exit": 0,
+    "source_before": true,
+    "source_after": false,
+    "namespace_empty_before_exit": true,
+    "cleanup_safe": false,
+    "cleanup": "NOT_ATTEMPTED_NEW_RUNTIME_HOLD",
+    "static_mapping_ok": false,
+    "static_reports_preserved_flag": true,
+    "root_observed_task_headers": 0,
+    "application_test_cases": 0,
+    "xml_testcases": 0,
+    "new_closures": 0,
+    "failure": "Original outer host-screen uncertainty: proof-owned-domain candidates26628/26745, proof-namespace:mnt23883; source/cause/ownership not established from these IDs. No live PID or held-runtime probes.",
+    "remaining": "Affected-only static qualification unmet; no automatic04 retry. Separately reviewed cleanup design conditional on supported exclusive custody and fresh exact guards, not admitted. Focused01 has now consumed its first attempt; all further builds paused for genuinely quiet coordination.",
+    "independent_review": "reviews/team20/focused_validation_review/DETEKT04-HOST02-ACTUAL-REVIEW.json",
+    "independent_review_sha256": "d91b3e6e51e34cc93685bbdbaa1e9fea472d6e0a8fd07a9b33169a83eafda734",
+    "scheduling_release": "reviews/detekt04-host02/SCHEDULING-RELEASE.json",
+    "scheduling_release_sha256": "d0a0ae5b7b4d523d71cbcad1f92bdae703a61994147b9a63189c3104755dcb05",
+    "all_seven_expected_nodes_unstarted": true,
+    "captured_static_reports": 0,
+    "first_failure": "Retained stable-birth/nonterminal javac in parent rather than owned namespaces; no actor/purpose/current-state or later-candidate attribution. Correct source guard rejection independently reconciled; no supported shared-mechanism repair."
+  },
+  "gui04_admission_basis": {
+    "status": "QUALIFIED_PREPARATION_ONLY_NOT_LAUNCH_OR_OLD_R_RELEASE",
+    "review": "reviews/team20/desktop_main_review/GUI04_HOST02_COMPILE03_ADMISSION_BASIS.md",
+    "review_sha256": "1d63d81744301f16358fd270d51c95875e173d798d8a1d2f746f2d32901f6578",
+    "scope": "Minimal distinct existing4-case control proposal now assigned; no new tests/source collector. Final GUI admission still requires static/focused dispositions, genuine new instance/tool/GUI/host/cleanup guards. OldGUI03 remains HOLD."
+  },
+  "focused_regression01_execution": {
+    "status": "CONSUMED_CANCELLED_ATTEMPT_INDEPENDENTLY_RECONCILED_PARTIAL_XML_NEW_R_HOLD",
+    "utc": "2026-09-11T15:58:54.974868+00:00",
+    "run_id": "linux-focused-regression01",
+    "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "source_manifest_sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "independent_review": "reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md",
+    "independent_review_sha256": "795475ee7949026066469761ab3866b9218d81c4b1b7097291d3ee110e4c0255",
+    "method_outcomes": {
+      "path": "reviews/team20/android_fixture_review/focused-regression01/actual01/METHOD-OUTCOMES.tsv",
+      "sha256": "bd8e85292dd7ac9821f166750512714808b80ccc09a850372d93ee603da4d80e"
+    },
+    "external": "reviews/focused-regression01-host02/EXTERNAL-RESULT.json",
+    "external_sha256": "043c83d68807eea9fbfa11116083638ee85ecc83a858cc50ce138188e945a39d",
+    "external_exit": 70,
+    "original_session": 93541,
+    "launch_chunk": "746cba",
+    "final_chunk": "2a0b2b",
+    "elapsed_seconds": 304.142,
+    "evidence": "runs/linux-focused-regression01/",
+    "outer_receipt": {
+      "path": "runs/linux-focused-regression01/OUTER-RECEIPT.json",
+      "sha256": "bcab1d7758ab3ae27d7545794e225236cee82026b49306a9a8ef3155fe2edc87"
+    },
+    "inner_result": {
+      "path": "runs/linux-focused-regression01/INNER-RESULT.json",
+      "sha256": "848d1bc8f5b5f29f73df1f63be11f654e4a71f3c388b73daa5108b361594a41b"
+    },
+    "phase": {
+      "path": "runs/linux-focused-regression01/PHASE-focused.json",
+      "sha256": "2761d8120ba703e57064c418b5d8d0138f03152e162b6186e4c3ded939e93988"
+    },
+    "task_results": {
+      "path": "runs/linux-focused-regression01/TASK-RESULTS.json",
+      "sha256": "d9442a16c7abcfbdb5d95cb9194d0a583e8c2dd62390af996af4e20aa8165ac8"
+    },
+    "xml": {
+      "path": "runs/linux-focused-regression01/xml/focused-TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml",
+      "sha256": "846b2c4a69e4259b0498c56a85fdd59391c3c98d0e62746d55c817956bd46163"
+    },
+    "focused_exit": 143,
+    "original_stop_exit": 0,
+    "namespace_empty_before_exit": true,
+    "source_before": true,
+    "source_after": false,
+    "cleanup_safe": false,
+    "task_mapping_ok": false,
+    "xml_mapping_ok": false,
+    "cleanup": "NOT_ATTEMPTED_NEW_RUNTIME_HOLD",
+    "held_runtime": "/root/projects/PassVault/audit-runtime-linux-focused-regression01",
+    "case_accounting": {
+      "declared_existing_methods": 20,
+      "expected_suites": 3,
+      "retained_suites": 1,
+      "xml_pass_observations_under_hold": 12,
+      "xml_failures": 0,
+      "xml_errors": 0,
+      "xml_skips": 0,
+      "methods_without_retained_outcome": 8,
+      "new_method_declarations": 0,
+      "clean_whole_cohort_pass": false,
+      "clean_12_case_cohort_credit": false,
+      "new_closures": 0
+    },
+    "target_reach": {
+      "planned_graph_nodes": 322,
+      "retained_task_lines": 50,
+      "database_test_task": "executed/didWork true; not skipped/upToDate/noSource; no failure",
+      "credential_test_task": "No target action-state or task line; C01 six and C02 two have no XML outcome",
+      "desktop_test_compile": "Graph node only; no target action-state/task line or compile-success credit",
+      "desktop_testcases": 0,
+      "last_retained_task_line": ":core:designsystem:checkDesktopMainComposeLibrariesCompatibility"
+    },
+    "first_failure": "Stable-birth/nonterminal java candidate in parent rather than owned namespaces; evidence-only classification, not current process ownership/purpose/state. Later mount-namespace uncertainties remain separate; six unclassified churn, not global idle.",
+    "limits": "Twelve exact existing D03 XML-pass observations survive as partial retained outcomes, not clean12/whole20 validation or closure. Source-after false is missing final proof, not demonstrated source drift. No additional stop, replay, probe, held-root deletion or downstream GUI admission.",
+    "scheduling_release": "reviews/focused-regression01-host02/SCHEDULING-RELEASE.json",
+    "scheduling_release_sha256": "eab56fd4b53aeea076f402eb94ec53a0ad07d4477d4db36b49a5e370e1dc07ac",
+    "remaining": "Quiet build window and fresh meaningful admission needed for unmet affected-only static, eight credential outcomes, Desktop test compilation and four GUI requirements. Do not blindly repeat the12 database observations; determine any exact source-assurance obligation separately."
+  },
+  "shared_host_screen_assessment": {
+    "status": "INDEPENDENTLY_ACCEPTED_NO_SUPPORTED_CAUSAL_SCREEN_PATCH",
+    "author": {
+      "path": "reviews/team20/focused_validation_author/DETEKT04-HOST02-SCREEN-ASSESSMENT-01.json",
+      "sha256": "84751ad72a8fb15f4f1e61d0ea06f2aea45a3de05ac6469add6d24e63d3ab580"
+    },
+    "review": {
+      "path": "reviews/team20/desktop_other_review/13-DETEKT04-HOST-SCREEN-ASSESSMENT-REVIEW.json",
+      "sha256": "841c86fcf6b89ececc7aa77918a49a1e191f9fbdbb2a8a6e4e4b0c52ee2ade7b"
+    },
+    "result": "Static/focused screen bytes identical; first static candidate was contemporaneously outside owned domains. No Java exemption, parent-as-owned or departure relaxation justified. Conditional unused focused01 entry-guard admission was exercised once and is now consumed; latest actual also records an outside-owned Java candidate.",
+    "next": "Pause further builds until a genuinely coordinated quiet window; no new observer/diagnostic patch merely to retry."
+  },
+  "static04_closeout_feasibility": {
+    "status": "CONDITIONAL_NEW_FIXED_R_DESIGN_ONLY_NOT_IMPLEMENTED_OR_ADMITTED",
+    "author": {
+      "path": "reviews/team20/android_compile_author/detekt04-closeout-feasibility01/DETEKT04-CLOSEOUT-FEASIBILITY.md",
+      "sha256": "4ed52726df33a5cef60a304282304f104928041ce4f499bad4dd450fec75d0d0"
+    },
+    "review": {
+      "path": "reviews/team20/android_compile_review/STATIC04-CLOSEOUT-FEASIBILITY-CHALLENGE.md",
+      "sha256": "30853501976efcff122f0e7e1feb5fe55cdf66c5b574344cdf142891500fc846"
+    },
+    "target": "/root/projects/PassVault/audit-runtime-linux-detekt04",
+    "prerequisites": "Supported exclusive custody/write-and-mount freeze; fresh original-object/subroot/mount/sealed-index/raw-C18-copy checks; complete bounded no-follow snapshot; separately admitted descriptor-relative removal and independent actual terminal reconciliation.",
+    "not_authority": "No concrete remover/request/admission; stop0/namespace-empty/old allocation or an empty process scan cannot establish custody. Original false flags and R HOLD remain. This static04-only design does not authorize focused01 or any old hold."
+  },
+  "gui04_inert_proposal": {
+    "status": "INDEPENDENTLY_ACCEPTED_INERT_GUI04_DELTA_NOT_PROMOTED_OR_ADMITTED",
+    "directory": "reviews/team20/android_fixture_author/desktop-integration04/proposal01/",
+    "review": {
+      "path": "reviews/team20/android_fixture_review/desktop-integration04/proposal01/DELTA-REVIEW.json",
+      "sha256": "bc3d4e978435deb2edb02bbd896ede281c05785790ad670302154346889af875"
+    },
+    "init_sha256": "355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf",
+    "inner_sha256": "f0f2879d479ae4fc215b5a138177e7372456504d6720ed579d92c0271b7c0b67",
+    "outer_sha256": "7ec1b69f7c4d285e26136c3f5035d120f99b6d72b522d9a9120b7a61e2d4289a",
+    "scope": "Only04/C18 bindings, four fixture digest cells,3432-member/144KiB OID capacity and dependent hashes changed; original4 requirement methods/two serial Test tasks and production loop preserved. No passing lifecycle/tray endpoint repetition.",
+    "remaining": "UNBOUND route/device/lock and request; no promotion. Static04 and focused01 now consumed/HOLD; exact dispositions, genuinely quiet host and new GUI-specific admission still required. OriginalGUI03/observer/control/R HOLD persists.",
+    "new_case_declarations": 0,
+    "actual_cases": 0,
+    "new_closures": 0
+  },
+  "post_focused01_resource_point": {
+    "path": "reviews/team20/root/POST-FOCUSED01-RESOURCE-POINT.json",
+    "sha256": "4dfe78ef1b7f2bac95f50e9d395305342c8c7f9d97c0c9da9d678709d1d4b1ac"
+  },
+  "current_regression_scheduling": {
+    "state": "NO_AUDIT_BUILD_RUNNING_ALL_HOST02_COHORTS_CONSUMED_QUIET_WINDOW_BLOCKED",
+    "next": "Quiet build window and fresh meaningful admission needed for unmet affected-only static, eight credential outcomes, Desktop test compilation and four GUI requirements. Do not blindly repeat the12 database observations; determine any exact source-assurance obligation separately.",
+    "slot": "EXECUTION_SLOT.json",
+    "constraints": "Root sole build/CI owner. Original wrapper stops complete; no extra stop/capture/helper replay/held-root deletion. Publication is separate and nonactivating."
+  },
+  "historical_xml_accounting_before_focused01": {
+    "application_related_mixed_events": 199,
+    "infrastructure": 3,
+    "producer": 1,
+    "xml_elements": 203
+  },
+  "continuation_application_test_cases_semantics": "Mixed retained execution events, including12 partial focused01 XML-pass observations under overall HOLD; not211passes or a completed20/clean12case cohort. Prior199+12partial+3infra+1producer=215 XML elements; no new test declarations/closures.",
+  "partial_xml_observations_under_hold": 12,
+  "c18_prospective_publication_release": {
+    "path": "reviews/team20/root/C18-PROSPECTIVE-PUBLICATION-RELEASE.json",
+    "sha256": "60d369f3446bf51c2ddd21ef2f703dd08e3b952fe81c1dae098711db9c706161",
+    "status": "EXPLICIT_PROSPECTIVE_C18_COHORT_ONLY_C19_PUBLICATION_FREEZE_RELEASE",
+    "runtime_release": false,
+    "command_admission": false
+  },
+  "c19_nonactivation_assessment": {
+    "status": "SOURCE_DIRECT_PUSH_NONACTIVATION_AND_RETAINED_PR_ABSENCE_POINT_INDEPENDENTLY_RECONCILED",
+    "source_review": {
+      "path": "reviews/team20/desktop_other_review/C19-REQUEST-PUBLICATION-NONACTIVATION-REVIEW.json",
+      "sha256": "216ef7092025eb503335db0b33f9bc318bf0a31c41e00fae5436f5495de74c52"
+    },
+    "pr_point_review": {
+      "path": "reviews/team20/desktop_other_review/C19-REQUEST-PUBLICATION-PR-POINT-RECONCILIATION.json",
+      "sha256": "a37b3cff64cbce165baa580569359896af07c0796e2652f988164c6fd4ab2be3"
+    },
+    "scope": "Exact six consumed/superseded Linux request leaves on the dedicated branch match no direct-push trigger among19 workflows.16:10:39Z exact branch/open-PR GET returned[]/child0/reaped/original terminal0. Point-only, no continuous external freeze or future CI/publication guarantee; no .github/product source selected."
+  },
+  "historical_continuation_application_runs_semantics_before_focused01": "Historical/non-exhaustive run index; detailed execution blocks and continuation_case_accounting are authoritative for199 application-intended events,3 infrastructure+1 producer=203 XML elements. Index lacks Mac02 two and Integration02 three; no counter change."
 }

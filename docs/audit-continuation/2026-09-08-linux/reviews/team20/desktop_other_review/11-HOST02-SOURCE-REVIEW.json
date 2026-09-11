@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "reviewer": "/root/desktop_other_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_EXACT_CORRECTED_HOST02_SOURCE_PENDING_ROOT_ADMISSION_AND_ACTUAL_RECONCILIATION",
+  "material_blockers": [],
+  "bindings": {
+    "corrected_source": {
+      "path": "reviews/checkpoint18/host02/HOST-FACTS.py",
+      "sha256": "ffc9ecd62dfa278b879f2c502ac5b74353079c3134b827dd1daf35fbfc48d214",
+      "bytes": 11380,
+      "lines": 248
+    },
+    "preserved_unexecuted_v1": {
+      "path": "reviews/checkpoint18/host02/HOST-FACTS-SOURCE-V1.py.txt",
+      "sha256": "0adf2f2fb99d40724f2442291de10276083edb2e0d515b8de4f5d852319d826e",
+      "bytes": 10463,
+      "qualification": "Exact archived bytes verified; root reports v1 never executed."
+    },
+    "consumed_compile02_actual_review": {
+      "path": "reviews/team20/android_compile_review/COMPILE02-PREALLOCATION-ACTUAL-REVIEW.md",
+      "sha256": "2b8ccebbb5cde396b7e480cd4c96cd15cea072cb25202117b1e928d823c92da5",
+      "bytes": 7644
+    },
+    "historical_requests": [
+      {
+        "path": "requests/LINUX-ANDROID-COMPILE-02.json",
+        "sha256": "317f9ce411b57c1755bbc333911e5081d93d7d788c2ffae4014ab69570d2928e",
+        "bytes": 11984,
+        "images": 20
+      },
+      {
+        "path": "requests/LINUX-DETEKT-04.json",
+        "sha256": "6cea7c172cdb7b97d7eec1a954d561baf4d06fa8daf2799a92d271b423728450",
+        "bytes": 8844,
+        "images": 15
+      },
+      {
+        "path": "requests/LINUX-FOCUSED-REGRESSION-01.json",
+        "sha256": "88da235c80fb4f6081eab0d13e255096b82769bcb9ad0e40d72dd022db3bb302",
+        "bytes": 6867,
+        "images": 13
+      }
+    ]
+  },
+  "resolved_concrete_v1_finding": {
+    "finding": "The raising asynchronous handler could interrupt an open before local try/registration, or abort the OSError-only final close sweep. A late signal after CAPTURED/code0 also reached an exception handler that did not reset status/code. Thus the proposed all-FD/always-HOLD failure claim was not sound.",
+    "correction": "Only the small preserved-v1/corrected-source textual delta was re-reviewed: nonthrowing cancellation latch; synchronous cancellation/deadline checks in need(); unconditional caught-error HOLD/70; uninterrupted close attempts; after closes, handled signals are blocked through exit and latched/pending cancellation or elapsed deadline forces HOLD/70 before terminal serialization. The120s bound is now explicitly cooperative.",
+    "disposition": "Resolved for the admitted handled-signal/ordinary-exception path. No harness, helper execution, signal injection or actual descriptor probe was used."
+  },
+  "scope_and_correctness": {
+    "historical_data_only": "All three request hashes/locks reconcile as inert data. Their28-key union has no image disagreement and contains only fixed W controls/shared SOURCE, publication config/index, tools/JDK and the five SDK metadata leaves; one key is the exactly admitted direct python3->python3.12 alias. No historical directory identity is required or silently adopted. No held runtime is in this image union.",
+    "stable_directories": "Seven fresh full5 directory projections: workspace parent, original coordination parent, B/runs, T, T/.git, W and SDK. Cached descriptor-relative NOFOLLOW traversal checks root owner/type/non-group/world-writable mode and FD/path pin equality, then rechecks every cached directory through its parent. This includes current T/G and SDK relationships without claiming old inode continuity or drift cause.",
+    "fixed_guards": "The original existing lock must retain exact full8 identity and take nonblocking flock; it is never created/replaced. Fixed new R/E absences cover android-compile03, detekt04 and focused-regression01 only. Six current store absences cover commondir/config.worktree/worktrees/info and both alternates paths. These12 absences are rechecked; absent info supports fresh INFO_ABSENT projection, not an old absence assumption.",
+    "unchanged_images": "Each requested image is bounded, hashed with stable pre/final full pins and required to equal its sealed prior record; no automatic rebasing of changed regular files. This carries exact SOURCE/index/config/tool/SDK-metadata fingerprints, not a new source/index semantic proof or source recapture. Git/Ruby direct aliases also retain exact old full-pin/readlink binding.",
+    "resources_namespaces": "Two bounded fixed meminfo/resource points check at least12GiB disk and25percent RAM at both points, with disk points for workspace parent/B/runs/T. Current self mnt/pid namespace links are recorded and rechecked; prior Android namespace labels remain explicitly historical data. No other process/runtime inventory or global-idleness assertion.",
+    "writes_and_settlement": "No subprocess/Git/build/child/runtime allocation/descent/deletion, store/config/SDK write or cleanup adoption. Output is stdout only; no evidence file or replay counter is created by the helper. Registered directory FDs, original lock and local read FDs have the corrected cleanup path; root must retain the original complete stdout/terminal as the one-shot evidence."
+  },
+  "metadata_renewal_sufficiency": "This exact scope is sufficient as input to the proposed directory/topology/namespace-only renewal if one separately admitted root observation actually succeeds under renewed quiescence/freeze. Root must project fresh full5 pins into each consumer schema, including repeated T/.git metadata_directory and Android SDK directory fields, and preserve exact old C18 SOURCE/index semantic proof by unchanged byte/pin bindings. Historical reviewed_assertions are not new observed facts. Any regular-image mismatch remains HOLD, not a rebase permit.",
+  "remaining_admission_and_limits": [
+    "Root must seal the exact corrected source/isolated no-site no-bytecode command, admit only one invocation and independently reconcile complete original stdout, exact self/source/request bindings, no error, resource/guard records, closed_descriptors and terminal exit0/no remaining session. Source acceptance is not execution admission or actual evidence.",
+    "The120s cooperative work/commit check does not bound uninterruptible kernel calls or the post-commit stdout/exit phase, where handled signals are blocked. Hard loss, incomplete output, close failure or uncertain terminal settlement remains HOLD/no automatic retry; no hostile-host or continuous-freeze guarantee.",
+    "Fresh absences/pins are point observations, not reservation or downstream execution authority. Mandatory launcher image/alias/store/allocation guards, renewed quiescence and genuine counterpart delta review remain intact.",
+    "Android continuation must be distinct Android03 with new reviewed run/R/E/request/approval/control identities. Static04/regression01 need separately reviewed metadata-only renewal. Never edit/replay consumed Compile02 or failed readonly-facts01; no old capture replay, cleanup, build/test/coverage/closure or denominator credit."
+  ],
+  "preservation": "Original-store/lock/config/protected-ref/held-runtime/hardware fences and all older HOLD/STOP/NO-RETRY/CLOSED/consumed/terminal gaps remain, including C17. Root retains admission, execution, central ledgers and notifications.",
+  "activity": "Read only the named root source/v1 archive, three sealed requests and existing Compile02 actual review as inert text/data. Standard-library hash/JSON/string/diff comparisons only. No new full audit, helper import/evaluation/AST/compile/syntax check/execution, harness, live T/Git/tool/SDK/proc/resource/runtime/network probe, cleanup or existing-file edit. Only this new own-lane report written."
+}

@@ -1,0 +1,129 @@
+{
+  "format": "passvault-focused-regression01-c18-source-binding-proposal-v1",
+  "author": "/root/android_fixture_author",
+  "status": "UNAPPLIED_PARTIAL_SOURCE_BINDING_ONLY",
+  "authority": "Root release of inner+outer source-binding constants and exactly3 CLASSES source_sha256 cells; explicit fixed GITDIR literal. No device/lock/instance admission release.",
+  "source": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "bytes": 1879327,
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "members": 3432,
+    "capture_read_only_not_duplicated": true
+  },
+  "projected_class_cells": [
+    {
+      "class_id": "D03",
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "manifest_field": "checkout_sha256",
+      "source_sha256": "f25cd292184e1fca7d0cbb3d384dac66156683e5bc9f093876cfd3b487d85b99",
+      "selected_methods": 12
+    },
+    {
+      "class_id": "C01",
+      "source_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "manifest_field": "checkout_sha256",
+      "source_sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+      "selected_methods": 6
+    },
+    {
+      "class_id": "C02",
+      "source_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "manifest_field": "checkout_sha256",
+      "source_sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+      "selected_methods": 2
+    }
+  ],
+  "common_frozen_hashes": {
+    "SOURCE": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "CLASSES": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+    "METHODS": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+    "INIT": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79"
+  },
+  "outer_frozen_hashes": {
+    "INNER": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715",
+    "SOURCE": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "CLASSES": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+    "METHODS": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+    "INIT": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79"
+  },
+  "files": [
+    {
+      "role": "classes",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+      "before_image": "classes.before.txt",
+      "before_bytes": 1237,
+      "before_sha256": "88d5b0b1bb06a7795ea6f90e52c642c532add8d41abfa0c0671abc640930f810",
+      "after_bytes": 1408,
+      "after_sha256": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53"
+    },
+    {
+      "role": "inner",
+      "path": "scripts/audit/linux_focused_regression_01.py",
+      "before_image": "inner.before.txt",
+      "before_bytes": 39869,
+      "before_sha256": "b461fe6399e14ef0ed92789c451b428ce23e6c4edad804ff48317e89278c76a1",
+      "after_bytes": 40158,
+      "after_sha256": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715"
+    },
+    {
+      "role": "outer",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+      "before_image": "outer.before.txt",
+      "before_bytes": 50866,
+      "before_sha256": "4228261a5432b7a2bb582da03205736d0617a092a428121ed2ac451921ae24a9",
+      "after_bytes": 51279,
+      "after_sha256": "a855d2cf04727c39115e17b52c73ae7334edbe3d06971f99a4a9aab68b5f2eea"
+    }
+  ],
+  "unchanged_files": [
+    {
+      "role": "init",
+      "path": "scripts/audit/focused_regression_01.init.gradle",
+      "bytes": 9384,
+      "sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79"
+    },
+    {
+      "role": "methods",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv",
+      "bytes": 1650,
+      "sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5"
+    }
+  ],
+  "patch": {
+    "path": "C18-SOURCE-BINDING01.UNAPPLIED.patch.txt",
+    "bytes": 6482,
+    "sha256": "0821857df32152dfde1bfd4fcf2626931ddf918b8c69378ed62b2bc4692417c4"
+  },
+  "field_delta": {
+    "classes": "Three UNBOUND source_sha256 cells only, from exact manifest checkout_sha256.",
+    "inner": [
+      "COMMIT",
+      "TREE",
+      "MEMBERS",
+      "FROZEN[SOURCE,CLASSES,METHODS,INIT]"
+    ],
+    "outer": [
+      "GITDIR fixed already-allowlisted path literal",
+      "COMMIT",
+      "TREE",
+      "MEMBERS",
+      "FROZEN[INNER,INIT,SOURCE,CLASSES,METHODS]"
+    ]
+  },
+  "preserved": [
+    "Init bytes",
+    "METHODS bytes",
+    "All selection/task/expected-XML/source-path columns",
+    "20existing methods12+6+2,3XML suites,2Test tasks,Desktop compilation only",
+    "DEVICE and EXPECTED_LOCK UNBOUND",
+    "All unrelated None values and source mechanisms"
+  ],
+  "not_claimed": [
+    "GITDIR live existence/identity/admission",
+    "Fresh tool/SDK/device/lock/parent/runtime facts",
+    "Instance request or reviewer approval",
+    "Helper execution/import, AST, build/tests, Git/T/proc/runtime probes"
+  ]
+}

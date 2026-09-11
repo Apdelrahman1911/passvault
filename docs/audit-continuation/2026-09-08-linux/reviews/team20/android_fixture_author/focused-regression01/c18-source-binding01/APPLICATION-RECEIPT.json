@@ -1,0 +1,108 @@
+{
+  "format": "passvault-focused-regression01-c18-source-binding-application-v1",
+  "author": "/root/android_fixture_author",
+  "status": "APPLIED_EXACT_ACCEPTED_PARTIAL_C18_SOURCE_BINDINGS",
+  "review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_review/focused-regression01/c18-source-binding01/PROPOSAL-REVIEW.md",
+    "sha256": "92a2a3bd600ed258c4380fb395f081bb761628e83ac7d875fb65591e4bee2f08"
+  },
+  "proposal_sha256": "7ebc2a0d40d5faa6034e8dc01d59b145b1a58f4cc96cb832a388d81751d72743",
+  "patch_sha256": "0821857df32152dfde1bfd4fcf2626931ddf918b8c69378ed62b2bc4692417c4",
+  "before_images": "classes.before.txt, inner.before.txt, outer.before.txt retained unchanged in this lane",
+  "source": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "bytes": 1879327,
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "members": 3432,
+    "capture_read_only_not_duplicated": true
+  },
+  "class_projection": [
+    {
+      "class_id": "D03",
+      "source_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "manifest_field": "checkout_sha256",
+      "source_sha256": "f25cd292184e1fca7d0cbb3d384dac66156683e5bc9f093876cfd3b487d85b99",
+      "selected_methods": 12
+    },
+    {
+      "class_id": "C01",
+      "source_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "manifest_field": "checkout_sha256",
+      "source_sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+      "selected_methods": 6
+    },
+    {
+      "class_id": "C02",
+      "source_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "manifest_field": "checkout_sha256",
+      "source_sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+      "selected_methods": 2
+    }
+  ],
+  "applied_readback": [
+    {
+      "role": "classes",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+      "bytes": 1408,
+      "sha256": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+      "exact_reviewed_after_image": true
+    },
+    {
+      "role": "inner",
+      "path": "scripts/audit/linux_focused_regression_01.py",
+      "bytes": 40158,
+      "sha256": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715",
+      "exact_reviewed_after_image": true
+    },
+    {
+      "role": "outer",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+      "bytes": 51279,
+      "sha256": "a855d2cf04727c39115e17b52c73ae7334edbe3d06971f99a4a9aab68b5f2eea",
+      "exact_reviewed_after_image": true
+    }
+  ],
+  "unchanged_files": [
+    {
+      "role": "init",
+      "path": "scripts/audit/focused_regression_01.init.gradle",
+      "bytes": 9384,
+      "sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79"
+    },
+    {
+      "role": "methods",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv",
+      "bytes": 1650,
+      "sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5"
+    }
+  ],
+  "dependency_order": [
+    "shared SOURCE/init/METHODS hashes",
+    "three CLASSES checkout_sha256 cells",
+    "final CLASSES hash in inner",
+    "final inner hash in outer"
+  ],
+  "remaining_unbound": [
+    "DEVICE.directory_device",
+    "DEVICE.regular_file_device",
+    "EXPECTED_LOCK",
+    "fresh input/tool/parent/lock/device/namespace instance packet and genuine instance approval"
+  ],
+  "gitdir_qualification": "Fixed allowed path selector only; no T/store existence, identity, provenance or admission probe.",
+  "scope_preserved": {
+    "existing_methods": 20,
+    "selected_methods_per_class": [
+      12,
+      6,
+      2
+    ],
+    "xml_suites": 3,
+    "test_tasks": 2,
+    "desktop_compile_only": true,
+    "new_runtime_testcases": 0
+  },
+  "request_or_approval_written": false,
+  "helper_execution_import_AST_build_test_Git_T_proc_runtime_SDK_probe": false
+}

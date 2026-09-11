@@ -1,0 +1,77 @@
+{
+  "status": "INERT_AUTHOR_CANDIDATE_PENDING_INDEPENDENT_REVIEW",
+  "candidate": {
+    "path": "C18-READONLY-FACTS-01.py.txt",
+    "sha256": "203060e9a869c80f695c74b10a16cd19d679c7b8c1542441e54a08da1248331b",
+    "bytes": 21239,
+    "lines": 420
+  },
+  "future_root_owned_source": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01.py",
+  "provenance": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/SOURCE-STORE-ADMISSION.json",
+      "sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+      "bytes": 4146
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+      "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+      "bytes": 1879327
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+      "sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+      "bytes": 17797
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "c398fa0f4763de0e27ff438a57d593178067607834a6c8e74442eb714b6b3516",
+      "bytes": 1548
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_review/C18-SOURCE-PREPARE-ACTUAL-REVIEW.json",
+      "sha256": "0e15123442d58bfd38c0defe72a42246b40ece14287fc48f432ac82414132988",
+      "bytes": 9478
+    },
+    {
+      "path": "scripts/audit/linux_android_compile_02.py",
+      "sha256": "09137a86e2637907628e5928eef7eeaacd6aa84b47137341946ccaa6afc88580",
+      "bytes": 64204,
+      "scope": "SDK_METADATA literals and pin/alias/exclude schema"
+    }
+  ],
+  "admission_original_config_expectation_not_fresh_observation": {
+    "pin": {
+      "bytes": 435,
+      "ctime_ns": 1789001766988319322,
+      "dev": 24,
+      "ino": 14293053,
+      "mode": 33152,
+      "mtime_ns": 1789001766988319322,
+      "nlink": 1,
+      "uid": 0
+    },
+    "sha256": "036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5"
+  },
+  "text_data_checks": {
+    "accepted_hashes_and_C18_source_pair": true,
+    "SDK_METADATA_exact_five_literals": [
+      "platforms/android-37.0/source.properties",
+      "platforms/android-37.0/package.xml",
+      "build-tools/36.0.0/source.properties",
+      "build-tools/36.0.0/package.xml",
+      "licenses/android-sdk-license"
+    ],
+    "lock_open_no_CREATE": true,
+    "CREATE_only_exclusive_evidence_writer": true,
+    "no_subprocess_exec_delete_reviewed_assertions_tokens": true,
+    "trailing_whitespace_absent": true
+  },
+  "independent_reviewer": "/root/desktop_other_review",
+  "independent_review": "PENDING",
+  "activity": "Only inert own-lane source/reports and W source-data comparisons. No helper execution/import/AST/compile/syntax check or live T/Git/tool/SDK/process/resource access. No active sessions.",
+  "rationale": {
+    "path": "RATIONALE.md",
+    "sha256": "5b56858b3a238da6a17633c250784c64b7c2b5f810f5c5d556436cde83562150"
+  }
+}

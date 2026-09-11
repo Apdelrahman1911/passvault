@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-11T03:43:43.861Z",
+  "purpose": "ONE_C18_SHARED_SOURCE_PREPARATION_ONLY",
+  "command": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py"
+  ],
+  "source_sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+  "instance_review": "reviews/team20/database_review/C18-SOURCE-PREPARE-INSTANCE-REVIEW.json",
+  "instance_review_sha256": "bc26c20c2b790aff9a51d8cc08bdb4182bd22a0271a2a6232bedd8db86e872f8",
+  "expected": {
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "members": 3432,
+    "raw_bytes": 113336811
+  },
+  "coordination": "Root sole Git/build/CI owner; T/config/index and relevant W inputs frozen. No audit build/test/CI admitted. Only this new source metadata capture; no runtime/held-scope access.",
+  "bounds": "180s total, each of two read-only Git children30s;3500 members/128MiB raw+checkout/32MiB member/2MiB listing+output; only receipt metadata cap131072; original12GiB25% /8GiB20% resource floors.",
+  "cleanup": "Signal/finally handling installed in accepted recipe before children. Reap original direct Git children, close streams/descriptors/lock, retain compact SOURCE/CAPTURE reports. No runtime/cache/temp/build/wrapper duty. Abnormal descendant/hard-loss uncertainty HOLD/no automatic retry; preserve all older obligations."
+}

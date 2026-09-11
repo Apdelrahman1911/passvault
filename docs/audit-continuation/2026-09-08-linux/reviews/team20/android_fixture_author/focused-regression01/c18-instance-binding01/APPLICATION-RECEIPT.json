@@ -1,0 +1,104 @@
+{
+  "actual_request_written": false,
+  "control_execution": false,
+  "format": "passvault-focused01-instance-literal-preparation-v1",
+  "genuine_approval_written": false,
+  "inert_request": {
+    "bytes": 6867,
+    "coordination": {
+      "agents_quiescent": null,
+      "no_ci": null,
+      "sole_build_owner": "/root"
+    },
+    "images": 13,
+    "index_dependency": false,
+    "parents": 4,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/focused-regression01/c18-instance-binding01/LINUX-FOCUSED-REGRESSION-01.INERT.json.txt",
+    "sha256": "6528fbda42b643cac1814b2b1d3c058b628e10c2642822103ab4f33d26cb024c",
+    "top_level_keys": 11
+  },
+  "inputs": {
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02.json": {
+      "bytes": 11172,
+      "sha256": "73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a"
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C18-INSTANCE-POINT-01.json": {
+      "bytes": 4924,
+      "sha256": "39950879fa8130a33db354efda60f68ac384fc9bc2dd34a5114829c6f25dcb6a"
+    }
+  },
+  "metadata02_actual_acceptance": {
+    "reported_by": "/root",
+    "review": "desktop_other_review/10-C18-READONLY-FACTS02-ACTUAL-REVIEW.json",
+    "root_report": "Independently ACCEPTED; author did not repeat actual metadata review.",
+    "sha256": "a5ec4243318a258f6074b29440baafeee41f384b719d426108e2faed3ffa0290"
+  },
+  "outer": {
+    "after": {
+      "pin": {
+        "bytes": 51399,
+        "ctime_ns": 1789101578844370071,
+        "dev": 24,
+        "ino": 14314270,
+        "mode": 33152,
+        "mtime_ns": 1789101578844370071,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "b67b336901b78934c66a17a29e18587cb94c2447d05dc9336bf67455feb7416e"
+    },
+    "before": {
+      "bytes": 51279,
+      "sha256": "a855d2cf04727c39115e17b52c73ae7334edbe3d06971f99a4a9aab68b5f2eea"
+    },
+    "before_image": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/focused-regression01/c18-instance-binding01/outer.before.txt",
+    "changed_lines": [
+      44,
+      45
+    ],
+    "device": {
+      "directory_device": 23,
+      "regular_file_device": 24
+    },
+    "exact_delta_only": [
+      "DEVICE",
+      "EXPECTED_LOCK"
+    ],
+    "original_lock": {
+      "bytes": 0,
+      "ctime_ns": 1788910891124735946,
+      "dev": 24,
+      "ino": 14189001,
+      "mode": 33152,
+      "mtime_ns": 1788910891124735946,
+      "nlink": 1,
+      "uid": 0
+    },
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py"
+  },
+  "owner": "/root/android_fixture_author",
+  "patch": {
+    "bytes": 1296,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/focused-regression01/c18-instance-binding01/OUTER-LITERAL-DELTA.patch.txt",
+    "sha256": "226d224cba3a04ac459d164261f1d5607e420f88628cb65850bad3ddda6401aa"
+  },
+  "pending_gates": [
+    "Root actual launch-time agents_quiescent/no_ci assurance; null is not acceptance.",
+    "Root final request bytes and genuine counterpart exact instance approval.",
+    "All original under-lock live checks; STOP/NO RETRY/CLOSED/native-refusal/old-HOLD fences remain."
+  ],
+  "pin_provenance": {
+    "five_W_controls": "Final regular-file content/lstat/fstat before-after equality during this authorized preparation; not tool execution.",
+    "parent_namespaces_and_directories": "Copied from supplied point01; point facts only, not current launch assurance.",
+    "python3_alias": "Copy metadata02 /usr/bin/python3.12 image plus link_pin=python3_alias.lstat and link_target=python3_alias.readlink.",
+    "source_and_tools": "Seven image objects copied verbatim from supplied metadata02; no live source/tool probes."
+  },
+  "preserved_scope": "Exactly20 selected methods,3 XML suites,2 Test tasks; :app-desktop:compileTestKotlinDesktop compile-only with zero testcase credit. No index dependency.",
+  "status": "INERT_PREPARATION_ONLY_NOT_REQUEST_APPROVAL_OR_EXECUTION_ADMISSION",
+  "unchanged_controls": {
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/focused_regression_01.init.gradle": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/linux_focused_regression_01.py": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715"
+  }
+}

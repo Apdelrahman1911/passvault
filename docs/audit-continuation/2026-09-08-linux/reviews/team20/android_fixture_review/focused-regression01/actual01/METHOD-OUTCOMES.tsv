@@ -1,0 +1,21 @@
+class_id	source_method	retained_outcome
+D03	completed lock rejects a key returned by an earlier biometric attempt	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	admission precedes the biometric metadata lookup	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	admission precedes the platform enrollment lookup	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	a genuinely fresh attempt after completed lock still opens the vault	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	a stale completion cannot succeed against or relock a newer valid session	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	stale admission takes precedence over malformed candidate invalidation	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	a fresh invalid candidate still invalidates its enrollment	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	pending lock refuses admission without metadata or platform access	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	cancellation after key transfer propagates and wipes the received array	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	lock during the last access write still prevents biometric publication	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	an already open session still succeeds without an intervening lock	XML_PASS_OBSERVED_OVERALL_HOLD
+D03	an admission from another repository cannot authorize this repository	XML_PASS_OBSERVED_OVERALL_HOLD
+C01	row Save captured before further edits adopts the latest draft and preserves another row	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C01	a latest blank name rejects stale enabled row Save without losing its draft	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C01	unchanged and duplicate row Saves preserve the live value owner	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C01	late row Save cannot resurrect an unknown cancelled removed or locked draft	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C01	busy generation rejects row Save while the pending draft still exists	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C01	explicit update keeps supplied payload bounds and does not become draft Save	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C02	duplicate row Save preserves the live value and page Save persists it	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE
+C02	unchanged row Save in a dirty editor never clears the live owner	NO_XML_TARGET_NOT_REACHED_IN_RETAINED_TRACE

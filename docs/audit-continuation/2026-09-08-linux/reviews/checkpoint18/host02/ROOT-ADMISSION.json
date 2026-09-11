@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-11T14:07:57.728080+00:00",
+  "owner": "/root",
+  "purpose": "ONE_READ_ONLY_CURRENT_HOST02_FACTS",
+  "source_sha256": "ffc9ecd62dfa278b879f2c502ac5b74353079c3134b827dd1daf35fbfc48d214",
+  "source_review_sha256": "ac5d144196013e1d1d33f83e144178a423c14e971109dc8241ea512a9c035391",
+  "agents_quiescent": true,
+  "no_audit_local_or_ci_job": true,
+  "source_and_store_freeze": "T/C18/config/index and all old regular images unchanged; root permits only new external controls/reports, no runtime access.",
+  "argv": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/host02/HOST-FACTS.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "login": false,
+  "bounds": "120s cooperative; fixed28 prior images,7 dirs,12 absences,2 resource points; no Git/child/build/runtime/cleanup.",
+  "cleanup": "Close original read descriptors and existing lock once even on failure; original stdout/terminal retained. No Gradle duty and no disposable files/cache/child.",
+  "limits": "Sourcev1 never invoked; no old collector replay. All consumed/HOLD/STOP/NO-RETRY/CLOSED restrictions preserved. Fresh facts are not downstream execution admission."
+}

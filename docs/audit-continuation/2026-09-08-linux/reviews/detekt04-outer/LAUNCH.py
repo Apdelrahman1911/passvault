@@ -33,7 +33,7 @@ GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
 INDEX_SOURCE = GITDIR / 'index'
 GIT_IMAGE = Path('/usr/bin/git')
 RUBY_IMAGE = Path('/usr/bin/ruby3.2')
-EXCLUDE_STATE = None  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
+EXCLUDE_STATE = 'INFO_ABSENT'  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
 GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 INNER, INIT = W / 'scripts/audit/linux_detekt_04.py', W / 'scripts/audit/detekt_04.init.gradle'
 SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
@@ -67,17 +67,17 @@ OMITTED_TASKS = (
     ':feature:unlock:detekt',
     ':feature:vault:detekt',
 )
-COMMIT = None  # UNBOUND: exact new published source commit; root and independent review required.
-TREE = None  # UNBOUND: exact new published source tree; root and independent review required.
-MEMBERS = None  # UNBOUND: complete new source/index membership; root and independent review required.
+COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'  # C18 source only; not execution admission.
+TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # C18 source only; not execution admission.
+MEMBERS = 3432  # C18 source members only; fresh full index review still required.
 ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 BASE_REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE, Path('/usr/bin/mount'))
 REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE)
 IMAGES = ()  # Final fixed set includes the externally reviewed optional exclude only when present.
 PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
-DEVICE = None  # UNBOUND: fresh04 filesystem model; not inherited from consumed03.
-EXPECTED_LOCK = None  # UNBOUND: verify the same original Linux lock; never recreate or replace it.
-FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: exact new04 controls and complete source.
+DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # UNBOUND: fresh04 filesystem model; not inherited from consumed03.
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # UNBOUND: verify the same original Linux lock; never recreate or replace it.
+FROZEN = {INNER: 'baabb5fa66f36e83580a688b7ab13224790b5f0d99c994233e8476802e4e7c38', INIT: 'a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}  # Known current images only; admission remains UNBOUND.
 REVIEW_ASSERTIONS = (
     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',

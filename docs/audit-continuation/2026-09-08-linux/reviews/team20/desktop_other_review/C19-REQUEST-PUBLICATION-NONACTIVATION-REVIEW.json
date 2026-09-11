@@ -1,0 +1,145 @@
+{
+  "format": "passvault-c19-request-publication-nonactivation-review-v1",
+  "reviewer": "/root/desktop_other_review",
+  "disposition": "EXACT_SIX_HAVE_NO_MATCHING_DIRECT_PUSH_ACTIVATION; PR_ROUTE_REQUIRES_ROOT_ADMISSION",
+  "workspace": "/root/projects/PassVault/passvault-linux",
+  "target_branch": "codex/audit-continuation-linux-20260908",
+  "request_directory": "docs/audit-continuation/2026-09-08-linux/requests",
+  "scope": "W-only inert source/data review of all 19 current workflow trigger surfaces, these six exact request bytes and four actual audit request selectors. No Git/CI/network/runtime probes, parser/helper execution, compilation, tests, publisher safety re-review, native-body re-audit or delegation. Only this new own-lane report is written.",
+  "exact_six": {
+    "LINUX-ANDROID-COMPILE-02.json": {
+      "bytes": 11984,
+      "sha256": "317f9ce411b57c1755bbc333911e5081d93d7d788c2ffae4014ab69570d2928e",
+      "classification": "CONSUMED_HISTORICAL_LOCAL_REQUEST",
+      "run_id": "linux-android-compile02",
+      "direct_push_request_path_match": false
+    },
+    "LINUX-ANDROID-COMPILE-03.json": {
+      "bytes": 11973,
+      "sha256": "c93cdbcf29c76d53c9ab040ca0021d24f94d4ccb451171cf6dc268302856bb45",
+      "classification": "CONSUMED_HISTORICAL_LOCAL_REQUEST",
+      "run_id": "linux-android-compile03",
+      "direct_push_request_path_match": false
+    },
+    "LINUX-DETEKT-04.json": {
+      "bytes": 8844,
+      "sha256": "6cea7c172cdb7b97d7eec1a954d561baf4d06fa8daf2799a92d271b423728450",
+      "classification": "SUPERSEDED_BEFORE_FIRST_INVOCATION_NOT_LIVE_APPROVAL",
+      "run_id": "linux-detekt04",
+      "direct_push_request_path_match": false
+    },
+    "LINUX-DETEKT-04-HOST02.json": {
+      "bytes": 8836,
+      "sha256": "3ff2b04fa549d859a247dd14afed489a8df685c3fa9967bca91166dcaeb24bfb",
+      "classification": "CONSUMED_HISTORICAL_LOCAL_REQUEST",
+      "run_id": "linux-detekt04",
+      "direct_push_request_path_match": false
+    },
+    "LINUX-FOCUSED-REGRESSION-01.json": {
+      "bytes": 6867,
+      "sha256": "88da235c80fb4f6081eab0d13e255096b82769bcb9ad0e40d72dd022db3bb302",
+      "classification": "SUPERSEDED_BEFORE_FIRST_INVOCATION_NOT_LIVE_APPROVAL",
+      "run_id": "linux-focused-regression01",
+      "direct_push_request_path_match": false
+    },
+    "LINUX-FOCUSED-REGRESSION-01-HOST02.json": {
+      "bytes": 6867,
+      "sha256": "04acb2f594a628970052d503f9e58af83eb48ed564248c8c069a74f414383b20",
+      "classification": "CONSUMED_HISTORICAL_LOCAL_REQUEST",
+      "run_id": "linux-focused-regression01",
+      "direct_push_request_path_match": false
+    }
+  },
+  "historical_status_provenance": "Consumed/superseded classifications are root-supplied current task facts, not inferred from JSON flags, run_id reuse, or fresh runtime inspection. All six remain retained evidence, not current launch authority; no request is renamed, rewritten or reactivated.",
+  "workflow_sha256": {
+    "audit-ios-focused-validation.yml": "d1a1b3b5c06b46446e935ce3ff2e75ec2a829d9d6179df0b90f75ddf7c2a9dfa",
+    "audit-macos-focused-validation.yml": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b",
+    "audit-macos-native-validation.yml": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d",
+    "audit-windows-native-validation.yml": "d70ba4a276957158d2904a426e421c7303bea9c47de4fc7a96cf060ce2bb1d21",
+    "candidate-readiness.yml": "b17a0d94f2e4a04f83a77fa99ff4a6300d3eaea4961bff31bb302ba6a667acd2",
+    "ci.yml": "eddfa5917a77fa606c115c418b433a3aa04c4a061cd757af5040fbdd452d9af2",
+    "mobile-release-candidate.yml": "bc776feeadf166d5c7f3252f11b29a23a00149fa9307fb385886f273b6755760",
+    "mobile-release-external-testing.yml": "fe250fea16e1fcf8ff4b74af591b43346af66bacc3dee0883c0e7c560c2f328b",
+    "mobile-release-preflight.yml": "15f25e2c07951a8481cb1203eb4076714699efdccd6e2712a043a53de76c51c9",
+    "mobile-store-release.yml": "fdefa6745a686e180f75102d671914951e3fa5df77b07f1d2838afa2fd31c558",
+    "pages.yml": "3da09e8e67b8502cd2e9a311e890b96bdb874e85b490afd323d5925df045a933",
+    "play-access-check.yml": "f9f001ffffc7512a3da6e2b42b15cf539e25eb851cf35e2761ef5c5bbfca0040",
+    "production-release.yml": "3cf6b2ce6fc6270b007132777e0681a221d3fe3544ef39899f2917333f87d2c5",
+    "production-signing-validation.yml": "3d530176598e68a3332c47e72f43b5ff0120a6a12a669ec70f09e8a40aafa338",
+    "publish-stable-release.yml": "65d91bad705bbe9b3216d07fac954869d39f48ae6253c9a09b950a0bf0cad9f1",
+    "release.yml": "e6b842aad78a7eb8697d860265531fa606111b86e8ced44186ef64e5b0ec12b9",
+    "request-mobile-production.yml": "45525424359e72b37fbc0ec8fe38c92486211b486f5b859aed71361c122150f3",
+    "store-screenshots.yml": "6f0230f49c724372a352855a58edbf8234cd9253e58e0b839fde0ccbbb2bdeb5",
+    "testing-release.yml": "b2df9bf0d52073dbcc7351f6847d2edb4e5e903a41eae04589b9b4bfbed9a6d4"
+  },
+  "trigger_findings": {
+    "audit_push_only": {
+      "branch": "codex/audit-continuation-linux-20260908",
+      "literal_request_leaves": {
+        "audit-ios-focused-validation.yml": "ios-focused-01.json (lines 5-10)",
+        "audit-macos-focused-validation.yml": "macos-focused-02.json (lines 4-9)",
+        "audit-macos-native-validation.yml": "macos-native-01.json (lines 6-11)",
+        "audit-windows-native-validation.yml": "windows-cohort-05.json (lines 5-9)"
+      },
+      "result": "Each has exactly one literal path beneath request_directory, not a requests/** wildcard. None is one of the six Linux leaves. All four jobs additionally require the fixed repository/ref, push, nondeleted event and first attempt. None of the six leaf names occurs anywhere in these 19 workflow texts or the four fixed selector texts."
+    },
+    "other_push_surfaces": {
+      "ci.yml": "lines 3-7: push branches main/testing/release only; target audit branch is excluded. Separate pull_request caveat below.",
+      "testing-release.yml": "lines 3-6: push branch testing only; other entry is workflow_dispatch.",
+      "pages.yml": "lines 3-12: push main only and paths limited to its workflow, site/**, build-public-site.rb and the iOS app-icon PNG; other entry is workflow_dispatch."
+    },
+    "manual_or_reusable_only": {
+      "workflow_dispatch": [
+        "candidate-readiness.yml",
+        "mobile-release-candidate.yml",
+        "mobile-release-external-testing.yml",
+        "mobile-release-preflight.yml",
+        "play-access-check.yml",
+        "production-release.yml",
+        "production-signing-validation.yml",
+        "publish-stable-release.yml",
+        "request-mobile-production.yml",
+        "store-screenshots.yml"
+      ],
+      "workflow_call_and_workflow_dispatch": [
+        "mobile-store-release.yml"
+      ],
+      "workflow_call": [
+        "release.yml"
+      ],
+      "result": "The six data leaves are not dispatch inputs or callable-workflow invocations. No matching audit-branch push workflow calls these release workflows; no workflow_run, repository_dispatch, schedule, release or tag-push event was found in the 19 current on blocks."
+    }
+  },
+  "fixed_audit_selectors": {
+    "ios_focused_validation.py": {
+      "sha256": "61f7e3627758c95eed5d03aa2dd8e165e3b6fab6f3e7be7a6d3da244d1e88fc9",
+      "request_leaf": "ios-focused-01.json",
+      "selection_source_lines": "25; 429-442: fixed REQUEST read, exact three-field schema and sole A\\tREQUEST activation change"
+    },
+    "macos_focused_validation.py": {
+      "sha256": "afef956d911ccafef3d4adc7b62487fc30df28833e0868a683b58c7b392c06ef",
+      "request_leaf": "macos-focused-02.json",
+      "selection_source_lines": "24; 351-367: fixed REQUEST read, exact three-field schema and sole A\\tREQUEST activation change"
+    },
+    "macos_native_validation.py": {
+      "sha256": "d9eb3ae6f8aaa0b407069c51ad912d16e930a76805e82808aee9276336be1f79",
+      "request_leaf": "macos-native-01.json",
+      "selection_source_lines": "30; 409-422: --request has only REQUEST_PATH choice; current backend remains fail-closed"
+    },
+    "windows_native_validation.py": {
+      "sha256": "35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a",
+      "request_leaf": "windows-cohort-05.json",
+      "selection_source_lines": "27-33; 960-980: fixed REQUEST and fixed review path; 1073-1075 requires sole A\\tREQUEST change"
+    }
+  },
+  "selector_limit": "These are secondary source guards, not permission to start a workflow and rely on its eventual refusal. In particular the Windows activation-diff check is later than input validation; no claim of universal preallocation refusal is made. The first nonactivation basis is the literal workflow branch/path mismatch.",
+  "material_qualification": {
+    "id": "CI_PULL_REQUEST_SYNCHRONIZE",
+    "source": "ci.yml lines 6-7 accepts pull_request with base main/testing/release, has no paths exclusion or head-branch exclusion; validate job at 17-27 has no extra event/path gate.",
+    "consequence": "A push to this audit branch could separately produce a pull_request synchronize event if it heads a PR to one of those bases. Then docs-only changes do not prevent CI validation. This review neither asserts such a PR exists nor certifies its absence.",
+    "root_gate": "Root accepted this qualification and plans a separate fresh read of exact-branch open-PR metadata with individual terminal evidence. That observation/admission is not performed or granted here; old C18 [] metadata is not current proof."
+  },
+  "publication_boundary": "Under these effective current workflow rules, an ordinary push of the six exact paths to the exact audit branch has no matching validation/release push trigger. Unconditional no-job/nonactivation is NOT proved by this source-only review because of the PR route. Root independently owns actual delta/target-workflow binding, metadata reconciliation and Git admission; excluding .github/product paths from the planned delta does not itself prove remote workflow bytes or PR state.",
+  "selection_guidance": "Source-only nonactivation supports preserving these exact six historical leaves at their existing names/hashes, not a requests/** allowlist expansion, any four platform activation leaf, new/renamed request, explicit dispatch, protected-ref publication or retry. Root reports exact six added in its bounded W delta and all .github/product paths excluded; this report is not an independent Git-diff attestation or publisher approval.",
+  "authority": "No execution, publication, CI, retry, cleanup or release authority. All prior consumed/HOLD/STOP/NO-RETRY/CLOSED states, protected refs, original-store/lock, held runtimes and terminal gaps remain unchanged."
+}

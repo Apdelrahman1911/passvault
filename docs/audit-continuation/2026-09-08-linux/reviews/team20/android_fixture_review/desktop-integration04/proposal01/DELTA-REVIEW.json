@@ -1,0 +1,219 @@
+{
+  "author_receipt": {
+    "bytes": 9349,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/GUI04-PROPOSAL-RECEIPT.json",
+    "sha256": "3e2356f08ca90e6e106f22ade392df4eae8b7c5ff95e069e20f8dc70d1a9e981"
+  },
+  "basis": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_main_review/GUI04_HOST02_COMPILE03_ADMISSION_BASIS.md",
+    "sha256": "1d63d81744301f16358fd270d51c95875e173d798d8a1d2f746f2d32901f6578"
+  },
+  "capacity": {
+    "OID_input_and_capture_bytes": {
+      "encoded_bytes": 140712,
+      "formula": "3432 * (40 hexadecimal OID bytes + 1 newline) = 140712; no OID deduplication",
+      "manifest_ordered_rows": 3432,
+      "new": 147456,
+      "old": 131072
+    },
+    "independent_check": "Derived from manifest rows without deduplication:140712 OID input bytes,113336811 raw blob bytes,113515367 projected batch bytes,maxblob11439084.3196 ceiling cannot admit3432;144KiB147456 admits the exact140712 bytes while preserving MEMBERS*41 equality. Both OID guard and capture raised together. Batch remains below128MiB and maxblob below32MiB; those limits and parent-mountinfo128KiB unchanged.",
+    "manifest_max_blob_bytes": 11439084,
+    "manifest_projected_batch_bytes": 113515367,
+    "manifest_raw_blob_bytes": 113336811,
+    "member_ceiling_inner_and_outer": {
+      "new": 3432,
+      "old": 3196
+    },
+    "parent_mountinfo_cap_unchanged": 131072,
+    "per_blob_cap_unchanged": 33554432,
+    "raw_blob_stream_cap_unchanged": 134217728
+  },
+  "controls": {
+    "init": {
+      "all_other_bytes_identical": true,
+      "base": {
+        "bytes": 11662,
+        "path": "/root/projects/PassVault/passvault-linux/scripts/audit/desktop_integration_03.init.gradle",
+        "sha256": "45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292"
+      },
+      "changed_lines": [
+        7,
+        11,
+        13,
+        15,
+        16,
+        18,
+        127,
+        133,
+        146,
+        176,
+        192
+      ],
+      "inert_proposal": {
+        "bytes": 11651,
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/desktop_integration_04.init.gradle.txt",
+        "sha256": "355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf"
+      },
+      "unchanged_line_count": 194
+    },
+    "inner": {
+      "all_other_bytes_identical": true,
+      "base": {
+        "bytes": 91480,
+        "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_desktop_integration_03.py",
+        "sha256": "c2feebee723587d21c6fe32540f2d039ac564441f62a31c5f891ef059ed4cf2b"
+      },
+      "changed_lines": [
+        2,
+        4,
+        11,
+        13,
+        14,
+        34,
+        35,
+        37,
+        38,
+        63,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        73,
+        74,
+        83,
+        89,
+        95,
+        101,
+        154,
+        162,
+        163,
+        362,
+        399,
+        402,
+        431,
+        456,
+        697,
+        707,
+        1391,
+        1393,
+        1401,
+        1447
+      ],
+      "inert_proposal": {
+        "bytes": 91498,
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/linux_desktop_integration_04.py.txt",
+        "sha256": "f0f2879d479ae4fc215b5a138177e7372456504d6720ed579d92c0271b7c0b67"
+      },
+      "unchanged_line_count": 1494
+    },
+    "outer": {
+      "all_other_bytes_identical": true,
+      "base": {
+        "bytes": 55258,
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py",
+        "sha256": "24560eb22ee51f3c743476213ed6a9b15acd748566156090cfd66d2b6be8273e"
+      },
+      "changed_lines": [
+        2,
+        27,
+        28,
+        29,
+        30,
+        31,
+        33,
+        34,
+        36,
+        37,
+        41,
+        42,
+        43,
+        44,
+        54,
+        55,
+        56,
+        69,
+        442,
+        456,
+        657,
+        668,
+        675,
+        684,
+        716,
+        780,
+        791,
+        839
+      ],
+      "inert_proposal": {
+        "bytes": 55143,
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/LAUNCH04.py.txt",
+        "sha256": "7ec1b69f7c4d285e26136c3f5035d120f99b6d72b522d9a9120b7a61e2d4289a"
+      },
+      "unchanged_line_count": 912
+    }
+  },
+  "disposition": "ACCEPT_INERT_MINIMAL_GUI04_SOURCE_DELTA_ONLY",
+  "exact_delta": {
+    "bytes": 26220,
+    "classes": "Distinct04 control/run/request/reviewer/private-GUI identities and failure/HOLD provenance; shared C18 source binding; dependent frozen hashes; four fixture digest cells; finite C18 capacity; inherited GUI-route/device/lock admissions reset to UNBOUND. Every other byte is unchanged.",
+    "independently_regenerated_byte_for_byte": true,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/GUI04-MINIMAL-DELTA.patch.txt",
+    "sha256": "a5e978ceb5e2c638da8a82ec8033acce2d24370001a7c138ce02ead4333b051f"
+  },
+  "fixture_binding": {
+    "production_files_unchanged": {
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt": "fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac",
+      "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt": "9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93"
+    },
+    "selection_block_check": "Exactly1 Room and3 Main sibling digest cells changed; after those substitutions the entire selection block is byte-identical. Init task/class selections and both production bindings are byte-identical. Hashes independently agree with shared SOURCE checkout_sha256 rows, not assumed raw Git hashes.",
+    "selection_cells": 4,
+    "unique_fixture_files": {
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt": "1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761",
+      "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt": "109a0534da3023b7cc1f951ba6c4f8b57f8e0e78f718bef765f7d05cc3223417"
+    }
+  },
+  "frozen_chain": "Independently checked SOURCE + proposed INIT -> proposed INNER -> proposed OUTER FROZEN entries. Shared SOURCE roots resolve identically in inner/outer. No new source collector or self-hash cycle.",
+  "next_gate": "Root alone decides promotion and later whole04 request/approval/admission. Fresh exact source/tool/alias/parent/original-lock/R-E absence/allocation/resources/GUI route/domain/namespace and agent/tool/CI conditions remain separate; HOST02 absences do not cover GUI04. Later missing literal bindings and dependency hashes require exact delta review, not another full review of unchanged controls. This file is not INSTANCE-ACCEPT.json and grants no launch or cleanup.",
+  "preservation": "GUI03 preparation143/stop0/terminal70,zero four cases,source-after/cleanup-safe false and original R/control/evidence HOLD persist. Compile03 settled only its own runtime; Observer01 failed absence remains failed. No adoption,access,signalling,cleanup or replay of old held R is authorized. All consumed runs/old HOLDs, PVU007 STOP, PVU011 NO RETRY, PVA029 failure/no automatic retry, G7/G8 CLOSED,native refusal and occupied1017001 fences persist.",
+  "remaining_03_references": [
+    {
+      "control": "inner",
+      "line": 4,
+      "text": "Copies held integration03 source as text, never imports/runs an earlier helper."
+    },
+    {
+      "control": "inner",
+      "line": 67,
+      "text": "# Fresh GUI/tool/route/instance admission remains unbound; GUI03 authority is not reused."
+    },
+    {
+      "control": "outer",
+      "line": 34,
+      "text": "# Never borrow GUI03 or other consumed-instance authority; old runtime HOLD remains."
+    }
+  ],
+  "reviewer": "/root/android_fixture_review",
+  "safety_and_status": "Shared foreign-Java/BUILDLIKE/watch screening is not weakened, exempted or bypassed. Strict wrapper/JDK17/serial flags, private route recipe, one5250/6000 outer clock without renewal, original stop/settlement/evidence and safe-new-root-only cleanup logic are unchanged. The preparation basis is not launch authority. Root latest status supersedes its earlier pending-static wording: static04 consumed/failed on outside-owned javac, not a repaired mechanism; focused01 approval remains frozen/unused. Their disposition and any ensuing source change must be reconciled before GUI04 final admission.",
+  "scope": "Four existing requirement methods/four suites in exactly two serial Test tasks: shared Room first; app Main/PVU003 chooser/PVA027 Settings-property siblings, sibling order unspecified. No passed lifecycle/tray endpoint rerun, added case, oracle weakening, helper redesign or product validation credit. Prior substantive control/fixture reviews are reused, not repeated.",
+  "source_binding": {
+    "bytes": 1879327,
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "independently_checked": "Existing manifest bytes/hash, format, C18 commit/tree,3432 unique paths,2 retained EOL qualifications; four selected fixture/production rows checked against checkout_sha256. No recapture, Git/tool call or app/fixture source edits. Newly bound controls remain separate W control images, not replacement C18 raw blobs.",
+    "members": 3432,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "recaptured": false,
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a"
+  },
+  "unbound_admission": {
+    "check": "The unchanged inner is-True route gate rejects UNBOUND; unchanged outer integer DEVICE/dict EXPECTED_LOCK guards reject placeholders. These are fail-closed inert bindings, not fresh host facts. No new request or instance approval exists from this review.",
+    "inner.PANEL_ROUTE_ADMITTED": "UNBOUND",
+    "outer.DEVICE": {
+      "directory_device": "UNBOUND",
+      "regular_file_device": "UNBOUND"
+    },
+    "outer.EXPECTED_LOCK": "UNBOUND"
+  },
+  "work_performed": "Bounded inert text/JSON/hash/diff and manifest arithmetic only. No helper execution/import/AST,build/test,Git/proc/runtime/SDK/network probe,application/source/request/approval/central-ledger edits. Original GUI03 controls hash-verified and untouched; only this own report created. No background job or new stop obligation; reviewer quiesces after delivery."
+}

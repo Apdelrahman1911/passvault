@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "reviewer": "/root/database_review",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_EXACT_BOUND_C18_SHARED_SOURCE_PREPARER_INSTANCE_ONLY",
+  "scope": "Pre-execution exact instance acceptance for root-only one-shot admission, not actual capture success, consumer admission or a new execution budget.",
+  "bindings": {
+    "published_unbound_source": {
+      "path": "reviews/team20/pva031_investigator/c18-source-prepare/SOURCE-PREPARE.py.txt",
+      "sha256": "424e30c470dd88b028bb39e007c72ca4ce7ad1b83f044eeead0db1c7eb048c20",
+      "bytes": 17678
+    },
+    "bound_source": {
+      "path": "reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+      "sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+      "bytes": 17797
+    },
+    "binding": {
+      "path": "reviews/checkpoint18/source-prepare01/BINDING.json",
+      "sha256": "768be8aa2f892fb30bea0f409b5cb3d4819c2777f2b4b48a81de662376ce200e",
+      "bytes": 2100
+    },
+    "fresh_facts": {
+      "path": "reviews/checkpoint18/SOURCE-STORE-ADMISSION.json",
+      "sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+      "bytes": 4146
+    },
+    "publication_receipt": {
+      "path": "publication/CHECKPOINT-18-PUBLISHED.json",
+      "sha256": "b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6",
+      "bytes": 78785
+    },
+    "publication_actual_review": {
+      "path": "reviews/team20/desktop_other_review/06-C18-PUBLICATION-ACTUAL-REVIEW.json",
+      "sha256": "800beb809a80a108ccf69e321273d6159bada21f0a5a05d2ea887d3281f18808",
+      "bytes": 8477
+    },
+    "publication_external": {
+      "path": "publication/CHECKPOINT-18-EXTERNAL.json",
+      "sha256": "439794e081b11b7daf411542dd0dd0f82c66fd736e22be020bf9441b99ab5f4f",
+      "bytes": 2197
+    },
+    "prior_facts": {
+      "path": "reviews/checkpoint17/SOURCE-STORE-ADMISSION.json",
+      "sha256": "d475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c",
+      "bytes": 4219
+    },
+    "receipt_cap_review": {
+      "path": "reviews/team20/database_review/C18-SOURCE-PREPARE-RECEIPT-CAP-REVIEW.json",
+      "sha256": "651d7370aa81ba3784f9126f4ddc9b7b5f95a3c310c7c6f384a772248a69e6c3",
+      "bytes": 3285
+    }
+  },
+  "exact_source_proof": {
+    "accepted_cap_adjusted_unbound_sha256": "4360a4e872b8b5b9980a6c2d51ba6ceffbd13b1985e851f8c52b3ec0b07f60a3",
+    "bound_sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+    "bound_bytes": 17797,
+    "lf": 288,
+    "only_changed_lines": [
+      19,
+      21,
+      22
+    ],
+    "forward_and_inverse_reproduce_complete_bytes": true,
+    "all_other_code_caps_commands_guards_cleanup_identical": true
+  },
+  "fresh_identity": {
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+    "facts_sha256": "cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a",
+    "publication_sha256": "b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6",
+    "proof": "Three BINDING literal substitutions checked without eval/import; exact fact/receipt/review commit/tree agree. Fresh41-byte branch-ref hash, symbolic HEAD hash and original shallow-boundary hash independently reconstructed from text. No historical C17 source identity transferred."
+  },
+  "metadata_preservation": "Retained C17/C18 checkout/store/coordination directory dictionaries and complete original-lock/config/HEAD/shallow/absence observations match exactly. Workspace-parent dev/ino/uid/mode match; nlink11->12 is explicit fresh metadata, not a full-dictionary historical match. Unchanged guard checks full fresh directory pins includingnlink12. These are executor-supplied records, not live reviewer probes or future-state proof.",
+  "fresh_metadata_settlement": "Root reports one lock-held read-only metadata capture, no Git/child, terminal tool8c100b exit0 and no descriptor errors. No independently retained metadata external-tool object was supplied to this reviewer; provenance remains that root statement plus the hashed facts.",
+  "publication_prerequisite": "Exact800beb809... actual review accepts settled C18 publication. Retained439794e0... external terminal d49a97 is0/no remaining session; terminal status/commit/tree/error-null match receipt. This checks retained reconciliation, not a second publisher execution or broader republication audit. Old C17 publisher-terminal gap remains.",
+  "planned_root_invocation": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py"
+  ],
+  "unchanged_envelope": "One foreground source-preparer invocation; only two fixed read-only Git children<=30s each/whole operation180s;3500 members,128MiB raw AND checkout,32MiB/member,2MiB listing/source/output limits,12GiB/25% entry and8GiB/20% active floors, unchanged EOL/refusal/owned-child/descriptor/lock/exclusive-output/HOLD rules. Only the separately accepted PUB receipt cap is128KiB; other metadata caps remain unchanged.",
+  "expected_count_and_bytes": "Root-supplied3432 members/113336811 raw bytes are below unchanged3500/128MiB limits; not recounted or independently captured here. Recorded fresh resource point meets entry floors; no continuous resource or future manifest/checkout/output-fit promise.",
+  "remaining_conditions": "Root must preserve exact reviewed W helper/facts/receipt and original T/config/lock freeze, obey unchanged fresh-output guards and perform only the stated admitted invocation. Retain actual external terminal/descriptor settlement and exact SOURCE/SOURCE-CAPTURE bytes for independent actual review. Any drift, occupied outputs, failure, interruption or settlement uncertainty remains HOLD/no automatic retry; no cleanup of old resources or Gradle-stop authority.",
+  "activity": "Known retained W text/JSON/hash reads and in-memory literal inverse/identity comparisons/arithmetic only; wrote this new compact report. No helper import/execution/syntax check, tests/harness/member recount/full machinery rereview, Git/T/proc/runtime/tool/SDK/network probe, existing-file edit or output capture. Foreground data readers closed.",
+  "boundaries": "Root owns admission/execution/publication/CI/cleanup/central ledgers. All PVU007 STOP,PVU011 NO RETRY,PVA029 failure/no automatic retry,G7/G8 CLOSED,consumed/HOLD/native-refusal/held-runtime/hardware/PVD/protected-ref/Store/occupied1017001 restrictions persist. No additional tests/closures or denominator change."
+}

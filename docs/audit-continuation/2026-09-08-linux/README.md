@@ -1,8 +1,34 @@
+## Current checkpoint19 preparation — 2026-09-11
+
+**INCOMPLETE / NOT READY; no audit-owned build/test/CI is running.** Read
+`CHECKPOINT_19.md` and the current ledgers. Compile03 is independently accepted,
+compiler-only, with original stop0/runtime removal. Static04 and focused01 are
+consumed operational failures; both original stops returned0. Focused01 retains
+12 exact database XML-pass observations under overall source-after/cleanup HOLD;
+8 credential methods and Desktop test compilation remain unvalidated. Its
+scheduling reservation is released, not a pending launch. All held roots remain
+untouched; no extra stop or automatic retry.
+
+Counts remain **19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**; eight PVD
+explanations/owner decisions separate. Retained XML is **199 prior mixed events
++12 partial observations +3 infrastructure +1 producer =215**, not215 passes or
+a clean12/20-case cohort. Conditional remaining effort: **2–4 engineering weeks**,
+external waits excluded. Further builds need a genuinely quiet coordinated window;
+no screening exemption is justified. GUI04 is source-reviewed but inert/unbound.
+C19 is an evidence-only checkpoint being prepared on unchanged published C18
+product source. The narrow prospective publication-only freeze release is now independently
+reviewed and explicitly adopted; exact publication admission remains separate.
+Original C18 config/objects/index snapshots and every held root stay protected.
+All earlier paragraphs below are historical where their pending status differs.
+
 # Linux continuation — in progress, not a release
 
-## Current resumed work — C18 preparation, not yet published
+## Historical C18 preparation — validation was pending
 
-The last published checkpoint is C17 (`0563e31adc9a66aefc3e74b99b9a24d17bdcdd49`).
+C18 is published at `6489252e88ad553a867d67578eff45a402e62a48` /
+`57d338a931ab0fb4e072aabcbbfd27bead8ef08a`. Its twenty-two Git command exits and
+original external terminal0 were independently reconciled; no application test
+or closure credit. Only the dedicated branch advanced; protected refs unchanged.
 Continue from `RESUMED_SESSION_2026-09-11.md`, the current ledgers and slot.
 The existing twenty-agent team has applied ten independently reviewed patches
 across seventeen application/test paths. Exact after-images are bound in
@@ -165,7 +191,7 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest report: `CHECKPOINT_18.md`; current C18 summary supersedes historical pending statuses.**
+**Latest report: `CHECKPOINT_19.md`; current C19 summary supersedes historical pending statuses.**
 
 **Historical: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
 One additional Desktop test plus two Android instrumentation cases and minimal

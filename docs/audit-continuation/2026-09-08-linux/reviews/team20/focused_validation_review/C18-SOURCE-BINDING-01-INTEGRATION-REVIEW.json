@@ -1,0 +1,133 @@
+{
+  "actual_controls": [
+    {
+      "before_sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+      "current_bytes": 3931,
+      "current_lf": 86,
+      "current_sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+      "exact_full_afterimage_equals_approved": true,
+      "exact_inverse_equals_published_beforeimage": true,
+      "git_mode": "100644",
+      "path": "scripts/audit/detekt_04.init.gradle",
+      "unchanged": true
+    },
+    {
+      "before_sha256": "d01236439dc9009c4d6a941f783d667d0d0e0267d48396643bdcde6de819fc27",
+      "current_bytes": 56219,
+      "current_lf": 973,
+      "current_sha256": "d1d5fb327d58dfbaddc252867539ed1ae5204df73ca1b8544857e686746c2372",
+      "exact_full_afterimage_equals_approved": true,
+      "exact_inverse_equals_published_beforeimage": true,
+      "git_mode": "100644",
+      "path": "scripts/audit/linux_detekt_04.py",
+      "unchanged": false
+    },
+    {
+      "before_sha256": "6d5687536832061f8c2d2e57a467eba30404e4d2282b981a994013671417b2a5",
+      "current_bytes": 60836,
+      "current_lf": 1040,
+      "current_sha256": "5516d22e6199db3e97bcc09eb19f1edcec947f12d50d7537951cc71b4c908706",
+      "exact_full_afterimage_equals_approved": true,
+      "exact_inverse_equals_published_beforeimage": true,
+      "git_mode": "100644",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py",
+      "unchanged": false
+    }
+  ],
+  "all_actual_bytes_equal_approved_afterimages": true,
+  "all_exact_inverses_equal_published_C18_unbound_beforeimages": true,
+  "approved_proposal": {
+    "bytes": 8443,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01.json",
+    "sha256": "ee4d09c750ac449cd2ddccb5459938f201dcab86e543e283607f96d7eec218f9"
+  },
+  "author_integration": {
+    "bytes": 7542,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01-INTEGRATION.json",
+    "sha256": "44c6620748d25615fca06ef31d96ea02225c0d78cb6f76695c8220b25d404eeb"
+  },
+  "bound_values_only": [
+    "inner/outer COMMIT",
+    "inner/outer TREE",
+    "inner/outer MEMBERS",
+    "inner FROZEN SOURCE/INIT",
+    "outer FROZEN INNER/INIT/SOURCE"
+  ],
+  "changed_files": 2,
+  "current_regular_single_link_git_modes_verified": true,
+  "exact_patch": {
+    "bytes": 3495,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-SOURCE-BINDING-01.patch.txt",
+    "sha256": "83dea5633901f1462761f745baa24a790262c43f71ef98d130e3bdf213ca813f"
+  },
+  "fences": "Root-only execution/Git/publication/cleanup/admission. Preserve original lock without recreation. GUI03 terminal70/zero cases/current-R cleanup HOLD; PVU007 STOP; PVU011 NO RETRY; PVA029 failure/no automatic retry; G7/G8 CLOSED; all older HOLDs/native refusal/device/PVD/publication restrictions unchanged.",
+  "format": "passvault-detekt04-c18-partial-source-integration-independent-review-v1",
+  "historical_filesystem_identity_limit": "Reviewer independently verifies current regular/single-link mode, exact bytes and reversibility. Author records in-place write order/original inode continuity; reviewer did not separately retain pre-write inode tuples or witness the writes, so does not independently certify that historical metadata claim.",
+  "init_bytes_unchanged": true,
+  "instance_acceptance_absent": true,
+  "instance_acceptance_created": false,
+  "new_application_or_junit_cases": 0,
+  "outer_binds_exact_actual_inner": true,
+  "paired_proposal_review": {
+    "bytes": 24460,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_review/C18-SOURCE-BINDING-01-REVIEW.json",
+    "sha256": "9ed901c823b0cf542e0ed2ba41dc5a00c06d708b83d9d0b319aa96beb94e172f"
+  },
+  "pre_intake_hold": "Remaining None exclusions/device/original-lock still fail unchanged inner890-896 and outer803-820 before intake. No helper was invoked to establish this source-only fact.",
+  "projection": {
+    "bytes": 61494,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/C18-REUSE-PROJECTION-01.json",
+    "sha256": "1916def6ce64296197d2b35d89ed0029a12411d8815e0649223d9c8255e1b625"
+  },
+  "publication_boundary": "Only released external W inner/outer received source-field bindings by author; init/source manifest/published C18 beforeimages and historical accepted proofs/proposals remain unchanged. New receipts are outside captured C18. These are partial external controls, not final admitted images.",
+  "remaining_unbound": {
+    "fresh_index_config_exclude_packet": null,
+    "fresh_tool_alias_packet": null,
+    "genuine_instance_acceptance": null,
+    "inner_EXCLUDE_STATE": null,
+    "outer_DEVICE": null,
+    "outer_EXCLUDE_STATE": null,
+    "outer_EXPECTED_LOCK": null,
+    "request": null
+  },
+  "required_next": [
+    "Root fresh same-C18 full stage0 index/config/exclude/tool/alias/device/original-lock packet and narrow independent binding review.",
+    "Refresh dependent outer INNER digest for any later inner change; never pretend current partial image is final.",
+    "Genuine exact request and distinct reviewer INSTANCE-ACCEPT only after complete source/packet binding and independent review.",
+    "Root truthful quiescence/no-CI/resource/host/original-lock admission and eventual full guard/source-before-after/original stop/settlement/cleanup evidence."
+  ],
+  "reviewed_utc": "2026-09-11T04:17:59.416535+00:00",
+  "reviewer": "/root/focused_validation_review",
+  "reviewer_activity": "Bounded stable no-follow source/JSON/hash/literal/unified-diff reads and NEW own-lane review write only. No helper import/AST/compilation/execution, live T/Git/index/tool/runtime/process/SDK/CI probes, private contents, requests/approvals, source or central-ledger writes.",
+  "source": {
+    "bytes": 1879327,
+    "commit": "6489252e88ad553a867d67578eff45a402e62a48",
+    "members": 3432,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "sha256": "a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3",
+    "tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a"
+  },
+  "source_scope": {
+    "full_source_derived_inputs": 441,
+    "graph_nodes_with_guard": 7,
+    "omitted_complete_sets": 16,
+    "omitted_inputs": 171,
+    "ordinary_configuration_inputs": 42,
+    "qualification": "Exact source plans/reuse projection already independently reviewed, not fresh analyzer/test output. Database76 includes added BackupDatabaseTextOrder.kt; root03 still unstarted.",
+    "retained_report_members": 42,
+    "root_scripts": 21,
+    "selected_analyzers": 6,
+    "selected_counts": [
+      21,
+      39,
+      92,
+      19,
+      76,
+      23
+    ],
+    "selected_inputs": 270
+  },
+  "unchanged_bodies": "All nonbinding bytes equal published reviewed beforeimages, preserving init graph/domain/omissions, flags/STOP/ENV, full source/index transport, quiescence and all original resource/report/stop/settlement/cleanup logic.",
+  "verdict": "ACCEPTED_EXACT_PARTIAL_SOURCE_INTEGRATION_NOT_INSTANCE_OR_EXECUTION_ADMISSION",
+  "whole_line_replacements": 8
+}

@@ -1,6 +1,43 @@
+## Current checkpoint19 preparation — 2026-09-11
+
+**INCOMPLETE / NOT READY; no audit-owned build/test/CI is running.** Read
+`CHECKPOINT_19.md` and the current ledgers. Compile03 is independently accepted,
+compiler-only, with original stop0/runtime removal. Static04 and focused01 are
+consumed operational failures; both original stops returned0. Focused01 retains
+12 exact database XML-pass observations under overall source-after/cleanup HOLD;
+8 credential methods and Desktop test compilation remain unvalidated. Its
+scheduling reservation is released, not a pending launch. All held roots remain
+untouched; no extra stop or automatic retry.
+
+Counts remain **19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**; eight PVD
+explanations/owner decisions separate. Retained XML is **199 prior mixed events
++12 partial observations +3 infrastructure +1 producer =215**, not215 passes or
+a clean12/20-case cohort. Conditional remaining effort: **2–4 engineering weeks**,
+external waits excluded. Further builds need a genuinely quiet coordinated window;
+no screening exemption is justified. GUI04 is source-reviewed but inert/unbound.
+C19 is an evidence-only checkpoint being prepared on unchanged published C18
+product source. The narrow prospective publication-only freeze release is now independently
+reviewed and explicitly adopted; exact publication admission remains separate.
+Original C18 config/objects/index snapshots and every held root stay protected.
+All earlier paragraphs below are historical where their pending status differs.
+
+# Historical focused-validation preparation — 2026-09-11T13:11:38.833985+00:00
+
+SOURCE, corrected metadata02 and the full3432-member index capture are independently accepted and consumed. Metadata01 remains a preserved parser failure. Final AndroidCompile02, static04 and focused20/Desktopcompile requests are sealed under `reviews/team20/root/C18-FINAL-REQUEST-SEAL.json`; genuine final approvals and each root execution admission are pending. All20 were quiescent at seal; only the three final reviewers resumed. No build/test/CI is active and no counts changed. Earlier pending-source captions below are historical; never replay those captures.
+
 # Owner-resumed continuation — 20 agents
 
-## Current update after GUI03 and source integration
+## Current post-C18 update
+
+**IN PROGRESS / NOT READY.** C18 publication and its original terminal have been
+independently reconciled. Shared source capture completed once (3432 members);
+actual review and one new shared index/tool capture precede the focused serial
+cohorts. See `TEAM_20_RESUME.md` for current author/reviewer assignments.
+No build/test/CI is active; no new test or closure credit. The earlier pause and
+all failures/holds remain historical evidence. Do not repeat already completed
+publication or source capture because earlier paragraphs said they were pending.
+
+## Historical update after GUI03 and source integration
 
 **IN PROGRESS / NOT READY; C18 not yet published.** Twenty agents were created;
 completed lanes are reused only for useful bounded work, not redundant reviews.

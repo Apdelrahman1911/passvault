@@ -1,0 +1,160 @@
+{
+  "format": "passvault-androidcompile03-inert-identity-proposal-v1",
+  "author": "/root/android_compile_author",
+  "status": "INERT_NEW03_PROPOSAL_ONLY_NO_RELEASE_OR_EXECUTION",
+  "application_semantics": "Create distinct03 controls from preserved02 bases and this exact ordered text delta; never rename, overwrite or replay02.",
+  "controls": [
+    {
+      "role": "init",
+      "base02": "/root/projects/PassVault/passvault-linux/scripts/audit/android_compile_02.init.gradle",
+      "proposed03": "/root/projects/PassVault/passvault-linux/scripts/audit/android_compile_03.init.gradle",
+      "base_sha256": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "proposed_sha256": "5c966dfd2b9b0714a5ce84885b49a0a9e78759bbe350f6761041d4e26bc3b109",
+      "bytes": 13511,
+      "LF": 195
+    },
+    {
+      "role": "inner",
+      "base02": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_compile_02.py",
+      "proposed03": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_compile_03.py",
+      "base_sha256": "028f8f660a4923a0ec9746fd2f9d3aa6a048b342915d6888872d5103a672e5e9",
+      "proposed_sha256": "a7d3ced291481f6171acbd54c4c7af4a3931b8d84abae3fdb003c3004c2b7323",
+      "bytes": 64213,
+      "LF": 1038
+    },
+    {
+      "role": "outer",
+      "base02": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py",
+      "proposed03": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-compile03-outer/LAUNCH.py",
+      "base_sha256": "093680180fbd4336a12ea4a29b4a665bcfac8ffae78765df25e95b759e2cccae",
+      "proposed_sha256": "b7a9126c8ae42372965321f710344f1132603518ed087ea5883246fe786539f3",
+      "bytes": 64469,
+      "LF": 1059
+    }
+  ],
+  "ordered_identity_replacements": [
+    {
+      "from": "linux-android-compile02",
+      "to": "linux-android-compile03",
+      "counts": {
+        "init": 5,
+        "inner": 10,
+        "outer": 14
+      }
+    },
+    {
+      "from": "reviews/android-compile02-outer/LAUNCH.py",
+      "to": "reviews/android-compile03-outer/LAUNCH.py",
+      "counts": {
+        "init": 0,
+        "inner": 0,
+        "outer": 1
+      }
+    },
+    {
+      "from": "android_compile_02",
+      "to": "android_compile_03",
+      "counts": {
+        "init": 0,
+        "inner": 2,
+        "outer": 2
+      }
+    },
+    {
+      "from": "LINUX-ANDROID-COMPILE-02.json",
+      "to": "LINUX-ANDROID-COMPILE-03.json",
+      "counts": {
+        "init": 0,
+        "inner": 0,
+        "outer": 1
+      }
+    },
+    {
+      "from": "ONE_LINUX_ANDROID_COMPILE02",
+      "to": "ONE_LINUX_ANDROID_COMPILE03",
+      "counts": {
+        "init": 0,
+        "inner": 0,
+        "outer": 1
+      }
+    },
+    {
+      "from": "PASSVAULT_ANDROID_COMPILE02=",
+      "to": "PASSVAULT_ANDROID_COMPILE03=",
+      "counts": {
+        "init": 1,
+        "inner": 1,
+        "outer": 0
+      }
+    },
+    {
+      "from": "AndroidCompile02",
+      "to": "AndroidCompile03",
+      "counts": {
+        "init": 1,
+        "inner": 5,
+        "outer": 2
+      }
+    },
+    {
+      "from": "execution02",
+      "to": "execution03",
+      "counts": {
+        "init": 1,
+        "inner": 0,
+        "outer": 0
+      }
+    },
+    {
+      "from": "fresh02",
+      "to": "fresh03",
+      "counts": {
+        "init": 1,
+        "inner": 2,
+        "outer": 4
+      }
+    },
+    {
+      "from": "reviews/team20/android_compile_review/INSTANCE-ACCEPT.json",
+      "to": "reviews/team20/android_compile_review/INSTANCE03-ACCEPT.json",
+      "counts": {
+        "init": 0,
+        "inner": 0,
+        "outer": 1
+      }
+    }
+  ],
+  "ordered_dependent_hash_replacements": [
+    {
+      "role": "inner",
+      "from": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "to": "5c966dfd2b9b0714a5ce84885b49a0a9e78759bbe350f6761041d4e26bc3b109",
+      "count": 1
+    },
+    {
+      "role": "outer",
+      "from": "35beeda0a6766d406e1f18bf6740a07d5f9730658673c67397c5c16d1108b41c",
+      "to": "5c966dfd2b9b0714a5ce84885b49a0a9e78759bbe350f6761041d4e26bc3b109",
+      "count": 1
+    },
+    {
+      "role": "outer",
+      "from": "028f8f660a4923a0ec9746fd2f9d3aa6a048b342915d6888872d5103a672e5e9",
+      "to": "a7d3ced291481f6171acbd54c4c7af4a3931b8d84abae3fdb003c3004c2b7323",
+      "count": 1
+    }
+  ],
+  "diff": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_compile_author/compile03-proposal01/ANDROID-COMPILE03-PROPOSAL.patch.txt",
+    "sha256": "eaaa25b6b1e52d5b720ef7e6a22f7d52c0f2e2cc7f4b73fc90f902656ae407df",
+    "bytes": 18695
+  },
+  "qualification": "Only current execution/control/receipt identities and dependent hash pins change. C18 source3432/four raw pins, six ordered root roles/offline=false, domain26/exact Jar edges, guards/caps/compile/stop/cleanup semantics and existing lock/device/exclude literals are retained. New03 directory/SDK/alias/instance facts and genuine request/approval remain root-supplied; no directory rebase or request projection from consumed02 facts.",
+  "verification": "Exact reverse ordered text substitutions recover all admitted02 bytes; equal LF counts; all02 controls readback unchanged. No new03 target accessed/created, no project-helper parse/import/run, T/SDK/tool probe, harness, request, approval, execution or retry.",
+  "construction_note": "An initial overlapping-name assertion stopped in-memory text construction before any writes. The SELF rename was narrowed to its full path literal, then exact forward/reverse text checks passed; no audit execution was attempted.",
+  "consumed02_context": {
+    "external_result_sha256": "e7f4e5d75ccc8cf92fced10d4c187fa21eefa7db3f67ee13702042881d1f602e",
+    "postrefusal_directory_diagnostic_sha256": "2362e628c0be2cf4bc07a716bfa568bb8703675db01199227ac404eafe850e62",
+    "qualification": "Read supplied records as data only; no inferred cause, continuity, absence, cleanup or new-instance admission."
+  }
+}
