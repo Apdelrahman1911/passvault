@@ -1,0 +1,12 @@
+--- a/core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt
++++ b/core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt
+@@ -47,7 +47,8 @@
+  * operations receive tracked, revocable key leases so lock can cancel an
+  * operation without waiting indefinitely for arbitrary suspending work.
+  */
+-@Suppress("TooManyFunctions") // This is the sole owner of the in-memory VEK and its serialized state machine.
++// VEK transitions and revocable-lease cleanup deliberately share one serialized state owner.
++@Suppress("TooManyFunctions", "LargeClass")
+ class VaultRepositoryImpl(
+     private val vaultMetadataDao: VaultMetadataDao,
+     private val cryptoEngine: CryptoEngine,

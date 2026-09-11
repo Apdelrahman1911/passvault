@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "reviewer": "/root/build_config",
+  "executor": "/root",
+  "review_date_utc": "2026-09-11",
+  "disposition": "ACCEPT_RETAINED_C17_INDEX_TOOL_CAPTURE_WITH_EXPLICIT_SCOPE_QUALIFICATIONS_NOT_CONSUMER_ADMISSION",
+  "bindings": {
+    "plan": {
+      "path": "reviews/checkpoint17/index-prepare01/PLAN.md",
+      "sha256": "81737811c2e32bfa51094c46215372aa74b7c5ccfce93d58480aee56a1a60224",
+      "bytes": 8026
+    },
+    "intent": {
+      "path": "reviews/checkpoint17/index-prepare01/INDEX-CAPTURE-INTENT.json",
+      "sha256": "305a2ee1c526c1057bb852136ab018e9107a31b126e5f88a1bb974b3b9454819",
+      "bytes": 8524
+    },
+    "capture": {
+      "path": "reviews/checkpoint17/index-prepare01/INDEX-SOURCE-CAPTURE.json",
+      "sha256": "fb68b2560066c5d765a7135e5e88c42c3802284a666d2617323894677f0b2db2",
+      "bytes": 10236
+    },
+    "index": {
+      "path": "reviews/checkpoint17/index-prepare01/INDEX.bin",
+      "sha256": "8ce66f15ba0fb4e2a37d3364719f4d9c1522e8ef8b2ae6e869372ed44fed58a7",
+      "bytes": 487500
+    },
+    "stage0": {
+      "path": "reviews/checkpoint17/index-prepare01/INDEX-STAGE0.raw",
+      "sha256": "9ec76a2e509dc86ad527958aa00a34b9771a85a66a08ee4b04f4108d07ccaaf5",
+      "bytes": 409808
+    },
+    "source": {
+      "path": "reviews/checkpoint17/source-prepare01/SOURCE.json",
+      "sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+      "bytes": 1661762
+    },
+    "source_capture": {
+      "path": "reviews/checkpoint17/source-prepare01/SOURCE-CAPTURE.json",
+      "sha256": "d8f1049ed7590ba3b7510caab3e52efe6679a46f9f567449276e6b0218b5f857",
+      "bytes": 5964
+    },
+    "source_review": {
+      "path": "reviews/verification/C17-SHARED-SOURCE-PREPARE-ACTUAL-REVIEW.json",
+      "sha256": "5dd8b17acd5abcb23b9d6d56117607c6a552ae46eb707d92f7122d07fddb41f5",
+      "bytes": 6482
+    },
+    "store_facts": {
+      "path": "reviews/checkpoint17/SOURCE-STORE-ADMISSION.json",
+      "sha256": "d475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c",
+      "bytes": 4219
+    },
+    "publication_receipt": {
+      "path": "publication/CHECKPOINT-17-PUBLISHED.json",
+      "sha256": "b9c91abc629dda9b0432b01c940e189f704c0fb153312e30fee729b1a403e19b",
+      "bytes": 53622
+    },
+    "jdk_release_text": {
+      "path": "reviews/android-compile01/c17-preflight/JDK17-release.txt",
+      "sha256": "b8d3277e4f728d8ed638fc8eae2b66c7d10d7b8424985dfb4e5feb688aea66d2",
+      "bytes": 1228
+    }
+  },
+  "identity": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "store": "/root/projects/PassVault/passvault-publication-20260910-01/.git",
+    "members": 3042,
+    "consumer_member_ceiling": 3196
+  },
+  "independent_retained_binary_and_source_proof": {
+    "index_header": "DIRC/version2/count3042",
+    "index_checksum_sha1": "cb7da4e9635b3f8be624157b11e3fd3c17af6b4b",
+    "mode_counts": {
+      "100644": 2968,
+      "100755": 74
+    },
+    "maximum_path_bytes": 182,
+    "entry_end_offset": 456884,
+    "layout": "All3042 entries decoded independently from retained bytes: complete62-byte fixed header, regular Git mode,20-byte OID, stage0 flags containing only exact pathname length, terminated unique safe UTF-8 paths in byte order, zero padding to the required8-byte entry boundary. No assume-valid, extended, skip-worktree, intent-to-add or unmerged form.",
+    "extensions": [
+      {
+        "signature": "TREE",
+        "header_offset": 456884,
+        "bytes": 30588,
+        "sha256": "d78ff7b6a2827c7055d2b3702ee7e9865e5dc7c55bc1d6f6a3e8d9b133d281e5"
+      }
+    ],
+    "extension_proof": "Exactly one fully framed TREE extension, then the verified20-byte index trailer; no split/sparse/other extension. All881 cache-tree nodes independently decoded, counts/names/OIDs equal reconstructed subtrees; no invalid cached node.",
+    "three_way_equality": "Strict mode/OID/stage0/tab/path/NUL parsing of retained409808-byte stdout yields the identical ordered3042 tuples as the487500-byte binary index and SOURCE mode/blob/path rows. Reconstructing stdout from those tuples reproduces every retained byte, not merely the collector booleans.",
+    "tree_reconstruction": "Independent Git tree-object SHA1 reconstruction from all retained mode/OID/path tuples equals d1bd6ca5b18d08ff3ff15896d9a78af9016be799; all881 subtree cache OIDs/counts also match. No live Git or source recapture.",
+    "source_relation": "Exact SOURCE/hash, SOURCE-CAPTURE/hash, index/stdout lengths/hashes, intent/hash and store facts/hash reconcile. Source identity agrees with publication receipt. This does not independently rehash T checkout buffers or blob contents.",
+    "eol": "Both historical raw/Git/checkout qualifications and the15 current CRLF-to-LF candidate rows remain qualified source metadata, not fresh Windows/raw-byte/runtime coverage. Separate source actual review is bound above."
+  },
+  "metadata_config_and_tools": {
+    "before_final_packet_consistency": "Intent/final index observations differ only by the final unchanged_after_git_read flag. Config, all8 tool images, all3 alias records, metadata directory, original lock, excludes, redirects, effective path, earlier-shadow observations and source bindings agree exactly. These are retained capture records; no independent live tool or filesystem rehash by this reviewer.",
+    "store": "Store is the recorded standalone T/.git directory dev23/ino1080546/uid0/mode16832; record matches store-facts projection. Expected HEAD and C17 branch-ref byte hashes and the original shallow-boundary hash reconcile. Recorded no commondir/config.worktree/object alternates/http-alternates/info attributes. Original coordination-lock pin also agrees. This is not a future freeze or hostile-root proof.",
+    "config": "Retained435-byte config text hashes to036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5 and matches store facts. Only basic core repositoryformatversion/filemode/bare/logallrefupdates, public HTTPS origin/tagOpt/explicit continuation fetch and branch remote/merge keys. No include, hooks command, fsmonitor command, filter, alias, credential or executable mechanism in this local text.",
+    "excludes": {
+      "state": "INFO_ABSENT",
+      "info_directory": null
+    },
+    "tool_images": "Exactly git,ruby3.2,python3.12,env,mount,unshare,JDK17 java/release; each recorded root-owned regular single-link non-group/world-writable image fits32MiB and has a64-hex digest. Total hashed image sizes12260620B. No live binaries read here; separately supplied retained release text is independently checked below. Git image equals shared source-capture observation.",
+    "aliases": "git regular pin equals its image; ruby->ruby3.2 and python3->python3.12 are exact single relative links with coherent recorded link lengths and resolved-image keys. Earlier JDK-bin git/ruby shadow absences are capture observations, not live reviewer probes.",
+    "jdk_release_text_proof": {
+      "JAVA_VERSION": "17.0.20",
+      "JAVA_RUNTIME_VERSION": "17.0.20+8-1-24.04-Ubuntu",
+      "OS_ARCH": "x86_64",
+      "OS_NAME": "Linux",
+      "IMPLEMENTOR": "Ubuntu",
+      "LIBC": "gnu",
+      "proof": "Independently parsed retained1228-byte public release text supplied after the index capture; exact byte length/hash equal the index tool-image release observation. No shell evaluation, Java/version command, tool/SDK discovery or live image read by reviewer.",
+      "source": "Root reports separately admitted Android instance metadata capture toolfec477 exit0 supplied these same pinned bytes. This closes this review's initially pinned-only release-text qualification, not arbitrary runtime/native-library or hardware proof."
+    }
+  },
+  "actual_command_and_settlement": {
+    "commands": 1,
+    "scope": "Exact PLAN argv/cwd and all13 clean-environment fields independently compared; only read-only ls-files --stage -z --full-name, no network/build/wrapper/test.",
+    "recorded_exit": 0,
+    "recorded_direct_child_reaped": true,
+    "recorded_stderr_bytes": 0,
+    "root_supplied_external_tool_chunk": "898296",
+    "root_supplied_external_exit": 0,
+    "root_supplied_tool_wall_seconds": 0.062835387,
+    "capture_elapsed_seconds": 0.13771776598878205,
+    "git_elapsed_seconds": 0.00697747798403725,
+    "clock_qualification": "Separately measured intervals, not calibrated/equal clocks; no timing-mismatch finding or hard-deadline claim.",
+    "settlement_qualification": "Root supplied actual terminal0 independently of the retained final receipt. Accepted only for this new foreground capture path and recorded original-child/descriptors/lock settlement. Receipt alone, recorded pid26419 or timing does not prove arbitrary descendants, global idleness, hardware or the separate missing C17 publisher external terminal.",
+    "cleanup": "No build/runtime/cache/SDK/service or temporary output created by capture or reviewer; no Gradle-stop duty arose. Necessary compact capture/review evidence retained. No deletion, global signal or held-resource probe. Consumed scope must not be replayed or retried automatically."
+  },
+  "bounds": {
+    "retained_capture_files_bytes": 916068,
+    "retained_capture_limit_bytes": 7340032,
+    "resource_points": 3,
+    "minimum_disk_available_bytes": 19353051136,
+    "minimum_ram_available_bytes": 23645741056,
+    "ram_total_bytes": 67435888640,
+    "qualification": "Manifest/index/listing/JSON and individual-image/count bounds satisfied. Three recorded entry/before-Git/exit points meet12GiB/25% entry and8GiB/20% active floors. Point observations are not continuous memory/process/ownership proof; no live resource census by reviewer."
+  },
+  "consumer_projection": {
+    "first_five_assertions": "ordinary_full_stage0_index_matches_source and no_split_sparse_unmerged_index have independent retained-byte proof. standalone_store_without_redirects, local_config_and_excludes_reviewed and no_external_git_config_or_executable_mechanisms are acceptable for these exact captured metadata/command observations with the executor/live-observation qualification above. No broader environment assertion.",
+    "sixth_assertion_not_granted": "publication_store_frozen_for_run is independently acceptable only as the explicit current root launch invariant: preserve exact T/store/index/config/excludes/tools under the original coordination lock and enforce the admitted per-run guards. Root confirms this prospective freeze condition separately; this review does not certify an unstarted run or extend the historical capture freeze. Request must not turn this into unconditional old-capture authority.",
+    "strict_shapes": "AndroidCompile01/Detekt03 git_inventory_binding accepts only publication_store/source_sha256/index_sha256/metadata_directory/excludes/reviewed_assertions. Images contain only pin/sha256. Request tool_aliases contains only git and ruby; python observation stays separate. This review is not directly inserted as extra request fields.",
+    "runtime_copy": "Each future admitted run creates and guards its own sealed0400 index copy and exact index_copy record; shared capture creates no runtime copy or ownership grant.",
+    "gui03": "Shares SOURCE and applicable unchanged regular tool-image observations only; no git_inventory_binding/tool_aliases/index-copy fields are added to its exact schema. GUI-specific prerequisites remain separate.",
+    "conditional_six_assertion_acceptance": "The exact six meanings, not extra metadata fields, are accepted within these boundaries. The first five bind the captured source/index/store/config/environment proof; the sixth must be explicitly bound and maintained by root for the individual future launch and rechecked by its admitted guards. Final request/recipe/admission and current per-run identities remain separate."
+  },
+  "accounting": {
+    "application_cases": 0,
+    "static_analyzers_executed": 0,
+    "compile_tasks": 0,
+    "new_closures": 0,
+    "suspicion_resolutions": 0,
+    "denominator_change": false
+  },
+  "activity": "Bounded retained W data/source reading plus independent in-memory parsing, hashing and this permanent review only. No old helper import/execution, control framework, Git/T/tool/proc/SDK/runtime/network probe, build/test/CI, source mutation, deletion or background job. All foreground data readers closed.",
+  "boundaries": "All PVU-007 STOP,PVU-011 NO-RETRY,PVA-029 failure/no automatic retry,G7/G8 CLOSED, Detekt02 failure, held-runtime/closeout limitations and other consumed/HOLD scopes remain. Hardware/PVD/product, protected refs/tags, signing/Store/publication and occupied1017001 restrictions unchanged."
+}

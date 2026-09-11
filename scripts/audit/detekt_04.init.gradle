@@ -1,0 +1,86 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.tasks.testing.Test
+
+// NEW Detekt04 scope guard/metadata only; not execution admission. Root + five
+// affected analyzers; exact task-level omissions reuse reviewed unchanged03 evidence.
+// No Test selection, alternate analyzer, source exclusion, dependency or rule changes.
+def selectedTaskPaths = [
+    ':detekt',
+    ':app-desktop:detekt',
+    ':shared:detekt',
+    ':core:crypto:detekt',
+    ':core:database:detekt',
+    ':feature:credential:detekt',
+]
+def omittedTaskPaths = [
+    ':app-android:detekt',
+    ':core:designsystem:detekt',
+    ':core:detekt',
+    ':core:domain:detekt',
+    ':core:navigation:detekt',
+    ':core:otp:detekt',
+    ':core:security:detekt',
+    ':core:testing:detekt',
+    ':feature:backup:detekt',
+    ':feature:detekt',
+    ':feature:generator:detekt',
+    ':feature:health:detekt',
+    ':feature:onboarding:detekt',
+    ':feature:settings:detekt',
+    ':feature:unlock:detekt',
+    ':feature:vault:detekt',
+]
+def start = gradle.startParameter
+if (start.taskNames != [':detekt'] || !start.continueOnFailure ||
+        start.excludedTaskNames != omittedTaskPaths.toSet() ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand ||
+        start.maxWorkerCount != 1 || start.buildCacheEnabled ||
+        start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
+    throw new GradleException('Detekt04 requires root :detekt --continue with exact16 task omissions, one worker, serial strict verification')
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def root = gradle.rootProject
+    def coverage = root.tasks.named('verifyStaticAnalysisCoverage').get()
+    def allDetektTasks = root.allprojects.collect { it.tasks.named('detekt').get() }
+    def detektTasks = allDetektTasks.findAll { it.path in selectedTaskPaths }
+    if (allDetektTasks.collect { it.path }.toSet() != (selectedTaskPaths + omittedTaskPaths).toSet() ||
+            detektTasks.collect { it.path }.toSet() != selectedTaskPaths.toSet() ||
+            graph.allTasks.toSet() != (detektTasks + coverage).toSet() ||
+            graph.allTasks.any { it instanceof Test } || !coverage.enabled ||
+            coverage.commandLine != ['ruby', 'scripts/verify-static-analysis-coverage.rb'] ||
+            coverage.workingDir.canonicalFile != root.projectDir.canonicalFile) {
+        throw new GradleException('Detekt04 forbids graph expansion, tests, or an altered inventory guard')
+    }
+
+    def sourceRoot = root.projectDir.canonicalFile.toPath()
+    def relative = { File file ->
+        def path = file.canonicalFile.toPath()
+        if (!path.startsWith(sourceRoot)) {
+            throw new GradleException('Detekt04 input/report escaped the disposable source snapshot')
+        }
+        sourceRoot.relativize(path).toString().replace(File.separator, '/')
+    }
+    detektTasks.sort { it.path }.each { task ->
+        if (!task.enabled || task.project.extensions.getByName('detekt').parallel.get() ||
+                task.jvmTarget.get() != '17') {
+            throw new GradleException('Detekt04 requires enabled serial generic Detekt with JVM target 17')
+        }
+        def reports = [:]
+        ['checkstyle', 'html', 'sarif'].each { kind ->
+            def report = task.reports."${kind}"
+            if (!report.required.get()) {
+                throw new GradleException('Detekt04 requires the existing compact static-report formats')
+            }
+            reports[kind] = relative(report.outputLocation.get().asFile)
+        }
+        // Planned task inputs are not per-file engine visitation or test cases.
+        println('PASSVAULT_DETEKT04_TASK=' + JsonOutput.toJson([
+            task: task.path,
+            sources: task.source.files.collect { relative(it) }.sort(),
+            reports: reports,
+        ]))
+    }
+}

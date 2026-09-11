@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "kind": "READ_ONLY_C18_NONACTIVATING_PUBLICATION_POINT_OBSERVATION",
+  "utc": "2026-09-11T03:00:02.472Z",
+  "command": "GH_PROMPT_DISABLED=1 timeout 45s gh pr list --repo Apdelrahman1911/passvault --head codex/audit-continuation-linux-20260908 --state open --json number,headRefName,state; GH_PROMPT_DISABLED=1 timeout 45s gh run list --repo Apdelrahman1911/passvault --branch codex/audit-continuation-linux-20260908 --limit 8 --json databaseId,status,conclusion,headSha,event,name; df -B1 /root/projects/PassVault; free -b",
+  "launch": {
+    "chunk_id": "f94eca",
+    "wall_time_seconds": 1.000822562,
+    "session_id": 96543,
+    "original_token_count": 10,
+    "output": "--- OPEN PRS ---\n[]\n--- BRANCH RUNS ---\n"
+  },
+  "terminal": {
+    "chunk_id": "37e9cc",
+    "wall_time_seconds": 0.000005257,
+    "exit_code": 0,
+    "original_token_count": 487,
+    "output": "[{\"conclusion\":\"failure\",\"databaseId\":34454557777,\"event\":\"push\",\"headSha\":\"d4b72e0a30e2b53283a3f23b13b942afc6cbd38b\",\"name\":\"Audit focused iOS validation 01 (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"failure\",\"databaseId\":34439762763,\"event\":\"push\",\"headSha\":\"b825df973ac3e3392dd99b251b8bb7fd48fecce6\",\"name\":\"Audit Windows native cohort 05 (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"success\",\"databaseId\":34430921453,\"event\":\"push\",\"headSha\":\"7b288271d6c139921812caf5050b7f994f5ce1b2\",\"name\":\"Audit focused macOS native validation 02 (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"failure\",\"databaseId\":34427448784,\"event\":\"push\",\"headSha\":\"6838961e966975532c714d60fd72e3f590f0c8ab\",\"name\":\"Audit Windows native cohort 04 (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"failure\",\"databaseId\":34391056257,\"event\":\"push\",\"headSha\":\"b2e826fd534be8fefede169d28e30c22e37530a9\",\"name\":\"Audit Windows native cohort 03 (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"failure\",\"databaseId\":34372394480,\"event\":\"push\",\"headSha\":\"7b716ce8c693fa480bfb99d518acd9d4c8f9cfab\",\"name\":\"Audit Windows native cohort 02 (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"failure\",\"databaseId\":34333087199,\"event\":\"push\",\"headSha\":\"17a19b0a36472e586851f5ea4185cefe9adaad71\",\"name\":\"Audit focused macOS native validation (non-publishing)\",\"status\":\"completed\"},{\"conclusion\":\"failure\",\"databaseId\":34284083351,\"event\":\"push\",\"headSha\":\"a1fbdf0d5f0663225a459838d37b072a65e334f6\",\"name\":\"Audit Windows native validation (non-publishing)\",\"status\":\"completed\"}]\n--- POINT RESOURCES ---\nFilesystem        1B-blocks        Used   Available Use% Mounted on\noverlay        100056096768 75540484096 19130126336  80% /\n               total        used        free      shared  buff/cache   available\nMem:     67435888640 25602236416 16331653120 21897453568 48098684928 41833652224\nSwap:              0           0           0\n"
+  },
+  "interpretation": "Open PR output [] and eight returned runs all completed; terminal tool exit0. Shell did not emit separate per-command exit fields. Point observation only, not continuous guarantee or unrelated-work control. No workflow dispatch, build or persistent worker."
+}

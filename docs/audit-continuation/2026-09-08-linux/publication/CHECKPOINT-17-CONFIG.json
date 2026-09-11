@@ -1,0 +1,52 @@
+{
+  "source_commit": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+  "source_tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+  "namespace_parent": [
+    23,
+    498323,
+    0,
+    16877
+  ],
+  "selection_sha256": "87743f00c7fe5caf49c48a64ae57541b11e10b81e5203076a44fef0706a53a3b",
+  "review_path": "reviews/baseline-coverage/CHECKPOINT-17-REVIEW.json",
+  "review_sha256": "61e9bd4ff918eb21209656cb6ad7a36457b4e3840b097420c5681936ac2c5b62",
+  "companions": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-17-PAYLOAD.json",
+      "sha256": "87743f00c7fe5caf49c48a64ae57541b11e10b81e5203076a44fef0706a53a3b",
+      "bytes": 50007,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/CHECKPOINT-17-REVIEW.json",
+      "sha256": "61e9bd4ff918eb21209656cb6ad7a36457b4e3840b097420c5681936ac2c5b62",
+      "bytes": 15191,
+      "git_mode": "100644"
+    }
+  ],
+  "slot_sha256": "56e716be61883613e1083bfdc1a1f8eb0b304b49d98cf3c20b4d64c0097ef683",
+  "slot_state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
+  "remotes": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "receipt_name": "CHECKPOINT-17-PUBLISHED.json",
+  "commit_message": "Preserve static failure evidence and prepare remaining focused checks",
+  "root_admission": {
+    "owner": "/root",
+    "utc": "2026-09-10T23:44:15.782328+00:00",
+    "purpose": "ONE_C17_SOURCE_PUBLICATION_ONLY",
+    "publisher_sha256": "3232ee3a4fbc6efbfc691c94f2a5abe9f712336aabe0753a9ca866dfe61dfaf4",
+    "selection_files": 167,
+    "total_with_companions": 169,
+    "exact_removals": 2,
+    "expected_committed_members": 3042,
+    "expected_raw_source_bytes": 103345745,
+    "commands": "One reviewed CHECKPOINT-17-PUBLISH.py invocation. Exact independent C17 acceptance; original-lock/source/parent/index/protected-ref/slot/resource checks before one nonforce dedicated-branch push. Source agents edit only outside frozen selection. No request/CI/build/test/wrapper/SDK/held-scope action or automatic retry.",
+    "cleanup": "Installed600s total/60s ordinaryGit/120s push deadlines and signal/reaping/fsync handling. Necessary T/source/evidence retained; no disposable build/cache/runtime/service. Abnormal descendants/hard-interruption uncertainty stays HOLD; no unrelated signal/delete."
+  }
+}

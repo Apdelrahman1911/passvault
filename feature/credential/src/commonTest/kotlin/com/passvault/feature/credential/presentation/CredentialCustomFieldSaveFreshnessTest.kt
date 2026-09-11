@@ -420,6 +420,8 @@ class CredentialCustomFieldSaveFreshnessTest {
         }
     }
 
+    // Cleanup-only failure must fail the test; a primary failure keeps cleanup failures suppressed.
+    @Suppress("ThrowingExceptionFromFinally")
     private suspend fun TestScope.withEditor(block: suspend EditorFixture.() -> Unit) {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         var ownedRepository: FakeCredentialRepository? = null

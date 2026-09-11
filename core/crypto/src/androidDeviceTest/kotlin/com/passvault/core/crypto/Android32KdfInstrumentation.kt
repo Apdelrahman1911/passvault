@@ -56,6 +56,8 @@ class Android32KdfInstrumentation : Instrumentation() {
         start()
     }
 
+    // Terminal test adapter: report all case throwables; never turn cancellation/linkage into a pass.
+    @Suppress("TooGenericExceptionCaught")
     override fun onStart() {
         super.onStart()
         if (cases.size != EXPECTED_CASES || cases.map { it.name }.toSet().size != EXPECTED_CASES) {
@@ -171,6 +173,8 @@ class Android32KdfInstrumentation : Instrumentation() {
     }
 
     /** Retain only the code-symbol's own mapping row, never a process memory dump. */
+    // Optional mapping evidence keeps Exception failures explicit; Errors still reach the terminal test boundary.
+    @Suppress("TooGenericExceptionCaught")
     private fun functionMapping(address: Long): String = try {
         var mapping: String? = null
         File("/proc/self/maps").bufferedReader().use { reader ->
@@ -179,13 +183,8 @@ class Android32KdfInstrumentation : Instrumentation() {
                 val line = reader.readLine() ?: break
                 lines += 1
                 check(line.length <= MAX_MAPPING_CHARS) { "Mapping line exceeds evidence bound" }
-                val range = line.substringBefore(' ').split('-', limit = 2)
-                if (range.size == 2) {
-                    val start = range[0].toLongOrNull(HEX_RADIX)
-                    val end = range[1].toLongOrNull(HEX_RADIX)
-                    if (start != null && end != null && address >= start && address < end) {
-                        mapping = line
-                    }
+                if (mappingContainsAddress(line, address)) {
+                    mapping = line
                 }
             }
         }
@@ -195,6 +194,18 @@ class Android32KdfInstrumentation : Instrumentation() {
         // Some Android policies may deny maps. Width/native-vector observations
         // remain distinct from that explicit mapping/packaged-image gap.
         "NOT_ESTABLISHED: ${error.javaClass.simpleName}"
+    }
+
+    private fun mappingContainsAddress(line: String, address: Long): Boolean {
+        val range = line.substringBefore(' ').split('-', limit = 2)
+        if (range.size != 2) return false
+        val start = range[0].toLongOrNull(HEX_RADIX)
+        val end = range[1].toLongOrNull(HEX_RADIX)
+        return if (start != null && end != null) {
+            address >= start && address < end
+        } else {
+            false
+        }
     }
 
     private suspend fun historicalBinaryPasswordVector() = deriveAndCheck(

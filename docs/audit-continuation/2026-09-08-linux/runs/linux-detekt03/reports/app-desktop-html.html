@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+    </style>
+    <meta charset="utf-8">
+    <title>detekt report</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+        }
+
+        h1 {
+            font-family: Arial, sans-serif;
+            font-weight: 600;
+            width: fit-content;
+            background: -webkit-linear-gradient(left, rgba(105, 33, 224, 1), rgba(247, 44, 67, 1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+            background: rgb(105, 33, 224);
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.8) 0%, rgba(158, 41, 156, 0.8) 50%, rgba(247, 44, 67, 0.8) 100%);
+            padding: 0.2em;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+
+        h3 {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.4) 0%, rgba(158, 41, 156, 0.4) 50%, rgba(247, 44, 67, 0.4) 100%);
+            padding: 0.5em;
+            border-radius: 4px;
+        }
+
+        .rule-container {
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.2) 0%, rgba(158, 41, 156, 0.2) 100%);
+            border-radius: 4px;
+            padding-left: 1em;
+            padding-bottom: 0.3em;
+            padding-top: 0.3em;
+            padding-right: 1em;
+            line-height: 1.5em;
+            margin-bottom: 8px;
+            margin-top: 8px;
+        }
+
+        .rule {
+            font-family: Arial, sans-serif;
+            padding: 0.3em;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+
+        .description {
+            font-family: Arial, sans-serif;
+            color: #000000;
+            padding: 0.3em;
+        }
+
+        .location {
+            font-family: Jetbrains Mono, monospace;
+            font-weight: 500;
+            color: #000000;
+            display: block;
+        }
+
+        .message {
+            font-family: Arial, sans-serif;
+            font-size: 0.8em;
+            color: #444444;
+            display: block;
+            margin-top: 1pt;
+        }
+
+        code {
+            font-family: JetBrains Mono, monospace;
+            font-weight: 400;
+        }
+
+        pre {
+            font-family: JetBrains Mono, monospace;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            overflow: auto;
+        }
+
+        .lineno {
+            margin-right: 24px;
+            color: #9771c3;
+            background-color: rgba(230, 211, 243, 0.51);
+        }
+
+        .error {
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AwCFR4T/3uLMgAAADxJREFUCNdNyLERQEAABMCjL4lQwIzcjErpguAL+C9AvgKJDbeD/PRpLdm35Hm+MU+cB+tCKaJW4L4YBy+CAiLJrFs9mgAAAABJRU5ErkJggg==) bottom repeat-x;
+        }
+
+        .exception {
+            color: #b60808;
+            display: inline-block;
+            background-color: #ecdada;
+            border-color: #b60808;
+            border-radius: 10px;
+            border: solid 2px;
+            padding-left: 16px;
+            padding-right: 16px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="225" height="53" viewBox="0 0 225 53" fill="none"
+     style="padding-top: 8px">
+    <path d="M88.8883 42.2665V7.99487H81.6954V20.389C79.9918 18.3703 77.6257 16.6332 73.7926 16.6332C67.7828 16.6332 62.2461 21.2341 62.2461 29.6377V29.7316C62.2461 38.1352 67.8774 42.736 73.7926 42.736C77.5311 42.736 79.9445 40.9989 81.6954 38.6516V42.2665H88.8883ZM81.79 29.7316C81.79 33.9099 78.998 36.6798 75.6382 36.6798C72.2783 36.6798 69.439 33.9099 69.439 29.7316V29.6377C69.439 25.4124 72.2783 22.6894 75.6382 22.6894C78.998 22.6894 81.79 25.4593 81.79 29.6377V29.7316Z"
+          fill="#222222"/>
+    <path d="M120.325 30.3888V30.2949C120.325 23.1589 116.444 16.6332 107.974 16.6332C100.591 16.6332 95.4334 22.5486 95.4334 29.7316V29.8254C95.4334 37.5248 101.065 42.8299 108.683 42.8299C113.274 42.8299 116.681 41.0459 119.047 38.1352L114.93 34.5202C112.942 36.3511 111.192 37.1023 108.778 37.1023C105.56 37.1023 103.289 35.4122 102.579 32.1728H120.23C120.277 31.5156 120.325 31.093 120.325 30.3888ZM113.321 27.7128H102.484C103.052 24.4734 104.992 22.3608 107.974 22.3608C111.002 22.3608 112.895 24.5204 113.321 27.7128Z"
+          fill="#222222"/>
+    <path d="M141.278 41.2337V35.5061C140.237 36.0695 139.054 36.3981 137.729 36.3981C136.12 36.3981 135.41 35.6 135.41 33.9568V23.2059H141.373V17.1027H135.41V10.6709H128.217V17.1027H125.189V23.2059H128.217V35.1305C128.217 40.952 131.199 42.6891 135.599 42.6891C138.013 42.6891 139.764 42.1257 141.278 41.2337Z"
+          fill="#222222"/>
+    <path d="M172.008 30.3888V30.2949C172.008 23.1589 168.128 16.6332 159.657 16.6332C152.275 16.6332 147.117 22.5486 147.117 29.7316V29.8254C147.117 37.5248 152.748 42.8299 160.367 42.8299C164.958 42.8299 168.365 41.0459 170.731 38.1352L166.614 34.5202C164.626 36.3511 162.875 37.1023 160.462 37.1023C157.244 37.1023 154.973 35.4122 154.263 32.1728H171.914C171.961 31.5156 172.008 31.093 172.008 30.3888ZM165.005 27.7128H154.168C154.736 24.4734 156.676 22.3608 159.657 22.3608C162.686 22.3608 164.579 24.5204 165.005 27.7128Z"
+          fill="#222222"/>
+    <path d="M203.278 42.2665L193.293 27.0086L202.947 17.1027H194.334L185.911 26.2574V7.99487H178.718V42.2665H185.911V34.6141L188.419 31.985L195.044 42.2665H203.278Z"
+          fill="#222222"/>
+    <path d="M224.905 41.2337V35.5061C223.864 36.0695 222.681 36.3981 221.356 36.3981C219.747 36.3981 219.037 35.6 219.037 33.9568V23.2059H225V17.1027H219.037V10.6709H211.844V17.1027H208.816V23.2059H211.844V35.1305C211.844 40.952 214.826 42.6891 219.227 42.6891C221.64 42.6891 223.391 42.1257 224.905 41.2337Z"
+          fill="#222222"/>
+    <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M2.18611 0C0.978755 0 0 0.978755 0 2.18611V40.771C0 41.9783 0.978755 42.9571 2.18611 42.9571H24.2534C25.6525 42.9571 26.6258 41.5473 26.3774 40.1705C26.2109 39.2481 26.124 38.2981 26.124 37.3279C26.124 28.5443 33.2445 21.4239 42.028 21.4239C42.8689 21.4239 43.6945 21.4892 44.5001 21.6149C45.8578 21.8268 47.22 20.8585 47.22 19.4844V2.18611C47.22 0.978755 46.2412 0 45.0339 0H2.18611Z"
+          fill="url(#paint0_linear)"/>
+    <path d="M55.3358 48.6166L54.7673 48.0481L53.2421 46.5229L52.9516 46.2324C52.2427 45.5234 52.1855 44.4067 52.673 43.5306C53.6299 41.8109 54.1762 39.833 54.1762 37.7293C54.1762 32.9104 51.3147 28.7499 47.2029 26.8501C46.5196 26.5344 45.8024 26.2808 45.0573 26.0974C44.3636 25.9268 43.6467 25.8164 42.9118 25.7727C42.6749 25.7587 42.4369 25.7495 42.1966 25.7495C38.5166 25.7495 35.2203 27.4188 33.0211 30.0381C31.9784 31.2802 31.1838 32.7357 30.7114 34.3293C30.3916 35.4079 30.217 36.5481 30.217 37.7291C30.217 38.0293 30.2319 38.3259 30.2537 38.6205C30.3082 39.3559 30.4265 40.0733 30.6082 40.766C30.8038 41.5117 31.0689 42.2296 31.3974 42.9116C33.3332 46.9295 37.4465 49.7089 42.1967 49.7089C43.957 49.7089 45.6291 49.3259 47.1357 48.6403C47.9841 48.2543 49.0046 48.3536 49.6636 49.0127L50.0894 49.4385L51.6301 50.9794L52.3016 51.6509C52.7205 52.0699 53.2697 52.2794 53.8186 52.2794C54.3677 52.2794 54.9169 52.0699 55.3357 51.6509C56.1738 50.8129 56.1738 49.4544 55.3358 48.6166ZM42.1967 45.418C39.9525 45.418 37.93 44.451 36.5232 42.9122C35.9485 42.2836 35.4772 41.5594 35.135 40.7667C34.845 40.0954 34.6493 39.3746 34.5617 38.6211C34.5277 38.3283 34.5084 38.0314 34.5084 37.7297C34.5084 33.4903 37.9574 30.0413 42.1968 30.0413C42.4379 30.0413 42.6762 30.0539 42.912 30.0756C43.6638 30.1455 44.3837 30.3242 45.0576 30.5956C45.8458 30.9127 46.5689 31.3564 47.2031 31.902C48.8434 33.3131 49.8852 35.4015 49.8852 37.7297C49.885 41.9688 46.4361 45.418 42.1967 45.418Z"
+          fill="url(#paint1_linear)"/>
+    <path d="M9.9936 25.6979C9.34217 25.6979 8.84618 25.4958 8.50566 25.0914C8.16514 24.6709 7.99487 24.1695 7.99487 23.5873V23.4903C7.99487 22.908 8.16514 22.4147 8.50566 22.0104C8.84618 21.5899 9.34217 21.3796 9.9936 21.3796C10.645 21.3796 11.141 21.5899 11.4815 22.0104C11.8221 22.4147 11.9923 22.908 11.9923 23.4903V23.5873C11.9923 24.1695 11.8221 24.6709 11.4815 25.0914C11.141 25.4958 10.645 25.6979 9.9936 25.6979ZM8.17254 10.8158V7.99487H11.8147V10.8158L10.6598 19.1612H9.32736L8.17254 10.8158Z"
+          fill="white"/>
+    <path d="M20.2729 25.6979C19.6215 25.6979 19.1255 25.4958 18.785 25.0914C18.4444 24.6709 18.2742 24.1695 18.2742 23.5873V23.4903C18.2742 22.908 18.4444 22.4147 18.785 22.0104C19.1255 21.5899 19.6215 21.3796 20.2729 21.3796C20.9243 21.3796 21.4203 21.5899 21.7608 22.0104C22.1014 22.4147 22.2716 22.908 22.2716 23.4903V23.5873C22.2716 24.1695 22.1014 24.6709 21.7608 25.0914C21.4203 25.4958 20.9243 25.6979 20.2729 25.6979ZM18.4518 10.8158V7.99487H22.094V10.8158L20.9391 19.1612H19.6067L18.4518 10.8158Z"
+          fill="white"/>
+    <defs>
+        <linearGradient id="paint0_linear" x1="5.222e-07" y1="41.3361" x2="51.982" y2="33.29"
+                        gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7942EE"/>
+            <stop offset="1" stop-color="#FF4651"/>
+        </linearGradient>
+        <linearGradient id="paint1_linear" x1="53.0121" y1="51.5465" x2="60.9801" y2="30.2423"
+                        gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7942EE"/>
+            <stop offset="1" stop-color="#FF4651"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<h2>Metrics</h2>
+
+<div>
+  <ul>
+    <li>39 number of kt files</li>
+    <li>9 number of packages</li>
+    <li>93 number of classes</li>
+    <li>516 number of functions</li>
+    <li>1,072 number of properties</li>
+  </ul>
+</div>
+
+
+<h2>Complexity Report</h2>
+
+<div>
+  <ul>
+    <li>9,018 lines of code (loc)</li>
+    <li>7,913 source lines of code (sloc)</li>
+    <li>6,272 logical lines of code (lloc)</li>
+    <li>387 comment lines of code (cloc)</li>
+    <li>1,297 cyclomatic complexity (mcc)</li>
+    <li>774 cognitive complexity</li>
+    <li>47 number of total findings</li>
+    <li>4% comment source ratio</li>
+    <li>206 mcc per 1,000 lloc</li>
+    <li>7 findings per 1,000 lloc</li>
+  </ul>
+</div>
+
+
+<h2>Issues</h2>
+<div>Total: 47
+  <h3>complexity: 11</h3>
+  <details id="ComplexCondition" open="open">
+    <summary class="rule-container"><span class="rule">ComplexCondition: 1 </span><span class="description">Complex conditions should be simplified and extracted into well-named methods if necessary.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/complexity#complexcondition">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:406:21</span><span class="message">This condition is too complex (4). The defined maximum number of allowed conditions is set to '3'</span>
+        <pre><code><span class="lineno"> 403 </span>            assertFalse(home.selected, &quot;PVU003_HOME_ALREADY_SELECTED&quot;)
+<span class="lineno"> 404 </span>            onEdt { assertTrue(backup.state.value.isExporting, &quot;PVU003_NOT_EXPORTING&quot;) }
+<span class="lineno"> 405 </span>            val observer = AWTEventListener { event -&gt;
+<span class="lineno"> 406 </span>                if (<span class="error">event is MouseEvent &amp;&amp; event.button == MouseEvent.BUTTON1 &amp;&amp;</span>
+<span class="lineno"> 407 </span><span class="error">                    (event.id == MouseEvent.MOUSE_PRESSED || event.id == MouseEvent.MOUSE_RELEASED)</span>
+<span class="lineno"> 408 </span>                ) {
+<span class="lineno"> 409 </span>                    val source = event.component
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="CyclomaticComplexMethod" open="open">
+    <summary class="rule-container"><span class="rule">CyclomaticComplexMethod: 5 </span><span class="description">Prefer splitting up complex methods into smaller, easier to test methods.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/complexity#cyclomaticcomplexmethod">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:370:17</span><span class="message">The function pvu003ChooserHomeThenCancel appears to be too complex based on Cyclomatic Complexity (complexity: 29). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 367 </span>        val frameDeliveryBits: Int,
+<span class="lineno"> 368 </span>    )
+<span class="lineno"> 369 </span>
+<span class="lineno"> 370 </span>    private fun <span class="error">pvu003ChooserHomeThenCancel</span>(): Pvu003ChooserObservation {
+<span class="lineno"> 371 </span>        val failures = MainNavFailures()
+<span class="lineno"> 372 </span>        val delivery = AtomicInteger()
+<span class="lineno"> 373 </span>        var chooser: FileDialog? = null
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:518:17</span><span class="message">The function settingsTrayPropagationOnlyScenario appears to be too complex based on Cyclomatic Complexity (complexity: 16). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 515 </span>        assertTrue(System.nanoTime() &lt; deadline, &quot;PVU003_DRIVER_DEADLINE&quot;)
+<span class="lineno"> 516 </span>        Thread.sleep(20) // Poll spacing only, never an acknowledgement of Compose/frame/coroutine progress.
+<span class="lineno"> 517 </span>    }
+<span class="lineno"> 518 </span>    private fun <span class="error">settingsTrayPropagationOnlyScenario</span>() {
+<span class="lineno"> 519 </span>        val originalFrame = frame
+<span class="lineno"> 520 </span>        replaceText(&quot;Master password&quot;, PASSWORD, readable = false)
+<span class="lineno"> 521 </span>        click(button(&quot;Unlock vault&quot;))
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:65:9</span><span class="message">The function secured locked Compose window shows usable synthetic unlock content after restore appears to be too complex based on Cyclomatic Complexity (complexity: 50). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno">  62 </span>@OptIn(ExperimentalComposeUiApi::class)
+<span class="lineno">  63 </span>class DesktopCurtainRenderingTest {
+<span class="lineno">  64 </span>    @Test
+<span class="lineno">  65 </span>    fun <span class="error">`secured locked Compose window shows usable synthetic unlock content after restore`</span>() {
+<span class="lineno">  66 </span>        val admittedDisplay = System.getProperty(&quot;passvault.pvu005.syntheticDisplay&quot;)
+<span class="lineno">  67 </span>        assumeTrue(&quot;PVU-005 requires a separately admitted synthetic display&quot;, admittedDisplay != null)
+<span class="lineno">  68 </span>        assertTrue(Regex(&quot;:\\d{1,5}(?:\\.0)?&quot;).matches(requireNotNull(admittedDisplay)))
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:306:17</span><span class="message">The function interact appears to be too complex based on Cyclomatic Complexity (complexity: 19). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 303 </span>        failure?.let { throw it }
+<span class="lineno"> 304 </span>    }
+<span class="lineno"> 305 </span>
+<span class="lineno"> 306 </span>    private fun <span class="error">interact</span>(
+<span class="lineno"> 307 </span>        robot: Robot,
+<span class="lineno"> 308 </span>        window: ComposeWindow,
+<span class="lineno"> 309 </span>        client: Rectangle,
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:337:17</span><span class="message">The function close appears to be too complex based on Cyclomatic Complexity (complexity: 21). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 334 </span>        fail(message)
+<span class="lineno"> 335 </span>    }
+<span class="lineno"> 336 </span>
+<span class="lineno"> 337 </span>    private fun <span class="error">close</span>(original: LocaleDefaults, originalImageCache: Boolean, evidence: Path, primary: Throwable?) {
+<span class="lineno"> 338 </span>        var interrupted = Thread.interrupted() || primary is InterruptedException ||
+<span class="lineno"> 339 </span>            primary?.cause is InterruptedException
+<span class="lineno"> 340 </span>        var failure: Throwable? = null
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="LongMethod" open="open">
+    <summary class="rule-container"><span class="rule">LongMethod: 5 </span><span class="description">One method should have one responsibility. Long methods tend to handle many things at once. Prefer smaller methods to make them easier to understand.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/complexity#longmethod">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:122:17</span><span class="message">The function runRole is too long (70). The maximum length is 60.</span>
+        <pre><code><span class="lineno"> 119 </span>        } // No next role after any assertion, child, cleanup, log or receipt failure.
+<span class="lineno"> 120 </span>    }
+<span class="lineno"> 121 </span>
+<span class="lineno"> 122 </span>    private fun <span class="error">runRole</span>(
+<span class="lineno"> 123 </span>        role: String, runtime: MainNavDirectory, evidence: MainNavDirectory, home: MainNavDirectory,
+<span class="lineno"> 124 </span>        classpath: String, display: String, authority: Path, databaseKey: String, case: MainNavCase,
+<span class="lineno"> 125 </span>    ) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:370:17</span><span class="message">The function pvu003ChooserHomeThenCancel is too long (113). The maximum length is 60.</span>
+        <pre><code><span class="lineno"> 367 </span>        val frameDeliveryBits: Int,
+<span class="lineno"> 368 </span>    )
+<span class="lineno"> 369 </span>
+<span class="lineno"> 370 </span>    private fun <span class="error">pvu003ChooserHomeThenCancel</span>(): Pvu003ChooserObservation {
+<span class="lineno"> 371 </span>        val failures = MainNavFailures()
+<span class="lineno"> 372 </span>        val delivery = AtomicInteger()
+<span class="lineno"> 373 </span>        var chooser: FileDialog? = null
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt:72:17</span><span class="message">The function runChild is too long (67). The maximum length is 60.</span>
+        <pre><code><span class="lineno">  69 </span>        }
+<span class="lineno">  70 </span>
+<span class="lineno">  71 </span>    @Suppress(&quot;TooGenericExceptionCaught&quot;) // Preserve primary assertions/interruption across cleanup failure.
+<span class="lineno">  72 </span>    private fun <span class="error">runChild</span>(
+<span class="lineno">  73 </span>        mode: String,
+<span class="lineno">  74 </span>        runtime: Path,
+<span class="lineno">  75 </span>        evidence: Path,
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:65:9</span><span class="message">The function secured locked Compose window shows usable synthetic unlock content after restore is too long (208). The maximum length is 60.</span>
+        <pre><code><span class="lineno">  62 </span>@OptIn(ExperimentalComposeUiApi::class)
+<span class="lineno">  63 </span>class DesktopCurtainRenderingTest {
+<span class="lineno">  64 </span>    @Test
+<span class="lineno">  65 </span>    fun <span class="error">`secured locked Compose window shows usable synthetic unlock content after restore`</span>() {
+<span class="lineno">  66 </span>        val admittedDisplay = System.getProperty(&quot;passvault.pvu005.syntheticDisplay&quot;)
+<span class="lineno">  67 </span>        assumeTrue(&quot;PVU-005 requires a separately admitted synthetic display&quot;, admittedDisplay != null)
+<span class="lineno">  68 </span>        assertTrue(Regex(&quot;:\\d{1,5}(?:\\.0)?&quot;).matches(requireNotNull(admittedDisplay)))
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:175:17</span><span class="message">The function exercisePopup is too long (61). The maximum length is 60.</span>
+        <pre><code><span class="lineno"> 172 </span>        observations += &quot;stage=$stage labels=${items.joinToString(&quot; | &quot;) { it.label }} tooltip=${icon.toolTip}&quot;
+<span class="lineno"> 173 </span>    }
+<span class="lineno"> 174 </span>
+<span class="lineno"> 175 </span>    private fun <span class="error">exercisePopup</span>(stage: Int, evidence: Path) {
+<span class="lineno"> 176 </span>        val input = requireNotNull(robot)
+<span class="lineno"> 177 </span>        var target: Rectangle? = null
+<span class="lineno"> 178 </span>        val before = captureWhen(&quot;PVA027_SETUP_MARKER_$stage&quot;) { pixels -&gt;
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <h3>exceptions: 29</h3>
+  <details id="PrintStackTrace" open="open">
+    <summary class="rule-container"><span class="rule">PrintStackTrace: 3 </span><span class="description">Do not print a stack trace. These debug statements should be removed or replaced with a logger.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/exceptions#printstacktrace">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:254:25</span><span class="message">Do not print a stack trace. These debug statements should be removed or replaced with a logger.</span>
+        <pre><code><span class="lineno"> 251 </span>                    try { NativeMainNav(trace, case).run() }
+<span class="lineno"> 252 </span>                    catch (error: Throwable) {
+<span class="lineno"> 253 </span>                        System.err.println(&quot;MAIN_NAV_FAILURE&quot;)
+<span class="lineno"> 254 </span>                        <span class="error">error</span>.printStackTrace(System.err)
+<span class="lineno"> 255 </span>                        runCatching { trace.record(&quot;DRIVER_FAILURE&quot;) }
+<span class="lineno"> 256 </span>                    }
+<span class="lineno"> 257 </span>                }, &quot;passvault-main-nav-synthetic-driver&quot;).start()
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:264:13</span><span class="message">Do not print a stack trace. These debug statements should be removed or replaced with a logger.</span>
+        <pre><code><span class="lineno"> 261 </span>            roomRole(role, home, args[3], trace)
+<span class="lineno"> 262 </span>        } catch (error: Throwable) {
+<span class="lineno"> 263 </span>            System.err.println(&quot;MAIN_NAV_FAILURE&quot;)
+<span class="lineno"> 264 </span>            <span class="error">error</span>.printStackTrace(System.err)
+<span class="lineno"> 265 </span>            exitProcess(1)
+<span class="lineno"> 266 </span>        }
+<span class="lineno"> 267 </span>        exitProcess(0) // Seed/verify only; no Main cleanup or graph can run in these processes.
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:353:21</span><span class="message">Do not print a stack trace. These debug statements should be removed or replaced with a logger.</span>
+        <pre><code><span class="lineno"> 350 </span>                } catch (error: Throwable) {
+<span class="lineno"> 351 </span>                    // Report INSIDE EDT, before queued Quit can System.exit; no timed driver wait races this receipt.
+<span class="lineno"> 352 </span>                    System.err.println(&quot;MAIN_NAV_FAILURE&quot;)
+<span class="lineno"> 353 </span>                    <span class="error">error</span>.printStackTrace(System.err)
+<span class="lineno"> 354 </span>                    runCatching { trace.record(&quot;DRIVER_FAILURE&quot;) }
+<span class="lineno"> 355 </span>                }
+<span class="lineno"> 356 </span>            }
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="ThrowingExceptionFromFinally" open="open">
+    <summary class="rule-container"><span class="rule">ThrowingExceptionFromFinally: 2 </span><span class="description">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/exceptions#throwingexceptionfromfinally">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt:138:42</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 135 </span>                        &quot;$mode child cleanup/evidence failed; runtime cleanup BLOCKED&quot;, cleanupFailure,
+<span class="lineno"> 136 </span>                    )
+<span class="lineno"> 137 </span>                    val primary = primaryFailure
+<span class="lineno"> 138 </span>                    if (primary == null) <span class="error">throw report</span>
+<span class="lineno"> 139 </span>                    primary.addSuppressed(report)
+<span class="lineno"> 140 </span>                } finally {
+<span class="lineno"> 141 </span>                    if (interrupted) Thread.currentThread().interrupt()
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:323:38</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 320 </span>        try { press() } catch (error: Throwable) { failure = error; throw error } finally {
+<span class="lineno"> 321 </span>            try { release(); heldInput.remove(id) } catch (error: Throwable) {
+<span class="lineno"> 322 </span>                val primary = failure
+<span class="lineno"> 323 </span>                if (primary == null) <span class="error">throw error</span> else primary.addSuppressed(error)
+<span class="lineno"> 324 </span>            }
+<span class="lineno"> 325 </span>        }
+<span class="lineno"> 326 </span>    }
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="TooGenericExceptionCaught" open="open">
+    <summary class="rule-container"><span class="rule">TooGenericExceptionCaught: 24 </span><span class="description">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/exceptions#toogenericexceptioncaught">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:181:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 178 </span>            val output = Files.readString(log)
+<span class="lineno"> 179 </span>            FORBIDDEN_LOGS.forEach { assertFalse(output.contains(it), &quot;MAIN_NAV_TERMINAL_DIAGNOSTIC_$it&quot;) }
+<span class="lineno"> 180 </span>            assertMainNavEvents(role, case, Files.readAllLines(trace))
+<span class="lineno"> 181 </span>        } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 182 </span>        finally {
+<span class="lineno"> 183 </span>            failures.release {
+<span class="lineno"> 184 </span>                child?.let { running -&gt;
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:252:28</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 249 </span>                assertFalse(GraphicsEnvironment.isHeadless())
+<span class="lineno"> 250 </span>                Thread({
+<span class="lineno"> 251 </span>                    try { NativeMainNav(trace, case).run() }
+<span class="lineno"> 252 </span>                    catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 253 </span>                        System.err.println(&quot;MAIN_NAV_FAILURE&quot;)
+<span class="lineno"> 254 </span>                        error.printStackTrace(System.err)
+<span class="lineno"> 255 </span>                        runCatching { trace.record(&quot;DRIVER_FAILURE&quot;) }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:262:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 259 </span>                error(&quot;MAIN_NAV_MAIN_RETURNED_WITHOUT_OWNED_PROCESS_EXIT&quot;)
+<span class="lineno"> 260 </span>            }
+<span class="lineno"> 261 </span>            roomRole(role, home, args[3], trace)
+<span class="lineno"> 262 </span>        } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 263 </span>            System.err.println(&quot;MAIN_NAV_FAILURE&quot;)
+<span class="lineno"> 264 </span>            error.printStackTrace(System.err)
+<span class="lineno"> 265 </span>            exitProcess(1)
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:298:14</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 295 </span>            assertOriginal(credentials)
+<span class="lineno"> 296 </span>        }
+<span class="lineno"> 297 </span>        trace.record(if (role == &quot;seed&quot;) &quot;SEED_ORIGINAL_TUPLES&quot; else &quot;VERIFY_ORIGINAL_TUPLES&quot;)
+<span class="lineno"> 298 </span>    } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 299 </span>    finally {
+<span class="lineno"> 300 </span>        // NonCancellable/native work can outlive these nominal limits: parent hard deadline remains required.
+<span class="lineno"> 301 </span>        failures.release { io(5_000) { vault?.lock(LockReason.Manual)?.getOrThrow() } }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:350:26</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 347 </span>                    // EDT cannot handle queued Ctrl+Q before DOWN/UP and this receipt finish.
+<span class="lineno"> 348 </span>                    withKey(KeyEvent.VK_CONTROL) { withKey(KeyEvent.VK_Q) { } }
+<span class="lineno"> 349 </span>                    trace.record(&quot;QUIT_KEY_CALLS_COMPLETE&quot;) // Issuance, not physical key-state/cleanup proof.
+<span class="lineno"> 350 </span>                } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 351 </span>                    // Report INSIDE EDT, before queued Quit can System.exit; no timed driver wait races this receipt.
+<span class="lineno"> 352 </span>                    System.err.println(&quot;MAIN_NAV_FAILURE&quot;)
+<span class="lineno"> 353 </span>                    error.printStackTrace(System.err)
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:357:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 354 </span>                    runCatching { trace.record(&quot;DRIVER_FAILURE&quot;) }
+<span class="lineno"> 355 </span>                }
+<span class="lineno"> 356 </span>            }
+<span class="lineno"> 357 </span>        } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 358 </span>        finally { if (failures.failed) failures.release { releaseInput() } }
+<span class="lineno"> 359 </span>        failures.throwIfPresent() // Main may already System.exit; no post-Main receipt/finalizer is relied upon.
+<span class="lineno"> 360 </span>    }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:431:75</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 428 </span>            assertTrue(pressedKeys.isEmpty())
+<span class="lineno"> 429 </span>            val input = MainNavFailures()
+<span class="lineno"> 430 </span>            mousePressed = true
+<span class="lineno"> 431 </span>            try { robot.mousePress(InputEvent.BUTTON1_DOWN_MASK) } catch (<span class="error">error: Throwable</span>) { input.add(error) }
+<span class="lineno"> 432 </span>            finally { input.release { robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false } }
+<span class="lineno"> 433 </span>            input.throwIfPresent() // Exactly one native Home press/release; no active-frame click/focus bypass.
+<span class="lineno"> 434 </span>            repeat(20) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:443:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 440 </span>                    homeDuring = homeDuring || selected
+<span class="lineno"> 441 </span>                }
+<span class="lineno"> 442 </span>            }
+<span class="lineno"> 443 </span>        } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 444 </span>        finally {
+<span class="lineno"> 445 </span>            if (exportAttempted) failures.release {
+<span class="lineno"> 446 </span>                // One bounded cleanup, not another scenario. Never select a file, Save, invoke a callback,
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:708:71</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 705 </span>        assertTrue(pressedKeys.isEmpty())
+<span class="lineno"> 706 </span>        val failures = MainNavFailures()
+<span class="lineno"> 707 </span>        mousePressed = true
+<span class="lineno"> 708 </span>        try { robot.mousePress(InputEvent.BUTTON1_DOWN_MASK) } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 709 </span>        finally { failures.release { robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false } }
+<span class="lineno"> 710 </span>        failures.throwIfPresent() // No alternative coordinates, direct AX action, or radio-click retry.
+<span class="lineno"> 711 </span>    }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:789:54</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 786 </span>    private fun withKey(code: Int, block: () -&gt; Unit) {
+<span class="lineno"> 787 </span>        pressedKeys += code
+<span class="lineno"> 788 </span>        val failures = MainNavFailures()
+<span class="lineno"> 789 </span>        try { robot.keyPress(code); block() } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 790 </span>        finally { failures.release { robot.keyRelease(code); pressedKeys -= code } }
+<span class="lineno"> 791 </span>        failures.throwIfPresent()
+<span class="lineno"> 792 </span>    }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:803:71</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 800 </span>        assertTrue(target.context === fresh.context &amp;&amp; rectangle == fresh.screen, &quot;MAIN_NAV_MOVED_TARGET&quot;)
+<span class="lineno"> 801 </span>        val failures = MainNavFailures()
+<span class="lineno"> 802 </span>        mousePressed = true
+<span class="lineno"> 803 </span>        try { robot.mousePress(InputEvent.BUTTON1_DOWN_MASK) } catch (<span class="error">error: Throwable</span>) { failures.add(error) }
+<span class="lineno"> 804 </span>        finally { failures.release { robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false } }
+<span class="lineno"> 805 </span>        failures.throwIfPresent()
+<span class="lineno"> 806 </span>    }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:1042:32</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno">1039 </span>    }
+<span class="lineno">1040 </span>    fun release(block: () -&gt; Unit) {
+<span class="lineno">1041 </span>        if (Thread.interrupted()) interrupted = true
+<span class="lineno">1042 </span>        try { block() } catch (<span class="error">error: Throwable</span>) { add(error) }
+<span class="lineno">1043 </span>        finally { if (Thread.interrupted()) interrupted = true }
+<span class="lineno">1044 </span>    }
+<span class="lineno">1045 </span>    fun problem(): Throwable? = first
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:1148:57</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno">1145 </span>    if (SwingUtilities.isEventDispatchThread()) return block()
+<span class="lineno">1146 </span>    val task = FutureTask(Callable(block))
+<span class="lineno">1147 </span>    SwingUtilities.invokeLater(task)
+<span class="lineno">1148 </span>    return try { task.get(5, TimeUnit.SECONDS) } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno">1149 </span>        task.cancel(false) // Cannot stop already begun EDT/native work; captured-child deadline is still required.
+<span class="lineno">1150 </span>        throw error
+<span class="lineno">1151 </span>    }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:99:26</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno">  96 </span>                fun setLookAndFeel(name: String): String = try {
+<span class="lineno">  97 </span>                    UIManager.setLookAndFeel(name)
+<span class="lineno">  98 </span>                    &quot;OK&quot;
+<span class="lineno">  99 </span>                } catch (<span class="error">error: Exception</span>) {
+<span class="lineno"> 100 </span>                    error.javaClass.simpleName
+<span class="lineno"> 101 </span>                }
+<span class="lineno"> 102 </span>                val gtkResult = setLookAndFeel(&quot;com.sun.java.swing.plaf.gtk.GTKLookAndFeel&quot;)
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:276:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 273 </span>            assertEquals(null, postAckInput?.blockedAt, &quot;PVU005_SETUP_POST_ACK_INPUT_SCOPE_CHANGED&quot;)
+<span class="lineno"> 274 </span>            assertTrue(postAckInput?.worked == true, &quot;PVU005_POST_ACK_UNLOCK_INPUT_OBSTRUCTED&quot;)
+<span class="lineno"> 275 </span>            assertEquals(listOf(true, true), postAckInput?.callbackLocks)
+<span class="lineno"> 276 </span>        } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 277 </span>            failure = error
+<span class="lineno"> 278 </span>        } finally {
+<span class="lineno"> 279 </span>            fun retain(error: Throwable) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:285:57</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 282 </span>            try {
+<span class="lineno"> 283 </span>                val cleanupErrors = onEdt {
+<span class="lineno"> 284 </span>                    val errors = mutableListOf&lt;Throwable&gt;()
+<span class="lineno"> 285 </span>                    try { protection.cleanup() } catch (<span class="error">error: Throwable</span>) { errors += error }
+<span class="lineno"> 286 </span>                    try { window.get()?.dispose() } catch (error: Throwable) { errors += error }
+<span class="lineno"> 287 </span>                    errors
+<span class="lineno"> 288 </span>                }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:286:60</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 283 </span>                val cleanupErrors = onEdt {
+<span class="lineno"> 284 </span>                    val errors = mutableListOf&lt;Throwable&gt;()
+<span class="lineno"> 285 </span>                    try { protection.cleanup() } catch (error: Throwable) { errors += error }
+<span class="lineno"> 286 </span>                    try { window.get()?.dispose() } catch (<span class="error">error: Throwable</span>) { errors += error }
+<span class="lineno"> 287 </span>                    errors
+<span class="lineno"> 288 </span>                }
+<span class="lineno"> 289 </span>                cleanupErrors.forEach(::retain)
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:291:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 288 </span>                }
+<span class="lineno"> 289 </span>                cleanupErrors.forEach(::retain)
+<span class="lineno"> 290 </span>                trace += &quot;cleanupErrors=${cleanupErrors.map { it.javaClass.simpleName }}&quot;
+<span class="lineno"> 291 </span>            } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 292 </span>                retain(error)
+<span class="lineno"> 293 </span>            }
+<span class="lineno"> 294 </span>            try {
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:299:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 296 </span>                    &quot;actual XML/worker/cleanup outcome required; finite samples, not no-flash proof&quot;
+<span class="lineno"> 297 </span>                Files.writeString(evidence.resolve(&quot;observations.txt&quot;), trace.joinToString(&quot;\n&quot;, postfix = &quot;\n&quot;),
+<span class="lineno"> 298 </span>                    CREATE_NEW, WRITE)
+<span class="lineno"> 299 </span>            } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 300 </span>                retain(error)
+<span class="lineno"> 301 </span>            }
+<span class="lineno"> 302 </span>        }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:101:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno">  98 </span>            }
+<span class="lineno">  99 </span>            assertEquals(3, actions.size, &quot;PVA027_NATIVE_CALLBACK_TOTAL&quot;)
+<span class="lineno"> 100 </span>            assertEquals(3, rightPresses.get(), &quot;PVA027_NATIVE_RIGHT_PRESS_TOTAL&quot;)
+<span class="lineno"> 101 </span>        } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 102 </span>            failure = error
+<span class="lineno"> 103 </span>            throw error
+<span class="lineno"> 104 </span>        } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:320:32</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 317 </span>        check(id !in heldInput)
+<span class="lineno"> 318 </span>        heldInput[id] = release // Register BEFORE native press, including partial failure.
+<span class="lineno"> 319 </span>        var failure: Throwable? = null
+<span class="lineno"> 320 </span>        try { press() } catch (<span class="error">error: Throwable</span>) { failure = error; throw error } finally {
+<span class="lineno"> 321 </span>            try { release(); heldInput.remove(id) } catch (error: Throwable) {
+<span class="lineno"> 322 </span>                val primary = failure
+<span class="lineno"> 323 </span>                if (primary == null) throw error else primary.addSuppressed(error)
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:321:60</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 318 </span>        heldInput[id] = release // Register BEFORE native press, including partial failure.
+<span class="lineno"> 319 </span>        var failure: Throwable? = null
+<span class="lineno"> 320 </span>        try { press() } catch (error: Throwable) { failure = error; throw error } finally {
+<span class="lineno"> 321 </span>            try { release(); heldInput.remove(id) } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 322 </span>                val primary = failure
+<span class="lineno"> 323 </span>                if (primary == null) throw error else primary.addSuppressed(error)
+<span class="lineno"> 324 </span>            }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:342:36</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 339 </span>            primary?.cause is InterruptedException
+<span class="lineno"> 340 </span>        var failure: Throwable? = null
+<span class="lineno"> 341 </span>        fun release(block: () -&gt; Unit) {
+<span class="lineno"> 342 </span>            try { block() } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 343 </span>                if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+<span class="lineno"> 344 </span>                val previous = failure
+<span class="lineno"> 345 </span>                if (previous == null) failure = error else previous.addSuppressed(error)
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:465:61</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 462 </span>        if (SwingUtilities.isEventDispatchThread()) return block()
+<span class="lineno"> 463 </span>        val task = FutureTask(Callable(block))
+<span class="lineno"> 464 </span>        SwingUtilities.invokeLater(task)
+<span class="lineno"> 465 </span>        return try { task.get(5, TimeUnit.SECONDS) } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 466 </span>            task.cancel(false) // Suppress work not yet started; this cannot settle a stalled running native call.
+<span class="lineno"> 467 </span>            throw error
+<span class="lineno"> 468 </span>        }
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <h3>style: 7</h3>
+  <details id="MaxLineLength" open="open">
+    <summary class="rule-container"><span class="rule">MaxLineLength: 3 </span><span class="description">Line detected, which is longer than the defined maximum line length in the code style.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/style#maxlinelength">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:472:1</span><span class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+        <pre><code><span class="lineno"> 469 </span>                            val state = backup.state.value
+<span class="lineno"> 470 </span>                            assertFalse(state.hasActiveOperation)
+<span class="lineno"> 471 </span>                            assertEquals(null, state.successMessage, &quot;PVU003_UNEXPECTED_EXPORT_SUCCESS&quot;)
+<span class="lineno"> 472 </span><span class="error">                            val selected = assertNotNull(tab(&quot;Home&quot;)(snapshot().filter { it.window === frame })).selected</span>
+<span class="lineno"> 473 </span>                            homeAfter = homeAfter || selected
+<span class="lineno"> 474 </span>                        }
+<span class="lineno"> 475 </span>                    }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:536:1</span><span class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+        <pre><code><span class="lineno"> 533 </span>                    (node.name == label || node.name?.startsWith(&quot;$label, &quot;) == true)
+<span class="lineno"> 534 </span>            })
+<span class="lineno"> 535 </span>        }
+<span class="lineno"> 536 </span><span class="error">        pva027VisibleTarget(languageOption(&quot;English&quot;)) // Real route, target and scroll-ancestor geometry before VM lookup.</span>
+<span class="lineno"> 537 </span>        // The real Appearance route already consumes this singleton. No early bootstrap/VM injection.
+<span class="lineno"> 538 </span>        val settings = onEdt { GlobalContext.get().get&lt;SettingsViewModel&gt;() }
+<span class="lineno"> 539 </span>        onEdt { assertEquals(SettingsViewModel.AppLanguage.SYSTEM, settings.state.value.language) }
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:594:1</span><span class="message">Line detected, which is longer than the defined maximum line length in the code style.</span>
+        <pre><code><span class="lineno"> 591 </span>            Triple(&quot;الإنجليزية&quot;, SettingsViewModel.AppLanguage.ENGLISH, english),
+<span class="lineno"> 592 </span>        )
+<span class="lineno"> 593 </span>        choices.forEachIndexed { stage, (label, choice, expected) -&gt;
+<span class="lineno"> 594 </span><span class="error">            pva027Click(languageOption(label)) // Native input only; never invoke onEvent/setup or publish an environment.</span>
+<span class="lineno"> 595 </span>            await(&quot;PVA027_SETTINGS_TO_INSTALLED_TRAY_$stage&quot;) {
+<span class="lineno"> 596 </span>                val choiceObserved = onEdt {
+<span class="lineno"> 597 </span>                    settings.state.value.language == choice &amp;&amp; settings.state.value.errorMessage == null
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="ReturnCount" open="open">
+    <summary class="rule-container"><span class="rule">ReturnCount: 4 </span><span class="description">Restrict the number of return statements in methods.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/style#returncount">Documentation</a>
+    <ul>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:615:17</span><span class="message">Function pva027Locate has 4 return statements which exceeds the limit of 2.</span>
+        <pre><code><span class="lineno"> 612 </span>    )
+<span class="lineno"> 613 </span>
+<span class="lineno"> 614 </span>    // PVA027-only locator: preserve the original credential/PVU003 primitives byte-for-byte.
+<span class="lineno"> 615 </span>    private fun <span class="error">pva027Locate</span>(
+<span class="lineno"> 616 </span>        selector: (List&lt;MainNavAx&gt;) -&gt; MainNavAx?, nodes: List&lt;MainNavAx&gt;,
+<span class="lineno"> 617 </span>    ): Pva027Target? {
+<span class="lineno"> 618 </span>        check(SwingUtilities.isEventDispatchThread())
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt:976:13</span><span class="message">Function fieldEdit has 3 return statements which exceeds the limit of 2.</span>
+        <pre><code><span class="lineno"> 973 </span>    it.actionCount &gt; 0 &amp;&amp; (it.name == TITLE || it.name?.startsWith(&quot;$TITLE, &quot;) == true)
+<span class="lineno"> 974 </span>})
+<span class="lineno"> 975 </span>
+<span class="lineno"> 976 </span>private fun <span class="error">fieldEdit</span>(nodes: List&lt;MainNavAx&gt;, fieldName: String): MainNavAx? {
+<span class="lineno"> 977 </span>    val title = unique(nodes.filter { it.name == fieldName }) ?: return null
+<span class="lineno"> 978 </span>    var ancestor = title.parent
+<span class="lineno"> 979 </span>    while (ancestor != null) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt:306:17</span><span class="message">Function interact has 6 return statements which exceeds the limit of 2.</span>
+        <pre><code><span class="lineno"> 303 </span>        failure?.let { throw it }
+<span class="lineno"> 304 </span>    }
+<span class="lineno"> 305 </span>
+<span class="lineno"> 306 </span>    private fun <span class="error">interact</span>(
+<span class="lineno"> 307 </span>        robot: Robot,
+<span class="lineno"> 308 </span>        window: ComposeWindow,
+<span class="lineno"> 309 </span>        client: Rectangle,
+</code></pre>
+      </li>
+      <li><span class="location">Error: app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt:272:17</span><span class="message">Function popupBounds has 4 return statements which exceeds the limit of 2.</span>
+        <pre><code><span class="lineno"> 269 </span>        return bounds
+<span class="lineno"> 270 </span>    }
+<span class="lineno"> 271 </span>
+<span class="lineno"> 272 </span>    private fun <span class="error">popupBounds</span>(before: BufferedImage, after: BufferedImage, marker: Rectangle): Rectangle? {
+<span class="lineno"> 273 </span>        val (bounds, count) = changed(before, after, screen, marker)
+<span class="lineno"> 274 </span>        if (bounds == null || bounds.width !in 80..560 || bounds.height !in 40..240) return null
+<span class="lineno"> 275 </span>        // A small tooltip, icon hover, blank-window focus or isolated pixels are not popup readiness.
+</code></pre>
+      </li>
+    </ul>
+  </details>
+</div>
+
+
+generated with <a href="https://detekt.dev/">detekt version 2.0.0-alpha.6</a> on 2026-09-11 00:55:01 UTC.
+
+</body>
+</html>

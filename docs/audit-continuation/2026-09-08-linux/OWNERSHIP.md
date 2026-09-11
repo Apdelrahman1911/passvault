@@ -1,4 +1,24 @@
-## Current C15 continuation ownership — 2026-09-10
+## Current C18 preparation ownership — 2026-09-11
+
+Root remains sole build/test/CI/Git/ledger/admission/cleanup owner. Reuse the
+existing twenty agents and bounded assignments in `TEAM_20_RESUME.md`; do not
+spawn a duplicate team. Authors and reviewers work on distinct source/report
+paths; no subagent project execution, T/Git, process or runtime probes.
+
+Ten independently reviewed patches across seventeen application/test paths and
+eleven UNBOUND focused-validation inputs are applied. Independent integration
+review adds no runtime pass or closure. One shared C18 capture is planned for
+AndroidCompile02, affected-only static04 and twenty existing regressions plus
+Desktop test compilation. Root serializes admitted work; no full-suite replay.
+
+GUI03 and its read-only observer are consumed failures. Current-R cleanup stays
+HOLD; the closer has not executed. `pva031_review` separately accepted prospective
+GUI03-only publication-freeze release and root explicitly adopted it. Retained
+false flags, C17 evidence/config/objects and
+all older STOP/NO-RETRY/CLOSED/HOLD restrictions survive. No active audit build,
+test or CI; no additional stop, process signal or runtime deletion.
+
+## Historical C15 continuation ownership — 2026-09-10
 
 Root remains sole build/test/CI/Git/ledger/admission/cleanup owner. Integration02
 actually finished external1: two XML passes, one failed Main driver and one
@@ -501,3 +521,25 @@ lifecycle/tray/native cases without affected behavior. Every original author,
 reviewer, failure, rejected-source and STOP/NO-RETRY/CLOSED qualification remains;
 the errored native-agent task is not retried or rephrased. Only root admits fresh
 execution, coordination and cleanup; source-only authors leave no background work.
+
+## Owner-resumed twenty-agent lanes — 2026-09-11
+
+The owner explicitly resumed and requested twenty agents. Exact non-overlapping
+lanes, independent pairings and initial proposal-only scopes are recorded in
+`TEAM_20_RESUME.md`; current observations are in `RESUMED_SESSION_2026-09-11.md`.
+All twenty named agents were spawned. Root alone owns builds/CI/Git/admission,
+cleanup and central ledgers. No source/helper/T freeze is released by resuming.
+GUI03 still requires temporary agent-tool quiescence before root admission.
+Several agents disclosed initial broad instruction-path discovery returning
+sibling AGENTS filenames; their reports preserve that metadata-only scope
+deviation. No sibling contents or held runtime cleanup authority was granted.
+
+## C18 publication and focused reuse review
+
+All twenty existing agents remain available; no duplicate team. Root alone owns
+Git/publication, capture, build/CI, admission, cleanup and central ledgers.
+`coverage_review` independently checks the final C18 selection/report;
+`focused_validation_author` and `focused_validation_review` prepare/challenge the
+exact unchanged Detekt03-source reuse proof in their own lanes. Other agents are
+quiescent until their bounded binding/actual-result or remaining-source tasks.
+No subagent builds, old-runtime access or shared source writes are authorized.

@@ -1,0 +1,84 @@
+{
+  "status": "INDEPENDENTLY_ACCEPTED_V3_UNBOUND_TEXT_ONLY_NOT_EXECUTED_OR_IMPORTED",
+  "derived_from": {
+    "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-17-PUBLISH.py",
+    "sha256": "3232ee3a4fbc6efbfc691c94f2a5abe9f712336aabe0753a9ca866dfe61dfaf4",
+    "bytes": 18687
+  },
+  "future_root_owned_path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-18-PUBLISH.py",
+  "candidate": {
+    "path": "CHECKPOINT-18-PUBLISH.py.txt",
+    "revision": "v3_original_config_preservation",
+    "sha256": "85f9840ecaf4fa5657f63ae11b3e9eb20560de9492d0173c4b5842e7b28a1345",
+    "bytes": 19384
+  },
+  "delta": {
+    "path": "C17-TO-C18-PUBLISHER.patch.txt",
+    "sha256": "7435560e0f260a9c97726cfea96cb16820a8a74d1b7f87a713c5568acf29c0b6"
+  },
+  "expected_predecessor_from_future_bound_config": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799"
+  },
+  "bindings_not_authored_or_admitted": [
+    "final C18 config",
+    "final C18 payload/selection",
+    "genuine final coverage_review acceptance",
+    "root invocation admission",
+    "root final all-.github exclusion, consumed-request reconciliation and no-CI/external-state admission"
+  ],
+  "independent_review": {
+    "reviewer": "/root/desktop_other_review",
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/04-C18-PUBLISHER-DELTA-REVIEW.md",
+    "sha256": "0bc67298495bfd1fc53b07a93875e00e4b579826810290dfcb08980d806ceff7",
+    "bytes": 19222,
+    "disposition": "ACCEPT_C18_PUBLISHER_TEXT_DELTA_ONLY_WITH_FINAL_BINDING_HOLDS",
+    "candidate_sha256": "85f9840ecaf4fa5657f63ae11b3e9eb20560de9492d0173c4b5842e7b28a1345",
+    "final_source_publication_acceptance_or_execution_admission": false
+  },
+  "execution": {
+    "candidate": "NOT_RUN_NOT_IMPORTED",
+    "predecessor": "NOT_RUN_NOT_IMPORTED",
+    "Git_T_runtime_process_access": "NONE"
+  },
+  "retained_rejected_candidate": {
+    "path": "CHECKPOINT-18-PUBLISH.v1-rejected.py.txt",
+    "sha256": "a756c0e76174327ffc31e426b0afa2afe2a707df6c3cb573dac3daa3834b4e45",
+    "bytes": 18240,
+    "reason": "Global REQUEST.json basename rejection would exclude necessary inert reviewed controls. Root clarified: restrict exact request subtree only; evidence controls elsewhere are transportable, not CI triggers."
+  },
+  "text_comparisons": {
+    "path": "TEXT_COMPARISONS.json",
+    "sha256": "98a1ab8dbfd98e518e8e77e9da1e1d7669748855099c9f1d828de3a5d34bb362"
+  },
+  "rationale": {
+    "path": "RATIONALE.md",
+    "sha256": "8003a75effc04514a5fda0fbca18d990134a25c2cb41790c17ca85ad6545ab5c"
+  },
+  "retained_superseded_candidate": {
+    "path": "CHECKPOINT-18-PUBLISH.v2-superseded.py.txt",
+    "sha256": "88e7229c5a96dce5c6bba4b20c51eea59481127fbad4305dc432c79b24e77fcf",
+    "bytes": 18196,
+    "reason": "Root added mandatory original T/.git/config bytes/hash/full-pin preservation before source-review sealing; v2 lacks this guard. Not admitted or invoked."
+  },
+  "fixed_preserved_config_binding": {
+    "source_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_review/gui03-closeout/PUBLICATION-RELEASE-REVIEW.json",
+    "source_sha256": "8a4868834e2ace3a63cde9afffa71acd18418f3153f220c5dce22bf477bcff7c",
+    "expected": {
+      "sha256": "036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5",
+      "pin": {
+        "bytes": 435,
+        "ctime_ns": 1789001766988319322,
+        "dev": 24,
+        "ino": 14293053,
+        "mode": 33152,
+        "mtime_ns": 1789001766988319322,
+        "nlink": 1,
+        "uid": 0
+      }
+    },
+    "fresh_T_observation_claimed": false,
+    "normal_success_requires_under_lock_before_after_equality": true,
+    "error_path_after_check_not_guaranteed": true
+  }
+}

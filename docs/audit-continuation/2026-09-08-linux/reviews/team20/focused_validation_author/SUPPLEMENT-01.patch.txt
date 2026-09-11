@@ -1,0 +1,58 @@
+--- a/scripts/audit/linux_detekt_04.py
++++ b/scripts/audit/linux_detekt_04.py
+@@ -888,7 +888,7 @@
+             and sys.flags.isolated and sys.dont_write_bytecode and sys.flags.no_site
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated absolute root entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3196
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values())
+             and all(isinstance(path, Path) and path.is_absolute() and '..' not in path.parts
+                     for path in (GIT_IMAGE, RUBY_IMAGE))
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py
+@@ -25,7 +25,7 @@
+ E = B / 'runs/linux-detekt04'
+ SELF = B / 'reviews/detekt04-outer/LAUNCH.py'
+ REQUEST = B / 'requests/LINUX-DETEKT-04.json'
+-APPROVAL = B / 'reviews/verification/LINUX-DETEKT04-INSTANCE-ACCEPT.json'
++APPROVAL = B / 'reviews/team20/focused_validation_review/INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+ # Actual source/store/index/tool/exclude identities require root's fresh review.
+ # Paths or old receipts alone never admit the retired source store or an index.
+@@ -572,7 +572,7 @@
+ 
+ def oid_requests(expected):
+     data = b''.join(row['git_blob'].encode('ascii') + b'\n' for row in expected.values())
+-    require(len(data) == MEMBERS * 41 and len(data) <= 128 * 1024, 'canonical bounded OID input size')
++    require(len(data) == MEMBERS * 41 and len(data) <= 144 * 1024, 'canonical bounded OID input size')
+     fd = new(R / 'source.oids')
+     try:
+         view = memoryview(data)
+@@ -586,7 +586,7 @@
+     finally:
+         os.close(fd)
+     os.fsync(directory(R))
+-    actual, original = capture(R / 'source.oids', 128 * 1024)
++    actual, original = capture(R / 'source.oids', 144 * 1024)
+     require(actual == data and original['pin'] == written, 'original OID input changed before capture')
+     return data, original
+ 
+@@ -801,7 +801,7 @@
+     require(sys.argv == [str(SELF)] and sys.executable == PYTHON and not sys.flags.optimize and sys.flags.isolated and
+             sys.flags.no_site and sys.dont_write_bytecode and dict(os.environ) == ENV and os.getuid() == os.geteuid() == 0, 'fixed entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3196
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
+             and all(isinstance(path, Path) and path.is_absolute() and '..' not in path.parts
+                     for path in (GITDIR, INDEX_SOURCE, GIT_IMAGE, RUBY_IMAGE))
+             and GITDIR == Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+@@ -840,7 +840,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-detekt04-approval-v1' and approval['reviewer'] == '/root/verification' and
++            approval['format'] == 'passvault-linux-detekt04-approval-v1' and approval['reviewer'] == '/root/focused_validation_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE)}, 'missing/stale/nonaccepting genuine review')

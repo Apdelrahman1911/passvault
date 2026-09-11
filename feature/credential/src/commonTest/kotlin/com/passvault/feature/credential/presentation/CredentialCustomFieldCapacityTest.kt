@@ -204,6 +204,11 @@ class CredentialCustomFieldCapacityTest {
     }
 
     private fun fields(count: Int): List<CustomField> = List(count) { index ->
-        CustomField(CustomFieldId("capacity-$index"), "Field $index", SensitiveText.from("value-$index"), index % 2 == 0)
+        CustomField(
+            CustomFieldId("capacity-$index"),
+            "Field $index",
+            SensitiveText.from("value-$index"),
+            index % 2 == 0,
+        )
     }
 }

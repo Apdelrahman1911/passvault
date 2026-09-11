@@ -1,0 +1,22 @@
+--- a/scripts/audit/linux_android_compile_02.py
++++ b/scripts/audit/linux_android_compile_02.py
+@@ -27,7 +27,7 @@
+ E = B / 'runs/linux-android-compile02'
+ CHECKOUT = R / 'checkout'
+ SELF, INIT = W / 'scripts/audit/linux_android_compile_02.py', W / 'scripts/audit/android_compile_02.init.gradle'
+-SOURCE = B / 'reviews/android-compile02/source-prepare01/SOURCE.json'  # UNBOUND reference, not a created capture.
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'  # UNBOUND reference, not a created capture.
+ JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
+ SDK, SDK_VIEW = Path('/opt/android-sdk'), R / 'sdk-readonly'
+ SDK_METADATA = tuple(SDK / p for p in ('platforms/android-37.0/source.properties',
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
+@@ -37,7 +37,7 @@
+ EXCLUDE_STATE = None  # UNBOUND: fresh02 store/index/config/exclude review.
+ GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ INNER, INIT = W / 'scripts/audit/linux_android_compile_02.py', W / 'scripts/audit/android_compile_02.init.gradle'
+-SOURCE = B / 'reviews/android-compile02/source-prepare01/SOURCE.json'  # UNBOUND reference, not a created capture.
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'  # UNBOUND reference, not a created capture.
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'

@@ -47,7 +47,8 @@ import kotlin.time.Clock
  * operations receive tracked, revocable key leases so lock can cancel an
  * operation without waiting indefinitely for arbitrary suspending work.
  */
-@Suppress("TooManyFunctions") // This is the sole owner of the in-memory VEK and its serialized state machine.
+// VEK transitions and revocable-lease cleanup deliberately share one serialized state owner.
+@Suppress("TooManyFunctions", "LargeClass")
 class VaultRepositoryImpl(
     private val vaultMetadataDao: VaultMetadataDao,
     private val cryptoEngine: CryptoEngine,
@@ -297,17 +298,12 @@ class VaultRepositoryImpl(
     ): Result<SessionId> =
         withExclusiveSessionTransition {
             currentCoroutineContext().ensureActive()
-            if (attempt.repositoryIdentity !== this) {
+            if (!isCurrentBiometricAttempt(attempt)) {
+                // A foreign or stale caller owns no session here. Do not relock
+                // or wipe a newer valid session or classify its key as invalidated.
                 return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
             }
             val unlockGeneration = attempt.lockGeneration
-            try {
-                lockIntents.verify(unlockGeneration)
-            } catch (_: UnlockPreemptedException) {
-                // A stale caller owns no session. Do not relock or wipe a newer
-                // valid session, and do not classify its key as invalidated.
-                return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
-            }
             if (vaultKey.size != VEK_BYTES) {
                 return@withExclusiveSessionTransition Result.failure(BiometricVaultKeyRejectedException())
             }
@@ -357,6 +353,16 @@ class VaultRepositoryImpl(
                 candidateVek?.let { cryptoEngine.secureWipe(it) }
             }
         }
+
+    private suspend fun isCurrentBiometricAttempt(attempt: BiometricUnlockAttempt): Boolean {
+        if (attempt.repositoryIdentity !== this) return false
+        return try {
+            lockIntents.verify(attempt.lockGeneration)
+            true
+        } catch (_: UnlockPreemptedException) {
+            false
+        }
+    }
 
     override suspend fun lock(reason: LockReason): Result<Unit> {
         cancelBiometricPromptBeforeLock()

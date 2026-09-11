@@ -427,9 +427,11 @@ class BiometricUnlockFreshnessIntegrationTest {
 
         override suspend fun retrieve(vaultId: String): Result<ByteArray> {
             retrieveCalls++
-            if (vaultId != enrolledVaultId) return Result.failure(BiometricKeyStoreException.NotEnabled())
-            val candidate = nextCandidate ?: storedKey?.copyOf()
-                ?: return Result.failure(BiometricKeyStoreException.NotEnabled())
+            val candidate = if (vaultId == enrolledVaultId) {
+                nextCandidate ?: storedKey?.copyOf()
+            } else {
+                null
+            } ?: return Result.failure(BiometricKeyStoreException.NotEnabled())
             nextCandidate = null
             val gate = nextRetrieval
             nextRetrieval = null

@@ -32,16 +32,16 @@ APPROVAL = B / 'reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-
 LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
 # New source/store/tool images and original device/lock pins await publication
 # and fresh instance review. Never borrow consumed02, TRAY01 or GUI02 authority.
-GITDIR = None
+GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
 INNER, INIT = W / 'scripts/audit/linux_desktop_integration_03.py', W / 'scripts/audit/desktop_integration_03.init.gradle'
 SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
 JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
 RELEASE = JAVA.parent.parent / 'release'
 PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
 RUN, PURPOSE = 'linux-desktop-integration03', 'ONE_LINUX_DESKTOP_INTEGRATION03'
-COMMIT = None
-TREE = None
-MEMBERS = None
+COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'
+TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'
+MEMBERS = 3042
 ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
                   ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon', 'mount', 'ip', 'xdpyinfo', 'xprop', 'xfce4-panel', 'xfconf-query')) + (
@@ -51,9 +51,9 @@ GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
 REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE) + GUI_TOOLS
 IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
 PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
-DEVICE = None
-EXPECTED_LOCK = None
-FROZEN = {INNER: None, INIT: None, SOURCE: None}
+DEVICE = {'directory_device': 23, 'regular_file_device': 24}
+EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1788910891124735946, 'dev': 24, 'ino': 14189001, 'mode': 33152, 'mtime_ns': 1788910891124735946, 'nlink': 1, 'uid': 0}
+FROZEN = {INNER: 'c2feebee723587d21c6fe32540f2d039ac564441f62a31c5f891ef059ed4cf2b', INIT: '45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292', SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f'}
 TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav pvu003 pva027'.split()
 WORKERS = ['mainnav', 'editor-room']
 CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()

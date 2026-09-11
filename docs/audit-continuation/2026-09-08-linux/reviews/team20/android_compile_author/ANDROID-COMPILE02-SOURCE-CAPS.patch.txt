@@ -1,0 +1,58 @@
+--- a/scripts/audit/linux_android_compile_02.py
++++ b/scripts/audit/linux_android_compile_02.py
+@@ -43,7 +43,7 @@
+ # require root's fresh review. Each None is a hard pre-launch HOLD, not a fallback.
+ COMMIT = None  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
+ TREE = None  # UNBOUND: final published source tree.
+-MEMBERS = None  # UNBOUND: exact final source/index membership; retain the existing 3196 ceiling.
++MEMBERS = None  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = None  # UNBOUND: fresh02 store/index/config/exclude review.
+@@ -945,7 +945,7 @@
+             and sys.flags.isolated and sys.dont_write_bytecode and sys.flags.no_site
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated absolute root entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3196
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values())
+             and all(isinstance(path, Path) and path.is_absolute() and '..' not in path.parts
+                     for path in (GIT_IMAGE, RUBY_IMAGE))
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py
+@@ -51,7 +51,7 @@
+ READ_ROOT_ENVELOPE = (R / 'checkout', R / 'gradle-home', R / 'tmp', R / 'konan', JAVA.parent.parent, SDK_VIEW)
+ COMMIT = None  # UNBOUND: final published source commit; no inherited C17/Compile01 authority.
+ TREE = None  # UNBOUND: final published source tree.
+-MEMBERS = None  # UNBOUND: exact final source/index membership; retain the existing 3196 ceiling.
++MEMBERS = None  # UNBOUND: exact final source/index membership; 3500 is a ceiling, not a bound count.
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+ BASE_REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE, Path('/usr/bin/mount'))
+ REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE) + SDK_METADATA
+@@ -576,7 +576,7 @@
+ 
+ def oid_requests(expected):
+     data = b''.join(row['git_blob'].encode('ascii') + b'\n' for row in expected.values())
+-    require(len(data) == MEMBERS * 41 and len(data) <= 128 * 1024, 'canonical bounded OID input size')
++    require(len(data) == MEMBERS * 41 and len(data) <= 144 * 1024, 'canonical bounded OID input size')
+     fd = new(R / 'source.oids')
+     try:
+         view = memoryview(data)
+@@ -590,7 +590,7 @@
+     finally:
+         os.close(fd)
+     os.fsync(directory(R))
+-    actual, original = capture(R / 'source.oids', 128 * 1024)
++    actual, original = capture(R / 'source.oids', 144 * 1024)
+     require(actual == data and original['pin'] == written, 'original OID input changed before capture')
+     return data, original
+ 
+@@ -808,7 +808,7 @@
+     require(sys.argv == [str(SELF)] and sys.executable == PYTHON and not sys.flags.optimize and sys.flags.isolated and
+             sys.flags.no_site and sys.dont_write_bytecode and dict(os.environ) == ENV and os.getuid() == os.geteuid() == 0, 'fixed entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3196
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
+             and all(isinstance(path, Path) and path.is_absolute() and '..' not in path.parts
+                     for path in (GITDIR, INDEX_SOURCE, GIT_IMAGE, RUBY_IMAGE))
+             and GITDIR == Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')

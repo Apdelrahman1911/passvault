@@ -1,0 +1,15 @@
+# Detekt03 pre-admission block01 — independent disposition
+
+Reviewer `/root/verification`,2026-09-11. **ACCEPT_RECORDED_PRE_ADMISSION_BLOCK; NO DETEKT03 EXECUTION/CONSUMPTION CREDIT.**
+
+`reviews/detekt03/c17-preflight/PRE-ADMISSION-BLOCK-01.json`:1459B, SHA256 `d389d84fdb5093ec1d65dce454e9842d10f900264d74224c97b362f29ac0ea0a`. Retained external tool10f6c8 actually terminated1, matching root's independent terminal report; traceback names the final assertion's positive point `{pid:16937,comm:java}`. Ownership remains **UNKNOWN**. This supplies no durable process identity, adoption, signalling or cleanup authority.
+
+Root reports the metadata pre-admission screen failed before helper/Gradle/test/stop/CI invocation, slot reservation, root admission or Detekt03 E/R allocation, with original lock descriptor closed in finally. Exact inline reader exists only in root's tool transcript, not a pre-pinned W source. These ordering/zero-invocation/settlement statements remain **root-attributed recorded effects**, not independently replayed or established by this reviewer through live state. No harness reconstruction or process/runtime probe.
+
+Important field clarification from root: with P=`reviews/detekt03/c17-preflight`, `slot_before_absent:true` means **P/SLOT-BEFORE.json** (intended once-only before-image) absent; `admission_absent:true` means **P/ROOT-EXECUTION-ADMISSION.json** absent. Neither means central `EXECUTION_SLOT.json` is missing or describes a `slot:null` field. Root's subsequent metadata-only writer records central slot still IDLE, unchanged SHA256 `9dcacdc1a56713c0c2c6d54561848eac06208385730b278678291279b84db016`. Reviewer did not open central state or either absent path.
+
+Narrow source/hash check of bound outer `reviews/detekt03-outer/LAUNCH.py` (`829000bc8403215b4313d197caeedc21c2f45ba1064b8c6e4378e53b5c5421b4`) confirms exact packet/coordination/original-lock intake and E/R absence before its own allocation. This source boundary does not establish the unexecuted helper's runtime results or independently prove the inline reader's control path.
+
+Exact-instance approval `a5942ed44cca031987aaa1c62be315dcdc2451b512dead20deb3636c4d864be2` and companion review `89101a9209f12807cfeb4ac003a920d7aea866cda43e5ccf77ceeb6928319b11` remain unchanged and **conditional**, not launch authority. Detekt03 request is not recorded consumed; no new runtime execution/recovery/cleanup scope exists. A future genuinely changed host state must pass fresh bounded negative screening and exact root admission, quiescence/no-CI/original-lock/source/pin guards. No blind immediate retry, diagnostic helper launch, process adoption or killing UNKNOWN java.
+
+Zero analyzers/application cases/closures; no denominator changes. All older HOLD/STOP/NO-RETRY/CLOSED/PVD/hardware/publication/1017001 fences remain. Bounded inert retained W/source reads and this O_EXCL permanent note only; no live R/T/process/Git/network/build probe, cache/temp output, deletion or background worker. Foreground descriptors closed; no wrapper-stop duty.

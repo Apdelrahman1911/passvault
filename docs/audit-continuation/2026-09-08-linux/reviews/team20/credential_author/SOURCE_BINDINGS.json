@@ -1,0 +1,102 @@
+{
+  "status": "UNAPPLIED_PROPOSAL_ONLY_REQUIRES_INDEPENDENT_ACCEPTANCE_AND_ROOT_FREEZE_RELEASE",
+  "author": "/root/credential_author",
+  "date_utc": "2026-09-11",
+  "source_root": "/root/projects/PassVault/passvault-linux",
+  "c17_context_from_retained_evidence_not_a_fresh_git_check": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799"
+  },
+  "patch": {
+    "path": "credential-detekt03.patch.txt",
+    "sha256": "8d680148698fc42be221c1019273129a4db65aee82a945896c0b2b84b1ff5ec3",
+    "bytes": 4035
+  },
+  "source_and_proposed_images": [
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "source_sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a",
+      "source_bytes": 17946,
+      "source_lf": 401,
+      "proposed_sha256": "0423e8e78c70fa6944efa771feb33feb91169f7e458bf22036e21067fbf4c255",
+      "proposed_bytes": 17962,
+      "proposed_lf": 402,
+      "retained_diagnostic": {
+        "rule": "MaxLineLength",
+        "source_line": 160
+      }
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "source_sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c",
+      "source_bytes": 16843,
+      "source_lf": 383,
+      "proposed_sha256": "73e9e401ae34d6f7e4f562d2cad2ed66738c1c1d450c5b3720daecad3ae38e7d",
+      "proposed_bytes": 16910,
+      "proposed_lf": 385,
+      "retained_diagnostic": {
+        "rule": "ReturnCount",
+        "source_line": 345
+      }
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+      "source_sha256": "b851a3fab0ea44109a6456896fb2936b99408aaeabb111c66d1bb96b1d1993bf",
+      "source_bytes": 9016,
+      "source_lf": 209,
+      "proposed_sha256": "5bd1b2316812977c733f74b8ee15929907cb47c040cfe3577f0062152e9acff4",
+      "proposed_bytes": 9075,
+      "proposed_lf": 214,
+      "retained_diagnostic": {
+        "rule": "MaxLineLength",
+        "source_line": 207
+      }
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "source_sha256": "d492ed289c21904c6f1145580aaf2980bd99e9a2ae6ccaf624b03c3d4faef0af",
+      "source_bytes": 26117,
+      "source_lf": 532,
+      "proposed_sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+      "proposed_bytes": 26264,
+      "proposed_lf": 534,
+      "retained_diagnostic": {
+        "rule": "ThrowingExceptionFromFinally",
+        "source_line": 460
+      }
+    }
+  ],
+  "retained_evidence": [
+    {
+      "path_relative_to_B": "runs/linux-detekt03/reports/feature-credential-checkstyle.xml",
+      "sha256": "fcca61d425dab71e0916e1ed97749f1c98ec142b9519f9ce2f3c1e2fcabde63c"
+    },
+    {
+      "path_relative_to_B": "runs/linux-detekt03/reports/feature-credential-sarif.sarif",
+      "sha256": "a2a71a5793cbc59a11e4fecd9de5f1f0d87bebf91e6d4e93bbed5bb2531d27c1"
+    },
+    {
+      "path_relative_to_B": "runs/linux-detekt03/SOURCE-BEFORE.json",
+      "sha256": "2e4552659b4ba10347409b435bf33b27cf629b60c2e2f2fbf08c66b9e80d81a9"
+    },
+    {
+      "path_relative_to_B": "runs/linux-detekt03/SOURCE-AFTER.json",
+      "sha256": "2e4552659b4ba10347409b435bf33b27cf629b60c2e2f2fbf08c66b9e80d81a9"
+    },
+    {
+      "path_relative_to_B": "reviews/editor-independent/INPUT-CALLBACK-PATCH-REVIEW.md",
+      "sha256": "d0d6150cd0db978fea10b546816932c228eed56a361ebc31f387792bbe439c09"
+    },
+    {
+      "path_relative_to_B": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
+      "sha256": "f428020cf798125507c514c8b4d632dc58ab4f401494a29b0eaeb5001799df45"
+    }
+  ],
+  "application_source_written": false,
+  "execution": "No builds, tests, Detekt, Git, CI, project helpers, process or SDK probes; no held-runtime file content opened or changed.",
+  "qualification": "Data-only proposal generation and source hashing; not compilation, test execution or a Detekt pass.",
+  "instruction_discovery_scope_deviation": {
+    "command": "find /root/projects/PassVault -maxdepth 3 -name AGENTS.md -print",
+    "qualification": "Initial instruction discovery enumerated AGENTS.md path names under held checkout directories. This broader directory enumeration was not needed for the lane. No such file content was opened; no held namespace was executed or altered. Subsequent reads were bounded to W source/evidence, and root was notified. No repeat."
+  }
+}

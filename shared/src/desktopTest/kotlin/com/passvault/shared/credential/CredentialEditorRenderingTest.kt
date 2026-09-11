@@ -190,6 +190,8 @@ class CredentialEditorRenderingTest {
             picture("04-capacity-save-reload.png")
         }
 
+    // Preserve assertions, native failures and cancellation as primary while the owned fixture closes.
+    @Suppress("TooGenericExceptionCaught")
     private fun withEditor(caseId: String, count: Int, block: Editor.() -> Unit) {
         val display = System.getProperty("passvault.editor.syntheticDisplay")
         assumeTrue("Rendered editor checks require a separately admitted synthetic display", display != null)
@@ -211,6 +213,7 @@ class CredentialEditorRenderingTest {
     private fun seedValues(count: Int) = List(count) { FieldValue("auditfield$it", "field$it", "value$it", false) }
 
     /** The only UI driver in this file; bounded and specific to this production form. */
+    @Suppress("TooManyFunctions") // One driver owns the form, native input and ordered cleanup together.
     private inner class Editor(private val caseId: String, private val count: Int) {
         private val repository = FakeCredentialRepository()
         private val stores = CopyOnWriteArrayList<ViewModelStore>()
@@ -227,6 +230,8 @@ class CredentialEditorRenderingTest {
         private var mousePressed = false
         val model: CredentialViewModel get() = requireNotNull(currentModel.value)
 
+        // Keep admission, registered owner setup and the first real rendered frame in one ordered boundary.
+        @Suppress("LongMethod")
         fun start(display: String) {
             deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(120)
             assertEquals("Linux", System.getProperty("os.name"), "EDITOR_SETUP_LINUX_ONLY")
@@ -356,6 +361,8 @@ class CredentialEditorRenderingTest {
 
         private fun press(code: Int) = withKey(code) { }
 
+        // Release even after a partial press; rethrow the primary and attach secondary release failures.
+        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
         private fun withKey(code: Int, action: () -> Unit) {
             val native = requireNotNull(robot)
             pressedKeys += code // Register cleanup BEFORE the press, including a partially failing native call.
@@ -383,6 +390,8 @@ class CredentialEditorRenderingTest {
             await("EDITOR_SETUP_NATIVE_CALLBACK_$event") { onEdt { (nativeEvents[event] ?: 0) == before + 1 } }
         }
 
+        // A release-only failure must fail the test; a failed press remains primary across release.
+        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
         fun click(selector: (List<Ax>) -> Ax?, allowDisabled: Boolean = false) {
             val target = scrollTo(selector)
             assertTrue(target.enabled || allowDisabled, "EDITOR_TARGET_UNEXPECTEDLY_DISABLED")
@@ -468,8 +477,7 @@ class CredentialEditorRenderingTest {
 
         /** Lowest common semantic ancestor of the title and exactly two dialog edit controls. */
         fun dialogAdd(nodes: List<Ax>): Ax? {
-            val title = unique(nodes.filter { it.name == "Add Custom Field" }) ?: return null
-            var ancestor = title.parent
+            var ancestor = unique(nodes.filter { it.name == "Add Custom Field" })?.parent
             while (ancestor != null) {
                 val candidate = ancestor
                 val members = nodes.filter { node ->
@@ -578,9 +586,13 @@ class CredentialEditorRenderingTest {
             fail(message)
         }
 
+        // Keep owner-local cancellation, settlement and interruption restoration in explicit order.
+        @Suppress("CyclomaticComplexMethod")
         fun close(primary: Throwable?) {
             var interrupted = Thread.interrupted() || primary is InterruptedException
             var cleanupFailure: Throwable? = null
+            // A failed release, including an assertion, must not skip the remaining owned resources.
+            @Suppress("TooGenericExceptionCaught")
             fun release(block: () -> Unit) {
                 try { block() } catch (error: Throwable) {
                     if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
@@ -675,6 +687,7 @@ class CredentialEditorRenderingTest {
         }
     }
 
+    @Suppress("TooGenericExceptionCaught") // Any failed wait must cancel an EDT action not yet started.
     private fun <T> onEdt(block: () -> T): T {
         if (SwingUtilities.isEventDispatchThread()) return block()
         val task = FutureTask(Callable(block))

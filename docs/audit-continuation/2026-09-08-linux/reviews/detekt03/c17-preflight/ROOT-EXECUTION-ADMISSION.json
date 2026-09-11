@@ -1,0 +1,59 @@
+{
+  "admission_reader_sha256": "436aafe085f6a9c134caddf1e0d8dee7068a0a0077e93b41ace1653309909965",
+  "analyzers": 22,
+  "application_test_cases": 0,
+  "approval_sha256": "a5942ed44cca031987aaa1c62be315dcdc2451b512dead20deb3636c4d864be2",
+  "at_utc": "2026-09-11T00:52:15.665738+00:00",
+  "bounds": {
+    "inner_evidence_bytes": 67108864,
+    "inner_evidence_items": 96,
+    "original_stop_seconds": 600,
+    "outer_seconds": 6000,
+    "outer_work_seconds": 5250,
+    "runtime_logical_bytes": 6442450944,
+    "static_seconds": 3600
+  },
+  "cleanup_before_execution": "Reviewed signal/finally handlers precede children; preserve reports, original wrapper stop, owned settlement, then validated allowlisted new-R cleanup only. Unknown/failed safety stays HOLD; no automatic retry.",
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt03-outer/LAUNCH.py"
+  ],
+  "coordination": {
+    "T_store_index_config_source_tools_frozen": true,
+    "all_other_agents_tools_quiescent": true,
+    "no_audit_ci_dispatch_since_captured_terminal_list": true,
+    "no_ci_dispatch_while_local_slot_used": true,
+    "original_lock_verified": true,
+    "sole_build_owner": "/root"
+  },
+  "coverage_tasks": 1,
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "final_result": "PENDING_ACTUAL_EXTERNAL_EXIT_AND_INDEPENDENT_RECONCILIATION",
+  "host_screen": {
+    "positive_rows": [],
+    "qualification": "Bounded pidfd/comm point, not global/continuing idleness or unknown-process authority.",
+    "unclassified_prepositive_departures": 0
+  },
+  "owner": "/root",
+  "qualifications": "Prior pre-admission block remains preserved; host now negative. No app cases/hardware/closure credit from static tasks. All STOP/NO-RETRY/CLOSED/HOLD/publication fences remain.",
+  "request_sha256": "6d256e2c17d616c980d8ea5b1fb6e996a1e24541d615befd0b61aaaeb532b82d",
+  "resources": {
+    "disk_available_bytes": 19992576000,
+    "memory_available_bytes": 24757620736,
+    "memory_total_bytes": 67435888640
+  },
+  "slot_before_sha256": "9dcacdc1a56713c0c2c6d54561848eac06208385730b278678291279b84db016",
+  "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+  "source_images_freshly_reconciled": 15,
+  "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+  "status": "ADMIT_ONE_EXACT_LINUX_DETEKT03"
+}

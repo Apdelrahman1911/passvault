@@ -1,0 +1,128 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.testing.Test
+
+// UNAPPLIED source-only focused20 candidate. No GUI, provider fixture, static or admission authority.
+def mode = gradle.startParameter.projectProperties['passvault.audit.mode']
+if (mode != 'focused') throw new GradleException('Exactly focused mode required; no whole-suite/default mode')
+if (System.getenv('PASSVAULT_PVA038_FIXTURE') != null) throw new GradleException('No provider fixture in focused20')
+def runtime = '/root/projects/PassVault/audit-runtime-linux-focused-regression01'
+def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+def compileTask = ':app-desktop:compileTestKotlinDesktop'
+def compileType = 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated'
+def testTasks = [':core:database:desktopTest', ':feature:credential:desktopTest']
+def requested = testTasks + [compileTask]
+if (gradle.startParameter.taskNames != requested || gradle.startParameter.dryRun ||
+        !gradle.startParameter.excludedTaskNames.empty || gradle.startParameter.continueOnFailure) {
+    throw new GradleException('Only the exact two Tests and compile-only task, no dry-run/exclusions/continue')
+}
+def selections = [
+    ':core:database': [worker: 'database', methods: [
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.completed lock rejects a key returned by an earlier biometric attempt',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.admission precedes the biometric metadata lookup',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.admission precedes the platform enrollment lookup',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.a genuinely fresh attempt after completed lock still opens the vault',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.a stale completion cannot succeed against or relock a newer valid session',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.stale admission takes precedence over malformed candidate invalidation',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.a fresh invalid candidate still invalidates its enrollment',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.pending lock refuses admission without metadata or platform access',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.cancellation after key transfer propagates and wipes the received array',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.lock during the last access write still prevents biometric publication',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.an already open session still succeeds without an intervening lock',
+        'com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.an admission from another repository cannot authorize this repository',
+    ]],
+    ':feature:credential': [worker: 'credential', methods: [
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.row Save captured before further edits adopts the latest draft and preserves another row',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.a latest blank name rejects stale enabled row Save without losing its draft',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.unchanged and duplicate row Saves preserve the live value owner',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.late row Save cannot resurrect an unknown cancelled removed or locked draft',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.busy generation rejects row Save while the pending draft still exists',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.explicit update keeps supplied payload bounds and does not become draft Save',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.duplicate row Save preserves the live value and page Save persists it',
+        'com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.unchanged row Save in a dirty editor never clears the live owner',
+    ]],
+]
+
+gradle.beforeProject { project ->
+    def selection = selections[project.path]
+    if (selection == null) return
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.name != 'desktopTest') return
+        def workerRoot = runtime + '/workers/' + selection.worker
+        def temporary = workerRoot + '/tmp'
+        test.executable = jdk + '/bin/java'
+        test.maxHeapSize = '512m'
+        test.maxParallelForks = 1
+        test.forkEvery = 0
+        test.ignoreFailures = false
+        test.jvmArgs('-XX:-UsePerfData')
+        // Test.systemProperty creates worker STARTUP -D arguments, not client flags.
+        test.systemProperty('file.encoding', 'UTF-8')
+        test.systemProperty('user.home', workerRoot + '/home')
+        test.systemProperty('jna.tmpdir', workerRoot + '/jna')
+        test.systemProperty('java.io.tmpdir', temporary)
+
+        // Root supplies a clean allowlisted client environment. Do not forward its
+        // JVM-option variables or stale provider mode/root/fixture to test workers.
+        def workerEnvironment = new LinkedHashMap(test.environment)
+        ['JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'JAVA_OPTS', 'GRADLE_OPTS',
+         'PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].each {
+            workerEnvironment.remove(it)
+        }
+        workerEnvironment.putAll([
+            'JAVA_HOME': jdk, 'HOME': workerRoot + '/home',
+            'TMPDIR': workerRoot + '/tmp', 'TMP': workerRoot + '/tmp', 'TEMP': workerRoot + '/tmp',
+            'SQLITE_TMPDIR': workerRoot + '/sqlite',
+            'XDG_CACHE_HOME': workerRoot + '/xdg-cache', 'XDG_CONFIG_HOME': workerRoot + '/xdg-config',
+            'XDG_DATA_HOME': workerRoot + '/xdg-data', 'XDG_STATE_HOME': workerRoot + '/xdg-state',
+        ])
+        test.setEnvironment(workerEnvironment)
+
+        test.filter.setIncludePatterns(selection.methods as String[])
+        test.filter.failOnNoMatchingTests = true
+    }
+}
+
+// Bounded observation only: do not add/disable graph tasks or generate test declarations.
+def emit = { Map value ->
+    String raw = JsonOutput.toJson(value)
+    if (raw.getBytes('UTF-8').length > 256 * 1024) throw new GradleException('Focused graph/state record cap')
+    println('PASSVAULT_FOCUSED_REGRESSION01=' + raw)
+}
+gradle.taskGraph.whenReady { graph ->
+    def tasks = graph.allTasks
+    if (tasks.size() > 512 || tasks.findAll { it instanceof Test }.collect { it.path }.sort() != testTasks.sort(false)) {
+        throw new GradleException('Exactly the two selected Test tasks; no Desktop/shared/Android/other Test task')
+    }
+    def compiler = tasks.find { it.path == compileTask }
+    if (compiler == null || !compiler.enabled || compiler.class.name != compileType) {
+        throw new GradleException('The real enabled app-desktop Kotlin test compiler is required')
+    }
+    tasks.each { task ->
+        def name = task.name.toLowerCase(java.util.Locale.ROOT)
+        if (task instanceof org.gradle.api.tasks.Exec || task instanceof org.gradle.api.tasks.JavaExec ||
+                name.contains('android') || name.contains('ios') || name.contains('native') ||
+                name.startsWith('detekt') || name.startsWith('lint') || name.startsWith('package') ||
+                name.startsWith('publish') || name.startsWith('sign') ||
+                name.startsWith('install') || name.startsWith('connected') || name in ['assemble', 'run', 'desktoprun',
+                    'createdistributable', 'createreleasedistributable', 'jlink', 'jpackage']) {
+            throw new GradleException('Out-of-scope execution task: ' + task.path)
+        }
+        if (task instanceof Test) {
+            def selection = selections[task.project.path]
+            if (!task.enabled || task.ignoreFailures || task.maxParallelForks != 1 || task.forkEvery != 0 ||
+                    task.filter.includePatterns != selection.methods.toSet() || !task.filter.excludePatterns.empty ||
+                    !task.filter.commandLineIncludePatterns.empty || !task.filter.failOnNoMatchingTests) {
+                throw new GradleException('Changed exact method filters/Test policy or CLI override: ' + task.path)
+            }
+        }
+    }
+    emit([kind: 'graph', selectors: requested, testTasks: testTasks.sort(false), compileTask: compileTask,
+          tasks: tasks.collect { [path: it.path, type: it.class.name] }.sort { it.path }])
+    graph.afterTask { task, state ->
+        if (!(task.path in requested)) return
+        emit([kind: 'task-state', task: task.path, type: task.class.name, executed: state.executed,
+              skipped: state.skipped, upToDate: state.upToDate, noSource: state.noSource,
+              didWork: state.didWork, skipMessage: state.skipMessage, failureType: state.failure?.class?.name])
+    }
+}

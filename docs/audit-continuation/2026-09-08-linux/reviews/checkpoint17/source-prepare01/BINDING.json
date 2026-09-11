@@ -1,0 +1,25 @@
+{
+  "after_sha256": "e1cb176dd9b2a4c4b24b9c34dee997909d308ad3884d3dd1069afa0fed41534a",
+  "before_sha256": "0042497f8972713653aa3374c2f2abeba936cc1102fd0e767edd113643fc73d2",
+  "facts_sha256": "d475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c",
+  "literal_replacements": [
+    {
+      "after": "P, TREE = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49', 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact independently reviewed C17 publication binding.",
+      "before": "P, TREE = None, None  # UNBOUND: root must supply the published C17 commit/tree."
+    },
+    {
+      "after": "FACTS, FACTS_SHA = B / 'reviews/checkpoint17/SOURCE-STORE-ADMISSION.json', 'd475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c'  # Exact fresh metadata facts.",
+      "before": "FACTS, FACTS_SHA = B / 'reviews/checkpoint17/SOURCE-STORE-ADMISSION.json', None  # UNBOUND root admission hash."
+    },
+    {
+      "after": "PUB, PUB_SHA = B / 'publication/CHECKPOINT-17-PUBLISHED.json', 'b9c91abc629dda9b0432b01c940e189f704c0fb153312e30fee729b1a403e19b'  # Exact durable publication receipt.",
+      "before": "PUB, PUB_SHA = B / 'publication/CHECKPOINT-17-PUBLISHED.json', None  # UNBOUND root publication hash."
+    }
+  ],
+  "owner": "/root",
+  "publication_sha256": "b9c91abc629dda9b0432b01c940e189f704c0fb153312e30fee729b1a403e19b",
+  "scope": "No body/cap/guard/command change; no helper import/execution, capture output or tests. Published C17 contains unbound helper; this bound helper is an external current control. Fresh independent once-only execution admission required.",
+  "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+  "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+  "status": "EXACT_THREE_LINE_BINDING_PENDING_INDEPENDENT_EXECUTION_REVIEW"
+}

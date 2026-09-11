@@ -1,0 +1,214 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt
+@@ -71,6 +71,8 @@
+     private val observations = mutableListOf<String>()
+ 
+     @Test
++    // Assertion failures and cancellation remain primary while every owned cleanup is attempted.
++    @Suppress("TooGenericExceptionCaught")
+     fun `same real tray refreshes English Arabic English and accepts native popup input`() {
+         val evidence = admittedEvidence()
+         val original = LocaleDefaults(
+@@ -207,19 +209,7 @@
+                 }
+             } finally { opened.flush() }
+             try {
+-                val crop = requireNotNull(popup).union(marker).apply { grow(8, 8) }.intersection(screen)
+-                assertTrue(crop.width <= 700 && crop.height <= 400, "PVA027_SETUP_CROP_BOUND")
+-                val picture = selected.getSubimage(crop.x, crop.y, crop.width, crop.height)
+-                try {
+-                    writeEvidence(evidence, IMAGE_NAMES[stage]) { channel ->
+-                        MemoryCacheImageOutputStream(Channels.newOutputStream(channel)).use { output ->
+-                            assertTrue(ImageIO.write(picture, "png", output), "PVA027_SETUP_PNG_WRITER")
+-                            output.flush()
+-                            channel.force(true) // Force the ORIGINAL channel before the image stream closes it.
+-                        }
+-                    }
+-                } finally { picture.flush() }
+-                observations += "stage=$stage nativePopupCrop=${crop.x},${crop.y},${crop.width},${crop.height}"
++                retainPopupImage(stage, evidence, selected, requireNotNull(popup), marker)
+             } finally { selected.flush() }
+             tap(KeyEvent.VK_ENTER)
+             await("PVA027_NATIVE_POPUP_CALLBACK_$stage") {
+@@ -236,6 +226,24 @@
+             completedStages++
+             observations += "stage=$stage nativeCallback=$action rightPresses=${rightPresses.get()} popupDismissed=true"
+         } finally { before.flush() }
++    }
++
++    private fun retainPopupImage(
++        stage: Int, evidence: Path, selected: BufferedImage, popup: Rectangle, marker: Rectangle,
++    ) {
++        val crop = popup.union(marker).apply { grow(8, 8) }.intersection(screen)
++        assertTrue(crop.width <= 700 && crop.height <= 400, "PVA027_SETUP_CROP_BOUND")
++        val picture = selected.getSubimage(crop.x, crop.y, crop.width, crop.height)
++        try {
++            writeEvidence(evidence, IMAGE_NAMES[stage]) { channel ->
++                MemoryCacheImageOutputStream(Channels.newOutputStream(channel)).use { output ->
++                    assertTrue(ImageIO.write(picture, "png", output), "PVA027_SETUP_PNG_WRITER")
++                    output.flush()
++                    channel.force(true) // Force the ORIGINAL channel before the image stream closes it.
++                }
++            }
++        } finally { picture.flush() }
++        observations += "stage=$stage nativePopupCrop=${crop.x},${crop.y},${crop.width},${crop.height}"
+     }
+ 
+     private fun locateMarker(pixels: BufferedImage): Rectangle? {
+@@ -273,9 +281,8 @@
+         val (bounds, count) = changed(before, after, screen, marker)
+         if (bounds == null || bounds.width !in 80..560 || bounds.height !in 40..240) return null
+         // A small tooltip, icon hover, blank-window focus or isolated pixels are not popup readiness.
+-        if (count < 500 || count < bounds.width * bounds.height / 3) return null
+-        if (!Rectangle(marker).apply { grow(560, 260) }.contains(bounds)) return null
+-        return bounds
++        val hasPopupDensity = count >= 500 && count >= bounds.width * bounds.height / 3
++        return if (hasPopupDensity && Rectangle(marker).apply { grow(560, 260) }.contains(bounds)) bounds else null
+     }
+ 
+     private fun changed(
+@@ -312,6 +319,8 @@
+         nativeInput("key:$code", { input.keyPress(code) }) { input.keyRelease(code) }
+     }
+ 
++    // Always release after a partial press; retain a press failure or fail on a release-only error.
++    @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+     private fun nativeInput(id: String, press: () -> Unit, release: () -> Unit) {
+         assertTrue(System.nanoTime() < deadline, "PVA027_SOFT_DEADLINE")
+         check(id !in heldInput)
+@@ -338,6 +347,8 @@
+         var interrupted = Thread.interrupted() || primary is InterruptedException ||
+             primary?.cause is InterruptedException
+         var failure: Throwable? = null
++        // Assertion/interruption failures cannot skip the other owned releases or become a pass.
++        @Suppress("TooGenericExceptionCaught")
+         fun release(block: () -> Unit) {
+             try { block() } catch (error: Throwable) {
+                 if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+@@ -345,26 +356,9 @@
+                 if (previous == null) failure = error else previous.addSuppressed(error)
+             } finally { if (Thread.interrupted()) interrupted = true }
+         }
+-        var removed = false
+-        var disposed = false
++        val nativeCleanup = NativeCleanupState()
+         try {
+-            heldInput.toMap().forEach { (id, releaseInput) -> release { releaseInput(); heldInput.remove(id) } }
+-            release { assertTrue(heldInput.isEmpty(), "PVA027_CLEANUP_HELD_INPUT") }
+-            release { onEdt { native?.let { it.icon.removeMouseListener(it.observer) } } }
+-            release { onEdt { native?.let { it.icon.image = it.originalImage } } }
+-            release { onEdt { tray?.cleanup() } }
+-            release {
+-                onEdt {
+-                    if (tray != null) {
+-                        assertTrue(SystemTray.getSystemTray().trayIcons.isEmpty(), "PVA027_CLEANUP_TRAY_LIVE")
+-                        removed = true
+-                    }
+-                }
+-            }
+-            release { onEdt { frame?.dispose() } }
+-            release { onEdt { assertTrue(frame?.isDisplayable != true, "PVA027_CLEANUP_FRAME_LIVE"); disposed = true } }
+-            // Never flush an image that an uncertain, unremoved native icon might still own.
+-            if (removed) release { native?.marker?.flush() }
++            closeNativeOwners(nativeCleanup, ::release)
+             release { ImageIO.setUseCache(originalImageCache) }
+             release { Locale.setDefault(original.general) }
+             release { Locale.setDefault(Locale.Category.DISPLAY, original.display) }
+@@ -376,28 +370,57 @@
+                 )
+                 assertEquals(original.format, Locale.getDefault(Locale.Category.FORMAT), "PVA027_CLEANUP_FORMAT_LOCALE")
+             }
+-            observations += "ownedTrayRemoved=$removed ownedFrameDisposed=$disposed"
+-            val scenarioStatus = if (primary == null && failure == null) "PASS" else "FAIL"
+-            observations += "scenarioAndOwnedCleanupStatus=$scenarioStatus"
+-            observations += "caseDeclarations=1 stagesPlanned=3 stagesCompleted=$completedStages"
+-            observations += "tooltipVisual=UNPROVED settingsPublisherChain=UNPROVED"
+-            observations += "productIconRendering=UNPROVED nativeTextReview=REQUIRED"
+-            observations += "traceWriteResultAndWorkerSettlement=EXTERNAL_JUNIT_AND_ROOT"
+-            release {
+-                val bytes = (observations.joinToString("\n") + "\n").toByteArray(Charsets.UTF_8)
+-                assertTrue(bytes.size <= 16_384, "PVA027_COMPACT_TRACE_BOUND")
+-                writeEvidence(evidence, "observations.txt") { channel ->
+-                    val buffer = ByteBuffer.wrap(bytes)
+-                    while (buffer.hasRemaining()) channel.write(buffer)
+-                    channel.force(true)
+-                }
+-            }
++            retainCleanupObservations(evidence, primary, failure, nativeCleanup, ::release)
+         } finally {
+             if (Thread.interrupted()) interrupted = true
+             if (interrupted) Thread.currentThread().interrupt()
+         }
+         failure?.let { if (primary == null) throw it else primary.addSuppressed(it) }
+         // EDT/native stalls and cancellation can outlive soft waits: root must settle the original worker.
++    }
++
++    private fun closeNativeOwners(state: NativeCleanupState, release: (() -> Unit) -> Unit) {
++        heldInput.toMap().forEach { (id, releaseInput) -> release { releaseInput(); heldInput.remove(id) } }
++        release { assertTrue(heldInput.isEmpty(), "PVA027_CLEANUP_HELD_INPUT") }
++        release { onEdt { native?.let { it.icon.removeMouseListener(it.observer) } } }
++        release { onEdt { native?.let { it.icon.image = it.originalImage } } }
++        release { onEdt { tray?.cleanup() } }
++        release {
++            onEdt {
++                if (tray != null) {
++                    assertTrue(SystemTray.getSystemTray().trayIcons.isEmpty(), "PVA027_CLEANUP_TRAY_LIVE")
++                    state.removed = true
++                }
++            }
++        }
++        release { onEdt { frame?.dispose() } }
++        release {
++            onEdt { assertTrue(frame?.isDisplayable != true, "PVA027_CLEANUP_FRAME_LIVE"); state.disposed = true }
++        }
++        // Never flush an image that an uncertain, unremoved native icon might still own.
++        if (state.removed) release { native?.marker?.flush() }
++    }
++
++    private fun retainCleanupObservations(
++        evidence: Path, primary: Throwable?, failure: Throwable?, nativeCleanup: NativeCleanupState,
++        release: (() -> Unit) -> Unit,
++    ) {
++        observations += "ownedTrayRemoved=${nativeCleanup.removed} ownedFrameDisposed=${nativeCleanup.disposed}"
++        val scenarioStatus = if (primary == null && failure == null) "PASS" else "FAIL"
++        observations += "scenarioAndOwnedCleanupStatus=$scenarioStatus"
++        observations += "caseDeclarations=1 stagesPlanned=3 stagesCompleted=$completedStages"
++        observations += "tooltipVisual=UNPROVED settingsPublisherChain=UNPROVED"
++        observations += "productIconRendering=UNPROVED nativeTextReview=REQUIRED"
++        observations += "traceWriteResultAndWorkerSettlement=EXTERNAL_JUNIT_AND_ROOT"
++        release {
++            val bytes = (observations.joinToString("\n") + "\n").toByteArray(Charsets.UTF_8)
++            assertTrue(bytes.size <= 16_384, "PVA027_COMPACT_TRACE_BOUND")
++            writeEvidence(evidence, "observations.txt") { channel ->
++                val buffer = ByteBuffer.wrap(bytes)
++                while (buffer.hasRemaining()) channel.write(buffer)
++                channel.force(true)
++            }
++        }
+     }
+ 
+     private fun admittedEvidence(): Path {
+@@ -462,10 +485,19 @@
+         if (SwingUtilities.isEventDispatchThread()) return block()
+         val task = FutureTask(Callable(block))
+         SwingUtilities.invokeLater(task)
+-        return try { task.get(5, TimeUnit.SECONDS) } catch (error: Throwable) {
+-            task.cancel(false) // Suppress work not yet started; this cannot settle a stalled running native call.
+-            throw error
+-        }
++        var completed = false
++        return try {
++            task.get(5, TimeUnit.SECONDS).also { completed = true }
++        } finally {
++            // Suppress work not yet started; this cannot settle a stalled running native call.
++            if (!completed) task.cancel(false)
++        }
++    }
++
++    // Keep live flags until observation: a timed-out EDT call may still finish during later cleanup.
++    private class NativeCleanupState {
++        var removed = false
++        var disposed = false
+     }
+ 
+     private data class NativeOwner(

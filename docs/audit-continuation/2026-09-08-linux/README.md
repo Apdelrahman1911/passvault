@@ -1,6 +1,40 @@
 # Linux continuation — in progress, not a release
 
-## Current C17 checkpoint
+## Current resumed work — C18 preparation, not yet published
+
+The last published checkpoint is C17 (`0563e31adc9a66aefc3e74b99b9a24d17bdcdd49`).
+Continue from `RESUMED_SESSION_2026-09-11.md`, the current ledgers and slot.
+The existing twenty-agent team has applied ten independently reviewed patches
+across seventeen application/test paths. Exact after-images are bound in
+`reviews/team20/root/W-APPLICATION-INTEGRATION.json`; focused validation is
+pending, with no new test methods, executions or closures from these edits.
+
+Detekt03 is independently reconciled: fourteen clean module analyses, five
+failed modules/103 diagnostics, two NO-SOURCE groups and the root's twenty-one
+Gradle-script inputs still unstarted. Original stop and disposable cleanup were
+qualified. Reuse unchanged successful evidence; validate only root plus the five
+affected modules after integration, not another full matrix.
+
+GUI03 is consumed: preparation143/original stop0/terminal70, zero task headers,
+all four cases UNSTARTED and zero XML. Source-after/cleanup-safe remain false;
+current runtime cleanup is HOLD, not attempted. The separately reviewed current-R
+closer remains UNBOUND: its prerequisite read-only observation failed on
+unclassified metadata (exit1; incomplete scan), not an established absence of
+references. No cleanup, GUI03/observer replay or extra stop follows. A separately
+reviewed, explicit GUI03-only prospective publication-freeze release preserves
+the original T config, C17 objects and all retained evidence; R remains HOLD.
+
+Eleven focused-validation inputs are now integrated, independently source-reviewed
+and UNBOUND. Android crypto compilation, root plus five affected static analyzers,
+and twenty existing regressions plus Desktop test compilation will share one fresh
+C18 source capture. No repeated full suite or unchanged successful GUI/native run.
+
+Counts remain **19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**;
+eight PVD explanations and owner decisions remain separate. Conditional remaining
+effort remains **2–4 engineering weeks**, excluding external waits/new findings,
+not a completion date or readiness percentage. No active audit build/test/CI.
+
+## Historical C17 checkpoint
 
 Read `CHECKPOINT_17.md` and the three current ledgers. Counts remain
 **19/25 (76%)**, **26/39 (66.7%)**, **2/12 (16.7%)**; eight PVD explanations
@@ -131,7 +165,7 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest report: `CHECKPOINT_17.md`; current summary above supersedes historical pending statuses.**
+**Latest report: `CHECKPOINT_18.md`; current C18 summary supersedes historical pending statuses.**
 
 **Historical: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
 One additional Desktop test plus two Android instrumentation cases and minimal

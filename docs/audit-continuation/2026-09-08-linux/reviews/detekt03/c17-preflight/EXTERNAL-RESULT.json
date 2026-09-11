@@ -1,0 +1,47 @@
+{
+  "format": "passvault-detekt03-external-result-v1",
+  "owner": "/root",
+  "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+  "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+  "admission_tool": {
+    "cmd": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 TZ=UTC /usr/bin/python3.12 -I -B -S /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt03/c17-preflight/ROOT-ADMIT-02.py.txt",
+    "chunk_id": "f03d89",
+    "wall_time_seconds": 0.000011744,
+    "exit_code": 0,
+    "original_token_count": 133,
+    "output": "{\"admission_sha256\": \"bfbe705d5d73bb31bbf346b644dd455f96c87793603b1c9d853377b6315ce805\", \"host_screen\": {\"positive_rows\": [], \"qualification\": \"Bounded pidfd/comm point, not global/continuing idleness or unknown-process authority.\", \"unclassified_prepositive_departures\": 0}, \"resources\": {\"disk_available_bytes\": 19992576000, \"memory_available_bytes\": 24757620736, \"memory_total_bytes\": 67435888640}, \"slot_sha256\": \"388e2db0bac1bb598eb7e77720701fba63b5057dc184724e7fc0a18c7591baea\", \"status\": \"ADMIT_ONE_EXACT_LINUX_DETEKT03\"}\n"
+  },
+  "fresh_prior_host_point_tool": {
+    "chunk_id": "044c53",
+    "wall_time_seconds": 0.00000798,
+    "exit_code": 0,
+    "original_token_count": 121,
+    "output": "{\"disk_available_bytes\": 20017078272, \"memory\": {\"MemAvailable\": 24815755264, \"MemTotal\": 67435888640}, \"positive_rows\": [], \"prepositive_unclassified_departures\": 0, \"purpose\": \"fresh bounded host point after useful source work; not execution admission\", \"qualification\": \"Only pidfd/comm screen; no positive process birth/namespace/cwd/data probe, no signal/adoption; not global idleness. No helper, lock, slot or runtime allocation.\", \"utc\": \"2026-09-11T00:46:56.579770+00:00\"}\n"
+  },
+  "launch_tool": {
+    "cmd": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 TZ=UTC /usr/bin/python3.12 -I -B -S /root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt03-outer/LAUNCH.py",
+    "chunk_id": "40208a",
+    "wall_time_seconds": 1.001017865,
+    "session_id": 85689,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "polls": [
+    {
+      "chunk_id": "86abed",
+      "wall_time_seconds": 5.001023521,
+      "session_id": 85689,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "chunk_id": "5e4810",
+      "wall_time_seconds": 120.652535277,
+      "exit_code": 1,
+      "original_token_count": 0,
+      "output": ""
+    }
+  ],
+  "actual_terminal_exit": 1,
+  "qualification": "Exactly one Detekt03 helper invocation. Static failure; no application/JUnit cases. Original inner wrapper stop0 and outer original runtime cleanup remain subject to independent retained-evidence reconciliation. No new stop or cleanup attempt."
+}

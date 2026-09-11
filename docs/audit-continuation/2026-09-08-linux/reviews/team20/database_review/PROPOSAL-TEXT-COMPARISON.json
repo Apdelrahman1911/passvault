@@ -1,0 +1,153 @@
+{
+  "reviewer": "/root/database_review",
+  "status": "UNAPPLIED_IN_MEMORY_TEXT_RECONSTRUCTION_ONLY",
+  "author_source_identity_report_sha256": "95e597de2f87db9052e95802f434246885315501171eeef7ec2afb25b1dee421",
+  "execution": "Inline standard-library source-data comparison only; no patch/tool/project code execution, application source writes, builds or tests.",
+  "steps": [
+    {
+      "proposal": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_author/01-pagination-declaration-and-fixture-format.patch.txt",
+      "sha256": "45ea3727ff8a44f07834ac864d78d2caa8a8f4292086d1231d56d4da3542bef1",
+      "bytes": 11079,
+      "changes": [
+        {
+          "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt",
+          "before": {
+            "sha256": "d601a0ba67bd22b0f39bc8412c4538a8fd2b0530d6a96fa83bd7f96a02aafa72",
+            "bytes": 4820,
+            "physical_lf": 125
+          },
+          "after": {
+            "sha256": "c551d04efdcbdcd53a132731bc1fd6cd0ab85b18495a79383a54f7b8326b18c8",
+            "bytes": 2328,
+            "physical_lf": 63
+          },
+          "exact_context_matches": true,
+          "hunks": 1
+        },
+        {
+          "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt",
+          "before": {
+            "exists": false
+          },
+          "after": {
+            "sha256": "d14d739d1793f859bc42426c41ac708bb81a5689661929eda3576ec6eae08029",
+            "bytes": 2535,
+            "physical_lf": 63
+          },
+          "exact_context_matches": true,
+          "hunks": 1
+        },
+        {
+          "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+          "before": {
+            "sha256": "36103de28d5bff2eaff06f6bea0aaf472983c0d8607e3383a485081974444554",
+            "bytes": 27183,
+            "physical_lf": 522
+          },
+          "after": {
+            "sha256": "acc3c5a8d29f2f976ed5dfd5612b325624915953937ff48b438ad6e5bcb63554",
+            "bytes": 27452,
+            "physical_lf": 534
+          },
+          "exact_context_matches": true,
+          "hunks": 6
+        }
+      ],
+      "declared_step_afterimages_match": true
+    },
+    {
+      "proposal": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_author/02-biometric-admission-and-fixture-returns.patch.txt",
+      "sha256": "fbccacba0abbaab83346c05dd3f50e90e90b2e4d34d0e6d4aacf171107ad6ee1",
+      "bytes": 2946,
+      "changes": [
+        {
+          "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+          "before": {
+            "sha256": "aee86a3e876da0318c750c350c3ec4eb8938aa1929123533c041c3a10ec38630",
+            "bytes": 37053,
+            "physical_lf": 846
+          },
+          "after": {
+            "sha256": "385b96c2f4f72b2561c7c32e92bbc34379d9666769847487b6b5740c508939fc",
+            "bytes": 37155,
+            "physical_lf": 851
+          },
+          "exact_context_matches": true,
+          "hunks": 2
+        },
+        {
+          "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+          "before": {
+            "sha256": "1108e4b0d4353c840974ac0ed57331e257947e9bded200a52bc73afd3b9d3e0e",
+            "bytes": 17716,
+            "physical_lf": 473
+          },
+          "after": {
+            "sha256": "f25cd292184e1fca7d0cbb3d384dac66156683e5bc9f093876cfd3b487d85b99",
+            "bytes": 17699,
+            "physical_lf": 475
+          },
+          "exact_context_matches": true,
+          "hunks": 1
+        }
+      ],
+      "declared_step_afterimages_match": true
+    },
+    {
+      "proposal": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_author/03-sole-vek-owner-size-exception.patch.txt",
+      "sha256": "1bf34df5ab49d21d65cfd515de4353dc8a7443da7c8c06ab48c30868e37bc312",
+      "bytes": 758,
+      "changes": [
+        {
+          "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+          "before": {
+            "sha256": "385b96c2f4f72b2561c7c32e92bbc34379d9666769847487b6b5740c508939fc",
+            "bytes": 37155,
+            "physical_lf": 851
+          },
+          "after": {
+            "sha256": "ce012cc2b0ffc76783b081f31285c7247bdc6192e4301f6af637c2df5cdac8e8",
+            "bytes": 37182,
+            "physical_lf": 852
+          },
+          "exact_context_matches": true,
+          "hunks": 1
+        }
+      ],
+      "declared_step_afterimages_match": true
+    }
+  ],
+  "combined_afterimages_match_author": true,
+  "checks": {
+    "moved_enum_and_all_three_comparator_helpers_byte_equal_except_boundary_blank_lines": true,
+    "remaining_pagination_validation_and_two_emit_functions_byte_equal": true,
+    "unicode_fixture_ordered_lexical_tokens_equal_ignoring_whitespace_comments_and_optional_trailing_commas": true,
+    "freshness_post_selection_transfer_gate_and_finally_region_byte_equal": true,
+    "biometric_post_admission_key_checks_verification_commits_errors_and_finally_region_byte_equal": true,
+    "test_declarations_unchanged": {
+      "BiometricUnlockFreshnessIntegrationTest": 12,
+      "VaultBackupUnicodePaginationTest": 6
+    },
+    "original_source_bytes_remain_unchanged": true,
+    "new_source_file_remains_absent": true
+  },
+  "line_checks": [
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt",
+      "over_120_non_import_package_lines": []
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt",
+      "over_120_non_import_package_lines": []
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+      "over_120_non_import_package_lines": []
+    },
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "over_120_non_import_package_lines": []
+    }
+  ],
+  "qualification": "Source equivalence and proposal identity checks are not Kotlin compilation, a Detekt result or executed behavioral tests. Author proposals require root freeze release and separate admission."
+}

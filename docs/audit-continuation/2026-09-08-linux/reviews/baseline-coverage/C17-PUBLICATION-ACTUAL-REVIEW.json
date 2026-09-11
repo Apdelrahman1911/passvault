@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "reviewer": "/root/baseline_coverage",
+  "date": "2026-09-10",
+  "disposition": "ACCEPT_C17_PUBLISHED_SOURCE_WITH_EXTERNAL_TERMINAL_GAP",
+  "scope": "Narrow retained actual-publication reconciliation against accepted C17 payload; no source re-audit or publisher/helper replay.",
+  "source": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "sole_parent": "e6738b17a7c783383a4f0ae0f17af726cffb9a40",
+    "parent_tree": "c4009ab5f9ba23bb8097d64cc54328b131baa0c8",
+    "dedicated_branch": "codex/audit-continuation-linux-20260908",
+    "members": 3042,
+    "raw_bytes": 103345745
+  },
+  "evidence": [
+    {
+      "path": "publication/CHECKPOINT-17-PUBLISHED.json",
+      "sha256": "b9c91abc629dda9b0432b01c940e189f704c0fb153312e30fee729b1a403e19b",
+      "bytes": 53622,
+      "role": "durable publication receipt"
+    },
+    {
+      "path": "publication/CHECKPOINT-17-CONFIG.json",
+      "sha256": "0bce0a83d6f2d0a5c5f576a73eb8b45da1905f1fb4994417234b85dd4f95566a",
+      "bytes": 2772,
+      "role": "root source-publication-only admission and exact companions"
+    },
+    {
+      "path": "publication/CHECKPOINT-17-PAYLOAD.json",
+      "sha256": "87743f00c7fe5caf49c48a64ae57541b11e10b81e5203076a44fef0706a53a3b",
+      "bytes": 50007,
+      "role": "accepted167-file selection and two exact removals"
+    },
+    {
+      "path": "reviews/baseline-coverage/CHECKPOINT-17-REVIEW.json",
+      "sha256": "61e9bd4ff918eb21209656cb6ad7a36457b4e3840b097420c5681936ac2c5b62",
+      "bytes": 15191,
+      "role": "final independent source/ledger/report acceptance"
+    },
+    {
+      "path": "publication/CHECKPOINT-17-EXTERNAL-OBSERVATION.json",
+      "sha256": "97f21889e45235e1a86914f1eef39c2894df55988e7dbe5ed4c24d331fb5dd42",
+      "bytes": 1209,
+      "role": "explicit missing external terminal/session qualification"
+    },
+    {
+      "path": "publication/CHECKPOINT-17-WHITESPACE.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "role": "retained scoped authored whitespace output"
+    },
+    {
+      "path": "publication/CHECKPOINT-17-PUBLISH.py",
+      "sha256": "3232ee3a4fbc6efbfc691c94f2a5abe9f712336aabe0753a9ca866dfe61dfaf4",
+      "bytes": 18687,
+      "role": "already accepted publisher source, finalizer tail reread only"
+    },
+    {
+      "path": "reviews/detekt02/source-prepare01/SOURCE.json",
+      "sha256": "2af03198511f26cfafb0ddd01470e66585697507e95c654530e1621b5ce0831b",
+      "bytes": 1575985,
+      "role": "retained C16 complete raw source member manifest"
+    }
+  ],
+  "actual_acceptance": {
+    "durable_status": "PUBLISHED_EXACT_C17_SOURCE",
+    "retained_exact_command_vectors": 22,
+    "retained_distinct_zero_exit_reaped_direct_git_children": 22,
+    "retained_command_outputs": "All present stdout strings independently match their recorded size/hash. Exact fixed argv, common Git safety overrides and publication-clone cwd match. Large recursive member/index/diff outputs independently regenerated as data below; commit transcript is hash-only, not independently reread.",
+    "source_images": {
+      "selected_after_images": 167,
+      "companions": 2,
+      "verified_total": 169,
+      "selected_raw_bytes": 6735985,
+      "current_named_W_images": 168,
+      "exact_archived_W_prebinding_image": 1
+    },
+    "exact_changed_paths": 171,
+    "index_update": {
+      "bytes": 23900,
+      "sha256": "445e276aee4cc5553ce837dfec11b3d98c13c87712794c6a2d61951e4072d5ce",
+      "qualification": "Reconstructed169 mode/blob/path NUL entries plus only two mode0/zeroOID exact deletions. Hash/length match retained stdin."
+    },
+    "aggregate_data_reconstruction": [
+      {
+        "bytes": 396219,
+        "index": 3,
+        "role": "C16 complete recursive tree list",
+        "sha256": "554a6e16cb291a7828551104eb58bba28ab44ebc6f4e8bd1b8deee648139b1b2"
+      },
+      {
+        "bytes": 387558,
+        "index": 4,
+        "role": "C16 complete stage0 index list",
+        "sha256": "2e1d74406734b3a2d2b7af3d37e1698b5c8afd2c5b376f7bf3f140af0b14d2a2"
+      },
+      {
+        "bytes": 6929,
+        "index": 9,
+        "role": "169 selected Git blob IDs",
+        "sha256": "5dc5606339af27c193d5723e87d74567c6c6d68e7c13ef72531214197c00b249"
+      },
+      {
+        "bytes": 409808,
+        "index": 11,
+        "role": "C17 complete stage0 index list",
+        "sha256": "9ec76a2e509dc86ad527958aa00a34b9771a85a66a08ee4b04f4108d07ccaaf5"
+      },
+      {
+        "bytes": 15702,
+        "index": 12,
+        "role": "171 exact changed paths",
+        "sha256": "e4d27cf137f1c95ff3e37ce717b2c9de8ada66dd6021f654ff6b9cf103193d4b"
+      },
+      {
+        "bytes": 418934,
+        "index": 18,
+        "role": "C17 complete recursive tree list",
+        "sha256": "09e35173f768aa110a3e65a3c3eafbacf2e29ee604779ca99f40202365e08c4a"
+      }
+    ],
+    "parent_and_refs": "Retained HEAD/tree and sole-parent output match source fields. Three before-remote snapshots equal CONFIG/C16 after snapshot; one after snapshot changes only the dedicated continuation ref. Main/testing/release, handoff branch and occupied rc1017001 tag unchanged in retained evidence. Push was once, nonforce, unsigned/no-follow-tags and no recursive submodule push.",
+    "moves": "Both exact historical draft removals equal accepted selection, and byte-preserving .kt.txt aliases are among the169 verified source images. No other removed path or live-module suppression.",
+    "whitespace": "One retained scoped Git --check,17 exact authored paths,exit0/empty log. Not another test or rerun of historical raw-evidence whitespace FAIL.",
+    "limits": "C16 manifest plus verified raw after-images reproduce all six retained list/blob-output aggregates. This is not a fresh Git/T/source-store probe or independent reconstruction of the binary Git tree object/commit object; reported commit/tree OIDs come from retained Git output."
+  },
+  "postpublication_source_binding": {
+    "original_path": "reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.py",
+    "selected_original_sha256": "0042497f8972713653aa3374c2f2abeba936cc1102fd0e767edd113643fc73d2",
+    "exact_archived_image": "reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.unbound.py.txt",
+    "exact_archived_bytes": 17673,
+    "binding_record": "reviews/checkpoint17/source-prepare01/BINDING.json",
+    "binding_record_sha256": "cd9958053224396b95b00169b18af0456d0e7705688a5f942c35b4af9b4ac9ad",
+    "later_current_sha256": "e1cb176dd9b2a4c4b24b9c34dee997909d308ad3884d3dd1069afa0fed41534a",
+    "qualification": "Root identifies later three-literal binding assigned to a separate independent review. Current file no longer represents committed C17. This review verifies its exact preserved unbound image against selected raw SHA/size/mode and recorded Git blob, but neither admits nor reviews the later binding/capture."
+  },
+  "external_terminal_gap": {
+    "publisher_external_exit": null,
+    "publisher_exec_session_id": null,
+    "publisher_process_exit_observed": false,
+    "cause": "Root's initial exec orchestration projected only exec_command.output at1000ms, losing session_id and final external publisher exit. Neither success status nor later data-reader0 repairs that omission.",
+    "later_receipt_observation": {
+      "tool": "0d6c61",
+      "exit": 0,
+      "qualification": "Completed bounded durable receipt read only, NOT publisher terminal observation. Root later sealed explicit observation note."
+    },
+    "finalizer_order": "Already accepted source lines255-260 closes original root descriptor, unlocks/closes coordination lock and closes coordination-parent descriptor before lines261-263 final durable receipt. Any recorded close error changes status to FAIL_CLEANUP_HOLD. Durable success has no such error fields and follows all22 direct Git children being reaped.",
+    "accepted_settlement": "Source-qualified completion of publication mutations, post-push ref comparison and original root/coordination close path is supported. This does not infer external exit0, global process idleness, live lock state or absence of arbitrary descendants.",
+    "unresolved_settlement": "Receipt descriptor close at264, stdout at265 and actual publisher process/tool terminal remain unobserved. Do not claim unconditional end-to-end terminal success or replace unknown with zero.",
+    "no_retry": "Do not replay publisher, guess/reacquire process or session identity, re-probe held targets, or signal/delete to manufacture missing terminal evidence.",
+    "continuation_boundary": "Exact C17 identity and qualified receipt may be referenced as retained data for separately reviewed fresh source-capture/admission. This review itself grants no T/runtime/process access, new source helper/build/test/CI execution, store mutation or cleanup authority; later gates must retain this gap rather than equate it to external terminal0."
+  },
+  "resources_and_coordination": {
+    "elapsed_seconds_reported": 6.974212740024086,
+    "point_observations": [
+      {
+        "disk_available_bytes": 19415068672,
+        "elapsed_seconds": 0.08785724500194192,
+        "label": "before source publication",
+        "ram_available_bytes": 25136463872,
+        "ram_total_bytes": 67435888640
+      },
+      {
+        "disk_available_bytes": 19406598144,
+        "elapsed_seconds": 6.974171022011433,
+        "label": "after source",
+        "ram_available_bytes": 25128067072,
+        "ram_total_bytes": 67435888640
+      }
+    ],
+    "namespace_before_matches_C16_after": true,
+    "namespace_after": {
+      "directories": 1153,
+      "files": 4536,
+      "label": "after source",
+      "logical_bytes": 147894687
+    },
+    "qualification": "Recorded namespace inventory/point disk and RAM values only; no live reviewer probe, net reclaimed-space claim, hard RSS limit or continuous resource coverage. Source publication created no build/SDK/cache/service/wrapper-stop duty. Necessary publication clone retained by root, not a build workspace. Original stores and held runtimes remain outside this scope.",
+    "slot": "Receipt says unchanged idle/no build or CI admitted. No new scheduling activation follows from this review."
+  },
+  "accounting": {
+    "new_application_cases": 0,
+    "new_qualified_closures": 0,
+    "new_suspicion_resolutions": 0,
+    "original_families": "19/25",
+    "all_families": "26/39",
+    "original_suspicions": "2/12",
+    "XML_records": "203 unchanged",
+    "infrastructure_controls": "5 parser+8 screen, separate nonXML",
+    "design_explanations": "8, owner decisions separate"
+  },
+  "restrictions": "Retain all earlier successes/rejections/grouped variants/failures,Detekt02 coverageFAIL/22UNSTARTED and zero-removal cleanup HOLD,unknown churn,PVU007 STOP,PVU011 NO-RETRY/no procedure inquiry,PVA029 recorded failure/no automatic retry,G7/G8 CLOSED,all consumed/retired-store/HOLD/native-refusal scopes,PVD/hardware boundaries and nonpublishing/protected-ref/occupied1017001 fences.",
+  "reviewer_activity": {
+    "method": "Named inert W source/evidence reads with no-follow regular-file/stable metadata checks; JSON/text/hash and in-memory Git blob/list-format comparisons only. Previously accepted source review reused; only finalizer order reread for the newly reported terminal gap. No subject import/AST/execution, Git/network/T/SDK/cache/process/mount probe, signal/deletion or build/test.",
+    "reader_history": "Initial in-memory reader7da3ed exited1 at expected postpublication source-preparer binding drift; root supplied exact preserved unbound W image. No publisher/helper/test rerun, T probe or current-source rollback. A command-summary print initially sliced the common prefix incorrectly; corrected data summary only.",
+    "artifact": "Only this new permanent review, created exclusively0600 with file/parent fsync and exact readback. No temporary files/caches/background workers; wrapper stop N/A."
+  },
+  "remaining_objection": "External publisher terminal/session evidence is missing and explicitly unresolved; it does not negate independently reconciled retained source-publication evidence."
+}

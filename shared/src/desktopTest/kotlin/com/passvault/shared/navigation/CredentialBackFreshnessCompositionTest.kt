@@ -178,6 +178,8 @@ class CredentialBackFreshnessCompositionTest {
         }
     }
 
+    // One nested boundary owns fixture teardown and Main restoration without replacing a primary test failure.
+    @Suppress("LongMethod", "ThrowsCount", "TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
     private suspend fun TestScope.withEditorComposition(block: suspend EditorCompositionFixture.() -> Unit) {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         var primaryFailure: Throwable? = null
@@ -264,6 +266,8 @@ class CredentialBackFreshnessCompositionTest {
         repository: FakeCredentialRepository,
     ) = withContext(NonCancellable) {
         var cleanupFailure: Throwable? = null
+        // Assertion/cancellation failures are retained while every remaining cancellation/settlement is attempted.
+        @Suppress("TooGenericExceptionCaught")
         suspend fun release(action: suspend () -> Unit) {
             try {
                 action()

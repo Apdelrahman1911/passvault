@@ -1,0 +1,152 @@
+--- a/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-17-PUBLISH.py
++++ b/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-18-PUBLISH.py
+@@ -1,9 +1,10 @@
+ #!/usr/bin/python3
+-# New C17 source publication-only recipe; utility source derived from consumed C16,
+-# never imported/replayed. Scoped authored-source whitespace only. Not a build/CI runner.
++# New C18 source publication-only candidate; derived as TEXT from consumed C17.
++# UNBOUND: root must bind final config/payload/review and separately admit one invocation.
++# Never import/replay a predecessor. Scoped authored-source whitespace only; no build/CI.
+ 
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+-CFG=json.loads(pathlib.Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-17-CONFIG.json').read_bytes())
++CFG=json.loads(pathlib.Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-18-CONFIG.json').read_bytes())
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+ PUB=B/'publication'
+@@ -12,7 +13,10 @@
+ BRANCH='codex/audit-continuation-linux-20260908'
+ BASE=CFG['source_commit']
+ BASE_TREE=CFG['source_tree']
+-REMOVAL_PATHS={'docs/audit-continuation/2026-09-08-linux/reviews/android32/navhost-draft/'+n for n in ('CredentialMainNavHostRoomIntegrationTest.kt','CredentialNavHostRoomIntegrationTest.kt')}
++REQUEST_PREFIX='docs/audit-continuation/2026-09-08-linux/requests/'
++CONSUMED_LINUX_REQUESTS={REQUEST_PREFIX+n for n in (
++ 'LINUX-DETEKT-03.json','LINUX-ANDROID-COMPILE-01.json','LINUX-DESKTOP-TRAY-01.json',
++ 'LINUX-DESKTOP-INTEGRATION-02.json','LINUX-DESKTOP-INTEGRATION-03.json')}
+ START=time.monotonic();CANCEL=False;child=None;lockfd=None;parentfd=None;rootfd=None;recfd=None
+ rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'review_sha256':CFG['review_sha256'],'source_workspace':str(S),'publication_clone':str(T),'commands':[],'resource_samples':[],'selection_sha256':CFG['selection_sha256'],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
+ def req(ok,msg):
+@@ -99,7 +103,7 @@
+   r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr=bytes(err).decode('utf-8','strict'))
+   if len(out)<=8192:r['stdout']=decoded
+   if args[:3]==['diff','--cached','--check']:
+-   p=PUB/'CHECKPOINT-17-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++   p=PUB/'CHECKPOINT-18-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+     view=memoryview(out)
+     while view:view=view[os.write(fd,view):]
+@@ -144,26 +148,35 @@
+  rec.setdefault('namespace_inventories',[]).append({'label':label,'files':count,'directories':directories,'logical_bytes':size})
+  durable()
+ try:
+- raw,_=read_file(PUB/'CHECKPOINT-17-PAYLOAD.json')
++ req((BASE,BASE_TREE)==('0563e31adc9a66aefc3e74b99b9a24d17bdcdd49','d1bd6ca5b18d08ff3ff15896d9a78af9016be799'),'C18 requires exact C17 predecessor from bound config')
++ raw,_=read_file(PUB/'CHECKPOINT-18-PAYLOAD.json')
+  req(digest(raw)==CFG['selection_sha256'],'selection changed')
+  selection=json.loads(raw)
+  req(selection['parent_commit']==BASE and selection['parent_tree']==BASE_TREE,'selection base')
+  selected=selection['files']
+  removals=selection['removals']
+- req(len(removals)==2 and {r['path'] for r in removals}==REMOVAL_PATHS,'only exact two reviewed inert draft removals')
+- req(all(r['to']==r['path']+'.txt' and r['git_mode']=='100644' for r in removals),'invalid inert draft alias')
+- req(all(not os.path.lexists(safe_parent(S,r['path'])) for r in removals),'old Kotlin draft still present in W')
++ req(removals==[],'C18 permits no removals; C17 inert-draft removals are already consumed')
++ allrows=selected+CFG['companions']
++ req(0<len(allrows)<=450,'bounded selected and companion paths')
++ # Guard descriptor namespaces before reading any selected/companion source bytes.
++ for r in allrows:
++  p=r['path'];rel=pathlib.PurePosixPath(p)
++  req(isinstance(p,str) and p==str(rel) and p not in ('','.'),'noncanonical selected path')
++  req(not rel.is_absolute() and '..' not in rel.parts and '\n' not in p and '\0' not in p,'unsafe selected path')
++  req('.git' not in rel.parts and not p.startswith('.github/workflows/'),'retired-store/workflow path forbidden')
++  req(not p.startswith(REQUEST_PREFIX) or p in CONSUMED_LINUX_REQUESTS,'only five exact consumed Linux request leaves permitted')
+  reviewraw,_=read_file(B/CFG['review_path'])
+  req(digest(reviewraw)==CFG['review_sha256'],'review changed')
+  review=json.loads(reviewraw)
+- req(review['reviewer']=='/root/baseline_coverage' and review['disposition']=='ACCEPT_C17_SOURCE_PUBLICATION'
++ req(review['reviewer']=='/root/coverage_review' and review['disposition']=='ACCEPT_C18_SOURCE_PUBLICATION'
+      and review['selection_sha256']==CFG['selection_sha256'],'genuine exact independent review required')
+- expected=frozen(S,selected+CFG['companions']);allrows=selected+CFG['companions']
+- req(len(expected)==len(allrows) and len(expected)<=400,'unique bounded selected paths')
+- req(REMOVAL_PATHS.isdisjoint(expected) and all(r['to'] in expected for r in removals),'remove/add scope mismatch')
+- req(all(next(x for x in allrows if x['path']==r['to'])['sha256']==r['sha256'] for r in removals),'inert rename must preserve exact bytes')
+- # No new or changed request file in a non-activating source checkpoint.
+- req(not any(p.startswith('docs/audit-continuation/2026-09-08-linux/requests/') for p in expected),'source checkpoint must not activate or alter a request')
++ expected=frozen(S,allrows)
++ req(len(expected)==len(allrows) and len(expected)<=450,'unique bounded selected paths')
++ # Final independent review must bind consumed evidence; names alone do not authorize replay.
++ whitespace_paths=CFG['authored_whitespace_paths']
++ req(isinstance(whitespace_paths,list) and 0<len(whitespace_paths)<=450 and all(isinstance(p,str) for p in whitespace_paths),'bounded authored whitespace list required')
++ req(len(set(whitespace_paths))==len(whitespace_paths) and set(whitespace_paths)<=set(expected)
++     and whitespace_paths==selection['authored_whitespace_paths'],'invalid or unreviewed authored whitespace scope')
+  slotraw,_=read_file(B/'EXECUTION_SLOT.json')
+  req(digest(slotraw)==CFG['slot_sha256'] and json.loads(slotraw)['state']==CFG['slot_state'],'slot changed')
+  lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,661121,0,16832],'original coordination parent changed')
+@@ -181,6 +194,13 @@
+  rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,1080545,0,16832];root_check();inventory('before source')
+  gd=T/'.git'
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
++ # Fixed retained release values; no config bytes are recorded in the receipt.
++ config_fields=('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')
++ config_before_raw,config_before_stat=read_file(gd/'config')
++ config_before_pin=tuple(getattr(config_before_stat,'st_'+k) for k in config_fields)
++ rec['preserved_config_before']={'sha256':digest(config_before_raw),'pin':{('bytes' if k=='size' else k):v for k,v in zip(config_fields,config_before_pin)}};durable()
++ req(rec['preserved_config_before']['sha256']=='036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'
++     and config_before_pin==(24,14293053,0,33152,1,435,1789001766988319322,1789001766988319322),'original T config differs from released hash/full pin')
+  dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((T/x).resolve()==gd for x in dirs),'external Git store')
+  req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'source base identity mismatch')
+  req(git(['symbolic-ref','--short','HEAD']).strip()==BRANCH,'source branch mismatch')
+@@ -207,32 +227,16 @@
+    os.fchmod(fd,0o700 if r['git_mode']=='100755' else 0o600);os.fsync(fd)
+   finally:os.close(fd)
+  req(frozen(T,allrows)==expected and frozen(S,allrows)==expected,'source copies differ')
+- for r in removals:
+-  root_check();p=safe_parent(T,r['path']);raw,original=read_file(p)
+-  req(r['path'] in base and base[r['path']][0]=='100644' and digest(raw)==r['sha256'] and len(raw)==r['bytes']
+-      and hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==base[r['path']][1],'removal is not original C16 draft')
+-  req(read_file(safe_parent(T,r['to']))[0]==raw and not os.path.lexists(safe_parent(S,r['path'])),'preserved alias or W absence changed')
+-  pfd=os.open(p.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+-  try:
+-   current=os.stat(p.name,dir_fd=pfd,follow_symlinks=False)
+-   req(all(getattr(current,'st_'+k)==getattr(original,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')),'removal identity changed')
+-   os.unlink(p.name,dir_fd=pfd);os.fsync(pfd)
+-   req(not os.path.lexists(p),'removed draft unexpectedly present')
+-  finally:os.close(pfd)
+- rec['removed_inert_drafts']=removals;durable()
++ rec['removed_inert_drafts']=[];durable()
+  paths=sorted(expected)
+  oids=git(['hash-object','-w','--no-filters','--',*paths]).splitlines()
+  req(len(oids)==len(paths) and all(o==expected[p][1] for p,o in zip(paths,oids)),'raw staged blobs differ')
+  inp=''.join(expected[p][0]+' '+expected[p][1]+'\t'+p+'\0' for p in paths).encode()
+- inp+=''.join('0 '+'0'*40+'\t'+r['path']+'\0' for r in removals).encode()
+  git(['update-index','--add','-z','--index-info'],input_bytes=inp)
+  whole=dict(base);whole.update(expected)
+- for r in removals:whole.pop(r['path'])
+  req(entries(git(['ls-files','--stage','-z']),True)==whole,'whole index changed beyond selected source')
+- changes={p for p in whole if whole[p]!=base.get(p)}|REMOVAL_PATHS
++ changes={p for p in whole if whole[p]!=base.get(p)}
+  req(set(git(['diff','--cached','--no-renames','--name-only','-z']).split('\0'))-{''}==changes,'unexpected staged names')
+- whitespace_paths=selection['authored_whitespace_paths']
+- req(whitespace_paths and len(set(whitespace_paths))==len(whitespace_paths) and set(whitespace_paths)<=set(expected),'invalid authored whitespace scope')
+  diff=git(['diff','--cached','--check','--',*whitespace_paths])
+  req(diff=='','authored source whitespace failure')
+  rec['whitespace']={'status':'PASS_SCOPED_AUTHORED_SOURCE_ONLY','exit':0,'paths':whitespace_paths,'qualification':'Unchanged raw evidence, logs and captured third-party source are not formatting inputs. Prior raw-evidence FAIL is preserved, not rerun or normalized.'}
+@@ -248,7 +252,11 @@
+  want_after=dict(want);want_after['refs/heads/'+BRANCH]=commit
+  rec['remote_after']=remote(git(remote_args));req(rec['remote_after']==want_after,'source remote mismatch')
+  inventory('after source');resource('after source')
+- rec.update(status='PUBLISHED_EXACT_C17_SOURCE',clone_is_build_workspace=False,slot='UNCHANGED_IDLE_NO_BUILD_OR_CI_ADMITTED')
++ config_after_raw,config_after_stat=read_file(gd/'config')
++ config_after_pin=tuple(getattr(config_after_stat,'st_'+k) for k in config_fields)
++ rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':{('bytes' if k=='size' else k):v for k,v in zip(config_fields,config_after_pin)}};durable()
++ req(config_after_raw==config_before_raw and config_after_pin==config_before_pin,'original T config bytes/full pin changed during publication')
++ rec.update(status='PUBLISHED_EXACT_C18_SOURCE',clone_is_build_workspace=False,slot='UNCHANGED_IDLE_NO_BUILD_OR_CI_ADMITTED')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+ finally:
+@@ -263,4 +271,4 @@
+  durable()
+  if recfd is not None:os.close(recfd)
+  print(json.dumps({'status':rec['status'],'error':rec.get('error'),'commit':rec.get('commit'),'tree':rec.get('tree'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+- if rec['status']!='PUBLISHED_EXACT_C17_SOURCE':raise SystemExit(1)
++ if rec['status']!='PUBLISHED_EXACT_C18_SOURCE':raise SystemExit(1)

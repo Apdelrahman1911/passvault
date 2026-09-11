@@ -294,7 +294,9 @@ class VaultBackupUnicodePaginationTest {
         val crypto = DesktopCryptoEngine()
         val vault = VaultRepositoryImpl(database.vaultMetadataDao(), crypto, VaultKeyHierarchy(crypto))
         val blobs = LocalAttachmentBlobStore(root.resolve("vault-files").toString())
-        val attachments = AttachmentRepositoryImpl(database.attachmentDao(), database.credentialDao(), blobs, crypto, vault)
+        val attachments = AttachmentRepositoryImpl(
+            database.attachmentDao(), database.credentialDao(), blobs, crypto, vault,
+        )
         val credentials = CredentialRepositoryImpl(
             database.credentialDao(), database.folderDao(), database.tagDao(), database.attachmentDao(),
             database.passwordHistoryDao(), crypto, vault, attachmentLifecycleManager = attachments,
@@ -328,7 +330,9 @@ class VaultBackupUnicodePaginationTest {
             insertHistory(ids[0], ids[0], 0)
             insertHistory(ids[1], ids[0], 1)
             insertHistory("a-history", ids[1], 2)
-            if (includeAttachments) ids.withIndex().reversed().forEach { (index, id) -> insertAttachment(id, ids[0], index) }
+            if (includeAttachments) ids.withIndex().reversed().forEach { (index, id) ->
+                insertAttachment(id, ids[0], index)
+            }
         }
 
         suspend fun saveCredential(id: String, folder: FolderId? = null, tagIds: Set<TagId> = emptySet()) {
@@ -359,13 +363,18 @@ class VaultBackupUnicodePaginationTest {
                     assertEquals(FolderId(id), credential.folderId)
                     assertEquals(if (index == 0) ids.map(::TagId).toSet() else setOf(TagId(ids[0])), credential.tagIds)
                     val expectedHistory = if (index == 0) setOf("older-0", "older-1") else setOf("older-2")
-                    assertEquals(expectedHistory, credential.passwordHistory.map { it.password.toStringUnsafe() }.toSet())
+                    assertEquals(
+                        expectedHistory,
+                        credential.passwordHistory.map { it.password.toStringUnsafe() }.toSet(),
+                    )
                     val expectedAttachments = if (includeAttachments && index == 0) ids.toSet() else emptySet()
                     assertEquals(expectedAttachments, credential.attachments.map { it.id.value }.toSet())
                     credential.attachments.forEach { attachment ->
                         assertEquals("fixture-${ids.indexOf(attachment.id.value)}.bin", attachment.fileName)
                         val output = MemorySink()
-                        attachments.copyContentTo(CredentialId(id), AttachmentId(attachment.id.value), output).getOrThrow()
+                        attachments.copyContentTo(
+                            CredentialId(id), AttachmentId(attachment.id.value), output,
+                        ).getOrThrow()
                         assertTrue(output.committed)
                         val actual = output.bytes()
                         try { assertContentEquals(CONTENT, actual) } finally { actual.fill(0) }
@@ -386,7 +395,8 @@ class VaultBackupUnicodePaginationTest {
                         val encrypted = PaddedPayload.encrypt(crypto, plaintext, key, aad, 4_096 * 4).getOrThrow()
                         try {
                             database.passwordHistoryDao().insert(PasswordHistoryRecordEntity(
-                                historyId, owner, CryptoEnvelope.encode(encrypted), encrypted.nonce.copyOf(), index.toLong(),
+                                historyId, owner, CryptoEnvelope.encode(encrypted), encrypted.nonce.copyOf(),
+                                index.toLong(),
                             ))
                         } finally { encrypted.clear() }
                     } finally { crypto.secureWipe(key) }
@@ -408,7 +418,8 @@ class VaultBackupUnicodePaginationTest {
                     val key = crypto.deriveSubkey(vek, "attachment:$context", 32).getOrThrow()
                     try {
                         val stored = AttachmentContainerCodec(blobs, crypto).encryptToObject(
-                            path, input, key, AttachmentContentBinding(id, owner, context, ""), existingCredentialBytes = 0,
+                            path, input, key, AttachmentContentBinding(id, owner, context, ""),
+                            existingCredentialBytes = 0,
                         )
                         val encrypted = PaddedPayload.encrypt(
                             crypto, filename, key, aad, AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
@@ -416,7 +427,8 @@ class VaultBackupUnicodePaginationTest {
                         try {
                             database.attachmentDao().insert(AttachmentRecordEntity(
                                 id, owner, CryptoEnvelope.encode(encrypted), encrypted.nonce.copyOf(), stored.mimeType,
-                                stored.sizeBytes, path, context, index.toLong(), AttachmentPolicy.CONTENT_FORMAT_VERSION,
+                                stored.sizeBytes, path, context, index.toLong(),
+                                AttachmentPolicy.CONTENT_FORMAT_VERSION,
                                 AttachmentRecordEntity.STORAGE_STATE_READY,
                             ))
                         } finally { encrypted.clear() }

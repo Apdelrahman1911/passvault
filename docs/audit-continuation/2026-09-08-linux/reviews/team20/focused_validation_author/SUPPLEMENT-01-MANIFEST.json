@@ -1,0 +1,85 @@
+{
+  "status": "UNAPPLIED_SUPPLEMENT_TO_INTEGRATED_UNBOUND04_PENDING_INDEPENDENT_REVIEW",
+  "owner": "/root/focused_validation_author",
+  "root_scope": "Only designated reviewer path/identity and3196-to3500 members with two coupled OID128-to144KiB sites; no other bound/resource/report/input-exclusion change.",
+  "integrated_base_receipt": "INTEGRATION-01.json",
+  "integrated_base_receipt_sha256": "59a71c35a49f511f138ae1c97807018dd7be2f8b744560956d8bf624025487e9",
+  "supplement_patch_sha256": "f4e12727dc9c012b9777885263a686dd8cb2b67f453cbb52a6e68b717e6cf361",
+  "files": [
+    {
+      "path": "scripts/audit/linux_detekt_04.py",
+      "before_sha256": "de80cb03cae89b179acc76584a4149b72d7330a0194b811c59722a8688005bb9",
+      "after_unbound_sha256": "f9dfdfc6da1a90663fbdb51a1f329bc04a0866b5ca92a1a979cf2839f33bd909",
+      "bytes": 56114,
+      "LF": 973,
+      "literal_replacements": [
+        {
+          "before": "and type(MEMBERS) is int and 1 <= MEMBERS <= 3196",
+          "after": "and type(MEMBERS) is int and 1 <= MEMBERS <= 3500",
+          "base04_line": 891,
+          "reason": "source-member launch guard"
+        }
+      ],
+      "inverse_recovers_integrated_base04_bytes": true
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py",
+      "before_sha256": "1a995d817de6dede63ccceb58e289c1dd0790167fb234b2ca5d08cbb51db8e81",
+      "after_unbound_sha256": "37fd7f10ad13f17c6b2b6a704f35ce435adc3402abd4566cf3f81ceae8e240f0",
+      "bytes": 60665,
+      "LF": 1040,
+      "literal_replacements": [
+        {
+          "before": "APPROVAL = B / 'reviews/verification/LINUX-DETEKT04-INSTANCE-ACCEPT.json'",
+          "after": "APPROVAL = B / 'reviews/team20/focused_validation_review/INSTANCE-ACCEPT.json'",
+          "base04_line": 28,
+          "reason": "genuine future reviewer approval path"
+        },
+        {
+          "before": "approval['reviewer'] == '/root/verification'",
+          "after": "approval['reviewer'] == '/root/focused_validation_review'",
+          "base04_line": 843,
+          "reason": "genuine future reviewer identity"
+        },
+        {
+          "before": "and type(MEMBERS) is int and 1 <= MEMBERS <= 3196",
+          "after": "and type(MEMBERS) is int and 1 <= MEMBERS <= 3500",
+          "base04_line": 804,
+          "reason": "source-member launch guard"
+        },
+        {
+          "before": "require(len(data) == MEMBERS * 41 and len(data) <= 128 * 1024, 'canonical bounded OID input size')",
+          "after": "require(len(data) == MEMBERS * 41 and len(data) <= 144 * 1024, 'canonical bounded OID input size')",
+          "base04_line": 575,
+          "reason": "canonical OID request length ceiling"
+        },
+        {
+          "before": "actual, original = capture(R / 'source.oids', 128 * 1024)",
+          "after": "actual, original = capture(R / 'source.oids', 144 * 1024)",
+          "base04_line": 589,
+          "reason": "same OID input capture ceiling"
+        }
+      ],
+      "inverse_recovers_integrated_base04_bytes": true
+    }
+  ],
+  "unchanged_init": {
+    "path": "scripts/audit/detekt_04.init.gradle",
+    "sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+    "bytes": 3931,
+    "LF": 86
+  },
+  "arithmetic": {
+    "OID_bytes_per_member": 41,
+    "old_member_ceiling": 3196,
+    "old_request_cap_bytes": 131072,
+    "old_ceiling_request_bytes": 131036,
+    "root_reported_current_required_members_approx": 3344,
+    "root_reported_count_request_bytes": 137104,
+    "new_member_ceiling": 3500,
+    "new_ceiling_request_bytes": 143500,
+    "new_request_cap_bytes": 147456,
+    "new_slack_bytes": 3956
+  },
+  "qualification": "Source/instance identities remain None; actual future count is not guessed from approximate3344. No target helper import/compilation/AST/execution, builds/tests/Git/T/CI/runtime/process/SDK work. Pure literal data transformations and inverse-byte comparisons; not execution admission or controls evidence."
+}

@@ -347,13 +347,14 @@ internal class CredentialCustomFieldEditor(
         requireNonBlankName: Boolean,
         draftForState: (CredentialViewModel.CredentialState) -> CredentialCustomFieldDraft?,
     ) {
-        while (true) {
+        var finished = false
+        while (!finished) {
             val current = state.value
             val draft = draftForState(current) ?: return
             val replaced = current.customFields.firstOrNull { it.id == fieldId } ?: return
             if (requireNonBlankName && draft.name.isBlank()) {
                 val invalid = current.copy(errorMessage = uiText(Res.string.validation_credential_custom_field_name))
-                if (state.compareAndSet(current, invalid)) return
+                finished = state.compareAndSet(current, invalid)
                 continue
             }
             val replacementValue = SensitiveText.from(draft.value)
@@ -375,9 +376,10 @@ internal class CredentialCustomFieldEditor(
                 // without installing a new state reference. Keep the live owner
                 // for unchanged fields and wipe only the unused replacement.
                 if (unchangedField) replacementValue.clear() else replaced.value.clear()
-                return
+                finished = true
+            } else {
+                replacementValue.clear()
             }
-            replacementValue.clear()
         }
     }
 }

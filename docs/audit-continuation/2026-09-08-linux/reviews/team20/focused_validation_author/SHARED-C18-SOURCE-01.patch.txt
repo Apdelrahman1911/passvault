@@ -1,0 +1,22 @@
+--- a/scripts/audit/linux_detekt_04.py
++++ b/scripts/audit/linux_detekt_04.py
+@@ -27,7 +27,7 @@
+ E = B / 'runs/linux-detekt04'
+ CHECKOUT = R / 'checkout'
+ SELF, INIT = W / 'scripts/audit/linux_detekt_04.py', W / 'scripts/audit/detekt_04.init.gradle'
+-SOURCE = B / 'reviews/detekt04/source-prepare01/SOURCE.json'
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
+ JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
+ PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py
+@@ -36,7 +36,7 @@
+ EXCLUDE_STATE = None  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
+ GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ INNER, INIT = W / 'scripts/audit/linux_detekt_04.py', W / 'scripts/audit/detekt_04.init.gradle'
+-SOURCE = B / 'reviews/detekt04/source-prepare01/SOURCE.json'
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'

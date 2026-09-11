@@ -34,13 +34,13 @@ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
 GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
 # Final published snapshot and exact regular tool/alias/optional-exclude identities
 # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
-COMMIT = None  # UNBOUND: root must bind the exact published C17 commit.
-TREE = None  # UNBOUND: root must bind the exact published C17 tree.
-MEMBERS = None  # UNBOUND: exact C17 source/index membership; no inherited admission.
+COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact C17/source binding; no inherited instance authority.
+TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact C17/source binding; no inherited instance authority.
+MEMBERS = 3042  # Exact C17/source binding; no inherited instance authority.
 GIT_IMAGE = Path('/usr/bin/git')
 RUBY_IMAGE = Path('/usr/bin/ruby3.2')
-EXCLUDE_STATE = None  # UNBOUND: fresh03 store/index/config/exclude review and new packet required.
-FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: fresh03 source and init SHA256 bindings.
+EXCLUDE_STATE = 'INFO_ABSENT'  # Exact C17/source binding; no inherited instance authority.
+FROZEN = {SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f', INIT: 'fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7'}  # Exact C17 source/external init.
 INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
 GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
 RUN_ID = 'linux-detekt03'

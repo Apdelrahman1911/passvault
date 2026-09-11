@@ -1,0 +1,804 @@
+{
+  "schema": 1,
+  "reviewer": "/root/coverage_review",
+  "generated_utc": "2026-09-11T02:19:20.094520+00:00",
+  "disposition": "ACCEPT_BOUNDED_C18_CURRENT_OVERLAY_COUNTING_AND_EVIDENCE_IDENTITY_WITH_LIMITS",
+  "scope": "Only the new current overlay/integration/source-byte accounting; not a new patch semantic review, execution pass, cleanup authorization, whole-project review or final checkpoint acceptance. No unchanged51XML recount or re-review of67 historical blocks.",
+  "input_ledgers": [
+    {
+      "updated_utc": "2026-09-11T02:01:53.720186+00:00",
+      "path": "ISSUE_LEDGER.json",
+      "bytes": 242870,
+      "sha256": "74a41ee8aa666ccbfb388373627bf22ba01a6841e9380f394956175281d9db8f",
+      "same_as_initial_C18_overlay_read": true
+    },
+    {
+      "updated_utc": "2026-09-11T02:01:53.720186+00:00",
+      "path": "VERIFICATION_LEDGER.json",
+      "bytes": 214494,
+      "sha256": "ee597a38293e584dc209958eb1e9a9f46fa355ddcbb0d8677d3a5c509463ee3f",
+      "same_as_initial_C18_overlay_read": true
+    },
+    {
+      "updated_utc": "2026-09-11T02:01:53.720186+00:00",
+      "path": "COVERAGE_DELTA.json",
+      "bytes": 292276,
+      "sha256": "17bb8f732c34da43506079528724134ebed6b70f766f9310142e1e904d40916b",
+      "same_as_initial_C18_overlay_read": true
+    },
+    {
+      "updated_utc": "2026-09-11T02:01:53.720186+00:00",
+      "path": "EXECUTION_SLOT.json",
+      "bytes": 57695,
+      "sha256": "aee0f82d793e8ab96f5a0111e1e161e41dfc7ef7a92377399cbb5990cd37e675",
+      "same_as_initial_C18_overlay_read": true
+    }
+  ],
+  "integration_receipt": {
+    "path": "reviews/team20/root/W-APPLICATION-INTEGRATION.json",
+    "bytes": 13278,
+    "sha256": "fd7a6cd140a4dac29845997e26618fcf09fe5028377542bdc67303f1987a1aa7"
+  },
+  "W_edit_release": {
+    "path": "reviews/team20/root/W-APPLICATION-EDIT-RELEASE.json",
+    "bytes": 19459,
+    "sha256": "25987165fcbb1316f9e6db5cac22d1aadc50d27a71bc912feb15e04ec53bdc80"
+  },
+  "source_before": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "manifest": {
+      "path": "reviews/checkpoint17/source-prepare01/SOURCE.json",
+      "bytes": 1661762,
+      "sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f"
+    },
+    "qualification": "C17 before-source identity only. No new complete C18 Git/tree or published freeze established."
+  },
+  "current_overlay_equality": {
+    "desktop_integration03_execution": true,
+    "c18_application_integration": true,
+    "pva031_supported_input_followup": true
+  },
+  "linked_evidence": [
+    {
+      "block": "desktop_integration03_execution",
+      "field": "external_result",
+      "path": "reviews/desktop-integration03/c17-preflight/EXTERNAL-RESULT.json",
+      "bytes": 1953,
+      "sha256": "786f35f8dc9f572715fefe1c88e169f5e704c46b6b55472a714cf3d750d674dc",
+      "matches": true
+    },
+    {
+      "block": "desktop_integration03_execution",
+      "field": "review",
+      "path": "reviews/team20/detekt_actual/gui03-actual/RECONCILIATION.json",
+      "bytes": 24048,
+      "sha256": "d94b78c84909e7e2728e4ad4da2eae874814f573a01e005ded088f2d88302830",
+      "matches": true
+    },
+    {
+      "block": "desktop_integration03_execution",
+      "field": "report",
+      "path": "reviews/team20/detekt_actual/gui03-actual/REPORT.md",
+      "bytes": 11124,
+      "sha256": "b57117b895dce042f5be56f8da502cd3817ebe40373211c932778eab3af7c839",
+      "matches": true
+    },
+    {
+      "block": "desktop_integration03_execution",
+      "field": "scheduling_release",
+      "path": "reviews/team20/root/W-APPLICATION-EDIT-RELEASE.json",
+      "bytes": 19459,
+      "sha256": "25987165fcbb1316f9e6db5cac22d1aadc50d27a71bc912feb15e04ec53bdc80",
+      "matches": true
+    },
+    {
+      "block": "c18_application_integration",
+      "field": "root_receipt",
+      "path": "reviews/team20/root/W-APPLICATION-INTEGRATION.json",
+      "bytes": 13278,
+      "sha256": "fd7a6cd140a4dac29845997e26618fcf09fe5028377542bdc67303f1987a1aa7",
+      "matches": true
+    },
+    {
+      "block": "pva031_supported_input_followup",
+      "field": "review",
+      "path": "reviews/team20/pva031_review/PVA031-PAIRED-RESULT-REVIEW-01.md",
+      "bytes": 6591,
+      "sha256": "9be25fe6e705efce7a8a581f9d505b8363ba84181c06cd8fa629efc58998c0e1",
+      "matches": true
+    },
+    {
+      "block": "pva031_supported_input_followup",
+      "field": "investigator",
+      "path": "reviews/team20/pva031_investigator/PVA031-SUPPORTED-STALE-CONFIRM-REACHABILITY.md",
+      "bytes": 19064,
+      "sha256": "daebc5e0ab913ce89fb820d15d2ce6b7b9d16d9a4f3b410f3419961c35b717d2",
+      "matches": true
+    }
+  ],
+  "patch_accounting": {
+    "accepted_patches": 10,
+    "file_edit_events": 18,
+    "unique_paths": 17,
+    "new_files": 1,
+    "repeated_path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt in database02 then03",
+    "patches": [
+      {
+        "path": "reviews/team20/android_fixture_author/ANDROID32-DETEKT03.UNAPPLIED.patch.txt",
+        "sha256": "7a3cc856f383c35570d17d68475593a0ba45771091657dffe0ef25cbbe7b0074",
+        "bytes": 2525,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/android_fixture_review/PROPOSAL-REVIEW.md",
+        "review_sha256": "a09c9e66180a61761dad7a4871274e4ada0cd15dbf9e52b075024dd165a02c70",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/credential_author/credential-detekt03.patch.txt",
+        "sha256": "8d680148698fc42be221c1019273129a4db65aee82a945896c0b2b84b1ff5ec3",
+        "bytes": 4035,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/credential_review/REVIEW.md",
+        "review_sha256": "fe9b1882fd673b79f8cf4dfe7e039d5eadff0abbc94350b505016746fb354904",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+          "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+          "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+          "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/database_author/01-pagination-declaration-and-fixture-format.patch.txt",
+        "sha256": "45ea3727ff8a44f07834ac864d78d2caa8a8f4292086d1231d56d4da3542bef1",
+        "bytes": 11079,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/database_review/ACCEPTANCE.json",
+        "review_sha256": "1b1ce47c5b03cc52f9a96cf057b199cbc9d9132a3f713440b00684be7bb9438b",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt",
+          "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt",
+          "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/database_author/02-biometric-admission-and-fixture-returns.patch.txt",
+        "sha256": "fbccacba0abbaab83346c05dd3f50e90e90b2e4d34d0e6d4aacf171107ad6ee1",
+        "bytes": 2946,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/database_review/ACCEPTANCE.json",
+        "review_sha256": "1b1ce47c5b03cc52f9a96cf057b199cbc9d9132a3f713440b00684be7bb9438b",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+          "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/database_author/03-sole-vek-owner-size-exception.patch.txt",
+        "sha256": "1bf34df5ab49d21d65cfd515de4353dc8a7443da7c8c06ab48c30868e37bc312",
+        "bytes": 758,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/database_review/ACCEPTANCE.json",
+        "review_sha256": "1b1ce47c5b03cc52f9a96cf057b199cbc9d9132a3f713440b00684be7bb9438b",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/shared_fixture_author/SHARED-FIXTURE-DETEKT03-v1.patch.txt",
+        "sha256": "843430ffbb9ff85c9f2a8e772f8e7e5123306af85abf9fe61e8d08da74913146",
+        "bytes": 9601,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/shared_fixture_review/PROPOSAL_V1_REVIEW.md",
+        "review_sha256": "a6b87d11d0d1c90ca1533f07bf843888e3fda1c49324a867b058b8c86e6b1808",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+          "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+          "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/desktop_main_author/MAIN-NAV-DETEKT03-v2.patch.txt",
+        "sha256": "aae3502ccd616d322ba0798f131d0bb6258de287812e482314ace5d6c4510fcd",
+        "bytes": 15729,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/desktop_main_review/V2_INDEPENDENT_REVIEW.md",
+        "review_sha256": "75a7dfd4a600931e2550f95ef99d66b45ecc4c1f8a19d0d9325f3e929a7e98ff",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/desktop_other_author/01-lifecycle-unapplied.patch.txt",
+        "sha256": "25ba7c3d136b1cb93998e4771de2b04a0df94980186c95cb844ffe12e19d5535",
+        "bytes": 2643,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/desktop_other_review/02-LIFECYCLE-TRAY-PATCH-REVIEW.md",
+        "review_sha256": "873af272cddf06cb1b2e9fff3e24c74cf7bf9c28722391898e5709ef98608f49",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/desktop_other_author/02-tray-v2-unapplied.patch.txt",
+        "sha256": "c4dafe58a516fd1a589eddc777cd32a1dbf8a82d07b4eb0098917377768285e6",
+        "bytes": 11781,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/desktop_other_review/02-LIFECYCLE-TRAY-PATCH-REVIEW.md",
+        "review_sha256": "873af272cddf06cb1b2e9fff3e24c74cf7bf9c28722391898e5709ef98608f49",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt"
+        ]
+      },
+      {
+        "path": "reviews/team20/desktop_other_author/03-curtain-unapplied.patch.txt",
+        "sha256": "d277399bf24fa95abd2753315f257add2f30dbca6d18d7f5543bb0db0741d291",
+        "bytes": 26661,
+        "patch_hash_matches": true,
+        "review": "reviews/team20/desktop_other_review/03-CURTAIN-PATCH-REVIEW.md",
+        "review_sha256": "da2c6d63072a5abef46bd9531f1c5d13de1e06048a375f3370139122f13c4fcc",
+        "review_hash_matches": true,
+        "patch_digest_is_explicit_in_review": true,
+        "affected_paths": [
+          "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt"
+        ]
+      }
+    ],
+    "independent_reviews": [
+      {
+        "path": "reviews/team20/android_fixture_review/PROPOSAL-REVIEW.md",
+        "bytes": 8918,
+        "sha256": "a09c9e66180a61761dad7a4871274e4ada0cd15dbf9e52b075024dd165a02c70"
+      },
+      {
+        "path": "reviews/team20/credential_review/REVIEW.md",
+        "bytes": 12020,
+        "sha256": "fe9b1882fd673b79f8cf4dfe7e039d5eadff0abbc94350b505016746fb354904"
+      },
+      {
+        "path": "reviews/team20/database_review/ACCEPTANCE.json",
+        "bytes": 11013,
+        "sha256": "1b1ce47c5b03cc52f9a96cf057b199cbc9d9132a3f713440b00684be7bb9438b"
+      },
+      {
+        "path": "reviews/team20/shared_fixture_review/PROPOSAL_V1_REVIEW.md",
+        "bytes": 12656,
+        "sha256": "a6b87d11d0d1c90ca1533f07bf843888e3fda1c49324a867b058b8c86e6b1808"
+      },
+      {
+        "path": "reviews/team20/desktop_main_review/V2_INDEPENDENT_REVIEW.md",
+        "bytes": 11749,
+        "sha256": "75a7dfd4a600931e2550f95ef99d66b45ecc4c1f8a19d0d9325f3e929a7e98ff"
+      },
+      {
+        "path": "reviews/team20/desktop_other_review/02-LIFECYCLE-TRAY-PATCH-REVIEW.md",
+        "bytes": 8081,
+        "sha256": "873af272cddf06cb1b2e9fff3e24c74cf7bf9c28722391898e5709ef98608f49"
+      },
+      {
+        "path": "reviews/team20/desktop_other_review/03-CURTAIN-PATCH-REVIEW.md",
+        "bytes": 8555,
+        "sha256": "da2c6d63072a5abef46bd9531f1c5d13de1e06048a375f3370139122f13c4fcc"
+      }
+    ],
+    "receipt_patch_list_equals_release": true,
+    "receipt_actual_after_equals_release_planned": true,
+    "ledger_after_equals_receipt_actual": true,
+    "inverse_diff_data_comparison": {
+      "method": "Read ten ordinary unified diffs and reverse79 hunks in memory from the verified final W bytes, in inverse application order. Never applied to disk or executed/imported project/helper code.",
+      "hunks": 79,
+      "file_edit_events": 18,
+      "existing_C17_preimages_matching_raw_hash_and_length": 16,
+      "new_file_absent_after_inverse": 1,
+      "mismatches": [],
+      "new_file": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt",
+      "annotated_test_declaration_count_changes": [],
+      "qualification": "Byte-origin/declaration comparison, not Kotlin parsing/compilation, test execution or semantic proof."
+    }
+  },
+  "coverage_registry": {
+    "prior_count": 31,
+    "current_count": 36,
+    "unchanged_complete_rows": 19,
+    "changed_existing_rows": 12,
+    "new_registry_rows": [
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt",
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+      "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt"
+    ],
+    "removed_rows": [],
+    "new_repository_files": [
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt"
+    ],
+    "prior_C17_tuple_matches": 31,
+    "current_tuple_matches": 36,
+    "current_tuples": [
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+        "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db",
+        "bytes": 6999,
+        "physical_lf": 181,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+        "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+        "bytes": 11636,
+        "physical_lf": 271,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "shared/src/commonTest/kotlin/com/passvault/shared/navigation/NavigationBackCoordinatorTest.kt",
+        "sha256": "e777006c470eded3f4f8d8183c74857229a6cb1004dc98add17c6eab6743fa14",
+        "bytes": 11300,
+        "physical_lf": 263,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+        "sha256": "f0614a75dfe0109e0effbd06e1903d1812d6be7c0fd9a97ef34a61ec4d6d42c3",
+        "bytes": 16962,
+        "physical_lf": 377,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+        "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+        "bytes": 25441,
+        "physical_lf": 590,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+        "sha256": "0423e8e78c70fa6944efa771feb33feb91169f7e458bf22036e21067fbf4c255",
+        "bytes": 17962,
+        "physical_lf": 402,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+        "sha256": "73e9e401ae34d6f7e4f562d2cad2ed66738c1c1d450c5b3720daecad3ae38e7d",
+        "bytes": 16910,
+        "physical_lf": 385,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/components/CustomFieldsEditor.kt",
+        "sha256": "dd60f4a65b4cf951a8ba94b2b6e4cab8440d1a33942eb046f1d74ccfcf9b31db",
+        "bytes": 15335,
+        "physical_lf": 446,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+        "sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+        "bytes": 26264,
+        "physical_lf": 534,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/crypto/src/androidDeviceTest/AndroidManifest.xml",
+        "sha256": "95a2d24cac877cd0d4fbbfeb58bc10d06275b2c40592244617a83564ec1a06ff",
+        "bytes": 209,
+        "physical_lf": 6,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/crypto/build.gradle.kts",
+        "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112",
+        "bytes": 2805,
+        "physical_lf": 90,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt",
+        "sha256": "9c4567e4a9cd1f6023534d3b5a40dfb21981cd49cc8eff0b4d1e453429246ca8",
+        "bytes": 14600,
+        "physical_lf": 302,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/native/biometric-bridge/tests/macos/passvault_biometric_macos_security_test.mm",
+        "sha256": "946bda34cb6b536ab347539637e1f60bc41532d49e1cd08dc655398e9972fab4",
+        "bytes": 20245,
+        "physical_lf": 459,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/native/biometric-bridge/tests/macos/README.md",
+        "sha256": "01211c798abc0a3a4134b1606ee9e57ec3d136ef12f540b3a08dd4a2b3691c61",
+        "bytes": 3492,
+        "physical_lf": 57,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt",
+        "sha256": "ce012cc2b0ffc76783b081f31285c7247bdc6192e4301f6af637c2df5cdac8e8",
+        "bytes": 37182,
+        "physical_lf": 852,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricVerificationFailureIntegrationTest.kt",
+        "sha256": "79e9d892d5aa0711facce39968ce6ce8d3a1a9dcefe47853af70e62e14168b10",
+        "bytes": 14243,
+        "physical_lf": 348,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricProviderInitializationFaultIntegrationTest.kt",
+        "sha256": "25a05900371704e67c96b3940869a8529490e0e2ca2d927c1267311418e4f0d0",
+        "bytes": 16180,
+        "physical_lf": 356,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt",
+        "sha256": "175feed3cd716d7881c48b3fcba906513a0e47f0599a7251e8de17f5b728e533",
+        "bytes": 25631,
+        "physical_lf": 524,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+        "sha256": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8",
+        "bytes": 9363,
+        "physical_lf": 230,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+        "sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+        "bytes": 99069,
+        "physical_lf": 2600,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+        "sha256": "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a",
+        "bytes": 37041,
+        "physical_lf": 870,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+        "sha256": "4e6fec750f0f995d459128111c13aa002d7c033980673ea7788742a6bf2d899c",
+        "bytes": 35482,
+        "physical_lf": 707,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt",
+        "sha256": "406c47fd2ea71afe50a57acfbc5050bcda05a3050e94a16c5555a5e053bdc337",
+        "bytes": 12028,
+        "physical_lf": 294,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt",
+        "sha256": "a0a212aec3cd5a78432feeaf2d8e3cc4b5c14a23dd5776029de15106287fb7ef",
+        "bytes": 27327,
+        "physical_lf": 515,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+        "sha256": "9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93",
+        "bytes": 7614,
+        "physical_lf": 253,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt",
+        "sha256": "fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac",
+        "bytes": 402,
+        "physical_lf": 10,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt",
+        "sha256": "0b40e53ceceaf11e6cbc5baaeb4be5f771bb17d939f2c7c2ae54fbb19ab00275",
+        "bytes": 9949,
+        "physical_lf": 207,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+        "sha256": "109a0534da3023b7cc1f951ba6c4f8b57f8e0e78f718bef765f7d05cc3223417",
+        "bytes": 37913,
+        "physical_lf": 726,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "sha256": "1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761",
+        "bytes": 68741,
+        "physical_lf": 1251,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-android/src/androidTest/kotlin/com/passvault/android/audit/AndroidClipboardLocaleInstrumentationTest.kt",
+        "sha256": "580c71e5fc5c917b7f62535282fa3436a3eada15e35ac7afa3bcd584f890c29d",
+        "bytes": 29184,
+        "physical_lf": 529,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "app-android/build.gradle.kts",
+        "sha256": "c7a382773cb11383d583b6fd1dcead85aac30ccc0a38f81995f535dc1029da42",
+        "bytes": 30600,
+        "physical_lf": 828,
+        "registry_match": true,
+        "new_identity_in_this_integration": false,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+        "sha256": "5bd1b2316812977c733f74b8ee15929907cb47c040cfe3577f0062152e9acff4",
+        "bytes": 9075,
+        "physical_lf": 214,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt",
+        "sha256": "c551d04efdcbdcd53a132731bc1fd6cd0ab85b18495a79383a54f7b8326b18c8",
+        "bytes": 2328,
+        "physical_lf": 63,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt",
+        "sha256": "d14d739d1793f859bc42426c41ac708bb81a5689661929eda3576ec6eae08029",
+        "bytes": 2535,
+        "physical_lf": 63,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+        "sha256": "acc3c5a8d29f2f976ed5dfd5612b325624915953937ff48b438ad6e5bcb63554",
+        "bytes": 27452,
+        "physical_lf": 534,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      },
+      {
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt",
+        "sha256": "f25cd292184e1fca7d0cbb3d384dac66156683e5bc9f093876cfd3b487d85b99",
+        "bytes": 17699,
+        "physical_lf": 475,
+        "registry_match": true,
+        "new_identity_in_this_integration": true,
+        "new_attributed_semantic_LF": null,
+        "historical_equal_line_credit_carried": false
+      }
+    ],
+    "new_semantic_LF_credit_claimed": 0,
+    "qualification": "Registry+5 is not five newly created repository files: four already existed in C17, one is new. Full prior31 rows remain historical; all31 before-tuples match pinned C17 metadata and19 unchanged complete rows equal current rows. Broader ancestry/authorial semantics are inherited, not independently replayed."
+  },
+  "counts": {
+    "denominators": {
+      "original_confirmed": {
+        "qualified_closures": 19,
+        "total": 25,
+        "remaining": 6,
+        "percent": 76
+      },
+      "all_confirmed": {
+        "qualified_closures": 26,
+        "total": 39,
+        "remaining": 13,
+        "percent": 66.7
+      },
+      "original_suspicions": {
+        "conclusive_outcomes": 2,
+        "total": 12,
+        "remaining": 10,
+        "percent": 16.7
+      },
+      "design_explanations": {
+        "documented": 8,
+        "total": 8,
+        "owner_decisions": "PENDING_SEPARATE_EXCEPT_REQUIRED_EXISTING_COMPATIBILITY"
+      }
+    },
+    "current_closed_status_rows": 26,
+    "current_open_status_rows": 13,
+    "application_intended_events": 199,
+    "infrastructure_fixture_cases": 3,
+    "fixture_producer_cases": 1,
+    "total_xml_elements": 203,
+    "new_test_methods": 0,
+    "new_application_executions": 0,
+    "new_closures": 0,
+    "qualification": "Prior51XML/203-element recount reused, not run again; GUI03 and source corrections add zero cases/closures. Proposed20 existing regressions are neither new declarations nor executed tests."
+  },
+  "GUI03": {
+    "status": "CONSUMED_FAIL_INDEPENDENTLY_RECONCILED_CURRENT_RUNTIME_HOLD",
+    "external_exit": 70,
+    "prepare_exit": 143,
+    "original_stop_exit": 0,
+    "application_cases": 0,
+    "unstarted_cases": 4,
+    "junit_xml": 0,
+    "task_headers": 0,
+    "source_after": false,
+    "cleanup_safe": false,
+    "cleanup": "NOT_ATTEMPTED_CURRENT_R_HOLD",
+    "actual_review_sha256": "d94b78c84909e7e2728e4ad4da2eae874814f573a01e005ded088f2d88302830",
+    "scheduling_release_not_cleanup": true,
+    "current_HOLD_and_control_T_index_config_freezes_preserved": true
+  },
+  "PVA031": {
+    "overlay": {
+      "status": "BOUNDED_SOURCE_OUTCOME_ACCEPTED_KEEP_PVA031_OPEN",
+      "investigator": "reviews/team20/pva031_investigator/PVA031-SUPPORTED-STALE-CONFIRM-REACHABILITY.md",
+      "investigator_sha256": "daebc5e0ab913ce89fb820d15d2ce6b7b9d16d9a4f3b410f3419961c35b717d2",
+      "review": "reviews/team20/pva031_review/PVA031-PAIRED-RESULT-REVIEW-01.md",
+      "review_sha256": "9be25fe6e705efce7a8a581f9d505b8363ba84181c06cd8fa629efc58998c0e1",
+      "outcome": "No supported first-populated stale-confirm rejection established; no justified patch. Bare duplicate sees synchronously cleared name; page-password IME Done is a real Save producer but not a modal/global route. Busy admission/entry-owner guards constrain easy witnesses; direct onEvent has no navigation-token guard. Lock reset is busy=false/count0; !canSave is not Add router rejection.",
+      "remaining": "Supported queued underlying input/busy delivery and late-input pre-disposal window remain unproved. Second late draft is not automatically loss of first accepted tuple. Original rapid/keyboard/a11y/RTL/mobile/backend applicability qualifications and successful evidence retained.",
+      "application_executions": 0,
+      "new_closures": 0
+    },
+    "family_status": "IMPLEMENTED — VERIFICATION BLOCKED",
+    "qualification": "Accepted bounded inconclusive source investigation only. No supported first-populated stale-confirm rejection/new patch established; late-input and framework delivery/applicability remain unproved. No conclusive PVU or closure credit."
+  },
+  "remaining_work": {
+    "applied_afterimages": "Not yet compiler/static/runtime validated; historical qualified source/test evidence retains its original identity and limits.",
+    "current_GUI03_closeout": "Genuinely fresh independently reviewed current-R-only cleanup admission; no replay/extra stop/older-HOLD access.",
+    "static": "Fresh exact-source focused root+five-module qualification, preserving14 unchanged qualified module results only under reviewed source/input reuse. Root21 Gradle-script inputs were unstarted. Inventory guard is not OpenGrep execution.",
+    "regressions": "Proposed20 existing cases=12 real-Room biometric+6 credential freshness+2 draft cases, plus Desktop test compilation. No execution/admission implied; exact selectors/helper review remain separate.",
+    "Android32": "Fresh compile02/source binding is distinct from target image authorization, usable32-bit target, actual ABI/KDF/business/minified/ARM32 evidence.",
+    "final_checkpoint": "Helper/source/publication integration and exact final independent checkpoint review remain pending.",
+    "estimates": "Inherited2–4 engineering weeks is conditional, external waits/new defects excluded, not a measured completion date; source integration closes no target or release gate."
+  },
+  "overlay_doc_pins": [
+    {
+      "path": "README.md",
+      "bytes": 25318,
+      "sha256": "5d22606ba7926f8a96d0ef8e1f97510cbe16eb44fb98a9fcd1df0bf57da39706"
+    },
+    {
+      "path": "RESUMED_SESSION_2026-09-11.md",
+      "bytes": 4328,
+      "sha256": "59fe182a826ccce6c0069a1ef50bd6513f36211746cd8029a4c16460be24206c"
+    },
+    {
+      "path": "TEAM_20_RESUME.md",
+      "bytes": 7966,
+      "sha256": "fdaada31ae662b1021c50cdef8f14909dffaa7b8b0fc5bc401ed7a7b2deb04e4"
+    }
+  ],
+  "preserved_rejections_and_errors": "Main/tray v1 rejected proposals remain distinct from accepted v2; original Detekt/GUI/compile failures and reviewer/precheck reader errors remain. No blanket suppression/baseline, new owner decision, native refusal retry or STOP/NO-RETRY/CLOSED relaxation.",
+  "unreviewed_final_scopes": [
+    "No Git/T/source clean-tree/ref/publication verification",
+    "No retained-current-R process/filesystem/cleanup probe",
+    "No new Android/static/regression helper execution/import or admission",
+    "No source-semantic rereview of all application files",
+    "No final checkpoint acceptance"
+  ],
+  "report_activity": "Only bounded source/retained-data reads and stdlib JSON/hash/in-memory text comparison; writes only this lane reports. No build, test, Git/T, SDK/runtime/process/CI/network probes, source edits or subagents."
+}

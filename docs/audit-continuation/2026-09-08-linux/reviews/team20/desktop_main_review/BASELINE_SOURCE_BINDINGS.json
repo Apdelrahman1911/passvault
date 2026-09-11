@@ -1,0 +1,235 @@
+{
+  "reviewer": "/root/desktop_main_review",
+  "date_utc": "2026-09-11",
+  "scope": "Independent source-only baseline and assigned Detekt03 diagnostics; not application runtime or whole-source coverage",
+  "source_context": "C17 0563e31adc9a66aefc3e74b99b9a24d17bdcdd49 / d1bd6ca5b18d08ff3ff15896d9a78af9016be799 from retained SOURCE.json, not a fresh Git observation",
+  "inputs": [
+    {
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4",
+      "bytes": 66405,
+      "physical_lf": 1212,
+      "inspection_scope": "all 1212 LF; complete fixture baseline"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+      "sha256": "9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93",
+      "bytes": 7614,
+      "physical_lf": 253,
+      "inspection_scope": "full file; real entry/terminal chain"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/PassVaultDesktopWindow.kt",
+      "sha256": "794a8fdbaea87edca986b2f729753dad3d434467f21e59ec1fcbb9027402e702",
+      "bytes": 17188,
+      "physical_lf": 454,
+      "inspection_scope": "59-325; actual window, key, resource/tray effect, cleanup wiring"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/components/KeyboardShortcuts.kt",
+      "sha256": "116059ec84f39cbf9f75210a638dc5c1c8a987903c6cf2663290c82437a826c5",
+      "bytes": 3679,
+      "physical_lf": 120,
+      "inspection_scope": "full file; Escape not global shortcut, Ctrl+Q terminal path"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopSystemTray.kt",
+      "sha256": "d1023a5bc9573e97eaa3089cf433107f0e009f22e67e01c4fd4f1e77e0e28d58",
+      "bytes": 7594,
+      "physical_lf": 244,
+      "inspection_scope": "full file; existing native owner and callback indirection"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/tray/DesktopTrayStrings.kt",
+      "sha256": "423c0857c03d7f1e7ad57669140afe1d7f25ac52cf2dadd038e973fc7999ac75",
+      "bytes": 1001,
+      "physical_lf": 17,
+      "inspection_scope": "full file; explicit resource environment"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/backup/DesktopBackupFileStore.kt",
+      "sha256": "ce13726b1c0c6d401c1a8d6d5a47abb18b129984eb1d205fd24a021fe94f9fd5",
+      "bytes": 9772,
+      "physical_lf": 253,
+      "inspection_scope": "24-132; native SAVE owner and null-file cancellation before output"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/PassVaultNavigationHost.kt",
+      "sha256": "50ec002a8b7b9e2c9324980662baff166596dddb31cef4823b4ffdfd784c9006",
+      "bytes": 26617,
+      "physical_lf": 647,
+      "inspection_scope": "85-280,285-286,438-558; runtime, host guards, NavDisplay, tab/Add and command routing"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/NavigationBackCoordinator.kt",
+      "sha256": "7f0f546301a87c0bd758d121a118d8325b2fe366561655d1ee5c8e1b248126db",
+      "bytes": 6999,
+      "physical_lf": 181,
+      "inspection_scope": "full file; policy/token/current-host and guard entry boundary"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/VaultRouteAdapters.kt",
+      "sha256": "4a155566bd433f2905f6e13137d1b8e7b03da06a54fd9e12b706b4f7d3061b98",
+      "bytes": 11636,
+      "physical_lf": 271,
+      "inspection_scope": "102-282; scoped VM/effect, synchronous credential policy"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/navigation/adapters/SettingsRouteAdapters.kt",
+      "sha256": "6339edcfe9a09916a5485894e287c40697e85909158c0c348e51b486b8073c06",
+      "bytes": 9625,
+      "physical_lf": 207,
+      "inspection_scope": "25-207; appearance/export route and back/current operation policy"
+    },
+    {
+      "path": "shared/src/commonMain/kotlin/com/passvault/shared/PassVaultApp.kt",
+      "sha256": "75349af0300801f0cad87f72b6afe9701e54bd24dafdd8867d7509c776506737",
+      "bytes": 12108,
+      "physical_lf": 315,
+      "inspection_scope": "139-180; resolved settings and language publication"
+    },
+    {
+      "path": "shared/src/desktopMain/kotlin/com/passvault/shared/platform/AppLanguageProvider.desktop.kt",
+      "sha256": "6d5be09814302ea0bb25cd1b4142ed883b930d892dff9166dda2b495c4212d59",
+      "bytes": 1676,
+      "physical_lf": 45,
+      "inspection_scope": "full file; resolved language/locale policy"
+    },
+    {
+      "path": "shared/src/desktopMain/kotlin/com/passvault/shared/platform/DesktopAppResourceEnvironmentPublication.kt",
+      "sha256": "3d56735ae5639254d9df13c6c6411fbeeed2c1c0b6c8bcab9a865f4d790d68da",
+      "bytes": 1816,
+      "physical_lf": 47,
+      "inspection_scope": "full file; publication ownership and window subscription"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/ui/CredentialEditScreen.kt",
+      "sha256": "22d878e85647fc3abb0522fccf3d8593aeb4671c5ba823d35501122c65edc4b4",
+      "bytes": 20997,
+      "physical_lf": 547,
+      "inspection_scope": "108-178; native Back/Save surface"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialViewModel.kt",
+      "sha256": "b9a9c5e6a9e9a5eee86a13a639fa32826dbfdfbd09fa81a032935a37f58f0611",
+      "bytes": 25441,
+      "physical_lf": 590,
+      "inspection_scope": "469-493; draft/busy/dirty policy"
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a",
+      "bytes": 17946,
+      "physical_lf": 401,
+      "inspection_scope": "179-206,236-253; Back/discard handling"
+    },
+    {
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/ui/SettingsScreen.kt",
+      "sha256": "ab34bfa20fcb176701dc3ff6b2414191acf759b5aa912f84d8bd63825f0bbd74",
+      "bytes": 12347,
+      "physical_lf": 304,
+      "inspection_scope": "175-216; appearance entry producer"
+    },
+    {
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/ui/AppearanceSettingsScreen.kt",
+      "sha256": "2b381898ad707dbb3f1637c0e588898c4f8c76415f194fee2e46aba395a841d1",
+      "bytes": 20192,
+      "physical_lf": 539,
+      "inspection_scope": "124-180,340-415; language radio UI"
+    },
+    {
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt",
+      "sha256": "a19baf0425234acdae2c2d923d74dbabf1e2b6a4822d923d80b9cccabfd6d723",
+      "bytes": 32872,
+      "physical_lf": 745,
+      "inspection_scope": "138-158,176-191,279-315; language producer, state then asynchronous persistence"
+    },
+    {
+      "path": "feature/backup/src/commonMain/kotlin/com/passvault/feature/backup/presentation/BackupViewModel.kt",
+      "sha256": "afd73521b4fc0d1b06af29bdc7d4940f4646507a66fcc4e55d801f2448060e63",
+      "bytes": 28938,
+      "physical_lf": 716,
+      "inspection_scope": "62-255; exact chooser export state and cancellation pipeline"
+    },
+    {
+      "path": "core/designsystem/src/commonMain/composeResources/values/strings.xml",
+      "sha256": "5605f102cca37a9fddf7fe50ecd598c5460168fd9eb6149d4d7a8318f644b118",
+      "bytes": 50416,
+      "physical_lf": 653,
+      "inspection_scope": "target tray/language literal rows only"
+    },
+    {
+      "path": "core/designsystem/src/commonMain/composeResources/values-ar/strings.xml",
+      "sha256": "66d4273670b44b6b3fd21000ce28d8fbea8b2a9b6f074de0f642051099762a30",
+      "bytes": 67635,
+      "physical_lf": 699,
+      "inspection_scope": "target tray/language literal rows only"
+    },
+    {
+      "path": "detekt.yml",
+      "sha256": "ef1abd634b35c339037856ee5f00b584a74d6a9783c6c0629637adbd8bc1af5e",
+      "bytes": 1535,
+      "physical_lf": 68,
+      "inspection_scope": "full file; no new config proposed"
+    },
+    {
+      "path": "build.gradle.kts",
+      "sha256": "6c35802a0f779baa1b4d5a65396a07824653761882ddfbfaa718a46c59fa5ee0",
+      "bytes": 24486,
+      "physical_lf": 635,
+      "inspection_scope": "317-394; generic module Detekt tasks and coverage prerequisite"
+    },
+    {
+      "path": "app-desktop/build.gradle.kts",
+      "sha256": "381ef53b5bc4ae775aa2322dbaea02588d499111d2a32e2ca3cdb2557363acde",
+      "bytes": 59984,
+      "physical_lf": 1472,
+      "inspection_scope": "KMP/source set locations; exact compile task also matched retained GUI02 log headers"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt03/reports/app-desktop-checkstyle.xml",
+      "sha256": "ccf904daa964e1004cce4b9b9d0ce25266971ff7042f966fd883bd288eba1471",
+      "bytes": 10406,
+      "physical_lf": 57,
+      "inspection_scope": "26 assigned diagnostics; entire XML read as data"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint17/source-prepare01/SOURCE.json",
+      "sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+      "bytes": 1661762,
+      "physical_lf": 1,
+      "inspection_scope": "assigned fixture exact tuple only; no live Git/index access"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-RATIONALE.json",
+      "sha256": "3d0ac32528b6363df6d0e03a4849823bd4e3a1586c7c403d9526f27a07205b48",
+      "bytes": 7691,
+      "physical_lf": 64,
+      "inspection_scope": "complete retained exact-instance qualifications"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/gui03-four-case/GUI03-FOUR-CASE-INDEPENDENT.md",
+      "sha256": "8de154f99b73d67f45af80872b7704d44322f3e3cbc37ab49ce3253853f0c6ec",
+      "bytes": 14039,
+      "physical_lf": 112,
+      "inspection_scope": "complete retained accepted four-case source delta"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+      "sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f",
+      "bytes": 9843,
+      "physical_lf": 121,
+      "inspection_scope": "complete retained actual failure/lifecycle/tray distinctions"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+      "sha256": "43a4050a51561404e579cd1a68fec2d250d3103300951674835566df3246b3f7",
+      "bytes": 226690,
+      "physical_lf": 3050,
+      "inspection_scope": "current PVA027/PVA031/PVA039/PVU003 and GUI03 source/editable correction rows only"
+    }
+  ],
+  "actual_project_executions": 0,
+  "proposal_review": "PENDING_EXACT_UNAPPLIED_AUTHOR_PATCH",
+  "restrictions": "C17 application/tests/helpers and T frozen; no Git/build/test/helper execution/import/runtime/process/SDK/network/central-ledger edits/subagents; STOP/NO-RETRY/CLOSED/HOLD restrictions retained"
+}

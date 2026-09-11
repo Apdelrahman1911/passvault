@@ -1,0 +1,105 @@
+{
+  "reviewer": "/root/credential_review",
+  "date_utc": "2026-09-11",
+  "scope": "Bounded source-data comparison; no patch applied or Kotlin/project/helper code executed.",
+  "patch": {
+    "path_relative_to_B": "reviews/team20/credential_author/credential-detekt03.patch.txt",
+    "sha256": "8d680148698fc42be221c1019273129a4db65aee82a945896c0b2b84b1ff5ec3",
+    "bytes": 4035,
+    "files": 4,
+    "hunks": 5
+  },
+  "author_bindings_sha256": "b9acb52e2d21cee41ba61567fe809382054df70c687f38bcd45f72e64fc62e25",
+  "author_rationale_sha256": "1b7334881893661e88a256063aa020ea13a2ebad7095ba7d468f699fa61f9f23",
+  "retained_source_manifest_sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+  "images": [
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt",
+      "current_sha256": "b1f18f9e32beff113d0c6d26dc16fc3b9e24460ef6039a3dc144554815431f5a",
+      "current_bytes": 17946,
+      "matches_retained_C17_manifest": true,
+      "in_memory_proposed_sha256": "0423e8e78c70fa6944efa771feb33feb91169f7e458bf22036e21067fbf4c255",
+      "in_memory_proposed_bytes": 17962,
+      "matches_author_binding": true,
+      "source_unchanged_after_read": true,
+      "proposed_nonimport_lines_over_120": []
+    },
+    {
+      "path": "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt",
+      "current_sha256": "b3403f38c94808df3d9f9d227353fc0505bb0b3848d20a69da63689424a2a66c",
+      "current_bytes": 16843,
+      "matches_retained_C17_manifest": true,
+      "in_memory_proposed_sha256": "73e9e401ae34d6f7e4f562d2cad2ed66738c1c1d450c5b3720daecad3ae38e7d",
+      "in_memory_proposed_bytes": 16910,
+      "matches_author_binding": true,
+      "source_unchanged_after_read": true,
+      "proposed_nonimport_lines_over_120": []
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt",
+      "current_sha256": "b851a3fab0ea44109a6456896fb2936b99408aaeabb111c66d1bb96b1d1993bf",
+      "current_bytes": 9016,
+      "matches_retained_C17_manifest": true,
+      "in_memory_proposed_sha256": "5bd1b2316812977c733f74b8ee15929907cb47c040cfe3577f0062152e9acff4",
+      "in_memory_proposed_bytes": 9075,
+      "matches_author_binding": true,
+      "source_unchanged_after_read": true,
+      "proposed_nonimport_lines_over_120": []
+    },
+    {
+      "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "current_sha256": "d492ed289c21904c6f1145580aaf2980bd99e9a2ae6ccaf624b03c3d4faef0af",
+      "current_bytes": 26117,
+      "matches_retained_C17_manifest": true,
+      "in_memory_proposed_sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+      "in_memory_proposed_bytes": 26264,
+      "matches_author_binding": true,
+      "source_unchanged_after_read": true,
+      "proposed_nonimport_lines_over_120": []
+    }
+  ],
+  "data_checks": {
+    "every_hunk_context_and_before_after_line_count_matches": true,
+    "event_router_whitespace_only": true,
+    "capacity_constructor_arguments_unchanged_except_layout_and_trailing_comma": true,
+    "freshness_test_body_byte_identical_without_new_comment_and_private_method_annotation": true,
+    "form_support_outside_updateField_byte_identical": true,
+    "form_support_only_three_reviewed_termination_control_edits": true,
+    "updateField_return_continue_break_counts": [
+      2,
+      1,
+      0
+    ],
+    "capacity_and_freshness_test_names_unchanged": true,
+    "eight_selected_existing_methods_resolve_exactly_once": true
+  },
+  "future_validation_not_run": {
+    "static_task": ":feature:credential:detekt",
+    "targeted_test_task": ":feature:credential:desktopTest",
+    "selected_methods": {
+      "com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest": [
+        "row Save captured before further edits adopts the latest draft and preserves another row",
+        "a latest blank name rejects stale enabled row Save without losing its draft",
+        "unchanged and duplicate row Saves preserve the live value owner",
+        "late row Save cannot resurrect an unknown cancelled removed or locked draft",
+        "busy generation rejects row Save while the pending draft still exists",
+        "explicit update keeps supplied payload bounds and does not become draft Save"
+      ],
+      "com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest": [
+        "duplicate row Save preserves the live value and page Save persists it",
+        "unchanged row Save in a dirty editor never clears the live owner"
+      ]
+    },
+    "unchanged_draft_test_source_sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+    "limits": "Root-only fresh-source admission after freeze reconciliation. No forced failed-CAS witness, device proof or PVA031 closure; do not replay consumed runners."
+  },
+  "not_claimed": [
+    "Detekt pass",
+    "Kotlin compilation",
+    "test execution",
+    "runtime cleanup",
+    "fresh Git identity",
+    "whole-source coverage",
+    "all possible bugs excluded"
+  ]
+}

@@ -157,7 +157,8 @@ internal class CredentialEventRouter(
             is CredentialEvent.OnCustomFieldEditCancelled -> customFields.cancelDraft(event.fieldId)
             is CredentialEvent.OnCustomFieldEditSaved -> customFields.commitDraft(event.fieldId)
             is CredentialEvent.OnCustomFieldDraftNameChanged -> customFields.changeDraftName(event.fieldId, event.name)
-            is CredentialEvent.OnCustomFieldDraftValueChanged -> customFields.changeDraftValue(event.fieldId, event.value)
+            is CredentialEvent.OnCustomFieldDraftValueChanged ->
+                customFields.changeDraftValue(event.fieldId, event.value)
             is CredentialEvent.OnCustomFieldDraftSecretChanged ->
                 customFields.changeDraftSecret(event.fieldId, event.isSecret)
             is CredentialEvent.OnCustomFieldDraftChanged -> customFields.changeDraft(event.fieldId, event.draft)

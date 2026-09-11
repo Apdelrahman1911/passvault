@@ -1,0 +1,142 @@
+{
+  "reviewer": "/root/shared_fixture_review",
+  "kind": "Independent in-memory unified-diff/source-data comparison; no patch applied and no project code/helper executed or imported.",
+  "proposal_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/shared_fixture_author/SHARED-FIXTURE-DETEKT03-v1.patch.txt",
+  "proposal_sha256": "843430ffbb9ff85c9f2a8e772f8e7e5123306af85abf9fe61e8d08da74913146",
+  "proposal_bytes": 9601,
+  "author_rationale_sha256": "a5a9913d9db51e814d310b1a0903d299d9ce2dcec6a14d59e63cc6c27f791fac",
+  "paths": [
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "before_sha256": "6e505b6efc7b55bdd5485ed0786cc51e25e47c08569abcf6c82f247ef714f50a",
+      "proposed_after_sha256": "4e6fec750f0f995d459128111c13aa002d7c033980673ea7788742a6bf2d899c",
+      "proposed_after_bytes": 35482,
+      "proposed_after_physical_lf": 707,
+      "hunks": 8,
+      "added_lines": 15,
+      "removed_lines": 2,
+      "new_annotations": [
+        "@Suppress(\"TooGenericExceptionCaught\")",
+        "@Suppress(\"TooManyFunctions\") // One driver owns the form, native input and ordered cleanup together.",
+        "@Suppress(\"LongMethod\")",
+        "@Suppress(\"TooGenericExceptionCaught\", \"ThrowingExceptionFromFinally\")",
+        "@Suppress(\"TooGenericExceptionCaught\", \"ThrowingExceptionFromFinally\")",
+        "@Suppress(\"CyclomaticComplexMethod\")",
+        "@Suppress(\"TooGenericExceptionCaught\")",
+        "@Suppress(\"TooGenericExceptionCaught\") // Any failed wait must cancel an EDT action not yet started."
+      ],
+      "new_comment_lines": [
+        "// Preserve assertions, native failures and cancellation as primary while the owned fixture closes.",
+        "// Keep admission, registered owner setup and the first real rendered frame in one ordered boundary.",
+        "// Release even after a partial press; rethrow the primary and attach secondary release failures.",
+        "// A release-only failure must fail the test; a failed press remains primary across release.",
+        "// Keep owner-local cancellation, settlement and interruption restoration in explicit order.",
+        "// A failed release, including an assertion, must not skip the remaining owned resources."
+      ],
+      "only_executable_line_replacement": {
+        "before": [
+          "            val title = unique(nodes.filter { it.name == \"Add Custom Field\" }) ?: return null\n",
+          "            var ancestor = title.parent\n"
+        ],
+        "after": [
+          "            var ancestor = unique(nodes.filter { it.name == \"Add Custom Field\" })?.parent\n"
+        ]
+      },
+      "declared_methods_unchanged": [
+        "native pending row draft survives page Save and a fresh rendered editor load",
+        "native row Save commits its tuple and row Cancel does not persist later edits",
+        "native capacity Add and retained composed input survive a controlled capacity transition"
+      ],
+      "assertion_or_fail_starting_lines_unchanged": 71,
+      "all_other_bytes_preserved_by_exact_hunk_reconstruction": true,
+      "live_source_readback_unchanged": true
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "before_sha256": "291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57",
+      "proposed_after_sha256": "109a0534da3023b7cc1f951ba6c4f8b57f8e0e78f718bef765f7d05cc3223417",
+      "proposed_after_bytes": 37913,
+      "proposed_after_physical_lf": 726,
+      "hunks": 8,
+      "added_lines": 14,
+      "removed_lines": 2,
+      "new_annotations": [
+        "@Suppress(\"TooGenericExceptionCaught\") // Teardown retains assertion/native failures as primary.",
+        "@Suppress(\"TooManyFunctions\") // One driver owns native input, real Room generations and their teardown.",
+        "@Suppress(\"CyclomaticComplexMethod\", \"TooGenericExceptionCaught\")",
+        "@Suppress(\"TooGenericExceptionCaught\", \"ThrowingExceptionFromFinally\")",
+        "@Suppress(\"TooGenericExceptionCaught\", \"ThrowingExceptionFromFinally\")",
+        "@Suppress(\"CyclomaticComplexMethod\")",
+        "@Suppress(\"TooGenericExceptionCaught\")",
+        "@Suppress(\"TooGenericExceptionCaught\") // Any failed wait must cancel an EDT action not yet started."
+      ],
+      "new_comment_lines": [
+        "// Single-attempt flags precede lock/close; preserve VM settlement and interruption/error ordering.",
+        "// Release even after a partial press; rethrow the primary and attach secondary release failures.",
+        "// A release-only failure must fail the test; a failed press remains primary across release.",
+        "// Keep owner-local cancellation, settlement and interruption restoration in explicit order.",
+        "// A failed release, including an assertion, must not skip the remaining owned resources."
+      ],
+      "only_executable_line_replacement": {
+        "before": [
+          "            val title = unique(nodes.filter { it.name == \"Add Custom Field\" }) ?: return null\n",
+          "            var ancestor = title.parent\n"
+        ],
+        "after": [
+          "            var ancestor = unique(nodes.filter { it.name == \"Add Custom Field\" })?.parent\n"
+        ]
+      },
+      "declared_methods_unchanged": [
+        "native capacity draft persists through page Save and a fresh Room database reopen"
+      ],
+      "assertion_or_fail_starting_lines_unchanged": 72,
+      "all_other_bytes_preserved_by_exact_hunk_reconstruction": true,
+      "live_source_readback_unchanged": true
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "before_sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+      "proposed_after_sha256": "f0614a75dfe0109e0effbd06e1903d1812d6be7c0fd9a97ef34a61ec4d6d42c3",
+      "proposed_after_bytes": 16962,
+      "proposed_after_physical_lf": 377,
+      "hunks": 2,
+      "added_lines": 4,
+      "removed_lines": 0,
+      "new_annotations": [
+        "@Suppress(\"LongMethod\", \"ThrowsCount\", \"TooGenericExceptionCaught\", \"ThrowingExceptionFromFinally\")",
+        "@Suppress(\"TooGenericExceptionCaught\")"
+      ],
+      "new_comment_lines": [
+        "// One nested boundary owns fixture teardown and Main restoration without replacing a primary test failure.",
+        "// Assertion/cancellation failures are retained while every remaining cancellation/settlement is attempted."
+      ],
+      "only_executable_line_replacement": {
+        "before": [],
+        "after": []
+      },
+      "declared_methods_unchanged": [
+        "inline draft edit is guarded before the next composition publishes its policy",
+        "same-tab reselection cannot discard the current inline draft before a frame",
+        "interactive completion rejects a newly dirty editor before another frame",
+        "synchronous save admission blocks old clean Back and forward policy",
+        "row Cancel restores clean Back without waiting to replace a dirty registration",
+        "unchanged draft remains clean and Back still pops exactly one entry",
+        "disposing the real registration leaves the guarded editor fail closed"
+      ],
+      "assertion_or_fail_starting_lines_unchanged": 55,
+      "all_other_bytes_preserved_by_exact_hunk_reconstruction": true,
+      "live_source_readback_unchanged": true
+    }
+  ],
+  "summary": {
+    "files": 3,
+    "hunks": 18,
+    "annotation_lines": 18,
+    "simple_selector_rewrites": 2,
+    "declared_methods": 11,
+    "new_methods": 0,
+    "compiled_or_executed_methods": 0,
+    "source_writes": 0
+  },
+  "limitation": "Text/hash/context and supported equivalence comparisons are not compiler, lint, application, GUI or universal failure-combination results."
+}

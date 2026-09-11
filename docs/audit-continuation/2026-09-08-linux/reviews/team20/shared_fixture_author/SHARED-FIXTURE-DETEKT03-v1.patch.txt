@@ -1,0 +1,175 @@
+--- a/shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt
++++ b/shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt
+@@ -190,6 +190,8 @@
+             picture("04-capacity-save-reload.png")
+         }
+ 
++    // Preserve assertions, native failures and cancellation as primary while the owned fixture closes.
++    @Suppress("TooGenericExceptionCaught")
+     private fun withEditor(caseId: String, count: Int, block: Editor.() -> Unit) {
+         val display = System.getProperty("passvault.editor.syntheticDisplay")
+         assumeTrue("Rendered editor checks require a separately admitted synthetic display", display != null)
+@@ -211,6 +213,7 @@
+     private fun seedValues(count: Int) = List(count) { FieldValue("auditfield$it", "field$it", "value$it", false) }
+ 
+     /** The only UI driver in this file; bounded and specific to this production form. */
++    @Suppress("TooManyFunctions") // One driver owns the form, native input and ordered cleanup together.
+     private inner class Editor(private val caseId: String, private val count: Int) {
+         private val repository = FakeCredentialRepository()
+         private val stores = CopyOnWriteArrayList<ViewModelStore>()
+@@ -227,6 +230,8 @@
+         private var mousePressed = false
+         val model: CredentialViewModel get() = requireNotNull(currentModel.value)
+ 
++        // Keep admission, registered owner setup and the first real rendered frame in one ordered boundary.
++        @Suppress("LongMethod")
+         fun start(display: String) {
+             deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(120)
+             assertEquals("Linux", System.getProperty("os.name"), "EDITOR_SETUP_LINUX_ONLY")
+@@ -356,6 +361,8 @@
+ 
+         private fun press(code: Int) = withKey(code) { }
+ 
++        // Release even after a partial press; rethrow the primary and attach secondary release failures.
++        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+         private fun withKey(code: Int, action: () -> Unit) {
+             val native = requireNotNull(robot)
+             pressedKeys += code // Register cleanup BEFORE the press, including a partially failing native call.
+@@ -383,6 +390,8 @@
+             await("EDITOR_SETUP_NATIVE_CALLBACK_$event") { onEdt { (nativeEvents[event] ?: 0) == before + 1 } }
+         }
+ 
++        // A release-only failure must fail the test; a failed press remains primary across release.
++        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+         fun click(selector: (List<Ax>) -> Ax?, allowDisabled: Boolean = false) {
+             val target = scrollTo(selector)
+             assertTrue(target.enabled || allowDisabled, "EDITOR_TARGET_UNEXPECTEDLY_DISABLED")
+@@ -468,8 +477,7 @@
+ 
+         /** Lowest common semantic ancestor of the title and exactly two dialog edit controls. */
+         fun dialogAdd(nodes: List<Ax>): Ax? {
+-            val title = unique(nodes.filter { it.name == "Add Custom Field" }) ?: return null
+-            var ancestor = title.parent
++            var ancestor = unique(nodes.filter { it.name == "Add Custom Field" })?.parent
+             while (ancestor != null) {
+                 val candidate = ancestor
+                 val members = nodes.filter { node ->
+@@ -578,9 +586,13 @@
+             fail(message)
+         }
+ 
++        // Keep owner-local cancellation, settlement and interruption restoration in explicit order.
++        @Suppress("CyclomaticComplexMethod")
+         fun close(primary: Throwable?) {
+             var interrupted = Thread.interrupted() || primary is InterruptedException
+             var cleanupFailure: Throwable? = null
++            // A failed release, including an assertion, must not skip the remaining owned resources.
++            @Suppress("TooGenericExceptionCaught")
+             fun release(block: () -> Unit) {
+                 try { block() } catch (error: Throwable) {
+                     if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+@@ -675,6 +687,7 @@
+         }
+     }
+ 
++    @Suppress("TooGenericExceptionCaught") // Any failed wait must cancel an EDT action not yet started.
+     private fun <T> onEdt(block: () -> T): T {
+         if (SwingUtilities.isEventDispatchThread()) return block()
+         val task = FutureTask(Callable(block))
+--- a/shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt
++++ b/shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt
+@@ -85,6 +85,7 @@
+ @OptIn(ExperimentalComposeUiApi::class)
+ class CredentialEditorRoomIntegrationTest {
+     @Test
++    @Suppress("TooGenericExceptionCaught") // Teardown retains assertion/native failures as primary.
+     fun `native capacity draft persists through page Save and a fresh Room database reopen`() {
+         val display = System.getProperty("passvault.editor.syntheticDisplay")
+         assumeTrue("Room editor check requires a separately admitted synthetic display", display != null)
+@@ -215,6 +216,7 @@
+     }
+ 
+     /** This one driver is fixed to the real form; locating uses read-only accessibility, never actions. */
++    @Suppress("TooManyFunctions") // One driver owns native input, real Room generations and their teardown.
+     private inner class Editor(private val home: AdmittedHome) {
+         private val rooms = mutableListOf<RoomOwner>()
+         private val stores = CopyOnWriteArrayList<ViewModelStore>()
+@@ -391,6 +393,8 @@
+             }
+         }
+ 
++        // Single-attempt flags precede lock/close; preserve VM settlement and interruption/error ordering.
++        @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
+         private fun closeRoom(owner: RoomOwner) {
+             var interrupted = Thread.interrupted()
+             var failure: Throwable? = null
+@@ -442,6 +446,8 @@
+             assertEquals(value, find(selector).text, "ROOM_EDITOR_NATIVE_TEXT_RESULT")
+         }
+ 
++        // Release even after a partial press; rethrow the primary and attach secondary release failures.
++        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+         private fun withKey(code: Int, action: () -> Unit) {
+             val native = requireNotNull(robot)
+             pressedKeys += code
+@@ -460,6 +466,8 @@
+             await("ROOM_EDITOR_NATIVE_CALLBACK_$event") { onEdt { (events[event] ?: 0) == before + 1 } }
+         }
+ 
++        // A release-only failure must fail the test; a failed press remains primary across release.
++        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+         fun click(selector: (List<Ax>) -> Ax?) {
+             val target = scrollTo(selector)
+             assertTrue(target.enabled, "ROOM_EDITOR_TARGET_DISABLED")
+@@ -531,8 +539,7 @@
+         fun dialogVisible(): Boolean = onEdt { snapshot().any { it.name == "Add Custom Field" } }
+ 
+         fun dialogAdd(nodes: List<Ax>): Ax? {
+-            val title = unique(nodes.filter { it.name == "Add Custom Field" }) ?: return null
+-            var ancestor = title.parent
++            var ancestor = unique(nodes.filter { it.name == "Add Custom Field" })?.parent
+             while (ancestor != null) {
+                 val candidate = ancestor
+                 val members = nodes.filter { node ->
+@@ -619,9 +626,13 @@
+             fail(message)
+         }
+ 
++        // Keep owner-local cancellation, settlement and interruption restoration in explicit order.
++        @Suppress("CyclomaticComplexMethod")
+         fun close(primary: Throwable?) {
+             var interrupted = Thread.interrupted() || primary is InterruptedException
+             var failure: Throwable? = null
++            // A failed release, including an assertion, must not skip the remaining owned resources.
++            @Suppress("TooGenericExceptionCaught")
+             fun release(block: () -> Unit) {
+                 try { block() } catch (error: Throwable) {
+                     if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+@@ -702,6 +713,7 @@
+         }
+     }
+ 
++    @Suppress("TooGenericExceptionCaught") // Any failed wait must cancel an EDT action not yet started.
+     private fun <T> onEdt(block: () -> T): T {
+         if (SwingUtilities.isEventDispatchThread()) return block()
+         val task = FutureTask(Callable(block))
+--- a/shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt
++++ b/shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt
+@@ -178,6 +178,8 @@
+         }
+     }
+ 
++    // One nested boundary owns fixture teardown and Main restoration without replacing a primary test failure.
++    @Suppress("LongMethod", "ThrowsCount", "TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+     private suspend fun TestScope.withEditorComposition(block: suspend EditorCompositionFixture.() -> Unit) {
+         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+         var primaryFailure: Throwable? = null
+@@ -264,6 +266,8 @@
+         repository: FakeCredentialRepository,
+     ) = withContext(NonCancellable) {
+         var cleanupFailure: Throwable? = null
++        // Assertion/cancellation failures are retained while every remaining cancellation/settlement is attempted.
++        @Suppress("TooGenericExceptionCaught")
+         suspend fun release(action: suspend () -> Unit) {
+             try {
+                 action()

@@ -1,0 +1,22 @@
+{
+  "owner": "/root",
+  "utc": "2026-09-10T23:54:46.717734+00:00",
+  "purpose": "ONE_CURRENT_C17_READ_ONLY_SOURCE_CAPTURE",
+  "bindings": {
+    "reviews/verification/C17-SHARED-SOURCE-PREPARE-INSTANCE-REVIEW.json": "5a21998d2535f98360d9ade6f05c05f2f8dcfbef06527ece0c412a1aa7a3a2b8",
+    "reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.py": "e1cb176dd9b2a4c4b24b9c34dee997909d308ad3884d3dd1069afa0fed41534a",
+    "reviews/checkpoint17/SOURCE-STORE-ADMISSION.json": "d475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c",
+    "publication/CHECKPOINT-17-PUBLISHED.json": "b9c91abc629dda9b0432b01c940e189f704c0fb153312e30fee729b1a403e19b"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.py"
+  ],
+  "freeze": "T source/store/config/ref/index and external bound helper/facts/publication remain frozen. No other Git mutation/CI/build/test initiated. No old helper/store/runtime action. Original existing lock only.",
+  "bounds": "Reviewed180s work/30s per each of2Git reads;4096members/128MiB raw+128MiB checkout/2MiB each compact output;12GiB25% launch and8GiB20% running floors.",
+  "cleanup": "Reviewed handlers/finally/direct Git child reaping installed before children; descriptors/lock closed, no disposable runtime/cache or wrapper obligation. Fail/HOLD/no automatic retry. Publisher external terminal gap remains distinct.",
+  "slot": "IDLE_NO_AUDIT_BUILD_ADMITTED; no build reservation or new consumer admission"
+}

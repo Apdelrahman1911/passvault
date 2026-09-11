@@ -1,0 +1,469 @@
+--- a/scripts/audit/linux_detekt_04.py
++++ b/scripts/audit/linux_detekt_04.py
+@@ -1,11 +1,11 @@
+ #!/usr/bin/python3
+-"""NEW fixed Detekt03 PID1 source, NOT execution admission.
++"""NEW fixed Detekt04 PID1 source, NOT execution admission.
+ 
+ Text-reuses Linux03 Files/resource/pidfd/stop/settlement and GUI02's distinction
+ between namespace setup and Gradle commands. No old helper import or replay.
+ Root owns fresh source/index transport, store freeze, original allocations/lock,
+ outer admission, pidfd/wait and allowlisted cleanup. No deletion or host signals.
+-One root :detekt plus original wrapper stop; no tests, GUI, native or packaging.
++One root + five-module Detekt cycle plus original stop; no tests, GUI, native or packaging.
+ """
+ import hashlib
+ import json
+@@ -23,27 +23,27 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-detekt03')
+-E = B / 'runs/linux-detekt03'
++R = Path('/root/projects/PassVault/audit-runtime-linux-detekt04')
++E = B / 'runs/linux-detekt04'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = W / 'scripts/audit/linux_detekt_03.py', W / 'scripts/audit/detekt_03.init.gradle'
+-SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
++SELF, INIT = W / 'scripts/audit/linux_detekt_04.py', W / 'scripts/audit/detekt_04.init.gradle'
++SOURCE = B / 'reviews/detekt04/source-prepare01/SOURCE.json'
+ JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
+ PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
+ # Final published snapshot and exact regular tool/alias/optional-exclude identities
+ # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
+-COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact C17/source binding; no inherited instance authority.
+-TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact C17/source binding; no inherited instance authority.
+-MEMBERS = 3042  # Exact C17/source binding; no inherited instance authority.
++COMMIT = None  # UNBOUND: exact new published source commit; root and independent review required.
++TREE = None  # UNBOUND: exact new published source tree; root and independent review required.
++MEMBERS = None  # UNBOUND: complete new source/index membership; root and independent review required.
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+-EXCLUDE_STATE = 'INFO_ABSENT'  # Exact C17/source binding; no inherited instance authority.
+-FROZEN = {SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f', INIT: 'fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7'}  # Exact C17 source/external init.
++EXCLUDE_STATE = None  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
++FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: new04 source/init SHA256; no inherited admission.
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
+ GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
+-RUN_ID = 'linux-detekt03'
++RUN_ID = 'linux-detekt04'
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -53,11 +53,27 @@
+            'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
+ # Outer separately owns the empty metadata mountpoint; its inode is not the bind view's inode.
+ ORIGINAL_DIRS = (R, E, E / 'logs', E / 'reports') + tuple(R / p for p in PRIVATE)
+-MODULES = ('', 'app-android', 'app-desktop', 'shared', 'core', 'feature',
+-           'core/domain', 'core/database', 'core/crypto', 'core/security', 'core/designsystem',
+-           'core/navigation', 'core/otp', 'core/testing', 'feature/onboarding', 'feature/unlock',
+-           'feature/vault', 'feature/credential', 'feature/generator', 'feature/health',
+-           'feature/settings', 'feature/backup')
++MODULES = ('', 'app-desktop', 'shared', 'core/crypto', 'core/database', 'feature/credential')
++# Exact task omissions only: independently qualified unchanged03 evidence must
++# match the new source/configuration. No Detekt source/rule/Git exclusion change.
++OMITTED_TASKS = (
++    ':app-android:detekt',
++    ':core:designsystem:detekt',
++    ':core:detekt',
++    ':core:domain:detekt',
++    ':core:navigation:detekt',
++    ':core:otp:detekt',
++    ':core:security:detekt',
++    ':core:testing:detekt',
++    ':feature:backup:detekt',
++    ':feature:detekt',
++    ':feature:generator:detekt',
++    ':feature:health:detekt',
++    ':feature:onboarding:detekt',
++    ':feature:settings:detekt',
++    ':feature:unlock:detekt',
++    ':feature:vault:detekt',
++)
+ TASKS = {((':' + m.replace('/', ':') + ':detekt') if m else ':detekt'): m for m in MODULES}
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+ FLAGS = ['--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel', '--no-configure-on-demand',
+@@ -65,7 +81,8 @@
+          '-Pkotlin.compiler.execution.strategy=in-process', '-Pandroid.builder.sdkDownload=false',
+          '-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8', '-Dorg.gradle.java.installations.auto-download=false',
+          '-Dorg.gradle.java.installations.auto-detect=false', '-Dorg.gradle.java.installations.paths=' + str(JAVA)]
+-COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), ':detekt', '--continue'] + FLAGS
++COMMAND = ([str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), ':detekt', '--continue']
++           + [arg for task in OMITTED_TASKS for arg in ('-x', task)] + FLAGS)
+ STOP = [str(CHECKOUT / 'gradlew'), '--stop'] + FLAGS
+ ENV = {'PATH': str(JAVA / 'bin') + ':/usr/bin:/bin', 'JAVA_HOME': str(JAVA), 'LANG': 'C.UTF-8',
+        'LC_ALL': 'C.UTF-8', 'TZ': 'UTC', 'HOME': str(R / 'home'), 'GRADLE_USER_HOME': str(R / 'gradle-home'),
+@@ -296,7 +313,7 @@
+     return {'parent': parent, 'self': current, 'nonpropagating_mounts': True, 'mount_rows': len(lines)}
+ 
+ 
+-class Detekt03:
++class Detekt04:
+     def __init__(self, files, parent):
+         self.f, self.parent, self.started = files, parent, time.monotonic()
+         self.errors, self.phases, self.inputs = [], [], {}
+@@ -321,10 +338,10 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = self.outer = json.loads(data)
+-        require(value['format'] == 'passvault-linux-detekt03-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-detekt04-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent,
+-                'fixed fresh Detekt03 intake; not independent execution admission')
++                'fixed fresh Detekt04 intake; not independent execution admission')
+         self.f.expected = dict(value['directories'])
+         # Do not compare the future mounted alias against its outer empty-directory inode.
+         self.f.expected.pop(str(GIT_DIR), None)
+@@ -696,10 +713,10 @@
+                 relative = Path(module) / 'build/reports/detekt' / ('detekt' + suffix)
+                 report_paths[task][kind] = str(relative)
+                 candidates.append((task, kind, relative, 4 * MIB))
+-        # Explicit extra diagnostic: 66 Detekt files + one <=1MiB Gradle HTML,
++        # Explicit extra diagnostic: 18 Detekt files + one <=1MiB Gradle HTML,
+         # sharing the original combined 32MiB capture budget, not extending it.
+         candidates.append((None, 'problems_html', Path('build/reports/problems/problems-report.html'), MIB))
+-        require(len(candidates) == 67, 'fixed 66 static reports plus one bounded diagnostic')
++        require(len(candidates) == 19, 'fixed 18 selected static reports plus one bounded diagnostic')
+         captures, absent, collection_errors, validation_errors = [], [], [], []
+         charged = 0
+         for task, kind, relative, cap in candidates:
+@@ -786,7 +803,7 @@
+                     and ((not module and r['path'].endswith('.gradle.kts'))
+                          or (module and r['path'].startswith(module + '/src/')
+                              and r['path'].endswith(('.kt', '.kts')))))
+-            prefix = 'PASSVAULT_DETEKT03_TASK='
++            prefix = 'PASSVAULT_DETEKT04_TASK='
+             seen = set()
+             for line in lines:
+                 if not line.startswith(prefix):
+@@ -811,7 +828,7 @@
+         except Exception as error:
+             note(validation_errors, 'static source/inventory mapping: ' + str(error))
+         if plan_count != len(TASKS) or valid_plans != set(TASKS):
+-            note(validation_errors, 'full exact 22-task static inventory missing or invalid')
++            note(validation_errors, 'full exact six-analyzer static inventory missing or invalid')
+         if headers['outcomes'][':verifyStaticAnalysisCoverage'] != 'BARE':
+             note(validation_errors, 'Ruby coverage guard lacks expected bare task evidence')
+         for task, expected in source_sets.items():
+@@ -824,7 +841,7 @@
+                    and set(source_sets) == set(TASKS) and headers['unique_tasks'] == len(all_tasks))
+         state['reports'] = {'captures': captures, 'absent': absent,
+             'bytes': sum(c['saved']['pin']['bytes'] for c in captures), 'budget_bytes_charged': charged,
+-            'capture_file_limit': 67, 'capture_bytes_limit': 32 * MIB, 'diagnostic_file_bytes_limit': MIB,
++            'capture_file_limit': 19, 'capture_bytes_limit': 32 * MIB, 'diagnostic_file_bytes_limit': MIB,
+             'checkstyle_findings': findings, 'parsed_checkstyle_reports': parsed_checkstyle,
+             'findings_scope': 'Subtotal in successfully parsed retained Checkstyle reports only; not full coverage',
+             'planned_source_sets': source_sets, 'planned_inventory_rows': plan_count,
+@@ -863,7 +880,7 @@
+                 self.note('static report/settlement uncertainty: ' + str(error))
+             state['record_image'] = self.f.write(E / 'PHASE-detekt.json', canonical(state))
+         require(state['build_ok'] and state['stop_ok'] and state['settled'] and self.mapping_ok
+-                and not self.cancelled(), 'Detekt03 failed; no automatic retry')
++                and not self.cancelled(), 'Detekt04 failed; no automatic retry')
+ 
+ 
+ def main():
+@@ -882,7 +899,7 @@
+     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+         signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+     files = Files()
+-    batch = Detekt03(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
++    batch = Detekt04(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
+     settled, code = False, 70
+     try:
+         batch.intake()
+@@ -920,13 +937,14 @@
+                 and (not attempted or batch.reports_preserved))
+         passed = safe and attempted and batch.mapping_ok and all(
+             p.get('setup_ok') if p['phase'] == 'git-isolation' else p['build_ok'] for p in batch.phases)
+-        result = {'format': 'passvault-linux-detekt03-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
++        result = {'format': 'passvault-linux-detekt04-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
+             'parent_namespaces': batch.parent, 'source_before': batch.before, 'source_after': batch.after,
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+             'git_bindings_established': batch.git_bound, 'git_bindings_stable': batch.git_stable,
+             'sealed_index_unchanged': batch.index_unchanged, 'static_reports_preserved': batch.reports_preserved,
+             'static_mapping_ok': batch.mapping_ok, 'validation_mapping_ok': bool(passed),
+-            'gradle_static_selector': ':detekt', 'declared_test_cases': 0, 'errors': batch.errors,
++            'gradle_static_selector': ':detekt', 'selected_detekt_tasks': list(TASKS),
++            'omitted_detekt_tasks': list(OMITTED_TASKS), 'declared_test_cases': 0, 'errors': batch.errors,
+             'phases': batch.phases, 'independent_semantic_acceptance': False,
+             'source_references': {'manifest_sha256': FROZEN[SOURCE], 'init_sha256': FROZEN[INIT],
+                 'inventory_guard_sha256': GUARD_SHA256, 'representation': 'RAW_GIT_BLOBS'},
+--- a/scripts/audit/detekt_04.init.gradle
++++ b/scripts/audit/detekt_04.init.gradle
+@@ -3,50 +3,81 @@
+ import org.gradle.api.artifacts.verification.DependencyVerificationMode
+ import org.gradle.api.tasks.testing.Test
+ 
+-// NEW Detekt03 scope guard/metadata only; not execution admission. No Test
+-// selection, alternate analyzer, source exclusion, dependency or rule changes.
++// NEW Detekt04 scope guard/metadata only; not execution admission. Root + five
++// affected analyzers; exact task-level omissions reuse reviewed unchanged03 evidence.
++// No Test selection, alternate analyzer, source exclusion, dependency or rule changes.
++def selectedTaskPaths = [
++    ':detekt',
++    ':app-desktop:detekt',
++    ':shared:detekt',
++    ':core:crypto:detekt',
++    ':core:database:detekt',
++    ':feature:credential:detekt',
++]
++def omittedTaskPaths = [
++    ':app-android:detekt',
++    ':core:designsystem:detekt',
++    ':core:detekt',
++    ':core:domain:detekt',
++    ':core:navigation:detekt',
++    ':core:otp:detekt',
++    ':core:security:detekt',
++    ':core:testing:detekt',
++    ':feature:backup:detekt',
++    ':feature:detekt',
++    ':feature:generator:detekt',
++    ':feature:health:detekt',
++    ':feature:onboarding:detekt',
++    ':feature:settings:detekt',
++    ':feature:unlock:detekt',
++    ':feature:vault:detekt',
++]
+ def start = gradle.startParameter
+-if (start.taskNames != [':detekt'] || !start.continueOnFailure || !start.excludedTaskNames.empty ||
++if (start.taskNames != [':detekt'] || !start.continueOnFailure ||
++        start.excludedTaskNames != omittedTaskPaths.toSet() ||
+         start.parallelProjectExecutionEnabled || start.configureOnDemand ||
+         start.maxWorkerCount != 1 || start.buildCacheEnabled ||
+         start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
+-    throw new GradleException('Detekt03 requires only root :detekt --continue, one worker, serial strict verification')
++    throw new GradleException('Detekt04 requires root :detekt --continue with exact16 task omissions, one worker, serial strict verification')
+ }
+ 
+ gradle.taskGraph.whenReady { graph ->
+     def root = gradle.rootProject
+     def coverage = root.tasks.named('verifyStaticAnalysisCoverage').get()
+-    def detektTasks = root.allprojects.collect { it.tasks.named('detekt').get() }
+-    if (graph.allTasks.toSet() != (detektTasks + coverage).toSet() ||
++    def allDetektTasks = root.allprojects.collect { it.tasks.named('detekt').get() }
++    def detektTasks = allDetektTasks.findAll { it.path in selectedTaskPaths }
++    if (allDetektTasks.collect { it.path }.toSet() != (selectedTaskPaths + omittedTaskPaths).toSet() ||
++            detektTasks.collect { it.path }.toSet() != selectedTaskPaths.toSet() ||
++            graph.allTasks.toSet() != (detektTasks + coverage).toSet() ||
+             graph.allTasks.any { it instanceof Test } || !coverage.enabled ||
+             coverage.commandLine != ['ruby', 'scripts/verify-static-analysis-coverage.rb'] ||
+             coverage.workingDir.canonicalFile != root.projectDir.canonicalFile) {
+-        throw new GradleException('Detekt03 forbids graph expansion, tests, or an altered inventory guard')
++        throw new GradleException('Detekt04 forbids graph expansion, tests, or an altered inventory guard')
+     }
+ 
+     def sourceRoot = root.projectDir.canonicalFile.toPath()
+     def relative = { File file ->
+         def path = file.canonicalFile.toPath()
+         if (!path.startsWith(sourceRoot)) {
+-            throw new GradleException('Detekt03 input/report escaped the disposable source snapshot')
++            throw new GradleException('Detekt04 input/report escaped the disposable source snapshot')
+         }
+         sourceRoot.relativize(path).toString().replace(File.separator, '/')
+     }
+     detektTasks.sort { it.path }.each { task ->
+         if (!task.enabled || task.project.extensions.getByName('detekt').parallel.get() ||
+                 task.jvmTarget.get() != '17') {
+-            throw new GradleException('Detekt03 requires enabled serial generic Detekt with JVM target 17')
++            throw new GradleException('Detekt04 requires enabled serial generic Detekt with JVM target 17')
+         }
+         def reports = [:]
+         ['checkstyle', 'html', 'sarif'].each { kind ->
+             def report = task.reports."${kind}"
+             if (!report.required.get()) {
+-                throw new GradleException('Detekt03 requires the existing compact static-report formats')
++                throw new GradleException('Detekt04 requires the existing compact static-report formats')
+             }
+             reports[kind] = relative(report.outputLocation.get().asFile)
+         }
+         // Planned task inputs are not per-file engine visitation or test cases.
+-        println('PASSVAULT_DETEKT03_TASK=' + JsonOutput.toJson([
++        println('PASSVAULT_DETEKT04_TASK=' + JsonOutput.toJson([
+             task: task.path,
+             sources: task.source.files.collect { relative(it) }.sort(),
+             reports: reports,
+--- a/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py
++++ b/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py
+@@ -1,10 +1,10 @@
+ #!/usr/bin/python3.12
+-"""NEW Detekt03 SOURCE ONLY, pending source/index/store/instance admission.
++"""NEW Detekt04 SOURCE ONLY, pending source/index/store/instance admission.
+ 
+ Root externally freezes REQUEST + genuine reviewer approval, including under the
+ original lock. No old helper is imported. No hostile-root/global-idle/no-escape
+ claim; blocked syscalls/kernel failure can defeat every userspace time bound.
+-One serial root :detekt; no tests, GUI, old store, fake index or inventory bypass.
++One serial root + five-module Detekt cycle; no tests, GUI, fake index or inventory bypass.
+ """
+ import fcntl
+ import hashlib
+@@ -21,11 +21,11 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-detekt03')
+-E = B / 'runs/linux-detekt03'
+-SELF = B / 'reviews/detekt03-outer/LAUNCH.py'
+-REQUEST = B / 'requests/LINUX-DETEKT-03.json'
+-APPROVAL = B / 'reviews/verification/LINUX-DETEKT03-INSTANCE-ACCEPT.json'
++R = Path('/root/projects/PassVault/audit-runtime-linux-detekt04')
++E = B / 'runs/linux-detekt04'
++SELF = B / 'reviews/detekt04-outer/LAUNCH.py'
++REQUEST = B / 'requests/LINUX-DETEKT-04.json'
++APPROVAL = B / 'reviews/verification/LINUX-DETEKT04-INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+ # Actual source/store/index/tool/exclude identities require root's fresh review.
+ # Paths or old receipts alone never admit the retired source store or an index.
+@@ -33,25 +33,51 @@
+ INDEX_SOURCE = GITDIR / 'index'
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+-EXCLUDE_STATE = 'INFO_ABSENT'  # Exact C17/source binding; no inherited instance authority.
++EXCLUDE_STATE = None  # UNBOUND: new store/index/config/Git-exclude review; root and independent review required.
+ GIT_METADATA, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+-INNER, INIT = W / 'scripts/audit/linux_detekt_03.py', W / 'scripts/audit/detekt_03.init.gradle'
+-SOURCE = B / 'reviews/checkpoint17/source-prepare01/SOURCE.json'
++INNER, INIT = W / 'scripts/audit/linux_detekt_04.py', W / 'scripts/audit/detekt_04.init.gradle'
++SOURCE = B / 'reviews/detekt04/source-prepare01/SOURCE.json'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/unshare'
+-RUN, PURPOSE = 'linux-detekt03', 'ONE_LINUX_DETEKT03'
+-COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact C17/source binding; no inherited instance authority.
+-TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact C17/source binding; no inherited instance authority.
+-MEMBERS = 3042  # Exact C17/source binding; no inherited instance authority.
++RUN, PURPOSE = 'linux-detekt04', 'ONE_LINUX_DETEKT04'
++STATIC_TASKS = (
++    ':detekt',
++    ':app-desktop:detekt',
++    ':shared:detekt',
++    ':core:crypto:detekt',
++    ':core:database:detekt',
++    ':feature:credential:detekt',
++)
++OMITTED_TASKS = (
++    ':app-android:detekt',
++    ':core:designsystem:detekt',
++    ':core:detekt',
++    ':core:domain:detekt',
++    ':core:navigation:detekt',
++    ':core:otp:detekt',
++    ':core:security:detekt',
++    ':core:testing:detekt',
++    ':feature:backup:detekt',
++    ':feature:detekt',
++    ':feature:generator:detekt',
++    ':feature:health:detekt',
++    ':feature:onboarding:detekt',
++    ':feature:settings:detekt',
++    ':feature:unlock:detekt',
++    ':feature:vault:detekt',
++)
++COMMIT = None  # UNBOUND: exact new published source commit; root and independent review required.
++TREE = None  # UNBOUND: exact new published source tree; root and independent review required.
++MEMBERS = None  # UNBOUND: complete new source/index membership; root and independent review required.
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+ BASE_REQUIRED = (INNER, INIT, SOURCE, JAVA, RELEASE, Path('/usr/bin/mount'))
+ REQUIRED = BASE_REQUIRED + (GIT_IMAGE, RUBY_IMAGE)
+ IMAGES = ()  # Final fixed set includes the externally reviewed optional exclude only when present.
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+-DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Exact current instance filesystem model.
+-EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original existing lock; never recreated.
+-FROZEN = {INNER: 'c73a4faf0731c1ff141d835f180d3742c56d7e56d1fb80a4b053aafe8a051fff', INIT: 'fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7', SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f'}  # Exact C17/external-control bindings.
++DEVICE = None  # UNBOUND: fresh04 filesystem model; not inherited from consumed03.
++EXPECTED_LOCK = None  # UNBOUND: verify the same original Linux lock; never recreate or replace it.
++FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: exact new04 controls and complete source.
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -67,7 +93,7 @@
+ END, WORK_END, last_watch = START + 6000, START + 5250, 0.0
+ reasons, resources, churn, directories, images = [], [], 0, {}, {}
+ child, lock_fd, owned_domain, cancel_written, index_copy = None, None, None, False, None
+-receipt = {'format': 'passvault-linux-detekt03-outer-receipt-v1', 'run_id': RUN,
++receipt = {'format': 'passvault-linux-detekt04-outer-receipt-v1', 'run_id': RUN,
+            'status': 'HOLD', 'inner_started': False, 'cleanup': 'NOT_ATTEMPTED', 'children': []}
+ 
+ def require(value, message):
+@@ -791,7 +817,7 @@
+             and EXPECTED_LOCK['mode'] == stat.S_IFREG | 0o600
+             and EXPECTED_LOCK['nlink'] == 1 and EXPECTED_LOCK['bytes'] == 0
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'PENDING Detekt03 source/index/store/tool/exclude/device/lock binding: source-only, no admission')
++            'PENDING Detekt04 source/index/store/tool/exclude/device/lock binding: source-only, no admission')
+     raw, request_image = capture(REQUEST, MIB)
+     request = decode(raw)
+     raw, approval_image = capture(APPROVAL, 65536)
+@@ -803,7 +829,7 @@
+     IMAGES = tuple(dict.fromkeys(REQUIRED + (SELF, Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON),
+         Path('/usr/bin/env'), INDEX_SOURCE, GITDIR / 'config')
+         + ((GITDIR / 'info/exclude',) if EXCLUDE_STATE == 'FILE' else ())))
+-    require(request['format'] == 'passvault-linux-detekt03-request-v1' and request['run_id'] == RUN and
++    require(request['format'] == 'passvault-linux-detekt04-request-v1' and request['run_id'] == RUN and
+             request['purpose'] == PURPOSE and request['commit'] == COMMIT and request['tree'] == TREE, 'request purpose/source')
+     require(request['coordination'] == {'sole_build_owner': '/root', 'agents_quiescent': True, 'no_ci': True}
+             and request['coordination']['agents_quiescent'] is True and request['coordination']['no_ci'] is True,
+@@ -814,7 +840,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-detekt03-approval-v1' and approval['reviewer'] == '/root/verification' and
++            approval['format'] == 'passvault-linux-detekt04-approval-v1' and approval['reviewer'] == '/root/verification' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE)}, 'missing/stale/nonaccepting genuine review')
+@@ -846,7 +872,7 @@
+     directory(E, True)
+     directory(R, True)
+     receipt.update(request=request_image, approval=approval_image, parent_namespaces=parent_ns, device_model=DEVICE)
+-    allocation = {'format': 'passvault-linux-detekt03-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
++    allocation = {'format': 'passvault-linux-detekt04-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
+         'commit': COMMIT, 'tree': TREE, 'source_members': MEMBERS, 'source_representation': 'RAW_GIT_BLOBS',
+         'allocated_directories': {str(p): directories[p][1] for p in (E, R)},
+         'parents': {str(p): directories[p][1] for p in PARENTS}, 'parent_namespaces': parent_ns,
+@@ -917,7 +943,7 @@
+             inner_images[str(GIT_INDEX)] = index_copy['copy_image']
+             for relative in ('config',) + (('info/exclude',) if EXCLUDE_STATE == 'FILE' else ()):
+                 inner_images[str(GIT_METADATA / relative)] = images[str(GITDIR / relative)]
+-            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-detekt03-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
++            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-detekt04-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
+                 'source_representation': 'RAW_GIT_BLOBS', 'source_members': MEMBERS, 'parent_namespaces': parent_ns,
+                 'directories': {str(p): v[1] for p, v in directories.items() if p == R or R in p.parents or p == E or E in p.parents},
+                 'images': inner_images, 'outer_images': images,
+@@ -929,7 +955,7 @@
+     raw, result_image = capture(E / 'INNER-RESULT.json', MIB)
+     result = decode(raw)
+     receipt.update(inner_exit=code, inner_result=result_image)
+-    require(code in (0, 1) and result['format'] == 'passvault-linux-detekt03-inner-v1' and result['run_id'] == RUN and
++    require(code in (0, 1) and result['format'] == 'passvault-linux-detekt04-inner-v1' and result['run_id'] == RUN and
+             result['commit'] == COMMIT and result['tree'] == TREE and result['parent_namespaces'] == parent_ns and all(result[k] is True for k in
+             ('source_before', 'source_after', 'all_required_stops_ok', 'namespace_empty_before_exit',
+              'cleanup_safe', 'git_bindings_established', 'git_bindings_stable', 'sealed_index_unchanged')),
+@@ -949,7 +975,10 @@
+     receipt['git_preflight'] = git_preflight
+     require(all(type(result[k]) is bool for k in
+                 ('static_reports_preserved', 'static_mapping_ok', 'validation_mapping_ok'))
+-            and result['gradle_static_selector'] == ':detekt' and type(result['declared_test_cases']) is int
++            and result['gradle_static_selector'] == ':detekt'
++            and result['selected_detekt_tasks'] == list(STATIC_TASKS)
++            and result['omitted_detekt_tasks'] == list(OMITTED_TASKS)
++            and type(result['declared_test_cases']) is int
+             and result['declared_test_cases'] == 0, 'static-only result contract; never application cases')
+     phases = result['phases']
+     require(isinstance(phases, list) and 1 <= len(phases) <= 2
+@@ -963,7 +992,9 @@
+                 and result['validation_mapping_ok'] is True,
+                 'success requires exact static task/source/report mapping; still independently unreconciled')
+     # Mapping/validation FAIL is not a cleanup veto when original safety/evidence obligations are met.
+-    receipt['static_scope'] = {'attempted': attempted, 'selector': ':detekt', 'declared_test_cases': 0,
++    receipt['static_scope'] = {'attempted': attempted, 'selector': ':detekt',
++        'selected_detekt_tasks': list(STATIC_TASKS), 'omitted_detekt_tasks': list(OMITTED_TASKS),
++        'declared_test_cases': 0,
+         **{k: result[k] for k in ('static_reports_preserved', 'static_mapping_ok', 'validation_mapping_ok')}}
+     require(source_check(expected) == before, 'outer raw-source after mismatch')
+     authority()

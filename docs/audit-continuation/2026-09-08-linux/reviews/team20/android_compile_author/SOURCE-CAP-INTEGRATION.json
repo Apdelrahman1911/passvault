@@ -1,0 +1,67 @@
+{
+  "format": "passvault-android-compile02-source-cap-integration-v1",
+  "author": "/root/android_compile_author",
+  "time_utc": "2026-09-11T02:05:53.858683+00:00",
+  "authority": "Root permitted application of only the exact cap patch once independent cap acceptance was sealed; no source/instance binding or execution authority.",
+  "disposition": "EXACT_INDEPENDENTLY_ACCEPTED_CAP_PATCH_APPLIED_ALL_BINDINGS_UNBOUND",
+  "base_integration": {
+    "path": "reviews/team20/android_compile_author/SOURCE-INTEGRATION.json",
+    "sha256": "a2fba289c8ece07b59f961c02e0dfdb16b80ccc75b7a77bc0209448bf3edaea3"
+  },
+  "cap_review": {
+    "path": "reviews/team20/android_compile_review/SOURCE-CAP-REVIEW.md",
+    "sha256": "eae9de6a883ae87fcf8248a34324a42116a751977c9e2f2047328bf9064e0b6e"
+  },
+  "cap_patch": {
+    "path": "reviews/team20/android_compile_author/ANDROID-COMPILE02-SOURCE-CAPS.patch.txt",
+    "sha256": "378726d37efc095a421dd9402176725e5787e39e072d485426f3f12b62071e5b"
+  },
+  "cap_rationale": {
+    "path": "reviews/team20/android_compile_author/SOURCE-CAP-DELTA.md",
+    "sha256": "47d590765991e20c24ab44977b21de72d8ba709192bfc0b7fcbb331fbb884025"
+  },
+  "files": [
+    {
+      "path": "scripts/audit/android_compile_02.init.gradle",
+      "accepted_base_sha256": "fccb4952a892ca5d0a223a6484d63497000b76e4a08eae8dc260d8534729bcd9",
+      "after": {
+        "sha256": "fccb4952a892ca5d0a223a6484d63497000b76e4a08eae8dc260d8534729bcd9",
+        "bytes": 12826,
+        "lf": 195
+      },
+      "changed": false
+    },
+    {
+      "path": "scripts/audit/linux_android_compile_02.py",
+      "accepted_base_sha256": "a10b713e5b7a760475d7a87ed11ee7d9cc9bf4e106f29604c01369b238cfcaf6",
+      "after": {
+        "sha256": "7391da07d72ff55ce9cbaa26ba31ca8e435f83a2b3063f962719b8d40519c93b",
+        "bytes": 63320,
+        "lf": 1038
+      },
+      "changed": true
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py",
+      "accepted_base_sha256": "c43deecd539de80c530b391257bac5caea9de394c333aa75a1236df3fa88a962",
+      "after": {
+        "sha256": "5f00a8109adad00c90546473e8632e25c3233da9369f7b017cd172571fe6a6f3",
+        "bytes": 63574,
+        "lf": 1059
+      },
+      "changed": true
+    }
+  ],
+  "functional_delta": "Only inner/outer member ceiling3196\u21923500 and both outer OID-input write/recapture limits128KiB\u2192144KiB; two explanatory comments. Init unchanged.",
+  "reviewer_role": "/root/android_compile_review remains the explicit independent future instance role; no INSTANCE-ACCEPT exists by this action.",
+  "bindings": "All source commit/tree/MEMBERS/FROZEN/required-source hashes/readRoots/offline/instance pins remain None/null. Root binds exact final C18 later.",
+  "limits": "All other task/index/source-blob/archive/runtime/evidence/time/resource and SDK/mountinfo limits unchanged; no report exclusions.",
+  "restrictions": "Consumed01, GUI03/C17 controls/evidence, T, held runtimes, STOP/NO-RETRY/CLOSED/native-refusal/publication fences untouched.",
+  "activity": "Released source edits and data-only hash/readback; no helper import/execution/AST/syntax check, build/test/Git/T/SDK/runtime/process probe or central-ledger edit.",
+  "accounting": {
+    "application_cases": 0,
+    "native_kdf_cases": 0,
+    "compiler_successes": 0,
+    "closures": 0
+  }
+}

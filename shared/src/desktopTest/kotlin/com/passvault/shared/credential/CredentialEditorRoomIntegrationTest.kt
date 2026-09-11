@@ -85,6 +85,7 @@ import kotlin.test.fail
 @OptIn(ExperimentalComposeUiApi::class)
 class CredentialEditorRoomIntegrationTest {
     @Test
+    @Suppress("TooGenericExceptionCaught") // Teardown retains assertion/native failures as primary.
     fun `native capacity draft persists through page Save and a fresh Room database reopen`() {
         val display = System.getProperty("passvault.editor.syntheticDisplay")
         assumeTrue("Room editor check requires a separately admitted synthetic display", display != null)
@@ -215,6 +216,7 @@ class CredentialEditorRoomIntegrationTest {
     }
 
     /** This one driver is fixed to the real form; locating uses read-only accessibility, never actions. */
+    @Suppress("TooManyFunctions") // One driver owns native input, real Room generations and their teardown.
     private inner class Editor(private val home: AdmittedHome) {
         private val rooms = mutableListOf<RoomOwner>()
         private val stores = CopyOnWriteArrayList<ViewModelStore>()
@@ -391,6 +393,8 @@ class CredentialEditorRoomIntegrationTest {
             }
         }
 
+        // Single-attempt flags precede lock/close; preserve VM settlement and interruption/error ordering.
+        @Suppress("CyclomaticComplexMethod", "TooGenericExceptionCaught")
         private fun closeRoom(owner: RoomOwner) {
             var interrupted = Thread.interrupted()
             var failure: Throwable? = null
@@ -442,6 +446,8 @@ class CredentialEditorRoomIntegrationTest {
             assertEquals(value, find(selector).text, "ROOM_EDITOR_NATIVE_TEXT_RESULT")
         }
 
+        // Release even after a partial press; rethrow the primary and attach secondary release failures.
+        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
         private fun withKey(code: Int, action: () -> Unit) {
             val native = requireNotNull(robot)
             pressedKeys += code
@@ -460,6 +466,8 @@ class CredentialEditorRoomIntegrationTest {
             await("ROOM_EDITOR_NATIVE_CALLBACK_$event") { onEdt { (events[event] ?: 0) == before + 1 } }
         }
 
+        // A release-only failure must fail the test; a failed press remains primary across release.
+        @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
         fun click(selector: (List<Ax>) -> Ax?) {
             val target = scrollTo(selector)
             assertTrue(target.enabled, "ROOM_EDITOR_TARGET_DISABLED")
@@ -531,8 +539,7 @@ class CredentialEditorRoomIntegrationTest {
         fun dialogVisible(): Boolean = onEdt { snapshot().any { it.name == "Add Custom Field" } }
 
         fun dialogAdd(nodes: List<Ax>): Ax? {
-            val title = unique(nodes.filter { it.name == "Add Custom Field" }) ?: return null
-            var ancestor = title.parent
+            var ancestor = unique(nodes.filter { it.name == "Add Custom Field" })?.parent
             while (ancestor != null) {
                 val candidate = ancestor
                 val members = nodes.filter { node ->
@@ -619,9 +626,13 @@ class CredentialEditorRoomIntegrationTest {
             fail(message)
         }
 
+        // Keep owner-local cancellation, settlement and interruption restoration in explicit order.
+        @Suppress("CyclomaticComplexMethod")
         fun close(primary: Throwable?) {
             var interrupted = Thread.interrupted() || primary is InterruptedException
             var failure: Throwable? = null
+            // A failed release, including an assertion, must not skip the remaining owned resources.
+            @Suppress("TooGenericExceptionCaught")
             fun release(block: () -> Unit) {
                 try { block() } catch (error: Throwable) {
                     if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
@@ -702,6 +713,7 @@ class CredentialEditorRoomIntegrationTest {
         }
     }
 
+    @Suppress("TooGenericExceptionCaught") // Any failed wait must cancel an EDT action not yet started.
     private fun <T> onEdt(block: () -> T): T {
         if (SwingUtilities.isEventDispatchThread()) return block()
         val task = FutureTask(Callable(block))

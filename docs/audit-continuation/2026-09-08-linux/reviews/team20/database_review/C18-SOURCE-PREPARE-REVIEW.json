@@ -1,0 +1,143 @@
+{
+  "reviewer": "/root/database_review",
+  "date": "2026-09-11",
+  "disposition": "ACCEPT_UNBOUND_C18_SHARED_SOURCE_PREPARER_DELTA_ONLY",
+  "not_instance_or_execution_admission": true,
+  "candidate": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_investigator/c18-source-prepare/SOURCE-PREPARE.py.txt",
+    "sha256": "424e30c470dd88b028bb39e007c72ca4ce7ad1b83f044eeead0db1c7eb048c20",
+    "bytes": 17678,
+    "physical_lf": 288
+  },
+  "rationale": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_investigator/c18-source-prepare/DELTA.md",
+    "sha256": "69ade3242ed7c9f6a0e3e5d57e37ff022551bf03c0c5069e54d22b698f173155",
+    "bytes": 6332,
+    "physical_lf": 109
+  },
+  "predecessor": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.py",
+    "sha256": "e1cb176dd9b2a4c4b24b9c34dee997909d308ad3884d3dd1069afa0fed41534a",
+    "bytes": 17873,
+    "physical_lf": 288
+  },
+  "accepted_unbound_predecessor": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint17/source-prepare01/SOURCE-PREPARE.unbound.py.txt",
+    "sha256": "0042497f8972713653aa3374c2f2abeba936cc1102fd0e767edd113643fc73d2",
+    "bytes": 17673,
+    "physical_lf": 288
+  },
+  "binding_record": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint17/source-prepare01/BINDING.json",
+    "sha256": "cd9958053224396b95b00169b18af0456d0e7705688a5f942c35b4af9b4ac9ad",
+    "bytes": 1792,
+    "physical_lf": 25
+  },
+  "predecessor_reviews": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/baseline-coverage/C17-SHARED-SOURCE-PREPARER-DELTA-REVIEW.json",
+      "sha256": "9a28609d1cbc3a78936c92ffc9f8047cdf59b7994b26fed4eda456fdf16fec09",
+      "bytes": 4913,
+      "physical_lf": 50
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/C17-SHARED-SOURCE-PREPARE-INSTANCE-REVIEW.json",
+      "sha256": "5a21998d2535f98360d9ade6f05c05f2f8dcfbef06527ece0c412a1aa7a3a2b8",
+      "bytes": 7406,
+      "physical_lf": 98
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/verification/C17-SHARED-SOURCE-PREPARE-ACTUAL-REVIEW.json",
+      "sha256": "5dd8b17acd5abcb23b9d6d56117607c6a552ae46eb707d92f7122d07fddb41f5",
+      "bytes": 6482,
+      "physical_lf": 91
+    }
+  ],
+  "independent_text_proof": {
+    "three_old_bindings_reverse_to_accepted_unbound": true,
+    "forward_literal_transform_exactly_equals_candidate": true,
+    "full_inverse_equals_bound_predecessor": true,
+    "changed_bound_predecessor_physical_lines": [
+      2,
+      14,
+      19,
+      21,
+      22,
+      28,
+      208,
+      212,
+      221,
+      223
+    ],
+    "old_current_commit_tree_facts_publication_digests_absent": true,
+    "P_TREE_FACTS_SHA_PUB_SHA_all_None": true,
+    "sole_policy_delta": "Exactly one member ceiling4096 to3500; all other code bytes are unchanged except scoped namespace/status/comment literals and removal of old three bindings.",
+    "replacement_groups": [
+      {
+        "before": "reviews/checkpoint17",
+        "after": "reviews/checkpoint18",
+        "occurrences": 2
+      },
+      {
+        "before": "NEW C17 checkpoint17 source-prepare01 for GUI03, Detekt03 and optional Android compile.",
+        "after": "NEW C18 checkpoint18 source-prepare01 shared by AndroidCompile02, static04 and regression01.",
+        "occurrences": 1
+      },
+      {
+        "before": "passvault-checkpoint17-source-prepare-v1",
+        "after": "passvault-checkpoint18-source-prepare-v1",
+        "occurrences": 1
+      },
+      {
+        "before": "PUBLISHED_EXACT_C17_SOURCE",
+        "after": "PUBLISHED_EXACT_C18_SOURCE",
+        "occurrences": 1
+      },
+      {
+        "before": "current C17 branch",
+        "after": "current C18 branch",
+        "occurrences": 1
+      },
+      {
+        "before": "actual C17 identity",
+        "after": "actual C18 identity",
+        "occurrences": 1
+      },
+      {
+        "before": "CHECKPOINT-17-PUBLISHED.json",
+        "after": "CHECKPOINT-18-PUBLISHED.json",
+        "occurrences": 1
+      },
+      {
+        "before": "published C17 commit/tree",
+        "after": "published C18 commit/tree",
+        "occurrences": 1
+      },
+      {
+        "before": "0 < len(entries) <= 4096",
+        "after": "0 < len(entries) <= 3500",
+        "occurrences": 1
+      }
+    ]
+  },
+  "root_clarification": "144KiB is downstream canonical-request coupling only. C17 preparer has no OID buffer/cap; no OID generator/reader/guard/transport is added. Root agreed to count-only delta after independent challenge.",
+  "capacity": {
+    "old_member_ceiling": 4096,
+    "new_member_ceiling": 3500,
+    "downstream_blob_oid_bytes_per_line": 41,
+    "at_most_3500_blob_oid_lines_bytes": 143500,
+    "downstream_144_KiB_bytes": 147456,
+    "margin_bytes": 3956,
+    "qualification": "This arithmetic does not enforce a consumer request, establish final C18 member count/bytes or promise output fit.3501 is rejected;3500 may still fail unchanged aggregate/member/listing/output/time/resource guards."
+  },
+  "preserved_contract": "Exact delta equality preserves two fixed read-only Git operations, T/G/REF/LOCK selectors, environment, descriptor no-follow/type/owner/single-link checks, config/HEAD/ref/shallow/absence/input rechecks, exclusive two-file outputs/fsync/readback, all byte/time/resource caps, signal/finally/direct-child cleanup and HOLD/no-retry limits. Historical15 CRLF paths/two EOL exceptions and exact tuple checks remain. No new capture/consumer/provenance authority.",
+  "unbound_gate": "checked(FACTS,None) precedes lock/T/Git work; SHA256 hexdigest str cannot equal None. Source reasoning only, not an executed guard or test.",
+  "future_requirements": [
+    "Root must promote/bind exact future B/reviews/checkpoint18/source-prepare01 separately after applicable freeze reconciliation.",
+    "Fresh published C18 commit/tree, fresh source-store facts, publication receipt, exact current controls/index/object/image facts and independent once-only instance admission; no facts inherited from consumed C17.",
+    "One successful independently reconciled SOURCE capture can serve AndroidCompile02, static04 and regression01 only when each consumer binds that same immutable C18 manifest and receives separate admission.",
+    "Retain original-lock identity and non-recreation rule; final count/output/resource checks may refuse. No automatic cap expansion, repeated capture per consumer or replay."
+  ],
+  "activity": "Named W source/retained-review reads, standard-library hashing/text replacement/integer comparison and this own report only. No source-helper execution/import/AST/syntax check, T/Git/proc/runtime/SDK access, allocation/capture or central edits. No sibling discovery in this lane.",
+  "restrictions": "Source freeze, GUI03 consumed/HOLD, all other consumed/HOLD/STOP/NO-RETRY/CLOSED scopes, native refusal, protected-ref/signing/Store/1017001 rules preserved. No builds/tests/closure or scheduler credit."
+}

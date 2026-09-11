@@ -1,0 +1,99 @@
+{
+  "format": "passvault-android-compile01-actual-independent-review-v1",
+  "reviewer": "/root/android32",
+  "executor": "/root",
+  "disposition": "ACCEPT_RECONCILED_FAILURE_AND_ORIGINAL_CLEANUP_NO_COMPILATION_CREDIT",
+  "identity": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "run_id": "linux-android-compile01",
+    "source_sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f"
+  },
+  "bindings": {
+    "external": {
+      "path": "reviews/android-compile01/c17-preflight/EXTERNAL-RESULT.json",
+      "sha256": "a9122212e8c35cc5c20398c51ede52708bf5555009050286225f5dd64352ec87",
+      "bytes": 995
+    },
+    "root_admission": {
+      "path": "reviews/android-compile01/c17-preflight/ROOT-EXECUTION-ADMISSION.json",
+      "sha256": "cda968002524919356f18315598715629704a383f5588adef112440bd95feed1",
+      "bytes": 2747
+    },
+    "instance_approval": {
+      "path": "reviews/android32/android-compile01/INSTANCE-ACCEPT.json",
+      "sha256": "7c446a82e6cccf3d4e2ec5b7251996505bf2f5d849b677a8414f66ac5929b437",
+      "bytes": 1058
+    },
+    "outer": {
+      "path": "runs/linux-android-compile01/OUTER-RECEIPT.json",
+      "sha256": "0a366bff54413d992e6ddef2b9179db40b653b6269f621d88ae3d8f72a20b14b",
+      "bytes": 12118
+    },
+    "inner": {
+      "path": "runs/linux-android-compile01/INNER-RESULT.json",
+      "sha256": "d80c8431464ed589bc82267cc96829ce05566d024823a60b2d610efaaac7e6e5",
+      "bytes": 16229
+    },
+    "compiler_evidence": {
+      "path": "runs/linux-android-compile01/COMPILE-EVIDENCE.json",
+      "sha256": "6dd21ae39f1afd116ecb694f269ab85fe325e8e8eb29e41e4a0b2359c4e5429b",
+      "bytes": 7025
+    },
+    "original_log": {
+      "path": "runs/linux-android-compile01/logs/compile.log",
+      "sha256": "c5840e1a9fee47cdc1c0f8d8bfc8f259a1caf313c6cccb2e7620c9997ad75666",
+      "bytes": 410749
+    },
+    "original_stop_log": {
+      "path": "runs/linux-android-compile01/logs/compile-stop.log",
+      "sha256": "c0b50aea60a9d482f47910f43a7d9dae995a535efbd5f684d2217f55175e3cf7",
+      "bytes": 442
+    },
+    "graph": {
+      "path": "runs/linux-android-compile01/reports/init-01.json",
+      "sha256": "7130a1eb3fbe8f8be2592d1241c7ac86551f3c102c8b4d542993418dc388ca96",
+      "bytes": 4125
+    },
+    "finished": {
+      "path": "runs/linux-android-compile01/reports/init-02.json",
+      "sha256": "d4ad323e35bef6a8f26139939864fbbd2c8a201767fa14b9c52e48b18f2e3aef",
+      "bytes": 221
+    }
+  },
+  "independent_retained_reconciliation": [
+    "All34 regular retained E files total495628B. Command log, two exact original marker bodies, phase/inner/outer image hashes and lengths reconcile. Allocation equals its outer copy; request/approval/source/index/config/tool/SDK packet projections agree with accepted instance. Reconstructed41-field clean environment hashes to5a32f866b7e1ec78ce328b457ecdeee07f56556d58414843e95f9a105b83052b in both original compile/stop intents; argv and phase commands agree.",
+    "Original log has3701 lines; graph/finished markers at3508/3510 exactly reproduce saved JSON bytes. Fourteen distinct enabled graph nodes are all reachable from the sole selected device compiler. All finalizer/ordering edge lists are empty. The sole path outside the25-name admission is :core:crypto:androidJar, type org.gradle.jvm.tasks.Jar_Decorated, no dependencies.",
+    "SOURCE-BEFORE/AFTER bytes are identical. Manifest-row reconstruction reproduces outer raw identity ba8d76961cec8b96dcd168880bd2a456175fcbbfbbb50fb217f991c8ff49dd9a; ordered3042 OID requests reproduce124722B/hash6dddf0bc1d59e425fa85fd0eafad02deec739aa741c05b28b0927cb4b737039e. Expected framed response size103503964B reconciles. Raw transport content and runtime per-file observations rely on the accepted executed guards, not reviewer rereading deleted R. Fifteen raw/checkout differences and both historical EOL qualifications remain."
+  ],
+  "precise_failure": {
+    "cause": "Init graph membership guard at source80-82 throws via33; original log3517-3535 names that exact guard. androidJar is unlisted. This is an audit compile-envelope omission/refusal, not a Kotlin source diagnostic or a PVA-001 native test failure.",
+    "stage": "Before selected target-module task actions: no > Task headers, no compiler receipts/readbacks/classes, finished phase=graph/completed=[]/evidenceComplete=false. Configuration, dependency acquisition and DSL script compilation did occur; zero target task actions does not mean no Gradle work.",
+    "counterexample_to_collector_boolean": "main_transitive_dependency_observed=false is an unevaluated default: inner797-798 rejects two receipts instead of ten before traversing edges. Independent graph traversal proves main is reachable; both compileAndroidMain and androidJar are direct compileAndroidDeviceTest prerequisites. That source/graph fact grants no compilation credit.",
+    "accounting": "The25 UNSTARTED outcome entries are the parser admission-domain defaults, including12 names absent from the14-node actual graph; they are not25 attempted tasks. Two receipts are retained failure evidence, not2/10 completed checks. No application/native/KDF/test/XML cases or successful target compiler actions."
+  },
+  "settlement_and_cleanup": [
+    "Six original Git/SDK mount commands completed0, wrapper compile completed1 and original same-wrapper --stop completed0. Stop log says no Gradle daemons running. --no-daemon used a recorded single-use Gradle daemon; this is not a claim that no JVM started. All command records are complete/error-free; both phases settled, required stop/source/evidence/binding checks and inner namespace-empty/cleanup-safe flags true.",
+    "Outer original Git child exited0; original unshare child exited1; neither pidfd kill attempted. Original owned namespaces agree with INNER-PREFLIGHT. Outer accepted the safe failed semantic result, repeated source/authority and no-runtime-mount guards, verified empty underlying SDK/Git aliases and original sealed index, then reported13111/13111 inventoried descendants removed and original R root removal. No SDK/source/permanent evidence or older held root was a cleanup target.",
+    "OUTER-RECEIPT is explicitly preterminal. Separately supplied unified session57369 final chunkff3020 external exit1 corroborates the accepted normal failure return after original descriptors/lock closes; not the unrelated missing C17 publisher terminal. No reasons/cleanup uncertainty recorded. Receipt/source/actual-terminal reconciliation supports this original cleanup only: no reviewer live R/proc census, retained per-entry removal replay, hostile-root/no-escape/global-idleness or hard-interruption guarantee."
+  ],
+  "resources": {
+    "outer_point_samples": 5,
+    "minimum_observed_disk_available_bytes": 18280185856,
+    "minimum_observed_memory_available_bytes": 21782384640,
+    "minimum_observed_memory_fraction": 0.32300878774332115,
+    "maximum_inner_observed_logical_bytes": 850887426,
+    "qualification": "Entry and recorded active floors satisfied; outer elapsed131.638s, original log BUILD FAILED in1m55s. Point observations and separate clocks are not continuous peak RSS/disk or hard deadline proof. Compact retained E remains necessary permanent evidence."
+  },
+  "accounting": {
+    "target_compiler_successes": 0,
+    "application_cases": 0,
+    "native_kdf_cases": 0,
+    "new_closures": 0,
+    "suspicion_resolutions": 0,
+    "denominator_change": false
+  },
+  "future_scope": "See FUTURE-ANDROIDJAR-SCOPE.md: grounded source/graph candidate only. This attempt is consumed; no01 expansion, retry,02 admission or inherited execution/cleanup authority.",
+  "restrictions": "All PVU007 STOP,PVU011 NO-RETRY,PVA029 failure/no automatic retry,G7/G8 CLOSED, older consumed/HOLD scopes, PVD/product boundaries, protected refs, signing/Store/publication and occupied1017001 restrictions remain. Actual Android32/native/packaging/business/hardware gaps remain.",
+  "activity": "Only bounded current retained E/source/admission/request reads, inert JSON/hash/text arithmetic and new permanent reviews. No helper execution/import/AST, live R/T/proc/tool/SDK/Git/network/CI probe, build, deletion, temporary output or background worker. Foreground readers settled; no Gradle-stop duty arose for reviewer."
+}

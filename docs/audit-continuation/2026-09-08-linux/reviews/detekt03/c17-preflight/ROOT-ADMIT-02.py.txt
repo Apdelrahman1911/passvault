@@ -1,0 +1,195 @@
+"""Once-only root metadata admission; no helper import, build, signal or R/E allocation.
+
+Independent Detekt03 instance acceptance remains normative. This root action
+rechecks it, original identities, resource floors and a conservative host point.
+It records/reserves scheduling only; the reviewed outer rechecks under the lock.
+"""
+import datetime
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import select
+import stat
+import time
+
+W = Path('/root/projects/PassVault/passvault-linux')
+B = W / 'docs/audit-continuation/2026-09-08-linux'
+P = B / 'reviews/detekt03/c17-preflight'
+LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+SLOT = B / 'EXECUTION_SLOT.json'
+REQ = B / 'requests/LINUX-DETEKT-03.json'
+APP = B / 'reviews/verification/LINUX-DETEKT03-INSTANCE-ACCEPT.json'
+R = Path('/root/projects/PassVault/audit-runtime-linux-detekt03')
+E = B / 'runs/linux-detekt03'
+SELF = P / 'ROOT-ADMIT-02.py.txt'
+OUTER = B / 'reviews/detekt03-outer/LAUNCH.py'
+EXPECTED = {
+    REQ: '6d256e2c17d616c980d8ea5b1fb6e996a1e24541d615befd0b61aaaeb532b82d',
+    APP: 'a5942ed44cca031987aaa1c62be315dcdc2451b512dead20deb3636c4d864be2',
+    SLOT: '9dcacdc1a56713c0c2c6d54561848eac06208385730b278678291279b84db016',
+}
+
+def pin(s):
+    return {**{k: getattr(s, 'st_' + k) for k in ('dev', 'ino', 'uid', 'mode', 'nlink')},
+            'bytes': s.st_size, 'mtime_ns': s.st_mtime_ns, 'ctime_ns': s.st_ctime_ns}
+
+def capture(path):
+    before = os.lstat(path)
+    target = path
+    extra = {}
+    if stat.S_ISLNK(before.st_mode):
+        assert path == Path('/usr/bin/python3') and os.readlink(path) == 'python3.12'
+        target = Path('/usr/bin/python3.12')
+        extra = {'link_pin': pin(before), 'link_target': 'python3.12'}
+    fd = os.open(target, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
+    try:
+        original = os.fstat(fd)
+        assert stat.S_ISREG(original.st_mode) and original.st_uid == 0
+        assert original.st_nlink == 1 and not original.st_mode & 0o022
+        assert original.st_size <= 32 * 1024 ** 2
+        data = bytearray()
+        while part := os.read(fd, 65536):
+            data.extend(part)
+            assert len(data) <= 32 * 1024 ** 2
+        assert len(data) == original.st_size
+        assert pin(original) == pin(os.fstat(fd)) == pin(os.lstat(target))
+        assert pin(before) == pin(os.lstat(path))
+        return bytes(data), {'sha256': hashlib.sha256(data).hexdigest(), 'pin': pin(original), **extra}
+    finally:
+        os.close(fd)
+
+def write_new(path, raw):
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+    try:
+        view = memoryview(raw)
+        while view:
+            n = os.write(fd, view)
+            assert n > 0
+            view = view[n:]
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+def encoded(value):
+    return (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + '\n').encode()
+
+pat = re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|'
+    r'gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|'
+    r'cargo|rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+raws = {}
+for path, digest in EXPECTED.items():
+    raw, image = capture(path)
+    assert image['sha256'] == digest, str(path)
+    raws[path] = raw
+request, approval, slot = (json.loads(raws[p]) for p in (REQ, APP, SLOT))
+assert slot['state'] == 'IDLE_NO_AUDIT_BUILD_ADMITTED'
+assert approval['request_sha256'] == EXPECTED[REQ]
+assert approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['reviewer'] == '/root/verification'
+assert request['coordination'] == {'sole_build_owner': '/root', 'agents_quiescent': True, 'no_ci': True}
+for p, original in request['directories'].items():
+    current = pin(os.lstat(p))
+    assert all(current[k] == original[k] for k in ('dev', 'ino', 'uid', 'mode')), p
+lockfd = os.open(LOCK, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC)
+try:
+    assert pin(os.fstat(lockfd)) == request['lock'] == pin(os.lstat(LOCK))
+    fcntl.flock(lockfd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    for path, digest in EXPECTED.items():
+        assert capture(path)[1]['sha256'] == digest
+    for p, original in request['images'].items():
+        assert capture(Path(p))[1] == original, p
+    for p, original in request['directories'].items():
+        current = pin(os.lstat(p))
+        assert all(current[k] == original[k] for k in ('dev', 'ino', 'uid', 'mode')), p
+    for p, original in request['tool_aliases'].items():
+        assert pin(os.lstat(p)) == original['lstat'], p
+        if original['readlink'] is not None:
+            assert os.readlink(p) == original['readlink']
+        assert str(Path(p).resolve(strict=True)) == original['resolved_image']
+    assert {k: os.readlink('/proc/self/ns/' + k) for k in ('pid', 'mnt')} == request['parent_namespaces']
+    assert not os.path.lexists(R) and not os.path.lexists(E)
+    assert not os.path.lexists(Path(request['git_inventory_binding']['publication_store']) / 'info')
+    for p in (P / 'SLOT-BEFORE.json', P / 'ROOT-EXECUTION-ADMISSION.json', B / '.DETEKT03-SLOT-NEXT.tmp'):
+        assert not os.path.lexists(p), str(p)
+    v = os.statvfs(R.parent)
+    disk = v.f_bavail * v.f_frsize
+    mem = {k: int(v.split()[0]) * 1024 for k, _, v in
+           (line.partition(':') for line in Path('/proc/meminfo').read_text().splitlines())
+           if k in ('MemTotal', 'MemAvailable')}
+    assert disk >= 12 * 1024 ** 3 and mem['MemAvailable'] >= mem['MemTotal'] / 4
+    started, positive, churn = time.monotonic(), [], 0
+    with os.scandir('/proc') as entries:
+        for i, entry in enumerate(entries):
+            assert i < 8192 and time.monotonic() - started < 5
+            if not entry.name.isdecimal():
+                continue
+            fd = None
+            try:
+                try:
+                    fd = os.pidfd_open(int(entry.name), 0)
+                except ProcessLookupError:
+                    churn += 1
+                    continue
+                try:
+                    comm = Path('/proc', entry.name, 'comm').read_text().strip()
+                except FileNotFoundError:
+                    poller = select.poll()
+                    poller.register(fd, select.POLLIN)
+                    events = poller.poll(0)
+                    assert len(events) == 1 and events[0][0] == fd and events[0][1]
+                    assert not events[0][1] & ~(select.POLLIN | select.POLLHUP)
+                    churn += 1
+                    continue
+                if pat.fullmatch(comm):
+                    positive.append({'pid': int(entry.name), 'comm': comm})
+            finally:
+                if fd is not None:
+                    os.close(fd)
+    assert not positive, positive
+    # Source-only agents have explicitly quiesced; root has dispatched no CI.
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    command = ['/usr/bin/env', '-i', 'PATH=/usr/bin:/bin', 'LANG=C.UTF-8', 'LC_ALL=C.UTF-8',
+               'TZ=UTC', '/usr/bin/python3.12', '-I', '-B', '-S', str(OUTER)]
+    admission = {
+        'owner': '/root', 'status': 'ADMIT_ONE_EXACT_LINUX_DETEKT03', 'at_utc': now,
+        'source_commit': request['commit'], 'source_tree': request['tree'],
+        'request_sha256': EXPECTED[REQ], 'approval_sha256': EXPECTED[APP],
+        'slot_before_sha256': EXPECTED[SLOT], 'admission_reader_sha256': capture(SELF)[1]['sha256'],
+        'source_images_freshly_reconciled': len(request['images']), 'command': command, 'cwd': str(W),
+        'coordination': {'sole_build_owner': '/root', 'all_other_agents_tools_quiescent': True,
+            'T_store_index_config_source_tools_frozen': True, 'original_lock_verified': True,
+            'no_audit_ci_dispatch_since_captured_terminal_list': True, 'no_ci_dispatch_while_local_slot_used': True},
+        'host_screen': {'positive_rows': positive, 'unclassified_prepositive_departures': churn,
+            'qualification': 'Bounded pidfd/comm point, not global/continuing idleness or unknown-process authority.'},
+        'resources': {'disk_available_bytes': disk, 'memory_available_bytes': mem['MemAvailable'],
+            'memory_total_bytes': mem['MemTotal']},
+        'bounds': {'outer_seconds': 6000, 'outer_work_seconds': 5250, 'static_seconds': 3600,
+            'original_stop_seconds': 600, 'runtime_logical_bytes': 6 * 1024 ** 3,
+            'inner_evidence_bytes': 64 * 1024 ** 2, 'inner_evidence_items': 96},
+        'analyzers': 22, 'coverage_tasks': 1, 'application_test_cases': 0,
+        'cleanup_before_execution': 'Reviewed signal/finally handlers precede children; preserve reports, original wrapper stop, owned settlement, then validated allowlisted new-R cleanup only. Unknown/failed safety stays HOLD; no automatic retry.',
+        'qualifications': 'Prior pre-admission block remains preserved; host now negative. No app cases/hardware/closure credit from static tasks. All STOP/NO-RETRY/CLOSED/HOLD/publication fences remain.',
+        'final_result': 'PENDING_ACTUAL_EXTERNAL_EXIT_AND_INDEPENDENT_RECONCILIATION',
+    }
+    write_new(P / 'SLOT-BEFORE.json', raws[SLOT])
+    data = encoded(admission)
+    write_new(P / 'ROOT-EXECUTION-ADMISSION.json', data)
+    slot.update(state='RESERVED_ONE_EXACT_LINUX_DETEKT03', updated_utc=now,
+        all_other_agents='QUIESCENT_NO_TOOLS_BUILD_OR_RUNTIME_PROBES',
+        local_execution='Exactly one accepted Detekt03 invocation reserved; no other audit build/test/CI.',
+        linux_detekt03={'status': 'RESERVED_UNSTARTED', 'admission': 'reviews/detekt03/c17-preflight/ROOT-EXECUTION-ADMISSION.json',
+            'admission_sha256': hashlib.sha256(data).hexdigest()})
+    write_new(B / '.DETEKT03-SLOT-NEXT.tmp', encoded(slot))
+    os.replace(B / '.DETEKT03-SLOT-NEXT.tmp', SLOT)
+    for directory in (P, B):
+        fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    print(json.dumps({'status': admission['status'], 'admission_sha256': hashlib.sha256(data).hexdigest(),
+        'slot_sha256': capture(SLOT)[1]['sha256'], 'resources': admission['resources'], 'host_screen': admission['host_screen']}, sort_keys=True))
+finally:
+    os.close(lockfd)

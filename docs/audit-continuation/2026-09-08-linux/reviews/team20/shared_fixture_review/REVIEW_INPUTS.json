@@ -1,0 +1,380 @@
+{
+  "reviewer": "/root/shared_fixture_review",
+  "scope": "Bounded source/retained-data identity comparison only; no application/helper execution, no full result or cleanup adjudication.",
+  "c17_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+  "c17_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+  "sources": [
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "sha256": "6e505b6efc7b55bdd5485ed0786cc51e25e47c08569abcf6c82f247ef714f50a",
+      "bytes": 34363,
+      "physical_lf": 694,
+      "c17_source_manifest_match": true,
+      "declared_methods": [
+        "native pending row draft survives page Save and a fresh rendered editor load",
+        "native row Save commits its tuple and row Cancel does not persist later edits",
+        "native capacity Add and retained composed input survive a controlled capacity transition"
+      ]
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "sha256": "291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57",
+      "bytes": 36796,
+      "physical_lf": 714,
+      "c17_source_manifest_match": true,
+      "declared_methods": [
+        "native capacity draft persists through page Save and a fresh Room database reopen"
+      ]
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "sha256": "8df5c4f32ab2002bc602c6963f0ac1f86bfb1ea2518f5f3a9cda15e981bd75d0",
+      "bytes": 16583,
+      "physical_lf": 373,
+      "c17_source_manifest_match": true,
+      "declared_methods": [
+        "inline draft edit is guarded before the next composition publishes its policy",
+        "same-tab reselection cannot discard the current inline draft before a frame",
+        "interactive completion rejects a newly dirty editor before another frame",
+        "synchronous save admission blocks old clean Back and forward policy",
+        "row Cancel restores clean Back without waiting to replace a dirty registration",
+        "unchanged draft remains clean and Back still pops exactly one entry",
+        "disposing the real registration leaves the guarded editor fail closed"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "runs/linux-detekt03/reports/shared-checkstyle.xml",
+      "sha256": "3057beffcffb93e21bbc1a7e706cd364812758b9c71d7fbe4b8b45de9de8e5fb",
+      "bytes": 8286
+    },
+    {
+      "path": "runs/linux-detekt03/reports/shared-sarif.sarif",
+      "sha256": "23433970b04d82a79d6a264aa566541d24a2768904753c79602c2a24a6d0416b",
+      "bytes": 155685
+    },
+    {
+      "path": "runs/linux-detekt03/STATIC-REPORTS.json",
+      "sha256": "a202cece16b23417c6f436e2ba100c8c00f74cabb1454debd5867720c6a2dfeb",
+      "bytes": 82130
+    },
+    {
+      "path": "runs/linux-detekt03/SOURCE-BEFORE.json",
+      "sha256": "2e4552659b4ba10347409b435bf33b27cf629b60c2e2f2fbf08c66b9e80d81a9",
+      "bytes": 1334
+    },
+    {
+      "path": "runs/linux-detekt03/SOURCE-AFTER.json",
+      "sha256": "2e4552659b4ba10347409b435bf33b27cf629b60c2e2f2fbf08c66b9e80d81a9",
+      "bytes": 1334
+    },
+    {
+      "path": "reviews/checkpoint17/source-prepare01/SOURCE.json",
+      "sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+      "bytes": 1661762
+    },
+    {
+      "path": "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-ACCEPT.json",
+      "sha256": "e6235ab3445396d451dc165dff05fb3e1f0ad681c500cc4d7360441f3b4a8326",
+      "bytes": 1086
+    },
+    {
+      "path": "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-RATIONALE.json",
+      "sha256": "3d0ac32528b6363df6d0e03a4849823bd4e3a1586c7c403d9526f27a07205b48",
+      "bytes": 7691
+    },
+    {
+      "path": "runs/linux-desktop-gui02/xml/shared--TEST-com.passvault.shared.credential.CredentialEditorRenderingTest.xml",
+      "sha256": "c70e65a32e8178d62200c3ffaa520054e8654a967c810e34d1f11e0ebfd9d27a",
+      "bytes": 1224
+    },
+    {
+      "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.shared.navigation.CredentialBackFreshnessCompositionTest.xml",
+      "sha256": "cf82bbd13efa2a078fb6da9166b09fac828013428f1b8a82ffbbcdd5eb706887",
+      "bytes": 1721
+    }
+  ],
+  "retained_shared_diagnostics": 37,
+  "counts_by_rule": {
+    "CyclomaticComplexMethod": 3,
+    "LongMethod": 2,
+    "ReturnCount": 2,
+    "ThrowingExceptionFromFinally": 6,
+    "ThrowsCount": 1,
+    "TooGenericExceptionCaught": 21,
+    "TooManyFunctions": 2
+  },
+  "counts_by_source": {
+    "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt": 13,
+    "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt": 15,
+    "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt": 9
+  },
+  "checkstyle_sarif_rule_location_match": true,
+  "detekt_retained_before_after_summary_equal": true,
+  "diagnostics": [
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 214,
+      "column": 25,
+      "rule": "TooManyFunctions",
+      "message": "Class 'Editor' with '15' functions detected. The maximum allowed functions per class is set to '11'"
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 581,
+      "column": 13,
+      "rule": "CyclomaticComplexMethod",
+      "message": "The function close appears to be too complex based on Cyclomatic Complexity (complexity: 18). The maximum allowed complexity for methods is set to '14'"
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 230,
+      "column": 13,
+      "rule": "LongMethod",
+      "message": "The function start is too long (67). The maximum length is 60."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 375,
+      "column": 42,
+      "rule": "ThrowingExceptionFromFinally",
+      "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 409,
+      "column": 42,
+      "rule": "ThrowingExceptionFromFinally",
+      "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 201,
+      "column": 18,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 366,
+      "column": 22,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 373,
+      "column": 26,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 400,
+      "column": 22,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 407,
+      "column": 26,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 585,
+      "column": 40,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 682,
+      "column": 61,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt",
+      "line": 470,
+      "column": 13,
+      "rule": "ReturnCount",
+      "message": "Function dialogAdd has 3 return statements which exceeds the limit of 2."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 218,
+      "column": 25,
+      "rule": "TooManyFunctions",
+      "message": "Class 'Editor' with '14' functions detected. The maximum allowed functions per class is set to '11'"
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 394,
+      "column": 21,
+      "rule": "CyclomaticComplexMethod",
+      "message": "The function closeRoom appears to be too complex based on Cyclomatic Complexity (complexity: 16). The maximum allowed complexity for methods is set to '14'"
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 622,
+      "column": 13,
+      "rule": "CyclomaticComplexMethod",
+      "message": "The function close appears to be too complex based on Cyclomatic Complexity (complexity: 19). The maximum allowed complexity for methods is set to '14'"
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 453,
+      "column": 65,
+      "rule": "ThrowingExceptionFromFinally",
+      "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 479,
+      "column": 65,
+      "rule": "ThrowingExceptionFromFinally",
+      "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 134,
+      "column": 18,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 401,
+      "column": 28,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 412,
+      "column": 30,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 450,
+      "column": 20,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 453,
+      "column": 24,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 476,
+      "column": 20,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 479,
+      "column": 24,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 626,
+      "column": 40,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 709,
+      "column": 61,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt",
+      "line": 533,
+      "column": 13,
+      "rule": "ReturnCount",
+      "message": "Function dialogAdd has 3 return statements which exceeds the limit of 2."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 181,
+      "column": 35,
+      "rule": "LongMethod",
+      "message": "The function withEditorComposition is too long (76). The maximum length is 60."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 242,
+      "column": 42,
+      "rule": "ThrowingExceptionFromFinally",
+      "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 253,
+      "column": 38,
+      "rule": "ThrowingExceptionFromFinally",
+      "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 234,
+      "column": 22,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 240,
+      "column": 26,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 245,
+      "column": 18,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 251,
+      "column": 22,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 270,
+      "column": 22,
+      "rule": "TooGenericExceptionCaught",
+      "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled."
+    },
+    {
+      "path": "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt",
+      "line": 181,
+      "column": 35,
+      "rule": "ThrowsCount",
+      "message": "Too many throw statements in the function withEditorComposition. The maximum number of allowed throw statements is 2."
+    }
+  ],
+  "application_test_executions_this_review": 0,
+  "project_or_helper_imports_or_execution": false,
+  "source_mutation": false,
+  "meaning": "Hashes bind bytes and retained reports; neither hash equality nor read comparison establishes application correctness or future lint pass."
+}

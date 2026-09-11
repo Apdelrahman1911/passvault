@@ -1,0 +1,195 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.tasks.testing.Test
+import java.nio.file.*
+import java.nio.file.attribute.BasicFileAttributes
+import java.security.MessageDigest
+
+// NEW execution02 proposal, not Compile01 candidate02. All source/instance bindings remain UNBOUND.
+final Map ADMITTED = null // UNBOUND: exact fresh02 readRoots/offline literal requires independent review.
+// Finite source/registration scope, NOT proven-safe types; ordinary frozen-source/verified-plugin trust, no expansion.
+final Set ALLOWED = [
+    'compileAndroidMain', 'compileAndroidDeviceTest', 'checkKotlinGradlePluginConfigurationErrors',
+    'kmpPartiallyResolvedDependenciesChecker', 'checkAndroidMainAarMetadata', 'checkAndroidDeviceTestAarMetadata',
+    'androidPreBuild', 'preAndroidMainBuild', 'preAndroidDeviceTestBuild', 'generateAndroidMainEmptyResourceFiles',
+    'generateAndroidDeviceTestResources', 'generateAndroidDeviceTestSources', 'generateAndroidDeviceTestRFile',
+    'compileAndroidDeviceTestNavigationResources', 'processAndroidDeviceTestNavigationResources',
+    'mapAndroidDeviceTestSourceSetPaths', 'mergeAndroidDeviceTestResources', 'parseAndroidDeviceTestLocalResources',
+    'processAndroidDeviceTestResources', 'processAndroidMainManifest', 'mergeAndroidDeviceTestManifest',
+    'processAndroidDeviceTestManifest', 'writeAndroidMainAarMetadata',
+    'bundleAndroidMainClassesToCompileJar', 'packageAndroidDeviceTestResources', // compile/resource exceptions only
+    'androidJar', // Exact observed crypto prerequisite, not generic Jar permission or archive-content proof.
+].collect { ':core:crypto:' + it }.toSet()
+final String MAIN = ':core:crypto:compileAndroidMain'
+final String DEVICE = ':core:crypto:compileAndroidDeviceTest'
+final String ANDROID_JAR = ':core:crypto:androidJar'
+final String BASE = 'core/crypto/src/'
+final String PKG = 'kotlin/com/passvault/core/crypto/'
+// UNBOUND: bind all four final source hashes identically in this init and the new inner helper.
+def required = [(MAIN): [
+    (BASE + 'commonMain/' + PKG + 'LibsodiumCryptoEngine.kt'): null,
+    (BASE + 'commonMain/' + PKG + 'RawPasswordHash.kt'): null,
+    (BASE + 'androidMain/' + PKG + 'RawPasswordHash.android.kt'): null],
+    (DEVICE): [(BASE + 'androidDeviceTest/' + PKG + 'Android32KdfInstrumentation.kt'): null]]
+def fail = { String why -> throw new GradleException('AndroidCompile02: ' + why) }
+long emitted = 0L
+def emit = { Map row ->
+    String json = JsonOutput.toJson(row)
+    int n = json.getBytes('UTF-8').length
+    long ceiling = row.kind == 'finished' ? 8L * 1024 * 1024 : 8L * 1024 * 1024 - 2048
+    if (n > 1024 * 1024 || emitted + n > ceiling) fail('receipt budget exceeded')
+    emitted += n
+    println('PASSVAULT_ANDROID_COMPILE02=' + json)
+}
+def completed = []
+def started = []
+String phase = 'init'
+gradle.buildFinished { result ->
+    boolean complete = completed.toSet() == [MAIN, DEVICE].toSet()
+    emit([kind: 'finished', phase: phase, completed: completed, evidenceComplete: complete, failureType: result.failure?.class?.name,
+          cases: 0, classpathAttribution: 'NOT_ESTABLISHED', runtimeEvidence: false])
+    if (result.failure == null && !complete) fail('successful build lacks both accepted compiler completions')
+}
+def start = gradle.startParameter
+def sys = start.systemPropertiesArgs
+def props = start.projectProperties
+if (gradle.gradleVersion != '9.7.1' || JavaVersion.current() != JavaVersion.VERSION_17 ||
+        start.taskNames != [DEVICE] || start.dryRun || start.continueOnFailure || !start.excludedTaskNames.empty ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
+        start.buildCacheEnabled || start.rerunTasks || start.dependencyVerificationMode != DependencyVerificationMode.STRICT ||
+        props['kotlin.compiler.execution.strategy'] != 'in-process' || props['android.builder.sdkDownload'] != 'false' ||
+        sys['org.gradle.java.installations.auto-download'] != 'false' || sys['org.gradle.java.installations.auto-detect'] != 'false' ||
+        !sys['org.gradle.java.installations.paths'] ||
+        new File(sys['org.gradle.java.installations.paths']).canonicalFile != new File(System.getProperty('java.home')).canonicalFile) {
+    fail('requires exact selector, Gradle9.7.1/JDK17, serial strict flags and disabled SDK/JDK acquisition')
+}
+if (ADMITTED != null && (ADMITTED.keySet() != ['readRoots', 'offline'].toSet() ||
+        !(ADMITTED.offline instanceof Boolean) || start.offline != ADMITTED.offline ||
+        !(ADMITTED.readRoots instanceof List) || ADMITTED.readRoots.empty || ADMITTED.readRoots.size() > 16)) fail('pre-configuration scope/policy mismatch')
+gradle.taskGraph.whenReady { graph ->
+    phase = 'graph'
+    if (graph.allTasks.size() > 26) fail('graph exceeds fixed bound')
+    def rows = graph.allTasks.collect { t ->
+        [path: t.path, type: t.class.name, enabled: t.enabled,
+         dependencies: t.taskDependencies.getDependencies(t).collect { it.path }.sort(),
+         finalizers: t.finalizedBy.getDependencies(t).collect { it.path }.sort(),
+         mustRunAfter: t.mustRunAfter.getDependencies(t).collect { it.path }.sort(),
+         shouldRunAfter: t.shouldRunAfter.getDependencies(t).collect { it.path }.sort()]
+    }
+    emit([kind: 'graph', selector: start.taskNames, tasks: rows])
+    if (ADMITTED == null) fail('UNBOUND fresh read roots/offline policy; no task actions admitted')
+    if (required.values().any { sourcePins ->
+        sourcePins.values().any { !(it instanceof String) || !(it ==~ /[0-9a-f]{64}/) }
+    }) fail('UNBOUND required production/harness source hashes')
+    if (graph.allTasks.any { t -> !ALLOWED.contains(t.path) || t instanceof Test ||
+            t instanceof org.gradle.api.tasks.Exec || t instanceof org.gradle.api.tasks.JavaExec
+    }) fail('unlisted task or test/Exec action; retain failure, no graph expansion/retry')
+    def compilers = [MAIN, DEVICE].collect { name -> graph.allTasks.find { it.path == name } }
+    if (compilers.any { it == null || !it.enabled }) fail('both enabled real main/device compiler dependencies required')
+    def edgeKinds = ['dependencies', 'finalizers', 'mustRunAfter', 'shouldRunAfter']
+    def jar = rows.find { it.path == ANDROID_JAR }
+    def device = rows.find { it.path == DEVICE }
+    def jarIncoming = rows.collectMany { row ->
+        edgeKinds.findAll { row[it].contains(ANDROID_JAR) }.collect { [row.path, it] }
+    }
+    if (jar == null || jar.type != 'org.gradle.jvm.tasks.Jar_Decorated' || !jar.enabled ||
+            edgeKinds.any { !jar[it].empty } || jarIncoming != [[DEVICE, 'dependencies']] ||
+            !device.dependencies.contains(MAIN)) fail('exact androidJar leaf/type and direct device edges required')
+    def root = gradle.rootProject.projectDir.toPath().toAbsolutePath().normalize()
+    def outputBoundary = root.resolve('core/crypto/build')
+    def readRoots = ADMITTED.readRoots.collect { new File(it).toPath().toAbsolutePath().normalize() }
+    if (!readRoots.contains(root) || readRoots.any { it.nameCount < 2 }) fail('invalid admitted read roots')
+    def checked = { File file ->
+        def p = file.toPath().toAbsolutePath().normalize()
+        if (!readRoots.any { p.startsWith(it) }) fail('input/output escaped admitted roots')
+        for (def q = p; q != null; q = q.parent) if (Files.isSymbolicLink(q)) fail('symlink in admitted path')
+        p
+    }
+    long hashed = 0L
+    int entries = 0
+    def hashFile = { p ->
+        def a = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        if (!a.isRegularFile() || a.size() > 256L * 1024 * 1024 || (hashed += a.size()) > 2L * 1024 * 1024 * 1024) fail('file/hash budget or type')
+        def md = MessageDigest.getInstance('SHA-256')
+        byte[] buffer = new byte[65536], header = new byte[8]
+        long seen = 0L
+        int copied = 0
+        Files.newInputStream(p, LinkOption.NOFOLLOW_LINKS).withCloseable { stream ->
+            int n
+            while ((n = stream.read(buffer)) != -1) {
+                if (n == 0) continue
+                seen += n
+                if (seen > a.size()) fail('input grew while hashing')
+                int take = Math.min(n, 8 - copied)
+                if (take > 0) { System.arraycopy(buffer, 0, header, copied, take); copied += take }
+                md.update(buffer, 0, n)
+            }
+        }
+        def z = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+        if (seen != a.size() || z.size() != a.size() || z.lastModifiedTime() != a.lastModifiedTime() || z.fileKey() != a.fileKey()) fail('unstable read')
+        [path: p.toString(), bytes: seen, sha256: md.digest().encodeHex().toString(),
+         classHeader: p.toString().endsWith('.class') ? header.encodeHex().toString() : null]
+    }
+    def snapshot = { File file, boolean mayBeAbsent ->
+        def p = checked(file)
+        if (!Files.exists(p, LinkOption.NOFOLLOW_LINKS)) {
+            if (!mayBeAbsent) fail('missing declared input')
+            return [root: p.toString(), present: false, files: []]
+        }
+        def found = []
+        Files.walk(p).withCloseable { stream ->
+            def iterator = stream.iterator()
+            while (iterator.hasNext()) {
+                def q = checked(iterator.next().toFile())
+                if (++entries > 16384) fail('entry budget exceeded')
+                if (!Files.isDirectory(q, LinkOption.NOFOLLOW_LINKS)) found.add(hashFile(q))
+            }
+        }
+        [root: p.toString(), present: true, files: found.sort { it.path }]
+    }
+    def outputs = [:]
+    compilers.each { t ->
+        def files = t.outputs.files.files.toList()
+        if (files.empty || files.size() > 16 || files.any { !checked(it).startsWith(outputBoundary) }) fail('declared output outside fixed build boundary')
+        outputs[t.path] = files
+        def before = files.collect { snapshot(it, true) }
+        emit([kind: 'declared-outputs-before', task: t.path, outputs: before])
+        if (before.any { !it.files.empty }) fail('nonempty output before actions; no cleanup/rerun fallback')
+        t.doFirst {
+            if (outputs[t.path].any { !snapshot(it, true).files.empty }) fail('output became nonempty before compiler')
+            def inputs = t.inputs.files.files.toList()
+            if (inputs.size() > 4096) fail('declared input-root budget exceeded')
+            def receipt = inputs.collect { snapshot(it, false) }
+            emit([kind: 'generic-task-inputs', task: t.path, api: 'Task.inputs.files; NOT compiler classpath or visitation', inputs: receipt])
+            def inputRows = receipt.collectMany { it.files }
+            required[t.path].each { rel, sha ->
+                if (!inputRows.any { it.path == root.resolve(rel).toString() && it.sha256 == sha }) fail('required production/harness input not matched: ' + rel)
+            }
+            started.add(t.path)
+            phase = 'compiler-actions'
+        }
+    }
+    graph.afterTask { t, state ->
+        if (!(t.path in [MAIN, DEVICE])) return
+        emit([kind: 'task-state', task: t.path, executed: state.executed, skipped: state.skipped, upToDate: state.upToDate,
+              noSource: state.noSource, skipMessage: state.skipMessage, didWork: state.didWork, failureType: state.failure?.class?.name])
+        if (state.failure != null) return
+        if (!started.contains(t.path) || !state.executed || state.skipped || state.upToDate || state.noSource || !state.didWork || state.skipMessage != null) fail('no fresh successful compiler action')
+        def generated = outputs[t.path].collectMany { snapshot(it, true).files }.unique { it.path }
+        String basename = t.path == DEVICE ? 'Android32KdfInstrumentation' : 'LibsodiumCryptoEngine'
+        String stem = '/com/passvault/core/crypto/' + basename
+        def classes = generated.findAll { row ->
+            def p = new File(row.path).toPath()
+            String name = p.fileName.toString()
+            p.parent.endsWith('com/passvault/core/crypto') &&
+                (name == basename + '.class' || (name.startsWith(basename + '$') && name.endsWith('.class')))
+        }
+        if (classes.count { it.path.endsWith(stem + '.class') } != 1 || classes.any { it.classHeader != 'cafebabe0000003d' }) fail('missing/invalid fresh JVM17 base or companion class')
+        emit([kind: 'emitted-classes', task: t.path, declaredRoots: outputs[t.path].collect { checked(it).toString() }, classes: classes,
+              generatedFileCount: generated.size(), attribution: 'declared outputs; not APK/DEX/runtime evidence'])
+        completed.add(t.path)
+        phase = 'compiled-' + completed.size()
+    }
+}

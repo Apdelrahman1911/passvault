@@ -1,0 +1,45 @@
+{
+  "format": "passvault-focused01-shared-c18-source-delta-v1",
+  "author": "/root/android_fixture_author",
+  "status": "UNAPPLIED_PENDING_GENUINE_PAIRED_ACCEPTANCE",
+  "root_scope": "Exactly two SOURCE assignment lines in already released focused01 inner/outer; no broader review or source change.",
+  "patch": {
+    "path": "05-shared-c18-source.UNAPPLIED.patch.txt",
+    "bytes": 1431,
+    "sha256": "2176eabb1418fc7a9afc1794671d6a56855a44896ba84067cb6844ade529a4e9"
+  },
+  "files": [
+    {
+      "path": "scripts/audit/linux_focused_regression_01.py",
+      "before_bytes": 39790,
+      "before_sha256": "97c77cc76ecf18b86e16ae169ec83e81f9d5822e744ba2913e9ed621b05aa9c2",
+      "after_bytes": 39869,
+      "after_sha256": "b461fe6399e14ef0ed92789c451b428ce23e6c4edad804ff48317e89278c76a1",
+      "old_line": "SOURCE = B / 'SOURCE.json'",
+      "new_line": "SOURCE = W / 'docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json'",
+      "only_one_assignment_line_changed": true
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+      "before_bytes": 50857,
+      "before_sha256": "092cf2801485ba5452f9b4a1c3a924304e59ac97aaf1988d67b3867f2ba4d5b8",
+      "after_bytes": 50866,
+      "after_sha256": "4228261a5432b7a2bb582da03205736d0617a092a428121ed2ac451921ae24a9",
+      "old_line": "SOURCE = B / 'reviews/focused-regression01/SOURCE.json'",
+      "new_line": "SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'",
+      "only_one_assignment_line_changed": true
+    }
+  ],
+  "shared_canonical_path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE.json",
+  "path_equality_checked_lexically_only": true,
+  "shared_manifest_read_or_created": false,
+  "unchanged": [
+    "B and CLASSES/METHODS roots",
+    "all other source bytes",
+    "all FROZEN hashes",
+    "COMMIT/TREE/MEMBERS UNBOUND",
+    "request/approval/device/lock admission bindings",
+    "original source proposal and prior acceptance"
+  ],
+  "qualification": "Source-text-only delta. No candidate helper import/execution, AST, tests, Git/T/proc/runtime or new capture. Exact binding/instance admission remains future root-owned work."
+}

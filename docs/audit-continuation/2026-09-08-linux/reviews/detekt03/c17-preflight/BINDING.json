@@ -1,0 +1,77 @@
+{
+  "ci_snapshot_sha256": "0fe9321151718148b4c1a79211e565aca0da14aac0083fab0244a251797c49ff",
+  "index_actual_review_sha256": "c81adbd03e1b3548f3e5ca89b2275cd6c6d9c962108265ee8e85bd60f5e50d7f",
+  "instance_facts_sha256": "c54bfd05ef76c6e29234742dccc39e5a2d38fb5479bed8efd6a989f13b4c13f9",
+  "limits": "No source-body, bound, task, parser or guard change. Exact inverse to accepted unbound C17 controls. No test/static/closure result; requests are unadmitted until genuine review and root once-only launch.",
+  "owner": "/root",
+  "source_actual_review_sha256": "5dd8b17acd5abcb23b9d6d56117607c6a552ae46eb707d92f7122d07fddb41f5",
+  "source_manifest_sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+  "source_review": "reviews/detekt03/ROOT-INDEPENDENT-REVIEW.json",
+  "source_review_sha256": "11b1e26838379250b5ab5a9fe3a416c834ef3d621db86f21d564cd1c8b291b60",
+  "status": "EXACT_LITERAL_BINDING_PENDING_INDEPENDENT_INSTANCE_REVIEW",
+  "unchanged_init_sha256": "fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7",
+  "updates": {
+    "inner": {
+      "after_sha256": "c73a4faf0731c1ff141d835f180d3742c56d7e56d1fb80a4b053aafe8a051fff",
+      "before_sha256": "19766a81e97f2d8f7fe214356f6c5e3742b813387fde955de4b729b9198bca45",
+      "literal_replacements": [
+        {
+          "after": "COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact C17/source binding; no inherited instance authority.",
+          "before": "COMMIT = None  # UNBOUND: root must bind the exact published C17 commit."
+        },
+        {
+          "after": "TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact C17/source binding; no inherited instance authority.",
+          "before": "TREE = None  # UNBOUND: root must bind the exact published C17 tree."
+        },
+        {
+          "after": "MEMBERS = 3042  # Exact C17/source binding; no inherited instance authority.",
+          "before": "MEMBERS = None  # UNBOUND: exact C17 source/index membership; no inherited admission."
+        },
+        {
+          "after": "EXCLUDE_STATE = 'INFO_ABSENT'  # Exact C17/source binding; no inherited instance authority.",
+          "before": "EXCLUDE_STATE = None  # UNBOUND: fresh03 store/index/config/exclude review and new packet required."
+        },
+        {
+          "after": "FROZEN = {SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f', INIT: 'fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7'}  # Exact C17 source/external init.",
+          "before": "FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: fresh03 source and init SHA256 bindings."
+        }
+      ],
+      "path": "scripts/audit/linux_detekt_03.py"
+    },
+    "outer": {
+      "after_sha256": "829000bc8403215b4313d197caeedc21c2f45ba1064b8c6e4378e53b5c5421b4",
+      "before_sha256": "e7a568f3c00a7239e7fd5f51fcbd77a55ec422e94dfd50c19d46a6c36a197359",
+      "literal_replacements": [
+        {
+          "after": "COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact C17/source binding; no inherited instance authority.",
+          "before": "COMMIT = None  # UNBOUND: root must bind the exact published C17 commit."
+        },
+        {
+          "after": "TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact C17/source binding; no inherited instance authority.",
+          "before": "TREE = None  # UNBOUND: root must bind the exact published C17 tree."
+        },
+        {
+          "after": "MEMBERS = 3042  # Exact C17/source binding; no inherited instance authority.",
+          "before": "MEMBERS = None  # UNBOUND: exact C17 source/index membership; no inherited admission."
+        },
+        {
+          "after": "EXCLUDE_STATE = 'INFO_ABSENT'  # Exact C17/source binding; no inherited instance authority.",
+          "before": "EXCLUDE_STATE = None  # UNBOUND: fresh03 store/index/config/exclude review and new packet required."
+        },
+        {
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Exact current instance filesystem model.",
+          "before": "DEVICE = None  # UNBOUND: fresh03 independently reviewed device/instance model."
+        },
+        {
+          "after": "EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original existing lock; never recreated.",
+          "before": "EXPECTED_LOCK = None  # UNBOUND: fresh03 original-lock identity; historical pins are not authority."
+        },
+        {
+          "after": "FROZEN = {INNER: 'c73a4faf0731c1ff141d835f180d3742c56d7e56d1fb80a4b053aafe8a051fff', INIT: 'fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7', SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f'}  # Exact C17/external-control bindings.",
+          "before": "FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: fresh03 helper/source SHA256 bindings."
+        }
+      ],
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt03-outer/LAUNCH.py"
+    }
+  }
+}

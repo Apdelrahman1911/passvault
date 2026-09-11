@@ -1,0 +1,505 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt
+@@ -7,6 +7,7 @@
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.size
+ import androidx.compose.foundation.text.BasicText
++import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.LaunchedEffect
+ import androidx.compose.runtime.mutableStateOf
+ import androidx.compose.runtime.withFrameNanos
+@@ -79,93 +80,129 @@
+         // Root allocates this fresh directory; never create/adopt a directory or overwrite evidence.
+         Files.newDirectoryStream(evidence).use { assertFalse(it.iterator().hasNext()) }
+ 
+-        val protection = DesktopWindowProtection()
+-        val window = AtomicReference<ComposeWindow?>()
+-        val safeContent = mutableStateOf(true)
+-        val safeFrame = AtomicInteger(0)
+-        val clicks = AtomicInteger(0)
+-        val callbackLocks = AtomicReference<List<Boolean>>(emptyList())
+-        val iconifiedEvents = AtomicInteger(0)
+-        val restoredEvents = AtomicInteger(0)
+-        val securityRequests = AtomicInteger(0)
+-        val button = AtomicReference<Rectangle?>()
+-        val trace = mutableListOf<String>()
+-        var failure: Throwable? = null
+-        try {
+-            onEdt {
+-                fun setLookAndFeel(name: String): String = try {
+-                    UIManager.setLookAndFeel(name)
+-                    "OK"
+-                } catch (error: Exception) {
+-                    error.javaClass.simpleName
++        RenderingScenario(requireNotNull(admittedDisplay), evidence).run()
++    }
++
++    /** One admitted invocation owns its window, callbacks, observations and terminal cleanup. */
++    private inner class RenderingScenario(private val admittedDisplay: String, private val evidence: Path) {
++        private val protection = DesktopWindowProtection()
++        private val window = AtomicReference<ComposeWindow?>()
++        private val safeContent = mutableStateOf(true)
++        private val safeFrame = AtomicInteger(0)
++        private val clicks = AtomicInteger(0)
++        private val callbackLocks = AtomicReference<List<Boolean>>(emptyList())
++        private val iconifiedEvents = AtomicInteger(0)
++        private val restoredEvents = AtomicInteger(0)
++        private val securityRequests = AtomicInteger(0)
++        private val button = AtomicReference<Rectangle?>()
++        private val trace = mutableListOf<String>()
++        private var failure: Throwable? = null
++
++        // Retain assertions and interruption until independent cleanup and evidence writes have run.
++        @Suppress("TooGenericExceptionCaught")
++        fun run() {
++            try {
++                showWindow()
++                val surface = measureWindow()
++                showBaseline(surface)
++                val preAck = deferRestore(surface)
++                val postAck = acknowledgeRestore(surface)
++                checkRemovalControl(surface)
++                assertLockedRestore(preAck, postAck)
++            } catch (error: Throwable) {
++                failure = error
++            } finally {
++                close()
++            }
++            failure?.let { throw it }
++        }
++
++        private fun showWindow() = onEdt {
++            configureLookAndFeel()
++            val current = ComposeWindow().also(window::set)
++            current.title = "PVU-005 synthetic rendering only"
++            current.setSize(640, 480)
++            current.setLocation(64, 64)
++            current.isResizable = false
++            current.addWindowStateListener { event ->
++                if (event.newState and Frame.ICONIFIED != 0) iconifiedEvents.incrementAndGet()
++                if (event.oldState and Frame.ICONIFIED != 0 && event.newState and Frame.ICONIFIED == 0) {
++                    restoredEvents.incrementAndGet()
+                 }
+-                val gtkResult = setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
+-                val laf = UIManager.getSystemLookAndFeelClassName()
+-                val lafResult = setLookAndFeel(laf)
+-                trace += "systemLookAndFeel=$laf selected=${UIManager.getLookAndFeel().javaClass.name}" +
+-                    " gtkSetup=$gtkResult systemSetup=$lafResult"
+-                val current = ComposeWindow().also(window::set)
+-                current.title = "PVU-005 synthetic rendering only"
+-                current.setSize(640, 480)
+-                current.setLocation(64, 64)
+-                current.isResizable = false
+-                current.addWindowStateListener { event ->
+-                    if (event.newState and Frame.ICONIFIED != 0) iconifiedEvents.incrementAndGet()
+-                    if (event.oldState and Frame.ICONIFIED != 0 && event.newState and Frame.ICONIFIED == 0) {
+-                        restoredEvents.incrementAndGet()
++            }
++            protection.attachWindow(current)
++            protection.setLockListener { securityRequests.incrementAndGet() }
++            current.setContent { renderContent() }
++            current.isVisible = true
++            current.toFront()
++            current.requestFocus()
++        }
++
++        private fun configureLookAndFeel() {
++            val gtkResult = setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
++            val laf = UIManager.getSystemLookAndFeelClassName()
++            val lafResult = setLookAndFeel(laf)
++            trace += "systemLookAndFeel=$laf selected=${UIManager.getLookAndFeel().javaClass.name}" +
++                " gtkSetup=$gtkResult systemSetup=$lafResult"
++        }
++
++        // Optional LAF attempts record any Exception; the selected LAF and real rendering remain observed.
++        @Suppress("TooGenericExceptionCaught")
++        private fun setLookAndFeel(name: String): String = try {
++            UIManager.setLookAndFeel(name)
++            "OK"
++        } catch (error: Exception) {
++            error.javaClass.simpleName
++        }
++
++        @Composable
++        private fun renderContent() {
++            val safe = safeContent.value
++            val focus = androidx.compose.runtime.remember { FocusRequester() }
++            LaunchedEffect(safe) {
++                if (safe) {
++                    // Same kind of real frame-clock signal as the caller, NOT screen readback
++                    // or the production Locked/route/cleanup/coordinator-epoch handshake.
++                    withFrameNanos { }
++                    focus.requestFocus()
++                    safeFrame.incrementAndGet()
++                }
++            }
++            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
++                Canvas(Modifier.fillMaxSize()) {
++                    val palette = if (safe) SAFE else UNLOCKED
++                    drawRect(color(palette[0]))
++                    drawRect(color(palette[1]), size = Size(size.width / 4, size.height / 4))
++                    drawRect(
++                        color(palette[2]),
++                        topLeft = Offset(size.width * 3 / 4, size.height * 3 / 4),
++                        size = Size(size.width / 4, size.height / 4),
++                    )
++                }
++                if (safe) {
++                    // Foundation is already exposed to app-desktop. Do not add Material3
++                    // or mistake this synthetic Button-role control for the real Unlock UI.
++                    Box(
++                        modifier = Modifier.size(240.dp, 80.dp).background(Color.White)
++                            .focusRequester(focus).onGloballyPositioned { coordinates ->
++                                val bounds = coordinates.boundsInRoot()
++                                button.set(Rectangle(
++                                    bounds.left.roundToInt(), bounds.top.roundToInt(),
++                                    bounds.width.roundToInt(), bounds.height.roundToInt(),
++                                ))
++                            }.clickable(role = Role.Button) {
++                                callbackLocks.updateAndGet { it + protection.isLocked }
++                                clicks.incrementAndGet()
++                            },
++                        contentAlignment = Alignment.Center,
++                    ) {
++                        BasicText("Synthetic Unlock")
+                     }
+                 }
+-                protection.attachWindow(current)
+-                protection.setLockListener { securityRequests.incrementAndGet() }
+-                current.setContent {
+-                    val safe = safeContent.value
+-                    val focus = androidx.compose.runtime.remember { FocusRequester() }
+-                    LaunchedEffect(safe) {
+-                        if (safe) {
+-                            // Same kind of real frame-clock signal as the caller, NOT screen readback
+-                            // or the production Locked/route/cleanup/coordinator-epoch handshake.
+-                            withFrameNanos { }
+-                            focus.requestFocus()
+-                            safeFrame.incrementAndGet()
+-                        }
+-                    }
+-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+-                        Canvas(Modifier.fillMaxSize()) {
+-                            val palette = if (safe) SAFE else UNLOCKED
+-                            drawRect(color(palette[0]))
+-                            drawRect(color(palette[1]), size = Size(size.width / 4, size.height / 4))
+-                            drawRect(
+-                                color(palette[2]),
+-                                topLeft = Offset(size.width * 3 / 4, size.height * 3 / 4),
+-                                size = Size(size.width / 4, size.height / 4),
+-                            )
+-                        }
+-                        if (safe) {
+-                            // Foundation is already exposed to app-desktop. Do not add Material3
+-                            // or mistake this synthetic Button-role control for the real Unlock UI.
+-                            Box(
+-                                modifier = Modifier.size(240.dp, 80.dp).background(Color.White)
+-                                    .focusRequester(focus).onGloballyPositioned { coordinates ->
+-                                        val bounds = coordinates.boundsInRoot()
+-                                        button.set(Rectangle(
+-                                            bounds.left.roundToInt(), bounds.top.roundToInt(),
+-                                            bounds.width.roundToInt(), bounds.height.roundToInt(),
+-                                        ))
+-                                    }.clickable(role = Role.Button) {
+-                                        callbackLocks.updateAndGet { it + protection.isLocked }
+-                                        clicks.incrementAndGet()
+-                                    },
+-                                contentAlignment = Alignment.Center,
+-                            ) {
+-                                BasicText("Synthetic Unlock")
+-                            }
+-                        }
+-                    }
+-                }
+-                current.isVisible = true
+-                current.toFront()
+-                current.requestFocus()
+-            }
++            }
++        }
++
++        private fun measureWindow(): RenderSurface {
+             val current = requireNotNull(window.get())
+             val robot = Robot().apply { autoDelay = 20 }
+             assertTrue(await { safeFrame.get() > 0 && onEdt { hasHeavyCanvas(current) } },
+@@ -184,44 +221,49 @@
+                     trace += "clientRectangle=$it"
+                 }
+             }
+-            fun picture(name: String): Pixels = capture(robot, bounds, evidence.resolve("$name.png")).also {
+-                trace += "$name safeHits=${it.safeHits}/27 unlockedHits=${it.unlockedHits}/27"
+-            }
+-            fun hits(palette: IntArray): Int = robot.createScreenCapture(bounds).let {
+-                try { matchingSamples(it, palette) } finally { it.flush() }
+-            }
+-            fun locked() = onEdt { protection.isLocked }
+-
+-            assertTrue(await { safeFrame.get() > 0 && hits(SAFE) == SAMPLE_COUNT }, "PVU005_SETUP_BASELINE_PIXELS")
+-            assertTrue(picture("01-safe-baseline").safe)
+-            val baselineInput = interact(robot, current, bounds, button, clicks, callbackLocks)
++            return RenderSurface(current, robot, bounds)
++        }
++
++        private fun showBaseline(surface: RenderSurface) {
++            assertTrue(
++                await { safeFrame.get() > 0 && hits(surface, SAFE) == SAMPLE_COUNT }, "PVU005_SETUP_BASELINE_PIXELS",
++            )
++            assertTrue(picture(surface, "01-safe-baseline").safe)
++            val baselineInput = input(surface)
+             trace += "baselineInput=$baselineInput"
+             assertTrue(baselineInput.worked, "PVU005_SETUP_BASELINE_INPUT")
+             assertEquals(listOf(false, false), baselineInput.callbackLocks)
+             onEdt { safeContent.value = false }
+-            assertTrue(await { hits(UNLOCKED) == SAMPLE_COUNT }, "PVU005_SETUP_UNLOCKED_MARKER")
+-            assertTrue(picture("02-unlocked-marker").unlocked)
+-
++            assertTrue(await { hits(surface, UNLOCKED) == SAMPLE_COUNT }, "PVU005_SETUP_UNLOCKED_MARKER")
++            assertTrue(picture(surface, "02-unlocked-marker").unlocked)
++        }
++
++        private fun deferRestore(surface: RenderSurface): Pixels {
+             onEdt { protection.lock() }
+-            assertTrue(await { iconifiedEvents.get() > 0 && hits(UNLOCKED) == 0 }, "PVU005_SETUP_ICONIFICATION")
++            assertTrue(
++                await { iconifiedEvents.get() > 0 && hits(surface, UNLOCKED) == 0 }, "PVU005_SETUP_ICONIFICATION",
++            )
+             assertTrue(locked())
+             val priorRestores = restoredEvents.get()
+             val priorIconifications = iconifiedEvents.get()
+             onEdt {
+                 protection.restoreWindow() // In-app request: intentionally withhold secured ACK.
+-                current.extendedState = Frame.NORMAL // Real native WM request; never dispatch a fake event.
++                surface.window.extendedState = Frame.NORMAL // Real native WM request; never dispatch a fake event.
+             }
+             val restoreDeferred = await {
+                 restoredEvents.get() > priorRestores && iconifiedEvents.get() > priorIconifications &&
+-                    onEdt { protection.isMinimized } && hits(UNLOCKED) == 0
+-            }
+-            val preAck = picture("03-pre-ack-restore")
++                    onEdt { protection.isMinimized } && hits(surface, UNLOCKED) == 0
++            }
++            val preAck = picture(surface, "03-pre-ack-restore")
+             trace += "nativeRestoreDeferred=$restoreDeferred iconifiedEvents=${iconifiedEvents.get()}" +
+                 " restoredEvents=${restoredEvents.get()} securityRequests=${securityRequests.get()}"
+             assertTrue(restoreDeferred, "PVU005_SETUP_NATIVE_RESTORE_NOT_SETTLED")
+             assertTrue(locked())
+             assertEquals(1, securityRequests.get())
+-
++            return preAck
++        }
++
++        private fun acknowledgeRestore(surface: RenderSurface): LockedRestoreObservation {
+             val priorSafeFrame = safeFrame.get()
+             onEdt { safeContent.value = true }
+             // Never restore early to force a hidden window to render. A timeout is an ACK-progress
+@@ -233,13 +275,15 @@
+                 restoredEvents.get() > restoresBeforeAck && !onEdt { protection.isMinimized }
+             }
+             val postAckGeometry = postAckRestored && onEdt {
+-                Rectangle(current.contentPane.locationOnScreen, current.contentPane.size) == bounds
+-            }
+-            val postAckVisible = postAckGeometry && await { hits(SAFE) == SAMPLE_COUNT }
+-            val postAck = picture("04-post-ack-locked")
++                Rectangle(
++                    surface.window.contentPane.locationOnScreen, surface.window.contentPane.size,
++                ) == surface.bounds
++            }
++            val postAckVisible = postAckGeometry && await { hits(surface, SAFE) == SAMPLE_COUNT }
++            val postAck = picture(surface, "04-post-ack-locked")
+             val postAckLocked = locked()
+             val postAckInput = if (postAckVisible && postAck.safe) {
+-                interact(robot, current, bounds, button, clicks, callbackLocks)
++                input(surface)
+             } else {
+                 null
+             }
+@@ -247,18 +291,26 @@
+             trace += "postAckRestored=$postAckRestored postAckGeometry=$postAckGeometry" +
+                 " postAckVisible=$postAckVisible postAckLocked=$postAckLocked" +
+                 " postAckInput=$postAckInput afterInputLocked=$afterInputLocked"
+-
++            return LockedRestoreObservation(
++                postAckRestored, postAckGeometry, postAckVisible, postAck,
++                postAckLocked && afterInputLocked, postAckInput,
++            )
++        }
++
++        private fun checkRemovalControl(surface: RenderSurface) {
+             // Capture the suspect verdict BEFORE this control; never let removal erase it.
+             // This explicit synthetic already-Unlocked transition is not an authentication result.
+             onEdt { protection.unlock() }
+             val removalVisible = await {
+                 !onEdt { protection.isMinimized } && onEdt {
+-                    Rectangle(current.contentPane.locationOnScreen, current.contentPane.size) == bounds
+-                } && hits(SAFE) == SAMPLE_COUNT
+-            }
+-            val removal = picture("05-unlocked-removal-control")
++                    Rectangle(
++                        surface.window.contentPane.locationOnScreen, surface.window.contentPane.size,
++                    ) == surface.bounds
++                } && hits(surface, SAFE) == SAMPLE_COUNT
++            }
++            val removal = picture(surface, "05-unlocked-removal-control")
+             val removalInput = if (removalVisible && removal.safe) {
+-                interact(robot, current, bounds, button, clicks, callbackLocks)
++                input(surface)
+             } else {
+                 null
+             }
+@@ -266,19 +318,40 @@
+             assertTrue(removalVisible && removal.safe && removalInput?.worked == true, "PVU005_CONTROL_REMOVAL_FAILED")
+             assertEquals(listOf(false, false), removalInput?.callbackLocks)
+             assertFalse(locked())
++        }
++
++        private fun assertLockedRestore(preAck: Pixels, postAck: LockedRestoreObservation) {
+             assertEquals(0, preAck.unlockedHits, "PVU005_PRE_ACK_SETTLED_MARKER_VISIBLE")
+-            assertTrue(postAckLocked && afterInputLocked, "PVU005_LOGICAL_LOCK_LOST")
+-            assertTrue(postAckRestored && postAckGeometry, "PVU005_SETUP_POST_ACK_NATIVE_RESTORE_OR_GEOMETRY")
+-            assertTrue(postAckVisible && postAck.safe, "PVU005_POST_ACK_UNLOCK_PIXELS_OBSTRUCTED")
+-            assertEquals(null, postAckInput?.blockedAt, "PVU005_SETUP_POST_ACK_INPUT_SCOPE_CHANGED")
+-            assertTrue(postAckInput?.worked == true, "PVU005_POST_ACK_UNLOCK_INPUT_OBSTRUCTED")
+-            assertEquals(listOf(true, true), postAckInput?.callbackLocks)
+-        } catch (error: Throwable) {
+-            failure = error
+-        } finally {
+-            fun retain(error: Throwable) {
+-                if (failure == null) failure = error else failure?.addSuppressed(error)
+-            }
++            assertTrue(postAck.stayedLocked, "PVU005_LOGICAL_LOCK_LOST")
++            assertTrue(postAck.restored && postAck.geometryMatches, "PVU005_SETUP_POST_ACK_NATIVE_RESTORE_OR_GEOMETRY")
++            assertTrue(postAck.visible && postAck.pixels.safe, "PVU005_POST_ACK_UNLOCK_PIXELS_OBSTRUCTED")
++            assertEquals(null, postAck.input?.blockedAt, "PVU005_SETUP_POST_ACK_INPUT_SCOPE_CHANGED")
++            assertTrue(postAck.input?.worked == true, "PVU005_POST_ACK_UNLOCK_INPUT_OBSTRUCTED")
++            assertEquals(listOf(true, true), postAck.input?.callbackLocks)
++        }
++
++        private fun picture(surface: RenderSurface, name: String): Pixels =
++            capture(surface.robot, surface.bounds, evidence.resolve("$name.png")).also {
++                trace += "$name safeHits=${it.safeHits}/27 unlockedHits=${it.unlockedHits}/27"
++            }
++
++        private fun hits(surface: RenderSurface, palette: IntArray): Int =
++            surface.robot.createScreenCapture(surface.bounds).let {
++                try { matchingSamples(it, palette) } finally { it.flush() }
++            }
++
++        private fun locked() = onEdt { protection.isLocked }
++
++        private fun input(surface: RenderSurface): InputObservation =
++            interact(surface.robot, surface.window, surface.bounds, button, clicks, callbackLocks)
++
++        private fun retain(error: Throwable) {
++            if (failure == null) failure = error else failure?.addSuppressed(error)
++        }
++
++        // Cleanup/disposal and trace writing are independent, including AssertionError and interruption.
++        @Suppress("TooGenericExceptionCaught")
++        private fun close() {
+             try {
+                 val cleanupErrors = onEdt {
+                     val errors = mutableListOf<Throwable>()
+@@ -300,8 +373,18 @@
+                 retain(error)
+             }
+         }
+-        failure?.let { throw it }
+-    }
++    }
++
++    private data class RenderSurface(val window: ComposeWindow, val robot: Robot, val bounds: Rectangle)
++
++    private data class LockedRestoreObservation(
++        val restored: Boolean,
++        val geometryMatches: Boolean,
++        val visible: Boolean,
++        val pixels: Pixels,
++        val stayedLocked: Boolean,
++        val input: InputObservation?,
++    )
+ 
+     private fun interact(
+         robot: Robot,
+@@ -316,36 +399,52 @@
+             pointer, key, callbackLocks.get().drop(callbackStart), blockedAt,
+         )
+         if (!await { onEdt { window.isActive } }) return result(0, 0, "before-pointer:NOT_ACTIVE")
+-        val target = control.get()?.let(::Rectangle) ?: return result(0, 0, "CONTROL_MISSING")
+-        fun scopeFailure(): String? = onEdt {
+-            when {
+-                !window.isDisplayable || !window.isShowing -> "NOT_DISPLAYABLE_OR_SHOWING"
+-                window.extendedState and Frame.ICONIFIED != 0 || !window.isActive -> "NOT_ACTIVE_OR_ICONIFIED"
+-                Rectangle(window.contentPane.locationOnScreen, window.contentPane.size) != client -> "CLIENT_CHANGED"
+-                control.get() != target -> "CONTROL_CHANGED"
+-                target.width <= 0 || target.height <= 0 ||
+-                    !Rectangle(0, 0, client.width, client.height).contains(target) -> "CONTROL_OUTSIDE_CLIENT"
+-                else -> null
+-            }
+-        }
+-        scopeFailure()?.let { return result(0, 0, "before-move:$it") }
+-        val pointX = client.x + target.x + target.width / 2
+-        val pointY = client.y + target.y + target.height / 2
+-        val beforePointer = clicks.get()
+-        robot.mouseMove(pointX, pointY)
+-        scopeFailure()?.let { return result(0, 0, "before-press:$it") }
+-        try { robot.mousePress(InputEvent.BUTTON1_DOWN_MASK) } finally {
+-            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
+-        }
+-        robot.waitForIdle()
+-        await { clicks.get() == beforePointer + 1 }
+-        val pointerDelta = clicks.get() - beforePointer
+-        scopeFailure()?.let { return result(pointerDelta, 0, "before-key:$it") }
+-        val beforeKey = clicks.get()
+-        try { robot.keyPress(KeyEvent.VK_SPACE) } finally { robot.keyRelease(KeyEvent.VK_SPACE) }
+-        robot.waitForIdle()
+-        await { clicks.get() == beforeKey + 1 }
+-        return result(pointerDelta, clicks.get() - beforeKey, scopeFailure()?.let { "after-key:$it" })
++        val target = control.get()?.let(::Rectangle)
++        fun scopeFailure(): String? = inputScopeFailure(window, client, control, requireNotNull(target))
++        var blockedAt = if (target == null) "CONTROL_MISSING" else scopeFailure()?.let { "before-move:$it" }
++        var beforePointer = 0
++        if (blockedAt == null) {
++            val admittedTarget = requireNotNull(target)
++            val pointX = client.x + admittedTarget.x + admittedTarget.width / 2
++            val pointY = client.y + admittedTarget.y + admittedTarget.height / 2
++            beforePointer = clicks.get()
++            robot.mouseMove(pointX, pointY)
++            blockedAt = scopeFailure()?.let { "before-press:$it" }
++        }
++        var pointerDelta = 0
++        if (blockedAt == null) {
++            try { robot.mousePress(InputEvent.BUTTON1_DOWN_MASK) } finally {
++                robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
++            }
++            robot.waitForIdle()
++            await { clicks.get() == beforePointer + 1 }
++            pointerDelta = clicks.get() - beforePointer
++            blockedAt = scopeFailure()?.let { "before-key:$it" }
++        }
++        var keyDelta = 0
++        if (blockedAt == null) {
++            val beforeKey = clicks.get()
++            try { robot.keyPress(KeyEvent.VK_SPACE) } finally { robot.keyRelease(KeyEvent.VK_SPACE) }
++            robot.waitForIdle()
++            await { clicks.get() == beforeKey + 1 }
++            keyDelta = clicks.get() - beforeKey
++            blockedAt = scopeFailure()?.let { "after-key:$it" }
++        }
++        return result(pointerDelta, keyDelta, blockedAt)
++    }
++
++    private fun inputScopeFailure(
++        window: ComposeWindow, client: Rectangle, control: AtomicReference<Rectangle?>, target: Rectangle,
++    ): String? = onEdt {
++        when {
++            !window.isDisplayable || !window.isShowing -> "NOT_DISPLAYABLE_OR_SHOWING"
++            window.extendedState and Frame.ICONIFIED != 0 || !window.isActive -> "NOT_ACTIVE_OR_ICONIFIED"
++            Rectangle(window.contentPane.locationOnScreen, window.contentPane.size) != client -> "CLIENT_CHANGED"
++            control.get() != target -> "CONTROL_CHANGED"
++            target.width <= 0 || target.height <= 0 ||
++                !Rectangle(0, 0, client.width, client.height).contains(target) -> "CONTROL_OUTSIDE_CLIENT"
++            else -> null
++        }
+     }
+ 
+     private fun capture(robot: Robot, bounds: Rectangle, destination: Path): Pixels {

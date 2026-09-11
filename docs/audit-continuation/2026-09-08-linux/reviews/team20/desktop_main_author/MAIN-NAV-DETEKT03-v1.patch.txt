@@ -1,0 +1,266 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -119,6 +119,8 @@
+         } // No next role after any assertion, child, cleanup, log or receipt failure.
+     }
+ 
++    // Preserve the primary assertion/native failure while the captured child and bound roots are settled.
++    @Suppress("TooGenericExceptionCaught")
+     private fun runRole(
+         role: String, runtime: MainNavDirectory, evidence: MainNavDirectory, home: MainNavDirectory,
+         classpath: String, display: String, authority: Path, databaseKey: String, case: MainNavCase,
+@@ -131,17 +133,7 @@
+         val log = Files.createFile(evidence.path.resolve("$role.log"), PRIVATE_FILE)
+         val traceKey = fileKey(trace)
+         val logKey = fileKey(log)
+-        val environment = mutableMapOf(
+-            "PATH" to "/usr/bin:/bin", "LANG" to "C.UTF-8", "LC_ALL" to "C.UTF-8", "TZ" to "UTC",
+-            "HOME" to home.path.toString(), "TMPDIR" to tmp.path.toString(),
+-            "TMP" to tmp.path.toString(), "TEMP" to tmp.path.toString(),
+-            "DISPLAY" to display, "XAUTHORITY" to authority.toString(),
+-        )
+-        // env.clear() must not discard the outer owner's private bus/bridge guards.
+-        environment.putAll(privateSessionEnvironment(authority))
+-        for (kind in listOf("CACHE", "CONFIG", "DATA", "STATE")) {
+-            environment["XDG_${kind}_HOME"] = phase.child("xdg-${kind.lowercase()}").path.toString()
+-        }
++        val environment = roleEnvironment(home, tmp, phase, display, authority)
+         val builder = ProcessBuilder(
+             Path.of(System.getProperty("java.home"), "bin", "java").toString(),
+             "-Xmx512m", "-XX:ActiveProcessorCount=1", "-XX:-UsePerfData", "-Dfile.encoding=UTF-8",
+@@ -194,6 +186,23 @@
+             failures.throwIfPresent()
+         }
+     }
++
++    private fun roleEnvironment(
++        home: MainNavDirectory, tmp: MainNavDirectory, phase: MainNavDirectory, display: String, authority: Path,
++    ): Map<String, String> {
++        val environment = mutableMapOf(
++            "PATH" to "/usr/bin:/bin", "LANG" to "C.UTF-8", "LC_ALL" to "C.UTF-8", "TZ" to "UTC",
++            "HOME" to home.path.toString(), "TMPDIR" to tmp.path.toString(),
++            "TMP" to tmp.path.toString(), "TEMP" to tmp.path.toString(),
++            "DISPLAY" to display, "XAUTHORITY" to authority.toString(),
++        )
++        // env.clear() must not discard the outer owner's private bus/bridge guards.
++        environment.putAll(privateSessionEnvironment(authority))
++        for (kind in listOf("CACHE", "CONFIG", "DATA", "STATE")) {
++            environment["XDG_${kind}_HOME"] = phase.child("xdg-${kind.lowercase()}").path.toString()
++        }
++        return environment
++    }
+ }
+ 
+ /** Separate observation case: absent opt-in is an ignored test, never admitted/passing PVU003 evidence. */
+@@ -222,6 +231,8 @@
+ 
+ /** Each role is a fresh JVM. Actual Main, not this fixture, owns the application role's terminal cleanup. */
+ internal object CredentialMainNavHostRoomProbe {
++    // An isolated child must report assertion/native failures to its private log before Main can System.exit.
++    @Suppress("TooGenericExceptionCaught", "PrintStackTrace")
+     @JvmStatic
+     fun main(args: Array<String>) {
+         try {
+@@ -268,6 +279,8 @@
+     }
+ }
+ 
++// Keep all assertion/native failures while every acquired Room/vault/host owner receives its one close attempt.
++@Suppress("TooGenericExceptionCaught")
+ private fun roomRole(role: String, home: MainNavDirectory, expectedKey: String, trace: MainNavTrace) {
+     var application: KoinApplication? = null
+     var bootstrap: VaultDatabaseBootstrap? = null
+@@ -316,6 +329,8 @@
+     private var mousePressed = false
+     private val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(150)
+ 
++    // Driver and queued EDT Quit failures must remain visible in the private child log before Main can exit.
++    @Suppress("TooGenericExceptionCaught", "PrintStackTrace")
+     fun run() {
+         await("MAIN_NAV_REAL_ACTIVE_WINDOW", 30) { onEdt {
+             val candidates = AwtWindow.getWindows().filterIsInstance<Frame>()
+@@ -367,6 +382,9 @@
+         val frameDeliveryBits: Int,
+     )
+ 
++    // One lexical owner captures partial export/input/listener acquisition and performs the single native cancel.
++    // Keep the assertions and sampling beside that finally; catch assertions as well as native/input failures.
++    @Suppress("LongMethod", "CyclomaticComplexMethod", "TooGenericExceptionCaught")
+     private fun pvu003ChooserHomeThenCancel(): Pvu003ChooserObservation {
+         val failures = MainNavFailures()
+         val delivery = AtomicInteger()
+@@ -403,7 +421,8 @@
+             assertFalse(home.selected, "PVU003_HOME_ALREADY_SELECTED")
+             onEdt { assertTrue(backup.state.value.isExporting, "PVU003_NOT_EXPORTING") }
+             val observer = AWTEventListener { event ->
+-                if (event is MouseEvent && event.button == MouseEvent.BUTTON1 &&
++                if (event !is MouseEvent) return@AWTEventListener
++                if (event.button == MouseEvent.BUTTON1 &&
+                     (event.id == MouseEvent.MOUSE_PRESSED || event.id == MouseEvent.MOUSE_RELEASED)
+                 ) {
+                     val source = event.component
+@@ -469,7 +488,9 @@
+                             val state = backup.state.value
+                             assertFalse(state.hasActiveOperation)
+                             assertEquals(null, state.successMessage, "PVU003_UNEXPECTED_EXPORT_SUCCESS")
+-                            val selected = assertNotNull(tab("Home")(snapshot().filter { it.window === frame })).selected
++                            val selected = assertNotNull(
++                                tab("Home")(snapshot().filter { it.window === frame }),
++                            ).selected
+                             homeAfter = homeAfter || selected
+                         }
+                     }
+@@ -527,13 +548,8 @@
+                 (node.name == "App language" || node.name?.startsWith("App language, ") == true)
+         }) }
+ 
+-        fun languageOption(label: String): (List<MainNavAx>) -> MainNavAx? = { nodes ->
+-            unique(nodes.filter { node ->
+-                node.role == AccessibleRole.RADIO_BUTTON &&
+-                    (node.name == label || node.name?.startsWith("$label, ") == true)
+-            })
+-        }
+-        pva027VisibleTarget(languageOption("English")) // Real route, target and scroll-ancestor geometry before VM lookup.
++        // Real route, target and scroll-ancestor geometry before VM lookup.
++        pva027VisibleTarget(pva027LanguageOption("English"))
+         // The real Appearance route already consumes this singleton. No early bootstrap/VM injection.
+         val settings = onEdt { GlobalContext.get().get<SettingsViewModel>() }
+         onEdt { assertEquals(SettingsViewModel.AppLanguage.SYSTEM, settings.state.value.language) }
+@@ -591,7 +607,8 @@
+             Triple("الإنجليزية", SettingsViewModel.AppLanguage.ENGLISH, english),
+         )
+         choices.forEachIndexed { stage, (label, choice, expected) ->
+-            pva027Click(languageOption(label)) // Native input only; never invoke onEvent/setup or publish an environment.
++            // Native input only; never invoke onEvent/setup or publish an environment.
++            pva027Click(pva027LanguageOption(label))
+             await("PVA027_SETTINGS_TO_INSTALLED_TRAY_$stage") {
+                 val choiceObserved = onEdt {
+                     settings.state.value.language == choice && settings.state.value.errorMessage == null
+@@ -603,6 +620,13 @@
+         }
+         // No tray/image/listener/window mutation to restore. Original Main terminal cleanup remains its owner.
+         // Matching state/labels does not establish preference-save, visual tooltip or native callback settlement.
++    }
++
++    private fun pva027LanguageOption(label: String): (List<MainNavAx>) -> MainNavAx? = { nodes ->
++        unique(nodes.filter { node ->
++            node.role == AccessibleRole.RADIO_BUTTON &&
++                (node.name == label || node.name?.startsWith("$label, ") == true)
++        })
+     }
+ 
+     private data class Pva027Target(
+@@ -619,31 +643,33 @@
+         assertNativeWindow(frame)
+         val target = selector(nodes) ?: return null
+         assertTrue(target.window === frame && target.enabled && target.actionCount > 0, "PVA027_TARGET_NOT_ACTIONABLE")
+-        val rectangle = target.screen ?: return null
+-        var ancestor = target.parent
+-        var childIndex = target.index
+-        var depth = 0
+-        val scrolls = mutableListOf<MainNavAx>()
+-        while (ancestor != null) {
+-            val index = requireNotNull(ancestor)
+-            assertTrue(++depth <= 48 && index in 0 until childIndex, "PVA027_ANCESTOR_BOUND")
+-            val node = nodes[index]
+-            assertTrue(node.window === frame, "PVA027_ANCESTOR_WINDOW_CHANGED")
+-            if (node.role == AccessibleRole.SCROLL_PANE) scrolls += node
+-            childIndex = index
+-            ancestor = node.parent
+-        }
+-        // Both production Settings surfaces use one non-lazy scaffoldVerticalScroll Column.
+-        // Missing/ambiguous toolkit scroll semantics fail; never guess any other scroll node.
+-        assertEquals(1, scrolls.size, "PVA027_EXACT_TARGET_SCROLL_ANCESTOR")
+-        val scroll = scrolls.single()
+-        val scrollArea = scroll.screen ?: return null
+-        assertTrue(scroll.enabled, "PVA027_SCROLL_ANCESTOR_DISABLED")
+-        val viewport = scrollArea.intersection(safeBounds(target, nodes)).apply { grow(-8, -8) }
+-        assertTrue(viewport.width in 100..1400 && viewport.height in 80..1000, "PVA027_VIEWPORT_GEOMETRY")
+-        assertTrue(rectangle.width in 1..viewport.width && rectangle.height in 1..viewport.height,
+-            "PVA027_TARGET_LARGER_THAN_SAFE_VIEWPORT")
+-        return Pva027Target(target, scroll, viewport)
++        return target.screen?.let { rectangle ->
++            var ancestor = target.parent
++            var childIndex = target.index
++            var depth = 0
++            val scrolls = mutableListOf<MainNavAx>()
++            while (ancestor != null) {
++                val index = requireNotNull(ancestor)
++                assertTrue(++depth <= 48 && index in 0 until childIndex, "PVA027_ANCESTOR_BOUND")
++                val node = nodes[index]
++                assertTrue(node.window === frame, "PVA027_ANCESTOR_WINDOW_CHANGED")
++                if (node.role == AccessibleRole.SCROLL_PANE) scrolls += node
++                childIndex = index
++                ancestor = node.parent
++            }
++            // Both production Settings surfaces use one non-lazy scaffoldVerticalScroll Column.
++            // Missing/ambiguous toolkit scroll semantics fail; never guess any other scroll node.
++            assertEquals(1, scrolls.size, "PVA027_EXACT_TARGET_SCROLL_ANCESTOR")
++            val scroll = scrolls.single()
++            scroll.screen?.let { scrollArea ->
++                assertTrue(scroll.enabled, "PVA027_SCROLL_ANCESTOR_DISABLED")
++                val viewport = scrollArea.intersection(safeBounds(target, nodes)).apply { grow(-8, -8) }
++                assertTrue(viewport.width in 100..1400 && viewport.height in 80..1000, "PVA027_VIEWPORT_GEOMETRY")
++                assertTrue(rectangle.width in 1..viewport.width && rectangle.height in 1..viewport.height,
++                    "PVA027_TARGET_LARGER_THAN_SAFE_VIEWPORT")
++                Pva027Target(target, scroll, viewport)
++            }
++        }
+     }
+ 
+     private fun pva027Find(selector: (List<MainNavAx>) -> MainNavAx?): Pva027Target {
+@@ -692,6 +718,8 @@
+         fail("PVA027_NATIVE_SCROLL_BOUND")
+     }
+ 
++    // A press can partly succeed before any Throwable; release once and retain the primary failure.
++    @Suppress("TooGenericExceptionCaught")
+     private fun pva027Click(selector: (List<MainNavAx>) -> MainNavAx?) {
+         val target = pva027VisibleTarget(selector)
+         val rectangle = assertNotNull(target.node.screen)
+@@ -783,6 +811,8 @@
+         }
+         if (readable) await("MAIN_NAV_NATIVE_TEXT") { find(selector).text == value }
+     }
++    // Retain assertion/native failures from the body while releasing the already captured key ownership.
++    @Suppress("TooGenericExceptionCaught")
+     private fun withKey(code: Int, block: () -> Unit) {
+         pressedKeys += code
+         val failures = MainNavFailures()
+@@ -790,6 +820,8 @@
+         finally { failures.release { robot.keyRelease(code); pressedKeys -= code } }
+         failures.throwIfPresent()
+     }
++    // A press can partly succeed before any Throwable; release once and retain the primary failure.
++    @Suppress("TooGenericExceptionCaught")
+     private fun click(selector: (List<MainNavAx>) -> MainNavAx?) {
+         val target = scrollTo(selector)
+         val rectangle = assertNotNull(target.screen)
+@@ -974,8 +1006,7 @@
+ })
+ 
+ private fun fieldEdit(nodes: List<MainNavAx>, fieldName: String): MainNavAx? {
+-    val title = unique(nodes.filter { it.name == fieldName }) ?: return null
+-    var ancestor = title.parent
++    var ancestor = unique(nodes.filter { it.name == fieldName })?.parent
+     while (ancestor != null) {
+         val candidate = ancestor
+         val members = nodes.filter { node ->
+@@ -1037,6 +1068,8 @@
+         if (primary == null) first = error else if (primary !== error) primary.addSuppressed(error)
+         if (Thread.interrupted()) interrupted = true
+     }
++    // Every cleanup attempt must run even after AssertionError/native failure; throwIfPresent restores/rethrows.
++    @Suppress("TooGenericExceptionCaught")
+     fun release(block: () -> Unit) {
+         if (Thread.interrupted()) interrupted = true
+         try { block() } catch (error: Throwable) { add(error) }
+@@ -1141,6 +1174,8 @@
+ }
+ private fun <T> io(timeoutMillis: Long = 60_000, block: suspend () -> T): T =
+     runBlocking { withTimeout(timeoutMillis) { block() } }
++// Any failed caller wait must cancel pending work and rethrow, including errors outside Exception.
++@Suppress("TooGenericExceptionCaught")
+ private fun <T> onEdt(block: () -> T): T {
+     if (SwingUtilities.isEventDispatchThread()) return block()
+     val task = FutureTask(Callable(block))

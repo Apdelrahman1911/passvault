@@ -1,0 +1,639 @@
+{
+  "schema": 1,
+  "reviewer": "/root/coverage_review",
+  "generated_utc": "2026-09-11T01:38:32.511392+00:00",
+  "status": "INTERMEDIATE_SOURCE_DATA_RECONCILIATION_NOT_FINAL_ACCEPTANCE",
+  "scope": "Retained data and explicit source identity arithmetic only; no project/helper execution/import, build/test, Git/T, runtime/process/SDK/CI/network probe or scheduling/cleanup authority. Independent GUI03 actual review remains a separate assigned task.",
+  "historical_preintegration_snapshot": {
+    "updated_utc": "2026-09-11T01:01:14.016203+00:00",
+    "pins": [
+      {
+        "path": "ISSUE_LEDGER.json",
+        "bytes": 226690,
+        "sha256": "43a4050a51561404e579cd1a68fec2d250d3103300951674835566df3246b3f7"
+      },
+      {
+        "path": "VERIFICATION_LEDGER.json",
+        "bytes": 199428,
+        "sha256": "eb3288a641d123630a81b271cd7c9201783620d4f75e0e2baaaf0132c2a03d45"
+      },
+      {
+        "path": "COVERAGE_DELTA.json",
+        "bytes": 244402,
+        "sha256": "2d3bea5b2b762309a90f33c0a6f70926ff6e4204c89e6722414372cabe9e590d"
+      },
+      {
+        "path": "EXECUTION_SLOT.json",
+        "bytes": 53158,
+        "sha256": "4fb79b05ab0cf7c954216fc44391ca131d338e0118813a8f1b944bed00404d0d"
+      }
+    ],
+    "semantics": "Earlier foreground reads before root GUI03 quiescence. The timestamp belongs to those ledger objects, not a fabricated exact reviewer-read time. Reader date2026-09-11; initial shared common objects64 all matched and31 byte tuples all matched. Full central snapshot not recopied."
+  },
+  "resumed_snapshot": {
+    "pins": [
+      {
+        "path": "ISSUE_LEDGER.json",
+        "bytes": 230299,
+        "sha256": "b8e61db4cc47432cfa4752d1feb12da7bc9314c5543c9a30a85b066e1e1b9ead",
+        "updated_utc": "2026-09-11T01:24:56.187343+00:00"
+      },
+      {
+        "path": "VERIFICATION_LEDGER.json",
+        "bytes": 203602,
+        "sha256": "f5c41db58b17d28379440c237705d9443274517d61aee234b069d6f4105cd120",
+        "updated_utc": "2026-09-11T01:24:56.187343+00:00"
+      },
+      {
+        "path": "COVERAGE_DELTA.json",
+        "bytes": 248011,
+        "sha256": "d1d0d682ec02e06900562e99ec1685958196575b005525829c09a49f38c92adb",
+        "updated_utc": "2026-09-11T01:24:56.187343+00:00"
+      },
+      {
+        "path": "EXECUTION_SLOT.json",
+        "bytes": 57048,
+        "sha256": "88dc252d64ed1eac279d963e936d8d2affafb238cb71a3f0c1a875336c90217a",
+        "updated_utc": "2026-09-11T01:33:02.358487+00:00"
+      }
+    ],
+    "same_bytes_at_end": [
+      {
+        "path": "ISSUE_LEDGER.json",
+        "same_bytes_at_end": true
+      },
+      {
+        "path": "VERIFICATION_LEDGER.json",
+        "same_bytes_at_end": true
+      },
+      {
+        "path": "COVERAGE_DELTA.json",
+        "same_bytes_at_end": true
+      },
+      {
+        "path": "EXECUTION_SLOT.json",
+        "same_bytes_at_end": true
+      }
+    ],
+    "qualifier": "Point checks, not continuous hostile-mutation or Git-source preservation proof."
+  },
+  "family_accounting": {
+    "base_ledger_pin": {
+      "path": "docs/audit-handoff/current/issue-to-fix.json",
+      "bytes": 908650,
+      "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+    },
+    "base_ledger_binding_matches": true,
+    "preserved_canonical_rows": 37,
+    "canonical_row_matches": 37,
+    "row_check_failures": [],
+    "closed_count": 26,
+    "closed_ids": [
+      "PVA-002",
+      "PVA-003",
+      "PVA-004",
+      "PVA-005",
+      "PVA-006",
+      "PVA-011",
+      "PVA-012",
+      "PVA-013",
+      "PVA-015",
+      "PVA-016",
+      "PVA-017",
+      "PVA-018",
+      "PVA-019",
+      "PVA-020",
+      "PVA-021",
+      "PVA-022",
+      "PVA-023",
+      "PVA-024",
+      "PVA-025",
+      "PVA-026",
+      "PVA-028",
+      "PVA-032",
+      "PVA-033",
+      "PVA-034",
+      "PVA-035",
+      "PVA-038"
+    ],
+    "open_count": 13,
+    "open_ids": [
+      "PVA-001",
+      "PVA-007",
+      "PVA-008",
+      "PVA-009",
+      "PVA-010",
+      "PVA-014",
+      "PVA-027",
+      "PVA-029",
+      "PVA-030",
+      "PVA-031",
+      "PVA-036",
+      "PVA-037",
+      "PVA-039"
+    ],
+    "original_closed_count": 19,
+    "denominators": {
+      "original_confirmed": {
+        "qualified_closures": 19,
+        "total": 25,
+        "remaining": 6,
+        "percent": 76
+      },
+      "all_confirmed": {
+        "qualified_closures": 26,
+        "total": 39,
+        "remaining": 13,
+        "percent": 66.7
+      },
+      "original_suspicions": {
+        "conclusive_outcomes": 2,
+        "total": 12,
+        "remaining": 10,
+        "percent": 16.7
+      },
+      "design_explanations": {
+        "documented": 8,
+        "total": 8,
+        "owner_decisions": "PENDING_SEPARATE_EXCEPT_REQUIRED_EXISTING_COMPATIBILITY"
+      }
+    },
+    "base_original_status_changes": [
+      "PVA-033",
+      "PVA-034",
+      "PVA-035"
+    ]
+  },
+  "cross_ledger_shared_objects": {
+    "common_top_level_objects": 67,
+    "mismatched_keys": []
+  },
+  "coverage": {
+    "bound_historical_coverage": {
+      "path": "docs/audit-handoff/current/coverage-CURRENT.json",
+      "sha256": "08fa607f8f910e368a6335f6e9557d6b0cd58eb32d4b9029089d2c6088b94f04",
+      "owned_text_files": 714,
+      "physical_LF_mixed_historical_exact_source_attribution": 129167,
+      "excluded": 97,
+      "inventory_total": 811,
+      "all_qualifiers_and_exact_references": "RETAINED_NORMATIVE_NOT_REWRITTEN",
+      "new_fresh_whole_file_claim": false
+    },
+    "historical_coverage_hash_matches": true,
+    "registry_entries": 31,
+    "unique_paths": 31,
+    "matching_point_source_tuples": 31,
+    "mismatch_paths": [],
+    "new_semantic_LF_credit": 0,
+    "qualifier": "31 point-checked byte/LF/hash identities, not31 whole-file reviews or a current whole-project LF denominator; full historical constraints remain."
+  },
+  "xml_recount": {
+    "runs": [
+      {
+        "run": "linux-isolated-batch03",
+        "xml_files": 17,
+        "testcases": 167,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "failed_names": []
+      },
+      {
+        "run": "macos-focused02",
+        "xml_files": 5,
+        "testcases": 5,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "failed_names": []
+      },
+      {
+        "run": "windows-cohort05",
+        "xml_files": 24,
+        "testcases": 24,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "failed_names": []
+      },
+      {
+        "run": "linux-desktop-gui02",
+        "xml_files": 2,
+        "testcases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "failed_names": []
+      },
+      {
+        "run": "linux-desktop-integration02",
+        "xml_files": 3,
+        "testcases": 3,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "failed_names": [
+          "actual Main guards dirty Back tab and Add without changing durable Room tuples[desktop]"
+        ]
+      }
+    ],
+    "totals": {
+      "xml_files": 51,
+      "testcases": 203,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "application_intended_events": 199,
+    "infrastructure_fixture_cases": 3,
+    "producer_cases": 1,
+    "expected_total_elements": 203,
+    "xml_pins": [
+      {
+        "path": "runs/linux-isolated-batch03/xml/loader-io-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+        "bytes": 810,
+        "sha256": "162451c19b824c05a8972c0153fe8e764804deaf2546524f7409c325bcf70d36"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.backup.BackupPaginationTest.xml",
+        "bytes": 2697,
+        "sha256": "aef4877a3b38826b70d909fb743d317453bff047e59f0eaedf8d74bc7ff31c0f"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.backup.VaultBackupStreamingTest.xml",
+        "bytes": 7764,
+        "sha256": "954c66f084a4a235c4381092ef80a74aa1ffb0b19135ed29a8e53930c5848fa9"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.xml",
+        "bytes": 1474,
+        "sha256": "d04959182e54265017611ecbd165fea49e1daa795f7010112c4188e0b23d7050"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml",
+        "bytes": 2727,
+        "sha256": "634bedc13ac6038c72d34887b791971e20550eef8413ccfc8b8d7fb775c333c8"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.repository.BiometricVerificationFailureIntegrationTest.xml",
+        "bytes": 2169,
+        "sha256": "280c1776a99889983bef88118527303ce41e4a3dc01696a29607156f3a62f713"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.repository.RepositoryBiometricSecurityIntegrationTest.xml",
+        "bytes": 2625,
+        "sha256": "0751c006d81af45c2b98c64a7f961c5de01c95a1eaa5b87bb1367a4eaaa3a467"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.repository.RepositorySecurityIntegrationTest.xml",
+        "bytes": 3665,
+        "sha256": "51017c789d705d58530e25d1217901b8d18356107e2378fa7461b79c15a2e751"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.core.database.repository.VaultUnlockPreemptionIntegrationTest.xml",
+        "bytes": 1764,
+        "sha256": "c3e9f197bb5af46b3138f1ad00a72c6dea35e1641bcfe4575fb7da5c42413ca1"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldCapacityTest.xml",
+        "bytes": 1752,
+        "sha256": "a4823377e8012d29de7fba266188f0ba10cdd14e996caa5eb6bd7e4951f8d2a1"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.xml",
+        "bytes": 2931,
+        "sha256": "16520c20e9f4465b635e6d22d9fb2b5841c1eb002c7ae16288163f19a6e1cb40"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.xml",
+        "bytes": 2717,
+        "sha256": "e0f7b8092853452cd13d2808106a2f2aa1e48b56671f762dd25cc5582fcf9b42"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.shared.navigation.CredentialBackFreshnessCompositionTest.xml",
+        "bytes": 1721,
+        "sha256": "cf82bbd13efa2a078fb6da9166b09fac828013428f1b8a82ffbbcdd5eb706887"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/ordinary-TEST-com.passvault.shared.navigation.NavigationBackCoordinatorTest.xml",
+        "bytes": 2361,
+        "sha256": "8c9b3710bf0bd6cf479e086c85ec26edf6015a2a94ef2ff730b1e6fed4030f48"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/prepare-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+        "bytes": 1061,
+        "sha256": "58423d3a86330bd3adf3031ccb2620d10ef38b85724fce72a33142bf8a5a6a0d"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/success-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+        "bytes": 740,
+        "sha256": "817ff1c3e022a79620a1346fa0282225fa3fca97397b9082729d053828e65665"
+      },
+      {
+        "path": "runs/linux-isolated-batch03/xml/wrong-key-TEST-com.passvault.core.database.repository.BiometricProviderInitializationFaultIntegrationTest.xml",
+        "bytes": 738,
+        "sha256": "c828b844256654b93d9ff77c8c6bb864c41ced7ac200fae25072f9d13e678f9a"
+      },
+      {
+        "path": "runs/macos-focused02/case-01.xml",
+        "bytes": 626,
+        "sha256": "0315f219e82f18148796ad7c865d7b6947bb8fe47098fff031a24aa910853242"
+      },
+      {
+        "path": "runs/macos-focused02/case-02.xml",
+        "bytes": 675,
+        "sha256": "ad8f172bfe838335abd5680d06e56f15c4f72458eea9b1b9e7f83466191d806e"
+      },
+      {
+        "path": "runs/macos-focused02/case-03.xml",
+        "bytes": 640,
+        "sha256": "cf7d0363c026709b11fc55e8ce3b81388bc08a49f45750f3e242fca0196decc4"
+      },
+      {
+        "path": "runs/macos-focused02/case-04.xml",
+        "bytes": 430,
+        "sha256": "6080179426328f5fa9939b66c2c0f1d0beaa314642757b119fd3e2ed933acba1"
+      },
+      {
+        "path": "runs/macos-focused02/case-05.xml",
+        "bytes": 530,
+        "sha256": "d800dc7d274aad5f7bcf8ee0ea9fd51f179bebafc9f4c9332be2276af46aa230"
+      },
+      {
+        "path": "runs/windows-cohort05/case-01.xml",
+        "bytes": 423,
+        "sha256": "a1d1be8f32aa704caacf7f69dd8de7c8da83bce4fa679913538b8a591aab1a4a"
+      },
+      {
+        "path": "runs/windows-cohort05/case-02.xml",
+        "bytes": 445,
+        "sha256": "e7425208270f67b5ec840ae4ce9a8173e4a37f30737b880eecd2468e02190cfe"
+      },
+      {
+        "path": "runs/windows-cohort05/case-03.xml",
+        "bytes": 433,
+        "sha256": "dbedf41dbe3930582520485e2e8dbbdf73b01aa07e67c8057871e7454a7390e8"
+      },
+      {
+        "path": "runs/windows-cohort05/case-04.xml",
+        "bytes": 427,
+        "sha256": "32ebc9dfd64ed657aca438cdfb3d28a10862c92d7569074074125ac70f11bfec"
+      },
+      {
+        "path": "runs/windows-cohort05/case-05.xml",
+        "bytes": 435,
+        "sha256": "19abbd3650ce6c913ab7c447f1d838d009a88334b8b09fd7d1d1dcd7af633d0b"
+      },
+      {
+        "path": "runs/windows-cohort05/case-06.xml",
+        "bytes": 443,
+        "sha256": "49f7d41fa9886867c6b41a78fd2151a60b9ab11916504b072e23df47b22a25df"
+      },
+      {
+        "path": "runs/windows-cohort05/case-07.xml",
+        "bytes": 433,
+        "sha256": "e5454368ccd5a29021e620670b1da0b80c86f08be133d8c65d9e7049e2a7ab5b"
+      },
+      {
+        "path": "runs/windows-cohort05/case-08.xml",
+        "bytes": 436,
+        "sha256": "3eec7f781f3512011df3df6c43a7b54883e9defca0dbff8f64a2242c2a856f28"
+      },
+      {
+        "path": "runs/windows-cohort05/case-09.xml",
+        "bytes": 437,
+        "sha256": "197e4c02bcfcb2b87c204dc8a0ae826774ab808b6834ef262f2d7979b45e7f29"
+      },
+      {
+        "path": "runs/windows-cohort05/case-10.xml",
+        "bytes": 437,
+        "sha256": "c8b7f101fee10d67c0714cec93f7b5678ca13744d19159865048cc7f7c673fd1"
+      },
+      {
+        "path": "runs/windows-cohort05/case-11.xml",
+        "bytes": 453,
+        "sha256": "e1667b86e25a469fef1308b66e81675a88cb6885cf93b409faa4a396a5ca30d9"
+      },
+      {
+        "path": "runs/windows-cohort05/case-12.xml",
+        "bytes": 445,
+        "sha256": "bc725060fb8ed68fefd096946008f7ac09ab390b0eb11d7d1f1c7a29ad91d119"
+      },
+      {
+        "path": "runs/windows-cohort05/case-13.xml",
+        "bytes": 389,
+        "sha256": "e716b6849879432462b7d71618886cde86fd7e23127553da0418c5f268244d34"
+      },
+      {
+        "path": "runs/windows-cohort05/case-14.xml",
+        "bytes": 415,
+        "sha256": "0b091d55f31aa0e0eae09f196fa06411be87ad3c54abc8c152ec5fca4a430664"
+      },
+      {
+        "path": "runs/windows-cohort05/case-15.xml",
+        "bytes": 501,
+        "sha256": "977448d34b52d97c2016582710d312647f473b1e38e13e401dece14e0986abc0"
+      },
+      {
+        "path": "runs/windows-cohort05/case-16.xml",
+        "bytes": 549,
+        "sha256": "c503dc947e6d7358e87f570c09dece8434369e1b0da8b63f5f2e390b8f5b69cb"
+      },
+      {
+        "path": "runs/windows-cohort05/case-17.xml",
+        "bytes": 531,
+        "sha256": "eb639221a40ae540baae0108ca34e90f59df94b2a1df592b9ba6497639dd3fbd"
+      },
+      {
+        "path": "runs/windows-cohort05/case-18.xml",
+        "bytes": 522,
+        "sha256": "0cce4df01bce5ba4b24d413906725de3a4295f0b2d7de1705ebcc2e89ecfc46c"
+      },
+      {
+        "path": "runs/windows-cohort05/case-19.xml",
+        "bytes": 519,
+        "sha256": "de5b9e40e802437fcc1ca5b6d86d7d0b3a106be7b53e203bf702a4d325d75663"
+      },
+      {
+        "path": "runs/windows-cohort05/case-20.xml",
+        "bytes": 531,
+        "sha256": "afb383245552b6ad6b567ff616dd47ff021f05ede9ab5d604a99e71e15030280"
+      },
+      {
+        "path": "runs/windows-cohort05/case-21.xml",
+        "bytes": 516,
+        "sha256": "7f826e631a2758a359ea9ce57c44ddbc191e2abc93b8534f2d15777add63ba37"
+      },
+      {
+        "path": "runs/windows-cohort05/case-22.xml",
+        "bytes": 522,
+        "sha256": "fe184ddcc37e677effd80a436b57632cdc9abab4dc9cdee4e77958e26c893a0f"
+      },
+      {
+        "path": "runs/windows-cohort05/case-23.xml",
+        "bytes": 536,
+        "sha256": "af2ae2a389bc1f487b1dca84ce53406e269229cee1456d8bdb1cd14d6d7acbc7"
+      },
+      {
+        "path": "runs/windows-cohort05/case-24.xml",
+        "bytes": 557,
+        "sha256": "0d3e26aca9b9c28af9b3fc5d0c95354bd2d6d334c2f62067adce16ca0baa9c08"
+      },
+      {
+        "path": "runs/linux-desktop-gui02/xml/app-desktop--TEST-com.passvault.desktop.security.DesktopCurtainRenderingTest.xml",
+        "bytes": 617,
+        "sha256": "e39f0721d5c086dc2a272a30ef5c99a0fd23eaf535669b4be4e7d0a9fed2cf24"
+      },
+      {
+        "path": "runs/linux-desktop-gui02/xml/shared--TEST-com.passvault.shared.credential.CredentialEditorRenderingTest.xml",
+        "bytes": 1224,
+        "sha256": "c70e65a32e8178d62200c3ffaa520054e8654a967c810e34d1f11e0ebfd9d27a"
+      },
+      {
+        "path": "runs/linux-desktop-integration02/xml/app-desktop--TEST-com.passvault.desktop.CredentialMainNavHostRoomIntegrationTest.xml",
+        "bytes": 5614,
+        "sha256": "c3e7b3f0aa2afa4468915381d20972a2e04098db617d8453de253fb4e5a1402d"
+      },
+      {
+        "path": "runs/linux-desktop-integration02/xml/app-desktop--TEST-com.passvault.desktop.DesktopApplicationLifecycleIntegrationTest.xml",
+        "bytes": 505,
+        "sha256": "ede424dbfe5452f891875ae5f74520cd5edda5cf337032afe15692108b706a59"
+      },
+      {
+        "path": "runs/linux-desktop-integration02/xml/app-desktop--TEST-com.passvault.desktop.tray.DesktopSystemTrayNativeIntegrationTest.xml",
+        "bytes": 529,
+        "sha256": "99878d9760cd80d9ce52a099aa9711f334f03a81c0d54a75f96c4f44f28db27d"
+      }
+    ],
+    "qualification": "This recount repeated the same inert-data arithmetic after resume to bind exact retained-file digests; no test rerun.199 heterogeneous app-intended events,3 infrastructure,1 producer; not199passes, unique behaviors or device/cleanup proof."
+  },
+  "detekt03": {
+    "static_report_pin": {
+      "path": "runs/linux-detekt03/STATIC-REPORTS.json",
+      "bytes": 82130,
+      "sha256": "a202cece16b23417c6f436e2ba100c8c00f74cabb1454debd5867720c6a2dfeb"
+    },
+    "saved_capture_count": 58,
+    "saved_hash_mismatches": [],
+    "checkstyle_reports": 19,
+    "diagnostics": 103,
+    "nonzero_by_task": {
+      ":app-desktop:detekt": 47,
+      ":shared:detekt": 37,
+      ":core:database:detekt": 11,
+      ":core:crypto:detekt": 4,
+      ":feature:credential:detekt": 4
+    },
+    "zero_diagnostic_reports": 14,
+    "review_pin": {
+      "path": "reviews/team20/detekt_actual/RECONCILIATION.json",
+      "bytes": 50344,
+      "sha256": "700f65a3406f896b9658724af8922441c342069f4b30378f2b344caab1fe4bb8"
+    },
+    "independent_disposition": "ACCEPT_RETAINED_ACTUAL_STATIC_FAIL_AND_ORIGINAL_CLEANUP",
+    "independent_static_qualified_clean_modules": 14,
+    "root_scheduling_release_pin": {
+      "path": "reviews/team20/root/DETEKT03-SCHEDULER-RELEASE.json",
+      "bytes": 802,
+      "sha256": "ead800ab37c5e2607015377fd5c26bf046fd344f8b64e377aec889918c2aec21"
+    },
+    "root_scheduling_release_status": "RELEASE_CONSUMED_DETEKT03_SCHEDULING_ONLY",
+    "application_cases": 0,
+    "junit_xml": 0,
+    "qualifier": "Independent qualified fourteen clean modules reuse exact review, not bare-header inference; overall staticFAIL and root21 unstarted script inputs remain."
+  },
+  "gui03_current_retained_metadata": {
+    "external_pin": {
+      "path": "reviews/desktop-integration03/c17-preflight/EXTERNAL-RESULT.json",
+      "bytes": 1953,
+      "sha256": "786f35f8dc9f572715fefe1c88e169f5e704c46b6b55472a714cf3d750d674dc"
+    },
+    "inner_pin": {
+      "path": "runs/linux-desktop-integration03/INNER-RESULT.json",
+      "bytes": 6850,
+      "sha256": "a98fa9200fa90575225e54612f19958e705a20f54df0b5acf5f439ad7fbc35c3"
+    },
+    "outer_pin": {
+      "path": "runs/linux-desktop-integration03/OUTER-RECEIPT.json",
+      "bytes": 9403,
+      "sha256": "0bfe3f8e9659ead00bb712cdfb217ede36d13f9d5d545b722d484530a4f94a00"
+    },
+    "external_status": "TERMINAL_EXIT_70_ACTUAL_REVIEW_PENDING",
+    "final_tool_chunk": "e68e02",
+    "terminal_exit": 70,
+    "prepare_exit": 143,
+    "original_stop_exit": 0,
+    "gui_attempted": false,
+    "render_attempted": false,
+    "preserved_xml_suites": 0,
+    "declared_cases": 4,
+    "application_cases": 0,
+    "unstarted_cases": 4,
+    "source_before": true,
+    "source_after": false,
+    "cleanup_safe": false,
+    "namespace_empty_before_exit": true,
+    "outer_status": "HOLD",
+    "cleanup": "NOT_ATTEMPTED",
+    "independent_actual_reconciliation": "PENDING_AS_REPORTED_BY_ROOT_AT_THIS_REVIEW",
+    "qualification": "Retained execution metadata and actual terminal70 only. Do not infer a product test failure, unowned-process attribution, global idleness, file cleanup or successor/stop/retry authority."
+  },
+  "run_index_semantics": "Historical/non-exhaustive run index; detailed execution blocks and continuation_case_accounting are authoritative for199 application-intended events,3 infrastructure+1 producer=203 XML elements. Index lacks Mac02 two and Integration02 three; no counter change.",
+  "missing_skill_tool": {
+    "path": "production-readiness-audit/scripts/validate_evidence_ledger.py",
+    "status": "NOT_SUPPLIED_NOT_RUN",
+    "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
+  },
+  "extra_report_input_pins": [
+    {
+      "path": "TEAM_20_RESUME.md",
+      "bytes": 6140,
+      "sha256": "38072e15457b8e674338466b82d47c5cc5f8cd4e7b95e69a267dfe2d6611b66b"
+    },
+    {
+      "path": "PAUSED_SESSION_2026-09-11.md",
+      "bytes": 11305,
+      "sha256": "cf55637ab4f5f83ccf64a1fec4d8de07a55039e8bff38f1f07e4b9d36d61c69a"
+    },
+    {
+      "path": "RESUMED_SESSION_2026-09-11.md",
+      "bytes": 2138,
+      "sha256": "b1c8af725536bb978293f0c28da68b719d1c2d6cdc4201f05139d40ae99bdab7"
+    },
+    {
+      "path": "README.md",
+      "bytes": 23642,
+      "sha256": "78ac13d96e7ccf789eb7983403b53d7e39b162062b572b5a64e35e31ceebae4b"
+    },
+    {
+      "path": "CHECKPOINT_17.md",
+      "bytes": 7914,
+      "sha256": "52d30bf7e0371f500893cba57b5775789672e38b22d31199fc9a37f59e5666eb"
+    },
+    {
+      "path": "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-ACCEPT.json",
+      "bytes": 1086,
+      "sha256": "e6235ab3445396d451dc165dff05fb3e1f0ad681c500cc4d7360441f3b4a8326"
+    },
+    {
+      "path": "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-RATIONALE.json",
+      "bytes": 7691,
+      "sha256": "3d0ac32528b6363df6d0e03a4849823bd4e3a1586c7c403d9526f27a07205b48"
+    },
+    {
+      "path": "reviews/android32/android-compile01/ACTUAL-REVIEW.json",
+      "bytes": 8341,
+      "sha256": "c6bf30fcdee251b7358bcd9059e897c1807af5175f8d02e59028acee06a27a7b"
+    },
+    {
+      "path": "reviews/verification/VALIDATION-ONLY-IOSX64-FEASIBILITY-INDEPENDENT-REVIEW.md",
+      "bytes": 6378,
+      "sha256": "bd71b15be805ec79b0ba05c69cdbd1a478e856c94cfd26cf9517e3e3b4319eb8"
+    }
+  ],
+  "administrative_reader_history": [
+    "Initial pre-quiescence reader stopped on TypeError because added family base_row_index was null; subsequent data-only comparison uses integer index guard. No project case or collector defect.",
+    "Some broad terminal displays truncated; only subsequently bounded/reconciled fields support this report."
+  ],
+  "final_report_acceptance": "PENDING_EXACT_ROOT_CHECKPOINT_AND_UPDATED_LEDGER_FREEZE"
+}

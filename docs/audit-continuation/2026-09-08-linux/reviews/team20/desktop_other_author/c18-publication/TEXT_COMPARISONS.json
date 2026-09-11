@@ -1,0 +1,87 @@
+{
+  "scope": "Candidate and C17 predecessor read as text only; no Python parsing/compilation/import/execution or runtime probes.",
+  "preserved_spans": [
+    {
+      "span": "cancellation_durable_resource_safety_reads",
+      "comparison": "BYTE_IDENTICAL",
+      "bytes": 2579,
+      "sha256": "5acdcf7b084e8670ef09868605c0f0a75e47ec18532afdbd41c83e5f227479df"
+    },
+    {
+      "span": "Git_argv_environment_defaults",
+      "comparison": "BYTE_IDENTICAL",
+      "bytes": 544,
+      "sha256": "159c7cb9186121d3a34a36fb17491627f330356132c2096796f19bb7483edf3f"
+    },
+    {
+      "span": "remote_index_root_inventory_functions",
+      "comparison": "BYTE_IDENTICAL",
+      "bytes": 1514,
+      "sha256": "a632a5e7fdd9b0cc59778c3e46574f21aac9e4cb82dc6dcd0c67c1eaeb431dfe"
+    },
+    {
+      "span": "original_slot_lock_T_base_remote_copy_controls",
+      "comparison": "EXACT_AFTER_REMOVING_ONLY_PRESERVED_CONFIG_BEFORE_GUARD_INSERTION",
+      "before_bytes": 3232,
+      "before_sha256": "349c5065c2ef21a144e4530b07db5165b2933976b9d45eadbb48d6422a5b7e6e",
+      "after_bytes": 3970,
+      "after_sha256": "04752bb87d59593f199ee730440f48724ec078f2b93225c7522ccbced653f759",
+      "inserted_guard_sha256": "7bba1ece55ae85657f49a37f387ecfbd1666405661bd8e45bd6308acb5648b6d"
+    },
+    {
+      "span": "Git_io_timeouts_output_resource_sampling_reaping",
+      "comparison": "EXACT_AFTER_ONLY_C18_WHITESPACE_LOG_NAME_NORMALIZATION",
+      "before_sha256": "aec707ebfc820df194bc5f73accab3fb1ed999d4ef166a1ce464c8c86abe560f",
+      "after_sha256": "ae46a496eeb700db864d9217c26a8f7a970d6c2ae14c03611780edec0b2d75ff"
+    },
+    {
+      "span": "error_finally_cleanup_and_exit",
+      "comparison": "EXACT_AFTER_ONLY_C18_SUCCESS_STATUS_NORMALIZATION",
+      "before_sha256": "f9e3be2157c3232ed7d04839f50327c213670b4619d3bd8ccdb5537a962afcb3",
+      "after_sha256": "58fed2b84386bf5b7a3c461f5ba77d08d0164b540d036e26eab54dc78c61d06e"
+    },
+    {
+      "span": "final_remote_inventory_resource_and_success",
+      "comparison": "EXACT_AFTER_REMOVING_ONLY_PRESERVED_CONFIG_AFTER_GUARD_AND_C18_STATUS_NORMALIZATION",
+      "before_sha256": "43a3a8829f01e6361352a319e8c4e490e22904eff4e2ff3ec7a9994d4de26c6e",
+      "after_sha256": "9386fa7dc59155a5ebe665b709aeb3c0f0cf24eca7ab5843fe288adbe17e58c0",
+      "inserted_guard_sha256": "15d6a4fd321a6338f96490560705c3cb23ab96a3697ff6dc80ea0433194cb0bf"
+    }
+  ],
+  "request_leaf_literals": [
+    "LINUX-ANDROID-COMPILE-01.json",
+    "LINUX-DESKTOP-INTEGRATION-02.json",
+    "LINUX-DESKTOP-INTEGRATION-03.json",
+    "LINUX-DESKTOP-TRAY-01.json",
+    "LINUX-DETEKT-03.json"
+  ],
+  "no_selection_unlink_or_index_removal_code_present": true,
+  "no_global_REQUEST_json_basename_rejection_present": true,
+  "candidate_sha256": "85f9840ecaf4fa5657f63ae11b3e9eb20560de9492d0173c4b5842e7b28a1345",
+  "C17_source_hash_reread_unchanged": true,
+  "v2_to_v3": {
+    "superseded_candidate_sha256": "88e7229c5a96dce5c6bba4b20c51eea59481127fbad4305dc432c79b24e77fcf",
+    "only_changes": "Two literal guard insertions, before first Git and after final Git/inventory/resource, both under original coordination lock. Removing exactly those insertions reproduces v2 bytes.",
+    "before_inserted_lines": 7,
+    "after_inserted_lines": 4,
+    "config_read_primitive": "Existing read_file, unchanged",
+    "fixed_expected_config": {
+      "sha256": "036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5",
+      "pin": {
+        "bytes": 435,
+        "ctime_ns": 1789001766988319322,
+        "dev": 24,
+        "ino": 14293053,
+        "mode": 33152,
+        "mtime_ns": 1789001766988319322,
+        "nlink": 1,
+        "uid": 0
+      }
+    },
+    "release_evidence_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_review/gui03-closeout/PUBLICATION-RELEASE-REVIEW.json",
+    "release_evidence_sha256": "8a4868834e2ace3a63cde9afffa71acd18418f3153f220c5dce22bf477bcff7c",
+    "raw_config_receipt_fields_added": false,
+    "error_finally_changed": false
+  },
+  "qualification": "Text provenance observations only, not execution, control-test counts, fresh T/config observations, final manifest acceptance or publication proof. Normal success requires both guard reads; abnormal/error path remains HOLD and may lack a completed after-read."
+}

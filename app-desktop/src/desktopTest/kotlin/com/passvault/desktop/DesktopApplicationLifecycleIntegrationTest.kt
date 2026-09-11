@@ -68,7 +68,8 @@ class DesktopApplicationLifecycleIntegrationTest {
             Files.newDirectoryStream(path).use { assertFalse(it.iterator().hasNext()) }
         }
 
-    @Suppress("TooGenericExceptionCaught") // Preserve primary assertions/interruption across cleanup failure.
+    // Preserve primary assertions/interruption; a cleanup-only failure must still fail this boundary.
+    @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
     private fun runChild(
         mode: String,
         runtime: Path,
@@ -81,15 +82,7 @@ class DesktopApplicationLifecycleIntegrationTest {
         val tmp = Files.createDirectory(home.resolve("tmp"))
         val trace = Files.createFile(evidence.resolve("$mode.events"))
         val log = Files.createFile(evidence.resolve("$mode.log"))
-        val environment = mutableMapOf(
-            "PATH" to "/usr/bin:/bin", "LANG" to "C.UTF-8", "LC_ALL" to "C.UTF-8", "TZ" to "UTC",
-            "HOME" to home.toString(), "TMPDIR" to tmp.toString(), "TMP" to tmp.toString(), "TEMP" to tmp.toString(),
-            "DISPLAY" to display, "XAUTHORITY" to authority,
-        )
-        for (kind in listOf("CACHE", "CONFIG", "DATA", "STATE")) {
-            environment["XDG_" + kind + "_HOME"] =
-                Files.createDirectory(home.resolve("xdg-" + kind.lowercase())).toString()
-        }
+        val environment = childEnvironment(home, tmp, display, authority)
         val builder = ProcessBuilder(
             Path.of(System.getProperty("java.home"), "bin", "java").toString(),
             "-Xmx256m", "-XX:ActiveProcessorCount=1", "-XX:-UsePerfData", "-Dfile.encoding=UTF-8",
@@ -142,6 +135,19 @@ class DesktopApplicationLifecycleIntegrationTest {
                 }
             }
         }
+    }
+
+    private fun childEnvironment(home: Path, tmp: Path, display: String, authority: String): Map<String, String> {
+        val environment = mutableMapOf(
+            "PATH" to "/usr/bin:/bin", "LANG" to "C.UTF-8", "LC_ALL" to "C.UTF-8", "TZ" to "UTC",
+            "HOME" to home.toString(), "TMPDIR" to tmp.toString(), "TMP" to tmp.toString(), "TEMP" to tmp.toString(),
+            "DISPLAY" to display, "XAUTHORITY" to authority,
+        )
+        for (kind in listOf("CACHE", "CONFIG", "DATA", "STATE")) {
+            environment["XDG_" + kind + "_HOME"] =
+                Files.createDirectory(home.resolve("xdg-" + kind.lowercase())).toString()
+        }
+        return environment
     }
 
     private companion object {

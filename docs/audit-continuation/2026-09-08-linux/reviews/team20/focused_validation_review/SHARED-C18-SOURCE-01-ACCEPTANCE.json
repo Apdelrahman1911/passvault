@@ -1,0 +1,70 @@
+{
+  "after_literal": "SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'",
+  "author": "/root/focused_validation_author",
+  "author_descriptor": {
+    "path": "reviews/team20/focused_validation_author/SHARED-C18-SOURCE-01.json",
+    "sha256": "86df2442c2d1cd7ebc62ea5a4a8d6f492aa49900fdeef801c39616bc520b4368"
+  },
+  "before_literal": "SOURCE = B / 'reviews/detekt04/source-prepare01/SOURCE.json'",
+  "disposition": "ACCEPT_EXACT_TWO_SOURCE_LITERALS_UNBOUND_ONLY",
+  "entire_patch_equals_exact_two_literal_diff": true,
+  "independent_reconstruction": [
+    {
+      "LF": 973,
+      "after_unbound_sha256": "d01236439dc9009c4d6a941f783d667d0d0e0267d48396643bdcde6de819fc27",
+      "before_sha256": "f9dfdfc6da1a90663fbdb51a1f329bc04a0866b5ca92a1a979cf2839f33bd909",
+      "bytes": 56118,
+      "path": "scripts/audit/linux_detekt_04.py",
+      "unique_literal_replacement": true,
+      "whole_source_inverse_equals_previously_accepted04": true
+    },
+    {
+      "LF": 1040,
+      "after_unbound_sha256": "6d5687536832061f8c2d2e57a467eba30404e4d2282b981a994013671417b2a5",
+      "before_sha256": "37fd7f10ad13f17c6b2b6a704f35ce435adc3402abd4566cf3f81ceae8e240f0",
+      "bytes": 60669,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py",
+      "unique_literal_replacement": true,
+      "whole_source_inverse_equals_previously_accepted04": true
+    }
+  ],
+  "limits": [
+    "This authorizes no source capture, runtime, request, INSTANCE-ACCEPT, build/test or scheduling. Genuine C18/source-reuse and exact-instance review remain pending.",
+    "Root source-path application permission is separate; application readback still required.",
+    "No T/proc/runtime/Git/SDK probe, helper execution/import/AST or static rerun. Only literal text/diff/hash comparisons and own report write.",
+    "GUI03 and all older HOLD/STOP/NO-RETRY/CLOSED/publication boundaries remain unchanged."
+  ],
+  "patch": {
+    "path": "reviews/team20/focused_validation_author/SHARED-C18-SOURCE-01.patch.txt",
+    "sha256": "9fd07f395bb5e176994c364a37c0e5ddd97df83df4769d839585b45aa8c8e3c5"
+  },
+  "preserved_reuse_gate": {
+    "baseline": {
+      "path": "reviews/team20/focused_validation_review/OMITTED03-BASELINE.json",
+      "sha256": "2b1b2348fa54c557bb25d6e91e522b724def610bc73f462348bc956be780875c"
+    },
+    "empty_group_tasks": 2,
+    "nonempty_qualified03_module_groups": 14,
+    "omitted_tasks": 16,
+    "planned_source_inputs": 171,
+    "requirements": [
+      "Fresh whole C18 manifest must establish identical full per-omitted-task source sets and every sorted[path,git_mode,git_blob] tuple; count171 or old report hashes alone are insufficient. Both empty group tasks must remain empty.",
+      "Shared analyzer/build/dependency/source-discovery configuration, coverage guard/baseline, wrapper and relevant tool/plugin identities must retain accepted03 equivalence. Complete relevant inputs require independent review, not only a short illustrative config list.",
+      "Retain actual03 independent result acceptance and exact report provenance; any changed omitted input/config invalidates omission and requires narrow independent rescoping, not silent exclusion or an all22 fallback."
+    ]
+  },
+  "preserved_scope": "Same UNBOUND commit/tree/member/exclude/hash/device/lock assignments; original lock;3500 members/144KiB OID input; all other graph, source/report, JDK17/wrapper/strict/worker/quiescence/resource/cleanup/stop/no-retry behavior unchanged by whole-file inverse. No body re-review or execution required for this literal change.",
+  "prior_integrated_source_review": {
+    "path": "reviews/team20/focused_validation_review/SUPPLEMENT-01-INTEGRATION-REVIEW.json",
+    "sha256": "2ca611f15a81155b2eba14ca127e90da90fe9f953404a8fcdb0f08d800af8989"
+  },
+  "reviewer": "/root/focused_validation_review",
+  "schema": 1,
+  "shared_manifest_status": "PATH_REQUIREMENT_ONLY_NOT_CREATED_READ_BOUND_OR_ADMITTED_BY_THIS_REVIEW",
+  "unchanged_init": {
+    "LF": 86,
+    "bytes": 3931,
+    "path": "scripts/audit/detekt_04.init.gradle",
+    "sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d"
+  }
+}

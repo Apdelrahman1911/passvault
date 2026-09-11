@@ -1,0 +1,84 @@
+{
+  "changes": [
+    {
+      "after_sha256": "c2feebee723587d21c6fe32540f2d039ac564441f62a31c5f891ef059ed4cf2b",
+      "before_sha256": "d79fb973dacd13b9c2c4ba2b11336ca44ac5d4e73104208c96c9a9a1b56adf8d",
+      "path": "scripts/audit/linux_desktop_integration_03.py",
+      "replacements": [
+        {
+          "after": "PANEL_ROUTE_ADMITTED = True",
+          "before": "PANEL_ROUTE_ADMITTED = None"
+        },
+        {
+          "after": "COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'",
+          "before": "COMMIT = None"
+        },
+        {
+          "after": "TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'",
+          "before": "TREE = None"
+        },
+        {
+          "after": "MEMBERS = 3042",
+          "before": "MEMBERS = None"
+        },
+        {
+          "after": "    SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f',",
+          "before": "    SOURCE: None,"
+        }
+      ],
+      "validation": "Exact reversible complete-line replacements; AST parse as data only, not import/test."
+    },
+    {
+      "after_sha256": "24560eb22ee51f3c743476213ed6a9b15acd748566156090cfd66d2b6be8273e",
+      "before_sha256": "9fb9d6a73f07fb928c1bfc7505d29d291f20a5ee5ef6b8524dbced4799ed538e",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py",
+      "replacements": [
+        {
+          "after": "GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')",
+          "before": "GITDIR = None"
+        },
+        {
+          "after": "COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'",
+          "before": "COMMIT = None"
+        },
+        {
+          "after": "TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'",
+          "before": "TREE = None"
+        },
+        {
+          "after": "MEMBERS = 3042",
+          "before": "MEMBERS = None"
+        },
+        {
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}",
+          "before": "DEVICE = None"
+        },
+        {
+          "after": "EXPECTED_LOCK = {'bytes': 0, 'ctime_ns': 1788910891124735946, 'dev': 24, 'ino': 14189001, 'mode': 33152, 'mtime_ns': 1788910891124735946, 'nlink': 1, 'uid': 0}",
+          "before": "EXPECTED_LOCK = None"
+        },
+        {
+          "after": "FROZEN = {INNER: 'c2feebee723587d21c6fe32540f2d039ac564441f62a31c5f891ef059ed4cf2b', INIT: '45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292', SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f'}",
+          "before": "FROZEN = {INNER: None, INIT: None, SOURCE: None}"
+        }
+      ],
+      "validation": "Exact reversible complete-line replacements; AST parse as data only, not import/test."
+    }
+  ],
+  "coordination": "True request flags are prospective root launch conditions; no instance approval/reservation/allocation/build by this binding. Final agent quiescence/resources/original-lock/current image and required directory identity checks remain.",
+  "owner": "/root",
+  "qualification": "C17 contains unbound helper images; bound controls are externally reviewed W controls, not C17 Git blobs. GUI03 uses raw source transport, NOT static/Android Git index-mirror contract. No body/case/task/guard/resource/cleanup change; no application/GUI/test evidence. Old consumed/HOLD/STOP/NO-RETRY/CLOSED scopes unchanged.",
+  "request_sha256": "122ad00a5377888d2752a1da7e02cdade1d18ca5c5f9900336f4e59bea5bebd7",
+  "route_review": "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-SOURCE-ROUTE-REVIEW.json",
+  "route_review_sha256": "16d61294b32dae39a9478ddaef3bab3e82e87d0a85c71ee4652b88f5442e78e9",
+  "source_body_review": "reviews/native-independent/gui03-four-case/GUI03-FOUR-CASE-INDEPENDENT.md",
+  "source_body_review_sha256": "8de154f99b73d67f45af80872b7704d44322f3e3cbc37ab49ce3253853f0c6ec",
+  "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+  "source_members": 3042,
+  "source_sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+  "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+  "status": "GUI03_BOUND_LITERAL_DELTA_ONLY_PENDING_INDEPENDENT_INSTANCE_REVIEW",
+  "tool_host_facts_sha256": "c048f7aad9b713c2ea5817dfb45cd677fa14349ff8106cecd6e2c7e4d5d64fb9",
+  "unchanged_init_sha256": "45ba75218a6bf7ebd7ede95c4d9b968a78250e914967e9d5dfc4b46a865d2292",
+  "utc": "2026-09-11T00:33:48.105380+00:00"
+}

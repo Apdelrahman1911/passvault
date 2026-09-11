@@ -1,0 +1,212 @@
+--- a/core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt
++++ b/core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt
+@@ -2,68 +2,6 @@
+ 
+ import com.passvault.core.database.repository.MAX_RECORD_IDENTIFIER_LENGTH
+ import com.passvault.core.database.repository.requireRecordIdentifier
+-
+-/**
+- * SQLite BINARY order for the database encoding reported by PRAGMA encoding.
+- * Inputs are validated identifiers, or the empty initial cursor. No normalization
+- * or case folding is allowed: each key must retain its cryptographic identity.
+- */
+-internal enum class BackupDatabaseTextOrder : Comparator<String> {
+-    UTF8,
+-    UTF16_LE,
+-    UTF16_BE;
+-
+-    override fun compare(a: String, b: String): Int = when (this) {
+-        UTF8 -> compareScalars(a, b)
+-        UTF16_LE -> compareCodeUnits(a, b, littleEndian = true)
+-        UTF16_BE -> compareCodeUnits(a, b, littleEndian = false)
+-    }
+-
+-    companion object {
+-        fun fromPragma(value: String): BackupDatabaseTextOrder = when (value) {
+-            "UTF-8" -> UTF8
+-            "UTF-16le" -> UTF16_LE
+-            "UTF-16be" -> UTF16_BE
+-            else -> throw IllegalArgumentException("Unsupported database encoding")
+-        }
+-    }
+-}
+-
+-// Unsigned UTF-8 byte order preserves Unicode scalar order for well-formed text.
+-// Decode pairs without allocating an encoded copy of each key on every page.
+-private fun compareScalars(left: String, right: String): Int {
+-    var leftIndex = 0
+-    var rightIndex = 0
+-    while (leftIndex < left.length && rightIndex < right.length) {
+-        val leftScalar = left.scalarAt(leftIndex)
+-        val rightScalar = right.scalarAt(rightIndex)
+-        if (leftScalar != rightScalar) return leftScalar.compareTo(rightScalar)
+-        leftIndex += if (leftScalar >= 0x10000) 2 else 1
+-        rightIndex += if (rightScalar >= 0x10000) 2 else 1
+-    }
+-    return (left.length - leftIndex).compareTo(right.length - rightIndex)
+-}
+-
+-private fun String.scalarAt(index: Int): Int {
+-    val first = this[index]
+-    return if (first.isHighSurrogate()) {
+-        0x10000 + ((first.code - 0xD800) shl 10) + (this[index + 1].code - 0xDC00)
+-    } else {
+-        first.code
+-    }
+-}
+-
+-private fun compareCodeUnits(left: String, right: String, littleEndian: Boolean): Int {
+-    for (index in 0 until minOf(left.length, right.length)) {
+-        val first = left[index].code
+-        val second = right[index].code
+-        // UTF-16LE compares each low byte before its high byte, both unsigned.
+-        val leftBytes = if (littleEndian) ((first and 0xFF) shl 8) or (first ushr 8) else first
+-        val rightBytes = if (littleEndian) ((second and 0xFF) shl 8) or (second ushr 8) else second
+-        if (leftBytes != rightBytes) return leftBytes.compareTo(rightBytes)
+-    }
+-    return left.length.compareTo(right.length)
+-}
+ 
+ private fun String.requirePaginationKey() {
+     // A valid 256-code-point key occupies at most 512 UTF-16 units. Bound the
+--- /dev/null
++++ b/core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt
+@@ -0,0 +1,63 @@
++package com.passvault.core.database.backup
++
++/**
++ * SQLite BINARY order for the database encoding reported by PRAGMA encoding.
++ * Inputs are validated identifiers, or the empty initial cursor. No normalization
++ * or case folding is allowed: each key must retain its cryptographic identity.
++ */
++internal enum class BackupDatabaseTextOrder : Comparator<String> {
++    UTF8,
++    UTF16_LE,
++    UTF16_BE;
++
++    override fun compare(a: String, b: String): Int = when (this) {
++        UTF8 -> compareScalars(a, b)
++        UTF16_LE -> compareCodeUnits(a, b, littleEndian = true)
++        UTF16_BE -> compareCodeUnits(a, b, littleEndian = false)
++    }
++
++    companion object {
++        fun fromPragma(value: String): BackupDatabaseTextOrder = when (value) {
++            "UTF-8" -> UTF8
++            "UTF-16le" -> UTF16_LE
++            "UTF-16be" -> UTF16_BE
++            else -> throw IllegalArgumentException("Unsupported database encoding")
++        }
++    }
++}
++
++// Unsigned UTF-8 byte order preserves Unicode scalar order for well-formed text.
++// Decode pairs without allocating an encoded copy of each key on every page.
++private fun compareScalars(left: String, right: String): Int {
++    var leftIndex = 0
++    var rightIndex = 0
++    while (leftIndex < left.length && rightIndex < right.length) {
++        val leftScalar = left.scalarAt(leftIndex)
++        val rightScalar = right.scalarAt(rightIndex)
++        if (leftScalar != rightScalar) return leftScalar.compareTo(rightScalar)
++        leftIndex += if (leftScalar >= 0x10000) 2 else 1
++        rightIndex += if (rightScalar >= 0x10000) 2 else 1
++    }
++    return (left.length - leftIndex).compareTo(right.length - rightIndex)
++}
++
++private fun String.scalarAt(index: Int): Int {
++    val first = this[index]
++    return if (first.isHighSurrogate()) {
++        0x10000 + ((first.code - 0xD800) shl 10) + (this[index + 1].code - 0xDC00)
++    } else {
++        first.code
++    }
++}
++
++private fun compareCodeUnits(left: String, right: String, littleEndian: Boolean): Int {
++    for (index in 0 until minOf(left.length, right.length)) {
++        val first = left[index].code
++        val second = right[index].code
++        // UTF-16LE compares each low byte before its high byte, both unsigned.
++        val leftBytes = if (littleEndian) ((first and 0xFF) shl 8) or (first ushr 8) else first
++        val rightBytes = if (littleEndian) ((second and 0xFF) shl 8) or (second ushr 8) else second
++        if (leftBytes != rightBytes) return leftBytes.compareTo(rightBytes)
++    }
++    return left.length.compareTo(right.length)
++}
+--- a/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt
++++ b/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt
+@@ -294,7 +294,9 @@
+         val crypto = DesktopCryptoEngine()
+         val vault = VaultRepositoryImpl(database.vaultMetadataDao(), crypto, VaultKeyHierarchy(crypto))
+         val blobs = LocalAttachmentBlobStore(root.resolve("vault-files").toString())
+-        val attachments = AttachmentRepositoryImpl(database.attachmentDao(), database.credentialDao(), blobs, crypto, vault)
++        val attachments = AttachmentRepositoryImpl(
++            database.attachmentDao(), database.credentialDao(), blobs, crypto, vault,
++        )
+         val credentials = CredentialRepositoryImpl(
+             database.credentialDao(), database.folderDao(), database.tagDao(), database.attachmentDao(),
+             database.passwordHistoryDao(), crypto, vault, attachmentLifecycleManager = attachments,
+@@ -328,7 +330,9 @@
+             insertHistory(ids[0], ids[0], 0)
+             insertHistory(ids[1], ids[0], 1)
+             insertHistory("a-history", ids[1], 2)
+-            if (includeAttachments) ids.withIndex().reversed().forEach { (index, id) -> insertAttachment(id, ids[0], index) }
++            if (includeAttachments) ids.withIndex().reversed().forEach { (index, id) ->
++                insertAttachment(id, ids[0], index)
++            }
+         }
+ 
+         suspend fun saveCredential(id: String, folder: FolderId? = null, tagIds: Set<TagId> = emptySet()) {
+@@ -359,13 +363,18 @@
+                     assertEquals(FolderId(id), credential.folderId)
+                     assertEquals(if (index == 0) ids.map(::TagId).toSet() else setOf(TagId(ids[0])), credential.tagIds)
+                     val expectedHistory = if (index == 0) setOf("older-0", "older-1") else setOf("older-2")
+-                    assertEquals(expectedHistory, credential.passwordHistory.map { it.password.toStringUnsafe() }.toSet())
++                    assertEquals(
++                        expectedHistory,
++                        credential.passwordHistory.map { it.password.toStringUnsafe() }.toSet(),
++                    )
+                     val expectedAttachments = if (includeAttachments && index == 0) ids.toSet() else emptySet()
+                     assertEquals(expectedAttachments, credential.attachments.map { it.id.value }.toSet())
+                     credential.attachments.forEach { attachment ->
+                         assertEquals("fixture-${ids.indexOf(attachment.id.value)}.bin", attachment.fileName)
+                         val output = MemorySink()
+-                        attachments.copyContentTo(CredentialId(id), AttachmentId(attachment.id.value), output).getOrThrow()
++                        attachments.copyContentTo(
++                            CredentialId(id), AttachmentId(attachment.id.value), output,
++                        ).getOrThrow()
+                         assertTrue(output.committed)
+                         val actual = output.bytes()
+                         try { assertContentEquals(CONTENT, actual) } finally { actual.fill(0) }
+@@ -386,7 +395,8 @@
+                         val encrypted = PaddedPayload.encrypt(crypto, plaintext, key, aad, 4_096 * 4).getOrThrow()
+                         try {
+                             database.passwordHistoryDao().insert(PasswordHistoryRecordEntity(
+-                                historyId, owner, CryptoEnvelope.encode(encrypted), encrypted.nonce.copyOf(), index.toLong(),
++                                historyId, owner, CryptoEnvelope.encode(encrypted), encrypted.nonce.copyOf(),
++                                index.toLong(),
+                             ))
+                         } finally { encrypted.clear() }
+                     } finally { crypto.secureWipe(key) }
+@@ -408,7 +418,8 @@
+                     val key = crypto.deriveSubkey(vek, "attachment:$context", 32).getOrThrow()
+                     try {
+                         val stored = AttachmentContainerCodec(blobs, crypto).encryptToObject(
+-                            path, input, key, AttachmentContentBinding(id, owner, context, ""), existingCredentialBytes = 0,
++                            path, input, key, AttachmentContentBinding(id, owner, context, ""),
++                            existingCredentialBytes = 0,
+                         )
+                         val encrypted = PaddedPayload.encrypt(
+                             crypto, filename, key, aad, AttachmentPolicy.MAX_FILE_NAME_CODE_POINTS * 4,
+@@ -416,7 +427,8 @@
+                         try {
+                             database.attachmentDao().insert(AttachmentRecordEntity(
+                                 id, owner, CryptoEnvelope.encode(encrypted), encrypted.nonce.copyOf(), stored.mimeType,
+-                                stored.sizeBytes, path, context, index.toLong(), AttachmentPolicy.CONTENT_FORMAT_VERSION,
++                                stored.sizeBytes, path, context, index.toLong(),
++                                AttachmentPolicy.CONTENT_FORMAT_VERSION,
+                                 AttachmentRecordEntity.STORAGE_STATE_READY,
+                             ))
+                         } finally { encrypted.clear() }

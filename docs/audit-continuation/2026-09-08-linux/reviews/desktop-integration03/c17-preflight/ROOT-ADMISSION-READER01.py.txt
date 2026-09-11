@@ -1,0 +1,95 @@
+import datetime,fcntl,hashlib,json,os,pathlib,re,select,stat,time
+W=pathlib.Path('/root/projects/PassVault/passvault-linux');B=W/'docs/audit-continuation/2026-09-08-linux';P=B/'reviews/desktop-integration03/c17-preflight'
+R=pathlib.Path('/root/projects/PassVault/audit-runtime-linux-desktop-integration03');E=B/'runs/linux-desktop-integration03'
+T=pathlib.Path('/root/projects/PassVault/passvault-publication-20260910-01/.git');L=pathlib.Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+def require(v,m):
+ if not v:raise ValueError(m)
+def pin(s):
+ return dict(dev=s.st_dev,ino=s.st_ino,uid=s.st_uid,mode=s.st_mode,nlink=s.st_nlink,bytes=s.st_size,mtime_ns=s.st_mtime_ns,ctime_ns=s.st_ctime_ns)
+def read(p,expected=None,cap=33554432):
+ p=pathlib.Path(p);link=None;ls=p.lstat();actual=p
+ if stat.S_ISLNK(ls.st_mode):
+  require(expected is not None and expected.get('link_target')==os.readlink(p) and expected.get('link_pin')==pin(ls),'unexpected symlink '+str(p))
+  require('/' not in expected['link_target'],'non-leaf link')
+  link={'link_pin':pin(ls),'link_target':expected['link_target']};actual=p.parent/expected['link_target']
+ fd=os.open(actual,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  before=pin(os.fstat(fd));require(stat.S_ISREG(before['mode']) and before['nlink']==1 and before['bytes']<=cap,'regular-file bound '+str(p))
+  with os.fdopen(os.dup(fd),'rb') as f:data=f.read(cap+1)
+  require(len(data)==before['bytes'] and pin(os.fstat(fd))==before and pin(actual.lstat())==before,'unstable file '+str(p))
+  image={'pin':before,'sha256':hashlib.sha256(data).hexdigest()}
+  if link:
+   require(pin(p.lstat())==link['link_pin'] and os.readlink(p)==link['link_target'],'unstable symlink')
+   image.update(link)
+  if expected is not None:require(image==expected,'image mismatch '+str(p))
+  return data,image
+ finally:os.close(fd)
+def pairs(rows):
+ d={}
+ for k,v in rows:
+  require(k not in d,'duplicate JSON key');d[k]=v
+ return d
+def decode(raw):return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda x:(_ for _ in ()).throw(ValueError('nonfinite '+x)))
+def encoded(d):return (json.dumps(d,indent=2,sort_keys=True,allow_nan=False)+'\n').encode()
+def new(p,d):
+ data=encoded(d);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+ with os.fdopen(fd,'wb') as f:f.write(data)
+ return hashlib.sha256(data).hexdigest()
+agents='detekt_actual android_compile_author android_compile_review android_fixture_author android_fixture_review credential_author credential_review pva031_investigator pva031_review database_author database_review shared_fixture_author shared_fixture_review desktop_main_author desktop_main_review desktop_other_author desktop_other_review focused_validation_author focused_validation_review coverage_review'.split()
+record={'format':'passvault-gui03-fresh-root-admission-v1','owner':'/root','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'BLOCKED_BEFORE_LAUNCH','all20_agents_quiescent':agents,'quiescence_basis':'Each agent reported no outstanding tools/sessions/background work; final list shows20 completed agents. No resumption until original cycle settlement.','findings':['PVA-007','PVA-027','PVA-031','PVA-039','PVU-003'],'purpose':'Four scoped Linux real-Room/actual Main navigation/chooser/Settings-tray GUI cases, not repeated passed lifecycle/tray endpoints or physical-device proof.','coordination':{'sole_build_owner':'/root','T_store_index_config_source_tools_frozen':True,'no_audit_ci_dispatch_since_all8_terminal_branch_list':True,'no_ci_dispatch_while_local_slot_used':True},'bounds':{'outer_seconds':6000,'work_seconds':5250,'prepare_seconds':1800,'render_seconds':2000,'original_stop_seconds':600,'runtime_bytes':6442450944,'inner_evidence_bytes':117440512,'inner_evidence_items':120},'cleanup_before_invocation':'Existing independently reviewed inner/outer signal/finally handling precedes every child. Preserve exact logs/XML/source evidence, original isolated wrapper --stop, owned GUI/session/namespace settlement, validated allowlisted freshR removal only. Uncertain/failed safety remains HOLD/no automatic retry; no old held-root access.','command':['/usr/bin/env','-i','PATH=/usr/bin:/bin','LANG=C.UTF-8','LC_ALL=C.UTF-8','TZ=UTC','/usr/bin/python3.12','-I','-B','-S',str(B/'reviews/desktop-integration03-outer/LAUNCH.py')],'cwd':str(W),'expected_evidence':'Four distinct one-method XML suites in2 serial Test tasks (shared first, then app3), bounded synthetic traces, exact commands/exits/source-before/after and cleanup. Zero credit from task counts/compilation alone.'}
+lock=None
+try:
+ req_raw,req_image=read(B/'requests/LINUX-DESKTOP-INTEGRATION-03.json');require(req_image['sha256']=='122ad00a5377888d2752a1da7e02cdade1d18ca5c5f9900336f4e59bea5bebd7','request digest')
+ app_raw,app_image=read(B/'reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-ACCEPT.json');require(app_image['sha256']=='e6235ab3445396d451dc165dff05fb3e1f0ad681c500cc4d7360441f3b4a8326','approval digest')
+ req,app=decode(req_raw),decode(app_raw);require(app['request_sha256']==req_image['sha256'],'approval request binding')
+ require(req['coordination']=={'sole_build_owner':'/root','agents_quiescent':True,'no_ci':True},'prospective coordination')
+ require(req['parent_namespaces']=={k:os.readlink('/proc/self/ns/'+k) for k in ('pid','mnt','net')},'parent namespace')
+ for p,expected in req['directories'].items():
+  s=pathlib.Path(p).lstat();require(stat.S_ISDIR(s.st_mode) and all(getattr(s,'st_'+k)==expected[k] for k in ('dev','ino','uid','mode')),'parent changed '+p)
+ lock=os.open(L,os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC);require(pin(os.fstat(lock))==req['lock']==pin(L.lstat()),'original lock mismatch');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ for p,expected in req['images'].items():read(p,expected)
+ require(len(req['images'])==24,'24 exact images')
+ store_raw,store_image=read(B/'reviews/checkpoint17/SOURCE-STORE-ADMISSION.json');require(store_image['sha256']=='d475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c','store fact digest');sf=decode(store_raw)
+ for n,k in (('config','config'),('HEAD','head'),('shallow','shallow'),('refs/heads/codex/audit-continuation-linux-20260908','branch_ref')):
+  v=sf[k];read(T/n,{'pin':v['pin'],'sha256':v['sha256']})
+ for n in sf['absence']:require(not os.path.lexists(T/n),'new store redirect '+n)
+ ic_raw,_=read(B/'reviews/checkpoint17/index-prepare01/INDEX-SOURCE-CAPTURE.json');ix=decode(ic_raw)['index'];read(T/'index',{'pin':ix['pin'],'sha256':ix['sha256']})
+ require(not os.path.lexists(T/'index.lock') and not os.path.lexists(R) and not os.path.lexists(E),'fresh names/index lock')
+ for n,h in {'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt':'291c47edcca2de797d1a669947a2ded246ec5b32c120feec8843a2d41ec9ef57','app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt':'cdb4002e4be7ca4c2c7c6dcb42a586ad5429618693c8c38c63bbcfc52302a2c4','app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt':'9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93','app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt':'fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac'}.items():require(read(W/n)[1]['sha256']==h,'selected source changed '+n)
+ buildlike=re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|cargo|rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+ positives=[];churn=0;deadline=time.monotonic()+5
+ with os.scandir('/proc') as entries:
+  for i,entry in enumerate(entries):
+   require(i<8192 and time.monotonic()<deadline,'host point bounds')
+   if not entry.name.isdecimal():continue
+   fd=None
+   try:
+    try:fd=os.pidfd_open(int(entry.name),0)
+    except ProcessLookupError:churn+=1;continue
+    try:comm=pathlib.Path('/proc',entry.name,'comm').read_text().strip()
+    except FileNotFoundError:
+     poll=select.poll();poll.register(fd,select.POLLIN);events=poll.poll(0);require(bool(events),'live unreadable comm');churn+=1;continue
+    if buildlike.fullmatch(comm):positives.append({'pid':int(entry.name),'comm':comm})
+   finally:
+    if fd is not None:os.close(fd)
+ record['host_screen']={'positive_rows':positives,'unclassified_prepositive_departures':churn,'qualification':'Bounded pidfd/comm point only; no global/continuous idleness, interpreter coverage, ownership or kill authority.'}
+ require(not positives,'unknown host buildlike workload')
+ mem=dict(x.split(':',1) for x in pathlib.Path('/proc/meminfo').read_text().splitlines());available,total=(int(mem[k].split()[0])*1024 for k in ('MemAvailable','MemTotal'))
+ disk=min(os.statvfs(p).f_bavail*os.statvfs(p).f_frsize for p in (R.parent,E.parent))
+ record['resources']={'disk_available_bytes':disk,'memory_available_bytes':available,'memory_total_bytes':total}
+ require(disk>=12*1024**3 and available>=total*.25,'launch resource floors')
+ sb,si=read(B/'EXECUTION_SLOT.json');slot=decode(sb);require(slot['state']=='IDLE_DETEKT03_RECONCILED_GUI03_FROZEN_PENDING_FRESH_ADMISSION','slot state')
+ record.update(status='ADMIT_ONE_EXACT_LINUX_DESKTOP_INTEGRATION03',source_commit=req['commit'],source_tree=req['tree'],source_images_freshly_reconciled=24,source_index_sha256=ix['sha256'],request_sha256=req_image['sha256'],approval_sha256=app_image['sha256'],slot_before_sha256=si['sha256'],actual_result='PENDING_FINAL_EXTERNAL_EXIT_AND_INDEPENDENT_RECONCILIATION',safety='All STOP/NO-RETRY/CLOSED/HOLD/PVD/hardware/publication fences unchanged. No original consumed helper replay.')
+ ah=new(P/'ROOT-EXECUTION-ADMISSION.json',record)
+ slot['state']='ACTIVE_LINUX_DESKTOP_INTEGRATION03_ADMITTED_NOT_YET_INVOKED';slot['updated_utc']=record['utc'];slot['all_other_agents']='ALL20_COMPLETED_QUIESCENT_NO_ACTIVE_TOOL_OR_BACKGROUND_WORK'
+ slot['linux_desktop_integration03'].update(status='ADMITTED_NOT_YET_INVOKED',consumed=False,reservation_active=True,root_admission=str((P/'ROOT-EXECUTION-ADMISSION.json').relative_to(B)),root_admission_sha256=ah)
+ require(read(B/'EXECUTION_SLOT.json')[1]['sha256']==si['sha256'],'slot changed')
+ with (B/'EXECUTION_SLOT.json').open('wb') as f:f.write(encoded(slot))
+ print(json.dumps({'status':record['status'],'admission_sha256':ah,'host_screen':record['host_screen'],'resources':record['resources'],'slot_sha256':hashlib.sha256(encoded(slot)).hexdigest()}))
+except BaseException as error:
+ record['error']={'type':type(error).__name__,'message':str(error)[:1000]}
+ new(P/'ROOT-PREADMISSION01-FAILURE.json',record)
+ raise
+finally:
+ if lock is not None:os.close(lock)
+

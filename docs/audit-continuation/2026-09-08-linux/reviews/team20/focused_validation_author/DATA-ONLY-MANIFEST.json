@@ -1,0 +1,73 @@
+{
+  "status": "PROSPECTIVE_UNAPPLIED_DATA_ONLY_DELTA_NOT_EXECUTABLE_ADMISSION",
+  "owner": "/root/focused_validation_author",
+  "patch_application_precondition": "Only after root releases exact freeze and an independent review: create NEW04 targets as byte-exact copies of the listed03 predecessors, leaving all03 files unchanged; this patch then applies to NEW04 copies. No such copy or application has occurred.",
+  "scope": {
+    "selected_detekt_tasks": [
+      ":detekt",
+      ":app-desktop:detekt",
+      ":shared:detekt",
+      ":core:crypto:detekt",
+      ":core:database:detekt",
+      ":feature:credential:detekt"
+    ],
+    "omitted_detekt_tasks": [
+      ":app-android:detekt",
+      ":core:designsystem:detekt",
+      ":core:detekt",
+      ":core:domain:detekt",
+      ":core:navigation:detekt",
+      ":core:otp:detekt",
+      ":core:security:detekt",
+      ":core:testing:detekt",
+      ":feature:backup:detekt",
+      ":feature:detekt",
+      ":feature:generator:detekt",
+      ":feature:health:detekt",
+      ":feature:onboarding:detekt",
+      ":feature:settings:detekt",
+      ":feature:unlock:detekt",
+      ":feature:vault:detekt"
+    ],
+    "coverage_prerequisite": ":verifyStaticAnalysisCoverage",
+    "expected_graph_nodes": 7,
+    "required_nonempty_report_triplets": 6,
+    "report_capture_slots": 19,
+    "application_test_cases": 0,
+    "coordination": "UNCHANGED_AGENTS_QUIESCENT_TRUE"
+  },
+  "patch_sha256": "975c0a41bc36993ead791956d0218dec2a842575dd32a3890109da44dcafd01d",
+  "files": [
+    {
+      "read_only_predecessor": "scripts/audit/linux_detekt_03.py",
+      "predecessor_sha256": "c73a4faf0731c1ff141d835f180d3742c56d7e56d1fb80a4b053aafe8a051fff",
+      "future_new_copy_target": "scripts/audit/linux_detekt_04.py",
+      "proposed_unbound_after_sha256": "de80cb03cae89b179acc76584a4149b72d7330a0194b811c59722a8688005bb9",
+      "bytes": 56114,
+      "LF": 973,
+      "delta_bytes": 12626,
+      "identity_status": "UNBOUND_SOURCE_AND_INSTANCE_NOT_ADMITTED"
+    },
+    {
+      "read_only_predecessor": "scripts/audit/detekt_03.init.gradle",
+      "predecessor_sha256": "fc9e7b7a19e28bc6424844ee6541749978a09b58e1b75683f0ce59beddfdc8c7",
+      "future_new_copy_target": "scripts/audit/detekt_04.init.gradle",
+      "proposed_unbound_after_sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+      "bytes": 3931,
+      "LF": 86,
+      "delta_bytes": 5054,
+      "identity_status": "UNBOUND_SOURCE_AND_INSTANCE_NOT_ADMITTED"
+    },
+    {
+      "read_only_predecessor": "docs/audit-continuation/2026-09-08-linux/reviews/detekt03-outer/LAUNCH.py",
+      "predecessor_sha256": "829000bc8403215b4313d197caeedc21c2f45ba1064b8c6e4378e53b5c5421b4",
+      "future_new_copy_target": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py",
+      "proposed_unbound_after_sha256": "1a995d817de6dede63ccceb58e289c1dd0790167fb234b2ca5d08cbb51db8e81",
+      "bytes": 60647,
+      "LF": 1040,
+      "delta_bytes": 12434,
+      "identity_status": "UNBOUND_SOURCE_AND_INSTANCE_NOT_ADMITTED"
+    }
+  ],
+  "qualification": "Literal text construction and SHA256/data accounting only. No source helper import/compile/AST/control/build/Git/CI/process/SDK/runtime action. These hashes establish proposed bytes, not syntax, correctness, run outcome or permission. Unchanged body safety reviews remain qualified. Existing3196-member guard is retained, not widened."
+}

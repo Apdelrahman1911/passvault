@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "reviewer": "/root/verification",
+  "executor": "/root",
+  "disposition": "ACCEPT_CONSUMED_C17_SOURCE_PREPARATION_RESULT_NO_VALIDATION_ADMISSION",
+  "bindings": {
+    "manifest": {
+      "path": "reviews/checkpoint17/source-prepare01/SOURCE.json",
+      "sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+      "bytes": 1661762
+    },
+    "capture": {
+      "path": "reviews/checkpoint17/source-prepare01/SOURCE-CAPTURE.json",
+      "sha256": "d8f1049ed7590ba3b7510caab3e52efe6679a46f9f567449276e6b0218b5f857",
+      "bytes": 5964
+    },
+    "external": {
+      "path": "reviews/checkpoint17/source-prepare01/EXTERNAL-RESULT.json",
+      "sha256": "35d90bb87879e3a69484b9b19663aef258b82e255c8fd8317123eac3121030c2",
+      "bytes": 583
+    }
+  },
+  "prior_independent_admission_sha256": "5a21998d2535f98360d9ade6f05c05f2f8dcfbef06527ece0c412a1aa7a3a2b8",
+  "root_admission_sha256_as_recorded": "108800fd852c08bb05c2ec8f6dbfc4491fea7e01a67408a501b0153826d03ebd",
+  "identity": {
+    "commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "store": "/root/projects/PassVault/passvault-publication-20260910-01/.git",
+    "recipe_sha256": "e1cb176dd9b2a4c4b24b9c34dee997909d308ad3884d3dd1069afa0fed41534a",
+    "facts_sha256": "d475fa019813b70f41bac4db83611b2e33b5b171239db7fdc116f1078c602a5c",
+    "publication_sha256": "b9c91abc629dda9b0432b01c940e189f704c0fb153312e30fee729b1a403e19b"
+  },
+  "actual_execution": {
+    "tool_chunk": "9ed961",
+    "external_exit": 0,
+    "git_commands": 2,
+    "both_commands_complete_exit0_direct_child_reaped": true,
+    "both_stderr_bytes": 0,
+    "scope": "Exactly the admitted read-only rev-parse P/P^{tree} and ls-tree -r -z -l --full-tree P operations; command arrays match. No source materialization, build, test, CI or runtime access.",
+    "helper_elapsed_seconds": 0.9675308740115725,
+    "tool_wall_seconds": 0.951668316,
+    "clock_qualification": "Independent recorded intervals, not calibrated/equal timing or a hard-deadline proof. This actual source-capture exit0 is not the missing publisher terminal."
+  },
+  "independent_retained_data_proof": {
+    "members": 3042,
+    "unique_paths": 3042,
+    "mode_counts": {
+      "100644": 2968,
+      "100755": 74
+    },
+    "raw_bytes": 103345745,
+    "observed_checkout_bytes": 103347692,
+    "largest_raw_member_bytes": 11439084,
+    "manifest_cap_bytes": 2097152,
+    "manifest_actual_bytes": 1661762,
+    "limits": "4096 member,128MiB raw and128MiB observed-checkout,32MiB member and2MiB listing/output bounds satisfied. All row keys/path uniqueness/ordering, sizes, regular root-owned single-link observed-pin metadata and totals reconcile.",
+    "stdout_reconstruction": "Exact82-byte P/tree response hashes to a7803e10c0d4a929aa5598b5422621c0f3b56a808729ea083006ceafc5ddeb47. Reconstructed3042 mode/blob/OID/padded-size/tab/path/NUL rows give443271B and3adc7848adb557bf60b0e1b7f1bddb8a2fd13ca2eeab9cec5463082606432ddc, matching retained Git stdout metadata. This is retained-row reconstruction, not a second live Git/stdout-file observation.",
+    "capture_relation": "Standalone SOURCE-CAPTURE canonical bytes match their parsed object and equal embedded manifest capture after excluding only final source_sha256/source_bytes. Final source hash/size match actual SOURCE bytes.",
+    "external_binding": "583-byte external note independently records tool9ed961/exit0 and exact source/capture hashes. It references root-admission108800fd…; that reference is not claimed to be a separate read/hash of an otherwise unnamed root-admission file.",
+    "published_control": "Manifest row for C17 SOURCE-PREPARE.py retains unbound0042497f… bytes; executed e1cb176d… is the separately admitted external binding, not misreported as the Git blob."
+  },
+  "EOL": {
+    "qualified_candidate_paths": 15,
+    "historical_qualifications": 2,
+    "checkout_minus_raw_bytes": 1947,
+    "qualification": "Exactly the admitted fifteen rows differ in raw/checkout identity; both historical scripts are included within those15, not17 independent normalization paths. Script/raw-copy and Git/checkout size/hash tuples reconcile with both preserved qualifications. No broadened normalization or hardware/runtime/raw-byte coverage inheritance.",
+    "provenance": "Checkout identities describe observed T buffers; raw identities describe that same buffer or exact OID/size/mode-qualified CRLF-to-LF candidate. Not cat-file transport, atomic-checkout proof or independent reviewer rehashing of all T files."
+  },
+  "resources": {
+    "point_samples": 27,
+    "minimum_available_disk_bytes": 19365203968,
+    "minimum_available_ram_bytes": 23712870400,
+    "total_ram_bytes": 67435888640,
+    "qualification": "All retained points meet the applicable floors; not continuous host/RSS or process-ownership proof."
+  },
+  "settlement_and_resume": [
+    "Accepted source successful path plus separately recorded actual terminal0 supports normal original Git/stream/descriptor/lock settlement and exclusive output fsync/readback. Not live reviewer process census, arbitrary-descendant/no-escape or hostile-root proof.",
+    "No build/cache/runtime/temp/generated binary or Gradle-stop obligation arose. Necessary compact outputs remain permanent. Attempt is CONSUMED/no replay or automatic retry.",
+    "Shared source result can be referenced by separately admitted C17 index/GUI03/Detekt03/Android consumers; none is admitted or reported successful here. No competing build or extra capture was launched by reviewer.",
+    "C17 publisher external-terminal gap, Detekt02 failure, closeout01 zero-removal reports-directory refusal and every older HOLD/STOP/NO-RETRY/CLOSED remain untouched. No held R re-probe, cache reinterpretation or cleanup proposal."
+  ],
+  "accounting": {
+    "application_cases": 0,
+    "static_analyzers_executed": 0,
+    "new_closures": 0,
+    "suspicion_resolutions": 0,
+    "denominator_change": false
+  },
+  "activity": "Bounded inert retained SOURCE/capture/external reads, JSON/hash/metadata arithmetic and this permanent review only. No helper rerun/import/AST/control, T/tool/proc/runtime/Git/network probe, deletion or central/frozen C17 edit. Foreground readers/descriptors settled; no temporary output or background worker.",
+  "boundaries": "Hardware/PVD/product boundaries, protected refs/tags, signing/Store/publication and occupied1017001 restrictions unchanged."
+}

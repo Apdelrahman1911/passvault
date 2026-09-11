@@ -1,0 +1,272 @@
+{
+  "format": "passvault-linux-focused-regression01-proposal-text-check-v1",
+  "author": "/root/android_fixture_author",
+  "date_utc": "2026-09-11",
+  "status": "SOURCE_ONLY_UNAPPLIED_NOT_INSTANCE_ADMISSION",
+  "method": "Standard-library source/text/CSV/JSON comparison only; unified additions reconstructed in memory, never written as helpers, imported, executed, compiled or AST-parsed.",
+  "patches": {
+    "01-inner.UNAPPLIED.patch.txt": {
+      "bytes": 40577,
+      "sha256": "c3fd72c2dd6260e9548dc1b3e480586b460225d26f2d0334dfb93296e4fb1a78",
+      "after_images": [
+        {
+          "path": "scripts/audit/linux_focused_regression_01.py",
+          "before": "ABSENT_NEW_FILE_PROPOSAL",
+          "bytes": 39790,
+          "lines": 704,
+          "sha256": "97c77cc76ecf18b86e16ae169ec83e81f9d5822e744ba2913e9ed621b05aa9c2"
+        }
+      ]
+    },
+    "02-init.UNAPPLIED.patch.txt": {
+      "bytes": 9598,
+      "sha256": "b5cb94b383d6b0b66024470270bba7cc5e097d4cc198cdf53957b0de999a69df",
+      "after_images": [
+        {
+          "path": "scripts/audit/focused_regression_01.init.gradle",
+          "before": "ABSENT_NEW_FILE_PROPOSAL",
+          "bytes": 9384,
+          "lines": 128,
+          "sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79"
+        }
+      ]
+    },
+    "03-outer.UNAPPLIED.patch.txt": {
+      "bytes": 51836,
+      "sha256": "4116706cd7982f2cf8a5eb45201c81cea9983592bb8fb0130e0edf602c30d5a9",
+      "after_images": [
+        {
+          "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+          "before": "ABSENT_NEW_FILE_PROPOSAL",
+          "bytes": 50857,
+          "lines": 861,
+          "sha256": "092cf2801485ba5452f9b4a1c3a924304e59ac97aaf1988d67b3867f2ba4d5b8"
+        }
+      ]
+    },
+    "04-selection-ledgers.UNAPPLIED.patch.txt": {
+      "bytes": 3149,
+      "sha256": "a0ca154a5c83c45d8065181afbf17afe0783e01394a49ff0c2a0004dd6eeaebb",
+      "after_images": [
+        {
+          "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+          "before": "ABSENT_NEW_FILE_PROPOSAL",
+          "bytes": 1237,
+          "lines": 4,
+          "sha256": "88d5b0b1bb06a7795ea6f90e52c642c532add8d41abfa0c0671abc640930f810"
+        },
+        {
+          "path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv",
+          "before": "ABSENT_NEW_FILE_PROPOSAL",
+          "bytes": 1650,
+          "lines": 21,
+          "sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5"
+        }
+      ]
+    }
+  },
+  "unchanged_source_mechanism_bases": {
+    "scripts/audit/linux_isolated_batch_03.py": {
+      "bytes": 37204,
+      "sha256": "4ceaef097a1db97b673e7233aac5ff77acf817d298c2aa8adc33ec86be075c79",
+      "unchanged_from_author_start": true
+    },
+    "scripts/audit/isolated_batch_tests_03.init.gradle": {
+      "bytes": 5430,
+      "sha256": "6e333500d4a9d56599bd22417d89005d26940240228b1f0710773f5f441d0f45",
+      "unchanged_from_author_start": true
+    },
+    "docs/audit-continuation/2026-09-08-linux/reviews/desktop-integration03-outer/LAUNCH.py": {
+      "bytes": 55258,
+      "sha256": "24560eb22ee51f3c743476213ed6a9b15acd748566156090cfd66d2b6be8273e",
+      "unchanged_from_author_start": true
+    }
+  },
+  "selection": {
+    "exact_methods": 20,
+    "selected_test_tasks": 2,
+    "expected_xml_suites": 3,
+    "selected_methods_by_fqcn": {
+      "com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest": [
+        "completed lock rejects a key returned by an earlier biometric attempt",
+        "admission precedes the biometric metadata lookup",
+        "admission precedes the platform enrollment lookup",
+        "a genuinely fresh attempt after completed lock still opens the vault",
+        "a stale completion cannot succeed against or relock a newer valid session",
+        "stale admission takes precedence over malformed candidate invalidation",
+        "a fresh invalid candidate still invalidates its enrollment",
+        "pending lock refuses admission without metadata or platform access",
+        "cancellation after key transfer propagates and wipes the received array",
+        "lock during the last access write still prevents biometric publication",
+        "an already open session still succeeds without an intervening lock",
+        "an admission from another repository cannot authorize this repository"
+      ],
+      "com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest": [
+        "row Save captured before further edits adopts the latest draft and preserves another row",
+        "a latest blank name rejects stale enabled row Save without losing its draft",
+        "unchanged and duplicate row Saves preserve the live value owner",
+        "late row Save cannot resurrect an unknown cancelled removed or locked draft",
+        "busy generation rejects row Save while the pending draft still exists",
+        "explicit update keeps supplied payload bounds and does not become draft Save"
+      ],
+      "com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest": [
+        "duplicate row Save preserves the live value and page Save persists it",
+        "unchanged row Save in a dirty editor never clears the live owner"
+      ]
+    },
+    "all_class_source_hashes": "UNBOUND",
+    "credential_authority": {
+      "path": "reviews/team20/credential_review/PROPOSAL-DATA-CHECK.json",
+      "sha256": "ff355586d3b6331e926b2b573c3416d26d665410d6fd175529c36a7e4c6cd156"
+    },
+    "database_authority": {
+      "path": "reviews/team20/database_review/FINAL-PROPOSAL-REVIEW.md",
+      "sha256": "6fe7803c781b03c2200f49d43da4823d068f345530ea07fadaa03c154605e1d9"
+    },
+    "init_literals_equal_ledgers_and_recommendations": true,
+    "no_wildcard_patterns": true,
+    "qualification": "12/6/2 are selected method counts, not total credential declarations. No current application source hash is bound; root is integrating accepted W-only patches."
+  },
+  "mechanism_comparisons": {
+    "outer_identical_top_level_functions": [
+      "authority",
+      "bind_domain",
+      "birth",
+      "capture",
+      "check_oid_input",
+      "decode",
+      "directory",
+      "drive",
+      "encoded",
+      "identity",
+      "latch",
+      "materialize",
+      "new",
+      "no_runtime_mounts",
+      "note",
+      "output",
+      "pairs",
+      "pin",
+      "remove_runtime",
+      "require",
+      "same_dir",
+      "screen",
+      "source_check",
+      "source_inventory",
+      "supervise",
+      "tick",
+      "under",
+      "watch"
+    ],
+    "outer_oid_requests_delta": "Only two 128KiB-to-144KiB OID-input bounds; byte-identical after undoing those two literal changes.",
+    "outer_screen_sha256": "b7e227cdb7accac627d70971d9295125cbefd689aaf9722f683e127ad115ccba",
+    "inner_identical_text_blocks": {
+      "files_and_namespace": {
+        "identical": true,
+        "sha256": "7a7fd273940b3798409fe60efe7fa1b4abc8301a7be2d9ced7600881277210ac"
+      },
+      "resources_and_settlement": {
+        "identical": true,
+        "sha256": "71ff66acad9b10a9882fc218f1e72c56d7831040fd3e0c440f17917f52f09f13"
+      },
+      "original_stop_finally": {
+        "identical": true,
+        "sha256": "5a0167dae8055610a3b76f12926b012a1c1d99a41f37c55952ab6d618bedea3c"
+      }
+    },
+    "inner_source_check_delta": "Only former fixed1572 count becomes MEMBERS, and C4 diagnostic becomes fresh; no source-check algorithm change.",
+    "qualification": "Text section comparisons, not Python/Groovy semantic parsing or execution."
+  },
+  "compiler_type_basis": {
+    "path": "runs/linux-android-compile01/reports/init-01.json",
+    "bytes": 4125,
+    "sha256": "7130a1eb3fbe8f8be2592d1241c7ac86551f3c102c8b4d542993418dc388ca96",
+    "retained_graph_rows": [
+      {
+        "path": ":core:crypto:compileAndroidMain",
+        "type": "org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"
+      },
+      {
+        "path": ":core:crypto:compileAndroidDeviceTest",
+        "type": "org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated"
+      }
+    ],
+    "prospective_type": "org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated",
+    "desktop_type_freshly_observed": false,
+    "qualification": "Retained Android JVM compiler rows plus shared Kotlin Multiplatform alias/version2.4.10 are a bounded expectation, not a Desktop runtime observation. Exact-type refusal remains; no discovery task, fallback or retry."
+  },
+  "wiring_source_observations": {
+    "app-desktop/build.gradle.kts": {
+      "bytes": 59984,
+      "sha256": "381ef53b5bc4ae775aa2322dbaea02588d499111d2a32e2ca3cdb2557363acde"
+    },
+    "core/crypto/build.gradle.kts": {
+      "bytes": 2805,
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112"
+    },
+    "core/database/build.gradle.kts": {
+      "bytes": 2079,
+      "sha256": "e83ca3a79cafd99f25d9d5a34c4db15f30ba1784a2e7613cfb44d9cbd7ffdbbc"
+    },
+    "feature/credential/build.gradle.kts": {
+      "bytes": 2696,
+      "sha256": "a471dd3cf229c869059781856a387d2a2b7960af31bf88aeef0e74f918b5a47d"
+    },
+    "build.gradle.kts": {
+      "bytes": 24486,
+      "sha256": "6c35802a0f779baa1b4d5a65396a07824653761882ddfbfaa718a46c59fa5ee0"
+    },
+    "gradle/libs.versions.toml": {
+      "bytes": 5973,
+      "sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a"
+    }
+  },
+  "budget": {
+    "original_outer_work_seconds": 5250,
+    "original_outer_total_seconds": 6000,
+    "required_before_build_seconds": 4700,
+    "build_seconds": 3600,
+    "build_abort_tail_seconds": 20,
+    "wrapper_source_check_seconds": 180,
+    "original_stop_envelope_seconds": 600,
+    "cumulative_settlement_seconds": 120,
+    "source_after_seconds": 180,
+    "non_stop_command_reserve_seconds": 1100,
+    "original_outer_cancellation_drain_seconds": 750,
+    "qualification": "Cooperative envelopes only. Metadata/resource/marker/evidence/syscall time is not guaranteed bounded. Original750s drain may truncate worst-case cancellation+wrapper-check+stop+settlement; such finalization uncertainty is HOLD, not safe cleanup."
+  },
+  "root_requested_capacity_delta": {
+    "reason": "Root reported new W source payload about3344files; old3196/128KiB cannot admit it. Explicit narrow new-helper correction only.",
+    "members_binding": "UNBOUND",
+    "members_max": 3500,
+    "canonical_oid_bytes_at_max": 143500,
+    "oid_input_bytes_max": 147456,
+    "raw_blob_stream_bytes_max": 134217728,
+    "generic_source_file_bytes_max": 33554432,
+    "changed_sites": [
+      "inner main MEMBERS guard",
+      "outer main MEMBERS guard",
+      "outer oid_requests canonical length guard",
+      "outer oid_requests capture cap"
+    ],
+    "unchanged": "Exact original OID stdin length/pin/digest and raw framing/order/count/two passes; raw128MiB/per-file32MiB limits."
+  },
+  "revision_notes": [
+    {
+      "superseded_inner_patch_sha256": "1dc54e10586c652a06ec1e0b5f9f8902fd2a25ec63d97c9e31e665ecee49426b",
+      "reason": "Self/reviewer challenge added omitted180s wrapper-only STOP source-check envelope,4700/1100 budget and explicit cooperative-work qualification; one blank function separator."
+    },
+    {
+      "superseded_init_patch_sha256": "0689f38a4d717a3966905bfa143f9156a35eabe978c9c8fdda99188420c5206a",
+      "reason": "Exact assemble lifecycle denial replaces assemble* prefix denial so ordinary resource assembly prerequisites are not spuriously excluded."
+    },
+    {
+      "superseded_inner_patch_sha256": "25b1f126f6a61c76f1c82d96d42be74a48ddfb6535346db6f9e82def36c86379",
+      "superseded_outer_patch_sha256": "f3b71411e590ca3385280c8ce3f5e2781e2db6b4cd6b7225b5b13a44e2cf14cc",
+      "reason": "Root expressly requested paired3500/144KiB source/OID cap correction. No prospective binding filled."
+    }
+  ],
+  "execution_or_admission_performed": false,
+  "source_application_performed": false,
+  "old_hold_disposition_changed": false
+}

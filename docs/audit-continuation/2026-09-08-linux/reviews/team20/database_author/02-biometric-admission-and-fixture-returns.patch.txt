@@ -1,0 +1,57 @@
+--- a/core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt
++++ b/core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt
+@@ -297,17 +297,12 @@
+     ): Result<SessionId> =
+         withExclusiveSessionTransition {
+             currentCoroutineContext().ensureActive()
+-            if (attempt.repositoryIdentity !== this) {
++            if (!isCurrentBiometricAttempt(attempt)) {
++                // A foreign or stale caller owns no session here. Do not relock
++                // or wipe a newer valid session or classify its key as invalidated.
+                 return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
+             }
+             val unlockGeneration = attempt.lockGeneration
+-            try {
+-                lockIntents.verify(unlockGeneration)
+-            } catch (_: UnlockPreemptedException) {
+-                // A stale caller owns no session. Do not relock or wipe a newer
+-                // valid session, and do not classify its key as invalidated.
+-                return@withExclusiveSessionTransition Result.failure(VaultSessionLockedException())
+-            }
+             if (vaultKey.size != VEK_BYTES) {
+                 return@withExclusiveSessionTransition Result.failure(BiometricVaultKeyRejectedException())
+             }
+@@ -358,6 +353,16 @@
+             }
+         }
+ 
++    private suspend fun isCurrentBiometricAttempt(attempt: BiometricUnlockAttempt): Boolean {
++        if (attempt.repositoryIdentity !== this) return false
++        return try {
++            lockIntents.verify(attempt.lockGeneration)
++            true
++        } catch (_: UnlockPreemptedException) {
++            false
++        }
++    }
++
+     override suspend fun lock(reason: LockReason): Result<Unit> {
+         cancelBiometricPromptBeforeLock()
+         // Once the transition starts, caller cancellation must not leave the
+--- a/core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt
++++ b/core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt
+@@ -427,9 +427,11 @@
+ 
+         override suspend fun retrieve(vaultId: String): Result<ByteArray> {
+             retrieveCalls++
+-            if (vaultId != enrolledVaultId) return Result.failure(BiometricKeyStoreException.NotEnabled())
+-            val candidate = nextCandidate ?: storedKey?.copyOf()
+-                ?: return Result.failure(BiometricKeyStoreException.NotEnabled())
++            val candidate = if (vaultId == enrolledVaultId) {
++                nextCandidate ?: storedKey?.copyOf()
++            } else {
++                null
++            } ?: return Result.failure(BiometricKeyStoreException.NotEnabled())
+             nextCandidate = null
+             val gate = nextRetrieval
+             nextRetrieval = null

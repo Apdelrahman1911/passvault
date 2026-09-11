@@ -1,0 +1,108 @@
+{
+  "compile_binding": {
+    "offline": false,
+    "readRoots": [
+      "/root/projects/PassVault/audit-runtime-linux-android-compile01/checkout",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile01/gradle-home",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile01/tmp",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile01/konan",
+      "/usr/lib/jvm/java-17-openjdk-amd64",
+      "/root/projects/PassVault/audit-runtime-linux-android-compile01/sdk-readonly"
+    ]
+  },
+  "index_capture_sha256": "fb68b2560066c5d765a7135e5e88c42c3802284a666d2617323894677f0b2db2",
+  "instance_facts_sha256": "3a0dee84bf54e26320066b1bd0037979c6499ee9a0585d9bac82ce80ea161d4e",
+  "owner": "/root",
+  "qualification": "External helpers absent from C17; application/source manifest remains exact C17. No body/cap/task/enforcement changes. Preserved unbound images invert every changed line. Test/native/KDF/XML/runtime/packaging/closure credit remains0.",
+  "source_acceptance": "reviews/android32/android-compile01/HELPER-SOURCE-INDEPENDENT.md",
+  "source_acceptance_sha256": "443c29525151a3841b144357ecae0ef8933b3222c723e0fab87a81548ad776cf",
+  "source_actual_review_sha256": "5dd8b17acd5abcb23b9d6d56117607c6a552ae46eb707d92f7122d07fddb41f5",
+  "source_manifest_sha256": "e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f",
+  "status": "BOUND_LITERAL_DELTA_ONLY_PENDING_INDEPENDENT_INSTANCE_REVIEW",
+  "updates": {
+    "init": {
+      "after_sha256": "c6e7c4f36ce9909414be548e867cb11bf9186f0dc09c5246b44c82cd62a00ffe",
+      "ast_parse_only": false,
+      "before_sha256": "aafa194609929b85ab975de27cdaf5e29766e81f3c02f5d2e21b119d76bc6bee",
+      "path": "scripts/audit/android_compile_01.init.gradle",
+      "replacements": [
+        {
+          "after": "final Map ADMITTED = [readRoots: ['/root/projects/PassVault/audit-runtime-linux-android-compile01/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile01/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile01/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile01/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile01/sdk-readonly'], offline: false]",
+          "before": "final Map ADMITTED = null"
+        }
+      ]
+    },
+    "inner": {
+      "after_sha256": "e4f31a57a16d91dc956969621f238c37b8acfee258dee9a6c7d2f333b50218b6",
+      "ast_parse_only": true,
+      "before_sha256": "0410f49fff9a1706cd20a48eb598e6677d9304b7424fc718ec7e870b375155c6",
+      "path": "scripts/audit/linux_android_compile_01.py",
+      "replacements": [
+        {
+          "after": "COMPILE_BINDING = {'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-compile01/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile01/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile01/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile01/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile01/sdk-readonly'], 'offline': False}  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "COMPILE_BINDING = None  # UNBOUND: exact reviewed init readRoots list and compile-only offline Boolean."
+        },
+        {
+          "after": "COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "COMMIT = None  # UNBOUND: root must bind the exact published C17 commit."
+        },
+        {
+          "after": "TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "TREE = None  # UNBOUND: root must bind the exact published C17 tree."
+        },
+        {
+          "after": "MEMBERS = 3042  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "MEMBERS = None  # UNBOUND: exact C17 source/index membership; no inherited admission."
+        },
+        {
+          "after": "EXCLUDE_STATE = 'INFO_ABSENT'  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "EXCLUDE_STATE = None  # UNBOUND: fresh compile01 store/index/config/exclude review and new packet required."
+        },
+        {
+          "after": "FROZEN = {SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f', INIT: 'c6e7c4f36ce9909414be548e867cb11bf9186f0dc09c5246b44c82cd62a00ffe'}  # Exact current C17 source and external init.",
+          "before": "FROZEN = {SOURCE: None, INIT: None}  # UNBOUND: fresh compile01 source and init SHA256 bindings."
+        }
+      ]
+    },
+    "outer": {
+      "after_sha256": "bb3cc62765f128a0122f2b0d614a38f731985402bbde5dd21766a5fcec33f54b",
+      "ast_parse_only": true,
+      "before_sha256": "4f91b1315d6ee29868a42fc1aa08a8713ffdc13dbf34f3f0e7167b277ec79945",
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/android-compile01-outer/LAUNCH.py",
+      "replacements": [
+        {
+          "after": "COMPILE_BINDING = {'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-compile01/checkout', '/root/projects/PassVault/audit-runtime-linux-android-compile01/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-compile01/tmp', '/root/projects/PassVault/audit-runtime-linux-android-compile01/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-compile01/sdk-readonly'], 'offline': False}  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "COMPILE_BINDING = None  # UNBOUND: identical independently reviewed inner/init readRoots/offline literal."
+        },
+        {
+          "after": "COMMIT = '0563e31adc9a66aefc3e74b99b9a24d17bdcdd49'  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "COMMIT = None  # UNBOUND: root must bind the exact published C17 commit."
+        },
+        {
+          "after": "TREE = 'd1bd6ca5b18d08ff3ff15896d9a78af9016be799'  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "TREE = None  # UNBOUND: root must bind the exact published C17 tree."
+        },
+        {
+          "after": "MEMBERS = 3042  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "MEMBERS = None  # UNBOUND: exact C17 source/index membership; no inherited admission."
+        },
+        {
+          "after": "EXCLUDE_STATE = 'INFO_ABSENT'  # Exact current C17/compile01 binding; no inherited instance authority.",
+          "before": "EXCLUDE_STATE = None  # UNBOUND: fresh compile01 store/index/config/exclude review and new packet required."
+        },
+        {
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Exact current instance filesystem model.",
+          "before": "DEVICE = None  # UNBOUND: fresh compile01 independently reviewed device/instance model."
+        },
+        {
+          "after": "EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original existing coordination lock, never recreated.",
+          "before": "EXPECTED_LOCK = None  # UNBOUND: fresh compile01 original-lock identity; historical pins are not authority."
+        },
+        {
+          "after": "FROZEN = {INNER: 'e4f31a57a16d91dc956969621f238c37b8acfee258dee9a6c7d2f333b50218b6', INIT: 'c6e7c4f36ce9909414be548e867cb11bf9186f0dc09c5246b44c82cd62a00ffe', SOURCE: 'e03d29e54974413ff893f96d9bcf0c70bbf11eeeaf114ac96296987456db1f7f'}  # Exact reviewed external controls and C17 source.",
+          "before": "FROZEN = {INNER: None, INIT: None, SOURCE: None}  # UNBOUND: fresh compile01 helper/source SHA256 bindings."
+        }
+      ]
+    }
+  }
+}

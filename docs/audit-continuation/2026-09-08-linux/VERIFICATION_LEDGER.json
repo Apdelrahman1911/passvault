@@ -596,481 +596,505 @@
   "gates": [
     {
       "id": "PINNED_HANDOFF_COMMIT_TREE",
-      "status": "PASS",
-      "scope": "Git transport identity only; see README baseline."
+      "scope": "Git transport identity only; see README baseline.",
+      "status": "PASS"
     },
     {
       "id": "ORIGINAL_POSIX_TRANSPORT_READER",
-      "status": "BLOCKED",
       "observed_exit": 2,
-      "reason": "Directory/file device split; supplied reader fail-closed; not retried or edited."
+      "reason": "Directory/file device split; supplied reader fail-closed; not retried or edited.",
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/baseline-coverage/transport-verify-v3-result.json",
       "id": "COMMITTED_HANDOFF_TRANSPORT",
-      "status": "PASS",
       "scope": "Root executed independently accepted Git-blob reader;21378 paths16510 blobs11packs;zero application tests;not checkout-byte proof.",
-      "evidence": "reviews/baseline-coverage/transport-verify-v3-result.json"
+      "status": "PASS"
     },
     {
-      "id": "LOCAL_DATABASE_RUNNER_ADMISSION",
-      "status": "PASS",
-      "reason": "Exact fresh Linux03 admission consumed and actual focused C4 batch independently reconciled; this is not current/future admission or old runner/HOLD clearance.",
       "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
-      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
       "history_before_linux03": {
-        "status": "BLOCKED",
-        "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
         "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
-        "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
-      }
+        "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+        "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
+        "status": "BLOCKED"
+      },
+      "id": "LOCAL_DATABASE_RUNNER_ADMISSION",
+      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+      "reason": "Exact fresh Linux03 admission consumed and actual focused C4 batch independently reconciled; this is not current/future admission or old runner/HOLD clearance.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native/ROOT-ADMISSION.md",
       "id": "WINDOWS_NATIVE_ADMISSION",
-      "status": "PASS",
       "reason": "Exact run01 packet independently accepted and consumed by activation a1fbdf0; this historical admission is not retry authority. Subsequent operational failure and CleanupHOLD preserved.",
-      "evidence": "reviews/native/ROOT-ADMISSION.md"
+      "status": "PASS"
     },
     {
       "id": "ANDROID32_TARGET",
-      "status": "BLOCKED",
-      "reason": "Source harness accepted; installed64only image rejected. API24x86 candidate has captured XSD static SHA-1 linkage only. Existing SDK license marker present but owner scope clarification unanswered. Exact task graph/archive/staging/software-emulator/ADB/isolation and actual32bit KDF/create/unlock/backup evidence remain; no download/target run and no database-first dependency."
+      "reason": "Source harness accepted; installed64only image rejected. API24x86 candidate has captured XSD static SHA-1 linkage only. Existing SDK license marker present but owner scope clarification unanswered. Exact task graph/archive/staging/software-emulator/ADB/isolation and actual32bit KDF/create/unlock/backup evidence remain; no download/target run and no database-first dependency.",
+      "status": "BLOCKED"
     },
     {
       "id": "APPLE_DEVICE_GUI_PROVIDER",
-      "status": "BLOCKED",
-      "reason": "Essential Apple/simulator/physical evidence remains absent; CI authorization is not execution."
+      "reason": "Essential Apple/simulator/physical evidence remains absent; CI authorization is not execution.",
+      "status": "BLOCKED"
     },
     {
       "id": "PVA029_REGRESSION",
-      "status": "FAIL",
       "reason": "Preserved49namedchecks44PASS5FAIL/noautomaticretry. Source-only follow-up identifies5 capture-cleanup failures, exact failing primitive still unknown; no policy/oracle correction justified.",
       "source_followup": "reviews/build-config/PVA029-SOURCE-FOLLOWUP.md",
-      "source_followup_review": "reviews/PVA029-ROOT-SOURCE-FOLLOWUP-REVIEW.json"
+      "source_followup_review": "reviews/PVA029-ROOT-SOURCE-FOLLOWUP-REVIEW.json",
+      "status": "FAIL"
     },
     {
       "id": "PVA031_HISTORICAL_SETUP",
-      "status": "BLOCKED",
-      "reason": "Historicalpluginresolutionfailure0assertions0XML;publicmetadataisnotGradleresult."
+      "reason": "Historicalpluginresolutionfailure0assertions0XML;publicmetadataisnotGradleresult.",
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/native-independent/RESULT-REVIEW-01.json",
       "id": "WINDOWS_NATIVE_EXECUTION",
-      "status": "FAIL",
       "reason": "Independently reconciled attempt1 run34284083351: configure/compiler probes observed, owned-descendant drain failed; no product build/CTest, all14 planned cases unstarted, configure exit not retained. ExactJob termination reports0workers.",
-      "evidence": "reviews/native-independent/RESULT-REVIEW-01.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/native-independent/RESULT-REVIEW-01.json",
       "id": "WINDOWS_NATIVE_CLEANUP",
-      "status": "BLOCKED",
       "reason": "Run01 refuses reparse point before any deletion; exact path/tag absent. OwnedJob0 supports process settlement only; hosted disposal is not observed file cleanup. No automatic cleanup/recovery retry.",
-      "evidence": "reviews/native-independent/RESULT-REVIEW-01.json"
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/editor-independent/CONTROL-RESULT-01-REVIEW.json",
       "id": "LINUX_RUNNER_CONTROLS_01",
-      "status": "FAIL",
       "reason": "One actual22-control batch:20PASS/2fixtureFAIL,0unstarted; LC17/22 TypeError before intended subject branch. Independently reconciled synthetic/process cleanup. Old request consumed, no automatic retry. Zero application cases.",
-      "evidence": "reviews/editor-independent/CONTROL-RESULT-01-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/editor-independent/CONTROL-RESULT-02-REVIEW.json",
       "id": "LINUX_RUNNER_CONTROLS_02",
-      "status": "PASS",
       "reason": "22 executed/22 PASS/0 FAIL/0 unstarted, independently reconciled with213 records and original synthetic/process settlement. Real synthetic file/pipe IO; process APIs mocked. Zero real children/signals/application tests. Consumed, not database/closeout admission.",
-      "evidence": "reviews/editor-independent/CONTROL-RESULT-02-REVIEW.json"
+      "status": "PASS"
     },
     {
-      "id": "LINUX_CLOSEOUT_CONTROLS",
-      "status": "PASS",
-      "reason": "Three separately admitted once-only controls batches:28/17/6 PASS, independently reconciled with original synthetic/root/process settlement. These validate bounded cleanup/registration contracts, not actual destructive main/Gradle/database tests. Prior failures and original four-only unexecuted proposal retained.",
       "evidence": [
         "reviews/editor-independent/CLOSEOUT-CONTROLS-ACTUAL-RESULT-REVIEW-01.json",
         "reviews/editor-independent/CLOSEOUT-CONTRACT-CONTROLS-ACTUAL-RESULT-REVIEW-01.json",
         "reviews/baseline-coverage/CLOSEOUT-REGISTRATION-CONTROLS-02-ACTUAL-RESULT-REVIEW.json"
-      ]
+      ],
+      "id": "LINUX_CLOSEOUT_CONTROLS",
+      "reason": "Three separately admitted once-only controls batches:28/17/6 PASS, independently reconciled with original synthetic/root/process settlement. These validate bounded cleanup/registration contracts, not actual destructive main/Gradle/database tests. Prior failures and original four-only unexecuted proposal retained.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/build-config/ANDROID-XSD-CAPTURE-ACTUAL-AND-SCHEMA-REVIEW.md",
       "id": "ANDROID_XSD_CAPTURE_01",
-      "status": "PASS",
       "reason": "Data capture and bounded static schema interpretation only; not archive integrity, license, SDK/emulator/runtime admission. Five permanent files,42 recorded closes, no temp/SDK changes; postreader diagnostic retained.",
-      "evidence": "reviews/build-config/ANDROID-XSD-CAPTURE-ACTUAL-AND-SCHEMA-REVIEW.md"
+      "status": "PASS"
     },
     {
-      "id": "PVA038_REGRESSION",
-      "status": "PASS",
-      "reason": "9 routing and3 real cold-JVM provider regressions PASS plus separate producer; narrow Desktop component qualified only. iOS/Kotlin-Native, actual OS authentication and hardware remain distinct OPEN/BLOCKED.",
       "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
       "history_before_linux03": {
-        "status": "BLOCKED",
+        "evidence": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json",
         "reason": "Production patch and9 routing+1 producer+3 fresh-provider consumer declarations independently source accepted at exact three-file tuple, all uncompiled/unexecuted. Actual startup flags/fixture transfer, cold native provider witness, sibling compatibility and platform gaps remain. Handoff105 selection does not test this patch.",
-        "evidence": "reviews/storage/PVA-038-INDEPENDENT-PATCH-REVIEW.json"
-      }
+        "status": "BLOCKED"
+      },
+      "id": "PVA038_REGRESSION",
+      "reason": "9 routing and3 real cold-JVM provider regressions PASS plus separate producer; narrow Desktop component qualified only. iOS/Kotlin-Native, actual OS authentication and hardware remain distinct OPEN/BLOCKED.",
+      "status": "PASS"
     },
     {
-      "id": "MACOS_SYNTHETIC_FIXTURE",
-      "status": "BLOCKED",
-      "reason": "Exact Mac5 source and instance were independently accepted and consumed in run34333087199; resource-gate FAIL before any product command, all5UNSTARTED. No runtime/XML/closure. Finalization qualifications and no automatic retry preserved; older preparation remains dormant.",
       "evidence": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json",
-      "historical_stage_qualification": "This row records its named source/earlier execution stage only. Use current MACOS_FOCUSED02_EXECUTION and WINDOWS_COHORT04_EXECUTION rows for actual outcomes."
+      "historical_stage_qualification": "This row records its named source/earlier execution stage only. Use current MACOS_FOCUSED02_EXECUTION and WINDOWS_COHORT04_EXECUTION rows for actual outcomes.",
+      "id": "MACOS_SYNTHETIC_FIXTURE",
+      "reason": "Exact Mac5 source and instance were independently accepted and consumed in run34333087199; resource-gate FAIL before any product command, all5UNSTARTED. No runtime/XML/closure. Finalization qualifications and no automatic retry preserved; older preparation remains dormant.",
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/verification/E-BOOTSTRAP-RESULT-REVIEW-01.json",
       "id": "EMPTY_E_BOOTSTRAP_01",
-      "status": "PASS",
       "reason": "Metadata-only original E/journal creation and result independently reconciled, actual external exit0; consumed. No application case, failure-injection result, build/closer or retry admission.",
-      "evidence": "reviews/verification/E-BOOTSTRAP-RESULT-REVIEW-01.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native/macos-primitives-01/FAILURE.json",
       "id": "MACOS_SOURCE_CAPTURE_01",
-      "status": "FAIL",
       "reason": "Three distinct metadata GET pipelines curl23/reader1: source-quoting SyntaxError before reader body; later two avoidable. Zero verified source responses/commits/files, all9 dependent file slots UNSTARTED. Consumed/no retry, zero app/tests.",
-      "evidence": "reviews/native/macos-primitives-01/FAILURE.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/native-independent/MACOS-CAPTURE-02-SOURCE-REVIEW-v2.json",
       "id": "MACOS_SOURCE_CAPTURE_02",
-      "status": "BLOCKED",
       "reason": "Qualified corrected source only; original parent/packet/transport/external wrapper and fresh root one-shot admission absent. Zero GETs/executions. Does not establish CTest JUnit producer compatibility or actual Mac primitives/backend.",
-      "evidence": "reviews/native-independent/MACOS-CAPTURE-02-SOURCE-REVIEW-v2.json"
+      "status": "BLOCKED"
     },
     {
-      "id": "CURRENT_C4_TARGETED167",
-      "status": "PASS",
-      "reason": "166 regressions plus one distinct producer executed successfully,17 exactXML,no failures/errors/skips/extras/missing/duplicates. No rendered/hardware or overall-readiness claim.",
       "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
-      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
       "history_before_linux03": {
-        "status": "BLOCKED",
-        "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
         "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
-        "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
-      }
+        "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+        "reason": "Latest isolated-batch02 consumed external70: Git archive0, raw-blob materialization refusal before inner/Gradle.166 regressions+1 producer UNSTARTED/0XML; runtime cleanup HOLD. Independent scheduling release only. Fresh corrected transport and reviewed instance required; no automatic retry.",
+        "status": "BLOCKED"
+      },
+      "id": "CURRENT_C4_TARGETED167",
+      "latest_review": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
+      "reason": "166 regressions plus one distinct producer executed successfully,17 exactXML,no failures/errors/skips/extras/missing/duplicates. No rendered/hardware or overall-readiness claim.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/build-config/PVU006-CURRENT-SOURCE-REVIEW.md",
       "id": "PVU006_SOURCE_NARROWING",
-      "status": "PASS",
       "reason": "Bounded source interpretation independently accepted only; suspicion remains unresolved, no product patch or execution.",
-      "evidence": "reviews/build-config/PVU006-CURRENT-SOURCE-REVIEW.md"
+      "status": "PASS"
     },
     {
-      "id": "PVU005_LINUX_RENDERING",
-      "status": "PASS",
-      "reason": "One actual Linux heavyweight SOFTWARE_FAST curtain case passed; finite synthetic content/manual ACK only. Broader original PVU005 remains unresolved.",
       "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json",
       "historical_before_gui02": {
-        "status": "BLOCKED",
+        "evidence": "reviews/editor/PVU005-LINUX-FIXTURE-SOURCE-REVIEW.md",
         "reason": "One independently source-accepted actual ComposeWindow fixture added after C4; no compilation/render/input execution. Fresh isolated X display/WM/JVM and cleanup admission pending; no product patch or closure.",
-        "evidence": "reviews/editor/PVU005-LINUX-FIXTURE-SOURCE-REVIEW.md"
-      }
+        "status": "BLOCKED"
+      },
+      "id": "PVU005_LINUX_RENDERING",
+      "reason": "One actual Linux heavyweight SOFTWARE_FAST curtain case passed; finite synthetic content/manual ACK only. Broader original PVU005 remains unresolved.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json",
       "id": "MACOS_FOCUSED_01_EXECUTION",
-      "status": "FAIL",
       "reason": "Exact source/activation admitted then one actual hosted resource-gate failure before any configure/build/CTest;0 product cases/5UNSTARTED. Original root removal qualified; finalization not global PASS. No automatic retry. Scheduling slot separately released.",
-      "evidence": "reviews/native-independent/MACOS-FOCUSED-01-RESULT-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json",
       "id": "LINUX_CURRENT_CYCLE01_EXECUTION",
-      "status": "FAIL",
       "reason": "Actualexit1/source-setup ownershipHOLD after Gitclone0; all167unstarted; no Gradle/stop/XML. OriginalR/source/process/cleanupHOLD retained; schedulingonly released; new unownedJava conflict external.",
-      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-01.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json",
       "id": "LINUX_CURRENT_CYCLE02_EXECUTION",
-      "status": "FAIL",
       "reason": "Linux02 was independently admitted and consumed once. Git init/detachedC4/1572-member source-before succeeded; ordinary wrapper exited143 during distribution bootstrap after unknown process provenance. Original once-only --stop completed0, but8 unclassified vanished PIDs keep source-after/owned-settlement/cleanup HOLD.0 project tests/166 regressions+1 producer UNSTARTED,0 XML. Scheduling only released; no retry/adoption/cleanup. Fresh isolated-execution admission remains pending, not proved externally impossible.",
-      "evidence": "reviews/editor-independent/ACTUAL-RESULT-REVIEW-02.json"
+      "status": "FAIL"
     },
     {
-      "id": "LINUX_ISOLATED_EXECUTION_FEASIBILITY",
-      "status": "PASS",
-      "reason": "Exact Linux03 workload successfully executed in separately admitted private namespace; older failed feasibility/cleanup scopes retained. Not blanket host/external/escape/security guarantee or automatic successor admission.",
       "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
       "history_before_linux03": {
-        "status": "BLOCKED",
-        "reason": "One newly admitted finite namespace01 reached PID1/distinctNS/selfstatus but failed mountinfo-fields parser; no final feasibility PASS. Independent actual reconciliation permits scheduling release only. Empty SOURCE format defect separately source-supported; a compact new private-domain workload is being prepared, not admitted. No automatic probe/03 retry or old HOLD reclassification.",
         "evidence": [
           "reviews/verification/LINUX-CONTAINMENT-FEASIBILITY.md",
           "reviews/native-independent/LINUX-CONTAINMENT-FEASIBILITY-REVIEW.md"
-        ]
-      }
+        ],
+        "reason": "One newly admitted finite namespace01 reached PID1/distinctNS/selfstatus but failed mountinfo-fields parser; no final feasibility PASS. Independent actual reconciliation permits scheduling release only. Empty SOURCE format defect separately source-supported; a compact new private-domain workload is being prepared, not admitted. No automatic probe/03 retry or old HOLD reclassification.",
+        "status": "BLOCKED"
+      },
+      "id": "LINUX_ISOLATED_EXECUTION_FEASIBILITY",
+      "reason": "Exact Linux03 workload successfully executed in separately admitted private namespace; older failed feasibility/cleanup scopes retained. Not blanket host/external/escape/security guarantee or automatic successor admission.",
+      "status": "PASS"
     },
     {
-      "id": "PVU008_CONTENT_LIFETIME",
-      "status": "BLOCKED",
-      "reason": "Completed bounded first-party content-lifetime inquiry, independently reviewed after conditional-destroy wording correction. Did not locate applicable contract; not proof no contract exists. Live allocation does not settle byte-mutation behavior; default provider unpinned and destroy statuses ignored. No provider fault/patch/test/closure established. Exact applicable contract or newly admitted isolated Windows destruction-status evidence remains needed; current Windows consumed FAIL/HOLD/no-retry unchanged.",
       "evidence": [
         "reviews/native/PVU008-CONTENT-CONTRACT-OUTCOME.md",
         "reviews/native-independent/PVU008-CONTENT-CONTRACT-REVIEW.md"
-      ]
+      ],
+      "id": "PVU008_CONTENT_LIFETIME",
+      "reason": "Completed bounded first-party content-lifetime inquiry, independently reviewed after conditional-destroy wording correction. Did not locate applicable contract; not proof no contract exists. Live allocation does not settle byte-mutation behavior; default provider unpinned and destroy statuses ignored. No provider fault/patch/test/closure established. Exact applicable contract or newly admitted isolated Windows destruction-status evidence remains needed; current Windows consumed FAIL/HOLD/no-retry unchanged.",
+      "status": "BLOCKED"
     },
     {
-      "id": "LINUX_NAMESPACE_FEASIBILITY01_EXECUTION",
-      "status": "FAIL",
-      "reason": "Prior PID1/distinctNS/proc-selfstatus guards reached, but full metadata/propagation feasibility not PASS. Missing failed child row. Normal direct wait/source-backed domain lifetime, not arbitrary descendant/interruption/kernel cleanup experiment. No automatic retry/build/old HOLD clearance.",
       "external_receipt": "reviews/storage/NAMESPACE01-EXTERNAL-RESULT.json",
-      "independent_review": "reviews/verification/LINUX-NAMESPACE-FEASIBILITY-01-ACTUAL-REVIEW.md"
+      "id": "LINUX_NAMESPACE_FEASIBILITY01_EXECUTION",
+      "independent_review": "reviews/verification/LINUX-NAMESPACE-FEASIBILITY-01-ACTUAL-REVIEW.md",
+      "reason": "Prior PID1/distinctNS/proc-selfstatus guards reached, but full metadata/propagation feasibility not PASS. Missing failed child row. Normal direct wait/source-backed domain lifetime, not arbitrary descendant/interruption/kernel cleanup experiment. No automatic retry/build/old HOLD clearance.",
+      "status": "FAIL"
     },
     {
-      "id": "LINUX_ISOLATED_BATCH01_EXECUTION",
-      "status": "FAIL",
-      "reason": "Linux isolated-batch01 source/instance independently accepted, then consumed external70 at initial host-conflict gate before any allocation/child.166+1 UNSTARTED/0XML/no Gradle. Independent result supports scheduling release only; new external-state admission required, no retry01 or claimed isolation/runtime pass.",
       "actual": {
-        "run_id": "linux-isolated-batch01",
-        "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
-        "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
-        "source_representation": "RAW_GIT_BLOBS_PLANNED_NOT_MATERIALIZED",
-        "request_sha256": "e15e29322dc3a6f018b3abfc053ee7cc0fb2d000f7ad878144055958bbeaf58f",
-        "approval_sha256": "e266daffd496e3612f26379d60462e09e27fb68076bdbf730c5f61ab06347122",
-        "operational_result": "CONSUMED_PREALLOCATION_HOST_CONFLICT_HOLD_NO_RETRY",
-        "external_exit": 70,
         "actual_children": 0,
-        "product_tests": 0,
-        "unstarted_regression_methods": 166,
-        "unstarted_fixture_producers": 1,
-        "xml_captures": 0,
-        "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
+        "approval_sha256": "e266daffd496e3612f26379d60462e09e27fb68076bdbf730c5f61ab06347122",
         "cleanup": "NOT_APPLICABLE_NO_RUNTIME_ALLOCATED; INDEPENDENT_FRESH_R_E_ABSENCE_POINT",
+        "consumed": true,
+        "external_exit": 70,
+        "external_receipt": "reviews/isolated-batch/EXTERNAL-RESULT.json",
         "independent_review": "reviews/verification/LINUX-ISOLATED-BATCH01-ACTUAL-RESULT-REVIEW.json",
         "independent_review_sha256": "e09558d86e30dc4ff9ec294cc6e2fc2568eea75d80abd0c5b3b1b6f633e0295e",
-        "external_receipt": "reviews/isolated-batch/EXTERNAL-RESULT.json",
-        "consumed": true,
-        "limits": "Candidate java389 owner/activity not established; no probe/signal/adoption authority. Original preterminal receipt and actual external70 support scheduling release only, not global idleness, host feasibility, final-close API proof or new admission."
-      }
+        "limits": "Candidate java389 owner/activity not established; no probe/signal/adoption authority. Original preterminal receipt and actual external70 support scheduling release only, not global idleness, host feasibility, final-close API proof or new admission.",
+        "operational_result": "CONSUMED_PREALLOCATION_HOST_CONFLICT_HOLD_NO_RETRY",
+        "product_tests": 0,
+        "request_sha256": "e15e29322dc3a6f018b3abfc053ee7cc0fb2d000f7ad878144055958bbeaf58f",
+        "run_id": "linux-isolated-batch01",
+        "source_commit": "da8ff89b9a8579017d5d524e628dff5251f2bb90",
+        "source_representation": "RAW_GIT_BLOBS_PLANNED_NOT_MATERIALIZED",
+        "source_tree": "cf0a8a702e7cd6948236be18b491bb5a21b5886e",
+        "unstarted_fixture_producers": 1,
+        "unstarted_regression_methods": 166,
+        "wrapper_stop": "NOT_APPLICABLE_NO_WRAPPER_ATTEMPTED",
+        "xml_captures": 0
+      },
+      "id": "LINUX_ISOLATED_BATCH01_EXECUTION",
+      "reason": "Linux isolated-batch01 source/instance independently accepted, then consumed external70 at initial host-conflict gate before any allocation/child.166+1 UNSTARTED/0XML/no Gradle. Independent result supports scheduling release only; new external-state admission required, no retry01 or claimed isolation/runtime pass.",
+      "status": "FAIL"
     },
     {
       "id": "WINDOWS_COHORT02_SOURCE",
-      "status": "PASS",
-      "scope": "Prospective exact source contract only, not target/runtime/closure/admission result",
       "review": "reviews/native-independent/WINDOWS-COHORT-02-ADMISSION.json",
-      "review_sha256": "475113c9b8658d3137437aa460b5a3e06ddb70ec2b97ea3a1e1a22524f6d3ec5"
+      "review_sha256": "475113c9b8658d3137437aa460b5a3e06ddb70ec2b97ea3a1e1a22524f6d3ec5",
+      "scope": "Prospective exact source contract only, not target/runtime/closure/admission result",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-02-ACTUAL-REVIEW.json",
       "id": "WINDOWS_COHORT02_EXECUTION",
-      "status": "FAIL",
       "reason": "Consumed firstreadonly parent0 then immediateJobactive1 refusal; finalJob0/rootcleanup independently reconciled.14UNSTARTED/0XML, no closure/retry.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-02-ACTUAL-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json",
       "id": "LINUX_ISOLATED_BATCH02_EXECUTION",
-      "status": "FAIL",
       "reason": "CONSUMED_MATERIALIZATION_FAIL_BEFORE_INNER_RUNTIME_HOLD",
-      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH02-ACTUAL-RESULT-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
       "id": "LINUX_ISOLATED_BATCH03_EXECUTION",
-      "status": "PASS",
       "reason": "Exact166 regressions+1producer reconciled; all5originalstops0 and original disposable runtime removed. Consumed only.",
-      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json",
       "id": "WINDOWS_COHORT03_EXECUTION",
-      "status": "FAIL",
       "reason": "Consumed SDK frozen-read refusal before CMake,14UNSTARTED/0XML; original cleanup and scheduling released only. Exact cause UNKNOWN.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-03-ACTUAL-REVIEW.json"
+      "status": "FAIL"
     },
     {
-      "id": "PVA007_RENDERED_INPUT",
-      "status": "BLOCKED",
-      "reason": "GUI02 supplies targeted native-form input/rendering evidence with fake persistence; broader Room/NavHost/Back/IME/mobile requirements remain.",
       "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json",
       "historical_before_gui02": {
-        "status": "BLOCKED",
+        "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
         "reason": "49 logical/Composition editor/navigation cases now pass; rendered edit/Save/reopen and native Back/IME/device behavior remain required.",
-        "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
-      }
+        "status": "BLOCKED"
+      },
+      "id": "PVA007_RENDERED_INPUT",
+      "reason": "GUI02 supplies targeted native-form input/rendering evidence with fake persistence; broader Room/NavHost/Back/IME/mobile requirements remain.",
+      "status": "BLOCKED"
     },
     {
-      "id": "PVA031_RENDERED_CAPACITY",
-      "status": "BLOCKED",
-      "reason": "GUI02 verifies native capacity controls and controlled still-composed input retention; rapid/a11y/RTL/mobile/backend rejection paths remain. Historical setup failure retained.",
       "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json",
       "historical_before_gui02": {
-        "status": "BLOCKED",
+        "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
         "reason": "7capacity+13draft cases pass in fresh admitted environment; historical setup failure cause remains unknown, rendered retained-input/capacity behavior pending.",
-        "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
-      }
+        "status": "BLOCKED"
+      },
+      "id": "PVA031_RENDERED_CAPACITY",
+      "reason": "GUI02 verifies native capacity controls and controlled still-composed input retention; rapid/a11y/RTL/mobile/backend rejection paths remain. Historical setup failure retained.",
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json",
       "id": "PVA038_IOS_NATIVE_AEAD",
-      "status": "BLOCKED",
       "reason": "Shared catch change source-reviewed; exact iOS/Kotlin-Native AEAD dependency exception source/runtime and real platform authentication not established by Linux JVM results.",
-      "evidence": "reviews/verification/LINUX-ISOLATED-BATCH03-ACTUAL-RESULT-REVIEW.json"
+      "status": "BLOCKED"
     },
     {
-      "id": "WINDOWS_COHORT04_SOURCE",
-      "status": "PASS",
-      "reason": "Source-only SDK handle/diagnostic correction accepted; no actual instance/run/case.",
       "evidence": "reviews/native-independent/WINDOWS-COHORT-04-ADMISSION.json",
-      "historical_stage_qualification": "This row records its named source/earlier execution stage only. Use current MACOS_FOCUSED02_EXECUTION and WINDOWS_COHORT04_EXECUTION rows for actual outcomes."
+      "historical_stage_qualification": "This row records its named source/earlier execution stage only. Use current MACOS_FOCUSED02_EXECUTION and WINDOWS_COHORT04_EXECUTION rows for actual outcomes.",
+      "id": "WINDOWS_COHORT04_SOURCE",
+      "reason": "Source-only SDK handle/diagnostic correction accepted; no actual instance/run/case.",
+      "status": "PASS"
     },
     {
-      "id": "MACOS_FOCUSED02_SOURCE",
-      "status": "PASS",
-      "reason": "Source-only metric/parser/pre-guard correction accepted, same floors; no actual instance/run/case.",
       "evidence": "reviews/native-independent/MACOS-FOCUSED-02-SOURCE-REVIEW.json",
-      "historical_stage_qualification": "This row records its named source/earlier execution stage only. Use current MACOS_FOCUSED02_EXECUTION and WINDOWS_COHORT04_EXECUTION rows for actual outcomes."
+      "historical_stage_qualification": "This row records its named source/earlier execution stage only. Use current MACOS_FOCUSED02_EXECUTION and WINDOWS_COHORT04_EXECUTION rows for actual outcomes.",
+      "id": "MACOS_FOCUSED02_SOURCE",
+      "reason": "Source-only metric/parser/pre-guard correction accepted, same floors; no actual instance/run/case.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/build-config/macos-memory-capture03/RESULT.json",
       "id": "MACOS_MEMORY_CAPTURE03",
-      "status": "FAIL",
       "reason": "One200/352B response rejected, exact fieldUNKNOWN; consumed.",
-      "evidence": "reviews/build-config/macos-memory-capture03/RESULT.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/build-config/MACOS-MEMORY-CAPTURE04-SEMANTICS.md",
       "id": "MACOS_MEMORY_CAPTURE04",
-      "status": "PASS",
       "reason": "Six200 inert public-source responses support prospective metric semantics only; no installed Mac/runtime proof.",
-      "evidence": "reviews/build-config/MACOS-MEMORY-CAPTURE04-SEMANTICS.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/MACOS-FOCUSED-02-ACTUAL-REVIEW.json",
       "id": "MACOS_FOCUSED02_EXECUTION",
-      "status": "PASS",
       "reason": "Qualified actual five CTests:2nativeABI/security+3fixture lifecycle,5XML; actual final CLI/workflow0 and original synthetic-root cleanup independently reconciled. No prompt/Keychain/hardware/packaged/sanitizer/family closure.",
-      "evidence": "reviews/native-independent/MACOS-FOCUSED-02-ACTUAL-REVIEW.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-04-ACTUAL-REVIEW.json",
       "id": "WINDOWS_COHORT04_EXECUTION",
-      "status": "FAIL",
       "reason": "Consumed post-config/pre-product frozen generated-text read failure; exact path/metadata/causeUNKNOWN,14UNSTARTED/zeroXML. OriginalJobtermination/final0 only; filesystemHOLD/no retry.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-04-ACTUAL-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ADMISSION.json",
       "id": "WINDOWS_COHORT05_SOURCE",
-      "status": "PASS",
       "reason": "Exact24case source accepted only; no request/instance/execution.04UNKNOWN/HOLD unchanged.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ADMISSION.json"
+      "status": "PASS"
     },
     {
-      "id": "DESKTOP_GUI02_SOURCE",
-      "status": "PASS",
-      "reason": "Four-case source only; real raw-source/store/instance binding and execution pending.",
       "evidence": [
         "reviews/editor-independent/GUI02-INIT-INNER-SOURCE-REVIEW-01.json",
         "reviews/verification/LINUX-DESKTOP-GUI02-OUTER-SOURCE-DELTA-REVIEW.md"
-      ]
+      ],
+      "id": "DESKTOP_GUI02_SOURCE",
+      "reason": "Four-case source only; real raw-source/store/instance binding and execution pending.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json",
       "id": "WINDOWS_COHORT05_EXECUTION",
-      "status": "FAIL",
       "reason": "24 native programs independently PASS/24XML; helper/job/runFAIL due no-follow reparse cleanup refusal. Source-qualified test evidence survives operational failure;0closures/no retry.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json",
       "id": "WINDOWS_COHORT05_TARGETED_REGRESSIONS",
-      "status": "PASS",
       "reason": "Exactly8current writer+4synthetic guard+2ABI/security+8historical(3reds/5controls)+2realCNG_PRK. Not broad provider/known-output/caller/crash/hardware or cleanup assurance.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json",
       "id": "WINDOWS_COHORT05_CLEANUP",
-      "status": "BLOCKED",
       "reason": "No-follow Content.IE5 reparse refusal before deletion phase. Target not read/followed/deleted; whole original generated rootHOLD. Original Job termination/zero releases scheduling only.",
-      "evidence": "reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json"
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json",
       "id": "DESKTOP_GUI02_EXECUTION",
-      "status": "PASS",
       "scope": "Exact four source-qualified actual cases, two XML/nine synthetic PNGs, original owned cleanup; no full-family or conclusive PVU closure",
-      "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json",
       "id": "PVA007_031_TARGETED_LINUX_FORM_RENDERING",
-      "status": "PASS",
       "scope": "Three real form/native-input cases with deep-copy fake persistence; controlled capacity interference not real backend rejection",
-      "evidence": "reviews/verification/LINUX-DESKTOP-GUI02-ACTUAL-RESULT-REVIEW.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/storage/IOS10-HELPER-WORKFLOW-INDEPENDENT.md",
       "id": "IOS_FOCUSED01_SOURCE",
-      "status": "PASS",
       "scope": "Historical source-stage acceptance of exact helper/workflow/fixture/activation and ten declarations. The later exact instance was admitted and consumed: resource-gate FAIL,10UNSTARTED,0XML; see IOS_FOCUSED01_EXECUTION. No real simulator execution or automatic retry.",
-      "evidence": "reviews/storage/IOS10-HELPER-WORKFLOW-INDEPENDENT.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/desktop-tray/ROOT-SOURCE-REVIEW.md",
       "id": "DESKTOP_TRAY01_SOURCE",
-      "status": "PASS",
       "scope": "One new permanent real-AWT fixture source only; actual installed tray session/input/visual evidence still pending",
-      "evidence": "reviews/desktop-tray/ROOT-SOURCE-REVIEW.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/verification/LINUX-DETEKT01-SOURCE-DELTA-REVIEW.md",
       "id": "LINUX_DETEKT01_SOURCE",
-      "status": "PASS",
       "scope": "Unexecuted helper/init/outer source; real source/index/store/tool/instance binding pending,23 prospective tasks not cases",
-      "evidence": "reviews/verification/LINUX-DETEKT01-SOURCE-DELTA-REVIEW.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json",
       "id": "IOS_FOCUSED01_EXECUTION",
-      "status": "FAIL",
       "scope": "Resource-gate failure before Xcode/private-runtime/Gradle; ten declarations UNSTARTED, zero XML. Not ten failed tests.",
-      "evidence": "reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json",
       "id": "IOS_FOCUSED01_EVIDENCE_CLOSE",
-      "status": "BLOCKED",
       "reason": "Actual helper1 does not meet retained PENDING_REQUIRE_ACTUAL_HELPER_EXIT_ZERO; no cleanup PASS or proven closefailure. Scheduling released separately.",
-      "evidence": "reviews/storage/IOS01-ACTUAL-RESULT-REVIEW.json"
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/native-independent/PVA039-IMPLEMENTATION-REGRESSION-INDEPENDENT.md",
       "id": "PVA039_IMPLEMENTATION_SOURCE",
-      "status": "PASS",
       "scope": "Narrow loop/finalizer fix and one prospective fresh-JVM control source only; runtime pending",
-      "evidence": "reviews/native-independent/PVA039-IMPLEMENTATION-REGRESSION-INDEPENDENT.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/native-independent/EDITOR-ROOM-INTEGRATION-INDEPENDENT.md",
       "id": "DESKTOP_ROOM01_SOURCE",
-      "status": "PASS",
       "scope": "One native-input/production form+VM/realRoom close+reopen fixture source only; unexecuted",
-      "evidence": "reviews/native-independent/EDITOR-ROOM-INTEGRATION-INDEPENDENT.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json",
       "id": "LINUX_DESKTOP_TRAY01_EXECUTION",
-      "status": "FAIL",
       "reason": "Prepare cancelled after host positive conflict;0PASS0FAIL3UNSTARTED,0XML,original stop0; source-after/final-evidence/cleanup HOLD.",
-      "evidence": "reviews/storage/TRAY01-ACTUAL-RESULT-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/desktop-tray/SLOT-RELEASE.json",
       "id": "LINUX_DESKTOP_TRAY01_CLEANUP",
-      "status": "BLOCKED",
       "reason": "Original runtime cleanup not attempted; no automatic retry, adoption, repeated stop or deletion. Scheduling/new-T active use only released.",
-      "evidence": "reviews/desktop-tray/SLOT-RELEASE.json"
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/verification/LINUX-DETEKT01-PREFLIGHT01-DISPOSITION.md",
       "id": "LINUX_DETEKT01_PREFLIGHT",
-      "status": "BLOCKED",
       "reason": "Host conflict prevents request/intake;0tasks,0cases,no Detekt runtime. No consumer created; unused prospective freeze separately released.",
-      "evidence": "reviews/verification/LINUX-DETEKT01-PREFLIGHT01-DISPOSITION.md"
+      "status": "BLOCKED"
     },
     {
+      "evidence": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-ROOM-INDEPENDENT-SOURCE-REVIEW.md",
       "id": "MAIN_NAVHOST_ROOM_SOURCE",
-      "status": "PASS",
       "scope": "Independent source acceptance and permanent opt-in adoption only;1prospective case,3roles,13events,0executions.",
-      "evidence": "reviews/editor-independent/navhost-draft/MAIN-NAVHOST-ROOM-INDEPENDENT-SOURCE-REVIEW.md"
+      "status": "PASS"
     },
     {
-      "id": "ANDROID_CLIPBOARD_LOCALE_SOURCE",
-      "status": "PASS",
-      "scope": "Independent source acceptance of two prospective bare-framework cases and one runner line only; zero compilation, execution, XML or closure; no target/cleanup admission.",
       "evidence": "reviews/editor/PVA009-PVA030-INSTRUMENTATION-INDEPENDENT.md",
-      "evidence_sha256": "f731206327042f1e02a53260a7cb0d64c930114d70932256e27dbf98fd46ed16"
+      "evidence_sha256": "f731206327042f1e02a53260a7cb0d64c930114d70932256e27dbf98fd46ed16",
+      "id": "ANDROID_CLIPBOARD_LOCALE_SOURCE",
+      "scope": "Independent source acceptance of two prospective bare-framework cases and one runner line only; zero compilation, execution, XML or closure; no target/cleanup admission.",
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/verification/LINUX-DETEKT01-C15-ACTUAL-RESULT-REVIEW.json",
       "id": "LINUX_DETEKT01_EXECUTION",
-      "status": "FAIL",
       "scope": "Coverage1PASS; app-android1FAIL/7diagnostics;21analyzersUNSTARTED;0cases;collector/report/cleanupHOLD",
-      "evidence": "reviews/verification/LINUX-DETEKT01-C15-ACTUAL-RESULT-REVIEW.json"
+      "status": "FAIL"
     },
     {
+      "evidence": "reviews/editor/detekt02/SUCCESSOR-INDEPENDENT.md",
       "id": "LINUX_DETEKT02_SOURCE",
-      "status": "PASS",
       "scope": "NEW helper/init/outer SOURCE ONLY; C16 binding/admission unfilled, no static execution",
-      "evidence": "reviews/editor/detekt02/SUCCESSOR-INDEPENDENT.md"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/detekt02/parser-controls01/ACTUAL-REVIEW.json",
       "id": "LINUX_DETEKT02_PARSER_CONTROLS01",
-      "status": "PASS",
       "scope": "5 isolated pure-parser infrastructure controls only,0 app/JUnit cases; consumed",
-      "evidence": "reviews/detekt02/parser-controls01/ACTUAL-REVIEW.json"
+      "status": "PASS"
     },
     {
+      "evidence": "reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md",
       "id": "LINUX_DETEKT02_EXECUTION",
-      "status": "FAIL",
       "scope": "One coverage task FAILED;22 analyzers UNSTARTED;zero application/JUnit cases. Unknown positive-process change;source-after/cleanup HOLD.",
-      "evidence": "reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md"
+      "status": "FAIL"
+    },
+    {
+      "evidence": "reviews/android32/android-compile01/ACTUAL-REVIEW.json",
+      "id": "ANDROID_CRYPTO_COMPILE01_EXECUTION",
+      "scope": "Unlisted crypto androidJar guard before target actions; both compilers UNSTARTED,0 test/XML/native cases. Original stop0/cleanup independently reconciled; no retry01.",
+      "status": "FAIL"
+    },
+    {
+      "id": "LINUX_DETEKT03_EXECUTION",
+      "status": "FAIL",
+      "evidence": "reviews/team20/detekt_actual/RECONCILIATION.json",
+      "reason": "Independently accepted actual static FAIL:14 clean module analyzers,5failed/103diagnostics,2NO-SOURCE groups, root21script-input analyzer UNSTARTED. Original stop0/newR removal qualified. Zero application cases; no automatic retry."
+    },
+    {
+      "id": "LINUX_DESKTOP_INTEGRATION03_EXECUTION",
+      "status": "FAIL",
+      "evidence": "reviews/team20/detekt_actual/gui03-actual/RECONCILIATION.json",
+      "reason": "Preparation143, original stop0, inner/external70; no task headers, all4cases UNSTARTED,0XML. Independent failed-run reconciliation; no GUI/application failure inferred."
+    },
+    {
+      "id": "LINUX_DESKTOP_INTEGRATION03_CURRENT_CLEANUP",
+      "status": "BLOCKED",
+      "evidence": "reviews/team20/detekt_actual/gui03-actual/RECONCILIATION.json",
+      "reason": "Original source_after/cleanup_safe false, cleanup NOT_ATTEMPTED/currentR HOLD. Fresh independently reviewed current-R-only closer needed; no replay or extra stop."
     }
   ],
   "missing_skill_tool": {
@@ -1078,7 +1102,7 @@
     "status": "NOT_SUPPLIED_NOT_RUN",
     "impact": "Independent manual/data-only ledger review is labeled as such. Verified authoritative location required only if exact missing tool becomes necessary; no invented repository URL."
   },
-  "updated_utc": "2026-09-10T23:25:51.289830+00:00",
+  "updated_utc": "2026-09-11T02:44:39.223988+00:00",
   "continuation_infrastructure_runs": [
     {
       "id": "LINUX_SOURCE_CAPTURE_01",
@@ -1312,12 +1336,12 @@
     "status": "UNCHANGED_IMMUTABLE_SOURCE_SELECTION_SUPERSEDED_FOR_SCHEDULING_NOT_DISCARDED"
   },
   "pending_selected_scope": {
-    "status": "GUI03_FOUR_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED",
+    "status": "GUI03_CONSUMED_ALL_FOUR_UNSTARTED_FRESH_SCOPE_REVIEW_REQUIRED",
     "regression_or_investigation_methods": 4,
     "fixture_producers": 0,
     "expected_test_tasks": 2,
     "expected_xml_files": 4,
-    "qualification": "Shared realRoom+Main corrections and two bounded chooser/tray-property observations in distinct classes; no passing lifecycle/tray repeat. Source/instance admission absent; Detekt03/Android compilation not application cases."
+    "qualification": "Four Room/Main/chooser/tray-property requirements remain unmet after GUI03 pretest failure. No pending GUI03 invocation exists. A future successor requires current-R disposition and meaningful freshly reviewed source/coordination/admission, not renaming. Focused20 existing regression cases are a separate proposed scope, not new case declarations."
   },
   "windows_cohort02_source": {
     "suite": "windows-native-14-cohort-v2",
@@ -3061,6 +3085,12 @@
       "evidence": "detekt02_execution",
       "application_cases": 0,
       "status": "FAIL"
+    },
+    {
+      "id": "linux-detekt03",
+      "evidence": "detekt03_execution",
+      "application_cases": 0,
+      "status": "FAIL"
     }
   ],
   "detekt01_generated_closeout01": {
@@ -3353,5 +3383,420 @@
     "actual_cases": 0,
     "executions": 0,
     "limits": "Original EOL/metadata/cooperative/direct-child/hard-interruption qualifications preserved. Data capture or syntax parse is not application test, code closure or future execution authority."
+  },
+  "android_crypto_compile01_execution": {
+    "application_cases": 0,
+    "consumed": true,
+    "external": "reviews/android-compile01/c17-preflight/EXTERNAL-RESULT.json",
+    "external_exit": 1,
+    "external_sha256": "a9122212e8c35cc5c20398c51ede52708bf5555009050286225f5dd64352ec87",
+    "gradle_exit": 1,
+    "junit_xml": 0,
+    "native_kdf_cases": 0,
+    "new_closures": 0,
+    "original_stop_exit": 0,
+    "release": "reviews/android-compile01/c17-preflight/SLOT-RELEASE.json",
+    "release_sha256": "ef1023d0ece69a94b9f16363cfd92f018de9e299443d7572cdf4e8e24251cf0d",
+    "remaining": "Instrumentation still uncompiled; separately reviewed exact androidJar prerequisite candidate may address the finite omission. Actual Android32/native KDF/business flows/minification/hardware remain unverified; new image agreement/usable target external. No01 mutation or automatic retry.",
+    "reservation_active": false,
+    "review": "reviews/android32/android-compile01/ACTUAL-REVIEW.json",
+    "review_sha256": "c6bf30fcdee251b7358bcd9059e897c1807af5175f8d02e59028acee06a27a7b",
+    "selector": ":core:crypto:compileAndroidDeviceTest",
+    "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "status": "FAIL_BEFORE_COMPILERS_ORIGINAL_RUNTIME_CLEANED",
+    "target_task_actions": 0
+  },
+  "owner_pause_20260911": {
+    "status": "PAUSED_BY_OWNER_NOT_COMPLETION",
+    "utc": "2026-09-11T01:01:14.016203+00:00",
+    "resume_note": "PAUSED_SESSION_2026-09-11.md",
+    "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "publication": "C17 remains published; pause/current results are local only. T/index/config/source/tools frozen for unconsumed GUI03; no C18 push.",
+    "detekt03": {
+      "external_exit": 1,
+      "external_launch_chunk": "40208a",
+      "external_session": 85689,
+      "external_final_chunk": "5e4810",
+      "external_result": "reviews/detekt03/c17-preflight/EXTERNAL-RESULT.json",
+      "external_result_sha256": "f4e689cfeeb36fa2071e452e09e32e45c070dcabce5aac7f27cb6770675557f1",
+      "root_observed_status": "VALIDATION_FAILED_CLEANED",
+      "original_wrapper_stop": 0,
+      "root_observed_original_runtime_removed_descendants": 13667,
+      "retained_files": 85,
+      "retained_bytes": 3363954,
+      "application_test_cases": 0,
+      "raw_task_header_events": 23,
+      "unique_observed_task_paths": 22,
+      "static_diagnostics_not_product_families": {
+        "app-desktop": 47,
+        "shared": 37,
+        "core:crypto": 4,
+        "core:database": 11,
+        "feature:credential": 4
+      },
+      "independent_actual_review": "PENDING_OWNER_STOPPED_REVIEW; no acceptance/report written",
+      "reviewer_parser_limit": "Reader stopped with ValueError(diagnostic capture shape) at optional Problems record; incorrect review-parser expectation, not established collector/product defect.",
+      "consumed_request": "reviews/detekt03/c17-preflight/REQUEST.CONSUMED.json",
+      "no_automatic_retry": true
+    },
+    "gui03": "Exact instance independently accepted e6235ab3445396d451dc165dff05fb3e1f0ad681c500cc4d7360441f3b4a8326; uninvoked/unconsumed; fresh post-pause root admission required.",
+    "android02": "Candidate and delta remain unwritten; source-only reasoning only; Android01 remains consumed failure.",
+    "pva031": "Unsealed reachability analysis, no patch/closure; postacceptance/closing-owner input qualification retained.",
+    "agents": "All nine subagents quiesced/interrupted; no reported tool sessions/background jobs.",
+    "counts": "Unchanged: original19/25; all26/39; suspicions2/12; eight PVD explanations separate.",
+    "safety": "No new stop/recovery/cleanup retry; all older HOLD/STOP/NO-RETRY/CLOSED and publication boundaries remain."
+  },
+  "owner_resume_20260911": {
+    "status": "RESUMED_BY_OWNER_SOURCE_PROPOSAL_AND_INDEPENDENT_REVIEW",
+    "utc": "2026-09-11T01:24:56.187343+00:00",
+    "authority": "Owner explicitly resumed and requested20 subagents.",
+    "team_plan": "TEAM_20_RESUME.md",
+    "agents_spawned": 20,
+    "build_owner": "/root",
+    "phase": "No new build/test/CI; application/tests/helpers/T frozen for accepted GUI03.",
+    "resume_note": "RESUMED_SESSION_2026-09-11.md",
+    "observations": "reviews/team20/root/RESUME-OBSERVATIONS.json",
+    "observations_sha256": "9faa2f7ce5ba2dcf831b052edb0737101d516fb7275c79b775e781aca9f23c02",
+    "pause_preserved": "owner_pause_20260911 is historical; not execution/cleanup clearance."
+  },
+  "detekt03_execution": {
+    "status": "CONSUMED_FAIL_INDEPENDENTLY_RECONCILED_ORIGINAL_RUNTIME_CLEANED",
+    "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "external_result": "reviews/detekt03/c17-preflight/EXTERNAL-RESULT.json",
+    "external_sha256": "f4e689cfeeb36fa2071e452e09e32e45c070dcabce5aac7f27cb6770675557f1",
+    "gradle_exit": 1,
+    "original_stop_exit": 0,
+    "inner_exit": 1,
+    "external_exit": 1,
+    "review": "reviews/team20/detekt_actual/RECONCILIATION.json",
+    "review_sha256": "700f65a3406f896b9658724af8922441c342069f4b30378f2b344caab1fe4bb8",
+    "report": "reviews/team20/detekt_actual/REPORT.md",
+    "report_sha256": "403057113a8f4249e1c6ede3ad950d5a8da21834c12ebb866e1699d030e4f031",
+    "scheduler_release": "reviews/team20/root/DETEKT03-SCHEDULER-RELEASE.json",
+    "scheduler_release_sha256": "ead800ab37c5e2607015377fd5c26bf046fd344f8b64e377aec889918c2aec21",
+    "static_result": {
+      "clean_module_analyzers": 14,
+      "failed_module_analyzers": 5,
+      "no_source_groups": 2,
+      "root_analyzer": "UNSTARTED_21_PLANNED_GRADLE_SCRIPT_INPUTS",
+      "coverage_guard": "PASS_COVERAGE_ONLY_NOT_OPENGREP",
+      "diagnostics": 103,
+      "by_module": {
+        "app-desktop": 47,
+        "shared": 37,
+        "core:crypto": 4,
+        "core:database": 11,
+        "feature:credential": 4
+      },
+      "qualification": "22 planned analyzer paths plus coverage guard;23 log headers/22 observed paths including guard, not tests or bare-header pass proof."
+    },
+    "application_cases": 0,
+    "junit_xml": 0,
+    "new_closures": 0,
+    "retained": {
+      "files": 85,
+      "bytes": 3363954
+    },
+    "cleanup": "Original13667 descendants plus root removed, source-enforced retained-evidence reconciliation; not fresh runtime rewalk or net reclaimed bytes. No remaining03 stop/cache/worker duty indicated. Older HOLDs untouched.",
+    "prior_review_failure": "Incorrect problems_html reader expectation preserved; not collector defect.",
+    "no_automatic_retry": true
+  },
+  "desktop_integration03_instance": {
+    "status": "CONSUMED_ONCE_FAIL_CURRENT_RUNTIME_HOLD",
+    "request": "requests/LINUX-DESKTOP-INTEGRATION-03.json",
+    "request_sha256": "122ad00a5377888d2752a1da7e02cdade1d18ca5c5f9900336f4e59bea5bebd7",
+    "approval": "reviews/editor-independent/LINUX-DESKTOP-INTEGRATION03-INSTANCE-ACCEPT.json",
+    "approval_sha256": "e6235ab3445396d451dc165dff05fb3e1f0ad681c500cc4d7360441f3b4a8326",
+    "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "prospective_cases": 4,
+    "serial_test_tasks": 2,
+    "actual_cases": 0,
+    "remaining": "Fresh independently reviewed current-GUI03-only closeout; current R/control/evidence/T/index/config remain frozen. Four unmet GUI requirements survive; no GUI03 replay.",
+    "historical_preexecution_status": "EXACT_INSTANCE_ACCEPTED_NOT_INVOKED",
+    "actual_result": "desktop_integration03_execution"
+  },
+  "continuation_application_runs_semantics": "Historical/non-exhaustive run index; detailed execution blocks and continuation_case_accounting are authoritative for199 application-intended events,3 infrastructure+1 producer=203 XML elements. Index lacks Mac02 two and Integration02 three; no counter change.",
+  "desktop_integration03_execution": {
+    "status": "CONSUMED_FAIL_INDEPENDENTLY_RECONCILED_CURRENT_RUNTIME_HOLD",
+    "source_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "source_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "external_result": "reviews/desktop-integration03/c17-preflight/EXTERNAL-RESULT.json",
+    "external_sha256": "786f35f8dc9f572715fefe1c88e169f5e704c46b6b55472a714cf3d750d674dc",
+    "review": "reviews/team20/detekt_actual/gui03-actual/RECONCILIATION.json",
+    "review_sha256": "d94b78c84909e7e2728e4ad4da2eae874814f573a01e005ded088f2d88302830",
+    "report": "reviews/team20/detekt_actual/gui03-actual/REPORT.md",
+    "report_sha256": "b57117b895dce042f5be56f8da502cd3817ebe40373211c932778eab3af7c839",
+    "prepare_exit": 143,
+    "original_stop_exit": 0,
+    "inner_exit": 70,
+    "external_exit": 70,
+    "declared_cases": 4,
+    "unstarted_cases": 4,
+    "application_cases": 0,
+    "junit_xml": 0,
+    "gradle_task_headers": 0,
+    "new_closures": 0,
+    "source_before": true,
+    "source_after": false,
+    "cleanup_safe": false,
+    "cleanup": "NOT_ATTEMPTED_CURRENT_R_HOLD",
+    "retained": {
+      "files": 19,
+      "bytes": 48396
+    },
+    "namespace_settlement": "Original inner namespace empty/phase settled; original required stop0. Not global host idleness or source-after proof.",
+    "host_qualification": "First detailed Java17963 was in parent namespaces, not owned; no responsible owner identified. Later16024 only namespace-proof uncertainty. No automatic retry or extra stop. Outer pidfd-kill flags false; inner abort can signal its original wrapper. No full timestamped causal chronology.",
+    "scheduling_release": "reviews/team20/root/W-APPLICATION-EDIT-RELEASE.json",
+    "scheduling_release_sha256": "25987165fcbb1316f9e6db5cac22d1aadc50d27a71bc912feb15e04ec53bdc80",
+    "no_automatic_retry": true,
+    "remaining": "Fresh independently reviewed current-GUI03-only closeout; current R/control/evidence/T/index/config remain frozen. Four unmet GUI requirements survive; no GUI03 replay."
+  },
+  "c18_application_integration": {
+    "status": "17_EXACT_REVIEWED_APPLICATION_AFTER_IMAGES_APPLIED_NOT_YET_VALIDATED",
+    "utc": "2026-09-11T02:01:53.720186+00:00",
+    "root_receipt": "reviews/team20/root/W-APPLICATION-INTEGRATION.json",
+    "root_receipt_sha256": "fd7a6cd140a4dac29845997e26618fcf09fe5028377542bdc67303f1987a1aa7",
+    "before_commit": "0563e31adc9a66aefc3e74b99b9a24d17bdcdd49",
+    "before_tree": "d1bd6ca5b18d08ff3ff15896d9a78af9016be799",
+    "patches": 10,
+    "changed_paths": 17,
+    "new_files": 1,
+    "new_test_methods": 0,
+    "new_application_executions": 0,
+    "new_closures": 0,
+    "scope": "Five formerly failing Detekt modules: preserve cryptographic ABI fixture, CAS secret ownership, biometric mutex/admission, unchanged SQLite comparison and regression/cleanup oracles. Specific local fixture-boundary exceptions independently accepted; no blanket rule/source/baseline exclusion.",
+    "rejected_evidence": "Desktop Main v1 and tray v1 retained; only accepted Main/tray v2 applied.",
+    "validation_needed": "Android crypto main/device-source compilation; focused root plus5module static checks with exact unchanged03 reuse; 12 existing real-Room biometric +6 credential freshness +2 draft cases and Desktop test compilation in a single focused regression cycle. No unchanged successful pagination/provider/lifecycle/tray rerun.",
+    "after_images": {
+      "core/crypto/src/androidDeviceTest/kotlin/com/passvault/core/crypto/Android32KdfInstrumentation.kt": {
+        "sha256": "9c4567e4a9cd1f6023534d3b5a40dfb21981cd49cc8eff0b4d1e453429246ca8",
+        "bytes": 14600
+      },
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialEventRouter.kt": {
+        "sha256": "0423e8e78c70fa6944efa771feb33feb91169f7e458bf22036e21067fbf4c255",
+        "bytes": 17962
+      },
+      "feature/credential/src/commonMain/kotlin/com/passvault/feature/credential/presentation/CredentialFormSupport.kt": {
+        "sha256": "73e9e401ae34d6f7e4f562d2cad2ed66738c1c1d450c5b3720daecad3ae38e7d",
+        "bytes": 16910
+      },
+      "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldCapacityTest.kt": {
+        "sha256": "5bd1b2316812977c733f74b8ee15929907cb47c040cfe3577f0062152e9acff4",
+        "bytes": 9075
+      },
+      "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt": {
+        "sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+        "bytes": 26264
+      },
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupPagination.kt": {
+        "sha256": "c551d04efdcbdcd53a132731bc1fd6cd0ab85b18495a79383a54f7b8326b18c8",
+        "bytes": 2328
+      },
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/backup/BackupDatabaseTextOrder.kt": {
+        "sha256": "d14d739d1793f859bc42426c41ac708bb81a5689661929eda3576ec6eae08029",
+        "bytes": 2535
+      },
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt": {
+        "sha256": "acc3c5a8d29f2f976ed5dfd5612b325624915953937ff48b438ad6e5bcb63554",
+        "bytes": 27452
+      },
+      "core/database/src/commonMain/kotlin/com/passvault/core/database/repository/VaultRepositoryImpl.kt": {
+        "sha256": "ce012cc2b0ffc76783b081f31285c7247bdc6192e4301f6af637c2df5cdac8e8",
+        "bytes": 37182
+      },
+      "core/database/src/desktopTest/kotlin/com/passvault/core/database/repository/BiometricUnlockFreshnessIntegrationTest.kt": {
+        "sha256": "f25cd292184e1fca7d0cbb3d384dac66156683e5bc9f093876cfd3b487d85b99",
+        "bytes": 17699
+      },
+      "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt": {
+        "sha256": "4e6fec750f0f995d459128111c13aa002d7c033980673ea7788742a6bf2d899c",
+        "bytes": 35482
+      },
+      "shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt": {
+        "sha256": "109a0534da3023b7cc1f951ba6c4f8b57f8e0e78f718bef765f7d05cc3223417",
+        "bytes": 37913
+      },
+      "shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt": {
+        "sha256": "f0614a75dfe0109e0effbd06e1903d1812d6be7c0fd9a97ef34a61ec4d6d42c3",
+        "bytes": 16962
+      },
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt": {
+        "sha256": "1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761",
+        "bytes": 68741
+      },
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt": {
+        "sha256": "0b40e53ceceaf11e6cbc5baaeb4be5f771bb17d939f2c7c2ae54fbb19ab00275",
+        "bytes": 9949
+      },
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt": {
+        "sha256": "a0a212aec3cd5a78432feeaf2d8e3cc4b5c14a23dd5776029de15106287fb7ef",
+        "bytes": 27327
+      },
+      "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt": {
+        "sha256": "175feed3cd716d7881c48b3fcba906513a0e47f0599a7251e8de17f5b728e533",
+        "bytes": 25631
+      }
+    },
+    "independent_integration_review": {
+      "path": "reviews/team20/coverage_review/C18-INTEGRATION-REVIEW.json",
+      "sha256": "513a249f95d34cae6dc2eb06cd9d494e6066ee7d95bba59e4cb6b9c9a730712c",
+      "report": "reviews/team20/coverage_review/C18-INTEGRATION-REVIEW.md",
+      "report_sha256": "843a7cea5c0096708245294ac4cb031694bbe4f80b7058c1717d5ffac8689195",
+      "scope": "Bounded application17afterimages/10patches/18edit events/36registry and current overlays; no final helper/publication/runtime acceptance."
+    }
+  },
+  "pva031_supported_input_followup": {
+    "status": "BOUNDED_SOURCE_OUTCOME_ACCEPTED_KEEP_PVA031_OPEN",
+    "investigator": "reviews/team20/pva031_investigator/PVA031-SUPPORTED-STALE-CONFIRM-REACHABILITY.md",
+    "investigator_sha256": "daebc5e0ab913ce89fb820d15d2ce6b7b9d16d9a4f3b410f3419961c35b717d2",
+    "review": "reviews/team20/pva031_review/PVA031-PAIRED-RESULT-REVIEW-01.md",
+    "review_sha256": "9be25fe6e705efce7a8a581f9d505b8363ba84181c06cd8fa629efc58998c0e1",
+    "outcome": "No supported first-populated stale-confirm rejection established; no justified patch. Bare duplicate sees synchronously cleared name; page-password IME Done is a real Save producer but not a modal/global route. Busy admission/entry-owner guards constrain easy witnesses; direct onEvent has no navigation-token guard. Lock reset is busy=false/count0; !canSave is not Add router rejection.",
+    "remaining": "Supported queued underlying input/busy delivery and late-input pre-disposal window remain unproved. Second late draft is not automatically loss of first accepted tuple. Original rapid/keyboard/a11y/RTL/mobile/backend applicability qualifications and successful evidence retained.",
+    "application_executions": 0,
+    "new_closures": 0
+  },
+  "resumed_current_phase": {
+    "utc": "2026-09-11T02:33:03.362725+00:00",
+    "phase": "17reviewed application/test paths and11new helper inputs integrated, all execution bindings UNBOUND. Failed GUI03 observation reconciled; no cleanup admission. Source-only publication-release/preparer/publisher deltas underway.",
+    "existing_agents": 20,
+    "owner": "/root",
+    "freeze": "OriginalGUI03 R/control/evidence and original T config/C17 objects unchanged. GUI03-only live T/working-tree/current-index publication freeze explicitly released prospectively; separate C18 command admission required.",
+    "next": "Finish exact C18 nonactivating publication selection/review; fresh shared source/index/tool/instance admission; smallest serial root validations. Runtime cleanup remains HOLD, not a prerequisite fabricated into publication."
+  },
+  "historical_pending_selected_scope_before_gui03_execution": {
+    "status": "GUI03_FOUR_CASES_EXACT_INSTANCE_ACCEPTED_NOT_INVOKED",
+    "regression_or_investigation_methods": 4,
+    "fixture_producers": 0,
+    "expected_test_tasks": 2,
+    "expected_xml_files": 4,
+    "qualification": "Shared realRoom+Main correction and two bounded chooser/tray-property observations; exact instance accepted, fresh root execution admission pending. No passed lifecycle/tray replay. Detekt/Android compilation are not application cases.",
+    "historical_status_before_exact_gui03_instance": "GUI03_FOUR_DECLARATIONS_SOURCE_ACCEPTED_UNBOUND_UNEXECUTED"
+  },
+  "c18_focused_validation_source": {
+    "status": "ELEVEN_NEW_HELPER_INPUTS_INTEGRATED_SOURCE_ACCEPTED_EXECUTION_UNBOUND",
+    "utc": "2026-09-11T02:33:03.362725+00:00",
+    "images": {
+      "scripts/audit/android_compile_02.init.gradle": {
+        "sha256": "fccb4952a892ca5d0a223a6484d63497000b76e4a08eae8dc260d8534729bcd9",
+        "bytes": 12826
+      },
+      "scripts/audit/linux_android_compile_02.py": {
+        "sha256": "a62983080e04c638754973f4a6dfe16d21ccf6bb8f0cbb2582f334aa9b85f89a",
+        "bytes": 63315
+      },
+      "docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py": {
+        "sha256": "3bfa5fff0a759c2fd11be99595949f1562f99f975ea323be1f25b2bd94eb02b6",
+        "bytes": 63569
+      },
+      "scripts/audit/detekt_04.init.gradle": {
+        "sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d",
+        "bytes": 3931
+      },
+      "scripts/audit/linux_detekt_04.py": {
+        "sha256": "d01236439dc9009c4d6a941f783d667d0d0e0267d48396643bdcde6de819fc27",
+        "bytes": 56118
+      },
+      "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py": {
+        "sha256": "6d5687536832061f8c2d2e57a467eba30404e4d2282b981a994013671417b2a5",
+        "bytes": 60669
+      },
+      "scripts/audit/focused_regression_01.init.gradle": {
+        "sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79",
+        "bytes": 9384
+      },
+      "scripts/audit/linux_focused_regression_01.py": {
+        "sha256": "b461fe6399e14ef0ed92789c451b428ce23e6c4edad804ff48317e89278c76a1",
+        "bytes": 39869
+      },
+      "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py": {
+        "sha256": "4228261a5432b7a2bb582da03205736d0617a092a428121ed2ac451921ae24a9",
+        "bytes": 50866
+      },
+      "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv": {
+        "sha256": "88d5b0b1bb06a7795ea6f90e52c642c532add8d41abfa0c0671abc640930f810",
+        "bytes": 1237
+      },
+      "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv": {
+        "sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+        "bytes": 1650
+      }
+    },
+    "shared_source_future_path": "reviews/checkpoint18/source-prepare01/SOURCE.json",
+    "shared_source_created": false,
+    "independent_literal_reviews": {
+      "reviews/team20/android_compile_review/SHARED-C18-SOURCE-REVIEW.md": "237dd539f23cc3a0373cc8ca81f0f5a571f4540e77183947a8f346bfabb0fa2f",
+      "reviews/team20/android_compile_review/SHARED-C18-SOURCE-APPLICATION-REVIEW.md": "cd09a1b74068df94db1986cb56d4ab541bba10c410b482c2a3fc0d3e3f16af52",
+      "reviews/team20/focused_validation_review/SHARED-C18-SOURCE-01-ACCEPTANCE.json": "98dca90f5cd0e22709642d027998af24ec0795ddbee6a29ed77ac65a017eee22",
+      "reviews/team20/focused_validation_review/SHARED-C18-SOURCE-01-INTEGRATION-REVIEW.json": "28e8aef58652a948121e36c18ace3d46e8175c794752e58a51be1cc0afa9fc45",
+      "reviews/team20/android_fixture_review/focused-regression01/SHARED-C18-SOURCE-DELTA-REVIEW.md": "58bb3831a5b93adf130a31786b6b55dd66f3845d6c0287c6699a020e1cac85dc",
+      "reviews/team20/android_fixture_review/focused-regression01/SHARED-C18-SOURCE-APPLICATION-VERIFY.md": "21280fb1132dcea5b18235640242693653728338304e70723d13a193802824a7"
+    },
+    "scopes": {
+      "android_compile02": "Crypto main/device-source compilation only; exact androidJar prerequisite. No APK, installed device, ABI execution, SDK install/license or dependency expansion.",
+      "static04": "Root plus five affected analyzers; exact sixteen task omissions require unchanged171 source tuples, empty groups and pertinent config/wrapper/tool proof. Preserve03 failures and successful unchanged analyses.",
+      "focused_regression01": "12 existing real-Room biometric freshness +6 existing credential freshness +2 existing credential draft methods;3XML suites/2Test tasks and Desktop-test compilation in same wrapper cycle. No GUI/cold-provider/lifecycle/tray replay."
+    },
+    "bounds": "Downstream3500 source members/144KiB canonical OID list; other limits unchanged. New C18 source preparer/prospective publisher separately source-reviewed; no old control replay.",
+    "new_methods": 0,
+    "new_executions": 0,
+    "new_closures": 0,
+    "remaining": "Fresh published C18 source, current index/tool/root instance/cleanup admission and genuine independent exact review; serialize root-owned validations."
+  },
+  "gui03_closeout_observation01": {
+    "status": "CONSUMED_READ_ONLY_FAILURE_ABSENCE_NOT_ESTABLISHED",
+    "utc": "2026-09-11T02:33:03.362725+00:00",
+    "source_sha256": "7d3b3f829f44e5d88097038ce1a4da37d9d0ab3b40483c3b7fabe2e4615e3edc",
+    "external": "reviews/desktop-integration03-closeout01/OBSERVE01-EXTERNAL-RESULT.json",
+    "external_sha256": "2d2189be653853bfa1f544923154e68898ce8dcecb0058cb8659ae8b59e3989c",
+    "review": "reviews/team20/detekt_actual/gui03-closeout-observation/OBSERVE01-ACTUAL-REVIEW.md",
+    "review_sha256": "bad8a1b9ee864a786f911f641da72adaf3277bf54b71ab8f03e07cd8faf033ba",
+    "exit": 1,
+    "elapsed_seconds": 1.701,
+    "retained_unclassified_rows": 64,
+    "error": "bounded issue-list overflow: HOLD",
+    "meaning": "Incomplete metadata scan; empty retained references/conflicts are not absence. Exact failing proc stages/paths not retained; kernel/no-exe attribution only hypothesis. No final namespace/slot/resources/monotonic proof.",
+    "runtime": "OriginalGUI03 R HOLD, no descent or deletion; original source_after/cleanup_safe stay false. Named root metadata observation is not zero R-path access.",
+    "closer": "Source accepted; REQUEST/ROOT-ADMISSION stay UNBOUND; ACCEPT absent; no closer invocation.",
+    "process_actions": "No child creation or signal/additional stop; terminal tool object has no remaining session.",
+    "no_automatic_retry": true,
+    "new_tests": 0,
+    "new_closures": 0
+  },
+  "gui03_prospective_publication_release": {
+    "path": "reviews/team20/root/GUI03-PROSPECTIVE-PUBLICATION-RELEASE.json",
+    "sha256": "895610961b2216b168cf0f737e475df4fca4bbe0301be962ca246dd6bf203049",
+    "status": "EXPLICIT_PROSPECTIVE_GUI03_ONLY_C18_PUBLICATION_FREEZE_RELEASE",
+    "runtime_release": false,
+    "command_admission": false
+  },
+  "ios02_source_feasibility_followup": {
+    "status": "BOUNDED_SOURCE_FEASIBILITY_ACCEPTED_NOT_ESTABLISHED_NO_SUCCESSOR_CREATED",
+    "author_report": "reviews/team20/shared_fixture_author/ios02-feasibility/FEASIBILITY.md",
+    "author_sha256": "e5b2a7c3f68f2e5a7430f939dd7e9d429db5317e60172616aef8375fed8fcb60",
+    "review": "reviews/team20/shared_fixture_review/IOS02_FEASIBILITY_INDEPENDENT_REVIEW.md",
+    "review_sha256": "677ca4052d515089cef5e6d57fdb53449b95de10582eb1af9562f9dffdb17bf3",
+    "result": "No evidence-supported Intel successor for same10; seventeen target variants, x64 cinterop/KSP/dependency trust and compatible installed simulator/JDK host not established. No speculative scaffold/matrix or floor relaxation.",
+    "external_input": "Concretely available compatible ARM host with materially evidenced resources, or authoritative supported x64 target/toolchain/dependency ABI closure plus compatible host; fresh source/request/instance/cleanup admission required.",
+    "preserve": "ConsumedIOS01 launch-resource FAIL/10UNSTARTED/0XML and unmet original close qualification; physical iPhone security remains hardware-specific. This is not universal Apple impossibility.",
+    "new_application_cases": 0,
+    "new_closures": 0,
+    "new_workflow_helper_or_request": false
+  },
+  "c18_shared_source_preparer": {
+    "status": "SOURCE_ACCEPTED_PROMOTED_UNBOUND_NOT_EXECUTED",
+    "path": "reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+    "sha256": "424e30c470dd88b028bb39e007c72ca4ce7ad1b83f044eeead0db1c7eb048c20",
+    "review": "reviews/team20/database_review/C18-SOURCE-PREPARE-REVIEW.json",
+    "review_sha256": "4e272063b550c4a8d7a21c990490cfb09832cd094ca282cb2455df47de25f2a8",
+    "promotion": "reviews/checkpoint18/source-prepare01/PROMOTION.json",
+    "promotion_sha256": "f71043d7af948e92baede87488ea3d6bc0bdd5deafed149beef0f668880e0dc9",
+    "source_members_limit": 3500,
+    "coupling": "3500*41=143500<=144KiB in downstream consumers only; source preparer has no OID-buffer reader/generator. Other caps unchanged.",
+    "execution_admission": false
   }
 }

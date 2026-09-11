@@ -1,0 +1,43 @@
+{
+  "status": "INTERIM_RECORD_SUPERSEDED_BY_SOURCE_HASHES_JSON",
+  "sources": [
+    {
+      "source": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt",
+      "before_sha256": "422cbfd7b85a08585b99519b94f41296ed24ea1dce133f47f4fdab2ddf5a85b9",
+      "proposed_after_sha256": "0b40e53ceceaf11e6cbc5baaeb4be5f771bb17d939f2c7c2ae54fbb19ab00275",
+      "patch": "01-lifecycle-unapplied.patch.txt",
+      "patch_sha256": "25ba7c3d136b1cb93998e4771de2b04a0df94980186c95cb844ffe12e19d5535",
+      "before_bytes": 9659,
+      "proposed_after_bytes": 9949
+    },
+    {
+      "source": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt",
+      "before_sha256": "0a70e40b519ec22e33a075467ec1961a40e8c9c091c43d53c31915e818f1baec",
+      "proposed_after_sha256": "3a730d5e9ae4feb44ea8b0975de470e4125d2fcc35172fdf5bc408b3800c32b2",
+      "patch": "02-tray-unapplied.patch.txt",
+      "patch_sha256": "0d12ebd67431574e0a65e632e45da6cdae213b11bf81cfdf222659d15637c1ed",
+      "before_bytes": 26087,
+      "proposed_after_bytes": 27109
+    },
+    {
+      "source": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/tray/DesktopSystemTrayNativeIntegrationTest.kt",
+      "before_sha256": "0a70e40b519ec22e33a075467ec1961a40e8c9c091c43d53c31915e818f1baec",
+      "proposed_after_sha256": "a0a212aec3cd5a78432feeaf2d8e3cc4b5c14a23dd5776029de15106287fb7ef",
+      "patch": "02-tray-v2-unapplied.patch.txt",
+      "patch_sha256": "c4dafe58a516fd1a589eddc777cd32a1dbf8a82d07b4eb0098917377768285e6",
+      "before_bytes": 26087,
+      "proposed_after_bytes": 27327,
+      "supersedes": "02-tray-unapplied.patch.txt",
+      "v1_rejection": "Pair snapshots could miss late EDT flag writes before cleanup observations; v2 retains live mutable state."
+    },
+    {
+      "source": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/DesktopCurtainRenderingTest.kt",
+      "before_sha256": "6e5f8190e94008f3e3c41b62b3d1d75cdca471057e2de57497829d5c42191c57",
+      "proposed_after_sha256": "175feed3cd716d7881c48b3fcba906513a0e47f0599a7251e8de17f5b728e533",
+      "patch": "03-curtain-unapplied.patch.txt",
+      "patch_sha256": "d277399bf24fa95abd2753315f257add2f30dbca6d18d7f5543bb0db0741d291",
+      "before_bytes": 22441,
+      "proposed_after_bytes": 25631
+    }
+  ]
+}

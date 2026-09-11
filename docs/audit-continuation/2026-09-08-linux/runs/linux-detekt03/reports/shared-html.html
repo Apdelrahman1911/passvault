@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+    </style>
+    <meta charset="utf-8">
+    <title>detekt report</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+        }
+
+        h1 {
+            font-family: Arial, sans-serif;
+            font-weight: 600;
+            width: fit-content;
+            background: -webkit-linear-gradient(left, rgba(105, 33, 224, 1), rgba(247, 44, 67, 1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-family: Arial, sans-serif;
+            font-weight: 400;
+            background: rgb(105, 33, 224);
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.8) 0%, rgba(158, 41, 156, 0.8) 50%, rgba(247, 44, 67, 0.8) 100%);
+            padding: 0.2em;
+            color: #ffffff;
+            border-radius: 4px;
+        }
+
+        h3 {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.4) 0%, rgba(158, 41, 156, 0.4) 50%, rgba(247, 44, 67, 0.4) 100%);
+            padding: 0.5em;
+            border-radius: 4px;
+        }
+
+        .rule-container {
+            background: linear-gradient(90deg, rgba(105, 33, 224, 0.2) 0%, rgba(158, 41, 156, 0.2) 100%);
+            border-radius: 4px;
+            padding-left: 1em;
+            padding-bottom: 0.3em;
+            padding-top: 0.3em;
+            padding-right: 1em;
+            line-height: 1.5em;
+            margin-bottom: 8px;
+            margin-top: 8px;
+        }
+
+        .rule {
+            font-family: Arial, sans-serif;
+            padding: 0.3em;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+
+        .description {
+            font-family: Arial, sans-serif;
+            color: #000000;
+            padding: 0.3em;
+        }
+
+        .location {
+            font-family: Jetbrains Mono, monospace;
+            font-weight: 500;
+            color: #000000;
+            display: block;
+        }
+
+        .message {
+            font-family: Arial, sans-serif;
+            font-size: 0.8em;
+            color: #444444;
+            display: block;
+            margin-top: 1pt;
+        }
+
+        code {
+            font-family: JetBrains Mono, monospace;
+            font-weight: 400;
+        }
+
+        pre {
+            font-family: JetBrains Mono, monospace;
+            font-weight: 500;
+            border: 1px solid #e0e0e0;
+            overflow: auto;
+        }
+
+        .lineno {
+            margin-right: 24px;
+            color: #9771c3;
+            background-color: rgba(230, 211, 243, 0.51);
+        }
+
+        .error {
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AwCFR4T/3uLMgAAADxJREFUCNdNyLERQEAABMCjL4lQwIzcjErpguAL+C9AvgKJDbeD/PRpLdm35Hm+MU+cB+tCKaJW4L4YBy+CAiLJrFs9mgAAAABJRU5ErkJggg==) bottom repeat-x;
+        }
+
+        .exception {
+            color: #b60808;
+            display: inline-block;
+            background-color: #ecdada;
+            border-color: #b60808;
+            border-radius: 10px;
+            border: solid 2px;
+            padding-left: 16px;
+            padding-right: 16px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="225" height="53" viewBox="0 0 225 53" fill="none"
+     style="padding-top: 8px">
+    <path d="M88.8883 42.2665V7.99487H81.6954V20.389C79.9918 18.3703 77.6257 16.6332 73.7926 16.6332C67.7828 16.6332 62.2461 21.2341 62.2461 29.6377V29.7316C62.2461 38.1352 67.8774 42.736 73.7926 42.736C77.5311 42.736 79.9445 40.9989 81.6954 38.6516V42.2665H88.8883ZM81.79 29.7316C81.79 33.9099 78.998 36.6798 75.6382 36.6798C72.2783 36.6798 69.439 33.9099 69.439 29.7316V29.6377C69.439 25.4124 72.2783 22.6894 75.6382 22.6894C78.998 22.6894 81.79 25.4593 81.79 29.6377V29.7316Z"
+          fill="#222222"/>
+    <path d="M120.325 30.3888V30.2949C120.325 23.1589 116.444 16.6332 107.974 16.6332C100.591 16.6332 95.4334 22.5486 95.4334 29.7316V29.8254C95.4334 37.5248 101.065 42.8299 108.683 42.8299C113.274 42.8299 116.681 41.0459 119.047 38.1352L114.93 34.5202C112.942 36.3511 111.192 37.1023 108.778 37.1023C105.56 37.1023 103.289 35.4122 102.579 32.1728H120.23C120.277 31.5156 120.325 31.093 120.325 30.3888ZM113.321 27.7128H102.484C103.052 24.4734 104.992 22.3608 107.974 22.3608C111.002 22.3608 112.895 24.5204 113.321 27.7128Z"
+          fill="#222222"/>
+    <path d="M141.278 41.2337V35.5061C140.237 36.0695 139.054 36.3981 137.729 36.3981C136.12 36.3981 135.41 35.6 135.41 33.9568V23.2059H141.373V17.1027H135.41V10.6709H128.217V17.1027H125.189V23.2059H128.217V35.1305C128.217 40.952 131.199 42.6891 135.599 42.6891C138.013 42.6891 139.764 42.1257 141.278 41.2337Z"
+          fill="#222222"/>
+    <path d="M172.008 30.3888V30.2949C172.008 23.1589 168.128 16.6332 159.657 16.6332C152.275 16.6332 147.117 22.5486 147.117 29.7316V29.8254C147.117 37.5248 152.748 42.8299 160.367 42.8299C164.958 42.8299 168.365 41.0459 170.731 38.1352L166.614 34.5202C164.626 36.3511 162.875 37.1023 160.462 37.1023C157.244 37.1023 154.973 35.4122 154.263 32.1728H171.914C171.961 31.5156 172.008 31.093 172.008 30.3888ZM165.005 27.7128H154.168C154.736 24.4734 156.676 22.3608 159.657 22.3608C162.686 22.3608 164.579 24.5204 165.005 27.7128Z"
+          fill="#222222"/>
+    <path d="M203.278 42.2665L193.293 27.0086L202.947 17.1027H194.334L185.911 26.2574V7.99487H178.718V42.2665H185.911V34.6141L188.419 31.985L195.044 42.2665H203.278Z"
+          fill="#222222"/>
+    <path d="M224.905 41.2337V35.5061C223.864 36.0695 222.681 36.3981 221.356 36.3981C219.747 36.3981 219.037 35.6 219.037 33.9568V23.2059H225V17.1027H219.037V10.6709H211.844V17.1027H208.816V23.2059H211.844V35.1305C211.844 40.952 214.826 42.6891 219.227 42.6891C221.64 42.6891 223.391 42.1257 224.905 41.2337Z"
+          fill="#222222"/>
+    <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M2.18611 0C0.978755 0 0 0.978755 0 2.18611V40.771C0 41.9783 0.978755 42.9571 2.18611 42.9571H24.2534C25.6525 42.9571 26.6258 41.5473 26.3774 40.1705C26.2109 39.2481 26.124 38.2981 26.124 37.3279C26.124 28.5443 33.2445 21.4239 42.028 21.4239C42.8689 21.4239 43.6945 21.4892 44.5001 21.6149C45.8578 21.8268 47.22 20.8585 47.22 19.4844V2.18611C47.22 0.978755 46.2412 0 45.0339 0H2.18611Z"
+          fill="url(#paint0_linear)"/>
+    <path d="M55.3358 48.6166L54.7673 48.0481L53.2421 46.5229L52.9516 46.2324C52.2427 45.5234 52.1855 44.4067 52.673 43.5306C53.6299 41.8109 54.1762 39.833 54.1762 37.7293C54.1762 32.9104 51.3147 28.7499 47.2029 26.8501C46.5196 26.5344 45.8024 26.2808 45.0573 26.0974C44.3636 25.9268 43.6467 25.8164 42.9118 25.7727C42.6749 25.7587 42.4369 25.7495 42.1966 25.7495C38.5166 25.7495 35.2203 27.4188 33.0211 30.0381C31.9784 31.2802 31.1838 32.7357 30.7114 34.3293C30.3916 35.4079 30.217 36.5481 30.217 37.7291C30.217 38.0293 30.2319 38.3259 30.2537 38.6205C30.3082 39.3559 30.4265 40.0733 30.6082 40.766C30.8038 41.5117 31.0689 42.2296 31.3974 42.9116C33.3332 46.9295 37.4465 49.7089 42.1967 49.7089C43.957 49.7089 45.6291 49.3259 47.1357 48.6403C47.9841 48.2543 49.0046 48.3536 49.6636 49.0127L50.0894 49.4385L51.6301 50.9794L52.3016 51.6509C52.7205 52.0699 53.2697 52.2794 53.8186 52.2794C54.3677 52.2794 54.9169 52.0699 55.3357 51.6509C56.1738 50.8129 56.1738 49.4544 55.3358 48.6166ZM42.1967 45.418C39.9525 45.418 37.93 44.451 36.5232 42.9122C35.9485 42.2836 35.4772 41.5594 35.135 40.7667C34.845 40.0954 34.6493 39.3746 34.5617 38.6211C34.5277 38.3283 34.5084 38.0314 34.5084 37.7297C34.5084 33.4903 37.9574 30.0413 42.1968 30.0413C42.4379 30.0413 42.6762 30.0539 42.912 30.0756C43.6638 30.1455 44.3837 30.3242 45.0576 30.5956C45.8458 30.9127 46.5689 31.3564 47.2031 31.902C48.8434 33.3131 49.8852 35.4015 49.8852 37.7297C49.885 41.9688 46.4361 45.418 42.1967 45.418Z"
+          fill="url(#paint1_linear)"/>
+    <path d="M9.9936 25.6979C9.34217 25.6979 8.84618 25.4958 8.50566 25.0914C8.16514 24.6709 7.99487 24.1695 7.99487 23.5873V23.4903C7.99487 22.908 8.16514 22.4147 8.50566 22.0104C8.84618 21.5899 9.34217 21.3796 9.9936 21.3796C10.645 21.3796 11.141 21.5899 11.4815 22.0104C11.8221 22.4147 11.9923 22.908 11.9923 23.4903V23.5873C11.9923 24.1695 11.8221 24.6709 11.4815 25.0914C11.141 25.4958 10.645 25.6979 9.9936 25.6979ZM8.17254 10.8158V7.99487H11.8147V10.8158L10.6598 19.1612H9.32736L8.17254 10.8158Z"
+          fill="white"/>
+    <path d="M20.2729 25.6979C19.6215 25.6979 19.1255 25.4958 18.785 25.0914C18.4444 24.6709 18.2742 24.1695 18.2742 23.5873V23.4903C18.2742 22.908 18.4444 22.4147 18.785 22.0104C19.1255 21.5899 19.6215 21.3796 20.2729 21.3796C20.9243 21.3796 21.4203 21.5899 21.7608 22.0104C22.1014 22.4147 22.2716 22.908 22.2716 23.4903V23.5873C22.2716 24.1695 22.1014 24.6709 21.7608 25.0914C21.4203 25.4958 20.9243 25.6979 20.2729 25.6979ZM18.4518 10.8158V7.99487H22.094V10.8158L20.9391 19.1612H19.6067L18.4518 10.8158Z"
+          fill="white"/>
+    <defs>
+        <linearGradient id="paint0_linear" x1="5.222e-07" y1="41.3361" x2="51.982" y2="33.29"
+                        gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7942EE"/>
+            <stop offset="1" stop-color="#FF4651"/>
+        </linearGradient>
+        <linearGradient id="paint1_linear" x1="53.0121" y1="51.5465" x2="60.9801" y2="30.2423"
+                        gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7942EE"/>
+            <stop offset="1" stop-color="#FF4651"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<h2>Metrics</h2>
+
+<div>
+  <ul>
+    <li>92 number of kt files</li>
+    <li>7 number of packages</li>
+    <li>127 number of classes</li>
+    <li>644 number of functions</li>
+    <li>1,122 number of properties</li>
+  </ul>
+</div>
+
+
+<h2>Complexity Report</h2>
+
+<div>
+  <ul>
+    <li>12,090 lines of code (loc)</li>
+    <li>10,569 source lines of code (sloc)</li>
+    <li>7,714 logical lines of code (lloc)</li>
+    <li>357 comment lines of code (cloc)</li>
+    <li>1,585 cyclomatic complexity (mcc)</li>
+    <li>1,068 cognitive complexity</li>
+    <li>37 number of total findings</li>
+    <li>3% comment source ratio</li>
+    <li>205 mcc per 1,000 lloc</li>
+    <li>4 findings per 1,000 lloc</li>
+  </ul>
+</div>
+
+
+<h2>Issues</h2>
+<div>Total: 37
+  <h3>complexity: 7</h3>
+  <details id="CyclomaticComplexMethod" open="open">
+    <summary class="rule-container"><span class="rule">CyclomaticComplexMethod: 3 </span><span class="description">Prefer splitting up complex methods into smaller, easier to test methods.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/complexity#cyclomaticcomplexmethod">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:581:13</span><span class="message">The function close appears to be too complex based on Cyclomatic Complexity (complexity: 18). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 578 </span>            fail(message)
+<span class="lineno"> 579 </span>        }
+<span class="lineno"> 580 </span>
+<span class="lineno"> 581 </span>        fun <span class="error">close</span>(primary: Throwable?) {
+<span class="lineno"> 582 </span>            var interrupted = Thread.interrupted() || primary is InterruptedException
+<span class="lineno"> 583 </span>            var cleanupFailure: Throwable? = null
+<span class="lineno"> 584 </span>            fun release(block: () -&gt; Unit) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:394:21</span><span class="message">The function closeRoom appears to be too complex based on Cyclomatic Complexity (complexity: 16). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 391 </span>            }
+<span class="lineno"> 392 </span>        }
+<span class="lineno"> 393 </span>
+<span class="lineno"> 394 </span>        private fun <span class="error">closeRoom</span>(owner: RoomOwner) {
+<span class="lineno"> 395 </span>            var interrupted = Thread.interrupted()
+<span class="lineno"> 396 </span>            var failure: Throwable? = null
+<span class="lineno"> 397 </span>            try {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:622:13</span><span class="message">The function close appears to be too complex based on Cyclomatic Complexity (complexity: 19). The maximum allowed complexity for methods is set to '14'</span>
+        <pre><code><span class="lineno"> 619 </span>            fail(message)
+<span class="lineno"> 620 </span>        }
+<span class="lineno"> 621 </span>
+<span class="lineno"> 622 </span>        fun <span class="error">close</span>(primary: Throwable?) {
+<span class="lineno"> 623 </span>            var interrupted = Thread.interrupted() || primary is InterruptedException
+<span class="lineno"> 624 </span>            var failure: Throwable? = null
+<span class="lineno"> 625 </span>            fun release(block: () -&gt; Unit) {
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="LongMethod" open="open">
+    <summary class="rule-container"><span class="rule">LongMethod: 2 </span><span class="description">One method should have one responsibility. Long methods tend to handle many things at once. Prefer smaller methods to make them easier to understand.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/complexity#longmethod">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:230:13</span><span class="message">The function start is too long (67). The maximum length is 60.</span>
+        <pre><code><span class="lineno"> 227 </span>        private var mousePressed = false
+<span class="lineno"> 228 </span>        val model: CredentialViewModel get() = requireNotNull(currentModel.value)
+<span class="lineno"> 229 </span>
+<span class="lineno"> 230 </span>        fun <span class="error">start</span>(display: String) {
+<span class="lineno"> 231 </span>            deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(120)
+<span class="lineno"> 232 </span>            assertEquals(&quot;Linux&quot;, System.getProperty(&quot;os.name&quot;), &quot;EDITOR_SETUP_LINUX_ONLY&quot;)
+<span class="lineno"> 233 </span>            assertTrue(Regex(&quot;:\\d{1,5}(?:\\.0)?&quot;).matches(display), &quot;EDITOR_SETUP_DISPLAY_SYNTAX&quot;)
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:181:35</span><span class="message">The function withEditorComposition is too long (76). The maximum length is 60.</span>
+        <pre><code><span class="lineno"> 178 </span>        }
+<span class="lineno"> 179 </span>    }
+<span class="lineno"> 180 </span>
+<span class="lineno"> 181 </span>    private suspend fun TestScope.<span class="error">withEditorComposition</span>(block: suspend EditorCompositionFixture.() -&gt; Unit) {
+<span class="lineno"> 182 </span>        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+<span class="lineno"> 183 </span>        var primaryFailure: Throwable? = null
+<span class="lineno"> 184 </span>        try {
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="TooManyFunctions" open="open">
+    <summary class="rule-container"><span class="rule">TooManyFunctions: 2 </span><span class="description">Too many functions inside a/an file/class/object/interface always indicate a violation of the single responsibility principle. Maybe the file/class/object/interface wants to manage too many things at once. Extract functionality which clearly belongs together.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/complexity#toomanyfunctions">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:214:25</span><span class="message">Class 'Editor' with '15' functions detected. The maximum allowed functions per class is set to '11'</span>
+        <pre><code><span class="lineno"> 211 </span>    private fun seedValues(count: Int) = List(count) { FieldValue(&quot;auditfield$it&quot;, &quot;field$it&quot;, &quot;value$it&quot;, false) }
+<span class="lineno"> 212 </span>
+<span class="lineno"> 213 </span>    /** The only UI driver in this file; bounded and specific to this production form. */
+<span class="lineno"> 214 </span>    private inner class <span class="error">Editor</span>(private val caseId: String, private val count: Int) {
+<span class="lineno"> 215 </span>        private val repository = FakeCredentialRepository()
+<span class="lineno"> 216 </span>        private val stores = CopyOnWriteArrayList&lt;ViewModelStore&gt;()
+<span class="lineno"> 217 </span>        private val jobs = CopyOnWriteArrayList&lt;Job&gt;()
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:218:25</span><span class="message">Class 'Editor' with '14' functions detected. The maximum allowed functions per class is set to '11'</span>
+        <pre><code><span class="lineno"> 215 </span>    }
+<span class="lineno"> 216 </span>
+<span class="lineno"> 217 </span>    /** This one driver is fixed to the real form; locating uses read-only accessibility, never actions. */
+<span class="lineno"> 218 </span>    private inner class <span class="error">Editor</span>(private val home: AdmittedHome) {
+<span class="lineno"> 219 </span>        private val rooms = mutableListOf&lt;RoomOwner&gt;()
+<span class="lineno"> 220 </span>        private val stores = CopyOnWriteArrayList&lt;ViewModelStore&gt;()
+<span class="lineno"> 221 </span>        private val jobs = CopyOnWriteArrayList&lt;Job&gt;()
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <h3>exceptions: 27</h3>
+  <details id="ThrowingExceptionFromFinally" open="open">
+    <summary class="rule-container"><span class="rule">ThrowingExceptionFromFinally: 6 </span><span class="description">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/exceptions#throwingexceptionfromfinally">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:375:42</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 372 </span>                    pressedKeys -= code
+<span class="lineno"> 373 </span>                } catch (error: Throwable) {
+<span class="lineno"> 374 </span>                    val primary = failure
+<span class="lineno"> 375 </span>                    if (primary == null) <span class="error">throw error</span> else primary.addSuppressed(error)
+<span class="lineno"> 376 </span>                }
+<span class="lineno"> 377 </span>            }
+<span class="lineno"> 378 </span>        }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:409:42</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 406 </span>                    mousePressed = false
+<span class="lineno"> 407 </span>                } catch (error: Throwable) {
+<span class="lineno"> 408 </span>                    val primary = failure
+<span class="lineno"> 409 </span>                    if (primary == null) <span class="error">throw error</span> else primary.addSuppressed(error)
+<span class="lineno"> 410 </span>                }
+<span class="lineno"> 411 </span>            }
+<span class="lineno"> 412 </span>        }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:453:65</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 450 </span>            catch (error: Throwable) { failure = error; throw error }
+<span class="lineno"> 451 </span>            finally {
+<span class="lineno"> 452 </span>                try { native.keyRelease(code); pressedKeys -= code }
+<span class="lineno"> 453 </span>                catch (error: Throwable) { if (failure == null) <span class="error">throw error</span> else failure.addSuppressed(error) }
+<span class="lineno"> 454 </span>            }
+<span class="lineno"> 455 </span>        }
+<span class="lineno"> 456 </span>
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:479:65</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 476 </span>            catch (error: Throwable) { failure = error; throw error }
+<span class="lineno"> 477 </span>            finally {
+<span class="lineno"> 478 </span>                try { native.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false }
+<span class="lineno"> 479 </span>                catch (error: Throwable) { if (failure == null) <span class="error">throw error</span> else failure.addSuppressed(error) }
+<span class="lineno"> 480 </span>            }
+<span class="lineno"> 481 </span>        }
+<span class="lineno"> 482 </span>
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:242:42</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 239 </span>                    closeFixture(composition, store, recomposer, recomposerJob, modelJob, repository)
+<span class="lineno"> 240 </span>                } catch (cleanupFailure: Throwable) {
+<span class="lineno"> 241 </span>                    val failure = bodyFailure
+<span class="lineno"> 242 </span>                    if (failure == null) <span class="error">throw cleanupFailure</span> else failure.addSuppressed(cleanupFailure)
+<span class="lineno"> 243 </span>                }
+<span class="lineno"> 244 </span>            }
+<span class="lineno"> 245 </span>        } catch (failure: Throwable) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:253:38</span><span class="message">Do not throw an exception within a finally statement. This can discard exceptions and is confusing.</span>
+        <pre><code><span class="lineno"> 250 </span>                Dispatchers.resetMain()
+<span class="lineno"> 251 </span>            } catch (cleanupFailure: Throwable) {
+<span class="lineno"> 252 </span>                val failure = primaryFailure
+<span class="lineno"> 253 </span>                if (failure == null) <span class="error">throw cleanupFailure</span> else failure.addSuppressed(cleanupFailure)
+<span class="lineno"> 254 </span>            }
+<span class="lineno"> 255 </span>        }
+<span class="lineno"> 256 </span>    }
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="TooGenericExceptionCaught" open="open">
+    <summary class="rule-container"><span class="rule">TooGenericExceptionCaught: 21 </span><span class="description">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/exceptions#toogenericexceptioncaught">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:201:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 198 </span>        try {
+<span class="lineno"> 199 </span>            editor.start(requireNotNull(display))
+<span class="lineno"> 200 </span>            editor.block()
+<span class="lineno"> 201 </span>        } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 202 </span>            failure = error
+<span class="lineno"> 203 </span>            throw error
+<span class="lineno"> 204 </span>        } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:366:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 363 </span>            try {
+<span class="lineno"> 364 </span>                native.keyPress(code)
+<span class="lineno"> 365 </span>                action()
+<span class="lineno"> 366 </span>            } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 367 </span>                failure = error
+<span class="lineno"> 368 </span>                throw error
+<span class="lineno"> 369 </span>            } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:373:26</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 370 </span>                try {
+<span class="lineno"> 371 </span>                    native.keyRelease(code)
+<span class="lineno"> 372 </span>                    pressedKeys -= code
+<span class="lineno"> 373 </span>                } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 374 </span>                    val primary = failure
+<span class="lineno"> 375 </span>                    if (primary == null) throw error else primary.addSuppressed(error)
+<span class="lineno"> 376 </span>                }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:400:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 397 </span>            var failure: Throwable? = null
+<span class="lineno"> 398 </span>            try {
+<span class="lineno"> 399 </span>                native.mousePress(InputEvent.BUTTON1_DOWN_MASK)
+<span class="lineno"> 400 </span>            } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 401 </span>                failure = error
+<span class="lineno"> 402 </span>                throw error
+<span class="lineno"> 403 </span>            } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:407:26</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 404 </span>                try {
+<span class="lineno"> 405 </span>                    native.mouseRelease(InputEvent.BUTTON1_DOWN_MASK)
+<span class="lineno"> 406 </span>                    mousePressed = false
+<span class="lineno"> 407 </span>                } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 408 </span>                    val primary = failure
+<span class="lineno"> 409 </span>                    if (primary == null) throw error else primary.addSuppressed(error)
+<span class="lineno"> 410 </span>                }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:585:40</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 582 </span>            var interrupted = Thread.interrupted() || primary is InterruptedException
+<span class="lineno"> 583 </span>            var cleanupFailure: Throwable? = null
+<span class="lineno"> 584 </span>            fun release(block: () -&gt; Unit) {
+<span class="lineno"> 585 </span>                try { block() } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 586 </span>                    if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+<span class="lineno"> 587 </span>                    val previous = cleanupFailure
+<span class="lineno"> 588 </span>                    if (previous == null) cleanupFailure = error else previous.addSuppressed(error)
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:682:61</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 679 </span>        if (SwingUtilities.isEventDispatchThread()) return block()
+<span class="lineno"> 680 </span>        val task = FutureTask(Callable(block))
+<span class="lineno"> 681 </span>        SwingUtilities.invokeLater(task)
+<span class="lineno"> 682 </span>        return try { task.get(5, TimeUnit.SECONDS) } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 683 </span>            task.cancel(false) // Prevent a not-yet-started setup action from running after failure.
+<span class="lineno"> 684 </span>            throw error
+<span class="lineno"> 685 </span>        }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:134:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 131 </span>            editor.scrollTo(named(&quot;roomdraft&quot;))
+<span class="lineno"> 132 </span>            assertTrue(editor.visible(named(&quot;Password is hidden&quot;)), &quot;ROOM_EDITOR_REOPEN_SECRET_MASKING&quot;)
+<span class="lineno"> 133 </span>            println(&quot;PASSVAULT_EDITOR_ROOM_RESULT\tfields=50\tsurvivors=49\troom_generations=2\tPASS&quot;)
+<span class="lineno"> 134 </span>        } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 135 </span>            failure = error
+<span class="lineno"> 136 </span>            throw error
+<span class="lineno"> 137 </span>        } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:401:28</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 398 </span>                if (!owner.lockAttempted) {
+<span class="lineno"> 399 </span>                    owner.lockAttempted = true
+<span class="lineno"> 400 </span>                    try { runBlocking { withTimeout(5_000) { owner.vault?.lock()?.getOrThrow() } } }
+<span class="lineno"> 401 </span>                    catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 402 </span>                        if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+<span class="lineno"> 403 </span>                        failure = error
+<span class="lineno"> 404 </span>                    } finally { if (Thread.interrupted()) interrupted = true }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:412:30</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 409 </span>                        assertTrue(jobs.all { it.isCompleted }, &quot;ROOM_EDITOR_CLOSE_WITH_LIVE_VM&quot;)
+<span class="lineno"> 410 </span>                        runBlocking { withTimeout(5_000) { owner.bootstrap.checkpointAndClose().getOrThrow() } }
+<span class="lineno"> 411 </span>                        owner.closed = true
+<span class="lineno"> 412 </span>                    } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 413 </span>                        if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+<span class="lineno"> 414 </span>                        if (failure == null) failure = error else if (failure !== error) failure.addSuppressed(error)
+<span class="lineno"> 415 </span>                    } finally { if (Thread.interrupted()) interrupted = true }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:450:20</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 447 </span>            pressedKeys += code
+<span class="lineno"> 448 </span>            var failure: Throwable? = null
+<span class="lineno"> 449 </span>            try { native.keyPress(code); action() }
+<span class="lineno"> 450 </span>            catch (<span class="error">error: Throwable</span>) { failure = error; throw error }
+<span class="lineno"> 451 </span>            finally {
+<span class="lineno"> 452 </span>                try { native.keyRelease(code); pressedKeys -= code }
+<span class="lineno"> 453 </span>                catch (error: Throwable) { if (failure == null) throw error else failure.addSuppressed(error) }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:453:24</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 450 </span>            catch (error: Throwable) { failure = error; throw error }
+<span class="lineno"> 451 </span>            finally {
+<span class="lineno"> 452 </span>                try { native.keyRelease(code); pressedKeys -= code }
+<span class="lineno"> 453 </span>                catch (<span class="error">error: Throwable</span>) { if (failure == null) throw error else failure.addSuppressed(error) }
+<span class="lineno"> 454 </span>            }
+<span class="lineno"> 455 </span>        }
+<span class="lineno"> 456 </span>
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:476:20</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 473 </span>            mousePressed = true
+<span class="lineno"> 474 </span>            var failure: Throwable? = null
+<span class="lineno"> 475 </span>            try { native.mousePress(InputEvent.BUTTON1_DOWN_MASK) }
+<span class="lineno"> 476 </span>            catch (<span class="error">error: Throwable</span>) { failure = error; throw error }
+<span class="lineno"> 477 </span>            finally {
+<span class="lineno"> 478 </span>                try { native.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false }
+<span class="lineno"> 479 </span>                catch (error: Throwable) { if (failure == null) throw error else failure.addSuppressed(error) }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:479:24</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 476 </span>            catch (error: Throwable) { failure = error; throw error }
+<span class="lineno"> 477 </span>            finally {
+<span class="lineno"> 478 </span>                try { native.mouseRelease(InputEvent.BUTTON1_DOWN_MASK); mousePressed = false }
+<span class="lineno"> 479 </span>                catch (<span class="error">error: Throwable</span>) { if (failure == null) throw error else failure.addSuppressed(error) }
+<span class="lineno"> 480 </span>            }
+<span class="lineno"> 481 </span>        }
+<span class="lineno"> 482 </span>
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:626:40</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 623 </span>            var interrupted = Thread.interrupted() || primary is InterruptedException
+<span class="lineno"> 624 </span>            var failure: Throwable? = null
+<span class="lineno"> 625 </span>            fun release(block: () -&gt; Unit) {
+<span class="lineno"> 626 </span>                try { block() } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 627 </span>                    if (error is InterruptedException || error.cause is InterruptedException) interrupted = true
+<span class="lineno"> 628 </span>                    if (failure == null) failure = error else requireNotNull(failure).addSuppressed(error)
+<span class="lineno"> 629 </span>                } finally { if (Thread.interrupted()) interrupted = true }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:709:61</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 706 </span>        if (SwingUtilities.isEventDispatchThread()) return block()
+<span class="lineno"> 707 </span>        val task = FutureTask(Callable(block))
+<span class="lineno"> 708 </span>        SwingUtilities.invokeLater(task)
+<span class="lineno"> 709 </span>        return try { task.get(5, TimeUnit.SECONDS) } catch (<span class="error">error: Throwable</span>) {
+<span class="lineno"> 710 </span>            task.cancel(false)
+<span class="lineno"> 711 </span>            throw error
+<span class="lineno"> 712 </span>        }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:234:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 231 </span>                assertEquals(BackDisposition.PopNow, fixture.lastComposedDisposition)
+<span class="lineno"> 232 </span>                assertTrue(fixture.appliedCompositions &gt; 0)
+<span class="lineno"> 233 </span>                fixture.block()
+<span class="lineno"> 234 </span>            } catch (<span class="error">failure: Throwable</span>) {
+<span class="lineno"> 235 </span>                bodyFailure = failure
+<span class="lineno"> 236 </span>                throw failure
+<span class="lineno"> 237 </span>            } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:240:26</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 237 </span>            } finally {
+<span class="lineno"> 238 </span>                try {
+<span class="lineno"> 239 </span>                    closeFixture(composition, store, recomposer, recomposerJob, modelJob, repository)
+<span class="lineno"> 240 </span>                } catch (<span class="error">cleanupFailure: Throwable</span>) {
+<span class="lineno"> 241 </span>                    val failure = bodyFailure
+<span class="lineno"> 242 </span>                    if (failure == null) throw cleanupFailure else failure.addSuppressed(cleanupFailure)
+<span class="lineno"> 243 </span>                }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:245:18</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 242 </span>                    if (failure == null) throw cleanupFailure else failure.addSuppressed(cleanupFailure)
+<span class="lineno"> 243 </span>                }
+<span class="lineno"> 244 </span>            }
+<span class="lineno"> 245 </span>        } catch (<span class="error">failure: Throwable</span>) {
+<span class="lineno"> 246 </span>            primaryFailure = failure
+<span class="lineno"> 247 </span>            throw failure
+<span class="lineno"> 248 </span>        } finally {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:251:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 248 </span>        } finally {
+<span class="lineno"> 249 </span>            try {
+<span class="lineno"> 250 </span>                Dispatchers.resetMain()
+<span class="lineno"> 251 </span>            } catch (<span class="error">cleanupFailure: Throwable</span>) {
+<span class="lineno"> 252 </span>                val failure = primaryFailure
+<span class="lineno"> 253 </span>                if (failure == null) throw cleanupFailure else failure.addSuppressed(cleanupFailure)
+<span class="lineno"> 254 </span>            }
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:270:22</span><span class="message">The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.</span>
+        <pre><code><span class="lineno"> 267 </span>        suspend fun release(action: suspend () -&gt; Unit) {
+<span class="lineno"> 268 </span>            try {
+<span class="lineno"> 269 </span>                action()
+<span class="lineno"> 270 </span>            } catch (<span class="error">failure: Throwable</span>) {
+<span class="lineno"> 271 </span>                val previousFailure = cleanupFailure
+<span class="lineno"> 272 </span>                if (previousFailure == null) cleanupFailure = failure else previousFailure.addSuppressed(failure)
+<span class="lineno"> 273 </span>            }
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <h3>style: 3</h3>
+  <details id="ReturnCount" open="open">
+    <summary class="rule-container"><span class="rule">ReturnCount: 2 </span><span class="description">Restrict the number of return statements in methods.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/style#returncount">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRenderingTest.kt:470:13</span><span class="message">Function dialogAdd has 3 return statements which exceeds the limit of 2.</span>
+        <pre><code><span class="lineno"> 467 </span>        fun dialogVisible(): Boolean = onEdt { snapshot().any { it.name == &quot;Add Custom Field&quot; } }
+<span class="lineno"> 468 </span>
+<span class="lineno"> 469 </span>        /** Lowest common semantic ancestor of the title and exactly two dialog edit controls. */
+<span class="lineno"> 470 </span>        fun <span class="error">dialogAdd</span>(nodes: List&lt;Ax&gt;): Ax? {
+<span class="lineno"> 471 </span>            val title = unique(nodes.filter { it.name == &quot;Add Custom Field&quot; }) ?: return null
+<span class="lineno"> 472 </span>            var ancestor = title.parent
+<span class="lineno"> 473 </span>            while (ancestor != null) {
+</code></pre>
+      </li>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt:533:13</span><span class="message">Function dialogAdd has 3 return statements which exceeds the limit of 2.</span>
+        <pre><code><span class="lineno"> 530 </span>
+<span class="lineno"> 531 </span>        fun dialogVisible(): Boolean = onEdt { snapshot().any { it.name == &quot;Add Custom Field&quot; } }
+<span class="lineno"> 532 </span>
+<span class="lineno"> 533 </span>        fun <span class="error">dialogAdd</span>(nodes: List&lt;Ax&gt;): Ax? {
+<span class="lineno"> 534 </span>            val title = unique(nodes.filter { it.name == &quot;Add Custom Field&quot; }) ?: return null
+<span class="lineno"> 535 </span>            var ancestor = title.parent
+<span class="lineno"> 536 </span>            while (ancestor != null) {
+</code></pre>
+      </li>
+    </ul>
+  </details>
+  <details id="ThrowsCount" open="open">
+    <summary class="rule-container"><span class="rule">ThrowsCount: 1 </span><span class="description">Restrict the number of throw statements in methods.</span></summary>
+<a href="https://detekt.dev/docs/2.0.0-alpha.6/rules/style#throwscount">Documentation</a>
+    <ul>
+      <li><span class="location">Error: shared/src/desktopTest/kotlin/com/passvault/shared/navigation/CredentialBackFreshnessCompositionTest.kt:181:35</span><span class="message">Too many throw statements in the function withEditorComposition. The maximum number of allowed throw statements is 2.</span>
+        <pre><code><span class="lineno"> 178 </span>        }
+<span class="lineno"> 179 </span>    }
+<span class="lineno"> 180 </span>
+<span class="lineno"> 181 </span>    private suspend fun TestScope.<span class="error">withEditorComposition</span>(block: suspend EditorCompositionFixture.() -&gt; Unit) {
+<span class="lineno"> 182 </span>        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+<span class="lineno"> 183 </span>        var primaryFailure: Throwable? = null
+<span class="lineno"> 184 </span>        try {
+</code></pre>
+      </li>
+    </ul>
+  </details>
+</div>
+
+
+generated with <a href="https://detekt.dev/">detekt version 2.0.0-alpha.6</a> on 2026-09-11 00:55:03 UTC.
+
+</body>
+</html>
