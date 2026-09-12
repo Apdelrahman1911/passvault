@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "utc": "2026-09-12T07:48:40.599248+00:00",
+  "reviewer": "/root/publication_review",
+  "author_reviewed": "/root/publication_author",
+  "disposition": "ACCEPT_SFIX_PUBLISH01_V2_SOURCE_AND_TRIGGER_DELTA_ONLY",
+  "source_acceptance": true,
+  "instance_admission": false,
+  "execution_admission": false,
+  "actual_publication_acceptance": false,
+  "scope": "Only the new one-file Sfix transport, material inherited child-lifetime correction, fixed temporary-source handling, receipt/capture compatibility and one-path push-trigger applicability. Reuse accepted ordering and DSL semantics; no audit restart, archived publisher replay or native-refusal workflow access.",
+  "inputs": [
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/SFIX-PUBLISH01-V2.py.txt",
+      "bytes": 26858,
+      "sha256": "4f2c888959c67921f3bbb9b7be0cc5190d5016bdbbd9dfd833a7f3168eb8549c"
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/SFIX-PUBLISH01-CONFIG.template.json",
+      "bytes": 2673,
+      "sha256": "68d431b5fc12b5017475113a2ba5109a21bd4dc9c0edbb244e8c8989243f10ee"
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/SFIX-PUBLISH01-V2-PACKET.json",
+      "bytes": 6896,
+      "sha256": "9288a8219c7c7706c441c9d3f04198511419de8dd2fe924300660939b02173dc"
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/SFIX-PUBLISH01-V2-DELTA.diff.txt",
+      "bytes": 1245,
+      "sha256": "b720cbbfde40eb7ae036bd3ba9ea6ac666e2046437046f4cb4fe974183c2d4e7"
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/README.md",
+      "bytes": 3681,
+      "sha256": "72bd7c8fc7a0552efb20b789caa529dc6c2a4e5dc0f26c28b7b1f2730792d504"
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/SFIX-PUBLISH01.py.txt",
+      "bytes": 26856,
+      "sha256": "6f5de82cee6dd917c5b8312e09ed94b8f2e2f77efd675365a894c8be38744a99"
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/SFIX-PUBLISH01-PACKET.json",
+      "bytes": 5917,
+      "sha256": "50208b1615cf9917a9e97fa975b7c91fdd4813fb840feb8f1c7086d8c9ccff9a"
+    },
+    {
+      "path": "reviews/team20/resume_disk/native_lifetime_author/dsl_fix01/app-desktop-build.gradle.kts.txt",
+      "bytes": 63918,
+      "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+    },
+    {
+      "path": "reviews/team20/resume_disk/native_lifetime_review/dsl_fix01/REVIEW.md",
+      "bytes": 4810,
+      "sha256": "c4dba5e4703f2f3979bd630a8cf5d10b5aec966dd1b8aa81267377e2f44979a6"
+    },
+    {
+      "path": "reviews/team20/resume_disk/coverage_review/POST-STATIC05-ORDERING-REVIEW.md",
+      "bytes": 4233,
+      "sha256": "86ef261161efaafd0737b57c2a6d9642449bc1e1333580172d6fa91f24e85a8b"
+    },
+    {
+      "path": "reviews/team20/resume_disk/windows_review/resumed01/AWIN-TRIGGER-ATTESTATION-REVIEW.json",
+      "bytes": 15044,
+      "sha256": "af25b67e184d58e648d577c72b0c062c01e0cc0b295cece5332a035fbd7176ac"
+    },
+    {
+      "path": "reviews/team20/resume_disk/capture_author/sfix_prepare01/SFIX-CAPTURE-PACKET.json",
+      "bytes": 13842,
+      "sha256": "337642fba636b9f49be06ac87a6d1b8d037b01ec1a17bfe92aeb3db8825afe09"
+    },
+    {
+      "path": "reviews/team20/resume_disk/coverage_review/WINDOWS-ACTIVATION01-BOUNDED-V2-SOURCE-REVIEW.json",
+      "bytes": 9726,
+      "sha256": "5e652276185957f0fcf2cdd89979f0339345c10631240cac2b904494b3760e68"
+    }
+  ],
+  "superseded_v1": {
+    "status": "UNEXECUTED_SOURCE_PROPOSAL_NOT_ACCEPTED_FOR_EXECUTION",
+    "reason": "Author and reviewer independently identified Popen plus pid/receipt durable outside the Git try/finally. Successful spawn followed by cap/IO/fsync failure could bypass owned-child finalization; outer finally handled temp and descriptors only.",
+    "v2_literal_proof": "A single exact text replacement moving the two Popen/postspawn bookkeeping lines inside the existing try reproduces complete v2 from v1. All argv/environment/output/timeout/Git/source/publication behavior otherwise unchanged. No helper import, AST, compilation or execution.",
+    "remaining_limits": "Original direct-child bounded reaping and pipe closure now cover postspawn bookkeeping failure. This is not descendant/cgroup containment, hard-kill recovery, cancellation delivery or a runtime-tested cleanup guarantee. Abnormal or ambiguous settlement stays HOLD/no automatic retry."
+  },
+  "independent_challenges": {
+    "lineage_and_single_source_delta": "Awin actual status/owner/commit/tree/C20 parent/delta/remote/config are bound before mutation. Independent review and terminal Windows cleanup are separately pinned root facts. Git independently checks Awin sole parent and sole fixed request addition, exact C20 tree, request row, and old Desktop blob. Whole index must equal parent tree with no staged/unstaged/untracked work. Sfix permits exactly one M app-desktop/build.gradle.kts; whole staged and committed maps must equal Awin with that row alone replaced; Sfix sole parent is actual Awin. No request/report/control companion or interposed commit is allowed.",
+    "accepted_source_identity": "Independently read current63886B/SHA0fd4293e5f4741a1a10ef049dc42f24e7f002d2303cb6779087eaa3bacf24ab6/blobfdc98c9575568e746933c476e5b40fabfe9a23ad and accepted63918B/SHA9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709/blob172fd771919fbb848c7c413af97706b257a7c3d2. Both framed Git blob calculations match literals. Existing4810B independent DSL review reused; no duplicate semantic/compiler claim. W original bytes stay frozen and are never modified by this helper. Root integrates separately after actual transport acceptance.",
+    "temp_and_failure_safety": "One fixed T/app-desktop/.build.gradle.kts.sfix-publish01.tmp must be absent and is O_EXCL/O_NOFOLLOW-created. Its descriptor/path identity and exact afterimage are checked; destination original bytes/full pin are reread before atomic replacement. Successful replacement becomes retained source, never cleanup. On failure only an uninstalled original single-linked uid0 regular temp with matching descriptor/path full pin may be unlinked. Unexpected temp/identity, staged/committed state, installed source and uncertain push remain retained HOLD; no reset/restore/delete/retry. Cooperative root-only custody is necessary; these path checks do not defeat hostile same-uid mutation.",
+    "namespace_and_config": "Original T/root parent/physical lock/config full pin and no-sharing guard retained. Original100000-file/512MiB complete physical before/after inventory is not replaced by a Git map or custody assertion. Twelve reused primitive blocks were compared as text:11 unchanged; read_file additionally requires uid0. Sfix-specific resource and128KiB receipt changes were separately read. Outer actual tool/environment/index/root custody remains required.",
+    "Git_external_side_effects": "Fixed operations run only in T, dedicated branch only, no force push, no tag-following, no submodule recursion, signing/hooks/automatic maintenance disabled. Exact six refs are checked before mutation, commit, push and after push; only continuation advances. A successful or uncertain push is external state even if later closeout fails. No dispatch, app build, release workflow reuse, Store/signing/publication or original W Git-store command exists.",
+    "admission_and_limits": "Config source is inert: ten admission predicates require literal true; floor fallback explicitly boolean. Awin actual and seven evidence descriptors have bounded exact hashes; stable_inputs rereads config, afterimage, W old source, slot, Awin receipt, DSL review and adopted evidence. Evidence truth is not inferred from JSON loading. Actual exact config/executor/environment bytes must be cooperatively frozen and independently instance-reviewed outside config. Total600s, Git60s/push120s,15s samples,4MiB stdout/1MiB stderr/128KiB stdin,128KiB receipt, normal12/8GiB and25/20percent RAM; explicit owner-permitted Linux3GiB fallback only. No target Windows-floor relaxation.",
+    "receipt_and_capture_compatibility": "Exclusive publication/CHECKPOINT-21-SFIX-PUBLISHED.json reports PUBLISHED_EXACT_SFIX_SOURCE only after all in-program checks; cap131072 matches prepared SOURCE reader. Includes actual commit/tree/publication_clone/namespace_identity/preserved_config_after and complete verified committed-tree path aggregates N,Q,max_json_quoted_path_bytes,encoding=UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL. Aggregates derive from whole committed map, not predicted4113/Q values or old C20 totals. Large stderr is retained in bounded exclusive logs rather than truncated into a success claim. Actual receipt size/terminal status/schema still need independent review; no file-byte totals or fresh SOURCE/INDEX are established here."
+  },
+  "Sfix_trigger_delta": {
+    "basis": "Reuse the independent af25b67e19-workflow exact named-tuple/stanza review. Published workflow set is19, not20. No workflow body or excluded native-refusal file was opened for this delta review.",
+    "finding": "Actual direct Sfix child changes only app-desktop/build.gradle.kts on codex/audit-continuation-linux-20260908. None of four audit exact-request-path push filters matches that path; ci/main/testing/release, pages/main and testing-release/testing direct pushes do not match the branch; twelve remaining workflows are dispatch/call-only. No published workflow_run trigger is added. Existing Awin request presence alone does not retrigger its workflow on a script-only push.",
+    "counterexample": "An open continuation-head PR to main/testing/release can trigger ci.yml synchronize without a path exclusion. Thus fresh exact-head/all-base PR observation and all repository nonterminal queues, root custody and separately accepted actual one-M source delta are still mandatory. This mapping neither supplies future/current queue facts nor excludes manual/external automation.",
+    "eligibility": "Source-only applicability accepted for this exact delta and unchanged19 workflow set; actual source/trigger/root admission remains separate."
+  },
+  "required_actual_bindings": [
+    "Successful independently accepted exact Awin source publication and terminal Windows4 original-job/handle/generated-cleanup settlement. A settled FAIL need not block unrelated source correction; unacknowledged push/running CI/uncertain cleanup does. Do not replay Windows4.",
+    "Fresh six-ref/all-base-head-PR/repository-wide queued,pending,waiting,requested,in_progress point, independent adoption, no known conflicting launcher, original namespace/lock/tool/environment custody and current resources. Prior preflight is not current Sfix authority.",
+    "Fresh sole-slot state/hash beginning RESERVED_SFIX, explicit limited T/index freeze release and frozen old W source. Exact candidate/config/evidence/executor hashes plus unused receipt/whitespace/log/temp eligibility; genuine independent exact-instance review and outer root execution admission.",
+    "Root invokes only exact26858B v2 path once under admitted environment. Retain original external terminal/result, full one-M/direct-parent/source/config/ref/cleanup facts and compact logs. Any consumed failure remains no-retry, not permission to replay this source.",
+    "Independent actual receipt acceptance precedes root W integration, shared fresh metadata/SOURCE/INDEX and local cohort binding. Reuse shared capture; do not relabel C20 data or derive measured counts from predictions. Minimal next already-needed Gradle cohort must demonstrate DSL compilation; no additional trivial test/build is requested."
+  ],
+  "activity": "Named W instruction/source/review byte reads, ordinary text/JSON/hash/framed-blob comparison and exclusive own review write/readback only. No T access, Git/network, live processes/runtime/SDK/held-root probes, source helper import/AST/compile/execution, canonical edits, build/test/cleanup or notifications. Short data commands settled; no worker/cache/service/emulator/disposable build output created.",
+  "counts": {
+    "application_tests": 0,
+    "compilation_passes": 0,
+    "new_findings_families": 0,
+    "qualified_closures": 0
+  },
+  "preserved": "PVU007 STOP;PVU011 NO RETRY/no procedure inquiry;PVA02949/44/5FAIL/no automatic retry;G7/G8 CLOSED;native refusal/earlier HOLD;protected refs/tags/version/dependency/identity/signing/Store/build1017001 and eight PVD owner decisions unchanged."
+}

@@ -1,0 +1,606 @@
+{
+  "case_scoring": "NOT_PERFORMED; raw XML requires independent actual-case review",
+  "cases": {
+    "passvault_biometric_windows_file_io_close_failure": {
+      "ctest_exit_code": 0,
+      "raw_xml": "file-io-close.xml",
+      "state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+      "xml_bytes": 599,
+      "xml_scoring": "NOT_PERFORMED; independent actual-case review required",
+      "xml_sha256": "4f3da0318da8b5297ca46979d48a615fe7079f848587de2a431c9ca9cf7706cd"
+    },
+    "passvault_biometric_windows_file_io_flush_failure": {
+      "ctest_exit_code": 0,
+      "raw_xml": "file-io-flush.xml",
+      "state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+      "xml_bytes": 599,
+      "xml_scoring": "NOT_PERFORMED; independent actual-case review required",
+      "xml_sha256": "57681bffde8699d2c35cafbad7246b18a8e5c65104028cdcdf53bbc309b0cc55"
+    },
+    "passvault_biometric_windows_file_io_write_failure": {
+      "ctest_exit_code": 0,
+      "raw_xml": "file-io-write.xml",
+      "state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+      "xml_bytes": 599,
+      "xml_scoring": "NOT_PERFORMED; independent actual-case review required",
+      "xml_sha256": "523cbd6cee3e8dccdd7d44d12910d1f0b1a9002984e0b6bf92eae15572c2cf73"
+    },
+    "passvault_biometric_windows_kdf_known_answer": {
+      "ctest_exit_code": 0,
+      "raw_xml": "kdf.xml",
+      "state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+      "xml_bytes": 431,
+      "xml_scoring": "NOT_PERFORMED; independent actual-case review required",
+      "xml_sha256": "fa2600d01f40cbca44604e934c8c3c4d0f946c47a3a4d31447b737b9a092e5b5"
+    }
+  },
+  "cleanup": "HOLD; hosted runner disposal is not an observed cleanup pass",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^",
+        "HEAD^^{tree}"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "01-git-identity.log",
+      "parent_output_snapshot_sha256": "ebb01d79e5a513c077f908686497c3e56fddec434ba44eadea3c4bf36e806aa6",
+      "pid": 2676,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 3120
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "02-one-parent.log",
+      "parent_output_snapshot_sha256": "ae5276129b396391095fa28fe75a6cd59506e7db263b4593d561c2baca6de677",
+      "pid": 6208,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 1532
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "diff",
+        "--name-status",
+        "HEAD^",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "03-request-only-diff.log",
+      "parent_output_snapshot_sha256": "5e962a12d90a85a53dde63612f484bc0c5f9834efd503184b3018defe1cd99f0",
+      "pid": 4964,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7300
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "04-clean-source.log",
+      "parent_output_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pid": 3552,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4008
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "--version"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "05-cmake-version.log",
+      "parent_output_snapshot_sha256": "f6e81c2559f3ce00c5fdad01d7b226c301f5d6b07ee04f65db6dbfdc1cc5970b",
+      "pid": 6708,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4392
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "-S",
+        "D:\\a\\passvault\\passvault\\app-desktop\\native\\biometric-bridge",
+        "-B",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "x64",
+        "-DCMAKE_SYSTEM_VERSION=10.0.26100.0",
+        "-DBUILD_TESTING=ON",
+        "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS=OFF"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "06-configure.log",
+      "parent_output_snapshot_sha256": "e9f759cfef9f452d620f2c72f9df5d66f793e49397843368c1e6160efe174042",
+      "pid": 2288,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 6968
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\cmake.exe",
+        "--build",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "--config",
+        "Release",
+        "--target",
+        "passvault_biometric_windows_security_test",
+        "--parallel",
+        "1",
+        "--verbose",
+        "--",
+        "/nodeReuse:false"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "07-build.log",
+      "parent_output_snapshot_sha256": "f6ec8ea9f62ddc240d297545a516d9c0c620762f97a47f8fbd8f7249a3f7e490",
+      "pid": 1200,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 7704
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "-C",
+        "Release",
+        "--show-only=json-v1",
+        "-R",
+        "^(passvault_biometric_windows_kdf_known_answer|passvault_biometric_windows_file_io_write_failure|passvault_biometric_windows_file_io_flush_failure|passvault_biometric_windows_file_io_close_failure)$"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "08-ctest-inventory.log",
+      "parent_output_snapshot_sha256": "61847c7f84ca80586939dd3312bacd935eddc72a0adcc4fb68b0c7298a94794b",
+      "pid": 4968,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 3104
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "-C",
+        "Release",
+        "--parallel",
+        "1",
+        "--timeout",
+        "30",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\logs\\kdf.xml",
+        "-R",
+        "^passvault_biometric_windows_kdf_known_answer$"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "09-case-1.log",
+      "parent_output_snapshot_sha256": "fbaaa9fc70b767dfa2861b8f339c8e2a675f3c6d9a6e7468df169b66ae7cb2c6",
+      "pid": 5480,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 2220
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "-C",
+        "Release",
+        "--parallel",
+        "1",
+        "--timeout",
+        "30",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\logs\\file-io-write.xml",
+        "-R",
+        "^passvault_biometric_windows_file_io_write_failure$"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "10-case-2.log",
+      "parent_output_snapshot_sha256": "92c22d0e4eb99a58fdfaf685a687d8107e36b31f3676b535c54ff2a635c58142",
+      "pid": 7264,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 2724
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "-C",
+        "Release",
+        "--parallel",
+        "1",
+        "--timeout",
+        "30",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\logs\\file-io-flush.xml",
+        "-R",
+        "^passvault_biometric_windows_file_io_flush_failure$"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "11-case-3.log",
+      "parent_output_snapshot_sha256": "1a63885d617cd46a6d70c7bb5b7edfdce4b0ae01bf519e8ef23b81905d23543d",
+      "pid": 4748,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 2276
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\CMake\\bin\\ctest.exe",
+        "--test-dir",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build",
+        "-C",
+        "Release",
+        "--parallel",
+        "1",
+        "--timeout",
+        "30",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\logs\\file-io-close.xml",
+        "-R",
+        "^passvault_biometric_windows_file_io_close_failure$"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "12-case-4.log",
+      "parent_output_snapshot_sha256": "fdbe915ba7b2a55e2a3110d71ca272fa414001a70d2811231af774c165ca89c0",
+      "pid": 3784,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 3476
+    }
+  ],
+  "entry_refusals": [
+    {
+      "disposition": "HOLD; no target read/follow/delete",
+      "identity": [
+        70345045,
+        65536,
+        5565,
+        9238
+      ],
+      "links": 1,
+      "original_handle_closed": true,
+      "owned_relative": "home\\AppData\\Local\\Microsoft\\Windows\\INetCache\\Content.IE5",
+      "owned_relative_characters": 58,
+      "owned_relative_sha256": "4cd955957d9592cde4e8cf2478a3ceb9da8fb16a9dc071a819d59a71ebe63ec3",
+      "reparse": true,
+      "target_read": false
+    }
+  ],
+  "failures": [
+    "Cleanup EntryRefusal: No-follow entry ownership/reparse/link refusal"
+  ],
+  "generated_file_observations": [
+    {
+      "after": {
+        "created": [
+          31277707,
+          3590554046
+        ],
+        "identity": [
+          70345045,
+          196608,
+          5608,
+          32
+        ],
+        "links": 1,
+        "size": 16863,
+        "written": [
+          31277707,
+          3590554046
+        ]
+      },
+      "before": {
+        "created": [
+          31277707,
+          3590554046
+        ],
+        "identity": [
+          70345045,
+          196608,
+          5608,
+          32
+        ],
+        "links": 1,
+        "size": 16863,
+        "written": [
+          31277707,
+          3590554046
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build\\CMakeCache.txt",
+      "read_bytes": 16863,
+      "read_bytes_sha256": "3abc8db6020ffa43a0f46a8614a6f92f4ec10e389336344fe05461c4d3cb8009",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": false,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    {
+      "after": {
+        "created": [
+          31277707,
+          3590866637
+        ],
+        "identity": [
+          70345045,
+          393216,
+          5631,
+          32
+        ],
+        "links": 1,
+        "size": 65670,
+        "written": [
+          31277707,
+          3590866637
+        ]
+      },
+      "before": {
+        "created": [
+          31277707,
+          3590866637
+        ],
+        "identity": [
+          70345045,
+          393216,
+          5631,
+          32
+        ],
+        "links": 1,
+        "size": 65670,
+        "written": [
+          31277707,
+          3590866637
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build\\passvault_biometric_windows_security_test.vcxproj",
+      "read_bytes": 65670,
+      "read_bytes_sha256": "196db68affab8944f3674c1474c048951289a2b415b913127f37a20a038e7ec7",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": false,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    {
+      "after": {
+        "created": [
+          31277707,
+          3590554046
+        ],
+        "identity": [
+          70345045,
+          196608,
+          5608,
+          32
+        ],
+        "links": 1,
+        "size": 16863,
+        "written": [
+          31277707,
+          3590554046
+        ]
+      },
+      "before": {
+        "created": [
+          31277707,
+          3590554046
+        ],
+        "identity": [
+          70345045,
+          196608,
+          5608,
+          32
+        ],
+        "links": 1,
+        "size": 16863,
+        "written": [
+          31277707,
+          3590554046
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build\\CMakeCache.txt",
+      "read_bytes": 16863,
+      "read_bytes_sha256": "3abc8db6020ffa43a0f46a8614a6f92f4ec10e389336344fe05461c4d3cb8009",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": true,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    },
+    {
+      "after": {
+        "created": [
+          31277707,
+          3590866637
+        ],
+        "identity": [
+          70345045,
+          393216,
+          5631,
+          32
+        ],
+        "links": 1,
+        "size": 65670,
+        "written": [
+          31277707,
+          3590866637
+        ]
+      },
+      "before": {
+        "created": [
+          31277707,
+          3590866637
+        ],
+        "identity": [
+          70345045,
+          393216,
+          5631,
+          32
+        ],
+        "links": 1,
+        "size": 65670,
+        "written": [
+          31277707,
+          3590866637
+        ]
+      },
+      "original_handle_close": "SUCCEEDED",
+      "path": "D:\\a\\_temp\\passvault-windows-kdf-file-io-01-34681869491-1-18d1aaaace5896f0f3a51317558a59e8\\build\\passvault_biometric_windows_security_test.vcxproj",
+      "read_bytes": 65670,
+      "read_bytes_sha256": "196db68affab8944f3674c1474c048951289a2b415b913127f37a20a038e7ec7",
+      "read_error": null,
+      "read_returned": true,
+      "read_validated": true,
+      "settled": true,
+      "sharing": "READ only; deny WRITE/DELETE",
+      "stage": "read_validated"
+    }
+  ],
+  "gradle_stop": "NOT_APPLICABLE: no Gradle invocation",
+  "hello_hardware": "BLOCKED: not exercised",
+  "job_settlement": {
+    "errors": [],
+    "observed_zero": true,
+    "termination_attempted": true
+  },
+  "operational_status": "FAILED_OR_INCOMPLETE",
+  "original_handle_close_failures": [],
+  "request_commit": "2ddeaa8412c06cef07e23b7dda951db3434f1f9c",
+  "request_tree": "6fd5ed8eae6903eabe898878054c493514654b13",
+  "sdk_header_observation": {
+    "after": {
+      "created": [
+        31231828,
+        3245702912
+      ],
+      "identity": [
+        16655526,
+        65536,
+        490593,
+        32
+      ],
+      "links": 1,
+      "size": 76998,
+      "written": [
+        31231828,
+        3245702912
+      ]
+    },
+    "before": {
+      "created": [
+        31231828,
+        3245702912
+      ],
+      "identity": [
+        16655526,
+        65536,
+        490593,
+        32
+      ],
+      "links": 1,
+      "size": 76998,
+      "written": [
+        31231828,
+        3245702912
+      ]
+    },
+    "original_handle_close": "SUCCEEDED",
+    "path": "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0\\um\\webauthn.h",
+    "read_bytes": 76998,
+    "read_bytes_sha256": "fb575592ce15d8f672386aab5e6b3d3aac101f4ec11a8c52c8085cd6d59a9665",
+    "read_error": null,
+    "read_returned": true,
+    "read_validated": true,
+    "sharing": "READ only; deny WRITE/DELETE",
+    "stage": "read_validated"
+  },
+  "source_commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+  "source_qualification": "Four fixed normal-image selectors: KDF has two source-qualified fixed-vector assertions; three I/O controls combine real owned files/handles with deliberate reported-status failure. The close control closes the real handle successfully before reporting false. No actual OS write/flush/close fault, process crash, application cancellation, whole-root recovery, old-case replay, provider/Hello/hardware, caller-secret cut or security-family closure is proved.",
+  "source_tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+  "suite": "windows-kdf-file-io-01"
+}

@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T10:40:11.227659+00:00",
+  "status": "ADMITTED_ONCE_ANDROIDGRAPH01_AND_IMMEDIATE_ORIGINAL_CLEANUP",
+  "finding_ids": [
+    "PVA-009",
+    "PVA-030"
+  ],
+  "why": "Observe exact host-unit graph for one pending Android clipboard regression, hard refusal before actions; no Android32/native/framework/compilation/test credit.",
+  "source_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "source_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+  "request": {
+    "path": "requests/LINUX-ANDROID-HOST-GRAPH-01.json",
+    "bytes": 12585,
+    "sha256": "a69a34d19cd29156d29b3d187e3520d809e7a9dcba0e07f160963e1970da1c3e"
+  },
+  "genuine_independent_approval": {
+    "path": "reviews/team20/resume_disk/android_review/resumed01/GRAPH01-INSTANCE-ACCEPT.json",
+    "bytes": 1081,
+    "sha256": "cddb7028f23f56fd68c92c4a77bc21c766cb7d3c666871dd269b3f4ad05f88b8"
+  },
+  "genuine_independent_instance_review": {
+    "path": "reviews/team20/resume_disk/android_review/resumed01/GRAPH01-INSTANCE-REVIEW.json",
+    "bytes": 6093,
+    "sha256": "0088b285046e248eb645aa5d3170fb7d929603cdc9f24618f3babfd5cfa82439"
+  },
+  "entry_instance": {
+    "path": "reviews/team20/resume_disk/root/SFIX-ANDROIDGRAPH01-INSTANCE01.json",
+    "bytes": 1122,
+    "sha256": "f3850b354b7ec85b0ae0f09589889e1384ad5ce426ef6c5cc5c5459074d12910"
+  },
+  "shared_capture_adoption": {
+    "path": "reviews/team20/resume_disk/root/SFIX-SHARED-CAPTURE-ADOPTION01.json",
+    "bytes": 2542,
+    "sha256": "ed54015e1190696af929c9b0d3bdcbab6c1bc81e40359c45460eb105d54c64de"
+  },
+  "entry_slot": {
+    "path": "reviews/team20/resume_disk/root/SFIX-ANDROIDGRAPH01-ENTRY-SLOT.json",
+    "bytes": 7755,
+    "sha256": "4c0e185114d8b71d0eb663c432454344c4a0c3cb01c8f1f6ac851b1558ca52d3"
+  },
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "bytes": 8271,
+    "sha256": "5455a9b42cfd507ed986a2d0cc02ca553bd6924b13a6262523b9dd9fed59eea0"
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-host-graph01-outer/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "planned_gradle_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-android-host-graph01/checkout/gradlew",
+    "--init-script",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/android_host_graph_01.init.gradle",
+    ":app-android:testDebugUnitTest",
+    "--info",
+    "--dry-run",
+    "-Ppassvault.audit.mode=android-host-graph-only",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_stop_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-android-host-graph01/checkout/gradlew",
+    "--stop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "expected_evidence": "Two exact graph records and callback-local pre-action refusal; complete original Gradle exit1, no action/task/test cases. Actual log/terminal/isolation/source/index/stop/settlement/cleanup independently reviewed; arbitrary failure or outer0 alone insufficient.",
+  "resources": {
+    "disk_available_bytes": 17860550656,
+    "padded_start_bytes": 13421772800,
+    "launch_floor_bytes": 12884901888,
+    "running_floor_bytes": 8589934592,
+    "whole_runtime_cap_bytes": 3221225472,
+    "ram_available_bytes": 63940227072,
+    "ram_total_bytes": 67435888640,
+    "worker_count": 1
+  },
+  "limits": "One graph Gradle900s,originalstop600s,outer6000s; JDK17/strictverification/worker1/non-daemon/no configureondemand/noSDKdownload. Existing compileSDK readonly only; no emulator/image/license acquisition or change.",
+  "fresh_external_state_change": "Prelaunch root conflict observed Java19165/19225/22242; no helper/admission/slotwrite then. Later10:37:06 point2110f7 empty and this fresh final screen empty. All current request image fullpins/hashes,namespaces,directories,lock/source/index match exactly. No changed source/request to re-review; original independent approval explicitly requires these root launch checks and remains exact, unconsumed.",
+  "coordination": "All20lanes complete or explicitly repaused including GUI/publication/Android after source-only work. Root sole build/test/CI/Git/runtime/cleanup launcher. No new CI since retained9completed point, original lock/sole slot. T/index remains frozen. Empty boundedcomm point not continuous global-idle guarantee; helper watches ongoing.",
+  "cleanup_installed_before_child": "Accepted outer signal/descriptor/ownedchild finalizers and inner original-stop journal installed before project command. Retain compact graph/log/source/isolation/settlement outsideR. Original wrapper--stop once; original namespace settlement and descriptor-validated wholefreshR removal. Failure/uncertainty HOLD/noautomaticretry.",
+  "fences": "NoGitmutation/push/protectedref/tag/dependency/version/identity/signing/store/build1017001change. PVU007STOP/PVU011NO-RETRY/PVA02949/44/5FAILnoautoretry/G7G8CLOSED/originalnative&HOLD/PVDrestrictionspreserved."
+}

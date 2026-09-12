@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T08:27:34.551243+00:00",
+  "status": "ACCEPTED_WINDOWS4_CASE_EVENTS_AND_EXECUTION_SETTLEMENT_WITH_IMMUTABLE_FILESYSTEM_HOLD",
+  "actual": {
+    "path": "reviews/team20/resume_disk/windows_author/resumed01/observer01/actual/intake/evidence/result.json",
+    "bytes": 18843,
+    "sha256": "a48a56750b39f6e82321a81f682752edb0926a3d2ddfe6ec42b99c0e8fee2022"
+  },
+  "independent_review": {
+    "path": "reviews/team20/resume_disk/windows_review/resumed01/WINDOWS4-ACTUAL-RESULT-REVIEW.json",
+    "bytes": 21562,
+    "sha256": "830660f5f4f13c1a5ea4685bda0063039dd29eff22667a3c2740b549442cd9e1"
+  },
+  "external_observation_terminals": {
+    "path": "reviews/team20/resume_disk/root/WINDOWS4-OBSERVATION-EXTERNAL-TERMINALS.json",
+    "bytes": 2294,
+    "sha256": "896040fa9703f30c2e9e87610105ab85a6ca350b4c76ef456a0b17acb76b249e"
+  },
+  "consumed_slot_snapshot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT-WINDOWS4-CONSUMED.json",
+    "bytes": 5232,
+    "sha256": "6dd455da5a0763bdd2ea80d89033b8be911a25e50a84f2e73f14ec7b09f142f2"
+  },
+  "run": {
+    "id": 34681869491,
+    "attempt": 1,
+    "job_id": 103521847510,
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "source_commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+  "source_tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+  "request_commit": "2ddeaa8412c06cef07e23b7dda951db3434f1f9c",
+  "request_tree": "6fd5ed8eae6903eabe898878054c493514654b13",
+  "accepted_case_events": 4,
+  "xml_accounting": {
+    "before_mixed_elements": 215,
+    "added_source_qualified_events_under_fail_hold": 4,
+    "after_mixed_elements": 219,
+    "qualification": "Not219 passes, unique logical cases or readiness percentage."
+  },
+  "new_closures": 0,
+  "execution_settlement": {
+    "termination_attempted": true,
+    "observed_zero": true,
+    "errors": [],
+    "original_handle_close_failures": [],
+    "qualification": "Not natural-only settlement; final Jobzero after one original Job termination. The remaining member identity is not inferred benign."
+  },
+  "filesystem_cleanup": {
+    "status": "HOLD",
+    "whole_root_deletion_credit": 0,
+    "entry": "home\\AppData\\Local\\Microsoft\\Windows\\INetCache\\Content.IE5",
+    "target_read": false,
+    "restriction": "Original Windows4 run/root consumed and not admitted for retry/reopen/recovery/deletion. Do not follow target. Hosted disposal is not a cleanup pass."
+  },
+  "scheduler_adjudication": "Release execution-only reservation because hosted run/job terminal and original Job/handles settled. Preserve filesystem HOLD independently. This is acceptance of actual cleanup disposition, NOT successful filesystem cleanup. No other operation admitted by this adoption.",
+  "next": "Fresh Sfix preflight/publication admission then one shared capture; later separately admitted serial cohorts. No repeated unchanged Windows4 check.",
+  "gradle_stop": "NOT_APPLICABLE_NO_GRADLE_INVOCATION",
+  "fences": "PVU007 STOP; PVU011 NO-RETRY/no procedure inquiry; PVA02949/44/5FAIL/no automatic retry; G7/G8 CLOSED; native refusal/excluded workflow; all earlier HOLD/failures; eight PVD; protectedbranches/tags/dependencies/versions/identities/signing/Store/release/occupiedbuild1017001."
+}

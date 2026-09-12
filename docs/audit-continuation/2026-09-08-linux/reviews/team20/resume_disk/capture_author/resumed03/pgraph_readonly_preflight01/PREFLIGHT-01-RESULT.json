@@ -1,0 +1,655 @@
+{
+  "cleanup": "Only original command children/pipes/selectors and descriptor-held point parents/lock closed. No unrelated signals or background workers. Abnormal descendants/SIGKILL/kernel blocking are not proven settled. No build/runtime/cache/service/output tree created; no Gradle stop/deletion. Preserve original external terminal completion separately.",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "credential.helper=",
+        "ls-remote",
+        "--refs",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "child_exit": 0,
+      "child_pid": 6776,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 0.660144,
+      "error": null,
+      "name": "refs",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 425,
+        "sha256": "c4bf7b23cb138e40ea45c47eb1e8f7c29d3f6175e2575fc3a79b716655d35bcd"
+      },
+      "utc": "2026-09-12T12:40:33.319005+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/pulls",
+        "-f",
+        "state=open",
+        "-f",
+        "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+        "-f",
+        "per_page=100",
+        "--jq",
+        "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+      ],
+      "child_exit": 0,
+      "child_pid": 6780,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 1.176812,
+      "error": null,
+      "name": "open_pr",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "utc": "2026-09-12T12:40:33.905602+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=queued",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "child_exit": 0,
+      "child_pid": 6814,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 1.664321,
+      "error": null,
+      "name": "queued",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 37,
+        "sha256": "fc5753fa7f5380199fb73c07a084e2125b722a06993132cdf348bc7e41367728"
+      },
+      "utc": "2026-09-12T12:40:34.421876+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=pending",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "child_exit": 0,
+      "child_pid": 6847,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 2.139601,
+      "error": null,
+      "name": "pending",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 37,
+        "sha256": "fc5753fa7f5380199fb73c07a084e2125b722a06993132cdf348bc7e41367728"
+      },
+      "utc": "2026-09-12T12:40:34.909424+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=waiting",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "child_exit": 0,
+      "child_pid": 6883,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 2.624745,
+      "error": null,
+      "name": "waiting",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 37,
+        "sha256": "fc5753fa7f5380199fb73c07a084e2125b722a06993132cdf348bc7e41367728"
+      },
+      "utc": "2026-09-12T12:40:35.384757+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=requested",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "child_exit": 0,
+      "child_pid": 6899,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 3.134496,
+      "error": null,
+      "name": "requested",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 37,
+        "sha256": "fc5753fa7f5380199fb73c07a084e2125b722a06993132cdf348bc7e41367728"
+      },
+      "utc": "2026-09-12T12:40:35.869841+00:00"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=in_progress",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "child_exit": 0,
+      "child_pid": 6912,
+      "child_reaped": true,
+      "child_started": true,
+      "cwd": "/root/projects/PassVault",
+      "elapsed_seconds_from_batch_start": 3.603683,
+      "error": null,
+      "name": "in_progress",
+      "signals_attempted": [],
+      "status": "POINT_RESPONSE_VALIDATED_NOT_ADMISSION",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 37,
+        "sha256": "fc5753fa7f5380199fb73c07a084e2125b722a06993132cdf348bc7e41367728"
+      },
+      "utc": "2026-09-12T12:40:36.379589+00:00"
+    }
+  ],
+  "commands_unstarted": [],
+  "conflicts": [],
+  "credential_environment_key_presence": {
+    "GH_CONFIG_DIR": false,
+    "GH_TOKEN": false,
+    "GITHUB_TOKEN": false,
+    "HOME": true,
+    "XDG_CONFIG_HOME": false
+  },
+  "elapsed_seconds": 3.605589,
+  "errors": [],
+  "executables": [
+    {
+      "path": "/usr/bin/python3.12",
+      "pin": {
+        "bytes": 8020928,
+        "ctime_ns": 1787292627933100530,
+        "dev": 25,
+        "ino": 1088,
+        "mode": 33261,
+        "mtime_ns": 1781873160000000000,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118"
+    },
+    {
+      "path": "/usr/bin/git",
+      "pin": {
+        "bytes": 4066232,
+        "ctime_ns": 1787292627848100156,
+        "dev": 25,
+        "ino": 864,
+        "mode": 33261,
+        "mtime_ns": 1751487822000000000,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668"
+    },
+    {
+      "path": "/usr/bin/gh",
+      "pin": {
+        "bytes": 45201664,
+        "ctime_ns": 1788815288409434312,
+        "dev": 24,
+        "ino": 12582980,
+        "mode": 33261,
+        "mtime_ns": 1752802161000000000,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "2fd925d68889746976958342fb749bf102bc7dc8bcba3abfa533a80ad7791673"
+    }
+  ],
+  "format": "passvault-pgraph-readonly-preflight01",
+  "intent": {
+    "command_seconds": 45,
+    "commands": [
+      {
+        "argv": [
+          "/usr/bin/git",
+          "--literal-pathspecs",
+          "-c",
+          "core.hooksPath=/dev/null",
+          "-c",
+          "core.fsmonitor=false",
+          "-c",
+          "gc.auto=0",
+          "-c",
+          "maintenance.auto=false",
+          "-c",
+          "commit.gpgsign=false",
+          "-c",
+          "credential.helper=",
+          "ls-remote",
+          "--refs",
+          "https://github.com/Apdelrahman1911/passvault.git",
+          "refs/heads/codex/audit-continuation-linux-20260908",
+          "refs/heads/codex/remediation-handoff-20260908",
+          "refs/heads/main",
+          "refs/heads/release",
+          "refs/heads/testing",
+          "refs/tags/v1.0.7-rc.1017001"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "refs"
+      },
+      {
+        "argv": [
+          "/usr/bin/gh",
+          "api",
+          "--hostname",
+          "github.com",
+          "--method",
+          "GET",
+          "repos/Apdelrahman1911/passvault/pulls",
+          "-f",
+          "state=open",
+          "-f",
+          "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+          "-f",
+          "per_page=100",
+          "--jq",
+          "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "open_pr"
+      },
+      {
+        "argv": [
+          "/usr/bin/gh",
+          "api",
+          "--hostname",
+          "github.com",
+          "--method",
+          "GET",
+          "repos/Apdelrahman1911/passvault/actions/runs",
+          "-f",
+          "per_page=100",
+          "-f",
+          "status=queued",
+          "--jq",
+          "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "queued"
+      },
+      {
+        "argv": [
+          "/usr/bin/gh",
+          "api",
+          "--hostname",
+          "github.com",
+          "--method",
+          "GET",
+          "repos/Apdelrahman1911/passvault/actions/runs",
+          "-f",
+          "per_page=100",
+          "-f",
+          "status=pending",
+          "--jq",
+          "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "pending"
+      },
+      {
+        "argv": [
+          "/usr/bin/gh",
+          "api",
+          "--hostname",
+          "github.com",
+          "--method",
+          "GET",
+          "repos/Apdelrahman1911/passvault/actions/runs",
+          "-f",
+          "per_page=100",
+          "-f",
+          "status=waiting",
+          "--jq",
+          "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "waiting"
+      },
+      {
+        "argv": [
+          "/usr/bin/gh",
+          "api",
+          "--hostname",
+          "github.com",
+          "--method",
+          "GET",
+          "repos/Apdelrahman1911/passvault/actions/runs",
+          "-f",
+          "per_page=100",
+          "-f",
+          "status=requested",
+          "--jq",
+          "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "requested"
+      },
+      {
+        "argv": [
+          "/usr/bin/gh",
+          "api",
+          "--hostname",
+          "github.com",
+          "--method",
+          "GET",
+          "repos/Apdelrahman1911/passvault/actions/runs",
+          "-f",
+          "per_page=100",
+          "-f",
+          "status=in_progress",
+          "--jq",
+          "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+        ],
+        "cwd": "/root/projects/PassVault",
+        "name": "in_progress"
+      }
+    ],
+    "commands_deadline_seconds": 55,
+    "live_slot": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "owner": "/root",
+    "pipe_cap_each": 32768,
+    "purpose": "ONE_PGRAPH_READONLY_PREFLIGHT01_NO_U_ALLOCATION_OR_PUBLICATION",
+    "receipt_cap_each": 65536,
+    "scope": "Read-only exact6 public remote refs from neutral parent, exact-head/all-base open PR and5 all-repository nonterminal-status GETs. Resource meminfo only, no host process census or original T/W Git access. Credential context goes only to authorized gh public GETs, never printed; Git has no credential helper and ignores inherited config. No fetch/clone, U allocation, mutation, dispatch, held-root access, private capture, build, deletion or old helper invocation. Root separately admits exact source/instance and disk floor; this slot does not auto-admit U. Userspace deadlines cannot defeat blocked kernel calls or SIGKILL.",
+    "source": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/capture_author/resumed03/pgraph_readonly_preflight01/PGRAPH-READONLY-PREFLIGHT01.py.txt",
+    "total_seconds": 60,
+    "utc": "2026-09-12T12:40:33.245056+00:00"
+  },
+  "live_slot_after": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "pin": {
+      "bytes": 11012,
+      "ctime_ns": 1789215055517061529,
+      "dev": 24,
+      "ino": 13637838,
+      "mode": 33152,
+      "mtime_ns": 1789215055516061529,
+      "nlink": 1,
+      "uid": 0
+    },
+    "sha256": "abef66660c09dc9302249289b5492bea84869bb94aebb56769b16aeba89ab775",
+    "state": "RESERVED_PGRAPH_U_SETUP01"
+  },
+  "live_slot_before": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "pin": {
+      "bytes": 11012,
+      "ctime_ns": 1789215055517061529,
+      "dev": 24,
+      "ino": 13637838,
+      "mode": 33152,
+      "mtime_ns": 1789215055516061529,
+      "nlink": 1,
+      "uid": 0
+    },
+    "sha256": "abef66660c09dc9302249289b5492bea84869bb94aebb56769b16aeba89ab775",
+    "state": "RESERVED_PGRAPH_U_SETUP01"
+  },
+  "lock": {
+    "acquired": true,
+    "after": {
+      "bytes": 0,
+      "ctime_ns": 1788910891124735946,
+      "dev": 24,
+      "ino": 14189001,
+      "mode": 33152,
+      "mtime_ns": 1788910891124735946,
+      "nlink": 1,
+      "uid": 0
+    },
+    "before": {
+      "bytes": 0,
+      "ctime_ns": 1788910891124735946,
+      "dev": 24,
+      "ino": 14189001,
+      "mode": 33152,
+      "mtime_ns": 1788910891124735946,
+      "nlink": 1,
+      "uid": 0
+    },
+    "close_returned": true,
+    "path": "/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock",
+    "under_lock": {
+      "bytes": 0,
+      "ctime_ns": 1788910891124735946,
+      "dev": 24,
+      "ino": 14189001,
+      "mode": 33152,
+      "mtime_ns": 1788910891124735946,
+      "nlink": 1,
+      "uid": 0
+    }
+  },
+  "owner": "/root",
+  "parents_after": {
+    "/root/projects/PassVault": {
+      "dev": 23,
+      "ino": 580,
+      "mode": 16877,
+      "nlink": 15,
+      "uid": 0
+    },
+    "/root/projects/PassVault/.audit-coordination-linux-20260908": {
+      "dev": 23,
+      "ino": 51356,
+      "mode": 16832,
+      "nlink": 2,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/capture_author/resumed03/pgraph_readonly_preflight01": {
+      "dev": 23,
+      "ino": 478048,
+      "mode": 16832,
+      "nlink": 2,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root": {
+      "dev": 23,
+      "ino": 426909,
+      "mode": 16832,
+      "nlink": 5,
+      "uid": 0
+    }
+  },
+  "parents_before": {
+    "/root/projects/PassVault": {
+      "dev": 23,
+      "ino": 580,
+      "mode": 16877,
+      "nlink": 15,
+      "uid": 0
+    },
+    "/root/projects/PassVault/.audit-coordination-linux-20260908": {
+      "dev": 23,
+      "ino": 51356,
+      "mode": 16832,
+      "nlink": 2,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/capture_author/resumed03/pgraph_readonly_preflight01": {
+      "dev": 23,
+      "ino": 478048,
+      "mode": 16832,
+      "nlink": 2,
+      "uid": 0
+    },
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root": {
+      "dev": 23,
+      "ino": 426909,
+      "mode": 16832,
+      "nlink": 5,
+      "uid": 0
+    }
+  },
+  "preterminal": true,
+  "pull_requests": [],
+  "queues": {
+    "in_progress": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "pending": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "queued": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "requested": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "waiting": {
+      "total_count": 0,
+      "workflow_runs": []
+    }
+  },
+  "remote_refs": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "resources": {
+    "MemAvailable": 63616393216,
+    "MemTotal": 67435888640,
+    "disk_available_bytes": {
+      "/root/projects/PassVault": 15324233728,
+      "/root/projects/PassVault/.audit-coordination-linux-20260908": 15324233728
+    },
+    "elapsed_seconds": 3.6041349819861352
+  },
+  "scope": "Fresh point facts only; not continuous custody, publication, build, CI or cleanup admission.",
+  "signal": null,
+  "status": "POINT_NO_OBSERVED_CONFLICT_NOT_ADMISSION"
+}

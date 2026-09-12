@@ -1,0 +1,356 @@
+#!/usr/bin/python3
+# INERT: fresh once-only root Sfix source transport, NOT execution admission.
+# Reuses accepted Windows A-only bounded Git/inventory primitives as TEXT.
+# No old helper import/replay. T only; no W edit, build, dispatch or release.
+import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+B=S/'docs/audit-continuation/2026-09-08-linux'
+PUB=B/'reviews/team20/resume_disk/publication_author/sfix_publish01'
+CONFIG=PUB/'SFIX-PUBLISH01-CONFIG.json'
+OUT=B/'publication/CHECKPOINT-21-SFIX-PUBLISHED.json'
+P=S.parent;T=P/'passvault-publication-20260910-01'
+URL='https://github.com/Apdelrahman1911/passvault.git'
+BRANCH='codex/audit-continuation-linux-20260908'
+C20='7459cb4bdaad00cfc8823a4c5b376e00c805d918'
+C20_TREE='550624b7b864ee687eaf8a50b0d83c9fc037fe6e'
+PREFIX='docs/audit-continuation/2026-09-08-linux/'
+A_PATH=PREFIX+'requests/windows-kdf-file-io-01.json'
+A_BLOB='713be2feb70a2f834c1316329bc81590030c4dc5'
+A_RECEIPT=B/'reviews/team20/resume_disk/publication_author/windows_activation01/WINDOWS-ACTIVATION-01-ACTUAL.json'
+FIX_PATH='app-desktop/build.gradle.kts'
+BEFORE_SHA='0fd4293e5f4741a1a10ef049dc42f24e7f002d2303cb6779087eaa3bacf24ab6'
+BEFORE_BYTES=63886
+BEFORE_BLOB='fdc98c9575568e746933c476e5b40fabfe9a23ad'
+AFTER_SHA='9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709'
+AFTER_BYTES=63918
+AFTER_BLOB='172fd771919fbb848c7c413af97706b257a7c3d2'
+CANDIDATE=B/'reviews/team20/resume_disk/native_lifetime_author/dsl_fix01/app-desktop-build.gradle.kts.txt'
+FIX_REVIEW=B/'reviews/team20/resume_disk/native_lifetime_review/dsl_fix01/REVIEW.md'
+FIX_REVIEW_SHA='c4dba5e4703f2f3979bd630a8cf5d10b5aec966dd1b8aa81267377e2f44979a6'
+ROW={'path':FIX_PATH,'sha256':AFTER_SHA,'bytes':AFTER_BYTES,'git_mode':'100644'}
+TEMP=T/'app-desktop/.build.gradle.kts.sfix-publish01.tmp'
+REFS={'refs/heads/'+BRANCH,'refs/heads/codex/remediation-handoff-20260908',
+      'refs/heads/main','refs/heads/release','refs/heads/testing','refs/tags/v1.0.7-rc.1017001'}
+LIVE_SLOT=B/'reviews/team20/resume_disk/root/EXECUTION_SLOT.json'
+START=time.monotonic();CANCEL=False;child=None;lockfd=None;parentfd=None;rootfd=None;recfd=None;tempfd=None
+CFG=None;installed=False;temporary_pin=None
+rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'source_workspace':str(S),'publication_clone':str(T),'commands':[],'resource_samples':[],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
+def req(ok,msg):
+ if not ok:raise RuntimeError(msg)
+def check():
+ req(not CANCEL and time.monotonic()-START<600,'cancelled or600s deadline')
+def cancelled(*_):
+ global CANCEL
+ CANCEL=True
+signal.signal(signal.SIGINT,cancelled);signal.signal(signal.SIGTERM,cancelled)
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+def dtuple(a):return [a.st_dev,a.st_ino,a.st_uid,a.st_mode]
+def durable():
+ if recfd is None:return
+ raw=(json.dumps(rec,ensure_ascii=False,indent=2)+'\n').encode();req(len(raw)<=131072,'publication receipt128KiB cap');os.lseek(recfd,0,os.SEEK_SET);os.ftruncate(recfd,0)
+ at=0
+ while at<len(raw):at+=os.write(recfd,raw[at:])
+ os.fsync(recfd)
+def resource(label,launch=False):
+ fs=os.statvfs(P);mem={l.split(':')[0]:int(l.split()[1])*1024 for l in pathlib.Path('/proc/meminfo').read_text().splitlines()}
+ row={'label':label,'elapsed_seconds':time.monotonic()-START,'disk_available_bytes':fs.f_bavail*fs.f_frsize,'ram_available_bytes':mem['MemAvailable'],'ram_total_bytes':mem['MemTotal']}
+ rec['resource_samples'].append(row)
+ floor=3*1024**3 if CFG['root_admission']['allow_3GiB_VPS_fallback'] else (12 if launch else 8)*1024**3
+ row['disk_floor_bytes']=floor
+ req(row['disk_available_bytes'] >= floor and mem['MemAvailable']>=mem['MemTotal']*(.25 if launch else .20),'resource floor')
+def safe_parent(root,rel,create=False):
+ rel=pathlib.PurePosixPath(rel);req(not rel.is_absolute() and '..' not in rel.parts and '\n' not in str(rel) and '\0' not in str(rel),'unsafe relative path')
+ cur=root
+ for part in rel.parts[:-1]:
+  cur=cur/part
+  if create and not os.path.lexists(cur):cur.mkdir(mode=0o700)
+  st=cur.lstat();req(stat.S_ISDIR(st.st_mode) and st.st_uid==0,'unsafe directory component')
+ return root/rel
+def read_file(p,cap=16*1024**2):
+ check();a=p.lstat();req(stat.S_ISREG(a.st_mode) and a.st_uid==0 and a.st_nlink==1 and a.st_size<=cap,'not bounded single-linked regular file')
+ fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  fields=('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')
+  def same(x):return all(getattr(x,'st_'+k)==getattr(a,'st_'+k) for k in fields)
+  req(same(os.fstat(fd)),'open/read identity drift')
+  chunks=[];total=0
+  while True:
+   raw=os.read(fd,65536)
+   if not raw:break
+   chunks.append(raw);total+=len(raw);req(total<=cap,'file byte cap')
+  req(same(os.fstat(fd)) and same(p.lstat()),'end/read identity drift')
+  return b''.join(chunks),a
+ finally:os.close(fd)
+def frozen(root,rows):
+ out={}
+ for r in rows:
+  raw,s=read_file(safe_parent(root,r['path']));mode='100755' if s.st_mode&0o111 else '100644'
+  req(digest(raw)==r['sha256'] and len(raw)==r['bytes'] and mode==r['git_mode'],'selected byte/mode drift:'+r['path'])
+  out[r['path']]=(mode,hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest())
+ return out
+G=['git','--literal-pathspecs','-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','commit.gpgsign=false','-c','credential.helper=','-c','credential.helper=!gh auth git-credential']
+ENV={k:v for k,v in os.environ.items() if not k.startswith('GIT_') and k not in ('SSH_ASKPASS','GIT_ASKPASS')}
+ENV.update(GIT_CONFIG_SYSTEM='/dev/null',GIT_CONFIG_GLOBAL='/dev/null',GIT_TERMINAL_PROMPT='0',GIT_OPTIONAL_LOCKS='0',GIT_NO_REPLACE_OBJECTS='1',GIT_NO_LAZY_FETCH='1',GH_PROMPT_DISABLED='1')
+def git(args,cwd=None,seconds=60,allowed=(0,),input_bytes=None):
+ global child
+ check();argv=G+args;r={'argv':argv,'cwd':str(cwd or T),'status':'INTENT'};rec['commands'].append(r);durable()
+ try:
+  child=subprocess.Popen(argv,cwd=cwd or T,env=ENV,stdin=subprocess.PIPE if input_bytes is not None else subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+  r['pid']=child.pid;r['owned_session']=child.pid;durable();out=bytearray();err=bytearray();sent=0;deadline=min(START+600,time.monotonic()+seconds);sample=time.monotonic()+15
+  with selectors.DefaultSelector() as sel:
+   for stream,buf,cap in ((child.stdout,out,4*1024**2),(child.stderr,err,1024**2)):
+    os.set_blocking(stream.fileno(),False);sel.register(stream,selectors.EVENT_READ,('read',buf,cap))
+   if input_bytes is not None:
+    req(len(input_bytes)<=131072,'stdin cap');os.set_blocking(child.stdin.fileno(),False);sel.register(child.stdin,selectors.EVENT_WRITE,('write',None,0));r['stdin_sha256']=digest(input_bytes);r['stdin_bytes']=len(input_bytes)
+   while sel.get_map():
+    check();req(time.monotonic()<deadline,'Git command deadline')
+    if time.monotonic()>=sample:resource('during '+args[0]);durable();sample=time.monotonic()+15
+    for key,_ in sel.select(.1):
+     kind,buf,cap=key.data
+     if kind=='write':
+      if sent<len(input_bytes):
+       try:sent+=os.write(key.fd,input_bytes[sent:sent+65536])
+       except BlockingIOError:continue
+      if sent==len(input_bytes):sel.unregister(key.fileobj);child.stdin.close()
+     else:
+      chunk=os.read(key.fd,65536)
+      if not chunk:sel.unregister(key.fileobj);continue
+      req(len(buf)+len(chunk)<=cap,'Git output cap; no success with truncation');buf.extend(chunk)
+   rc=child.wait(timeout=max(.01,deadline-time.monotonic()))
+  decoded=bytes(out).decode('utf-8','strict')
+  r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr_sha256=digest(err),stderr_bytes=len(err))
+  if len(err)<=4096:r['stderr']=bytes(err).decode('utf-8','strict')
+  else:r['stderr_file']=write_once('SFIX-PUBLISH01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
+  if len(out)<=2048:r['stdout']=decoded
+  if args[:3]==['diff','--cached','--check']:
+   p=PUB/'SFIX-PUBLISH01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+   try:
+    view=memoryview(out)
+    while view:view=view[os.write(fd,view):]
+    os.fsync(fd)
+   finally:os.close(fd)
+   r['stdout_file']=p.name
+  durable()
+  req(rc in allowed,'Git nonaccepted exit '+str(rc));check();return decoded
+ finally:
+  if child is not None:
+   if child.poll() is None:
+    r['owned_direct_child_kill_attempted']=True;child.kill()
+    try:child.wait(timeout=5)
+    except subprocess.TimeoutExpired:r['settlement']='DIRECT_CHILD_HOLD';raise
+    r['abnormal_descendants']='NOT_PROVEN; no unrelated signal or automatic retry'
+   r['direct_child_reaped']=child.poll() is not None
+   for pipe in (child.stdin,child.stdout,child.stderr):
+    if pipe is not None and not pipe.closed:pipe.close()
+   child=None;durable()
+def remote(raw):return {line.split('\t')[1]:line.split('\t')[0] for line in raw.splitlines()}
+def entries(raw,index=False):
+ result={}
+ for row in raw.split('\0'):
+  if not row:continue
+  left,path=row.split('\t',1);a,b,c=left.split()
+  if index:req(c=='0','index conflict');mode,oid=a,b
+  else:req(b=='blob','non-blob tree member');mode,oid=a,c
+  req(path not in result,'duplicate Git entry');result[path]=(mode,oid)
+ return result
+def root_check():
+ req(rootfd is not None and dtuple(os.fstat(rootfd))==rec['namespace_identity'] and dtuple(T.lstat())==rec['namespace_identity'],'original clone root drift')
+ req(dtuple(P.lstat())==CFG['namespace_parent'],'clone parent drift')
+def inventory(label):
+ root_check();count=0;size=0;directories=0;device=os.fstat(rootfd).st_dev
+ for path,dirs,files in os.walk(T,followlinks=False):
+  check();p=pathlib.Path(path);a=p.lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==device and a.st_uid==0,'unsafe clone directory');directories+=1
+  for name in dirs:
+   a=(p/name).lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==23 and a.st_uid==0,'clone symlink/special directory')
+  for name in files:
+   a=(p/name).lstat();req(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_dev in (23,24) and a.st_uid==0,'clone shared/link/special file')
+   count+=1;size+=a.st_size;req(count<=100000 and size<=512*1024**2,'clone512MiB/count bound')
+ rec.setdefault('namespace_inventories',[]).append({'label':label,'files':count,'directories':directories,'logical_bytes':size})
+ durable()
+def fullpin(a):
+ return {('bytes' if k=='size' else k):getattr(a,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')}
+def write_once(name,raw):
+ req('/' not in name and name.startswith('SFIX-PUBLISH01-'),'fixed output name')
+ p=safe_parent(PUB,name);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+ try:
+  at=0
+  while at<len(raw):at+=os.write(fd,raw[at:])
+  os.fsync(fd)
+ finally:os.close(fd)
+ return str(p.relative_to(B))
+def evidence(desc):
+ req(set(desc)=={'path','bytes','sha256'} and type(desc['bytes']) is int and 0<desc['bytes']<=131072,'bounded evidence descriptor')
+ req(re.fullmatch(r'[0-9a-f]{64}',desc['sha256']) is not None,'evidence digest unbound')
+ raw,_=read_file(safe_parent(B,desc['path']),cap=desc['bytes'])
+ req(len(raw)==desc['bytes'] and digest(raw)==desc['sha256'],'evidence drift:'+desc['path'])
+ return raw
+
+def stable_inputs():
+ req(read_file(CONFIG,cap=32768)[0]==config_raw,'exact config changed')
+ req(read_file(CANDIDATE,cap=AFTER_BYTES)[0]==after_raw,'accepted afterimage changed')
+ req(read_file(S/FIX_PATH,cap=BEFORE_BYTES)[0]==w_before,'W source changed during transport')
+ req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'sole reserved slot changed')
+ req(read_file(A_RECEIPT,cap=131072)[0]==awin_raw,'Awin actual changed')
+ req(digest(read_file(FIX_REVIEW,cap=4810)[0])==FIX_REVIEW_SHA,'accepted DSL review changed')
+ for desc in CFG['evidence'].values():evidence(desc)
+
+try:
+ # O_EXCL receipt is the consumed namespace; no project/Git operation precedes it.
+ safe_parent(S,str(OUT.relative_to(S)))
+ recfd=os.open(OUT,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600);durable()
+ pfd=os.open(OUT.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:os.fsync(pfd)
+ finally:os.close(pfd)
+ config_raw,_=read_file(CONFIG,cap=32768);CFG=json.loads(config_raw)
+ rec['configuration']={'path':str(CONFIG.relative_to(B)),'bytes':len(config_raw),'sha256':digest(config_raw)}
+ BASE=CFG['Awin_commit'];BASE_TREE=CFG['Awin_tree']
+ req(all(isinstance(v,str) and re.fullmatch(r'[0-9a-f]{40}',v) for v in (BASE,BASE_TREE)),'actual Awin identity unbound')
+ req(BASE!=C20 and CFG['namespace_parent']==[23,580,0,16877],'actual Awin/original namespace parent required')
+ req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE,'six exact refs/Awin head required')
+ req(all(re.fullmatch(r'[0-9a-f]{40}',v) for v in CFG['remotes'].values()),'remote object format')
+ req(CFG['receipt_path']==str(OUT.relative_to(B)),'one fixed Sfix publication receipt')
+ req(CFG['commit_message']=='Fix Desktop native-host Gradle DSL imports','fixed one-file source commit')
+ admission=CFG['root_admission']
+ req(admission['status']=='ADMITTED_SFIX_ONCE_ONLY_AFTER_WINDOWS4_SETTLEMENT','root admission unbound')
+ for key in ('Awin_exact_transport_independently_accepted','Windows4_terminal_result_and_cleanup_independently_accepted',
+             'fresh_Sfix_all_base_head_PR_and_all_repo_queues_reviewed','Sfix_push_other_triggers_reviewed',
+             'exclusive_local_CI_slot_reserved','T_source_index_freeze_released_for_this_Sfix_only_transaction',
+             'bounded_physical_T_inventory_guard_admitted','original_child_and_fixed_temp_cleanup_admitted',
+             'publisher_exact_source_and_instance_independently_accepted','W_original_fix_source_frozen'):
+  req(admission[key] is True,'missing explicit root admission:'+key)
+ req(type(admission['allow_3GiB_VPS_fallback']) is bool,'VPS floor choice must be explicit')
+ required_evidence={'Awin_actual_review','Windows4_terminal_result','Windows4_settlement_review',
+                    'Sfix_preflight_actual','Sfix_preflight_actual_review','Sfix_trigger_review','publisher_source_review'}
+ req(set(CFG['evidence'])==required_evidence,'required independently adopted evidence bindings')
+ for desc in CFG['evidence'].values():evidence(desc)
+ rec['root_admission']=admission;rec['adopted_evidence']=CFG['evidence']
+ rec['admission_qualification']='Pinned root-reviewed evidence plus separately required outer exact-instance acceptance, not JSON self-authorization; fresh queue/PR point is not continuous exclusivity. Windows4 terminal FAIL may be retained; no requirement to manufacture four PASS cases.'
+ awin_raw,_=read_file(A_RECEIPT,cap=131072)
+ req(re.fullmatch(r'[0-9a-f]{64}',CFG['Awin_receipt_sha256']) is not None and digest(awin_raw)==CFG['Awin_receipt_sha256'],'actual Awin receipt unbound/drifted')
+ awin=json.loads(awin_raw)
+ req(awin['status']=='PUSHED_WINDOWS4_A_ONLY_ACTIVATION_REQUEST' and awin['owner']=='/root','Awin transport not successful/adopted')
+ req((awin['commit'],awin['tree'],awin['parent'],awin['parent_tree'])==(BASE,BASE_TREE,C20,C20_TREE),'Awin actual lineage differs')
+ req(awin['publication_clone']==str(T) and awin['remote_after']==CFG['remotes'],'Awin store/remote binding differs')
+ req(awin['committed_delta']=='A\t'+A_PATH+'\n','Awin receipt not exact request addition')
+ rec['Awin_publication']={'path':str(A_RECEIPT.relative_to(B)),'sha256':digest(awin_raw),'commit':BASE,'tree':BASE_TREE}
+ after_raw,after_stat=read_file(CANDIDATE,cap=AFTER_BYTES)
+ req(len(after_raw)==AFTER_BYTES and digest(after_raw)==AFTER_SHA and not after_stat.st_mode&0o111,'accepted exact afterimage differs')
+ req(hashlib.sha1(b'blob '+str(len(after_raw)).encode()+b'\0'+after_raw).hexdigest()==AFTER_BLOB,'afterimage raw Git blob differs')
+ req(digest(read_file(FIX_REVIEW,cap=4810)[0])==FIX_REVIEW_SHA,'independent DSL source review drift')
+ w_before,wstat=read_file(S/FIX_PATH,cap=BEFORE_BYTES)
+ req(len(w_before)==BEFORE_BYTES and digest(w_before)==BEFORE_SHA and not wstat.st_mode&0o111,'W source not accepted original; do not overwrite local work')
+ slotraw,_=read_file(LIVE_SLOT,cap=32768)
+ req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot unbound/drifted')
+ req(CFG['slot_state'].startswith('RESERVED_SFIX') and json.loads(slotraw)['state']==CFG['slot_state'],'fresh root Sfix reservation required')
+ lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+ parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+ req((a.st_dev,a.st_ino,a.st_uid,a.st_mode,a.st_nlink,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(24,14189001,0,33152,1,0,1788910891124735946,1788910891124735946),'original lock changed')
+ fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ stable_inputs();resource('before Sfix source transport',launch=True)
+ req(dtuple(T.lstat())==[23,51357,0,16832],'original publication clone changed')
+ rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,51357,0,16832];root_check();inventory('before Sfix')
+ req(not os.path.lexists(TEMP),'fixed disposable temp already exists; no reuse/overwrite')
+ gd=T/'.git'
+ for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+ config_before_raw,config_before_stat=read_file(gd/'config')
+ rec['preserved_config_before']={'sha256':digest(config_before_raw),'pin':fullpin(config_before_stat)}
+ req(rec['preserved_config_before']==awin['preserved_config_after'],'original T config differs from accepted Awin closeout')
+ req(rec['preserved_config_before']['sha256']=='036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'
+     and fullpin(config_before_stat)=={'dev':24,'ino':14293053,'uid':0,'mode':33152,'nlink':1,'bytes':435,'mtime_ns':1789001766988319322,'ctime_ns':1789001766988319322},'original T config hash/full pin changed')
+ dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((T/x).resolve()==gd for x in dirs),'external Git store')
+ req(git(['rev-parse','HEAD','HEAD^{tree}',C20+'^{tree}']).splitlines()==[BASE,BASE_TREE,C20_TREE],'exact Awin/C20 identity required; no interposed commit')
+ req(git(['symbolic-ref','--short','HEAD']).strip()==BRANCH,'dedicated continuation branch mismatch')
+ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[BASE,C20],'Awin is not sole C20 child')
+ req(git(['diff-tree','--no-commit-id','--no-renames','--name-status','-r',C20,'HEAD'])=='A\t'+A_PATH+'\n','Awin parent delta not request-only')
+ base=entries(git(['ls-tree','-r','-z','--full-tree','HEAD']))
+ req(base[A_PATH]==('100644',A_BLOB) and base[FIX_PATH]==('100644',BEFORE_BLOB),'Awin request/before-image Git row differs')
+ req(entries(git(['ls-files','--stage','-z']),True)==base,'index not exact Awin')
+ req(git(['diff','--name-only','-z'])=='','preexisting unstaged work; do not overwrite')
+ req(git(['ls-files','--others','--exclude-standard','-z'])=='','preexisting untracked work; do not overwrite')
+ req(git(['remote','get-url','--push','--all','origin']).splitlines()==[URL],'wrong push destination')
+ want=CFG['remotes'];remote_args=['ls-remote',URL,*sorted(want)]
+ rec['remote_before']=remote(git(remote_args));req(rec['remote_before']==want,'remote advanced; revalidation required')
+ root_check();stable_inputs()
+ dest=safe_parent(T,FIX_PATH);before_raw,before_stat=read_file(dest,cap=BEFORE_BYTES)
+ req(before_raw==w_before and not before_stat.st_mode&0o111,'T original source differs before replacement')
+ safe_parent(T,str(TEMP.relative_to(T)))
+ tempfd=os.open(TEMP,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+ temporary_pin=dtuple(os.fstat(tempfd));rec['temporary_source']={'path':str(TEMP),'identity':temporary_pin,'status':'OWNED_DISPOSABLE_UNINSTALLED'};durable()
+ at=0
+ while at<len(after_raw):at+=os.write(tempfd,after_raw[at:])
+ os.fsync(tempfd)
+ tempraw,tempstat=read_file(TEMP,cap=AFTER_BYTES)
+ req(tempraw==after_raw and dtuple(tempstat)==temporary_pin and fullpin(tempstat)==fullpin(os.fstat(tempfd)),'fixed disposable source identity/bytes drift')
+ before_now,before_now_stat=read_file(dest,cap=BEFORE_BYTES)
+ req(before_now==before_raw and fullpin(before_now_stat)==fullpin(before_stat),'original destination drift; never overwrite different work')
+ check();root_check();os.replace(TEMP,dest);installed=True
+ rec['temporary_source']['status']='ATOMically_INSTALLED_AS_INTENDED_SOURCE_NOT_A_CLEANUP_TARGET'
+ dfd=os.open(dest.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:os.fsync(dfd)
+ finally:os.close(dfd)
+ req(frozen(T,[ROW])=={FIX_PATH:('100644',AFTER_BLOB)},'installed source differs');durable()
+ os.close(tempfd);tempfd=None
+ req(git(['diff','--name-only','-z'])==FIX_PATH+'\0','unexpected working-tree delta after source replacement')
+ req(git(['hash-object','-w','--no-filters','--',FIX_PATH]).splitlines()==[AFTER_BLOB],'staged raw source blob differs')
+ inp=('100644 '+AFTER_BLOB+'\t'+FIX_PATH+'\0').encode()
+ git(['update-index','-z','--index-info'],input_bytes=inp)
+ whole=dict(base);whole[FIX_PATH]=('100644',AFTER_BLOB)
+ req(len(whole)==len(base) and entries(git(['ls-files','--stage','-z']),True)==whole,'index changed beyond one fixed source row')
+ req(git(['diff','--cached','--no-renames','--name-only','-z'])==FIX_PATH+'\0','unexpected staged names')
+ req(git(['diff','--cached','--check','--',FIX_PATH])=='','changed-source whitespace failure')
+ rec['whitespace']={'status':'PASS_FIXED_SOURCE_PATH_ONLY','exit':0,'paths':[FIX_PATH],'qualification':'No whole-tree or retained raw-evidence formatting claim.'}
+ req(frozen(T,[ROW])=={FIX_PATH:('100644',AFTER_BLOB)},'installed source changed before commit')
+ stable_inputs();req(remote(git(remote_args))==want,'remote advanced before Sfix commit')
+ git(['-c','user.name=Codex','-c','user.email=codex@openai.com','commit','-m',CFG['commit_message']])
+ commit,tree=git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()
+ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'Sfix not sole direct child of Awin')
+ req(entries(git(['ls-tree','-r','-z','--full-tree','HEAD']))==whole,'Sfix complete committed tree drift')
+ delta=git(['diff-tree','--no-commit-id','--no-renames','--name-status','-r',BASE,'HEAD'])
+ req(delta=='M\t'+FIX_PATH+'\n','Sfix delta not exactly one source modification')
+ quoted=[len(json.dumps(p,ensure_ascii=True,separators=(',',':')).encode('utf-8')) for p in whole]
+ rec['source_capture_path_aggregates']={'N':len(whole),'Q':sum(quoted),'max_json_quoted_path_bytes':max(quoted),'encoding':'UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL','qualification':'Already verified complete committed-tree path map; not file-byte totals, member-size or runtime proof.'}
+ rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,committed_delta=delta,selected_paths=1,changed_paths=1,companion_paths=0,
+            source_correction={'path':FIX_PATH,'before_bytes':BEFORE_BYTES,'before_sha256':BEFORE_SHA,'before_blob':BEFORE_BLOB,'bytes':AFTER_BYTES,'sha256':AFTER_SHA,'blob':AFTER_BLOB,'git_mode':'100644','independent_review_sha256':FIX_REVIEW_SHA})
+ req(entries(git(['ls-files','--stage','-z']),True)==whole and git(['diff','--name-only','-z'])=='','postcommit index/worktree drift')
+ stable_inputs();req(remote(git(remote_args))==want,'remote advanced before Sfix push')
+ rec['push_intent']='Dedicated fast-forward source correction only; a successful or uncertain push is external state even if later closeout fails.';durable()
+ git(['push','--no-signed','--no-follow-tags','--recurse-submodules=no','origin','HEAD:refs/heads/'+BRANCH],seconds=120)
+ want_after=dict(want);want_after['refs/heads/'+BRANCH]=commit
+ rec['remote_after']=remote(git(remote_args));req(rec['remote_after']==want_after,'Sfix remote mismatch')
+ inventory('after Sfix');resource('after Sfix source transport')
+ config_after_raw,config_after_stat=read_file(gd/'config')
+ rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':fullpin(config_after_stat)}
+ req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'original T config bytes/full pin changed')
+ stable_inputs();req(not os.path.lexists(TEMP),'disposable sibling unexpectedly remains')
+ rec.update(status='PUBLISHED_EXACT_SFIX_SOURCE',clone_is_build_workspace=False,source_workspace_modified=False,
+            slot='UNCHANGED_ROOT_SFIX_RESERVATION; NO_CI_RUN_OR_DEVICE_RESULT_CLAIM')
+except BaseException as error:
+ rec['error']=type(error).__name__+': '+str(error)[:3000]
+finally:
+ # Never delete installed source, staged work, a commit, or another namespace.
+ if tempfd is not None:
+  try:
+   if not installed:
+    a=os.fstat(tempfd);b=TEMP.lstat()
+    req(temporary_pin==dtuple(a)==dtuple(b) and stat.S_ISREG(b.st_mode) and b.st_uid==0 and b.st_nlink==1 and fullpin(a)==fullpin(b),'disposable sibling cleanup identity uncertain')
+    os.unlink(TEMP);rec['temporary_source']['status']='ORIGINAL_UNINSTALLED_DISPOSABLE_REMOVED'
+   os.close(tempfd);tempfd=None
+  except BaseException as error:
+   rec['temporary_cleanup_error']=type(error).__name__+': '+str(error)[:1000];rec['status']='FAIL_CLEANUP_HOLD'
+   if tempfd is not None:
+    try:os.close(tempfd)
+    except OSError:pass
+ for fd,label in ((rootfd,'root'),(lockfd,'lock'),(parentfd,'coordination_parent')):
+  if fd is not None:
+   try:
+    if label=='lock':fcntl.flock(fd,fcntl.LOCK_UN)
+    os.close(fd)
+   except OSError as error:rec[label+'_close_error']=repr(error);rec['status']='FAIL_CLEANUP_HOLD'
+ rec['elapsed_seconds']=time.monotonic()-START
+ rec['cleanup']='Normal foreground Git children reaped; original T and intended source/index/commit retained. Only newly created original uninstalled temp identity is disposable. No build/cache/service/emulator or Gradle stop. Abnormal descendant settlement and hard interruption remain HOLD/no automatic retry; never reset staged/committed changes. Root retains sole reservation through actual review and fresh shared capture.'
+ try:durable()
+ finally:
+  if recfd is not None:os.close(recfd)
+ print(json.dumps({'status':rec['status'],'error':rec.get('error'),'commit':rec.get('commit'),'tree':rec.get('tree'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+ if rec['status']!='PUBLISHED_EXACT_SFIX_SOURCE':raise SystemExit(1)

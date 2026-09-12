@@ -1,0 +1,85 @@
+--- preserved-runtime-v1/windows_real_jna_01.py.txt
++++ runtime_adapter01/v2/windows_real_jna_01.py.txt
+@@ -31,7 +31,7 @@
+ HELPER = "scripts/audit/windows_real_jna_01.py"
+ INIT = "scripts/audit/windows_real_jna_01.init.gradle"
+ WORKFLOW = ".github/workflows/audit-windows-real-jna-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/SOURCE-SCOPE.txt"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v2/SOURCE-SCOPE.txt"
+ REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/REAL-JNA-INSTANCE-ACCEPT.json"
+ SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+ # Corrected Sfix PRODUCT: one actual root-captured SOURCE; independent review remains required.
+@@ -1442,6 +1442,40 @@
+     return captures, {"graph": graph, "toolchain": toolchain, "review": review, "graph_bytes": captures[GRAPH_PATH]}
+ 
+ 
++def require_graph_tools_before_producer(run, admitted, git):
++    """Current content checks before CMake; original generated environment comes later."""
++    run.work_time()
++    previous = admitted["toolchain"]
++    require(previous["image_version"] == os.environ.get("ImageVersion") and previous["python"] == sys.version,
++            "Current Windows image/Python differ from accepted graph before producer")
++    system = safe_command_path(Path(os.environ["SystemRoot"]).resolve(strict=True))
++    cmd = safe_command_path(system / "System32/cmd.exe")
++    require(Path(os.environ["COMSPEC"]).resolve(strict=True) == cmd, "Current COMSPEC differs before producer")
++    jdk = safe_command_path(Path(os.environ["JAVA_HOME_17_X64"]).resolve(strict=True))
++    sdk = safe_command_path(Path(os.environ["ANDROID_HOME"]).resolve(strict=True))
++    require(str(sdk) == previous["sdk_path"] and
++            ("ANDROID_SDK_ROOT" not in os.environ or Path(os.environ["ANDROID_SDK_ROOT"]).resolve(strict=True) == sdk),
++            "Current configured Android SDK path differs; no install/fallback")
++    tools = {cmd, jdk / "bin/java.exe", jdk / "bin/server/jvm.dll", git, Path(sys.executable).resolve(strict=True)}
++    run.read_only_tool_inputs.update(tools)
++    current_tools = []
++    for tool in sorted(tools):
++        _data, identity = run.read_bound_bytes(tool, 64 * 1024 ** 2, preinstalled_tool=True)
++        current_tools.append((str(tool), identity["sha256"], identity["size"]))
++    require(current_tools == sorted((row["path"], row["sha256"], row["size"]) for row in previous["tools"]),
++            "Current graph tool path/content differs before native producer")
++    _data, release = run.read_bound_bytes(jdk / "release", 65536)
++    require(all(release[key] == previous["jdk_release"][key] for key in ("sha256", "size")),
++            "Current JDK release content differs from accepted graph")
++    run.work_time()
++    write_json(run.evidence / "graph-preproducer-tools.json", {
++        "graph_toolchain_sha256": GRAPH_TOOLCHAIN_SHA256, "image_version": previous["image_version"],
++        "tool_path_sha256_size": current_tools,
++        "jdk_release_content": {key: release[key] for key in ("sha256", "size")},
++        "qualification": "Current byte provenance only; no old inode/path/lock authority; private environment checked after prepare_gradle",
++    })
++
++
+ def require_compatible_graph_toolchain(run, admitted):
+     """Compare current content/provenance, never historical inode/lock authority."""
+     current = json.loads(frozen_bytes(run.evidence / "toolchain.json", 2 * 1024 ** 2), object_pairs_hook=no_duplicate_keys)
+@@ -1496,6 +1530,11 @@
+     evidence = {"state": "COLLECTING", "producer": None, "xml": None, "failures": []}
+     run.real_jna_evidence = evidence
+     if producer is not None:
++        copied_graph, graph_identity = run.read_bound_bytes(run.temp / "controls/accepted-graph-task-order.json",
++                                                          1024 ** 2, cleanup=True)
++        require(copied_graph == admitted["graph_bytes"] and graph_identity["sha256"] == GRAPH_SHA256,
++                "Copied accepted graph changed before original cleanup")
++        evidence["copied_accepted_graph"] = graph_identity
+         _data, state = run.read_bound_bytes(Path(producer["library"]), 64 * 1024 ** 2, cleanup=True)
+         require(state == producer["identity"], "Original ordinary DLL changed before final cleanup")
+         for observed in producer["producer_logs"]:
+@@ -1520,6 +1559,12 @@
+     xml_name = "TEST-com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest.xml"
+     directory = run.project / "app-desktop/build/test-results/auditJnaLifetimeTest"
+     try:
++        # Missing output is not a failed CreateFileW handle to reopen. Check the
++        # original plain parent chain and leaf metadata first; any later race or
++        # original-open failure remains HOLD, never reclassified as absence.
++        run.cleanup_time()
++        plain_path(directory.parent)
++        directory.lstat()
+         handle, identity = run.open_output(directory, delete=False)
+     except FileNotFoundError:
+         evidence["xml"] = {"state": "NOT_CREATED_NO_CASE_INFERENCE"}
+@@ -1720,6 +1765,7 @@
+             output.write(admitted_graph["graph_bytes"])
+             output.flush()
+             os.fsync(output.fileno())
++        require_graph_tools_before_producer(run, admitted_graph, git)
+         producer = produce_ordinary_windows_library(run)
+         prepared, java_argv = run.prepare_gradle(git, init_bytes, producer)
+         require_compatible_graph_toolchain(run, admitted_graph)

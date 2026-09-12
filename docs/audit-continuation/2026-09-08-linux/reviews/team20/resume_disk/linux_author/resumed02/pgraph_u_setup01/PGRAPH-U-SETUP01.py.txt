@@ -1,0 +1,295 @@
+#!/usr/bin/python3
+# INERT SOURCE ONLY. Fresh root once-only Git setup, not execution admission.
+# No original T access; no build/test/push/dispatch/cleanup/retry operation.
+import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+B=S/'docs/audit-continuation/2026-09-08-linux'
+A=B/'reviews/team20/resume_disk/linux_author/resumed02/pgraph_u_setup01'
+CONFIG=A/'PGRAPH-U-SETUP01-CONFIG.json'
+OUT=B/'publication/PGRAPH-U-SETUP01-ACTUAL.json'
+P=S.parent;U=P/'passvault-publication-20260912-02'
+LP=P/'.audit-coordination-linux-20260908'
+LIVE_SLOT=B/'reviews/team20/resume_disk/root/EXECUTION_SLOT.json'
+URL='https://github.com/Apdelrahman1911/passvault.git'
+BRANCH='codex/audit-continuation-linux-20260908'
+BASE='e9cca961837789048503aaffc74ab1a1e7e536ec'
+TREE='7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d'
+PARENT='2ddeaa8412c06cef07e23b7dda951db3434f1f9c'
+PREFIX='docs/audit-continuation/2026-09-08-linux/'
+SOURCE=B/'reviews/checkpoint21/source-prepare01/SOURCE.json'
+SOURCE_SHA='887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74'
+REQUESTS=(PREFIX+'requests/windows-jna-graph-01.json',PREFIX+'requests/windows-real-jna-01.json')
+REFS={'refs/heads/'+BRANCH,'refs/heads/codex/remediation-handoff-20260908','refs/heads/main','refs/heads/release','refs/heads/testing','refs/tags/v1.0.7-rc.1017001'}
+FIXED_EVIDENCE={
+ 'setup_contract':{'path':'reviews/team20/resume_disk/publication_author/pgraph_publish_u01/U-SETUP-CONTRACT.json','bytes':9038,'sha256':'a767e5fbc41441043e56cf756118f1363bfc229d20434c548850a218ce1f80ab'},
+ 'contract_ordering_review':{'path':'reviews/team20/resume_disk/publication_review/resumed02/PGRAPH-PUBLISH-U01-SOURCE-REVIEW.json','bytes':8151,'sha256':'59cbb8ea00fddc0f5c16c2370ea9fe4a5a87881bf297029b384f5eff0c3de3d2'}}
+START=time.monotonic();CANCEL=False;NEXT_SAMPLE=None
+child=None;parentfd=None;coordfd=None;lockfd=None;rootfd=None;recfd=None;old_umask=None
+CFG=None;config_pin=None;config_bytes=None
+rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'publication_clone':str(U),'commands':[],'resource_samples':[],'application_cases':0,'additional_closures':0,'original_T_accessed':False}
+def req(ok,message):
+ if not ok:raise RuntimeError(message)
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+def dtuple(a):return [a.st_dev,a.st_ino,a.st_uid,a.st_mode]
+def fullpin(a):return {('bytes' if k=='size' else k):getattr(a,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')}
+def durable():
+ if recfd is None:return
+ raw=(json.dumps(rec,ensure_ascii=False,indent=2)+'\n').encode();req(len(raw)<=131072,'receipt128KiB cap')
+ os.lseek(recfd,0,os.SEEK_SET);os.ftruncate(recfd,0);at=0
+ while at<len(raw):at+=os.write(recfd,raw[at:])
+ os.fsync(recfd)
+def resource(label,launch=False):
+ fs=os.statvfs(P);mem={l.split(':')[0]:int(l.split()[1])*1024 for l in pathlib.Path('/proc/meminfo').read_text().splitlines()}
+ row={'label':label,'elapsed_seconds':time.monotonic()-START,'disk_available_bytes':fs.f_bavail*fs.f_frsize,'ram_available_bytes':mem['MemAvailable'],'ram_total_bytes':mem['MemTotal'],'disk_floor_bytes':(12 if launch else 8)*1024**3}
+ rec['resource_samples'].append(row)
+ req(row['disk_available_bytes']>=row['disk_floor_bytes'] and mem['MemAvailable']>=mem['MemTotal']*(.25 if launch else .20),'resource floor; no fallback')
+def check():
+ global NEXT_SAMPLE
+ req(not CANCEL and time.monotonic()-START<300,'cancelled or300s deadline')
+ if NEXT_SAMPLE is not None and time.monotonic()>=NEXT_SAMPLE:
+  resource('periodic');durable();NEXT_SAMPLE=time.monotonic()+15
+
+def cancelled(*_):
+ global CANCEL
+ CANCEL=True
+signal.signal(signal.SIGINT,cancelled);signal.signal(signal.SIGTERM,cancelled)
+def safe_parent(root,rel):
+ rel=pathlib.PurePosixPath(rel);req(not rel.is_absolute() and '..' not in rel.parts and '\n' not in str(rel) and '\0' not in str(rel),'unsafe relative path')
+ cur=root
+ for part in rel.parts[:-1]:
+  cur=cur/part;a=cur.lstat();req(stat.S_ISDIR(a.st_mode) and a.st_uid==0,'unsafe directory component')
+ return root/rel
+def read_file(p,cap=16*1024**2):
+ check();a=p.lstat();req(stat.S_ISREG(a.st_mode) and a.st_uid==0 and a.st_nlink==1 and a.st_size<=cap,'not bounded root single-linked regular file')
+ fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  req(fullpin(os.fstat(fd))==fullpin(a),'open/read identity drift');chunks=[];total=0
+  while True:
+   check();raw=os.read(fd,65536)
+   if not raw:break
+   chunks.append(raw);total+=len(raw);req(total<=cap,'file byte cap')
+  req(fullpin(os.fstat(fd))==fullpin(a)==fullpin(p.lstat()),'end/read identity drift')
+  return b''.join(chunks),a
+ finally:os.close(fd)
+def no_duplicates(pairs):
+ result={}
+ for key,value in pairs:req(key not in result,'duplicate JSON member');result[key]=value
+ return result
+def parsed(raw):return json.loads(raw,object_pairs_hook=no_duplicates)
+def evidence(desc):
+ req(set(desc)=={'path','bytes','sha256'} and type(desc['bytes']) is int and 0<desc['bytes']<=131072,'bounded evidence descriptor')
+ req(isinstance(desc['sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',desc['sha256']) is not None,'unbound evidence digest')
+ raw,_=read_file(safe_parent(B,desc['path']),cap=desc['bytes'])
+ req(len(raw)==desc['bytes'] and digest(raw)==desc['sha256'],'evidence drift:'+desc['path']);return raw
+def write_once(name,raw):
+ req('/' not in name and re.fullmatch(r'PGRAPH-U-SETUP01-GIT-[0-9]+\.stderr\.log',name) is not None,'fixed diagnostic name')
+ p=safe_parent(A,name);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+ try:
+  at=0
+  while at<len(raw):at+=os.write(fd,raw[at:])
+  os.fsync(fd)
+ finally:os.close(fd)
+ return {'path':str(p.relative_to(B)),'bytes':len(raw),'sha256':digest(raw)}
+def parent_check():
+ req(parentfd is not None and dtuple(os.fstat(parentfd))==[23,580,0,16877] and dtuple(P.lstat())==[23,580,0,16877],'original parent drift')
+def root_check():
+ parent_check();req(rootfd is not None and dtuple(os.fstat(rootfd))==rec['namespace_identity']==dtuple(U.lstat()),'original U handle/path drift')
+def home_check():
+ root_check()
+ for name in ('.netrc','_netrc','.curlrc'):
+  req(not os.path.lexists(U/name),'unexpected public-clone HOME credential/config file')
+def sharing_check():
+ root_check();gd=U/'.git';a=gd.lstat();req(stat.S_ISDIR(a.st_mode) and a.st_uid==0 and a.st_dev==os.fstat(rootfd).st_dev,'own ordinary .git required')
+ for path in ('commondir','config.worktree','objects/info/alternates','objects/info/http-alternates','worktrees','info/grafts','info/sparse-checkout','refs/replace'):
+  req(not os.path.lexists(gd/path),'external/alternate/replacement/sparse Git mechanism')
+ pack=gd/'objects/pack'
+ if os.path.lexists(pack):
+  a=pack.lstat();req(stat.S_ISDIR(a.st_mode) and a.st_uid==0,'unsafe pack directory')
+  req(not any(name.endswith('.promisor') for name in os.listdir(pack)),'partial/promisor clone forbidden')
+def config_check(first=False):
+ global config_bytes,config_pin
+ sharing_check();raw,a=read_file(U/'.git/config',cap=32768);pin=fullpin(a)
+ if first:
+  sections={'[core]':'core','[remote "origin"]':'remote','[branch "'+BRANCH+'"]':'branch'}
+  expected={'core.repositoryformatversion':'0','core.filemode':'true','core.bare':'false','core.logallrefupdates':'true','remote.url':URL,'remote.fetch':'+refs/heads/'+BRANCH+':refs/remotes/origin/'+BRANCH,'remote.tagopt':'--no-tags','branch.remote':'origin','branch.merge':'refs/heads/'+BRANCH}
+  got={};seen=set();section=None;req(b'\0' not in raw and b'\r' not in raw,'noncanonical fresh config')
+  for line in raw.decode('ascii','strict').splitlines():
+   line=line.strip()
+   if not line:continue
+   if line in sections:
+    req(line not in seen,'duplicate config section');seen.add(line);section=sections[line];continue
+   match=re.fullmatch(r'([A-Za-z][A-Za-z0-9]*)\s*=\s*(.*)',line)
+   req(section is not None and match is not None,'unexpected fresh config grammar/section')
+   key=section+'.'+match.group(1).lower();req(key in expected and key not in got,'unallowed/duplicate fresh config key');got[key]=match.group(2)
+  req(got==expected and seen==set(sections),'fresh config differs from exact public single-branch clone allowlist')
+  config_bytes=raw;config_pin=pin;rec['preserved_config_before']={'sha256':digest(raw),'pin':pin};rec['fresh_config_allowlist']=got
+ else:req(raw==config_bytes and pin==config_pin,'fresh U original config bytes/fullpin drift')
+def inventory(label):
+ root_check();count=0;size=0;directories=0;device=os.fstat(rootfd).st_dev
+ for path,dirs,files in os.walk(U,followlinks=False):
+  check();p=pathlib.Path(path);a=p.lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==device and a.st_uid==0,'unsafe U directory');directories+=1
+  for name in dirs:
+   a=(p/name).lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==device and a.st_uid==0,'U symlink/special/external directory')
+  for name in files:
+   a=(p/name).lstat();req(stat.S_ISREG(a.st_mode) and a.st_uid==0 and a.st_nlink==1 and a.st_dev in (23,24),'U shared/link/special/external file')
+   count+=1;size+=a.st_size;req(count<=100000 and size<=256*1024**2,'U256MiB/100000-file bound')
+ root_check();rec.setdefault('namespace_inventories',[]).append({'label':label,'files':count,'directories':directories,'logical_bytes':size});durable()
+def empty_worktree(no_index):
+ home_check();config_check();req(os.listdir(rootfd)==['.git'],'unexpected initial source work; no overwrite')
+ for name in ('index.lock','shallow.lock','config.lock','HEAD.lock'):
+  req(not os.path.lexists(U/'.git'/name),'unexpected Git lock')
+ if no_index:req(not os.path.lexists(U/'.git/index'),'unexpected initial index; no overwrite')
+def stable_inputs():
+ req(read_file(CONFIG,cap=32768)[0]==config_raw,'root config changed')
+ req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'root sole-slot reservation changed')
+ for desc in FIXED_EVIDENCE.values():evidence(desc)
+ for desc in CFG['evidence'].values():evidence(desc)
+
+def entries(raw,index=False):
+ result={}
+ for row in raw.split('\0'):
+  if not row:continue
+  left,path=row.split('\t',1);a,b,c=left.split()
+  if index:req(c=='0','non-stage0 index');mode,oid=a,b
+  else:req(b=='blob','non-blob tree member');mode,oid=a,c
+  req(path not in result,'duplicate Git entry');result[path]=(mode,oid)
+ return result
+G=['/usr/bin/git','--literal-pathspecs','-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','commit.gpgsign=false','-c','credential.helper=','-c','http.followRedirects=false','-c','protocol.allow=never','-c','protocol.https.allow=always','-c','init.templateDir=','-c','core.attributesFile=/dev/null','-c','core.autocrlf=false','-c','core.eol=lf']
+ENV={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','TZ':'UTC','HOME':str(U),'GIT_CONFIG_SYSTEM':'/dev/null','GIT_CONFIG_GLOBAL':'/dev/null','GIT_CONFIG_NOSYSTEM':'1','GIT_ATTR_NOSYSTEM':'1','GIT_TERMINAL_PROMPT':'0','GIT_OPTIONAL_LOCKS':'0','GIT_NO_REPLACE_OBJECTS':'1','GIT_NO_LAZY_FETCH':'1','GH_PROMPT_DISABLED':'1'}
+def git(args,clone=False):
+ global child
+ check();home_check()
+ if not clone:config_check()
+ argv=G+args;r={'argv':argv,'cwd':str(P if clone else U),'status':'INTENT'};rec['commands'].append(r);durable()
+ out=bytearray();err=bytearray();complete=False;settled=False
+ try:
+  child=subprocess.Popen(argv,cwd=P if clone else U,env=ENV,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+  r['pid']=child.pid;r['owned_session']=child.pid;durable();deadline=min(START+300,time.monotonic()+(180 if clone else 30))
+  with selectors.DefaultSelector() as sel:
+   for stream,buf,cap in ((child.stdout,out,4*1024**2),(child.stderr,err,1024**2)):
+    os.set_blocking(stream.fileno(),False);sel.register(stream,selectors.EVENT_READ,(buf,cap))
+   while sel.get_map() or child.poll() is None:
+    check();req(time.monotonic()<deadline,'Git command deadline')
+    for key,_ in sel.select(.1):
+     buf,cap=key.data
+     try:chunk=os.read(key.fd,65536)
+     except BlockingIOError:continue
+     if not chunk:sel.unregister(key.fileobj);continue
+     if len(buf)+len(chunk)>cap:
+      r['output_cap_exceeded']=True;r['last_unretained_chunk_bytes']=len(chunk);raise RuntimeError('Git output cap; captured prefix is not complete evidence')
+     buf.extend(chunk)
+   rc=child.wait(timeout=max(.01,deadline-time.monotonic()));complete=True
+  r.update(status='COMPLETED',exit=rc);req(rc==0,'Git nonzero exit '+str(rc));check()
+  decoded=bytes(out).decode('utf-8','strict');settled=True;return decoded
+ except BaseException as error:
+  r['error']=type(error).__name__+': '+str(error)[:2000]
+  r['abnormal_descendants']='NOT_PROVEN; HOLD/no automatic retry or unrelated signal';raise
+ finally:
+  if child is not None:
+   try:
+    if child.poll() is None:
+     r['owned_direct_child_kill_attempted']=True
+     try:child.kill();child.wait(timeout=5)
+     except BaseException as error:r['direct_child_settlement_error']=repr(error);settled=False
+    r['direct_child_reaped']=child.poll() is not None
+    if not r['direct_child_reaped']:settled=False
+   finally:
+    for pipe in (child.stdin,child.stdout,child.stderr):
+     if pipe is not None and not pipe.closed:
+      try:pipe.close()
+      except OSError as error:r['pipe_close_error']=repr(error);settled=False
+    child=None
+  r.update(output_complete=complete,stdout_sha256=digest(out),stdout_bytes=len(out),stderr_sha256=digest(err),stderr_bytes=len(err))
+  if len(out)<=2048:r['stdout']=bytes(out).decode('utf-8','backslashreplace')
+  if len(err)<=4096:r['stderr']=bytes(err).decode('utf-8','backslashreplace')
+  else:r['stderr_file']=write_once('PGRAPH-U-SETUP01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
+  if not settled:r['abnormal_descendants']='NOT_PROVEN; HOLD/no automatic retry or unrelated signal'
+  durable();req(settled,'Git command/child/pipe settlement HOLD')
+try:
+ # Receipt O_EXCL consumes this invocation. Signals/finalizers precede any child.
+ safe_parent(S,str(OUT.relative_to(S)));recfd=os.open(OUT,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600);durable()
+ fd=os.open(OUT.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:os.fsync(fd)
+ finally:os.close(fd)
+ config_raw,_=read_file(CONFIG,cap=32768);CFG=parsed(config_raw)
+ req(set(CFG)=={'schema','owner','namespace_parent','slot_sha256','slot_state','remotes','coordination_parent','coordination_lock','git_tool','root_admission','evidence'},'fixed setup config fields')
+ req(CFG['schema']==1 and CFG['owner']=='/root' and CFG['namespace_parent']==[23,580,0,16877],'fresh root/namespace admission required')
+ req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE and all(isinstance(v,str) and re.fullmatch(r'[0-9a-f]{40}',v) is not None for v in CFG['remotes'].values()),'fresh exact sixref/Sfix point required')
+ admission=CFG['root_admission'];keys={'fresh_sixref_PR_queue_point_independently_accepted','exclusive_local_CI_slot_reserved','fresh_absent_U_and_original_parent_admitted','public_credentials_free_toolchain_admitted','source_and_exact_instance_independently_accepted','original_child_finalization_and_partial_U_HOLD_admitted','original_T_and_unconsumed_facts_frozen_no_access'}
+ req(set(admission)==keys|{'status','allow_3GiB_fallback'} and admission['status']=='ADMITTED_PGRAPH_U_SETUP01_ONCE_ONLY','root setup admission unbound')
+ for key in keys:req(admission[key] is True,'missing explicit root adoption:'+key)
+ req(admission['allow_3GiB_fallback'] is False,'strict12GiB launch; no fallback')
+ req(set(CFG['evidence'])=={'setup_source_review','fresh_preflight_actual','fresh_preflight_review'},'exact independent evidence set')
+ for desc in FIXED_EVIDENCE.values():evidence(desc)
+ for desc in CFG['evidence'].values():evidence(desc)
+ slotraw,_=read_file(LIVE_SLOT,cap=32768)
+ req(isinstance(CFG['slot_sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'fresh sole-slot hash required')
+ req(CFG['slot_state']=='RESERVED_PGRAPH_U_SETUP01' and parsed(slotraw)['state']==CFG['slot_state'],'fresh sole setup slot required')
+ tool=CFG['git_tool'];req(set(tool)=={'path','sha256','pin'} and tool['path']=='/usr/bin/git','fixed public Git tool')
+ toolraw,toolstat=read_file(pathlib.Path('/usr/bin/git'),cap=16*1024**2)
+ req(digest(toolraw)==tool['sha256'] and fullpin(toolstat)==tool['pin'] and toolstat.st_mode&0o111,'fresh Git tool bytes/fullpin mismatch');del toolraw
+ source_raw,_=read_file(SOURCE,cap=2266654)
+ req(len(source_raw)==2266654 and digest(source_raw)==SOURCE_SHA,'shared SOURCE hash/length drift')
+ source=parsed(source_raw);req(source['commit']==BASE and source['tree']==TREE,'shared SOURCE identity drift')
+ rows=source['files'];req(len(rows)==4113 and sum(r['raw_size'] for r in rows)==125708841,'shared SOURCE count/raw bytes drift')
+ product={r['path']:(r['git_mode'],r['git_blob']) for r in rows};req(len(product)==4113,'duplicate shared SOURCE path')
+ for path,(mode,oid) in product.items():
+  p=pathlib.PurePosixPath(path);req(not p.is_absolute() and str(p)==path and not any(x in ('.','..','.git') for x in p.parts) and '\0' not in path,'unsafe PRODUCT path')
+  req(mode in ('100644','100755') and re.fullmatch(r'[0-9a-f]{40}',oid) is not None,'nonordinary PRODUCT tuple')
+ req(not set(REQUESTS)&set(product) and not {'.netrc','_netrc','.curlrc'}&set(product),'request or HOME credential/config file already in PRODUCT')
+ rec['configuration']={'path':str(CONFIG.relative_to(B)),'bytes':len(config_raw),'sha256':digest(config_raw)};rec['root_admission']=admission;rec['adopted_evidence']=CFG['evidence'];rec['fixed_evidence']=FIXED_EVIDENCE
+ rec['tool']=tool;rec['shared_SOURCE']={'path':str(SOURCE.relative_to(B)),'bytes':2266654,'sha256':SOURCE_SHA,'members':4113,'raw_bytes':125708841,'qualification':'Frozen Git tuple map only; no historical checkout or physical INDEX observation relabeled U.'}
+ req(dtuple(LP.lstat())==CFG['coordination_parent'] and CFG['coordination_parent'][2:]==[0,16832],'fresh coordination parent mismatch')
+ coordfd=os.open(LP,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);req(dtuple(os.fstat(coordfd))==CFG['coordination_parent'],'coordination open drift')
+ lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=coordfd);a=os.fstat(lockfd)
+ req(fullpin(a)==CFG['coordination_lock'] and stat.S_ISREG(a.st_mode) and a.st_uid==0 and a.st_nlink==1 and a.st_size==0,'fresh original coordination lock mismatch');fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ parentfd=os.open(P,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);parent_check();stable_inputs();resource('before fresh U allocation',launch=True);NEXT_SAMPLE=time.monotonic()+15
+ req(not os.path.lexists(U),'U occupied; never reuse/delete/reset')
+ old_umask=os.umask(0o077);os.mkdir(U.name,mode=0o700,dir_fd=parentfd);os.fsync(parentfd)
+ rootfd=os.open(U.name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);rec['namespace_identity']=dtuple(os.fstat(rootfd))
+ req(rec['namespace_identity'][2:]==[0,16832] and os.listdir(rootfd)==[],'new U not root0700/empty');root_check();durable()
+ git(['clone','--single-branch','--branch',BRANCH,'--depth=2','--no-tags','--no-local','--no-hardlinks','--no-recurse-submodules','--no-checkout','--',URL,str(U)],clone=True)
+ # This full own-store/config/empty boundary MUST precede read-tree/checkout.
+ inventory('after no-checkout clone');home_check();config_check(first=True);empty_worktree(no_index=True)
+ raw,_=read_file(U/'.git/HEAD',cap=4096);req(raw==('ref: refs/heads/'+BRANCH+'\n').encode(),'HEAD is not dedicated continuation branch')
+ shallow,_=read_file(U/'.git/shallow',cap=4096);req(shallow==(PARENT+'\n').encode(),'not exact depth2 sole Awin boundary')
+ dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines()
+ req(len(dirs)==2 and all(os.path.normpath(str(U/x))==str(U/'.git') for x in dirs),'git-dir/common-dir not own U/.git')
+ req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,TREE],'clone is not exact Sfix commit/tree')
+ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[BASE,PARENT],'Sfix sole Awin parent mismatch')
+ observed_tree=entries(git(['ls-tree','-r','-z','--full-tree','HEAD']));req(observed_tree==product,'complete4113 HEAD map differs from frozen Sfix')
+ rec['pre_materialization']={'own_config_reviewed':True,'git_dir_and_common_dir':str(U/'.git'),'initial_worktree_empty_and_index_absent':True,'source_commit':BASE,'source_tree':TREE,'sole_parent':PARENT,'HEAD_map_members':len(observed_tree)}
+ stable_inputs();empty_worktree(no_index=True);durable();git(['read-tree','HEAD'])
+ req(entries(git(['ls-files','--stage','-z']),index=True)==product,'new stage0 index differs from all4113 Sfix tuples')
+ stable_inputs();empty_worktree(no_index=False);git(['checkout-index','--all'])
+ inventory('after no-force checkout');home_check();config_check()
+ req(entries(git(['ls-files','--stage','-z']),index=True)==product,'postcheckout stage0 index differs')
+ req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,TREE],'postcheckout HEAD drift')
+ req(git(['diff','--no-ext-diff','--no-textconv','--name-only','-z'])=='','postcheckout unstaged work')
+ req(git(['ls-files','--others','-z'])=='','postcheckout untracked/ignored work')
+ for path in REQUESTS:req(not os.path.lexists(U/path),'future request unexpectedly present')
+ req(git(['remote','get-url','--push','--all','origin']).splitlines()==[URL],'wrong push destination')
+ raw=git(['ls-remote',URL,*sorted(REFS)]);remote={}
+ for line in raw.splitlines():
+  oid,ref=line.split('\t');req(ref in REFS and ref not in remote and re.fullmatch(r'[0-9a-f]{40}',oid) is not None,'unexpected/duplicate remote row');remote[ref]=oid
+ req(remote==CFG['remotes'],'fresh sixref point advanced; no retry')
+ stable_inputs();inventory('final retained U');config_check();resource('after fresh U setup')
+ rec.update(status='PGRAPH_U_SETUP_OBSERVED_AWAITING_INDEPENDENT_REVIEW',source_commit=BASE,source_tree=TREE,sole_parent=PARENT,preserved_config_after={'sha256':digest(config_bytes),'pin':config_pin},remote_after=remote,independent_clone_no_alternates_or_hardlinks=True,complete_HEAD_and_stage0_index_members=4113,absent_requests=list(REQUESTS),working_tree_clean=True,original_T_accessed=False)
+ rec['qualification']='Observed setup only: exact independent actual/terminal review required before publication use. Not a new SOURCE/INDEX capture, build, test, hardware or closure result.'
+except BaseException as error:
+ rec['error']=type(error).__name__+': '+str(error)[:3000]
+finally:
+ for fd,label in ((rootfd,'U_root'),(parentfd,'namespace_parent'),(lockfd,'coordination_lock'),(coordfd,'coordination_parent')):
+  if fd is not None:
+   try:
+    if label=='coordination_lock':fcntl.flock(fd,fcntl.LOCK_UN)
+    os.close(fd)
+   except OSError as error:rec[label+'_close_error']=repr(error);rec['status']='FAIL_CLEANUP_HOLD'
+ if old_umask is not None:os.umask(old_umask)
+ rec['elapsed_seconds']=time.monotonic()-START
+ rec['cleanup']='Original direct Git children have per-command observed reap/pipe results. U is needed transport and retained, including any partial clone/index/source. No build/cache/runtime/service/Gradle task started or stopped. No U deletion/reset/clean/retry or original-T access. Abnormal descendant settlement and uncatchable interruption remain external HOLD; no unrelated signals.'
+ try:durable()
+ finally:
+  if recfd is not None:os.close(recfd)
+ print(json.dumps({'status':rec['status'],'error':rec.get('error'),'source_commit':rec.get('source_commit'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+ if rec['status']!='PGRAPH_U_SETUP_OBSERVED_AWAITING_INDEPENDENT_REVIEW':raise SystemExit(1)

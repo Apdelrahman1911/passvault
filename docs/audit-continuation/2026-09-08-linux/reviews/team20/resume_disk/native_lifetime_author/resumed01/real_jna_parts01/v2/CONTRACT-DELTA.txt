@@ -1,0 +1,19 @@
+# One independent-review correction; original parts retained
+
+Reviewer /root/native_review_c20 challenged the V1 XML fragment: raw ASCII scans
+for DTD/entity tokens miss UTF-16/32 interleaved-NUL encodings that ElementTree
+can parse. V1 is not accepted for use. Its source/packet remain unchanged; this
+is a source-review objection and correction, not an executed failing test.
+
+V2 requires the actual Gradle format only: bounded original bytes -> strict
+UTF-8 decode -> reject NUL and decoded DTD/entity declarations -> parse that
+same text. Original raw XML size/hash stay evidence. No other suite/case/marker
+or accounting change. No encoding matrix or generic XML framework is added.
+
+Use only V2 real_jna_xml.fragment.py.txt; reuse parent producer/runtime init and
+INTEGRATION-CONTRACT.txt except its XML format clause now expressly requires
+strict UTF-8/no NUL before the declaration scan. The source parts remain inert,
+not a complete adapter or instance admission. All actual source/graph/Windows/
+DLL/cleanup gates and STOP/NO-RETRY/CLOSED/native/PVD/build1017001 restrictions
+remain. No helper import/compile/test/build/process/runtime/Git/network execution
+was performed for this correction. New run/case/fix/finding/closure credit zero.

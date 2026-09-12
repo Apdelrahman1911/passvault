@@ -1,0 +1,215 @@
+SetFileInformationByHandle function (fileapi.h) - Win32 apps | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+SetFileInformationByHandle function (fileapi.h)
+Feedback
+Summarize this article for me
+In this article
+Sets the file information for the specified file.
+To retrieve file information using a file handle, see
+GetFileInformationByHandle or
+GetFileInformationByHandleEx.
+Syntax
+BOOL SetFileInformationByHandle(
+[in] HANDLE                    hFile,
+[in] FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+[in] LPVOID                    lpFileInformation,
+[in] DWORD                     dwBufferSize
+);
+Parameters
+[in] hFile
+A handle to the file for which to change information.
+This handle must be opened with the appropriate permissions for the requested change. For more information,
+see the Remarks and Example Code sections.
+This handle should not be a pipe handle.
+[in] FileInformationClass
+A FILE_INFO_BY_HANDLE_CLASS enumeration
+value that specifies the type of information to be changed.
+For a table of valid values, see the Remarks section.
+[in] lpFileInformation
+A pointer to the buffer that contains the information to change  for the specified file information class.
+The structure that this parameter points to corresponds to the class that is specified by
+FileInformationClass.
+For a table of valid structure types, see the Remarks section.
+[in] dwBufferSize
+The size of lpFileInformation, in bytes.
+Return value
+Returns nonzero if successful or zero otherwise.
+To get extended error information, call
+GetLastError.
+Remarks
+Certain file information classes behave slightly differently on different operating system releases. These
+classes are supported by the underlying drivers, and any information they return is subject to change between
+operating system releases.
+The following table shows the valid file information classes and their corresponding data structure types for
+use with this function.
+FileInformationClass value
+lpFileInformation type
+FileBasicInfo
+0
+FILE_BASIC_INFO
+FileRenameInfo
+3
+FILE_RENAME_INFO
+FileDispositionInfo
+4
+FILE_DISPOSITION_INFO
+FileAllocationInfo
+5
+FILE_ALLOCATION_INFO
+FileEndOfFileInfo
+6
+FILE_END_OF_FILE_INFO
+FileIoPriorityHintInfo
+12
+FILE_IO_PRIORITY_HINT_INFO
+You must specify appropriate access flags when creating the file handle for use with
+SetFileInformationByHandle. For example, if
+the application is using FILE_DISPOSITION_INFO with
+the DeleteFile member set to TRUE, the file would need
+DELETE access requested in the call to the
+CreateFile function. To see an example of this, see the
+Example Code section. For more information about file permissions, see
+File Security and Access Rights.
+If there is a transaction bound to the handle, then the changes made will be transacted for the information
+classes FileBasicInfo, FileRenameInfo,
+FileAllocationInfo, FileEndOfFileInfo, and
+FileDispositionInfo. If FileDispositionInfo is specified,
+only the delete operation is transacted if a DeleteFile
+operation was requested. In this case, if the transaction is not committed before the handle is closed, the
+deletion will not occur. For more information about TxF, see
+Transactional NTFS (TxF).
+In Windows 8 and Windows Server 2012, this function is supported by the following technologies.
+Technology
+Supported
+Server Message Block (SMB) 3.0 protocol
+Yes
+SMB 3.0 Transparent Failover (TFO)
+See comment
+SMB 3.0 with Scale-out File Shares (SO)
+See comment
+Cluster Shared Volume File System (CsvFS)
+Yes
+Resilient File System (ReFS)
+Yes
+SMB 3.0 does not support rename of alternate data streams on file shares with continuous availability capability.
+Examples
+The following C++ example shows how to create a file and mark it for deletion when the handle is closed.
+//...
+HANDLE hFile = CreateFile( TEXT("tempfile"),
+GENERIC_READ | GENERIC_WRITE | DELETE,
+0 /* exclusive access */,
+NULL,
+CREATE_ALWAYS,
+0,
+NULL);
+if (hFile != INVALID_HANDLE_VALUE)
+{
+FILE_DISPOSITION_INFO fdi;
+fdi.DeleteFile = TRUE; // marking for deletion
+BOOL fResult = SetFileInformationByHandle( hFile,
+FileDispositionInfo,
+&fdi,
+sizeof(FILE_DISPOSITION_INFO) );
+if (fResult)
+{
+// File will be deleted upon CloseHandle.
+_tprintf( TEXT("SetFileInformationByHandle marked tempfile for deletion\n") );
+// ...
+// Now use the file for whatever temp data storage you need,
+// it will automatically be deleted upon CloseHandle or
+// application termination.
+// ...
+}
+else
+{
+_tprintf( TEXT("error %lu:  SetFileInformationByHandle could not mark tempfile for deletion\n"),
+GetLastError() );
+}
+CloseHandle(hFile);
+// At this point, the file is closed and deleted by the system.
+}
+else
+{
+_tprintf( TEXT("error %lu:  could not create tempfile\n"),
+GetLastError() );
+}
+//...
+Requirements
+Requirement
+Value
+Minimum supported client
+Windows Vista [desktop apps | UWP apps]
+Minimum supported server
+Windows Server 2008 [desktop apps | UWP apps]
+Target Platform
+Windows
+Header
+fileapi.h (include Windows.h)
+Library
+Kernel32.lib; FileExtd.lib on Windows Server 2003 and Windows XP
+DLL
+Kernel32.dll
+Redistributable
+Windows SDK on     Windows Server 2003 and Windows XP.
+See also
+CreateFile
+File Management Functions
+File Security and Access Rights
+Generic Access Rights
+GetFileInformationByHandle
+GetFileInformationByHandleEx
+Feedback
+Was this page helpful?
+Yes
+No
+No
+Need help with this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+Ask Learn
+Ask Learn
+Suggest a fix?
+Additional resources
+Last updated on
+2021-10-13
+In this article
+Was this page helpful?
+Need help with this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+Ask Learn
+Ask Learn
+Suggest a fix?
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

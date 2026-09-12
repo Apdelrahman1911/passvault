@@ -1,0 +1,86 @@
+FILE_DISPOSITION_INFO (winbase.h) - Win32 apps | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+FILE_DISPOSITION_INFO structure (winbase.h)
+Feedback
+Summarize this article for me
+In this article
+Indicates whether a file  should be deleted. Used for any handles. Use only when calling
+SetFileInformationByHandle.
+Syntax
+typedef struct _FILE_DISPOSITION_INFO {
+BOOLEAN DeleteFile;
+} FILE_DISPOSITION_INFO, *PFILE_DISPOSITION_INFO;
+Members
+DeleteFile
+Indicates whether the file should be deleted. Set to TRUE to delete the file.
+This member has no effect if the handle was opened with
+FILE_FLAG_DELETE_ON_CLOSE.
+Requirements
+Requirement
+Value
+Minimum supported client
+Windows Vista [desktop apps only]
+Minimum supported server
+Windows Server 2008 [desktop apps only]
+Header
+winbase.h (include Windows.h)
+Redistributable
+Windows SDK on     Windows Server 2003 and Windows XP.
+See also
+FILE_INFO_BY_HANDLE_CLASS
+SetFileInformationByHandle
+Feedback
+Was this page helpful?
+Yes
+No
+No
+Need help with this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+Ask Learn
+Ask Learn
+Suggest a fix?
+Additional resources
+Last updated on
+2024-02-22
+In this article
+Was this page helpful?
+Need help with this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+Ask Learn
+Ask Learn
+Suggest a fix?
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

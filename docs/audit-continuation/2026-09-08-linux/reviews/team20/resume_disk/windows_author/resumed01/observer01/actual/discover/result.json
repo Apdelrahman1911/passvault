@@ -1,0 +1,70 @@
+{
+  "additional_cases": 0,
+  "awin_sha": "2ddeaa8412c06cef07e23b7dda951db3434f1f9c",
+  "boot_id": "e1611048-73e0-4b6c-85cf-72a511344ee6",
+  "command": {
+    "argv": [
+      "/usr/bin/gh",
+      "api",
+      "--hostname",
+      "github.com",
+      "--method",
+      "GET",
+      "repos/Apdelrahman1911/passvault/actions/workflows/audit-windows-kdf-file-io-validation.yml/runs",
+      "-f",
+      "branch=codex/audit-continuation-linux-20260908",
+      "-f",
+      "event=push",
+      "-f",
+      "head_sha=2ddeaa8412c06cef07e23b7dda951db3434f1f9c",
+      "-f",
+      "per_page=10",
+      "--jq",
+      "{total_count,workflow_runs:[.workflow_runs[]|{id,run_attempt,workflow_id,path,head_sha,head_branch,event,status,conclusion,created_at,updated_at,run_started_at,repository:{full_name:.repository.full_name},head_repository:{full_name:.head_repository.full_name}}]}"
+    ],
+    "cleanup": "ORIGINAL_GROUP_EMPTY_EXCEPT_REAPED_LEADER",
+    "exit_code": 0,
+    "leader_start_ticks": 6986024,
+    "pid": 15006,
+    "scope": "Original Linux group/session point observations; no escaped-process or global exclusivity claim.",
+    "stderr_bytes": 0,
+    "stderr_policy": "byte/hash only; no possible signed-URL diagnostic disclosure",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 559,
+    "stdout_sha256": "f777130da26a54ccf7d3856e50e4ae041f2a64955735c7fc6c2c0207f8e8b303",
+    "utc_end": 1789200304.040108,
+    "utc_start": 1789200303.400921
+  },
+  "data": {
+    "total_count": 1,
+    "workflow_runs": [
+      {
+        "conclusion": "failure",
+        "created_at": "2026-09-12T07:53:12Z",
+        "event": "push",
+        "head_branch": "codex/audit-continuation-linux-20260908",
+        "head_repository": {
+          "full_name": "Apdelrahman1911/passvault"
+        },
+        "head_sha": "2ddeaa8412c06cef07e23b7dda951db3434f1f9c",
+        "id": 34681869491,
+        "path": ".github/workflows/audit-windows-kdf-file-io-validation.yml",
+        "repository": {
+          "full_name": "Apdelrahman1911/passvault"
+        },
+        "run_attempt": 1,
+        "run_started_at": "2026-09-12T07:53:12Z",
+        "status": "completed",
+        "updated_at": "2026-09-12T07:54:14Z",
+        "workflow_id": 356374269
+      }
+    ]
+  },
+  "monotonic_start": 69860.243799593,
+  "operation": "discover",
+  "schema": 1,
+  "source_sha256": "c885d71463256e1ea6c8b50b14a4cd32e48ea62799d3be75122fcbc9f57b7403",
+  "status": "OBSERVED",
+  "utc_end": 1789200304.042739,
+  "utc_start": 1789200303.3991895
+}

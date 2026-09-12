@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "utc": "2026-09-12T10:06:35.935778+00:00",
+  "reviewer": "/root/windows_review",
+  "author_reviewed": "/root/windows_author",
+  "disposition": "ACCEPT_EXACT_INERT_GRAPH_RECEIVER_REQUEST_BINDING_AND_FUTURE_REAL_JNA_RECEIVER_DELTA_ONLY",
+  "execution_or_instance_admission": false,
+  "inputs": [
+    {
+      "path": "reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/audit-windows-jna-graph-validation.yml.txt",
+      "bytes": 2183,
+      "sha256": "5f453c9c410ce70175e54d6232c46351a88db458ab1bf1e1ef4a5adf72d9480e"
+    },
+    {
+      "path": "reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/audit-windows-real-jna-validation.yml.txt",
+      "bytes": 2327,
+      "sha256": "bdc67cd9a1790e520d57ae4c0006dbb249d809ef1226c6b25da54bb3057e2d16"
+    },
+    {
+      "path": "reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/GRAPH-TO-REAL-JNA-WORKFLOW.diff.txt",
+      "bytes": 3153,
+      "sha256": "daa0e0345754c2560c84efe5021bf6cad3350adbdcfda23f10de11cfbd1c882e"
+    },
+    {
+      "path": "reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/windows-jna-graph-01.REQUEST.template.json",
+      "bytes": 1878,
+      "sha256": "449c82665cfa2fe83ba76e7656459d67d2a923895d81a0e47c41ef0098719521"
+    },
+    {
+      "path": "reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/CONTROL-ROW-MAP.json",
+      "bytes": 5888,
+      "sha256": "5a9c7398342d729f3dc942154047743c6c85eb065422c6720e41646177aa0978"
+    },
+    {
+      "path": "reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/REQUEST.template.json",
+      "bytes": 1878,
+      "sha256": "449c82665cfa2fe83ba76e7656459d67d2a923895d81a0e47c41ef0098719521"
+    },
+    {
+      "path": "reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt",
+      "bytes": 3422,
+      "sha256": "c95ecfcfd9e5c81a396bd1829e48f3c1712460032484d53d3ddbcac23c07161b"
+    },
+    {
+      "path": "reviews/checkpoint21/source-prepare01/SOURCE.json",
+      "bytes": 2266654,
+      "sha256": "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74"
+    }
+  ],
+  "independent_comparisons": {
+    "terminal": "e7bea8 exit0; inert JSON/hash/literal comparisons only, not a build/test",
+    "graph_receiver": "Exact2183B/5f453c9c unchanged graph receiver. Native reviewer confirms unchanged helper binding1185097a and graph receiver5f453c9c; no repeated full helper/API review.",
+    "real_jna_delta": "Exact2327B/bdc67cd9 reconstructed from graph by only title/request namespace/job label/helper command/step labels/10-to30min changes and one exact flat XML artifact glob. Independent unified diff exactly equals3153B/daa0e034 author diff. No other receiver changes.",
+    "request_copy": "Exact1878B/449c8266 byte-equal native graph_actual_sfix01/REQUEST.template.json; duplicate JSON members rejected.",
+    "shared_SOURCE": "Actual2266654B/887d3b93 parsed once as inert previously captured data; exact Sfix commit e9cca961837789048503aaffc74ab1a1e7e536ec/tree7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d/4113 unique rows/125708841 summed raw bytes agree request/map. No second source capture or live Git/tree proof.",
+    "row_map": "All six materialized map rows (five graph core plus dormant real-JNA receiver) have exact source-afterimage size/SHA, unique destination,100644,A_ONLY and are absent from shared Sfix SOURCE. Graph activation request and genuine reviewer destination also absent from that SOURCE. This partial map does not establish a complete publication/review ancestry closure; publication reviewer owns that."
+  },
+  "receiver_security_and_scheduling": [
+    "Each receiver has exactly one job on windows-2022, exact dedicated continuation-branch and distinct exact request-path push filter. Repository/ref/event/not-deleted/attempt1 job guard retained; no workflow_dispatch,pull_request,workflow_run,schedule,matrix,needs or automatic graph-to-runtime chain.",
+    "Same fixed concurrency group/cancel-in-progressfalse; not machine-wide or local/CI exclusivity and not protection for an older pending run. Root must freshly exclude other queued/pending/running owned builds and evaluate the actual entire Pgraph/Agraph deltas and protected-base PR synchronize risk before both pushes. This narrow review is not a fresh all-workflow trigger/queue census.",
+    "contents:read only; checkout3d3c42e5aac5ba805825da76410c181273ba90b1 and upload043fb46d1a93c77aae656e7c1c64a875d1fc6a0a remain immutable40hex pins. Checkout exactgithub.sha/depth2/persist-credentialsfalse/submodulesfalse/LFSfalse. No environment/signing/Store/secrets/OIDC/dependency-install/cache/publishing step.",
+    "One fixed pwsh command python -I -B scripts/audit/windows_jna_graph_01.py or scripts/audit/windows_real_jna_01.py; no user command/arg injection. Graph job600s; future real-JNA job1800s. Actual JDK17/wrapper/worker/dependency/source gates remain helper+root duties, not workflow proof.",
+    "Compact upload only when validate.evidence_owned equals true, even on failure. Exact run/attempt evidence namespace; graph flatJSON/JSONL/log only; future real-JNA also flatXML.3day retention/compression9/no-fileserror. No binary/archive/object/PDB/build-directory glob. Actual file count/size/secret-safe contents and original-root ownership must still be established by separately accepted helper and actual intake."
+  ],
+  "graph_request_contract": {
+    "bound": "Product Sfix commit/tree and shared SOURCE path/hash/4113/125708841; helper1185097a/init952d4337/workflow5f453c9c/scopec95ecfcf exact materialized bytes. Genuine reviewer path agrees partial map.",
+    "workload": "case_count0/dry_runtrue/target :app-desktop:auditJnaLifetimeTest. Seven parent command limit; work300s/stop360s/cleanup420s within receiver600s. JDK selectorJAVA_HOME_17_X64 and heap -Xmx1536m -XX:MaxMetaspaceSize=384m -XX:ActiveProcessorCount=1. Target label does not mean real-JNA tests execute in graph phase.",
+    "deliberately_unbound": [
+      "source_commit/controlPgraph",
+      "source_tree/controlPgraph",
+      "nonce/freshroot",
+      "independent_review_sha256/genuinecontentacceptance"
+    ],
+    "root_attestations_false": 6,
+    "qualification": "Correctly non-executable request template, not an activation or genuine instance. Reviewer acceptance row remains nullsize/hash. No nonce/current execution authority invented; do not publish it as a runnable request."
+  },
+  "future_runtime_composition": {
+    "source_scope": "Dormant receiver only for one ordinary DLL and independently admitted real-JNA case. Adding XML retention is justified by actual testcase evidence, not a matrix expansion.",
+    "pending": "native_review_c20 reports runtime draft not yet sealed. Accepted component proposal expects1500/1560/1620s work/stop/cleanup inside1800s workflow and passvault-windows-real-jna-01 namespace, but actual composed-helper suite/request/namespace/outputflag/timeout/selector correspondence is NOT yet confirmed by this review.",
+    "required_before_execution": "Exact helper/scope/genuine runtime-instance review must bind receiver hashbdc67cd9, scripts/audit/windows_real_jna_01.py, requests/windows-real-jna-01.json, validate evidence_owned output, run/attempt evidence namespace, compactXML and resource/cleanup clocks. Actual graph plus original wrapper-stop/Job/handle/root-cleanup independent acceptance precedes separately bound real-JNA activation. Never bundle runtime request with graph activation or auto-chain on graph success."
+  },
+  "no_blocking_receiver_source_findings": true,
+  "remaining_root_publication_gates": [
+    "Finish shared Sfix SOURCE/INDEX consumer settlement and genuine shared-source acceptance; preserve exact rows and raw-Git/EOL qualifications. Parent reports Static06 runtime cleaned/quiet window released; this review does not inspect runtime or settle AndroidGraph01/other consumers.",
+    "Native source/component acceptance and genuine fresh root nonce/content record; exact complete add-only Pgraph manifest/supporting review ancestry from publication owner. No source/report/request overwrite or protected ref changes.",
+    "Fresh Pgraph trigger/queue/global-slot/resource admission, actual Pgraph commit/tree reconciliation, then exact new graph A-only request child with its independent activation admission. Product Sfix tuple must not be substituted for still-unbound control Pgraph tuple.",
+    "Root sole Windows graph execution and independent actual source/graph/log/stop/Job/handles/generated-root cleanup adjudication; then separately admit real-JNA if its actual gates permit. No speculative extra matrix or repeated Windows4 tests."
+  ],
+  "preserved": "Windows4four source-qualified events and overallFAIL/filesystemHOLD unchanged; no original-root read/retry/recovery/cleanup-only CI. PVU007STOP/PVU011NO_RETRY/PVA02949-44-5FAIL/noautomaticretry/G7G8CLOSED/originalnative-refusal/priorHOLDs/eightPVD/protectedrefs/tags/build1017001 remain. Excluded native-refusal workflow never opened.",
+  "accounting": "Zero builds/tests/application/native cases/new findings/fixes/closures from this source review. Graph is zero-case; future real-JNA label is not evidence. Existing accounting unchanged.",
+  "activity": "Named W source/evidence reads, ordinary SHA/duplicate-key JSON/literal/difflib comparisons, exclusive new review write. No Git/network/T/runtime/process inspection/helper import/AST/compilation/execute/build/test/cleanup or canonical edit. No worker/disposable build output created."
+}

@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "reviewer": "/root/linux_review",
+  "utc": "2026-09-12T11:27:43.627360+00:00",
+  "status": "ACCEPT_ACTUAL_CONSUMED_HOLD_ONLY_NO_TEST_OR_CLEANUP_SUCCESS",
+  "run_id": "linux-focused-regression03",
+  "scope": "Independent retained-evidence reconciliation, not execution, recovery or cleanup admission. No R/T reads, Git/network, host/process probes, helper execution/import, build/test, stop or deletion by reviewer. Only this new reviewer leaf written.",
+  "source": {
+    "commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+    "tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+    "manifest_sha256": "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74",
+    "qualification": "4113 raw-Git members,125708841B; accepted source-before only. Both original checkout-EOL qualifications remain. Final source conservation was NOT established."
+  },
+  "inputs": [
+    {
+      "path": "runs/linux-focused-regression03/OUTER-RECEIPT.json",
+      "bytes": 10390,
+      "sha256": "259eb638add02615bdb7370cbc375282fb35791b1775cbac3831d05d2b4c3cde"
+    },
+    {
+      "path": "runs/linux-focused-regression03/INNER-RESULT.json",
+      "bytes": 5877,
+      "sha256": "78d102c931fd292356199fce5f730e98875665188ba73f2b58496c835c658ada"
+    },
+    {
+      "path": "runs/linux-focused-regression03/PHASE-focused.json",
+      "bytes": 2735,
+      "sha256": "89640a0c2a5675f42e8875364cb467f36bb4f7af21d264fb89ccadb3928410a7"
+    },
+    {
+      "path": "runs/linux-focused-regression03/TASK-RESULTS.json",
+      "bytes": 44498,
+      "sha256": "44b9cd0fb9a1fd2012eaeabd7aa629362ed0aa0b35b82f63aa1c796d4c594739"
+    },
+    {
+      "path": "runs/linux-focused-regression03/logs/focused.log",
+      "bytes": 48645,
+      "sha256": "171a9557a48ed5c1f8cb1d11753baecc08379987ca95e71b49a65b86b21d0a07"
+    },
+    {
+      "path": "runs/linux-focused-regression03/logs/focused-stop.log",
+      "bytes": 454,
+      "sha256": "940ffcd898dd32d799e33362041336418fcd18062a34c1ac7c153f4150f77668"
+    },
+    {
+      "path": "runs/linux-focused-regression03/CANCEL",
+      "bytes": 124,
+      "sha256": "e39136efdf8c94ef3975f69f064044ba05c2e717f57bc29c22e0be89331adc91"
+    },
+    {
+      "path": "runs/linux-focused-regression03/INNER-PREFLIGHT.json",
+      "bytes": 167,
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    {
+      "path": "runs/linux-focused-regression03/SOURCE-BEFORE.json",
+      "bytes": 1334,
+      "sha256": "8f310d124648fb03f9d4ee9a2b08588c8933ba2ad813d4acd5bf0e28efcf50c4"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/SFIX-FOCUSED03-EXECUTION-ADMISSION.json",
+      "bytes": 7224,
+      "sha256": "1b9b15a9f34768429847775ba60c644f98e54f67ed2e261adf0aa390ac11427b"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/SFIX-FOCUSED03-EXTERNAL-TERMINAL.json",
+      "bytes": 4102,
+      "sha256": "9ad0db358c2ecd1aa97c499a7de6501f98297a969e60ff51188b62de9bbde577"
+    },
+    {
+      "path": "reviews/focused-regression03/CLASSES.tsv",
+      "bytes": 1770,
+      "sha256": "ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a"
+    },
+    {
+      "path": "reviews/focused-regression03/METHODS.tsv",
+      "bytes": 903,
+      "sha256": "fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd"
+    }
+  ],
+  "external_terminal": {
+    "launch_chunk": "ac40af",
+    "session_id": 58370,
+    "terminal_chunk": "e313ea",
+    "exit_code": 70,
+    "qualification": "Root-retained terminal completion, not a reviewer rerun. Authoritative after the explicitly preterminal outer receipt."
+  },
+  "reconciliation": {
+    "commands": "Phase JSON matches inner phase exactly after removing its added record_image descriptor. Build and original-stop argv equal admitted argv. JDK17/wrapper/one worker/no daemon/no parallel/no configure-on-demand/strict dependency verification recorded; no platform/toolchain bypass.",
+    "actual_outcome": "Outer HOLD213.262s; original Git child0 and original unshare/inner child1, neither outer pidfd kill attempted. Focused command complete143 with timeout/cancel/resource/output-failure category; CANCEL identifies host-screen uncertainty, not a demonstrated resource-floor violation or product assertion failure.",
+    "conflict_reasons": [
+      "RuntimeError:host-screen candidate uncertainty: 29218:proof-owned-domain",
+      "RuntimeError:host-screen candidate uncertainty: 29369:proof-owned-domain",
+      "RuntimeError:host-screen candidate uncertainty: 20697:proof-namespace:mnt",
+      "RuntimeError:child failure/uncertain finalization"
+    ],
+    "first_conflict": "PID29218 java,PPID29150,start8149999 was observed in host mnt:[4026531841]/pid:[4026531836], not owned mnt:[4026532115]/pid:[4026532116]; owned_proof=false. Supports UNCLASSIFIED_NONADMITTED_HOST_JAVA, not a verified unrelated owner and not proof of an escaped owned process. PID29369 second domain uncertainty, PID20697 final mnt uncertainty and unclassified_host_churn=2 are preserved.",
+    "graph_and_xml": "TASK-RESULTS contains exactly the single graph record also present in focused.log:322 scheduled paths, the exact three selectors, two KotlinJvmTest tasks and one KotlinCompile task. Zero selected task-state records. E/xml empty, captures empty, mapping_ok=false. Dependency task progress in the log is not completed regression or Desktop test-compilation evidence.",
+    "selection": "DB1/DB2/C01/C02 select1/1/6/2 methods: full migration rollback/reopen; schema1 encrypted backup restore/reopen; six editor Save freshness/ownership cases; two duplicate/unchanged draft Save cases. These are10 declared regressions, four expected XML suites, two Test task actions, plus Desktop test compilation only. unstarted=[] records that the focused invocation began; it does not establish completed tasks/cases.",
+    "scope_mapping": "Root correction accepted: admission PVA031/PVA039 IDs are contextual, not an exhaustive case-to-finding map. Selection also concerns PVA007 editor ownership and already qualified migration/backup boundaries. Desktop compilation is not PVA039 static-analysis closure.",
+    "original_stop": "Original wrapper--stop completed0 without errors; log says No Gradle daemons are running. stop_required/attempted/ok and settled true, all_required_stops_ok=true, namespace_empty_before_exit=true. Root terminal reports a later bounded empty original-namespace scan with zero proc vanishes. Narrow recorded owned settlement only, not universal idle/no-escape/future-exclusion proof. Do NOT repeat the completed stop.",
+    "source_and_cleanup": "source_before=true; source_after=false; cleanup_safe=false; cleanup=NOT_ATTEMPTED. SOURCE-AFTER absent. Root terminal observes original R top still present and current shared-index digest af34295e4d563f8226e3fce23c673d0d4d281d821219bc0ee270090a258d7add. That separately attributed observation does not repair cancelled source-after or authorize R disposal.",
+    "errors_preserved": [
+      "focused: missing/extra/failed XML; zero success inferred from compilation",
+      "focused graph/compile outcome: exact graph/three task states",
+      "RuntimeError: focused failed; no retry",
+      "final evidence/source/namespace uncertainty: cancelled before final evidence acceptance"
+    ]
+  },
+  "resources": {
+    "outer_minimum_sampled_disk_available_bytes": 16379772928,
+    "outer_minimum_sampled_ram_available_bytes": 60863307776,
+    "inner_completed_samples": 8,
+    "incomplete_samples": 0,
+    "last_sampled_R_logical_bytes": 1017370343,
+    "last_sampled_R_allocated_bytes": 1066762240,
+    "last_sampled_R_files": 10555,
+    "last_sampled_R_directories": 5536,
+    "qualification": "All eight retained inventory samples completed with zero vanished entries/directories. Samples are historical, not final inventory, ownership, cleanup authorization or peak proof. No observed disk-floor breach. Later root terminal reports16287277056B available, not a reviewer host probe."
+  },
+  "credit": {
+    "selected_regression_passes": 0,
+    "selected_xml_cases": 0,
+    "selected_xml_files": 0,
+    "selected_task_outcomes_accepted": 0,
+    "desktop_test_compilation_success": false,
+    "new_family_closures": 0,
+    "new_suspicion_resolutions": 0,
+    "qualification": "Partial task/log/graph observations are retained, not promoted to case, platform, hardware or product-completion evidence. Existing successful evidence is not revoked."
+  },
+  "next_boundary": "One-shot Focused03 is consumed. No automatic rerun, fresh-name replay, stop replay, R inspection or deletion is admitted by this review. Any root-owned fresh R-only closeout requires its own reviewed admission and independent actual reconciliation; later evidence cannot rewrite original source_after=false. New local execution also needs reliable fresh quiet coordination.",
+  "fences": "PVU007 STOP; PVU011 NO-RETRY; PVA02949/44/5FAIL and no automatic retry; G7/G8 CLOSED; original native refusal; all earlier HOLDs; protected branches/tags and mobile1017001; dependency/version/identity/signing/Store/PVD boundaries unchanged."
+}

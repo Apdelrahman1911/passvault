@@ -1,0 +1,1470 @@
+"""One Windows real-JNA task-graph preflight; no Test/native execution or retry.
+
+Sfix derivative author /root/native_author; reviewer /root/native_review_c20.
+The current Windows source03 is a TEXT containment precedent only. It is not
+imported, executed, modified, or assigned Gradle authority. This separate fixed
+adapter requires fresh source/instance/coordination admission. No Test properties,
+DLL, native compiler, SDK/JDK install, release task, credentials or hardware call.
+Seven parent commands maximum; the seventh is cleanup-only original-wrapper stop.
+"""
+
+from __future__ import annotations
+
+import ctypes
+from ctypes import wintypes as wt
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import shutil
+import signal
+import stat
+import struct
+import subprocess
+import sys
+import time
+
+BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
+BASE = "docs/audit-continuation/2026-09-08-linux"
+REQUEST = f"{BASE}/requests/windows-jna-graph-01.json"
+HELPER = "scripts/audit/windows_jna_graph_01.py"
+INIT = "scripts/audit/windows_jna_graph_01.init.gradle"
+WORKFLOW = ".github/workflows/audit-windows-jna-graph-validation.yml"
+SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt"
+REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json"
+SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+# Corrected Sfix PRODUCT: one actual root-captured SOURCE; independent review remains required.
+# Actual product values bound below; control/instance/coordination remain rejecting.
+SOURCE_SHA256 = "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74"
+SOURCE_MEMBERS = 4113
+SOURCE_BYTES = 125708841
+PROJECT_COMMIT = "e9cca961837789048503aaffc74ab1a1e7e536ec"
+PROJECT_TREE = "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d"
+SUITE = "windows-jna-graph-01"
+TARGET = ":app-desktop:auditJnaLifetimeTest"
+WRAPPER_SHA256 = "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+DISTRIBUTION_URL = "https://services.gradle.org/distributions/gradle-9.7.1-bin.zip"
+DISTRIBUTION_SHA256 = "acd53f1edaf02f1a8ff99879f8a34b302661a057d9b063ae9e35b552f804d20a"
+DISTRIBUTION_DIRECTORY = "wrapper/dists/gradle-9.7.1-bin/1w1c7tv4s851m17nbqdsro2tv"
+JVM_HEAP = "-Xmx1536m -XX:MaxMetaspaceSize=384m -XX:ActiveProcessorCount=1"
+ROOT_ATTESTATIONS = (
+    "exclusive_build_slot",
+    "source_push_excludes_queued_pending_running_local_ci",
+    "activation_push_excludes_queued_pending_running_local_ci",
+    "source_push_other_workflow_triggers_reviewed",
+    "activation_push_other_workflow_triggers_reviewed",
+    "generated_cleanup_admitted",
+)
+REQUIRED_PROJECT_INPUTS = (
+    ".gitattributes", "gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar",
+    "gradle/wrapper/gradle-wrapper.properties", "gradle.properties", "settings.gradle.kts",
+    "build.gradle.kts", "gradle/libs.versions.toml", "gradle/verification-metadata.xml",
+    "app-desktop/build.gradle.kts", "core/crypto/build.gradle.kts",
+    "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/"
+    "JnaDesktopBiometricNativeLifetimeIntegrationTest.kt",
+)
+GiB = 1024 ** 3
+LOG_LIMIT = 2 * 1024 ** 2
+LOG_TOTAL_LIMIT = 8 * 1024 ** 2
+JOURNAL_LIMIT = 8 * 1024 ** 2
+MAX_SOURCE_INPUT = 8 * 1024 ** 2
+MAX_BLOB = 32 * 1024 ** 2
+MAX_SOURCE_BYTES = 128 * 1024 ** 2
+MAX_ENTRIES = 20000
+COMMAND_SECONDS, STOP_CUTOFF_SECONDS, CLEANUP_SECONDS = 300, 360, 420
+CASES = ()
+# One FUTURE fresh-profile entry only. Never an old-root or target cleanup scope.
+PROFILE_CACHE_LEAF = "home/AppData/Local/Microsoft/Windows/INetCache/Content.IE5"
+CANCELLED = False
+
+def require(condition: bool, explanation: str) -> None:
+    if not condition:
+        raise RuntimeError(explanation)
+
+
+def require_absent(path: Path) -> None:
+    try:
+        path.lstat()  # Never follow a reparse target merely to test absence.
+    except FileNotFoundError:
+        return
+    raise RuntimeError(f"Namespace exists; no adoption/recovery: {path.name}")
+
+
+def digest(path: Path) -> str:
+    with path.open("rb") as value:
+        return hashlib.file_digest(value, "sha256").hexdigest()
+
+
+def frozen_bytes(path: Path, limit=1024 ** 2) -> bytes:
+    plain_path(path)
+    before = path.lstat()
+    require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, "Input must be regular and single-linked")
+    require(before.st_size <= limit, "Oversized frozen input")
+    identity = lambda state: (state.st_dev, state.st_ino, state.st_size, state.st_mtime_ns, state.st_ctime_ns)
+    with path.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        data = stream.read(limit + 1)
+        finished = os.fstat(stream.fileno())
+    after = path.lstat()
+    require(identity(before) == identity(opened) == identity(finished) == identity(after), "Frozen input changed during read")
+    require(len(data) == before.st_size, "Frozen input length changed")
+    return data
+
+
+def no_duplicate_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        require(key not in result, "Duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def read_json(path: Path):
+    return json.loads(frozen_bytes(path), object_pairs_hook=no_duplicate_keys)
+
+
+def write_json(path: Path, value) -> None:
+    encoded = json.dumps(value, sort_keys=True, indent=2) + "\n"
+    require(len(encoded.encode("utf-8")) <= 1024 ** 2, "Compact JSON exceeds one MiB")
+    with path.open("x", encoding="utf-8", newline="\n") as output:
+        output.write(encoded)
+        output.flush()
+        os.fsync(output.fileno())
+
+
+def cancel(_number, _frame):
+    global CANCELLED
+    CANCELLED = True
+
+
+def plain_path(path: Path) -> None:
+    """No reparse components; no assertion of adversarial same-user isolation."""
+    for member in reversed((path, *path.parents)):
+        state = member.lstat()
+        require(not (state.st_file_attributes & 0x400), f"Reparse path: {member}")
+
+
+class SECURITY_ATTRIBUTES(ctypes.Structure):
+    _fields_ = [("length", wt.DWORD), ("descriptor", wt.LPVOID), ("inherit", wt.BOOL)]
+
+
+class STARTUPINFO(ctypes.Structure):
+    _fields_ = [
+        ("cb", wt.DWORD), ("reserved", wt.LPWSTR), ("desktop", wt.LPWSTR),
+        ("title", wt.LPWSTR), ("x", wt.DWORD), ("y", wt.DWORD),
+        ("width", wt.DWORD), ("height", wt.DWORD), ("chars_x", wt.DWORD),
+        ("chars_y", wt.DWORD), ("fill", wt.DWORD), ("flags", wt.DWORD),
+        ("show", wt.WORD), ("reserved_size", wt.WORD), ("reserved_ptr", wt.LPVOID),
+        ("stdin", wt.HANDLE), ("stdout", wt.HANDLE), ("stderr", wt.HANDLE),
+    ]
+
+
+class PROCESS_INFORMATION(ctypes.Structure):
+    _fields_ = [("process", wt.HANDLE), ("thread", wt.HANDLE),
+                ("pid", wt.DWORD), ("tid", wt.DWORD)]
+
+
+class STARTUPINFOEX(ctypes.Structure):
+    _fields_ = [("startup", STARTUPINFO), ("attributes", wt.LPVOID)]
+
+
+class BASIC_LIMIT(ctypes.Structure):
+    _fields_ = [
+        ("process_time", ctypes.c_int64), ("job_time", ctypes.c_int64),
+        ("flags", wt.DWORD), ("min_working_set", ctypes.c_size_t),
+        ("max_working_set", ctypes.c_size_t), ("active_limit", wt.DWORD),
+        ("affinity", ctypes.c_size_t), ("priority", wt.DWORD), ("scheduling", wt.DWORD),
+    ]
+
+
+class IO_COUNTERS(ctypes.Structure):
+    _fields_ = [(name, ctypes.c_uint64) for name in (
+        "read_ops", "write_ops", "other_ops", "read_bytes", "write_bytes", "other_bytes")]
+
+
+class EXTENDED_LIMIT(ctypes.Structure):
+    _fields_ = [
+        ("basic", BASIC_LIMIT), ("io", IO_COUNTERS),
+        ("process_memory", ctypes.c_size_t), ("job_memory", ctypes.c_size_t),
+        ("peak_process", ctypes.c_size_t), ("peak_job", ctypes.c_size_t),
+    ]
+
+
+class ACCOUNTING(ctypes.Structure):
+    _fields_ = [
+        ("user_time", ctypes.c_int64), ("kernel_time", ctypes.c_int64),
+        ("period_user", ctypes.c_int64), ("period_kernel", ctypes.c_int64),
+        ("faults", wt.DWORD), ("total", wt.DWORD),
+        ("active", wt.DWORD), ("terminated", wt.DWORD),
+    ]
+
+
+class MEMORY(ctypes.Structure):
+    _fields_ = [("length", wt.DWORD), ("load", wt.DWORD)] + [
+        (name, ctypes.c_uint64) for name in (
+            "total", "available", "total_page", "available_page",
+            "total_virtual", "available_virtual", "extended_virtual")]
+
+
+class FILE_INFO(ctypes.Structure):
+    _fields_ = [
+        ("attributes", wt.DWORD), ("created", wt.FILETIME),
+        ("accessed", wt.FILETIME), ("written", wt.FILETIME), ("volume", wt.DWORD),
+        ("size_high", wt.DWORD), ("size_low", wt.DWORD), ("links", wt.DWORD),
+        ("index_high", wt.DWORD), ("index_low", wt.DWORD),
+    ]
+
+
+class EntryRefusal(RuntimeError):
+    def __init__(self, details):
+        super().__init__("No-follow entry ownership/reparse/link refusal")
+        self.details = details
+
+
+class FILE_ATTRIBUTE_TAG_INFO(ctypes.Structure):
+    _fields_ = [("attributes", wt.DWORD), ("reparse_tag", wt.DWORD)]
+
+
+class Windows:
+    """Atomic creation-time job assignment; no unowned fork/assignment gap."""
+
+    def __init__(self):
+        self.k = ctypes.WinDLL("kernel32", use_last_error=True)
+        specs = {
+            "CreateJobObjectW": ([wt.LPVOID, wt.LPCWSTR], wt.HANDLE),
+            "SetInformationJobObject": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+            "QueryInformationJobObject": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD, wt.LPVOID], wt.BOOL),
+            "TerminateJobObject": ([wt.HANDLE, wt.UINT], wt.BOOL),
+            "InitializeProcThreadAttributeList": ([wt.LPVOID, wt.DWORD, wt.DWORD, wt.LPVOID], wt.BOOL),
+            "UpdateProcThreadAttribute": ([wt.LPVOID, wt.DWORD, ctypes.c_size_t, wt.LPVOID,
+                                            ctypes.c_size_t, wt.LPVOID, wt.LPVOID], wt.BOOL),
+            "DeleteProcThreadAttributeList": ([wt.LPVOID], None),
+            "CreateFileW": ([wt.LPCWSTR, wt.DWORD, wt.DWORD, wt.LPVOID, wt.DWORD, wt.DWORD, wt.HANDLE], wt.HANDLE),
+            "ReadFile": ([wt.HANDLE, wt.LPVOID, wt.DWORD, wt.LPVOID, wt.LPVOID], wt.BOOL),
+            "CreateProcessW": ([wt.LPCWSTR, wt.LPWSTR, wt.LPVOID, wt.LPVOID, wt.BOOL, wt.DWORD,
+                                wt.LPVOID, wt.LPCWSTR, wt.LPVOID, wt.LPVOID], wt.BOOL),
+            "ResumeThread": ([wt.HANDLE], wt.DWORD),
+            "WaitForSingleObject": ([wt.HANDLE, wt.DWORD], wt.DWORD),
+            "GetExitCodeProcess": ([wt.HANDLE, wt.LPVOID], wt.BOOL),
+            "CloseHandle": ([wt.HANDLE], wt.BOOL),
+            "FlushFileBuffers": ([wt.HANDLE], wt.BOOL),
+            "GlobalMemoryStatusEx": ([wt.LPVOID], wt.BOOL),
+            "GetFileInformationByHandle": ([wt.HANDLE, wt.LPVOID], wt.BOOL),
+            "GetFileInformationByHandleEx": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+            "SetFileInformationByHandle": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+        }
+        for name, (arguments, result) in specs.items():
+            method = getattr(self.k, name)
+            method.argtypes, method.restype = arguments, result
+        self.job = self.k.CreateJobObjectW(None, None)
+        self.termination_attempted = False
+        self.check(self.job, "CreateJobObject")
+        try:
+            limits = EXTENDED_LIMIT()
+            # Active-process limit + total committed-memory limit + kill-on-close.
+            limits.basic.flags = 0x00000008 | 0x00000200 | 0x00002000
+            limits.basic.active_limit = 16
+            limits.job_memory = 3 * GiB
+            self.check(self.k.SetInformationJobObject(self.job, 9, ctypes.byref(limits),
+                                                      ctypes.sizeof(limits)), "SetJobLimits")
+        except BaseException as error:
+            handle = self.job
+            self.job = None
+            if not self.k.CloseHandle(handle):
+                raise OSError(ctypes.get_last_error(), "Job construction close failed; no retry") from error
+            raise
+
+    @staticmethod
+    def check(ok, operation):
+        if not ok:
+            raise OSError(ctypes.get_last_error(), operation)
+
+    def active(self) -> int:
+        state = ACCOUNTING()
+        self.check(self.k.QueryInformationJobObject(self.job, 1, ctypes.byref(state),
+                                                    ctypes.sizeof(state), None), "JobAccounting")
+        return state.active
+
+    def terminate_once(self):
+        require(not self.termination_attempted, "Unsettled prior job termination; no automatic retry")
+        self.termination_attempted = True
+        self.check(self.k.TerminateJobObject(self.job, 125), "TerminateOwnedJob")
+
+    def resources(self, paths, launch=False):
+        memory = MEMORY()
+        memory.length = ctypes.sizeof(memory)
+        self.check(self.k.GlobalMemoryStatusEx(ctypes.byref(memory)), "MemoryStatus")
+        disks = {str(path): shutil.disk_usage(path).free for path in paths}
+        observation = {"time": time.time(), "available_ram": memory.available,
+                       "total_ram": memory.total, "free_disk": disks}
+        require(memory.total > 0 and memory.available / memory.total >= (0.25 if launch else 0.20),
+                "RAM admission/running floor crossed: " + json.dumps(observation, sort_keys=True))
+        require(min(disks.values()) >= (12 if launch else 8) * GiB,
+                "Disk admission/running floor crossed: " + json.dumps(observation, sort_keys=True))
+        return observation
+
+    def open_owned(self, path: Path, delete=True):
+        # DELETE + READ_ATTRIBUTES; denying delete sharing freezes this entry's
+        # name until its retained handle itself requests disposition/close.
+        handle = self.k.CreateFileW(str(path), (0x10000 if delete else 0) | 0x80, 0x1 | 0x2, None,
+                                    3, 0x02000000 | 0x00200000, None)
+        require(handle not in (None, ctypes.c_void_p(-1).value), f"Cannot bind {path}")
+        try:
+            state = FILE_INFO()
+            self.check(self.k.GetFileInformationByHandle(handle, ctypes.byref(state)), "FileIdentity")
+            identity = [state.volume, state.index_high, state.index_low, state.attributes]
+            if state.attributes & 0x400 or state.links != 1:
+                raise EntryRefusal({"identity": identity, "links": state.links,
+                                    "reparse": bool(state.attributes & 0x400), "target_read": False})
+            return handle, identity
+        except BaseException as error:
+            closed = bool(self.k.CloseHandle(handle))
+            if isinstance(error, EntryRefusal):
+                error.details["original_handle_closed"] = closed
+                if not closed:
+                    error.details["close_error"] = ctypes.get_last_error()
+            elif not closed:
+                raise OSError(ctypes.get_last_error(), "Rejected original handle close failed; no retry") from error
+            raise
+
+    def delete_handle(self, handle):
+        mark = ctypes.c_ubyte(1)  # FILE_DISPOSITION_INFO.DeleteFile
+        self.check(self.k.SetFileInformationByHandle(handle, 4, ctypes.byref(mark), 1),
+                   "HandleBoundDelete")
+
+    def close(self):
+        if self.job:
+            handle = self.job
+            self.job = None
+            self.check(self.k.CloseHandle(handle), "CloseJob; no retry")
+
+
+class Run:
+    def __init__(self, win: Windows, workspace: Path, temp: Path, evidence: Path):
+        self.win, self.workspace, self.temp, self.evidence = win, workspace, temp, evidence
+        self.start = time.monotonic()
+        self.sequence = 0
+        self.command_results = []
+        self.logs, self.rejections = [], []
+        self.case_results = {name: {"state": "UNSTARTED"} for name in CASES}
+        self.compiler_cohort = False
+        self.job_settled = False
+        self.close_failures = []
+        self.cleanup_cancellation_seen = False
+        self.project = temp / "project"
+        self.gradle = None
+        self.gradle_stop = {"state": "NOT_ARMED", "attempted": False, "fulfilled": False}
+        self.graph_snapshot = None
+        self.source_copy = None
+        self.read_only_tool_inputs = set()
+        self.profile_leaf_records = []
+        self.environment = {
+            name: os.environ[name] for name in (
+                "SystemRoot", "WINDIR", "COMSPEC", "PATH", "PATHEXT",
+                "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432",
+                "PROCESSOR_ARCHITECTURE", "NUMBER_OF_PROCESSORS", "SystemDrive",
+            ) if name in os.environ
+        }
+        self.environment.update({
+            "TEMP": str(temp / "tmp"), "TMP": str(temp / "tmp"),
+            "HOME": str(temp / "home"), "USERPROFILE": str(temp / "home"),
+            "APPDATA": str(temp / "appdata"), "LOCALAPPDATA": str(temp / "localappdata"),
+            "CMAKE_BUILD_PARALLEL_LEVEL": "1", "CTEST_PARALLEL_LEVEL": "1",
+            "MSBUILDDISABLENODEREUSE": "1", "VSCMD_SKIP_SENDTELEMETRY": "1",
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "NUL",
+            "GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0",
+        })
+
+    def event(self, kind, **value):
+        entry = json.dumps({"time": time.time(), "event": kind, **value}, sort_keys=True) + "\n"
+        path = self.evidence / "journal.jsonl"
+        length = len(entry.encode("utf-8"))
+        require(length <= 16384 and (path.stat().st_size if path.exists() else 0) + length <= JOURNAL_LIMIT,
+                "Compact journal bound exceeded")
+        with path.open("a", encoding="utf-8", newline="\n") as output:
+            output.write(entry)
+            output.flush()
+            os.fsync(output.fileno())
+
+    def file_state(self, handle):
+        state = FILE_INFO()
+        self.win.check(self.win.k.GetFileInformationByHandle(handle, ctypes.byref(state)), "OutputIdentity")
+        return {"identity": [state.volume, state.index_high, state.index_low, state.attributes],
+                "links": state.links, "size": (state.size_high << 32) | state.size_low,
+                "written": [state.written.dwHighDateTime, state.written.dwLowDateTime]}
+
+    def read_bound_bytes(self, path, limit, cleanup=False, preinstalled_tool=False):
+        """One original read-only-share handle; no stat/fstat inode comparison."""
+        gate = self.cleanup_time if cleanup else self.work_time
+        if cleanup:
+            require(self.job_settled, "Cleanup source read needs original Job zero")
+        if preinstalled_tool:
+            require(not cleanup and path in self.read_only_tool_inputs,
+                    "Multiple links are allowed only for fixed read-only preinstalled tool images")
+        gate()
+        plain_path(path.parent)
+        handle = self.win.k.CreateFileW(str(path), 0x80000000 | 0x80, 0x1, None, 3, 0x00200000, None)
+        require(handle not in (None, ctypes.c_void_p(-1).value), "Cannot bind declared input")
+        try:
+            before = self.file_state(handle)
+            require(not before["identity"][3] & (0x400 | 0x10) and
+                    (before["links"] >= 1 if preinstalled_tool else before["links"] == 1),
+                    "Declared input has an inadmissible type or link count")
+            require(before["size"] <= limit, "Declared input exceeds its explicit bound")
+            buffer = ctypes.create_string_buffer(before["size"] + 1)
+            count = wt.DWORD()
+            self.win.check(self.win.k.ReadFile(handle, buffer, len(buffer), ctypes.byref(count), None),
+                           "ReadDeclaredInput")
+            require(count.value == before["size"] and self.file_state(handle) == before,
+                    "Declared original input changed or short-read")
+            data = buffer.raw[:count.value]
+            gate()
+            return data, {**before, "sha256": hashlib.sha256(data).hexdigest()}
+        finally:
+            self.close_original(handle, "declared input")
+
+    def work_time(self):
+        require(not CANCELLED and time.monotonic() < self.start + COMMAND_SECONDS,
+                "Original work deadline/cancellation; no further preparation or launch")
+
+    def copy_project(self, manifest):
+        """Materialize every reviewed raw Git blob, not a guessed Gradle subset."""
+        self.source_copy = {"state": "COPYING", "files": 0, "raw_bytes": 0, "derived_crlf_paths": []}
+        rows = manifest["files"]
+        names, folded, byte_sum = set(), set(), 0
+        for row in rows:
+            relative = row.get("path", "")
+            parts = PurePosixPath(relative).parts
+            require(parts and not PurePosixPath(relative).is_absolute() and
+                    str(PurePosixPath(relative)) == relative and
+                    all(part not in (".", "..", ".git") and part.rstrip(" .") == part and
+                        not re.search(r'[<>:"\\|?*\x00-\x1f]', part) and
+                        not re.fullmatch(r"(?i)(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?", part)
+                        for part in parts), "Manifest path is not a safe Windows source member")
+            require(relative not in names and relative.casefold() not in folded,
+                    "Duplicate or Windows case-alias source member")
+            names.add(relative)
+            folded.add(relative.casefold())
+            require(row.get("git_mode") in ("100644", "100755") and
+                    type(row.get("raw_size")) is int and row["raw_size"] == row.get("git_size") and
+                    0 <= row["raw_size"] <= MAX_BLOB and
+                    re.fullmatch(r"[0-9a-f]{40}", row.get("git_blob", "")) and
+                    re.fullmatch(r"[0-9a-f]{64}", row.get("raw_sha256", "")),
+                    "Invalid raw Git source tuple")
+            byte_sum += row["raw_size"]
+        require(len(rows) == SOURCE_MEMBERS and byte_sum == SOURCE_BYTES <= MAX_SOURCE_BYTES and
+                set(REQUIRED_PROJECT_INPUTS) <= names, "Incomplete or oversized reviewed full source")
+        self.project.mkdir()
+        copied_digest = hashlib.sha256()
+        for index, row in enumerate(rows):
+            self.work_time()
+            relative = row["path"]
+            data, _state = self.read_bound_bytes(self.workspace / relative, MAX_BLOB * 2)
+
+            def matches(raw):
+                return len(raw) == row["raw_size"] and hashlib.sha256(raw).hexdigest() == row["raw_sha256"] and (
+                    hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
+                    == row["git_blob"])
+
+            if not matches(data):
+                require(PurePosixPath(relative).suffix.lower() in (".bat", ".cmd", ".ps1"),
+                        "Unqualified checkout/raw-source difference")
+                candidate = data.replace(b"\r\n", b"\n")
+                require(matches(candidate), "CRLF candidate does not equal the exact raw Git blob")
+                data = candidate
+                self.source_copy["derived_crlf_paths"].append(relative)
+            destination = self.project / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with destination.open("xb") as output:
+                output.write(data)
+                output.flush()
+                os.fsync(output.fileno())
+            copied_digest.update((relative + "\0" + row["raw_sha256"] + "\n").encode("utf-8"))
+            self.source_copy["files"] += 1
+            self.source_copy["raw_bytes"] += len(data)
+            if index % 64 == 0:
+                self.event("source_copy_resources", copied=index + 1,
+                           observation=self.win.resources([self.workspace, self.temp]))
+        self.source_copy.update({"state": "COMPLETE", "ordered_path_raw_sha256_digest": copied_digest.hexdigest(),
+                                 "manifest_sha256": SOURCE_SHA256, "project_commit": PROJECT_COMMIT,
+                                 "project_tree": PROJECT_TREE,
+                                 "qualification": "Raw byte identities only; Linux inode/EOL/runtime authority not inherited"})
+        write_json(self.evidence / "source-copy.json", self.source_copy)
+
+    def prepare_gradle(self, git, init_bytes):
+        """Fixed preinstalled JDK17, private environment and non-generic cmd grammar."""
+        require(self.source_copy is not None and self.source_copy["state"] == "COMPLETE",
+                "No Gradle preparation before complete full raw source")
+        system = safe_command_path(Path(os.environ["SystemRoot"]).resolve(strict=True))
+        cmd = safe_command_path(system / "System32/cmd.exe")
+        require(Path(os.environ["COMSPEC"]).resolve(strict=True) == cmd, "COMSPEC is not the bound system cmd.exe")
+        jdk = safe_command_path(Path(os.environ["JAVA_HOME_17_X64"]).resolve(strict=True))
+        java = safe_command_path(jdk / "bin/java.exe")
+        server = jdk / "bin/server/jvm.dll"
+        sdk = safe_command_path(Path(os.environ["ANDROID_HOME"]).resolve(strict=True))
+        if "ANDROID_SDK_ROOT" in os.environ:
+            require(Path(os.environ["ANDROID_SDK_ROOT"]).resolve(strict=True) == sdk,
+                    "Conflicting preinstalled Android SDK roots; no fallback")
+        for directory in (system, jdk, sdk, self.project, self.temp):
+            plain_path(directory)
+            require(directory.is_dir(), "Bound tool/private directory missing")
+        release, release_record = self.read_bound_bytes(jdk / "release", 65536)
+        fields = dict(re.findall(r'^([A-Z0-9_]+)="([^"\r\n]*)"\r?$', release.decode("utf-8"), re.MULTILINE))
+        require(re.fullmatch(r"17(?:[.0-9+_\-A-Za-z]*)", fields.get("JAVA_VERSION", "")) and
+                fields.get("OS_ARCH") in ("x86_64", "amd64") and fields.get("OS_NAME") == "Windows",
+                "Preinstalled selected JDK is not Windows x64 Java17; no install/fallback")
+        tools = []
+        self.read_only_tool_inputs = {cmd, java, server, git, Path(sys.executable).resolve(strict=True)}
+        for tool in sorted(self.read_only_tool_inputs):
+            content, record = self.read_bound_bytes(tool, 64 * 1024 ** 2, preinstalled_tool=True)
+            require(len(content) >= 64 and content[:2] == b"MZ", "Declared Windows tool lacks MZ")
+            pe = struct.unpack_from("<I", content, 60)[0]
+            require(pe + 6 <= len(content) and content[pe:pe + 4] == b"PE\0\0" and
+                    struct.unpack_from("<H", content, pe + 4)[0] == 0x8664, "Declared tool is not AMD64 PE")
+            tools.append({"path": str(tool), "qualification": "Read-only preinstalled image; never a cleanup target", **record})
+        wrapper = safe_command_path(self.project / "gradlew.bat")
+        jar = self.project / "gradle/wrapper/gradle-wrapper.jar"
+        properties = self.project / "gradle/wrapper/gradle-wrapper.properties"
+        bindings = {}
+        for path in (wrapper, jar, properties):
+            data, record = self.read_bound_bytes(path, 1024 ** 2)
+            bindings[str(path)] = record["sha256"]
+            if path == jar:
+                require(record["sha256"] == WRAPPER_SHA256, "Checked-in wrapper JAR changed")
+            if path == properties:
+                text = data.decode("ascii")
+                require("distributionUrl=" + DISTRIBUTION_URL.replace(":", "\\:") in text.splitlines() and
+                        "distributionSha256Sum=" + DISTRIBUTION_SHA256 in text.splitlines() and
+                        "distributionBase=GRADLE_USER_HOME" in text.splitlines() and
+                        "zipStoreBase=GRADLE_USER_HOME" in text.splitlines() and
+                        "distributionPath=wrapper/dists" in text.splitlines() and
+                        "zipStorePath=wrapper/dists" in text.splitlines(), "Unapproved wrapper bootstrap contract")
+        init = self.temp / "controls/windows_jna_graph_01.init.gradle"
+        with init.open("xb") as output:
+            output.write(init_bytes)
+            output.flush()
+            os.fsync(output.fileno())
+        self.environment = {
+            name: os.environ[name] for name in (
+                "SystemRoot", "WINDIR", "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432",
+                "PROCESSOR_ARCHITECTURE", "NUMBER_OF_PROCESSORS", "SystemDrive",
+            ) if name in os.environ
+        }
+        self.environment.update({
+            "COMSPEC": str(cmd), "PATHEXT": ".COM;.EXE;.BAT;.CMD",
+            "PATH": ";".join(str(path) for path in (jdk / "bin", git.parent, system / "System32", system)),
+            "JAVA_HOME": str(jdk), "JAVA_OPTS": "",
+            "GRADLE_USER_HOME": str(self.temp / "gradle-home"),
+            "TEMP": str(self.temp / "tmp"), "TMP": str(self.temp / "tmp"),
+            "HOME": str(self.temp / "home"), "USERPROFILE": str(self.temp / "home"),
+            "APPDATA": str(self.temp / "appdata"), "LOCALAPPDATA": str(self.temp / "localappdata"),
+            "ANDROID_HOME": str(sdk), "ANDROID_SDK_ROOT": str(sdk),
+            "ANDROID_USER_HOME": str(self.temp / "android-home"),
+            "ANDROID_PREFS_ROOT": str(self.temp / "android-home"),
+            "KONAN_DATA_DIR": str(self.temp / "konan"),
+            "PASSVAULT_AUDIT_JNA_GRAPH_ROOT": str(self.project),
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "NUL",
+            "GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0",
+        })
+        private_jvm = (" -XX:-UsePerfData -XX:-CreateCoredumpOnCrash -Dfile.encoding=UTF-8"
+                       f" -Duser.home={self.temp / 'home'} -Djava.io.tmpdir={self.temp / 'tmp'}")
+        self.environment["GRADLE_OPTS"] = "-XX:ActiveProcessorCount=1 -XX:MaxMetaspaceSize=128m" + private_jvm
+        common = [
+            "--no-daemon", "--max-workers=1", "--no-parallel", "--no-configure-on-demand",
+            "--no-configuration-cache", "--no-build-cache", "--dependency-verification=strict", "--console=plain",
+            "--project-cache-dir", str(self.temp / "project-cache"),
+            "-Pkotlin.compiler.execution.strategy=in-process",
+            "-Pkotlin.native.toolchain.enabled=true", "-Pkotlin.native.distribution.downloadFromMaven=true",
+            "-Pkonan.data.dir=" + str(self.temp / "konan"),
+            "-Ppassvault.audit.jnaGraph.root=" + str(self.project),
+            "-Porg.gradle.java.installations.auto-download=false", "-Porg.gradle.java.installations.auto-detect=false",
+            "-Porg.gradle.java.installations.paths=" + str(jdk), "-Pandroid.builder.sdkDownload=false",
+            "-Dorg.gradle.jvmargs=" + JVM_HEAP + private_jvm,
+        ]
+        graph_args = [TARGET, "--dry-run", *common, "--init-script", str(init)]
+        stop_args = ["--stop", "--offline", *common]
+        graph_argv, graph_line = fixed_cmd(cmd, wrapper, graph_args)
+        stop_argv, stop_line = fixed_cmd(cmd, wrapper, stop_args)
+        prepared = {"graph_argv": graph_argv, "graph_line": graph_line,
+                    "stop_argv": stop_argv, "stop_line": stop_line,
+                    "environment": dict(self.environment), "wrapper_bindings": bindings,
+                    "project": str(self.project), "gradle_home": self.environment["GRADLE_USER_HOME"]}
+        write_json(self.evidence / "toolchain.json", {
+            "runner": "windows-2022", "architecture": "x64", "jdk_selector": "JAVA_HOME_17_X64",
+            "image_version": os.environ.get("ImageVersion"), "python": sys.version,
+            "tools": tools, "jdk_release": release_record, "sdk_path": str(sdk),
+            "sdk_qualification": "Existing path only; configuration must fail if required packages are absent",
+            "wrapper_bindings": bindings, "child_environment": self.environment,
+            "gradle_jvm_options": JVM_HEAP + private_jvm,
+            "bootstrap": "Only checked-in SHA256-pinned Gradle9.7.1 and strict existing dependencies permitted",
+        })
+        return prepared, [java, "-Xmx64m", "-Xms16m", "-XX:ActiveProcessorCount=1",
+                          "-XX:-UsePerfData", "-XX:-CreateCoredumpOnCrash",
+                          "-Duser.home=" + str(self.temp / "home"),
+                          "-Djava.io.tmpdir=" + str(self.temp / "tmp"), "-version"]
+
+    def arm_gradle(self, prepared):
+        require(self.gradle is None and self.gradle_stop["state"] == "NOT_ARMED", "One original wrapper invocation only")
+        self.work_time()
+        self.gradle = prepared
+        self.gradle_stop.update({"state": "ARMED_BEFORE_GRAPH_LAUNCH", "decision_consumed": False,
+                                 "original_wrapper": str(self.project / "gradlew.bat"),
+                                 "original_gradle_home": self.environment["GRADLE_USER_HOME"]})
+        self.event("wrapper_stop_armed", **self.gradle_stop)
+
+    def stop_once(self):
+        if self.gradle is None:
+            return self.gradle_stop
+        require(not self.gradle_stop["decision_consumed"], "Original stop decision consumed; no retry")
+        self.gradle_stop["decision_consumed"] = True
+        try:
+            require(time.monotonic() < self.start + STOP_CUTOFF_SECONDS, "Original stop cutoff already exhausted")
+            require(self.environment == self.gradle["environment"] and
+                    str(self.project) == self.gradle["project"] and
+                    self.environment["GRADLE_USER_HOME"] == self.gradle["gradle_home"],
+                    "Original wrapper environment/root changed; no stop namespace replacement")
+            for path, expected in self.gradle["wrapper_bindings"].items():
+                require(hashlib.sha256(frozen_bytes(Path(path))).hexdigest() == expected,
+                        "Original wrapper bytes changed; do not run a replacement")
+            base = self.temp / "gradle-home" / DISTRIBUTION_DIRECTORY
+            marker = base / "gradle-9.7.1-bin.zip.ok"
+            home = base / "gradle-9.7.1"
+            library = home / "lib"
+            launcher = library / "gradle-launcher-9.7.1.jar"
+            # This marker is the pinned wrapper's successful private-install
+            # receipt, not an arbitrary caller marker or worker-settlement proof.
+            # Missing/partial bootstrap must never cause --stop to bootstrap again.
+            # Pinned Install.lambda$createDist$0 returns without download only
+            # when marker isFile AND verifyDistributionRoot finds exactly one
+            # distribution directory and one gradle-launcher-.*\.jar in lib.
+            # See root WRAPPER-JAVAP-01-stdout lines32-181,1039-1091,1508-1522.
+            shape = {}
+            for directory, limit in ((base, 128), (library, 2048)):
+                handle, identity = self.open_output(directory)
+                try:
+                    before = self.file_state(handle)
+                    require(before["identity"][3] & 0x10, "Private distribution shape lacks a directory")
+                    directories, launchers, count = [], [], 0
+                    with os.scandir(directory) as entries:
+                        for entry in entries:
+                            require(time.monotonic() < self.start + STOP_CUTOFF_SECONDS,
+                                    "Original stop cutoff exhausted during private shape check")
+                            count += 1
+                            require(count <= limit, "Private distribution shape bound exceeded")
+                            path = Path(entry.path)
+                            state = path.lstat()
+                            require(not state.st_file_attributes & 0x400 and state.st_nlink == 1,
+                                    "Private distribution contains a reparse or multiply-linked entry")
+                            if stat.S_ISDIR(state.st_mode):
+                                directories.append(entry.name)
+                            if re.fullmatch(r"gradle-launcher-.*\.jar", entry.name):
+                                require(stat.S_ISREG(state.st_mode), "Launcher selection is not a regular file")
+                                launchers.append(entry.name)
+                    require(self.file_state(handle) == before, "Original private distribution shape changed during read")
+                    shape[str(directory.relative_to(self.temp))] = {
+                        "identity": identity, "entries": count, "directories": sorted(directories),
+                        "launcher_matches": sorted(launchers),
+                    }
+                    if directory == base:
+                        require(directories == [home.name], "Private wrapper distribution has missing/extra root directories")
+                    else:
+                        require(launchers == [launcher.name], "Private wrapper launcher selection is missing/ambiguous")
+                finally:
+                    self.close_original(handle, "private wrapper shape directory")
+            marker_bytes = frozen_bytes(marker, 0)
+            require(marker_bytes == b"", "Private wrapper completion marker is not empty")
+            launcher_bytes = frozen_bytes(launcher, MAX_BLOB)
+            require(len(launcher_bytes) > 0, "Exact pinned-distribution launcher is absent")
+            self.gradle_stop["bootstrap_guard"] = {
+                "private_marker": str(marker.relative_to(self.temp)), "marker_sha256": hashlib.sha256(marker_bytes).hexdigest(),
+                "launcher": str(launcher.relative_to(self.temp)), "launcher_sha256": hashlib.sha256(launcher_bytes).hexdigest(),
+                "shape": shape,
+                "qualification": "Original fresh private wrapper install only; no independent all-file or worker-settlement claim",
+            }
+            self.gradle_stop.update({"state": "STOP_ATTEMPT_INTENT", "attempted": True})
+            self.event("wrapper_stop_intent", original_argv=self.gradle["stop_argv"], attempt=1)
+            self.command(self.gradle["stop_argv"], 60, "gradle-stop", cleanup_stop=True)
+            self.gradle_stop.update({"state": "STOP_EXIT_ZERO_PENDING_JOB_SETTLEMENT", "fulfilled": True})
+        except BaseException as error:
+            self.gradle_stop.update({"state": "STOP_UNFULFILLED_HOLD_NO_RETRY",
+                                     "failure": f"{type(error).__name__}: {error}", "fulfilled": False})
+            try:
+                self.event("wrapper_stop_unfulfilled", **self.gradle_stop)
+            except BaseException as journal_error:
+                self.gradle_stop["journal_error"] = str(journal_error)
+        return self.gradle_stop
+
+    def log_state(self, entry):
+        state = self.file_state(entry["handle"])
+        require(not state["identity"][3] & (0x400 | 0x10) and state["links"] == 1,
+                "Log is not a plain single-linked file")
+        if entry["identity"] is None:
+            entry["identity"] = state["identity"]
+        require(state["identity"][:3] == entry["identity"][:3], "Original log identity changed")
+        return state
+
+    def check_outputs(self):
+        # Every original stdout handle remains live: old compiler descendants
+        # can still write earlier logs while the next phase's parent runs.
+        require(len(self.logs) <= 7, "Exact graph-only Windows command log count exceeded")
+        total = 0
+        for entry in self.logs:
+            size = self.log_state(entry)["size"]
+            require(size <= LOG_LIMIT, f"Compact per-log limit exceeded: {entry['path'].name}")
+            total += size
+        require(total <= LOG_TOTAL_LIMIT, "Aggregate command log limit exceeded")
+    def close_original(self, handle, label):
+        if not self.win.k.CloseHandle(handle):
+            self.close_failures.append({"handle_scope": label, "error": ctypes.get_last_error(),
+                                        "retry": "FORBIDDEN"})
+            raise RuntimeError(f"Original {label} handle close failed; no retry")
+
+    def close_logs(self):
+        for entry in self.logs:
+            handle, entry["handle"] = entry["handle"], None
+            if handle is not None:
+                try:
+                    self.close_original(handle, entry["path"].name)
+                except RuntimeError:
+                    pass  # All failures remain in close_failures; close others once.
+
+    def retain_outputs(self):
+        errors, remaining = [], LOG_TOTAL_LIMIT
+        for entry in self.logs:
+            path = entry["path"]
+            try:
+                self.cleanup_time()
+                self.win.check(self.win.k.FlushFileBuffers(entry["handle"]), "FlushRetainedLog")
+                before = self.log_state(entry)
+                plain_path(path)
+                with path.open("rb") as source:
+                    prefix = source.read(min(LOG_LIMIT, remaining))
+                after = self.log_state(entry)
+                remaining -= len(prefix)
+                complete = self.job_settled and before == after and len(prefix) == after["size"]
+                with (self.evidence / path.name).open("xb") as output:
+                    output.write(prefix)
+                    output.flush()
+                    os.fsync(output.fileno())
+                write_json(self.evidence / (path.stem + "-retention.json"), {
+                    "log": path.name, "original_identity": entry["identity"],
+                    "observed_raw_bytes_before": before["size"], "observed_raw_bytes_after": after["size"],
+                    "retained_bytes": len(prefix), "retained_sha256": hashlib.sha256(prefix).hexdigest(),
+                    "settled_full_sha256": hashlib.sha256(prefix).hexdigest() if complete else None,
+                    "complete": complete, "owned_job_settled": self.job_settled,
+                    "qualification": "Settled exact bytes" if complete else "UNADJUDICATED bounded prefix only",
+                })
+                require(complete, "Log evidence incomplete/unsettled; filesystem HOLD")
+            except BaseException as error:
+                errors.append(f"{path.name}: {type(error).__name__}: {error}")
+        return errors
+
+    def command(self, arguments, budget, label, case=None, cleanup_stop=False):
+        argv = [str(arg) for arg in arguments]
+        if cleanup_stop:
+            require(self.gradle is not None and self.gradle_stop["attempted"] and
+                    not self.gradle_stop["fulfilled"] and label == "gradle-stop" and
+                    argv == self.gradle["stop_argv"], "Cleanup permit is only this original captured --stop")
+        else:
+            require(not CANCELLED, "Cancellation is sticky; no new workload command")
+            require(label != "gradle-stop", "The wrapper stop is available only through stop_once")
+        cutoff = self.start + (STOP_CUTOFF_SECONDS if cleanup_stop else COMMAND_SECONDS)
+        require(time.monotonic() < cutoff, "Original phase cutoff exhausted; no command launch")
+        if not self.compiler_cohort and not cleanup_stop:
+            require(self.win.active() == 0, "Read-only preflight Job not empty; no new command")
+        self.check_outputs()
+        self.event("resources", observation=self.win.resources([self.workspace, self.temp], launch=True))
+        self.sequence += 1
+        log = self.temp / "logs" / f"{self.sequence:02d}-{label}.log"
+        record = {"argv": argv, "log": log.name, "state": "INTENT", "exit_code": None}
+        self.command_results.append(record)
+        if case is not None:
+            self.case_results[case]["state"] = "LAUNCH_ATTEMPT; TEST_START_UNKNOWN"
+        self.event("command_intent", argv=argv, seconds=budget, log=log.name,
+                   stop_obligation=("ORIGINAL_WRAPPER_STOP_AND_JOB_SETTLEMENT" if self.gradle is not None else "WINDOWS_JOB_SETTLEMENT"),
+                   cleanup_only=cleanup_stop)
+        info = PROCESS_INFORMATION()
+        handles = []
+        process_attributes = None
+        attributes_initialized = False
+        try:
+            attributes = SECURITY_ATTRIBUTES(ctypes.sizeof(SECURITY_ATTRIBUTES), None, True)
+            output = self.win.k.CreateFileW(str(log), 0x40000000 | 0x80, 1,
+                                           ctypes.byref(attributes), 1, 0x80, None)
+            require(output not in (None, ctypes.c_void_p(-1).value), "Exclusive log creation failed")
+            # Retain immediately, including if later launch preparation fails.
+            entry = {"path": log, "handle": output, "identity": None}
+            self.logs.append(entry)
+            self.log_state(entry)
+            stdin = self.win.k.CreateFileW("NUL", 0x80000000, 3, ctypes.byref(attributes), 3, 0x80, None)
+            require(stdin not in (None, ctypes.c_void_p(-1).value), "NUL input creation failed")
+            handles.append(stdin)
+            startup = STARTUPINFOEX()
+            startup.startup.cb, startup.startup.flags = ctypes.sizeof(startup), 0x100
+            startup.startup.stdin, startup.startup.stdout, startup.startup.stderr = stdin, output, output
+            size = ctypes.c_size_t()
+            self.win.k.InitializeProcThreadAttributeList(None, 2, 0, ctypes.byref(size))
+            require(0 < size.value < 1024 ** 2, "Invalid process attribute allocation")
+            process_attributes = ctypes.create_string_buffer(size.value)
+            self.win.check(self.win.k.InitializeProcThreadAttributeList(process_attributes, 2, 0,
+                                                                        ctypes.byref(size)), "InitProcessAttributes")
+            attributes_initialized = True
+            startup.attributes = ctypes.cast(process_attributes, wt.LPVOID)
+            job_list = (wt.HANDLE * 1)(self.win.job)
+            handle_list = (wt.HANDLE * 2)(stdin, output)
+            # PROC_THREAD_ATTRIBUTE_JOB_LIST binds the job atomically with
+            # creation, before even a suspended child could escape parent death.
+            # HANDLE_LIST excludes the Job, source/cleanup handles AND earlier
+            # logs. Only this command's NUL/stdout handles are inherited.
+            for attribute, values in ((0x0002000D, job_list), (0x00020002, handle_list)):
+                self.win.check(self.win.k.UpdateProcThreadAttribute(
+                    process_attributes, 0, attribute, values, ctypes.sizeof(values), None, None),
+                    "BindProcessAttributes")
+            block = ctypes.create_unicode_buffer("\0".join(
+                f"{key}={value}" for key, value in sorted(self.environment.items(), key=lambda item: item[0].upper())
+            ) + "\0\0")
+            if label in ("gradle-graph", "gradle-stop"):
+                key = "stop" if cleanup_stop else "graph"
+                require(self.gradle is not None and argv == self.gradle[key + "_argv"],
+                        "Only the pre-captured fixed wrapper command is allowed")
+                require(self.environment == self.gradle["environment"], "Original wrapper environment changed")
+                record["exact_cmd_line"] = self.gradle[key + "_line"]
+                command_line = ctypes.create_unicode_buffer(record["exact_cmd_line"])
+                working_directory = self.project
+            else:
+                command_line = ctypes.create_unicode_buffer(subprocess.list2cmdline(argv))
+                working_directory = self.workspace
+            require(cleanup_stop or not CANCELLED, "Cancellation before suspended launch")
+            require(time.monotonic() < cutoff, "Original cutoff exhausted before suspended launch")
+            self.win.check(self.win.k.CreateProcessW(
+                argv[0], command_line, None, None, True,
+                0x00000004 | 0x00000400 | 0x08000000 | 0x00080000,
+                block, str(working_directory), ctypes.byref(startup), ctypes.byref(info)), "CreateSuspendedProcess")
+            record.update({"state": "PROCESS_CREATED_SUSPENDED", "pid": info.pid, "tid": info.tid})
+            if label == "gradle-graph":
+                self.compiler_cohort = True
+            if case is not None:
+                self.case_results[case]["state"] = "CTEST_PROCESS_CREATED; TEST_START_UNKNOWN"
+            self.event("command_bound", pid=info.pid, tid=info.tid, compiler_cohort=self.compiler_cohort)
+            require(cleanup_stop or not CANCELLED, "Cancellation before resume")
+            require(time.monotonic() < cutoff, "Original cutoff exhausted before resume")
+            require(self.win.k.ResumeThread(info.thread) != 0xffffffff, "ResumeThread failed")
+            record["state"] = "PROCESS_RESUMED"
+            deadline = min(time.monotonic() + budget, cutoff)
+            last_sample = 0.0
+            while True:
+                waited = self.win.k.WaitForSingleObject(info.process, 500)
+                require(waited in (0, 258), "Process wait failed")
+                if waited == 0:
+                    code = wt.DWORD()
+                    self.win.check(self.win.k.GetExitCodeProcess(info.process, ctypes.byref(code)), "ProcessExit")
+                    # Persist the actual immediate-parent exit before any Job
+                    # query, resource/log check, parsing or final cohort drain.
+                    record.update({"state": "PARENT_EXIT_OBSERVED", "exit_code": code.value})
+                    if case is not None:
+                        self.case_results[case].update({"state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+                                                        "ctest_exit_code": code.value})
+                    self.event("parent_exit", **record)
+                    break
+                require(cleanup_stop or not CANCELLED, "Cancellation requested")
+                require(time.monotonic() < deadline, "Command/global time budget exceeded")
+                self.check_outputs()
+                if time.monotonic() - last_sample >= 5:
+                    self.event("resources", observation=self.win.resources([self.workspace, self.temp]))
+                    last_sample = time.monotonic()
+            require(cleanup_stop or not CANCELLED, "Cancellation after observed parent exit")
+            require(time.monotonic() < deadline, "Command/global budget expired at parent exit")
+            self.check_outputs()
+            record["job_active_after_parent"] = self.win.active()
+            self.event("cohort_after_parent", log=log.name, active=record["job_active_after_parent"],
+                       qualification="Point accounting only; not final Job settlement")
+            if not self.compiler_cohort and not cleanup_stop:
+                active = record["job_active_after_parent"]
+                while active:
+                    require(not CANCELLED, "Cancellation during read-only Job drain")
+                    require(time.monotonic() < deadline, "Read-only Job drain exceeded existing command/global deadline")
+                    self.check_outputs()
+                    if time.monotonic() - last_sample >= 5:
+                        self.event("resources", observation=self.win.resources([self.workspace, self.temp]))
+                        last_sample = time.monotonic()
+                    time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
+                    active = self.win.active()
+                require(not CANCELLED, "Cancellation after read-only Job drain")
+                require(time.monotonic() < deadline, "Read-only Job zero observed after existing deadline")
+                self.check_outputs()
+                record["readonly_job_zero_observed"] = True
+                self.event("readonly_job_natural_zero", log=log.name, initial_active=record["job_active_after_parent"],
+                           qualification="Point accounting only; no member identity or benignity inference")
+            self.win.check(self.win.k.FlushFileBuffers(output), "FlushCommandLog")
+            with log.open("rb") as completed_log:
+                captured_output = completed_log.read(LOG_LIMIT + 1)
+            require(len(captured_output) <= LOG_LIMIT, "Completed log exceeds bounded read")
+            record["parent_output_snapshot_sha256"] = hashlib.sha256(captured_output).hexdigest()
+            record["snapshot_qualification"] = "Not a settled-log hash; owned descendants may still write"
+            require(record["exit_code"] == 0, f"Command failed ({record['exit_code']}); no automatic retry: {label}")
+            return captured_output.decode("utf-8", errors="replace")
+        except BaseException as error:
+            record["failure"] = f"{type(error).__name__}: {error}"
+            try:
+                self.event("command_failure", log=log.name, error=record["failure"])
+            except BaseException as journal_error:
+                record["failure_journal_error"] = str(journal_error)
+            raise
+        finally:
+            close_errors = []
+            if attributes_initialized:
+                self.win.k.DeleteProcThreadAttributeList(process_attributes)
+            # A still-running/suspended process remains owned by the Job after
+            # its original process/thread handles close. Finalization alone
+            # drains/terminates that one cohort; never per-command termination.
+            for handle in [info.thread, info.process, *handles]:
+                if handle:
+                    try:
+                        self.close_original(handle, f"command-{self.sequence}")
+                    except BaseException as error:
+                        close_errors.append(str(error))
+            if close_errors:
+                record["close_errors"] = close_errors
+                raise RuntimeError("Command original-handle close failure; filesystem HOLD")
+
+    def settle(self, normal):
+        errors = []
+        try:
+            if normal and not CANCELLED:
+                deadline = min(time.monotonic() + 10, self.start + CLEANUP_SECONDS)
+                last_sample = 0.0
+                while True:
+                    self.check_outputs()
+                    if self.win.active() == 0:
+                        self.job_settled = True
+                        break
+                    require(not CANCELLED, "Cancellation during final natural cohort drain")
+                    if time.monotonic() >= deadline:
+                        break
+                    if time.monotonic() - last_sample >= 5:
+                        self.event("resources", observation=self.win.resources([self.workspace, self.temp]))
+                        last_sample = time.monotonic()
+                    time.sleep(0.1)
+        except BaseException as error:
+            errors.append(f"Natural drain {type(error).__name__}: {error}")
+        finally:
+            # A failed journal/resource/output check can never veto the one
+            # original-Job stop. Query failure also cannot suppress containment.
+            if not self.job_settled:
+                try:
+                    self.job_settled = self.win.active() == 0
+                except BaseException as error:
+                    errors.append(f"Job query {type(error).__name__}: {error}")
+                if not self.job_settled:
+                    try:
+                        self.event("final_stop_intent", boundary="original non-breakaway Job", attempt=1)
+                    except BaseException as error:
+                        errors.append(f"Stop-intent journal {type(error).__name__}: {error}")
+                    try:
+                        self.win.terminate_once()
+                    except BaseException as error:
+                        errors.append(f"Job termination {type(error).__name__}: {error}")
+                    try:
+                        deadline = min(time.monotonic() + 10, self.start + CLEANUP_SECONDS)
+                        monitor_error_seen = False
+                        while self.win.active() != 0 and time.monotonic() < deadline:
+                            try:
+                                self.check_outputs()
+                            except BaseException as error:
+                                if not monitor_error_seen:
+                                    errors.append(f"Post-stop output monitor {type(error).__name__}: {error}")
+                                    monitor_error_seen = True
+                            time.sleep(0.1)
+                        self.job_settled = self.win.active() == 0
+                    except BaseException as error:
+                        errors.append(f"Post-stop observation {type(error).__name__}: {error}")
+            if not self.job_settled:
+                errors.append("Owned Job zero unobserved; kill-on-close is not settlement proof")
+            try:
+                self.event("final_job_observation", observed_zero=self.job_settled,
+                           termination_attempted=self.win.termination_attempted)
+            except BaseException as error:
+                errors.append(f"Settlement journal {type(error).__name__}: {error}")
+        return {"observed_zero": self.job_settled, "termination_attempted": self.win.termination_attempted,
+                "errors": errors}
+
+    def cleanup_time(self):
+        require(time.monotonic() < self.start + CLEANUP_SECONDS, "420-second original cleanup cutoff; filesystem HOLD")
+        if CANCELLED and not self.cleanup_cancellation_seen:
+            self.cleanup_cancellation_seen = True
+            self.event("cancellation_cleanup_only", qualification="No workload command; original once-only wrapper stop and bounded evidence/owned cleanup only")
+
+    def open_output(self, path, delete=False):
+        plain_path(path.parent)
+        try:
+            return self.win.open_owned(path, delete=delete)
+        except EntryRefusal as error:
+            relative = str(path.relative_to(self.temp))
+            detail = {"owned_relative": relative if len(relative) <= 1024 else None,
+                      "owned_relative_characters": len(relative),
+                      "owned_relative_sha256": hashlib.sha256(relative.encode("utf-8")).hexdigest(),
+                      "disposition": "HOLD; no target read/follow/delete", **error.details}
+            self.rejections.append(detail)  # Keep before any fallible journaling.
+            if not detail["original_handle_closed"]:
+                self.close_failures.append({"handle_scope": "rejected entry", "error": detail.get("close_error"),
+                                            "retry": "FORBIDDEN"})
+            self.event("entry_refused", **detail)
+            raise
+
+    def profile_parent_custody(self, retained_parents):
+        """Seven fixed original plain ancestors, not target/path resolution."""
+        self.cleanup_time()
+        require(self.job_settled and self.win.active() == 0 and not self.close_failures,
+                "Profile entry needs settled original Job and handles")
+        require(self.gradle is None or self.gradle_stop["fulfilled"], "Original wrapper stop remains required")
+        parts = PROFILE_CACHE_LEAF.split("/")
+        require(self.temp in retained_parents, "Original fresh generated-root handle missing")
+        volume = retained_parents[self.temp][1][0]
+        records = []
+        for depth in range(len(parts)):
+            path = self.temp.joinpath(*parts[:depth])
+            require(path in retained_parents, "Profile ancestor is not an originally retained directory")
+            handle, expected = retained_parents[path]
+            actual = self.file_state(handle)
+            require(actual["identity"] == expected and actual["links"] == 1 and expected[0] == volume and
+                    expected[3] & 0x10 and not expected[3] & 0x400,
+                    "Original profile ancestor identity/type/link/volume changed")
+            records.append({"relative": "/".join(parts[:depth]), "identity": expected, "links": 1})
+        return records
+
+    def profile_entry_snapshot(self, handle):
+        self.cleanup_time()
+        require(ctypes.sizeof(wt.DWORD) == 4 and ctypes.sizeof(FILE_ATTRIBUTE_TAG_INFO) == 8,
+                "Native Windows two-DWORD attribute/tag ABI required")
+        before = self.file_state(handle)
+        tag = FILE_ATTRIBUTE_TAG_INFO()
+        self.win.check(self.win.k.GetFileInformationByHandleEx(handle, 9, ctypes.byref(tag), ctypes.sizeof(tag)),
+                       "OriginalProfileEntryAttributeTag")
+        require(self.file_state(handle) == before and tag.attributes == before["identity"][3],
+                "Original profile entry changed across same-handle metadata queries")
+        return {**before, "reparse_tag": int(tag.reparse_tag) if tag.attributes & 0x400 else None}
+
+    def open_profile_entry(self, path, retained_parents):
+        require(path.relative_to(self.temp).as_posix() == PROFILE_CACHE_LEAF and not self.profile_leaf_records,
+                "Only one exact fresh profile entry; no reopen, retry or general reparse policy")
+        parents = self.profile_parent_custody(retained_parents)
+        record = {"relative": PROFILE_CACHE_LEAF, "state": "ORIGINAL_ENTRY_OPEN_INTENT",
+                  "parents": parents, "target_read": False, "target_followed": False,
+                  "target_cleaned": False, "target_unchanged_verified": False}
+        self.profile_leaf_records.append(record)
+        self.event("profile_entry_open_intent", **record)
+        # OPEN_EXISTING + BACKUP_SEMANTICS + OPEN_REPARSE_POINT returns the entry.
+        # READ-only sharing denies new data-write/delete opens, NOT all metadata
+        # writes; immediate original-handle rechecks retain the cooperative model.
+        handle = self.win.k.CreateFileW(str(path), 0x10000 | 0x80, 0x1, None, 3, 0x02000000 | 0x00200000, None)
+        require(handle not in (None, ctypes.c_void_p(-1).value), "Cannot open original nofollow profile entry")
+        try:
+            snapshot = self.profile_entry_snapshot(handle)
+            record.update({"state": "ORIGINAL_ENTRY_METADATA_OBSERVED", "snapshot": snapshot})
+            identity = snapshot["identity"]
+            require(snapshot["links"] == 1 and identity[0] == parents[0]["identity"][0],
+                    "Profile entry must be single-linked on the owned root volume")
+            if identity[3] & 0x400:
+                expected_tag = getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", None)
+                require(type(expected_tag) is int and 0 < expected_tag <= 0xffffffff,
+                        "Native Python named MOUNT_POINT constant missing; no numeric fallback")
+                allowed = (stat.FILE_ATTRIBUTE_DIRECTORY | stat.FILE_ATTRIBUTE_REPARSE_POINT |
+                           stat.FILE_ATTRIBUTE_HIDDEN | stat.FILE_ATTRIBUTE_SYSTEM | stat.FILE_ATTRIBUTE_NOT_CONTENT_INDEXED)
+                require(identity[3] & 0x10 and not identity[3] & ~allowed and snapshot["reparse_tag"] == expected_tag,
+                        "Exact profile reparse entry has an unadmitted type/attribute/tag")
+                record.update({"kind": "MOUNT_POINT_ENTRY_LEAF_NOT_TARGET", "state": "ORIGINAL_ALIAS_LEAF_BOUND",
+                               "entry_only_exception": True, "descent": False})
+            else:
+                # The SAME plain original handle returns to the existing walker.
+                # Ordinary child removal can change this directory's timestamp;
+                # do not apply alias snapshot/absence logic or leaf-only credit.
+                record.update({"kind": "ORDINARY_ENTRY_NO_REPARSE_EXCEPTION",
+                               "state": "ORDINARY_ENTRY_RETURNED_TO_EXISTING_CLEANUP", "entry_only_exception": False,
+                               "ordinary_directory_recursion_allowed": bool(identity[3] & 0x10)})
+            require(self.profile_parent_custody(retained_parents) == parents, "Profile ancestry changed across entry open")
+            self.event("profile_entry_bound", **record)
+            return handle, identity, record if identity[3] & 0x400 else None
+        except BaseException as error:
+            record.update({"state": "ENTRY_REFUSED_HOLD", "failure": f"{type(error).__name__}: {error}",
+                           "original_handle_close": "ATTEMPTED_ONCE"})
+            self.close_original(handle, "refused original profile entry")
+            record["original_handle_close"] = "SUCCEEDED"
+            raise
+
+    def profile_entry_name_absent(self, path, retained_parents):
+        # Enumerate names only in the retained ORIGINAL PLAIN PARENT. Never reopen
+        # or resolve the deleted leaf, enumerate its target, or inspect child data.
+        parents = self.profile_parent_custody(retained_parents)
+        count = 0
+        with os.scandir(path.parent) as names:
+            for entry in names:
+                self.cleanup_time()
+                count += 1
+                require(count <= MAX_ENTRIES, "Profile parent name-only absence bound exceeded")
+                require(entry.name.casefold() != path.name.casefold(), "Profile entry name remains; no retry")
+        require(self.profile_parent_custody(retained_parents) == parents, "Profile ancestry changed during absence check")
+        return {"method": "BOUNDED_ORIGINAL_PLAIN_PARENT_NAME_ONLY", "entries_seen": count,
+                "entry_name_absent": True, "target_read": False, "target_followed": False}
+
+    def cleanup(self, root_handle, root_identity):
+        require(self.gradle is None or self.gradle_stop["fulfilled"],
+                "Cleanup HOLD: original wrapper stop duty is unresolved")
+        require(self.job_settled and self.win.active() == 0, "Cleanup HOLD: owned Job zero not observed")
+        require(not self.close_failures, "Cleanup HOLD: original handle close failure")
+        self.cleanup_time()
+        require(self.file_state(root_handle)["identity"] == root_identity, "Original generated-root identity changed")
+        handles = []
+        close_attempted = set()
+        parts = PROFILE_CACHE_LEAF.split("/")
+        profile_ancestors = {self.temp.joinpath(*parts[:depth]) for depth in range(len(parts))}
+        retained_profile_parents = {self.temp: (root_handle, root_identity)}
+        try:
+            # All-before-any deletion remains. The sole exact admitted reparse
+            # entry is an original-handle leaf, NEVER a directory to descend into.
+            stack = [self.temp]
+            while stack:
+                self.cleanup_time()
+                parent = stack.pop()
+                with os.scandir(parent) as entries:
+                    for entry in entries:
+                        self.cleanup_time()
+                        path = Path(entry.path)
+                        require(len(handles) < MAX_ENTRIES, "Cleanup entry cap exceeded")
+                        profile = None
+                        if path.relative_to(self.temp).as_posix() == PROFILE_CACHE_LEAF:
+                            handle, identity, profile = self.open_profile_entry(path, retained_profile_parents)
+                        else:
+                            handle, identity = self.open_output(path, delete=True)
+                        handles.append((path, handle, identity, profile))
+                        if identity[3] & 0x10 and not identity[3] & 0x400:
+                            if path in profile_ancestors:
+                                retained_profile_parents[path] = (handle, identity)
+                            stack.append(path)
+            for path, handle, identity, profile in sorted(handles, key=lambda item: len(item[0].parts), reverse=True):
+                self.cleanup_time()
+                if profile is not None:
+                    require(self.profile_parent_custody(retained_profile_parents) == profile["parents"] and
+                            self.profile_entry_snapshot(handle) == profile["snapshot"],
+                            "Original profile entry/ancestry changed before entry-only disposition")
+                    profile["state"] = "ENTRY_ONLY_DISPOSITION_INTENT"
+                    self.event("profile_entry_disposition_intent", **profile)
+                self.event("delete_intent", path=str(path.relative_to(self.temp)), identity=identity)
+                # Existing class4/BOOLEAN disposition acts on the SAME nofollow
+                # entry handle; no pathname, reparse-payload or mount-management API.
+                self.win.delete_handle(handle)
+                if profile is not None:
+                    profile["state"] = "ENTRY_DISPOSITION_ACCEPTED_CLOSE_PENDING"
+                close_attempted.add(handle)
+                self.close_original(handle, "deleted entry")
+                if profile is not None:
+                    profile["state"] = "ENTRY_HANDLE_CLOSED_ABSENCE_PENDING"
+                    profile["absence"] = self.profile_entry_name_absent(path, retained_profile_parents)
+                    profile["state"] = "ENTRY_REMOVED_NO_TARGET_INSPECTION"
+                    self.event("profile_entry_removed", **profile)
+            self.cleanup_time()
+            self.event("delete_root_intent", identity=root_identity)
+            self.win.delete_handle(root_handle)
+            return len(handles)
+        finally:
+            for _path, handle, _identity, _profile in handles:
+                if handle not in close_attempted:
+                    close_attempted.add(handle)
+                    try:
+                        self.close_original(handle, "gathered entry")
+                    except RuntimeError:
+                        pass
+            require(not self.close_failures, "Original cleanup-handle close failure; filesystem HOLD")
+
+def executable(name):
+    found = shutil.which(name)
+    require(found is not None, f"Required preinstalled tool absent: {name}")
+    path = Path(found).resolve(strict=True)
+    plain_path(path)
+    return path
+
+
+def safe_command_path(path):
+    """Fixed CI drive paths only, not a general cmd-language escape function."""
+    text = str(path)
+    require(path.is_absolute() and re.fullmatch(r"[A-Za-z]:\\[A-Za-z0-9_.\\/\-]+", text),
+            "Wrapper/JDK/runtime path contains whitespace, shell grammar or unsupported path form")
+    require(all(part not in (".", "..") for part in path.parts), "Noncanonical command path")
+    return path
+
+
+def fixed_cmd(cmd, wrapper, arguments):
+    safe_command_path(cmd)
+    safe_command_path(wrapper)
+    values = [str(wrapper), *[str(value) for value in arguments]]
+    for value in values:
+        require(value and not re.search(r'["%!&|<>^\r\n\x00]', value), "Unexpected fixed cmd token grammar")
+    # /D suppresses AutoRun; /V:OFF suppresses delayed expansion. /S /C removes
+    # only the outer command-string pair. Every inner argument remains quoted
+    # through the checked-in wrapper's final %* expansion into java.exe.
+    tail = '"' + " ".join('"' + value + '"' for value in values) + '"'
+    argv = [str(cmd), "/D", "/S", "/V:OFF", "/C", tail]
+    line = '"' + str(cmd) + '" /D /S /V:OFF /C ' + tail
+    require(len(line) < 8000, "Fixed cmd line exceeds conservative CMD limit")
+    return argv, line
+
+
+def validated_inputs(workspace):
+    require(re.fullmatch(r"[0-9a-f]{64}", SOURCE_SHA256) and
+            type(SOURCE_MEMBERS) is int and 0 < SOURCE_MEMBERS <= 10000 and
+            type(SOURCE_BYTES) is int and 0 < SOURCE_BYTES <= MAX_SOURCE_BYTES,
+            "Actual complete corrected Sfix source capture is unbound; this source cannot run")
+    request_data = frozen_bytes(workspace / REQUEST)
+    request = json.loads(request_data, object_pairs_hook=no_duplicate_keys)
+    fixed = {"schema": 1, "suite": SUITE, "owner": "/root", "target": TARGET, "dry_run": True,
+             "case_count": 0, "parent_command_limit": 7, "max_seconds": COMMAND_SECONDS,
+             "stop_cutoff_seconds": STOP_CUTOFF_SECONDS, "cleanup_seconds": CLEANUP_SECONDS,
+             "project_commit": PROJECT_COMMIT, "project_tree": PROJECT_TREE,
+             "source_manifest_path": SOURCE, "source_manifest_sha256": SOURCE_SHA256,
+             "source_members": SOURCE_MEMBERS, "source_raw_bytes": SOURCE_BYTES,
+             "jdk_selector": "JAVA_HOME_17_X64", "gradle_jvm_heap": JVM_HEAP}
+    require(all(request.get(key) == value for key, value in fixed.items()), "Changed fixed graph-only request contract")
+    require(all(request.get(key) is True for key in ROOT_ATTESTATIONS), "Fresh root coordination/cleanup attestations absent")
+    require(re.fullmatch(r"[0-9a-f]{32}", request.get("nonce", "")), "Invalid fresh nonce")
+    require(all(re.fullmatch(r"[0-9a-f]{40}", request.get(key, "")) for key in ("source_commit", "source_tree")),
+            "Exact separately published control-source commit/tree required")
+    captures = {}
+    for key, path in (("helper_sha256", HELPER), ("init_sha256", INIT),
+                      ("workflow_sha256", WORKFLOW), ("scope_sha256", SCOPE)):
+        data = frozen_bytes(workspace / path)
+        require(request.get(key) == hashlib.sha256(data).hexdigest(), "Control-source hash mismatch: " + path)
+        captures[path] = data
+    source_bytes = frozen_bytes(workspace / SOURCE, MAX_SOURCE_INPUT)
+    require(hashlib.sha256(source_bytes).hexdigest() == SOURCE_SHA256, "Full raw-source manifest changed")
+    manifest = json.loads(source_bytes, object_pairs_hook=no_duplicate_keys)
+    require(manifest.get("format") == "passvault-linux-checkout-source-v1" and manifest.get("author") == "/root" and
+            manifest.get("commit") == PROJECT_COMMIT and manifest.get("tree") == PROJECT_TREE and
+            isinstance(manifest.get("files"), list) and len(manifest["files"]) == SOURCE_MEMBERS,
+            "Wrong complete raw-source schema/identity; historical Linux inode pins are not runtime authority")
+    captures[SOURCE] = source_bytes
+    require(request.get("independent_review_path") == REVIEW, "Wrong fresh graph-only reviewer path")
+    review_bytes = frozen_bytes(workspace / REVIEW)
+    require(request.get("independent_review_sha256") == hashlib.sha256(review_bytes).hexdigest(), "Review hash mismatch")
+    review = json.loads(review_bytes, object_pairs_hook=no_duplicate_keys)
+    require(review.get("schema") == 1 and review.get("reviewer") == "/root/native_review_c20" and
+            review.get("disposition") == "ACCEPT_WINDOWS_JNA_GRAPH_01_INSTANCE" and
+            review.get("nonce") == request["nonce"] and
+            all(review.get(key) == value for key, value in fixed.items() if key not in ("owner", "schema")),
+            "Genuine independent graph-only content/nonce acceptance missing")
+    for key in ("helper_sha256", "init_sha256", "workflow_sha256", "scope_sha256"):
+        require(review.get(key) == request.get(key), "Independent acceptance does not bind this exact candidate")
+    captures[REQUEST], captures[REVIEW] = request_data, review_bytes
+    return request, manifest, {path: hashlib.sha256(data).hexdigest() for path, data in captures.items()}, captures[INIT]
+
+
+def main():
+    require(len(sys.argv) == 1, "Fixed helper only; no command-line overrides")
+    require(sys.platform == "win32" and struct.calcsize("P") == 8, "Native Windows x64 Python required")
+    require(sys.version_info >= (3, 11), "Preinstalled Python>=3.11 only; no installation")
+    require(os.environ.get("GITHUB_REPOSITORY") == "Apdelrahman1911/passvault", "Wrong repository")
+    require(os.environ.get("GITHUB_REF") == BRANCH and os.environ.get("GITHUB_EVENT_NAME") == "push",
+            "Only the dedicated reviewed request push is allowed")
+    require(os.environ.get("GITHUB_RUN_ATTEMPT") == "1", "No rerun or automatic retry")
+    require(os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted" and
+            os.environ.get("RUNNER_OS") == "Windows" and os.environ.get("RUNNER_ARCH") == "X64",
+            "Wrong hosted runner/platform architecture")
+    run_id = os.environ.get("GITHUB_RUN_ID", "")
+    require(re.fullmatch(r"[0-9]{1,20}", run_id), "Invalid run identity")
+    workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)
+    runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
+    plain_path(workspace)
+    plain_path(runner_temp)
+    require(Path(__file__).resolve() == workspace / HELPER, "Unexpected helper location")
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGBREAK):
+        signal.signal(number, cancel)
+    request, manifest, captures, init_bytes = validated_inputs(workspace)
+    require(not CANCELLED, "Cancellation before allocation")
+    temp = safe_command_path(runner_temp / f"pv-jg1-{run_id}-1-{request['nonce']}")
+    evidence = runner_temp / f"passvault-windows-jna-graph-01-{run_id}-1-evidence"
+    require_absent(temp)
+    require_absent(evidence)
+    evidence.mkdir()
+    win, run, root_handle, root_identity = None, None, None, None
+    parent_handles = []
+    graph_returned = False
+    result = {"suite": SUITE, "tests": 0, "operational_status": "FAILED_OR_INCOMPLETE",
+              "cleanup": "NOT_STARTED", "gradle_stop": {"state": "NOT_ARMED"}, "failures": [],
+              "qualification": "Configuration/dry-run only; no Test/native/packaging execution or family closure"}
+    try:
+        with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8", newline="\n") as output:
+            output.write("evidence_owned=true\n")
+            output.flush()
+            os.fsync(output.fileno())
+        win = Windows()
+        resources = win.resources([workspace, runner_temp], launch=True)
+        for path in (workspace, runner_temp):
+            handle, identity = win.open_owned(path, delete=False)
+            parent_handles.append((path, handle, identity))
+        _, _, rechecked, rechecked_init = validated_inputs(workspace)
+        require(rechecked == captures and rechecked_init == init_bytes, "Source authority drift across parent binding")
+        write_json(evidence / "allocation-intent.json", {
+            "workspace": str(workspace), "generated": str(temp), "resources": resources,
+            "run_id": run_id, "attempt": 1, "inputs": captures,
+            "parent_identities": [{"path": str(path), "identity": identity} for path, _, identity in parent_handles],
+            "limits": {"commands": COMMAND_SECONDS, "stop_cutoff": STOP_CUTOFF_SECONDS,
+                       "cleanup": CLEANUP_SECONDS, "processes": 16, "job_committed_memory_bytes": 3 * GiB,
+                       "cleanup_entries": MAX_ENTRIES, "journal_bytes": JOURNAL_LIMIT},
+        })
+        require(not CANCELLED, "Cancellation before generated-root allocation")
+        temp.mkdir()
+        root_handle, root_identity = win.open_owned(temp)
+        for name in ("tmp", "home", "appdata", "localappdata", "logs", "gradle-home",
+                     "android-home", "konan", "project-cache", "controls"):
+            (temp / name).mkdir()
+        run = Run(win, workspace, temp, evidence)
+        run.event("ownership_bound", root_identity=root_identity)
+        git = executable("git.exe")
+        git_prefix = [git, "-c", "core.hooksPath=NUL", "-c", "core.fsmonitor=false", "-c", "gc.auto=0"]
+        identity = run.command(git_prefix + ["rev-parse", "HEAD", "HEAD^{tree}", "HEAD^", "HEAD^^{tree}"],
+                               30, "git-identity").splitlines()
+        require(len(identity) == 4 and identity[0] == os.environ.get("GITHUB_SHA"), "Request HEAD mismatch")
+        require(identity[2] == request["source_commit"] and identity[3] == request["source_tree"],
+                "Request must directly follow the separately reviewed control-source commit/tree")
+        parents = run.command(git_prefix + ["rev-list", "--parents", "-n", "1", "HEAD"], 30, "one-parent").split()
+        require(parents == [identity[0], identity[2]], "Activation must have exactly one reviewed parent")
+        changes = run.command(git_prefix + ["diff", "--name-status", "HEAD^", "HEAD", "--"],
+                              30, "request-only-diff").splitlines()
+        require(changes == ["A\t" + REQUEST], "Activation may only add the fresh graph request")
+        status = run.command(git_prefix + ["status", "--porcelain=v1", "--untracked-files=all"], 30, "clean-source")
+        require(not status.strip(), "Control checkout is not clean")
+        result.update({"control_source_commit": identity[2], "control_source_tree": identity[3],
+                       "request_commit": identity[0], "request_tree": identity[1],
+                       "project_commit": PROJECT_COMMIT, "project_tree": PROJECT_TREE})
+        write_json(evidence / "request.json", request)
+        write_json(evidence / "source-bindings.json", {"captures": captures, "project_commit": PROJECT_COMMIT,
+                                                      "project_tree": PROJECT_TREE, "source_manifest": SOURCE,
+                                                      "source_members": SOURCE_MEMBERS, "source_raw_bytes": SOURCE_BYTES})
+        # Full retained source paths can exceed legacy MAX_PATH after copying
+        # under G. Require the existing Windows setting; never modify the host.
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                            0, winreg.KEY_READ | winreg.KEY_WOW64_64KEY) as key:
+            long_paths, kind = winreg.QueryValueEx(key, "LongPathsEnabled")
+        require(kind == winreg.REG_DWORD and long_paths == 1,
+                "Full source requires pre-enabled Windows long paths; no registry/host change allowed")
+        result["windows_long_paths_enabled"] = True
+        run.copy_project(manifest)
+        prepared, java_argv = run.prepare_gradle(git, init_bytes)
+        version = run.command(java_argv, 30, "java-version")
+        require(re.search(r'(?:openjdk|java) version "17\.', version) and "64-Bit Server VM" in version,
+                "Actual selected JVM is not a qualified HotSpot-compatible Java17 x64")
+        run.arm_gradle(prepared)  # Installed before any graph launch can be ambiguous.
+        graph = run.command(prepared["graph_argv"], 210, "gradle-graph")
+        tasks = re.findall(r"^(:[A-Za-z0-9_:.-]+) SKIPPED\r?$", graph, re.MULTILINE)
+        require(0 < len(tasks) <= 1000 and len(tasks) == len(set(tasks)) and tasks.count(TARGET) == 1,
+                "Missing, duplicate or oversized exact dry-run task record")
+        graph_lines = [line.removeprefix("PVA010_WINDOWS_JNA_GRAPH01=") for line in graph.splitlines()
+                       if line.startswith("PVA010_WINDOWS_JNA_GRAPH01=")]
+        require(len(graph_lines) == 1 and graph.splitlines().count("PVA010_WINDOWS_JNA_GRAPH01_NATIVE_ROUTE_CLEAR") == 1,
+                "Missing/duplicate graph observation or terminal native-route guard")
+        observed = json.loads(graph_lines[0], object_pairs_hook=no_duplicate_keys)
+        require(observed.get("selector") == TARGET and observed.get("root") == str(run.project) and
+                observed.get("dryRun") is True and isinstance(observed.get("tasks"), list) and
+                [row.get("path") for row in observed["tasks"]] == tasks,
+                "Graph observer and actual dry-run task sequence differ")
+        run.graph_snapshot = {"observed": observed, "ordered_task_paths": tasks, "tests_executed": 0, "selector": TARGET,
+                              "qualification": "Current task paths/types/edges plus dry-run order; NOT independent scope acceptance;"
+                                               " full source/settled log and cleanup require review before a fresh case"}
+        write_json(evidence / "graph-task-order.json", run.graph_snapshot)
+        require(not CANCELLED, "Cancellation before original wrapper cleanup")
+        graph_returned = True
+    except BaseException as error:
+        result["failures"].append(f"{type(error).__name__}: {error}")
+    finally:
+        if win is not None:
+            try:
+                if run is None:
+                    result["owned_job_zero_observed"] = win.active() == 0
+                    result["cleanup"] = "HOLD_NO_BOUND_RUN; no adoption/retry"
+                else:
+                    result["gradle_stop"] = run.stop_once()
+                    if run.gradle is not None and not run.gradle_stop["fulfilled"]:
+                        result["failures"].append("Original wrapper stop unfulfilled; original environment/cache retained HOLD")
+                    settlement = run.settle(normal=graph_returned and not result["failures"])
+                    result["job_settlement"] = settlement
+                    result["failures"].extend(settlement["errors"])
+                    evidence_ready = run.job_settled and (run.gradle is None or run.gradle_stop["fulfilled"])
+                    if run.job_settled:
+                        try:
+                            run.cleanup_time()
+                            for path, expected in captures.items():
+                                run.cleanup_time()
+                                actual = hashlib.sha256(frozen_bytes(workspace / path, MAX_SOURCE_INPUT)).hexdigest()
+                                require(actual == expected, "Control/source authority changed: " + path)
+                            source_unchanged = None
+                            if run.source_copy is not None and run.source_copy["state"] == "COMPLETE":
+                                aggregate = hashlib.sha256()
+                                for row in manifest["files"]:
+                                    data, state = run.read_bound_bytes(run.project / row["path"], MAX_BLOB, cleanup=True)
+                                    require(len(data) == row["raw_size"] and state["sha256"] == row["raw_sha256"],
+                                            "Materialized raw source changed during configuration: " + row["path"])
+                                    aggregate.update((row["path"] + "\0" + state["sha256"] + "\n").encode("utf-8"))
+                                require(aggregate.hexdigest() == run.source_copy["ordered_path_raw_sha256_digest"],
+                                        "Full materialized raw-source aggregate changed")
+                                source_unchanged = {"members": SOURCE_MEMBERS, "raw_bytes": SOURCE_BYTES,
+                                                    "ordered_path_raw_sha256_digest": aggregate.hexdigest()}
+                            write_json(evidence / "settled-source.json", {"control_capture_hashes": captures,
+                                                                         "copied_raw_source_unchanged": source_unchanged})
+                        except BaseException as error:
+                            evidence_ready = False
+                            result["failures"].append(f"Settled evidence {type(error).__name__}: {error}")
+                    try:
+                        retention_errors = run.retain_outputs()
+                        result["failures"].extend(retention_errors)
+                        evidence_ready = evidence_ready and not retention_errors
+                    except BaseException as error:
+                        evidence_ready = False
+                        result["failures"].append(f"Retention {type(error).__name__}: {error}")
+                    finally:
+                        run.close_logs()
+                    if evidence_ready and not run.close_failures and root_handle is not None:
+                        count = run.cleanup(root_handle, root_identity)
+                        handle, root_handle = root_handle, None
+                        run.close_original(handle, "deleted generated root")
+                        require_absent(temp)
+                        run.event("cleanup_settled", removed_entries=count, root_removed=True)
+                        result["cleanup"] = "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"
+                    else:
+                        result["cleanup"] = "HOLD_UNSETTLED_STOP_EVIDENCE_OR_HANDLES; original root retained"
+            except BaseException as error:
+                result["failures"].append(f"Cleanup {type(error).__name__}: {error}")
+                result["cleanup"] = "HOLD; hosted disposal is not observed cleanup"
+            finally:
+                if run is not None:
+                    run.close_logs()
+                if root_handle is not None:
+                    handle, root_handle = root_handle, None
+                    if not win.k.CloseHandle(handle):
+                        result["failures"].append("Original generated-root handle close failed; no retry")
+                for _path, handle, _identity in parent_handles:
+                    if not win.k.CloseHandle(handle):
+                        result["failures"].append("Original parent handle close failed; no retry")
+                try:
+                    win.close()
+                except BaseException as error:
+                    result["failures"].append(f"Job close {type(error).__name__}: {error}")
+        if CANCELLED:
+            result["failures"].append("Cancellation observed before terminal evidence")
+        result["commands"] = run.command_results if run else []
+        result["source_copy"] = run.source_copy if run else None
+        result["graph_snapshot"] = run.graph_snapshot if run else None
+        result["entry_refusals"] = run.rejections if run else []
+        result["profile_entry_cleanup"] = run.profile_leaf_records if run else []
+        result["original_handle_close_failures"] = run.close_failures if run else []
+        if (graph_returned and not result["failures"] and not result["original_handle_close_failures"] and
+                result["gradle_stop"].get("fulfilled") and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
+            result["operational_status"] = "GRAPH_CAPTURED_AWAITING_INDEPENDENT_REVIEW"
+        write_json(evidence / "result.json", result)
+        print(json.dumps(result, sort_keys=True))
+    for number in (signal.SIGINT, signal.SIGTERM, signal.SIGBREAK):
+        signal.signal(number, signal.SIG_DFL)
+    return 0 if not CANCELLED and result["operational_status"] == "GRAPH_CAPTURED_AWAITING_INDEPENDENT_REVIEW" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

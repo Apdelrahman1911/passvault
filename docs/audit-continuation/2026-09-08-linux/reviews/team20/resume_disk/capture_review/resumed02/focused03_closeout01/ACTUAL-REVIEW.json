@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "reviewer": "/root/capture_review",
+  "utc": "2026-09-12T11:53:06.855926+00:00",
+  "status": "ACCEPT_ACTUAL_DISPOSAL_ONLY_ORIGINAL_FOCUSED03_REMAINS_HOLD",
+  "run_id": "focused03-closeout01",
+  "inputs": [
+    {
+      "path": "reviews/team20/resume_disk/root/FOCUSED03-CLOSEOUT01-EXTERNAL-TERMINAL.json",
+      "bytes": 2492,
+      "sha256": "2aec49819001edac4378dac35d510a5bc89966d76475de65a03dacff09dca96d"
+    },
+    {
+      "path": "reviews/team20/resume_disk/root/FOCUSED03-CLOSEOUT01-EXECUTION-ADMISSION.json",
+      "bytes": 2798,
+      "sha256": "d43a20a2dd190e678dbb2f756ee2fe0c6274594aaf48a5db4202e382fda9721b"
+    },
+    {
+      "path": "runs/linux-focused-regression03/closeout01/RECEIPT.json",
+      "bytes": 3277,
+      "sha256": "bd711f01ab007be7cb00fd4a982beba16975f724b7f0602e2d7e80bcbe4a1ba5"
+    },
+    {
+      "path": "runs/linux-focused-regression03/closeout01/ORIGINAL-ANCHORS.json",
+      "bytes": 5707,
+      "sha256": "e7fabb5182b13356069db35f20e38a17fb4a482409f86599da4f3576093e521e"
+    },
+    {
+      "path": "runs/linux-focused-regression03/closeout01/SOURCE-DISPOSAL-PROOF.json",
+      "bytes": 2651,
+      "sha256": "4d60c18f9496b25f594c42cfb7c3fc09903df15812acd7d15d9d21bcfe2ee660"
+    },
+    {
+      "path": "runs/linux-focused-regression03/closeout01/RUNTIME-SNAPSHOT.json",
+      "bytes": 5102398,
+      "sha256": "479d38caff613ea6a47fd544e4eac6165543124fa82a53b76029de8bf308195d"
+    },
+    {
+      "path": "runs/linux-focused-regression03/closeout01/GENERATED-REPORTS.json",
+      "bytes": 6908,
+      "sha256": "7e41ba9b0f57ec8c1a30cfb8be74386d360bf8a1e152ddc8c8681d02c860454e"
+    }
+  ],
+  "source": "Reviewed v2 CLOSEOUT01-v2.py47562B/d832f84d01a415fd0e471bccec0db9c1b8a593d5bb7c9c3e17ba8f4bc3cbb8ca; PLAN-v2.json7595B/4618ce67a67294d241e41f1ab74f9924ab7fffe80543216b8b87543dde7759a9. Entry command exactly plan, requestccde9d8a and genuine approval79997f09 match retained receipt. Rejected v1/donor never executed.",
+  "external_terminal": {
+    "launch_chunk": "ab77a1",
+    "session_id": 80443,
+    "terminal_chunk": "7ba688",
+    "exit_code": 0,
+    "completion_received": true,
+    "remaining_tool_session": null,
+    "qualification": "Root-retained authoritative completion after preterminal receipt; not a reviewer rerun or process probe."
+  },
+  "actual": "One root cleanup-only invocation completed in2.992s, receipt DISPOSAL_COMPLETED_NOT_TEST_SUCCESS with no reasons. OriginalFocused03Rdev23/ino468528 removed; receipt original-name-absent and descriptor-removal postconditions accepted, root later independently reports current original name absent. Edev23/ino468527 preserved; new closeoutdev23/ino475351 only. Original-record and saved-evidence postchecks true. No repeatedstop, subprocess/build/test/Git/CI/processcensus or cleanup chain.",
+  "independent_reconciliation": {
+    "evidence": "Independently fd-read/hashed all five retained outputs; exact closeout evidence membership, sizes and hashes match external terminal/receipt. Re-read and matched all16 original anchor full pins/hashes after disposal; original INNER-RESULTsource_afterfalse/cleanup_safefalse and OUTERcleanupNOT_ATTEMPTED unchanged.",
+    "source": "Fresh proof4113members/125708841rawB, Sfix e9cca961837789048503aaffc74ab1a1e7e536ec/tree7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d, SOURCE887d3b93 and rawe3999999 match original intent/accepted manifest. Independently matched every4113 snapshot source member raw size/Git mode and directory ancestors. Both source.oids/source.blobs snapshot pins equal original transport pins. Actual byte hashing/OID/aggregate proof came from reviewed closer before deletion, not a reviewer postdeletion runtime read. Fifteen checkout differences and two historical EOL qualifications preserved exactly.",
+    "snapshot": "Parsed complete16234entries; all regularfiles/directories, admitted split devices/uid0, regularnlink1, no .git/path traversal, and complete directory ancestry.10635regularfiles +5599snapshotdirectories. Successful deletion counts10635files and5600directories include originalR. Logical sum1108012851 exactly matches receipt; snapshot allocated1157959680, receipt allocated1157963776, difference4096 for source-coded originalR contribution. These are unlink accounting, not net reclaimed disk.",
+    "reports": "All44 identified DSL reportroots exist in snapshot and are empty; no new copies, selected XML, auxiliary roots/files or problems report. Empty report manifest is legitimate, not omitted required diagnostics. Conservation before unlink and saved postchecks true. Zero report/test provenance credit.",
+    "evidence_budget": "Exactly five retained evidence files total5120941B; equals5117664B before receipt +3277B receipt. Snapshot5102398B remains necessary compact deletion/conservation evidence, not disposable build output. No unneeded large application binaries retained in this new leaf."
+  },
+  "resources": {
+    "minimum_sampled_disk_available_bytes": 16191598592,
+    "minimum_sampled_ram_available_bytes": 63717068800,
+    "ram_total_bytes": 67435888640,
+    "root_post_disk_available_bytes": 17341345792,
+    "root_post_ram_available_bytes": 63719215104,
+    "qualification": "Recorded samples satisfy normal12GiB+96MiB entry/8GiB running and25/20percent RAM policy. Postdisk is root observation only; no causal net-reclamation or peak/globalidle claim."
+  },
+  "credit": {
+    "new_testcases": 0,
+    "new_xml_credit": 0,
+    "compile_credit": false,
+    "new_family_closures": 0,
+    "new_suspicion_resolutions": 0,
+    "qualification": "Original outer70/build143/stop0, zero selected cases, incomplete Desktop test compilation and source_afterfalse remain. Original source-after is not repaired by fresh disposal proof; host Java ownership remains UNCLASSIFIED_NONADMITTED_HOST_JAVA."
+  },
+  "next_boundary": "Only this completed fresh cleanup reservation may be released by root after adoption. No remaining cleanup/stop duty for this removed R; no replay/successor admitted. New builds require separate current quiet coordination and admission. All older HOLDs, PVU007STOP, PVU011NO-RETRY, PVA02949/44/5FAIL, G7/G8CLOSED, original native refusal, PVD/protectedrefs/tags/build1017001 remain untouched.",
+  "reviewer_activity": "Named inert source/evidence reads, hashes, ordinary JSON/arithmetic and this new own review only. No R/T/proc/SDK/network/Git/helper execution/import/AST/compile, runtime test/stop/signal/deletion or background process; no reviewer cache/runtime created."
+}

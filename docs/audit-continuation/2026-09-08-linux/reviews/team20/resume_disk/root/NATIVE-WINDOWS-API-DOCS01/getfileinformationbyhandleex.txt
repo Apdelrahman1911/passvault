@@ -1,0 +1,174 @@
+GetFileInformationByHandleEx function (winbase.h) - Win32 apps | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+GetFileInformationByHandleEx function (winbase.h)
+Feedback
+Summarize this article for me
+In this article
+Retrieves file information for the specified file.
+For a more basic version of this function for desktop apps, see
+GetFileInformationByHandle.
+To set file information using a file handle, see
+SetFileInformationByHandle.
+Syntax
+BOOL GetFileInformationByHandleEx(
+[in]  HANDLE                    hFile,
+[in]  FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+[out] LPVOID                    lpFileInformation,
+[in]  DWORD                     dwBufferSize
+);
+Parameters
+[in] hFile
+A handle to the file that contains the information to be retrieved.
+This handle should not be a pipe handle.
+[in] FileInformationClass
+A FILE_INFO_BY_HANDLE_CLASS enumeration
+value that specifies the type of information to be retrieved.
+For a table of valid values, see the Remarks section.
+[out] lpFileInformation
+A pointer to the buffer that receives the requested file information. The structure that is returned
+corresponds to the class that is specified by FileInformationClass. For a table of
+valid structure types, see the Remarks section.
+[in] dwBufferSize
+The size of the lpFileInformation buffer, in bytes.
+Return value
+If the function succeeds, the return value is nonzero and file information data is contained in the buffer
+pointed to by the lpFileInformation parameter.
+If the function fails, the return value is zero. To get extended error information, call
+GetLastError.
+Remarks
+If FileInformationClass is FileStreamInfo and the calls
+succeed but no streams are returned, the error that is returned by
+GetLastError is
+ERROR_HANDLE_EOF.
+Certain file information classes behave slightly differently on different operating system releases. These
+classes are supported by the underlying drivers, and any information they return is subject to change between
+operating system releases.
+The following table shows the valid file information class types and their corresponding data structure types
+for use with this function.
+FileInformationClass value
+lpFileInformation type
+FileBasicInfo (0)
+FILE_BASIC_INFO
+FileStandardInfo (1)
+FILE_STANDARD_INFO
+FileNameInfo (2)
+FILE_NAME_INFO
+FileStreamInfo (7)
+FILE_STREAM_INFO
+FileCompressionInfo (8)
+FILE_COMPRESSION_INFO
+FileAttributeTagInfo (9)
+FILE_ATTRIBUTE_TAG_INFO
+FileIdBothDirectoryInfo (0xa)
+FILE_ID_BOTH_DIR_INFO
+FileIdBothDirectoryRestartInfo (0xb)
+FILE_ID_BOTH_DIR_INFO
+FileRemoteProtocolInfo (0xd)
+FILE_REMOTE_PROTOCOL_INFO
+FileFullDirectoryInfo (0xe)
+FILE_FULL_DIR_INFO
+FileFullDirectoryRestartInfo (0xf)
+FILE_FULL_DIR_INFO
+FileStorageInfo (0x10)
+FILE_STORAGE_INFO
+FileAlignmentInfo (0x11)
+FILE_ALIGNMENT_INFO
+FileIdInfo (0x12)
+FILE_ID_INFO
+FileIdExtdDirectoryInfo (0x13)
+FILE_ID_EXTD_DIR_INFO
+FileIdExtdDirectoryRestartInfo (0x14)
+FILE_ID_EXTD_DIR_INFO
+Transacted Operations
+If there is a transaction bound to the thread at the time of the call, then the function returns the
+compressed file size of the isolated file view. For more information, see
+About Transactional NTFS.
+In Windows 8 and Windows Server 2012, this function is supported by the following technologies.
+Technology
+Supported
+Server Message Block (SMB) 3.0 protocol
+Yes
+SMB 3.0 Transparent Failover (TFO)
+Yes
+SMB 3.0 with Scale-out File Shares (SO)
+Yes
+Cluster Shared Volume File System (CsvFS)
+Yes
+Resilient File System (ReFS)
+Yes
+Requirements
+Requirement
+Value
+Minimum supported client
+Windows Vista [desktop apps | UWP apps]
+Minimum supported server
+Windows Server 2008 [desktop apps | UWP apps]
+Target Platform
+Windows
+Header
+winbase.h (include Windows.h)
+Library
+Kernel32.lib; FileExtd.lib on Windows Server 2003 and Windows XP
+DLL
+Kernel32.dll
+Redistributable
+Windows SDK on     Windows Server 2003 and Windows XP.
+See also
+FILE_INFO_BY_HANDLE_CLASS
+File Management Functions
+SetFileInformationByHandle
+Feedback
+Was this page helpful?
+Yes
+No
+No
+Need help with this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+Ask Learn
+Ask Learn
+Suggest a fix?
+Additional resources
+Last updated on
+2024-02-22
+In this article
+Was this page helpful?
+Need help with this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+Ask Learn
+Ask Learn
+Suggest a fix?
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

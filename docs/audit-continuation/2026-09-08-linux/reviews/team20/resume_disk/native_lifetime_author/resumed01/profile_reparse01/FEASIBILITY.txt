@@ -1,0 +1,97 @@
+# Future Windows profile-entry cleanup feasibility — no recovery
+
+Author /root/native_author; independent review requested from /root/native_review_c20.
+SOURCE-ONLY FUTURE CONTRACT, not code or execution/cleanup admission. No old
+Windows root, reparse target, excluded workflow, host/runtime, registry or cache
+was opened. The four-case result is retained evidence, not replay authority.
+
+## Actual bounded observation, not an inferred junction or creator
+
+Exact result18843B/SHA256 a48a56750b39f6e82321a81f682752edb0926a3d2ddfe6ec42b99c0e8fee2022
+records four CTest parent exits0 (independent case review pending), then cleanup
+HOLD at owned relative home/AppData/Local/Microsoft/Windows/INetCache/Content.IE5.
+The original handle observed attributes9238=0x2416 (directory/reparse/hidden/system/
+not-content-indexed), links1, target_read=false, then closed successfully. Reparse
+TAG, payload/target, producing process and creation phase were NOT captured. A
+normal-looking profile pathname is not proof it is a junction or harmless.
+Original Job termination was attempted and observed zero with errors[], and all
+original handle closes reported no failure. This is not a cleanup PASS or natural
+producer quiescence proof; original HOLD and no-retry obligations remain untouched.
+
+## Inheritance is real; recurrence is not established for every workload
+
+Accepted graph Run.__init__/prepare_gradle both set USERPROFILE/HOME=G/home,
+APPDATA=G/appdata, LOCALAPPDATA=G/localappdata, as Windows4 does. Its Windows
+open_owned rejects every reparse entry before cleanup recursion; the identical
+attribute bit would refuse. The prospective ordinary-DLL producer uses this same
+private profile and VS17/MSBuild configure/build route, so the exposure is directly
+relevant despite BUILD_TESTING=OFF and its stricter per-parent natural Job drain.
+Graph-only omits MSVC/CMake and uses Git/JDK/Gradle: the path may never appear,
+but no retained evidence proves immunity. Current accepted templates cannot
+claim reliable whole-G cleanup against this observed profile-entry shape.
+
+## Prevention options are not source-proven; do not guess environment switches
+
+LOCALAPPDATA is already redirected yet the entry appeared under USERPROFILE.
+Changing HOME/APPDATA, unsetting USERPROFILE, disabling arbitrary MSBuild/network/
+WinINet settings, or routing to the runner's real profile is not a proven fix;
+the last option would violate isolation. Coherent AppData subdirectories or
+precreating Content.IE5 as a regular directory might alter tool behavior, but
+neither is established to prevent OS creation/replacement. No prevention edit or
+standalone CI experiment is justified by the retained result. Do not modify
+registry/user profiles or toolchain/dependency semantics to make cleanup green.
+
+## Smallest defensible prospective solution: one owned reparse leaf, never its target
+
+A separately reviewed future helper can retain the general reparse refusal and
+admit ONLY this exact relative entry, only during original final cleanup:
+
+1. Require the fresh run's independently bound, originally absent G; original
+   Job-zero, fulfilled original wrapper stop if armed, complete evidence and no
+   handle-close error. Every ancestor is a retained original plain directory
+   beneath G/home; no target resolution, Path.resolve/is_dir or scandir on the
+   reparse entry. Original historical IDs do not authorize this fresh object.
+2. Route this one literal relative pathname to a dedicated opener BEFORE the
+   generic refusal, not catch-and-reopen the consumed refused handle. Open the
+   entry ONCE with DELETE|FILE_READ_ATTRIBUTES, FILE_SHARE_READ only (deny new
+   write/delete sharing), OPEN_EXISTING, BACKUP_SEMANTICS|OPEN_REPARSE_POINT.
+   Bind original volume/file-index/link-count/type against this fresh owned G
+   and retained ancestors; require links1 and same volume. This is the existing
+   cooperative owned-namespace contract, not adversarial same-user isolation.
+3. Query GetFileInformationByHandleEx(FileAttributeTagInfo) ON THAT HANDLE;
+   reconcile its attributes with GetFileInformationByHandle. If it is a reparse,
+   the only prospective allowed tag is IO_REPARSE_TAG_MOUNT_POINT=0xA0000003,
+   with directory/reparse attributes and no attributes outside the reviewed
+   observed0x2416 set. This tag is a proposed strict admission, NOT observed
+   Windows4 evidence. Symlink/cloud/unknown tags, extra paths, links or drift
+   refuse. An ordinary nonreparse directory keeps the original plain-entry rule.
+   Do not request FSCTL_GET_REPARSE_POINT or decode/read any target payload.
+4. Store the one admitted alias as a NON-RECURSIVE leaf in the existing
+   all-before-any original-handle inventory. Keep other reparse paths forbidden.
+   Immediately before its deletion requery the same identity/attributes/tag,
+   then use only original-handle SetFileInformationByHandle(FileDispositionInfo)
+   and one CloseHandle. Do not clear/replace the reparse record, use path-based
+   recursive deletion, follow the target, or add fallback deletion/attribute
+   changes. Parent cleanup follows only after that entry is removed; every
+   mismatch/API/deletion failure remains HOLD/no automatic retry.
+5. Retain compact original identity/tag/leaf-disposition/close/absence receipts
+   proving the entry was not descended into. Never label its target read, owned,
+   empty, cleaned or unchanged from these receipts. Target contents are outside
+   the operation; the safety argument depends on correctly bound Win32 no-follow
+   handle/disposition semantics, not a guessed target pathname.
+
+This is a narrowly feasible design, NOT implemented/admitted. Full independent
+API/binding and before-any-deletion walker review is needed before integration;
+if no-follow leaf disposition cannot be established on the selected Windows
+API/filesystem, keep this prospective lane BLOCKED rather than broaden policy.
+Actual observed tag/identity and entry-removal evidence can be gathered only in
+the NEXT ALREADY-NEEDED, separately admitted graph/native job if the entry is
+created. Do not add a CI run solely to investigate/retry cleanup. If that future
+job has no such entry, the exception remains unexercised, not falsely validated.
+Old Windows4 root is never an input or cleanup target; its original HOLD persists.
+
+No source delta is authored now: root first adopts the independent Windows4
+actual review, then decides whether this precise future-leaf contract should be
+implemented/reviewed before the next genuinely useful Windows job. Continue Linux,
+Sfix and other permitted lanes meanwhile. No new cases/fixes/findings/closures;
+all STOP/NO-RETRY/CLOSED/native/PVD/protected-ref/build1017001 restrictions remain.

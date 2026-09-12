@@ -1,0 +1,122 @@
+"""INERT fragment for a future separately admitted Windows real-JNA1 adapter.
+
+Not a standalone helper. Do not import any old runner to call this function.
+Integrate only after accepted actual graph/cleanup, exact source and new instance
+admission. Uses unchanged graph Run containment/command/final-cleanup methods.
+Three native parent commands, no CTest, fixture, staging, signing or native load.
+"""
+
+
+def produce_ordinary_windows_library(run):
+    require(run.source_copy is not None and run.source_copy["state"] == "COMPLETE",
+            "Ordinary DLL requires the complete bound Sfix product")
+    require(run.gradle is None and not run.compiler_cohort and not run.job_settled and
+            not run.win.termination_attempted and run.win.active() == 0,
+            "DLL production precedes this fresh invocation's wrapper; no settled/terminated cohort reuse")
+    require(run.sequence == 4 and len(run.command_results) == 4,
+            "Only four exact control Git checks may precede ordinary-DLL production")
+    run.work_time()
+    cmake = executable("cmake.exe")
+    run.read_only_tool_inputs.add(cmake)
+    cmake_bytes, cmake_identity = run.read_bound_bytes(cmake, 64 * 1024 ** 2, preinstalled_tool=True)
+    require(len(cmake_bytes) >= 64 and cmake_bytes[:2] == b"MZ", "CMake image lacks a PE header")
+    offset = struct.unpack_from("<I", cmake_bytes, 60)[0]
+    require(64 <= offset <= len(cmake_bytes) - 6 and cmake_bytes[offset:offset + 4] == b"PE\0\0" and
+            struct.unpack_from("<H", cmake_bytes, offset + 4)[0] == 0x8664, "CMake must be native AMD64")
+    sdk = "10.0.26100.0"
+    header_path = Path(os.environ["ProgramFiles(x86)"]) / "Windows Kits/10/Include" / sdk / "um/webauthn.h"
+    header_bytes, header_identity = run.read_bound_bytes(header_path, 2 * 1024 ** 2)
+    header = header_bytes.decode("utf-8", errors="strict")
+    for token in ("WEBAUTHN_API_VERSION_8", "WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_8",
+                  "WEBAUTHN_HMAC_SECRET_SALT", "pPRFGlobalEval"):
+        require(token in header, "Required preinstalled SDK declaration absent; no provisioning")
+    build = run.temp / "native"
+    require_absent(build)
+    native = run.project / "app-desktop/native/biometric-bridge"
+    source_files = ("CMakeLists.txt", "src/windows/passvault_biometric_windows.cpp",
+                    "src/windows/passvault_biometric_windows.rc", "include/passvault_biometric.h")
+    source = {}
+    for relative in source_files:
+        _data, source[relative] = run.read_bound_bytes(native / relative, MAX_BLOB)
+    run.command([cmake, "--version"], 30, "ordinary-dll-cmake-version")
+    # Keep compiler_cohort false: the existing command method naturally drains
+    # this original Job before returning EVERY pre-wrapper native parent.
+    # Its legacy readonly_job_zero_observed name is not a read-only-command claim.
+    run.command([cmake, "-S", native, "-B", build, "-G", "Visual Studio 17 2022", "-A", "x64",
+                 "-DCMAKE_SYSTEM_VERSION=" + sdk, "-DBUILD_TESTING=OFF",
+                 "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS:BOOL=OFF"], 120, "ordinary-dll-configure")
+
+    def snapshot_last_native_log():
+        run.work_time()
+        require(not run.compiler_cohort and run.win.active() == 0, "Original producer Job is not naturally zero")
+        record, entry = run.command_results[-1], run.logs[-1]
+        require(record["exit_code"] == 0 and record.get("readonly_job_zero_observed") is True and
+                record["log"] == entry["path"].name, "Producer parent/Job-zero record missing")
+        run.win.check(run.win.k.FlushFileBuffers(entry["handle"]), "FlushOriginalProducerLog")
+        before = run.log_state(entry)
+        plain_path(entry["path"])
+        with entry["path"].open("rb") as stream:
+            data = stream.read(LOG_LIMIT + 1)
+        require(run.log_state(entry) == before and len(data) == before["size"] <= LOG_LIMIT and
+                hashlib.sha256(data).hexdigest() == record["parent_output_snapshot_sha256"] and
+                run.win.active() == 0, "Producer log is not the stable complete natural-zero snapshot")
+        run.work_time()
+        return {"log": entry["path"].name, "identity": entry["identity"], "bytes": len(data),
+                "sha256": hashlib.sha256(data).hexdigest(), "natural_job_zero": True,
+                "qualification": "Stable complete producer observation; final full retained log must match before PASS"}
+
+    logs = [snapshot_last_native_log()]
+    cache, cache_identity = run.read_bound_bytes(build / "CMakeCache.txt", 1024 ** 2)
+    cache_lines = cache.decode("utf-8-sig").splitlines()
+    expected_cache = {
+        "BUILD_TESTING": "BOOL=OFF",
+        "PASSVAULT_AUDIT_PVA036_037_CONTROLS": "BOOL=OFF",
+        "CMAKE_GENERATOR": "INTERNAL=Visual Studio 17 2022",
+        "CMAKE_GENERATOR_PLATFORM": "INTERNAL=x64",
+    }
+    for key, tail in expected_cache.items():
+        matches = [line for line in cache_lines if line.startswith(key + ":")]
+        require(matches == [key + ":" + tail], "Ordinary DLL cache drift: " + key)
+    project, project_identity = run.read_bound_bytes(build / "passvault_biometric.vcxproj", 1024 ** 2)
+    project_text = project.decode("utf-8-sig")
+    require("<WindowsTargetPlatformVersion>" + sdk + "</WindowsTargetPlatformVersion>" in project_text,
+            "Ordinary DLL is not configured for the exact installed SDK")
+    for forbidden in ("PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST", "PASSVAULT_BIOMETRIC_PVA036_SOURCE",
+                      "PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST", "passvault_biometric_windows_security_test.cpp"):
+        require(forbidden not in project_text, "Ordinary DLL must not compile test/control instrumentation")
+    for token in ("<ConfigurationType>DynamicLibrary</ConfigurationType>", "stdcpp20",
+                  "<WarningLevel>Level4</WarningLevel>", "<TreatWarningAsError>true</TreatWarningAsError>",
+                  "<SDLCheck>true</SDLCheck>", "<ControlFlowGuard>Guard</ControlFlowGuard>"):
+        require(token in project_text, "Required ordinary DLL compiler configuration absent")
+    run.command([cmake, "--build", build, "--config", "Release", "--target", "passvault_biometric",
+                 "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 240, "ordinary-dll-build")
+    logs.append(snapshot_last_native_log())
+    for path, expected in ((build / "CMakeCache.txt", cache_identity),
+                           (build / "passvault_biometric.vcxproj", project_identity)):
+        _data, actual = run.read_bound_bytes(path, 1024 ** 2)
+        require(actual == expected, "Ordinary DLL configuration changed during production")
+    _data, current_cmake = run.read_bound_bytes(cmake, 64 * 1024 ** 2, preinstalled_tool=True)
+    require(current_cmake == cmake_identity, "Original CMake image changed")
+    for relative, expected in source.items():
+        _data, actual = run.read_bound_bytes(native / relative, MAX_BLOB)
+        require(actual == expected, "Original ordinary DLL source changed")
+    library = build / "Release/passvault_biometric.dll"
+    binary, identity = run.read_bound_bytes(library, 64 * 1024 ** 2)
+    require(64 <= len(binary) <= 64 * 1024 ** 2 and binary[:2] == b"MZ", "Ordinary DLL lacks a bounded MZ image")
+    pe = struct.unpack_from("<I", binary, 60)[0]
+    require(64 <= pe <= len(binary) - 26 and binary[pe:pe + 4] == b"PE\0\0", "Ordinary DLL has invalid PE offset")
+    machine, sections = struct.unpack_from("<HH", binary, pe + 4)
+    optional_size, characteristics = struct.unpack_from("<HH", binary, pe + 20)
+    require(machine == 0x8664 and 0 < sections <= 96 and optional_size >= 112 and
+            pe + 24 + optional_size + 40 * sections <= len(binary) and
+            struct.unpack_from("<H", binary, pe + 24)[0] == 0x20b and
+            characteristics & 0x2002 == 0x2002, "Require an AMD64 PE32+ executable DLL, not the security-test EXE")
+    require(run.win.active() == 0 and not run.win.termination_attempted, "Producer settlement changed before DLL binding")
+    result = {"library": str(library), "bytes": len(binary), "sha256": identity["sha256"],
+              "identity": identity, "pe": {"machine": "AMD64", "optional_header": "PE32+", "dll": True},
+              "cmake": {"path": str(cmake), **cmake_identity}, "sdk": sdk, "sdk_header": header_identity,
+              "source": source, "cache": cache_identity, "project": project_identity, "producer_logs": logs,
+              "producer_natural_job_zero": True, "abi": "UNOBSERVED_UNTIL_ACTUAL_JNA_CASE",
+              "qualification": "Fresh unsigned ordinary Release DLL only; not Test/ABI/provider or final cleanup evidence"}
+    write_json(run.evidence / "ordinary-dll-producer.json", result)
+    return result

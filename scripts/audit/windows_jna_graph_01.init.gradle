@@ -1,0 +1,98 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.tasks.testing.Test
+import java.util.concurrent.atomic.AtomicBoolean
+
+// Only this fixed Windows --dry-run observer; no task rewrite or test execution.
+// Native guard reuses independently reviewed dependency/konan01 lines41-77.
+def start = gradle.startParameter
+def selector = ':app-desktop:auditJnaLifetimeTest'
+def expectedRoot = new File(start.projectProperties['passvault.audit.jnaGraph.root'] ?: '')
+if (gradle.gradleVersion != '9.7.1' || System.getProperty('java.specification.version') != '17' ||
+        !System.getProperty('os.name').startsWith('Windows') || !(System.getProperty('os.arch') in ['amd64', 'x86_64']) ||
+        start.taskNames != [selector] || !start.dryRun || start.continueOnFailure || !start.excludedTaskNames.empty ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
+        start.buildCacheEnabled || start.offline || start.refreshDependencies || start.initScripts.size() != 1 ||
+        start.dependencyVerificationMode != DependencyVerificationMode.STRICT ||
+        start.projectProperties.keySet().any { it.startsWith('passvault.audit.jnaLifetime.') } ||
+        !expectedRoot.isAbsolute() || expectedRoot.absoluteFile != expectedRoot || expectedRoot.canonicalFile != expectedRoot ||
+        expectedRoot.name != 'project' || System.getenv('PASSVAULT_AUDIT_JNA_GRAPH_ROOT') != expectedRoot.path) {
+    throw new GradleException('WindowsGraph01 requires exactly one native-Windows JDK17 dry-run in its original private source')
+}
+
+// KGP2.4.10 source-proven native route guard; not a general download ban.
+// Fresh outer-owned storage is required: an installed provisioned.ok marker
+// or a custom native home would bypass bundle resolution and permit auxiliaries.
+def nativeData = new File(expectedRoot.parentFile, 'konan')
+def nativeProperties = [
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': nativeData.path,
+]
+def forbiddenNativeOverrides = ['kotlin.native.home', 'org.jetbrains.kotlin.native.home',
+    'kotlin.native.version', 'org.jetbrains.kotlin.native.version', 'kotlin.native.reinstall']
+if (nativeProperties.any { key, value -> start.projectProperties[key] != value } ||
+        forbiddenNativeOverrides.any { start.projectProperties.containsKey(it) } ||
+        System.getenv('KONAN_DATA_DIR') != nativeData.path || nativeData.canonicalFile != nativeData ||
+        !nativeData.isDirectory() || nativeData.list()?.length != 0) {
+    throw new GradleException('WindowsGraph01 requires the pinned native route and fresh empty native data directory')
+}
+// Reject project-property shadowing before plugin application; do not query KGP providers.
+gradle.beforeProject { project ->
+    if (nativeProperties.any { key, value -> project.findProperty(key) != value } ||
+            forbiddenNativeOverrides.any { project.findProperty(it) != null }) {
+        throw new GradleException('WindowsGraph01 refuses native route/home/version/reinstall overrides')
+    }
+}
+def nativeDenied = new AtomicBoolean()
+// Registered in init, before settings/projects: configuration, provider realization
+// and cached-archive resolution must all encounter this BEFORE obtaining the bundle.
+gradle.addListener([
+    beforeResolve: { ResolvableDependencies incoming ->
+        if (incoming.name == 'kotlinNativeBundleConfiguration') {
+            nativeDenied.set(true)
+            throw new GradleException('WindowsGraph01 forbids Kotlin/Native compiler provisioning')
+        }
+    },
+    afterResolve: { ResolvableDependencies ignored -> },
+] as DependencyResolutionListener)
+
+// Observe this one graph without executing Test.doFirst, resolving task inputs,
+// replacing task dependencies, or selecting a broad suite. Graph acceptance is
+// still a separate independent evidence gate before a fresh runtime instance.
+def graphReported = false
+gradle.taskGraph.whenReady { graph ->
+    def root = gradle.rootProject
+    if (nativeDenied.get() || root.projectDir.absoluteFile != expectedRoot || root.projectDir.canonicalFile != expectedRoot ||
+            graph.allTasks.empty || graph.allTasks.size() > 1000 ||
+            graph.allTasks.count { it.path == selector && it instanceof Test } != 1) {
+        throw new GradleException('WindowsGraph01 cannot observe a changed root, native denial or missing exact Test selector')
+    }
+    def rows = graph.allTasks.collect { task ->
+        [path: task.path, type: task.class.name, isTest: task instanceof Test, enabled: task.enabled,
+         dependencies: task.taskDependencies.getDependencies(task).collect { it.path }.sort(),
+         finalizers: task.finalizedBy.getDependencies(task).collect { it.path }.sort(),
+         mustRunAfter: task.mustRunAfter.getDependencies(task).collect { it.path }.sort(),
+         shouldRunAfter: task.shouldRunAfter.getDependencies(task).collect { it.path }.sort()]
+    }
+    if (nativeDenied.get()) {
+        throw new GradleException('WindowsGraph01 refuses swallowed native denial during graph observation')
+    }
+    def encoded = JsonOutput.toJson([selector: selector, root: expectedRoot.path, dryRun: true, tasks: rows])
+    if (encoded.getBytes('UTF-8').length > 1024 * 1024) {
+        throw new GradleException('WindowsGraph01 compact graph bound exceeded')
+    }
+    println('PVA010_WINDOWS_JNA_GRAPH01=' + encoded)
+    graphReported = true
+}
+gradle.buildFinished { outcome ->
+    if (nativeDenied.get()) {
+        throw new GradleException('WindowsGraph01 native compiler provisioning was refused; no graph PASS')
+    }
+    if (outcome.failure == null && graphReported) {
+        println('PVA010_WINDOWS_JNA_GRAPH01_NATIVE_ROUTE_CLEAR')
+    }
+}

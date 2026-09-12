@@ -1,0 +1,55 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/graph01/c20_binding01/windows_jna_graph_01.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_sfix01/windows_jna_graph_01.py.txt
+@@ -1,6 +1,6 @@
+ """One Windows real-JNA task-graph preflight; no Test/native execution or retry.
+ 
+-Author /root/c20_remaining_author; reviewer /root/c20_remaining_review.
++Sfix derivative author /root/native_author; reviewer /root/native_review_c20.
+ The current Windows source03 is a TEXT containment precedent only. It is not
+ imported, executed, modified, or assigned Gradle authority. This separate fixed
+ adapter requires fresh source/instance/coordination admission. No Test properties,
+@@ -31,16 +31,16 @@
+ HELPER = "scripts/audit/windows_jna_graph_01.py"
+ INIT = "scripts/audit/windows_jna_graph_01.init.gradle"
+ WORKFLOW = ".github/workflows/audit-windows-jna-graph-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/graph01/c20_binding01/SOURCE-SCOPE.md"
+-REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/graph01/INSTANCE-ACCEPT.json"
+-SOURCE = f"{BASE}/reviews/checkpoint20/source-prepare01/SOURCE.json"
+-# Root-authorized C20 full-source literals; independently review this derivative.
+-# Control publication, nonce and instance/coordination admission remain separate.
+-SOURCE_SHA256 = "dc7ef1cf29926b5e64048485dad26cc154c9c42d7389add18368e4217395d686"
+-SOURCE_MEMBERS = 4112
+-SOURCE_BYTES = 125706921
+-PROJECT_COMMIT = "7459cb4bdaad00cfc8823a4c5b376e00c805d918"
+-PROJECT_TREE = "550624b7b864ee687eaf8a50b0d83c9fc037fe6e"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_sfix01/SOURCE-SCOPE.txt"
++REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json"
++SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
++# Future corrected Sfix PRODUCT: use one root-captured independently accepted SOURCE.
++# Actual product/control/instance values stay rejecting until separately bound.
++SOURCE_SHA256 = "UNBOUND_ACTUAL_ACCEPTED_SFIX_SOURCE_SHA256"
++SOURCE_MEMBERS = 0
++SOURCE_BYTES = 0
++PROJECT_COMMIT = "UNBOUND_ACTUAL_SFIX_PRODUCT_COMMIT"
++PROJECT_TREE = "UNBOUND_ACTUAL_SFIX_PRODUCT_TREE"
+ SUITE = "windows-jna-graph-01"
+ TARGET = ":app-desktop:auditJnaLifetimeTest"
+ WRAPPER_SHA256 = "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+@@ -1086,7 +1086,7 @@
+     require(re.fullmatch(r"[0-9a-f]{64}", SOURCE_SHA256) and
+             type(SOURCE_MEMBERS) is int and 0 < SOURCE_MEMBERS <= 10000 and
+             type(SOURCE_BYTES) is int and 0 < SOURCE_BYTES <= MAX_SOURCE_BYTES,
+-            "Actual complete C20 source capture is unbound; this source cannot run")
++            "Actual complete corrected Sfix source capture is unbound; this source cannot run")
+     request_data = frozen_bytes(workspace / REQUEST)
+     request = json.loads(request_data, object_pairs_hook=no_duplicate_keys)
+     fixed = {"schema": 1, "suite": SUITE, "owner": "/root", "target": TARGET, "dry_run": True,
+@@ -1119,7 +1119,7 @@
+     review_bytes = frozen_bytes(workspace / REVIEW)
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_bytes).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_bytes, object_pairs_hook=no_duplicate_keys)
+-    require(review.get("schema") == 1 and review.get("reviewer") == "/root/c20_remaining_review" and
++    require(review.get("schema") == 1 and review.get("reviewer") == "/root/native_review_c20" and
+             review.get("disposition") == "ACCEPT_WINDOWS_JNA_GRAPH_01_INSTANCE" and
+             review.get("nonce") == request["nonce"] and
+             all(review.get(key) == value for key, value in fixed.items() if key not in ("owner", "schema")),

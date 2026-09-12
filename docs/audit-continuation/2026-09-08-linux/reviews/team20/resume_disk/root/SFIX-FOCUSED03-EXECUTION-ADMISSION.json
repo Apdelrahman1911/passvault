@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T11:15:19.011463+00:00",
+  "status": "ADMITTED_ONCE_FOCUSED03_AND_IMMEDIATE_ORIGINAL_CLEANUP",
+  "finding_ids": [
+    "PVA-031",
+    "PVA-039"
+  ],
+  "why": "Smallest currently accepted ten-case cohort: Room full-chain rollback and clean reopen1; schema1 encrypted backup restore/reopen1; editor stale/duplicate/unchanged Save ownership8. Also Desktop test compilation only; no hardware/native/platform closure claim. Unchanged successful broad cohorts not replayed.",
+  "source_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "source_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+  "request": {
+    "path": "requests/LINUX-FOCUSED-REGRESSION-03.json",
+    "bytes": 6859,
+    "sha256": "bff9085e090ec7e11dd5c5d724283e231c7c4147adb1a4e77f1d9bb54c2f4556"
+  },
+  "genuine_independent_approval": {
+    "path": "reviews/team20/resume_disk/linux_review/resumed01/focused03-INSTANCE-ACCEPT.json",
+    "bytes": 1469,
+    "sha256": "14a64fd23be00a318aa36cd5a5f58a37d68563692c806bdb58aaeb5935c5a41a"
+  },
+  "genuine_independent_instance_review": {
+    "path": "reviews/team20/resume_disk/linux_review/resumed01/focused03-INSTANCE-REVIEW.json",
+    "bytes": 3748,
+    "sha256": "2abebfaadb7df383a97c697bf22ec16c3444e71aedaca6565cc300129daf58b5"
+  },
+  "entry_instance": {
+    "path": "reviews/team20/resume_disk/root/SFIX-FOCUSED03-INSTANCE01.json",
+    "bytes": 2164,
+    "sha256": "fea883ee582679191fc1267a7a36b9aa4f0f033617daa626030b6fd826ede44a"
+  },
+  "shared_capture_adoption": {
+    "path": "reviews/team20/resume_disk/root/SFIX-SHARED-CAPTURE-ADOPTION01.json",
+    "bytes": 2542,
+    "sha256": "ed54015e1190696af929c9b0d3bdcbab6c1bc81e40359c45460eb105d54c64de"
+  },
+  "prior_graph_actual_adoption": {
+    "path": "reviews/team20/resume_disk/root/SFIX-ANDROIDGRAPH01-ACTUAL-ADOPTION01.json",
+    "bytes": 1528,
+    "sha256": "88e7a374cccc77df7c021f9315144054107b346915e6e75fbd56a771dfbabdd4"
+  },
+  "entry_slot": {
+    "path": "reviews/team20/resume_disk/root/SFIX-FOCUSED03-ENTRY-SLOT.json",
+    "bytes": 9069,
+    "sha256": "16e6ca7897c29c6c0f55c50e9a848f09a607204099ac40b49e1d15eb98ff20b9"
+  },
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "bytes": 9349,
+    "sha256": "324a513a4c715941ae4efaa217f5b0348afecdbc5f43dfdce76fcb340516f235"
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression03/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "planned_gradle_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-focused-regression03/checkout/gradlew",
+    "--init-script",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/focused_regression_03.init.gradle",
+    "-Ppassvault.audit.mode=focused",
+    ":core:database:desktopTest",
+    ":feature:credential:desktopTest",
+    ":app-desktop:compileTestKotlinDesktop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_stop_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-focused-regression03/checkout/gradlew",
+    "--stop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "expected_evidence": "Exactly10 named regression XML cases,4XMLs,2 Test task actions, actual Desktop test compiler action; complete command/log/exit/source/stop/namespace/cleanup evidence. Compilation is0 cases. Actuals require independent reconciliation.",
+  "resources": {
+    "disk_available_bytes": 17587191808,
+    "padded_start_bytes": 13421772800,
+    "launch_floor_bytes": 12884901888,
+    "running_floor_bytes": 8589934592,
+    "whole_runtime_cap_bytes": 3221225472,
+    "ram_available_bytes": 63775129600,
+    "ram_total_bytes": 67435888640,
+    "worker_count": 1
+  },
+  "fresh_checks": {
+    "current_parent_observations": {
+      "/root/projects/PassVault": {
+        "dev": 23,
+        "ino": 580,
+        "uid": 0,
+        "mode": 16877,
+        "nlink": 15
+      },
+      "/root/projects/PassVault/.audit-coordination-linux-20260908": {
+        "dev": 23,
+        "ino": 51356,
+        "uid": 0,
+        "mode": 16832,
+        "nlink": 2
+      },
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs": {
+        "dev": 23,
+        "ino": 54473,
+        "uid": 0,
+        "mode": 16832,
+        "nlink": 31
+      },
+      "/root/projects/PassVault/passvault-publication-20260910-01/.git": {
+        "dev": 23,
+        "ino": 51994,
+        "uid": 0,
+        "mode": 16832,
+        "nlink": 5
+      }
+    },
+    "images": "All13 fullpins/digests match admittedrequest; source/rawindex unchanged. Original lock sameobject/nonblockinglock available; current pid/mnt namespaces exact; freshR/E absent.",
+    "index_sha256": "af34295e4d563f8226e3fce23c673d0d4d281d821219bc0ee270090a258d7add",
+    "host_screen_positive": [],
+    "qualification": "Bounded comm point not universal or continuous idle; launcher provides ongoing checks."
+  },
+  "limits": "One Gradle3600s; originalstop600s; outer6000s. JDK17/wrapper/strictverification/worker1/non-daemon/configureondemanddisabled. No SDK/emulator acquisition.",
+  "coordination": "All20otherlanes completed or expresslypaused, including finalreviewer. Root sole launcher; no auditCI launch since retained9completed point SFIX-LOCAL-CI-QUEUE01. Original lock and sole live slot; T/index/Sfix samepath freeze maintained.",
+  "cleanup_installed_before_child": "Accepted outer signal/descriptor/originalchild finalizers and inner original-stop journal installed before project invocation. Retain compact logs/XML/task/identity evidence outsideR. Run original wrapper--stop once, prove namespace settlement, descriptor-validated disposal of freshR. Failure/uncertainty HOLD and no automatic retry. Old held roots unchanged.",
+  "fences": "PVU007STOP;PVU011NO-RETRY;PVA02949/44/5FAILnoautoretry;G7G8CLOSED;oldHOLDs unchanged. No refs/tags/dependencies/versions/identities/signing/Store/build1017001 changes."
+}

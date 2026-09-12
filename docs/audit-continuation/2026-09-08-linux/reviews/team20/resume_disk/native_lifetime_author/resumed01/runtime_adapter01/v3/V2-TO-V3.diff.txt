@@ -1,0 +1,34 @@
+--- preserved-runtime-v2/windows_real_jna_01.py.txt
++++ runtime_adapter01/v3/windows_real_jna_01.py.txt
+@@ -31,7 +31,7 @@
+ HELPER = "scripts/audit/windows_real_jna_01.py"
+ INIT = "scripts/audit/windows_real_jna_01.init.gradle"
+ WORKFLOW = ".github/workflows/audit-windows-real-jna-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v2/SOURCE-SCOPE.txt"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v3/SOURCE-SCOPE.txt"
+ REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/REAL-JNA-INSTANCE-ACCEPT.json"
+ SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+ # Corrected Sfix PRODUCT: one actual root-captured SOURCE; independent review remains required.
+@@ -1462,7 +1462,7 @@
+     for tool in sorted(tools):
+         _data, identity = run.read_bound_bytes(tool, 64 * 1024 ** 2, preinstalled_tool=True)
+         current_tools.append((str(tool), identity["sha256"], identity["size"]))
+-    require(current_tools == sorted((row["path"], row["sha256"], row["size"]) for row in previous["tools"]),
++    require(sorted(current_tools) == sorted((row["path"], row["sha256"], row["size"]) for row in previous["tools"]),
+             "Current graph tool path/content differs before native producer")
+     _data, release = run.read_bound_bytes(jdk / "release", 65536)
+     require(all(release[key] == previous["jdk_release"][key] for key in ("sha256", "size")),
+@@ -1565,12 +1565,12 @@
+         run.cleanup_time()
+         plain_path(directory.parent)
+         directory.lstat()
+-        handle, identity = run.open_output(directory, delete=False)
+     except FileNotFoundError:
+         evidence["xml"] = {"state": "NOT_CREATED_NO_CASE_INFERENCE"}
+         if runtime_returned:
+             evidence["failures"].append("Successful parent lacks required actual one-case XML")
+     else:
++        handle, identity = run.open_output(directory, delete=False)
+         try:
+             before = run.file_state(handle)
+             require(identity[3] & 0x10, "Original Test result path is not a plain directory")

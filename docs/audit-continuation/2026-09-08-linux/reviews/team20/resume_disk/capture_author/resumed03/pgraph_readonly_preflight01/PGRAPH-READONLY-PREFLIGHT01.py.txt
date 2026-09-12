@@ -1,0 +1,537 @@
+#!/usr/bin/python3.12
+"""One new fixed seven-command read-only Pgraph preflight facts batch.
+
+Source proposal only until genuine independent source review and root's fresh
+once-only outer admission. No old helper is imported or invoked. No build,
+CI dispatch, source edit, fetch, held-root access, cleanup or publication.
+The only Git command is public exact-six-ref ls-remote from the neutral parent.
+No original Git store or U namespace is accessed or allocated.
+"""
+import datetime
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import selectors
+import signal
+import stat
+import subprocess
+import sys
+import time
+
+W = Path('/root/projects/PassVault/passvault-linux')
+B = W / 'docs/audit-continuation/2026-09-08-linux'
+D = B / 'reviews/team20/resume_disk/capture_author/resumed03/pgraph_readonly_preflight01'
+SELF = D / 'PGRAPH-READONLY-PREFLIGHT01.py.txt'
+P = W.parent
+LIVE_SLOT = B / 'reviews/team20/resume_disk/root/EXECUTION_SLOT.json'
+LOCK = P / '.audit-coordination-linux-20260908/build.lock'
+PARENTS = (P, LOCK.parent, D, LIVE_SLOT.parent)
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1,
+                 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}
+URL = 'https://github.com/Apdelrahman1911/passvault.git'
+BRANCH = 'codex/audit-continuation-linux-20260908'
+EXPECTED_SLOT_SHA256 = 'abef66660c09dc9302249289b5492bea84869bb94aebb56769b16aeba89ab775'
+EXPECTED_TOOLS = {'/usr/bin/python3.12': {'path': '/usr/bin/python3.12', 'pin': {'dev': 25, 'ino': 1088, 'uid': 0, 'mode': 33261, 'nlink': 1, 'mtime_ns': 1781873160000000000, 'ctime_ns': 1787292627933100530, 'bytes': 8020928}, 'sha256': '1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118'}, '/usr/bin/git': {'path': '/usr/bin/git', 'pin': {'dev': 25, 'ino': 864, 'uid': 0, 'mode': 33261, 'nlink': 1, 'mtime_ns': 1751487822000000000, 'ctime_ns': 1787292627848100156, 'bytes': 4066232}, 'sha256': '2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668'}, '/usr/bin/gh': {'path': '/usr/bin/gh', 'pin': {'dev': 24, 'ino': 12582980, 'uid': 0, 'mode': 33261, 'nlink': 1, 'mtime_ns': 1752802161000000000, 'ctime_ns': 1788815288409434312, 'bytes': 45201664}, 'sha256': '2fd925d68889746976958342fb749bf102bc7dc8bcba3abfa533a80ad7791673'}}
+# Retained comparison expectations, NOT fresh remote observations.
+RETAINED_REFS = {
+    'refs/heads/codex/audit-continuation-linux-20260908': 'e9cca961837789048503aaffc74ab1a1e7e536ec',
+    'refs/heads/codex/remediation-handoff-20260908': '9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed',
+    'refs/heads/main': '0dbc12c7f1b7770e75963c751c8c67af6e8b057a',
+    'refs/heads/release': '61f55216302023d9872aba17546126450e5fbad3',
+    'refs/heads/testing': '2ae65df7111a9c5493740e8b772932be77eb98bc',
+    'refs/tags/v1.0.7-rc.1017001': '61f55216302023d9872aba17546126450e5fbad3',
+}
+GIT_ARGV = ['/usr/bin/git', '--literal-pathspecs', '-c', 'core.hooksPath=/dev/null',
+            '-c', 'core.fsmonitor=false', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',
+            '-c', 'commit.gpgsign=false', '-c', 'credential.helper=',
+            'ls-remote', '--refs', URL, *sorted(RETAINED_REFS)]
+PR_ARGV = ['/usr/bin/gh', 'api', '--hostname', 'github.com', '--method', 'GET',
+           'repos/Apdelrahman1911/passvault/pulls', '-f', 'state=open',
+           '-f', 'head=Apdelrahman1911:codex/audit-continuation-linux-20260908',
+           '-f', 'per_page=100', '--jq',
+           'map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})']
+QUEUE_PREFIX = ['/usr/bin/gh', 'api', '--hostname', 'github.com', '--method', 'GET',
+                'repos/Apdelrahman1911/passvault/actions/runs', '-f', 'per_page=100']
+QUEUE_PROJECTION = '{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}'
+STATUSES = ('queued', 'pending', 'waiting', 'requested', 'in_progress')
+# Fixed closed seven-row workload; no external argv, endpoints, callbacks or pagination.
+COMMANDS = (
+    ('refs', GIT_ARGV),
+    ('open_pr', PR_ARGV),
+    ('queued', QUEUE_PREFIX + ['-f', 'status=queued', '--jq', QUEUE_PROJECTION]),
+    ('pending', QUEUE_PREFIX + ['-f', 'status=pending', '--jq', QUEUE_PROJECTION]),
+    ('waiting', QUEUE_PREFIX + ['-f', 'status=waiting', '--jq', QUEUE_PROJECTION]),
+    ('requested', QUEUE_PREFIX + ['-f', 'status=requested', '--jq', QUEUE_PROJECTION]),
+    ('in_progress', QUEUE_PREFIX + ['-f', 'status=in_progress', '--jq', QUEUE_PROJECTION]),
+)
+START = time.monotonic()
+END = START + 60
+CANCELLED = None
+ODIR = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+OREAD = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW | os.O_CLOEXEC
+DIRS = {}
+RESULT = {'format': 'passvault-pgraph-readonly-preflight01', 'owner': '/root',
+          'status': 'HOLD_CONSUMED_NO_AUTOMATIC_RETRY', 'errors': [], 'commands': [], 'preterminal': True,
+          'scope': 'Fresh point facts only; not continuous custody, publication, build, CI or cleanup admission.',
+          'lock': {'path': str(LOCK), 'acquired': False, 'close_returned': False}}
+
+def require(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+
+def decode(raw):
+    def pairs(rows):
+        value = {}
+        for key, item in rows:
+            require(key not in value, 'duplicate JSON key')
+            value[key] = item
+        return value
+    return json.loads(raw, object_pairs_hook=pairs,
+                      parse_constant=lambda _: require(False, 'nonfinite JSON'))
+
+
+def bounded_text(value):
+    return (isinstance(value, str) and 0 < len(value) <= 1024
+            and all(ord(char) >= 32 and ord(char) != 127 for char in value))
+
+
+def neutral_parent():
+    # Together with GIT_CEILING_DIRECTORIES, no original T/W repository discovery.
+    try:
+        os.stat('.git', dir_fd=directory(P), follow_symlinks=False)
+    except FileNotFoundError:
+        return
+    raise RuntimeError('neutral parent unexpectedly has .git; no Git command admitted')
+
+
+def problem(error):
+    return {'type': type(error).__name__, 'errno': getattr(error, 'errno', None),
+            'message': str(error)[:256]}
+
+
+def on_signal(number, _frame):
+    global CANCELLED
+    if CANCELLED is None:
+        CANCELLED = number
+
+
+def check():
+    require(CANCELLED is None, 'observer interrupted')
+    require(time.monotonic() < END, 'observer overall deadline')
+
+
+def pin(info, directory=False):
+    value = {key: getattr(info, 'st_' + key) for key in ('dev', 'ino', 'uid', 'mode', 'nlink')}
+    if not directory:
+        value.update(bytes=info.st_size, mtime_ns=info.st_mtime_ns, ctime_ns=info.st_ctime_ns)
+    return value
+
+
+def same_directory(left, right):
+    return all(left[key] == right[key] for key in ('dev', 'ino', 'uid', 'mode'))
+
+
+def directory(path):
+    check()
+    if path not in DIRS:
+        parent = None if path == Path('/') else directory(path.parent)
+        require(len(DIRS) < 32, 'fixed parent depth bound')
+        fd = os.open('/' if parent is None else path.name, ODIR, dir_fd=parent)
+        try:
+            value = pin(os.fstat(fd), True)
+            require(stat.S_ISDIR(value['mode']) and value['uid'] == 0 and not value['mode'] & 0o022,
+                    'parent directory type/owner/mode')
+            DIRS[path] = (fd, value)
+        except BaseException:
+            os.close(fd)
+            raise
+    return DIRS[path][0]
+
+
+def recheck_directories():
+    check()
+    for path, (fd, original) in DIRS.items():
+        current = pin(os.fstat(fd), True)
+        parent = None if path == Path('/') else DIRS[path.parent][0]
+        named = pin(os.stat('/' if parent is None else path.name,
+                            dir_fd=parent, follow_symlinks=False), True)
+        require(same_directory(current, original) and same_directory(named, original),
+                'fresh parent descriptor/name changed')
+    return {str(path): pin(os.fstat(DIRS[path][0]), True) for path in PARENTS}
+
+
+def lock_pin(fd):
+    check()
+    actual = pin(os.fstat(fd))
+    named = pin(os.stat(LOCK.name, dir_fd=DIRS[LOCK.parent][0], follow_symlinks=False))
+    require(actual == named == EXPECTED_LOCK, 'original lock pin mismatch; never recreate')
+    return actual
+
+
+
+def bounded_proc(path, cap):
+    check()
+    fd = os.open(path, OREAD)
+    try:
+        require(stat.S_ISREG(os.fstat(fd).st_mode), 'unexpected proc file type')
+        data = bytearray()
+        while True:
+            check()
+            chunk = os.read(fd, min(4096, cap - len(data) + 1))
+            if not chunk:
+                return bytes(data)
+            data.extend(chunk)
+            require(len(data) <= cap, 'proc byte bound')
+    finally:
+        os.close(fd)
+
+
+def resources():
+    fields = {}
+    for line in bounded_proc('/proc/meminfo', 65536).decode('ascii').splitlines():
+        key, value = line.split(':', 1)
+        require(key not in fields, 'duplicate meminfo key')
+        fields[key] = value.split()
+    values = {}
+    for key in ('MemAvailable', 'MemTotal'):
+        row = fields[key]
+        require(len(row) == 2 and row[1] == 'kB' and row[0].isdecimal(), 'meminfo unit/value')
+        values[key] = int(row[0]) * 1024
+    disks = {}
+    for path in PARENTS[:2]:
+        point = os.fstatvfs(DIRS[path][0])
+        require(point.f_bavail >= 0 and point.f_frsize > 0, 'invalid filesystem headroom')
+        disks[str(path)] = point.f_bavail * point.f_frsize
+    RESULT['resources'] = {'elapsed_seconds': time.monotonic() - START,
+                           'disk_available_bytes': disks, **values}
+    require(0 <= values['MemAvailable'] <= values['MemTotal'] and values['MemTotal'] > 0,
+            'invalid memory quantities')
+    # Root approved disk observations only for this cheap read-only facts batch.
+    # Actual 12GiB/authorized-3GiB publication admission remains separate.
+    require(values['MemAvailable'] * 4 >= values['MemTotal'], 'metadata RAM25percent floor')
+
+
+def need(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+
+def executable(path):
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        before = os.fstat(fd)
+        need(stat.S_ISREG(before.st_mode) and before.st_uid == 0
+             and before.st_mode & 0o111 and not before.st_mode & 0o022
+             and before.st_nlink == 1 and before.st_size <= 64 * 1024 * 1024, 'executable bounds')
+        digest = hashlib.sha256()
+        count = 0
+        while True:
+            data = os.read(fd, 65536)
+            if not data:
+                break
+            count += len(data)
+            need(count <= 64 * 1024 * 1024 and time.monotonic() - START < 60 and not CANCELLED,
+                 'executable read bound')
+            digest.update(data)
+        need(pin(before) == pin(os.fstat(fd)) == pin(os.stat(path, follow_symlinks=False))
+             and count == before.st_size, 'executable changed')
+        return {'path': path, 'pin': pin(before), 'sha256': digest.hexdigest()}
+    finally:
+        os.close(fd)
+
+
+def save(name, value):
+    data = (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + '\n').encode()
+    need(len(data) <= 65536, 'receipt cap')
+    fd = os.open(D / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+    try:
+        with os.fdopen(fd, 'wb', closefd=False) as out:
+            out.write(data)
+            out.flush()
+            os.fsync(fd)
+    finally:
+        os.close(fd)
+    need((D / name).read_bytes() == data, 'receipt readback')
+
+
+def slot_point():
+    """Read only the sole live scheduling record; frozen selected slot is untouched."""
+    check()
+    fd = os.open(LIVE_SLOT.name, OREAD, dir_fd=directory(LIVE_SLOT.parent))
+    try:
+        original = pin(os.fstat(fd))
+        need(stat.S_ISREG(original['mode']) and original['uid'] == 0
+             and original['nlink'] == 1 and not original['mode'] & 0o022
+             and original['bytes'] <= 262144, 'live slot bounds')
+        raw = bytearray()
+        while True:
+            check()
+            chunk = os.read(fd, min(65536, 262145 - len(raw)))
+            if not chunk:
+                break
+            raw.extend(chunk)
+            need(len(raw) <= 262144, 'live slot byte cap')
+        need(pin(os.fstat(fd)) == original
+             == pin(os.stat(LIVE_SLOT.name, dir_fd=DIRS[LIVE_SLOT.parent][0], follow_symlinks=False))
+             and len(raw) == original['bytes'], 'live slot drift')
+        value = decode(bytes(raw).decode('utf-8'))
+        need(isinstance(value, dict) and isinstance(value.get('state'), str)
+             and 0 < len(value['state']) <= 256, 'live slot state projection')
+        need(hashlib.sha256(raw).hexdigest() == EXPECTED_SLOT_SHA256
+             and value['owner'] == '/root'
+             and value['authority'] == 'SOLE_LIVE_POST_FREEZE_SCHEDULING_RECORD_FOR_NEW_OPERATIONS'
+             and value['physical_coordination_lock'] == str(LOCK)
+             and value['state'] == 'RESERVED_PGRAPH_U_SETUP01'
+             and value['root_commitments']['no_audit_build_test_or_ci_running'] is True
+             and value['current_operation']['run_id'] == 'pgraph-u-setup01'
+             and value['current_operation']['active'] is True
+             and value['current_operation']['kind'] == 'READONLY_PREFLIGHT_THEN_SEPARATELY_ADMITTED_GIT_ONLY_U_SETUP'
+             and value['current_operation']['no_auto_chain'] is True
+             and value['current_operation']['build_test_CI_admitted'] is False,
+             'wrong/stale sole preflight reservation; no U admission')
+        return {'path': str(LIVE_SLOT), 'sha256': hashlib.sha256(raw).hexdigest(),
+                'pin': original, 'state': value['state']}
+    finally:
+        os.close(fd)
+
+
+def main():
+    os.umask(0o077)
+    need(os.getuid() == os.geteuid() == 0 and sys.argv == [str(SELF)]
+         and sys.executable == '/usr/bin/python3.12' and not sys.flags.optimize
+         and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,
+         'root-only fixed isolated entry')
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(sig, on_signal)
+    intent = {'purpose': 'ONE_PGRAPH_READONLY_PREFLIGHT01_NO_U_ALLOCATION_OR_PUBLICATION', 'owner': '/root',
+              'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'source': str(SELF), 'live_slot': str(LIVE_SLOT),
+              'commands': [{'name': name, 'argv': argv, 'cwd': str(P)} for name, argv in COMMANDS],
+              'command_seconds': 45, 'total_seconds': 60, 'commands_deadline_seconds': 55,
+              'pipe_cap_each': 32768, 'receipt_cap_each': 65536,
+              'scope': 'Read-only exact6 public remote refs from neutral parent, exact-head/all-base open PR and5 all-repository nonterminal-status GETs. Resource meminfo only, no host process census or original T/W Git access. Credential context goes only to authorized gh public GETs, never printed; Git has no credential helper and ignores inherited config. No fetch/clone, U allocation, mutation, dispatch, held-root access, private capture, build, deletion or old helper invocation. Root separately admits exact source/instance and disk floor; this slot does not auto-admit U. Userspace deadlines cannot defeat blocked kernel calls or SIGKILL.'}
+    RESULT['intent'] = intent
+    RESULT['conflicts'] = []
+    lock_fd = None
+    complete = False
+    code = 1
+    try:
+        for path in PARENTS:
+            directory(path)
+        for path, wanted in ((P, (23, 580, 0, 16877)),
+                             (LOCK.parent, (23, 51356, 0, 16832))):
+            directory(path)
+            actual = pin(os.fstat(DIRS[path][0]), True)
+            need(tuple(actual[key] for key in ('dev', 'ino', 'uid', 'mode')) == wanted,
+                 'original publication/coordination namespace changed')
+        RESULT['parents_before'] = recheck_directories()
+        neutral_parent()
+        for name in ('PREFLIGHT-01-INTENT.json', 'PREFLIGHT-01-RESULT.json'):
+            try:
+                os.stat(name, dir_fd=directory(D), follow_symlinks=False)
+            except FileNotFoundError:
+                continue
+            raise RuntimeError('preflight output already exists; instance consumed')
+        save('PREFLIGHT-01-INTENT.json', intent)
+        lock_fd = os.open(LOCK.name, OREAD, dir_fd=DIRS[LOCK.parent][0])
+        RESULT['lock']['before'] = lock_pin(lock_fd)
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        RESULT['lock']['acquired'] = True
+        RESULT['lock']['under_lock'] = lock_pin(lock_fd)
+        RESULT['live_slot_before'] = slot_point()
+        resources()
+        RESULT['executables'] = [executable(path) for path in EXPECTED_TOOLS]
+        need({row['path']: row for row in RESULT['executables']} == EXPECTED_TOOLS,
+             'fresh root-bound interpreter/Git/gh tool image changed')
+        context_keys = ('HOME', 'GH_CONFIG_DIR', 'XDG_CONFIG_HOME', 'GH_TOKEN', 'GITHUB_TOKEN')
+        RESULT['credential_environment_key_presence'] = {key: key in os.environ for key in context_keys}
+        env = {key: os.environ[key] for key in context_keys if key in os.environ}
+        for key in ('HTTPS_PROXY', 'HTTP_PROXY', 'ALL_PROXY', 'NO_PROXY', 'SSL_CERT_FILE', 'SSL_CERT_DIR'):
+            if key in os.environ:
+                env[key] = os.environ[key]
+        env.update(PATH='/usr/bin:/bin', LANG='C.UTF-8', LC_ALL='C.UTF-8', TZ='UTC',
+                   GH_HOST='github.com', GH_PROMPT_DISABLED='1', GH_PAGER='cat', PAGER='cat',
+                   GIT_CONFIG_SYSTEM='/dev/null', GIT_CONFIG_GLOBAL='/dev/null',
+                   GIT_TERMINAL_PROMPT='0', GIT_OPTIONAL_LOCKS='0', GIT_NO_REPLACE_OBJECTS='1',
+                   GIT_NO_LAZY_FETCH='1', GIT_CONFIG_NOSYSTEM='1',
+                   GIT_CEILING_DIRECTORIES=str(P),
+                   GH_NO_UPDATE_NOTIFIER='1', GH_NO_EXTENSION_UPDATE_NOTIFIER='1')
+        git_env = {key: value for key, value in env.items()
+                   if key not in ('GH_TOKEN', 'GITHUB_TOKEN', 'GH_CONFIG_DIR', 'XDG_CONFIG_HOME')}
+        git_env.update(HOME='/nonexistent')
+        need(CANCELLED is None and time.monotonic() - START < 15, 'prelaunch bound')
+        for name, argv in COMMANDS:
+            row = {'name': name, 'argv': argv, 'cwd': str(P), 'status': 'START_INTENT',
+                   'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'child_started': False, 'child_reaped': False, 'child_exit': None,
+                   'signals_attempted': [], 'error': None}
+            RESULT['commands'].append(row)
+            child = None
+            selector = None
+            streams = []
+            buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+            try:
+                check()
+                need(time.monotonic() - START < 55, 'batch command-launch deadline')
+                selector = selectors.DefaultSelector()
+                child = subprocess.Popen(argv, cwd=P, env=git_env if name == 'refs' else env, stdin=subprocess.DEVNULL,
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+                row.update(child_started=True, child_pid=child.pid)
+                streams = [child.stdout, child.stderr]
+                launched = time.monotonic()
+                for stream_name, pipe in (('stdout', child.stdout), ('stderr', child.stderr)):
+                    os.set_blocking(pipe.fileno(), False)
+                    selector.register(pipe, selectors.EVENT_READ, stream_name)
+                while selector.get_map() or child.poll() is None:
+                    need(CANCELLED is None and time.monotonic() - launched < 45
+                         and time.monotonic() - START < 55, 'command cancelled/deadline')
+                    for key, _mask in selector.select(0.05):
+                        data = os.read(key.fd, 4096)
+                        if data:
+                            need(len(buffers[key.data]) + len(data) <= 32768, 'pipe cap')
+                            buffers[key.data].extend(data)
+                        else:
+                            selector.unregister(key.fileobj)
+                row['child_exit'] = child.wait(timeout=1)
+                row['child_reaped'] = True
+                need(row['child_exit'] == 0 and not buffers['stderr'], 'command failure or diagnostic')
+                row['status'] = 'TRANSPORT_COMPLETE_DATA_REVIEW_PENDING'
+            except BaseException as error:
+                row['error'] = problem(error)
+                raise
+            finally:
+                if child is not None and not row['child_reaped']:
+                    try:
+                        if child.poll() is None:
+                            child.kill()  # Original unreaped direct child only; no PID/name/group fallback.
+                            row['signals_attempted'].append('KILL_ORIGINAL_DIRECT_CHILD')
+                        row['child_exit'] = child.wait(timeout=5)
+                        row['child_reaped'] = True
+                        row['abnormal_descendants'] = 'NOT_PROVEN; no further signal or automatic retry'
+                    except BaseException as error:
+                        row['settlement_error'] = type(error).__name__
+                for pipe in streams:
+                    try:
+                        pipe.close()
+                    except BaseException as error:
+                        row.setdefault('close_errors', []).append(type(error).__name__)
+                if selector is not None:
+                    try:
+                        selector.close()
+                    except BaseException as error:
+                        row.setdefault('close_errors', []).append(type(error).__name__)
+                for stream_name, value in buffers.items():
+                    row[stream_name] = {'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
+                row['elapsed_seconds_from_batch_start'] = round(time.monotonic() - START, 6)
+            need(row['child_reaped'] and not row.get('settlement_error') and not row.get('close_errors'),
+                 'command settlement/close failure')
+            output = bytes(buffers['stdout']).decode('utf-8')
+            if name == 'refs':
+                observed = {}
+                lines = output.splitlines()
+                need(len(lines) == 6, 'remote ref cardinality')
+                for line in lines:
+                    fields = line.split('\t')
+                    need(len(fields) == 2 and re.fullmatch(r'[0-9a-f]{40}', fields[0]) is not None
+                         and fields[1] in RETAINED_REFS and fields[1] not in observed,
+                         'remote ref identity/duplicate')
+                    observed[fields[1]] = fields[0]
+                need(set(observed) == set(RETAINED_REFS), 'remote ref set')
+                RESULT['remote_refs'] = observed
+                changed = {key: {'retained': value, 'observed': observed[key]}
+                           for key, value in RETAINED_REFS.items() if observed[key] != value}
+                if changed:
+                    RESULT['conflicts'].append({'kind': 'REF_ADVANCEMENT_REQUIRES_REVALIDATION', 'refs': changed})
+            elif name == 'open_pr':
+                pulls = decode(output)
+                need(isinstance(pulls, list) and len(pulls) < 100, 'ambiguous/full-page PR response')
+                for pull in pulls:
+                    need(isinstance(pull, dict) and set(pull) == {'number', 'head', 'base', 'state'}
+                         and type(pull['number']) is int and pull['number'] > 0
+                         and pull['state'] == 'open' and isinstance(pull['head'], dict)
+                         and set(pull['head']) == {'ref', 'sha'} and pull['head']['ref'] == BRANCH
+                         and isinstance(pull['head']['sha'], str)
+                         and re.fullmatch(r'[0-9a-f]{40}', pull['head']['sha']) is not None
+                         and isinstance(pull['base'], dict) and set(pull['base']) == {'ref'}
+                         and bounded_text(pull['base']['ref']), 'PR projection mismatch')
+                need(len({pull['number'] for pull in pulls}) == len(pulls), 'duplicate PR projection')
+                RESULT['pull_requests'] = pulls
+                if pulls:
+                    RESULT['conflicts'].append({'kind': 'OPEN_PR_TRIGGER_REASSESSMENT', 'count': len(pulls)})
+            else:
+                need(name in STATUSES, 'closed status workload')
+                value = decode(output)
+                need(isinstance(value, dict) and set(value) == {'total_count', 'workflow_runs'}
+                     and type(value['total_count']) is int and 0 <= value['total_count'] < 100
+                     and isinstance(value['workflow_runs'], list)
+                     and len(value['workflow_runs']) == value['total_count'],
+                     'queue count/projection incomplete or saturated')
+                ids = set()
+                for run in value['workflow_runs']:
+                    need(isinstance(run, dict) and set(run) == {'id', 'status', 'head_sha', 'path', 'head_branch'}
+                         and type(run['id']) is int and 0 < run['id'] < 2**64
+                         and run['id'] not in ids and run['status'] == name
+                         and isinstance(run['head_sha'], str)
+                         and re.fullmatch(r'[0-9a-f]{40}', run['head_sha']) is not None
+                         and bounded_text(run['path'])
+                         and (run['head_branch'] is None or bounded_text(run['head_branch'])),
+                         'queue run identity/status/duplicate')
+                    ids.add(run['id'])
+                RESULT.setdefault('queues', {})[name] = value
+                if value['total_count']:
+                    RESULT['conflicts'].append({'kind': 'NONTERMINAL_REPOSITORY_CI',
+                                                'status': name, 'count': value['total_count']})
+            row['status'] = 'POINT_RESPONSE_VALIDATED_NOT_ADMISSION'
+            check()
+        need(len(RESULT['commands']) == 7 and set(RESULT.get('queues', {})) == set(STATUSES),
+             'incomplete fixed batch')
+        neutral_parent()
+        resources()
+        RESULT['live_slot_after'] = slot_point()
+        need(RESULT['live_slot_after'] == RESULT['live_slot_before'], 'live slot changed during point')
+        RESULT['parents_after'] = recheck_directories()
+        RESULT['lock']['after'] = lock_pin(lock_fd)
+        check()
+        complete = True
+    except BaseException as error:
+        RESULT['errors'].append(problem(error))
+    finally:
+        if lock_fd is not None:
+            try:
+                os.close(lock_fd)  # Point custody only, not custody across a later publication gap.
+                RESULT['lock']['close_returned'] = True
+            except BaseException as error:
+                RESULT['errors'].append(problem(error))
+        for fd, _original in reversed(tuple(DIRS.values())):
+            try:
+                os.close(fd)
+            except BaseException as error:
+                RESULT['errors'].append(problem(error))
+    RESULT['signal'] = CANCELLED
+    RESULT['elapsed_seconds'] = round(time.monotonic() - START, 6)
+    RESULT['commands_unstarted'] = [name for name, _argv in COMMANDS
+                                    if name not in {row['name'] for row in RESULT['commands']}]
+    RESULT['cleanup'] = 'Only original command children/pipes/selectors and descriptor-held point parents/lock closed. No unrelated signals or background workers. Abnormal descendants/SIGKILL/kernel blocking are not proven settled. No build/runtime/cache/service/output tree created; no Gradle stop/deletion. Preserve original external terminal completion separately.'
+    if complete and not RESULT['errors'] and CANCELLED is None and time.monotonic() < END:
+        RESULT['status'] = ('POINT_CONFLICTS_REQUIRE_REASSESSMENT_NOT_ADMISSION' if RESULT['conflicts']
+                            else 'POINT_NO_OBSERVED_CONFLICT_NOT_ADMISSION')
+        code = 0
+    save('PREFLIGHT-01-RESULT.json', RESULT)
+    # Receipt is preterminal; a latched late signal/deadline cannot become exit0.
+    if CANCELLED is not None or time.monotonic() >= END:
+        code = 1
+        RESULT['status'] = 'HOLD_CONSUMED_NO_AUTOMATIC_RETRY'
+    print(json.dumps({'status': RESULT['status'], 'pending_code': code,
+                      'commands_started': len(RESULT['commands']),
+                      'commands_reaped': sum(row['child_reaped'] for row in RESULT['commands']),
+                      'error_count': len(RESULT['errors']),
+                      'elapsed_seconds': RESULT['elapsed_seconds']}))
+    return 1 if CANCELLED is not None or time.monotonic() >= END else code
+
+
+if __name__ == '__main__':
+    sys.exit(main())

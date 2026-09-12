@@ -1,0 +1,63 @@
+--- audit-windows-jna-graph-validation.yml.txt
++++ audit-windows-real-jna-validation.yml.txt
+@@ -1,4 +1,4 @@
+-name: Audit Windows JNA graph 01 (non-publishing)
++name: Audit Windows real JNA 01 (non-publishing)
+ 
+ # Inert proposal. Actual full source pins and independent source/instance approval
+ # are required before root alone can publish source, then a fresh A-only request.
+@@ -6,7 +6,7 @@
+   push:
+     branches: [codex/audit-continuation-linux-20260908]
+     paths:
+-      - docs/audit-continuation/2026-09-08-linux/requests/windows-jna-graph-01.json
++      - docs/audit-continuation/2026-09-08-linux/requests/windows-real-jna-01.json
+ 
+ permissions:
+   contents: read
+@@ -17,14 +17,14 @@
+   cancel-in-progress: false
+ 
+ jobs:
+-  graph-only:
++  real-jna-one:
+     if: >-
+       github.repository == 'Apdelrahman1911/passvault' &&
+       github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+       github.event_name == 'push' && !github.event.deleted &&
+       github.run_attempt == 1
+     runs-on: windows-2022
+-    timeout-minutes: 10
++    timeout-minutes: 30
+     steps:
+       - name: Read-only exact request checkout
+         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+@@ -35,20 +35,21 @@
+           submodules: false
+           lfs: false
+ 
+-      - name: Capture only the separately admitted native-Windows task graph
++      - name: Build one ordinary DLL and run only the independently admitted real-JNA case
+         id: validate
+         shell: pwsh
+-        run: python -I -B scripts/audit/windows_jna_graph_01.py
++        run: python -I -B scripts/audit/windows_real_jna_01.py
+ 
+-      - name: Preserve compact source-bound graph and cleanup evidence only
++      - name: Preserve compact source, one-case XML, DLL-hash and cleanup evidence only
+         if: always() && steps.validate.outputs.evidence_owned == 'true'
+         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+         with:
+-          name: audit-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}
++          name: audit-windows-real-jna-01-${{ github.run_id }}-${{ github.run_attempt }}
+           path: |
+-            ${{ runner.temp }}/passvault-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+-            ${{ runner.temp }}/passvault-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+-            ${{ runner.temp }}/passvault-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
++            ${{ runner.temp }}/passvault-windows-real-jna-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
++            ${{ runner.temp }}/passvault-windows-real-jna-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
++            ${{ runner.temp }}/passvault-windows-real-jna-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
++            ${{ runner.temp }}/passvault-windows-real-jna-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
+           retention-days: 3
+           compression-level: 9
+           if-no-files-found: error

@@ -1,0 +1,221 @@
+--- accepted-graph_sfix01/windows_jna_graph_01.py.txt
++++ profile_leaf_source01/v2/windows_jna_graph_01.py.txt
+@@ -31,7 +31,7 @@
+ HELPER = "scripts/audit/windows_jna_graph_01.py"
+ INIT = "scripts/audit/windows_jna_graph_01.init.gradle"
+ WORKFLOW = ".github/workflows/audit-windows-jna-graph-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_sfix01/SOURCE-SCOPE.txt"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/profile_leaf_source01/v2/SOURCE-SCOPE.txt"
+ REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json"
+ SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+ # Future corrected Sfix PRODUCT: use one root-captured independently accepted SOURCE.
+@@ -74,6 +74,8 @@
+ MAX_ENTRIES = 20000
+ COMMAND_SECONDS, STOP_CUTOFF_SECONDS, CLEANUP_SECONDS = 300, 360, 420
+ CASES = ()
++# One FUTURE fresh-profile entry only. Never an old-root or target cleanup scope.
++PROFILE_CACHE_LEAF = "home/AppData/Local/Microsoft/Windows/INetCache/Content.IE5"
+ CANCELLED = False
+ 
+ def require(condition: bool, explanation: str) -> None:
+@@ -218,6 +220,10 @@
+     def __init__(self, details):
+         super().__init__("No-follow entry ownership/reparse/link refusal")
+         self.details = details
++
++
++class FILE_ATTRIBUTE_TAG_INFO(ctypes.Structure):
++    _fields_ = [("attributes", wt.DWORD), ("reparse_tag", wt.DWORD)]
+ 
+ 
+ class Windows:
+@@ -245,6 +251,7 @@
+             "FlushFileBuffers": ([wt.HANDLE], wt.BOOL),
+             "GlobalMemoryStatusEx": ([wt.LPVOID], wt.BOOL),
+             "GetFileInformationByHandle": ([wt.HANDLE, wt.LPVOID], wt.BOOL),
++            "GetFileInformationByHandleEx": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+             "SetFileInformationByHandle": ([wt.HANDLE, ctypes.c_int, wt.LPVOID, wt.DWORD], wt.BOOL),
+         }
+         for name, (arguments, result) in specs.items():
+@@ -351,6 +358,7 @@
+         self.graph_snapshot = None
+         self.source_copy = None
+         self.read_only_tool_inputs = set()
++        self.profile_leaf_records = []
+         self.environment = {
+             name: os.environ[name] for name in (
+                 "SystemRoot", "WINDIR", "COMSPEC", "PATH", "PATHEXT",
+@@ -1004,6 +1012,101 @@
+             self.event("entry_refused", **detail)
+             raise
+ 
++    def profile_parent_custody(self, retained_parents):
++        """Seven fixed original plain ancestors, not target/path resolution."""
++        self.cleanup_time()
++        require(self.job_settled and self.win.active() == 0 and not self.close_failures,
++                "Profile entry needs settled original Job and handles")
++        require(self.gradle is None or self.gradle_stop["fulfilled"], "Original wrapper stop remains required")
++        parts = PROFILE_CACHE_LEAF.split("/")
++        require(self.temp in retained_parents, "Original fresh generated-root handle missing")
++        volume = retained_parents[self.temp][1][0]
++        records = []
++        for depth in range(len(parts)):
++            path = self.temp.joinpath(*parts[:depth])
++            require(path in retained_parents, "Profile ancestor is not an originally retained directory")
++            handle, expected = retained_parents[path]
++            actual = self.file_state(handle)
++            require(actual["identity"] == expected and actual["links"] == 1 and expected[0] == volume and
++                    expected[3] & 0x10 and not expected[3] & 0x400,
++                    "Original profile ancestor identity/type/link/volume changed")
++            records.append({"relative": "/".join(parts[:depth]), "identity": expected, "links": 1})
++        return records
++
++    def profile_entry_snapshot(self, handle):
++        self.cleanup_time()
++        require(ctypes.sizeof(wt.DWORD) == 4 and ctypes.sizeof(FILE_ATTRIBUTE_TAG_INFO) == 8,
++                "Native Windows two-DWORD attribute/tag ABI required")
++        before = self.file_state(handle)
++        tag = FILE_ATTRIBUTE_TAG_INFO()
++        self.win.check(self.win.k.GetFileInformationByHandleEx(handle, 9, ctypes.byref(tag), ctypes.sizeof(tag)),
++                       "OriginalProfileEntryAttributeTag")
++        require(self.file_state(handle) == before and tag.attributes == before["identity"][3],
++                "Original profile entry changed across same-handle metadata queries")
++        return {**before, "reparse_tag": int(tag.reparse_tag) if tag.attributes & 0x400 else None}
++
++    def open_profile_entry(self, path, retained_parents):
++        require(path.relative_to(self.temp).as_posix() == PROFILE_CACHE_LEAF and not self.profile_leaf_records,
++                "Only one exact fresh profile entry; no reopen, retry or general reparse policy")
++        parents = self.profile_parent_custody(retained_parents)
++        record = {"relative": PROFILE_CACHE_LEAF, "state": "ORIGINAL_ENTRY_OPEN_INTENT",
++                  "parents": parents, "target_read": False, "target_followed": False,
++                  "target_cleaned": False, "target_unchanged_verified": False}
++        self.profile_leaf_records.append(record)
++        self.event("profile_entry_open_intent", **record)
++        # OPEN_EXISTING + BACKUP_SEMANTICS + OPEN_REPARSE_POINT returns the entry.
++        # READ-only sharing denies new data-write/delete opens, NOT all metadata
++        # writes; immediate original-handle rechecks retain the cooperative model.
++        handle = self.win.k.CreateFileW(str(path), 0x10000 | 0x80, 0x1, None, 3, 0x02000000 | 0x00200000, None)
++        require(handle not in (None, ctypes.c_void_p(-1).value), "Cannot open original nofollow profile entry")
++        try:
++            snapshot = self.profile_entry_snapshot(handle)
++            record.update({"state": "ORIGINAL_ENTRY_METADATA_OBSERVED", "snapshot": snapshot})
++            identity = snapshot["identity"]
++            require(snapshot["links"] == 1 and identity[0] == parents[0]["identity"][0],
++                    "Profile entry must be single-linked on the owned root volume")
++            if identity[3] & 0x400:
++                expected_tag = getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", None)
++                require(type(expected_tag) is int and 0 < expected_tag <= 0xffffffff,
++                        "Native Python named MOUNT_POINT constant missing; no numeric fallback")
++                allowed = (stat.FILE_ATTRIBUTE_DIRECTORY | stat.FILE_ATTRIBUTE_REPARSE_POINT |
++                           stat.FILE_ATTRIBUTE_HIDDEN | stat.FILE_ATTRIBUTE_SYSTEM | stat.FILE_ATTRIBUTE_NOT_CONTENT_INDEXED)
++                require(identity[3] & 0x10 and not identity[3] & ~allowed and snapshot["reparse_tag"] == expected_tag,
++                        "Exact profile reparse entry has an unadmitted type/attribute/tag")
++                record.update({"kind": "MOUNT_POINT_ENTRY_LEAF_NOT_TARGET", "state": "ORIGINAL_ALIAS_LEAF_BOUND",
++                               "entry_only_exception": True, "descent": False})
++            else:
++                # The SAME plain original handle returns to the existing walker.
++                # Ordinary child removal can change this directory's timestamp;
++                # do not apply alias snapshot/absence logic or leaf-only credit.
++                record.update({"kind": "ORDINARY_ENTRY_NO_REPARSE_EXCEPTION",
++                               "state": "ORDINARY_ENTRY_RETURNED_TO_EXISTING_CLEANUP", "entry_only_exception": False,
++                               "ordinary_directory_recursion_allowed": bool(identity[3] & 0x10)})
++            require(self.profile_parent_custody(retained_parents) == parents, "Profile ancestry changed across entry open")
++            self.event("profile_entry_bound", **record)
++            return handle, identity, record if identity[3] & 0x400 else None
++        except BaseException as error:
++            record.update({"state": "ENTRY_REFUSED_HOLD", "failure": f"{type(error).__name__}: {error}",
++                           "original_handle_close": "ATTEMPTED_ONCE"})
++            self.close_original(handle, "refused original profile entry")
++            record["original_handle_close"] = "SUCCEEDED"
++            raise
++
++    def profile_entry_name_absent(self, path, retained_parents):
++        # Enumerate names only in the retained ORIGINAL PLAIN PARENT. Never reopen
++        # or resolve the deleted leaf, enumerate its target, or inspect child data.
++        parents = self.profile_parent_custody(retained_parents)
++        count = 0
++        with os.scandir(path.parent) as names:
++            for entry in names:
++                self.cleanup_time()
++                count += 1
++                require(count <= MAX_ENTRIES, "Profile parent name-only absence bound exceeded")
++                require(entry.name.casefold() != path.name.casefold(), "Profile entry name remains; no retry")
++        require(self.profile_parent_custody(retained_parents) == parents, "Profile ancestry changed during absence check")
++        return {"method": "BOUNDED_ORIGINAL_PLAIN_PARENT_NAME_ONLY", "entries_seen": count,
++                "entry_name_absent": True, "target_read": False, "target_followed": False}
++
+     def cleanup(self, root_handle, root_identity):
+         require(self.gradle is None or self.gradle_stop["fulfilled"],
+                 "Cleanup HOLD: original wrapper stop duty is unresolved")
+@@ -1013,9 +1116,12 @@
+         require(self.file_state(root_handle)["identity"] == root_identity, "Original generated-root identity changed")
+         handles = []
+         close_attempted = set()
++        parts = PROFILE_CACHE_LEAF.split("/")
++        profile_ancestors = {self.temp.joinpath(*parts[:depth]) for depth in range(len(parts))}
++        retained_profile_parents = {self.temp: (root_handle, root_identity)}
+         try:
+-            # Retain every original descendant handle before any deletion. No
+-            # path-based recursive delete and no following reparse/hard links.
++            # All-before-any deletion remains. The sole exact admitted reparse
++            # entry is an original-handle leaf, NEVER a directory to descend into.
+             stack = [self.temp]
+             while stack:
+                 self.cleanup_time()
+@@ -1025,22 +1131,43 @@
+                         self.cleanup_time()
+                         path = Path(entry.path)
+                         require(len(handles) < MAX_ENTRIES, "Cleanup entry cap exceeded")
+-                        handle, identity = self.open_output(path, delete=True)
+-                        handles.append((path, handle, identity))
+-                        if identity[3] & 0x10:
++                        profile = None
++                        if path.relative_to(self.temp).as_posix() == PROFILE_CACHE_LEAF:
++                            handle, identity, profile = self.open_profile_entry(path, retained_profile_parents)
++                        else:
++                            handle, identity = self.open_output(path, delete=True)
++                        handles.append((path, handle, identity, profile))
++                        if identity[3] & 0x10 and not identity[3] & 0x400:
++                            if path in profile_ancestors:
++                                retained_profile_parents[path] = (handle, identity)
+                             stack.append(path)
+-            for path, handle, identity in sorted(handles, key=lambda item: len(item[0].parts), reverse=True):
++            for path, handle, identity, profile in sorted(handles, key=lambda item: len(item[0].parts), reverse=True):
+                 self.cleanup_time()
++                if profile is not None:
++                    require(self.profile_parent_custody(retained_profile_parents) == profile["parents"] and
++                            self.profile_entry_snapshot(handle) == profile["snapshot"],
++                            "Original profile entry/ancestry changed before entry-only disposition")
++                    profile["state"] = "ENTRY_ONLY_DISPOSITION_INTENT"
++                    self.event("profile_entry_disposition_intent", **profile)
+                 self.event("delete_intent", path=str(path.relative_to(self.temp)), identity=identity)
++                # Existing class4/BOOLEAN disposition acts on the SAME nofollow
++                # entry handle; no pathname, reparse-payload or mount-management API.
+                 self.win.delete_handle(handle)
++                if profile is not None:
++                    profile["state"] = "ENTRY_DISPOSITION_ACCEPTED_CLOSE_PENDING"
+                 close_attempted.add(handle)
+                 self.close_original(handle, "deleted entry")
++                if profile is not None:
++                    profile["state"] = "ENTRY_HANDLE_CLOSED_ABSENCE_PENDING"
++                    profile["absence"] = self.profile_entry_name_absent(path, retained_profile_parents)
++                    profile["state"] = "ENTRY_REMOVED_NO_TARGET_INSPECTION"
++                    self.event("profile_entry_removed", **profile)
+             self.cleanup_time()
+             self.event("delete_root_intent", identity=root_identity)
+             self.win.delete_handle(root_handle)
+             return len(handles)
+         finally:
+-            for _path, handle, _identity in handles:
++            for _path, handle, _identity, _profile in handles:
+                 if handle not in close_attempted:
+                     close_attempted.add(handle)
+                     try:
+@@ -1327,6 +1454,7 @@
+         result["source_copy"] = run.source_copy if run else None
+         result["graph_snapshot"] = run.graph_snapshot if run else None
+         result["entry_refusals"] = run.rejections if run else []
++        result["profile_entry_cleanup"] = run.profile_leaf_records if run else []
+         result["original_handle_close_failures"] = run.close_failures if run else []
+         if (graph_returned and not result["failures"] and not result["original_handle_close_failures"] and
+                 result["gradle_stop"].get("fulfilled") and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):

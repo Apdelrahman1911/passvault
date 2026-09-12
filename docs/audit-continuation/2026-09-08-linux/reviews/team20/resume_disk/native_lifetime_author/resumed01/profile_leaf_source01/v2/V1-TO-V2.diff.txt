@@ -1,0 +1,51 @@
+--- preserved-v1/windows_jna_graph_01.py.txt
++++ profile_leaf_source01/v2/windows_jna_graph_01.py.txt
+@@ -31,7 +31,7 @@
+ HELPER = "scripts/audit/windows_jna_graph_01.py"
+ INIT = "scripts/audit/windows_jna_graph_01.init.gradle"
+ WORKFLOW = ".github/workflows/audit-windows-jna-graph-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/profile_leaf_source01/SOURCE-SCOPE.txt"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/profile_leaf_source01/v2/SOURCE-SCOPE.txt"
+ REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json"
+ SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+ # Future corrected Sfix PRODUCT: use one root-captured independently accepted SOURCE.
+@@ -1051,7 +1051,7 @@
+         parents = self.profile_parent_custody(retained_parents)
+         record = {"relative": PROFILE_CACHE_LEAF, "state": "ORIGINAL_ENTRY_OPEN_INTENT",
+                   "parents": parents, "target_read": False, "target_followed": False,
+-                  "target_cleaned": False, "target_unchanged_verified": False, "descent": False}
++                  "target_cleaned": False, "target_unchanged_verified": False}
+         self.profile_leaf_records.append(record)
+         self.event("profile_entry_open_intent", **record)
+         # OPEN_EXISTING + BACKUP_SEMANTICS + OPEN_REPARSE_POINT returns the entry.
+@@ -1061,6 +1061,7 @@
+         require(handle not in (None, ctypes.c_void_p(-1).value), "Cannot open original nofollow profile entry")
+         try:
+             snapshot = self.profile_entry_snapshot(handle)
++            record.update({"state": "ORIGINAL_ENTRY_METADATA_OBSERVED", "snapshot": snapshot})
+             identity = snapshot["identity"]
+             require(snapshot["links"] == 1 and identity[0] == parents[0]["identity"][0],
+                     "Profile entry must be single-linked on the owned root volume")
+@@ -1072,13 +1073,18 @@
+                            stat.FILE_ATTRIBUTE_HIDDEN | stat.FILE_ATTRIBUTE_SYSTEM | stat.FILE_ATTRIBUTE_NOT_CONTENT_INDEXED)
+                 require(identity[3] & 0x10 and not identity[3] & ~allowed and snapshot["reparse_tag"] == expected_tag,
+                         "Exact profile reparse entry has an unadmitted type/attribute/tag")
+-                record["kind"] = "MOUNT_POINT_ENTRY_LEAF_NOT_TARGET"
++                record.update({"kind": "MOUNT_POINT_ENTRY_LEAF_NOT_TARGET", "state": "ORIGINAL_ALIAS_LEAF_BOUND",
++                               "entry_only_exception": True, "descent": False})
+             else:
+-                record["kind"] = "ORDINARY_ENTRY_NO_REPARSE_EXCEPTION"
+-            record.update({"state": "ORIGINAL_ENTRY_BOUND", "snapshot": snapshot})
++                # The SAME plain original handle returns to the existing walker.
++                # Ordinary child removal can change this directory's timestamp;
++                # do not apply alias snapshot/absence logic or leaf-only credit.
++                record.update({"kind": "ORDINARY_ENTRY_NO_REPARSE_EXCEPTION",
++                               "state": "ORDINARY_ENTRY_RETURNED_TO_EXISTING_CLEANUP", "entry_only_exception": False,
++                               "ordinary_directory_recursion_allowed": bool(identity[3] & 0x10)})
+             require(self.profile_parent_custody(retained_parents) == parents, "Profile ancestry changed across entry open")
+             self.event("profile_entry_bound", **record)
+-            return handle, identity, record
++            return handle, identity, record if identity[3] & 0x400 else None
+         except BaseException as error:
+             record.update({"state": "ENTRY_REFUSED_HOLD", "failure": f"{type(error).__name__}: {error}",
+                            "original_handle_close": "ATTEMPTED_ONCE"})

@@ -1,0 +1,166 @@
+--- accepted-unexecuted/PGRAPH-PUBLISH01.py.txt
++++ inert-new/PGRAPH-PUBLISH-U01.py.txt
+@@ -1,16 +1,18 @@
+ #!/usr/bin/python3
+ # INERT: one fresh root Pgraph add-only transport; NOT execution admission.
++# Fresh independent U; original T/index stays frozen for unconsumed local checks.
+ # Fixed Sfix parent; all4113 PRODUCT rows preserved; BOTH new requests absent.
+ # Reuses corrected Sfix V2 child/inventory primitives AS TEXT, never replayed.
+ # T only; no W edit, helper import, build, dispatch, signing or release.
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+-PUB=B/'reviews/team20/resume_disk/publication_author/pgraph_publish01'
+-CONFIG=PUB/'PGRAPH-PUBLISH01-CONFIG.json'
+-MANIFEST=PUB/'PGRAPH-PUBLISH01-MANIFEST.json'
+-OUT=B/'publication/PGRAPH-PUBLISH01-ACTUAL.json'
+-P=S.parent;T=P/'passvault-publication-20260910-01'
++PUB=B/'reviews/team20/resume_disk/publication_author/pgraph_publish_u01'
++CONFIG=PUB/'PGRAPH-PUBLISH-U01-CONFIG.json'
++MANIFEST=PUB/'PGRAPH-PUBLISH-U01-MANIFEST.json'
++OUT=B/'publication/PGRAPH-PUBLISH-U01-ACTUAL.json'
++P=S.parent;T=P/'passvault-publication-20260912-02'
++OLD_T=P/'passvault-publication-20260910-01'  # historical receipt label only; never accessed
+ URL='https://github.com/Apdelrahman1911/passvault.git'
+ BRANCH='codex/audit-continuation-linux-20260908'
+ BASE='e9cca961837789048503aaffc74ab1a1e7e536ec'
+@@ -117,10 +119,10 @@
+   decoded=bytes(out).decode('utf-8','strict')
+   r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr_sha256=digest(err),stderr_bytes=len(err))
+   if len(err)<=4096:r['stderr']=bytes(err).decode('utf-8','strict')
+-  else:r['stderr_file']=write_once('PGRAPH-PUBLISH01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
++  else:r['stderr_file']=write_once('PGRAPH-PUBLISH-U01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
+   if len(out)<=2048:r['stdout']=decoded
+   if args[:3]==['diff','--cached','--check']:
+-   p=PUB/'PGRAPH-PUBLISH01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++   p=PUB/'PGRAPH-PUBLISH-U01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+     view=memoryview(out)
+     while view:view=view[os.write(fd,view):]
+@@ -161,13 +163,13 @@
+    a=(p/name).lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==23 and a.st_uid==0,'clone symlink/special directory')
+   for name in files:
+    a=(p/name).lstat();req(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_dev in (23,24) and a.st_uid==0,'clone shared/link/special file')
+-   count+=1;size+=a.st_size;req(count<=100000 and size<=512*1024**2,'clone512MiB/count bound')
++   count+=1;size+=a.st_size;req(count<=100000 and size<=256*1024**2,'clone256MiB/count bound')
+  rec.setdefault('namespace_inventories',[]).append({'label':label,'files':count,'directories':directories,'logical_bytes':size})
+  durable()
+ def fullpin(a):
+  return {('bytes' if k=='size' else k):getattr(a,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')}
+ def write_once(name,raw):
+- req('/' not in name and name.startswith('PGRAPH-PUBLISH01-'),'fixed output name')
++ req('/' not in name and name.startswith('PGRAPH-PUBLISH-U01-'),'fixed output name')
+  p=safe_parent(PUB,name);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+  try:
+   at=0
+@@ -203,6 +205,7 @@
+  req(read_file(MANIFEST,cap=131072)[0]==manifest_raw,'exact manifest changed')
+  req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'sole reserved slot changed')
+  req(read_file(BASE_RECEIPT,cap=40440)[0]==base_receipt_raw,'Sfix actual changed')
++ req(evidence(CFG['U_setup_receipt'])==setup_raw,'fresh U setup evidence changed')
+  for row in rows:source_row(row)
+  for desc in MANDATORY_EVIDENCE.values():evidence(desc)
+  for desc in CFG['evidence'].values():evidence(desc)
+@@ -242,24 +245,32 @@
+  try:os.fsync(pfd)
+  finally:os.close(pfd)
+  config_raw,_=read_file(CONFIG,cap=32768);CFG=parsed(config_raw)
+- req(set(CFG)=={'namespace_parent','slot_sha256','slot_state','remotes','receipt_path','commit_message','manifest_sha256','graph_nonce','root_admission','evidence'},'fixed Pgraph config fields')
++ req(set(CFG)=={'namespace_parent','slot_sha256','slot_state','remotes','receipt_path','commit_message','manifest_sha256','graph_nonce','root_admission','evidence','U_setup_receipt'},'fixed Pgraph config fields')
+  req(CFG['namespace_parent']==[23,580,0,16877],'original namespace parent required')
+  req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE,'six exact refs/Sfix head required')
+  req(all(re.fullmatch(r'[0-9a-f]{40}',v) for v in CFG['remotes'].values()),'remote object format')
+  req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Publish reviewed Windows validation controls and continuation evidence','fixed Pgraph receipt/message')
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['manifest_sha256']) is not None and re.fullmatch(r'[0-9a-f]{32}',CFG['graph_nonce']) is not None,'manifest/graph nonce unbound')
+- admission=CFG['root_admission'];req(admission['status']=='ADMITTED_PGRAPH_ONCE_ONLY_ADD_ONLY','root admission unbound')
+- for key in ('Sfix_publication_and_shared_capture_independently_accepted','current_exact_index_consumers_settled_and_custody_released',
++ admission=CFG['root_admission'];req(admission['status']=='ADMITTED_PGRAPH_U_ONCE_ONLY_ADD_ONLY','root admission unbound')
++ for key in ('Sfix_publication_and_shared_capture_independently_accepted','original_T_and_unconsumed_consumer_facts_remain_frozen_no_access',
++             'retained_local_consumers_do_not_require_unchanged_remote_head',
++             'fresh_U_setup_namespace_and_config_independently_accepted',
+              'all4113_PRODUCT_paths_bytes_modes_preserved_and_suffix_moves_deferred','Windows4_filesystem_HOLD_immutable_no_old_root_access',
+              'fresh_all_base_head_PR_and_all_repo_queues_reviewed','both_new_receiver_and_other_trigger_delta_reviewed',
+              'exclusive_local_CI_slot_reserved','bounded_physical_T_inventory_guard_admitted',
+              'original_child_cleanup_and_partial_addition_HOLD_admitted','publisher_source_manifest_and_exact_instance_independently_accepted',
+              'genuine_graph_nonce_content_review_adopted','dormant_realJNA_UNBOUND_gates_preserved_and_both_requests_absent','selected_W_sources_frozen'):
+   req(admission[key] is True,'missing explicit root admission:'+key)
+- req(type(admission['allow_3GiB_VPS_fallback']) is bool,'VPS floor choice must be explicit')
+- req(set(CFG['evidence'])=={'source_index_custody_release','fresh_PR_queue_preflight_actual','fresh_PR_queue_preflight_review','trigger_delta_review','publisher_source_manifest_review','graph_content_review'},'exact independent admission evidence set')
++ req(admission['allow_3GiB_VPS_fallback'] is False,'fresh U requires strict12GiB entry; no fallback')
++ req(set(CFG['evidence'])=={'U_setup_actual_review','retained_consumer_remote_independence_review','fresh_PR_queue_preflight_actual','fresh_PR_queue_preflight_review','trigger_delta_review','publisher_source_manifest_review','graph_content_review'},'exact independent admission evidence set')
+  for desc in CFG['evidence'].values():evidence(desc)
+  for desc in MANDATORY_EVIDENCE.values():evidence(desc)
++ req(CFG['U_setup_receipt']['path']=='publication/PGRAPH-U-SETUP01-ACTUAL.json','one fixed fresh U setup receipt')
++ setup_raw=evidence(CFG['U_setup_receipt']);setup=parsed(setup_raw)
++ req(setup['schema']==1 and setup['owner']=='/root' and setup['status']=='PGRAPH_U_SETUP_OBSERVED_AWAITING_INDEPENDENT_REVIEW','fresh U setup not observed/adopted')
++ req(setup['publication_clone']==str(T) and setup['source_commit']==BASE and setup['source_tree']==BASE_TREE and setup['remote_after']==CFG['remotes'],'fresh U source/namespace/sixrefs mismatch')
++ req(setup['original_T_accessed'] is False and setup['independent_clone_no_alternates_or_hardlinks'] is True,'new U may not borrow original T custody/storage')
++ uid=setup['namespace_identity'];req(isinstance(uid,list) and len(uid)==4 and all(type(v) is int for v in uid) and uid[2]==0 and uid[3]==16832,'new U original root-owned0700 namespace identity required')
+  manifest_raw,_=read_file(MANIFEST,cap=131072);req(digest(manifest_raw)==CFG['manifest_sha256'],'manifest hash drift')
+  manifest,rows,bypath,selected_bytes=validate_manifest(manifest_raw)
+  copies={row['destination']:source_row(row) for row in rows}
+@@ -278,30 +289,29 @@
+  base_receipt_raw,_=read_file(BASE_RECEIPT,cap=40440);req(len(base_receipt_raw)==40440 and digest(base_receipt_raw)==BASE_RECEIPT_SHA,'actual Sfix receipt drift')
+  prior=parsed(base_receipt_raw)
+  req(prior['status']=='PUBLISHED_EXACT_SFIX_SOURCE' and (prior['commit'],prior['tree'],prior['parent'])==(BASE,BASE_TREE,PARENT),'Sfix not successful expected direct Awin child')
+- req(prior['publication_clone']==str(T) and prior['remote_after']==CFG['remotes'],'Sfix store/six refs differ; do not silently refresh parent')
++ req(prior['publication_clone']==str(OLD_T) and prior['remote_after']==CFG['remotes'],'historical Sfix T lineage/sixrefs differ; never relabel as U observation')
+  rec['configuration']={'path':str(CONFIG.relative_to(B)),'bytes':len(config_raw),'sha256':digest(config_raw)}
+  rec['manifest']={'path':str(MANIFEST.relative_to(B)),'bytes':len(manifest_raw),'sha256':digest(manifest_raw),'additions':len(rows),'raw_bytes':selected_bytes}
+  rec['root_admission']=admission;rec['adopted_evidence']=CFG['evidence'];rec['fixed_review_evidence']=MANDATORY_EVIDENCE
++ rec['fresh_U_setup']=CFG['U_setup_receipt'];rec['original_T']='HISTORICAL_SOURCE_LINEAGE_ONLY; NOT_ACCESSED_OR_MUTATED; LOCAL_CONSUMER_FREEZE_RETAINED'
+  rec['admission_qualification']='Pinned root-reviewed evidence plus separately required exact-instance acceptance, not self-authorization; fresh PR/queue point is not continuous exclusivity. Native/source review is not execution or hardware credit.'
+  slotraw,_=read_file(LIVE_SLOT,cap=32768)
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot unbound/drifted')
+- req(CFG['slot_state'].startswith('RESERVED_PGRAPH') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root Pgraph reservation required')
++ req(CFG['slot_state'].startswith('RESERVED_PGRAPH_U') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root Pgraph reservation required')
+  lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+  parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+  req((a.st_dev,a.st_ino,a.st_uid,a.st_mode,a.st_nlink,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(24,14189001,0,33152,1,0,1788910891124735946,1788910891124735946),'original lock changed')
+  fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+  stable_inputs();resource('before Pgraph add-only transport',launch=True)
+- req(dtuple(T.lstat())==[23,51357,0,16832],'original publication clone changed')
+- rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=[23,51357,0,16832];root_check();inventory('before Pgraph')
++ req(dtuple(T.lstat())==setup['namespace_identity'],'original admitted U namespace changed')
++ rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=setup['namespace_identity'];root_check();inventory('before Pgraph in U')
+  request_absence()
+  gd=T/'.git'
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+  config_before_raw,config_before_stat=read_file(gd/'config')
+  rec['preserved_config_before']={'sha256':digest(config_before_raw),'pin':fullpin(config_before_stat)}
+- req(rec['preserved_config_before']==prior['preserved_config_after'],'original T config differs from accepted Sfix closeout')
+- req(rec['preserved_config_before']['sha256']=='036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'
+-     and fullpin(config_before_stat)=={'dev':24,'ino':14293053,'uid':0,'mode':33152,'nlink':1,'bytes':435,'mtime_ns':1789001766988319322,'ctime_ns':1789001766988319322},'original T config hash/full pin changed')
++ req(rec['preserved_config_before']==setup['preserved_config_after'],'fresh U original config bytes/full pin differ from independently accepted setup')
+  dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((T/x).resolve()==gd for x in dirs),'external Git store')
+  req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'exact Sfix parent required; no interposed commit')
+  req(git(['symbolic-ref','--short','HEAD']).strip()==BRANCH,'dedicated continuation branch mismatch')
+@@ -360,14 +370,15 @@
+  inventory('after Pgraph');resource('after Pgraph add-only transport')
+  config_after_raw,config_after_stat=read_file(gd/'config')
+  rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':fullpin(config_after_stat)}
+- req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'original T config bytes/full pin changed')
++ req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'fresh U original config bytes/full pin changed')
+  stable_inputs();request_absence()
+  rec.update(status='PUBLISHED_EXACT_PGRAPH_ADD_ONLY_CONTROLS',clone_is_build_workspace=False,source_workspace_modified=False,
+-            absent_activation_requests=list(ABSENT_REQUESTS),slot='UNCHANGED_ROOT_PGRAPH_RESERVATION; NO_GRAPH_OR_REAL_JNA_ACTIVATION_OR_CASE_CLAIM')
++            absent_activation_requests=list(ABSENT_REQUESTS),slot='UNCHANGED_ROOT_PGRAPH_U_RESERVATION; ORIGINAL_T_FREEZE_RETAINED; NO_GRAPH_OR_REAL_JNA_ACTIVATION_OR_CASE_CLAIM')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+ finally:
+- # No disposable runtime/temp was made. Never remove intended source or staged work.
++ # No disposable runtime/temp was made. U remains necessary through activation.
++ # Never access original T or remove intended U source/index/staged work.
+  for fd,label in ((rootfd,'root'),(lockfd,'lock'),(parentfd,'coordination_parent')):
+   if fd is not None:
+    try:
+@@ -375,7 +386,7 @@
+     os.close(fd)
+    except OSError as error:rec[label+'_close_error']=repr(error);rec['status']='FAIL_CLEANUP_HOLD'
+  rec['elapsed_seconds']=time.monotonic()-START
+- rec['cleanup']='Normal original foreground Git children reaped; original T/config and all intended additions/index/commit retained. Partial new source/parent directories are HOLD evidence, never automatic deletion/rollback. No build/cache/service/emulator/temp or Gradle duty. Abnormal descendants/hard interruption remain HOLD/no retry; no unrelated signals.'
++ rec['cleanup']='Normal original foreground Git children reaped; fresh U/config and all intended additions/index/commit retained for subsequent activation/publication. Original T/index/objects remain untouched/frozen. Partial new source/parent directories are HOLD evidence, never automatic deletion/rollback. No build/cache/service/emulator/temp or Gradle duty. Abnormal descendants/hard interruption remain HOLD/no retry; no unrelated signals.'
+  try:durable()
+  finally:
+   if recfd is not None:os.close(recfd)

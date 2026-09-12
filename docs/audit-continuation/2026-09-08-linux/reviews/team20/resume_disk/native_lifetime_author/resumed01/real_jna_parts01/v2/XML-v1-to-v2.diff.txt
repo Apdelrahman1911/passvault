@@ -1,0 +1,17 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/real_jna_parts01/real_jna_xml.fragment.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/real_jna_parts01/v2/real_jna_xml.fragment.py.txt
+@@ -9,9 +9,11 @@
+ def inspect_real_jna_xml(xml_bytes):
+     # Imports are only proposed source; this .txt fragment has not been imported.
+     import xml.etree.ElementTree as ET
+-    require(0 < len(xml_bytes) <= 512 * 1024 and b"<!DOCTYPE" not in xml_bytes.upper() and
+-            b"<!ENTITY" not in xml_bytes.upper(), "Oversized or declarative XML is not admitted")
+-    root = ET.fromstring(xml_bytes)
++    require(0 < len(xml_bytes) <= 512 * 1024, "Oversized XML is not admitted")
++    xml_text = xml_bytes.decode("utf-8", errors="strict")
++    require("\x00" not in xml_text and "<!DOCTYPE" not in xml_text.upper() and
++            "<!ENTITY" not in xml_text.upper(), "Only nondeclarative UTF-8 Gradle XML is admitted")
++    root = ET.fromstring(xml_text)
+     klass = "com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest"
+     method = "closeReservationProtectsRealContextUntilCancellationReturns"
+     require(root.tag == "testsuite" and root.get("name") == klass and root.get("tests") == "1" and

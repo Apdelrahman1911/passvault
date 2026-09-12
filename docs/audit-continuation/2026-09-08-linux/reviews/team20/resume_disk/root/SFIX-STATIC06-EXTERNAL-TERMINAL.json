@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T09:59:03.974370+00:00",
+  "status": "ORIGINAL_STATIC06_EXIT1_VALIDATION_FAILED_RUNTIME_CLEANED_PENDING_ACTUAL_REVIEW",
+  "original_launch_chunk": "c45629",
+  "original_session_id": 33961,
+  "original_terminal_chunk": "4aa462",
+  "outer_exit": 1,
+  "outer": {
+    "path": "runs/linux-detekt06/OUTER-RECEIPT.json",
+    "bytes": 12430,
+    "sha256": "e3338d4f99166e0bb6e876a0113300860391402b4076b43cf392639ee19bb07f"
+  },
+  "inner": {
+    "path": "runs/linux-detekt06/INNER-RESULT.json",
+    "bytes": 40967,
+    "sha256": "6434d59239fe681b533794d1e60b1fdf204c81b99e9bfdda5a2b236def91f322"
+  },
+  "phase": {
+    "path": "runs/linux-detekt06/PHASE-detekt.json",
+    "bytes": 34831,
+    "sha256": "1611f3ce07e0caf74b4652585fc072af93b4bec7a12a1f404dbe4bc121ec725f"
+  },
+  "admission": {
+    "path": "reviews/team20/resume_disk/root/SFIX-STATIC06-EXECUTION-ADMISSION.json",
+    "bytes": 6077,
+    "sha256": "020e9a4badbef58ccdc6b76eba6f80a6c26687f5ec4a543d7ff0e1ccd175cefd"
+  },
+  "original_stop_exit": 0,
+  "owned_namespace_empty_before_exit": true,
+  "original_runtime_absent_after_terminal": true,
+  "cleanup_removed_entries": 14320,
+  "post_terminal_host_screen": {
+    "buildlike_matches": [],
+    "qualification": "Bounded comm-only point not global idle/escapedprocess guarantee; ownedsettlement based on originalnamespace/childreceipts."
+  },
+  "resources": {
+    "disk_available_bytes": 18449965056,
+    "ram_available_bytes": 64245235712,
+    "ram_total_bytes": 67435888640
+  },
+  "initial_observation": "Corrected DesktopDSL configured; verifyStaticAnalysisCoverage executed andfailed because two retained before/after .kt audit snapshots are outsideDetektroots. Seven analyzer inputs were inventoried but analyzer tasks didnotexecute;21reportsabsent. Zero applicationcases, no closurecredit. Exactindependentresult reviewpending; do not rerun unchanged source.",
+  "cleanup": "Originalwrapperstoponce completed0 andownednamespace settled; reviewedouterremovedwholefreshRincludingrun-specificcaches/buildoutputs immediately. Requiredlogs/generatedProblemsreport/source/taskreceiptsretained. No repeatstop, no oldheldroot/sharedcache/source deletion; no netdiskreclaimclaim."
+}

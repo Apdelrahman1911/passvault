@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T09:33:23.989841+00:00",
+  "status": "ADMITTED_ONCE_FRESH_SHARED_SFIX_INDEX_CAPTURE_ONLY",
+  "promoted_source": {
+    "path": "reviews/checkpoint21/index-prepare01/INDEX-CAPTURE.py",
+    "bytes": 27229,
+    "sha256": "63e964ac4226018546b7a79a378c625f1f1bdc1dac3572a1156495f57055d141",
+    "pin": {
+      "dev": 24,
+      "ino": 14685779,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "bytes": 27229,
+      "mtime_ns": 1789205603987624884,
+      "ctime_ns": 1789205603987624884
+    }
+  },
+  "candidate": {
+    "path": "reviews/team20/resume_disk/capture_author/resumed01/index_sfix01/INDEX-CAPTURE-BOUND.py.txt",
+    "bytes": 27229,
+    "sha256": "63e964ac4226018546b7a79a378c625f1f1bdc1dac3572a1156495f57055d141"
+  },
+  "genuine_independent_instance_review": {
+    "path": "reviews/team20/resume_disk/capture_review/resumed01/index_sfix01/INSTANCE-REVIEW.json",
+    "bytes": 4152,
+    "sha256": "5d84dd8ae9fac67527c5910972ba0965ab9b11a89a5378b918c97d24d2f5803c"
+  },
+  "actual_inputs": [
+    {
+      "path": "reviews/checkpoint21/source-prepare01/SOURCE.json",
+      "bytes": 2266654,
+      "sha256": "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74"
+    },
+    {
+      "path": "reviews/checkpoint21/metadata-facts01/FACTS.json",
+      "bytes": 3689,
+      "sha256": "caeea7efa46a56ec19d39b9c346f881597e3585b865249bd7fe125766ea0a6a4"
+    },
+    {
+      "path": "reviews/checkpoint21/metadata-facts01/EXTRA.json",
+      "bytes": 9902,
+      "sha256": "69827731d7e979090cfd603b2f37cf9dd0819391e89416d5945aa9944aafaad8"
+    },
+    {
+      "path": "reviews/team20/resume_disk/capture_review/resumed01/source_sfix01/ACTUAL-REVIEW.json",
+      "bytes": 5851,
+      "sha256": "fec3babf6f7299bf7d9a6a5e5015da5f7ba69ce4ff85cdaf5658916576740519"
+    }
+  ],
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "bytes": 6218,
+    "sha256": "e7c677c639293a6566bd20a17c529a2046984f1237abf05da26a0f3a6f09a2e6"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint21/index-prepare01/INDEX-CAPTURE.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "source_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "source_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+  "resources": {
+    "disk_available_bytes": 18545528832,
+    "ram_available_bytes": 64313942016,
+    "ram_total_bytes": 67435888640,
+    "launch_reserve_bytes": 12884901888,
+    "running_reserve_bytes": 8589934592,
+    "total_retained_output_cap_bytes": 7340032
+  },
+  "custody": "Root sole T/index/config/Git writer and sole build/test/CI launcher; no Git writes/build/CI after accepted Sfix publication. Agents own only inert W source/review leaves; no runtime or competing capture. Original slot/lock/T freeze preserved.",
+  "bounds": "One local read-only Git child30s,total180s,no network,caches,SDK,build/test or runtime. 4MiBindex,2MiBstage,32MiBtool,7MiBtotal outputs; actualSOURCEreader2266654B.",
+  "cleanup": "Reviewed fixed executor installs original child/FD/lock and cancellation handling before Git. Retain compact original outputs and externalterminal; normal directchild reaped,originalFDs closed. Abnormal/uncertain outcomes HOLD,noautomaticretry. Gradle stop not applicable.",
+  "qualification": "Promoted only exact accepted current helper into fresh absent name; source/index capture no appcases,closures or downstream invocation admission. OriginalHOLDs/EOL/protectedref/build1017001 unchanged."
+}

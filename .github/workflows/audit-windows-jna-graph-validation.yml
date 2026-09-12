@@ -1,0 +1,54 @@
+name: Audit Windows JNA graph 01 (non-publishing)
+
+# Inert proposal. Actual full source pins and independent source/instance approval
+# are required before root alone can publish source, then a fresh A-only request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-jna-graph-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Not global/local exclusivity, and not protection of an older pending run.
+  cancel-in-progress: false
+
+jobs:
+  graph-only:
+    if: >-
+      github.repository == 'Apdelrahman1911/passvault' &&
+      github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+      github.event_name == 'push' && !github.event.deleted &&
+      github.run_attempt == 1
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - name: Read-only exact request checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          submodules: false
+          lfs: false
+
+      - name: Capture only the separately admitted native-Windows task graph
+        id: validate
+        shell: pwsh
+        run: python -I -B scripts/audit/windows_jna_graph_01.py
+
+      - name: Preserve compact source-bound graph and cleanup evidence only
+        if: always() && steps.validate.outputs.evidence_owned == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: audit-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/passvault-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+            ${{ runner.temp }}/passvault-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+            ${{ runner.temp }}/passvault-windows-jna-graph-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
+          retention-days: 3
+          compression-level: 9
+          if-no-files-found: error

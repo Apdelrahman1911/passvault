@@ -1,0 +1,74 @@
+{
+  "audit_controls": false,
+  "case_argv": {
+    "passvault_biometric_windows_file_io_close_failure": [
+      "--file-io-case",
+      "close_failure"
+    ],
+    "passvault_biometric_windows_file_io_flush_failure": [
+      "--file-io-case",
+      "flush_failure"
+    ],
+    "passvault_biometric_windows_file_io_write_failure": [
+      "--file-io-case",
+      "write_failure"
+    ],
+    "passvault_biometric_windows_kdf_known_answer": [
+      "--kdf-known-answer"
+    ]
+  },
+  "case_names": [
+    "passvault_biometric_windows_kdf_known_answer",
+    "passvault_biometric_windows_file_io_write_failure",
+    "passvault_biometric_windows_file_io_flush_failure",
+    "passvault_biometric_windows_file_io_close_failure"
+  ],
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "sha256": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "sha256": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json",
+      "sha256": "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md",
+      "sha256": "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-NATIVE-TEST-INTEGRATION.json",
+      "sha256": "227fae154a727b51e1f03b00a17fe48bf8d380c8d3237b86b944a2e17082dac5"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_review/IO01-SOURCE-REVIEW.json",
+      "sha256": "a13876a95a1c13e51a7ead1328263bc2467a61e4ef51a0c34729db2f10ec08e6"
+    }
+  ],
+  "suite": "windows-kdf-file-io-01",
+  "target": "passvault_biometric_windows_security_test"
+}

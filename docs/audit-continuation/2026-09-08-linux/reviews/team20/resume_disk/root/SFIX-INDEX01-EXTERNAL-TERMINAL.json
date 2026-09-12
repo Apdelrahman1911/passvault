@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T09:34:03.276449+00:00",
+  "status": "ORIGINAL_INDEX01_COMPLETED_EXTERNAL_EXIT0",
+  "original_terminal_chunk": "18feb8",
+  "outer_exit": 0,
+  "observed_status": "INDEX_TOOL_OBSERVATIONS_REQUIRE_EXTERNAL_TERMINAL_AND_INDEPENDENT_REVIEW",
+  "observation_elapsed_seconds": 0.260314870000002,
+  "elapsed_before_final_receipt_seconds": 0.26220228501188103,
+  "report": {
+    "path": "reviews/checkpoint21/index-prepare01/INDEX-SOURCE-CAPTURE.json",
+    "bytes": 16522,
+    "sha256": "5521a136539be2bf37cfe50f626c2341da057d356e010aee57321847d4e10351"
+  },
+  "outputs": [
+    {
+      "path": "reviews/checkpoint21/index-prepare01/INDEX-CAPTURE-INTENT.json",
+      "bytes": 1940,
+      "sha256": "5c05d02b829c7adc61e07fa55e087ae5b033f40a0416af68aed1612d6c8d8b87"
+    },
+    {
+      "path": "reviews/checkpoint21/index-prepare01/INDEX.bin",
+      "bytes": 677943,
+      "sha256": "af34295e4d563f8226e3fce23c673d0d4d281d821219bc0ee270090a258d7add"
+    },
+    {
+      "path": "reviews/checkpoint21/index-prepare01/INDEX-STAGE0.raw",
+      "bytes": 575351,
+      "sha256": "e44072c384a700a78477b5e495401946101ecaaef4ebc3429bf8146521fd0c56"
+    }
+  ],
+  "admission": {
+    "path": "reviews/team20/resume_disk/root/SFIX-INDEX01-EXECUTION-ADMISSION.json",
+    "bytes": 3641,
+    "sha256": "72a95c35c2c1611e4b6295ec49aed47f039fc0368fe0763d76ea6350e81bef2b"
+  },
+  "cleanup": "Original read-only Git child reaped, pipes closed, original lock/FDs closed. No new runtime/build/test/cache/SDK/process worker, Gradle stop N/A. Once-only namespace consumed; actual independent semantic review required.",
+  "qualification": "INDEX.bin is retained compact verification evidence, not a runtime index/cache. No application cases/closures or consumer admission; original filesystem HOLDs unchanged."
+}

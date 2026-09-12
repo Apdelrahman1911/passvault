@@ -1,0 +1,779 @@
+--- accepted-graph_actual_sfix01/windows_jna_graph_01.py.txt
++++ runtime_adapter01/v2/windows_real_jna_01.py.txt
+@@ -1,11 +1,11 @@
+-"""One Windows real-JNA task-graph preflight; no Test/native execution or retry.
+-
+-Sfix derivative author /root/native_author; reviewer /root/native_review_c20.
+-The current Windows source03 is a TEXT containment precedent only. It is not
+-imported, executed, modified, or assigned Gradle authority. This separate fixed
+-adapter requires fresh source/instance/coordination admission. No Test properties,
+-DLL, native compiler, SDK/JDK install, release task, credentials or hardware call.
+-Seven parent commands maximum; the seventh is cleanup-only original-wrapper stop.
++"""INERT prospective Windows real-JNA1 adapter; no execution or instance admission.
++
++Author /root/native_author; independent reviewer /root/native_review_c20.
++Text composition of accepted graph containment/profile-leaf V2 and real-JNA parts;
++no old helper import or old-root adoption. Missing actual graph/review bindings
++reject before allocation. One PVA010 managed-pre-entry real FFI/context case only,
++not native-active, PVA037/provider/Hello/hardware, signing, packaging or release.
++Ten parent commands maximum; the tenth is cleanup-only original-wrapper stop.
+ """
+ 
+ from __future__ import annotations
+@@ -27,12 +27,12 @@
+ 
+ BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
+ BASE = "docs/audit-continuation/2026-09-08-linux"
+-REQUEST = f"{BASE}/requests/windows-jna-graph-01.json"
+-HELPER = "scripts/audit/windows_jna_graph_01.py"
+-INIT = "scripts/audit/windows_jna_graph_01.init.gradle"
+-WORKFLOW = ".github/workflows/audit-windows-jna-graph-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt"
+-REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json"
++REQUEST = f"{BASE}/requests/windows-real-jna-01.json"
++HELPER = "scripts/audit/windows_real_jna_01.py"
++INIT = "scripts/audit/windows_real_jna_01.init.gradle"
++WORKFLOW = ".github/workflows/audit-windows-real-jna-validation.yml"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v2/SOURCE-SCOPE.txt"
++REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/REAL-JNA-INSTANCE-ACCEPT.json"
+ SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+ # Corrected Sfix PRODUCT: one actual root-captured SOURCE; independent review remains required.
+ # Actual product values bound below; control/instance/coordination remain rejecting.
+@@ -41,7 +41,17 @@
+ SOURCE_BYTES = 125708841
+ PROJECT_COMMIT = "e9cca961837789048503aaffc74ab1a1e7e536ec"
+ PROJECT_TREE = "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d"
+-SUITE = "windows-jna-graph-01"
++SUITE = "windows-real-jna-01"
++# Actual original graph/cleanup/reviewer evidence is still absent. No guessed paths,
++# invented tasks, generic approval boolean or old runtime access may fill these.
++GRAPH_PATH = "UNBOUND_ACTUAL_WINDOWS_GRAPH_EVIDENCE_PATH"
++GRAPH_SHA256 = "UNBOUND_INDEPENDENTLY_ACCEPTED_ACTUAL_WINDOWS_GRAPH_SHA256"
++GRAPH_RESULT_PATH = "UNBOUND_ACTUAL_WINDOWS_GRAPH_RESULT_PATH"
++GRAPH_RESULT_SHA256 = "UNBOUND_ACTUAL_WINDOWS_GRAPH_RESULT_SHA256"
++GRAPH_TOOLCHAIN_PATH = "UNBOUND_ACTUAL_WINDOWS_GRAPH_TOOLCHAIN_PATH"
++GRAPH_TOOLCHAIN_SHA256 = "UNBOUND_ACTUAL_WINDOWS_GRAPH_TOOLCHAIN_SHA256"
++GRAPH_REVIEW_PATH = "UNBOUND_REVIEWER_AUTHORED_ACTUAL_GRAPH_REVIEW_PATH"
++GRAPH_REVIEW_SHA256 = "UNBOUND_REVIEWER_AUTHORED_ACTUAL_GRAPH_REVIEW_SHA256"
+ TARGET = ":app-desktop:auditJnaLifetimeTest"
+ WRAPPER_SHA256 = "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+ DISTRIBUTION_URL = "https://services.gradle.org/distributions/gradle-9.7.1-bin.zip"
+@@ -72,8 +82,8 @@
+ MAX_BLOB = 32 * 1024 ** 2
+ MAX_SOURCE_BYTES = 128 * 1024 ** 2
+ MAX_ENTRIES = 20000
+-COMMAND_SECONDS, STOP_CUTOFF_SECONDS, CLEANUP_SECONDS = 300, 360, 420
+-CASES = ()
++COMMAND_SECONDS, STOP_CUTOFF_SECONDS, CLEANUP_SECONDS = 1500, 1560, 1620
++CASES = ("PVA010_REAL_JNA_MANAGED_PRE_ENTRY",)
+ # One FUTURE fresh-profile entry only. Never an old-root or target cleanup scope.
+ PROFILE_CACHE_LEAF = "home/AppData/Local/Microsoft/Windows/INetCache/Content.IE5"
+ CANCELLED = False
+@@ -356,6 +366,7 @@
+         self.gradle = None
+         self.gradle_stop = {"state": "NOT_ARMED", "attempted": False, "fulfilled": False}
+         self.graph_snapshot = None
++        self.real_jna_evidence = None
+         self.source_copy = None
+         self.read_only_tool_inputs = set()
+         self.profile_leaf_records = []
+@@ -492,7 +503,7 @@
+                                  "qualification": "Raw byte identities only; Linux inode/EOL/runtime authority not inherited"})
+         write_json(self.evidence / "source-copy.json", self.source_copy)
+ 
+-    def prepare_gradle(self, git, init_bytes):
++    def prepare_gradle(self, git, init_bytes, producer):
+         """Fixed preinstalled JDK17, private environment and non-generic cmd grammar."""
+         require(self.source_copy is not None and self.source_copy["state"] == "COMPLETE",
+                 "No Gradle preparation before complete full raw source")
+@@ -540,7 +551,7 @@
+                         "zipStoreBase=GRADLE_USER_HOME" in text.splitlines() and
+                         "distributionPath=wrapper/dists" in text.splitlines() and
+                         "zipStorePath=wrapper/dists" in text.splitlines(), "Unapproved wrapper bootstrap contract")
+-        init = self.temp / "controls/windows_jna_graph_01.init.gradle"
++        init = self.temp / "controls/windows_real_jna_01.init.gradle"
+         with init.open("xb") as output:
+             output.write(init_bytes)
+             output.flush()
+@@ -582,11 +593,26 @@
+             "-Porg.gradle.java.installations.paths=" + str(jdk), "-Pandroid.builder.sdkDownload=false",
+             "-Dorg.gradle.jvmargs=" + JVM_HEAP + private_jvm,
+         ]
+-        graph_args = [TARGET, "--dry-run", *common, "--init-script", str(init)]
++        require(producer["producer_natural_job_zero"] is True and
++                producer["library"] == str(self.temp / "native/Release/passvault_biometric.dll") and
++                0 < producer["bytes"] <= 64 * 1024 ** 2 and re.fullmatch(r"[0-9a-f]{64}", producer["sha256"]),
++                "Only this fresh ordinary DLL may enter the one real-JNA case")
++        for directory in (self.temp / "jna-data", self.temp / "jna-home", self.temp / "jna-tmp"):
++            safe_command_path(directory)
++            plain_path(directory)
++            require(directory.is_dir() and not list(directory.iterdir()), "Fresh empty case storage required")
++        lifetime = {
++            "enabled": "1", "target": "windows-x64", "abi": "1", "library": producer["library"],
++            "libraryBytes": str(producer["bytes"]), "librarySha256": producer["sha256"],
++            "dataDirectory": str(self.temp / "jna-data"), "workerHome": str(self.temp / "jna-home"),
++            "workerTemporaryDirectory": str(self.temp / "jna-tmp"),
++        }
++        test_args = [TARGET, *common, "--init-script", str(init),
++                     *["-Ppassvault.audit.jnaLifetime." + key + "=" + value for key, value in lifetime.items()]]
+         stop_args = ["--stop", "--offline", *common]
+-        graph_argv, graph_line = fixed_cmd(cmd, wrapper, graph_args)
++        test_argv, test_line = fixed_cmd(cmd, wrapper, test_args)
+         stop_argv, stop_line = fixed_cmd(cmd, wrapper, stop_args)
+-        prepared = {"graph_argv": graph_argv, "graph_line": graph_line,
++        prepared = {"test_argv": test_argv, "test_line": test_line, "lifetime_properties": lifetime,
+                     "stop_argv": stop_argv, "stop_line": stop_line,
+                     "environment": dict(self.environment), "wrapper_bindings": bindings,
+                     "project": str(self.project), "gradle_home": self.environment["GRADLE_USER_HOME"]}
+@@ -608,7 +634,7 @@
+         require(self.gradle is None and self.gradle_stop["state"] == "NOT_ARMED", "One original wrapper invocation only")
+         self.work_time()
+         self.gradle = prepared
+-        self.gradle_stop.update({"state": "ARMED_BEFORE_GRAPH_LAUNCH", "decision_consumed": False,
++        self.gradle_stop.update({"state": "ARMED_BEFORE_TEST_LAUNCH", "decision_consumed": False,
+                                  "original_wrapper": str(self.project / "gradlew.bat"),
+                                  "original_gradle_home": self.environment["GRADLE_USER_HOME"]})
+         self.event("wrapper_stop_armed", **self.gradle_stop)
+@@ -707,7 +733,7 @@
+     def check_outputs(self):
+         # Every original stdout handle remains live: old compiler descendants
+         # can still write earlier logs while the next phase's parent runs.
+-        require(len(self.logs) <= 7, "Exact graph-only Windows command log count exceeded")
++        require(len(self.logs) <= 10, "Exact one-case Windows command log count exceeded")
+         total = 0
+         for entry in self.logs:
+             size = self.log_state(entry)["size"]
+@@ -775,6 +801,7 @@
+             require(self.win.active() == 0, "Read-only preflight Job not empty; no new command")
+         self.check_outputs()
+         self.event("resources", observation=self.win.resources([self.workspace, self.temp], launch=True))
++        require(self.sequence < 10, "Ten original parent commands exhausted; no further launch")
+         self.sequence += 1
+         log = self.temp / "logs" / f"{self.sequence:02d}-{label}.log"
+         record = {"argv": argv, "log": log.name, "state": "INTENT", "exit_code": None}
+@@ -824,8 +851,8 @@
+             block = ctypes.create_unicode_buffer("\0".join(
+                 f"{key}={value}" for key, value in sorted(self.environment.items(), key=lambda item: item[0].upper())
+             ) + "\0\0")
+-            if label in ("gradle-graph", "gradle-stop"):
+-                key = "stop" if cleanup_stop else "graph"
++            if label in ("gradle-real-jna", "gradle-stop"):
++                key = "stop" if cleanup_stop else "test"
+                 require(self.gradle is not None and argv == self.gradle[key + "_argv"],
+                         "Only the pre-captured fixed wrapper command is allowed")
+                 require(self.environment == self.gradle["environment"], "Original wrapper environment changed")
+@@ -842,10 +869,10 @@
+                 0x00000004 | 0x00000400 | 0x08000000 | 0x00080000,
+                 block, str(working_directory), ctypes.byref(startup), ctypes.byref(info)), "CreateSuspendedProcess")
+             record.update({"state": "PROCESS_CREATED_SUSPENDED", "pid": info.pid, "tid": info.tid})
+-            if label == "gradle-graph":
++            if label == "gradle-real-jna":
+                 self.compiler_cohort = True
+             if case is not None:
+-                self.case_results[case]["state"] = "CTEST_PROCESS_CREATED; TEST_START_UNKNOWN"
++                self.case_results[case]["state"] = "GRADLE_PARENT_CREATED; TEST_START_UNKNOWN"
+             self.event("command_bound", pid=info.pid, tid=info.tid, compiler_cohort=self.compiler_cohort)
+             require(cleanup_stop or not CANCELLED, "Cancellation before resume")
+             require(time.monotonic() < cutoff, "Original cutoff exhausted before resume")
+@@ -863,8 +890,8 @@
+                     # query, resource/log check, parsing or final cohort drain.
+                     record.update({"state": "PARENT_EXIT_OBSERVED", "exit_code": code.value})
+                     if case is not None:
+-                        self.case_results[case].update({"state": "CTEST_EXIT_OBSERVED; XML_PENDING",
+-                                                        "ctest_exit_code": code.value})
++                        self.case_results[case].update({"state": "GRADLE_PARENT_EXIT_OBSERVED; XML_PENDING",
++                                                        "gradle_parent_exit_code": code.value})
+                     self.event("parent_exit", **record)
+                     break
+                 require(cleanup_stop or not CANCELLED, "Cancellation requested")
+@@ -990,7 +1017,7 @@
+                 "errors": errors}
+ 
+     def cleanup_time(self):
+-        require(time.monotonic() < self.start + CLEANUP_SECONDS, "420-second original cleanup cutoff; filesystem HOLD")
++        require(time.monotonic() < self.start + CLEANUP_SECONDS, "1620-second original cleanup cutoff; filesystem HOLD")
+         if CANCELLED and not self.cleanup_cancellation_seen:
+             self.cleanup_cancellation_seen = True
+             self.event("cancellation_cleanup_only", qualification="No workload command; original once-only wrapper stop and bounded evidence/owned cleanup only")
+@@ -1209,6 +1236,383 @@
+     return argv, line
+ 
+ 
++def produce_ordinary_windows_library(run):
++    require(run.source_copy is not None and run.source_copy["state"] == "COMPLETE",
++            "Ordinary DLL requires the complete bound Sfix product")
++    require(run.gradle is None and not run.compiler_cohort and not run.job_settled and
++            not run.win.termination_attempted and run.win.active() == 0,
++            "DLL production precedes this fresh invocation's wrapper; no settled/terminated cohort reuse")
++    require(run.sequence == 4 and len(run.command_results) == 4,
++            "Only four exact control Git checks may precede ordinary-DLL production")
++    run.work_time()
++    cmake = executable("cmake.exe")
++    run.read_only_tool_inputs.add(cmake)
++    cmake_bytes, cmake_identity = run.read_bound_bytes(cmake, 64 * 1024 ** 2, preinstalled_tool=True)
++    require(len(cmake_bytes) >= 64 and cmake_bytes[:2] == b"MZ", "CMake image lacks a PE header")
++    offset = struct.unpack_from("<I", cmake_bytes, 60)[0]
++    require(64 <= offset <= len(cmake_bytes) - 6 and cmake_bytes[offset:offset + 4] == b"PE\0\0" and
++            struct.unpack_from("<H", cmake_bytes, offset + 4)[0] == 0x8664, "CMake must be native AMD64")
++    sdk = "10.0.26100.0"
++    header_path = Path(os.environ["ProgramFiles(x86)"]) / "Windows Kits/10/Include" / sdk / "um/webauthn.h"
++    header_bytes, header_identity = run.read_bound_bytes(header_path, 2 * 1024 ** 2)
++    header = header_bytes.decode("utf-8", errors="strict")
++    for token in ("WEBAUTHN_API_VERSION_8", "WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_8",
++                  "WEBAUTHN_HMAC_SECRET_SALT", "pPRFGlobalEval"):
++        require(token in header, "Required preinstalled SDK declaration absent; no provisioning")
++    build = run.temp / "native"
++    require_absent(build)
++    native = run.project / "app-desktop/native/biometric-bridge"
++    source_files = ("CMakeLists.txt", "src/windows/passvault_biometric_windows.cpp",
++                    "src/windows/passvault_biometric_windows.rc", "include/passvault_biometric.h")
++    source = {}
++    for relative in source_files:
++        _data, source[relative] = run.read_bound_bytes(native / relative, MAX_BLOB)
++    run.command([cmake, "--version"], 30, "ordinary-dll-cmake-version")
++    # Keep compiler_cohort false: the existing command method naturally drains
++    # this original Job before returning EVERY pre-wrapper native parent.
++    # Its legacy readonly_job_zero_observed name is not a read-only-command claim.
++    run.command([cmake, "-S", native, "-B", build, "-G", "Visual Studio 17 2022", "-A", "x64",
++                 "-DCMAKE_SYSTEM_VERSION=" + sdk, "-DBUILD_TESTING=OFF",
++                 "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS:BOOL=OFF"], 120, "ordinary-dll-configure")
++
++    def snapshot_last_native_log():
++        run.work_time()
++        require(not run.compiler_cohort and run.win.active() == 0, "Original producer Job is not naturally zero")
++        record, entry = run.command_results[-1], run.logs[-1]
++        require(record["exit_code"] == 0 and record.get("readonly_job_zero_observed") is True and
++                record["log"] == entry["path"].name, "Producer parent/Job-zero record missing")
++        run.win.check(run.win.k.FlushFileBuffers(entry["handle"]), "FlushOriginalProducerLog")
++        before = run.log_state(entry)
++        plain_path(entry["path"])
++        with entry["path"].open("rb") as stream:
++            data = stream.read(LOG_LIMIT + 1)
++        require(run.log_state(entry) == before and len(data) == before["size"] <= LOG_LIMIT and
++                hashlib.sha256(data).hexdigest() == record["parent_output_snapshot_sha256"] and
++                run.win.active() == 0, "Producer log is not the stable complete natural-zero snapshot")
++        run.work_time()
++        return {"log": entry["path"].name, "identity": entry["identity"], "bytes": len(data),
++                "sha256": hashlib.sha256(data).hexdigest(), "natural_job_zero": True,
++                "qualification": "Stable complete producer observation; final full retained log must match before PASS"}
++
++    logs = [snapshot_last_native_log()]
++    cache, cache_identity = run.read_bound_bytes(build / "CMakeCache.txt", 1024 ** 2)
++    cache_lines = cache.decode("utf-8-sig").splitlines()
++    expected_cache = {
++        "BUILD_TESTING": "BOOL=OFF",
++        "PASSVAULT_AUDIT_PVA036_037_CONTROLS": "BOOL=OFF",
++        "CMAKE_GENERATOR": "INTERNAL=Visual Studio 17 2022",
++        "CMAKE_GENERATOR_PLATFORM": "INTERNAL=x64",
++    }
++    for key, tail in expected_cache.items():
++        matches = [line for line in cache_lines if line.startswith(key + ":")]
++        require(matches == [key + ":" + tail], "Ordinary DLL cache drift: " + key)
++    project, project_identity = run.read_bound_bytes(build / "passvault_biometric.vcxproj", 1024 ** 2)
++    project_text = project.decode("utf-8-sig")
++    require("<WindowsTargetPlatformVersion>" + sdk + "</WindowsTargetPlatformVersion>" in project_text,
++            "Ordinary DLL is not configured for the exact installed SDK")
++    for forbidden in ("PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST", "PASSVAULT_BIOMETRIC_PVA036_SOURCE",
++                      "PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST", "passvault_biometric_windows_security_test.cpp"):
++        require(forbidden not in project_text, "Ordinary DLL must not compile test/control instrumentation")
++    for token in ("<ConfigurationType>DynamicLibrary</ConfigurationType>", "stdcpp20",
++                  "<WarningLevel>Level4</WarningLevel>", "<TreatWarningAsError>true</TreatWarningAsError>",
++                  "<SDLCheck>true</SDLCheck>", "<ControlFlowGuard>Guard</ControlFlowGuard>"):
++        require(token in project_text, "Required ordinary DLL compiler configuration absent")
++    run.command([cmake, "--build", build, "--config", "Release", "--target", "passvault_biometric",
++                 "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 240, "ordinary-dll-build")
++    logs.append(snapshot_last_native_log())
++    for path, expected in ((build / "CMakeCache.txt", cache_identity),
++                           (build / "passvault_biometric.vcxproj", project_identity)):
++        _data, actual = run.read_bound_bytes(path, 1024 ** 2)
++        require(actual == expected, "Ordinary DLL configuration changed during production")
++    _data, current_cmake = run.read_bound_bytes(cmake, 64 * 1024 ** 2, preinstalled_tool=True)
++    require(current_cmake == cmake_identity, "Original CMake image changed")
++    for relative, expected in source.items():
++        _data, actual = run.read_bound_bytes(native / relative, MAX_BLOB)
++        require(actual == expected, "Original ordinary DLL source changed")
++    library = build / "Release/passvault_biometric.dll"
++    binary, identity = run.read_bound_bytes(library, 64 * 1024 ** 2)
++    require(64 <= len(binary) <= 64 * 1024 ** 2 and binary[:2] == b"MZ", "Ordinary DLL lacks a bounded MZ image")
++    pe = struct.unpack_from("<I", binary, 60)[0]
++    require(64 <= pe <= len(binary) - 26 and binary[pe:pe + 4] == b"PE\0\0", "Ordinary DLL has invalid PE offset")
++    machine, sections = struct.unpack_from("<HH", binary, pe + 4)
++    optional_size, characteristics = struct.unpack_from("<HH", binary, pe + 20)
++    require(machine == 0x8664 and 0 < sections <= 96 and optional_size >= 112 and
++            pe + 24 + optional_size + 40 * sections <= len(binary) and
++            struct.unpack_from("<H", binary, pe + 24)[0] == 0x20b and
++            characteristics & 0x2002 == 0x2002, "Require an AMD64 PE32+ executable DLL, not the security-test EXE")
++    require(run.win.active() == 0 and not run.win.termination_attempted, "Producer settlement changed before DLL binding")
++    result = {"library": str(library), "bytes": len(binary), "sha256": identity["sha256"],
++              "identity": identity, "pe": {"machine": "AMD64", "optional_header": "PE32+", "dll": True},
++              "cmake": {"path": str(cmake), **cmake_identity}, "sdk": sdk, "sdk_header": header_identity,
++              "source": source, "cache": cache_identity, "project": project_identity, "producer_logs": logs,
++              "producer_natural_job_zero": True, "abi": "UNOBSERVED_UNTIL_ACTUAL_JNA_CASE",
++              "qualification": "Fresh unsigned ordinary Release DLL only; not Test/ABI/provider or final cleanup evidence"}
++    write_json(run.evidence / "ordinary-dll-producer.json", result)
++    return result
++
++def inspect_real_jna_xml(xml_bytes):
++    # Imports are only proposed source; this .txt fragment has not been imported.
++    import xml.etree.ElementTree as ET
++    require(0 < len(xml_bytes) <= 512 * 1024, "Oversized XML is not admitted")
++    xml_text = xml_bytes.decode("utf-8", errors="strict")
++    require("\x00" not in xml_text and "<!DOCTYPE" not in xml_text.upper() and
++            "<!ENTITY" not in xml_text.upper(), "Only nondeclarative UTF-8 Gradle XML is admitted")
++    root = ET.fromstring(xml_text)
++    klass = "com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest"
++    method = "closeReservationProtectsRealContextUntilCancellationReturns"
++    require(root.tag == "testsuite" and root.get("name") == klass and root.get("tests") == "1" and
++            all(root.get(name) == "0" for name in ("failures", "errors", "skipped")),
++            "Require exactly one non-skipped successful JUnit suite, not tasks or configuration")
++    cases = list(root.iter("testcase"))
++    require(len(cases) == 1 and cases == root.findall("testcase") and
++            cases[0].get("classname") == klass and cases[0].get("name") == method and
++            not any(node.tag in ("failure", "error", "skipped") for node in root.iter()),
++            "Wrong, duplicate, nested, failed or skipped real-JNA case")
++    output = "\n".join("".join(node.itertext()) for node in root.iter("system-out"))
++    lines = output.splitlines()
++    cleanup = "PVA010_REAL_JNA_LIFETIME_CLEANUP_SETTLED"
++    passed = "PVA010_REAL_JNA_LIFETIME_PASS target=windows-x64 abi=1 retrieve=5 cancel=0 destroy=1"
++    require(lines.count(cleanup) == 1 and lines.count(passed) == 1 and lines.index(cleanup) < lines.index(passed),
++            "Actual Windows ABI/context/order plus one settled cleanup marker required in XML stdout")
++    return {"class": klass, "method": method, "tests": 1, "failures": 0, "errors": 0, "skipped": 0,
++            "xml_sha256": hashlib.sha256(xml_bytes).hexdigest(), "xml_bytes": len(xml_bytes),
++            "qualification": "One XML/marker contract only; no PASS until source/graph/DLL/logs/stop/Job/cleanup independently reconcile"}
++
++def accepted_graph_inputs(workspace):
++    """Hash-bound retained DATA only; never inspect an old Windows runtime."""
++    bindings = {
++        "graph_task_order_sha256": (GRAPH_PATH, GRAPH_SHA256),
++        "graph_result_sha256": (GRAPH_RESULT_PATH, GRAPH_RESULT_SHA256),
++        "graph_toolchain_sha256": (GRAPH_TOOLCHAIN_PATH, GRAPH_TOOLCHAIN_SHA256),
++        "graph_review_sha256": (GRAPH_REVIEW_PATH, GRAPH_REVIEW_SHA256),
++    }
++    require(all(re.fullmatch(r"[0-9a-f]{64}", value) for _path, value in bindings.values()),
++            "Genuine actual graph/cleanup/reviewer binding absent; no native producer or allocation")
++    captures, decoded = {}, {}
++    for key, (relative, expected) in bindings.items():
++        parts = PurePosixPath(relative).parts
++        require(relative.startswith(BASE + "/reviews/") and not PurePosixPath(relative).is_absolute() and
++                str(PurePosixPath(relative)) == relative and all(part not in (".", "..", ".git") for part in parts) and
++                not re.search(r'[\\:\x00-\x1f]', relative), "Actual graph input is not a fixed retained evidence member")
++        data = frozen_bytes(workspace / relative, 2 * 1024 ** 2)
++        require(hashlib.sha256(data).hexdigest() == expected, "Actual accepted graph input changed: " + key)
++        captures[relative] = data
++        decoded[key] = json.loads(data, object_pairs_hook=no_duplicate_keys)
++    graph, result, toolchain, review = (decoded[name] for name in bindings)
++    require(len(captures[GRAPH_PATH]) <= 1024 ** 2 and graph.get("selector") == TARGET and
++            graph.get("tests_executed") == 0 and graph.get("observed", {}).get("selector") == TARGET and
++            graph["observed"].get("dryRun") is True and isinstance(graph["observed"].get("root"), str) and
++            isinstance(graph["observed"].get("tasks"), list) and 0 < len(graph["observed"]["tasks"]) <= 1000 and
++            [row.get("path") for row in graph["observed"]["tasks"]] == graph.get("ordered_task_paths") and
++            sum(row.get("isTest") is True for row in graph["observed"]["tasks"]) == 1,
++            "Actual accepted graph rows/selector/zero-case evidence are invalid")
++    require(result.get("suite") == "windows-jna-graph-01" and result.get("tests") == 0 and
++            result.get("operational_status") == "GRAPH_CAPTURED_AWAITING_INDEPENDENT_REVIEW" and
++            result.get("cleanup") == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED" and
++            result.get("failures") == [] and result.get("original_handle_close_failures") == [] and
++            result.get("project_commit") == PROJECT_COMMIT and result.get("project_tree") == PROJECT_TREE and
++            result.get("graph_snapshot") == graph and result.get("gradle_stop", {}).get("fulfilled") is True and
++            result["gradle_stop"].get("attempted") is True and
++            result.get("job_settlement", {}).get("observed_zero") is True and result["job_settlement"].get("errors") == [],
++            "Original actual graph/source/stop/Job/whole-cleanup did not complete; no follow-on")
++    source_copy = result.get("source_copy", {})
++    commands = result.get("commands", [])
++    require(source_copy.get("state") == "COMPLETE" and source_copy.get("manifest_sha256") == SOURCE_SHA256 and
++            source_copy.get("files") == SOURCE_MEMBERS and source_copy.get("raw_bytes") == SOURCE_BYTES and
++            source_copy.get("project_commit") == PROJECT_COMMIT and source_copy.get("project_tree") == PROJECT_TREE and
++            len(commands) == 7 and all(row.get("exit_code") == 0 for row in commands) and
++            commands[-1].get("log") == "07-gradle-stop.log",
++            "Actual graph lacks complete same-product materialization or seven original commands")
++    expected_review = {
++        "schema": 1, "reviewer": "/root/native_review_c20", "disposition": "ACCEPT_WINDOWS_JNA_GRAPH_01_ACTUAL",
++        "project_commit": PROJECT_COMMIT, "project_tree": PROJECT_TREE, "source_manifest_sha256": SOURCE_SHA256,
++        "graph_task_order_sha256": GRAPH_SHA256, "graph_result_sha256": GRAPH_RESULT_SHA256,
++        "graph_toolchain_sha256": GRAPH_TOOLCHAIN_SHA256, "next_selector": TARGET,
++        "graph_request_commit": result.get("request_commit"), "graph_control_commit": result.get("control_source_commit"),
++        "qualification": "PVA010_REAL_FFI_MANAGED_PRE_ENTRY_ONLY",
++    }
++    require(all(re.fullmatch(r"[0-9a-f]{40}", expected_review[key] or "")
++                for key in ("graph_request_commit", "graph_control_commit")) and
++            all(review.get(key) == value for key, value in expected_review.items()),
++            "Genuine independently authored exact actual graph/source/cleanup acceptance is missing")
++    require(toolchain.get("runner") == "windows-2022" and toolchain.get("architecture") == "x64" and
++            toolchain.get("jdk_selector") == "JAVA_HOME_17_X64" and isinstance(toolchain.get("image_version"), str) and
++            toolchain["image_version"] and isinstance(toolchain.get("tools"), list),
++            "Actual graph toolchain provenance is absent")
++    return captures, {"graph": graph, "toolchain": toolchain, "review": review, "graph_bytes": captures[GRAPH_PATH]}
++
++
++def require_graph_tools_before_producer(run, admitted, git):
++    """Current content checks before CMake; original generated environment comes later."""
++    run.work_time()
++    previous = admitted["toolchain"]
++    require(previous["image_version"] == os.environ.get("ImageVersion") and previous["python"] == sys.version,
++            "Current Windows image/Python differ from accepted graph before producer")
++    system = safe_command_path(Path(os.environ["SystemRoot"]).resolve(strict=True))
++    cmd = safe_command_path(system / "System32/cmd.exe")
++    require(Path(os.environ["COMSPEC"]).resolve(strict=True) == cmd, "Current COMSPEC differs before producer")
++    jdk = safe_command_path(Path(os.environ["JAVA_HOME_17_X64"]).resolve(strict=True))
++    sdk = safe_command_path(Path(os.environ["ANDROID_HOME"]).resolve(strict=True))
++    require(str(sdk) == previous["sdk_path"] and
++            ("ANDROID_SDK_ROOT" not in os.environ or Path(os.environ["ANDROID_SDK_ROOT"]).resolve(strict=True) == sdk),
++            "Current configured Android SDK path differs; no install/fallback")
++    tools = {cmd, jdk / "bin/java.exe", jdk / "bin/server/jvm.dll", git, Path(sys.executable).resolve(strict=True)}
++    run.read_only_tool_inputs.update(tools)
++    current_tools = []
++    for tool in sorted(tools):
++        _data, identity = run.read_bound_bytes(tool, 64 * 1024 ** 2, preinstalled_tool=True)
++        current_tools.append((str(tool), identity["sha256"], identity["size"]))
++    require(current_tools == sorted((row["path"], row["sha256"], row["size"]) for row in previous["tools"]),
++            "Current graph tool path/content differs before native producer")
++    _data, release = run.read_bound_bytes(jdk / "release", 65536)
++    require(all(release[key] == previous["jdk_release"][key] for key in ("sha256", "size")),
++            "Current JDK release content differs from accepted graph")
++    run.work_time()
++    write_json(run.evidence / "graph-preproducer-tools.json", {
++        "graph_toolchain_sha256": GRAPH_TOOLCHAIN_SHA256, "image_version": previous["image_version"],
++        "tool_path_sha256_size": current_tools,
++        "jdk_release_content": {key: release[key] for key in ("sha256", "size")},
++        "qualification": "Current byte provenance only; no old inode/path/lock authority; private environment checked after prepare_gradle",
++    })
++
++
++def require_compatible_graph_toolchain(run, admitted):
++    """Compare current content/provenance, never historical inode/lock authority."""
++    current = json.loads(frozen_bytes(run.evidence / "toolchain.json", 2 * 1024 ** 2), object_pairs_hook=no_duplicate_keys)
++    previous = admitted["toolchain"]
++    old_project = Path(admitted["graph"]["observed"]["root"])  # Lexical retained string only; no filesystem call.
++    require(old_project.is_absolute() and old_project.name == "project", "Bad retained graph root string")
++
++    def normalized(value, generated):
++        if isinstance(value, str):
++            return value.replace(generated, "<FRESH_OWNED_GENERATED_ROOT>")
++        if isinstance(value, list):
++            return [normalized(item, generated) for item in value]
++        if isinstance(value, dict):
++            return {normalized(key, generated): normalized(item, generated) for key, item in value.items()}
++        return value
++
++    def fingerprint(value, generated):
++        facts = {name: value[name] for name in ("runner", "architecture", "jdk_selector", "image_version", "python",
++                                               "sdk_path", "wrapper_bindings", "child_environment", "gradle_jvm_options")}
++        facts["jdk_release"] = {key: value["jdk_release"][key] for key in ("sha256", "size")}
++        facts["tools"] = sorted((row["path"], row["sha256"], row["size"]) for row in value["tools"])
++        return normalized(facts, generated)
++
++    require(fingerprint(previous, str(old_project.parent)) == fingerprint(current, str(run.temp)),
++            "Current image/JDK/tools/private environment changed from accepted graph; no wrapper Test")
++    write_json(run.evidence / "graph-toolchain-compatibility.json", {
++        "graph_toolchain_sha256": GRAPH_TOOLCHAIN_SHA256, "current_toolchain_sha256": digest(run.evidence / "toolchain.json"),
++        "content_projection_equal": True, "historical_ids_used_as_authority": False,
++        "qualification": "Only fresh generated-root prefixes normalized; no old path opened or stronger hardware claim",
++    })
++
++
++def inspect_real_jna_graph(log_text, graph, current_root):
++    marker = "PVA010_WINDOWS_REAL_JNA01_GRAPH_ACCEPTED="
++    lines = log_text.splitlines()
++    values = [line.removeprefix(marker) for line in lines if line.startswith(marker)]
++    require(len(values) == 1 and lines.count("PVA010_WINDOWS_REAL_JNA01_NATIVE_ROUTE_CLEAR") == 1,
++            "Exact before-actions graph and terminal native-route marker required")
++    actual = json.loads(values[0], object_pairs_hook=no_duplicate_keys)
++    require(actual.get("selector") == TARGET and actual.get("root") == str(current_root) and actual.get("dryRun") is False and
++            actual.get("tasks") == graph["observed"]["tasks"] and
++            [row.get("path") for row in actual["tasks"]] == graph["ordered_task_paths"],
++            "Current runtime graph does not match the independently accepted task/edge graph")
++    return {"observed": actual, "accepted_graph_sha256": GRAPH_SHA256,
++            "qualification": "Before-actions graph/native-route contract only; actual case needs settled original XML"}
++
++
++def retain_real_jna_evidence(run, producer, admitted, runtime_returned):
++    """Final-only, original Job-zero evidence; existing whole-root cleanup stays outer."""
++    require(run.job_settled and not run.close_failures and (run.gradle is None or run.gradle_stop["fulfilled"]),
++            "Original stop/Job/handles must settle before real-JNA evidence")
++    evidence = {"state": "COLLECTING", "producer": None, "xml": None, "failures": []}
++    run.real_jna_evidence = evidence
++    if producer is not None:
++        copied_graph, graph_identity = run.read_bound_bytes(run.temp / "controls/accepted-graph-task-order.json",
++                                                          1024 ** 2, cleanup=True)
++        require(copied_graph == admitted["graph_bytes"] and graph_identity["sha256"] == GRAPH_SHA256,
++                "Copied accepted graph changed before original cleanup")
++        evidence["copied_accepted_graph"] = graph_identity
++        _data, state = run.read_bound_bytes(Path(producer["library"]), 64 * 1024 ** 2, cleanup=True)
++        require(state == producer["identity"], "Original ordinary DLL changed before final cleanup")
++        for observed in producer["producer_logs"]:
++            receipt = run.evidence / (Path(observed["log"]).stem + "-retention.json")
++            retained = json.loads(frozen_bytes(receipt), object_pairs_hook=no_duplicate_keys)
++            require(retained.get("complete") is True and retained.get("owned_job_settled") is True and
++                    retained.get("log") == observed["log"] and retained.get("original_identity") == observed["identity"] and
++                    all(retained.get(key) == observed["bytes"] for key in
++                        ("observed_raw_bytes_before", "observed_raw_bytes_after", "retained_bytes")) and
++                    all(retained.get(key) == observed["sha256"] for key in ("retained_sha256", "settled_full_sha256")),
++                    "Producer snapshot lacks identical complete original final retained log")
++        evidence["producer"] = {"dll_final_identity": state, "producer_logs_matched": len(producer["producer_logs"]),
++                                "qualification": "Original ordinary DLL/logs only; exported ABI still comes from actual case"}
++    runtime_commands = [row for row in run.command_results if row["log"].endswith("-gradle-real-jna.log")]
++    require(len(runtime_commands) <= 1, "Unexpected second Test command")
++    if runtime_returned:
++        require(len(runtime_commands) == 1 and runtime_commands[0]["exit_code"] == 0, "Original Test parent exit missing")
++        settled_log = frozen_bytes(run.evidence / runtime_commands[0]["log"], LOG_LIMIT)
++        graph = inspect_real_jna_graph(settled_log.decode("utf-8", errors="replace"), admitted["graph"], run.project)
++        require(graph == run.graph_snapshot, "Final settled runtime graph markers differ from parent observation")
++        evidence["settled_graph"] = graph
++    xml_name = "TEST-com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest.xml"
++    directory = run.project / "app-desktop/build/test-results/auditJnaLifetimeTest"
++    try:
++        # Missing output is not a failed CreateFileW handle to reopen. Check the
++        # original plain parent chain and leaf metadata first; any later race or
++        # original-open failure remains HOLD, never reclassified as absence.
++        run.cleanup_time()
++        plain_path(directory.parent)
++        directory.lstat()
++        handle, identity = run.open_output(directory, delete=False)
++    except FileNotFoundError:
++        evidence["xml"] = {"state": "NOT_CREATED_NO_CASE_INFERENCE"}
++        if runtime_returned:
++            evidence["failures"].append("Successful parent lacks required actual one-case XML")
++    else:
++        try:
++            before = run.file_state(handle)
++            require(identity[3] & 0x10, "Original Test result path is not a plain directory")
++            xml_names, seen = [], 0
++            with os.scandir(directory) as entries:
++                for entry in entries:
++                    run.cleanup_time()
++                    seen += 1
++                    require(seen <= 32, "One-case result directory shape exceeded")
++                    if entry.name.lower().endswith(".xml"):
++                        xml_names.append(entry.name)
++            require(run.file_state(handle) == before, "Original settled result directory changed during inventory")
++            if not xml_names:
++                evidence["xml"] = {"state": "NO_XML_CREATED_NO_CASE_INFERENCE"}
++                if runtime_returned:
++                    evidence["failures"].append("Successful parent lacks required actual one-case XML")
++            else:
++                require(xml_names == [xml_name], "Alternate/multiple XML outside one-case contract; retain original root HOLD")
++                data, original = run.read_bound_bytes(directory / xml_name, 512 * 1024, cleanup=True)
++                require(run.file_state(handle) == before, "Original settled result directory changed during XML read")
++                target = run.evidence / "real-jna.xml"
++                with target.open("xb") as output:
++                    output.write(data)
++                    output.flush()
++                    os.fsync(output.fileno())
++                evidence["xml"] = {"state": "ORIGINAL_COMPLETE_XML_RETAINED", "source_name": xml_name,
++                                   "original": original, "retained": target.name, "contract": None}
++                try:
++                    evidence["xml"]["contract"] = inspect_real_jna_xml(data)
++                    run.case_results[CASES[0]].update({"state": "XML_CONTRACT_PASS_PENDING_OPERATIONAL_REVIEW",
++                                                     "xml_sha256": original["sha256"]})
++                except BaseException as error:
++                    failure = f"XML contract {type(error).__name__}: {error}"
++                    evidence["failures"].append(failure)
++                    run.case_results[CASES[0]].update({"state": "XML_RETAINED_CONTRACT_NOT_PASSED", "failure": failure})
++        finally:
++            run.close_original(handle, "original settled real-JNA result directory")
++    evidence["state"] = "COMPLETE_ORIGINAL_EVIDENCE_RETAINED"
++    write_json(run.evidence / "real-jna-evidence.json", evidence)
++    return evidence
++
++
+ def validated_inputs(workspace):
+     require(re.fullmatch(r"[0-9a-f]{64}", SOURCE_SHA256) and
+             type(SOURCE_MEMBERS) is int and 0 < SOURCE_MEMBERS <= 10000 and
+@@ -1216,14 +1620,18 @@
+             "Actual complete corrected Sfix source capture is unbound; this source cannot run")
+     request_data = frozen_bytes(workspace / REQUEST)
+     request = json.loads(request_data, object_pairs_hook=no_duplicate_keys)
+-    fixed = {"schema": 1, "suite": SUITE, "owner": "/root", "target": TARGET, "dry_run": True,
+-             "case_count": 0, "parent_command_limit": 7, "max_seconds": COMMAND_SECONDS,
++    fixed = {"schema": 1, "suite": SUITE, "owner": "/root", "target": TARGET, "dry_run": False,
++             "case_count": 1, "parent_command_limit": 10, "max_seconds": COMMAND_SECONDS,
+              "stop_cutoff_seconds": STOP_CUTOFF_SECONDS, "cleanup_seconds": CLEANUP_SECONDS,
+              "project_commit": PROJECT_COMMIT, "project_tree": PROJECT_TREE,
+              "source_manifest_path": SOURCE, "source_manifest_sha256": SOURCE_SHA256,
+              "source_members": SOURCE_MEMBERS, "source_raw_bytes": SOURCE_BYTES,
+-             "jdk_selector": "JAVA_HOME_17_X64", "gradle_jvm_heap": JVM_HEAP}
+-    require(all(request.get(key) == value for key, value in fixed.items()), "Changed fixed graph-only request contract")
++             "jdk_selector": "JAVA_HOME_17_X64", "gradle_jvm_heap": JVM_HEAP,
++             "graph_task_order_path": GRAPH_PATH, "graph_task_order_sha256": GRAPH_SHA256,
++             "graph_result_path": GRAPH_RESULT_PATH, "graph_result_sha256": GRAPH_RESULT_SHA256,
++             "graph_toolchain_path": GRAPH_TOOLCHAIN_PATH, "graph_toolchain_sha256": GRAPH_TOOLCHAIN_SHA256,
++             "graph_review_path": GRAPH_REVIEW_PATH, "graph_review_sha256": GRAPH_REVIEW_SHA256}
++    require(all(request.get(key) == value for key, value in fixed.items()), "Changed fixed one-case real-JNA request contract")
+     require(all(request.get(key) is True for key in ROOT_ATTESTATIONS), "Fresh root coordination/cleanup attestations absent")
+     require(re.fullmatch(r"[0-9a-f]{32}", request.get("nonce", "")), "Invalid fresh nonce")
+     require(all(re.fullmatch(r"[0-9a-f]{40}", request.get(key, "")) for key in ("source_commit", "source_tree")),
+@@ -1242,19 +1650,23 @@
+             isinstance(manifest.get("files"), list) and len(manifest["files"]) == SOURCE_MEMBERS,
+             "Wrong complete raw-source schema/identity; historical Linux inode pins are not runtime authority")
+     captures[SOURCE] = source_bytes
+-    require(request.get("independent_review_path") == REVIEW, "Wrong fresh graph-only reviewer path")
++    require(request.get("independent_review_path") == REVIEW, "Wrong fresh one-case real-JNA reviewer path")
+     review_bytes = frozen_bytes(workspace / REVIEW)
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_bytes).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_bytes, object_pairs_hook=no_duplicate_keys)
+     require(review.get("schema") == 1 and review.get("reviewer") == "/root/native_review_c20" and
+-            review.get("disposition") == "ACCEPT_WINDOWS_JNA_GRAPH_01_INSTANCE" and
++            review.get("disposition") == "ACCEPT_WINDOWS_REAL_JNA_01_INSTANCE" and
+             review.get("nonce") == request["nonce"] and
+             all(review.get(key) == value for key, value in fixed.items() if key not in ("owner", "schema")),
+-            "Genuine independent graph-only content/nonce acceptance missing")
++            "Genuine independent one-case content/nonce acceptance missing")
+     for key in ("helper_sha256", "init_sha256", "workflow_sha256", "scope_sha256"):
+         require(review.get(key) == request.get(key), "Independent acceptance does not bind this exact candidate")
++    graph_captures, admitted_graph = accepted_graph_inputs(workspace)
++    require(f"def actualGraphSha256 = '{GRAPH_SHA256}'".encode("ascii") in captures[INIT],
++            "Runtime init does not bind this exact actual accepted graph")
++    captures.update(graph_captures)
+     captures[REQUEST], captures[REVIEW] = request_data, review_bytes
+-    return request, manifest, {path: hashlib.sha256(data).hexdigest() for path, data in captures.items()}, captures[INIT]
++    return request, manifest, {path: hashlib.sha256(data).hexdigest() for path, data in captures.items()}, captures[INIT], admitted_graph
+ 
+ 
+ def main():
+@@ -1277,19 +1689,19 @@
+     require(Path(__file__).resolve() == workspace / HELPER, "Unexpected helper location")
+     for number in (signal.SIGINT, signal.SIGTERM, signal.SIGBREAK):
+         signal.signal(number, cancel)
+-    request, manifest, captures, init_bytes = validated_inputs(workspace)
++    request, manifest, captures, init_bytes, admitted_graph = validated_inputs(workspace)
+     require(not CANCELLED, "Cancellation before allocation")
+-    temp = safe_command_path(runner_temp / f"pv-jg1-{run_id}-1-{request['nonce']}")
+-    evidence = runner_temp / f"passvault-windows-jna-graph-01-{run_id}-1-evidence"
++    temp = safe_command_path(runner_temp / f"pv-jr1-{run_id}-1-{request['nonce']}")
++    evidence = runner_temp / f"passvault-windows-real-jna-01-{run_id}-1-evidence"
+     require_absent(temp)
+     require_absent(evidence)
+     evidence.mkdir()
+     win, run, root_handle, root_identity = None, None, None, None
+     parent_handles = []
+-    graph_returned = False
+-    result = {"suite": SUITE, "tests": 0, "operational_status": "FAILED_OR_INCOMPLETE",
++    runtime_returned, producer = False, None
++    result = {"suite": SUITE, "planned_cases": 1, "xml_passing_cases": 0, "operational_status": "FAILED_OR_INCOMPLETE",
+               "cleanup": "NOT_STARTED", "gradle_stop": {"state": "NOT_ARMED"}, "failures": [],
+-              "qualification": "Configuration/dry-run only; no Test/native/packaging execution or family closure"}
++              "qualification": "PVA010 managed-pre-entry real FFI/context only; no native-active/provider/PVA037/Hello/family closure"}
+     try:
+         with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8", newline="\n") as output:
+             output.write("evidence_owned=true\n")
+@@ -1300,7 +1712,7 @@
+         for path in (workspace, runner_temp):
+             handle, identity = win.open_owned(path, delete=False)
+             parent_handles.append((path, handle, identity))
+-        _, _, rechecked, rechecked_init = validated_inputs(workspace)
++        _, _, rechecked, rechecked_init, _rechecked_graph = validated_inputs(workspace)
+         require(rechecked == captures and rechecked_init == init_bytes, "Source authority drift across parent binding")
+         write_json(evidence / "allocation-intent.json", {
+             "workspace": str(workspace), "generated": str(temp), "resources": resources,
+@@ -1314,7 +1726,7 @@
+         temp.mkdir()
+         root_handle, root_identity = win.open_owned(temp)
+         for name in ("tmp", "home", "appdata", "localappdata", "logs", "gradle-home",
+-                     "android-home", "konan", "project-cache", "controls"):
++                     "android-home", "konan", "project-cache", "controls", "jna-data", "jna-home", "jna-tmp"):
+             (temp / name).mkdir()
+         run = Run(win, workspace, temp, evidence)
+         run.event("ownership_bound", root_identity=root_identity)
+@@ -1329,7 +1741,7 @@
+         require(parents == [identity[0], identity[2]], "Activation must have exactly one reviewed parent")
+         changes = run.command(git_prefix + ["diff", "--name-status", "HEAD^", "HEAD", "--"],
+                               30, "request-only-diff").splitlines()
+-        require(changes == ["A\t" + REQUEST], "Activation may only add the fresh graph request")
++        require(changes == ["A\t" + REQUEST], "Activation may only add the fresh real-JNA request")
+         status = run.command(git_prefix + ["status", "--porcelain=v1", "--untracked-files=all"], 30, "clean-source")
+         require(not status.strip(), "Control checkout is not clean")
+         result.update({"control_source_commit": identity[2], "control_source_tree": identity[3],
+@@ -1349,30 +1761,23 @@
+                 "Full source requires pre-enabled Windows long paths; no registry/host change allowed")
+         result["windows_long_paths_enabled"] = True
+         run.copy_project(manifest)
+-        prepared, java_argv = run.prepare_gradle(git, init_bytes)
++        with (run.temp / "controls/accepted-graph-task-order.json").open("xb") as output:
++            output.write(admitted_graph["graph_bytes"])
++            output.flush()
++            os.fsync(output.fileno())
++        require_graph_tools_before_producer(run, admitted_graph, git)
++        producer = produce_ordinary_windows_library(run)
++        prepared, java_argv = run.prepare_gradle(git, init_bytes, producer)
++        require_compatible_graph_toolchain(run, admitted_graph)
+         version = run.command(java_argv, 30, "java-version")
+         require(re.search(r'(?:openjdk|java) version "17\.', version) and "64-Bit Server VM" in version,
+                 "Actual selected JVM is not a qualified HotSpot-compatible Java17 x64")
+-        run.arm_gradle(prepared)  # Installed before any graph launch can be ambiguous.
+-        graph = run.command(prepared["graph_argv"], 210, "gradle-graph")
+-        tasks = re.findall(r"^(:[A-Za-z0-9_:.-]+) SKIPPED\r?$", graph, re.MULTILINE)
+-        require(0 < len(tasks) <= 1000 and len(tasks) == len(set(tasks)) and tasks.count(TARGET) == 1,
+-                "Missing, duplicate or oversized exact dry-run task record")
+-        graph_lines = [line.removeprefix("PVA010_WINDOWS_JNA_GRAPH01=") for line in graph.splitlines()
+-                       if line.startswith("PVA010_WINDOWS_JNA_GRAPH01=")]
+-        require(len(graph_lines) == 1 and graph.splitlines().count("PVA010_WINDOWS_JNA_GRAPH01_NATIVE_ROUTE_CLEAR") == 1,
+-                "Missing/duplicate graph observation or terminal native-route guard")
+-        observed = json.loads(graph_lines[0], object_pairs_hook=no_duplicate_keys)
+-        require(observed.get("selector") == TARGET and observed.get("root") == str(run.project) and
+-                observed.get("dryRun") is True and isinstance(observed.get("tasks"), list) and
+-                [row.get("path") for row in observed["tasks"]] == tasks,
+-                "Graph observer and actual dry-run task sequence differ")
+-        run.graph_snapshot = {"observed": observed, "ordered_task_paths": tasks, "tests_executed": 0, "selector": TARGET,
+-                              "qualification": "Current task paths/types/edges plus dry-run order; NOT independent scope acceptance;"
+-                                               " full source/settled log and cleanup require review before a fresh case"}
+-        write_json(evidence / "graph-task-order.json", run.graph_snapshot)
++        run.arm_gradle(prepared)  # Installed before any one-case wrapper launch can be ambiguous.
++        output = run.command(prepared["test_argv"], 1200, "gradle-real-jna", case=CASES[0])
++        run.graph_snapshot = inspect_real_jna_graph(output, admitted_graph["graph"], run.project)
++        write_json(evidence / "runtime-graph.json", run.graph_snapshot)
+         require(not CANCELLED, "Cancellation before original wrapper cleanup")
+-        graph_returned = True
++        runtime_returned = True
+     except BaseException as error:
+         result["failures"].append(f"{type(error).__name__}: {error}")
+     finally:
+@@ -1385,7 +1790,7 @@
+                     result["gradle_stop"] = run.stop_once()
+                     if run.gradle is not None and not run.gradle_stop["fulfilled"]:
+                         result["failures"].append("Original wrapper stop unfulfilled; original environment/cache retained HOLD")
+-                    settlement = run.settle(normal=graph_returned and not result["failures"])
++                    settlement = run.settle(normal=runtime_returned and not result["failures"])
+                     result["job_settlement"] = settlement
+                     result["failures"].extend(settlement["errors"])
+                     evidence_ready = run.job_settled and (run.gradle is None or run.gradle_stop["fulfilled"])
+@@ -1422,6 +1827,15 @@
+                         result["failures"].append(f"Retention {type(error).__name__}: {error}")
+                     finally:
+                         run.close_logs()
++                    if evidence_ready and not run.close_failures:
++                        try:
++                            retained = retain_real_jna_evidence(run, producer, admitted_graph, runtime_returned)
++                            result["failures"].extend(retained["failures"])
++                            xml = retained.get("xml") or {}
++                            result["xml_passing_cases"] = 1 if xml.get("contract") is not None else 0
++                        except BaseException as error:
++                            evidence_ready = False
++                            result["failures"].append(f"Real-JNA retention {type(error).__name__}: {error}")
+                     if evidence_ready and not run.close_failures and root_handle is not None:
+                         count = run.cleanup(root_handle, root_identity)
+                         handle, root_handle = root_handle, None
+@@ -1453,17 +1867,20 @@
+         result["commands"] = run.command_results if run else []
+         result["source_copy"] = run.source_copy if run else None
+         result["graph_snapshot"] = run.graph_snapshot if run else None
++        result["real_jna_evidence"] = run.real_jna_evidence if run else None
++        result["case_observations"] = run.case_results if run else {CASES[0]: {"state": "UNSTARTED"}}
+         result["entry_refusals"] = run.rejections if run else []
+         result["profile_entry_cleanup"] = run.profile_leaf_records if run else []
+         result["original_handle_close_failures"] = run.close_failures if run else []
+-        if (graph_returned and not result["failures"] and not result["original_handle_close_failures"] and
+-                result["gradle_stop"].get("fulfilled") and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
+-            result["operational_status"] = "GRAPH_CAPTURED_AWAITING_INDEPENDENT_REVIEW"
++        if (runtime_returned and result["xml_passing_cases"] == 1 and not result["failures"] and
++                not result["original_handle_close_failures"] and result["gradle_stop"].get("fulfilled") and
++                result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
++            result["operational_status"] = "REAL_JNA_CASE_RETAINED_AWAITING_INDEPENDENT_REVIEW"
+         write_json(evidence / "result.json", result)
+         print(json.dumps(result, sort_keys=True))
+     for number in (signal.SIGINT, signal.SIGTERM, signal.SIGBREAK):
+         signal.signal(number, signal.SIG_DFL)
+-    return 0 if not CANCELLED and result["operational_status"] == "GRAPH_CAPTURED_AWAITING_INDEPENDENT_REVIEW" else 1
++    return 0 if not CANCELLED and result["operational_status"] == "REAL_JNA_CASE_RETAINED_AWAITING_INDEPENDENT_REVIEW" else 1
+ 
+ 
+ if __name__ == "__main__":

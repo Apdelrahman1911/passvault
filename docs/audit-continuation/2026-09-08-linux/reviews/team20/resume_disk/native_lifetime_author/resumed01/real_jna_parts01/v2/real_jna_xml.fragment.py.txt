@@ -1,0 +1,35 @@
+"""INERT one-case XML classifier, not an execution helper or closure decision.
+
+Caller supplies original fully retained Job-zero XML bytes and separately proves
+actual run/source/DLL/graph, original wrapper stop and every cleanup obligation.
+No file access, dynamic test selection, retries or subprocess are added here.
+"""
+
+
+def inspect_real_jna_xml(xml_bytes):
+    # Imports are only proposed source; this .txt fragment has not been imported.
+    import xml.etree.ElementTree as ET
+    require(0 < len(xml_bytes) <= 512 * 1024, "Oversized XML is not admitted")
+    xml_text = xml_bytes.decode("utf-8", errors="strict")
+    require("\x00" not in xml_text and "<!DOCTYPE" not in xml_text.upper() and
+            "<!ENTITY" not in xml_text.upper(), "Only nondeclarative UTF-8 Gradle XML is admitted")
+    root = ET.fromstring(xml_text)
+    klass = "com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest"
+    method = "closeReservationProtectsRealContextUntilCancellationReturns"
+    require(root.tag == "testsuite" and root.get("name") == klass and root.get("tests") == "1" and
+            all(root.get(name) == "0" for name in ("failures", "errors", "skipped")),
+            "Require exactly one non-skipped successful JUnit suite, not tasks or configuration")
+    cases = list(root.iter("testcase"))
+    require(len(cases) == 1 and cases == root.findall("testcase") and
+            cases[0].get("classname") == klass and cases[0].get("name") == method and
+            not any(node.tag in ("failure", "error", "skipped") for node in root.iter()),
+            "Wrong, duplicate, nested, failed or skipped real-JNA case")
+    output = "\n".join("".join(node.itertext()) for node in root.iter("system-out"))
+    lines = output.splitlines()
+    cleanup = "PVA010_REAL_JNA_LIFETIME_CLEANUP_SETTLED"
+    passed = "PVA010_REAL_JNA_LIFETIME_PASS target=windows-x64 abi=1 retrieve=5 cancel=0 destroy=1"
+    require(lines.count(cleanup) == 1 and lines.count(passed) == 1 and lines.index(cleanup) < lines.index(passed),
+            "Actual Windows ABI/context/order plus one settled cleanup marker required in XML stdout")
+    return {"class": klass, "method": method, "tests": 1, "failures": 0, "errors": 0, "skipped": 0,
+            "xml_sha256": hashlib.sha256(xml_bytes).hexdigest(), "xml_bytes": len(xml_bytes),
+            "qualification": "One XML/marker contract only; no PASS until source/graph/DLL/logs/stop/Job/cleanup independently reconcile"}

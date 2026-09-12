@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T10:43:35.552058+00:00",
+  "status": "ACTUAL_GRAPH01_EXIT1_NONACCEPTING_CLEANED_PENDING_INDEPENDENT_REVIEW",
+  "original_launch": {
+    "chunk_id": "3197c6",
+    "session_id": 41838
+  },
+  "poll_chunk": "4e3d94",
+  "original_terminal": {
+    "chunk_id": "d1eefe",
+    "exit_code": 1,
+    "output_bytes": 0
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-host-graph01-outer/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "admission": {
+    "path": "reviews/team20/resume_disk/root/SFIX-ANDROIDGRAPH01-EXECUTION-ADMISSION.json",
+    "bytes": 6255,
+    "sha256": "88ae46b37bba22108d27396d5fb407833d99921a91684660225376289c13f7e5"
+  },
+  "outer": {
+    "path": "runs/linux-android-host-graph01/OUTER-RECEIPT.json",
+    "bytes": 12217,
+    "sha256": "526b01845869d7b57371c606179b04a0094ecd8cc2c013f862be24c9547c22e8"
+  },
+  "inner": {
+    "path": "runs/linux-android-host-graph01/INNER-RESULT.json",
+    "bytes": 10922,
+    "sha256": "ee902210b3aa6b952c57712158b8d76eea478f1e7f15fda8c20d494e07e9b244"
+  },
+  "graph_evidence": {
+    "path": "runs/linux-android-host-graph01/GRAPH-EVIDENCE.json",
+    "bytes": 1245,
+    "sha256": "3668108f2902c5cb7fdb94aff6a42a5cbb9dbdbf8a0568e7aabe1ed4d543f42b"
+  },
+  "graph_log": {
+    "path": "runs/linux-android-host-graph01/logs/host-graph.log",
+    "bytes": 24793,
+    "sha256": "ee53933317770c864b4aef2293f984436009c75ee2f81de3ec104a53ef036e8b"
+  },
+  "stop_log": {
+    "path": "runs/linux-android-host-graph01/logs/host-graph-stop.log",
+    "bytes": 454,
+    "sha256": "0cab237eef1d623a5bd7a54dbd0c6d22a418916b142a5a3166131c95f1439c8d"
+  },
+  "outcome": "Initialization argument guard rejected before settings/task graph. Exactly one finished/init marker with graphCount0/whenReady0 and sourceUNBOUND. No expected preaction-refusal pair; no graph acceptance. 0task actions/tests/XML/compiler/native32/closure credit. Narrow source investigation remains; no automatic retry.",
+  "cleanup": {
+    "removed": 6160,
+    "snapshot_entries": 6160,
+    "status": "REMOVED_ORIGINAL_RUNTIME"
+  },
+  "original_wrapper_stop": "COMPLETE_EXIT0_ONCE_DO_NOT_REPEAT",
+  "safety_flags": {
+    "source_before": true,
+    "source_after": true,
+    "all_required_stops_ok": true,
+    "namespace_empty_before_exit": true,
+    "cleanup_safe": true,
+    "sealed_index_unchanged": true
+  },
+  "runtime_absence_observed": true,
+  "outer_elapsed_seconds": 29.185,
+  "unclassified_host_churn": 0,
+  "postrun_resource_point": {
+    "disk_available_bytes": 17847832576,
+    "ram_available_bytes": 63944585216,
+    "ram_total_bytes": 67435888640
+  },
+  "postrun_buildlike_screen": "d4131c empty comm-only point, not global ownership/exclusivity proof",
+  "qualification": "Original external terminal retained separately from preterminal receipts. No second stop, manual cleanup or old-root access. Source/T/index unchanged; source-only lane may resume after root release, next build requires independent current-run settlement review."
+}

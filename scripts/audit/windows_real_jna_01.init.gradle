@@ -1,0 +1,133 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import java.security.MessageDigest
+import org.gradle.api.GradleException
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.tasks.testing.Test
+import java.util.concurrent.atomic.AtomicBoolean
+
+// INERT proposed one-case runtime guard; actual graph/instance admission still absent.
+// Native guard reuses independently reviewed dependency/konan01 lines41-77.
+def start = gradle.startParameter
+def selector = ':app-desktop:auditJnaLifetimeTest'
+def expectedRoot = new File(start.projectProperties['passvault.audit.jnaGraph.root'] ?: '')
+def actualGraphSha256 = 'UNBOUND_INDEPENDENTLY_ACCEPTED_ACTUAL_WINDOWS_GRAPH_SHA256'
+def admittedNames = ['enabled', 'target', 'abi', 'library', 'libraryBytes', 'librarySha256',
+                     'dataDirectory', 'workerHome', 'workerTemporaryDirectory']
+def prefix = 'passvault.audit.jnaLifetime.'
+def actualNames = start.projectProperties.keySet().findAll { it.startsWith(prefix) }.collect { it.substring(prefix.length()) }
+if (gradle.gradleVersion != '9.7.1' || System.getProperty('java.specification.version') != '17' ||
+        !System.getProperty('os.name').startsWith('Windows') || !(System.getProperty('os.arch') in ['amd64', 'x86_64']) ||
+        start.taskNames != [selector] || start.dryRun || start.continueOnFailure || !start.excludedTaskNames.empty ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
+        start.buildCacheEnabled || start.offline || start.refreshDependencies || start.initScripts.size() != 1 ||
+        start.dependencyVerificationMode != DependencyVerificationMode.STRICT ||
+        actualNames.toSet() != admittedNames.toSet() ||
+        admittedNames.any { !(start.projectProperties[prefix + it] instanceof String) || start.projectProperties[prefix + it].trim().empty } ||
+        start.projectProperties[prefix + 'enabled'] != '1' || start.projectProperties[prefix + 'target'] != 'windows-x64' ||
+        start.projectProperties[prefix + 'abi'] != '1' ||
+        !expectedRoot.isAbsolute() || expectedRoot.absoluteFile != expectedRoot || expectedRoot.canonicalFile != expectedRoot ||
+        expectedRoot.name != 'project' || System.getenv('PASSVAULT_AUDIT_JNA_GRAPH_ROOT') != expectedRoot.path) {
+    throw new GradleException('WindowsRealJna01 requires exactly one admitted native-Windows JDK17 Test in original private source')
+}
+
+// Copy of the real independently accepted graph evidence, not invented task paths.
+// Outer adapter must hash-bind the actual graph, its genuine independent review,
+// unchanged product/toolchain/environment, and complete original graph cleanup.
+def graphFile = new File(expectedRoot.parentFile, 'controls/accepted-graph-task-order.json')
+if (!(actualGraphSha256 ==~ /[0-9a-f]{64}/) || !graphFile.isFile() ||
+        graphFile.canonicalFile != graphFile.absoluteFile || graphFile.length() > 1024 * 1024) {
+    throw new GradleException('Real-JNA graph binding is still absent or changed; no Test actions')
+}
+def graphBytes = graphFile.bytes
+if (graphBytes.length == 0 || graphBytes.length > 1024 * 1024 ||
+        MessageDigest.getInstance('SHA-256').digest(graphBytes).encodeHex().toString() != actualGraphSha256) {
+    throw new GradleException('Actual accepted native-Windows graph bytes changed')
+}
+def accepted = new JsonSlurper().parseText(new String(graphBytes, 'UTF-8'))
+if (accepted.selector != selector || accepted.tests_executed != 0 ||
+        accepted.observed.selector != selector || accepted.observed.dryRun != true ||
+        !(accepted.observed.tasks instanceof List) || accepted.observed.tasks.empty ||
+        accepted.observed.tasks.size() > 1000 ||
+        accepted.observed.tasks.collect { it.path } != accepted.ordered_task_paths) {
+    throw new GradleException('Wrong actual graph-only evidence contract')
+}
+
+// KGP2.4.10 source-proven native route guard; not a general download ban.
+// Fresh outer-owned storage is required: an installed provisioned.ok marker
+// or a custom native home would bypass bundle resolution and permit auxiliaries.
+def nativeData = new File(expectedRoot.parentFile, 'konan')
+def nativeProperties = [
+    'kotlin.native.toolchain.enabled': 'true',
+    'kotlin.native.distribution.downloadFromMaven': 'true',
+    'konan.data.dir': nativeData.path,
+]
+def forbiddenNativeOverrides = ['kotlin.native.home', 'org.jetbrains.kotlin.native.home',
+    'kotlin.native.version', 'org.jetbrains.kotlin.native.version', 'kotlin.native.reinstall']
+if (nativeProperties.any { key, value -> start.projectProperties[key] != value } ||
+        forbiddenNativeOverrides.any { start.projectProperties.containsKey(it) } ||
+        System.getenv('KONAN_DATA_DIR') != nativeData.path || nativeData.canonicalFile != nativeData ||
+        !nativeData.isDirectory() || nativeData.list()?.length != 0) {
+    throw new GradleException('WindowsRealJna01 requires the pinned native route and fresh empty native data directory')
+}
+// Reject project-property shadowing before plugin application; do not query KGP providers.
+gradle.beforeProject { project ->
+    if (nativeProperties.any { key, value -> project.findProperty(key) != value } ||
+            forbiddenNativeOverrides.any { project.findProperty(it) != null }) {
+        throw new GradleException('WindowsRealJna01 refuses native route/home/version/reinstall overrides')
+    }
+}
+def nativeDenied = new AtomicBoolean()
+// Registered in init, before settings/projects: configuration, provider realization
+// and cached-archive resolution must all encounter this BEFORE obtaining the bundle.
+gradle.addListener([
+    beforeResolve: { ResolvableDependencies incoming ->
+        if (incoming.name == 'kotlinNativeBundleConfiguration') {
+            nativeDenied.set(true)
+            throw new GradleException('WindowsRealJna01 forbids Kotlin/Native compiler provisioning')
+        }
+    },
+    afterResolve: { ResolvableDependencies ignored -> },
+] as DependencyResolutionListener)
+
+// Before ANY task action, compare actual ordered paths/types/enabled flags and all
+// dependency/finalizer/order edges. No task mutation, broad suite or late refusal.
+def graphReported = false
+gradle.taskGraph.whenReady { graph ->
+    def root = gradle.rootProject
+    if (nativeDenied.get() || root.projectDir.absoluteFile != expectedRoot || root.projectDir.canonicalFile != expectedRoot ||
+            graph.allTasks.empty || graph.allTasks.size() > 1000 ||
+            graph.allTasks.count { it.path == selector && it instanceof Test } != 1) {
+        throw new GradleException('WindowsRealJna01 cannot observe a changed root, native denial or missing exact Test selector')
+    }
+    def rows = graph.allTasks.collect { task ->
+        [path: task.path, type: task.class.name, isTest: task instanceof Test, enabled: task.enabled,
+         dependencies: task.taskDependencies.getDependencies(task).collect { it.path }.sort(),
+         finalizers: task.finalizedBy.getDependencies(task).collect { it.path }.sort(),
+         mustRunAfter: task.mustRunAfter.getDependencies(task).collect { it.path }.sort(),
+         shouldRunAfter: task.shouldRunAfter.getDependencies(task).collect { it.path }.sort()]
+    }
+    if (nativeDenied.get()) {
+        throw new GradleException('WindowsRealJna01 refuses swallowed native denial during graph observation')
+    }
+    if (rows != accepted.observed.tasks || rows.collect { it.path } != accepted.ordered_task_paths ||
+            rows.count { it.isTest } != 1) {
+        throw new GradleException('Actual execution graph differs from independently accepted Windows graph; refuse before actions')
+    }
+    def encoded = JsonOutput.toJson([selector: selector, root: expectedRoot.path, dryRun: false, tasks: rows])
+    if (encoded.getBytes('UTF-8').length > 1024 * 1024) {
+        throw new GradleException('WindowsRealJna01 compact graph bound exceeded')
+    }
+    println('PVA010_WINDOWS_REAL_JNA01_GRAPH_ACCEPTED=' + encoded)
+    graphReported = true
+}
+gradle.buildFinished { outcome ->
+    if (nativeDenied.get()) {
+        throw new GradleException('WindowsRealJna01 native compiler provisioning was refused; no real-JNA PASS')
+    }
+    if (outcome.failure == null && graphReported) {
+        println('PVA010_WINDOWS_REAL_JNA01_NATIVE_ROUTE_CLEAR')
+    }
+}

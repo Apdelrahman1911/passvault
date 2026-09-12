@@ -1,0 +1,27 @@
+--- accepted-profile-leaf-v2/windows_jna_graph_01.py.txt
++++ graph_actual_sfix01/windows_jna_graph_01.py.txt
+@@ -31,16 +31,16 @@
+ HELPER = "scripts/audit/windows_jna_graph_01.py"
+ INIT = "scripts/audit/windows_jna_graph_01.init.gradle"
+ WORKFLOW = ".github/workflows/audit-windows-jna-graph-validation.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/profile_leaf_source01/v2/SOURCE-SCOPE.txt"
++SCOPE = f"{BASE}/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt"
+ REVIEW = f"{BASE}/reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json"
+ SOURCE = f"{BASE}/reviews/checkpoint21/source-prepare01/SOURCE.json"
+-# Future corrected Sfix PRODUCT: use one root-captured independently accepted SOURCE.
+-# Actual product/control/instance values stay rejecting until separately bound.
+-SOURCE_SHA256 = "UNBOUND_ACTUAL_ACCEPTED_SFIX_SOURCE_SHA256"
+-SOURCE_MEMBERS = 0
+-SOURCE_BYTES = 0
+-PROJECT_COMMIT = "UNBOUND_ACTUAL_SFIX_PRODUCT_COMMIT"
+-PROJECT_TREE = "UNBOUND_ACTUAL_SFIX_PRODUCT_TREE"
++# Corrected Sfix PRODUCT: one actual root-captured SOURCE; independent review remains required.
++# Actual product values bound below; control/instance/coordination remain rejecting.
++SOURCE_SHA256 = "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74"
++SOURCE_MEMBERS = 4113
++SOURCE_BYTES = 125708841
++PROJECT_COMMIT = "e9cca961837789048503aaffc74ab1a1e7e536ec"
++PROJECT_TREE = "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d"
+ SUITE = "windows-jna-graph-01"
+ TARGET = ":app-desktop:auditJnaLifetimeTest"
+ WRAPPER_SHA256 = "7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"

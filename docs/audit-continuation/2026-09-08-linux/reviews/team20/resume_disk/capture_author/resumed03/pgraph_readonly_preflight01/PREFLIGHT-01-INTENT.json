@@ -1,0 +1,160 @@
+{
+  "command_seconds": 45,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--literal-pathspecs",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "commit.gpgsign=false",
+        "-c",
+        "credential.helper=",
+        "ls-remote",
+        "--refs",
+        "https://github.com/Apdelrahman1911/passvault.git",
+        "refs/heads/codex/audit-continuation-linux-20260908",
+        "refs/heads/codex/remediation-handoff-20260908",
+        "refs/heads/main",
+        "refs/heads/release",
+        "refs/heads/testing",
+        "refs/tags/v1.0.7-rc.1017001"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "refs"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/pulls",
+        "-f",
+        "state=open",
+        "-f",
+        "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+        "-f",
+        "per_page=100",
+        "--jq",
+        "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "open_pr"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=queued",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "queued"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=pending",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "pending"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=waiting",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "waiting"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=requested",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "requested"
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs",
+        "-f",
+        "per_page=100",
+        "-f",
+        "status=in_progress",
+        "--jq",
+        "{total_count,workflow_runs:(.workflow_runs | map({id,status,head_sha,path,head_branch}))}"
+      ],
+      "cwd": "/root/projects/PassVault",
+      "name": "in_progress"
+    }
+  ],
+  "commands_deadline_seconds": 55,
+  "live_slot": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+  "owner": "/root",
+  "pipe_cap_each": 32768,
+  "purpose": "ONE_PGRAPH_READONLY_PREFLIGHT01_NO_U_ALLOCATION_OR_PUBLICATION",
+  "receipt_cap_each": 65536,
+  "scope": "Read-only exact6 public remote refs from neutral parent, exact-head/all-base open PR and5 all-repository nonterminal-status GETs. Resource meminfo only, no host process census or original T/W Git access. Credential context goes only to authorized gh public GETs, never printed; Git has no credential helper and ignores inherited config. No fetch/clone, U allocation, mutation, dispatch, held-root access, private capture, build, deletion or old helper invocation. Root separately admits exact source/instance and disk floor; this slot does not auto-admit U. Userspace deadlines cannot defeat blocked kernel calls or SIGKILL.",
+  "source": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/capture_author/resumed03/pgraph_readonly_preflight01/PGRAPH-READONLY-PREFLIGHT01.py.txt",
+  "total_seconds": 60,
+  "utc": "2026-09-12T12:40:33.245056+00:00"
+}
