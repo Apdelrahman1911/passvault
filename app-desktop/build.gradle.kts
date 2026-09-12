@@ -19,8 +19,11 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.testing.Test
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.LinkOption
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import java.time.Duration
 import java.util.Properties
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipFile
@@ -1086,7 +1089,7 @@ kotlin {
                 forkEvery = 1
                 maxHeapSize = "512m"
                 jvmArgs("-XX:ActiveProcessorCount=1", "-XX:-UsePerfData", "-XX:-CreateCoredumpOnCrash")
-                timeout.set(java.time.Duration.ofSeconds(120))
+                timeout.set(Duration.ofSeconds(120))
                 reports.junitXml.required.set(true)
                 reports.html.required.set(false)
                 outputs.upToDateWhen { false }
@@ -1108,11 +1111,11 @@ kotlin {
                     require(admitted.getValue("enabled") == "1" && admitted.values.none(String::isBlank)) {
                         "This one-case task requires all explicit real-JNA admission properties"
                     }
-                    val home = java.nio.file.Path.of(admitted.getValue("workerHome"))
-                    val temporary = java.nio.file.Path.of(admitted.getValue("workerTemporaryDirectory"))
+                    val home = Path.of(admitted.getValue("workerHome"))
+                    val temporary = Path.of(admitted.getValue("workerTemporaryDirectory"))
                     for (directory in listOf(home, temporary)) {
                         require(directory.isAbsolute && directory == directory.normalize())
-                        require(Files.isDirectory(directory, java.nio.file.LinkOption.NOFOLLOW_LINKS))
+                        require(Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS))
                         require(directory == directory.toRealPath())
                     }
                     require(home != temporary)
