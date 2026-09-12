@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "suite": "windows-kdf-file-io-01",
+  "owner": "/root",
+  "exclusive_build_slot": true,
+  "source_push_excludes_queued_pending_running_local_ci": true,
+  "activation_push_excludes_queued_pending_running_local_ci": true,
+  "source_push_other_workflow_triggers_reviewed": true,
+  "activation_push_other_workflow_triggers_reviewed": true,
+  "generated_cleanup_admitted": true,
+  "nonce": "18d1aaaace5896f0f3a51317558a59e8",
+  "case_names": [
+    "passvault_biometric_windows_kdf_known_answer",
+    "passvault_biometric_windows_file_io_write_failure",
+    "passvault_biometric_windows_file_io_flush_failure",
+    "passvault_biometric_windows_file_io_close_failure"
+  ],
+  "target": "passvault_biometric_windows_security_test",
+  "case_argv": {
+    "passvault_biometric_windows_kdf_known_answer": [
+      "--kdf-known-answer"
+    ],
+    "passvault_biometric_windows_file_io_write_failure": [
+      "--file-io-case",
+      "write_failure"
+    ],
+    "passvault_biometric_windows_file_io_flush_failure": [
+      "--file-io-case",
+      "flush_failure"
+    ],
+    "passvault_biometric_windows_file_io_close_failure": [
+      "--file-io-case",
+      "close_failure"
+    ]
+  },
+  "audit_controls": false,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "source_commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+  "source_tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+  "helper_sha256": "1f07418b060000e1109c269d624423017e8699476a4c500e5f383bd435bf0a5c",
+  "workflow_sha256": "df1bcec6be613216fda57b9d593659c0da86383c7a02001b8544d3d811b7dfe3",
+  "scope_sha256": "0c32ba79a2eee3c59bf99c94fb170bbea4216553e46f07f8fc6957b54d6337ee",
+  "independent_review_path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_review/IO-BATCH-INSTANCE-ACCEPT.json",
+  "independent_review_sha256": "49e5ba6bcb3f927017af3ca025a521fa73e6c07a88dd9ee378383f71b9377d7f"
+}
