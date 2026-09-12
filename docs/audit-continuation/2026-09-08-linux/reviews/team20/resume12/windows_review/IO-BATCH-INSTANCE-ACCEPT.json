@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "utc": "2026-09-12T01:25:58.591910+00:00",
+  "reviewer": "/root/c20_windows_review",
+  "disposition": "ACCEPT_WINDOWS_KDF_FILE_IO_01_INSTANCE",
+  "acceptance_scope": "EXACT_SOURCE_CONTENT_AND_ROOT_SUPPLIED_NONCE_ONLY_NOT_CURRENT_EXECUTION_ADMISSION",
+  "suite": "windows-kdf-file-io-01",
+  "nonce": "18d1aaaace5896f0f3a51317558a59e8",
+  "case_names": [
+    "passvault_biometric_windows_kdf_known_answer",
+    "passvault_biometric_windows_file_io_write_failure",
+    "passvault_biometric_windows_file_io_flush_failure",
+    "passvault_biometric_windows_file_io_close_failure"
+  ],
+  "case_argv": {
+    "passvault_biometric_windows_kdf_known_answer": [
+      "--kdf-known-answer"
+    ],
+    "passvault_biometric_windows_file_io_write_failure": [
+      "--file-io-case",
+      "write_failure"
+    ],
+    "passvault_biometric_windows_file_io_flush_failure": [
+      "--file-io-case",
+      "flush_failure"
+    ],
+    "passvault_biometric_windows_file_io_close_failure": [
+      "--file-io-case",
+      "close_failure"
+    ]
+  },
+  "target": "passvault_biometric_windows_security_test",
+  "audit_controls": false,
+  "sdk": "10.0.26100.0",
+  "max_seconds": 480,
+  "input_sha256": {
+    ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+    "app-desktop/native/biometric-bridge/CMakeLists.txt": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10",
+    "app-desktop/native/biometric-bridge/include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+    "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+    "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+    "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json": "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md": "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-NATIVE-TEST-INTEGRATION.json": "227fae154a727b51e1f03b00a17fe48bf8d380c8d3237b86b944a2e17082dac5",
+    "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_review/IO01-SOURCE-REVIEW.json": "a13876a95a1c13e51a7ead1328263bc2467a61e4ef51a0c34729db2f10ec08e6"
+  },
+  "helper_sha256": "1f07418b060000e1109c269d624423017e8699476a4c500e5f383bd435bf0a5c",
+  "workflow_sha256": "df1bcec6be613216fda57b9d593659c0da86383c7a02001b8544d3d811b7dfe3",
+  "scope_sha256": "0c32ba79a2eee3c59bf99c94fb170bbea4216553e46f07f8fc6957b54d6337ee",
+  "root_content_nonce_request": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-WINDOWS-IO-CONTENT-REVIEW-REQUEST.json",
+    "bytes": 4274,
+    "sha256": "a34009cba089d7bd7495d9e9d74cdb754fec69fb65d94be4f294a2dca70a34df"
+  },
+  "independent_source_review": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_review/SOURCE03-REVIEW.json",
+    "bytes": 14831,
+    "sha256": "1e81241238796b6b207733855a21d19c6458a5536f51856e69d9236946fcc03b"
+  },
+  "root_canonical_promotion_receipt": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-WINDOWS-CONTROLS-INTEGRATION.json",
+    "bytes": 1782,
+    "sha256": "7351ac0b6f6319ffa89e071b90388da73de505dd358e518689d42d2fe9e257f1"
+  },
+  "current_canonical_control_descriptors": [
+    {
+      "path": "scripts/audit/windows_kdf_file_io_01.py",
+      "bytes": 75311,
+      "sha256": "1f07418b060000e1109c269d624423017e8699476a4c500e5f383bd435bf0a5c"
+    },
+    {
+      "path": ".github/workflows/audit-windows-kdf-file-io-validation.yml",
+      "bytes": 2469,
+      "sha256": "df1bcec6be613216fda57b9d593659c0da86383c7a02001b8544d3d811b7dfe3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/SOURCE-SCOPE.md",
+      "bytes": 12461,
+      "sha256": "0c32ba79a2eee3c59bf99c94fb170bbea4216553e46f07f8fc6957b54d6337ee"
+    }
+  ],
+  "independent_reconciliation": [
+    "Root request parsed without duplicate members; exact suite, root/reviewer identities, 32-lowercase-hex nonce, ordered four-case list, complete argv map, target, controlsfalse, SDK/480s and fixed accepting-review path reconciled. The nonce is root-supplied; this bounded review does not independently establish historical non-reuse.",
+    "All eleven current source/evidence leaves have the accepted SOURCE03 byte hashes and exactly match the root input map. Canonical helper/workflow and the retained scope match source03. Root promotion receipt matches those two current canonical descriptors and the genuine source03 review hash.",
+    "Read helper fixed contracts and validated_inputs authority checks as inert text only. Required acceptance fields below bind the real reviewer and exact content/nonce; no source commit/tree or root execution attestations are invented.",
+    "SOURCE03-REVIEW and IO01-SOURCE-REVIEW retain the completed independent source/guard/counterexample review. This record adds the root nonce and canonical-promotion reconciliation, not an unchanged broad review or execution cycle."
+  ],
+  "authority_ceiling": [
+    "This genuine instance record accepts only the exact four-case source-content/nonce contract for inclusion in a dormant source publication. It does not admit source publication/push, an activation request or push, cleanup, CI, a build/test or release.",
+    "No actual source commit/tree, entire publication delta, activation request bytes/hash, live PR/queue/exclusivity/resource facts, source/activation push or result evidence was supplied to or independently admitted by this record. A containing source commit is deliberately not self-referentially asserted.",
+    "Root content request and canonical-promotion receipt report activation request absent and all execution/publication admission outstanding. These are attributed root observations, not a fresh reviewer filesystem/CI probe. Root reports the 12GiB launch floor unmet; this review neither rechecks nor relaxes it.",
+    "Six future request attestations must have separate fresh root evidence; the helper checking a boolean is not an observation of global exclusivity, resource availability, queue state or cleanup admission."
+  ],
+  "mandatory_remaining_gates": [
+    "Before any source push, root independently admits the actual complete dormant publication delta and freshly checks other workflow triggers, protected-base PR synchronization, and all queued/pending/waiting/running audit and local resource-heavy work. cancel-in-progress:false does not protect older pending runs.",
+    "After dormant publication, reconcile actual source commit/tree and exact eleven inputs/helper/workflow/scope/reviewer record; prepare and independently review exact activation request bytes/hash with this nonce and genuine review hash.",
+    "Activation must be one direct single-parent child of that exact source identity adding only the new request, with no source drift or existing-request modification. Before activation push, freshly reconcile trigger/PR/queue/global exclusive slot/resource/retention/owned-cleanup admission. Historical observations are not current permission.",
+    "Root alone may run the one normal Release Windows2022/x64 native cohort under the unchanged bounds. No old matrix replay, second run, automatic retry, Gradle/JNA expansion, old-root recovery or hardware/provider inference.",
+    "Independently reconcile actual source/request/run/job, exact inventory and argv, effective Release compile/link flags, settled AMD64 PE, raw command exits, four exact one-case XMLs, complete retained artifact byte/hash inventory and original Job/handle settlement plus cleanup. Operational completion is not itself test pass or whole-helper acceptance."
+  ],
+  "evidence_scoring_limits": [
+    "Exactly four selected cases: one KDF known-answer case containing two vectors, and three mixed real-file/injected-status I/O cases. Testcase counts are not command/task/process/vector counts.",
+    "Each exact XML requires tests1/failures0/disabled0/skipped0/errors absent-or0, the expected name/classname/status=run, and no failure/error/skipped child. KDF system-out may be empty. Each IO XML additionally needs its matching PVA036_IO case marker, status_injection=YES real_io=PASS pre_teardown=PASS native temp/destination IDs and cleanup=PASS.",
+    "The three controls exercise real files and successful underlying APIs while deliberately reporting failure; close_failure really closes the handle before reporting failure. They are not injected OS faults, leaked-handle behavior, actual cancellation, process crash, power-loss/durability, provider/Hello or hardware evidence.",
+    "PVA036 crash/cancel lifecycle gap remains OPEN. Existing Windows05 source-qualified case successes and its overall FAIL/HOLD remain separate. No family closure or readiness increase follows from this content acceptance."
+  ],
+  "counters": {
+    "cases_selected": 4,
+    "new_case_executions": 0,
+    "new_closures": 0,
+    "new_activation_requests": 0
+  },
+  "method": "Bounded permitted source/review/receipt reads, stdlib duplicate-key JSON parsing, literal contract comparisons and SHA256; exclusive creation of this owned review leaf. No helper import/AST/syntax/execute, Git/T/network/CI, host/process/SDK/runtime/held-root probes, canonical edit, build/test or cleanup.",
+  "preserved": "PVU007 STOP; PVU011 NO RETRY/no procedure inquiry; PVA02949/44/5 failure/no automatic retry; G7/G8 CLOSED; original native refusal; historical source/provenance/FAIL/HOLDs and hardware/provider/package gaps; eight PVD owner decisions; protected refs/tags/dependencies/versions/identities/signing/Store/release/occupied1017001 restrictions."
+}

@@ -1,0 +1,229 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source02/windows_kdf_known_answer_01.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/windows_kdf_file_io_01.py.txt
+@@ -1,11 +1,12 @@
+-"""One fresh Windows KDF known-answer case; no automatic retry or general runner.
+-
+-Author: /root/desktop_integration_author. Inert source until root separately
+-admits the exact SOURCE-SCOPE.md, source, request and genuine independent review.
+-Windows/Run lifetime primitives are copied from the reviewed Windows05 helper
+-SHA256 35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a;
+-that helper is never imported/executed and its consumed instance stays HOLD.
+-No Gradle, signing, installation, old case, credential inventory or Hello call.
++"""One fresh Windows KDF plus three file-I/O-status controls; no automatic retry.
++
++Author: /root/c20_windows_author. Inert source until root separately admits
++source03 scope, exact source, request and genuine independent instance review.
++The accepted KDF source02 helper is the inert lifetime-code precedent; it and
++consumed Windows05 are never imported/executed or given new recovery authority.
++One normal target, four fixed selectors; no old cases, Gradle, signing,
++installation, credential inventory or Hello call. I/O controls use real owned
++files/handles plus reported-status injection, not naturally occurring OS faults.
+ One Job encloses all commands; a command return is not whole-cohort settlement.
+ """
+ 
+@@ -29,17 +30,28 @@
+ 
+ BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
+ BASE = "docs/audit-continuation/2026-09-08-linux"
+-REQUEST = f"{BASE}/requests/windows-kdf-known-answer-01.json"
+-HELPER = "scripts/audit/windows_kdf_known_answer_01.py"
+-WORKFLOW = ".github/workflows/audit-windows-kdf-known-answer.yml"
+-SCOPE = f"{BASE}/reviews/team20/resume12/windows_author/source02/SOURCE-SCOPE.md"
+-REVIEW = f"{BASE}/reviews/team20/resume12/windows_review/INSTANCE-ACCEPT.json"
+-SUITE = "windows-kdf-known-answer-01"
++REQUEST = f"{BASE}/requests/windows-kdf-file-io-01.json"
++HELPER = "scripts/audit/windows_kdf_file_io_01.py"
++WORKFLOW = ".github/workflows/audit-windows-kdf-file-io-validation.yml"
++SCOPE = f"{BASE}/reviews/team20/resume12/windows_author/source03/SOURCE-SCOPE.md"
++REVIEW = f"{BASE}/reviews/team20/resume12/windows_review/IO-BATCH-INSTANCE-ACCEPT.json"
++SUITE = "windows-kdf-file-io-01"
+ SDK = "10.0.26100.0"
+ TARGET = "passvault_biometric_windows_security_test"
+-CASE = "passvault_biometric_windows_kdf_known_answer"
+-SELECTOR = "--kdf-known-answer"
+-CASES = [CASE]
++KDF_CASE = "passvault_biometric_windows_kdf_known_answer"
++CASE_ARGV = {
++    KDF_CASE: ["--kdf-known-answer"],
++    "passvault_biometric_windows_file_io_write_failure": ["--file-io-case", "write_failure"],
++    "passvault_biometric_windows_file_io_flush_failure": ["--file-io-case", "flush_failure"],
++    "passvault_biometric_windows_file_io_close_failure": ["--file-io-case", "close_failure"],
++}
++CASES = list(CASE_ARGV)
++XML_NAMES = {
++    KDF_CASE: "kdf.xml",
++    "passvault_biometric_windows_file_io_write_failure": "file-io-write.xml",
++    "passvault_biometric_windows_file_io_flush_failure": "file-io-flush.xml",
++    "passvault_biometric_windows_file_io_close_failure": "file-io-close.xml",
++}
+ PROJECTS = (TARGET,)
+ INSTRUMENTATION = (
+     "PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST",
+@@ -60,22 +72,24 @@
+ NATIVE = "app-desktop/native/biometric-bridge/"
+ INPUTS = {
+     ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+-    NATIVE + "CMakeLists.txt": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe",
++    NATIVE + "CMakeLists.txt": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10",
+     NATIVE + "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+     NATIVE + "src/windows/passvault_biometric_windows.cpp":
+-        "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
++        "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+     NATIVE + "src/windows/passvault_biometric_windows.rc":
+         "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c",
+     NATIVE + "tests/passvault_biometric_abi_test.cpp":
+         "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+     NATIVE + "tests/windows/passvault_biometric_windows_security_test.cpp":
+-        "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653",
++        "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60",
+     BASE + "/reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json":
+         "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321",
+     BASE + "/reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md":
+         "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2",
+     BASE + "/reviews/team20/root/C20-NATIVE-TEST-INTEGRATION.json":
+         "227fae154a727b51e1f03b00a17fe48bf8d380c8d3237b86b944a2e17082dac5",
++    BASE + "/reviews/team20/resume12/windows_file_review/IO01-SOURCE-REVIEW.json":
++        "a13876a95a1c13e51a7ead1328263bc2467a61e4ef51a0c34729db2f10ec08e6",
+ }
+ GiB = 1024 ** 3
+ LOG_LIMIT = 2 * 1024 ** 2
+@@ -555,7 +569,7 @@
+     def check_outputs(self):
+         # Every original stdout handle remains live: old compiler descendants
+         # can still write earlier logs while the next phase's parent runs.
+-        require(len(self.logs) <= 9, "Exact one-case KDF command log count exceeded")
++        require(len(self.logs) <= 12, "Exact four-case Windows command log count exceeded")
+         total = 0
+         for entry in self.logs:
+             size = self.log_state(entry)["size"]
+@@ -972,8 +986,8 @@
+             "Fresh root queued/pending/running local-CI, both-push trigger and owned-cleanup attestations required")
+     require(re.fullmatch(r"[0-9a-f]{32}", request.get("nonce", "")) is not None, "Invalid request nonce")
+     require(request.get("case_names") == CASES and request.get("target") == TARGET and
+-            request.get("selector") == SELECTOR and request.get("audit_controls") is False,
+-            "Only one normal-target KDF selector with audit controls OFF is admitted")
++            request.get("case_argv") == CASE_ARGV and request.get("audit_controls") is False,
++            "Only the four fixed normal-target KDF/file-I/O selectors with controls OFF are admitted")
+     require(request.get("sdk") == SDK and request.get("max_seconds") == COMMAND_SECONDS,
+             "Changed target/resource contract")
+     require(all(re.fullmatch(r"[0-9a-f]{40}", request.get(key, "")) for key in ("source_commit", "source_tree")),
+@@ -984,23 +998,23 @@
+         require(request.get(key) == hashlib.sha256(data).hexdigest(), f"Request hash mismatch: {path}")
+         captures[path] = data
+     review_path = request.get("independent_review_path", "")
+-    require(review_path == REVIEW, "Wrong new Windows KDF01 independent-review path")
++    require(review_path == REVIEW, "Wrong new Windows KDF/file-I/O independent-review path")
+     review_data = frozen_bytes(workspace / review_path)
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
+     require(review.get("schema") == 1 and review.get("reviewer") == "/root/c20_windows_review" and
+-            review.get("disposition") == "ACCEPT_WINDOWS_KDF_KNOWN_ANSWER_01_INSTANCE",
+-            "Missing genuine independent KDF01 instance acceptance")
++            review.get("disposition") == "ACCEPT_WINDOWS_KDF_FILE_IO_01_INSTANCE",
++            "Missing genuine independent KDF/file-I/O instance acceptance")
+     require(review.get("suite") == SUITE and review.get("nonce") == request["nonce"] and
+             review.get("case_names") == CASES and review.get("target") == TARGET and
+-            review.get("selector") == SELECTOR and review.get("audit_controls") is False and
++            review.get("case_argv") == CASE_ARGV and review.get("audit_controls") is False and
+             review.get("input_sha256") == INPUTS,
+-            "Independent acceptance does not bind this one-case nonce/source contract")
++            "Independent acceptance does not bind this four-case nonce/source contract")
+     for key in ("helper_sha256", "workflow_sha256", "scope_sha256"):
+         require(review.get(key) == request.get(key), "Acceptance does not bind the exact candidate")
+-    # Six native configure inputs, checkout attributes, three authority receipts.
+-    # No historical source is read; the old helper/request remain untouched.
+-    binding = {"suite": SUITE, "case_names": CASES, "target": TARGET, "selector": SELECTOR,
++    # Six native configure inputs, attributes, three retained KDF receipts and
++    # the independently accepted IO01 patch review. No historical code is read.
++    binding = {"suite": SUITE, "case_names": CASES, "target": TARGET, "case_argv": CASE_ARGV,
+                "audit_controls": False,
+                "files": [{"path": path, "sha256": expected} for path, expected in INPUTS.items()]}
+     for member in binding["files"]:
+@@ -1033,8 +1047,8 @@
+         signal.signal(number, cancel)
+     request, binding, captures = validated_inputs(workspace)
+     require(not CANCELLED, "Cancellation before allocation")
+-    temp = runner_temp / f"passvault-windows-kdf-known-answer-01-{run_id}-1-{request['nonce']}"
+-    evidence = runner_temp / f"passvault-windows-kdf-known-answer-01-{run_id}-1-evidence"
++    temp = runner_temp / f"passvault-windows-kdf-file-io-01-{run_id}-1-{request['nonce']}"
++    evidence = runner_temp / f"passvault-windows-kdf-file-io-01-{run_id}-1-evidence"
+     require_absent(temp)
+     require_absent(evidence)
+     evidence.mkdir()
+@@ -1134,7 +1148,7 @@
+             project_bytes = run.read_generated(project)
+             text = project_bytes.decode("utf-8-sig")
+             require(not any(token in text for token in INSTRUMENTATION),
+-                    "Normal KDF target must not compile historical/PRK instrumentation or source")
++                    "Normal KDF/file-I/O target must not compile historical/PRK instrumentation or source")
+             for token in ("stdcpp20", "<ExceptionHandling>Sync</ExceptionHandling>",
+                           "<WarningLevel>Level4</WarningLevel>", "<TreatWarningAsError>true</TreatWarningAsError>",
+                           "<SDLCheck>true</SDLCheck>", "<ControlFlowGuard>Guard</ControlFlowGuard>"):
+@@ -1149,26 +1163,37 @@
+         run.command([cmake, "--build", build, "--config", "Release", "--target", TARGET,
+                      "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 240, "build")
+         build_returned = True
+-        exact_filter = "^" + re.escape(CASE) + "$"
++        exact_filter = "^(" + "|".join(re.escape(name) for name in CASES) + ")$"
+         inventory = json.loads(run.command(
+             [ctest, "--test-dir", build, "-C", "Release", "--show-only=json-v1", "-R", exact_filter],
+             30, "ctest-inventory"), object_pairs_hook=no_duplicate_keys)
+         tests = inventory.get("tests")
+-        require(isinstance(tests, list) and len(tests) == 1 and isinstance(tests[0], dict) and
+-                tests[0].get("name") == CASE, "Filtered CTest inventory must contain exactly the KDF case")
+-        selected_argv = tests[0].get("command")
++        require(isinstance(tests, list) and len(tests) == len(CASES),
++                "Filtered CTest inventory must contain exactly the four admitted cases")
++        by_name = {}
+         normal_executable = build / "Release" / (TARGET + ".exe")
+-        require(isinstance(selected_argv, list) and len(selected_argv) == 2 and
+-                isinstance(selected_argv[0], str) and Path(selected_argv[0]).is_absolute() and
+-                Path(selected_argv[0]) == normal_executable and selected_argv[1] == SELECTOR,
+-                "KDF inventory must name this normal Release executable plus sole --kdf-known-answer argument")
++        for entry in tests:
++            require(isinstance(entry, dict), "Invalid CTest inventory entry")
++            name = entry.get("name")
++            require(isinstance(name, str) and name in CASE_ARGV and name not in by_name,
++                    "Missing, extra or duplicate KDF/file-I/O inventory name")
++            selected_argv = entry.get("command")
++            require(isinstance(selected_argv, list) and len(selected_argv) == 1 + len(CASE_ARGV[name]) and
++                    isinstance(selected_argv[0], str) and Path(selected_argv[0]).is_absolute() and
++                    Path(selected_argv[0]) == normal_executable and selected_argv[1:] == CASE_ARGV[name],
++                    "Inventory must select this normal Release executable and the exact per-case argv")
++            by_name[name] = entry
++        require(set(by_name) == set(CASES), "Incomplete exact four-case inventory")
+         plain_path(normal_executable)
+         write_json(evidence / "ctest-inventory.json", inventory)
+-        xml = temp / "logs" / "kdf.xml"
+-        run.xml_paths[CASE] = xml
+-        run.command([ctest, "--test-dir", build, "-C", "Release", "--parallel", "1",
+-                     "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit", xml,
+-                     "-R", exact_filter], 45, "kdf-known-answer", case=CASE)
++        # Fixed four-case list only; each parent/XML remains independently named.
++        # A failure aborts the remainder, with later cases still UNSTARTED.
++        for index, case in enumerate(CASES):
++            xml = temp / "logs" / XML_NAMES[case]
++            run.xml_paths[case] = xml
++            run.command([ctest, "--test-dir", build, "-C", "Release", "--parallel", "1",
++                         "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit", xml,
++                         "-R", "^" + re.escape(case) + "$"], 45, f"case-{index + 1}", case=case)
+         require(not CANCELLED, "Cancellation before result/cleanup")
+         commands_returned = True
+     except BaseException as error:
+@@ -1265,10 +1290,12 @@
+         result["original_handle_close_failures"] = run.close_failures if run is not None else []
+         result["sdk_header_observation"] = run.sdk_header_observation if run is not None else None
+         result["generated_file_observations"] = run.generated_file_observations if run is not None else []
+-        result["source_qualification"] = ("One normal-image KDF known-answer selector with two source-qualified fixed-vector "
+-                                          "assertions and success/input guards; no per-vector stdout markers or inferred case/HMAC count. "
+-                                          "No old-case replay, caller PRF/wrapping-array cut, provider-object lifetime, "
+-                                          "hardware/Hello, security-family closure or cure of any earlier HOLD")
++        result["source_qualification"] = (
++            "Four fixed normal-image selectors: KDF has two source-qualified fixed-vector assertions; "
++            "three I/O controls combine real owned files/handles with deliberate reported-status failure. "
++            "The close control closes the real handle successfully before reporting false. No actual OS "
++            "write/flush/close fault, process crash, application cancellation, whole-root recovery, "
++            "old-case replay, provider/Hello/hardware, caller-secret cut or security-family closure is proved.")
+         if (commands_returned and not result["failures"] and not result["original_handle_close_failures"]
+                 and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
+             result["operational_status"] = "COMMANDS_RETURNED_WITH_RAW_XML_AWAITING_INDEPENDENT_RESULT_REVIEW"

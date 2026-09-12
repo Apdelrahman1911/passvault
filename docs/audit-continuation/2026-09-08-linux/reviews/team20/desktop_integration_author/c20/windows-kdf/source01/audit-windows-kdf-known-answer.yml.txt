@@ -1,0 +1,57 @@
+name: Audit Windows KDF known answer 01 (non-publishing)
+
+# INERT SOURCE01 AFTER-IMAGE. No request, instance admission or run exists here.
+# Root alone may publish source first, then add an independently admitted request.
+on:
+  push:
+    branches: [codex/audit-continuation-linux-20260908]
+    paths:
+      - docs/audit-continuation/2026-09-08-linux/requests/windows-kdf-known-answer-01.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: passvault-audit-validation-20260908
+  # Does not preserve older pending runs or prove global/local exclusivity.
+  # Root must freshly exclude queued/pending/running cohorts before either push.
+  # Independent other-workflow trigger review is also required before either push.
+  cancel-in-progress: false
+
+jobs:
+  kdf:
+    if: >-
+      github.repository == 'Apdelrahman1911/passvault' &&
+      github.ref == 'refs/heads/codex/audit-continuation-linux-20260908' &&
+      github.event_name == 'push' && !github.event.deleted &&
+      github.run_attempt == 1
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - name: Read-only exact request checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          submodules: false
+          lfs: false
+
+      - name: Run only the admitted KDF known-answer selector
+        id: validate
+        shell: pwsh
+        run: python -I -B scripts/audit/windows_kdf_known_answer_01.py
+
+      - name: Preserve compact evidence, never application binaries
+        if: always() && steps.validate.outputs.evidence_owned == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: audit-windows-kdf-known-answer-01-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/passvault-windows-kdf-known-answer-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.json
+            ${{ runner.temp }}/passvault-windows-kdf-known-answer-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.jsonl
+            ${{ runner.temp }}/passvault-windows-kdf-known-answer-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.log
+            ${{ runner.temp }}/passvault-windows-kdf-known-answer-01-${{ github.run_id }}-${{ github.run_attempt }}-evidence/*.xml
+          retention-days: 3
+          compression-level: 9
+          if-no-files-found: error

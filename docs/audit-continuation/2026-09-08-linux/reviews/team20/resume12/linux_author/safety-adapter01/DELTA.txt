@@ -1,0 +1,456 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/LAUNCH.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/safety-adapter01/detekt05/LAUNCH.py.txt
+@@ -86,6 +86,9 @@
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state git-metadata'.split()
+ DIRS = TOP
+ ODIR, MIB = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, 1024 ** 2
++CACHE_REPORT_LIMITS = {'roots': 4, 'files': 16, 'file_bytes': MIB, 'total_bytes': 4 * MIB,
++                       'descendant_levels': 8, 'relative_json_bytes': 512}
++PROBLEMS_REPORT = ('checkout', 'build', 'reports', 'problems', 'problems-report.html')
+ BUILDLIKE = re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|'
+     r'gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|cargo|'
+     r'rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+@@ -748,7 +751,164 @@
+     receipt['parent_mount_guard'] = {'rows': len(lines), 'sha256': hashlib.sha256(raw).hexdigest(),
+         'qualification': 'Cooperative quiescent host only; not protection against concurrent hostile-root mount mutation.'}
+ 
+-def remove_runtime():
++def selected_report_images(result):
++    # Only the fixed inner-selected sources/destinations; no basename exemption.
++    allowed = {}
++    for task in STATIC_TASKS:
++        module = '' if task == ':detekt' else task[1:-7].replace(':', '/')
++        for kind, suffix in (('checkstyle', '.xml'), ('html', '.html'), ('sarif', '.sarif')):
++            relative = str(Path(module) / 'build/reports/detekt' / ('detekt' + suffix))
++            destination = 'reports/' + (module.replace('/', '-') if module else 'root') + '-' + kind + suffix
++            allowed[relative] = (destination, 4 * MIB, task, kind)
++    allowed['build/reports/problems/problems-report.html'] = ('reports/gradle-problems.html', MIB, None, 'problems_html')
++    phases = [phase for phase in result['phases'] if phase['phase'] == 'detekt']
++    require(len(phases) <= 1, 'at most the original static phase')
++    captures = phases[0]['reports']['captures'] if phases and phases[0]['stop_required'] else []
++    require(isinstance(captures, list) and len(captures) <= 22, 'bounded previously retained static captures')
++    selected = {}
++    for row in captures:
++        require(isinstance(row, dict) and set(row) == {'task', 'kind', 'source', 'destination', 'original', 'saved',
++                'diagnostic_only'} and row['source'] in allowed, 'fixed retained static capture source/schema')
++        destination, cap, task, kind = allowed[row['source']]
++        require(row['destination'] == destination and row['task'] == task and row['kind'] == kind
++                and row['diagnostic_only'] is (task is None), 'fixed retained static destination/kind')
++        parts = ('checkout', *row['source'].split('/'))
++        require(parts not in selected, 'duplicate retained static source')
++        selected[parts] = {'relative': '/'.join(parts), 'kind': 'ALREADY_RETAINED_SELECTED_REPORT',
++            'destination': destination, 'source_image': row['original'], 'saved_image': row['saved'],
++            'file_cap': cap, 'already_retained': True}
++    paths = [('checkout', *relative.split('/')) for relative in allowed]
++    return {'files': selected, 'directories': {parts[:count] for parts in paths for count in range(1, len(parts))}}
++
++
++def cache_report_root(parts, is_directory):
++    # Exact accepted static02 source shapes only; no basename disposal waiver.
++    if len(parts) >= 6 and parts[:4] == ('gradle-home', 'caches', '9.7.1', 'groovy-dsl'):
++        count = 6
++    elif len(parts) >= 7 and parts[:5] == ('gradle-home', 'caches', '9.7.1', 'kotlin-dsl', 'scripts'):
++        count = 7
++    else:
++        return None
++    digest = parts[count - 2]
++    if len(digest) != 32 or any(c not in '0123456789abcdef' for c in digest) or parts[count - 1] != 'reports':
++        return None
++    require(len(parts) - count <= CACHE_REPORT_LIMITS['descendant_levels']
++            and len(encoded('/'.join(parts))) <= CACHE_REPORT_LIMITS['relative_json_bytes'], 'cache report depth/path cap')
++    root = parts[:count]
++    require(parts != root or is_directory, 'cache report root is not a directory')
++    return root
++
++
++def capture_report_source(parts, snapshot, cap=MIB):
++    # Bind every containing directory to the original complete snapshot BEFORE
++    # reusing capture(); never adopt a new parent merely because the name matches.
++    for count in range(1, len(parts)):
++        prefix = parts[:count]
++        fd = directory(R.joinpath(*prefix))
++        require(same_dir(pin(os.fstat(fd), True), snapshot[prefix]), 'report parent differs from original snapshot')
++    data, image = capture(R.joinpath(*parts), cap)
++    require(image['pin'] == snapshot[parts], 'report file differs from original snapshot')
++    return data, image
++
++
++def preserve_generated_reports(snapshot, expected, folders, selected):
++    frozen_files = {('checkout', *name.split('/')) for name in expected}
++    frozen_directories = {('checkout', *name.split('/')) for name in folders}
++    problem_directories = {PROBLEMS_REPORT[:count] for count in range(3, len(PROBLEMS_REPORT))}
++    roots, candidates, cache_files, cache_bytes = {}, [], 0, 0
++    # Classification of the WHOLE snapshot precedes every evidence copy and unlink.
++    for parts, original in sorted(snapshot.items(), key=lambda item: (len(item[0]), item[0])):
++        tick(END)
++        is_directory = stat.S_ISDIR(original['mode'])
++        if parts in frozen_files:
++            require(not is_directory, 'frozen source file changed type')
++            continue  # Authoritative source/evidence remains preserved outside R.
++        if parts in frozen_directories:
++            require(is_directory, 'frozen source ancestor changed type')
++            continue
++        if parts in selected['files']:
++            row = selected['files'][parts]
++            require(not is_directory and row['source_image']['pin'] == original,
++                    'previously retained report original differs from complete snapshot')
++            continue
++        if is_directory and parts in selected['directories']:
++            continue  # Exact source/auxiliary ancestors only; siblings gain no waiver.
++        root = cache_report_root(parts, is_directory)
++        if root is not None:
++            if parts == root:
++                require(root not in roots and len(roots) < CACHE_REPORT_LIMITS['roots'], 'cache report root cap')
++                roots[root] = original
++            else:
++                require(root in roots, 'cache report root must precede descendants')
++            if not is_directory:
++                cache_files += 1
++                cache_bytes += original['bytes']
++                require(cache_files <= CACHE_REPORT_LIMITS['files'] and 0 <= original['bytes'] <= MIB
++                        and cache_bytes <= CACHE_REPORT_LIMITS['total_bytes'], 'cache report file/byte caps')
++                candidates.append((parts, 'PRIVATE_GRADLE_DSL_REPORT'))
++            continue
++        if parts == PROBLEMS_REPORT:
++            require(not is_directory and 0 <= original['bytes'] <= MIB, 'fixed problems report type/byte cap')
++            candidates.append((parts, 'FIXED_GRADLE_PROBLEMS_REPORT'))
++            continue
++        if is_directory and parts in problem_directories:
++            continue  # Only the fixed file is permitted beneath these ancestors.
++        lower, name = tuple(p.lower() for p in parts), parts[-1].lower()
++        report = any(p in ('reports', 'test-results', 'surefire-reports', 'failsafe-reports', 'test-output') for p in lower)
++        diagnostic = (name.endswith(('.sarif', '.sarif.json', '.xcresult'))
++                      or (not is_directory and (name.endswith('.hprof')
++                          or (name.startswith('test-') and name.endswith('.xml'))
++                          or name.startswith(('hs_err_pid', 'replay_pid', 'worker-error-'))
++                          or name == 'core' or (name.startswith('core.') and name[5:].isdigit()))))
++        if report or diagnostic:
++            receipt['unexpected_evidence'] = {'relative': '/'.join(parts), 'directory': is_directory,
++                                              'reason': 'unpreserved report/test/crash/worker-error evidence'}
++            require(False, 'unpreserved generated diagnostic: HOLD before any deletion')
++    copies = list(selected['files'].values())
++    prior_count = len(copies)
++    for parts, kind in candidates:
++        tick(END)
++        data, original = capture_report_source(parts, snapshot)
++        destination = 'GENERATED-REPORT-%04d.bin' % (len(copies) - prior_count + 1)
++        output(destination, data)  # Existing exclusive flat-E write + file/parent fsync.
++        saved_data, saved = capture(E / destination, MIB)
++        require(saved_data == data and saved['sha256'] == original['sha256']
++                and saved['pin']['dev'] == DEVICE['regular_file_device']
++                and saved['pin']['mode'] == stat.S_IFREG | 0o600, 'exact durable report copy/readback')
++        copies.append({'relative': '/'.join(parts), 'kind': kind, 'destination': destination,
++                       'source_image': original, 'saved_image': saved, 'file_cap': MIB, 'already_retained': False})
++    manifest = {'format': 'passvault-linux-detekt05-retained-diagnostics-v1', 'run_id': RUN,
++        'cache_roots': {'/'.join(parts): value for parts, value in roots.items()}, 'limits': CACHE_REPORT_LIMITS,
++        'cache_file_count': cache_files, 'cache_logical_bytes': cache_bytes,
++        'problems_report_limit_bytes': MIB, 'previously_retained_files': prior_count, 'copies': copies,
++        'qualification': 'Opaque generated diagnostic bytes conserved outside R, no provenance or test credit.'}
++    output('GENERATED-REPORTS.json', encoded(manifest))
++    saved_manifest, manifest_image = capture(E / 'GENERATED-REPORTS.json', MIB)
++    require(saved_manifest == encoded(manifest), 'exact durable generated-report manifest')
++    receipt['generated_report_preservation'] = {'manifest': manifest_image, 'copied_files': len(copies) - prior_count,
++        'previously_retained_files': prior_count,
++        'copied_logical_bytes': sum(row['source_image']['pin']['bytes'] for row in copies if not row['already_retained']),
++        'source_and_saved_reverified_before_unlink': False, 'saved_reverified_after_cleanup': False}
++    return {'copies': copies, 'manifest_image': manifest_image}
++
++
++def verify_generated_reports(conserved, snapshot, *, source):
++    require(capture(E / 'GENERATED-REPORTS.json', MIB)[1] == conserved['manifest_image'], 'retained report manifest changed')
++    for row in conserved['copies']:
++        tick(END)
++        if source:
++            require(capture_report_source(tuple(row['relative'].split('/')), snapshot, row['file_cap'])[1] == row['source_image'],
++                    'original report changed before first unlink')
++        saved_data, saved = capture(E / row['destination'], row['file_cap'])
++        require(saved == row['saved_image'] and saved['pin']['dev'] == DEVICE['regular_file_device']
++                and saved['pin']['mode'] == stat.S_IFREG | 0o600
++                and saved['sha256'] == row['source_image']['sha256']
++                and len(saved_data) == row['source_image']['pin']['bytes'], 'retained report bytes/pin changed')
++    key = 'source_and_saved_reverified_before_unlink' if source else 'saved_reverified_after_cleanup'
++    receipt['generated_report_preservation'][key] = True
++
++
++def remove_runtime(expected, folders, result):
+     no_runtime_mounts()
+     mountpoint = directory(GIT_METADATA)
+     require(pin(os.fstat(mountpoint), True) == directories[GIT_METADATA][1],
+@@ -776,6 +936,8 @@
+                 finally:
+                     os.close(nested)
+     inventory(root)  # Complete bounded snapshot BEFORE any deletion; no retry after partial failure.
++    conserved = preserve_generated_reports(snapshot, expected, folders, selected_report_images(result))
++    verify_generated_reports(conserved, snapshot, source=True)
+     no_runtime_mounts()  # Recheck immediately before first destructive operation, including same-device bind mounts.
+     receipt['cleanup'] = {'status': 'STARTED', 'snapshot_entries': len(snapshot), 'removed': 0}
+     for parts in sorted(snapshot, key=lambda p: (-len(p), p)):
+@@ -795,6 +957,7 @@
+     os.fsync(directory(R.parent))
+     require(os.fstat(root).st_nlink == 0 and not os.path.lexists(R), 'runtime removal not established')
+     receipt['cleanup']['status'] = 'REMOVED_ORIGINAL_RUNTIME'
++    verify_generated_reports(conserved, snapshot, source=False)
+ 
+ def main():
+     global lock_fd, parent_ns, request, request_image, approval_image, IMAGES
+@@ -999,7 +1162,7 @@
+     require(source_check(expected) == before, 'outer raw-source after mismatch')
+     authority()
+     watch()
+-    remove_runtime()
++    remove_runtime(expected, folders, result)
+     receipt['status'] = 'COMPLETED_PENDING_INDEPENDENT_RECONCILIATION' if code == 0 else 'VALIDATION_FAILED_CLEANED'
+     return code
+ 
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/REQUEST.template.json
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/safety-adapter01/detekt05/REQUEST.template.json
+@@ -41,7 +41,7 @@
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt05/LAUNCH.py": {
+       "pin": null,
+-      "sha256": "ebf2ba8f2ea88c540cbab8b1f1d53d08caed14a9ff1a2b5028cba212d293fd26"
++      "sha256": "bd2eec51d077145db12cf995c7877953221e03dbbe37155143f92bb9ad79eea5"
+     },
+     "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_05.init.gradle": {
+       "pin": null,
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/LAUNCH.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/safety-adapter01/focused02/LAUNCH.py.txt
+@@ -49,6 +49,17 @@
+ CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
+ DIRS = TOP + [f'workers/{w}' for w in WORKERS] + [f'workers/{w}/{d}' for w in WORKERS for d in CHILDREN]
+ ODIR, MIB = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, 1024 ** 2
++CACHE_REPORT_LIMITS = {'roots': 4, 'files': 16, 'file_bytes': MIB, 'total_bytes': 4 * MIB,
++                       'descendant_levels': 8, 'relative_json_bytes': 512}
++PROBLEMS_REPORT = ('checkout', 'build', 'reports', 'problems', 'problems-report.html')
++AUXILIARY_REPORT_LIMITS = {'roots': 4, 'files': 64, 'file_bytes': MIB, 'total_bytes': 4 * MIB,
++                           'descendant_levels': 8, 'relative_json_bytes': 512}
++AUXILIARY_REPORT_ROOTS = (
++    ('checkout', 'core', 'database', 'build', 'reports', 'tests', 'desktopTest'),
++    ('checkout', 'feature', 'credential', 'build', 'reports', 'tests', 'desktopTest'),
++    ('checkout', 'core', 'database', 'build', 'test-results', 'desktopTest', 'binary'),
++    ('checkout', 'feature', 'credential', 'build', 'test-results', 'desktopTest', 'binary'),
++)
+ BUILDLIKE = re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|'
+     r'gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|cargo|'
+     r'rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+@@ -600,7 +611,182 @@
+     receipt['parent_mount_guard'] = {'rows': len(lines), 'sha256': hashlib.sha256(raw).hexdigest(),
+         'qualification': 'Cooperative quiescent host only; not protection against concurrent hostile-root mount mutation.'}
+ 
+-def remove_runtime():
++def selected_report_images(result):
++    # These are exactly the four reviewed class XMLs, not arbitrary TEST-* output.
++    allowed = {}
++    for module, fqcn in (
++            ('core/database', 'com.passvault.core.database.CredentialFolderForeignKeyMigrationTest'),
++            ('core/database', 'com.passvault.core.database.backup.VaultBackupUnicodePaginationTest'),
++            ('feature/credential', 'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest'),
++            ('feature/credential', 'com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest')):
++        name = 'TEST-' + fqcn + '.xml'
++        parts = ('checkout', *module.split('/'), 'build', 'test-results', 'desktopTest', name)
++        allowed[str(R.joinpath(*parts))] = (parts, 'xml/focused-' + name)
++    captures = result['phases'][0]['xml'].get('captures', [])
++    require(isinstance(captures, list) and len(captures) <= 4, 'bounded previously retained selected XML')
++    selected = {}
++    for row in captures:
++        require(isinstance(row, dict) and set(row) == {'source', 'original', 'saved'}
++                and row['source'] in allowed, 'fixed retained XML source/schema')
++        parts, destination = allowed[row['source']]
++        require(parts not in selected, 'duplicate retained XML source')
++        selected[parts] = {'relative': '/'.join(parts), 'kind': 'ALREADY_RETAINED_SELECTED_XML',
++            'destination': destination, 'source_image': row['original'], 'saved_image': row['saved'],
++            'file_cap': 2 * MIB, 'already_retained': True}
++    paths = [parts for parts, _ in allowed.values()]
++    paths += list(AUXILIARY_REPORT_ROOTS)
++    return {'files': selected, 'directories': {parts[:count] for parts in paths for count in range(1, len(parts))}}
++
++
++def cache_report_root(parts, is_directory):
++    # Exact accepted static02 source shapes only; no basename disposal waiver.
++    if len(parts) >= 6 and parts[:4] == ('gradle-home', 'caches', '9.7.1', 'groovy-dsl'):
++        count = 6
++    elif len(parts) >= 7 and parts[:5] == ('gradle-home', 'caches', '9.7.1', 'kotlin-dsl', 'scripts'):
++        count = 7
++    else:
++        return None
++    digest = parts[count - 2]
++    if len(digest) != 32 or any(c not in '0123456789abcdef' for c in digest) or parts[count - 1] != 'reports':
++        return None
++    require(len(parts) - count <= CACHE_REPORT_LIMITS['descendant_levels']
++            and len(encoded('/'.join(parts))) <= CACHE_REPORT_LIMITS['relative_json_bytes'], 'cache report depth/path cap')
++    root = parts[:count]
++    require(parts != root or is_directory, 'cache report root is not a directory')
++    return root
++
++
++def capture_report_source(parts, snapshot, cap=MIB):
++    # Bind every containing directory to the original complete snapshot BEFORE
++    # reusing capture(); never adopt a new parent merely because the name matches.
++    for count in range(1, len(parts)):
++        prefix = parts[:count]
++        fd = directory(R.joinpath(*prefix))
++        require(same_dir(pin(os.fstat(fd), True), snapshot[prefix]), 'report parent differs from original snapshot')
++    data, image = capture(R.joinpath(*parts), cap)
++    require(image['pin'] == snapshot[parts], 'report file differs from original snapshot')
++    return data, image
++
++
++def preserve_generated_reports(snapshot, expected, folders, selected):
++    frozen_files = {('checkout', *name.split('/')) for name in expected}
++    frozen_directories = {('checkout', *name.split('/')) for name in folders}
++    problem_directories = {PROBLEMS_REPORT[:count] for count in range(3, len(PROBLEMS_REPORT))}
++    roots, candidates, cache_files, cache_bytes = {}, [], 0, 0
++    auxiliary_roots, auxiliary_files, auxiliary_bytes = {}, 0, 0
++    # Classification of the WHOLE snapshot precedes every evidence copy and unlink.
++    for parts, original in sorted(snapshot.items(), key=lambda item: (len(item[0]), item[0])):
++        tick(END)
++        is_directory = stat.S_ISDIR(original['mode'])
++        if parts in frozen_files:
++            require(not is_directory, 'frozen source file changed type')
++            continue  # Authoritative source/evidence remains preserved outside R.
++        if parts in frozen_directories:
++            require(is_directory, 'frozen source ancestor changed type')
++            continue
++        if parts in selected['files']:
++            row = selected['files'][parts]
++            require(not is_directory and row['source_image']['pin'] == original,
++                    'previously retained report original differs from complete snapshot')
++            continue
++        if is_directory and parts in selected['directories']:
++            continue  # Exact source/auxiliary ancestors only; siblings gain no waiver.
++        root = cache_report_root(parts, is_directory)
++        if root is not None:
++            if parts == root:
++                require(root not in roots and len(roots) < CACHE_REPORT_LIMITS['roots'], 'cache report root cap')
++                roots[root] = original
++            else:
++                require(root in roots, 'cache report root must precede descendants')
++            if not is_directory:
++                cache_files += 1
++                cache_bytes += original['bytes']
++                require(cache_files <= CACHE_REPORT_LIMITS['files'] and 0 <= original['bytes'] <= MIB
++                        and cache_bytes <= CACHE_REPORT_LIMITS['total_bytes'], 'cache report file/byte caps')
++                candidates.append((parts, 'PRIVATE_GRADLE_DSL_REPORT'))
++            continue
++        if parts == PROBLEMS_REPORT:
++            require(not is_directory and 0 <= original['bytes'] <= MIB, 'fixed problems report type/byte cap')
++            candidates.append((parts, 'FIXED_GRADLE_PROBLEMS_REPORT'))
++            continue
++        if is_directory and parts in problem_directories:
++            continue  # Only the fixed file is permitted beneath these ancestors.
++        auxiliary = next((root for root in AUXILIARY_REPORT_ROOTS if parts[:len(root)] == root), None)
++        if auxiliary is not None:
++            require(len(parts) - len(auxiliary) <= AUXILIARY_REPORT_LIMITS['descendant_levels']
++                    and len(encoded('/'.join(parts))) <= AUXILIARY_REPORT_LIMITS['relative_json_bytes'],
++                    'selected test auxiliary report depth/path cap')
++            if parts == auxiliary:
++                require(is_directory and auxiliary not in auxiliary_roots, 'fixed auxiliary report root type/order')
++                auxiliary_roots[auxiliary] = original
++            else:
++                require(auxiliary in auxiliary_roots, 'fixed auxiliary root must precede descendants')
++            if not is_directory:
++                auxiliary_files += 1
++                auxiliary_bytes += original['bytes']
++                require(auxiliary_files <= AUXILIARY_REPORT_LIMITS['files'] and 0 <= original['bytes'] <= MIB
++                        and auxiliary_bytes <= AUXILIARY_REPORT_LIMITS['total_bytes'], 'selected test auxiliary file/byte caps')
++                candidates.append((parts, 'SELECTED_TEST_AUXILIARY_REPORT'))
++            continue
++        lower, name = tuple(p.lower() for p in parts), parts[-1].lower()
++        report = any(p in ('reports', 'test-results', 'surefire-reports', 'failsafe-reports', 'test-output') for p in lower)
++        diagnostic = (name.endswith(('.sarif', '.sarif.json', '.xcresult'))
++                      or (not is_directory and (name.endswith('.hprof')
++                          or (name.startswith('test-') and name.endswith('.xml'))
++                          or name.startswith(('hs_err_pid', 'replay_pid', 'worker-error-'))
++                          or name == 'core' or (name.startswith('core.') and name[5:].isdigit()))))
++        if report or diagnostic:
++            receipt['unexpected_evidence'] = {'relative': '/'.join(parts), 'directory': is_directory,
++                                              'reason': 'unpreserved report/test/crash/worker-error evidence'}
++            require(False, 'unpreserved generated diagnostic: HOLD before any deletion')
++    copies = list(selected['files'].values())
++    prior_count = len(copies)
++    for parts, kind in candidates:
++        tick(END)
++        data, original = capture_report_source(parts, snapshot)
++        destination = 'GENERATED-REPORT-%04d.bin' % (len(copies) - prior_count + 1)
++        output(destination, data)  # Existing exclusive flat-E write + file/parent fsync.
++        saved_data, saved = capture(E / destination, MIB)
++        require(saved_data == data and saved['sha256'] == original['sha256']
++                and saved['pin']['dev'] == DEVICE['regular_file_device']
++                and saved['pin']['mode'] == stat.S_IFREG | 0o600, 'exact durable report copy/readback')
++        copies.append({'relative': '/'.join(parts), 'kind': kind, 'destination': destination,
++                       'source_image': original, 'saved_image': saved, 'file_cap': MIB, 'already_retained': False})
++    manifest = {'format': 'passvault-linux-focused-regression02-retained-diagnostics-v1', 'run_id': RUN,
++        'cache_roots': {'/'.join(parts): value for parts, value in roots.items()}, 'limits': CACHE_REPORT_LIMITS,
++        'cache_file_count': cache_files, 'cache_logical_bytes': cache_bytes,
++        'auxiliary_roots': {'/'.join(parts): value for parts, value in auxiliary_roots.items()},
++        'auxiliary_limits': AUXILIARY_REPORT_LIMITS, 'auxiliary_file_count': auxiliary_files,
++        'auxiliary_logical_bytes': auxiliary_bytes,
++        'problems_report_limit_bytes': MIB, 'previously_retained_files': prior_count, 'copies': copies,
++        'qualification': 'Opaque generated diagnostic bytes conserved outside R, no provenance or test credit.'}
++    output('GENERATED-REPORTS.json', encoded(manifest))
++    saved_manifest, manifest_image = capture(E / 'GENERATED-REPORTS.json', MIB)
++    require(saved_manifest == encoded(manifest), 'exact durable generated-report manifest')
++    receipt['generated_report_preservation'] = {'manifest': manifest_image, 'copied_files': len(copies) - prior_count,
++        'previously_retained_files': prior_count,
++        'copied_logical_bytes': sum(row['source_image']['pin']['bytes'] for row in copies if not row['already_retained']),
++        'source_and_saved_reverified_before_unlink': False, 'saved_reverified_after_cleanup': False}
++    return {'copies': copies, 'manifest_image': manifest_image}
++
++
++def verify_generated_reports(conserved, snapshot, *, source):
++    require(capture(E / 'GENERATED-REPORTS.json', MIB)[1] == conserved['manifest_image'], 'retained report manifest changed')
++    for row in conserved['copies']:
++        tick(END)
++        if source:
++            require(capture_report_source(tuple(row['relative'].split('/')), snapshot, row['file_cap'])[1] == row['source_image'],
++                    'original report changed before first unlink')
++        saved_data, saved = capture(E / row['destination'], row['file_cap'])
++        require(saved == row['saved_image'] and saved['pin']['dev'] == DEVICE['regular_file_device']
++                and saved['pin']['mode'] == stat.S_IFREG | 0o600
++                and saved['sha256'] == row['source_image']['sha256']
++                and len(saved_data) == row['source_image']['pin']['bytes'], 'retained report bytes/pin changed')
++    key = 'source_and_saved_reverified_before_unlink' if source else 'saved_reverified_after_cleanup'
++    receipt['generated_report_preservation'][key] = True
++
++
++def remove_runtime(expected, folders, result):
+     no_runtime_mounts()
+     root, snapshot = directory(R), {}
+     def inventory(fd, prefix=()):
+@@ -619,6 +805,8 @@
+                 finally:
+                     os.close(nested)
+     inventory(root)  # Complete bounded snapshot BEFORE any deletion; no retry after partial failure.
++    conserved = preserve_generated_reports(snapshot, expected, folders, selected_report_images(result))
++    verify_generated_reports(conserved, snapshot, source=True)
+     no_runtime_mounts()  # Recheck immediately before first destructive operation, including same-device bind mounts.
+     receipt['cleanup'] = {'status': 'STARTED', 'snapshot_entries': len(snapshot), 'removed': 0}
+     for parts in sorted(snapshot, key=lambda p: (-len(p), p)):
+@@ -638,6 +826,7 @@
+     os.fsync(directory(R.parent))
+     require(os.fstat(root).st_nlink == 0 and not os.path.lexists(R), 'runtime removal not established')
+     receipt['cleanup']['status'] = 'REMOVED_ORIGINAL_RUNTIME'
++    verify_generated_reports(conserved, snapshot, source=False)
+ 
+ def main():
+     global lock_fd, parent_ns, request, request_image, approval_image
+@@ -820,7 +1009,7 @@
+     require(source_check(expected) == before, 'outer raw-source after mismatch')
+     authority()
+     watch()
+-    remove_runtime()
++    remove_runtime(expected, folders, result)
+     receipt['status'] = 'COMPLETED_PENDING_INDEPENDENT_RECONCILIATION' if code == 0 else 'VALIDATION_FAILED_CLEANED'
+     return code
+ 
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/REQUEST.template.json
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/safety-adapter01/focused02/REQUEST.template.json
+@@ -27,7 +27,7 @@
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/LAUNCH.py": {
+       "pin": null,
+-      "sha256": "55a986424fbf04aca6e736e0c8f3d27abf845b00e1744711441b826ac048e014"
++      "sha256": "ca6fe927d8f5f8584b6831668b2902a3ad0a41eb803f9bf3e62ae43b6cc12c4c"
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/METHODS.tsv": {
+       "pin": null,

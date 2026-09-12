@@ -1,0 +1,284 @@
+# INERT, UNBOUND source excerpt, NOT a helper to import or execute.
+# Text-integration points for a separately reviewed NEW root-owned inner only.
+# Reuses require/note/canonical/Files/command/state/settle as text; no engine changes.
+# Top-level functions taking self are proposed methods, not a new lifecycle class.
+GRAPH_BINDING = None
+GRAPH_COMMAND = None
+GRAPH_TARGET = ':app-android:testDebugUnitTest'
+GRAPH_FILTER = ('com.passvault.android.security.AndroidClipboardServiceTest.'
+                'newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry')
+GRAPH_SUBJECT_SHA = 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332'
+GRAPH_LEGAL = ':app-android:prepareAndroidLegalAssets'
+GRAPH_WRAPPERS = {'org.gradle.internal.exceptions.LocationAwareException',
+                  'org.gradle.internal.event.ListenerNotificationException',
+                  'org.gradle.execution.MultipleBuildFailures'}
+GRAPH_OUTPUT_SCOPE = 'LEXICAL_ONLY_PHYSICAL_AND_SYNC_DELETE_BOUNDARY_UNBOUND'
+
+
+def verify_host_graph_subject(self):
+    # Passive source affinity, NOT compiler input visitation or a test outcome.
+    relative = 'app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt'
+    rows = [r for r in self.source['files'] if r['path'] == relative]
+    require(len(rows) == 1, 'exact host subject membership in final source manifest')
+    data, image = self.f.read(CHECKOUT / relative, MIB)
+    require(sha(data) == GRAPH_SUBJECT_SHA
+            and hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == rows[0]['git_blob'],
+            'host subject SHA256/final raw Git-blob affinity')
+    self.f.write(E / 'HOST-SUBJECT.json', canonical({'relative_source': relative, 'image': image,
+                 'sha256': GRAPH_SUBJECT_SHA, 'source_manifest_sha256': GRAPH_BINDING['sourceManifestSha256'],
+                 'not_compiler_visitation_or_test_evidence': True}))
+
+
+def validate_host_graph_rows(rows, binding):
+    require(isinstance(binding, dict) and binding.get('subjectSha256') == GRAPH_SUBJECT_SHA
+            and isinstance(binding.get('sourceManifestSha256'), str)
+            and re.fullmatch(r'[0-9a-f]{64}', binding['sourceManifestSha256']), 'UNBOUND graph/source binding')
+    require(isinstance(rows, list) and len(rows) == 2, 'exact graph then finished receipt pair')
+    common = {'format': 'passvault-android-host-graph01-receipt-v1', 'runId': 'linux-android-host-graph01',
+              'sourceManifestSha256': binding['sourceManifestSha256'], 'subjectSha256': GRAPH_SUBJECT_SHA,
+              'selector': [GRAPH_TARGET], 'methodFilter': GRAPH_FILTER, 'graphOnly': True}
+    graph, finished = rows
+    for row in rows:
+        require(isinstance(row, dict) and all(row.get(k) == v for k, v in common.items())
+                and row['graphOnly'] is True, 'receipt source/selector/mode identity')
+    require(set(graph) == set(common) | {'kind', 'taskCount', 'tasks', 'testTasks', 'targetPolicy',
+                'selectedOutputs', 'edgeReferences', 'legalGetterBinding', 'outputPathScope', 'otherOutputRoles',
+                'allTasksAreObservationsNotAnExecutionAllowlist'} and graph['kind'] == 'graph', 'exact graph schema')
+    require(type(graph['taskCount']) is int and 1 <= graph['taskCount'] <= 512
+            and isinstance(graph['tasks'], list) and len(graph['tasks']) == graph['taskCount'], 'task count bound')
+
+    def text_field(value, cap, pattern=None):
+        require(isinstance(value, str) and 0 < len(value) <= cap
+                and all(32 <= ord(c) <= 126 for c in value)
+                and (pattern is None or re.fullmatch(pattern, value)), 'bounded metadata text')
+        return value
+
+    def task_path(value):
+        return text_field(value, 512, r':(?:[A-Za-z0-9_-]+:)*[A-Za-z0-9_-]+')
+
+    def type_name(value):
+        return text_field(value, 512, r'[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*')
+
+    edge_names = ('dependencies', 'finalizers', 'mustRunAfter', 'shouldRunAfter')
+    paths, total_edges = {}, 0
+    for task in graph['tasks']:
+        require(isinstance(task, dict) and set(task) == {'path', 'type', 'enabled', 'isTest', 'isExec',
+                'isJavaExec', 'isArchive', *edge_names}, 'exact observed task schema')
+        path = task_path(task['path'])
+        require(path not in paths, 'unique observed task path')
+        paths[path] = task
+        type_name(task['type'])
+        require(all(type(task[k]) is bool for k in ('enabled', 'isTest', 'isExec', 'isJavaExec', 'isArchive')),
+                'observed task Boolean types')
+        for name in edge_names:
+            edges = task[name]
+            require(isinstance(edges, list) and len(edges) <= 128, 'observed edge list bound')
+            for value in edges:
+                task_path(value)
+            require(edges == sorted(set(edges)), 'unique sorted edge references')
+            total_edges += len(edges)
+            require(total_edges <= 8192, 'observed edge-reference total bound')
+    require(type(graph['edgeReferences']) is int and graph['edgeReferences'] == total_edges
+            and all(set(t['dependencies']) <= set(paths) for t in paths.values()), 'populated graph dependency mapping')
+    tests = sorted(p for p, t in paths.items() if t['isTest'])
+    require(tests == graph['testTasks'] == [GRAPH_TARGET] and paths[GRAPH_TARGET]['enabled'], 'sole enabled selected Test')
+    policy = graph['targetPolicy']
+    expected_policy = {'enabled': True, 'includePatterns': [GRAPH_FILTER], 'excludePatterns': [],
+                       'commandLineIncludePatterns': [], 'failOnNoMatchingTests': True, 'ignoreFailures': False,
+                       'maxParallelForks': 1, 'forkEvery': 0}
+    require(isinstance(policy, dict) and policy == expected_policy
+            and all(type(policy[k]) is bool for k in ('enabled', 'failOnNoMatchingTests', 'ignoreFailures'))
+            and type(policy['maxParallelForks']) is int and type(policy['forkEvery']) is int, 'exact host Test policy')
+    require(graph['outputPathScope'] == GRAPH_OUTPUT_SCOPE and graph['otherOutputRoles'] == 'UNBOUND_NOT_QUERIED'
+            and graph['allTasksAreObservationsNotAnExecutionAllowlist'] is True, 'observation and output qualifications')
+    legal_state = graph['legalGetterBinding']
+    wanted_outputs = {GRAPH_TARGET: 'Test.reports.junitXml.outputLocation'}
+    if GRAPH_LEGAL not in paths:
+        require(legal_state == 'NOT_IN_GRAPH', 'absent legal task must remain unqueried')
+    else:
+        require(legal_state in ('UNBOUND_TYPE_NOT_QUERIED', 'SOURCE_HIERARCHY_MATCHED_LEXICAL_PATH_ONLY'),
+                'legal getter query state')
+        if legal_state == 'SOURCE_HIERARCHY_MATCHED_LEXICAL_PATH_ONLY':
+            require(paths[GRAPH_LEGAL]['type'] == 'Build_gradle$PrepareAndroidLegalAssets_Decorated',
+                    'exact source/decorated legal class; pinned init additionally checks direct superclass')
+            wanted_outputs[GRAPH_LEGAL] = 'PrepareAndroidLegalAssets.getOutputDirectory'
+    require(isinstance(graph['selectedOutputs'], list) and len(graph['selectedOutputs']) == len(wanted_outputs),
+            'fixed selected output descriptor count')
+    seen_outputs = set()
+    boundary = Path(binding['runtimeRoot']) / 'checkout/app-android/build'
+    for output in graph['selectedOutputs']:
+        require(isinstance(output, dict) and set(output) == {'task', 'api', 'root'}, 'selected output descriptor schema')
+        task = output['task']
+        require(task in wanted_outputs and task not in seen_outputs and output['api'] == wanted_outputs[task],
+                'fixed selected output getter')
+        seen_outputs.add(task)
+        root = text_field(output['root'], 1024)
+        path = Path(root)
+        require(path.is_absolute() and str(path) == root and '..' not in path.parts
+                and path != boundary and path.is_relative_to(boundary), 'lexical output root only; not symlink/physical proof')
+        if task == GRAPH_TARGET:
+            require(path == boundary / 'test-results/testDebugUnitTest', 'fixed default selected Test XML root')
+
+    required_finish = {'kind', 'phase', 'graphCount', 'whenReadyEntries', 'finishCallbacks', 'beforeTaskEntries',
+                       'afterTaskEvents', 'taskActionsAdmitted', 'localExpectedRefusal', 'failureTree',
+                       'finalProcessAndLogReviewRequired', 'observedTestCases', 'qualification'}
+    require(set(finished) == set(common) | required_finish and finished['kind'] == 'finished'
+            and finished['phase'] == 'intended-refusal', 'exact terminal callback receipt')
+    for key, value in {'graphCount': 1, 'whenReadyEntries': 1, 'finishCallbacks': 1,
+                       'beforeTaskEntries': 0, 'afterTaskEvents': 0, 'observedTestCases': 0}.items():
+        require(type(finished[key]) is int and finished[key] == value, 'exact callback/action-entry count: ' + key)
+    require(finished['taskActionsAdmitted'] is False and finished['localExpectedRefusal'] is True
+            and finished['finalProcessAndLogReviewRequired'] is True
+            and finished['qualification'] == 'Callback-local tree and task-entry guards; configuration can execute code and write files.',
+            'local-only refusal and zero-action admission')
+    tree = finished['failureTree']
+    require(isinstance(tree, dict) and set(tree) == {'complete', 'onlyIntendedAtCallback', 'root', 'nodes', 'errorType'}
+            and tree['complete'] is True and tree['onlyIntendedAtCallback'] is True and tree['errorType'] is None
+            and type(tree['root']) is int and tree['root'] == 0
+            and isinstance(tree['nodes'], list) and 1 <= len(tree['nodes']) <= 32, 'complete bounded local failure tree')
+    nodes, sentinel_count, failure_edges = tree['nodes'], 0, 0
+    for index, node in enumerate(nodes):
+        require(isinstance(node, dict) and set(node) == {'id', 'type', 'intendedIdentity', 'children', 'suppressedCount'}
+                and type(node['id']) is int and node['id'] == index and type(node['intendedIdentity']) is bool
+                and type(node['suppressedCount']) is int and node['suppressedCount'] == 0
+                and isinstance(node['children'], list) and len(node['children']) <= 17, 'failure node schema/bound')
+        type_name(node['type'])
+        require(all(type(i) is int and 0 <= i < len(nodes) for i in node['children'])
+                and len(set(node['children'])) == len(node['children']), 'unique bounded failure edges')
+        failure_edges += len(node['children'])
+        require(failure_edges <= 64, 'failure edge total')
+        if node['intendedIdentity']:
+            sentinel_count += 1
+            require(node['type'] == 'PassVaultAndroidHostGraphOnlyRefusal' and not node['children'], 'intended identity leaf')
+        else:
+            require(node['type'] in GRAPH_WRAPPERS and bool(node['children']), 'known pass-through wrapper only')
+    visited, active = set(), set()
+
+    def visit(index):
+        require(index not in active, 'cyclic failure tree')
+        if index in visited:
+            return
+        active.add(index)
+        for child in nodes[index]['children']:
+            visit(child)
+        active.remove(index)
+        visited.add(index)
+
+    visit(0)
+    require(sentinel_count == 1 and visited == set(range(len(nodes))), 'one sentinel and no unreachable failure node')
+    return {'task_count': len(paths), 'edge_references': total_edges, 'legal_getter_binding': legal_state,
+            'output_path_scope': GRAPH_OUTPUT_SCOPE,
+            'out_of_graph_ordering_references': sum(p not in paths for t in paths.values()
+                                                    for name in edge_names[1:] for p in t[name])}
+
+
+def preserve_host_graph(self, state):
+    # Raw command log is already durable. Save exact marker bodies before JSON interpretation.
+    captures, rows, collection_errors, validation_errors = [], [], [], []
+    prefix = b'PASSVAULT_ANDROID_HOST_GRAPH01='
+    log_image, marker_count, summary, mapped = None, 0, None, False
+    signals = {'task_headers': 0, 'dry_run_outcomes': 0, 'build_success_lines': 0, 'misaligned_markers': 0}
+
+    def receipt_pairs(items):
+        value = {}
+        for key, item in items:
+            require(key not in value, 'duplicate init JSON key')
+            value[key] = item
+        return value
+
+    try:
+        raw, log_image = self.f.read(E / 'logs/host-graph.log', 4 * MIB)
+        require(log_image == self.f.evidence[E / 'logs/host-graph.log'], 'original graph log changed')
+        for number, line in enumerate(raw.splitlines(keepends=True), 1):
+            signals['task_headers'] += int(line.lstrip().startswith(b'> Task '))
+            signals['dry_run_outcomes'] += int(re.fullmatch(rb':[A-Za-z0-9:_-]+ SKIPPED\s*', line) is not None)
+            signals['build_success_lines'] += int(line.startswith(b'BUILD SUCCESSFUL'))
+            signals['misaligned_markers'] += int(prefix in line and not line.startswith(prefix))
+            if not line.startswith(prefix):
+                continue
+            marker_count += 1
+            body = line[len(prefix):]  # Exact raw suffix, including its original terminator (if any).
+            if marker_count > 2 or len(body) > MIB + 1:
+                note(validation_errors, 'marker count/size exceeded; raw log retained')
+                continue
+            destination = 'reports/graph-init-%02d.json' % marker_count
+            try:
+                saved = self.f.write(E / destination, body)
+                captures.append({'line': number, 'destination': destination, 'saved': saved})
+            except Exception as error:
+                note(collection_errors, 'receipt retention: ' + str(error))
+                continue
+            try:
+                require(body.endswith(b'\n') and not body.endswith(b'\r\n'),
+                        'marker is not a complete LF-only record; original suffix retained without repair')
+                row = json.loads(body.decode('utf-8'), object_pairs_hook=receipt_pairs,
+                                 parse_constant=lambda _: require(False, 'nonfinite init JSON'))
+                require(isinstance(row, dict), 'init JSON object required')
+                require(row.get('kind') != 'finished' or len(body) <= 32769, 'terminal receipt size bound')
+                rows.append(row)
+            except Exception as error:
+                note(validation_errors, 'init JSON row: ' + str(error))
+    except Exception as error:
+        note(collection_errors, 'graph log/receipt retention: ' + str(error))
+    try:
+        require(not collection_errors and not validation_errors and not any(signals.values())
+                and len(rows) == marker_count == len(captures) == 2, 'exact zero-task graph/refusal receipt stream')
+        commands = [c for c in state['commands'] if c['label'] == 'host-graph']
+        require(len(commands) == 1, 'exact original graph command record')
+        command = commands[0]
+        require(command['argv'] == GRAPH_COMMAND and command['started'] is True and command['complete'] is True
+                and type(command['exit']) is int and command['exit'] == 1 and not command['errors']
+                and command.get('log') == log_image and state['command_zero_exit'] is False,
+                'complete exact graph command/exit1/log; arbitrary failure is not acceptance')
+        summary = validate_host_graph_rows(rows, GRAPH_BINDING)
+        mapped = True
+    except Exception as error:
+        note(validation_errors, 'graph local-refusal mapping: ' + str(error))
+    preserved = log_image is not None and not collection_errors
+    state['graph'] = {'log_image': log_image, 'init_receipts': captures, 'marker_count': marker_count,
+                      'summary': summary, 'task_or_success_log_signals': signals,
+                      'collection_errors': collection_errors, 'validation_errors': validation_errors,
+                      'evidence_preserved': preserved, 'callback_local_refusal_mapping_ok': mapped,
+                      'exclusive_global_failure_established': False, 'independent_final_log_review_required': True,
+                      'declared_test_cases': 0, 'compiler_or_runtime_credit': False,
+                      'qualification': 'Complete process evidence plus callback-local sentinel proof only; '
+                          'later listener/shutdown failures require independent final raw-log review. '
+                          'Graph/lexical output observations admit no future actions or cleanup.'}
+    self.f.write(E / 'GRAPH-EVIDENCE.json', canonical(state['graph']))
+    self.graph_preserved, self.graph_local_mapping_ok = preserved, mapped
+    if not preserved:
+        self.note('Graph evidence retention uncertain; no automatic cleanup')
+    if not mapped:
+        self.note('Graph local-refusal mapping incomplete; retained/no automatic retry')
+
+
+def observe_host_graph(self):
+    state = self.state('android-host-graph')
+    state['command_zero_exit'], state['observation_ok'] = False, False
+    try:
+        require(isinstance(GRAPH_BINDING, dict) and isinstance(GRAPH_COMMAND, list), 'UNBOUND graph contract')
+        self.check_inputs()
+        self.binding_check()
+        require(self.git_bound and self.settle() and not self.cancelled(), 'admitted Git/SDK-isolated graph phase')
+        self.verify_host_graph_subject()
+        self.resources(True)
+        # command() is byte-for-byte unchanged: exit1 ordinarily RETURNS FALSE.
+        state['command_zero_exit'] = self.command('host-graph', GRAPH_COMMAND, ENV, 900, state)
+    finally:
+        if state['stop_required']:
+            try:
+                self.check_inputs(stopping=True)
+                self.source_check('STOP', True)
+                state['stop_ok'] = self.command('host-graph-stop', STOP, ENV, 600, state, stopping=True)
+            except Exception as error:
+                self.note('original wrapper stop incomplete/no retry: ' + str(error))
+        try:
+            state['settled'] = self.settle()
+            if state['settled'] and state['stop_required']:
+                self.preserve_host_graph(state)
+        except Exception as error:
+            self.note('graph evidence/settlement uncertainty: ' + str(error))
+        state['observation_ok'] = bool(state['stop_ok'] and state['settled'] and self.graph_local_mapping_ok
+                                       and not self.cancelled())
+        state['record_image'] = self.f.write(E / 'PHASE-android-host-graph.json', canonical(state))
+    require(state['observation_ok'], 'AndroidHostGraph01 incomplete; no automatic retry')

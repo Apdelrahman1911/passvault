@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "date": "2026-09-11",
+  "status": "APPLIED_EXACT_INDEPENDENTLY_REVIEWED_KDF_TEST_DELTA_NOT_NATIVE_EXECUTION",
+  "patch_sha256": "133aba239b8040ae23c56621ba5c02a3407bbda8a85a324d12105adfbf33d268",
+  "files": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "before_sha256": "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a",
+      "after_sha256": "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653",
+      "bytes": 39578
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before_sha256": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8",
+      "after_sha256": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe",
+      "bytes": 9534
+    }
+  ],
+  "source_review": "reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json",
+  "source_review_sha256": "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321",
+  "literal_review": "reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md",
+  "literal_review_sha256": "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2",
+  "scope": "One new existing-target CTest registration/selector with two literal assertions; no production algorithm, old selector, dependency, compiler/linker/hardening or target changes. Zero native executions/closures."
+}

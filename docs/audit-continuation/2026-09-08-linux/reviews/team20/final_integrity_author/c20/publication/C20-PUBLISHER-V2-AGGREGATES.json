@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "author": "/root/final_integrity_author",
+  "status": "INERT_V2_AGGREGATE_ONLY_PROPOSAL_NOT_EXECUTED_NOT_ADMITTED",
+  "root_direction": "Explicitly authorized tiny aggregate-only receipt delta from the already verified actual full-tree map; no new Git command, probe, -l widening or full raw-byte claim. Preserve sealed v1.",
+  "base": {
+    "path": "CHECKPOINT-20-PUBLISH.py.txt",
+    "bytes": 21083,
+    "sha256": "f2d4666d04a13f6fb0e2572a3e1c30c18150e3dacc7b18670c1adc93548c5341",
+    "independent_review": "reviews/team20/coverage_review/c20/C20-PUBLISHER-DELTA-REVIEW.json",
+    "independent_review_sha256": "080347815f295c6d0a63333b26613e0c0570e38e3f14a39c537700310110f7c4",
+    "disposition": "ACCEPT_C20_PUBLISHER_INERT_DELTA_ONLY"
+  },
+  "candidate": {
+    "path": "CHECKPOINT-20-PUBLISH-v2.py.txt",
+    "bytes": 21511,
+    "lf": 292,
+    "sha256": "52eefd47ecba0b4eee534ed107991d902c6bf9299f68448397d83add1d2a42cd",
+    "root_only_destination": "publication/CHECKPOINT-20-PUBLISH.py"
+  },
+  "patch": {
+    "path": "CHECKPOINT-20-PUBLISH-v2-from-v1.patch.txt",
+    "bytes": 1121,
+    "sha256": "aa34f16628a7c76aa6c89c03b9a0f946824c1dfdd70acf28dcf3da9658503c47"
+  },
+  "exact_insert_after": " req(entries(git(['ls-tree','-r','-z','--full-tree','HEAD']))==whole,'source committed-tree drift')\n",
+  "exact_insert": " quoted_path_bytes=[len(json.dumps(p,ensure_ascii=True,separators=(',',':')).encode('utf-8')) for p in whole]\n rec['source_capture_path_aggregates']={'N':len(whole),'Q':sum(quoted_path_bytes),'max_json_quoted_path_bytes':max(quoted_path_bytes),'encoding':'UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL','qualification':'Already verified complete committed-tree path map only; no -l, file-byte sum or max-member-size claim.'}\n",
+  "proof": "Removing this exact unique two-line insertion reproduces v1 byte for byte. Every other byte, including Git argv order, namespace/config/object/index/tree/whitespace/protected-ref/branch/lock/receipt/safety/admission semantics and all five afterimage pins, is unchanged.",
+  "metrics_contract": {
+    "receipt_key": "source_capture_path_aggregates",
+    "when": "Only after the existing actual committed ls-tree -r -z --full-tree HEAD result parses and equals the complete expected whole map. The map includes inherited C19 members, all selected afterimages and final companions.",
+    "N": "len(whole): exact count of complete committed-tree path-map members.",
+    "Q": "sum(len(json.dumps(path,ensure_ascii=True,separators=(',',':')).encode('utf-8')) for path in whole): UTF-8 encoded compact ensure_ascii JSON string-literal lengths, including each pair of quotes and any escapes.",
+    "max_json_quoted_path_bytes": "Maximum of those same encoded JSON string-literal lengths; NOT unquoted raw UTF-8 path length.",
+    "nonempty": "Existing exact-five-payload requirement and full committed-tree equality guarantee a nonempty map before max().",
+    "not_supplied": [
+      "ls-tree -l byte length",
+      "full committed source file-byte sum",
+      "largest member file size",
+      "new source/index capture results",
+      "runtime verification or publication success"
+    ],
+    "actual_values": null,
+    "actual_qualification": "These are prospective source-defined fields only until a separately admitted root invocation emits them and original terminal/actual publication are independently reconciled. Do not infer values from selected rows alone."
+  },
+  "admission_and_scope": "v1 source-only acceptance is preserved, not repurposed as execution permission. Independent v2 addition review, final explicit source/companion selection, inherited-workflow plus fresh branch/PR qualification, separate T/current-index publication scope, root-bound config/slot/remotes/current-source/instance and exact root launch adoption all remain required.",
+  "author_activity": "Only exact owned v1 bytes read and standard-library string/hash/diff/JSON work; three own-leaf inert files written/read back. No candidate/predecessor execution/import/AST/compile, Git/network/process/SDK/runtime probe, source capture, central file write or cleanup."
+}

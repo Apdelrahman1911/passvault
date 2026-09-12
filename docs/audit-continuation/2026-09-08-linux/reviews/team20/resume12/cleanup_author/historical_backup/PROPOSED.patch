@@ -1,0 +1,245 @@
+--- a/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt
++++ b/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt
+@@ -9,6 +9,8 @@
+ import com.passvault.core.crypto.PaddedPayload
+ import com.passvault.core.crypto.VaultKeyHierarchy
+ import com.passvault.core.database.VaultDatabase
++import com.passvault.core.database.addVaultMigrations
++import com.passvault.core.database.dao.VaultBackupEntities
+ import com.passvault.core.database.attachment.AttachmentContainerCodec
+ import com.passvault.core.database.attachment.AttachmentContentBinding
+ import com.passvault.core.database.attachment.AttachmentRepositoryImpl
+@@ -36,23 +38,31 @@
+ import java.io.IOException
+ import java.nio.file.FileVisitResult
+ import java.nio.file.Files
++import java.nio.file.LinkOption
+ import java.nio.file.Path
+ import java.nio.file.SimpleFileVisitor
++import java.nio.file.StandardOpenOption
+ import java.nio.file.attribute.BasicFileAttributes
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.NonCancellable
+ import kotlinx.coroutines.test.runTest
+ import kotlinx.coroutines.withContext
++import kotlinx.serialization.json.Json
++import kotlinx.serialization.json.jsonArray
++import kotlinx.serialization.json.jsonObject
++import kotlinx.serialization.json.jsonPrimitive
+ import okio.Buffer
+ import kotlin.test.Test
+ import kotlin.test.assertContentEquals
+ import kotlin.test.assertEquals
+ import kotlin.test.assertFalse
+ import kotlin.test.assertNotNull
++import kotlin.test.assertNull
+ import kotlin.test.assertTrue
+ import kotlin.time.Instant
+ 
+ /** Tiny synthetic vaults only: real Room, repository crypto, and backup I/O; no platform key store or clipboard. */
++@Suppress("LargeClass") // Reuse one real-crypto fixture for ordering and historical-origin backup.
+ class VaultBackupUnicodePaginationTest {
+     @Test
+     fun `UTF8 export restores Unicode IDs relationships history and managed content`() = runTest {
+@@ -151,6 +161,77 @@
+         }
+     }
+ 
++    @Test
++    @Suppress("LongMethod") // Keep the real historical layout, backup handoff and closed-session reopen explicit.
++    fun `schema one encrypted records survive current backup restore and a fresh reopen`() = runTest {
++        val root = Files.createTempDirectory("passvault-pagination-historical-")
++        withHistoricalCleanup(cleanup = { deleteOwnedFixture(root) }) {
++            val seedPath = Files.createDirectory(root.resolve("seed")).resolve("synthetic.db")
++            val originPath = Files.createDirectory(root.resolve("origin")).resolve("synthetic.db")
++            val targetPath = Files.createDirectory(root.resolve("target")).resolve("synthetic.db")
++            val backupPath = root.resolve("historical-origin.pvault")
++            val ids = encodings[0].ids
++            val original = withHistoricalDatabase(seedPath) { producer ->
++                withPassword(MASTER_PASSWORD) { producer.vault.create(it).getOrThrow() }
++                withPassword(MASTER_PASSWORD) { producer.vault.unlock(it).getOrThrow() }
++                producer.seed(ids, includeAttachments = false)
++                producer.assertContents(ids, includeAttachments = false)
++                producer.database.vaultBackupDao().readSnapshot()
++            }
++            // The producer's Room connection and unlocked session are closed BEFORE copying its encrypted rows.
++            // This is current production crypto in genuine exported schema1, not a historical application binary.
++            copyEncryptedSeedIntoSchemaOne(seedPath, originPath)
++            val created = withHistoricalDatabase(originPath) { migrated ->
++                withPassword(MASTER_PASSWORD) { migrated.vault.unlock(it).getOrThrow() }
++                assertEquals(5L, historicalFixtureVersion(migrated))
++                migrated.assertContents(ids, includeAttachments = false)
++                assertEquals(canonicalHistoricalSnapshot(original),
++                    canonicalHistoricalSnapshot(migrated.database.vaultBackupDao().readSnapshot()))
++                val sink = MemorySink()
++                val inspection = withPassword(BACKUP_PASSWORD) { migrated.backups.createBackup(it, sink).getOrThrow() }
++                assertEquals(2, inspection.credentialCount)
++                assertEquals(0, inspection.attachmentCount)
++                assertTrue(sink.committed)
++                assertFalse(sink.aborted)
++                val bytes = sink.bytes()
++                try {
++                    Files.write(backupPath, bytes, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)
++                } finally { bytes.fill(0) }
++                inspection
++            }
++            // Both origin sessions are gone; read the persisted encrypted container, not a retained plaintext fixture.
++            assertTrue(Files.size(backupPath) in 1L..(256L * 1024))
++            val bytes = Files.readAllBytes(backupPath)
++            try {
++                withHistoricalDatabase(targetPath) { target ->
++                    val targetPassword = "separate empty destination master password"
++                    withPassword(targetPassword) { target.vault.create(it).getOrThrow() }
++                    withPassword(targetPassword) { target.vault.unlock(it).getOrThrow() }
++                    target.saveCredential("restore-sentinel")
++                    val input = MemorySource(bytes)
++                    val restored = withPassword(BACKUP_PASSWORD) {
++                        target.backups.restoreBackup(input, it).getOrThrow()
++                    }
++                    assertEquals(created, restored)
++                    assertTrue(input.closed)
++                    assertNull(target.database.credentialDao().getById("restore-sentinel"))
++                }
++            } finally { bytes.fill(0) }
++            // A new Room instance and repository must recover the source key using only restored, persisted metadata.
++            withHistoricalDatabase(targetPath) { reopened ->
++                withPassword(MASTER_PASSWORD) { reopened.vault.unlock(it).getOrThrow() }
++                assertEquals(5L, historicalFixtureVersion(reopened))
++                reopened.assertContents(ids, includeAttachments = false)
++                val restored = reopened.database.vaultBackupDao().readSnapshot()
++                assertEquals(ids.size, restored.metadata.entryCount)
++                assertEquals(canonicalHistoricalSnapshot(original), canonicalHistoricalSnapshot(restored))
++                val credential = assertNotNull(reopened.credentials.getById(CredentialId(ids[0])).getOrThrow())
++                try { assertEquals("Synthetic pagination item", credential.title) }
++                finally { credential.clearSensitiveValues() }
++            }
++        }
++    }
++
+     private suspend fun roundTrip(encoding: EncodingCase) {
+         withFixture(encoding.name) { source ->
+             source.seed(encoding.ids, includeAttachments = true)
+@@ -249,6 +330,123 @@
+         val result = mutableListOf<Pair<String, String>>()
+         order.emitCompositeKeyPages(limit, fetch, first, second) { result += first(it) to second(it) }
+         return result
++    }
++
++    private suspend fun <T> withHistoricalDatabase(path: Path, block: suspend (Fixture) -> T): T {
++        val database = Room.databaseBuilder<VaultDatabase>(name = path.toString())
++            .addVaultMigrations()
++            .setDriver(BundledSQLiteDriver())
++            .setQueryCoroutineContext(Dispatchers.IO)
++            .build()
++        return withHistoricalCleanup(cleanup = { database.close() }) {
++            val fixture = Fixture(database, path.parent)
++            withHistoricalCleanup(cleanup = { fixture.vault.lock().getOrThrow() }) { block(fixture) }
++        }
++    }
++
++    private suspend fun historicalFixtureVersion(fixture: Fixture): Long =
++        fixture.database.useReaderConnection { connection ->
++            connection.usePrepared("PRAGMA main.user_version") { statement ->
++                check(statement.step())
++                statement.getLong(0).also { check(!statement.step()) }
++            }
++        }
++
++    @Suppress("LongMethod") // Materialize the exact exported layout, then copy only encrypted fixture rows.
++    private fun copyEncryptedSeedIntoSchemaOne(seed: Path, origin: Path) {
++        check(seed.parent.parent == origin.parent.parent)
++        check(Files.isRegularFile(seed, LinkOption.NOFOLLOW_LINKS))
++        check(!Files.exists(origin, LinkOption.NOFOLLOW_LINKS))
++        val resource = requireNotNull(javaClass.classLoader
++            .getResourceAsStream("com.passvault.core.database.VaultDatabase/1.json"))
++        val schema = resource.bufferedReader().use { Json.parseToJsonElement(it.readText()).jsonObject }
++            .getValue("database").jsonObject
++        assertEquals(1, schema.getValue("version").jsonPrimitive.content.toInt())
++        val entities = schema.getValue("entities").jsonArray.map { it.jsonObject }
++        BundledSQLiteDriver().open(origin.toString()).use { connection ->
++            connection.execSQL("PRAGMA foreign_keys = ON")
++            entities.forEach { entity ->
++                val table = entity.getValue("tableName").jsonPrimitive.content
++                connection.execSQL(entity.getValue("createSql").jsonPrimitive.content
++                    .replace("${'$'}{TABLE_NAME}", table))
++                entity["indices"]?.jsonArray.orEmpty().forEach { index ->
++                    connection.execSQL(index.jsonObject.getValue("createSql").jsonPrimitive.content
++                        .replace("${'$'}{TABLE_NAME}", table))
++                }
++            }
++            schema.getValue("setupQueries").jsonArray.forEach { connection.execSQL(it.jsonPrimitive.content) }
++            connection.execSQL("PRAGMA main.user_version = 1")
++            connection.prepare("ATTACH DATABASE ? AS synthetic_seed").use { statement ->
++                statement.bindText(1, seed.toString())
++                check(!statement.step())
++            }
++            listOf(
++                "vault_metadata", "folder_records", "tag_records", "credential_records",
++                "credential_folder_cross_ref", "credential_tag_cross_ref", "password_history_records",
++            ).forEach { table ->
++                val entity = entities.single { it.getValue("tableName").jsonPrimitive.content == table }
++                val columns = entity.getValue("fields").jsonArray.map {
++                    it.jsonObject.getValue("columnName").jsonPrimitive.content
++                }
++                val names = columns.joinToString { "`$it`" }
++                val values = columns.joinToString { column ->
++                    // The retired index has no role in decryption and is dropped by production3→4.
++                    // All authenticated payloads, nonces, KDF metadata and live blind indexes are copied unchanged.
++                    if (table == "credential_records" && column == "title_hash") "zeroblob(32)" else "`$column`"
++                }
++                connection.execSQL("INSERT INTO main.`$table` ($names) SELECT $values FROM synthetic_seed.`$table`")
++            }
++            connection.prepare("PRAGMA main.user_version").use { statement ->
++                check(statement.step())
++                assertEquals(1L, statement.getLong(0))
++            }
++            connection.prepare("SELECT identity_hash FROM main.room_master_table WHERE id = 42").use { statement ->
++                check(statement.step())
++                assertEquals(schema.getValue("identityHash").jsonPrimitive.content, statement.getText(0))
++            }
++            connection.prepare("SELECT COUNT(*) FROM pragma_table_info('credential_records') WHERE name = 'title_hash'")
++                .use { statement ->
++                    check(statement.step())
++                    assertEquals(1L, statement.getLong(0))
++                }
++            connection.prepare("SELECT COUNT(*) FROM pragma_foreign_key_check").use { statement ->
++                check(statement.step())
++                assertEquals(0L, statement.getLong(0))
++            }
++        }
++    }
++
++    private fun canonicalHistoricalSnapshot(snapshot: VaultBackupEntities): VaultBackupEntities = snapshot.copy(
++        // Unlock updates access time; export deliberately derives count from rows. Neither is ciphertext identity.
++        metadata = snapshot.metadata.copy(lastAccessedAt = null, entryCount = snapshot.credentials.size),
++        credentials = snapshot.credentials.sortedBy { it.id },
++        folders = snapshot.folders.sortedBy { it.id },
++        tags = snapshot.tags.sortedBy { it.id },
++        credentialFolderReferences = snapshot.credentialFolderReferences
++            .sortedWith(compareBy({ it.credentialId }, { it.folderId })),
++        credentialTagReferences = snapshot.credentialTagReferences
++            .sortedWith(compareBy({ it.credentialId }, { it.tagId })),
++        attachments = snapshot.attachments.sortedBy { it.id },
++        passwordHistory = snapshot.passwordHistory.sortedBy { it.id },
++    )
++
++    // Preserve assertion/cancellation failures while attempting every owned cleanup.
++    @Suppress("TooGenericExceptionCaught")
++    private suspend fun <T> withHistoricalCleanup(cleanup: suspend () -> Unit, block: suspend () -> T): T {
++        var primary: Throwable? = null
++        try {
++            return block()
++        } catch (failure: Throwable) {
++            primary = failure
++            throw failure
++        } finally {
++            try {
++                withContext(NonCancellable) { cleanup() }
++            } catch (cleanupFailure: Throwable) {
++                val failure = primary ?: throw cleanupFailure
++                if (failure !== cleanupFailure) failure.addSuppressed(cleanupFailure)
++            }
++        }
+     }
+ 
+     private suspend fun <T> withFixture(encoding: String, block: suspend (Fixture) -> T): T {

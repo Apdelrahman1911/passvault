@@ -1,0 +1,324 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-11",
+  "reviewer": "/root/desktop_main_review",
+  "author_reviewed": "/root/desktop_integration_author",
+  "disposition": "ACCEPT_EXACT_INERT_WINDOWS_KDF01_SOURCE01_ONLY",
+  "instance_acceptance": false,
+  "root_release": "C20-01, source/evidence work only; no activation or execution",
+  "authority_ceiling": "This file is not INSTANCE-ACCEPT.json and does not satisfy ACCEPT_WINDOWS_KDF_KNOWN_ANSWER_01_INSTANCE. Root alone owns integration, publication, final packet, admission and any execution. No such authority is granted here.",
+  "feasibility_basis": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_main_review/c20/windows-kdf/FEASIBILITY-REVIEW.md",
+    "sha256": "75ef53b221ee74c626aee06f9aac524c6f207dea897ee28f5b456a5ada964b58"
+  },
+  "reviewed_files": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/windows_kdf_known_answer_01.py.txt",
+      "bytes": 73687,
+      "lf": 1286,
+      "sha256": "4c2c9c7ecb8df37d6e6f4131a593bb474cc1a021f87760df6aa5a9a23639b59f"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/audit-windows-kdf-known-answer.yml.txt",
+      "bytes": 2494,
+      "lf": 57,
+      "sha256": "20eb2ede7a856e69b81953549fc1d6c04c472d4d686e691e26f8aadcfa25e45b"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/SOURCE-SCOPE.md",
+      "bytes": 15182,
+      "lf": 240,
+      "sha256": "2c6c5dbbcad3815c23e93590d79871939aac495e7592827ae3585cf19aabe8e1"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/WINDOWS05-TO-KDF01.diff.txt",
+      "bytes": 21213,
+      "lf": 306,
+      "sha256": "27ecbdf2ca7e6e20eb57541ac6b8574c3cf2be5a6e72f3cb9cf4105459a35c52"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/SOURCE-PROPOSAL.json",
+      "bytes": 7958,
+      "lf": 187,
+      "sha256": "41c4bad06fe4ebd14b0366ec68a38c76ea5415385eb427d98798853435604b9b"
+    },
+    {
+      "path": "scripts/audit/windows_native_validation.py",
+      "bytes": 70729,
+      "lf": 1252,
+      "sha256": "35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a"
+    }
+  ],
+  "independent_text_comparison": {
+    "hunks": 11,
+    "added_lines": 112,
+    "removed_lines": 78,
+    "author_comparison_complete_hunk_body_equal": true,
+    "Run_methods": 16,
+    "Run_methods_literal_equal": 15,
+    "only_changed_Run_method": "check_outputs: maximum logs32 to9 and corresponding fixed one-case error label; no other body change",
+    "literal_blocks": {
+      "Run.__init__": {
+        "literal_equal": true,
+        "bytes_old": 1561,
+        "bytes_new": 1561,
+        "new_sha256": "aef6f1260cfacd4034f3e518b7f77898fd768efe51c27913b0e78bcf297d5602"
+      },
+      "Run.event": {
+        "literal_equal": true,
+        "bytes_old": 548,
+        "bytes_new": 548,
+        "new_sha256": "bbdce9cb04806c1930d39d7abdde48b0f3d621e1ec24884d55a7759c4827fb7f"
+      },
+      "Run.file_state": {
+        "literal_equal": true,
+        "bytes_old": 445,
+        "bytes_new": 445,
+        "new_sha256": "7cd50e2fd473cf8f50a5bc4e8b9975b7a17d88b2ae5294666e6b069b32418802"
+      },
+      "Run.read_sdk_header": {
+        "literal_equal": true,
+        "bytes_old": 4168,
+        "bytes_new": 4168,
+        "new_sha256": "fff1530dc6077b38dcf3f0bc1ced0521d487dce629b3fde20b23f97c7e0e73c6"
+      },
+      "Run.read_generated": {
+        "literal_equal": true,
+        "bytes_old": 4682,
+        "bytes_new": 4682,
+        "new_sha256": "a3c5b31ed8ca8b9de0cedcd6ad828e2be125b0e78aa8ed21612687d6790c7354"
+      },
+      "Run.log_state": {
+        "literal_equal": true,
+        "bytes_old": 428,
+        "bytes_new": 428,
+        "new_sha256": "4e2e908ea5d61f835e0a7a9788a702040a7605a8e2aa56f6848e3bb48016fe5c"
+      },
+      "Run.check_outputs": {
+        "literal_equal": false,
+        "bytes_old": 945,
+        "bytes_new": 942,
+        "new_sha256": "6269696c1bceb09e96e22825a7655d4b1de662ee698a49765165af982c5cc332"
+      },
+      "Run.close_original": {
+        "literal_equal": true,
+        "bytes_old": 335,
+        "bytes_new": 335,
+        "new_sha256": "e317abfa33a7d5d4ecd574d668882e36b0eaf7d4723d1bbb708863f084ba4ca0"
+      },
+      "Run.close_logs": {
+        "literal_equal": true,
+        "bytes_old": 366,
+        "bytes_new": 366,
+        "new_sha256": "e7ba68b7bfa0867cd2da31c2795a2256b94e445699e06c212e384a480c66fa99"
+      },
+      "Run.retain_outputs": {
+        "literal_equal": true,
+        "bytes_old": 3629,
+        "bytes_new": 3629,
+        "new_sha256": "938627b8dbf444ab15960b46a154a715b0ac2a220cd7c1eabdc87162aa2c7885"
+      },
+      "Run.command": {
+        "literal_equal": true,
+        "bytes_old": 10152,
+        "bytes_new": 10152,
+        "new_sha256": "e43fb52861c4dbf960ee26cb0d5a90893200072f1ca483cf3a0bce940202d751"
+      },
+      "Run.settle": {
+        "literal_equal": true,
+        "bytes_old": 3397,
+        "bytes_new": 3397,
+        "new_sha256": "d753dbee1248ddb3001ea0dda1027594a97c4047a0536bdd9470c1cb7bfe44a6"
+      },
+      "Run.cleanup_time": {
+        "literal_equal": true,
+        "bytes_old": 372,
+        "bytes_new": 372,
+        "new_sha256": "2790834ee477ee1ec1cf5a3c9d66143450a07fb8120c1870d5229fafa3bfecff"
+      },
+      "Run.open_output": {
+        "literal_equal": true,
+        "bytes_old": 976,
+        "bytes_new": 976,
+        "new_sha256": "3fa620fd90f729beada3c203755a32536f6ba697d95ba23adeab48f09c3d7b94"
+      },
+      "Run.settled_file": {
+        "literal_equal": true,
+        "bytes_old": 617,
+        "bytes_new": 617,
+        "new_sha256": "9c5939b912fd69d8ee9c9d98beb81ab2c1271e16a55a7b42f13122454e84bd57"
+      },
+      "Run.cleanup": {
+        "literal_equal": true,
+        "bytes_old": 2271,
+        "bytes_new": 2271,
+        "new_sha256": "2e88e7e506d0b683b1150b1b89e457285204586ac628ed0aa2b84546ce2dc791"
+      },
+      "Windows_entire_class": {
+        "literal_equal": true,
+        "bytes_old": 6244,
+        "bytes_new": 6244,
+        "new_sha256": "a56d7c5ab11f061e2e0185328beb525c833ec9f7bb3f61c035739cd1a9c68089"
+      }
+    },
+    "boundary_note": "Byte slices start at declarations and end before the next same-indent declaration; final Run.cleanup includes the trailing separator LF before def executable. Its hash therefore includes one more LF than the author's 2270-byte slice; old/new text remains equal.",
+    "remaining_diff_review": "All eleven hunks were read. No ctypes structure, bootstrap/read/write/path algorithm, installed-tool/PE reader, original allocation/ownership block, main settlement/final-source loop, raw retention/descriptor cleanup/original-close block, or terminal cancellation handler was changed. Workload-dependent CASES/PROJECTS intentionally become singletons.",
+    "fixed_command_sites": 9,
+    "filtered_inventory_sites": 1,
+    "junit_sites": 1,
+    "old_case_execution_loop_removed": true,
+    "subprocess_members": [
+      "list2cmdline"
+    ]
+  },
+  "fixed_current_input_observations": [
+    {
+      "path": ".gitattributes",
+      "bytes": 270,
+      "lf": 20,
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "bytes": 9534,
+      "lf": 234,
+      "sha256": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "bytes": 4540,
+      "lf": 120,
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "bytes": 99069,
+      "lf": 2600,
+      "sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "bytes": 812,
+      "lf": 33,
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "bytes": 826,
+      "lf": 28,
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "bytes": 39578,
+      "lf": 924,
+      "sha256": "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json",
+      "bytes": 13800,
+      "lf": 162,
+      "sha256": "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md",
+      "bytes": 3723,
+      "lf": 65,
+      "sha256": "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-NATIVE-TEST-INTEGRATION.json",
+      "bytes": 1467,
+      "lf": 26,
+      "sha256": "227fae154a727b51e1f03b00a17fe48bf8d380c8d3237b86b944a2e17082dac5"
+    }
+  ],
+  "native_source_boundary": {
+    "reused_review": "Separate exact patch and literal-oracle acceptances are source evidence, not repeated oracle analysis or Windows execution.",
+    "current_afterimages_match": true,
+    "configure_input_scope": "Six current native leaves plus .gitattributes and three accepted authority receipts; all ten byte hashes independently confirmed. RC/ABI are configure references only. No historical input is read.",
+    "CMake_observation": "Current CMake controls branch117-152 guards historical SHA read and extra images; normal target111-113/181-187 has no production-DLL/ABI target dependency; KAT registration193-196 is exact."
+  },
+  "workload_and_selection": {
+    "target": "passvault_biometric_windows_security_test",
+    "case": "passvault_biometric_windows_kdf_known_answer",
+    "sole_native_argument": "--kdf-known-answer",
+    "selected_cases": 1,
+    "source_qualified_vectors": 2,
+    "parent_chain": [
+      "four fixed contained Git checks",
+      "one CMake version observation",
+      "one explicit controls-OFF configure",
+      "one Release build of normal target",
+      "one exact-filter JSON inventory",
+      "one exact-filter CTest with kdf.xml"
+    ],
+    "bounds": "Nine fixed parent command sites, not nine total processes. CLI overrides rejected; no user-selected command/target/case and no old24 execution loop.",
+    "prebuild_gates": "Exact BUILD_TESTING:BOOL=ON and PASSVAULT_AUDIT_PVA036_037_CONTROLS:BOOL=OFF cache lines; normal vcxproj excludes both PVA036 macros, PRK allocation macro and historical source filename; existing C++20/EH/W4/WX/SDL/CFG predicates retained.",
+    "inventory_gate": "Exactly one dictionary with exact case name and two argv entries. First must be absolute Windows Path equal to this fresh G/build/Release/normal-target.exe; second exactly --kdf-known-answer. Then plain_path guard. Extra/missing tests, alternate image, bare/default call and extra arguments refuse before CTest.",
+    "actual_CTest_arguments": "-C Release --parallel 1 --timeout 30 --no-tests=error --output-on-failure --output-junit G/logs/kdf.xml -R ^passvault_biometric_windows_kdf_known_answer$",
+    "settled_evidence": "Reuses original generated reader for new settled CMakeCache hash/control check; singleton project hash plus instrumentation exclusions; only one normal AMD64 PE/hash/length record, no DLL/ABI/historical/PRK artifacts expected.",
+    "compile_ceiling": "Presence predicates and hashes are not proof of effective Release compilation/link flags. Independent actual verbose-log and source/argv/build reconciliation remains mandatory."
+  },
+  "authority_schema_review": {
+    "request": "Fixed fresh path/schema/suite/root owner; exact one-case/target/selector/controls false/SDK/480s; six literal-true root attestations; 32-lowercase-hex nonce and 40-hex source commit/tree. Helper/workflow/scope bytes and fixed reviewer path/hash are captured before allocation.",
+    "genuine_future_review": "Requires schema1, reviewer /root/desktop_main_review, exact ACCEPT_WINDOWS_KDF_KNOWN_ANSWER_01_INSTANCE disposition, same suite/nonce/case/target/selector/controls false, exact full INPUTS map and helper/workflow/scope hashes. This SOURCE01 review cannot pass that gate.",
+    "runtime_source_chain": "Original Job exists before all Git children. HEAD must equal GITHUB_SHA; direct parent commit/tree match request; one parent; exact A-only fresh request addition; clean checkout. Frozen request/review/authority/input bytes are recaptured after Job settlement.",
+    "necessary_external_gate": "Content/nonce approval is deliberately not asked to embed its own containing commit hash. Root must separately reconcile actual frozen source commit/tree, request bytes/nonce and genuine independent instance acceptance with fresh both-push queue/trigger/cleanup admission before activation.",
+    "not_verified_by_booleans": "Root attestations do not prove current queue state, nonce freshness, source-push safety or global/local exclusivity. No source commit/tree, request, nonce, accepting instance record or live slot was supplied or admitted by this review."
+  },
+  "workflow_review": {
+    "semantic_delta_from_feasibility": "Only the inert-proposal comment changes to inert SOURCE01 after-image; all executable YAML remains identical to the accepted illustration.",
+    "job_count": 1,
+    "activation": "Push restricted to codex/audit-continuation-linux-20260908 and only the fresh Windows KDF01 request path; exact repository/ref/push/not-deleted/attempt1 job gate.",
+    "permissions": "contents: read only; no secret inputs, environment attachment, OIDC, signing, installation, cache, publishing, PR, dispatch or matrix.",
+    "checkout": "Immutable existing action pin, exact github.sha, fetch-depth2, persist-credentials/submodules/lfs false.",
+    "upload": "Immutable existing pin; always() AND helper evidence_owned=true, exact fresh E prefix and flat JSON/JSONL/log/XML allowlist; retention3days/error on no files; no native binaries or profile upload.",
+    "scheduling_limit": "cancel-in-progress:false does not protect an older pending run. Root must exclude queued/pending AND running local/CI audit cohorts before BOTH pushes and independently review other workflow triggers. One declared job is not proof of one job repository-wide.",
+    "credential_limit": "Platform checkout/upload credentials exist; unchanged explicit native-child environment excludes token/secret variables. No secret-free-host claim is made."
+  },
+  "lifetime_and_cleanup_review": {
+    "containment": "Literal creation-time JOB_LIST plus per-command NUL/stdout-only HANDLE_LIST; noninherited Job/source/cleanup/older-log handles; suspended creation and original process HANDLE waits; immediate-parent exit persisted before fallible checks.",
+    "bounds": "Original non-breakaway Job, kill-on-close,16 active processes/3GiB committed memory;12GiB/25% launch and8GiB/20% running floors; nonrenewable480s commands/540s cleanup within600s job; sticky cancellation; no new launch after cancellation.",
+    "settlement": "One final original-Job termination attempt cannot be vetoed by logging/resource failure. Parent exit/Job-close fallback/hosted disposal are not observed Job-zero proof.",
+    "fresh_ownership": "G uses run_id/attempt1/root nonce; separate E uses run_id/attempt1. Exclusive absence/allocation, original parent/root handles and authority recheck are unchanged. No adoption or old-root access.",
+    "deletion_gate": "Observed original Job zero, successful bounded source/config/PE/raw-log/XML retention and no original-close failures; all generated descendant handles gathered/validated before any deletion. Reparse/multiple-link/identity/close uncertainty remains HOLD/no-follow/no retry.",
+    "deletion_scope": "Only fresh G descendants and original G via retained original handles, then original root close and absence check. E, source/checkout, SDK/cache and all earlier roots stay outside deletion.",
+    "failure_semantics": "Test failure alone may still allow otherwise-safe cleanup. Evidence/ownership/settlement uncertainty may not. No new XML scorer or E traversal is inserted into inherited lifetime code.",
+    "limits": "Cooperative hosted namespace, not adversarial same-user filesystem isolation. Literal reuse is not an execution/correctness proof and does not cure Windows05 reparse HOLD."
+  },
+  "mandatory_actual_result_gate": {
+    "helper_ceiling": "case_scoring/xml_scoring NOT_PERFORMED; even operational success is raw XML awaiting independent actual-case review, not a case pass.",
+    "required_observation": "One nonempty bounded kdf.xml; exactly one suite tests1/failures0/disabled0/skipped0/errors absent-or0; one testcase exact selector name/classname/status=run with no failure/error/skipped child. Empty system-out is valid.",
+    "source_qualification": "Two fixed vector assertions and success/input guards have no per-vector stdout markers. Do not infer two executions, four HMAC cases, native-refusal/hardware proof or family closure.",
+    "reconciliation": "Root/independent actual review must bind source and selected argv, effective fresh normal compilation, settled normal PE, CTest parent exit/raw XML, actual CI run/job and cleanup status.",
+    "artifact_inventory": "Root received-artifact intake must produce complete bytes/SHA256 inventory; this never substitutes for original successful raw retention BEFORE generated deletion.",
+    "no_fabrication": "Missing/extra/skipped XML, build/launch/exit alone or hard cancellation cannot be credited as a case pass. Native outcome and overall cleanup remain separately qualified."
+  },
+  "blocking_source_findings": [],
+  "remaining_gates": [
+    "root integration decision and exact applied after-images",
+    "fresh source freeze/commit/tree plus genuine independent instance and request-byte reconciliation",
+    "both-push queued/pending/running local-CI exclusion and other-trigger review",
+    "fresh root resource/retention/generated-cleanup admission",
+    "root-only execution and independent actual-result/cleanup reconciliation"
+  ],
+  "method": "Bounded inert file bytes/text/JSON reads and hashes, independent stdlib difflib and regex/text byte slicing, current fixed-input hash comparisons, and this own-leaf report write. Subject files were never imported, AST/syntax parsed, evaluated or executed.",
+  "not_performed": [
+    "Git/T",
+    "network/CI",
+    "build/test/application/native/helper execution",
+    "process/device/runtime/SDK probe",
+    "canonical helper/workflow/source edit",
+    "cleanup",
+    "held-root traversal"
+  ],
+  "counters": {
+    "new_native_cases_executed": 0,
+    "new_case_passes": 0,
+    "new_requests_or_instance_approvals": 0,
+    "new_cleanup_results": 0,
+    "new_closures": 0
+  },
+  "preserved_restrictions": "PVU007 STOP; PVU011 NO RETRY; PVA02949/44/5 failure/no automatic retry; G7/G8 CLOSED; all consumed Windows05/GUI03/observer and other HOLDs; native-refusal; protected refs/dependencies/versions/identity/publication; separate PVD decisions; occupied1017001. No unchanged-success replay, old-root recovery or broad old24 runner."
+}

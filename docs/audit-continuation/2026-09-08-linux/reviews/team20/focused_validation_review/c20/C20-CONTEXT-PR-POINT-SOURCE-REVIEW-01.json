@@ -1,0 +1,67 @@
+{
+  "disposition": "HOLD_SOURCE_PENDING_SMALL_CAP_CLEANUP_AND_SCOPE_DELTA",
+  "findings": [
+    {
+      "finding": "streams is populated during registration. A first-pipe set_blocking/register failure omits the second child pipe from finally cleanup. An unguarded pipe.close exception can also bypass remaining pipes, selector cleanup and final receipt.",
+      "id": "PIPE_SETUP_AND_CLOSE_FAILURE",
+      "lines": [
+        113,
+        114,
+        115,
+        116,
+        152,
+        153,
+        154,
+        155
+      ],
+      "minimal_remedy": "Record both child pipes before any setup operation, or close both child-owned handles from finally irrespective of registration; independently guard closes so an error preserves HOLD and does not bypass the other handles/receipt. No process-group or framework expansion."
+    },
+    {
+      "finding": "The 32768-byte check follows extending the retained buffer by up to4096 bytes, so a cap violation can retain36864 bytes while the intent says32768 per pipe.",
+      "id": "DECLARED_PIPE_CAP",
+      "lines": [
+        121,
+        123,
+        124
+      ],
+      "minimal_remedy": "Check prospective retained length before extending, or explicitly and accurately declare a bounded one-chunk overflow instead of a strict32768 cap."
+    },
+    {
+      "finding": "The collector records credential-context ENV key presence only and does not itself open credential files, but passes existing auth/config context to gh. Normal gh authentication may consult that context, including existing credential config. The no-credential-file-reads wording must not be read as a child-wide guarantee.",
+      "id": "NORMAL_GH_AUTH_SCOPE",
+      "lines": [
+        87,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        109
+      ],
+      "minimal_remedy": "Clarify that this is no direct credential-file/value probing or disclosure, with normal retained-context gh authentication separately allowed by root; otherwise the normal-auth scope needs a decision before execution."
+    }
+  ],
+  "format": "C20_CONTEXT_PR_POINT_SOURCE_REVIEW_V1",
+  "method": "Read all 166 source lines as retained bytes/text and independently hash them. No helper execution/import/AST/compilation, Git, network, process/runtime/SDK probe, build/test, source capture, stop, cleanup or replay. Only this own-lane source-review artifact is written.",
+  "narrow_positive_findings": [
+    "Fixed absolute gh api --hostname github.com --method GET endpoint repos/Apdelrahman1911/passvault/pulls with state=open, exact owner-qualified continuation head, per_page100 and a number/head-ref/head-sha/base-ref/state-only jq projection; no pagination, shell, Git command or new runtime/cache manager.",
+    "The two executable inspections are fixed /usr/bin/gh and /usr/bin/curl: bounded regular root-owned executable bytes, no final symlink, before/fd-after/path pin equality and SHA256; curl is not invoked.",
+    "Own /proc/self/ns/{pid,mnt} readlinks only; environment output is presence booleans for HOME/GH_CONFIG_DIR/XDG_CONFIG_HOME/GH_TOKEN/GITHUB_TOKEN. Known auth/proxy context is passed unlogged, not included in receipts.",
+    "stdin DEVNULL, close_fds, nonblocking selected pipes; cancel/deadline/cap/API/schema errors retain consumed HOLD; only the original direct unreaped child is conditionally killed and then waited. No name/group kill or assertion of abnormal-descendant absence.",
+    "Exclusive private intent/final JSON receipt slots and original external terminal requirement prevent treating a saved receipt as terminal-settlement evidence or as an automatic retry invitation."
+  ],
+  "owner": "focused_validation_review",
+  "remaining_qualifications": [
+    "45s command and60s total are cooperative checks, not a hard universal deadline on blocking filesystem operations or final receipt IO; no new framework is requested.",
+    "Matching open PRs produce a successful metadata point with explicit admission-reassessment status; exit0 alone cannot authorize publication. An empty result is only a new exact-branch point, not continuous future PR/workflow exclusion.",
+    "Exact executable/namespace/context actuals remain unknown until separately admitted execution and original terminal/receipt reconciliation. No C19 query authority or replay is inherited.",
+    "Source-only review is not root one-shot admission, invocation, Apple collector binding, publication, stop or cleanup authorization. Existing HOLDs, protected refs and historical gaps remain unchanged."
+  ],
+  "source": {
+    "bytes": 7903,
+    "lf": 166,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint20/C20-CONTEXT-PR-POINT.py",
+    "sha256": "6b38ae8e194b331eff4749542fd3b486ca72fa1201003f3224e925cb21ecdada"
+  }
+}

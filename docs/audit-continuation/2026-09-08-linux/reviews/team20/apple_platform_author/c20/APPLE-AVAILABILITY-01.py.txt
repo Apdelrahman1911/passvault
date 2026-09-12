@@ -1,0 +1,448 @@
+#!/usr/bin/python3
+"""INERT C20 proposal. Root alone may bind/review/admit ONE three-GET capture.
+No project imports, Git command, SDK, CI launch, account change or deletion.
+Private compact evidence remains; direct-child custody is not a descendant census.
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import selectors
+import signal
+import stat
+import subprocess
+import sys
+import time
+import unicodedata
+
+W = Path('/root/projects/PassVault/passvault-linux')
+B = W / 'docs/audit-continuation/2026-09-08-linux'
+D = B / 'reviews/team20/apple_platform_author/c20'
+SELF = D / 'APPLE-AVAILABILITY-01.py.txt'
+ADMISSION = D / 'APPLE-AVAILABILITY-01.ADMISSION.json'
+T = W.parent / 'passvault-publication-20260910-01'
+POINT = B / 'reviews/checkpoint19/PUBLICATION-METADATA-POINT.json'
+POINT_SHA = 'd83f2bc3193d5de49bf986e32bdadf2098e22a69e0d7725fb790b1fbeea18510'
+SCOPE_SHA = 'fb5b1176cfb593ceeb48ed35dfffcf8b393754099f5a6ec040080c6268a306ba'
+REVIEW_SHA = 'cbd56b6014049e0ce442fe71b02ef2c11f6b05e135f3a5e9123f827503817d40'
+PRIVATE_PARENT = W.parent
+E_NAME = '.apple-availability01-private'
+PATH = '/usr/bin:/bin:/usr/sbin:/sbin'
+MIB = 1024 * 1024
+START = time.monotonic()
+CANCEL = False
+EFD = None
+WRITTEN = 0
+KNOWN_SECRETS = []
+ODIR = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+RESULT = {'schema': 1, 'status': 'REFUSED_NO_RETRY', 'commands': [],
+          'route_established': False, 'new_tests': 0, 'new_closures': 0,
+          'publication_context_after': 'NOT_OBSERVED_ON_ABORT'}
+
+
+class Refused(Exception):
+    pass
+
+
+def need(ok, code):
+    if not ok:
+        raise Refused(code)
+
+
+def cancelled(*unused):
+    global CANCEL
+    CANCEL = True
+
+
+signal.signal(signal.SIGINT, cancelled)
+signal.signal(signal.SIGTERM, cancelled)
+
+
+def tick():
+    need(not CANCEL and time.monotonic() - START < 95, 'CANCELLED_OR_TOTAL_DEADLINE')
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def pin(st, directory=False):
+    out = {k: getattr(st, 'st_' + k) for k in ('dev', 'ino', 'uid', 'mode')}
+    if not directory:
+        out.update(nlink=st.st_nlink, bytes=st.st_size,
+                   mtime_ns=st.st_mtime_ns, ctime_ns=st.st_ctime_ns)
+    return out
+
+
+def directory(path):
+    need(path.is_absolute() and '..' not in path.parts, 'DIRECTORY_PATH')
+    fd = os.open('/', ODIR)
+    try:
+        for part in path.parts[1:]:
+            new = os.open(part, ODIR, dir_fd=fd)
+            os.close(fd)
+            fd = new
+            st = os.fstat(fd)
+            need(st.st_uid == 0 and not st.st_mode & 0o022, 'DIRECTORY_OWNER_MODE')
+        out, fd = fd, None
+        return out
+    finally:
+        if fd is not None:
+            os.close(fd)
+
+
+def read_file(path, cap, keep=True):
+    parent = directory(path.parent)
+    fd = None
+    try:
+        before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        need(stat.S_ISREG(before.st_mode) and before.st_uid == 0 and before.st_nlink == 1
+             and not before.st_mode & 0o022 and 0 <= before.st_size <= cap, 'INPUT_TYPE_MODE_SIZE')
+        fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC, dir_fd=parent)
+        need(pin(before) == pin(os.fstat(fd)), 'INPUT_OPEN_DRIFT')
+        h, size, chunks = hashlib.sha256(), 0, []
+        while True:
+            tick()
+            data = os.read(fd, min(65536, cap + 1 - size))
+            if not data:
+                break
+            size += len(data)
+            need(size <= cap, 'INPUT_CAP')
+            h.update(data)
+            if keep:
+                chunks.append(data)
+        need(size == before.st_size and pin(before) == pin(os.fstat(fd)) ==
+             pin(os.stat(path.name, dir_fd=parent, follow_symlinks=False)), 'INPUT_READ_DRIFT')
+        return b''.join(chunks), {'pin': pin(before), 'sha256': h.hexdigest()}
+    finally:
+        try:
+            if fd is not None:
+                os.close(fd)
+        finally:
+            os.close(parent)
+
+
+def unique(pairs):
+    out = {}
+    for key, value in pairs:
+        need(key not in out, 'DUPLICATE_JSON_KEY')
+        out[key] = value
+    return out
+
+
+def parse(raw):
+    return json.loads(raw.decode('utf-8'), object_pairs_hook=unique,
+                      parse_constant=lambda unused: need(False, 'NONFINITE_JSON'))
+
+
+def save(name, raw):
+    global WRITTEN
+    need(EFD is not None and re.fullmatch(r'[a-zA-Z0-9.-]+', name), 'EVIDENCE_NAME')
+    need(not any(secret in raw for secret in KNOWN_SECRETS), 'KNOWN_CREDENTIAL_ECHO_WITHHELD')
+    cap = 2 * MIB if name == 'RESULT.json' else 2 * MIB - 16384
+    need(WRITTEN + len(raw) <= cap, 'AGGREGATE_EVIDENCE_CAP')
+    fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                 0o600, dir_fd=EFD)
+    try:
+        WRITTEN += len(raw)
+        at = 0
+        while at < len(raw):
+            n = os.write(fd, raw[at:])
+            need(n > 0, 'EVIDENCE_SHORT_WRITE')
+            at += n
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def record(name, value):
+    save(name, (json.dumps(value, ensure_ascii=True, sort_keys=True) + '\n').encode())
+
+
+def context_guard(point):
+    for path in (W.parent, T, T / '.git'):
+        fd = directory(path)
+        try:
+            need(pin(os.fstat(fd), True) == point['images'][str(path)], 'T_DIRECTORY_DRIFT')
+        finally:
+            os.close(fd)
+    unused, image = read_file(T / '.git/config', 4096, keep=False)
+    need(image == point['images'][str(T / '.git/config')], 'T_CONFIG_DRIFT')
+
+
+def tool_guard(tool, expected):
+    need(type(tool) is dict and set(tool) == {'path', 'pin', 'sha256'}
+         and type(tool['path']) is str, 'TOOL_BINDING')
+    path = Path(tool['path'])
+    need(path.is_absolute() and path.name == expected, 'TOOL_PATH')
+    unused, image = read_file(path, 256 * MIB, keep=False)
+    need(image == {'pin': tool['pin'], 'sha256': tool['sha256']}
+         and tool['pin']['mode'] & 0o111, 'TOOL_IMAGE_DRIFT')
+
+
+def query(label, argv, env, tool, cap, documentation=False):
+    tick()
+    tool_guard(tool, 'curl' if documentation else 'gh')
+    row = {'label': label, 'argv': argv, 'cwd': str(T), 'status': 'INTENT',
+           'start_unix': time.time(), 'start_elapsed': time.monotonic() - START}
+    # Reserve two seconds within the 30s query ceiling for direct kill/wait.
+    end = min(START + row['start_elapsed'] + 30, START + 95)
+    work_end = end - 2
+    RESULT['commands'].append(row)
+    record(label + '-INTENT.json', row)
+    p, sel, error = None, selectors.DefaultSelector(), None
+    buffers, eof = {'stdout': bytearray(), 'stderr': bytearray()}, set()
+    limits = {'stdout': cap, 'stderr': 16384}
+    try:
+        need(not CANCEL and time.monotonic() < work_end, 'QUERY_CANCELLED_OR_DEADLINE')
+        p = subprocess.Popen(argv, cwd=T, env=env, stdin=subprocess.DEVNULL,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             start_new_session=True, close_fds=True)
+        row.update(pid=p.pid, owned_session=p.pid)
+        for name, pipe in (('stdout', p.stdout), ('stderr', p.stderr)):
+            os.set_blocking(pipe.fileno(), False)
+            sel.register(pipe, selectors.EVENT_READ, name)
+        while sel.get_map() or p.poll() is None:
+            need(not CANCEL and time.monotonic() < work_end, 'QUERY_CANCELLED_OR_DEADLINE')
+            for key, unused in sel.select(min(0.1, max(0, work_end - time.monotonic()))):
+                name = key.data
+                left = limits[name] - len(buffers[name])
+                data = os.read(key.fd, min(65536, left + 1))
+                if not data:
+                    eof.add(name)
+                    sel.unregister(key.fileobj)
+                    continue
+                buffers[name].extend(data[:left])
+                need(len(data) <= left, 'QUERY_OUTPUT_CAP')
+    except Refused as exc:
+        error = str(exc)
+    except BaseException:
+        error = 'QUERY_SPAWN_OR_OBSERVATION_ERROR'
+    finally:
+        if p is not None and p.poll() is None:
+            try:
+                p.kill()  # Exact unreaped Popen child only; never a group/name sweep.
+            except BaseException:
+                error = 'DIRECT_CHILD_SIGNAL_UNCERTAIN'
+        if p is not None:
+            try:
+                p.wait(timeout=max(0, end - time.monotonic()))
+            except BaseException:
+                error = 'DIRECT_CHILD_REAP_UNCERTAIN'
+            for pipe in (p.stdout, p.stderr):
+                try:
+                    pipe.close()
+                except BaseException:
+                    error = 'PIPE_CLOSE_UNCERTAIN'
+        try:
+            sel.close()
+        except BaseException:
+            error = 'SELECTOR_CLOSE_UNCERTAIN'
+    if time.monotonic() > end:
+        error = error or 'QUERY_DEADLINE_EXCEEDED'
+    complete = eof == {'stdout', 'stderr'} and error is None
+    row.update(exit=None if p is None else p.returncode,
+               direct_child_reaped=p is not None and p.returncode is not None,
+               complete_streams=complete, end_unix=time.time(),
+               elapsed_seconds=time.monotonic() - START - row['start_elapsed'])
+    raw, stderr = bytes(buffers['stdout']), bytes(buffers['stderr'])
+    if any(secret in raw or secret in stderr for secret in KNOWN_SECRETS):
+        error = 'KNOWN_CREDENTIAL_ECHO_WITHHELD'
+        row['raw_withheld'] = True
+    else:
+        row.update(stdout_bytes=len(raw), stdout_sha256=sha(raw),
+                   stderr_bytes=len(stderr), stderr_sha256=sha(stderr),
+                   hashes_cover='COMPLETE_STREAMS' if complete else 'RETAINED_PREFIXES_ONLY')
+        if documentation and complete and p.returncode == 0:
+            trailer = re.search(rb'\nPASSVAULT_HTTP_STATUS=([0-9]{3})\n\Z', raw)
+            if trailer is None or trailer.start() > MIB:
+                error = 'DOCUMENT_STATUS_SUFFIX_INVALID' if trailer is None else 'DOCUMENT_BODY_CAP'
+                save(label + '.stdout.partial', raw)
+            else:
+                body, suffix = raw[:trailer.start()], raw[trailer.start():]
+                save('eligibility.html', body)
+                row.update(http_status=trailer.group(1).decode('ascii'),
+                           stdout_trailer=suffix.decode('ascii'), html_bytes=len(body), html_sha256=sha(body))
+                if row['http_status'] != '200':
+                    error = 'DOCUMENT_HTTP_STATUS_NOT_200'
+        else:
+            save(label + ('.stdout' if complete else '.stdout.partial'), raw)
+        save(label + '.stderr.private', stderr)
+    if not error and (p is None or p.returncode != 0):
+        error = 'QUERY_EXIT_NONZERO'
+    row.update(status='CAPTURED' if not error else 'FAILED', error=error)
+    record(label + '-RESULT.json', row)
+    need(error is None and complete and row['direct_child_reaped'], error or 'QUERY_INCOMPLETE')
+    tool_guard(tool, 'curl' if documentation else 'gh')
+    return raw
+
+
+def repo_admin(raw):
+    obj = parse(raw)
+    need(type(obj) is dict and set(obj) == {'id', 'full_name', 'private', 'visibility',
+         'archived', 'disabled', 'owner', 'permissions'}, 'REPOSITORY_SHAPE')
+    need(type(obj['id']) is int and obj['id'] == 1318415796 and
+         obj['full_name'] == 'Apdelrahman1911/passvault' and obj['visibility'] == 'public', 'REPOSITORY_IDENTITY')
+    need(all(type(obj[k]) is bool and not obj[k] for k in ('private', 'archived', 'disabled')), 'REPOSITORY_FLAGS')
+    owner, perms = obj['owner'], obj['permissions']
+    need(type(owner) is dict and set(owner) == {'id', 'login', 'type'} and
+         type(owner['id']) is int and owner['id'] == 104788132 and
+         owner['login'] == 'Apdelrahman1911' and owner['type'] == 'User', 'OWNER_IDENTITY')
+    need(type(perms) is dict and set(perms) == {'admin', 'pull'} and
+         all(type(v) is bool for v in perms.values()), 'PERMISSION_SHAPE')
+    return perms['admin']
+
+
+def runners_count(raw):
+    obj = parse(raw)
+    need(type(obj) is dict and set(obj) == {'total_count', 'runners'} and
+         type(obj['total_count']) is int and obj['total_count'] >= 0 and
+         type(obj['runners']) is list and len(obj['runners']) <= 100, 'RUNNER_LIST_SHAPE')
+    ids = set()
+    def text(value):
+        return type(value) is str and 0 < len(value) <= 256 and all(
+            unicodedata.category(c) not in ('Cc', 'Cf', 'Cs') for c in value)
+    for r in obj['runners']:
+        need(type(r) is dict and set(r) == {'id', 'name', 'os', 'status', 'busy', 'labels'}, 'RUNNER_SHAPE')
+        need(type(r['id']) is int and r['id'] > 0 and r['id'] not in ids and type(r['busy']) is bool
+             and all(text(r[k]) for k in ('name', 'os', 'status')), 'RUNNER_FIELDS')
+        ids.add(r['id'])
+        need(type(r['labels']) is list and len(r['labels']) <= 100, 'LABEL_ARRAY')
+        for label in r['labels']:
+            need(type(label) is dict and set(label) == {'name', 'type'} and
+                 all(text(v) for v in label.values()), 'LABEL_FIELDS')
+    need(obj['total_count'] <= 100 and len(ids) == obj['total_count'], 'RUNNER_INVENTORY_INCOMPLETE')
+    return len(ids)
+
+
+def main():
+    global EFD, KNOWN_SECRETS
+    need(os.geteuid() == 0 and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode,
+         'ROOT_ISOLATED_NOSITE_NOBYTECODE_REQUIRED')
+    need(len(sys.argv) == 2 and re.fullmatch('[0-9a-f]{64}', sys.argv[1]) and
+         Path(os.path.abspath(__file__)) == SELF, 'EXACT_ENTRY_AND_ADMISSION_HASH_REQUIRED')
+    raw, unused = read_file(ADMISSION, 16384)
+    need(sha(raw) == sys.argv[1], 'ADMISSION_BYTE_DRIFT')
+    cfg = parse(raw)
+    need(type(cfg) is dict and set(cfg) == {'schema', 'status', 'owner', 'exclusive_root_custody',
+         'nonce', 'start_before_unix', 'collector_sha256', 'scope_sha256', 'metadata_review_sha256',
+         'collector_review_name', 'collector_review_sha256', 'evidence_parent_pin', 'tools',
+         'credential_path_values', 'credential_token_names'} and type(cfg['schema']) is int
+         and cfg['schema'] == 1, 'ADMISSION_SHAPE')
+    need(cfg['status'] == 'ROOT_ADMITTED_ONE_METADATA_CAPTURE' and cfg['owner'] == '/root'
+         and cfg['exclusive_root_custody'] is True and cfg['scope_sha256'] == SCOPE_SHA
+         and cfg['metadata_review_sha256'] == REVIEW_SHA and
+         type(cfg['nonce']) is str and re.fullmatch('[0-9a-f]{32}', cfg['nonce']) and
+         type(cfg['start_before_unix']) is int and time.time() <= cfg['start_before_unix'], 'UNBOUND_ADMISSION')
+    need(all(type(cfg[k]) is str and re.fullmatch('[0-9a-f]{64}', cfg[k]) for k in
+             ('collector_sha256', 'collector_review_sha256')), 'ADMISSION_HASH_FORMAT')
+    need(type(cfg['collector_review_name']) is str and
+         re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,120}\.md', cfg['collector_review_name']),
+         'COLLECTOR_REVIEW_BASENAME')
+    self_raw, unused = read_file(SELF, 65536)
+    need(sha(self_raw) == cfg['collector_sha256'], 'COLLECTOR_BYTE_DRIFT')
+    review_raw, unused = read_file(D.parent.parent / 'apple_platform_review/c20' / cfg['collector_review_name'], 65536)
+    need(sha(review_raw) == cfg['collector_review_sha256'], 'COLLECTOR_REVIEW_BINDING')
+    point_raw, unused = read_file(POINT, 8192)
+    need(sha(point_raw) == POINT_SHA, 'RETAINED_CONTEXT_DRIFT')
+    point = parse(point_raw)
+    context_guard(point)
+    RESULT['publication_context_before'] = 'MATCHED_RETAINED_POINT'
+    need(type(cfg['tools']) is dict and set(cfg['tools']) == {'gh', 'curl'}, 'FIXED_TOOLS')
+    need(type(cfg['credential_path_values']) is dict and
+         set(cfg['credential_path_values']) <= {'HOME', 'GH_CONFIG_DIR', 'XDG_CONFIG_HOME'} and
+         'HOME' in cfg['credential_path_values'], 'CREDENTIAL_PATH_KEYS')
+    need(type(cfg['credential_token_names']) is list and
+         all(type(k) is str for k in cfg['credential_token_names']) and
+         set(cfg['credential_token_names']) <= {'GH_TOKEN', 'GITHUB_TOKEN'} and
+         len(set(cfg['credential_token_names'])) == len(cfg['credential_token_names']), 'CREDENTIAL_TOKEN_KEYS')
+    present_paths = {k for k in ('HOME', 'GH_CONFIG_DIR', 'XDG_CONFIG_HOME') if k in os.environ}
+    present_tokens = {k for k in ('GH_TOKEN', 'GITHUB_TOKEN') if k in os.environ}
+    need(present_paths == set(cfg['credential_path_values']) and present_tokens == set(cfg['credential_token_names']),
+         'CREDENTIAL_CONTEXT_PRESENCE_DRIFT')
+    base_env = {'PATH': PATH, 'LANG': 'C', 'LC_ALL': 'C', 'TZ': 'UTC'}
+    api_env = dict(base_env, GH_HOST='github.com', GH_PROMPT_DISABLED='1', GH_PAGER='')
+    for key, value in cfg['credential_path_values'].items():
+        need(type(value) is str and value.startswith('/') and os.environ.get(key) == value, 'CREDENTIAL_PATH_DRIFT')
+        api_env[key] = value
+    for key in cfg['credential_token_names']:
+        value = os.environ[key]
+        need(len(value) >= 8, 'CREDENTIAL_ENV_INVALID')
+        api_env[key] = value
+        KNOWN_SECRETS.append(value.encode())
+    # All other inherited variables, including debug/proxy/TLS-key-log settings,
+    # are excluded. The documentation child receives ONLY base_env.
+    os.umask(0o077)
+    parent = directory(PRIVATE_PARENT)
+    try:
+        need(pin(os.fstat(parent), True) == cfg['evidence_parent_pin'], 'EVIDENCE_PARENT_DRIFT')
+        os.mkdir(E_NAME, 0o700, dir_fd=parent)  # Fixed exclusive one-shot barrier.
+        EFD = os.open(E_NAME, ODIR, dir_fd=parent)
+        st = os.fstat(EFD)
+        need(st.st_uid == 0 and stat.S_IMODE(st.st_mode) == 0o700 and
+             pin(st, True) == pin(os.stat(E_NAME, dir_fd=parent, follow_symlinks=False), True), 'EVIDENCE_IDENTITY')
+        os.fsync(parent)
+    finally:
+        os.close(parent)
+    RESULT.update(admission_sha256=sys.argv[1], collector_sha256=sha(self_raw), nonce=cfg['nonce'],
+                  retained_context_sha256=POINT_SHA, evidence_pin=pin(os.fstat(EFD), True),
+                  private_evidence_path=str(PRIVATE_PARENT / E_NAME),
+                  qualification='METADATA_ONLY_NOT_HOST_TOOLCHAIN_OR_EXECUTION_ADMISSION')
+    record('INTENT.json', RESULT)
+    gh = [cfg['tools']['gh']['path'], 'api', '--hostname', 'github.com', '--method', 'GET',
+          '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28']
+    projection = '{id,full_name,private,visibility,archived,disabled,owner:{id:.owner.id,login:.owner.login,type:.owner.type},permissions:{admin:.permissions.admin,pull:.permissions.pull}}'
+    raw = query('01-repository', gh + ['repos/Apdelrahman1911/passvault', '--jq', projection],
+                api_env, cfg['tools']['gh'], 256 * 1024)
+    admin = repo_admin(raw)
+    RESULT['repository_admin'] = admin
+    if admin:
+        projection = '{total_count,runners:[.runners[]|{id,name,os,status,busy,labels:[.labels[]|{name,type}]}]}'
+        raw = query('02-runners', gh + ['repos/Apdelrahman1911/passvault/actions/runners?per_page=100&page=1',
+                    '--jq', projection], api_env, cfg['tools']['gh'], 256 * 1024)
+        RESULT['complete_self_hosted_runner_count'] = runners_count(raw)
+    else:
+        RESULT['self_hosted_inventory'] = 'SKIPPED_ADMIN_FALSE_NOT_AN_EMPTY_LIST'
+    curl = [cfg['tools']['curl']['path'], '-q', '--silent', '--show-error', '--fail', '--retry', '0',
+            '--proto', '=https', '--tlsv1.2', '--connect-timeout', '10', '--max-time', '30',
+            '--max-redirs', '0', '--max-filesize', '1048576', '--header', 'Accept: text/html',
+            '--write-out', '\nPASSVAULT_HTTP_STATUS=%{http_code}\n',
+            'https://docs.github.com/en/actions/reference/runners/larger-runners']
+    query('03-documentation', curl, base_env, cfg['tools']['curl'], MIB + 128, documentation=True)
+    RESULT['publication_context_after'] = 'CHECK_INCOMPLETE_OR_FAILED'
+    context_guard(point)
+    RESULT['publication_context_after'] = 'MATCHED_RETAINED_POINT'
+    need(sha(read_file(ADMISSION, 16384)[0]) == sys.argv[1] and
+         sha(read_file(SELF, 65536)[0]) == cfg['collector_sha256'], 'FINAL_SOURCE_ADMISSION_DRIFT')
+    tick()
+    RESULT['status'] = 'METADATA_CAPTURED_INDEPENDENT_INTERPRETATION_REQUIRED'
+
+
+try:
+    main()
+except Refused as exc:
+    RESULT['error'] = str(exc)
+except BaseException:
+    RESULT['error'] = 'UNEXPECTED_COLLECTOR_EXCEPTION'
+finally:
+    RESULT['elapsed_seconds'] = time.monotonic() - START
+    RESULT['cancelled'] = CANCEL
+    RESULT['evidence_close'] = 'REQUIRES_ACTUAL_EXIT_ZERO_OR_EXTERNAL_FAILURE_RECONCILIATION'
+    if EFD is not None:
+        try:
+            record('RESULT.json', RESULT)
+            os.fsync(EFD)
+        except BaseException:
+            RESULT['status'] = 'FINAL_EVIDENCE_WRITE_UNCERTAIN_NO_RETRY'
+        finally:
+            try:
+                os.close(EFD)
+            except BaseException:
+                RESULT['status'] = 'EVIDENCE_CLOSE_UNCERTAIN_NO_RETRY'
+    if CANCEL or time.monotonic() - START >= 100:
+        RESULT['status'] = 'FINAL_CANCEL_OR_DEADLINE_NO_RETRY'
+    print(json.dumps({'status': RESULT['status'], 'queries': len(RESULT['commands']),
+                      'route_established': False, 'new_tests': 0, 'new_closures': 0}), flush=True)
+sys.exit(0 if RESULT['status'] == 'METADATA_CAPTURED_INDEPENDENT_INTERPRETATION_REQUIRED'
+         and not CANCEL and time.monotonic() - START < 100 else 70)

@@ -1,0 +1,523 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -8,11 +8,13 @@
+ import com.passvault.core.domain.model.CustomField
+ import com.passvault.core.domain.model.CustomFieldId
+ import com.passvault.core.domain.model.SensitiveText
++import com.passvault.core.domain.model.VaultSessionState
+ import com.passvault.core.domain.repository.CredentialRepository
+ import com.passvault.core.domain.repository.LockReason
+ import com.passvault.core.domain.repository.VaultRepository
+ import com.passvault.desktop.di.desktopModule
+ import com.passvault.desktop.security.biometric.DesktopBiometricHost
++import com.passvault.desktop.security.DesktopWindowProtection
+ import com.passvault.shared.di.AppModule
+ import com.passvault.feature.backup.presentation.BackupViewModel
+ import com.passvault.feature.settings.presentation.SettingsViewModel
+@@ -21,6 +23,10 @@
+ import java.awt.SystemTray
+ import java.awt.TrayIcon
+ import java.awt.event.ActionListener
++import java.awt.event.ActionEvent
++import java.awt.event.MouseAdapter
++import java.awt.Image
++import java.awt.image.BufferedImage
+ import java.awt.AWTEvent
+ import java.awt.Dialog
+ import java.awt.FileDialog
+@@ -39,11 +45,13 @@
+ import java.awt.event.KeyEvent
+ import java.nio.ByteBuffer
+ import java.nio.channels.FileChannel
++import java.nio.channels.Channels
+ import java.nio.file.Files
+ import java.nio.file.LinkOption.NOFOLLOW_LINKS
+ import java.nio.file.Path
+ import java.nio.file.StandardOpenOption.APPEND
+ import java.nio.file.StandardOpenOption.CREATE_NEW
++import java.nio.file.StandardOpenOption.READ
+ import java.nio.file.StandardOpenOption.WRITE
+ import java.nio.file.attribute.PosixFileAttributes
+ import java.nio.file.attribute.PosixFilePermissions
+@@ -57,7 +65,10 @@
+ import javax.accessibility.AccessibleState
+ import javax.accessibility.AccessibleText
+ import javax.swing.SwingUtilities
++import javax.imageio.ImageIO
++import javax.imageio.stream.MemoryCacheImageOutputStream
+ import kotlinx.coroutines.runBlocking
++import kotlinx.coroutines.flow.StateFlow
+ import kotlinx.coroutines.withTimeout
+ import org.junit.Assume.assumeTrue
+ import org.koin.core.KoinApplication
+@@ -78,7 +89,7 @@
+  * Root must admit actual Test classpath/property forwarding, private X/WM, fresh roots and external cleanup.
+  * Native accessibility and geometry require an admitted execution; source review alone does not verify them.
+  * Linux Main reaches actual tray/window protection/instance lock; no hardware assurance.
+- * PVA027 samples installed tray language properties, not native tray input or displayed tooltips.
++ * PVA027 adds real tray tooltip crops and native Main Lock/Exit; crop text still needs independent visual review.
+  */
+ class CredentialMainNavHostRoomIntegrationTest {
+     @Test
+@@ -221,7 +232,7 @@
+     }
+ }
+ 
+-/** Separate property-only caller-chain case; no endpoint replay, tooltip pixels or tray callback claim. */
++/** Same caller-chain case, with native tooltip evidence and actual Main Lock/Exit rather than callback fakes. */
+ class Pva027MainSettingsTrayPropagationIntegrationTest {
+     @Test
+     fun `actual Main Settings updates installed tray properties through English Arabic English`() {
+@@ -331,6 +342,7 @@
+     private lateinit var robot: Robot
+     private val pressedKeys = mutableSetOf<Int>()
+     private var mousePressed = false
++    private var pva027Tray: MainNavTrayProbe? = null
+     private val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(150)
+ 
+     // Driver and queued EDT Quit failures must remain visible in the private child log before Main can exit.
+@@ -360,7 +372,9 @@
+             }
+             releaseInput()
+             trace.record("DRIVER_ASSERTIONS_COMPLETE")
+-            SwingUtilities.invokeLater {
++            if (case == MainNavCase.PVA027_SETTINGS_TRAY) {
++                requireNotNull(pva027Tray).queueExit()
++            } else SwingUtilities.invokeLater {
+                 try {
+                     assertNativeWindow(frame)
+                     // EDT cannot handle queued Ctrl+Q before DOWN/UP and this receipt finish.
+@@ -374,7 +388,10 @@
+                 }
+             }
+         } catch (error: Throwable) { failures.add(error) }
+-        finally { if (failures.failed) failures.release { releaseInput() } }
++        finally { if (failures.failed) {
++            failures.release { pva027Tray?.close() }
++            failures.release { releaseInput() }
++        } }
+         failures.throwIfPresent() // Main may already System.exit; no post-Main receipt/finalizer is relied upon.
+     }
+ 
+@@ -558,14 +575,7 @@
+         val settings = onEdt { GlobalContext.get().get<SettingsViewModel>() }
+         onEdt { assertEquals(SettingsViewModel.AppLanguage.SYSTEM, settings.state.value.language) }
+ 
+-        data class Owner(
+-            val icon: TrayIcon,
+-            val popup: PopupMenu,
+-            val items: List<MenuItem>,
+-            val iconListeners: List<ActionListener>,
+-            val itemListeners: List<List<ActionListener>>,
+-        )
+-        var observed: Owner? = null
++        var observed: MainNavTrayOwner? = null
+         await("PVA027_ACTUAL_MAIN_TRAY_INSTALLED") { onEdt {
+             assertTrue(SystemTray.isSupported(), "PVA027_NATIVE_TRAY_UNSUPPORTED")
+             val icons = SystemTray.getSystemTray().trayIcons
+@@ -577,7 +587,7 @@
+             val iconListeners = icon.actionListeners.toList()
+             val itemListeners = items.map { it.actionListeners.toList() }
+             assertTrue(iconListeners.isNotEmpty() && itemListeners.all { it.isNotEmpty() }, "PVA027_NO_LISTENERS")
+-            observed = Owner(icon, popup, items, iconListeners, itemListeners)
++            observed = MainNavTrayOwner(icon, popup, items, iconListeners, itemListeners)
+             true
+         } }
+         val owner = assertNotNull(observed)
+@@ -610,6 +620,11 @@
+             Triple("Arabic", SettingsViewModel.AppLanguage.ARABIC, arabic),
+             Triple("الإنجليزية", SettingsViewModel.AppLanguage.ENGLISH, english),
+         )
++        // Root separately admits these five cropped PNGs and the changed ordered event contract.
++        // Register the owner before any native property/listener change; Main still owns tray removal.
++        val native = MainNavTrayProbe(frame, robot, owner, trace) { code -> withKey(code) { } }
++            .also { pva027Tray = it }
++        native.installMarker()
+         choices.forEachIndexed { stage, (label, choice, expected) ->
+             // Native input only; never invoke onEvent/setup or publish an environment.
+             pva027Click(pva027LanguageOption(label))
+@@ -621,9 +636,12 @@
+             }
+             // Separate fixed case contract; never add these receipts to the original credential EVENTS.
+             trace.record(listOf("PVA027_MAIN_TRAY_EN1", "PVA027_MAIN_TRAY_AR", "PVA027_MAIN_TRAY_EN2")[stage])
+-        }
+-        // No tray/image/listener/window mutation to restore. Original Main terminal cleanup remains its owner.
+-        // Matching state/labels does not establish preference-save, visual tooltip or native callback settlement.
++            native.captureTooltip(stage)
++        }
++        native.lockVault()
++        native.prepareExit()
++        // No native Show/re-unlock or restored-curtain claim. Actual Main owns the pending Exit and terminal cleanup.
++        // Preference persistence, packaged icon rendering and other Desktop backends remain outside this case.
+     }
+ 
+     private fun pva027LanguageOption(label: String): (List<MainNavAx>) -> MainNavAx? = { nodes ->
+@@ -955,6 +973,356 @@
+     }
+ }
+ 
++private data class MainNavTrayOwner(
++    val icon: TrayIcon, val popup: PopupMenu, val items: List<MenuItem>,
++    val iconListeners: List<ActionListener>, val itemListeners: List<List<ActionListener>>,
++)
++
++/** Native observer only: never calls/replaces a production listener, repository lock or Main cleanup. */
++private class MainNavTrayProbe(
++    private val frame: Frame,
++    private val robot: Robot,
++    private val owner: MainNavTrayOwner,
++    private val trace: MainNavTrace,
++    private val key: (Int) -> Unit,
++) {
++    private val evidence = MainNavDirectory.acquire(property("evidenceDir"), empty = false)
++    private val screen = onEdt {
++        assertTrue(frame.graphicsConfiguration.defaultTransform.isIdentity, "PVA027_UNADMITTED_DISPLAY_SCALING")
++        Rectangle(frame.graphicsConfiguration.bounds)
++    }.also {
++        assertTrue(it.x == 0 && it.y == 0 && it.width in 640..1280 && it.height in 480..1024)
++    }
++    private val originalFrameBounds = onEdt { Rectangle(frame.bounds) }
++    // Readiness alone masks live Main hover/focus repaints. Retained crops use original, unmasked pixels.
++    private val frameMask = Rectangle(originalFrameBounds).apply { grow(12, 12) }
++    private val protection = onEdt { GlobalContext.get().get<DesktopWindowProtection>() }
++    // Real VaultRepositoryImpl returns asStateFlow. Fail a changed implementation rather than block the EDT.
++    private val session = onEdt {
++        assertNotNull(GlobalContext.get().get<VaultRepository>().getSessionState() as? StateFlow<VaultSessionState>)
++    }
++    private val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60)
++    private val rightPresses = AtomicInteger()
++    private var originalImage: Image? = null
++    private var marker: BufferedImage? = null
++    private var mouseRegistered = false
++    private var actionRegistered = false
++    private var postLockRegistered = false
++    private var rightHeld = false
++    private var expectedAction: MenuItem? = null
++    private var lockEvent: ActionEvent? = null
++    @Volatile private var lockDispatched = false
++    @Volatile private var observerFailure: Throwable? = null
++    private val mouseObserver = object : MouseAdapter() {
++        override fun mousePressed(event: MouseEvent) {
++            if (event.source === owner.icon && event.button == MouseEvent.BUTTON3) rightPresses.incrementAndGet()
++        }
++    }
++    private val actionObserver = AWTEventListener { event ->
++        if (event is ActionEvent && owner.items.any { it === event.source }) observe {
++            assertTrue(SwingUtilities.isEventDispatchThread() && event.id == ActionEvent.ACTION_PERFORMED)
++            checkOwner()
++            assertTrue(event.source === expectedAction, "PVA027_WRONG_NATIVE_MENU_ACTION")
++            if (event.source === owner.items[1]) {
++                assertFalse(protection.isLocked, "PVA027_LOCK_ALREADY_OCCURRED_BEFORE_NATIVE_ACTION")
++                assertTrue(session.value is VaultSessionState.Unlocked, "PVA027_SESSION_NOT_UNLOCKED_BEFORE_ACTION")
++                assertTrue(frame.extendedState and Frame.ICONIFIED == 0, "PVA027_PREACTION_MINIMIZED")
++                assertTrue(lockEvent == null, "PVA027_DUPLICATE_LOCK_ACTION")
++                lockEvent = event
++            } else {
++                assertTrue(event.source === owner.items[2] && lockDispatched)
++                assertTrue(protection.isLocked && session.value is VaultSessionState.Locked)
++                // Toolkit's notification precedes the original menu listener/Main System.exit.
++                trace.record("PVA027_NATIVE_EXIT_EVENT")
++                Toolkit.getDefaultToolkit().removeAWTEventListener(actionObserverReference())
++                actionRegistered = false
++            }
++        }
++    }
++    private val postLockObserver = ActionListener { event -> observe {
++        // Original listener remains first. Ordinary AWT timers cannot interleave this same event dispatch.
++        assertTrue(SwingUtilities.isEventDispatchThread() && event === lockEvent)
++        assertTrue(event.source === owner.items[1] && protection.isLocked, "PVA027_NATIVE_LOCK_DID_NOT_LOCK")
++        assertFalse(lockDispatched, "PVA027_DUPLICATE_LOCK_CALLBACK")
++        trace.record("PVA027_NATIVE_LOCK_DISPATCH")
++        lockDispatched = true
++    } }
++
++    // Avoid referring to an incompletely initialized property inside its own SAM initializer.
++    private fun actionObserverReference(): AWTEventListener = actionObserver
++
++    fun installMarker() = onEdt {
++        checkOwner()
++        val size = owner.icon.size
++        assertTrue(size.width in 12..64 && size.height in 12..64)
++        val image = BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB).also { marker = it }
++        for (y in 0 until image.height) for (x in 0 until image.width) {
++            image.setRGB(x, y, COLORS[if (y < image.height / 2) 0 else if (x < image.width / 2) 1 else 2])
++        }
++        originalImage = owner.icon.image
++        mouseRegistered = true // Ownership precedes partial registration/property failure.
++        owner.icon.addMouseListener(mouseObserver)
++        owner.icon.image = image
++    }
++
++    fun captureTooltip(stage: Int) {
++        assertTrue(stage in 0..2)
++        val park = onEdt { Rectangle(frame.bounds) }
++        robot.mouseMove(park.centerX.toInt(), park.centerY.toInt())
++        var locator: Rectangle? = null
++        val before = capture("PVA027_TOOLTIP_MARKER_$stage") { locator = markerBounds(it); locator != null }
++        try {
++            val point = requireNotNull(locator)
++            robot.mouseMove(point.centerX.toInt(), point.centerY.toInt())
++            var tooltip: Rectangle? = null
++            val hovered = capture("PVA027_DISPLAYED_TOOLTIP_$stage") { pixels ->
++                val (bounds, count) = difference(before, pixels, screen, point)
++                tooltip = bounds?.takeIf {
++                    it.width in 60..600 && it.height in 12..56 && count >= 100 &&
++                        Rectangle(point).apply { grow(620, 120) }.contains(it)
++                }
++                tooltip != null
++            }
++            try { retain(TOOLTIPS[stage], hovered, requireNotNull(tooltip), point) } finally { hovered.flush() }
++            robot.mouseMove(park.centerX.toInt(), park.centerY.toInt())
++            capture("PVA027_TOOLTIP_DISMISS_$stage") {
++                difference(before, it, requireNotNull(tooltip), point).second < 16
++            }.flush()
++            trace.record(listOf("PVA027_TOOLTIP_EN1", "PVA027_TOOLTIP_AR", "PVA027_TOOLTIP_EN2")[stage])
++            // Geometry is readiness only. Independent crop review must verify current text/shaping/clipping.
++        } finally { before.flush() }
++    }
++
++    fun lockVault() {
++        onEdt {
++            checkOwner()
++            assertFalse(protection.isLocked)
++            assertTrue(session.value is VaultSessionState.Unlocked && owner.itemListeners[1].size == 1)
++            expectedAction = owner.items[1]
++            actionRegistered = true
++            Toolkit.getDefaultToolkit().addAWTEventListener(actionObserver, AWTEvent.ACTION_EVENT_MASK)
++            postLockRegistered = true
++            owner.items[1].addActionListener(postLockObserver) // Append; never remove/reorder originals.
++        }
++        selectPopup(1, "tray-lock-selection.png")
++        key(KeyEvent.VK_ENTER)
++        waitFor("PVA027_REAL_LOCK_DISPATCH") { lockDispatched }
++        waitFor("PVA027_REAL_SESSION_LOCKED") { onEdt {
++            protection.isLocked && session.value is VaultSessionState.Locked &&
++                frame.extendedState and Frame.ICONIFIED != 0
++        } }
++        trace.record("PVA027_MAIN_LOCKED")
++    }
++
++    fun prepareExit() {
++        onEdt { checkOwner(); expectedAction = owner.items[2] }
++        selectPopup(2, "tray-exit-selection.png")
++        // All mutation/input owners except the pre-Exit observer are released BEFORE Main can exit.
++        restoreImageAndListeners(keepExitObserver = true)
++    }
++
++    fun queueExit() {
++        SwingUtilities.invokeLater {
++            observe {
++                assertTrue(System.nanoTime() < deadline, "PVA027_NATIVE_EXIT_DEADLINE")
++                checkOwner()
++                assertTrue(actionRegistered && !mouseRegistered && !postLockRegistered && !rightHeld)
++                assertTrue(lockDispatched && session.value is VaultSessionState.Locked && protection.isLocked)
++                key(KeyEvent.VK_ENTER)
++                // The EDT cannot dispatch the resulting MenuItem action before key release and this receipt.
++                trace.record("PVA027_EXIT_KEY_CALLS_COMPLETE")
++            }
++        }
++    }
++
++    fun close() = restoreImageAndListeners(keepExitObserver = false)
++
++    private fun restoreImageAndListeners(keepExitObserver: Boolean) {
++        val failures = MainNavFailures()
++        failures.release { if (rightHeld) { robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK); rightHeld = false } }
++        failures.release { onEdt {
++            if (mouseRegistered) { owner.icon.removeMouseListener(mouseObserver); mouseRegistered = false }
++        } }
++        failures.release { onEdt {
++            if (postLockRegistered) { owner.items[1].removeActionListener(postLockObserver); postLockRegistered = false }
++        } }
++        failures.release { onEdt {
++            if (!keepExitObserver && actionRegistered) {
++                Toolkit.getDefaultToolkit().removeAWTEventListener(actionObserver); actionRegistered = false
++            }
++        } }
++        var restored = false
++        failures.release { onEdt { originalImage?.let { owner.icon.image = it }; restored = true } }
++        if (restored) marker?.flush() // Never free an image whose native-owner restoration is uncertain.
++        failures.throwIfPresent()
++    }
++
++    @Suppress("TooGenericExceptionCaught")
++    private fun selectPopup(index: Int, name: String) {
++        var locator: Rectangle? = null
++        val before = capture("PVA027_ACTION_MARKER") { locator = markerBounds(it); locator != null }
++        try {
++            val point = requireNotNull(locator)
++            val previous = rightPresses.get()
++            robot.mouseMove(point.centerX.toInt(), point.centerY.toInt())
++            val failures = MainNavFailures()
++            rightHeld = true
++            try { robot.mousePress(InputEvent.BUTTON3_DOWN_MASK) } catch (error: Throwable) { failures.add(error) }
++            finally { failures.release { robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK); rightHeld = false } }
++            failures.throwIfPresent()
++            waitFor("PVA027_EXACT_TRAY_RIGHT_PRESS") {
++                assertTrue(rightPresses.get() <= previous + 1)
++                rightPresses.get() == previous + 1
++            }
++            var popup: Rectangle? = null
++            fun visible(pixels: BufferedImage): Boolean {
++                val (bounds, count) = difference(before, pixels, screen, point)
++                popup = bounds?.takeIf {
++                    it.width in 80..560 && it.height in 40..240 && count >= 500 &&
++                        count >= it.width * it.height / 3 && Rectangle(point).apply { grow(560, 260) }.contains(it)
++                }
++                return popup != null
++            }
++            val opened = capture("PVA027_NATIVE_POPUP", ::visible)
++            try {
++                // Same admitted Linux peer order as the retained Show endpoint; no Home/End assumption or fallback.
++                repeat(index + 1) { key(KeyEvent.VK_DOWN) }
++                val selected = capture("PVA027_NATIVE_SELECTION") {
++                    visible(it) && difference(opened, it, requireNotNull(popup), point).second >= 20
++                }
++                try { retain(name, selected, requireNotNull(popup), point) } finally { selected.flush() }
++            } finally { opened.flush() }
++        } finally { before.flush() }
++    }
++
++    private fun checkOwner() {
++        assertTrue(SwingUtilities.isEventDispatchThread())
++        assertTrue(SystemTray.getSystemTray().trayIcons.single() === owner.icon && owner.icon.popupMenu === owner.popup)
++        assertEquals(5, owner.popup.itemCount)
++        fun same(expected: List<ActionListener>, actual: List<ActionListener>) =
++            expected.size == actual.size && expected.zip(actual).all { (a, b) -> a === b }
++        assertTrue(same(owner.iconListeners, owner.icon.actionListeners.toList()))
++        owner.items.forEachIndexed { index, item ->
++            assertTrue(owner.popup.getItem(index * 2) === item && item.isEnabled)
++            val expected = owner.itemListeners[index] + if (index == 1 && postLockRegistered) listOf(postLockObserver)
++                else emptyList()
++            assertTrue(same(expected, item.actionListeners.toList()), "PVA027_ORIGINAL_ACTION_LISTENER_CHANGED")
++        }
++    }
++
++    private fun markerBounds(pixels: BufferedImage): Rectangle? {
++        val boxes = Array(3) { intArrayOf(screen.width, screen.height, -1, -1, 0) }
++        for (y in 0 until pixels.height) for (x in 0 until pixels.width) {
++            val index = COLORS.indexOf(pixels.getRGB(x, y) and 0xffffff)
++            if (index >= 0) boxes[index].let {
++                it[0] = minOf(it[0], x); it[1] = minOf(it[1], y)
++                it[2] = maxOf(it[2], x); it[3] = maxOf(it[3], y); it[4]++
++            }
++        }
++        if (boxes.any { it[4] < 8 }) return null
++        val rectangles = boxes.map { Rectangle(it[0], it[1], it[2] - it[0] + 1, it[3] - it[1] + 1) }
++        val bounds = rectangles.reduce(Rectangle::union)
++        val image = requireNotNull(marker)
++        assertTrue(bounds.width in image.width / 2..image.width + 4 && bounds.height in image.height / 2..image.height + 4)
++        val (top, left, right) = rectangles
++        assertTrue(
++            kotlin.math.abs(top.x - left.x) <= 2 &&
++                kotlin.math.abs(top.x + top.width - right.x - right.width) <= 2 && top.y < left.y && left.x < right.x &&
++                kotlin.math.abs(left.y - right.y) <= 2 && kotlin.math.abs(left.y - top.y - top.height) <= 2 &&
++                kotlin.math.abs(left.height - right.height) <= 2,
++            "PVA027_AMBIGUOUS_MARKER_SHAPE",
++        )
++        rectangles.forEachIndexed { index, box -> assertTrue(boxes[index][4] >= box.width * box.height * 3 / 4) }
++        assertFalse(frameMask.intersects(bounds), "PVA027_MARKER_OVERLAPS_MAIN_MASK")
++        cornerCrop(bounds) // No inferred panel placement, relocation or fallback outside this bounded geometry.
++        return bounds
++    }
++
++    private fun difference(
++        before: BufferedImage, after: BufferedImage, area: Rectangle, point: Rectangle,
++    ): Pair<Rectangle?, Int> {
++        val excluded = Rectangle(point).apply { grow(4, 4) }
++        var minX = screen.width; var minY = screen.height; var maxX = -1; var maxY = -1; var count = 0
++        for (y in area.y until area.y + area.height) for (x in area.x until area.x + area.width) {
++            if (!frameMask.contains(x, y) && !excluded.contains(x, y) &&
++                before.getRGB(x, y) != after.getRGB(x, y)
++            ) {
++                minX = minOf(minX, x); minY = minOf(minY, y); maxX = maxOf(maxX, x); maxY = maxOf(maxY, y); count++
++            }
++        }
++        return (if (count == 0) null else Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1)) to count
++    }
++
++    private fun capture(message: String, ready: (BufferedImage) -> Boolean): BufferedImage {
++        var retained: BufferedImage? = null
++        waitFor(message) {
++            onEdt { assertEquals(originalFrameBounds, frame.bounds, "PVA027_MAIN_GEOMETRY_CHANGED") }
++            val pixels = robot.createScreenCapture(screen)
++            var keep = false
++            try { keep = ready(pixels); if (keep) retained = pixels } finally { if (!keep) pixels.flush() }
++            keep
++        }
++        return requireNotNull(retained)
++    }
++
++    private fun retain(name: String, pixels: BufferedImage, bounds: Rectangle, point: Rectangle) {
++        assertTrue(name in TOOLTIPS || name in listOf("tray-lock-selection.png", "tray-exit-selection.png"))
++        evidence.checkBound()
++        // Full fixed neighborhood, NOT the partly masked difference box: retain overlay pixels over Main too.
++        val crop = cornerCrop(point)
++        assertTrue(crop.contains(bounds), "PVA027_OBSERVED_SURFACE_OUTSIDE_CROP")
++        val image = pixels.getSubimage(crop.x, crop.y, crop.width, crop.height)
++        val path = evidence.path.resolve(name)
++        try {
++            FileChannel.open(path, setOf(CREATE_NEW, WRITE), PRIVATE_FILE).use { channel ->
++                MemoryCacheImageOutputStream(Channels.newOutputStream(channel)).use { output ->
++                    assertTrue(ImageIO.write(image, "png", output))
++                    output.flush(); channel.force(true)
++                }
++            }
++            FileChannel.open(evidence.path, READ).use { it.force(true) }
++            checkedFile(path, fileKey(path), 1_048_576)
++            assertTrue(Files.size(path) > 0)
++        } finally { image.flush() }
++    }
++
++    private fun cornerCrop(point: Rectangle): Rectangle {
++        val left = point.x >= 0 && point.x + point.width <= 64
++        val right = point.x >= screen.width - 64 && point.x + point.width <= screen.width
++        val top = point.y >= 0 && point.y + point.height <= 64
++        val bottom = point.y >= screen.height - 64 && point.y + point.height <= screen.height
++        assertTrue((left || right) && (top || bottom), "PVA027_UNADMITTED_TRAY_CORNER")
++        val width = minOf(700, screen.width); val height = minOf(400, screen.height)
++        return Rectangle(if (left) 0 else screen.width - width, if (top) 0 else screen.height - height, width, height)
++    }
++
++    private fun waitFor(message: String, ready: () -> Boolean) {
++        val end = minOf(deadline, System.nanoTime() + TimeUnit.SECONDS.toNanos(5))
++        while (System.nanoTime() < end) {
++            observerFailure?.let { throw it }
++            if (Thread.currentThread().isInterrupted) throw InterruptedException("PVA027_NATIVE_INTERRUPTED")
++            if (ready()) return
++            Thread.sleep(250)
++        }
++        fail(message)
++    }
++
++    @Suppress("TooGenericExceptionCaught", "PrintStackTrace")
++    private fun observe(block: () -> Unit) {
++        try { block() } catch (error: Throwable) {
++            observerFailure = observerFailure ?: error
++            System.err.println("MAIN_NAV_FAILURE")
++            error.printStackTrace(System.err)
++            runCatching { trace.record("DRIVER_FAILURE") }
++        }
++    }
++
++    private companion object {
++        val COLORS = intArrayOf(0xEF11AD, 0x17CEDF, 0xF5D917)
++        val TOOLTIPS = listOf("tray-tooltip-en1.png", "tray-tooltip-ar.png", "tray-tooltip-en2.png")
++    }
++}
++
+ private suspend fun assertOriginal(repository: CredentialRepository) {
+     assertEquals(listOf(CredentialId(ID)), repository.getAllSummaries().getOrThrow().map { it.id })
+     val credential = assertNotNull(repository.getById(CredentialId(ID)).getOrThrow())
+@@ -1213,8 +1581,9 @@
+     "PVU003_CHOOSER_HOME=[01];AFTER_CANCEL=[01];FRAME_DELIVERY=[0-9a-f]",
+ )
+ private val PVA027_MAIN_EVENTS = listOf(
+-    "PVA027_MAIN_TRAY_EN1", "PVA027_MAIN_TRAY_AR", "PVA027_MAIN_TRAY_EN2",
+-    "DRIVER_ASSERTIONS_COMPLETE", "QUIT_KEY_CALLS_COMPLETE",
++    "PVA027_MAIN_TRAY_EN1", "PVA027_TOOLTIP_EN1", "PVA027_MAIN_TRAY_AR", "PVA027_TOOLTIP_AR",
++    "PVA027_MAIN_TRAY_EN2", "PVA027_TOOLTIP_EN2", "PVA027_NATIVE_LOCK_DISPATCH", "PVA027_MAIN_LOCKED",
++    "DRIVER_ASSERTIONS_COMPLETE", "PVA027_EXIT_KEY_CALLS_COMPLETE", "PVA027_NATIVE_EXIT_EVENT",
+ )
+ private fun mainNavExpectedEvents(role: String, case: MainNavCase): List<String> = when {
+     role != "main" -> EVENTS.getValue(role)

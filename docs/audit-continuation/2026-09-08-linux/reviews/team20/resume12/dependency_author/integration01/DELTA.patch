@@ -1,0 +1,1194 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/linux_focused_regression_02.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/linux_dependency_inventory_01.py.txt
+@@ -1,6 +1,6 @@
+ #!/usr/bin/python3
+-"""UNBOUND focused10 PID1 batch: credential8, migration1, historical-backup1 and one compile-only task.
+-No old helper imports, GUI, static analyzer, provider producer or general runner.
++"""UNBOUND dependency3 PID1 invocation: exact current production inventory producers only.
++No old helper imports, Test/XML/compile/package scope or general runner.
+ 
+ Root separately owns the fresh raw object batch, original allocations/lock, host conflict
+ checks, exact outer admission, pidfd/wait and disposable-copy cleanup. This
+@@ -21,42 +21,49 @@
+ import subprocess
+ import sys
+ import time
+-import xml.etree.ElementTree as ET
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+-R = Path('/root/projects/PassVault/audit-runtime-linux-focused-regression02')
+-E = W / 'docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression02'
++R = Path('/root/projects/PassVault/audit-runtime-linux-dependency-inventory01')
++E = W / 'docs/audit-continuation/2026-09-08-linux/runs/linux-dependency-inventory01'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = W / 'scripts/audit/linux_focused_regression_02.py', W / 'scripts/audit/focused_regression_02.init.gradle'
+-B = W / 'docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02'
++SELF, INIT = W / 'scripts/audit/linux_dependency_inventory_01.py', W / 'scripts/audit/dependency_inventory_01.init.gradle'
++B = W / 'docs/audit-continuation/2026-09-08-linux/reviews/dependency-inventory01'
+ SOURCE = W / 'docs/audit-continuation/2026-09-08-linux/UNBOUND_C20_SOURCE_MANIFEST_PATH'
+-CLASSES, METHODS = B / 'CLASSES.tsv', B / 'METHODS.tsv'
++TABLE = B / 'INVENTORY.tsv'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+-INPUTS = (SELF, INIT, SOURCE, CLASSES, METHODS, JAVA / 'bin/java', JAVA / 'release')
++INPUTS = (SELF, INIT, SOURCE, TABLE, JAVA / 'bin/java', JAVA / 'release')
+ COMMIT, TREE = 'UNBOUND_C20_COMMIT', 'UNBOUND_C20_TREE'
+-MEMBERS = 'UNBOUND_C20_SOURCE_MEMBERS'  # Exact C20 count and capacity binding pending.
+-RUN_ID = 'linux-focused-regression02'
+-FROZEN = {SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a', METHODS: 'fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd', INIT: '46d5bbf54cb34fbc9235d361763dafae7ff5ae6c8de8316c5cd4901695bdccc2'}
+-PHASES = ('focused',)
+-WORKERS = ('database', 'credential')
+-TEST_TASKS = (':core:database:desktopTest', ':feature:credential:desktopTest')
+-COMPILE_TASK = ':app-desktop:compileTestKotlinDesktop'
+-COMPILE_TYPE = 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated'
+-TARGETS = TEST_TASKS + (COMPILE_TASK,)
+-TASK_PREFIX = 'PASSVAULT_FOCUSED_REGRESSION02='
+-CHILDREN = ('home', 'tmp', 'jna', 'sqlite', 'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
++MEMBERS = None  # UNBOUND exact current C20 source membership.
++MEMBER_LIMIT = None  # UNBOUND smallest independently reviewed current-source ceiling.
++SOURCE_BYTES = None  # UNBOUND exact manifest length, within the original 32MiB reader envelope.
++OID_BYTES = None  # UNBOUND exact MEMBERS * 41.
++SOURCE_CAPACITY = {'members': MEMBERS, 'member_limit': MEMBER_LIMIT, 'manifest_bytes': SOURCE_BYTES,
++                   'oid_bytes': OID_BYTES, 'raw_stream_limit_bytes': 128 * 1024 * 1024}
++RUN_ID = 'linux-dependency-inventory01'
++FROZEN = {SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256',
++          TABLE: '905c5b05aa394db81e010775609ef556b7cb1f7d08fe9dc03c200a406018af67',
++          INIT: '65feca52b8417a1c15517edb1cb6bae172b76bca2c556666e1e32d6113e6b85c'}
++PHASES = ('inventory',)
++TARGETS = (':app-android:generateAndroidThirdPartyDependencyInventory',
++           ':app-desktop:generateDesktopThirdPartyDependencyInventory',
++           ':shared:generateIosArm64ThirdPartyDependencyInventory')
++REPORT_PATHS = {
++    'android': 'app-android/build/reports/legal/android-production-dependencies.lock',
++    'desktop': 'app-desktop/build/reports/legal/desktop-production-dependencies.lock',
++    'iosArm64': 'shared/build/reports/legal/iosArm64-production-dependencies.lock',
++}
++MARKERS = {'GRAPH': 'PASSVAULT_INVENTORY01_GRAPH=', 'START': 'PASSVAULT_INVENTORY01_START=',
++           'FINISH': 'PASSVAULT_INVENTORY01_FINISH='}
+ PRIVATE = ('checkout', 'home', 'tmp', 'jna', 'sqlite', 'gradle-home', 'konan', 'android-user',
+-           'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state', 'workers')
+-ORIGINAL_DIRS = (R, E, E / 'logs', E / 'xml') + tuple(R / p for p in PRIVATE) + tuple(
+-    p for w in WORKERS for p in (R / 'workers' / w, *(R / 'workers' / w / c for c in CHILDREN)))
++           'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
++ORIGINAL_DIRS = (R, E, E / 'logs', E / 'inventory') + tuple(R / p for p in PRIVATE)
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+ FLAGS = ['--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel', '--no-configure-on-demand',
+          '--no-configuration-cache', '--no-build-cache', '--dependency-verification=strict', '--stacktrace',
+          '-Pkotlin.compiler.execution.strategy=in-process', '-Pandroid.builder.sdkDownload=false',
+          '-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8', '-Dorg.gradle.java.installations.auto-download=false',
+          '-Dorg.gradle.java.installations.auto-detect=false', '-Dorg.gradle.java.installations.paths=' + str(JAVA)]
+-COMMANDS = {'focused': [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT),
+-                        '-Ppassvault.audit.mode=focused', *TARGETS] + FLAGS}
++COMMANDS = {'inventory': [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT), *TARGETS, '--continue'] + FLAGS}
+ STOP = [str(CHECKOUT / 'gradlew'), '--stop'] + FLAGS
+ ENV = {'PATH': str(JAVA / 'bin') + ':/usr/bin:/bin', 'JAVA_HOME': str(JAVA), 'LANG': 'C.UTF-8',
+        'LC_ALL': 'C.UTF-8', 'TZ': 'UTC', 'HOME': str(R / 'home'), 'GRADLE_USER_HOME': str(R / 'gradle-home'),
+@@ -243,7 +250,7 @@
+         self.source = None
+         self.work_deadline_ns = None
+         self.before = self.after = self.namespace_ok = self.evidence_ok = False
+-        self.xml_bytes, self.last_resource, self.last_inventory = 0, 0.0, 0.0
++        self.inventory_bytes, self.last_resource, self.last_inventory = 0, 0.0, 0.0
+         self.settlement_remaining = 120.0
+         self.inventories = []
+ 
+@@ -261,12 +268,13 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = json.loads(data)
+-        require(value['format'] == 'passvault-linux-focused-regression02-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-dependency-inventory01-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+-                and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent,
++                and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent
++                and value['source_capacity'] == SOURCE_CAPACITY,
+                 'fixed original outer intake (not independent admission)')
+         deadline, now = value['work_deadline_monotonic_ns'], time.monotonic_ns()
+-        require(type(deadline) is int and 0 < deadline - now <= 5250 * 1_000_000_000,
++        require(type(deadline) is int and 0 < deadline - now <= 780 * 1_000_000_000,
+                 'original outer monotonic work deadline missing/expired/reset')
+         self.work_deadline_ns = deadline
+         self.f.expected = value['directories']
+@@ -277,7 +285,8 @@
+         self.inputs[E / 'OUTER-INTENT.json'] = image
+         captured = {}
+         for path in INPUTS:
+-            captured[path], actual = self.f.read(path, 32 * MIB)
++            captured[path], actual = self.f.read(path, SOURCE_BYTES if path == SOURCE else 32 * MIB)
++            require(path != SOURCE or actual['pin']['bytes'] == SOURCE_BYTES, 'exact current source manifest length')
+             require(actual == value['images'][str(path)] and actual['sha256'] == FROZEN.get(path, actual['sha256']),
+                     'exact immutable input/tool image')
+             self.inputs[path] = actual
+@@ -293,7 +302,7 @@
+     def check_inputs(self, stopping=False):
+         for path, image in self.inputs.items():
+             if not stopping or path in (JAVA / 'bin/java', JAVA / 'release'):
+-                require(self.f.read(path, 32 * MIB)[1] == image, 'admitted input drift')
++                require(self.f.read(path, SOURCE_BYTES if path == SOURCE else 32 * MIB)[1] == image, 'admitted input drift')
+ 
+     def source_check(self, label, wrapper_only=False):
+         started, count, size = time.monotonic(), 0, 0
+@@ -436,10 +445,10 @@
+                         note(record['errors'], error)
+                     cancelled = self.cancelled()
+                     now = time.monotonic()  # Resource/syscall time is not subtracted from cooperative deadlines.
+-                    # The NEW 600s stop envelope includes its 20s TERM/KILL tail.
+-                    expired = now - started >= seconds - (20 if stopping else 0)
++                    # Both work and original 120s stop ceilings include their 20s TERM/KILL tail.
++                    expired = now - started >= seconds - 20
+                     expired = expired or (not stopping and self.work_deadline_ns is not None
+-                        and time.monotonic_ns() >= self.work_deadline_ns - 1100 * 1_000_000_000)
++                        and time.monotonic_ns() >= self.work_deadline_ns - 200 * 1_000_000_000)
+                     if expired or record['errors'] or (cancelled and not stopping):
+                         if abort is None:
+                             abort = now
+@@ -491,118 +500,151 @@
+             pass  # Original direct child is already terminal; no numeric-PID fallback or retry.
+ 
+     def selections(self, captured):
+-        classes = list(csv.DictReader(io.StringIO(captured[CLASSES].decode()), delimiter='\t'))
+-        methods = list(csv.DictReader(io.StringIO(captured[METHODS].decode()), delimiter='\t'))
+-        require([c['class_id'] for c in classes] == ['DB1', 'DB2', 'C01', 'C02']
+-                and [int(c['selected_methods']) for c in classes] == [1, 1, 6, 2]
+-                and len(methods) == 10 and len({tuple(r.values()) for r in methods}) == 10
+-                and collections.Counter(r['invocation'] for r in methods) == {'focused': 10}
+-                and {c['task'] for c in classes} == set(TEST_TASKS), 'fixed selected10/four classes/two Test tasks')
+-        source_map = {r['path']: r for r in self.source['files']}
+-        for c in classes:
+-            require(source_map[c['source_path']]['checkout_sha256'] == c['source_sha256']
+-                    and sum(m['class_id'] == c['class_id'] for m in methods) == int(c['selected_methods']),
+-                    'reviewed class source/count binding')
+-        return {p: [{**c, 'methods': [m['source_method'] for m in methods
+-                                     if m['class_id'] == c['class_id'] and m['invocation'] == p]}
+-                    for c in classes if any(m['class_id'] == c['class_id'] and m['invocation'] == p for m in methods)]
+-                for p in PHASES}
+-
+-    def preserve_xml(self, phase, classes):
+-        mode = phase['phase']
+-        expected = {CHECKOUT / c['expected_xml_path']: c for c in classes}
+-        observed, captures, mapping = set(), [], True
+-        for root in sorted({p.parent for p in expected}):
++        reader = csv.DictReader(io.StringIO(captured[TABLE].decode('utf-8')), delimiter='\t')
++        columns = ['scope', 'task', 'configuration', 'path', 'expected_rows', 'expected_bytes', 'expected_sha256']
++        rows = list(reader)
++        require(reader.fieldnames == columns and len(rows) == 3
++                and [r['scope'] for r in rows] == list(REPORT_PATHS)
++                and tuple(r['task'] for r in rows) == TARGETS, 'exact three inventory table rows/targets')
++        source_paths = {r['path'] for r in self.source['files']}
++        require(not source_paths.intersection(REPORT_PATHS.values())
++                and 'release/publisher.properties' not in source_paths and 'local.properties' not in source_paths
++                and not os.path.lexists(CHECKOUT / 'release/publisher.properties')
++                and not os.path.lexists(CHECKOUT / 'local.properties'), 'no frozen generated output or private publisher/local override')
++        lock, image = self.f.read(CHECKOUT / 'legal/third-party-dependencies.lock', 17552)
++        require(len(lock) == 17552 and image['sha256'] == '252661ae65b520539b6d7a1e301cb1f6de505a17576301e970668b1778d150e2',
++                'unchanged accepted expected inventory lock')
++        lock_rows = [line for line in lock.decode('utf-8').splitlines() if line and not line.startswith('#')]
++        for row, configuration in zip(rows, ('releaseRuntimeClasspath', 'desktopRuntimeClasspath', 'iosArm64CompileKlibraries')):
++            scope = row['scope']
++            require(set(row) == set(columns) and row['configuration'] == configuration
++                    and row['path'] == REPORT_PATHS[scope]
++                    and re.fullmatch(r'[1-9][0-9]{0,4}', row['expected_rows'])
++                    and re.fullmatch(r'[1-9][0-9]{0,4}', row['expected_bytes'])
++                    and re.fullmatch(r'[0-9a-f]{64}', row['expected_sha256']), 'fixed producer/output table contract')
++            projection = [line for line in lock_rows if line.startswith(scope + '\t')]
++            expected = ('# Generated production dependency inventory for ' + scope + '.\n'
++                        + ''.join(line + '\n' for line in projection)).encode('utf-8')
++            require(projection == sorted(set(projection)) and len(projection) == int(row['expected_rows'])
++                    and len(expected) == int(row['expected_bytes']) <= 65536
++                    and sha(expected) == row['expected_sha256'], 'exact expected-lock scoped projection binding')
++        return rows
++
++    def preserve_inventory(self, phase, specs):
++        captures, missing, errors, mapping = [], [], [], True
++        for spec in specs:
++            path = CHECKOUT / spec['path']
+             try:
+-                names = [n for n in os.listdir(self.f.directory(root)) if n.startswith('TEST-') and n.endswith('.xml')]
++                data, original = self.f.read(path, 65536)
+             except FileNotFoundError:
++                missing.append(spec['scope'])
+                 mapping = False
+                 continue
+-            require(len(names) <= 32, 'XML file count bound')
+-            for name in sorted(names):
+-                path = root / name
+-                observed.add(path)
+-                data, original = self.f.read(path, 2 * MIB)
+-                self.xml_bytes += len(data)
+-                require(self.xml_bytes <= 32 * MIB, 'aggregate XML bound')
+-                saved = self.f.write(E / 'xml' / (mode + '-' + name), data)
+-                captures.append({'source': str(path), 'original': original, 'saved': saved})
+-                try:
+-                    require(path in expected and data and b'<!DOCTYPE' not in data and b'<!ENTITY' not in data,
+-                            'unexpected/empty/declaring XML')
+-                    c, suite = expected[path], ET.fromstring(data)
+-                    cases = suite.findall('testcase')
+-                    require(suite.tag == 'testsuite' and suite.get('name') == c['fqcn'].rsplit('.', 1)[1] + '[desktop]'
+-                            and collections.Counter((t.get('classname'), t.get('name')) for t in cases)
+-                            == collections.Counter((c['fqcn'], m + '[desktop]') for m in c['methods']), 'exact case mapping')
+-                    require(suite.get('tests') == str(len(c['methods'])) and len(cases) == len(c['methods'])
+-                            and all(suite.get(k) == '0' for k in ('failures', 'errors', 'skipped'))
+-                            and all(not list(t.findall('failure') + t.findall('error') + t.findall('skipped'))
+-                                    for t in cases), 'failure/error/skip suite')
+-                except (RuntimeError, ET.ParseError) as error:
+-                    mapping = False
+-                    self.note(mode + ': ' + str(error))
+-        phase['xml'] = {'captures': captures, 'preserved': True, 'mapping_ok': mapping and observed == set(expected)}
+-        if not phase['xml']['mapping_ok']:
+-            self.note(mode + ': missing/extra/failed XML; zero success inferred from compilation')
+-
+-    def preserve_task_outcomes(self, phase):
+-        data, log_image = self.f.read(E / 'logs/focused.log', 4 * MIB)
++            except Exception as error:
++                note(errors, spec['scope'] + ': ' + str(error))
++                mapping = False
++                continue  # Retain other available producer results; unsafe output prevents cleanup.
++            try:
++                self.inventory_bytes += len(data)
++                require(self.inventory_bytes <= 3 * 65536, 'three-report aggregate byte bound')
++                destination = 'inventory/' + spec['scope'] + '.lock'
++                saved = self.f.write(E / destination, data)  # Preserve original bytes before content interpretation.
++                captures.append({'scope': spec['scope'], 'source': str(path), 'original': original,
++                                 'destination': destination, 'saved': saved})
++            except Exception as error:
++                note(errors, spec['scope'] + ': original report preservation: ' + str(error))
++                mapping = False
++                continue
++            try:
++                lines = data.decode('utf-8').splitlines()
++                require(data.endswith(b'\n') and b'\r' not in data and lines
++                        and lines[0] == '# Generated production dependency inventory for ' + spec['scope'] + '.',
++                        'exact inventory header/LF framing')
++                rows = lines[1:]
++                require(rows == sorted(set(rows)) and len(rows) == int(spec['expected_rows'])
++                        and all(re.fullmatch(re.escape(spec['scope']) + r'\t[^:\s]+:[^:\s]+:[^:\s]+', row) for row in rows)
++                        and len(data) == int(spec['expected_bytes']) and sha(data) == spec['expected_sha256'],
++                        'current producer output differs from accepted expected projection')
++            except (RuntimeError, UnicodeError) as error:
++                mapping = False
++                self.note(spec['scope'] + ': ' + str(error))
++        phase['inventory'] = {'captures': captures, 'missing': missing, 'capture_errors': errors,
++                              'preserved': not errors, 'mapping_ok': mapping and len(captures) == 3}
++        for error in errors:
++            self.note(error)
++        if not phase['inventory']['mapping_ok']:
++            self.note('missing/failed/mismatched inventory; original outputs retained, no lock rewrite or retry')
++
++    def preserve_task_outcomes(self, phase, specs):
++        data, log_image = self.f.read(E / 'logs/inventory.log', 4 * MIB)
+         records, errors = [], []
+         try:
+             for line in data.decode('utf-8').splitlines():
+-                if line.startswith(TASK_PREFIX):
+-                    require(len(records) < 4, 'graph/task marker count exceeds fixed four')
+-                    records.append(json.loads(line[len(TASK_PREFIX):]))
+-            graphs = [r for r in records if r.get('kind') == 'graph']
+-            states = [r for r in records if r.get('kind') == 'task-state']
+-            require(len(records) == 4 and len(graphs) == 1 and len(states) == 3, 'exact graph/three task states')
+-            graph = graphs[0]
+-            require(graph['selectors'] == list(TARGETS) and graph['testTasks'] == sorted(TEST_TASKS)
+-                    and graph['compileTask'] == COMPILE_TASK, 'fixed requested/graph scope')
+-            rows = graph['tasks']
+-            require(3 <= len(rows) <= 512 and len({r['path'] for r in rows}) == len(rows), 'bounded unique graph')
+-            by_path = {r['path']: r['type'] for r in rows}
+-            require(by_path.get(COMPILE_TASK) == COMPILE_TYPE
+-                    and collections.Counter(s['task'] for s in states) == collections.Counter(TARGETS),
+-                    'exact compiler type/unique selected task outcomes')
+-            for state in states:
+-                require(state['type'] == by_path[state['task']] and state['executed'] is True
+-                        and state['didWork'] is True and state['skipped'] is False
+-                        and state['upToDate'] is False and state['noSource'] is False
+-                        and state['skipMessage'] is None and state['failureType'] is None,
+-                        'selected task did not complete fresh successful actions')
+-        except (RuntimeError, ValueError, KeyError, TypeError, AttributeError) as error:
++                if line.startswith('PASSVAULT_INVENTORY01_'):
++                    matches = [(kind, prefix) for kind, prefix in MARKERS.items() if line.startswith(prefix)]
++                    require(len(matches) == 1 and len(records) < 7, 'unknown/excess inventory marker')
++                    kind, prefix = matches[0]
++                    records.append({'kind': kind, 'value': json.loads(line[len(prefix):])})
++            require(len(records) == 7 and records[0]['kind'] == 'GRAPH'
++                    and collections.Counter(r['kind'] for r in records) == {'GRAPH': 1, 'START': 3, 'FINISH': 3},
++                    'exact graph and three producer START/FINISH pairs')
++            graph = records[0]['value']
++            require(isinstance(graph, list) and len(graph) == 3
++                    and [r['task'] for r in graph] == sorted(TARGETS), 'exact three-node original producer graph')
++            by_task = {s['task']: s for s in specs}
++            for row in graph:
++                spec = by_task[row['task']]
++                require(isinstance(row['declaredType'], str) and row['declaredType'].endswith('GenerateThirdPartyDependencyScopeTask')
++                        and row['scope'] == spec['scope'] and row['project'] == row['task'].rsplit(':', 1)[0]
++                        and row['configuration'] == spec['configuration'] and row['output'] == spec['path']
++                        and all(row[k] == [] for k in ('dependencies', 'finalizers', 'mustRunAfter', 'shouldRunAfter')),
++                        'original producer type/scope/configuration/output/no-edge contract')
++            started, finished = set(), set()
++            for record in records[1:]:
++                state = record['value']
++                task = state['task']
++                require(task in by_task, 'unadmitted producer marker')
++                if record['kind'] == 'START':
++                    require(task not in started and started == finished, 'duplicate/nonserial producer start')
++                    started.add(task)
++                else:
++                    require(record['kind'] == 'FINISH' and task in started and task not in finished,
++                            'producer finish lacks one original start')
++                    require(state['executed'] is True and state['didWork'] is True and state['skipped'] is False
++                            and state['upToDate'] is False and state['noSource'] is False and state['failureClass'] is None,
++                            'producer did not execute fresh successful original actions')
++                    finished.add(task)
++            require(started == finished == set(TARGETS), 'missing producer state')
++        except (RuntimeError, ValueError, KeyError, TypeError, AttributeError, IndexError, UnicodeError) as error:
+             note(errors, error)
+-            self.note('focused graph/compile outcome: ' + str(error))
++            self.note('inventory graph/task outcome: ' + str(error))
+         packet = {'run_id': RUN_ID, 'log': log_image, 'records': records, 'errors': errors,
+-                  'mapping_ok': not errors, 'compile_only_task': COMPILE_TASK,
+-                  'qualification': 'Task actions are not application test cases; exact XML remains required.'}
++                  'mapping_ok': not errors, 'targets': list(TARGETS),
++                  'qualification': 'Three producer task executions only; zero Test tasks, XML suites or application testcases.'}
+         saved = self.f.write(E / 'TASK-RESULTS.json', canonical(packet))
+         phase['task_evidence'] = {'preserved': True, 'mapping_ok': not errors, 'result_image': saved}
+ 
+-    def phase(self, mode, classes):
++    def phase(self, mode, specs):
+         state = {'phase': mode, 'commands': [], 'stop_required': False, 'stop_attempted': False, 'stop_ok': False,
+-                 'build_ok': False, 'settled': False, 'xml': {'preserved': False, 'mapping_ok': False},
++                 'build_ok': False, 'settled': False, 'inventory': {'preserved': False, 'mapping_ok': False},
+                  'task_evidence': {'preserved': False, 'mapping_ok': False}}
+         self.phases.append(state)
+         env = dict(ENV)
+         try:
+             self.check_inputs()
+             require(not self.cancelled() and time.monotonic_ns() < self.work_deadline_ns, 'cancelled/expired phase')
+-            for worker in WORKERS:
+-                root = R / 'workers' / worker
+-                require(set(os.listdir(self.f.directory(root))) == set(CHILDREN), 'unused worker root membership')
+-                require(all(not os.listdir(self.f.directory(root / c)) for c in CHILDREN), 'worker storage not empty')
++            for spec in specs:
++                require(not os.path.lexists(CHECKOUT / spec['path']), 'fresh producer output must be absent before launch')
+             self.resources(True)
+             require(self.settle(), 'namespace not empty before phase')
+             remaining = self.work_deadline_ns - time.monotonic_ns()
+             state['budget'] = {'outer_work_deadline_monotonic_ns': self.work_deadline_ns,
+-                               'remaining_before_build_ns': remaining, 'required_seconds': 4700}
+-            # 3600 build + 20 tail + 180 wrapper check + 600 stop + 120 settlement + 180 source-after.
+-            # Metadata/evidence/resource work is cooperative; the original outer deadline remains authoritative.
+-            require(remaining >= 4700 * 1_000_000_000, 'insufficient original work budget; no launch/retry')
+-            state['build_ok'] = self.command(mode, COMMANDS[mode], env, 3600, state)
++                               'remaining_before_build_ns': remaining, 'required_seconds': 300}
++            # Work ceiling600 includes its20s tail and cuts off by outer START+600. Stop ceiling120 includes its tail.
++            # The300s minimum is cooperative reservation, NOT the sum of worst-case180s source scans.
++            # Slow source/stop/settlement may hit original780/900 deadlines and HOLD; never fabricate cleanup.
++            require(remaining >= 300 * 1_000_000_000, 'insufficient original work budget; no launch/retry')
++            state['build_ok'] = self.command(mode, COMMANDS[mode], env, 600, state)
+         except Exception as error:
+             self.note(mode + ': ' + str(error))
+         finally:
+@@ -610,18 +652,18 @@
+                 try:
+                     self.check_inputs(stopping=True)  # Retain the original wrapper/JDK stop despite other input drift.
+                     self.source_check('STOP', True)
+-                    state['stop_ok'] = self.command(mode + '-stop', STOP, env, 600, state, True)
++                    state['stop_ok'] = self.command(mode + '-stop', STOP, env, 120, state, True)
+                 except Exception as error:
+                     self.note(mode + ': original stop incomplete/no retry: ' + str(error))
+             try:
+                 state['settled'] = self.settle()
+                 if state['settled'] and state['stop_required']:
+-                    self.preserve_xml(state, classes)
+-                    self.preserve_task_outcomes(state)
++                    self.preserve_inventory(state, specs)
++                    self.preserve_task_outcomes(state, specs)
+             except Exception as error:
+-                self.note(mode + ': settlement/XML preservation uncertainty: ' + str(error))
++                self.note(mode + ': settlement/inventory preservation uncertainty: ' + str(error))
+             state['record_image'] = self.f.write(E / ('PHASE-' + mode + '.json'), canonical(state))
+-        require(state['build_ok'] and state['stop_ok'] and state['settled'] and state['xml']['mapping_ok']
++        require(state['build_ok'] and state['stop_ok'] and state['settled'] and state['inventory']['mapping_ok']
+                 and state['task_evidence']['mapping_ok'] and not self.cancelled(), mode + ' failed; no retry')
+ 
+ 
+@@ -630,9 +672,11 @@
+             and sys.flags.isolated and sys.dont_write_bytecode and sys.flags.no_site
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated absolute root entry')
+     require(all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{40}', v) for v in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
++            and type(MEMBERS) is int and type(MEMBER_LIMIT) is int and 1 <= MEMBERS <= MEMBER_LIMIT
++            and type(SOURCE_BYTES) is int and 0 < SOURCE_BYTES <= 32 * MIB
++            and type(OID_BYTES) is int and OID_BYTES == MEMBERS * 41
+             and all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{64}', v) for v in FROZEN.values()),
+-            'UNBOUND fresh source/selection/control identities: source only, no execution admission')
++            'UNBOUND fresh source/inventory/control identities: source only, no execution admission')
+     os.umask(0o077)
+     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+@@ -649,7 +693,7 @@
+         batch.source_check('BEFORE')
+         batch.before = True
+         selected = batch.selections(captured)
+-        batch.phase('focused', selected['focused'])
++        batch.phase('inventory', selected)
+     except Exception as error:
+         batch.note(type(error).__name__ + ': ' + str(error))
+     finally:
+@@ -666,26 +710,26 @@
+             batch.note('final evidence/source/namespace uncertainty: ' + str(error))
+         stops = all(not p['stop_required'] or (p['stop_attempted'] and p['stop_ok']) for p in batch.phases)
+         complete = all('record_image' in p and (not p['stop_required'] or
+-                       (p['xml']['preserved'] and p['task_evidence']['preserved']))
++                       (p['inventory']['preserved'] and p['task_evidence']['preserved']))
+                        and all(c['complete'] and 'log' in c and not c['errors'] for c in p['commands'])
+                        for p in batch.phases)
+         safe = batch.namespace_ok and batch.before and batch.after and stops and settled and batch.evidence_ok and complete
+         safe = safe and not CANCEL
+-        passed = safe and len(batch.phases) == 1 and all(p['build_ok'] and p['xml']['mapping_ok']
++        passed = safe and len(batch.phases) == 1 and all(p['build_ok'] and p['inventory']['mapping_ok']
+                       and p['task_evidence']['mapping_ok'] for p in batch.phases)
+-        result = {'format': 'passvault-linux-focused-regression02-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
++        result = {'format': 'passvault-linux-dependency-inventory01-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
+             'parent_namespaces': batch.parent, 'source_before': batch.before, 'source_after': batch.after,
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+             'validation_mapping_ok': passed, 'errors': batch.errors, 'phases': batch.phases,
+             'unstarted': [p for p in PHASES if not any(s['phase'] == p and s['stop_required'] for s in batch.phases)],
+-            'declared_regressions': 10, 'declared_producers': 0, 'declared_xml_suites': 4, 'declared_test_tasks': 2,
+-            'compile_only_task': COMPILE_TASK, 'outer_work_deadline_monotonic_ns': batch.work_deadline_ns,
++            'declared_regressions': 0, 'declared_producers': 3, 'declared_xml_suites': 0, 'declared_test_tasks': 0,
++            'producer_tasks': list(TARGETS), 'outer_work_deadline_monotonic_ns': batch.work_deadline_ns,
+             'independent_semantic_acceptance': False,
+             'resource_point_samples_not_ownership_or_cleanup_proof': batch.inventories,
+             'incomplete_resource_samples': sum(not s['traversal_finished'] or bool(s['vanished_entries']
+                 or s['vanished_scan_directories']) for s in batch.inventories),
+             'source_references': {'manifest_sha256': FROZEN[SOURCE], 'representation': 'RAW_GIT_BLOBS',
+-                                  'class_ledger_sha256': FROZEN[CLASSES], 'method_ledger_sha256': FROZEN[METHODS]}}
++                                  'inventory_table_sha256': FROZEN[TABLE], 'source_capacity': SOURCE_CAPACITY}}
+         try:
+             files.write(E / 'INNER-RESULT.json', canonical(result))
+             files.verify()
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/LAUNCH.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/LAUNCH.py.txt
+@@ -1,9 +1,9 @@
+ #!/usr/bin/python3.12
+-"""UNBOUND focused10 source-only outer; not execution or old-HOLD cleanup authority.
++"""UNBOUND dependency3 source-only outer; not execution or old-HOLD cleanup authority.
+ 
+ Current reviewed raw transport, host screen, namespace supervision and descriptor
+ cleanup mechanisms only. Fresh exact source/instance/reviewer/root admission is
+-mandatory. No GUI/static/native provider work, retired Git store, or old helper import.
++mandatory. No Test/compile/package scope, retired Git store, or old helper import.
+ Cooperative-root model only; no global-idle/no-escape/hard syscall deadline claim.
+ """
+ import fcntl
+@@ -21,42 +21,60 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-focused-regression02')
+-E = B / 'runs/linux-focused-regression02'
+-SELF = B / 'reviews/focused-regression02/LAUNCH.py'
+-REQUEST = B / 'requests/LINUX-FOCUSED-REGRESSION-02.json'
+-APPROVAL = B / 'reviews/team20/resume12/linux_review/focused02-INSTANCE-ACCEPT.json'
++R = Path('/root/projects/PassVault/audit-runtime-linux-dependency-inventory01')
++E = B / 'runs/linux-dependency-inventory01'
++SELF = B / 'reviews/dependency-inventory01/LAUNCH.py'
++REQUEST = B / 'requests/LINUX-DEPENDENCY-INVENTORY-01.json'
++APPROVAL = B / 'reviews/team20/resume12/dependency_review/integration01-INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+ # Fixed T destination only; current standalone source/store/instance admission remains UNBOUND.
+ GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+-INNER, INIT = W / 'scripts/audit/linux_focused_regression_02.py', W / 'scripts/audit/focused_regression_02.init.gradle'
++INNER, INIT = W / 'scripts/audit/linux_dependency_inventory_01.py', W / 'scripts/audit/dependency_inventory_01.init.gradle'
+ SOURCE = B / 'UNBOUND_C20_SOURCE_MANIFEST_PATH'
+-CLASSES, METHODS = (B / ('reviews/focused-regression02/' + p + '.tsv') for p in ('CLASSES', 'METHODS'))
++TABLE = B / 'reviews/dependency-inventory01/INVENTORY.tsv'
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
+-RUN, PURPOSE = 'linux-focused-regression02', 'ONE_LINUX_FOCUSED_REGRESSION02'
+-COMMIT, TREE, MEMBERS = 'UNBOUND_C20_COMMIT', 'UNBOUND_C20_TREE', 'UNBOUND_C20_SOURCE_MEMBERS'
++RUN, PURPOSE = 'linux-dependency-inventory01', 'ONE_LINUX_DEPENDENCY_INVENTORY01'
++COMMIT, TREE = 'UNBOUND_C20_COMMIT', 'UNBOUND_C20_TREE'
++MEMBERS = None  # UNBOUND exact current C20 source membership.
++MEMBER_LIMIT = None  # UNBOUND smallest independently reviewed current-source ceiling.
++SOURCE_BYTES = None  # UNBOUND exact manifest length, within the original 32MiB reader envelope.
++OID_BYTES = None  # UNBOUND exact MEMBERS * 41.
++SOURCE_CAPACITY = {'members': MEMBERS, 'member_limit': MEMBER_LIMIT, 'manifest_bytes': SOURCE_BYTES,
++                   'oid_bytes': OID_BYTES, 'raw_stream_limit_bytes': 128 * 1024 * 1024}
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+-REQUIRED = (INNER, INIT, SOURCE, CLASSES, METHODS, JAVA, RELEASE)
++REQUIRED = (INNER, INIT, SOURCE, TABLE, JAVA, RELEASE)
+ IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 'UNBOUND_C20_DIRECTORY_DEVICE', 'regular_file_device': 'UNBOUND_C20_REGULAR_FILE_DEVICE'}
+ EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original Linux lock obligation only; fresh same-object observation remains UNBOUND. Never recreate/replace.
+-FROZEN = {INNER: 'aceef90e7b7b61e51625379571fe20ac68a79dc9873f25eb803f7237484fde37', INIT: '46d5bbf54cb34fbc9235d361763dafae7ff5ae6c8de8316c5cd4901695bdccc2', SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a', METHODS: 'fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd'}
+-TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers'.split()
+-WORKERS = ['database', 'credential']
+-CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
+-DIRS = TOP + [f'workers/{w}' for w in WORKERS] + [f'workers/{w}/{d}' for w in WORKERS for d in CHILDREN]
++FROZEN = {INNER: '6356b9d0a3d5f7ba3df8e98ddc5c3d304f94029c46940a1f00881e0d24d2da81',
++          INIT: '65feca52b8417a1c15517edb1cb6bae172b76bca2c556666e1e32d6113e6b85c',
++          SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256',
++          TABLE: '905c5b05aa394db81e010775609ef556b7cb1f7d08fe9dc03c200a406018af67'}
++TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state'.split()
++DIRS = TOP
+ ODIR, MIB = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, 1024 ** 2
++CACHE_REPORT_LIMITS = {'roots': 4, 'files': 16, 'file_bytes': MIB, 'total_bytes': 4 * MIB,
++                       'descendant_levels': 8, 'relative_json_bytes': 512}
++PROBLEMS_REPORT = ('checkout', 'build', 'reports', 'problems', 'problems-report.html')
++INVENTORY_REPORTS = {
++    'android': 'app-android/build/reports/legal/android-production-dependencies.lock',
++    'desktop': 'app-desktop/build/reports/legal/desktop-production-dependencies.lock',
++    'iosArm64': 'shared/build/reports/legal/iosArm64-production-dependencies.lock',
++}
++PRODUCER_TASKS = (':app-android:generateAndroidThirdPartyDependencyInventory',
++                  ':app-desktop:generateDesktopThirdPartyDependencyInventory',
++                  ':shared:generateIosArm64ThirdPartyDependencyInventory')
+ BUILDLIKE = re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|'
+     r'gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|cargo|'
+     r'rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+ START = time.monotonic()
+-END, WORK_END, last_watch = START + 6000, START + 5250, 0.0
++END, WORK_END, last_watch = START + 900, START + 780, 0.0
+ reasons, resources, churn, directories, images = [], [], 0, {}, {}
+ child, lock_fd, owned_domain, cancel_written = None, None, None, False
+-receipt = {'format': 'passvault-linux-focused-regression02-outer-receipt-v1', 'run_id': RUN,
++receipt = {'format': 'passvault-linux-dependency-inventory01-outer-receipt-v1', 'run_id': RUN,
+            'status': 'HOLD', 'inner_started': False, 'cleanup': 'NOT_ATTEMPTED', 'children': []}
+ 
+ def require(value, message):
+@@ -358,7 +376,7 @@
+         if reasons:
+             latch(reasons[0])
+             if c['drain'] is None:
+-                c['drain'] = min(time.monotonic() + (750 if c['isolated'] else 0), END)
++                c['drain'] = min(time.monotonic() + (180 if c['isolated'] else 0), END)
+             if time.monotonic() >= c['drain']:
+                 c['row']['pidfd_kill_attempted'] = True
+                 c['final_wait'] = True  # Monotone before syscall; finally cannot retry kill or 5-second wait.
+@@ -429,7 +447,7 @@
+ 
+ def oid_requests(expected):
+     data = b''.join(row['git_blob'].encode('ascii') + b'\n' for row in expected.values())
+-    require(len(data) == MEMBERS * 41 and len(data) <= 144 * 1024, 'canonical bounded OID input size')
++    require(len(data) == OID_BYTES == MEMBERS * 41, 'canonical exact current-source OID input size')
+     fd = new(R / 'source.oids')
+     try:
+         view = memoryview(data)
+@@ -443,7 +461,7 @@
+     finally:
+         os.close(fd)
+     os.fsync(directory(R))
+-    actual, original = capture(R / 'source.oids', 144 * 1024)
++    actual, original = capture(R / 'source.oids', OID_BYTES)
+     require(actual == data and original['pin'] == written, 'original OID input changed before capture')
+     return data, original
+ 
+@@ -576,7 +594,7 @@
+     for path in tuple(directories):
+         directory(path)
+     for path in IMAGES:
+-        require(capture(path)[1] == images[str(path)], 'admitted image changed')
++        require(capture(path, SOURCE_BYTES if path == SOURCE else 32 * MIB)[1] == images[str(path)], 'admitted image changed')
+ 
+ def no_runtime_mounts():
+     deadline = min(time.monotonic() + 5, END)
+@@ -600,7 +618,140 @@
+     receipt['parent_mount_guard'] = {'rows': len(lines), 'sha256': hashlib.sha256(raw).hexdigest(),
+         'qualification': 'Cooperative quiescent host only; not protection against concurrent hostile-root mount mutation.'}
+ 
+-def remove_runtime():
++def cache_report_root(parts, is_directory):
++    # Exact accepted static02 source shapes only; no basename disposal waiver.
++    if len(parts) >= 6 and parts[:4] == ('gradle-home', 'caches', '9.7.1', 'groovy-dsl'):
++        count = 6
++    elif len(parts) >= 7 and parts[:5] == ('gradle-home', 'caches', '9.7.1', 'kotlin-dsl', 'scripts'):
++        count = 7
++    else:
++        return None
++    digest = parts[count - 2]
++    if len(digest) != 32 or any(c not in '0123456789abcdef' for c in digest) or parts[count - 1] != 'reports':
++        return None
++    require(len(parts) - count <= CACHE_REPORT_LIMITS['descendant_levels']
++            and len(encoded('/'.join(parts))) <= CACHE_REPORT_LIMITS['relative_json_bytes'], 'cache report depth/path cap')
++    root = parts[:count]
++    require(parts != root or is_directory, 'cache report root is not a directory')
++    return root
++
++
++def capture_report_source(parts, snapshot):
++    # Bind every containing directory to the original complete snapshot BEFORE
++    # reusing capture(); never adopt a new parent merely because the name matches.
++    for count in range(1, len(parts)):
++        prefix = parts[:count]
++        fd = directory(R.joinpath(*prefix))
++        require(same_dir(pin(os.fstat(fd), True), snapshot[prefix]), 'report parent differs from original snapshot')
++    data, image = capture(R.joinpath(*parts), MIB)
++    require(image['pin'] == snapshot[parts], 'report file differs from original snapshot')
++    return data, image
++
++
++def preserve_generated_reports(snapshot, expected, folders, retained_inventory):
++    frozen_files = {('checkout', *name.split('/')) for name in expected}
++    frozen_directories = {('checkout', *name.split('/')) for name in folders}
++    problem_directories = {PROBLEMS_REPORT[:count] for count in range(3, len(PROBLEMS_REPORT))}
++    inventory_files = {('checkout', *name.split('/')) for name in INVENTORY_REPORTS.values()}
++    inventory_directories = {parts[:count] for parts in inventory_files for count in range(2, len(parts))}
++    roots, candidates, cache_files, cache_bytes, observed_inventory = {}, [], 0, 0, set()
++    # Classification of the WHOLE snapshot precedes every evidence copy and unlink.
++    for parts, original in sorted(snapshot.items(), key=lambda item: (len(item[0]), item[0])):
++        tick(END)
++        is_directory = stat.S_ISDIR(original['mode'])
++        if parts in frozen_files:
++            require(not is_directory, 'frozen source file changed type')
++            continue  # Authoritative source/evidence remains preserved outside R.
++        if parts in frozen_directories:
++            require(is_directory, 'frozen source ancestor changed type')
++            continue
++        if parts in inventory_files:
++            require(not is_directory and 0 <= original['bytes'] <= 65536 and parts in retained_inventory,
++                    'exact producer output lacks bounded original retained image')
++            observed_inventory.add(parts)
++            candidates.append((parts, 'EXACT_PRODUCTION_INVENTORY'))
++            continue
++        if is_directory and parts in inventory_directories:
++            continue  # Only the three fixed leaves are permitted beneath their report ancestors.
++        root = cache_report_root(parts, is_directory)
++        if root is not None:
++            if parts == root:
++                require(root not in roots and len(roots) < CACHE_REPORT_LIMITS['roots'], 'cache report root cap')
++                roots[root] = original
++            else:
++                require(root in roots, 'cache report root must precede descendants')
++            if not is_directory:
++                cache_files += 1
++                cache_bytes += original['bytes']
++                require(cache_files <= CACHE_REPORT_LIMITS['files'] and 0 <= original['bytes'] <= MIB
++                        and cache_bytes <= CACHE_REPORT_LIMITS['total_bytes'], 'cache report file/byte caps')
++                candidates.append((parts, 'PRIVATE_GRADLE_DSL_REPORT'))
++            continue
++        if parts == PROBLEMS_REPORT:
++            require(not is_directory and 0 <= original['bytes'] <= MIB, 'fixed problems report type/byte cap')
++            candidates.append((parts, 'FIXED_GRADLE_PROBLEMS_REPORT'))
++            continue
++        if is_directory and parts in problem_directories:
++            continue  # Only the fixed file is permitted beneath these ancestors.
++        lower, name = tuple(p.lower() for p in parts), parts[-1].lower()
++        report = any(p in ('reports', 'test-results', 'surefire-reports', 'failsafe-reports', 'test-output') for p in lower)
++        diagnostic = (name.endswith(('.sarif', '.sarif.json', '.xcresult'))
++                      or (not is_directory and (name.endswith('.hprof')
++                          or (name.startswith('test-') and name.endswith('.xml'))
++                          or name.startswith(('hs_err_pid', 'replay_pid', 'worker-error-'))
++                          or name == 'core' or (name.startswith('core.') and name[5:].isdigit()))))
++        if report or diagnostic:
++            receipt['unexpected_evidence'] = {'relative': '/'.join(parts), 'directory': is_directory,
++                                              'reason': 'unpreserved report/test/crash/worker-error evidence'}
++            require(False, 'unpreserved generated diagnostic: HOLD before any deletion')
++    require(observed_inventory == set(retained_inventory), 'captured producer output disappeared or was not inventoried')
++    copies = []
++    for parts, kind in candidates:
++        tick(END)
++        data, original = capture_report_source(parts, snapshot)
++        if kind == 'EXACT_PRODUCTION_INVENTORY':
++            retained = retained_inventory[parts]
++            require(original == retained['original'], 'producer report changed after inner preservation')
++            destination = retained['destination']
++            saved_data, saved = capture(E / destination, 65536)
++            require(saved == retained['saved'], 'original inner-retained producer image changed')
++        else:
++            destination = 'GENERATED-REPORT-%04d.bin' % (len(copies) + 1)
++            output(destination, data)  # Existing exclusive flat-E write + file/parent fsync.
++            saved_data, saved = capture(E / destination, MIB)
++        require(saved_data == data and saved['sha256'] == original['sha256']
++                and saved['pin']['dev'] == DEVICE['regular_file_device']
++                and saved['pin']['mode'] == stat.S_IFREG | 0o600, 'exact durable report copy/readback')
++        copies.append({'relative': '/'.join(parts), 'kind': kind, 'destination': destination,
++                       'source_image': original, 'saved_image': saved})
++    manifest = {'format': 'passvault-linux-dependency-inventory01-retained-reports-v1', 'run_id': RUN,
++        'cache_roots': {'/'.join(parts): value for parts, value in roots.items()}, 'limits': CACHE_REPORT_LIMITS,
++        'cache_file_count': cache_files, 'cache_logical_bytes': cache_bytes,
++        'problems_report_limit_bytes': MIB, 'inventory_file_count': len(observed_inventory),
++        'inventory_limits': {'files': 3, 'file_bytes': 65536, 'total_bytes': 3 * 65536}, 'copies': copies,
++        'qualification': 'Original three producer reports reuse inner copies; opaque diagnostics conserved outside R. No extra copy, test or license provenance credit.'}
++    output('GENERATED-REPORTS.json', encoded(manifest))
++    saved_manifest, manifest_image = capture(E / 'GENERATED-REPORTS.json', MIB)
++    require(saved_manifest == encoded(manifest), 'exact durable generated-report manifest')
++    receipt['generated_report_preservation'] = {'manifest': manifest_image, 'copied_files': len(copies),
++        'copied_logical_bytes': sum(row['source_image']['pin']['bytes'] for row in copies),
++        'source_and_saved_reverified_before_unlink': False, 'saved_reverified_after_cleanup': False}
++    return {'copies': copies, 'manifest_image': manifest_image}
++
++
++def verify_generated_reports(conserved, snapshot, *, source):
++    require(capture(E / 'GENERATED-REPORTS.json', MIB)[1] == conserved['manifest_image'], 'retained report manifest changed')
++    for row in conserved['copies']:
++        tick(END)
++        if source:
++            require(capture_report_source(tuple(row['relative'].split('/')), snapshot)[1] == row['source_image'],
++                    'original report changed before first unlink')
++        require(capture(E / row['destination'], MIB)[1] == row['saved_image'], 'retained diagnostic bytes/pin changed')
++    key = 'source_and_saved_reverified_before_unlink' if source else 'saved_reverified_after_cleanup'
++    receipt['generated_report_preservation'][key] = True
++
++
++def remove_runtime(expected, folders, retained_inventory):
+     no_runtime_mounts()
+     root, snapshot = directory(R), {}
+     def inventory(fd, prefix=()):
+@@ -619,6 +770,8 @@
+                 finally:
+                     os.close(nested)
+     inventory(root)  # Complete bounded snapshot BEFORE any deletion; no retry after partial failure.
++    conserved = preserve_generated_reports(snapshot, expected, folders, retained_inventory)
++    verify_generated_reports(conserved, snapshot, source=True)
+     no_runtime_mounts()  # Recheck immediately before first destructive operation, including same-device bind mounts.
+     receipt['cleanup'] = {'status': 'STARTED', 'snapshot_entries': len(snapshot), 'removed': 0}
+     for parts in sorted(snapshot, key=lambda p: (-len(p), p)):
+@@ -638,13 +791,16 @@
+     os.fsync(directory(R.parent))
+     require(os.fstat(root).st_nlink == 0 and not os.path.lexists(R), 'runtime removal not established')
+     receipt['cleanup']['status'] = 'REMOVED_ORIGINAL_RUNTIME'
++    verify_generated_reports(conserved, snapshot, source=False)
+ 
+ def main():
+     global lock_fd, parent_ns, request, request_image, approval_image
+     require(sys.argv == [str(SELF)] and sys.executable == PYTHON and not sys.flags.optimize and sys.flags.isolated and
+             sys.flags.no_site and sys.dont_write_bytecode and dict(os.environ) == ENV and os.getuid() == os.geteuid() == 0, 'fixed entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
++            and type(MEMBERS) is int and type(MEMBER_LIMIT) is int and 1 <= MEMBERS <= MEMBER_LIMIT
++            and type(SOURCE_BYTES) is int and 0 < SOURCE_BYTES <= 32 * MIB
++            and type(OID_BYTES) is int and OID_BYTES == MEMBERS * 41
+             and GITDIR == Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+             and isinstance(DEVICE, dict) and set(DEVICE) == {'directory_device', 'regular_file_device'}
+             and all(type(value) is int and value >= 0 for value in DEVICE.values())
+@@ -655,14 +811,15 @@
+             and EXPECTED_LOCK['mode'] == stat.S_IFREG | 0o600
+             and EXPECTED_LOCK['nlink'] == 1 and EXPECTED_LOCK['bytes'] == 0
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'UNBOUND fresh focused10 source/store/tool/device/lock binding: source-only, no execution admission')
++            'UNBOUND fresh dependency3 source/store/tool/device/lock binding: source-only, no execution admission')
+     raw, request_image = capture(REQUEST, MIB)
+     request = decode(raw)
+     raw, approval_image = capture(APPROVAL, 65536)
+     approval = decode(raw)
+     require(set(request) == {'format', 'run_id', 'purpose', 'commit', 'tree', 'parent_namespaces', 'directories',
+-            'lock', 'images', 'coordination', 'device_model'} and request['device_model'] == DEVICE, 'request/device schema')
+-    require(request['format'] == 'passvault-linux-focused-regression02-request-v1' and request['run_id'] == RUN and
++            'lock', 'images', 'coordination', 'device_model', 'source_capacity'}
++            and request['device_model'] == DEVICE and request['source_capacity'] == SOURCE_CAPACITY, 'request/device/source-capacity schema')
++    require(request['format'] == 'passvault-linux-dependency-inventory01-request-v1' and request['run_id'] == RUN and
+             request['purpose'] == PURPOSE and request['commit'] == COMMIT and request['tree'] == TREE, 'request purpose/source')
+     require(request['coordination'] == {'sole_build_owner': '/root', 'agents_quiescent': True, 'no_ci': True}, 'coordination not admitted')
+     parent_ns = {k: os.readlink('/proc/self/ns/' + k) for k in ('pid', 'mnt')}
+@@ -671,10 +828,10 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-focused-regression02-approval-v1' and approval['reviewer'] == '/root/c20_linux_review' and
++            approval['format'] == 'passvault-linux-dependency-inventory01-approval-v1' and approval['reviewer'] == '/root/c20_dependency_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+-            {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE, CLASSES, METHODS)}, 'missing/stale/nonaccepting genuine review')
++            {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE, TABLE)}, 'missing/stale/nonaccepting genuine review')
+     lock_fd = os.open(LOCK.name, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=directory(LOCK.parent))
+     require(pin(os.fstat(lock_fd)) == request['lock'] == EXPECTED_LOCK
+             == pin(os.stat(LOCK, follow_symlinks=False)), 'wrong freshly admitted original lock')
+@@ -683,10 +840,11 @@
+     require(receipt['parent_under_lock'] == entry_parent, 'original parent changed before locked intake')
+     source = None
+     for path in IMAGES:
+-        data, actual = capture(path)
++        data, actual = capture(path, SOURCE_BYTES if path == SOURCE else 32 * MIB)
+         require(actual == request['images'][str(path)] and actual['sha256'] == FROZEN.get(path, actual['sha256']), 'input image/pin mismatch')
+         images[str(path)] = actual
+         if path == SOURCE:
++            require(actual['pin']['bytes'] == SOURCE_BYTES, 'exact current source manifest length')
+             source = decode(data)
+     for path in PARENTS:
+         require(same_dir(pin(os.fstat(directory(path)), True), request['directories'][str(path)]), 'original parent mismatch')
+@@ -703,18 +861,19 @@
+     directory(E, True)
+     directory(R, True)
+     receipt.update(request=request_image, approval=approval_image, parent_namespaces=parent_ns, device_model=DEVICE)
+-    allocation = {'format': 'passvault-linux-focused-regression02-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
++    allocation = {'format': 'passvault-linux-dependency-inventory01-allocation-v1', 'run_id': RUN, 'purpose': PURPOSE,
+         'commit': COMMIT, 'tree': TREE, 'source_members': MEMBERS, 'source_representation': 'RAW_GIT_BLOBS',
++        'source_capacity': SOURCE_CAPACITY,
+         'allocated_directories': {str(p): directories[p][1] for p in (E, R)},
+         'parents': {str(p): directories[p][1] for p in PARENTS}, 'parent_namespaces': parent_ns,
+         'packet': {'request': request_image, 'approval': approval_image},
+-        'sources': {str(p): images[str(p)] for p in (SELF, INNER, INIT, SOURCE, CLASSES, METHODS)}, 'device_model': DEVICE,
++        'sources': {str(p): images[str(p)] for p in (SELF, INNER, INIT, SOURCE, TABLE)}, 'device_model': DEVICE,
+         'qualification': 'Original fresh E/R allocation evidence only; NOT materialization, settlement or cleanup admission. No authority for any old or consumed instance.'}
+     receipt['allocation'] = allocation  # Retain origin even if the sole permanent allocation-record write fails.
+     output('OUTER-ALLOCATION.json', encoded(allocation))
+     os.fsync(directory(E.parent))
+     os.fsync(directory(R.parent))
+-    for path in (E / 'logs', E / 'xml', *(R / p for p in DIRS)):
++    for path in (E / 'logs', E / 'inventory', *(R / p for p in DIRS)):
+         directory(path, True)
+     oid_data, oid_image = oid_requests(expected)
+     receipt['raw_transport'] = {'format': 'git-cat-file-batch-raw-blobs', 'members': len(expected),
+@@ -766,8 +925,9 @@
+             receipt['raw_transport']['complete_stream_passes'] = 2
+             receipt['source_before'] = before
+             authority()
+-            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-focused-regression02-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
++            output('OUTER-INTENT.json', encoded({'format': 'passvault-linux-dependency-inventory01-outer-v1', 'run_id': RUN, 'commit': COMMIT, 'tree': TREE,
+                 'source_representation': 'RAW_GIT_BLOBS', 'source_members': MEMBERS, 'parent_namespaces': parent_ns,
++                'source_capacity': SOURCE_CAPACITY,
+                 'work_deadline_monotonic_ns': int(WORK_END * 1_000_000_000),
+                 'directories': {str(p): v[1] for p, v in directories.items() if p == R or R in p.parents or p == E or E in p.parents},
+                 'images': {str(p): images[str(p)] for p in REQUIRED}, 'outer_images': images,
+@@ -777,7 +937,7 @@
+     raw, result_image = capture(E / 'INNER-RESULT.json', MIB)
+     result = decode(raw)
+     receipt.update(inner_exit=code, inner_result=result_image)
+-    require(code in (0, 1) and result['format'] == 'passvault-linux-focused-regression02-inner-v1' and result['run_id'] == RUN and
++    require(code in (0, 1) and result['format'] == 'passvault-linux-dependency-inventory01-inner-v1' and result['run_id'] == RUN and
+             result['commit'] == COMMIT and result['tree'] == TREE and result['parent_namespaces'] == parent_ns and all(result[k] is True for k in
+             ('source_before', 'source_after', 'all_required_stops_ok', 'namespace_empty_before_exit', 'cleanup_safe')), 'inner safety proofs incomplete')
+     raw, preflight = capture(E / 'INNER-PREFLIGHT.json', 65536)
+@@ -789,38 +949,51 @@
+     require(type(result['outer_work_deadline_monotonic_ns']) is int
+             and result['outer_work_deadline_monotonic_ns'] == int(WORK_END * 1_000_000_000),
+             'inner must echo original outer deadline, not reset its remaining budget')
+-    require(result['declared_regressions'] == 10 and result['declared_producers'] == 0
+-            and result['declared_xml_suites'] == 4 and result['declared_test_tasks'] == 2
+-            and result['compile_only_task'] == ':app-desktop:compileTestKotlinDesktop', 'fixed10 plus compile-only scope')
++    require(result['declared_regressions'] == 0 and result['declared_producers'] == 3
++            and result['declared_xml_suites'] == 0 and result['declared_test_tasks'] == 0
++            and result['producer_tasks'] == list(PRODUCER_TASKS), 'fixed three producer tasks, no test/compile scope')
+     require(isinstance(result['phases'], list) and len(result['phases']) == 1
+-            and result['phases'][0]['phase'] == 'focused', 'one serial wrapper phase only')
++            and result['phases'][0]['phase'] == 'inventory', 'one serial wrapper phase only')
+     phase = result['phases'][0]
+-    phase_raw, phase_image = capture(E / 'PHASE-focused.json', 4 * MIB)
++    phase_raw, phase_image = capture(E / 'PHASE-inventory.json', 4 * MIB)
+     require(phase_image == phase['record_image']
+             and decode(phase_raw) == {k: v for k, v in phase.items() if k != 'record_image'}, 'exact saved phase')
+-    receipt['focused_phase'] = phase_image
++    receipt['inventory_phase'] = phase_image
++    retained_inventory = {}
+     if phase['stop_required']:
+         require(phase['stop_attempted'] is True and phase['stop_ok'] is True and phase['settled'] is True
+-                and phase['xml']['preserved'] is True and phase['task_evidence']['preserved'] is True,
++                and phase['inventory']['preserved'] is True and phase['task_evidence']['preserved'] is True,
+                 'original phase stop/settlement/evidence obligations incomplete')
+         task_raw, task_image = capture(E / 'TASK-RESULTS.json', MIB)
+         task_result = decode(task_raw)
+         require(task_image == phase['task_evidence']['result_image'] and task_result['run_id'] == RUN
+-                and task_result['compile_only_task'] == result['compile_only_task']
+-                and task_result['mapping_ok'] == phase['task_evidence']['mapping_ok'], 'saved task/compile outcome binding')
++                and task_result['targets'] == list(PRODUCER_TASKS)
++                and task_result['mapping_ok'] == phase['task_evidence']['mapping_ok'], 'saved producer graph/state binding')
+         receipt['task_results'] = task_image
++        captures = phase['inventory']['captures']
++        require(isinstance(captures, list) and len(captures) <= 3 and not phase['inventory']['capture_errors'],
++                'bounded complete original producer capture obligations')
++        for row in captures:
++            scope = row['scope']
++            require(scope in INVENTORY_REPORTS
++                    and row['source'] == str(R / 'checkout' / INVENTORY_REPORTS[scope])
++                    and row['destination'] == 'inventory/' + scope + '.lock', 'exact fixed producer source/destination')
++            parts = ('checkout', *INVENTORY_REPORTS[scope].split('/'))
++            require(parts not in retained_inventory and capture(E / row['destination'], 65536)[1] == row['saved'],
++                    'unique stable original inner producer copy')
++            retained_inventory[parts] = row
+     if code == 0:
+         require(result['validation_mapping_ok'] is True and not result['errors']
+                 and all(phase[k] is True for k in ('build_ok', 'stop_required', 'stop_attempted', 'stop_ok', 'settled'))
+-                and phase['xml']['mapping_ok'] is True and len(phase['xml']['captures']) == 4
++                and phase['inventory']['mapping_ok'] is True and len(retained_inventory) == 3
+                 and phase['task_evidence']['mapping_ok'] is True,
+-                'success requires exact10/four XML suites/two Tests plus successful compile actions')
+-    receipt['focused_scope'] = {'regressions': 10, 'xml_suites': 4, 'test_tasks': 2,
+-                               'compile_only_task': result['compile_only_task'], 'producers': 0}
++                'success requires exact three fresh producers/outputs and graph/state markers')
++    receipt['inventory_scope'] = {'regressions': 0, 'xml_suites': 0, 'test_tasks': 0,
++                                  'producer_tasks': list(PRODUCER_TASKS), 'producers': 3}
+     require(source_check(expected) == before, 'outer raw-source after mismatch')
+     authority()
+     watch()
+-    remove_runtime()
++    remove_runtime(expected, folders, retained_inventory)
+     receipt['status'] = 'COMPLETED_PENDING_INDEPENDENT_RECONCILIATION' if code == 0 else 'VALIDATION_FAILED_CLEANED'
+     return code
+ 
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/focused_regression_02.init.gradle.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/dependency_inventory_01.init.gradle.txt
+@@ -1,118 +1,101 @@
+ import groovy.json.JsonOutput
++import org.gradle.api.DefaultTask
+ import org.gradle.api.GradleException
+-import org.gradle.api.tasks.testing.Test
++import org.gradle.api.Task
++import org.gradle.api.artifacts.verification.DependencyVerificationMode
++import org.gradle.api.tasks.TaskState
+ 
+-// UNAPPLIED source-only focused10 candidate. No GUI, provider fixture, static or admission authority.
+-def mode = gradle.startParameter.projectProperties['passvault.audit.mode']
+-if (mode != 'focused') throw new GradleException('Exactly focused mode required; no whole-suite/default mode')
+-if (System.getenv('PASSVAULT_PVA038_FIXTURE') != null) throw new GradleException('No provider fixture in focused10')
+-def runtime = '/root/projects/PassVault/audit-runtime-linux-focused-regression02'
+-def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+-def compileTask = ':app-desktop:compileTestKotlinDesktop'
+-def compileType = 'org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated'
+-def testTasks = [':core:database:desktopTest', ':feature:credential:desktopTest']
+-def requested = testTasks + [compileTask]
+-if (gradle.startParameter.taskNames != requested || gradle.startParameter.dryRun ||
+-        !gradle.startParameter.excludedTaskNames.empty || gradle.startParameter.continueOnFailure) {
+-    throw new GradleException('Only the exact two Tests and compile-only task, no dry-run/exclusions/continue')
+-}
+-def selections = [
+-    ':core:database': [worker: 'database', methods: [
+-        'com.passvault.core.database.CredentialFolderForeignKeyMigrationTest.Room validation failure rolls back the full upgrade and a clean reopen persists it',
+-        'com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.schema one encrypted records survive current backup restore and a fresh reopen',
+-    ]],
+-    ':feature:credential': [worker: 'credential', methods: [
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.row Save captured before further edits adopts the latest draft and preserves another row',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.a latest blank name rejects stale enabled row Save without losing its draft',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.unchanged and duplicate row Saves preserve the live value owner',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.late row Save cannot resurrect an unknown cancelled removed or locked draft',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.busy generation rejects row Save while the pending draft still exists',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.explicit update keeps supplied payload bounds and does not become draft Save',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.duplicate row Save preserves the live value and page Save persists it',
+-        'com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.unchanged row Save in a dirty editor never clears the live owner',
+-    ]],
++// INERT new inventory-only scope guard. Root must bind, copy and admit this exact
++// source with its new one-shot outer envelope. No standalone execution authority.
++// This does not replace/mutate the checked-in coordinates provider or task action.
++def expectedRoot = new File('/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/checkout')
++def scopes = [
++    ':app-android:generateAndroidThirdPartyDependencyInventory': [
++        scope: 'android', configuration: 'releaseRuntimeClasspath',
++        output: 'app-android/build/reports/legal/android-production-dependencies.lock',
++    ],
++    ':app-desktop:generateDesktopThirdPartyDependencyInventory': [
++        scope: 'desktop', configuration: 'desktopRuntimeClasspath',
++        output: 'app-desktop/build/reports/legal/desktop-production-dependencies.lock',
++    ],
++    ':shared:generateIosArm64ThirdPartyDependencyInventory': [
++        scope: 'iosArm64', configuration: 'iosArm64CompileKlibraries',
++        output: 'shared/build/reports/legal/iosArm64-production-dependencies.lock',
++    ],
+ ]
+-
+-gradle.beforeProject { project ->
+-    def selection = selections[project.path]
+-    if (selection == null) return
+-    project.tasks.withType(Test).configureEach { Test test ->
+-        if (test.name != 'desktopTest') return
+-        def workerRoot = runtime + '/workers/' + selection.worker
+-        def temporary = workerRoot + '/tmp'
+-        test.executable = jdk + '/bin/java'
+-        test.maxHeapSize = '512m'
+-        test.maxParallelForks = 1
+-        test.forkEvery = 0
+-        test.ignoreFailures = false
+-        test.jvmArgs('-XX:-UsePerfData')
+-        // Test.systemProperty creates worker STARTUP -D arguments, not client flags.
+-        test.systemProperty('file.encoding', 'UTF-8')
+-        test.systemProperty('user.home', workerRoot + '/home')
+-        test.systemProperty('jna.tmpdir', workerRoot + '/jna')
+-        test.systemProperty('java.io.tmpdir', temporary)
+-
+-        // Root supplies a clean allowlisted client environment. Do not forward its
+-        // JVM-option variables or stale provider mode/root/fixture to test workers.
+-        def workerEnvironment = new LinkedHashMap(test.environment)
+-        ['JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS', 'JAVA_OPTS', 'GRADLE_OPTS',
+-         'PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].each {
+-            workerEnvironment.remove(it)
+-        }
+-        workerEnvironment.putAll([
+-            'JAVA_HOME': jdk, 'HOME': workerRoot + '/home',
+-            'TMPDIR': workerRoot + '/tmp', 'TMP': workerRoot + '/tmp', 'TEMP': workerRoot + '/tmp',
+-            'SQLITE_TMPDIR': workerRoot + '/sqlite',
+-            'XDG_CACHE_HOME': workerRoot + '/xdg-cache', 'XDG_CONFIG_HOME': workerRoot + '/xdg-config',
+-            'XDG_DATA_HOME': workerRoot + '/xdg-data', 'XDG_STATE_HOME': workerRoot + '/xdg-state',
+-        ])
+-        test.setEnvironment(workerEnvironment)
+-
+-        test.filter.setIncludePatterns(selection.methods as String[])
+-        test.filter.failOnNoMatchingTests = true
+-    }
++def selected = scopes.keySet().toList()
++def start = gradle.startParameter
++if (gradle.gradleVersion != '9.7.1' || System.getProperty('java.specification.version') != '17' ||
++        System.getProperty('os.name') != 'Linux' || !(System.getProperty('os.arch') in ['amd64', 'x86_64']) ||
++        start.taskNames != selected || !start.continueOnFailure || !start.excludedTaskNames.empty ||
++        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
++        start.buildCacheEnabled || start.offline || start.refreshDependencies || start.dryRun ||
++        start.initScripts.size() != 1 ||
++        start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
++    throw new GradleException('Inventory01 requires the exact online three-producer command, Linux/JDK17, serial strict verification')
+ }
+ 
+-// Bounded observation only: do not add/disable graph tasks or generate test declarations.
+-def emit = { Map value ->
+-    String raw = JsonOutput.toJson(value)
+-    if (raw.getBytes('UTF-8').length > 256 * 1024) throw new GradleException('Focused graph/state record cap')
+-    println('PASSVAULT_FOCUSED_REGRESSION02=' + raw)
++def admitted = [:]
++def started = new LinkedHashSet<String>()
++def finished = new LinkedHashSet<String>()
++def graphAccepted = false
++gradle.taskGraph.whenReady { graph ->
++    def root = gradle.rootProject
++    if (root.projectDir.absoluteFile != expectedRoot || root.projectDir.canonicalFile != expectedRoot ||
++            graph.allTasks.size() != 3 || graph.allTasks.collect { it.path }.toSet() != scopes.keySet()) {
++        throw new GradleException('Inventory01 forbids a different source root or any graph expansion')
++    }
++    def rows = []
++    graph.allTasks.each { task ->
++        def declaration = task.class.superclass
++        def spec = scopes[task.path]
++        def dependencies = task.taskDependencies.getDependencies(task).collect { it.path }.sort()
++        def finalizers = task.finalizedBy.getDependencies(task).collect { it.path }.sort()
++        def mustRunAfter = task.mustRunAfter.getDependencies(task).collect { it.path }.sort()
++        def shouldRunAfter = task.shouldRunAfter.getDependencies(task).collect { it.path }.sort()
++        if (!task.enabled || declaration.simpleName != 'GenerateThirdPartyDependencyScopeTask' ||
++                declaration.superclass != DefaultTask || task.actions.size() != 1 ||
++                !dependencies.empty || !finalizers.empty || !mustRunAfter.empty || !shouldRunAfter.empty) {
++            throw new GradleException('Inventory01 requires original single-action producers with no task edges')
++        }
++        def configuration = task.project.configurations.getByName(spec.configuration)
++        def output = new File(expectedRoot, spec.output)
++        if (task.scope.get() != spec.scope || !configuration.canBeResolved ||
++                task.outputFile.get().asFile.absoluteFile != output ||
++                task.outputFile.get().asFile.canonicalFile != output ||
++                task.outputs.files.files.collect { it.absoluteFile }.toSet() != [output].toSet()) {
++            throw new GradleException('Inventory01 producer scope/configuration/output changed')
++        }
++        // Do NOT query coordinates or task.inputs here: those realize the original
++        // artifact provider. Configuration/transform costs remain under outer guards.
++        admitted[task.path] = task
++        rows.add([
++            task: task.path, declaredType: declaration.name, scope: spec.scope,
++            project: task.project.path, configuration: spec.configuration, output: spec.output,
++            dependencies: dependencies, finalizers: finalizers,
++            mustRunAfter: mustRunAfter, shouldRunAfter: shouldRunAfter,
++        ])
++    }
++    graphAccepted = true
++    println('PASSVAULT_INVENTORY01_GRAPH=' + JsonOutput.toJson(rows.sort { it.task }))
+ }
+-gradle.taskGraph.whenReady { graph ->
+-    def tasks = graph.allTasks
+-    if (tasks.size() > 512 || tasks.findAll { it instanceof Test }.collect { it.path }.sort() != testTasks.sort(false)) {
+-        throw new GradleException('Exactly the two selected Test tasks; no Desktop/shared/Android/other Test task')
++
++// These bounded task-state markers add no action, resolve no extra configuration,
++// and are not a replacement for original exit/log/file/source/cleanup evidence.
++gradle.taskGraph.beforeTask { Task task ->
++    if (!graphAccepted || !admitted.containsKey(task.path) || !admitted[task.path].is(task) || !started.add(task.path)) {
++        throw new GradleException('Inventory01 refused an unadmitted or duplicate task start')
+     }
+-    def compiler = tasks.find { it.path == compileTask }
+-    if (compiler == null || !compiler.enabled || compiler.class.name != compileType) {
+-        throw new GradleException('The real enabled app-desktop Kotlin test compiler is required')
++    println('PASSVAULT_INVENTORY01_START=' + JsonOutput.toJson([task: task.path]))
++}
++gradle.taskGraph.afterTask { Task task, TaskState state ->
++    if (!graphAccepted || !admitted.containsKey(task.path) || !admitted[task.path].is(task) ||
++            !started.contains(task.path) || !finished.add(task.path)) {
++        throw new GradleException('Inventory01 refused an unadmitted or duplicate task finish')
+     }
+-    tasks.each { task ->
+-        def name = task.name.toLowerCase(java.util.Locale.ROOT)
+-        if (task instanceof org.gradle.api.tasks.Exec || task instanceof org.gradle.api.tasks.JavaExec ||
+-                name.contains('android') || name.contains('ios') || name.contains('native') ||
+-                name.startsWith('detekt') || name.startsWith('lint') || name.startsWith('package') ||
+-                name.startsWith('publish') || name.startsWith('sign') ||
+-                name.startsWith('install') || name.startsWith('connected') || name in ['assemble', 'run', 'desktoprun',
+-                    'createdistributable', 'createreleasedistributable', 'jlink', 'jpackage']) {
+-            throw new GradleException('Out-of-scope execution task: ' + task.path)
+-        }
+-        if (task instanceof Test) {
+-            def selection = selections[task.project.path]
+-            if (!task.enabled || task.ignoreFailures || task.maxParallelForks != 1 || task.forkEvery != 0 ||
+-                    task.filter.includePatterns != selection.methods.toSet() || !task.filter.excludePatterns.empty ||
+-                    !task.filter.commandLineIncludePatterns.empty || !task.filter.failOnNoMatchingTests) {
+-                throw new GradleException('Changed exact method filters/Test policy or CLI override: ' + task.path)
+-            }
+-        }
+-    }
+-    emit([kind: 'graph', selectors: requested, testTasks: testTasks.sort(false), compileTask: compileTask,
+-          tasks: tasks.collect { [path: it.path, type: it.class.name] }.sort { it.path }])
+-    graph.afterTask { task, state ->
+-        if (!(task.path in requested)) return
+-        emit([kind: 'task-state', task: task.path, type: task.class.name, executed: state.executed,
+-              skipped: state.skipped, upToDate: state.upToDate, noSource: state.noSource,
+-              didWork: state.didWork, skipMessage: state.skipMessage, failureType: state.failure?.class?.name])
+-    }
++    println('PASSVAULT_INVENTORY01_FINISH=' + JsonOutput.toJson([
++        task: task.path, executed: state.executed, didWork: state.didWork,
++        skipped: state.skipped, upToDate: state.upToDate, noSource: state.noSource,
++        failureClass: state.failure == null ? null : state.failure.class.name,
++    ]))
+ }
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/REQUEST.template.json
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/REQUEST.template.json
+@@ -15,31 +15,27 @@
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs": null,
+     "/root/projects/PassVault/passvault-publication-20260910-01/.git": null
+   },
+-  "format": "passvault-linux-focused-regression02-request-v1",
++  "format": "passvault-linux-dependency-inventory01-request-v1",
+   "images": {
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/UNBOUND_C20_SOURCE_MANIFEST_PATH": {
+       "pin": null,
+       "sha256": null
+     },
+-    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/CLASSES.tsv": {
++    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/dependency-inventory01/INVENTORY.tsv": {
+       "pin": null,
+-      "sha256": "ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a"
++      "sha256": "905c5b05aa394db81e010775609ef556b7cb1f7d08fe9dc03c200a406018af67"
+     },
+-    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/LAUNCH.py": {
++    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/dependency-inventory01/LAUNCH.py": {
+       "pin": null,
+-      "sha256": "55a986424fbf04aca6e736e0c8f3d27abf845b00e1744711441b826ac048e014"
++      "sha256": "e3ef3af06d77e5dafea41ea36298f7aff00144415358d7c2ce8d3cd82958b7e9"
+     },
+-    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/METHODS.tsv": {
++    "/root/projects/PassVault/passvault-linux/scripts/audit/dependency_inventory_01.init.gradle": {
+       "pin": null,
+-      "sha256": "fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd"
++      "sha256": "65feca52b8417a1c15517edb1cb6bae172b76bca2c556666e1e32d6113e6b85c"
+     },
+-    "/root/projects/PassVault/passvault-linux/scripts/audit/focused_regression_02.init.gradle": {
++    "/root/projects/PassVault/passvault-linux/scripts/audit/linux_dependency_inventory_01.py": {
+       "pin": null,
+-      "sha256": "46d5bbf54cb34fbc9235d361763dafae7ff5ae6c8de8316c5cd4901695bdccc2"
+-    },
+-    "/root/projects/PassVault/passvault-linux/scripts/audit/linux_focused_regression_02.py": {
+-      "pin": null,
+-      "sha256": "aceef90e7b7b61e51625379571fe20ac68a79dc9873f25eb803f7237484fde37"
++      "sha256": "6356b9d0a3d5f7ba3df8e98ddc5c3d304f94029c46940a1f00881e0d24d2da81"
+     },
+     "/usr/bin/env": {
+       "pin": null,
+@@ -77,7 +73,14 @@
+     "mnt": null,
+     "pid": null
+   },
+-  "purpose": "ONE_LINUX_FOCUSED_REGRESSION02",
+-  "run_id": "linux-focused-regression02",
++  "purpose": "ONE_LINUX_DEPENDENCY_INVENTORY01",
++  "run_id": "linux-dependency-inventory01",
++  "source_capacity": {
++    "manifest_bytes": null,
++    "member_limit": null,
++    "members": null,
++    "oid_bytes": null,
++    "raw_stream_limit_bytes": 134217728
++  },
+   "tree": "UNBOUND_C20_TREE"
+ }
+--- /dev/null
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/INVENTORY.tsv.txt
+@@ -0,0 +1,4 @@
++scope	task	configuration	path	expected_rows	expected_bytes	expected_sha256
++android	:app-android:generateAndroidThirdPartyDependencyInventory	releaseRuntimeClasspath	app-android/build/reports/legal/android-production-dependencies.lock	151	8242	38335a6e4574ef086af43dd36bb8ce276215163ac49b18c7bf3b0af1f2008235
++desktop	:app-desktop:generateDesktopThirdPartyDependencyInventory	desktopRuntimeClasspath	app-desktop/build/reports/legal/desktop-production-dependencies.lock	80	4866	45715dbe1dbb876cf167f3f7d78b222a29bf97c7513d1a72bffd79f96942b774
++iosArm64	:shared:generateIosArm64ThirdPartyDependencyInventory	iosArm64CompileKlibraries	shared/build/reports/legal/iosArm64-production-dependencies.lock	66	4424	980ce402967ad661eefbfafe1c743540f2fdeac6cbbae1128eb84eb6e8ab09a6

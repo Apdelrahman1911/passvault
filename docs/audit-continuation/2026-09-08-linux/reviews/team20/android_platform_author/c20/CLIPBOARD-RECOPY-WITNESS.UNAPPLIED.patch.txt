@@ -1,0 +1,50 @@
+--- a/app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt
++++ b/app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt
+@@ -106,6 +106,46 @@
+         }
+     }
+ 
++    @Test
++    fun newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry() = runBlocking {
++        val clipboard = FakeClipboard()
++        val expiries = List(2) { CompletableDeferred<Unit>() }
++        var expiryCount = 0
++        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
++        val service = AndroidClipboardService(clipboard, scope, awaitTimeout = { expiries[expiryCount++].await() })
++        try {
++            service.copySensitive("synthetic original")
++            val originalToken = clipboard.token
++            assertEquals(1, expiryCount)
++            clipboard.readable = false
++            service.clear()
++            assertEquals(0, clipboard.clearCalls)
++            assertTrue(service.containsSensitive())
++
++            service.copySensitive("synthetic replacement")
++            val replacementToken = clipboard.token
++            assertTrue(replacementToken != null && replacementToken != originalToken)
++            assertEquals(2, expiryCount)
++            clipboard.readable = true
++            expiries[0].complete(Unit)
++            service.onForeground()
++
++            assertEquals(0, clipboard.clearCalls)
++            assertEquals(replacementToken, clipboard.token)
++            assertEquals("synthetic replacement", clipboard.text)
++            assertTrue(service.containsSensitive())
++
++            expiries[1].complete(Unit)
++            assertEquals(1, clipboard.clearCalls)
++            assertFalse(service.containsSensitive())
++            assertEquals("", clipboard.text)
++            service.onForeground()
++            assertEquals(1, clipboard.clearCalls)
++        } finally {
++            scope.cancel()
++        }
++    }
++
+     private suspend fun withClipboard(
+         block: suspend (AndroidClipboardService, FakeClipboard, CompletableDeferred<Unit>) -> Unit,
+     ) {
+

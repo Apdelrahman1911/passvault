@@ -1,0 +1,379 @@
+{
+  "format": "passvault-linux-focused-regression02-inert-control-proposal-v1",
+  "author": "/root/android_fixture_author",
+  "independent_reviewer": "/root/android_fixture_review",
+  "disposition": "SOURCE_ONLY_UNBOUND_PENDING_INDEPENDENT_DELTA_REVIEW",
+  "authority": "No promotion, source freeze, fresh-instance acceptance, execution, cleanup, or testcase credit.",
+  "W": "/root/projects/PassVault/passvault-linux",
+  "B": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux",
+  "proposal_directory": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch",
+  "fixed_names": {
+    "run_id": "linux-focused-regression02",
+    "purpose": "ONE_LINUX_FOCUSED_REGRESSION02",
+    "R": "/root/projects/PassVault/audit-runtime-linux-focused-regression02",
+    "E_B_path": "runs/linux-focused-regression02",
+    "request_B_path": "requests/LINUX-FOCUSED-REGRESSION-02.json",
+    "approval_B_path": "reviews/team20/android_fixture_review/focused-regression02/INSTANCE-ACCEPT.json",
+    "request_or_approval_written": false
+  },
+  "artifacts": {
+    "inner": {
+      "base_W_path": "scripts/audit/linux_focused_regression_01.py",
+      "base_bytes": 40158,
+      "base_sha256": "d84cc3fdfb097fcae00c16c1b18404c7a2cdf638e357d45d6dbc94df15e84715",
+      "proposal_file": "linux_focused_regression_02.py.txt",
+      "proposal_bytes": 40078,
+      "proposal_sha256": "1bae5c731ace9d49589caf7198a38bb642cb998e6936b2be7c7ccf9b42ad9d41",
+      "prospective_target_W_path": "scripts/audit/linux_focused_regression_02.py"
+    },
+    "init": {
+      "base_W_path": "scripts/audit/focused_regression_01.init.gradle",
+      "base_bytes": 9384,
+      "base_sha256": "e945045a8de9db6b8b773b1a49fade926b6dd55494a4f65cc6bc089816c16a79",
+      "proposal_file": "focused_regression_02.init.gradle.txt",
+      "proposal_bytes": 7675,
+      "proposal_sha256": "90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8",
+      "prospective_target_W_path": "scripts/audit/focused_regression_02.init.gradle"
+    },
+    "outer": {
+      "base_W_path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01-host02/LAUNCH.py",
+      "base_bytes": 51420,
+      "base_sha256": "7ff5cc456d36dab5f588810dcf782e29defc769a15e6ea3f7c11b4414f5d13a8",
+      "proposal_file": "LAUNCH.py.txt",
+      "proposal_bytes": 51207,
+      "proposal_sha256": "eab843bdf20a06116228e9dd5100e1b567dbf76a3dfc8bd5a09dd506360599e9",
+      "prospective_target_W_path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/LAUNCH.py"
+    },
+    "classes": {
+      "base_W_path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+      "base_bytes": 1408,
+      "base_sha256": "c973df4ac8a9e0057d01a17f0266b46c4e3c1873fd35cd72185a8cec859bda53",
+      "proposal_file": "CLASSES.tsv.txt",
+      "proposal_bytes": 1374,
+      "proposal_sha256": "e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c",
+      "prospective_target_W_path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/CLASSES.tsv"
+    },
+    "methods": {
+      "base_W_path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/METHODS.tsv",
+      "base_bytes": 1650,
+      "base_sha256": "eed756d95856424716cdce0c7b1dafd3986acd6636b45ea95933ea5e8a1c22b5",
+      "proposal_file": "METHODS.tsv.txt",
+      "proposal_bytes": 812,
+      "proposal_sha256": "56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c",
+      "prospective_target_W_path": "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/METHODS.tsv"
+    }
+  },
+  "combined_diff": {
+    "proposal_file": "FOCUSED02-CONTROLS.diff.txt",
+    "bytes": 27145,
+    "sha256": "41317fbcd7a2abeefb462b38070046c5feb62b3261c7677bd6a557d1d4f88784",
+    "use": "Text comparison only; BASE paths remain unchanged. Do not apply over old controls."
+  },
+  "selection": {
+    "phase": "focused",
+    "class_ids": [
+      "DB1",
+      "C01",
+      "C02"
+    ],
+    "methods_per_class": [
+      1,
+      6,
+      2
+    ],
+    "testcases": 9,
+    "xml_suites": 3,
+    "test_tasks": 2,
+    "targets_in_order": [
+      ":core:database:desktopTest",
+      ":feature:credential:desktopTest",
+      ":app-desktop:compileTestKotlinDesktop"
+    ],
+    "compiler_type": "org.jetbrains.kotlin.gradle.tasks.KotlinCompile_Decorated",
+    "compiler_testcase_credit": 0,
+    "graph_records": {
+      "graph": 1,
+      "task_state": 3,
+      "total": 4,
+      "minimum_graph_nodes": 3
+    },
+    "sole_DB1_method": "Room validation failure rolls back the full upgrade and a clean reopen persists it",
+    "exclusions": "No D03 biometric12 replay; neither old FK migration method; no Android host1, static7, detekt, provider producer, GUI or native work."
+  },
+  "source_image_qualification": "Only these three current W byte images and exact selected method declarations were checked. They are not a full C20 manifest, commit/tree/member count, oracle re-review, or execution result.",
+  "source_images": [
+    {
+      "class_id": "DB1",
+      "W_path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+      "bytes": 22952,
+      "sha256": "5d80abe70b5667a4c874e65c6b61e56f80625260bbeae8002b3ba0eb3c5de40c"
+    },
+    {
+      "class_id": "C01",
+      "W_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+      "bytes": 26264,
+      "sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819"
+    },
+    {
+      "class_id": "C02",
+      "W_path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+      "bytes": 15170,
+      "sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2"
+    }
+  ],
+  "DB1_integration_basis": [
+    {
+      "B_path": "reviews/team20/migration_integrity_review/c20/PROPOSAL-v2-REVIEW.md",
+      "bytes": 7732,
+      "sha256": "d44dd62e03274dd06c7e1d5b6a254873f48c6dd801ea5566af0c89a94b9321eb"
+    },
+    {
+      "B_path": "reviews/team20/root/C20-KOTLIN-TEST-INTEGRATION.json",
+      "bytes": 1779,
+      "sha256": "c80dcd359ae8d23c40fd5930a43c5172ccffb3c45dc672b35d430fd5a90c980f"
+    }
+  ],
+  "line_delta_proof": {
+    "inner": {
+      "excluded_base_lines": [
+        2,
+        27,
+        28,
+        30,
+        31,
+        32,
+        36,
+        37,
+        38,
+        39,
+        46,
+        264,
+        496,
+        497,
+        498,
+        499,
+        500,
+        676,
+        681
+      ],
+      "excluded_proposal_lines": [
+        2,
+        27,
+        28,
+        30,
+        31,
+        32,
+        36,
+        37,
+        38,
+        39,
+        46,
+        264,
+        496,
+        497,
+        498,
+        499,
+        500,
+        676,
+        681
+      ],
+      "all_other_ordered_line_bytes_equal": true,
+      "common_bytes": 38217,
+      "common_sha256": "5166b7b4f4af46c9f9dc34948e55c02bfe8bcda75ce0bfb646f4c67c70b5d0a3"
+    },
+    "init": {
+      "excluded_base_lines": [
+        5,
+        8,
+        9,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        90
+      ],
+      "excluded_proposal_lines": [
+        5,
+        8,
+        9,
+        21,
+        79
+      ],
+      "all_other_ordered_line_bytes_equal": true,
+      "common_bytes": 7160,
+      "common_sha256": "af28e425385f216d68199c6d66b5e46187e174aaf39add4c8086b1bb3e2dc73e"
+    },
+    "outer": {
+      "excluded_base_lines": [
+        2,
+        24,
+        25,
+        26,
+        27,
+        28,
+        31,
+        32,
+        33,
+        34,
+        38,
+        39,
+        44,
+        45,
+        46,
+        59,
+        648,
+        658,
+        665,
+        674,
+        706,
+        769,
+        780,
+        792,
+        794,
+        817,
+        818
+      ],
+      "excluded_proposal_lines": [
+        2,
+        24,
+        25,
+        26,
+        27,
+        28,
+        31,
+        32,
+        33,
+        34,
+        38,
+        39,
+        44,
+        45,
+        46,
+        59,
+        648,
+        658,
+        665,
+        674,
+        706,
+        769,
+        780,
+        792,
+        794,
+        817,
+        818
+      ],
+      "all_other_ordered_line_bytes_equal": true,
+      "common_bytes": 48378,
+      "common_sha256": "bb4d5d04eacc328329bf77e0b6e6096b383e95b1b41082eb3598f1d150f248b7"
+    },
+    "classes": {
+      "excluded_base_lines": [
+        2
+      ],
+      "excluded_proposal_lines": [
+        2
+      ],
+      "all_other_ordered_line_bytes_equal": true,
+      "common_bytes": 978,
+      "common_sha256": "057d0029a53323d624572beca30d497d0badbd7f8c36ba215712d7c63bc67156"
+    },
+    "methods": {
+      "excluded_base_lines": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "excluded_proposal_lines": [
+        2
+      ],
+      "all_other_ordered_line_bytes_equal": true,
+      "common_bytes": 717,
+      "common_sha256": "ed37949bcd04229c3e05531b983392244f41425f141f135f5a3a0da453e8a25c"
+    }
+  },
+  "author_text_checks": {
+    "base_and_candidate_readback_hashes": true,
+    "recomputed_diff_equals_saved_bytes": true,
+    "only_listed_lines_changed": true,
+    "C01_C02_ledger_rows_byte_identical": true,
+    "init_literals_equal_exact_ordered_ledger9": true,
+    "selected_W_method_declarations_unique": true,
+    "frozen_proposed_hash_chain_consistent": true,
+    "retired_identity_and_unselected_test_residue_absent": true,
+    "helper_imports_executions_AST_or_builds_performed": 0,
+    "held_runtime_reads_or_cleanup": 0
+  },
+  "unbound_interface": {
+    "both_controls": [
+      "SOURCE path and SHA256",
+      "COMMIT",
+      "TREE",
+      "MEMBERS"
+    ],
+    "outer": [
+      "GITDIR constant and matching exact entry guard",
+      "DEVICE directory/regular devices",
+      "EXPECTED_LOCK original lock pin"
+    ],
+    "live_packet": "All tool/input images and metadata, parent namespaces/directories, current source/store continuity, original lock custody, unused R/E names and genuine request/approval remain root/reviewer-owned and UNBOUND. Proposal hashes are not live image pins.",
+    "lock_limit": "Bind only the ORIGINAL existing build.lock. Placeholder is not permission to substitute, recreate, replace or repair it; changed original identity remains HOLD."
+  },
+  "capacity_gate": {
+    "status": "HOLD_PENDING_EXACT_C20_FOOTPRINT_AND_SEPARATELY_REVIEWED_LITERAL_DELTA",
+    "unchanged_member_ceiling": 3500,
+    "member_guard_lines": {
+      "inner": 633,
+      "outer": 647
+    },
+    "unchanged_oid_input_and_capture_bytes": 147456,
+    "oid_guard_lines_outer": [
+      432,
+      446
+    ],
+    "reported_C19_member_floor": 3734,
+    "reported_floor_oid_bytes_at_41_per_member": 153094,
+    "qualification": "Reported C19 count already exceeds BOTH old capacities; it is not a C20 count. Do not admit these unchanged limits. Root must derive exact post-integration C20 member count, ordered OID bytes and raw framed blob footprint, then obtain independent review of minimal capacity changes and refreshed hashes. No guessed/padded count or headroom.",
+    "other_inherited_bounds_not_yet_proven_sufficient": {
+      "raw_stream_bytes": 134217728,
+      "individual_file_bytes": 33554432
+    }
+  },
+  "inherited_lifecycle": "Separate fresh single-PID1 cohort, one serial wrapper build plus original stop, no shared cache/multiphase manager. All containment, host screening, ownership, cancellation, clocks, evidence, source-before/after, stop, settlement and descriptor-cleanup algorithms unchanged except the explicitly listed identity/count literals.",
+  "inherited_budgets_seconds": {
+    "outer_work": 5250,
+    "outer_total": 6000,
+    "prebuild_required_remaining": 4700,
+    "inner_reserve": 1100,
+    "build": 3600,
+    "wrapper_only_check": 180,
+    "original_stop": 600,
+    "settlement": 120,
+    "source_check_each": 180,
+    "outer_cancellation_drain": 750
+  },
+  "budget_qualification": "No new adequacy claim. Inherited 750s cancellation drain can truncate worst-case settlement; any uncertainty remains HOLD, not fabricated source-after or cleanup proof.",
+  "root_application_interface": [
+    "Independent reviewer first accepts the exact inert delta only, not execution. Root owns any promotion and final source/publication sequencing.",
+    "Use distinct prospective target paths; never overwrite or revive the original focused01/HOST02 packet. No target, request, approval, R or E was created by this proposal.",
+    "Bind true C20/source/store/device/original-lock placeholders and independently reviewed exact capacity literals. Refresh init/ledgers -> inner FROZEN -> outer FROZEN -> final control hashes/request/reviewer chain after every byte change.",
+    "Before execution root must obtain fresh exact genuine instance approval, full current metadata/coordination and a separate execution window; this receipt cannot admit a build or cleanup."
+  ],
+  "retained_holds": "STOP / NO RETRY / CLOSED / native refusal / occupied1017001 and all existing runtime/control HOLDs remain unchanged. Original focused01 partial12 is not clean20; no tests were run here."
+}

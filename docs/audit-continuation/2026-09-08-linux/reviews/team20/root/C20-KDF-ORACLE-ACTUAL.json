@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "date": "2026-09-11",
+  "owner": "/root",
+  "status": "CONSUMED_SOURCE_ORACLE_CALCULATION_EXIT_ZERO_PENDING_INDEPENDENT_RESULT_RECONCILIATION",
+  "admission": "reviews/team20/root/C20-KDF-ORACLE-ADMISSION.json",
+  "stdin": "reviews/team20/root/C20-KDF-ORACLE-STDIN.py.txt",
+  "stdin_sha256": "4ef1bec5271a9a6da9a40d779084843f07444cc11551ce98b3980e680f8fbcf2",
+  "command": "timeout --signal=TERM --kill-after=2s 5s /usr/bin/python3 -I -B -S - < C20-KDF-ORACLE-STDIN.py.txt > C20-KDF-ORACLE-STDOUT.json 2> C20-KDF-ORACLE-STDERR.txt",
+  "tool_chunk": "d55fdd",
+  "tool_exit": 0,
+  "tool_session": null,
+  "calculator_exit": 0,
+  "stdout": "reviews/team20/root/C20-KDF-ORACLE-STDOUT.json",
+  "stdout_sha256": "adb3f5f07e418f7e717d1fcb030e6cf1ff10fdeca3c84b4e943f7f9e7df56e9e",
+  "stderr": "reviews/team20/root/C20-KDF-ORACLE-STDERR.txt",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outputs": {
+    "ascending": "977ea1dce4266794464932f34640331ee4d58bfbd1257467be3d7cc378714caf",
+    "vault_first_byte_zero": "b83f58ef0f9297d7ff8a3487e6f2d6572aedb78eca9f2bb9a386462d3224dc20"
+  },
+  "scope": "One deterministic stdlib source-data calculation with two fixed synthetic vectors and explicit-pad cross-check. Not application cases, native/CNG/Windows execution, hardware or full-family verification. Both calculations share hashlib SHA256.",
+  "cleanup": "Original foreground timeout/interpreter command and terminal settled exit0, no ongoing tool session. No calculator subprocesses, runtime/cache/temp directory, service or bytecode writes. Only explicitly needed compact source/stdout/stderr/admission/receipt retained. Gradle stop NOT_APPLICABLE.",
+  "new_application_cases": 0,
+  "new_closures": 0,
+  "retry_authority": false
+}

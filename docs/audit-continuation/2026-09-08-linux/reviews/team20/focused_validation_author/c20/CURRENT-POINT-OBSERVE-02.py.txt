@@ -1,0 +1,465 @@
+#!/usr/bin/python3.12
+"""INERT SOURCE: one new root-only, read-only C20 point observation.
+
+Root must first adopt paired source review and record the concrete cooperative
+reservation/all-lane quiescence for this original invocation. This program does
+not independently attest that declaration or authorize a build. It creates no
+files/directories, never enters a held runtime, and emits bounded JSON to stdout.
+One /proc screen and one fixed T-only builtin Git query; no automatic retry.
+Original external completion must be retained by root. Userspace deadlines are
+not guarantees against blocked kernel calls, SIGKILL, or hostile privileged code.
+"""
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import select
+import signal
+import stat
+import subprocess
+import sys
+import time
+
+W = Path('/root/projects/PassVault/passvault-linux')
+B = W / 'docs/audit-continuation/2026-09-08-linux'
+SELF = B / 'reviews/team20/focused_validation_author/c20/CURRENT-POINT-OBSERVE-02.py.txt'
+T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
+GITDIR = T / '.git'
+EXPECTED_CONFIG = {'dev': 24, 'ino': 14293053, 'uid': 0, 'mode': 33152, 'nlink': 1,
+                   'bytes': 435, 'mtime_ns': 1789001766988319322, 'ctime_ns': 1789001766988319322}
+CONFIG_SHA256 = '036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'
+LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+PARENTS = (Path('/root/projects/PassVault'), B / 'runs', GITDIR, LOCK.parent)
+EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1,
+                 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}
+COMMIT = '3b2130fce1d15c7686f068ae994e4cb8a80714de'
+TREE = '603ed0fbe94721d75893ba3307119523189eca85'
+BRANCH = 'refs/heads/codex/audit-continuation-linux-20260908'
+# Same supported-name policy as the reviewed HOST02 outer; no Java exemption.
+BUILDLIKE = re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|'
+    r'gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|cargo|'
+    r'rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+START = time.monotonic()
+END = START + 30
+ODIR = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+OREAD = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW | os.O_CLOEXEC
+DIRS = {}
+CANCELLED = None
+RESULT = {'format': 'passvault-c20-current-point-observation-v1', 'status': 'HOLD',
+          'expected_C19': {'commit': COMMIT, 'tree': TREE, 'branch': BRANCH},
+          'scope': 'Point facts only; not global idleness, continuous custody, source assurance, build or cleanup admission.',
+          'reservation': 'Separate root declaration/admission; not independently observed by this program.',
+          'lock': {'path': str(LOCK), 'acquired': False, 'close_returned': False},
+          'errors': []}
+
+
+def require(value, message):
+    if not value:
+        raise RuntimeError(message)
+
+
+def problem(error):
+    return {'type': type(error).__name__, 'errno': getattr(error, 'errno', None),
+            'message': str(error)[:256]}
+
+
+def on_signal(number, _frame):
+    global CANCELLED
+    if CANCELLED is None:
+        CANCELLED = number
+
+
+def check():
+    require(CANCELLED is None, 'observer interrupted')
+    require(time.monotonic() < END, 'observer overall deadline')
+
+
+def pin(info, directory=False):
+    value = {key: getattr(info, 'st_' + key) for key in ('dev', 'ino', 'uid', 'mode', 'nlink')}
+    if not directory:
+        value.update(bytes=info.st_size, mtime_ns=info.st_mtime_ns, ctime_ns=info.st_ctime_ns)
+    return value
+
+
+def same_directory(left, right):
+    return all(left[key] == right[key] for key in ('dev', 'ino', 'uid', 'mode'))
+
+
+def directory(path):
+    check()
+    if path not in DIRS:
+        parent = None if path == Path('/') else directory(path.parent)
+        require(len(DIRS) < 32, 'fixed parent depth bound')
+        fd = os.open('/' if parent is None else path.name, ODIR, dir_fd=parent)
+        try:
+            value = pin(os.fstat(fd), True)
+            require(stat.S_ISDIR(value['mode']) and value['uid'] == 0 and not value['mode'] & 0o022,
+                    'parent directory type/owner/mode')
+            DIRS[path] = (fd, value)
+        except BaseException:
+            os.close(fd)
+            raise
+    return DIRS[path][0]
+
+
+def recheck_directories():
+    check()
+    for path, (fd, original) in DIRS.items():
+        current = pin(os.fstat(fd), True)
+        parent = None if path == Path('/') else DIRS[path.parent][0]
+        named = pin(os.stat('/' if parent is None else path.name,
+                            dir_fd=parent, follow_symlinks=False), True)
+        require(same_directory(current, original) and same_directory(named, original),
+                'fresh parent descriptor/name changed')
+    return {str(path): pin(os.fstat(DIRS[path][0]), True) for path in PARENTS}
+
+
+def lock_pin(fd):
+    check()
+    actual = pin(os.fstat(fd))
+    named = pin(os.stat(LOCK.name, dir_fd=DIRS[LOCK.parent][0], follow_symlinks=False))
+    require(actual == named == EXPECTED_LOCK, 'original lock pin mismatch; never recreate')
+    return actual
+
+
+
+def t_metadata():
+    """Only the original config and three fixed no-redirect point guards."""
+    check()
+    gitfd = directory(GITDIR)
+    fd = os.open('config', OREAD, dir_fd=gitfd)
+    try:
+        original = pin(os.fstat(fd))
+        require(original == EXPECTED_CONFIG, 'original T config full pin changed')
+        raw = bytearray()
+        while True:
+            check()
+            chunk = os.read(fd, 436 - len(raw))
+            if not chunk:
+                break
+            raw.extend(chunk)
+            require(len(raw) <= 435, 'original T config byte bound')
+        digest = hashlib.sha256(raw).hexdigest()
+        require(digest == CONFIG_SHA256 and pin(os.fstat(fd)) == original
+                == pin(os.stat('config', dir_fd=gitfd, follow_symlinks=False)),
+                'original T config hash/name/descriptor changed')
+    finally:
+        os.close(fd)
+
+    def absent(parent, name):
+        try:
+            os.stat(name, dir_fd=parent, follow_symlinks=False)
+        except FileNotFoundError:
+            return
+        raise RuntimeError('T Git redirect present: ' + name)
+
+    absent(gitfd, 'commondir')
+    objectsfd = directory(GITDIR / 'objects')
+    try:
+        os.stat('info', dir_fd=objectsfd, follow_symlinks=False)
+    except FileNotFoundError:
+        info = 'ABSENT_PARENT'  # Explicit parent ENOENT only, not permission/error masking.
+    else:
+        infofd = directory(GITDIR / 'objects/info')
+        absent(infofd, 'alternates')
+        absent(infofd, 'http-alternates')
+        info = pin(os.fstat(infofd), True)
+    recheck_directories()
+    return {'config': {'pin': original, 'sha256': digest},
+            'absent': ['commondir', 'objects/info/alternates', 'objects/info/http-alternates'],
+            'objects_parent': pin(os.fstat(objectsfd), True), 'objects_info_parent': info}
+
+
+def bounded_proc(path, cap):
+    check()
+    fd = os.open(path, OREAD)
+    try:
+        require(stat.S_ISREG(os.fstat(fd).st_mode), 'unexpected proc file type')
+        data = bytearray()
+        while True:
+            check()
+            chunk = os.read(fd, min(4096, cap - len(data) + 1))
+            if not chunk:
+                return bytes(data)
+            data.extend(chunk)
+            require(len(data) <= cap, 'proc byte bound')
+    finally:
+        os.close(fd)
+
+
+def birth(pid):
+    raw = bounded_proc('/proc/' + str(pid) + '/stat', 16384)
+    require(raw.startswith(str(pid).encode() + b' ('), 'proc stat pid mismatch')
+    end = raw.rfind(b')')
+    require(end >= 0, 'proc stat framing')
+    fields = raw[end + 2:].split()
+    require(len(fields) >= 20, 'short proc stat')
+    return {'pid': pid, 'ppid': int(fields[1]), 'start': int(fields[19])}
+
+
+def namespaces(pid):
+    result = {}
+    for namespace in ('pid', 'mnt'):
+        check()
+        value = os.readlink('/proc/' + str(pid) + '/ns/' + namespace)
+        require(re.fullmatch(namespace + r':\[[0-9]{1,20}\]', value) is not None,
+                'unexpected namespace link')
+        result[namespace] = value
+    return result
+
+
+def terminal(fd, diagnostic, label):
+    poller = select.poll()
+    poller.register(fd, select.POLLIN)
+    events = poller.poll(0)
+    diagnostic.setdefault('pidfd_observations', {})[label] = [mask for _, mask in events]
+    require(not events or (len(events) == 1 and events[0][0] == fd and events[0][1] != 0
+            and not events[0][1] & ~(select.POLLIN | select.POLLHUP)), 'uncertain pidfd readiness')
+    return bool(events)
+
+
+def resources():
+    fields = {}
+    for line in bounded_proc('/proc/meminfo', 65536).decode('ascii').splitlines():
+        key, value = line.split(':', 1)
+        require(key not in fields, 'duplicate meminfo key')
+        fields[key] = value.split()
+    values = {}
+    for key in ('MemAvailable', 'MemTotal'):
+        row = fields[key]
+        require(len(row) == 2 and row[1] == 'kB' and row[0].isdecimal(), 'meminfo unit/value')
+        values[key] = int(row[0]) * 1024
+    disks = {}
+    for path in PARENTS[:2]:
+        point = os.fstatvfs(DIRS[path][0])
+        require(point.f_bavail >= 0 and point.f_frsize > 0, 'invalid filesystem headroom')
+        disks[str(path)] = point.f_bavail * point.f_frsize
+    RESULT['resources'] = {'elapsed_seconds': time.monotonic() - START,
+                           'disk_available_bytes': disks, **values}
+    require(0 <= values['MemAvailable'] <= values['MemTotal'] and values['MemTotal'] > 0,
+            'invalid memory quantities')
+    require(min(disks.values()) >= 12 * 1024 ** 3 and values['MemAvailable'] * 4 >= values['MemTotal'],
+            'entry floor: disk12GiB and MemAvailable25percent')
+
+
+def screen():
+    deadline = min(END, time.monotonic() + 5)
+    summary = {'completed': False, 'directory_entries': 0, 'numeric_entries': 0,
+               'prepositive_unclassified_churn': 0, 'owned_build_domain': None,
+               'qualification': 'Supported-name point screen only; churn is not idle proof; no ownership exemptions.'}
+    RESULT['process_screen'] = summary
+    with os.scandir('/proc') as entries:
+        for index, entry in enumerate(entries):
+            check()
+            require(index < 8192 and time.monotonic() < deadline, 'host-screen entry/time bound')
+            summary['directory_entries'] += 1
+            if not entry.name.isdecimal():
+                continue
+            pid, fd = int(entry.name), None
+            summary['numeric_entries'] += 1
+            diagnostic = {'pid': pid, 'stage': 'pidfd-open', 'comm': None, 'owned_proof': False,
+                          'pidfd_observations': {}}
+            try:
+                try:
+                    try:
+                        fd = os.pidfd_open(pid, 0)  # Original candidate pinned BEFORE positive comm.
+                    except ProcessLookupError:
+                        summary['prepositive_unclassified_churn'] += 1
+                        continue
+                    diagnostic['stage'] = 'comm-initial'
+                    try:
+                        comm = bounded_proc('/proc/' + str(pid) + '/comm', 256).decode('utf-8').strip()
+                    except FileNotFoundError:
+                        require(terminal(fd, diagnostic, 'prepositive-enoent'),
+                                'live/unreadable potential host workload')
+                        summary['prepositive_unclassified_churn'] += 1
+                        continue
+                    diagnostic['comm'] = comm
+                    if not BUILDLIKE.fullmatch(comm):
+                        continue
+                    diagnostic['supported_positive'] = True
+                    diagnostic['stage'] = 'positive-birth'
+                    original = birth(pid)
+                    diagnostic['birth'] = original
+                    diagnostic['stage'] = 'positive-namespaces'
+                    pair = namespaces(pid)
+                    diagnostic['namespaces'] = pair
+                    diagnostic['stage'] = 'positive-rereads'
+                    diagnostic['birth_reread'] = birth(pid)
+                    require(diagnostic['birth_reread'] == original, 'positive birth changed')
+                    diagnostic['namespaces_reread'] = namespaces(pid)
+                    require(diagnostic['namespaces_reread'] == pair, 'positive namespaces changed')
+                    require(birth(pid) == original, 'positive final birth changed')
+                    require(not terminal(fd, diagnostic, 'positive-proof'),
+                            'positive departed before ownership proof')
+                    diagnostic['stage'] = 'no-owned-build-domain'
+                    raise RuntimeError('supported buildlike conflict; no owned build domain or name exemption')
+                finally:
+                    if fd is not None:
+                        os.close(fd)  # One close; never signal this candidate, never PID fallback.
+            except BaseException as error:
+                diagnostic['error'] = problem(error)
+                summary['first_failure'] = diagnostic
+                raise
+    require(time.monotonic() < deadline, 'host-screen final time bound')
+    summary['completed'] = True
+
+
+def git_refs():
+    check()
+    command = ['/usr/bin/git', '--no-pager', '--no-replace-objects', '--git-dir=' + str(GITDIR),
+               '--work-tree=' + str(T)]
+    for value in ('core.hooksPath=/dev/null', 'core.fsmonitor=false', 'gc.auto=0',
+                  'maintenance.auto=false', 'protocol.allow=never'):
+        command += ['-c', value]
+    command += ['rev-parse', 'HEAD^{commit}', 'HEAD^{tree}', BRANCH + '^{commit}']
+    env = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC',
+           'HOME': '/dev/null', 'XDG_CONFIG_HOME': '/dev/null', 'GIT_CONFIG_NOSYSTEM': '1',
+           'GIT_CONFIG_SYSTEM': '/dev/null', 'GIT_CONFIG_GLOBAL': '/dev/null', 'GIT_CONFIG_COUNT': '0',
+           'GIT_OPTIONAL_LOCKS': '0', 'GIT_TERMINAL_PROMPT': '0', 'GIT_ASKPASS': '/bin/false',
+           'GIT_SSH_COMMAND': '/bin/false', 'GIT_ALLOW_PROTOCOL': '', 'GIT_PROTOCOL_FROM_USER': '0',
+           'GIT_NO_REPLACE_OBJECTS': '1', 'GIT_NO_LAZY_FETCH': '1'}
+    row = {'command': command, 'cwd': str(T), 'environment': env, 'pidfd_kill_attempted': False,
+           'final_wait_attempted': False, 'reaped': False, 'exit': None, 'errors': []}
+    RESULT['git_ref_query'] = row
+    p, pidfd, pipes = None, None, []
+    buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+    terminal_seen = False
+    deadline = min(END, time.monotonic() + 10)
+    try:
+        p = subprocess.Popen(command, cwd=str(T), env=env, stdin=subprocess.DEVNULL,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+        pipes = [p.stdout, p.stderr]
+        row['pid'] = p.pid
+        pidfd = os.pidfd_open(p.pid, 0)  # BEFORE every poll/wait of original unreaped direct child.
+        row['birth'] = birth(p.pid)
+        require(row['birth']['ppid'] == os.getpid(), 'Git is not original direct child')
+        poller = select.poll()
+        poller.register(pidfd, select.POLLIN)
+        active = {}
+        for name, pipe in zip(('stdout', 'stderr'), pipes):
+            fd = pipe.fileno()
+            os.set_blocking(fd, False)
+            active[fd] = name
+            poller.register(fd, select.POLLIN | select.POLLHUP | select.POLLERR)
+        while active or not terminal_seen:
+            check()
+            require(time.monotonic() < deadline, 'Git child deadline')
+            for fd, mask in poller.poll(100):
+                if fd == pidfd:
+                    require(mask != 0 and not mask & ~(select.POLLIN | select.POLLHUP),
+                            'uncertain Git pidfd readiness')
+                    terminal_seen = True
+                    poller.unregister(pidfd)
+                else:
+                    require(fd in active and not mask & select.POLLNVAL, 'uncertain Git pipe event')
+                    name = active[fd]
+                    try:
+                        data = os.read(fd, min(4096, 8192 - len(buffers[name]) + 1))
+                    except BlockingIOError:
+                        continue
+                    if data:
+                        buffers[name].extend(data)
+                        require(len(buffers[name]) <= 8192, 'Git stdout/stderr byte bound')
+                    else:
+                        poller.unregister(fd)
+                        del active[fd]
+    except BaseException as error:
+        row['errors'].append(problem(error))
+    finally:
+        if p is not None:
+            if not terminal_seen and pidfd is not None:
+                row['pidfd_kill_attempted'] = True
+                try:
+                    signal.pidfd_send_signal(pidfd, signal.SIGKILL)  # Own original Git child ONLY.
+                except ProcessLookupError:
+                    pass
+                except BaseException as error:
+                    row['errors'].append(problem(error))
+            row['final_wait_attempted'] = True  # Exactly one bounded final wait, including failure.
+            try:
+                row['exit'] = p.wait(timeout=5)
+                row['reaped'] = True
+            except BaseException as error:
+                row['errors'].append(problem(error))
+            for pipe in pipes:
+                try:
+                    pipe.close()
+                except BaseException as error:
+                    row['errors'].append(problem(error))
+        if pidfd is not None:
+            try:
+                os.close(pidfd)
+            except BaseException as error:
+                row['errors'].append(problem(error))
+        for name, data in buffers.items():
+            row[name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+    check()
+    require(not row['errors'] and row['reaped'] and row['exit'] == 0 and terminal_seen,
+            'Git failed or original child settlement unproved; no retry')
+    require(bytes(buffers['stdout']) == (COMMIT + '\n' + TREE + '\n' + COMMIT + '\n').encode('ascii')
+            and not buffers['stderr'], 'current T HEAD/branch commit/tree mismatch or Git diagnostic')
+    row['matched_C19'] = True
+    row['qualification'] = 'Current local ref query only; not a source manifest, index proof, remote query or CI observation.'
+
+
+def main():
+    lock_fd = None
+    complete = False
+    try:
+        require(os.getuid() == os.geteuid() == 0 and sys.argv == [str(SELF)],
+                'root-only exact source invocation without arguments')
+        for number in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+            signal.signal(number, on_signal)
+        RESULT['wall_time_ns'] = time.time_ns()
+        RESULT['observer'] = {'birth': birth(os.getpid()), 'namespaces': namespaces(os.getpid())}
+        for path in PARENTS:
+            directory(path)
+        RESULT['parents_before'] = recheck_directories()
+        lock_fd = os.open(LOCK.name, OREAD, dir_fd=DIRS[LOCK.parent][0])  # Never create/replace/write.
+        RESULT['lock']['before'] = lock_pin(lock_fd)
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        RESULT['lock']['acquired'] = True
+        RESULT['lock']['under_lock'] = lock_pin(lock_fd)
+        recheck_directories()
+        resources()
+        screen()
+        RESULT['T_metadata_before'] = t_metadata()
+        git_refs()
+        RESULT['T_metadata_after'] = t_metadata()
+        RESULT['parents_after'] = recheck_directories()
+        RESULT['lock']['after'] = lock_pin(lock_fd)
+        check()
+        complete = True
+    except BaseException as error:
+        RESULT['errors'].append(problem(error))
+    finally:
+        if lock_fd is not None:
+            try:
+                os.close(lock_fd)  # Normal end of this point's custody, NOT custody across a later gap.
+                RESULT['lock']['close_returned'] = True
+            except BaseException as error:
+                RESULT['errors'].append(problem(error))
+        for fd, _original in reversed(tuple(DIRS.values())):
+            try:
+                os.close(fd)
+            except BaseException as error:
+                RESULT['errors'].append(problem(error))
+    RESULT['signal'] = CANCELLED
+    RESULT['elapsed_seconds'] = time.monotonic() - START
+    okay = complete and not RESULT['errors'] and CANCELLED is None and time.monotonic() < END
+    RESULT['status'] = 'POINT_OBSERVED_NOT_BUILD_ADMISSION' if okay else 'HOLD'
+    data = json.dumps(RESULT, sort_keys=True, separators=(',', ':'), allow_nan=False).encode() + b'\n'
+    require(len(data) <= 32768, 'final stdout bound')
+    remaining = memoryview(data)
+    while remaining:
+        count = os.write(1, remaining)
+        require(count > 0, 'zero stdout write')
+        remaining = remaining[count:]
+    return 0 if okay else 70
+
+
+if __name__ == '__main__':
+    sys.exit(main())

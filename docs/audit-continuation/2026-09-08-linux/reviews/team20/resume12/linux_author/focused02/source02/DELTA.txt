@@ -1,0 +1,169 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/linux_focused_regression_02.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/linux_focused_regression_02.py.txt
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3
+-"""UNBOUND focused9 PID1 batch: credential8 plus new migration1 and one compile-only task.
++"""UNBOUND focused10 PID1 batch: credential8, migration1, historical-backup1 and one compile-only task.
+ No old helper imports, GUI, static analyzer, provider producer or general runner.
+ 
+ Root separately owns the fresh raw object batch, original allocations/lock, host conflict
+@@ -36,7 +36,7 @@
+ COMMIT, TREE = 'UNBOUND_C20_COMMIT', 'UNBOUND_C20_TREE'
+ MEMBERS = 'UNBOUND_C20_SOURCE_MEMBERS'  # Exact C20 count and capacity binding pending.
+ RUN_ID = 'linux-focused-regression02'
+-FROZEN = {SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c', METHODS: '56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c', INIT: '90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8'}
++FROZEN = {SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a', METHODS: 'fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd', INIT: '46d5bbf54cb34fbc9235d361763dafae7ff5ae6c8de8316c5cd4901695bdccc2'}
+ PHASES = ('focused',)
+ WORKERS = ('database', 'credential')
+ TEST_TASKS = (':core:database:desktopTest', ':feature:credential:desktopTest')
+@@ -493,11 +493,11 @@
+     def selections(self, captured):
+         classes = list(csv.DictReader(io.StringIO(captured[CLASSES].decode()), delimiter='\t'))
+         methods = list(csv.DictReader(io.StringIO(captured[METHODS].decode()), delimiter='\t'))
+-        require([c['class_id'] for c in classes] == ['DB1', 'C01', 'C02']
+-                and [int(c['selected_methods']) for c in classes] == [1, 6, 2]
+-                and len(methods) == 9 and len({tuple(r.values()) for r in methods}) == 9
+-                and collections.Counter(r['invocation'] for r in methods) == {'focused': 9}
+-                and {c['task'] for c in classes} == set(TEST_TASKS), 'fixed selected9/three classes/two Test tasks')
++        require([c['class_id'] for c in classes] == ['DB1', 'DB2', 'C01', 'C02']
++                and [int(c['selected_methods']) for c in classes] == [1, 1, 6, 2]
++                and len(methods) == 10 and len({tuple(r.values()) for r in methods}) == 10
++                and collections.Counter(r['invocation'] for r in methods) == {'focused': 10}
++                and {c['task'] for c in classes} == set(TEST_TASKS), 'fixed selected10/four classes/two Test tasks')
+         source_map = {r['path']: r for r in self.source['files']}
+         for c in classes:
+             require(source_map[c['source_path']]['checkout_sha256'] == c['source_sha256']
+@@ -678,7 +678,7 @@
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+             'validation_mapping_ok': passed, 'errors': batch.errors, 'phases': batch.phases,
+             'unstarted': [p for p in PHASES if not any(s['phase'] == p and s['stop_required'] for s in batch.phases)],
+-            'declared_regressions': 9, 'declared_producers': 0, 'declared_xml_suites': 3, 'declared_test_tasks': 2,
++            'declared_regressions': 10, 'declared_producers': 0, 'declared_xml_suites': 4, 'declared_test_tasks': 2,
+             'compile_only_task': COMPILE_TASK, 'outer_work_deadline_monotonic_ns': batch.work_deadline_ns,
+             'independent_semantic_acceptance': False,
+             'resource_point_samples_not_ownership_or_cleanup_proof': batch.inventories,
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/focused_regression_02.init.gradle.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/focused_regression_02.init.gradle.txt
+@@ -2,10 +2,10 @@
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.testing.Test
+ 
+-// UNAPPLIED source-only focused9 candidate. No GUI, provider fixture, static or admission authority.
++// UNAPPLIED source-only focused10 candidate. No GUI, provider fixture, static or admission authority.
+ def mode = gradle.startParameter.projectProperties['passvault.audit.mode']
+ if (mode != 'focused') throw new GradleException('Exactly focused mode required; no whole-suite/default mode')
+-if (System.getenv('PASSVAULT_PVA038_FIXTURE') != null) throw new GradleException('No provider fixture in focused9')
++if (System.getenv('PASSVAULT_PVA038_FIXTURE') != null) throw new GradleException('No provider fixture in focused10')
+ def runtime = '/root/projects/PassVault/audit-runtime-linux-focused-regression02'
+ def jdk = '/usr/lib/jvm/java-17-openjdk-amd64'
+ def compileTask = ':app-desktop:compileTestKotlinDesktop'
+@@ -19,6 +19,7 @@
+ def selections = [
+     ':core:database': [worker: 'database', methods: [
+         'com.passvault.core.database.CredentialFolderForeignKeyMigrationTest.Room validation failure rolls back the full upgrade and a clean reopen persists it',
++        'com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.schema one encrypted records survive current backup restore and a fresh reopen',
+     ]],
+     ':feature:credential': [worker: 'credential', methods: [
+         'com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.row Save captured before further edits adopts the latest draft and preserves another row',
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/LAUNCH.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/LAUNCH.py.txt
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3.12
+-"""UNBOUND focused9 source-only outer; not execution or old-HOLD cleanup authority.
++"""UNBOUND focused10 source-only outer; not execution or old-HOLD cleanup authority.
+ 
+ Current reviewed raw transport, host screen, namespace supervision and descriptor
+ cleanup mechanisms only. Fresh exact source/instance/reviewer/root admission is
+@@ -43,7 +43,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 'UNBOUND_C20_DIRECTORY_DEVICE', 'regular_file_device': 'UNBOUND_C20_REGULAR_FILE_DEVICE'}
+ EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original Linux lock obligation only; fresh same-object observation remains UNBOUND. Never recreate/replace.
+-FROZEN = {INNER: '1bae5c731ace9d49589caf7198a38bb642cb998e6936b2be7c7ccf9b42ad9d41', INIT: '90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8', SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c', METHODS: '56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c'}
++FROZEN = {INNER: 'aceef90e7b7b61e51625379571fe20ac68a79dc9873f25eb803f7237484fde37', INIT: '46d5bbf54cb34fbc9235d361763dafae7ff5ae6c8de8316c5cd4901695bdccc2', SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a', METHODS: 'fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers'.split()
+ WORKERS = ['database', 'credential']
+ CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
+@@ -655,7 +655,7 @@
+             and EXPECTED_LOCK['mode'] == stat.S_IFREG | 0o600
+             and EXPECTED_LOCK['nlink'] == 1 and EXPECTED_LOCK['bytes'] == 0
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values()),
+-            'UNBOUND fresh focused9 source/store/tool/device/lock binding: source-only, no execution admission')
++            'UNBOUND fresh focused10 source/store/tool/device/lock binding: source-only, no execution admission')
+     raw, request_image = capture(REQUEST, MIB)
+     request = decode(raw)
+     raw, approval_image = capture(APPROVAL, 65536)
+@@ -789,9 +789,9 @@
+     require(type(result['outer_work_deadline_monotonic_ns']) is int
+             and result['outer_work_deadline_monotonic_ns'] == int(WORK_END * 1_000_000_000),
+             'inner must echo original outer deadline, not reset its remaining budget')
+-    require(result['declared_regressions'] == 9 and result['declared_producers'] == 0
+-            and result['declared_xml_suites'] == 3 and result['declared_test_tasks'] == 2
+-            and result['compile_only_task'] == ':app-desktop:compileTestKotlinDesktop', 'fixed9 plus compile-only scope')
++    require(result['declared_regressions'] == 10 and result['declared_producers'] == 0
++            and result['declared_xml_suites'] == 4 and result['declared_test_tasks'] == 2
++            and result['compile_only_task'] == ':app-desktop:compileTestKotlinDesktop', 'fixed10 plus compile-only scope')
+     require(isinstance(result['phases'], list) and len(result['phases']) == 1
+             and result['phases'][0]['phase'] == 'focused', 'one serial wrapper phase only')
+     phase = result['phases'][0]
+@@ -812,10 +812,10 @@
+     if code == 0:
+         require(result['validation_mapping_ok'] is True and not result['errors']
+                 and all(phase[k] is True for k in ('build_ok', 'stop_required', 'stop_attempted', 'stop_ok', 'settled'))
+-                and phase['xml']['mapping_ok'] is True and len(phase['xml']['captures']) == 3
++                and phase['xml']['mapping_ok'] is True and len(phase['xml']['captures']) == 4
+                 and phase['task_evidence']['mapping_ok'] is True,
+-                'success requires exact9/three XML suites/two Tests plus successful compile actions')
+-    receipt['focused_scope'] = {'regressions': 9, 'xml_suites': 3, 'test_tasks': 2,
++                'success requires exact10/four XML suites/two Tests plus successful compile actions')
++    receipt['focused_scope'] = {'regressions': 10, 'xml_suites': 4, 'test_tasks': 2,
+                                'compile_only_task': result['compile_only_task'], 'producers': 0}
+     require(source_check(expected) == before, 'outer raw-source after mismatch')
+     authority()
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/CLASSES.tsv.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/CLASSES.tsv.txt
+@@ -1,4 +1,5 @@
+ class_id	task	fqcn	selected_methods	source_path	source_sha256	expected_xml_path
+ DB1	:core:database:desktopTest	com.passvault.core.database.CredentialFolderForeignKeyMigrationTest	1	core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt	5d80abe70b5667a4c874e65c6b61e56f80625260bbeae8002b3ba0eb3c5de40c	core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.CredentialFolderForeignKeyMigrationTest.xml
++DB2	:core:database:desktopTest	com.passvault.core.database.backup.VaultBackupUnicodePaginationTest	1	core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt	a136ec3fe0ca70b469f8b6ecf2555da65f1a480d2d39a43d21255175f96b944d	core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.backup.VaultBackupUnicodePaginationTest.xml
+ C01	:feature:credential:desktopTest	com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest	6	feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt	68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819	feature/credential/build/test-results/desktopTest/TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.xml
+ C02	:feature:credential:desktopTest	com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest	2	feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt	b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2	feature/credential/build/test-results/desktopTest/TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.xml
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/METHODS.tsv.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/METHODS.tsv.txt
+@@ -1,5 +1,6 @@
+ invocation	class_id	source_method
+ focused	DB1	Room validation failure rolls back the full upgrade and a clean reopen persists it
++focused	DB2	schema one encrypted records survive current backup restore and a fresh reopen
+ focused	C01	row Save captured before further edits adopts the latest draft and preserves another row
+ focused	C01	a latest blank name rejects stale enabled row Save without losing its draft
+ focused	C01	unchanged and duplicate row Saves preserve the live value owner
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/REQUEST.template.json
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/source02/REQUEST.template.json
+@@ -23,23 +23,23 @@
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/CLASSES.tsv": {
+       "pin": null,
+-      "sha256": "e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c"
++      "sha256": "ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a"
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/LAUNCH.py": {
+       "pin": null,
+-      "sha256": "e347b1e5706be90c08f2f647ae5a963c5137ac73770af7389be9251372d3162a"
++      "sha256": "55a986424fbf04aca6e736e0c8f3d27abf845b00e1744711441b826ac048e014"
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/METHODS.tsv": {
+       "pin": null,
+-      "sha256": "56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c"
++      "sha256": "fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd"
+     },
+     "/root/projects/PassVault/passvault-linux/scripts/audit/focused_regression_02.init.gradle": {
+       "pin": null,
+-      "sha256": "90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8"
++      "sha256": "46d5bbf54cb34fbc9235d361763dafae7ff5ae6c8de8316c5cd4901695bdccc2"
+     },
+     "/root/projects/PassVault/passvault-linux/scripts/audit/linux_focused_regression_02.py": {
+       "pin": null,
+-      "sha256": "1bae5c731ace9d49589caf7198a38bb642cb998e6936b2be7c7ccf9b42ad9d41"
++      "sha256": "aceef90e7b7b61e51625379571fe20ac68a79dc9873f25eb803f7237484fde37"
+     },
+     "/usr/bin/env": {
+       "pin": null,

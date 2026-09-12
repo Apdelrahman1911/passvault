@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T01:09:48.445583+00:00",
+  "status": "APPLIED_INDEPENDENTLY_REVIEWED_INTERNAL_IO_SEAM_AND_THREE_TESTS_EXECUTION_PENDING",
+  "author": "/root/c20_windows_author",
+  "reviewer": "/root/c20_windows_review",
+  "review": "reviews/team20/resume12/windows_file_review/IO01-SOURCE-REVIEW.json",
+  "review_sha256": "a13876a95a1c13e51a7ead1328263bc2467a61e4ef51a0c34729db2f10ec08e6",
+  "source_edit_release": {
+    "path": "reviews/team20/root/C20-WINDOWS-IO-SOURCE-EDIT-RELEASE.json",
+    "sha256": "ec707f392eff9523ce89bf089d85e60536dcdffbe97433d10ec049048701f477"
+  },
+  "files": [
+    {
+      "canonical_path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "before_sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+      "after_sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+      "after_bytes": 99579,
+      "after_lf": 2611
+    },
+    {
+      "canonical_path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "before_sha256": "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653",
+      "after_sha256": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60",
+      "after_bytes": 48464,
+      "after_lf": 1109
+    },
+    {
+      "canonical_path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before_sha256": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe",
+      "after_sha256": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10",
+      "after_bytes": 9982,
+      "after_lf": 242
+    }
+  ],
+  "new_test_declarations": 3,
+  "actual_test_executions": 0,
+  "new_closures": 0,
+  "qualification": "Default production Win32 forwarding and existing order retained by independent source review. New real-file/handle tests deliberately inject reported write/flush/close failures and assert identity/bytes before teardown. Not naturally occurring OS failures, crash/cancel/provider/physical security evidence or PVA036 closure. No build/test/worker/cache/temp file created."
+}

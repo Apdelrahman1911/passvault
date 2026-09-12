@@ -1,0 +1,88 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/linux_desktop_integration_04.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/migration_integrity_author/c20/gui/linux_desktop_integration_04.py.txt
+@@ -10,8 +10,8 @@
+ No passed tray/lifecycle rerun or Detekt; no inherited two-case admission or
+ borrowed execution identity. Integration02/03 failures and old-runtime HOLDs remain.
+ Panel setup uses a fresh private Xfconf channel, never an assumed backend XML
+-path/default panel. Shared C18 source is frozen; independent route/instance
+-admission remains UNBOUND; no earlier execution scope is reused.
++path/default panel. Final C20 source identity and independent route/instance
++admission remain UNBOUND; no earlier execution scope is reused.
+ """
+ import collections
+ import hashlib
+@@ -35,7 +35,7 @@
+ E = B / 'runs/linux-desktop-integration04'
+ CHECKOUT = R / 'checkout'
+ SELF, INIT = W / 'scripts/audit/linux_desktop_integration_04.py', W / 'scripts/audit/desktop_integration_04.init.gradle'
+-SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
++SOURCE = Path('UNBOUND')
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+ XVFB, XAUTH, WM, DBUS = (Path('/usr/bin/' + n) for n in ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon'))
+ MOUNT, IP, XDPYINFO, XPROP = (Path('/usr/bin/' + n) for n in ('mount', 'ip', 'xdpyinfo', 'xprop'))
+@@ -63,14 +63,14 @@
+ PANEL_ROUTE_ADMITTED = 'UNBOUND'
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release',
+           XVFB, XAUTH, WM, DBUS, XFCONF, MOUNT, IP, XDPYINFO, XPROP, PANEL, SYSTRAY, WRAPPER, QUERY)
+-# Reuse the accepted shared C18 raw-blob manifest; do not recapture SOURCE.
++# Bind only root's independently accepted final C20 SOURCE; do not recapture it.
+ # Fresh GUI/tool/route/instance admission remains unbound; GUI03 authority is not reused.
+-COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'
+-TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
+-MEMBERS = 3432
++COMMIT = 'UNBOUND'
++TREE = 'UNBOUND'
++MEMBERS = 'UNBOUND'
+ RUN_ID = 'linux-desktop-integration04'
+ FROZEN = {
+-    SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3',
++    SOURCE: 'UNBOUND',
+     INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf',
+ }
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/desktop-integration04/proposal01/LAUNCH04.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/migration_integrity_author/c20/gui/LAUNCH04.py.txt
+@@ -28,20 +28,20 @@
+ E = B / 'runs/linux-desktop-integration04'
+ SELF = B / 'reviews/desktop-integration04-outer/LAUNCH.py'
+ REQUEST = B / 'requests/LINUX-DESKTOP-INTEGRATION-04.json'
+-APPROVAL = B / 'reviews/team20/android_fixture_review/desktop-integration04/INSTANCE-ACCEPT.json'
++APPROVAL = B / 'reviews/team20/migration_integrity_review/c20/gui/INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+ # Fresh GUI/tool/directory/original-lock identities remain unbound.
+ # Never borrow GUI03 or other consumed-instance authority; old runtime HOLD remains.
+ GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+ INNER, INIT = W / 'scripts/audit/linux_desktop_integration_04.py', W / 'scripts/audit/desktop_integration_04.init.gradle'
+-SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
++SOURCE = Path('UNBOUND')
+ JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64/bin/java')
+ RELEASE = JAVA.parent.parent / 'release'
+ PYTHON, INNER_PYTHON, GIT, UNSHARE = '/usr/bin/python3.12', '/usr/bin/python3', '/usr/bin/git', '/usr/bin/unshare'
+ RUN, PURPOSE = 'linux-desktop-integration04', 'ONE_LINUX_DESKTOP_INTEGRATION04'
+-COMMIT = '6489252e88ad553a867d67578eff45a402e62a48'
+-TREE = '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
+-MEMBERS = 3432
++COMMIT = 'UNBOUND'
++TREE = 'UNBOUND'
++MEMBERS = 'UNBOUND'
+ ENV = {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
+ GUI_TOOLS = tuple(Path('/usr/bin/' + name) for name in
+                   ('Xvfb', 'xauth', 'xfwm4', 'dbus-daemon', 'mount', 'ip', 'xdpyinfo', 'xprop', 'xfce4-panel', 'xfconf-query')) + (
+@@ -53,7 +53,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 'UNBOUND', 'regular_file_device': 'UNBOUND'}
+ EXPECTED_LOCK = 'UNBOUND'
+-FROZEN = {INNER: 'f0f2879d479ae4fc215b5a138177e7372456504d6720ed579d92c0271b7c0b67', INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf', SOURCE: 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'}
++FROZEN = {INNER: 'ebb7a67b6a5b1eb7c252ac4b53b0dbd09c0c645dcd0775de6e621b92b6613702', INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf', SOURCE: 'UNBOUND'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav pvu003 pva027'.split()
+ WORKERS = ['mainnav', 'editor-room']
+ CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
+@@ -681,7 +681,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-desktop-integration04-approval-v1' and approval['reviewer'] == '/root/android_fixture_review' and
++            approval['format'] == 'passvault-linux-desktop-integration04-approval-v1' and approval['reviewer'] == '/root/migration_integrity_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE)}, 'missing/stale/nonaccepting genuine review')

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-11T21:18:18.063315+00:00",
+  "status": "ADOPTED_INDEPENDENT_ACTUAL_RECONCILIATIONS_SOURCE_ORACLE_AND_POINT_ONLY",
+  "review": {
+    "point": {
+      "path": "reviews/team20/focused_validation_review/c20/CURRENT-POINT-02-ACTUAL-REVIEW.json",
+      "sha256": "a88f5cb1e7f04efd87653824ed63242cbb70e8c8e19d3cb5e4ac7b75058f367b"
+    },
+    "oracle": {
+      "path": "reviews/team20/android_fixture_review/c20/KDF-ORACLE-ACTUAL-REVIEW.md",
+      "sha256": "fa401c192a4a301a3b44a17107da25f2e2dccda3f098a7ce1b0c3a47f8772e83"
+    }
+  },
+  "original_actuals": [
+    "reviews/team20/root/C20-CURRENT-POINT-02-ACTUAL.json",
+    "reviews/team20/root/C20-KDF-ORACLE-ACTUAL.json"
+  ],
+  "point_qualification": "One consumed local-ref/resource/supported-process/lock/config point, not present build admission or continuous host idleness. Actual bare env and added HOME/XDG_CONFIG_HOME launcher variance retained in independent review; no replay to erase it.",
+  "oracle_qualification": "One deterministic synthetic source-data calculation, two vector comparisons; both SHA256 paths share hashlib. No CNG/native/Windows/hardware evidence.",
+  "application_cases": 0,
+  "closures": 0,
+  "prior_holds_failures_stop_obligations": "UNCHANGED; no extra stops, held-root access or cleanup authority follows."
+}

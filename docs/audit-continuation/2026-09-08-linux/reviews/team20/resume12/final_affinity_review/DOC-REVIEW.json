@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "date": "2026-09-12",
+  "reviewer": "/root/c20_dependency_review",
+  "author": "/root/c20_dependency_author",
+  "disposition": "ACCEPT_EXACT_TWO_DOCUMENT_SOURCE_SCOPE_CORRECTION",
+  "grouping": "Existing PVA025 documentation/current-schema and provenance-consistency grouping only; no new family or closure, and no broadening of the original checklist-only verification.",
+  "independence": "Reviewer first raised the sibling-document inconsistency and suggested the bounded factual scope, but did not author either afterimage or patch. This review independently challenges their exact wording, surrounding statements, source facts and evidence limits.",
+  "proposal": {
+    "path": "reviews/team20/resume12/final_affinity_author/DOC-PROPOSAL.json",
+    "bytes": 5992,
+    "sha256": "11546ab69ff377909220386c7ad91ffe6134a456499f215f5b8fae8d7ed0ed2d"
+  },
+  "accepted_afterimages": [
+    {
+      "target": "SECURITY.md",
+      "before_bytes": 5279,
+      "before_sha256": "a8b855c52e25fc660a5d7ead05ba695f77a4e56e400c3a139098a266b8fa0b1c",
+      "proposal_path": "reviews/team20/resume12/final_affinity_author/docs-proposal/SECURITY.md.txt",
+      "after_bytes": 6491,
+      "after_sha256": "ef70e5d95a4d9ddc776eaedf1595db81ac5b72f6dd67eaff0f1b870e6d88d066"
+    },
+    {
+      "target": "PENTEST.md",
+      "before_bytes": 5406,
+      "before_sha256": "0319e6252039c18d7222db5b873e6962918b52ddddf0e8dac621ce3736321ec4",
+      "proposal_path": "reviews/team20/resume12/final_affinity_author/docs-proposal/PENTEST.md.txt",
+      "after_bytes": 6533,
+      "after_sha256": "77f8c707ae24d56cd32b34abd8f8c26acbba6389e21e8a90a9fb27716e8628bd"
+    }
+  ],
+  "patch": {
+    "path": "reviews/team20/resume12/final_affinity_author/docs-proposal/DOC-SCOPE-RECONCILIATION.patch",
+    "bytes": 8674,
+    "sha256": "9f1833810fabe43e932523e080025b0b7202d887a26dd998edfae22a119323cc",
+    "independent_data_check": "Fresh in-memory unified differences from the two actual W before-images to the two proposed afterimages exactly equal the seven-hunk patch (SECURITY3, PENTEST4). All tuples match. No patch was applied and no project/helper program was executed."
+  },
+  "source_and_wording_challenge": [
+    "Read both complete afterimages and their exact diff. Matched all13 proposal source/reference pins. Current VaultDatabase declares version5/exportSchema=true; the five schema JSON database.version fields are1..5, and VaultMigrations declares and registers1->2->3->4->5. These are source facts, not current successful upgrades or a fresh generated-schema comparison.",
+    "DesktopBiometricRuntime chooses TouchID/macOS and WindowsHello/Windows, with Linux/unknown unavailable; the native loader has supported macOS arm64/x64 and Windows x64 branches. The new text correctly says implementation/source, not universal architecture, provider readiness or published artifacts. Production publication deferral is the retained owner/handoff boundary, not a new product decision.",
+    "The unchecked schema5 gate replaces the obsolete checked schema3 scope without asserting missing exports, absence of historical migration tests, or completed final-source verification. PENTEST expressly preserves matched historical successes. SECURITY's unfinished final-source gate must not be read as requiring unchanged successful tests to be replayed.",
+    "The candidate-schema4 statement is expressly attributed to the handoff; source schema5 is not presented as an installed/Store observation. Occupied1017001 is unchanged and must not be rebuilt/replaced. No candidate-ref, deployed artifact or Store query was made.",
+    "PENTEST preserves the2026-09-03 historical review date and labels2026-09-12 as scope/status documentation reconciliation, not a new security test or full audit. Both documents route current claims to the existing continuation issue/verification ledgers and retain historical narrative separately.",
+    "Third-party certification, native/provider/device/package verification and publisher/disclosure limitations remain explicit. The plaintext-export wording is narrowed to credentials, avoiding an implication that local attachment handoffs do not exist. No cryptography, persistence, schema, runtime, publication policy, dependency or version behavior changes."
+  ],
+  "validation_judgment": "The material risk is misleading public source/current-verification/publication wording. Exact independent wording/source and patch-identity checks address it; a build, test, platform matrix or validator invocation would add no relevant confidence. No new test is required for this documentation-only correction.",
+  "remaining_authority": "Root alone may integrate the exact afterimages, update the source registry and publication selection, and establish any required prospective freeze/trigger/publication admission. This review does not itself release a source freeze, approve a workflow run or publish anything. The separate53-input F11-F13 affinity disposition is not completed by this document review.",
+  "activity": "Only named public W source/evidence reads, finite standard-library byte/JSON/diff comparisons and this own-leaf write. One initial patch read used the parent leaf rather than the manifest's docs-proposal path and returned absent; the exact declared file was then read. No unseen truncated source receives semantic credit, and no build/test/Git/CI/network/runtime/private-input/cleanup operation occurred.",
+  "accounting": {
+    "documentation_paths_proposed": 2,
+    "application_test_cases": 0,
+    "xml_cases": 0,
+    "new_findings": 0,
+    "new_family_closures": 0,
+    "runtime_or_readiness_pass": false
+  },
+  "fences": "PVA02949/44/5FAIL and no automatic retry; PVU007 STOP; PVU011 NO RETRY; G7/G8 CLOSED; original native refusal/HOLDs; all eight separate PVD decisions; protected refs/tags, signing/Store, dependencies/versions/identities and occupied1017001 remain unchanged."
+}

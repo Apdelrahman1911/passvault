@@ -1,0 +1,135 @@
+--- a/SECURITY.md
++++ b/SECURITY.md
+@@ -1,7 +1,10 @@
+ # PassVault security
+ 
+-PassVault is security-sensitive software under active hardening. It has internal source review and automated tests,
+-but no independent audit, penetration-test certification, MASVS certification, or public release attestation.
++PassVault is security-sensitive software under active hardening. Internal source review and automated tests do not
++establish third-party audit, penetration-test or MASVS certification, or production-release attestation.
++
++Current continuation status and source-bound results are in the [issue ledger][audit-issues] and
++[verification ledger][audit-verification]. Start with [AUDIT_HANDOFF.md](AUDIT_HANDOFF.md) for evidence qualifications.
+ 
+ ## Implemented controls
+ 
+@@ -40,9 +43,13 @@
+ 
+ ## Unsupported security claims
+ 
+-Desktop biometric vault unlock is not shipped. PassVault also has no cloud sync, TLS/certificate-pinning boundary,
+-root/jailbreak detection, account service, or CSV export. Mobile biometric and attachment-picker source/automated
+-tests do not substitute for physical-device prompt, provider, cancellation, backgrounding, and cleanup evidence.
++The remediation source implements Desktop biometric vault unlock for macOS and Windows; Linux remains
++master-password-only. Desktop production publication is deferred. Implementation and selected host tests do not
++establish completed native/provider/device or production-package verification.
++
++PassVault has no cloud sync, TLS/certificate-pinning boundary, root/jailbreak detection, account service, or CSV
++export. Mobile biometric and attachment-picker source/automated tests do not substitute for physical-device prompt,
++provider, cancellation, backgrounding, and cleanup evidence.
+ 
+ ## Reporting vulnerabilities
+ 
+@@ -60,12 +67,22 @@
+   recreation, and enrollment-change invalidation.
+ - [ ] Desktop graphical smoke tests for focus/lock, clipboard, tray, minimize/focus concealment, and file dialogs;
+   portable screenshot prevention is not claimed.
+-- [x] Exported Room schemas 1/2/3 and non-destructive 1 -> 3, 2 -> 3, fresh-schema, query-plan, and rollback tests.
++- [ ] Verify every supported prior Room schema (1, 2, 3, and 4) upgrades non-destructively to audited schema 5;
++  verify fresh-schema/export agreement, query-plan indexes, and injected-failure rollback/reopen against the exact
++  final source. Schemas 1–5 and explicit 1 -> 2 -> 3 -> 4 -> 5 migrations are present; historical passes do not
++  complete this final-source gate.
+ - [ ] Publisher ownership/disclosure contacts plus release signing and notarization are independently verified; the
+   repository's Apache-2.0 license and third-party notices are included in release artifacts.
+ - [ ] Full tests, static analysis, Android release/R8 build, and current-host Desktop package pass from a clean
+   checkout.
+ 
+-Implementation detail and current evidence are recorded in
+-[`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md) and
+-[`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md).
++Schema 5 describes the audited remediation source, not an observed installed or Store build. The handoff records
++occupied candidate 1017001 as schema 4; no current Store/deployed-state query is implied, and it must not be rebuilt
++or replaced.
++
++Implementation details are in [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md).
++[`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md) preserves historical command claims;
++use the continuation ledgers above for current qualified outcomes and remaining work.
++
++[audit-issues]: docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json
++[audit-verification]: docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json
+--- a/PENTEST.md
++++ b/PENTEST.md
+@@ -1,9 +1,11 @@
+ # PassVault security review status
+ 
+-Last reviewed: 2026-09-03
++Historical review: 2026-09-03. Scope/status documentation reconciled: 2026-09-12.
+ 
+ This repository has received an internal source audit and automated security-boundary tests. It has **not** received
+ an independent penetration test, and this document must not be presented as a third-party certification.
++Current continuation outcomes and unresolved requirements are in the [issue ledger][audit-issues] and
++[verification ledger][audit-verification], with qualifications in [AUDIT_HANDOFF.md](AUDIT_HANDOFF.md).
+ 
+ ## Reviewed boundaries
+ 
+@@ -28,13 +30,15 @@
+ - Gradle build inputs use strict, complete SHA-256 metadata for integrity after review. This review does not claim
+   publisher provenance from those checksums; [`docs/DEPENDENCY_VERIFICATION.md`](docs/DEPENDENCY_VERIFICATION.md)
+   records the accepted first-use boundary and the evidence required before enabling PGP verification.
+-- Desktop biometric unlock on supported macOS and Windows systems: native Touch ID and Windows Hello/WebAuthn PRF
+-  bridges, the JNA boundary, VEK release/verification, cancellation, and signed bridge packaging. Linux remains
+-  master-password-only. See [`docs/DESKTOP_BIOMETRIC_UNLOCK.md`](docs/DESKTOP_BIOMETRIC_UNLOCK.md).
++- Desktop biometric source on macOS and Windows: native Touch ID and Windows Hello/WebAuthn PRF bridges, the JNA
++  boundary, VEK release/verification, cancellation, and signed-bridge packaging paths. Linux remains
++  master-password-only. Implementation does not establish completed native/provider/device or production-package
++  verification; Desktop production publication is deferred. See
++  [`docs/DESKTOP_BIOMETRIC_UNLOCK.md`](docs/DESKTOP_BIOMETRIC_UNLOCK.md).
+ 
+ ## Automated evidence
+ 
+-Focused tests cover:
++Historical and scoped focused tests exercise these boundaries; this is not a final-source or device-wide PASS:
+ 
+ - XChaCha20-Poly1305 round trips, wrong keys, tampering, unique nonces, invalid sizes, Argon2id, and key hierarchy.
+ - Real Room + real Desktop libsodium vault creation/unlock, encrypted credential round trips, fresh nonces, locked
+@@ -46,8 +50,9 @@
+   session creation at the common/repository boundary.
+ - Vault, unlock, generator, settings, health, credential, and vault-list state behavior.
+ 
+-The exact commands and current results are recorded in
+-[`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md).
++The historical command narrative is in
++[`docs/PRODUCTION_READINESS_AUDIT.md`](docs/PRODUCTION_READINESS_AUDIT.md). Current source-bound results, failures
++and limitations remain in the continuation ledgers above.
+ 
+ ## Open security assurance work
+ 
+@@ -60,17 +65,23 @@
+   recreation, focus/background transitions, signed bridge loading, and release packaging. Source and host-runner
+   coverage does not substitute for native-library or hardware validation.
+ - Memory-dump testing and platform-specific secure-memory review. Kotlin/JVM strings cannot be guaranteed wipeable.
+-- Database migration testing when a real previous release schema is available.
++- Complete any missing source-bound migration, fresh-schema/export, query-plan and injected-failure
++  rollback/reopen verification, preserving matched historical successes. The audited source is schema 5 and
++  includes exports 1–5 and explicit 1 -> 2 -> 3 -> 4 -> 5 migrations; this does not establish deployed/Store schema
++  or a passed final-source migration matrix.
+ - Publisher-controlled signing, notarization, update-channel verification, disclosure contact, and supply-chain CI.
+ 
+ ## Explicit non-features
+ 
+-PassVault does not ship cloud sync, network APIs, TLS/certificate pinning, CSV/plaintext export, or analytics.
+-Managed encrypted attachment storage and Desktop biometric vault unlock are shipped attack surfaces and remain in
+-scope for review. Biometric claims remain source/automated-test evidence until the relevant physical-device matrix
+-is complete.
++The audited source does not implement cloud sync, network APIs, TLS/certificate pinning, CSV/plaintext credential
++export, or analytics. Managed encrypted attachment storage and Desktop biometric vault unlock are implemented
++attack surfaces and remain in scope for review, not proof of published behavior. Desktop production publication
++is deferred; native, provider, physical-device and package evidence retain their separate outstanding requirements.
+ 
+ ## Reporting
+ 
+ This checkout contains no verified public security-contact address or disclosure policy. The publisher must add one
+ before public distribution. Do not send sensitive vault data, master passwords, or backups in a report.
++
++[audit-issues]: docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json
++[audit-verification]: docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json

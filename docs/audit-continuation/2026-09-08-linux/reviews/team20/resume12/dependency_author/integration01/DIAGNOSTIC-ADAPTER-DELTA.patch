@@ -1,0 +1,72 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/android_author/LAUNCH-GRAPH01.py.txt:accepted-diagnostic-functions
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/LAUNCH.py.txt:diagnostic-functions
+@@ -28,11 +28,13 @@
+     return data, image
+ 
+ 
+-def preserve_generated_reports(snapshot, expected, folders):
++def preserve_generated_reports(snapshot, expected, folders, retained_inventory):
+     frozen_files = {('checkout', *name.split('/')) for name in expected}
+     frozen_directories = {('checkout', *name.split('/')) for name in folders}
+     problem_directories = {PROBLEMS_REPORT[:count] for count in range(3, len(PROBLEMS_REPORT))}
+-    roots, candidates, cache_files, cache_bytes = {}, [], 0, 0
++    inventory_files = {('checkout', *name.split('/')) for name in INVENTORY_REPORTS.values()}
++    inventory_directories = {parts[:count] for parts in inventory_files for count in range(2, len(parts))}
++    roots, candidates, cache_files, cache_bytes, observed_inventory = {}, [], 0, 0, set()
+     # Classification of the WHOLE snapshot precedes every evidence copy and unlink.
+     for parts, original in sorted(snapshot.items(), key=lambda item: (len(item[0]), item[0])):
+         tick(END)
+@@ -43,6 +45,14 @@
+         if parts in frozen_directories:
+             require(is_directory, 'frozen source ancestor changed type')
+             continue
++        if parts in inventory_files:
++            require(not is_directory and 0 <= original['bytes'] <= 65536 and parts in retained_inventory,
++                    'exact producer output lacks bounded original retained image')
++            observed_inventory.add(parts)
++            candidates.append((parts, 'EXACT_PRODUCTION_INVENTORY'))
++            continue
++        if is_directory and parts in inventory_directories:
++            continue  # Only the three fixed leaves are permitted beneath their report ancestors.
+         root = cache_report_root(parts, is_directory)
+         if root is not None:
+             if parts == root:
+@@ -74,23 +84,32 @@
+             receipt['unexpected_evidence'] = {'relative': '/'.join(parts), 'directory': is_directory,
+                                               'reason': 'unpreserved report/test/crash/worker-error evidence'}
+             require(False, 'unpreserved generated diagnostic: HOLD before any deletion')
++    require(observed_inventory == set(retained_inventory), 'captured producer output disappeared or was not inventoried')
+     copies = []
+     for parts, kind in candidates:
+         tick(END)
+         data, original = capture_report_source(parts, snapshot)
+-        destination = 'GENERATED-REPORT-%04d.bin' % (len(copies) + 1)
+-        output(destination, data)  # Existing exclusive flat-E write + file/parent fsync.
+-        saved_data, saved = capture(E / destination, MIB)
++        if kind == 'EXACT_PRODUCTION_INVENTORY':
++            retained = retained_inventory[parts]
++            require(original == retained['original'], 'producer report changed after inner preservation')
++            destination = retained['destination']
++            saved_data, saved = capture(E / destination, 65536)
++            require(saved == retained['saved'], 'original inner-retained producer image changed')
++        else:
++            destination = 'GENERATED-REPORT-%04d.bin' % (len(copies) + 1)
++            output(destination, data)  # Existing exclusive flat-E write + file/parent fsync.
++            saved_data, saved = capture(E / destination, MIB)
+         require(saved_data == data and saved['sha256'] == original['sha256']
+                 and saved['pin']['dev'] == DEVICE['regular_file_device']
+                 and saved['pin']['mode'] == stat.S_IFREG | 0o600, 'exact durable report copy/readback')
+         copies.append({'relative': '/'.join(parts), 'kind': kind, 'destination': destination,
+                        'source_image': original, 'saved_image': saved})
+-    manifest = {'format': 'passvault-linux-android-host-graph01-retained-diagnostics-v1', 'run_id': RUN,
++    manifest = {'format': 'passvault-linux-dependency-inventory01-retained-reports-v1', 'run_id': RUN,
+         'cache_roots': {'/'.join(parts): value for parts, value in roots.items()}, 'limits': CACHE_REPORT_LIMITS,
+         'cache_file_count': cache_files, 'cache_logical_bytes': cache_bytes,
+-        'problems_report_limit_bytes': MIB, 'copies': copies,
+-        'qualification': 'Opaque generated diagnostic bytes conserved outside R, no provenance or test credit.'}
++        'problems_report_limit_bytes': MIB, 'inventory_file_count': len(observed_inventory),
++        'inventory_limits': {'files': 3, 'file_bytes': 65536, 'total_bytes': 3 * 65536}, 'copies': copies,
++        'qualification': 'Original three producer reports reuse inner copies; opaque diagnostics conserved outside R. No extra copy, test or license provenance credit.'}
+     output('GENERATED-REPORTS.json', encoded(manifest))
+     saved_manifest, manifest_image = capture(E / 'GENERATED-REPORTS.json', MIB)
+     require(saved_manifest == encoded(manifest), 'exact durable generated-report manifest')

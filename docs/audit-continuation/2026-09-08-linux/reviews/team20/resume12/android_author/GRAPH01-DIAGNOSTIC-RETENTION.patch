@@ -1,0 +1,208 @@
+--- v1/LINUX-ANDROID-HOST-GRAPH01.py.txt
++++ v2/LINUX-ANDROID-HOST-GRAPH01.py.txt
+@@ -463,6 +463,7 @@
+             require(actual == value['images'][str(path)] and actual['sha256'] == FROZEN.get(path, actual['sha256']),
+                     'exact immutable input/tool image')
+             self.inputs[path] = actual
++        require(self.inputs[SOURCE]['pin']['bytes'] == SOURCE_BYTES, 'exact current source manifest length')
+         require(b'JAVA_VERSION="17.' in captured[JAVA / 'release']
+                 and b'OS_ARCH="x86_64"' in captured[JAVA / 'release'], 'JDK17 x86_64')
+         self.source = json.loads(captured[SOURCE])
+--- v1/LAUNCH-GRAPH01.py.txt
++++ v2/LAUNCH-GRAPH01.py.txt
+@@ -64,7 +64,7 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # UNBOUND: fresh03 independently reviewed filesystem/instance model.
+ EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # UNBOUND: freshly verify the original existing lock; never recreate it.
+-FROZEN = {INNER: '56f78ebbf3b6f07ea4bd72df367ef4f0271e97cb457387e8bbb21ff90fe9047e', INIT: '379e6371756a5f20de7c25a21e5b71359cf9876e33e6ee8259fe74319ca29d9b', SOURCE: None}  # Rehash bound new controls; actual C20 SOURCE remains UNBOUND.
++FROZEN = {INNER: '740968caf0e878f70b0fedf66be9e61d907abb423d51b8b247285ee86194e25c', INIT: '379e6371756a5f20de7c25a21e5b71359cf9876e33e6ee8259fe74319ca29d9b', SOURCE: None}  # Rehash bound new controls; actual C20 SOURCE remains UNBOUND.
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -73,6 +73,9 @@
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state git-metadata sdk-readonly'.split()
+ DIRS = TOP
+ ODIR, MIB = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, 1024 ** 2
++CACHE_REPORT_LIMITS = {'roots': 4, 'files': 16, 'file_bytes': MIB, 'total_bytes': 4 * MIB,
++                       'descendant_levels': 8, 'relative_json_bytes': 512}
++PROBLEMS_REPORT = ('checkout', 'build', 'reports', 'problems', 'problems-report.html')
+ BUILDLIKE = re.compile(r'(java|javac|gradle.*|Gradle.*|kotlinc.*|kotlin.*|Kotlin.*|xcodebuild|clang.*|'
+     r'gcc.*|g\+\+.*|cc|c\+\+|cc1.*|cmake|ninja|make|gmake|ctest|mvn.*|msbuild|dotnet|pytest.*|cargo|'
+     r'rustc|jpackage|jlink|aapt2?|d8|r8|zipalign|adb|emulator.*|qemu-system.*)')
+@@ -760,7 +763,121 @@
+     receipt['parent_mount_guard'] = {'rows': len(lines), 'sha256': hashlib.sha256(raw).hexdigest(),
+         'qualification': 'Cooperative quiescent host only; not protection against concurrent hostile-root mount mutation.'}
+ 
+-def remove_runtime():
++def cache_report_root(parts, is_directory):
++    # Exact accepted static02 source shapes only; no basename disposal waiver.
++    if len(parts) >= 6 and parts[:4] == ('gradle-home', 'caches', '9.7.1', 'groovy-dsl'):
++        count = 6
++    elif len(parts) >= 7 and parts[:5] == ('gradle-home', 'caches', '9.7.1', 'kotlin-dsl', 'scripts'):
++        count = 7
++    else:
++        return None
++    digest = parts[count - 2]
++    if len(digest) != 32 or any(c not in '0123456789abcdef' for c in digest) or parts[count - 1] != 'reports':
++        return None
++    require(len(parts) - count <= CACHE_REPORT_LIMITS['descendant_levels']
++            and len(encoded('/'.join(parts))) <= CACHE_REPORT_LIMITS['relative_json_bytes'], 'cache report depth/path cap')
++    root = parts[:count]
++    require(parts != root or is_directory, 'cache report root is not a directory')
++    return root
++
++
++def capture_report_source(parts, snapshot):
++    # Bind every containing directory to the original complete snapshot BEFORE
++    # reusing capture(); never adopt a new parent merely because the name matches.
++    for count in range(1, len(parts)):
++        prefix = parts[:count]
++        fd = directory(R.joinpath(*prefix))
++        require(same_dir(pin(os.fstat(fd), True), snapshot[prefix]), 'report parent differs from original snapshot')
++    data, image = capture(R.joinpath(*parts), MIB)
++    require(image['pin'] == snapshot[parts], 'report file differs from original snapshot')
++    return data, image
++
++
++def preserve_generated_reports(snapshot, expected, folders):
++    frozen_files = {('checkout', *name.split('/')) for name in expected}
++    frozen_directories = {('checkout', *name.split('/')) for name in folders}
++    problem_directories = {PROBLEMS_REPORT[:count] for count in range(3, len(PROBLEMS_REPORT))}
++    roots, candidates, cache_files, cache_bytes = {}, [], 0, 0
++    # Classification of the WHOLE snapshot precedes every evidence copy and unlink.
++    for parts, original in sorted(snapshot.items(), key=lambda item: (len(item[0]), item[0])):
++        tick(END)
++        is_directory = stat.S_ISDIR(original['mode'])
++        if parts in frozen_files:
++            require(not is_directory, 'frozen source file changed type')
++            continue  # Authoritative source/evidence remains preserved outside R.
++        if parts in frozen_directories:
++            require(is_directory, 'frozen source ancestor changed type')
++            continue
++        root = cache_report_root(parts, is_directory)
++        if root is not None:
++            if parts == root:
++                require(root not in roots and len(roots) < CACHE_REPORT_LIMITS['roots'], 'cache report root cap')
++                roots[root] = original
++            else:
++                require(root in roots, 'cache report root must precede descendants')
++            if not is_directory:
++                cache_files += 1
++                cache_bytes += original['bytes']
++                require(cache_files <= CACHE_REPORT_LIMITS['files'] and 0 <= original['bytes'] <= MIB
++                        and cache_bytes <= CACHE_REPORT_LIMITS['total_bytes'], 'cache report file/byte caps')
++                candidates.append((parts, 'PRIVATE_GRADLE_DSL_REPORT'))
++            continue
++        if parts == PROBLEMS_REPORT:
++            require(not is_directory and 0 <= original['bytes'] <= MIB, 'fixed problems report type/byte cap')
++            candidates.append((parts, 'FIXED_GRADLE_PROBLEMS_REPORT'))
++            continue
++        if is_directory and parts in problem_directories:
++            continue  # Only the fixed file is permitted beneath these ancestors.
++        lower, name = tuple(p.lower() for p in parts), parts[-1].lower()
++        report = any(p in ('reports', 'test-results', 'surefire-reports', 'failsafe-reports', 'test-output') for p in lower)
++        diagnostic = (name.endswith(('.sarif', '.sarif.json', '.xcresult'))
++                      or (not is_directory and (name.endswith('.hprof')
++                          or (name.startswith('test-') and name.endswith('.xml'))
++                          or name.startswith(('hs_err_pid', 'replay_pid', 'worker-error-'))
++                          or name == 'core' or (name.startswith('core.') and name[5:].isdigit()))))
++        if report or diagnostic:
++            receipt['unexpected_evidence'] = {'relative': '/'.join(parts), 'directory': is_directory,
++                                              'reason': 'unpreserved report/test/crash/worker-error evidence'}
++            require(False, 'unpreserved generated diagnostic: HOLD before any deletion')
++    copies = []
++    for parts, kind in candidates:
++        tick(END)
++        data, original = capture_report_source(parts, snapshot)
++        destination = 'GENERATED-REPORT-%04d.bin' % (len(copies) + 1)
++        output(destination, data)  # Existing exclusive flat-E write + file/parent fsync.
++        saved_data, saved = capture(E / destination, MIB)
++        require(saved_data == data and saved['sha256'] == original['sha256']
++                and saved['pin']['dev'] == DEVICE['regular_file_device']
++                and saved['pin']['mode'] == stat.S_IFREG | 0o600, 'exact durable report copy/readback')
++        copies.append({'relative': '/'.join(parts), 'kind': kind, 'destination': destination,
++                       'source_image': original, 'saved_image': saved})
++    manifest = {'format': 'passvault-linux-android-host-graph01-retained-diagnostics-v1', 'run_id': RUN,
++        'cache_roots': {'/'.join(parts): value for parts, value in roots.items()}, 'limits': CACHE_REPORT_LIMITS,
++        'cache_file_count': cache_files, 'cache_logical_bytes': cache_bytes,
++        'problems_report_limit_bytes': MIB, 'copies': copies,
++        'qualification': 'Opaque generated diagnostic bytes conserved outside R, no provenance or test credit.'}
++    output('GENERATED-REPORTS.json', encoded(manifest))
++    saved_manifest, manifest_image = capture(E / 'GENERATED-REPORTS.json', MIB)
++    require(saved_manifest == encoded(manifest), 'exact durable generated-report manifest')
++    receipt['generated_report_preservation'] = {'manifest': manifest_image, 'copied_files': len(copies),
++        'copied_logical_bytes': sum(row['source_image']['pin']['bytes'] for row in copies),
++        'source_and_saved_reverified_before_unlink': False, 'saved_reverified_after_cleanup': False}
++    return {'copies': copies, 'manifest_image': manifest_image}
++
++
++def verify_generated_reports(conserved, snapshot, *, source):
++    require(capture(E / 'GENERATED-REPORTS.json', MIB)[1] == conserved['manifest_image'], 'retained report manifest changed')
++    for row in conserved['copies']:
++        tick(END)
++        if source:
++            require(capture_report_source(tuple(row['relative'].split('/')), snapshot)[1] == row['source_image'],
++                    'original report changed before first unlink')
++        require(capture(E / row['destination'], MIB)[1] == row['saved_image'], 'retained diagnostic bytes/pin changed')
++    key = 'source_and_saved_reverified_before_unlink' if source else 'saved_reverified_after_cleanup'
++    receipt['generated_report_preservation'][key] = True
++
++
++def remove_runtime(expected, folders):
+     no_runtime_mounts()
+     for target in (GIT_METADATA, SDK_VIEW):
+         mountpoint = directory(target)
+@@ -790,6 +907,8 @@
+                 finally:
+                     os.close(nested)
+     inventory(root)  # Complete bounded snapshot BEFORE any deletion; no retry after partial failure.
++    conserved = preserve_generated_reports(snapshot, expected, folders)
++    verify_generated_reports(conserved, snapshot, source=True)
+     no_runtime_mounts()  # Recheck immediately before first destructive operation, including same-device bind mounts.
+     receipt['cleanup'] = {'status': 'STARTED', 'snapshot_entries': len(snapshot), 'removed': 0}
+     for parts in sorted(snapshot, key=lambda p: (-len(p), p)):
+@@ -809,6 +928,7 @@
+     os.fsync(directory(R.parent))
+     require(os.fstat(root).st_nlink == 0 and not os.path.lexists(R), 'runtime removal not established')
+     receipt['cleanup']['status'] = 'REMOVED_ORIGINAL_RUNTIME'
++    verify_generated_reports(conserved, snapshot, source=False)
+ 
+ def main():
+     global lock_fd, parent_ns, request, request_image, approval_image, IMAGES
+@@ -884,6 +1004,7 @@
+         require(actual == request['images'][str(path)] and actual['sha256'] == FROZEN.get(path, actual['sha256']), 'input image/pin mismatch')
+         images[str(path)] = actual
+         if path == SOURCE:
++            require(actual['pin']['bytes'] == SOURCE_BYTES, 'exact current source manifest length')
+             source = decode(data)
+     for path in PARENTS:
+         require(same_dir(pin(os.fstat(directory(path)), True), request['directories'][str(path)]), 'original parent mismatch')
+@@ -1042,7 +1163,7 @@
+     require(source_check(expected) == before, 'outer raw-source after mismatch')
+     authority()
+     watch()
+-    remove_runtime()
++    remove_runtime(expected, folders)
+     receipt['status'] = ('GRAPH_OBSERVATION_COLLECTED_PENDING_INDEPENDENT_REVIEW' if code == 0
+                          else 'GRAPH_OBSERVATION_NONACCEPTING_CLEANED')
+     return code
+--- v1/REQUEST-GRAPH01.template.json
++++ v2/REQUEST-GRAPH01.template.json
+@@ -101,7 +101,7 @@
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-host-graph01-outer/LAUNCH.py": {
+       "pin": null,
+-      "sha256": "1e8fb0ecc3568626e1a48cc2130c89250ebd67b37ebda9930128f5be2ce9112a"
++      "sha256": "b05e9852eddc4d6a7e18246637498d1cf8ed23e1ad7c98ce2f9c119c872f9a74"
+     },
+     "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint20/source-prepare01/SOURCE.json": {
+       "pin": null,
+@@ -113,7 +113,7 @@
+     },
+     "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_host_graph_01.py": {
+       "pin": null,
+-      "sha256": "56f78ebbf3b6f07ea4bd72df367ef4f0271e97cb457387e8bbb21ff90fe9047e"
++      "sha256": "740968caf0e878f70b0fedf66be9e61d907abb423d51b8b247285ee86194e25c"
+     },
+     "/root/projects/PassVault/passvault-publication-20260910-01/.git/config": {
+       "pin": {

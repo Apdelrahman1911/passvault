@@ -1,0 +1,103 @@
+{
+  "source_commit": "6489252e88ad553a867d67578eff45a402e62a48",
+  "source_tree": "57d338a931ab0fb4e072aabcbbfd27bead8ef08a",
+  "namespace_parent": [
+    23,
+    580,
+    0,
+    16877
+  ],
+  "selection_sha256": "634ae4b3cb3e884154db4e4dce30e970e36966f953a35737805cf58efb959b71",
+  "review_path": "reviews/team20/coverage_review/CHECKPOINT-19-REVIEW.json",
+  "review_sha256": "5cd041cc0d7738a2c5aadc8b2630a6c11ffecf236a3cf5e803a00086666109bd",
+  "companions": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-19-PAYLOAD.json",
+      "sha256": "634ae4b3cb3e884154db4e4dce30e970e36966f953a35737805cf58efb959b71",
+      "bytes": 90674,
+      "git_mode": "100644"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/coverage_review/CHECKPOINT-19-REVIEW.json",
+      "sha256": "5cd041cc0d7738a2c5aadc8b2630a6c11ffecf236a3cf5e803a00086666109bd",
+      "bytes": 28240,
+      "git_mode": "100644"
+    }
+  ],
+  "slot_sha256": "83682ef4f2ccd2ad5ef327230e3a1ed20a5ed5a51e3ab06556418aa507e3b069",
+  "slot_state": "IDLE_NO_AUDIT_BUILD_ADMITTED_QUIET_WINDOW_BLOCKED",
+  "remotes": {
+    "refs/heads/codex/audit-continuation-linux-20260908": "6489252e88ad553a867d67578eff45a402e62a48",
+    "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+    "refs/heads/main": "0dbc12c7f1b7770e75963c751c8c67af6e8b057a",
+    "refs/heads/release": "61f55216302023d9872aba17546126450e5fbad3",
+    "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+    "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+  },
+  "receipt_name": "CHECKPOINT-19-PUBLISHED.json",
+  "commit_message": "Record Android compilation and partial regression evidence",
+  "authored_whitespace_paths": [
+    "docs/audit-continuation/2026-09-08-linux/CHECKPOINT_19.md",
+    "docs/audit-continuation/2026-09-08-linux/COVERAGE_DELTA.json",
+    "docs/audit-continuation/2026-09-08-linux/EXECUTION_SLOT.json",
+    "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/OWNERSHIP.md",
+    "docs/audit-continuation/2026-09-08-linux/README.md",
+    "docs/audit-continuation/2026-09-08-linux/RESUMED_SESSION_2026-09-11.md",
+    "docs/audit-continuation/2026-09-08-linux/TEAM_20_RESUME.md",
+    "docs/audit-continuation/2026-09-08-linux/VERIFICATION_LEDGER.json",
+    "docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-19-PUBLISH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/android-compile02-outer/LAUNCH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/android-compile03-outer/LAUNCH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-01.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/C18-READONLY-FACTS-02.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/host02/HOST-FACTS.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-host02/LAUNCH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-outer/LAUNCH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01-host02/LAUNCH.py",
+    "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/CLASSES.tsv",
+    "docs/audit-continuation/2026-09-08-linux/reviews/focused-regression01/LAUNCH.py",
+    "scripts/audit/android_compile_02.init.gradle",
+    "scripts/audit/android_compile_03.init.gradle",
+    "scripts/audit/linux_android_compile_02.py",
+    "scripts/audit/linux_android_compile_03.py",
+    "scripts/audit/linux_detekt_04.py",
+    "scripts/audit/linux_focused_regression_01.py"
+  ],
+  "root_admission": {
+    "owner": "/root",
+    "utc": "2026-09-11T16:46:51.290297+00:00",
+    "purpose": "ONE_C19_NONACTIVATING_EVIDENCE_CONTROL_PUBLICATION_ONLY",
+    "status": "BOUND_CONDITIONAL_ON_GENUINE_FINAL_INSTANCE_ACCEPTANCE_AND_SEPARATE_ROOT_LAUNCH_ADOPTION",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/publication/CHECKPOINT-19-PUBLISH.py"
+    ],
+    "cwd": "/root/projects/PassVault/passvault-linux",
+    "publisher_sha256": "356ed8195ad089745b2f5abbe37ac1dfebfc9069fe29023364aa07a45ebf95d1",
+    "publisher_source_review": "reviews/team20/focused_validation_review/C19-PUBLISHER-DELTA-REVIEW.json",
+    "publisher_source_review_sha256": "c7472e141285c8f129de65c7df796a7202e9bc77eed05dbe15c14d2fa3cb08d1",
+    "source_publication_release": "reviews/team20/root/C18-PROSPECTIVE-PUBLICATION-RELEASE.json",
+    "source_publication_release_sha256": "60d369f3446bf51c2ddd21ef2f703dd08e3b952fe81c1dae098711db9c706161",
+    "coverage_review_adopted": "Root adopts exact genuine independent C19 selection/coverage/report acceptance without application closure or execution credit.",
+    "selection_files": 317,
+    "total_with_companions": 319,
+    "exact_removals": 0,
+    "expected_committed_members": 3734,
+    "expected_raw_source_bytes": 120162624,
+    "publication_metadata_point": "reviews/checkpoint19/PUBLICATION-METADATA-POINT.json",
+    "publication_metadata_point_sha256": "d83f2bc3193d5de49bf986e32bdadf2098e22a69e0d7725fb790b1fbeea18510",
+    "publication_metadata_qualification": "Accepted HOST02 current-context directory points only; no historic continuity inferred. Preserve exact original build.lock and T config full pin/hash. Publisher rechecks fixed lock/parent/T and P tuple at launch and original config before/after; point is not live custody or build admission.",
+    "commands": "Only this new C19 publisher, once after final independent instance acceptance and root exact launch adoption. Recheck actual T HEAD/full base index/raw selected tuples/slot/resource and six protected-public refs under original lock. One nonforce dedicated-branch push. No fetch/GC/prune/repack/maintenance/config/topology change, old publisher replay, retired W Git-store use, protected-ref/tag write or explicit CI activation.",
+    "coordination": "Root alone owns Git/build/CI/cleanup. No audit-owned build/test/CI active. All selected317 files plus payload/coverage-review companions and slot frozen; no T writers. Only unselected final instance/admission/actual receipts may be authored. Publication does not release build quiet-window or held-runtime exclusive-custody blockers.",
+    "ci_observation": "reviews/checkpoint19/PR-STATE.json",
+    "ci_observation_sha256": "f334dd5599cd6ebf0ca6315c2b51f707b1d98242eccc5dde91a77556070b4f10",
+    "ci_qualification": "Original individually reconciled bounded filtered PR GET returned[] at16:10:39Z; no query rerun or continuous external freeze/future no-CI guarantee. All19 reviewed workflow trigger surfaces exclude these six consumed/superseded leaves from direct push activation. No product/.github changes, PR creation or dispatch. Existing native exclusions unchanged.",
+    "cleanup": "Before the first Git child, the source installs600s total/60s ordinary Git/120s push bounds, cancellation handling, direct-child wait/reap, bounded output and descriptor/fsync cleanup. Retain necessary T/source/compact reports/C18 objects/config. No disposable build/cache/SDK/runtime/service is created, so no Gradle --stop duty. Abnormal descendants/hard loss remain HOLD/no automatic retry; never signal unrelated processes or traverse/delete held roots.",
+    "terminal_evidence": "Retain original exec launch/final terminal and exact config/instance/root-admission alongside publisher receipt, then independently reconcile actual commands/commit/tree/remote/config preservation/settlement. Local post-selection receipts are not claimed included in C19 and need no recursive publication loop.",
+    "claims": "Source/evidence transport only; no tests/builds/closure or readiness. All STOP/NO-RETRY/CLOSED/native-refusal/PVD/hardware/source-after and older terminal/cleanup qualifications remain; versions/dependencies/identities/signing/Store/occupied1017001 unchanged."
+  }
+}

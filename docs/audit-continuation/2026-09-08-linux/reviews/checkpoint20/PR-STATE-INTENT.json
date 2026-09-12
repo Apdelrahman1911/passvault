@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/usr/bin/gh",
+    "api",
+    "--hostname",
+    "github.com",
+    "--method",
+    "GET",
+    "repos/Apdelrahman1911/passvault/pulls",
+    "-f",
+    "state=open",
+    "-f",
+    "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+    "-f",
+    "per_page=100",
+    "--jq",
+    "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+  ],
+  "command_seconds": 45,
+  "owner": "/root",
+  "pipe_cap_each": 32768,
+  "purpose": "ONE_C20_CONTEXT_AND_BRANCH_PR_POINT",
+  "scope": "Read-only public PR projection, executable bytes, own namespaces and credential environment key PRESENCE only; collector does not inspect credential files/values. The normal gh child may read its existing authorized authentication config. No Git, build, SDK, held runtime or mutations; deadlines are cooperative, not a hard filesystem-IO bound.",
+  "total_seconds": 60,
+  "utc": "2026-09-12T00:19:04.621033+00:00"
+}

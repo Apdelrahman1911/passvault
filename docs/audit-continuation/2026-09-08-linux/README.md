@@ -1,4 +1,44 @@
-## Current checkpoint19 preparation — 2026-09-11
+## Current C20 continuation — 2026-09-12
+
+**INCOMPLETE / NOT READY.** Read the consolidated completed/remaining-work report,
+[`C20_CONSOLIDATED_REPORT.md`](C20_CONSOLIDATED_REPORT.md), then `CHECKPOINT_20.md`,
+`C20-WORKSTREAMS.json`, the three central ledgers and `EXECUTION_SLOT.json`.
+C19 was published and independently reconciled; do not repeat it. C20 applies
+an expanded independently reviewed source/test/documentation batch, with no new application
+execution or closure yet. One synthetic KDF oracle and two different bounded
+metadata points are not application tests. Eighteen resumed agents plus two
+remaining-work reconciliation agents form the current twenty-agent team.
+Root is still the sole build/CI/Git/cleanup owner.
+
+Static04 closeout01 refused an unretained private Kotlin-DSL diagnostic before
+deletion (exit1, zero deletion). Separately admitted static04-closeout02 refused its resource
+guard (exit1, zero deletion); the original runtime remains HOLD. The later disk
+point at02:01Z was about8.50GiB, below the12GiB launch floor. The requested cleanup-only
+exception is not granted; no automatic retry or completed-stop repetition.
+Apple's three-query availability capture is independently reconciled: zero
+configured repository self-hosted runners, no allocated suitable host established.
+Private response evidence stays local. Linux focused checks, GUI4, Android
+host1 and narrow Windows work remain pending; Android32 licensing and
+physical-device/account gaps remain explicit. Counts remain19/25,26/39,2/12,
+not overall readiness percentages. Candidate1017001 and protected refs stay unchanged.
+
+Independent remaining-work reconciliation found software gaps outside the initial
+prepared cohorts. Historical-layout backup with valid ciphertext, actual tray
+tooltip/Lock/Exit and Windows real-file reported-I/O-status regressions are now
+integrated but unexecuted. The ordinary real-JNA case and bounded Room toolbar
+retention extension are also independently reviewed and integrated. Workflow/package input affinity and factual security
+documentation are independently reconciled at their stated source-only scope.
+No software obligation is silently relabelled as physical-hardware-only, and no
+refused native procedure is reopened. See the current workstream ledger.
+
+The final source batch also includes one small standalone native-host Test task;
+ordinary tests/native/release wiring is preserved at the reviewed source scope.
+Final Linux/dependency/GUI control packets are independently accepted. The current
+41-path application/test/build byte registry and four new Kotlin methods/four new
+CTest registrations/three existing-method extensions confer no runtime or closure
+credit. Source publication, current capture and target execution remain blocked.
+
+## Historical checkpoint19 preparation — 2026-09-11
 
 **INCOMPLETE / NOT READY; no audit-owned build/test/CI is running.** Read
 `CHECKPOINT_19.md` and the current ledgers. Compile03 is independently accepted,
@@ -191,7 +231,8 @@ Current state is in the three ledgers and slot.
 
 ## Current continuation checkpoint
 
-**Latest report: `CHECKPOINT_19.md`; current C19 summary supersedes historical pending statuses.**
+**Historical navigation note: C19 was the latest report at that checkpoint.
+Use the C20 consolidated report and current ledgers linked above now.**
 
 **Historical: `CHECKPOINT_14.md` (non-activating source/evidence checkpoint).**
 One additional Desktop test plus two Android instrumentation cases and minimal

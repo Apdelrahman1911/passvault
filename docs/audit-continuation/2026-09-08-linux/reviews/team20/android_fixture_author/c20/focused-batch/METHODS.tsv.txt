@@ -1,0 +1,10 @@
+invocation	class_id	source_method
+focused	DB1	Room validation failure rolls back the full upgrade and a clean reopen persists it
+focused	C01	row Save captured before further edits adopts the latest draft and preserves another row
+focused	C01	a latest blank name rejects stale enabled row Save without losing its draft
+focused	C01	unchanged and duplicate row Saves preserve the live value owner
+focused	C01	late row Save cannot resurrect an unknown cancelled removed or locked draft
+focused	C01	busy generation rejects row Save while the pending draft still exists
+focused	C01	explicit update keeps supplied payload bounds and does not become draft Save
+focused	C02	duplicate row Save preserves the live value and page Save persists it
+focused	C02	unchanged row Save in a dirty editor never clears the live owner

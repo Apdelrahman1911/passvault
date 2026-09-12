@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "task": "C20 bounded migration, fault and persistence integrity",
+  "author": "/root/migration_integrity_author",
+  "independent_reviewer": "/root/migration_integrity_review",
+  "status": "SOURCE_ACCEPTED_AUTHOR_APPLICATION_AND_EXECUTION_ZERO_W_AFTER_IMAGE_OBSERVED",
+  "baseline": {
+    "owner_supplied_commit": "3b2130f",
+    "owner_supplied_tree": "603ed0fb",
+    "git_refreshed_by_author": false
+  },
+  "write_scope": "docs/audit-continuation/2026-09-08-linux/reviews/team20/migration_integrity_author/c20/ only",
+  "permanent_file_ownership": [
+    {
+      "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+      "action": "MODIFY_TEST_ONLY",
+      "before": {
+        "artifact": "before/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+        "sha256": "d3ade5f151b1653d32de802d1c777b5337ec35e430b1943661b2c94bf8fa196a",
+        "bytes": 15919,
+        "physical_lf": 351
+      },
+      "after": {
+        "artifact": "after/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+        "sha256": "5d80abe70b5667a4c874e65c6b61e56f80625260bbeae8002b3ba0eb3c5de40c",
+        "bytes": 22952,
+        "physical_lf": 486
+      },
+      "new_methods": [
+        "Room validation failure rolls back the full upgrade and a clean reopen persists it"
+      ],
+      "existing_test_methods_unchanged": 2,
+      "production_paths_changed": 0
+    }
+  ],
+  "patch": {
+    "artifact": "PROPOSED.patch",
+    "sha256": "c08390088ba109b505735b8287b39428286a341b427cd3215b676683c2c6cce0",
+    "bytes": 8272,
+    "physical_lf": 165,
+    "application_by_author": false
+  },
+  "independent_source_review": {
+    "path": "../../migration_integrity_review/c20/PROPOSAL-v2-REVIEW.md",
+    "sha256": "d44dd62e03274dd06c7e1d5b6a254873f48c6dd801ea5566af0c89a94b9321eb",
+    "disposition": "ACCEPT_SOURCE_ONLY_BOUNDED_TEST_ADDITION"
+  },
+  "final_readonly_source_observation": {
+    "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+    "sha256": "5d80abe70b5667a4c874e65c6b61e56f80625260bbeae8002b3ba0eb3c5de40c",
+    "matches_accepted_after_image": true,
+    "qualification": "Author did not apply the patch. W already matches the accepted after-image; do not reapply. Root-owned integration, admission and runtime results require their separate receipts."
+  },
+  "superseded_v1": {
+    "reason": "Independent challenge: preserve a primary failure when new-method Room close or bounded fixture cleanup also fails.",
+    "patch": "versions/v1/PROPOSED.patch",
+    "patch_sha256": "fcac91e211845c79c880d591bf2adab42970847f0b1e2c08f48ecf98de2bb8cc",
+    "after": "versions/v1/after/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+    "after_sha256": "1ad87817791db36a03d9795faf486964f719f72203a1941d9c4e35ba496ccf0c"
+  },
+  "prospective_selection": {
+    "task": ":core:database:desktopTest",
+    "class": "com.passvault.core.database.CredentialFolderForeignKeyMigrationTest",
+    "method": "Room validation failure rolls back the full upgrade and a clean reopen persists it",
+    "expected_framework_suffix_to_freeze_before_admission": "[desktop]",
+    "expected_new_methods": 1,
+    "executed_new_methods": 0,
+    "compile_test_or_static_analyzer_executions_by_author": 0,
+    "new_findings": 0,
+    "new_closures": 0,
+    "execution_authority": "NONE; root alone must bind and independently admit an exact future invocation. No full-class or Linux03 replay requested."
+  },
+  "limits": [
+    "Synthetic exported-schema1 fixture, real file-backed BundledSQLite/Room, test-only incorrect final migration; no product defect is alleged.",
+    "One historical-schema loop remains one existing method, not four new methods.",
+    "Snapshot oracle is designed to check complete rollback of the finite seeded state and persistence of the resulting committed state; unexecuted, not exhaustive successful-transform equivalence.",
+    "Sentinel BLOBs are not authenticated credential ciphertext. No KDF, provider, platform, actual process-death, fsync or power-loss proof.",
+    "All runtime HOLD, STOP, NO-RETRY, CLOSED, native refusal, protected-ref and build1017001 restrictions survive."
+  ]
+}

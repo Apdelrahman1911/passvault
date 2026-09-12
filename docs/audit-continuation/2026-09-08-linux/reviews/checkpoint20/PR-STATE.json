@@ -1,0 +1,85 @@
+{
+  "argv": [
+    "/usr/bin/gh",
+    "api",
+    "--hostname",
+    "github.com",
+    "--method",
+    "GET",
+    "repos/Apdelrahman1911/passvault/pulls",
+    "-f",
+    "state=open",
+    "-f",
+    "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+    "-f",
+    "per_page=100",
+    "--jq",
+    "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+  ],
+  "child_exit": 0,
+  "child_pid": 32133,
+  "child_reaped": true,
+  "child_started": true,
+  "cleanup": "Only original direct child/pipes settled; abnormal descendants not proven absent. No runtime/cache/temp/service or Gradle invocation; no stop or deletion. Exact terminal result remains separately required.",
+  "command_seconds": 45,
+  "credential_environment_key_presence": {
+    "GH_CONFIG_DIR": false,
+    "GH_TOKEN": false,
+    "GITHUB_TOKEN": false,
+    "HOME": true,
+    "XDG_CONFIG_HOME": false
+  },
+  "elapsed_seconds": 0.583934,
+  "error": null,
+  "executables": [
+    {
+      "path": "/usr/bin/gh",
+      "pin": {
+        "bytes": 45201664,
+        "ctime_ns": 1788815288409434312,
+        "dev": 24,
+        "ino": 12582980,
+        "mode": 33261,
+        "mtime_ns": 1752802161000000000,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "2fd925d68889746976958342fb749bf102bc7dc8bcba3abfa533a80ad7791673"
+    },
+    {
+      "path": "/usr/bin/curl",
+      "pin": {
+        "bytes": 297288,
+        "ctime_ns": 1788731385137435337,
+        "dev": 24,
+        "ino": 12597927,
+        "mode": 33261,
+        "mtime_ns": 1787253863000000000,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "74b4ce8f74b377f18ef1b3df7279c26cb3cd14c49e39ab1498575b209dc3f70f"
+    }
+  ],
+  "namespaces": {
+    "mnt": "mnt:[4026531841]",
+    "pid": "pid:[4026531836]"
+  },
+  "owner": "/root",
+  "pipe_cap_each": 32768,
+  "pull_requests": [],
+  "purpose": "ONE_C20_CONTEXT_AND_BRANCH_PR_POINT",
+  "scope": "Read-only public PR projection, executable bytes, own namespaces and credential environment key PRESENCE only; collector does not inspect credential files/values. The normal gh child may read its existing authorized authentication config. No Git, build, SDK, held runtime or mutations; deadlines are cooperative, not a hard filesystem-IO bound.",
+  "signals_attempted": [],
+  "status": "POINT_NO_MATCHING_OPEN_PR",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 3,
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "total_seconds": 60,
+  "utc": "2026-09-12T00:19:04.621033+00:00"
+}

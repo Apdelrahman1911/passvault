@@ -1,0 +1,98 @@
+--- a/app-desktop/build.gradle.kts
++++ b/app-desktop/build.gradle.kts
+@@ -861,6 +861,7 @@
+ val nativeBiometricSourceDirectory = project.layout.projectDirectory.dir("native/biometric-bridge")
+ val nativeBiometricBuildDirectory = project.layout.buildDirectory.dir("native-biometric/current")
+ val nativeBiometricStagingDirectory = project.layout.buildDirectory.dir("native-biometric/staged")
++val auditJnaLifetimeTestName = "auditJnaLifetimeTest"
+ val hostOperatingSystem = System.getProperty("os.name").lowercase()
+ val hostArchitecture = System.getProperty("os.arch").lowercase()
+ val nativeBiometricPlatform = when {
+@@ -1021,12 +1022,16 @@
+         }
+     }
+     tasks.withType<Test>().configureEach {
+-        dependsOn(stageDesktopBiometricBridge)
+-        if (testDesktopBiometricBridge != null) dependsOn(testDesktopBiometricBridge)
+-        systemProperty(
+-            "passvault.biometric.testBridgeDirectory",
+-            nativeBiometricStagingDirectory.get().asFile.absolutePath,
+-        )
++        // This one explicit audit task takes an independently bound ordinary
++        // library, not the full native test/staging graph. All other Tests retain it.
++        if (name != auditJnaLifetimeTestName) {
++            dependsOn(stageDesktopBiometricBridge)
++            if (testDesktopBiometricBridge != null) dependsOn(testDesktopBiometricBridge)
++            systemProperty(
++                "passvault.biometric.testBridgeDirectory",
++                nativeBiometricStagingDirectory.get().asFile.absolutePath,
++            )
++        }
+     }
+ }
+ 
+@@ -1057,6 +1062,64 @@
+ 
+         // Do not use withJava().
+         // Java sources are compiled automatically.
++
++        if (nativeBiometricPlatform != null) {
++            val compilation = compilations.getByName("test")
++            tasks.register<Test>(auditJnaLifetimeTestName) {
++                group = "verification"
++                description = "Runs only the explicitly admitted ordinary real-JNA lifetime case."
++                // Use compilation FileCollections directly: a desktopTest TaskProvider
++                // mapped to its classpath can accidentally pull that entire Test graph in.
++                dependsOn(compilation.compileAllTaskName)
++                testClassesDirs = compilation.output.classesDirs
++                classpath = compilation.output.allOutputs + requireNotNull(compilation.runtimeDependencyFiles)
++                val testClass =
++                    "com.passvault.desktop.security.biometric.JnaDesktopBiometricNativeLifetimeIntegrationTest"
++                include(testClass.replace('.', '/') + ".class")
++                isScanForTestClasses = false
++                filter {
++                    includeTestsMatching("$testClass.closeReservationProtectsRealContextUntilCancellationReturns")
++                    isFailOnNoMatchingTests = true
++                }
++                useJUnit()
++                maxParallelForks = 1
++                forkEvery = 1
++                maxHeapSize = "512m"
++                jvmArgs("-XX:ActiveProcessorCount=1", "-XX:-UsePerfData", "-XX:-CreateCoredumpOnCrash")
++                timeout.set(java.time.Duration.ofSeconds(120))
++                reports.junitXml.required.set(true)
++                reports.html.required.set(false)
++                outputs.upToDateWhen { false }
++                outputs.doNotCacheIf("Requires a fresh admitted native runtime observation") { true }
++
++                val prefix = "passvault.audit.jnaLifetime."
++                val admitted = listOf(
++                    "enabled", "target", "abi", "library", "libraryBytes", "librarySha256", "dataDirectory",
++                    "workerHome", "workerTemporaryDirectory",
++                ).associateWith { project.providers.gradleProperty(prefix + it).orElse("").get() }
++                inputs.properties(admitted)
++                systemProperties(admitted.mapKeys { (name, _) -> prefix + name })
++                systemProperty("user.home", admitted.getValue("workerHome"))
++                systemProperty("java.io.tmpdir", admitted.getValue("workerTemporaryDirectory"))
++                systemProperty("jna.tmpdir", admitted.getValue("workerTemporaryDirectory"))
++                // Realizing tasks/IDE models without admission must remain harmless.
++                // Explicit execution, however, must fail rather than produce a green skip.
++                doFirst {
++                    require(admitted.getValue("enabled") == "1" && admitted.values.none(String::isBlank)) {
++                        "This one-case task requires all explicit real-JNA admission properties"
++                    }
++                    val home = java.nio.file.Path.of(admitted.getValue("workerHome"))
++                    val temporary = java.nio.file.Path.of(admitted.getValue("workerTemporaryDirectory"))
++                    for (directory in listOf(home, temporary)) {
++                        require(directory.isAbsolute && directory == directory.normalize())
++                        require(Files.isDirectory(directory, java.nio.file.LinkOption.NOFOLLOW_LINKS))
++                        require(directory == directory.toRealPath())
++                    }
++                    require(home != temporary)
++                    workingDir(home.toFile())
++                }
++            }
++        }
+     }
+ 
+     sourceSets {

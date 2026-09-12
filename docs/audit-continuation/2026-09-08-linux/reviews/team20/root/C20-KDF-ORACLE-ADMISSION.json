@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "date": "2026-09-11",
+  "owner": "/root",
+  "status": "ADMITTED_ONCE_SOURCE_DATA_CALCULATION_NOT_PLATFORM_TEST",
+  "proposal": "reviews/team20/native_security_author/c20/KDF-ORACLE-PROPOSAL.md",
+  "proposal_sha256": "b54d8e4447c7747183aa0578106bf3b893c6933644a2ad63a7a4645f1c25b228",
+  "stdin_sha256": "4ef1bec5271a9a6da9a40d779084843f07444cc11551ce98b3980e680f8fbcf2",
+  "stdin_bytes": 1583,
+  "independent_review": "reviews/team20/android_fixture_review/c20/KDF-ORACLE-SOURCE-REVIEW.md",
+  "independent_review_sha256": "58e8b21470906a6cf6c5232b30a81c95656a79407ef51220d94f087b3f83666a",
+  "command": "timeout --signal=TERM --kill-after=2s 5s /usr/bin/python3 -I -B -S - < C20-KDF-ORACLE-STDIN.py.txt",
+  "preparation": "Copy only the exact reviewed fenced source to a new exclusive source-evidence file after proposal/source digest checks. No unreviewed source or historical helper is evaluated.",
+  "purpose": "Fix two public synthetic 32-byte expected compatibility outputs using stdlib HMAC-SHA256 and explicit ipad/opad cross-check, independent of production CNG helper. Same hashlib implementation is shared; not two independent cryptographic providers.",
+  "bound": "At most5 seconds plus2 seconds termination grace; one no-child calculator, no network/randomness/source/environment reads, no native/app/credential API, no mutable application storage. Finite34-line code and four standard HMAC calls.",
+  "cleanup_installed_before_command": "timeout bounds the sole calculator and waits its direct child; shell waits foreground timeout. Python -I -B -S disables user site/environment influence and bytecode writing. No run HOME/cache/temp namespace or disposable output is created; only exact source/stdout/stderr/receipt evidence retained. No Gradle or service is started, so wrapper stop is NOT_APPLICABLE. On timeout/failure preserve output, do not retry automatically.",
+  "coordination": "No audit local or CI build active; this finite source-data calculation is not a VPS build/test window or held-runtime operation. Other agents remain source/evidence-only.",
+  "root_adoption": "Root admits this exact one calculation after independent source review; result/literal reconciliation remains independent. No platform result, closure or native-refusal scope change follows."
+}

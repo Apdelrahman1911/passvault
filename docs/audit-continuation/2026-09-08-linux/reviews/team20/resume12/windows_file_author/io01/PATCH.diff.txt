@@ -1,0 +1,292 @@
+--- a/app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp
++++ b/app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp
+@@ -670,16 +670,27 @@
+   return result;
+ }
+ 
+-// Keep filesystem ownership and I/O in one implementation. The three local
+-// callables make rare validation failures deterministic in the native tests;
+-// the production entry below always supplies the real security operations.
+-template <typename MakeSuffix, typename ValidateFile, typename ProtectFile>
++struct FileWriterWin32Io final {
++  bool write(HANDLE file, const uint8_t *bytes, DWORD requested,
++             DWORD *written) const {
++    return WriteFile(file, bytes, requested, written, nullptr) != FALSE;
++  }
++  bool flush(HANDLE file) const { return FlushFileBuffers(file) != FALSE; }
++  bool close(WindowsHandle &file) const { return file.close(); }
++};
++
++// Keep filesystem ownership and I/O in one implementation. Native tests can
++// supply deterministic security or I/O-status failures; the production entry
++// below explicitly supplies only the real security operations and Win32 I/O.
++template <typename MakeSuffix, typename ValidateFile, typename ProtectFile,
++          typename FileIo = FileWriterWin32Io>
+ bool write_secure_file_atomic_impl(const std::filesystem::path &directory,
+                                    const std::filesystem::path &destination,
+                                    const std::vector<uint8_t> &bytes,
+                                    MakeSuffix make_suffix,
+                                    ValidateFile validate_file,
+-                                   ProtectFile protect_file) {
++                                   ProtectFile protect_file,
++                                   FileIo file_io = {}) {
+   if (bytes.empty() || bytes.size() > kMaxEnvelopeBytes ||
+       !safe_directory(directory)) {
+     return false;
+@@ -703,7 +714,7 @@
+   if (!validate_file(file.get()) ||
+       !protect_file(file.get(), NO_INHERITANCE)) {
+     // Share mode zero prevents deletion until this acquired handle is closed.
+-    if (file.close()) {
++    if (file_io.close(file)) {
+       DeleteFileW(temporary.c_str());
+     }
+     return false;
+@@ -715,16 +726,15 @@
+     const DWORD requested = static_cast<DWORD>(
+         std::min(bytes.size() - offset,
+                  static_cast<size_t>(std::numeric_limits<DWORD>::max())));
+-    if (!WriteFile(file.get(), bytes.data() + offset, requested, &written,
+-                   nullptr) ||
++    if (!file_io.write(file.get(), bytes.data() + offset, requested, &written) ||
+         written == 0) {
+       success = false;
+       break;
+     }
+     offset += written;
+   }
+-  const bool flushed = success && FlushFileBuffers(file.get());
+-  const bool closed = file.close();
++  const bool flushed = success && file_io.flush(file.get());
++  const bool closed = file_io.close(file);
+   success = flushed && closed;
+   if (success) {
+     success = MoveFileExW(temporary.c_str(), destination.c_str(),
+@@ -741,7 +751,8 @@
+                               const std::vector<uint8_t> &bytes) {
+   return write_secure_file_atomic_impl(directory, destination, bytes,
+                                        random_suffix, safe_handle,
+-                                       apply_current_user_only_dacl);
++                                       apply_current_user_only_dacl,
++                                       FileWriterWin32Io{});
+ }
+ 
+ void append_u32(std::vector<uint8_t> *output, uint32_t value) {
+--- a/app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp
++++ b/app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp
+@@ -531,6 +531,186 @@
+ }
+ 
+ #if !defined(PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST)
++enum class FileWriterIoFault { write_failure, flush_failure, close_failure };
++
++std::optional<FileWriterIoFault> parse_file_writer_io_fault(std::string_view name) {
++  if (name == "write_failure")
++    return FileWriterIoFault::write_failure;
++  if (name == "flush_failure")
++    return FileWriterIoFault::flush_failure;
++  if (name == "close_failure")
++    return FileWriterIoFault::close_failure;
++  return std::nullopt;
++}
++
++bool same_writer_file(const BY_HANDLE_FILE_INFORMATION &left,
++                      const BY_HANDLE_FILE_INFORMATION &right) {
++  return left.dwVolumeSerialNumber == right.dwVolumeSerialNumber &&
++         left.nFileIndexHigh == right.nFileIndexHigh &&
++         left.nFileIndexLow == right.nFileIndexLow &&
++         left.ftCreationTime.dwHighDateTime == right.ftCreationTime.dwHighDateTime &&
++         left.ftCreationTime.dwLowDateTime == right.ftCreationTime.dwLowDateTime;
++}
++
++// One original handle binds identity, exact small synthetic bytes, and close.
++// No handle remains open to accidentally block the writer's replace/delete.
++bool snapshot_writer_file(const std::filesystem::path &path,
++                          const std::vector<uint8_t> &expected,
++                          BY_HANDLE_FILE_INFORMATION *identity) {
++  std::array<uint8_t, 5> actual{};
++  if (identity == nullptr || expected.empty() || expected.size() > actual.size())
++    return false;
++  WindowsHandle file(CreateFileW(path.c_str(), GENERIC_READ | READ_CONTROL,
++                                 FILE_SHARE_READ, nullptr, OPEN_EXISTING,
++                                 FILE_FLAG_OPEN_REPARSE_POINT, nullptr));
++  DWORD read = 0;
++  const bool matches = file.valid() && safe_handle(file.get()) &&
++      GetFileInformationByHandle(file.get(), identity) &&
++      (identity->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 &&
++      identity->nNumberOfLinks == 1 && identity->nFileSizeHigh == 0 &&
++      identity->nFileSizeLow == expected.size() &&
++      ReadFile(file.get(), actual.data(), static_cast<DWORD>(expected.size()),
++               &read, nullptr) &&
++      read == expected.size() &&
++      std::equal(expected.begin(), expected.end(), actual.begin());
++  const bool closed = file.close();
++  secure_wipe(actual);
++  return matches && closed;
++}
++
++struct FileWriterIoObservation {
++  unsigned int order = 0;
++  int writes = 0;
++  int flushes = 0;
++  int closes = 0;
++  DWORD actual_written = 0;
++  bool real_write_succeeded = false;
++  bool real_flush_succeeded = false;
++  bool real_close_succeeded = false;
++  bool before_delete_snapshot = false;
++  BY_HANDLE_FILE_INFORMATION created{};
++  BY_HANDLE_FILE_INFORMATION closed{};
++};
++
++struct FaultedFileWriterIo {
++  FileWriterIoFault fault;
++  const std::filesystem::path &temporary;
++  const std::vector<uint8_t> &expected_temporary;
++  FileWriterIoObservation &observed;
++
++  bool write(HANDLE file, const uint8_t *bytes, DWORD requested,
++             DWORD *written) const {
++    observed.order = observed.order * 10 + 3;
++    ++observed.writes;
++    const DWORD amount = fault == FileWriterIoFault::write_failure
++                             ? std::min(requested, DWORD{2}) : requested;
++    observed.real_write_succeeded =
++        FileWriterWin32Io{}.write(file, bytes, amount, written) && *written == amount;
++    observed.actual_written = *written;
++    // Deliberate reported failure AFTER a real nonzero prefix write. This is
++    // not an assertion that the OS itself returned ERROR_WRITE_FAULT.
++    return observed.real_write_succeeded && fault != FileWriterIoFault::write_failure;
++  }
++
++  bool flush(HANDLE file) const {
++    observed.order = observed.order * 10 + 4;
++    ++observed.flushes;
++    observed.real_flush_succeeded = FileWriterWin32Io{}.flush(file);
++    return observed.real_flush_succeeded && fault != FileWriterIoFault::flush_failure;
++  }
++
++  bool close(WindowsHandle &file) const {
++    observed.order = observed.order * 10 + 5;
++    ++observed.closes;
++    observed.real_close_succeeded = FileWriterWin32Io{}.close(file);
++    if (observed.real_close_succeeded) {
++      observed.before_delete_snapshot =
++          snapshot_writer_file(temporary, expected_temporary, &observed.closed) &&
++          same_writer_file(observed.created, observed.closed);
++    }
++    // The real handle is closed even for this conservative false-status cut.
++    // It proves the caller's no-delete branch, NOT an actual failed OS close.
++    return observed.real_close_succeeded && fault != FileWriterIoFault::close_failure;
++  }
++};
++
++int test_atomic_writer_io_fault(FileWriterIoFault fault, const char *case_name) {
++  const std::wstring suffix = random_suffix();
++  PV_TEST_CHECK(!suffix.empty());
++  std::error_code error;
++  const std::filesystem::path parent = std::filesystem::temp_directory_path(error);
++  PV_TEST_CHECK(!error);
++  const std::filesystem::path root = parent / (L"passvault-file-io-test-" + suffix);
++  TestContextFixture fixture(root);
++  fixture.owns_root = std::filesystem::create_directory(root, error);
++  PV_TEST_CHECK(fixture.owns_root && !error);
++  PV_TEST_CHECK(ensure_safe_directory(root));
++
++  const std::filesystem::path destination = root / kMetadataFileName;
++  const std::wstring fixed_suffix = L"0361000000000001";
++  const std::filesystem::path temporary = destination.wstring() + L".tmp." + fixed_suffix;
++  const std::vector<uint8_t> original{0x01, 0x00, 0x7f, 0xff};
++  const std::vector<uint8_t> replacement{0x02, 0xff, 0x00, 0x80, 0x03};
++  const std::vector<uint8_t> expected_temporary = fault == FileWriterIoFault::write_failure
++      ? std::vector<uint8_t>(replacement.begin(), replacement.begin() + 2) : replacement;
++  PV_TEST_CHECK(write_secure_file_atomic(root, destination, original));
++  BY_HANDLE_FILE_INFORMATION original_identity{};
++  PV_TEST_CHECK(snapshot_writer_file(destination, original, &original_identity));
++  PV_TEST_CHECK(directory_has_only(root, {destination}));
++
++  FileWriterIoObservation observed;
++  const bool result = write_secure_file_atomic_impl(
++      root, destination, replacement, [&]() { return fixed_suffix; },
++      [&](HANDLE handle) {
++        observed.order = observed.order * 10 + 1;
++        return safe_handle(handle) && GetFileInformationByHandle(handle, &observed.created) &&
++               observed.created.nNumberOfLinks == 1 && observed.created.nFileSizeHigh == 0 &&
++               observed.created.nFileSizeLow == 0;
++      },
++      [&](HANDLE handle, DWORD inheritance) {
++        observed.order = observed.order * 10 + 2;
++        return inheritance == NO_INHERITANCE && apply_current_user_only_dacl(handle, inheritance);
++      },
++      FaultedFileWriterIo{fault, temporary, expected_temporary, observed});
++  PV_TEST_CHECK(!result);
++  PV_TEST_CHECK(observed.writes == 1 && observed.closes == 1 &&
++                observed.real_write_succeeded && observed.real_close_succeeded &&
++                observed.actual_written == expected_temporary.size() &&
++                observed.before_delete_snapshot);
++  const bool write_cut = fault == FileWriterIoFault::write_failure;
++  PV_TEST_CHECK(observed.order == (write_cut ? 1235U : 12345U));
++  PV_TEST_CHECK(observed.flushes == (write_cut ? 0 : 1));
++  PV_TEST_CHECK(observed.real_flush_succeeded == !write_cut);
++
++  // Decisive real-file/identity checks precede all fixture teardown.
++  BY_HANDLE_FILE_INFORMATION after_identity{};
++  PV_TEST_CHECK(snapshot_writer_file(destination, original, &after_identity));
++  PV_TEST_CHECK(same_writer_file(original_identity, after_identity));
++  if (fault == FileWriterIoFault::close_failure) {
++    BY_HANDLE_FILE_INFORMATION retained_identity{};
++    PV_TEST_CHECK(snapshot_writer_file(temporary, replacement, &retained_identity));
++    PV_TEST_CHECK(same_writer_file(observed.created, retained_identity));
++    PV_TEST_CHECK(directory_has_only(root, {destination, temporary}));
++  } else {
++    PV_TEST_CHECK(!std::filesystem::exists(temporary, error) && !error);
++    PV_TEST_CHECK(directory_has_only(root, {destination}));
++  }
++  PV_TEST_CHECK(fixture.close());
++  PV_TEST_CHECK(!std::filesystem::exists(root, error) && !error);
++  PV_TEST_CHECK(std::printf(
++      "PVA036_IO case=%s status_injection=YES real_io=PASS pre_teardown=PASS "
++      "temp_id=%lu:%lu:%lu destination_id=%lu:%lu:%lu cleanup=PASS\n",
++      case_name,
++      static_cast<unsigned long>(observed.created.dwVolumeSerialNumber),
++      static_cast<unsigned long>(observed.created.nFileIndexHigh),
++      static_cast<unsigned long>(observed.created.nFileIndexLow),
++      static_cast<unsigned long>(original_identity.dwVolumeSerialNumber),
++      static_cast<unsigned long>(original_identity.nFileIndexHigh),
++      static_cast<unsigned long>(original_identity.nFileIndexLow)) > 0);
++  PV_TEST_CHECK(std::fflush(stdout) == 0);
++  return 0;
++}
++
+ // These synthetic cases exercise the production guard with live caller-owned
+ // arrays. Explicit bad_alloc is an unwind test, not real allocation exhaustion,
+ // WebAuthn/CNG fault injection, or a probe of freed memory.
+@@ -693,6 +873,11 @@
+   if (argc == 2 && std::string_view(argv[1]) == "--kdf-known-answer") {
+     return test_kdf_known_answer();
+   }
++  if (argc == 3 && std::string_view(argv[1]) == "--file-io-case") {
++    const auto fault = parse_file_writer_io_fault(argv[2]);
++    PV_TEST_CHECK(fault.has_value());
++    return test_atomic_writer_io_fault(*fault, argv[2]);
++  }
+   PV_TEST_CHECK(argc == 1);
+   const std::wstring context_suffix = random_suffix();
+   PV_TEST_CHECK(!context_suffix.empty());
+--- a/app-desktop/native/biometric-bridge/CMakeLists.txt
++++ b/app-desktop/native/biometric-bridge/CMakeLists.txt
+@@ -194,6 +194,14 @@
+             NAME passvault_biometric_windows_kdf_known_answer
+             COMMAND passvault_biometric_windows_security_test --kdf-known-answer
+         )
++        # New reported-I/O-status controls use real owned files/handles; they
++        # do not claim naturally occurring OS faults, crash or cancellation.
++        foreach(io_case IN ITEMS write_failure flush_failure close_failure)
++            add_test(
++                NAME passvault_biometric_windows_file_io_${io_case}
++                COMMAND passvault_biometric_windows_security_test --file-io-case ${io_case}
++            )
++        endforeach()
+         # Each failure path is a separate process/result, so a baseline failure
+         # cannot make later cases appear to have run. All data is synthetic.
+         foreach(file_case IN ITEMS

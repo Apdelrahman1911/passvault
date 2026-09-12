@@ -1,0 +1,211 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-11",
+  "reviewer": "/root/desktop_other_review",
+  "author_reviewed": "/root/native_security_author",
+  "disposition": "ACCEPT_RESIDUAL_MAP_AND_DISTINCT_NONEXECUTING_PROPOSAL_FOR_ROOT_DECISION_ONLY",
+  "implementation_disposition": "NOT_ACCEPTED_OR_APPLIED; golden outputs and exact prospective patch are absent",
+  "runtime_disposition": "NOT_ADMITTED_NOT_EXECUTED",
+  "independence": "Reviewer did not author a product patch, oracle or test. Prior selection advice about the separately unmet fixed-output question and explicit limits is disclosed; this is independent retained-evidence/current-source challenge, not independent rediscovery of a defect.",
+  "reviewed_proposal": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/RESIDUAL-MAP-AND-PROPOSAL.md",
+    "bytes": 15558,
+    "sha256": "0f6fb05e54845735d7b1716837733ffa112dccb463fb86ce7e7c41f0614f1025"
+  },
+  "normative_and_reused_inputs": {
+    "normative_base": {
+      "path": "docs/audit-handoff/current/issue-to-fix.json",
+      "bytes": 908650,
+      "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+    },
+    "pvu_projection": {
+      "path": "docs/audit-handoff/current/unresolved-investigations-outcome-only.json",
+      "bytes": 62958,
+      "sha256": "420b7eb1a419aabec37cbc323bc7d9a9b32ca160395dcc2d5f109488820eed19"
+    },
+    "mac02_actual": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/MACOS-FOCUSED-02-ACTUAL-REVIEW.json",
+      "bytes": 17252,
+      "sha256": "73aef6e8b91a225594a378e812785c2e162f961ed62fde0be547516eae0b8285"
+    },
+    "windows05_actual": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json",
+      "bytes": 34599,
+      "sha256": "b8432123f1dcef6149c172df901a7c03f4214a732003e185bd8f39990a107116"
+    },
+    "windows05_refusal_scope": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/WINDOWS-COHORT-05-SCOPE.md",
+      "bytes": 8100,
+      "sha256": "762b35f3354bc029afac6e7c84ca09086653f505fdf8d5a530e7612adb68d84c"
+    },
+    "pvu008_author_outcome": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native/PVU008-CONTENT-CONTRACT-OUTCOME.md",
+      "bytes": 6181,
+      "sha256": "a99f342ac00a483cf40e488db832e9f2c5423f9ced4c02ec7d7205c22077866a"
+    },
+    "pvu008_independent_outcome": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/PVU008-CONTENT-CONTRACT-REVIEW.md",
+      "bytes": 6240,
+      "sha256": "5298726147d9d63f8bf8ca68d0dfd400691096707cf33d33e0626eb21a9c1b80"
+    }
+  },
+  "continuation_snapshot_previously_read": {
+    "path": "docs/audit-continuation/2026-09-08-linux/ISSUE_LEDGER.json",
+    "bytes": 286851,
+    "sha256": "00fef74ad98b56a60416bd39e62635bf6cba3be343ae453a07ca6a1a0e4fd125",
+    "scope": "Only PVA010/014/036/037 and PVU008/009. Historical snapshot read during this lane, not a guarantee of subsequent central-ledger immutability."
+  },
+  "current_source": [
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "bytes": 99069,
+      "lf": 2600,
+      "sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+      "semantic_ranges": [
+        [
+          1,
+          177
+        ],
+        [
+          181,
+          301
+        ],
+        [
+          1960,
+          2003
+        ],
+        [
+          2200,
+          2248
+        ]
+      ],
+      "equals_windows05_recorded_hash": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "bytes": 37041,
+      "lf": 870,
+      "sha256": "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a",
+      "semantic_ranges": [
+        [
+          1,
+          39
+        ],
+        [
+          611,
+          695
+        ],
+        [
+          735,
+          818
+        ]
+      ],
+      "equals_windows05_recorded_hash": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "bytes": 9363,
+      "lf": 230,
+      "sha256": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8",
+      "semantic_ranges": [
+        [
+          63,
+          78
+        ],
+        [
+          106,
+          218
+        ]
+      ],
+      "equals_windows05_recorded_hash": true
+    }
+  ],
+  "additional_header_read": {
+    "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+    "bytes": 4540,
+    "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+    "scope": "Vault hash/key byte macros at24-25 only; both32. No whole-header semantic claim."
+  },
+  "source_scope_qualification": "Hashes bind whole bytes, not whole-file semantic coverage. Selected declaration/call locators supplement the listed windows. Current Windows three-file equality is independently checked against Windows05 recorded hashes; no current macOS/JNA/loader hash or whole-tree equality is independently asserted here. Historical source line numbers are not promoted to current locations.",
+  "reused_successes": {
+    "mac02": {
+      "run_id": 34430921453,
+      "qualified_ctest_events": 5,
+      "actual_helper_exit": 0,
+      "credit": "Three fixture normal/early-return/C++-exception cases plus actual linked ABI and source-included security. Real Foundation/LAContext property and bounded synthetic native busy/destroy evidence.",
+      "limits": "Exact original-root cleanup qualification survives. No real protected Keychain/TouchID, displayed-language, genuine JNA/native race, provider or packaged whole-lifecycle closure. No rerun."
+    },
+    "windows05": {
+      "run_id": 34439762763,
+      "qualified_ctest_events": 24,
+      "actual_helper_exit": 1,
+      "whole_generated_root": "FILESYSTEM_HOLD",
+      "credit": "Eight current real-Win32 writers, eight full-old-source historical controls (three observed defect reds/five valid controls), four live synthetic-array guard units, two actual CNG PRK cases, one linked-DLL ABI and one native security/locale/crypto sibling.",
+      "limits": "All24 case events remain useful with their exact oracles. They do not cure the later cleanup refusal or establish normal final Job drain. Remaining member identity and cleanup-target content/creator/benignity are unknown. Fixture-local cleanup is not whole-helper cleanup. No replay or held-root access."
+    }
+  },
+  "independent_kdf_challenge": {
+    "why_distinct": "Windows05 normal PRK output is changed/nonzero, and the envelope roundtrip derives through the same helper on both sides. Common-mode KDF drift can pass those checks. A fixed independent known answer addresses a separately named compatibility requirement, not a new defect or a replay of passing24.",
+    "current_function": "windows source272-296: PRK=HMAC-SHA256(salt[32],PRF[32]); output=HMAC-SHA256(PRK,domain[45]||vault_hash[32]||01). The array guard is registered before allocations and remains in normal production code.",
+    "domain_ascii": "PassVault Windows Hello vault-key wrapping v1",
+    "domain_bytes_excluding_nul": 45,
+    "second_message_bytes": 78,
+    "proposed_vectors": [
+      {
+        "prf_hex_range_inclusive": "47..66",
+        "salt_hex_range_inclusive": "33..52",
+        "vault_hash_hex_range_inclusive": "01..20",
+        "each_input_bytes": 32
+      },
+      {
+        "difference_from_first": "Only vault_hash[0]:01->00; other input bytes identical"
+      }
+    ],
+    "oracle_status": "BOTH_FULL32_GOLDEN_OUTPUTS_NOT_SUPPLIED_NOT_COMPUTED",
+    "oracle_gate": "Before implementation acceptance, root must separately admit preparation of both exact independent expected arrays with retained input/domain/counter bytes, method and provenance. Never derive the oracle through the SUT, its hmac helper or its production kKdfInfo at test runtime. An arbitrary published HKDF vector is not automatically this custom fixed-domain vector.",
+    "prospective_dispatch": "One normal-current-only --kdf-known-answer argc2 selector and one CTest registration in the existing security executable/CMake. Main621-642 currently closes PRK-only and historical dispatch before the normal no-argument path. Place the new branch before random suffix/temp/context setup at643 onward and ensure wrong argc/selector fails without falling through to that route.",
+    "prospective_oracles": "Live PV_TEST_CHECK Boolean success plus complete32-byte equality to literal expected arrays, checked without the SUT comparison helper; fixed input sizes and unchanged input/canary bytes; cleanup of mutable synthetic output on every assertion return. No runtime expected-value computation, roundtrip-only or nonzero-only substitute.",
+    "scope_ceiling": "One proposed CTest with two fixed-vector assertions, not two executed cases or a count per HMAC/assertion. Future success would establish only those exact helper/CNG output bytes. It would not establish all-input compatibility, upstream/JNA identity conversion, envelope/AAD serialization, genuine Hello release/unwrap, caller allocation cuts, PVU008 or a family closure.",
+    "real_native_vs_mock": "The proposed direct derive call reaches actual BCrypt HMAC operations if eventually executed on the admitted target. It is not provider-free and is not a fake HMAC. Its synthetic PRF is not a successful protected Hello provider result, and it bypasses the enrollment/retrieval caller guard and ownership paths at1984-1996/2219-2245.",
+    "provider_counterexample": "Current HashHandle143-159/KeyHandle161-177 call destroy only for nonnull handles and discard NTSTATUS. hmac230-269 computes success and wipes the live object bytes before destruction. Correct known output cannot establish destroy success/resource consequences or settle the applicable object-content contract. The nullptr provider argument is not exact implementation pinning.",
+    "compatibility_preservation_gate": "No production edit, allocator seam extension, new executable/macro/option/SDK/dependency/hardening change, Hello/inventory/random/filesystem/context/AES route, or provider-destroy instrumentation. Exact prospective old/new hashes and diff plus independent review are required before accepting any implementation."
+  },
+  "remaining_requirements_not_replayed": {
+    "PVA010": {
+      "classification": "Software/target integration, sanitizer and packaged-image gaps as well as separate provider gaps; not all inherently physical biometric work.",
+      "minimum_external_requirement": "Separately admitted supported real-JNA/native concurrent lifetime/close schedule and native instrumentation/sanitizer evidence, plus exact packaged-image lifecycle evidence. Existing native synthetic schedules and fake-NativeApi JVM cases cover different boundaries."
+    },
+    "PVA014": {
+      "classification": "Native ABI/property siblings already useful; actual selected-language display/focus/accessibility still target/interactive. Windows remains additive ABI compatibility, not a fourth translated-rendering defect.",
+      "minimum_external_requirement": "Authorized Android/Apple target UI evidence, including app/OS language interaction and relevant accessibility/lifecycle controls; unresolved iOS integration requires distinct admission. Consumed IOS01 resource-gate failure/ten unstarted declarations provides no target credit or retry authority."
+    },
+    "PVA036": {
+      "classification": "Current/historical targeted writer defects verified; crash/cancellation/lifecycle evidence and inaccessible historical cleanup custody remain distinct.",
+      "minimum_external_requirement": "Separately admitted safe synthetic Windows TMP/TEMP crash/cancellation/cleanup schedule with exact owned identities. Never traverse or clean Windows05 held root; a fresh success cannot backfill old close/deletion proof."
+    },
+    "PVA037": {
+      "classification": "Fixed KDF oracle preparation is the selected distinct nonexecuting candidate. Later production caller cuts and true provider behavior remain unmet.",
+      "minimum_external_requirement": "First the independent golden/source gate; later only root-admitted exact Windows/CNG target execution for the new selector. No physical Hello device is required for that narrow helper result. Genuine protected PRF/caller cuts/commit/cancellation/device behavior require their own admissible evidence and are not redesigned here."
+    },
+    "PVU008": {
+      "classification": "Unresolved provider content contract; freed-before-destroy allegation remains rejected. A bounded search failing to locate a contract does not prove none exists.",
+      "minimum_external_requirement": "Exact applicable authoritative provider-content contract/source, OR separately admitted isolated Windows CNG-only investigation of both handle types, actual destroy statuses and resource consequences. Neither is supplied by this KDF proposal; no repeated search/speculative patch/old helper reuse."
+    },
+    "PVU009": {
+      "classification": "Conditional synchronous cancellation before deadline established; actual native stall not established. Separate from PVA010 reservation correctness.",
+      "minimum_external_requirement": "Separately admitted target-native synthetic prompt/cancellation schedule with request/cancel entry+return/concealment/cleanup/composition/process-exit timing, independent deadline/teardown, and inactive/cooperative/committed/pre-entry/cancel-failure controls. A fake finite latch or known answer does not establish native latency."
+    }
+  },
+  "root_decision_only": "The residual map and small nonexecuting proposal are reasonable. Golden preparation is the next distinct decision; not a build-slot request or implicit authority. Source application, command/instance/resource/retention/cleanup admission and execution remain root-only. Windows05/Mac02 retained success is evidence, never reusable execution authority.",
+  "counters": {
+    "new_product_or_test_edits": 0,
+    "new_oracle_computations": 0,
+    "new_test_executions": 0,
+    "new_confirmed_findings": 0,
+    "new_family_closures": 0,
+    "new_runtime_authority": 0,
+    "central_coverage_increment": 0
+  },
+  "preserved_restrictions": "Original native cybersecurity refusal/two partial edits/root completion remain unchanged, not relabelled or resumed. No caller-cut or fake-PRF injection harness. PVU007 STOP, PVU011 NO RETRY, PVA029 recorded49/44/5FAIL/no automatic retry, G7/G8 CLOSED, every consumed/failed/refused/held runtime and cleanup scope, eight separate PVD choices, protected refs, dependency/version/identity/signing/Store/occupied1017001 boundaries survive.",
+  "method": "Only source/exact retained evidence reads, standard-library JSON/hash/string comparison and this new own-lane report. Selected Windows05 substantive fields were read separately without truncation; complete raw24 chains were not replayed or independently recollected. No Git/network/CI/build/compiler/test/provider/process/runtime probe, helper import/execution, cleanup, stop, product/central edit, oracle computation or background worker. No whole-source audit/physical-erasure claim. Exclusive report creation with fsync and exact readback."
+}

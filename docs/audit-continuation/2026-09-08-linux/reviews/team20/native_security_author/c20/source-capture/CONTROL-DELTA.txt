@@ -1,0 +1,92 @@
+--- reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py
++++ reviews/team20/native_security_author/c20/source-capture/SOURCE-PREPARE.py.txt
+@@ -1,6 +1,6 @@
+ #!/usr/bin/python3
+-"""NEW C18 checkpoint18 source-prepare01 shared by AndroidCompile02, static04 and regression01.
++"""NEW C20 checkpoint20 source-prepare01 for static05/focused02 and GUI/host bindings.
+ Externally reviewed execution required; no predecessor scope is replayed.
+-Read-only new-T Git only; no cat-file, builds, old stores, R/E or binding edits.
++Read-only publication-T Git only; no cat-file, builds, old stores, R/E or binding edits.
+ One observed checkout buffer per file; calculated raw candidates need exact Git
+ OID/size/mode. No atomic-checkout/hostile-root/hard-deadline/descendant claim.
+@@ -12,13 +12,13 @@
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-D = B / 'reviews/checkpoint18/source-prepare01'
++D = B / 'reviews/checkpoint20/source-prepare01'
+ SELF = D / 'SOURCE-PREPARE.py'
+ T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
+ G = T / '.git'
+ LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+-P, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'  # Bound C18; separate execution admission.
++P, TREE = None, None  # UNBOUND C20; actual publication and separate execution admission required.
+ REF = 'refs/heads/codex/audit-continuation-linux-20260908'
+-FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', 'cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a'
+-PUB, PUB_SHA = B / 'publication/CHECKPOINT-18-PUBLISHED.json', 'b95c9668272f0991c88f8d98070608147b61968101216fe59a5e6762e1b747e6'
++FACTS, FACTS_SHA = B / 'reviews/checkpoint20/SOURCE-STORE-ADMISSION.json', None
++PUB, PUB_SHA = B / 'publication/CHECKPOINT-20-PUBLISHED.json', None
+ OLD = B / 'reviews/desktop-gui02'
+ OLD_SHA = '6d593b947d76f0a7b3e7929a7ae54e6968cb0a36b69bf78d771b33226bd396ee'
+@@ -26,5 +26,5 @@
+ MIB, ODIR = 1024 ** 2, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+ START, cancelled, pinned = time.monotonic(), [], {}
+-report = {'format': 'passvault-checkpoint18-source-prepare-v1', 'owner': '/root', 'status': 'HOLD',
++report = {'format': 'passvault-checkpoint20-source-prepare-v1', 'owner': '/root', 'status': 'HOLD',
+           'commit': P, 'tree': TREE, 'store': str(G), 'commands': [], 'resources': [], 'tests': 0}
+ ENV = {'PATH': '/usr/bin:/bin', 'HOME': '/nonexistent', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC',
+@@ -206,9 +206,9 @@
+         pub = json.loads(checked(PUB, PUB_SHA, 131072))
+         require((pub['commit'], pub['tree'], pub['publication_clone'], pub['status']) ==
+-                (P, TREE, str(T), 'PUBLISHED_EXACT_C18_SOURCE'), 'publication binding')
++                (P, TREE, str(T), 'PUBLISHED_EXACT_C20_SOURCE'), 'publication binding')
+         for name, key in (('config', 'config'), ('HEAD', 'head'), (REF, 'branch_ref'), ('shallow', 'shallow')):
+             data = checked(G / name, facts[key]['sha256'], 65536)
+             require(pinned[G / name] == facts[key]['pin'], 'original store metadata')
+-            if key == 'branch_ref': require(data == (P + '\n').encode(), 'current C18 branch')
++            if key == 'branch_ref': require(data == (P + '\n').encode(), 'current C20 branch')
+             if key == 'shallow': require(data == (facts[key]['boundary_commit'] + '\n').encode(), 'original shallow boundary')
+         prior = json.loads(checked(OLD / 'SOURCE.json', OLD_SHA))
+@@ -219,5 +219,5 @@
+             data, identity = read(path, 32 * MIB); pinned[path] = identity
+             report['recipe' if path == SELF else 'git_image'] = {'sha256': hashlib.sha256(data).hexdigest(), 'pin': identity}
+-        require(git(['rev-parse', P, P + '^{tree}'], 82, facts, lock) == (P + '\n' + TREE + '\n').encode(), 'actual C18 identity')
++        require(git(['rev-parse', P, P + '^{tree}'], 82, facts, lock) == (P + '\n' + TREE + '\n').encode(), 'actual C20 identity')
+         listing = git(['ls-tree', '-r', '-z', '-l', '--full-tree', P], 2 * MIB, facts, lock)
+         entries = listing.split(b'\0'); require(entries.pop() == b'' and 0 < len(entries) <= 3500, 'complete NUL inventory/count')
+--- reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py
++++ reviews/team20/native_security_author/c20/source-capture/INDEX-CAPTURE.py.txt
+@@ -1,4 +1,4 @@
+ #!/usr/bin/python3
+-"""C18 index/tool collector candidate: one read-only Git child, no validation run.
++"""C20 index/tool collector candidate: one read-only Git child, no validation run.
+ EXTRA_SHA is deliberately UNBOUND. Root binding and independent exact instance
+ admission are separate. No source preparation, SDK/device/runtime access,
+@@ -11,5 +11,5 @@
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-D = B / 'reviews/checkpoint18/index-prepare01'
++D = B / 'reviews/checkpoint20/index-prepare01'
+ SELF = D / 'INDEX-CAPTURE.py'
+ T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
+@@ -17,9 +17,9 @@
+ LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+ REF = 'refs/heads/codex/audit-continuation-linux-20260908'
+-P, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
+-SOURCE, SOURCE_SHA = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json', 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'
+-FACTS, FACTS_SHA = B / 'reviews/checkpoint18/SOURCE-STORE-ADMISSION.json', 'cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a'
+-EXTRA, EXTRA_SHA = B / 'reviews/checkpoint18/C18-READONLY-FACTS-02.json', '73465ba2ffa1d32146b1fed47de870d0e972ede0425acec011a6db7f93dd7f2a'  # UNBOUND: fresh root metadata, never old pins.
+-CONFIG_SHA = '036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'  # Exact fresh SOURCE-STORE-ADMISSION config.
++P, TREE = None, None  # UNBOUND: actual C20 publication required.
++SOURCE, SOURCE_SHA = B / 'reviews/checkpoint20/source-prepare01/SOURCE.json', None
++FACTS, FACTS_SHA = B / 'reviews/checkpoint20/SOURCE-STORE-ADMISSION.json', None
++EXTRA, EXTRA_SHA = B / 'reviews/checkpoint20/C20-READONLY-FACTS-01.json', None  # UNBOUND: fresh root metadata, never old pins.
++CONFIG_SHA = None  # UNBOUND: exact fresh SOURCE-STORE-ADMISSION config.
+ MIB = 1024 ** 2
+ ODIR = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+@@ -38,5 +38,5 @@
+ output_bytes, output_directory, may_report = 0, None, False
+ inputs = {}
+-report = {'format': 'passvault-checkpoint18-index-tool-capture-v1', 'owner': '/root', 'status': 'HOLD',
++report = {'format': 'passvault-checkpoint20-index-tool-capture-v1', 'owner': '/root', 'status': 'HOLD',
+           'commit': P, 'tree': TREE, 'store': str(G), 'source_sha256': SOURCE_SHA,
+           'store_facts_sha256': FACTS_SHA, 'extra_facts_sha256': EXTRA_SHA,

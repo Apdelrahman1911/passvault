@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-11",
+  "reviewer": "/root/desktop_other_review",
+  "author_reviewed": "/root/native_security_author",
+  "disposition": "ACCEPT_EXACT_INERT_TWO_FILE_PATCH_SOURCE_ONLY",
+  "application_status": "UNAPPLIED_AT_REVIEW; canonical test and CMake still match their reviewed before hashes",
+  "native_runtime_status": "UNCOMPILED_UNEXECUTED; source oracle calculation is not a native/CNG case",
+  "independence": "Reviewer did not author or apply the patch and did not execute the oracle. Earlier bounded selection/oracle/isolation advice is disclosed. Separate android_fixture_review owns oracle calculation source/provenance/actual reconciliation; this reviewer independently reconstructed the full two-file delta and matched the proposed literals to retained output data.",
+  "source_images": [
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "before": {
+        "bytes": 37041,
+        "sha256": "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a"
+      },
+      "proposed_after": {
+        "bytes": 39578,
+        "lf": 924,
+        "sha256": "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653"
+      },
+      "canonical_before_still_observed": true
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "before": {
+        "bytes": 9363,
+        "sha256": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8"
+      },
+      "proposed_after": {
+        "bytes": 9534,
+        "lf": 234,
+        "sha256": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe"
+      },
+      "canonical_before_still_observed": true
+    }
+  ],
+  "unchanged_production": {
+    "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+    "bytes": 99069,
+    "lf": 2600,
+    "sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+    "scope": "Reuses bounded semantic reads1-177,181-301,1960-2003,2200-2248 from the initial C20 review. This patch contains no production source path."
+  },
+  "inert_reconstruction": {
+    "method": "Captured exact before source strings in session memory while canonical hashes matched Windows05. Parsed only the inert unified-diff text: exact file names, all old/context lines, hunk positions/counts, and no unsupported markers. Constructed after strings in memory and SHA256-hashed their UTF8 bytes with the standard library. No patch/helper/compiler execution, AST parse, Git or source write.",
+    "added": 58,
+    "deleted": 0,
+    "hunks": 3,
+    "files": [
+      {
+        "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+        "added": 54,
+        "deleted": 0,
+        "hunks": 2
+      },
+      {
+        "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+        "added": 4,
+        "deleted": 0,
+        "hunks": 1
+      }
+    ],
+    "literals": [
+      {
+        "name": "expected_ascending",
+        "vector": "ascending",
+        "bytes": 32,
+        "hex": "977ea1dce4266794464932f34640331ee4d58bfbd1257467be3d7cc378714caf",
+        "equals_retained_stdout": true
+      },
+      {
+        "name": "expected_changed_vault",
+        "vector": "vault_first_byte_zero",
+        "bytes": 32,
+        "hex": "b83f58ef0f9297d7ff8a3487e6f2d6572aedb78eca9f2bb9a386462d3224dc20",
+        "equals_retained_stdout": true
+      }
+    ],
+    "result": "PASS_DATA_COMPARISONS_ONLY; two paths/three hunks/+58/-0, test+54 and CMake+4; both independently reconstructed after identities exactly match the author's declared hashes"
+  },
+  "fixed_oracle": {
+    "provenance": "Reuses separately accepted root once-only stdlib source-data calculation and android_fixture_review actual receipt reconciliation. That accepted actual review reuses source-review SHA58e8b21470906a6cf6c5232b30a81c95656a79407ef51220d94f087b3f83666a. This reviewer read the exact actual review, root receipt and stdout, and did not rerun or independently calculate HMAC.",
+    "source_semantics": "Current derive272-296: HMAC-SHA256(salt32,PRF32), then HMAC-SHA256(PRK,45 ASCII bytes 'PassVault Windows Hello vault-key wrapping v1' excluding NUL || raw vault_hash32 || 01), expand input78 bytes.",
+    "input_match": "Proposed static_assert619 requires PRF/salt/hash sizes32. Loop635-639 generates PRF47..66, salt33..52, vault01..20 exactly; changed_vault_hash is copied then only byte0 is changed01->00 before its snapshot. These match the two named retained vectors.",
+    "literal_match": "Both expected arrays622-631 contain exactly32 two-digit byte literals. Inert token/string comparisons match each complete array to the correctly named retained stdout output, not just a prefix or nonzero predicate. No runtime expected-value calculation, HMAC call or SUT comparison helper supplies the oracle.",
+    "calculation_limit": "Root stdlib HMAC and explicit-pad calculation paths share hashlib SHA256. This is non-native reference provenance, not corroboration by two independent crypto providers or a Windows pass."
+  },
+  "source_challenge": {
+    "reachability": "In the normal target, argc2/--kdf-known-answer at693-695 calls the new helper and returns before argc1/random suffix/temp/context setup at696-704. Direct derive calls reach actual CNG HMAC operations if eventually executed; inputs are public synthetic arrays, not a successful Hello credential/PRF operation.",
+    "complete_checks": "At653/660 each call must return true; at654/661 std::array equality checks all32 bytes against its fixed expected array. Outputs are reset to the nonmatching91 sentinel before each call. Source18-22 retains the live PV_TEST_CHECK return path; NDEBUG does not disable it.",
+    "controls_and_ownership": "Full PRF/salt/original-vault/changed-vault snapshots plus an unrelated6d array are compared after each result. They are bounded source assertions, not a broad out-of-bounds or ABI-memory-safety oracle. Output649 outlives its immediate no-throw ScopedArrayWipe650 through normal return, assertion returns or ordinary C++ unwinding. No departed-stack observation, exception injection, real secret or logging is introduced.",
+    "preprocessor_isolation": "Test's existing outer #if PRK24/#else266 and inner !HISTORICAL533 contain the helper through endif668/669. Main PRK672-678 admits only its existing exact selectors; historical685-686 returns before the new branch. Historical builds never see the new ScopedArrayWipe-using helper. No new macro or target changes this partition.",
+    "wrong_arguments": "Normal wrong selectors or argument counts fall through to the unchanged argc1 check before fixture setup; selected KDF argc2 returns directly. Existing file/secret selectors retain their order and bodies. PRK and historical binaries do not acquire the KDF route.",
+    "unchanged_routes": "Exact insertion-only reconstruction preserves all prior implementation/test lines. New block/branch brace context was read after reconstruction, not inferred from +line counts. No no-argument work, old selector, fixture, locale/ABI/roundtrip, allocator hook or existing assertion body is added to the KDF route. Inherited numeric case comments are not denominator authority.",
+    "compatibility": "Test-only delta uses already available array/string_view/algorithm machinery and the existing C++20 configuration. static_assert explicitly binds the external WebAuthn PRF-size constant; supported target compilation must still establish it. Production function, native ABI, KDF algorithm/domain/format, provider policy, package identity, dependency and runtime ownership remain unchanged.",
+    "cmake": "Only add_test193-196 is inserted in existing WIN32/BUILD_TESTING scope. Name passvault_biometric_windows_kdf_known_answer invokes existing passvault_biometric_windows_security_test with --kdf-known-answer. CMake7-9 C++20 and existing compile/link/runtime/security flags, include paths, libraries and opt-in old controls are unchanged. No new executable/option/dependency/workflow/helper."
+  },
+  "ci_contract_facts_not_admission": {
+    "ctest_name": "passvault_biometric_windows_kdf_known_answer",
+    "executable_target": "passvault_biometric_windows_security_test",
+    "sole_test_argument": "--kdf-known-answer",
+    "main_argc": 2,
+    "testing_requirement": "BUILD_TESTING enabled; historical/PRK audit controls are not needed and default OFF. The normal target has neither instrumentation macro.",
+    "output_marker_limit": "The new helper prints no per-vector terminal marker. One eventual process/CTest XML event with exit0 can source-qualify both checks under ordinary execution. Do not require or invent two per-vector records, count two executions or count four HMAC operations as cases.",
+    "case_ceiling": "One newly proposed pending CTest with two exact vector assertions; no new native case executed in this review.",
+    "selected_native_boundary": "Existing real-CNG HMAC path only; no selected WebAuthn enrollment/retrieval/inventory, filesystem/context, RNG, AES, provider-destroy instrumentation or protected-provider access.",
+    "admission": "Any application/build/CI remains root-only and needs exact new source/command/instance/resource/retention/cleanup admission and independent result reconciliation. Existing Windows05/Mac02 helpers/requests and24 passing cases confer no new authority. Separate desktop_integration_author/desktop_main_review own the new Windows-KDF CI feasibility/source boundary."
+  },
+  "evidence_ceiling": "Future success would freeze these two helper/CNG output32 values, not prove all-input compatibility, upstream/JNA identity conversion, envelope/AAD serialization, actual caller PRF/wrapping-array exception cuts, real protected Hello assertion/unwrap, PVU008 destruction/status/resources, PVU009 native latency, physical erasure, real JNA/native races, packaged lifecycle or family closure.",
+  "provider_counterexample": "Correct output is calculated before current ignored-status native handle destructors finish. Hash-object backing storage remains live but its contents are wiped before destroy. Known output does not resolve the exact provider content contract, identify its implementation from nullptr selection, prove destroy success or establish resource consequences.",
+  "source_acceptance_next_step": "No source correction requested. Root may separately decide canonical application of these exact two after identities. This report does not apply them, accept a different diff or admit execution. A root after-image receipt/match must distinguish actual canonical application from this in-memory reconstruction.",
+  "counters": {
+    "product_fixes": 0,
+    "canonical_edits_by_reviewer": 0,
+    "oracle_recalculations": 0,
+    "native_test_executions": 0,
+    "new_family_closures": 0,
+    "new_confirmed_defects": 0,
+    "central_coverage_increment": 0
+  },
+  "preserved_restrictions": "Initial residual map/evidence qualifications remain. Original native cybersecurity refusal and partial-edit/root-completion provenance are not resumed/relabelled; no caller-cut redesign or old workflow/runtime replay. Mac02 and Windows05 accepted results retain exact narrow credit; Windows05 helper1/root filesystemHOLD and unknown cleanup target/member remain. PVU007 STOP, PVU011 NO RETRY, PVA029 recorded49/44/5FAIL/no retry, G7/G8 CLOSED, every consumed/failed/refused/cleanup/HOLD scope, eight PVD choices and protected refs/dependencies/version/identity/signing/Store/occupied1017001 boundaries survive.",
+  "method": "Source/exact retained evidence reads and inert string/JSON/hash comparisons only. Entire patch/rationale and reconstructed affected windows were semantically read; this is not whole-file native semantic coverage or whole-tree identity. No KDF computation, provider/runtime/process/toolchain probe, helper import/execution, build/test/AST/compiler, Git/network/CI, held-root access/cleanup/stop, source/central edit or new background work. Only this new own-lane report, exclusively created0600 with fsync/readback.",
+  "inputs": {
+    "patch": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/KDF-KNOWN-ANSWER.patch.txt",
+      "bytes": 3925,
+      "lf": 83,
+      "sha256": "133aba239b8040ae23c56621ba5c02a3407bbda8a85a324d12105adfbf33d268"
+    },
+    "proposal": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/KDF-KNOWN-ANSWER-PROPOSAL.md",
+      "bytes": 5131,
+      "lf": 80,
+      "sha256": "bd791df4e4b770df39025e6db4cbae7d7cc541c7f3ed32b2ffad2d320386c945"
+    },
+    "oracle_stdout": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-KDF-ORACLE-STDOUT.json",
+      "bytes": 1082,
+      "lf": 1,
+      "sha256": "adb3f5f07e418f7e717d1fcb030e6cf1ff10fdeca3c84b4e943f7f9e7df56e9e"
+    },
+    "oracle_actual_receipt": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-KDF-ORACLE-ACTUAL.json",
+      "bytes": 1790,
+      "lf": 27,
+      "sha256": "40752a01b817ff9c4fa79a0f7f0305ed59f84eff453cdf3aa769be9acfde68b3"
+    },
+    "oracle_actual_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_review/c20/KDF-ORACLE-ACTUAL-REVIEW.md",
+      "bytes": 4759,
+      "lf": 79,
+      "sha256": "fa401c192a4a301a3b44a17107da25f2e2dccda3f098a7ce1b0c3a47f8772e83"
+    },
+    "prior_nonexecuting_proposal_review": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/c20/NATIVE-RESIDUAL-KDF-PROPOSAL-REVIEW.json",
+      "bytes": 15305,
+      "lf": 211,
+      "sha256": "868b823f9b768f27b58078c23b070be5ba5bc55d5eab33bbfe3bbc1afdfb25d3"
+    }
+  }
+}

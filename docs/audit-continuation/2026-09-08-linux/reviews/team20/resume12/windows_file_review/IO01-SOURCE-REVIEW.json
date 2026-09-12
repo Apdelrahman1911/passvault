@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-12",
+  "reviewer": "/root/c20_windows_review",
+  "author_reviewed": "/root/c20_windows_author",
+  "disposition": "ACCEPT_EXACT_IO01_THREE_PATH_SOURCE_PATCH_ONLY",
+  "canonical_application": "NOT_APPLIED_BY_REVIEWER; exact before hashes still matched W at this review",
+  "execution_admission": false,
+  "independence": "Reviewer did not author or apply the patch. Prior concept feedback required default-forwarding fidelity, real-I/O preconditions and before-teardown identity/byte oracles; exact final bytes independently challenged here.",
+  "source_images": [
+    {
+      "after_bytes": 99579,
+      "after_lf": 2611,
+      "after_sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d",
+      "afterimage": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_author/io01/passvault_biometric_windows.cpp.txt",
+      "before_bytes": 99069,
+      "before_lf": 2600,
+      "before_sha256": "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+      "canonical_path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "independent_diff_added": 22,
+      "independent_diff_removed": 11,
+      "hunks": 4
+    },
+    {
+      "after_bytes": 48464,
+      "after_lf": 1109,
+      "after_sha256": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60",
+      "afterimage": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_author/io01/passvault_biometric_windows_security_test.cpp.txt",
+      "before_bytes": 39578,
+      "before_lf": 924,
+      "before_sha256": "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653",
+      "canonical_path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "independent_diff_added": 185,
+      "independent_diff_removed": 0,
+      "hunks": 2
+    },
+    {
+      "after_bytes": 9982,
+      "after_lf": 242,
+      "after_sha256": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10",
+      "afterimage": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_author/io01/CMakeLists.txt.txt",
+      "before_bytes": 9534,
+      "before_lf": 234,
+      "before_sha256": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe",
+      "canonical_path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "independent_diff_added": 8,
+      "independent_diff_removed": 0,
+      "hunks": 1
+    }
+  ],
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_author/io01/FILES.json",
+      "bytes": 2370,
+      "sha256": "2072acdd6fbec88af3a46b4f7b4cabd92acb61a251417d6068d332e1b22edaf0"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_author/io01/PATCH.diff.txt",
+      "bytes": 14307,
+      "sha256": "c52465ba3ad9852bef6d11ef0778fdbc6a21487e918ae89db0d4b0a194437649"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_author/io01/PROPOSAL.md",
+      "bytes": 5756,
+      "sha256": "5188a5e6e16b12f1c167d16f3f21317fd8d0080e591f4752f1be8fc86cc099d2"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_review/CRASH-CANCEL-SCOPE-REVIEW.json",
+      "bytes": 4859,
+      "sha256": "6a4d0355258e3bc0531f692a53dcd4dc55df6dcb6678e6483303bd7e37775181"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/WINDOWS-COHORT-05-ACTUAL-REVIEW.json",
+      "bytes": 34599,
+      "sha256": "b8432123f1dcef6149c172df901a7c03f4214a732003e185bd8f39990a107116"
+    }
+  ],
+  "independent_reconstruction": {
+    "full_three_file_unified_diff_equals_supplied_patch": true,
+    "production_before_writer_and_after_append_u32_exactly_unchanged": true,
+    "existing_guard_and_KDF_test_region_exactly_unchanged": true,
+    "method": "Inert source byte reads and independently generated stdlib difflib, hashes and literal region comparison. No subject import, AST/syntax/compile/evaluation or execution."
+  },
+  "production_compatibility": [
+    "Only internal writer testability changes. Empty FileWriterWin32Io forwards to WriteFile with the original pointer/count/overlapped=nullptr, FlushFileBuffers and existing WindowsHandle.close. BOOL != FALSE is the original boolean interpretation, not a new success criterion.",
+    "Default template policy preserves all existing six-argument current calls; the production wrapper explicitly passes FileWriterWin32Io{}. No externally configurable policy, new export/ABI, macro, dependency, format, recovery policy, catch, allocation or provider operation is introduced.",
+    "Payload/directory/suffix/CREATE_NEW guards, exclusive share-zero handle acquisition, no creation ownership on failed create, write loop/zero-progress check, success-short-circuited flush, unconditional close, move flags and close-gated deletion retain their original order and conditions.",
+    "The original WindowsHandle and all production code outside the writer span are byte-identical. Test refactoring does not add a failed-close retry or promise crash cleanup. Historical-source target still uses its own untouched old implementation/signature.",
+    "These are source-level compatibility findings, not target compilation or universal runtime equivalence. Existing C++20/includes/normal compiler-link settings suffice by source inspection; target evidence remains required."
+  ],
+  "test_selection": {
+    "target": "passvault_biometric_windows_security_test",
+    "cases": [
+      {
+        "ctest": "passvault_biometric_windows_file_io_write_failure",
+        "argv": [
+          "--file-io-case",
+          "write_failure"
+        ],
+        "order": 1235,
+        "real_precondition": "Actual two-byte prefix written; no flush; actual close succeeds.",
+        "before_teardown": "Same created temporary identity has exact prefix before production deletion; then temp absent, original destination identity/four bytes unchanged."
+      },
+      {
+        "ctest": "passvault_biometric_windows_file_io_flush_failure",
+        "argv": [
+          "--file-io-case",
+          "flush_failure"
+        ],
+        "order": 12345,
+        "real_precondition": "Actual five-byte write and successful real FlushFileBuffers, then synthetic false; actual close succeeds.",
+        "before_teardown": "Same created temporary identity/five bytes captured before production deletion; then temp absent, original destination identity/four bytes unchanged."
+      },
+      {
+        "ctest": "passvault_biometric_windows_file_io_close_failure",
+        "argv": [
+          "--file-io-case",
+          "close_failure"
+        ],
+        "order": 12345,
+        "real_precondition": "Actual full write, real flush and real close all succeed, then close policy returns false.",
+        "before_teardown": "Same created temporary remains with exact five bytes; no destination replacement/deletion; exact directory membership."
+      }
+    ],
+    "normal_only": "Definitions are within non-PRK and non-historical guards. Dispatch has exact argc3/selector/known case and returns before no-argument context/provider setup. Historical and PRK entry branches cannot select these tests; bad cases fail before fixture allocation.",
+    "cmake": "Only three named registrations in existing WIN32/BUILD_TESTING scope, using existing normal target. No target, compiler/linker flag, dependency or old registration changed."
+  },
+  "meaningful_oracles_and_counterexamples": [
+    "Each test first exercises the actual default production writer to seed a fresh synthetic destination. Security callbacks and CREATE_NEW are real; no mock filesystem, substituted handle or real vault/provider is used.",
+    "Original destination snapshot opens one real handle and explicitly closes before writer entry. A sharing lock cannot accidentally mask a rename bug.",
+    "Created-file validation records actual volume/file-index/creation-time identity, single-link empty state and real owner/reparse checks. Close policy performs a real close, then a new one-handle same-object/size/byte snapshot before returning to production deletion; that reader also explicitly closes.",
+    "Exact write/flush/close counts, event order, successful underlying statuses, transferred length and before-delete snapshot defeat early setup failures, skipped operations, short writes and false-positive status-only assertions. Expected prefix/full bytes are fixed synthetic data, not calculated by a mock writer.",
+    "Ignoring false write/flush status would violate return/destination or counter oracles. Deleting before real close would leave the share-zero file and fail temp-absence checks. Deleting or replacing after uncertain close status would violate retained-temp/destination identity checks.",
+    "All decisive directory/content/identity checks run BEFORE existing fixture teardown. Only afterward must fixture.close and root absence succeed. Terminal marker includes status_injection=YES, real-I/O/pre-teardown qualifications and native identity numbers; success marker requires printf/fflush success.",
+    "No handles are intentionally left open, no process/child/job/shell/resource-exhaustion machinery is added, and no invalid/stale handle is used to manufacture a fault. Existing owned fixture cleanup is reused, not redesigned."
+  ],
+  "evidence_ceiling": "Three future cases combine real Win32 file/handle/ACL operations with deliberately reported failure statuses. They do NOT demonstrate actual OS write/flush/close failures, leaked live handles, power loss, hard crash, enrollment cancellation/rollback, provider lifecycle, physical Hello, broad durability, cleanup of a previous held root or PVA036 family closure. Close_false after a successful real close proves only conservative caller no-delete handling.",
+  "existing_evidence_reuse": "No old8 current/historical8/old24 matrix replay requested. Default forwarding is source-equivalent; old case bodies and KDF oracle/test bodies are untouched. Preserve their original source-qualified actual results and Windows05 overall FAIL/HOLD.",
+  "blocking_source_findings": [],
+  "next_gates": [
+    "Root explicit exact-afterimage application and source identity",
+    "Fresh independently reviewed fixed four-case KDF1+IO3 control/helper/scope/request if batching; old KDF1 helper native hashes cannot authorize changed IO01 source",
+    "Exact Windows2022/x64 source/toolchain/argv/normal-image compile and four expected XML case outcomes",
+    "Root serial slot/PR/queue/cleanup admission and independently reconciled actual results, with test outcomes separate from whole-helper cleanup"
+  ],
+  "counters": {
+    "new_test_declarations": 3,
+    "new_product_fixes": 0,
+    "new_native_executions": 0,
+    "new_closures": 0
+  },
+  "restrictions": "No Git/network/CI/build/test/helper import or execution/host-runtime probe/held-root access/cleanup/canonical edit. Original native refusal and partial-edit provenance, Windows05 FAIL/HOLD, PVU007 STOP, PVU011 NO RETRY, PVA02949/44/5 no automatic retry, G7/G8 CLOSED, PVD/hardware/provider/package gaps and protected refs/tags/dependencies/versions/identities/signing/Store/1017001 restrictions persist. KDF1 source02 controls remain immutable."
+}

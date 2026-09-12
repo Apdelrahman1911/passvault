@@ -1,0 +1,307 @@
+import groovy.json.JsonOutput
+import org.gradle.api.GradleException
+import org.gradle.api.JavaVersion
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.testing.Test
+
+// INERT NEW SOURCE PROPOSAL. No task action, runnable helper, allocation or admission.
+// A bound copy needs independent root review; never rename/replay Compile03.
+final Map ADMITTED = [
+    runtimeRoot: '/root/projects/PassVault/audit-runtime-linux-android-host-graph01',
+    evidenceRoot: '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-host-graph01',
+    readRoots: [
+        '/root/projects/PassVault/audit-runtime-linux-android-host-graph01/checkout',
+        '/root/projects/PassVault/audit-runtime-linux-android-host-graph01/gradle-home',
+        '/root/projects/PassVault/audit-runtime-linux-android-host-graph01/tmp',
+        '/root/projects/PassVault/audit-runtime-linux-android-host-graph01/konan',
+        '/usr/lib/jvm/java-17-openjdk-amd64',
+        '/root/projects/PassVault/audit-runtime-linux-android-host-graph01/sdk-readonly',
+    ],
+    offline: false, sourceManifestSha256: null,
+    subjectSha256: 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332',
+] // UNBOUND only final source manifest; root must promote/review exact bound bytes.
+// Required exact keys: runtimeRoot, evidenceRoot, readRoots, offline,
+// sourceManifestSha256, subjectSha256. All instance/source/SDK/tool pins are UNBOUND.
+final String RUN_ID = 'linux-android-host-graph01'
+final String TARGET = ':app-android:testDebugUnitTest'
+final String FILTER = 'com.passvault.android.security.AndroidClipboardServiceTest.' +
+    'newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry'
+final String LEGAL = ':app-android:prepareAndroidLegalAssets'
+final String SUBJECT_SHA = 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332'
+final String JDK = '/usr/lib/jvm/java-17-openjdk-amd64'
+final Set WRAPPERS = [
+    'org.gradle.internal.exceptions.LocationAwareException',
+    'org.gradle.internal.event.ListenerNotificationException',
+    'org.gradle.execution.MultipleBuildFailures',
+].toSet()
+// No internal Gradle imports or fallback unwrapping. Unknown wrapper => nonaccepted.
+class PassVaultAndroidHostGraphOnlyRefusal extends GradleException {
+    PassVaultAndroidHostGraphOnlyRefusal() {
+        super('PASSVAULT_ANDROID_HOST_GRAPH01_INTENDED_PREACTION_REFUSAL')
+    }
+}
+
+def reject = { String why -> throw new GradleException('AndroidHostGraph01: ' + why) }
+def textBound = { Object value, int cap ->
+    if (!(value instanceof String) || value.empty || value.length() > cap || !(value ==~ /[ -~]+/)) {
+        reject('bounded printable text required')
+    }
+    value
+}
+def taskPath = { Object value ->
+    String s = textBound(value, 512)
+    if (!(s ==~ /:(?:[A-Za-z0-9_-]+:)*[A-Za-z0-9_-]+/)) reject('bounded task path required')
+    s
+}
+def typeName = { Object value ->
+    String s = textBound(value, 512)
+    if (!(s ==~ /[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*/)) reject('bounded type required')
+    s
+}
+def absolutePath = { Object value ->
+    String s = textBound(value, 1024)
+    def p = new File(s).toPath()
+    if (!p.isAbsolute() || p.normalize().toString() != s) reject('absolute normalized path required')
+    p
+}
+int graphCount = 0, readyCount = 0, beforeCount = 0, afterCount = 0, finishCount = 0
+long emittedBytes = 0L
+boolean bindingOk = false
+String phase = 'init'
+Throwable intended = null
+def emit = { Map row ->
+    String raw = JsonOutput.toJson(row)
+    int n = raw.getBytes('UTF-8').length
+    int cap = row.kind == 'finished' ? 32768 : 1024 * 1024
+    if (n > cap || emittedBytes + n > 1024 * 1024 + 32768) reject('receipt budget exceeded')
+    emittedBytes += n
+    println('PASSVAULT_ANDROID_HOST_GRAPH01=' + raw)
+}
+def common = {
+    [format: 'passvault-android-host-graph01-receipt-v1', runId: RUN_ID,
+     sourceManifestSha256: bindingOk ? ADMITTED.sourceManifestSha256 : 'UNBOUND',
+     subjectSha256: SUBJECT_SHA, selector: [TARGET], methodFilter: FILTER, graphOnly: true]
+}
+
+// This is a callback-local failure-tree observation, not a final-process oracle.
+// Traverse public cause/suppressed/getCauses only; no messages, stack traversal,
+// getDeclaredMethod, setAccessible, arbitrary cause adapters or exception imports.
+def failureTree = { Throwable failure ->
+    def nodes = [], ids = new IdentityHashMap(), active = new IdentityHashMap()
+    int edgeCount = 0
+    def walk
+    walk = { Throwable f ->
+        if (f == null || active.containsKey(f)) reject('missing/cyclic failure node')
+        if (ids.containsKey(f)) return ids.get(f)
+        if (nodes.size() >= 32) reject('failure node bound')
+        int id = nodes.size()
+        ids.put(f, id)
+        active.put(f, true)
+        def row = [id: id, type: typeName(f.class.name), intendedIdentity: intended != null && f.is(intended),
+                   children: [], suppressedCount: null]
+        nodes.add(row)
+        // Reject unknown classes BEFORE any virtual/reflected cause getter.
+        if (row.intendedIdentity ? row.type != 'PassVaultAndroidHostGraphOnlyRefusal' : !WRAPPERS.contains(row.type)) {
+            reject('unrecognized failure type')
+        }
+        row.suppressedCount = f.suppressed.length
+        if (row.suppressedCount != 0) reject('suppressed failure is not an exclusive intended refusal')
+        def children = [], unique = new IdentityHashMap()
+        def child = { Object value ->
+            if (!(value instanceof Throwable)) reject('non-Throwable cause')
+            if (!unique.containsKey(value)) { unique.put(value, true); children.add(value) }
+        }
+        def primary = f.cause
+        if (primary != null) child(primary)
+        def getter = null
+        try { getter = f.class.getMethod('getCauses') } catch (NoSuchMethodException absent) { }
+        if (getter != null) {
+            def extra = getter.invoke(f)
+            if (!(extra instanceof List) || extra.size() > 16) reject('public getCauses bound/type')
+            extra.each { child(it) }
+        }
+        if (row.intendedIdentity) {
+            if (!children.empty || row.type != 'PassVaultAndroidHostGraphOnlyRefusal') reject('changed refusal leaf')
+        } else if (children.empty) {
+            reject('unrelated failure leaf')
+        }
+        if ((edgeCount += children.size()) > 64) reject('failure edge bound')
+        row.children = children.collect { walk(it) }
+        active.remove(f)
+        id
+    }
+    try {
+        walk(failure)
+        if (nodes.count { it.intendedIdentity } != 1) reject('unique intended identity required')
+        [complete: true, onlyIntendedAtCallback: true, root: 0, nodes: nodes, errorType: null]
+    } catch (Throwable error) {
+        [complete: false, onlyIntendedAtCallback: false, root: nodes.empty ? null : 0,
+         nodes: nodes, errorType: typeName(error.class.name)]
+    }
+}
+
+// Install defensive guards before binding/configuration checks. Neither listener
+// enables an action or adds doFirst/doLast. Entry/outcome counts must remain zero.
+gradle.taskGraph.beforeTask { task ->
+    beforeCount++
+    phase = 'task-entry-refused'
+    reject('every task entry is forbidden in graph-only mode')
+}
+gradle.taskGraph.afterTask { task, state ->
+    afterCount++
+    phase = 'unexpected-task-outcome'
+    reject('any task outcome makes this observation nonaccepted')
+}
+gradle.buildFinished { result ->
+    finishCount++
+    def tree = failureTree(result.failure)
+    boolean local = bindingOk && graphCount == 1 && readyCount == 1 && finishCount == 1 &&
+        beforeCount == 0 && afterCount == 0 && phase == 'intended-refusal' && tree.onlyIntendedAtCallback
+    emit(common() + [kind: 'finished', phase: phase, graphCount: graphCount, whenReadyEntries: readyCount,
+        finishCallbacks: finishCount, beforeTaskEntries: beforeCount, afterTaskEvents: afterCount,
+        taskActionsAdmitted: false, localExpectedRefusal: local, failureTree: tree,
+        finalProcessAndLogReviewRequired: true, observedTestCases: 0,
+        qualification: 'Callback-local tree and task-entry guards; configuration can execute code and write files.'])
+}
+
+def start = gradle.startParameter
+def sys = start.systemPropertiesArgs
+def props = start.projectProperties
+if (ADMITTED == null || ADMITTED.keySet() != ['runtimeRoot', 'evidenceRoot', 'readRoots', 'offline',
+        'sourceManifestSha256', 'subjectSha256'].toSet() || !(ADMITTED.offline instanceof Boolean) ||
+        !(ADMITTED.sourceManifestSha256 instanceof String) || !(ADMITTED.sourceManifestSha256 ==~ /[0-9a-f]{64}/) ||
+        ADMITTED.subjectSha256 != SUBJECT_SHA) reject('UNBOUND source/instance/read-root policy')
+def runtime = absolutePath(ADMITTED.runtimeRoot)
+def evidence = absolutePath(ADMITTED.evidenceRoot)
+def checkout = runtime.resolve('checkout')
+def readRoots = [checkout, runtime.resolve('gradle-home'), runtime.resolve('tmp'), runtime.resolve('konan'),
+                 absolutePath(JDK), runtime.resolve('sdk-readonly')].collect { it.toString() }
+if (runtime.parent.toString() != '/root/projects/PassVault' || runtime.fileName.toString() != 'audit-runtime-' + RUN_ID ||
+        evidence.toString() != '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/' + RUN_ID ||
+        ADMITTED.readRoots != readRoots || start.offline != ADMITTED.offline ||
+        start.currentDir.toPath().toAbsolutePath().normalize() != checkout ||
+        start.gradleUserHomeDir.toPath().toAbsolutePath().normalize() != runtime.resolve('gradle-home') ||
+        System.getenv('ANDROID_HOME') != runtime.resolve('sdk-readonly').toString() ||
+        System.getenv('ANDROID_SDK_ROOT') != runtime.resolve('sdk-readonly').toString() ||
+        ['PASSVAULT_PVA038_MODE', 'PASSVAULT_PVA038_RUN_ROOT', 'PASSVAULT_PVA038_FIXTURE'].any { System.getenv(it) != null }) {
+    reject('fresh fixed instance/SDK view/environment mismatch')
+}
+if (gradle.gradleVersion != '9.7.1' || JavaVersion.current() != JavaVersion.VERSION_17 ||
+        start.taskNames != [TARGET] || !start.dryRun || start.continueOnFailure || !start.excludedTaskNames.empty ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
+        start.buildCacheEnabled || start.rerunTasks || start.dependencyVerificationMode != DependencyVerificationMode.STRICT ||
+        props.keySet() != ['passvault.audit.mode', 'kotlin.compiler.execution.strategy', 'android.builder.sdkDownload'].toSet() ||
+        props['passvault.audit.mode'] != 'android-host-graph-only' ||
+        props['kotlin.compiler.execution.strategy'] != 'in-process' || props['android.builder.sdkDownload'] != 'false' ||
+        sys['org.gradle.java.installations.auto-download'] != 'false' || sys['org.gradle.java.installations.auto-detect'] != 'false' ||
+        !sys['org.gradle.java.installations.paths'] ||
+        new File(sys['org.gradle.java.installations.paths']).canonicalFile != new File(System.getProperty('java.home')).canonicalFile) {
+    reject('exact selector/mode/dry-run and original Gradle9.7.1/JDK17 serial strict acquisition-off flags required')
+}
+bindingOk = true
+gradle.beforeProject { project ->
+    if (project.path != ':app-android') return
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.path != TARGET) return
+        test.filter.setIncludePatterns([FILTER] as String[])
+        test.filter.failOnNoMatchingTests = true
+        test.ignoreFailures = false
+        test.maxParallelForks = 1
+        test.forkEvery = 0
+        // No worker is started or prepared. Actual-host worker policy needs its own future review.
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    readyCount++
+    phase = 'graph'
+    Throwable collectionFailure = null
+    try {
+        if (!bindingOk || readyCount != 1 || !start.dryRun) reject('one bound graph-only callback required')
+        def tasks = graph.allTasks
+        if (tasks.empty || tasks.size() > 512) reject('requested graph task bound')
+        def paths = tasks.collect { taskPath(it.path) }.toSet()
+        if (paths.size() != tasks.size()) reject('duplicate requested graph path')
+        int edgeRefs = 0
+        def edge = { collection ->
+            if (!(collection instanceof Collection) || collection.size() > 128) reject('edge-list bound/type')
+            if ((edgeRefs += collection.size()) > 8192) reject('total edge-reference bound')
+            def names = collection.collect { taskPath(it.path) }
+            if (names.toSet().size() != names.size()) reject('duplicate edge reference')
+            names.sort()
+        }
+        def rows = tasks.collect { t ->
+            // Populated execution-graph dependencies, NOT Task.inputs/buildDependencies/classpaths.
+            def dependencies = edge(graph.getDependencies(t))
+            if (dependencies.any { !paths.contains(it) }) reject('dependency outside populated graph')
+            [path: taskPath(t.path), type: typeName(t.class.name), enabled: t.enabled,
+             isTest: t instanceof Test, isExec: t instanceof Exec, isJavaExec: t instanceof JavaExec,
+             isArchive: t instanceof AbstractArchiveTask, dependencies: dependencies,
+             finalizers: edge(t.finalizedBy.getDependencies(t)), mustRunAfter: edge(t.mustRunAfter.getDependencies(t)),
+             shouldRunAfter: edge(t.shouldRunAfter.getDependencies(t))]
+        }
+        def target = tasks.find { it.path == TARGET }
+        if (!(target instanceof Test)) reject('selected task is not a Test')
+        def tests = rows.findAll { it.isTest }.collect { it.path }.sort()
+        def patterns = { collection ->
+            if (!(collection instanceof Collection) || collection.size() > 8) reject('filter pattern count/type')
+            collection.collect { textBound(it, 512) }.sort()
+        }
+        def policy = [enabled: target.enabled, includePatterns: patterns(target.filter.includePatterns),
+            excludePatterns: patterns(target.filter.excludePatterns),
+            commandLineIncludePatterns: patterns(target.filter.commandLineIncludePatterns),
+            failOnNoMatchingTests: target.filter.failOnNoMatchingTests, ignoreFailures: target.ignoreFailures,
+            maxParallelForks: target.maxParallelForks, forkEvery: target.forkEvery]
+        def boundary = checkout.resolve('app-android/build')
+        def output = { String path, String api, Object provider ->
+            if (!(provider instanceof DirectoryProperty)) reject('selected DirectoryProperty type required')
+            def directory = provider.getOrNull()
+            if (directory == null) reject('selected output provider unresolved')
+            def p = absolutePath(directory.asFile.toPath().toAbsolutePath().normalize().toString())
+            if (!p.startsWith(boundary) || p == boundary) reject('selected output is not below fresh app build root')
+            [task: path, api: api, root: p.toString()]
+        }
+        def selectedOutputs = [output(TARGET, 'Test.reports.junitXml.outputLocation', target.reports.junitXml.outputLocation)]
+        def legal = tasks.find { it.path == LEGAL }
+        String legalGetterBinding = legal == null ? 'NOT_IN_GRAPH' : 'UNBOUND_TYPE_NOT_QUERIED'
+        if (legal != null) {
+            // Exactly the source-defined property at app build.gradle.kts:298-325/491-503/665-671.
+            // The conventional Kotlin-script/decorated names are NOT claimed observed.
+            // Unknown concrete hierarchy: retain graph type, do not invoke its getter.
+            String sourceType = 'Build_gradle$PrepareAndroidLegalAssets'
+            if (legal.class.name == sourceType + '_Decorated' && legal.class.superclass?.name == sourceType) {
+                def getter = legal.class.getMethod('getOutputDirectory')
+                if (!DirectoryProperty.class.isAssignableFrom(getter.returnType)) reject('legal output getter type changed')
+                selectedOutputs.add(output(LEGAL, 'PrepareAndroidLegalAssets.getOutputDirectory', getter.invoke(legal)))
+                legalGetterBinding = 'SOURCE_HIERARCHY_MATCHED_LEXICAL_PATH_ONLY'
+            }
+        }
+        emit(common() + [kind: 'graph', taskCount: tasks.size(), tasks: rows, testTasks: tests,
+            targetPolicy: policy, selectedOutputs: selectedOutputs, edgeReferences: edgeRefs,
+            legalGetterBinding: legalGetterBinding,
+            outputPathScope: 'LEXICAL_ONLY_PHYSICAL_AND_SYNC_DELETE_BOUNDARY_UNBOUND',
+            otherOutputRoles: 'UNBOUND_NOT_QUERIED', allTasksAreObservationsNotAnExecutionAllowlist: true])
+        graphCount++
+        if (tests != [TARGET] || !policy.enabled || policy.includePatterns != [FILTER] ||
+                !policy.excludePatterns.empty || !policy.commandLineIncludePatterns.empty ||
+                !policy.failOnNoMatchingTests || policy.ignoreFailures || policy.maxParallelForks != 1 || policy.forkEvery != 0 ||
+                selectedOutputs[0].root != boundary.resolve('test-results/testDebugUnitTest').toString()) {
+            reject('exact selected Test/filter/default XML-output policy changed')
+        }
+        intended = new PassVaultAndroidHostGraphOnlyRefusal()
+        phase = 'intended-refusal'
+    } catch (Throwable error) {
+        collectionFailure = error
+    } finally {
+        // Unconditional gate, including every metadata/error path. Never discovery -> execution.
+        if (collectionFailure != null || intended == null) {
+            phase = 'graph-rejected'
+            throw new GradleException('AndroidHostGraph01: metadata refused; all task actions forbidden', collectionFailure)
+        }
+        throw intended
+    }
+}

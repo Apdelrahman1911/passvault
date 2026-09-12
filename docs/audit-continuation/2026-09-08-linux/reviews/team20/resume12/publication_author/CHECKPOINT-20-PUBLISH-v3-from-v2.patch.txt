@@ -1,0 +1,11 @@
+--- CHECKPOINT-20-PUBLISH-v2.py.txt
++++ CHECKPOINT-20-PUBLISH-v3.py.txt
+@@ -183,7 +183,7 @@
+  reviewraw,_=read_file(B/CFG['review_path'])
+  req(digest(reviewraw)==CFG['review_sha256'],'review changed')
+  review=json.loads(reviewraw)
+- req(review['reviewer']=='/root/coverage_review' and review['disposition']=='ACCEPT_C20_SOURCE_PUBLICATION'
++ req(review['reviewer']=='/root/c20_coverage_review' and review['disposition']=='ACCEPT_C20_SOURCE_PUBLICATION'
+      and review['selection_sha256']==CFG['selection_sha256'],'genuine exact independent review required')
+  expected=frozen(S,allrows)
+  req(len(expected)==len(allrows) and len(expected)<=450,'unique bounded selected paths')

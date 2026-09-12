@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "date": "2026-09-12",
+  "author": "/root/c20_dependency_author",
+  "status": "INERT_DOC_AFTERIMAGES_NOT_APPLIED",
+  "root_requested": "Factual source-facing schema/publication clarification only, existing PVA025 docs/provenance grouping if independently supported. Root alone integrates/publishes after exact review.",
+  "subjects": [
+    {
+      "path": "SECURITY.md",
+      "before_bytes": 5279,
+      "before_sha256": "a8b855c52e25fc660a5d7ead05ba695f77a4e56e400c3a139098a266b8fa0b1c",
+      "afterimage": "docs-proposal/SECURITY.md.txt",
+      "after_bytes": 6491,
+      "after_sha256": "ef70e5d95a4d9ddc776eaedf1595db81ac5b72f6dd67eaff0f1b870e6d88d066",
+      "scope": "Documentation only; source implementation versus publication/runtime proof, schema1\u20135 versus final-source verification, current ledger routing. No claim to change source, schema, application/dependency/version/build identities or executed outcomes."
+    },
+    {
+      "path": "PENTEST.md",
+      "before_bytes": 5406,
+      "before_sha256": "0319e6252039c18d7222db5b873e6962918b52ddddf0e8dac621ce3736321ec4",
+      "afterimage": "docs-proposal/PENTEST.md.txt",
+      "after_bytes": 6533,
+      "after_sha256": "77f8c707ae24d56cd32b34abd8f8c26acbba6389e21e8a90a9fb27716e8628bd",
+      "scope": "Documentation only; source implementation versus publication/runtime proof, schema1\u20135 versus final-source verification, current ledger routing. No claim to change source, schema, application/dependency/version/build identities or executed outcomes."
+    }
+  ],
+  "patch": {
+    "path": "docs-proposal/DOC-SCOPE-RECONCILIATION.patch",
+    "bytes": 8674,
+    "sha256": "9f1833810fabe43e932523e080025b0b7202d887a26dd998edfae22a119323cc"
+  },
+  "source_pins": [
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/VaultDatabase.kt",
+      "bytes": 2830,
+      "sha256": "c727909e0b8e765ea56e8badec5ccea0d579967cabe1eb84ad57bbb2c79972d6"
+    },
+    {
+      "path": "core/database/src/commonMain/kotlin/com/passvault/core/database/VaultMigrations.kt",
+      "bytes": 16886,
+      "sha256": "e1e16717e2cc178824955a96971aa6fbe02d2bb70a704f56b8acec68221346b6"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricRuntime.kt",
+      "bytes": 1830,
+      "sha256": "111d03d9d074f0dc46dfcd670bcf2b3669b6a9104236fdb88287d41ad2b2e496"
+    },
+    {
+      "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/security/biometric/DesktopBiometricNativeLoader.kt",
+      "bytes": 22534,
+      "sha256": "58bfb35a24738dafa765216aba023371088c697c5b5024462b1e2bc09ecbe787"
+    },
+    {
+      "path": "docs/DESKTOP_BIOMETRIC_UNLOCK.md",
+      "bytes": 18693,
+      "sha256": "5766910b6c6e1495a560361c3fa8fc694a0e0126e3d5609c1f594d357e19496b"
+    },
+    {
+      "path": "docs/audit-handoff/START_HERE.md",
+      "bytes": 9826,
+      "sha256": "8311cc3cab113588c3f585d96ff52157e6b74937672d64d81996daa6d5137565"
+    },
+    {
+      "path": "docs/audit-handoff/PERMISSIONS.md",
+      "bytes": 6350,
+      "sha256": "3bde2eab96c83cbf313bd8f5cf184a08212cc82c67288c9c735f863ef0bd5723"
+    },
+    {
+      "path": "docs/audit-handoff/current/issue-to-fix.json",
+      "bytes": 908650,
+      "sha256": "5782666330bc2eb017e42b7a8725db1efdf54223462f3648c8acf25cb21b245e"
+    },
+    {
+      "path": "core/database/schemas/com.passvault.core.database.VaultDatabase/1.json",
+      "bytes": 29409,
+      "sha256": "76985152ec6593ee7eb13343bf30e86b1fd7beacbb27e89c4a2cfcb286eeb586",
+      "declared_database_version": 1
+    },
+    {
+      "path": "core/database/schemas/com.passvault.core.database.VaultDatabase/2.json",
+      "bytes": 30050,
+      "sha256": "3c09e59f2ab2b59a2535c82a404b9af27b9e3934f88e4161c1a9478cdef38d94",
+      "declared_database_version": 2
+    },
+    {
+      "path": "core/database/schemas/com.passvault.core.database.VaultDatabase/3.json",
+      "bytes": 30582,
+      "sha256": "080ac957b9dcdb58bc4950cb3e1f6a8279a0432e2a3ea580ba3aa0c84add9136",
+      "declared_database_version": 3
+    },
+    {
+      "path": "core/database/schemas/com.passvault.core.database.VaultDatabase/4.json",
+      "bytes": 30055,
+      "sha256": "9dc4f187784ca4a409b258debab1fbf9ad8a700778e060c44b98d9d4d8d14224",
+      "declared_database_version": 4
+    },
+    {
+      "path": "core/database/schemas/com.passvault.core.database.VaultDatabase/5.json",
+      "bytes": 30461,
+      "sha256": "431ed8a2dbfcde5c132f45a2e4443894d45aa0010bf9b6616780f62be3cd354b",
+      "declared_database_version": 5
+    }
+  ],
+  "semantic_source_scope": [
+    "VaultDatabase @Database version5/exportSchema true; VaultMigrations explicit1->2,2->3,3->4,4->5 and builder registration.",
+    "Five current exported schema JSON database.version fields equal filenames1..5; no runtime migration/integrity invocation.",
+    "DesktopBiometricRuntime.create has macOS/Windows types and Linux/unknown unavailable branch. Loader platform/packaged-signature declarations read boundedly, not executed.",
+    "Published handoff START_HERE distinguishes main/source schema5 from recorded candidate schema4; no current Git/Store/deployed-byte observation.",
+    "Existing PVA025 closure is Documentation/current-schema consistency only; no new family/closure or retroactive broadening of prior execution."
+  ],
+  "validation": "Smallest meaningful scope is independent exact wording/source review plus before/after/patch identity. No build/test/lint/validator/script execution; docs do not alter executable or platform behavior.",
+  "preserve": [
+    "Historical successes/failures/partial evidence, PVA02949/44/5FAIL and no retry, all STOP/NO-RETRY/CLOSED/native/HOLD fences.",
+    "Existing candidate1017001/protectedrefs/tags/dependencies/versions/identities, policy and eight PVD decisions unchanged.",
+    "Native/provider/device/package verification remains incomplete/qualified; no false deployment, Store or third-party certification claim."
+  ]
+}

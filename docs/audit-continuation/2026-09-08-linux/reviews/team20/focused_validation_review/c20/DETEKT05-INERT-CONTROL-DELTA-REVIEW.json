@@ -1,0 +1,302 @@
+{
+  "accepted_lineage": [
+    {
+      "bytes": 2531,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_review/DETEKT04-HOST02-DELTA-REVIEW.json",
+      "qualification": "Accepted old HOST02 SELF/REQUEST/APPROVAL-only delta plus unchanged long-body safeguards.",
+      "sha256": "3b499d9f2035d76a8c0da3cc28d0b319622711561666dbb6639c4255dbb49440"
+    },
+    {
+      "bytes": 1021,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_review/INSTANCE-ACCEPT-HOST02.json",
+      "qualification": "Consumed old three-control/C18 instance only; no new authority.",
+      "sha256": "29474aa4604f95142dc92ab509b60bba659f9a322f9386bae988fcfd0662bee5"
+    }
+  ],
+  "accepted_predecessor_bytes": {
+    "init": {
+      "bytes": 3931,
+      "path": "scripts/audit/detekt_04.init.gradle",
+      "sha256": "a5feccc963f6b96565143837701a8522e63f8fb84d142cd2de624f354a4d2d3d"
+    },
+    "inner": {
+      "bytes": 56228,
+      "path": "scripts/audit/linux_detekt_04.py",
+      "sha256": "baabb5fa66f36e83580a688b7ab13224790b5f0d99c994233e8476802e4e7c38"
+    },
+    "outer": {
+      "bytes": 61046,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt04-host02/LAUNCH.py",
+      "sha256": "0a42b59a5a14b3c8d607b4ca09a04ad6ca60ff340bf14006d07e7d3790c3a130"
+    }
+  },
+  "authority": {
+    "execution_admitted": false,
+    "future_approval_not_written": true,
+    "is_instance_approval": false,
+    "publication_admitted": false,
+    "replay_stop_or_cleanup_admitted": false,
+    "source_capture_admitted": false
+  },
+  "cohort_layout": "Independent new cohort, original single-PID1 lifecycle. NO common outer, shared runtime/cache, or old root adoption.",
+  "completed_checks": {
+    "all_nine_safety_sections_byte_identical": true,
+    "exact_cross_control_selected_and_omitted_sets_and_dependent_hashes_match": true,
+    "full_new_init_and_early_binding_refusal_excerpts_read": true,
+    "independent_three_unified_diffs_and_entire_packet_framing_match": true,
+    "line_counts": {
+      "init": {
+        "added": 8,
+        "candidate_lf": 86,
+        "equal": 78,
+        "predecessor_lf": 86,
+        "removed": 8
+      },
+      "inner": {
+        "added": 24,
+        "candidate_lf": 972,
+        "equal": 948,
+        "predecessor_lf": 973,
+        "removed": 25
+      },
+      "outer": {
+        "added": 24,
+        "candidate_lf": 1040,
+        "equal": 1016,
+        "predecessor_lf": 1040,
+        "removed": 24
+      }
+    },
+    "no_guard_weakening_found_in_narrow_delta": true,
+    "no_stale_04_C18_instance_identifiers_hashes_or_3432_count_in_candidates": true,
+    "ordered_literal_replacements_forward_and_reverse_whole_byte_identity": true,
+    "whole_file_hashes_and_lengths_match": true
+  },
+  "coverage_guard": {
+    "path": "scripts/verify-static-analysis-coverage.rb",
+    "sha256": "7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945",
+    "unchanged_rehashed": true
+  },
+  "disposition": "ACCEPT_INERT_SOURCE_DELTA_ONLY_FINAL_BINDING_REQUIRED",
+  "fixed_future_paths_not_created_or_admitted": {
+    "E": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-detekt05",
+    "R": "/root/projects/PassVault/audit-runtime-linux-detekt05",
+    "approval": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_review/INSTANCE-ACCEPT-DETEKT05.json",
+    "init": "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_05.init.gradle",
+    "inner": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_05.py",
+    "outer": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt05/LAUNCH.py",
+    "request": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-DETEKT-05.json"
+  },
+  "format": "C20_DETEKT05_INERT_CONTROL_DELTA_REVIEW_V1",
+  "intentional_unbound_state": {
+    "COMMIT": "UNBOUND_C20_COMMIT",
+    "EXCLUDE_STATE": "UNBOUND",
+    "MEMBERS": 0,
+    "SOURCE": "docs/audit-continuation/2026-09-08-linux/reviews/UNBOUND-C20-SOURCE/SOURCE.json",
+    "TREE": "UNBOUND_C20_TREE",
+    "outer_DEVICE_values": null,
+    "source_refusal": "Early guards reject UNBOUND bindings before request intake, allocation or Git. This is a source finding, not an executed negative test.",
+    "source_sha256": "UNBOUND_C20_SOURCE_SHA256",
+    "strict_outer_entry": "Exact PATH/LANG/LC_ALL/TZ-only ENV, exact interpreter/argv, isolated/no-site/no-bytecode and root checks remain. Do not transfer the benign currentpoint observer HOME/XDG argv variation to this strict static runner."
+  },
+  "method": "Independent retained-byte/text/JSON review only. Exact ordered replacements and their inverses, complete unified-diff framing, cross-control scope/bindings and nine unchanged-section seals were checked. Completed narrow checks are recorded here without repeating accepted long-body review. This sealing step rehashed the three baselines, three candidates and contract/delta. No candidate/helper execution or import, AST, compilation, Git, network, process/runtime/SDK probe, build, test, source capture or replay.",
+  "owner": "focused_validation_review",
+  "packet": {
+    "candidates": {
+      "init": {
+        "bytes": 3930,
+        "path": "DETEKT-05.init.gradle.txt",
+        "sha256": "a539da7932f305a7dd99afb0e7b36428e533aae79f95a5f301a1967003105417"
+      },
+      "inner": {
+        "bytes": 56230,
+        "path": "LINUX-DETEKT-05.py.txt",
+        "sha256": "53343670f556959551f48a2d2eef9527781b3bef5bbacf05ac03a98b85089361"
+      },
+      "outer": {
+        "bytes": 61062,
+        "path": "LAUNCH.py.txt",
+        "sha256": "6888b970c2345abebf12248c21950fa4b682fb3136fe53c37d92f88bf2d63012"
+      }
+    },
+    "contract": {
+      "bytes": 16790,
+      "path": "CONTROL-CONTRACT.json",
+      "sha256": "eb6457acbd18a4f1757faca4c6c8a230ce8fd94c2ddefc12f8a3012129085ed8"
+    },
+    "delta": {
+      "bytes": 24835,
+      "path": "CONTROL-DELTA.txt",
+      "sha256": "55e9054d319255925e41fe72d61fec332fba74c509b2df8354e1e77d4cb4f579"
+    }
+  },
+  "packet_directory": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/c20/detekt05",
+  "preservation": [
+    "Original lock/config identities and immutable source/index/object evidence remain preserved; actual final source/store/index/config/exclude/tools/aliases/parent/device/namespace/request/approval/quiescence bindings remain unbound.",
+    "Original source-before/after, stop, outside-owned Java refusal, child/namespace/ownership/evidence/cleanup conditions are unchanged.",
+    "All old R HOLDs, STOP/NO-RETRY/CLOSED/native refusal/protected refs/1017001 and historical terminal gaps remain. No old runtime/cache adoption, replay, stop or cleanup.",
+    "Old static04 HOST02 external70/wrapper143/original stop0, unstarted analyzers/coverage, false source-after/cleanup-safe and R HOLD are not changed by this new inert cohort.",
+    "This report creates only an own-lane review artifact; no central integration, final binding, source capture, runtime, instance approval, result or publication is claimed."
+  ],
+  "required_later_binding_delta": {
+    "admission": "A later independent minimal binding-delta review, genuine request/paired instance acceptance and root renewed per-cohort concrete quiet reservation/quiescence are required before any static05 launch. Root alone promotes, admits and executes; this report cannot serve as the future approval.",
+    "cap_rule": "Review minimal final-count-derived replacements at all four sites together. Filling MEMBERS alone or adjusting only the two entry caps is insufficient; prior C19 already had 3734 members. No C20 member count has been captured here. Existing other byte/output/runtime/time limits remain unchanged.",
+    "final_source": "Root supplies one actual final post-integration source capture and exact SOURCE path/hash, commit/tree and integer member count; all five test-path integrations are root-reported complete, but no new full source capture is claimed by this review.",
+    "four_conservative_cap_sites": [
+      {
+        "control": "inner",
+        "current": "1 <= MEMBERS <= 3500",
+        "line": 890
+      },
+      {
+        "control": "outer",
+        "current": "1 <= MEMBERS <= 3500",
+        "line": 804
+      },
+      {
+        "control": "outer",
+        "current": "len(data)==MEMBERS*41 and len(data)<=144*1024",
+        "line": 575
+      },
+      {
+        "control": "outer",
+        "current": "capture(R/'source.oids',144*1024)",
+        "line": 589
+      }
+    ],
+    "remaining_debt": [
+      "Root chosen single post-integration SOURCE path/hash, full commit/tree and actual member count. Current UNBOUND strings/count0 prevent admission.",
+      "The old3500-member entry caps in both bodies and144KiB OID-vector cap in outer deliberately remain conservative and cannot admit C19/C20 (C19 already3734). Bind minimal replacements only after actual final count. Existing byte/output/runtime/time floors/caps otherwise unchanged.",
+      "Fresh full ordinary-stage0 index/store/config/exclude/tool/alias/parent/device/current-namespace bindings and genuine request/paired approval; original EXPECTED_LOCK identity preserved, fresh same-object observation required.",
+      "Reproject affected input rows and all omitted unchanged-source reuse after all5 test paths integrated; root says integration complete but no new source capture/readiness is claimed here.",
+      "Root promotes only exact finally reviewed successors, renews concrete quiet cooperative reservation/quiescence, records original terminal/settlement, and owns serial static05/focused02/Androidhost1 separately."
+    ]
+  },
+  "scope": {
+    "application_test_cases": 0,
+    "capture_file_limit": 22,
+    "exact_omitted_tasks": [
+      ":core:designsystem:detekt",
+      ":core:detekt",
+      ":core:domain:detekt",
+      ":core:navigation:detekt",
+      ":core:otp:detekt",
+      ":core:security:detekt",
+      ":core:testing:detekt",
+      ":feature:backup:detekt",
+      ":feature:detekt",
+      ":feature:generator:detekt",
+      ":feature:health:detekt",
+      ":feature:onboarding:detekt",
+      ":feature:settings:detekt",
+      ":feature:unlock:detekt",
+      ":feature:vault:detekt"
+    ],
+    "graph_tasks": 8,
+    "optional_bounded_diagnostic_files": 1,
+    "required_guard": ":verifyStaticAnalysisCoverage",
+    "selected_analyzers": [
+      ":detekt",
+      ":app-android:detekt",
+      ":app-desktop:detekt",
+      ":shared:detekt",
+      ":core:crypto:detekt",
+      ":core:database:detekt",
+      ":feature:credential:detekt"
+    ],
+    "selected_report_triplets": 7,
+    "static_reports": 21,
+    "unchanged_combined_capture_bytes": 33554432,
+    "unchanged_diagnostic_bytes": 1048576,
+    "unchanged_each_static_report_bytes": 4194304,
+    "unchanged_reuse": "13 prior clean modules remain candidates only after fresh final-source reprojection; the other2 omissions are aggregate core/feature tasks. No old270/171 projection inherited."
+  },
+  "scope_interpretation": [
+    "Only :app-android:detekt moves from omitted to selected. The same complete 22-task Detekt universe is partitioned into seven selected analyzers and 15 exact omissions.",
+    "Exact eight-node graph is seven analyzers plus :verifyStaticAnalysisCoverage. Root :detekt, --continue, one worker, serial strict dependency verification, no build cache, JVM17 and the same coverage Ruby command remain; no Test task or other graph expansion.",
+    "Seven report triplets require 21 static files; one optional bounded Problems diagnostic makes the 22-file capture limit. Existing 32MiB combined, 4MiB per static report and 1MiB diagnostic limits remain.",
+    "The 13 prior clean-module omissions are candidates only after fresh final-source reprojection; the other two omissions are :core:detekt and :feature:detekt aggregates. No old 270/171 input projection or clean-result reuse automatically carries forward.",
+    "Task/source planning and prospective graph counts do not establish per-file analyzer visitation, test execution, clean results or closure."
+  ],
+  "separate_validation_workstreams": {
+    "android_host1": "Separately scoped and serially admitted; not part of static05.",
+    "fixture_pair": "Focused Linux9 plus Desktop compilation; credential8 and precisely new migration1, two Test tasks/three XML. No DB12 replay is implied.",
+    "historical_partial12": "Qualified old C18 exact XML-pass observations under HOLD with missing final full checkout-AFTER; not a clean 12/20/current-source claim. Later success cannot retroactively clean that cohort."
+  },
+  "unchanged_safety_sections": [
+    {
+      "byte_identical": true,
+      "bytes": 287,
+      "control": "outer",
+      "end": "START = ",
+      "sha256": "b76e6ff255865994a2f830d3ff88171d0c8d37c1a308e02a7c7154d6dd65f943",
+      "start": "BUILDLIKE = "
+    },
+    {
+      "byte_identical": true,
+      "bytes": 12628,
+      "control": "outer",
+      "end": "def under(",
+      "sha256": "c52488268f59890b57776fee12c66cf1299789d9e3ab50cd0d5a1ef29f7da9d5",
+      "start": "def birth("
+    },
+    {
+      "byte_identical": true,
+      "bytes": 2927,
+      "control": "outer",
+      "end": "\ndef main():",
+      "sha256": "e473906573f16d57ec71feb024638f6f59f1129b80b130b4327babe0b5b4d8f2",
+      "start": "def remove_runtime("
+    },
+    {
+      "byte_identical": true,
+      "bytes": 4409,
+      "control": "inner",
+      "end": "\ndef namespace_preflight(",
+      "sha256": "7e7bde0e81d09b0f9613a7246c11ed0cfe481254c5127c2ef8dedfda35d38808",
+      "start": "class Files:"
+    },
+    {
+      "byte_identical": true,
+      "bytes": 1855,
+      "candidate_end": "\nclass Detekt05:",
+      "control": "inner",
+      "delimiter_note": "Only the external class-name end delimiter changes; the sealed section bytes are identical.",
+      "end": "\nclass Detekt04:",
+      "sha256": "e96ce79c31df01da5e1cb00a3cf0803f44efe4de5f6e911e58c9153ef3295d31",
+      "start": "def namespace_preflight("
+    },
+    {
+      "byte_identical": true,
+      "bytes": 1770,
+      "control": "inner",
+      "end": "    def resources(",
+      "sha256": "b509a831ce4900ed7de31a4576c9594fff91c0ca5f731a37b20ebd067a2c54c9",
+      "start": "    def source_check("
+    },
+    {
+      "byte_identical": true,
+      "bytes": 3553,
+      "control": "inner",
+      "end": "    def settle(",
+      "sha256": "5d8f931eb426c1be54d93a512a5bde1ed837966cacaea8e1686fe763e5d00557",
+      "start": "    def resources("
+    },
+    {
+      "byte_identical": true,
+      "bytes": 973,
+      "control": "inner",
+      "end": "    def command(",
+      "sha256": "ff4313cd65e4cf356bfc5bf551fd77a0b4ddc57ccef37dcf3f3414ba8b5ffcbf",
+      "start": "    def settle("
+    },
+    {
+      "byte_identical": true,
+      "bytes": 5480,
+      "control": "inner",
+      "end": "    def state(",
+      "sha256": "ab32f03b7ba5a3b27aae7ec9737841572a43d8ff83d7c8c752c5c9388e6fbe6b",
+      "start": "    def command("
+    }
+  ]
+}

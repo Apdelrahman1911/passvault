@@ -1,0 +1,379 @@
+package com.passvault.desktop.security.biometric
+
+import com.passvault.core.security.BiometricType
+import com.passvault.shared.platform.NativeBiometricPromptStrings
+import com.sun.jna.Library
+import com.sun.jna.Native
+import com.sun.jna.NativeLibrary
+import com.sun.jna.Pointer
+import com.sun.jna.ptr.PointerByReference
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
+import java.nio.file.Files
+import java.nio.file.LinkOption.NOFOLLOW_LINKS
+import java.nio.file.Path
+import java.security.MessageDigest
+import java.util.HexFormat
+import java.util.concurrent.Callable
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
+import org.junit.Assume.assumeTrue
+
+/**
+ * One ordinary real-JNA boundary on an admitted current Windows/macOS library.
+ * The gates are managed: missing synthetic metadata returns before native
+ * provider activation. This is not an active-provider, sanitizer, packaged
+ * loader/signature, secret-array, or physical-biometric test.
+ *
+ * Root owns a fresh Test worker, original isolated HOME/TMP/data roots, native
+ * source/binary binding, external deadline and cleanup. This test never deletes
+ * directories and never retries an uncertain native destruction.
+ */
+class JnaDesktopBiometricNativeLifetimeIntegrationTest {
+    @Test
+    @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+    fun closeReservationProtectsRealContextUntilCancellationReturns() {
+        val selected = System.getProperty(PREFIX + "enabled")
+        assumeTrue("Real JNA lifetime requires explicit execution admission", selected != null)
+        assertEquals("1", selected)
+        val admission = Admission.read()
+        var library: NativeLibrary? = null
+        var observer: LifetimeObserver? = null
+        var workers: ExecutorService? = null
+        var primaryFailure: Throwable? = null
+        try {
+            val real = Native.load(
+                admission.library.toString(), NativeApi::class.java,
+                mapOf(Library.OPTION_STRING_ENCODING to Charsets.UTF_8.name()),
+            )
+            // Capture the actual Native.load handle, not a second independently
+            // cached getInstance handle, and retain it until all calls settle.
+            library = (Proxy.getInvocationHandler(real) as Library.Handler).nativeLibrary
+            assertEquals(admission.library, library.file.toPath().toRealPath())
+            val calls = LifetimeObserver(real).also { observer = it }
+            val bridge = JnaDesktopBiometricBridge.create(
+                type = admission.type,
+                native = calls.api,
+                dataDirectory = admission.data.toString(),
+                closeWaitMillis = 1_000L,
+                promptStrings = { NativeBiometricPromptStrings.forLanguageTag("en") },
+            )
+            admission.requireOnlyEmptyBiometricDirectory()
+            val executor = Executors.newFixedThreadPool(2).also { workers = it }
+            val retrieval = executor.submit(Callable<Throwable?> {
+                try {
+                    bridge.retrieve(ByteArray(32)).fill(0)
+                    null
+                } catch (failure: Throwable) {
+                    failure
+                }
+            })
+            assertTrue(calls.retrieveReturned.await(WAIT_SECONDS, TimeUnit.SECONDS), "Native retrieve deadline")
+            calls.requireNoFailure()
+            assertEquals(5, calls.retrieveStatus(), "Real missing metadata must be NOT_ENABLED")
+            val close = executor.submit(Callable { bridge.close() })
+            assertTrue(calls.cancelEntered.await(WAIT_SECONDS, TimeUnit.SECONDS), "Managed cancel entry deadline")
+            calls.requireNoFailure()
+
+            calls.releaseRetrieve.countDown()
+            assertSame(DesktopBiometricBridgeException.NotEnabled, retrieval.get(WAIT_SECONDS, TimeUnit.SECONDS))
+            assertEquals(0, calls.destroyRequests(), "Close must reserve context before cancellation native entry")
+            assertFalse(close.isDone, "Cancellation must still be gated")
+
+            calls.releaseCancel.countDown()
+            close.get(WAIT_SECONDS, TimeUnit.SECONDS)
+            bridge.close()
+            calls.requireSuccessfulOrder()
+            admission.requireOnlyEmptyBiometricDirectory()
+            admission.verifyLibraryIdentity()
+        } catch (failure: Throwable) {
+            primaryFailure = failure
+            if (failure is InterruptedException) Thread.currentThread().interrupt()
+            throw failure
+        } finally {
+            // Clearing interruption here permits bounded owned-worker settlement;
+            // restore it afterward rather than abandoning a native context.
+            val interrupted = Thread.interrupted()
+            try {
+                observer?.releaseRetrieve?.countDown()
+                observer?.releaseCancel?.countDown()
+                workers?.let { executor ->
+                    executor.shutdown()
+                    if (!executor.awaitTermination(WAIT_SECONDS, TimeUnit.SECONDS)) {
+                        executor.shutdownNow() // Only this captured test-owned executor.
+                        check(executor.awaitTermination(WAIT_SECONDS, TimeUnit.SECONDS)) {
+                            "HOLD: owned workers did not settle; retain library and original runtime"
+                        }
+                    }
+                }
+                observer?.releaseAfterWorkerSettlement()
+                library?.close()
+                println("PVA010_REAL_JNA_LIFETIME_CLEANUP_SETTLED")
+            } catch (cleanupFailure: Throwable) {
+                if (cleanupFailure is InterruptedException) Thread.currentThread().interrupt()
+                val report = IllegalStateException(
+                    "HOLD: native lifetime cleanup uncertain; retain original runtime for owner", cleanupFailure,
+                )
+                val primary = primaryFailure
+                if (primary == null) throw report
+                primary.addSuppressed(report)
+            } finally {
+                if (interrupted) Thread.currentThread().interrupt()
+            }
+        }
+        println("PVA010_REAL_JNA_LIFETIME_PASS target=${admission.target} abi=1 retrieve=5 cancel=0 destroy=1")
+    }
+
+    private data class Admission(
+        val target: String,
+        val type: BiometricType,
+        val library: Path,
+        val data: Path,
+        val bytes: Long,
+        val sha256: String,
+    ) {
+        fun verifyLibraryIdentity() {
+            assertTrue(Files.isRegularFile(library, NOFOLLOW_LINKS))
+            assertEquals(library, library.toRealPath())
+            assertEquals(bytes, Files.size(library))
+            val digest = MessageDigest.getInstance("SHA-256")
+            Files.newInputStream(library, NOFOLLOW_LINKS).use { stream ->
+                val buffer = ByteArray(8_192)
+                while (true) {
+                    val count = stream.read(buffer)
+                    if (count < 0) break
+                    digest.update(buffer, 0, count)
+                }
+            }
+            assertEquals(sha256, HexFormat.of().formatHex(digest.digest()))
+        }
+
+        fun requireOnlyEmptyBiometricDirectory() {
+            val biometric = data.resolve("biometric")
+            assertTrue(Files.isDirectory(biometric, NOFOLLOW_LINKS))
+            assertEquals(biometric, biometric.toRealPath())
+            Files.newDirectoryStream(data).use { assertEquals(listOf(biometric), it.toList()) }
+            Files.newDirectoryStream(biometric).use { assertFalse(it.iterator().hasNext()) }
+        }
+
+        companion object {
+            fun read(): Admission {
+                assertEquals(17, Runtime.version().feature())
+                val os = System.getProperty("os.name").lowercase()
+                val arch = System.getProperty("os.arch").lowercase()
+                val target = when {
+                    os.startsWith("windows") && arch in setOf("amd64", "x86_64") -> "windows-x64"
+                    os.startsWith("mac") && arch in setOf("amd64", "x86_64") -> "macos-x64"
+                    os.startsWith("mac") && arch in setOf("aarch64", "arm64") -> "macos-arm64"
+                    else -> error("Selected real-JNA lifetime requires a supported native Windows/macOS JVM")
+                }
+                assertEquals(target, property("target"))
+                assertEquals("1", property("abi")) // Declared ABI before load; factory checks actual exported ABI.
+                val library = exactPath("library")
+                val data = exactPath("dataDirectory")
+                assertTrue(Files.isDirectory(data, NOFOLLOW_LINKS))
+                assertFalse(library.startsWith(data) || data.startsWith(library))
+                Files.newDirectoryStream(data).use { assertFalse(it.iterator().hasNext()) }
+                val expectedName = if (target == "windows-x64") {
+                    "passvault_biometric.dll"
+                } else {
+                    "libpassvault_biometric.dylib"
+                }
+                assertEquals(expectedName, library.fileName.toString())
+                val bytes = property("libraryBytes").toLong()
+                assertTrue(bytes in 1..64L * 1024 * 1024)
+                val sha256 = property("librarySha256")
+                assertTrue(Regex("[0-9a-f]{64}").matches(sha256))
+                return Admission(
+                    target, if (target == "windows-x64") BiometricType.WINDOWS_HELLO else BiometricType.TOUCH_ID,
+                    library, data, bytes, sha256,
+                ).also { it.verifyLibraryIdentity() }
+            }
+
+            private fun property(name: String): String =
+                requireNotNull(System.getProperty(PREFIX + name)) { "Missing admitted property: $name" }
+
+            private fun exactPath(name: String): Path = Path.of(property(name)).also { path ->
+                assertTrue(path.isAbsolute && path == path.normalize())
+                assertEquals(path, path.toRealPath())
+            }
+        }
+    }
+
+    /** Observes only five ordinary exports; every other export refuses before native entry. */
+    private class LifetimeObserver(private val real: NativeApi) {
+        val retrieveReturned = CountDownLatch(1)
+        val cancelEntered = CountDownLatch(1)
+        val releaseRetrieve = CountDownLatch(1)
+        val releaseCancel = CountDownLatch(1)
+        private val lock = Any()
+        private var context: Pointer? = null
+        private var createAttempted = false
+        private var uncertain = false
+        private var inFlight = 0
+        private var operationId = 0L
+        private var abiCalls = 0
+        private var retrievals = 0
+        private var cancellations = 0
+        private var retrievedStatus: Int? = null
+        private var cancelledStatus: Int? = null
+        private var destructionRequests = 0
+        private var prematureDestructionRequests = 0
+        private var destructionAttempted = false
+        private var destructionReturned = false
+        private var firstFailure: Throwable? = null
+
+        val api: NativeApi = Proxy.newProxyInstance(
+            NativeApi::class.java.classLoader, arrayOf(NativeApi::class.java),
+        ) { proxy, method, nullableArguments ->
+            val arguments = nullableArguments ?: emptyArray()
+            try {
+                when (method.name) {
+                    "equals" -> proxy === arguments[0]
+                    "hashCode" -> System.identityHashCode(proxy)
+                    "toString" -> "Observed real native lifetime API"
+                    "pv_bio_abi_version" -> {
+                        synchronized(lock) { check(++abiCalls == 1) }
+                        invokeReal(method, arguments)
+                    }
+                    "pv_bio_create" -> create(method, arguments)
+                    "pv_bio_retrieve_localized", "pv_bio_cancel" -> callWithContext(method, arguments)
+                    "pv_bio_destroy" -> {
+                        requestDestroy(arguments[0] as Pointer)
+                        null
+                    }
+                    else -> error("Refused unexpected native export: ${method.name}")
+                }
+            } catch (failure: Throwable) {
+                synchronized(lock) { if (firstFailure == null) firstFailure = failure }
+                throw failure
+            }
+        } as NativeApi
+
+        private fun invokeReal(method: Method, arguments: Array<out Any?>): Any? = try {
+            method.invoke(real, *arguments)
+        } catch (failure: InvocationTargetException) {
+            if (method.name != "pv_bio_abi_version") synchronized(lock) { uncertain = true }
+            throw failure.targetException
+        }
+
+        private fun create(method: Method, arguments: Array<out Any?>): Any? {
+            synchronized(lock) {
+                check(!createAttempted)
+                createAttempted = true
+                uncertain = true
+            }
+            val status = invokeReal(method, arguments) as Int
+            val pointer = (arguments[2] as PointerByReference).value
+            synchronized(lock) {
+                context = pointer
+                val valid = status == 0 && pointer != null && Pointer.nativeValue(pointer) != 0L
+                uncertain = !valid && (status == 0 || pointer != null)
+                check(valid) { "Real native context creation failed" }
+            }
+            return status
+        }
+
+        private fun callWithContext(method: Method, arguments: Array<out Any?>): Int {
+            val retrieving = method.name == "pv_bio_retrieve_localized"
+            synchronized(lock) {
+                requireLivePointer(arguments[0] as Pointer)
+                val requestedOperation = arguments[1] as Long
+                check(requestedOperation != 0L)
+                if (retrieving) {
+                    check(++retrievals == 1)
+                    operationId = requestedOperation
+                } else {
+                    check(++cancellations == 1 && requestedOperation == operationId)
+                }
+                inFlight += 1
+            }
+            return try {
+                if (retrieving) {
+                    val status = invokeReal(method, arguments) as Int
+                    synchronized(lock) { retrievedStatus = status }
+                    retrieveReturned.countDown()
+                    check(releaseRetrieve.await(WAIT_SECONDS, TimeUnit.SECONDS)) { "Retrieve release deadline" }
+                    status
+                } else {
+                    cancelEntered.countDown()
+                    check(releaseCancel.await(WAIT_SECONDS, TimeUnit.SECONDS)) { "Cancel release deadline" }
+                    val status = invokeReal(method, arguments) as Int
+                    synchronized(lock) { cancelledStatus = status }
+                    status
+                }
+            } finally {
+                synchronized(lock) { inFlight -= 1 }
+            }
+        }
+
+        private fun requireLivePointer(pointer: Pointer) {
+            check(context != null && Pointer.nativeValue(pointer) == Pointer.nativeValue(context))
+            check(!destructionAttempted && !uncertain) { "Refused call on destroyed or uncertain context" }
+        }
+
+        private fun requestDestroy(pointer: Pointer) {
+            synchronized(lock) {
+                destructionRequests += 1
+                requireLivePointer(pointer)
+                if (inFlight != 0) {
+                    // A broken inverse must fail its request-count oracle, never
+                    // free this pointer and then deliberately call through it.
+                    prematureDestructionRequests += 1
+                    return
+                }
+                destructionAttempted = true
+            }
+            real.pv_bio_destroy(pointer)
+            synchronized(lock) { destructionReturned = true }
+        }
+
+        fun retrieveStatus(): Int? = synchronized(lock) { retrievedStatus }
+        fun destroyRequests(): Int = synchronized(lock) { destructionRequests }
+
+        fun requireNoFailure() = synchronized(lock) {
+            firstFailure?.let { throw AssertionError("Native observation failed", it) }
+        }
+
+        fun requireSuccessfulOrder() = synchronized(lock) {
+            requireNoFailure()
+            assertEquals(1, abiCalls)
+            assertEquals(1, retrievals)
+            assertEquals(1, cancellations)
+            assertEquals(5, retrievedStatus)
+            assertEquals(0, cancelledStatus)
+            assertEquals(0, inFlight)
+            assertEquals(0, prematureDestructionRequests)
+            assertEquals(1, destructionRequests)
+            assertTrue(destructionAttempted && destructionReturned)
+            assertFalse(uncertain)
+        }
+
+        fun releaseAfterWorkerSettlement() {
+            val pointer = synchronized(lock) {
+                check(inFlight == 0 && !uncertain) { "Native settlement uncertain" }
+                if (destructionAttempted) {
+                    check(destructionReturned) { "Native destruction attempted but return unproven; no retry" }
+                    return
+                }
+                context?.also { destructionAttempted = true }
+            } ?: return
+            // Cleanup only, never counted as the successful regression oracle.
+            real.pv_bio_destroy(pointer)
+            synchronized(lock) { destructionReturned = true }
+        }
+    }
+
+    private companion object {
+        const val PREFIX = "passvault.audit.jnaLifetime."
+        const val WAIT_SECONDS = 10L
+    }
+}

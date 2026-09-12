@@ -1,0 +1,23 @@
+{
+  "command": "pwd && printf '\\nInstruction paths\\n' && find /root/projects/PassVault -name AGENTS.md -print",
+  "event": "Unadmitted recursive name-only AGENTS discovery",
+  "exit_code": 0,
+  "original_tool_chunk": "726077",
+  "owner": "/root/c20_cleanup_author",
+  "paths_returned": [
+    "audit-runtime-linux-desktop-tray01/checkout/AGENTS.md",
+    "audit-runtime-linux-desktop-integration03/checkout/AGENTS.md",
+    "audit-runtime-linux-detekt04/checkout/AGENTS.md",
+    "audit-runtime-linux-focused-regression01/checkout/AGENTS.md",
+    "passvault-publication-20260910-01/AGENTS.md",
+    "audit-runtime-linux-current-cycle02/checkout/AGENTS.md",
+    "audit-runtime-linux-isolated-batch02/checkout/AGENTS.md",
+    "passvault-linux/AGENTS.md",
+    "audit-runtime-linux-detekt02/checkout/AGENTS.md",
+    "passvault/AGENTS.md"
+  ],
+  "qualification": "find recursively traversed project/held-runtime directory names and queried entry metadata to match AGENTS.md. No file contents from held roots were read; no writes/deletion/helper/build/test/process/SDK operations. This was outside the assigned no-held-root-probe scope; it is not current custody, fresh admission or cleanup evidence.",
+  "root_notice": "Reported immediately via collaboration; all subsequent reads restricted to explicit W/B source/evidence inputs.",
+  "schema": 1,
+  "scope": "C20 resume12 inert cleanup source proposal"
+}

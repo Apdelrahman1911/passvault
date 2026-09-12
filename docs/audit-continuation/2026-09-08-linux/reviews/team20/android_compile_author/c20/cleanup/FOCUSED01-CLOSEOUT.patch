@@ -1,0 +1,481 @@
+--- accepted-text-baseline/detekt02-closeout01/CLOSEOUT.py
++++ proposed-text/focused-regression01-closeout01/CLOSEOUT.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3.12
+-"""NEW current Detekt02 whole-R closeout01; SOURCE ONLY until separately admitted.
++"""NEW current FocusedRegression01 whole-R closeout01; SOURCE ONLY until separately admitted.
+ 
+ Fixed-path/once-only, original-cohort cooperative freeze, not hostile-root safety.
+ No subprocess, build/stop, process census/signals, Git/SDK/network, mount action,
+@@ -17,17 +17,17 @@
+ import time
+ 
+ B = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux')
+-D = B / 'reviews/detekt02-closeout01'
++D = B / 'reviews/focused-regression01-closeout01'
+ SELF, REQUEST, ACCEPT = D / 'CLOSEOUT.py', D / 'REQUEST.json', D / 'ACCEPT.json'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-detekt02')
+-E, OUT = B / 'runs/linux-detekt02', B / 'runs/linux-detekt02/closeout01'
++R = Path('/root/projects/PassVault/audit-runtime-linux-focused-regression01')
++E, OUT = B / 'runs/linux-focused-regression01', B / 'runs/linux-focused-regression01/closeout01'
+ LOCK = R.parent / '.audit-coordination-linux-20260908/build.lock'
+ LOCK_PIN = (24, 14189001, 0, 33152, 1, 0, 1788910891124735946, 1788910891124735946)
+ SLOT = B / 'EXECUTION_SLOT.json'
+-SOURCE = B / 'reviews/detekt02/source-prepare01/SOURCE.json'
+-PURPOSE = 'ONE_CURRENT_DETEKT02_WHOLE_R_CLOSEOUT01'
+-COMMIT, TREE = 'e6738b17a7c783383a4f0ae0f17af726cffb9a40', 'c4009ab5f9ba23bb8097d64cc54328b131baa0c8'
+-RAW_IDENTITY = '97c8f86c6a25928db7776e16d2b803bfceb1d1b39be9f4064a5b5c152e1f78c8'
++SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
++PURPOSE = 'ONE_CURRENT_FOCUSED_REGRESSION01_WHOLE_R_CLOSEOUT01'
++COMMIT, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
++RAW_IDENTITY = 'df744d8d7a3836853500d96b465af56206122736b2b1300d7c4059380f557878'
+ MIB = 1024 ** 2
+ LIMITS = {'seconds': 180, 'entry_count': 40000, 'inventory_bytes': 16 * MIB,
+           'logical_bytes': 2 * 1024 ** 3, 'runtime_hash_bytes': 256 * MIB, 'receipt_bytes': 65536,
+@@ -43,51 +43,55 @@
+            'feature/settings', 'feature/backup')
+ GENERATED = tuple('checkout/' + (m + '/' if m else '') + 'build' for m in MODULES) + (
+     'checkout/.gradle', 'checkout/.kotlin')
+-ALLOWROOTS = PRIVATE + GENERATED
+-TOP = {'checkout': 1372037, 'home': 1372038, 'tmp': 1372039, 'jna': 1372040,
+-       'sqlite': 1372041, 'gradle-home': 1372042, 'konan': 1372043, 'android-user': 1372044,
+-       'xdg-cache': 1372045, 'xdg-config': 1372046, 'xdg-data': 1372047,
+-       'xdg-state': 1372048, 'git-metadata': 1372049}
+-PINS = {R: (23, 1372034, 0, stat.S_IFDIR | 0o700),
+-        R.parent: (23, 498323, 0, stat.S_IFDIR | 0o755),
+-        E: (23, 1372033, 0, stat.S_IFDIR | 0o700),
+-        E.parent: (23, 642474, 0, stat.S_IFDIR | 0o700),
+-        E / 'logs': (23, 1372035, 0, stat.S_IFDIR | 0o700),
+-        E / 'reports': (23, 1372036, 0, stat.S_IFDIR | 0o700),
+-        LOCK.parent: (23, 661121, 0, stat.S_IFDIR | 0o700)}
++WORKERS = ('database', 'credential')
++WORKER_CHILDREN = ('home', 'tmp', 'jna', 'sqlite', 'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
++ALLOWROOTS = PRIVATE + GENERATED + tuple('workers/' + worker + '/' + name
++                                        for worker in WORKERS for name in WORKER_CHILDREN)
++TOP = {'android-user': 323417, 'checkout': 323410, 'gradle-home': 323415, 'home': 323411, 'jna': 323413, 'konan': 323416, 'sqlite': 323414, 'tmp': 323412, 'workers': 323422, 'xdg-cache': 323418, 'xdg-config': 323419, 'xdg-data': 323420, 'xdg-state': 323421}
++WORKER_DIRS = {'workers/credential': 323424, 'workers/credential/home': 323433, 'workers/credential/jna': 323435, 'workers/credential/sqlite': 323436, 'workers/credential/tmp': 323434, 'workers/credential/xdg-cache': 323437, 'workers/credential/xdg-config': 323438, 'workers/credential/xdg-data': 323439, 'workers/credential/xdg-state': 323440, 'workers/database': 323423, 'workers/database/home': 323425, 'workers/database/jna': 323427, 'workers/database/sqlite': 323428, 'workers/database/tmp': 323426, 'workers/database/xdg-cache': 323429, 'workers/database/xdg-config': 323430, 'workers/database/xdg-data': 323431, 'workers/database/xdg-state': 323432}
++PINS = {R: (23, 323407, 0, stat.S_IFDIR | 0o700),
++        R.parent: (23, 580, 0, stat.S_IFDIR | 0o755),
++        E: (23, 323406, 0, stat.S_IFDIR | 0o700),
++        E.parent: (23, 54473, 0, stat.S_IFDIR | 0o700),
++        E / 'logs': (23, 323408, 0, stat.S_IFDIR | 0o700),
++        E / 'xml': (23, 323409, 0, stat.S_IFDIR | 0o700),
++        LOCK.parent: (23, 51356, 0, stat.S_IFDIR | 0o700)}
+ PINS.update({R / name: (23, ino, 0, stat.S_IFDIR | 0o700) for name, ino in TOP.items()})
++PINS.update({R / name: (23, ino, 0, stat.S_IFDIR | 0o700) for name, ino in WORKER_DIRS.items()})
+ INPUTS = {
+-    'manifest': (SOURCE, '2af03198511f26cfafb0ddd01470e66585697507e95c654530e1621b5ce0831b'),
+-    'allocation': (E / 'OUTER-ALLOCATION.json', '6af8a25ec3137458b48ee112fb5c8298fa0f188fdb1302684c7a838929fef833'),
+-    'intent': (E / 'OUTER-INTENT.json', '280eb0c77b0e39363dae1da3b4dd8800f33faa7762cdc3eaa9160b72a8174368'),
+-    'outer': (E / 'OUTER-RECEIPT.json', '8099cb62ccbd72928b760281c07e5a3f5926ba3497147ae17144a03d2cac56b0'),
+-    'inner': (E / 'INNER-RESULT.json', '911e25a273b8ab280a784b130ca9515ab9b13cf94c20ebfa1d3be960c7a68506'),
+-    'reports': (E / 'STATIC-REPORTS.json', '87a859877d517408d8550b9f1b3cdd2b4f64cd5c873cf7dd8877739b5325c6ab'),
+-    'terminal': (B / 'reviews/detekt02/c16-preflight/EXTERNAL-RESULT.json',
+-                 '2cd877888c7b539208b4427c7e4992673c8709845a303aaf6e7e369e4407e4fa'),
++    'manifest': (SOURCE, 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'),
++    'allocation': (E / 'OUTER-ALLOCATION.json', 'cd929d96eb92393a922e9d6aa41c380bfe9283815999cbe29aa13858732a8607'),
++    'intent': (E / 'OUTER-INTENT.json', '3231873955c561e9c01629b1ce293821cfa63752e4bf57e965a2ab9c52590004'),
++    'outer': (E / 'OUTER-RECEIPT.json', 'bcab1d7758ab3ae27d7545794e225236cee82026b49306a9a8ef3155fe2edc87'),
++    'inner': (E / 'INNER-RESULT.json', '848d1bc8f5b5f29f73df1f63be11f654e4a71f3c388b73daa5108b361594a41b'),
++    'terminal': (B / 'reviews/focused-regression01-host02/EXTERNAL-RESULT.json', '043c83d68807eea9fbfa11116083638ee85ecc83a858cc50ce138188e945a39d'),
+ }
+ TEXT_INPUTS = {
+-    B / 'reviews/verification/LINUX-DETEKT02-ACTUAL-REVIEW.md':
+-        '722ad5bdf974bbaa06b5b37a597a5e91e4c12de25fa76bf9bbece4e62a541edb',
+-    B / 'reviews/storage/DETEKT02-CURRENT-WHOLE-R-CLOSEOUT-PLAN-v2.md':
+-        '104a9e60980a3d5289926b39e52e83e1cc95462510a70ccb6405130dda81ed9c',
+-    B / 'reviews/verification/DETEKT02-CURRENT-WHOLE-R-CLOSEOUT-PLAN-REVIEW.md':
+-        'af412d18e7473f9ff5ab7bb694679a530dd628baae984c328f90a6103ca415c7',
+-    E / 'CANCEL': '47c907d45f33722bf908113afe185dadb46d1136bcd039c0f003c97f2f3d6a6c',
++    B / 'reviews/focused-regression01-host02/LAUNCH.py':
++        '7ff5cc456d36dab5f588810dcf782e29defc769a15e6ea3f7c11b4414f5d13a8',
++    B / 'reviews/team20/android_fixture_review/focused-regression01/actual01/ACTUAL-REVIEW.md':
++        '795475ee7949026066469761ab3866b9218d81c4b1b7097291d3ee110e4c0255',
+ }
+-PROBLEM = 'checkout/build/reports/problems/problems-report.html'
+-PROBLEM_SHA = '077cc100c8a55fe02d644fa03f22eebbbaea0ff26a556d3c521ead8c8b1185bc'
++CACHE_LIMITS = {'roots': 4, 'files': 16, 'file_bytes': 1048576, 'total_bytes': 4194304, 'descendant_levels': 8, 'relative_json_bytes': 512}
++BASE_HASH_BYTES = 226995791
++EXPECTED_RAW_DIRS, EXPECTED_REQUIRED_DIRS, EXPECTED_ALLOWROOTS = (963, 966, 51)
++BUFFER_BYTES = [140712, 113515367]
++ORIGINAL_CHURN, ORIGINAL_CHILD_EXITS, ORIGINAL_CONFLICT_COMM = (6, [0, 1], 'java')
++XML = 'checkout/core/database/build/test-results/desktopTest/TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml'
++SAVED_XML = E / 'xml/focused-TEST-com.passvault.core.database.repository.BiometricUnlockFreshnessIntegrationTest.xml'
++XML_SHA = '846b2c4a69e4259b0498c56a85fdd59391c3c98d0e62746d55c817956bd46163'
+ FAILURE_FLAGS = {'source_after': False, 'cleanup_safe': False, 'independent_semantic_acceptance': False}
+ START, CANCELLED, last_resource = time.monotonic(), False, 0.0
+ DIRECTORIES, FILES, CHILDREN, SNAPSHOT = {}, {}, {}, {}
+ RAW_DIRS, REQUIRED_DIRS = set(), set()
+-runtime_bytes, logical_bytes, inventory_bytes = 0, 0, 3
++CACHE_ROOTS, CACHE_FILES, RETAINED_IMAGES = {}, {}, []
++runtime_bytes, logical_bytes, inventory_bytes, cache_bytes = 0, 0, 3, 0
+ lock_fd, receipt_fd = None, None
+ record = {'schema': 1, 'purpose': PURPOSE, 'status': 'HOLD', 'removed_files': 0,
+           'removed_directories_including_R': 0, 'removed_logical_bytes': 0, 'resources': [],
+           'builds_tests_stops': 0, 'original_failure_flags_unchanged': FAILURE_FLAGS,
+-          'unclassified_host_churn': {'count': 1, 'attribution': 'UNIDENTIFIED_UNWAIVED',
+-                                    'reason': 'positive buildlike process vanished/changed/unreadable'}}
++          'cache_reports': {'roots': CACHE_ROOTS, 'files': CACHE_FILES, 'logical_bytes': 0,
++                            'qualification': 'Opaque bounded conservation only; no content provenance or test/runtime credit'}}
+ 
+ 
+ def require(ok, message):
+@@ -266,6 +270,84 @@
+     return sorted(result)
+ 
+ 
++def cache_report_root(relative, is_directory):
++    parts = relative.split('/')
++    if (len(parts) < 6 or parts[:4] != ['gradle-home', 'caches', '9.7.1', 'groovy-dsl']
++            or len(parts[4]) != 32 or any(c not in '0123456789abcdef' for c in parts[4])
++            or parts[5] != 'reports'):
++        return None
++    require(len(parts) - 6 <= CACHE_LIMITS['descendant_levels']
++            and len(encode(relative)) <= CACHE_LIMITS['relative_json_bytes'], 'cache report depth/path cap')
++    root = '/'.join(parts[:6])
++    require(relative != root or is_directory, 'fixed cache reports root must be a directory')
++    require(relative == root or root in CACHE_ROOTS, 'cache report root must precede every descendant')
++    return root
++
++
++def retain_cache_report(parent, name, relative, before):
++    global runtime_bytes, cache_bytes
++    require(cache_report_root(relative, False) in CACHE_ROOTS and relative not in CACHE_FILES
++            and len(CACHE_FILES) < CACHE_LIMITS['files']
++            and 0 <= before.st_size <= CACHE_LIMITS['file_bytes']
++            and cache_bytes + before.st_size <= CACHE_LIMITS['total_bytes'], 'complete cache capture count/byte cap')
++    original = fp(before)
++    fd = os.open(name, OREAD, dir_fd=parent)
++    try:
++        require(fp(os.fstat(fd)) == original, 'cache report source open changed')
++        data = bytearray()
++        while part := os.read(fd, 65536):
++            check()
++            data.extend(part)
++            runtime_bytes += len(part)
++            require(len(data) <= before.st_size and runtime_bytes <= LIMITS['runtime_hash_bytes'], 'cache source read cap')
++        require(len(data) == before.st_size and original == fp(os.fstat(fd))
++                == fp(os.stat(name, dir_fd=parent, follow_symlinks=False)), 'cache report source drift')
++    finally:
++        os.close(fd)
++    digest = hashlib.sha256(data).hexdigest()
++    destination = 'CACHE-REPORTS/' + str(len(CACHE_FILES) + 1).zfill(4) + '.bin'
++    saved_parent = directory(OUT / 'CACHE-REPORTS')
++    fd = os.open(Path(destination).name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
++                 0o600, dir_fd=saved_parent)
++    try:
++        at = 0
++        while at < len(data):
++            check()
++            count = os.write(fd, data[at:at + 65536])
++            require(count > 0, 'short cache preservation write')
++            at += count
++        os.fsync(fd)
++        saved = fp(os.fstat(fd))
++        require(saved[0] == 24 and saved[2:6] == (0, stat.S_IFREG | 0o600, 1, len(data)),
++                'exclusive cache preservation file type/owner/mode/size')
++    finally:
++        os.close(fd)
++    os.fsync(saved_parent)
++    require(capture(OUT / destination, CACHE_LIMITS['file_bytes'], digest, saved) == bytes(data),
++            'exclusive cache preservation exact byte readback')
++    CACHE_FILES[relative] = {'destination': destination, 'sha256': digest, 'original_pin': original, 'saved_pin': saved}
++    cache_bytes += len(data)
++    record['cache_reports']['files'] = CACHE_FILES
++    record['cache_reports']['logical_bytes'] = cache_bytes
++    add(relative, ['f', original, digest])
++
++
++def verify_cache_reports(*, source):
++    global runtime_bytes
++    if CACHE_ROOTS:
++        require(dp(os.fstat(directory(OUT / 'CACHE-REPORTS'))) == record['cache_reports']['saved_directory_pin']
++                and set(names(directory(OUT / 'CACHE-REPORTS'))) ==
++                    {Path(item['destination']).name for item in CACHE_FILES.values()}, 'saved cache membership/identity')
++    for relative, item in sorted(CACHE_FILES.items()):
++        if source:
++            require(runtime_bytes + item['original_pin'][5] <= LIMITS['runtime_hash_bytes'], 'cache rehash aggregate cap')
++            data = capture(R / relative, CACHE_LIMITS['file_bytes'], item['sha256'], item['original_pin'])
++            runtime_bytes += len(data)
++        capture(OUT / item['destination'], CACHE_LIMITS['file_bytes'], item['sha256'], item['saved_pin'])
++    record['cache_reports']['source_and_saved_reverified_before_unlink' if source else 'saved_reverified_after_unlink'] = True
++    record['runtime_bytes_hashed'] = runtime_bytes
++
++
+ def classify(relative, is_directory):
+     if relative in FILES:
+         require(not is_directory, 'required regular member became directory: ' + relative)
+@@ -275,6 +357,8 @@
+         return
+     require(any(relative == p or relative.startswith(p + '/') for p in ALLOWROOTS),
+             'unadmitted runtime member: ' + relative)
++    if cache_report_root(relative, is_directory) is not None:
++        return  # Every regular byte here is conserved outside R; not a basename disposal waiver.
+     # Exact evidence locations/patterns anywhere in the admitted trees, not
+     # broad test/report substrings or arbitrary XML/HTML/log/cache contents.
+     parts = relative.lower().split('/')
+@@ -335,12 +419,23 @@
+             and (path not in PINS or pin == PINS[path])
+             and (relative not in RAW_DIRS or pin[3] == stat.S_IFDIR | 0o700), 'directory origin/type/mode')
+     classify(relative, True)
++    if cache_report_root(relative, True) == relative:
++        require(relative not in CACHE_ROOTS and len(CACHE_ROOTS) < CACHE_LIMITS['roots'], 'cache report root count cap')
++        if not CACHE_ROOTS:
++            os.mkdir('CACHE-REPORTS', 0o700, dir_fd=directory(OUT))
++            saved_pin = dp(os.fstat(directory(OUT / 'CACHE-REPORTS')))
++            require(saved_pin[0] == 23 and saved_pin[2:] == (0, stat.S_IFDIR | 0o700), 'fresh private cache evidence directory')
++            os.fsync(directory(OUT))
++            record['cache_reports']['saved_directory_pin'] = saved_pin
++        CACHE_ROOTS[relative] = pin
+     add(relative, ['d', pin])
+     CHILDREN[relative] = names(fd)
+     if relative == '':
+-        require(set(CHILDREN[relative]) == set(TOP) | {'source.oids', 'source.blobs', 'git-index'}, 'exact original top membership')
+-    if relative == 'git-metadata':
+-        require(not CHILDREN[relative], 'original underlying metadata must be empty; do not traverse alias')
++        require(set(CHILDREN[relative]) == set(TOP) | {'source.oids', 'source.blobs'}, 'exact original top membership')
++    if relative == 'workers':
++        require(set(CHILDREN[relative]) == set(WORKERS), 'exact original worker roots')
++    if relative in ('workers/database', 'workers/credential'):
++        require(set(CHILDREN[relative]) == set(WORKER_CHILDREN), 'exact eight private leaves per original worker')
+     for name in CHILDREN[relative]:
+         check()
+         child = relative + '/' + name if relative else name
+@@ -362,6 +457,8 @@
+                 os.close(sub)
+         elif child in FILES:
+             verify_file(fd, name, child, before)
++        elif cache_report_root(child, False) is not None:
++            retain_cache_report(fd, name, child, before)
+         else:
+             add(child, ['f', fp(before)])  # Generated/cache metadata only; not a content-diagnostic claim.
+     require(names(fd) == CHILDREN[relative] and dp(os.fstat(fd)) == pin, 'snapshot membership/identity drift')
+@@ -406,38 +503,46 @@
+ 
+ def bind_retained(inputs):
+     manifest, allocation, intent, outer, inner = (inputs[k] for k in ('manifest', 'allocation', 'intent', 'outer', 'inner'))
+-    require(manifest['commit'] == COMMIT and manifest['tree'] == TREE and len(manifest['files']) == 2887
+-            and len(manifest['checkout_eol_qualifications']) == 2 and allocation == outer['allocation'],
+-            'original C16 manifest/allocation')
++    require(manifest['commit'] == COMMIT and manifest['tree'] == TREE and len(manifest['files']) == 3432
++            and len(manifest['checkout_eol_qualifications']) == 2 and allocation == outer['allocation']
++            and all(v['commit'] == COMMIT and v['tree'] == TREE for v in (allocation, intent))
++            and allocation['source_members'] == intent['source_members'] == 3432, 'original C18 manifest/allocation')
+     for path in (R, E):
+         require(historical(allocation['allocated_directories'][str(path)], True) == PINS[path], 'original allocation')
+     for path in (R.parent, E.parent, LOCK.parent):
+         require(historical(allocation['parents'][str(path)], True) == PINS[path], 'original parent allocation')
+-    for path in (R, E, E / 'logs', E / 'reports', *(R / p for p in TOP)):
+-        require(historical(intent['directories'][str(path)], True) == PINS[path], 'original top/evidence directory')
++    original_directories = {path for path in PINS if path == R or R in path.parents or path == E or E in path.parents}
++    require(set(intent['directories']) == {str(path) for path in original_directories}, 'exact original directory cohort')
++    for path in original_directories:
++        require(historical(intent['directories'][str(path)], True) == PINS[path], 'original runtime/evidence directory')
+     require(inner['commit'] == COMMIT and inner['tree'] == TREE and inner['source_before'] is True
+             and all(inner[k] is v for k, v in FAILURE_FLAGS.items())
+-            and inner['all_required_stops_ok'] is True and inner['namespace_empty_before_exit'] is True
+-            and inner['git_bindings_stable'] is True and inner['sealed_index_unchanged'] is True
+-            and inner['declared_test_cases'] == 0, 'original failure/settlement flags; no waiver')
++            and inner['all_required_stops_ok'] is True and inner['namespace_empty_before_exit'] is True,
++            'original failure/settlement flags; no waiver')
+     phases = inner['phases']
+-    require([p['phase'] for p in phases] == ['git-isolation', 'detekt'] and all(p['settled'] is True for p in phases)
+-            and phases[1]['stop_required'] is True and phases[1]['stop_attempted'] is True and phases[1]['stop_ok'] is True
+-            and [(c['label'], c['complete'], c['exit']) for c in phases[1]['commands']] ==
+-                [('detekt', True, 1), ('detekt-stop', True, 0)], 'original cohort only; no renewed stop')
+-    require(outer['status'] == 'HOLD' and outer['cleanup'] == 'NOT_ATTEMPTED' and outer['unclassified_host_churn'] == 1
+-            and 'RuntimeError:positive buildlike process vanished/changed/unreadable' in outer['reasons']
+-            and [c['exit'] for c in outer['children']] == [0, 70]
++    require([p['phase'] for p in phases] == ['focused'] and phases[0]['settled'] is True
++            and phases[0]['stop_required'] is True and phases[0]['stop_attempted'] is True and phases[0]['stop_ok'] is True
++            and [(c['label'], c['complete'], c['exit']) for c in phases[0]['commands']] ==
++                [('focused', True, 143), ('focused-stop', True, 0)], 'original focused cohort only; no renewed stop')
++    require('index_copy' not in intent and 'index_copy' not in outer and 'git-metadata' not in TOP,
++            'focused contract has no sealed index or metadata alias')
++    require(outer['status'] == 'HOLD' and outer['cleanup'] == 'NOT_ATTEMPTED'
++            and outer['unclassified_host_churn'] == ORIGINAL_CHURN
++            and [c['exit'] for c in outer['children']] == ORIGINAL_CHILD_EXITS
+             and all(c['pidfd_kill_attempted'] is False for c in outer['children'])
+-            and inputs['terminal']['terminal_exit'] == 70 and inputs['terminal']['direct_tool_session_complete'] is True,
+-            'original actual failure/churn/settlement binding')
++            and inputs['terminal']['final']['exit_code'] == 70
++            and 'session_id' not in inputs['terminal']['final'], 'original actual failure/churn/settlement binding')
++    first = outer['host_screen_first_failure']
++    require(first['comm'] == ORIGINAL_CONFLICT_COMM and first['owned_proof'] is False
++            and first['identity']['namespaces'] == outer['parent_namespaces'], 'retained positive parent-namespace conflict')
++    record.update(original_host_churn={'count': ORIGINAL_CHURN, 'first_failure': first, 'reasons': outer['reasons'],
++                                      'qualification': 'UNWAIVED_HISTORY; neither current actor adoption nor proof of absence'},
++                  original_child_exits=ORIGINAL_CHILD_EXITS, original_external_exit=70)
+     for phase in phases:
+-        image = phase['record_image']
+-        capture(E / ('PHASE-' + phase['phase'] + '.json'), MIB, image['sha256'], historical(image['pin']))
+-    for command in phases[1]['commands']:
+-        image = command['log']
+-        capture(E / 'logs' / (command['label'] + '.log'), MIB, image['sha256'], historical(image['pin']))
+-    RAW_DIRS.update({'', *TOP})
++        RETAINED_IMAGES.append((E / ('PHASE-' + phase['phase'] + '.json'), phase['record_image']))
++        RETAINED_IMAGES.extend((E / 'logs' / (command['label'] + '.log'), command['log']) for command in phase['commands'])
++    RAW_DIRS.update('' if path == R else str(path.relative_to(R))
++                    for path in original_directories if path == R or R in path.parents)
+     identities, oids = [], bytearray()
+     for row in manifest['files']:
+         check()
+@@ -454,41 +559,56 @@
+         RAW_DIRS.update('/'.join(parts[:n]) for n in range(1, len(parts)))
+         identities.append([name, mode, row['git_blob'], row['raw_size'], row['raw_sha256']])
+         oids.extend(row['git_blob'].encode('ascii') + b'\n')
+-    require(len(RAW_DIRS) == 868 and len(GENERATED) == 24 and len(set(ALLOWROOTS)) == 35
+-            and sum(row['raw_size'] for row in manifest['files']) == 97700141
++    require(len(RAW_DIRS) == EXPECTED_RAW_DIRS and len(GENERATED) == 24 and len(set(ALLOWROOTS)) == EXPECTED_ALLOWROOTS
++            and sum(row['raw_size'] for row in manifest['files']) == 113336811
++            and sum(row['git_mode'] == '100644' for row in manifest['files']) == 3358
++            and sum(row['git_mode'] == '100755' for row in manifest['files']) == 74
+             and hashlib.sha256(encode(sorted(identities))).hexdigest() == RAW_IDENTITY
+                 == outer['source_before']['raw_identity_sha256'] == intent['raw_source']['raw_identity_sha256'],
+-            'exact raw source identity/counts')
++            'exact C18 raw source identity/counts; no current W/T comparison')
+     extras = {'source.oids': outer['raw_transport']['ordered_request'][str(R / 'source.oids')],
+-              'source.blobs': outer['raw_transport']['response'][str(R / 'source.blobs')],
+-              'git-index': outer['index_copy']['copy_image']}
+-    require(len(oids) == 118367 and hashlib.sha256(oids).hexdigest() == extras['source.oids']['sha256']
+-            and [extras[p]['pin']['bytes'] for p in extras] == [118367, 97850288, 461842], 'original exact buffers/OID order')
++              'source.blobs': outer['raw_transport']['response'][str(R / 'source.blobs')]}
++    require(len(oids) == 140712 and hashlib.sha256(oids).hexdigest() == extras['source.oids']['sha256']
++                == 'ddee058c4a4cf9a8ab1eb63a323ab0b10dab19a4c4a43214f95e17bc2ff5fb64'
++            and extras['source.blobs']['sha256'] == '11b749e0038eeb0acf68c9fbcc5b33889d3c7aba82823aaecda48d39c62a8c42'
++            and [extras[p]['pin']['bytes'] for p in extras] == BUFFER_BYTES, 'original exact buffers/OID order')
+     for name, image in extras.items():
+         pin = historical(image['pin'])
+         require(pin[0] == 24 and pin[2] == 0 and pin[4] == 1
+                 and pin[3] == stat.S_IFREG | (0o400 if name == 'git-index' else 0o600), 'original transport/index type')
+         FILES[name] = {'bytes': pin[5], 'mode': pin[3], 'sha256': image['sha256'], 'original_pin': pin}
+-    require(len(FILES) == 2890 and sum(v['bytes'] for v in FILES.values()) == 196130638
+-            and not RAW_DIRS.intersection(FILES), 'exact source/buffer aggregate')
+-    reports = inputs['reports']
+-    absent = {('checkout/' + (m + '/' if m else '') + 'build/reports/detekt/detekt.' + ext)
+-              for m in MODULES for ext in ('xml', 'html', 'sarif')}
+-    require(reports == phases[1]['reports'] and reports['preserved'] is True and len(reports['captures']) == 1
+-            and len(reports['absent']) == len(absent) == 66
+-            and {'checkout/' + row['source'] for row in reports['absent']} == absent, 'original fixed report inventory')
+-    kept = reports['captures'][0]
+-    require(kept['source'] == PROBLEM.removeprefix('checkout/') and kept['destination'] == 'reports/gradle-problems.html'
+-            and kept['original']['sha256'] == kept['saved']['sha256'] == PROBLEM_SHA
+-            and kept['original']['pin']['bytes'] == kept['saved']['pin']['bytes'] == 130495, 'sole original/saved report')
++    xml = phases[0]['xml']
++    require(xml['preserved'] is True and xml['mapping_ok'] is False and len(xml['captures']) == 1,
++            'one originally retained XML, not twelve XML files or complete regression acceptance')
++    kept = xml['captures'][0]
++    require(kept['source'] == str(R / XML) and kept['original']['sha256'] == kept['saved']['sha256'] == XML_SHA
++            and kept['original']['pin']['bytes'] == kept['saved']['pin']['bytes'] == 2901, 'sole original/saved XML')
+     original = historical(kept['original']['pin'])
+-    FILES[PROBLEM] = {'bytes': 130495, 'mode': original[3], 'sha256': PROBLEM_SHA, 'original_pin': original}
+-    REQUIRED_DIRS.update(RAW_DIRS | {'checkout/build', 'checkout/build/reports', 'checkout/build/reports/problems'})
+-    capture(E / kept['destination'], MIB, PROBLEM_SHA, historical(kept['saved']['pin']))
++    FILES[XML] = {'bytes': 2901, 'mode': original[3], 'sha256': XML_SHA, 'original_pin': original}
++    RETAINED_IMAGES.append((SAVED_XML, kept['saved']))
++    REQUIRED_DIRS.update(RAW_DIRS | {'checkout/core/database/build', 'checkout/core/database/build/test-results',
++                                   'checkout/core/database/build/test-results/desktopTest'})
++    absent = set()
++    record.update(original_retained_xml_files=1, original_xml_case_observations=12, saved_xml=kept,
++                  xml_qualification='Twelve observations in one retained XML; no complete20 or regression PASS')
++    require(len(FILES) == 3435 and sum(v['bytes'] for v in FILES.values()) == BASE_HASH_BYTES
++            and len(REQUIRED_DIRS) == EXPECTED_REQUIRED_DIRS and not RAW_DIRS.intersection(FILES), 'exact source/buffer/report aggregate')
++    for path, image in RETAINED_IMAGES:
++        capture(path, MIB, image['sha256'], historical(image['pin']))
+     record.update(original_cohort_settlement_bound=True, original_reports_preserved=True,
+-                  saved_report=kept, source_commit=COMMIT, source_tree=TREE, raw_source_identity_sha256=RAW_IDENTITY,
+-                  source_checkout_eol_qualifications='PRESERVED; raw fields only; T checkout pins are not R pins')
+-    return absent, kept
++                  source_commit=COMMIT, source_tree=TREE, raw_source_identity_sha256=RAW_IDENTITY,
++                  source_checkout_eol_qualifications='PRESERVED; raw fields only; observed T checkout pins are not R pins',
++                  fresh_cleanup_check_is_not_original_SOURCE_AFTER_repair=True)
++    return absent
++
++
++def recheck_original_evidence():
++    for path, digest in INPUTS.values():
++        capture(path, 2 * MIB, digest)
++    for path, digest in TEXT_INPUTS.items():
++        capture(path, MIB, digest)
++    for path, image in RETAINED_IMAGES:
++        capture(path, MIB, image['sha256'], historical(image['pin']))
+ 
+ 
+ def main():
+@@ -501,13 +621,18 @@
+     request, approval = decode(request_raw), decode(approval_raw)
+     source_hash = hashlib.sha256(capture(SELF, MIB)).hexdigest()
+     require(request['purpose'] == PURPOSE and request['source_sha256'] == source_hash and request['limits'] == LIMITS
+-            and approval == {'purpose': PURPOSE, 'reviewer': '/root/verification', 'disposition': 'ACCEPT_EXACT_ONCE',
++            and request['cache_limits'] == CACHE_LIMITS
++            and approval == {'purpose': PURPOSE, 'reviewer': '/root/android_compile_review', 'disposition': 'ACCEPT_EXACT_ONCE',
+                              'request_sha256': hashlib.sha256(request_raw).hexdigest(), 'source_sha256': source_hash}, 'exact independent admission')
+-    require(request['binding_complete'] is True and request['sole_owner'] == '/root'
+-            and request['no_audit_build_or_ci'] is True and request['original_runtime_writer_freeze'] is True
+-            and request['original_settled_cohort_only'] is True
+-            and request['unidentified_churn_not_attributed_or_waived'] is True
+-            and request['acknowledged_original_failure_flags'] == FAILURE_FLAGS, 'fresh root original-only coordination incomplete')
++    require(request['binding_complete'] is True and request['sole_team_launcher'] == '/root'
++            and request['cooperative_audit_team_no_build_or_ci'] is True and request['no_known_external_scheduler'] is True
++            and request['cooperative_original_runtime_writer_freeze'] is True
++            and request['cooperative_original_runtime_mount_freeze'] is True
++            and request['immutable_original_evidence_freeze'] is True and request['original_settled_cohort_only'] is True
++            and request['historical_host_churn_retained_not_current_actor_proof'] is True
++            and request['acknowledged_original_failure_flags'] == FAILURE_FLAGS
++            and request['coordination_scope'] == 'COOPERATIVE_OLD_R_ONLY_NOT_GLOBAL_IDLE_OR_HOSTILE_ROOT',
++            'fresh cooperative root original-only coordination incomplete')
+     lock_fd = os.open(LOCK.name, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=directory(LOCK.parent))
+     require(fp(os.fstat(lock_fd)) == tuple(request['lock_pin']) == LOCK_PIN
+             == fp(os.stat(LOCK.name, dir_fd=directory(LOCK.parent), follow_symlinks=False)), 'original lock before flock')
+@@ -530,14 +655,14 @@
+     inputs = {key: decode(capture(path, 2 * MIB, digest)) for key, (path, digest) in INPUTS.items()}
+     for path, digest in TEXT_INPUTS.items():
+         capture(path, MIB, digest)
+-    absent, kept = bind_retained(inputs)
++    absent = bind_retained(inputs)
+     coordination(request)
+     record.update(retained_bindings_verified=True, mount_before=mounts(), status='VERIFYING_WHOLE_CURRENT_R')
+     flush()
+     root, parent = directory(R), directory(R.parent)
+     snapshot(root, '')
+     require(set(FILES).issubset(SNAPSHOT) and REQUIRED_DIRS.issubset(SNAPSHOT)
+-            and absent.isdisjoint(SNAPSHOT) and runtime_bytes == 196261133, 'complete fresh source/report/inventory verification')
++            and absent.isdisjoint(SNAPSHOT) and runtime_bytes == BASE_HASH_BYTES + cache_bytes, 'complete fresh source/report/inventory verification')
+     expected_files = sum(item[0] == 'f' for item in SNAPSHOT.values())
+     expected_dirs = len(SNAPSHOT) - expected_files
+     inventory = encode(SNAPSHOT)
+@@ -545,11 +670,15 @@
+     record.update(inventory_retained=retain_inventory(inventory), inventory_entries=len(SNAPSHOT),
+                   expected_files=expected_files, expected_directories_including_R=expected_dirs,
+                   expected_logical_bytes=logical_bytes, runtime_bytes_hashed=runtime_bytes,
+-                  fresh_raw_source_verified=True, fixed_analyzer_reports_absent=66,
++                  fresh_raw_source_verified=True, cache_report_bytes_preserved=cache_bytes,
+                   status='WHOLE_INVENTORY_RETAINED_NO_DELETION_YET')
+     flush()
+     walk_inventory(root, '', deleting=False)  # Full metadata/membership pass before the first unlink.
+-    capture(E / kept['destination'], MIB, PROBLEM_SHA, historical(kept['saved']['pin']))
++    recheck_original_evidence()
++    capture(OUT / 'INVENTORY.json', LIMITS['inventory_bytes'], record['inventory_retained']['sha256'],
++            record['inventory_retained']['pin'])
++    verify_cache_reports(source=True)
++    require(runtime_bytes == BASE_HASH_BYTES + 2 * cache_bytes, 'complete source plus cache rehash accounting')
+     coordination(request)
+     directory(R)
+     record.update(mount_before_delete=mounts(), status='DELETING_VERIFIED_WHOLE_CURRENT_R')
+@@ -570,10 +699,13 @@
+         raise RuntimeError('R name reappeared; no further action')
+     require(record['removed_files'] == expected_files and record['removed_directories_including_R'] == expected_dirs
+             and record['removed_logical_bytes'] == logical_bytes, 'final removal accounting')
+-    capture(E / kept['destination'], MIB, PROBLEM_SHA, historical(kept['saved']['pin']))
++    recheck_original_evidence()
++    capture(OUT / 'INVENTORY.json', LIMITS['inventory_bytes'], record['inventory_retained']['sha256'],
++            record['inventory_retained']['pin'])
++    verify_cache_reports(source=False)
+     record.update(mount_after=mounts(), status='CURRENT_WHOLE_R_REMOVED_PENDING_INDEPENDENT_RECONCILIATION',
+-                  qualification='Only original current Detekt02 temporary R removed; W/T/E and original failure/churn preserved. '
+-                                'Ordinary private Gradle logs/cache metadata are not new diagnostic evidence solely by extension. '
++                  qualification='Only original current FocusedRegression01 temporary R removed; W/T/E and original failure/churn preserved. '
++                                'Narrow private cache-report bytes conserved outside R without provenance or test credit. '
+                                 'No test/Detekt PASS, global-idle/no-escape, physical-space or hostile-root/atomic-unlink proof.')
+ 
+ 

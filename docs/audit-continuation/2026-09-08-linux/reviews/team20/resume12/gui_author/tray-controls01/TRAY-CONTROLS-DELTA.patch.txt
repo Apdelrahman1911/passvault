@@ -1,0 +1,232 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/gui_author/instance-template01/linux_desktop_integration_04.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/gui_author/tray-controls01/linux_desktop_integration_04.py.txt
+@@ -86,19 +86,19 @@
+      'suite': 'CredentialMainNavHostRoomIntegrationTest[desktop]',
+      'methods': ('actual Main guards dirty Back tab and Add without changing durable Room tuples',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': '1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761'},
++     'sha256': '992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f'},
+     {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+      'class': 'com.passvault.desktop.Pvu003NativeChooserAdmissionIntegrationTest',
+      'suite': 'Pvu003NativeChooserAdmissionIntegrationTest[desktop]',
+      'methods': ('actual Main samples Home while the export chooser is modal then cancels',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': '1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761'},
++     'sha256': '992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f'},
+     {'module': 'app-desktop', 'task': ':app-desktop:desktopTest', 'worker': 'mainnav',
+      'class': 'com.passvault.desktop.Pva027MainSettingsTrayPropagationIntegrationTest',
+      'suite': 'Pva027MainSettingsTrayPropagationIntegrationTest[desktop]',
+      'methods': ('actual Main Settings updates installed tray properties through English Arabic English',),
+      'fixture': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt',
+-     'sha256': '1c7cf84fec50c6e161d2e3e282066c372a8950b0c6f2bd7c08b1fa423d769761'},
++     'sha256': '992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f'},
+ )
+ PRODUCTION_SOURCE = {
+     'app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt':
+@@ -112,6 +112,10 @@
+ MAINNAV_ROLES = ('seed', 'main', 'verify')
+ MAINNAV_FILES = {role + suffix: cap for role in MAINNAV_ROLES
+                  for suffix, cap in (('.events', 8192), ('.log', 256 * 1024), ('.exit', 16))}
++PVA027_CROPS = {name: MIB for name in (
++    'tray-tooltip-en1.png', 'tray-tooltip-ar.png', 'tray-tooltip-en2.png',
++    'tray-lock-selection.png', 'tray-exit-selection.png',
++)}
+ MAINNAV_EVENTS = {
+     'seed': ('SEED_ORIGINAL_TUPLES', 'SEED_ROOM_CLOSED'),
+     'main': ('MAIN_NATIVE_EDIT', 'PENDING_NATIVE_TUPLE', 'TOOLBAR_STAY', 'ESCAPE_STAY', 'TAB_STAY',
+@@ -120,21 +124,24 @@
+ }
+ MAINNAV_MAIN_EVENTS = {
+     'mainnav': MAINNAV_EVENTS['main'],
+-    'pva027': ('PVA027_MAIN_TRAY_EN1', 'PVA027_MAIN_TRAY_AR', 'PVA027_MAIN_TRAY_EN2',
+-               'DRIVER_ASSERTIONS_COMPLETE', 'QUIT_KEY_CALLS_COMPLETE'),
++    'pva027': ('PVA027_MAIN_TRAY_EN1', 'PVA027_TOOLTIP_EN1', 'PVA027_MAIN_TRAY_AR', 'PVA027_TOOLTIP_AR',
++               'PVA027_MAIN_TRAY_EN2', 'PVA027_TOOLTIP_EN2', 'PVA027_NATIVE_LOCK_DISPATCH', 'PVA027_MAIN_LOCKED',
++               'DRIVER_ASSERTIONS_COMPLETE', 'PVA027_EXIT_KEY_CALLS_COMPLETE', 'PVA027_NATIVE_EXIT_EVENT'),
+ }
+ PVU003_MAIN_RECEIPT = (
+     rb'PVU003_CHOOSER_HOME=[01];AFTER_CANCEL=[01];FRAME_DELIVERY=[0-9a-f]\n'
+     rb'DRIVER_ASSERTIONS_COMPLETE\nQUIT_KEY_CALLS_COMPLETE\n'
+ )
+-MAINNAV_EVENT_COUNTS = {'mainnav': 13, 'pvu003': 7, 'pva027': 9}
++MAINNAV_EVENT_COUNTS = {'mainnav': 13, 'pvu003': 7, 'pva027': 15}
+ MAINNAV_QUALIFICATIONS = {
+     'mainnav': 'Actual Main/Window/NavHost native dirty Back/tab/Add and final durable Room tuples; '
+                'not transient-write exclusion, comprehensive navigation/cleanup, recovery, hardware or PVD proof.',
+     'pvu003': 'Bounded modal Home/cancel observation, not lock-cycle/deletion/deadlock proof or disproof; '
+               'receipt values must be interpreted, not forced to a suspected result.',
+-    'pva027': 'Real Settings EN/AR/EN to installed tray properties; ordered non-atomic state/property samples, '
+-              'not displayed tooltip, native callbacks, continuous ownership, persistence or packaging proof.',
++    'pva027': 'Real Settings EN/AR/EN, native Lock/Exit and five bounded crops; automatic PNG header/terminator/geometry '
++              'mapping is not image decoding or a visual pass. Tooltip text/shaping/clipping and selected menu items '
++              'require independent visual review with exact trace/XML/state/exit evidence. Not continuous ownership, '
++              're-unlock, preference persistence, packaged-icon, other-backend or hardware proof.',
+ }
+ MAINNAV_LOG_FAILURES = (
+     b'MAIN_NAV_FAILURE', b'Exception in thread', b'[ERROR]',
+@@ -310,8 +317,8 @@
+         require(not self.pending and not self.write_close_failed, 'unfinished/uncertain original evidence files')
+         for path in tuple(self.dirs):
+             self.directory(path)
+-        # 107 success + at most 9 Main child crash texts + 4 extra XML (8 total XML) = 120 items.
+-        require(len(self.evidence) <= 120 and sum(v['pin']['bytes'] for v in self.evidence.values()) <= 112 * MIB,
++        # Prior 120-item/112MiB ceiling plus exactly five PVA027 crops at at most 1MiB each.
++        require(len(self.evidence) <= 125 and sum(v['pin']['bytes'] for v in self.evidence.values()) <= 117 * MIB,
+                 'compact evidence aggregate bound')
+         for path, expected in self.evidence.items():
+             require(self.read(path, 4 * MIB)[1] == expected, 'preserved evidence drift')
+@@ -1300,13 +1307,16 @@
+         require(case in MAINNAV_CASES, 'fixed Main case only')
+         runtime, evidence = MAINNAV_RUNTIME[case], MAINNAV_EVIDENCE[case]
+         observed = set(os.listdir(self.f.directory(evidence)))
+-        require(observed <= set(MAINNAV_FILES), 'unexpected Main/NavHost producer evidence; cleanup HOLD')
++        crop_files = PVA027_CROPS if case == 'pva027' else {}
++        allowed_files = {**MAINNAV_FILES, **crop_files}
++        require(observed <= set(allowed_files), 'unexpected Main/NavHost producer evidence; cleanup HOLD')
+         contents, images, size = {}, {}, 0
+         for name in sorted(observed):
+             path = evidence / name
+-            data, image = self.f.read(path, MAINNAV_FILES[name])
++            data, image = self.f.read(path, allowed_files[name])
+             size += len(data)
+-            require(size <= 811056 and path not in self.f.evidence, 'fixed nine Main/NavHost receipts/exclusive adoption')
++            require(size <= sum(allowed_files.values()) and path not in self.f.evidence,
++                    'fixed case receipts/crop byte bound and exclusive adoption')
+             # Accepted lifecycle original-descriptor/force/adoption discipline, not a new runner abstraction.
+             parent = self.f.directory(path.parent)
+             fd = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC, dir_fd=parent)
+@@ -1324,6 +1334,22 @@
+                     raise RuntimeError('original Main/NavHost descriptor close uncertain; no retry') from error
+             self.f.evidence[path] = image
+             contents[name], images[name] = data, image
++
++        # All safely readable producer bytes are already forced/adopted above, even
++        # empty/partial/invalid-header PNGs. Classification must not discard failure evidence.
++        crop_headers, crop_mapping = {}, True
++        for name in crop_files:
++            data = contents.get(name)
++            header = (data is not None and len(data) >= 33
++                      and data[:16] == b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR')
++            terminal = data is not None and data[-12:] == b'\x00\x00\x00\x00IEND\xaeB`\x82'
++            width = int.from_bytes(data[16:20], 'big') if header else None
++            height = int.from_bytes(data[20:24], 'big') if header else None
++            bounded = bool(header and terminal and 1 <= width <= 700 and 1 <= height <= 400)
++            crop_mapping = crop_mapping and bounded
++            crop_headers[name] = {'present': data is not None, 'width': width, 'height': height,
++                'header_and_terminal_geometry_ok': bounded,
++                'qualification': 'Signature/IHDR dimensions/IEND sentinel only; no CRC/IDAT decode or visual acceptance.'}
+ 
+         diagnostics = []
+         try:
+@@ -1366,13 +1392,16 @@
+         else:
+             expected['main.events'] = ('\n'.join(MAINNAV_MAIN_EVENTS[case]) + '\n').encode()
+             main_ok = True
+-        mapping = (observed == set(MAINNAV_FILES) and not diagnostics and main_ok
++        mapping = (observed == set(allowed_files) and not diagnostics and main_ok and crop_mapping
+                    and all(contents.get(name) == value for name, value in expected.items())
+                    and all(not any(marker in contents.get(role + '.log', b'') for marker in MAINNAV_LOG_FAILURES)
+                            for role in MAINNAV_ROLES))
+         saved = self.f.write(E / (case.upper() + '-RESULT.json'), canonical({
+             'case': case, 'runtime_directory': str(runtime), 'evidence_directory': str(evidence),
+-            'required_images': images, 'required_bytes': size, 'required_present': observed == set(MAINNAV_FILES),
++            'required_images': images, 'required_bytes': size, 'required_present': observed == set(allowed_files),
++            'expected_role_files': len(MAINNAV_FILES), 'expected_crop_files': len(crop_files),
++            'crop_headers': crop_headers, 'crop_header_mapping_ok': crop_mapping,
++            'independent_visual_review': 'REQUIRED_NOT_PERFORMED' if crop_files else 'NOT_APPLICABLE',
+             'preserved': True, 'mapping_ok': mapping, 'crash_diagnostics': diagnostics,
+             'declared_cases': 1, 'child_roles_planned': 3, 'ordered_events_required': MAINNAV_EVENT_COUNTS[case],
+             'bounded_observation_receipt': observation,
+@@ -1460,7 +1489,8 @@
+             'preserved_xml_suites': batch.preserved_xml_suites, 'executed_cases_require_exact_xml': True,
+             'mainnav_evidence_preserved': batch.mainnav_preserved, 'mainnav_mapping_ok': batch.mainnav_ok,
+             'mainnav_crash_diagnostics': batch.mainnav_crash_count, 'mainnav_case_results': batch.mainnav_cases,
+-            'expected_mainnav_files': 27, 'mainnav_child_roles_planned': 9,
++            'expected_mainnav_files': 32, 'expected_mainnav_role_files': 27, 'expected_pva027_crop_files': 5,
++            'pva027_independent_visual_review': 'REQUIRED_NOT_PERFORMED', 'mainnav_child_roles_planned': 9,
+             'outer_work_deadline_monotonic_ns': batch.work_deadline_ns,
+             'xml_preserved': batch.xml_preserved, 'xml_mapping_ok': batch.xml_ok,
+             'errors': batch.errors, 'phases': batch.phases,
+@@ -1473,9 +1503,11 @@
+             'qualification': 'Four Linux cases in two existing serial KMP tasks: real-Room editor first, then '
+                               'original Main/PVU003 chooser/PVA027 Settings-property siblings in unspecified class order. '
+                               'Earlier lifecycle/tray passes and failed02 Main evidence remain separate, not rerun. '
+-                              'PVU003 is bounded observation; PVA027 is sampled property propagation, not closure. '
++                              'PVU003 is bounded observation; PVA027 adds native Lock/Exit receipts and5crops, not closure. '
++                              'Automatic PNG header/terminator/geometry mapping is not decoding or visual acceptance; '
++                              'tooltip text/shaping/clipping and selected menu items require independent visual review. '
+                               'Not transient-write exclusion, comprehensive cleanup/navigation, race/IME, general AX, '
+-                              'displayed tooltip/tray callbacks, persistence, packaging, other platforms/hardware or PVD proof'}
++                              're-unlock, preference persistence, packaging, other platforms/hardware or PVD proof'}
+         try:
+             files.write(E / 'INNER-RESULT.json', canonical(result))
+             files.verify()
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/gui_author/instance-template01/LAUNCH04.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/gui_author/tray-controls01/LAUNCH04.py.txt
+@@ -53,9 +53,11 @@
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 'UNBOUND', 'regular_file_device': 'UNBOUND'}
+ EXPECTED_LOCK = 'UNBOUND'
+-FROZEN = {INNER: 'ebb7a67b6a5b1eb7c252ac4b53b0dbd09c0c645dcd0775de6e621b92b6613702', INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf', SOURCE: 'UNBOUND'}
++FROZEN = {INNER: 'f14950eb250d85ccb7816e93b9d8395705b45ecc81a9b917b57f27e78f1e1099', INIT: '355d767f7e658c2bcb0d2ff2fc956db9494246f9c7cd1c10c832c153441edcdf', SOURCE: 'UNBOUND'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers mainnav pvu003 pva027'.split()
+ WORKERS = ['mainnav', 'editor-room']
++PVA027_CROPS = ('tray-tooltip-en1.png', 'tray-tooltip-ar.png', 'tray-tooltip-en2.png',
++                'tray-lock-selection.png', 'tray-exit-selection.png')
+ CHILDREN = 'home tmp jna sqlite xdg-cache xdg-config xdg-data xdg-state'.split()
+ DIRS = TOP + [f'workers/{w}' for w in WORKERS] + [f'workers/{w}/{d}' for w in WORKERS for d in CHILDREN]
+ ODIR, MIB = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, 1024 ** 2
+@@ -818,10 +820,27 @@
+                 and case_value['declared_cases'] == 1 and case_value['child_roles_planned'] == 3
+                 and case_value['preserved'] is True and case_value['mapping_ok'] == row['mapping_ok']
+                 and len(case_value['crash_diagnostics']) == row['crash_count'], 'Main case saved result binding')
++        require(case_value['expected_role_files'] == 9
++                and case_value['expected_crop_files'] == (5 if case == 'pva027' else 0)
++                and type(case_value['crop_header_mapping_ok']) is bool
++                and case_value['independent_visual_review'] ==
++                    ('REQUIRED_NOT_PERFORMED' if case == 'pva027' else 'NOT_APPLICABLE'),
++                'fixed per-case crop/role counts and independent visual-review qualification')
++        if case == 'pva027':
++            require(isinstance(case_value['crop_headers'], dict) and set(case_value['crop_headers']) == set(PVA027_CROPS),
++                    'exact five PVA027 crop structural records')
+         if code == 0:
+             require(row['mapping_ok'] is True and row['crash_count'] == 0
+-                    and case_value['required_present'] is True and len(case_value['required_images']) == 9,
+-                    'successful Main case requires exact complete receipt set')
++                    and case_value['required_present'] is True
++                    and len(case_value['required_images']) == (14 if case == 'pva027' else 9),
++                    'successful Main case requires exact complete role/crop set')
++            if case == 'pva027':
++                required = {role + suffix for role in ('seed', 'main', 'verify')
++                            for suffix in ('.events', '.log', '.exit')} | set(PVA027_CROPS)
++                require(set(case_value['required_images']) == required and case_value['crop_header_mapping_ok'] is True
++                        and all(row['present'] is True and row['header_and_terminal_geometry_ok'] is True
++                                for row in case_value['crop_headers'].values()),
++                        'PVA027 automated crop mapping only; independent visual review remains required')
+         receipt['mainnav_case_results'][case] = case_image
+     require(all(type(result[k]) is bool for k in ('gui_attempted', 'render_attempted', 'net_private_before_gui',
+             'tmpfs_private_before_gui', 'gui_helpers_settled', 'mainnav_evidence_preserved'))
+@@ -853,17 +872,22 @@
+         require(code == 1 and result['render_attempted'] is False and result['gui_helpers'] == [],
+                 'unstarted GUI cannot claim rendering/success/helpers')
+     require(not result['render_attempted'] or result['xml_preserved'] is True, 'attempted render evidence not preserved')
++    require(result['pva027_independent_visual_review'] == 'REQUIRED_NOT_PERFORMED',
++            'automatic run must not claim independent PVA027 visual acceptance')
++    receipt['pva027_independent_visual_review'] = result['pva027_independent_visual_review']
+     if code == 0:
+         require(all(result[k] is True for k in ('gui_attempted', 'render_attempted', 'validation_mapping_ok',
+                 'panel_configuration_verified_before_launch', 'original_tray_owners_captured_before_test',
+                 'original_tray_owners_settled', 'xml_mapping_ok', 'mainnav_mapping_ok'))
+                 and all(type(result[k]) is int for k in ('declared_rendering_cases', 'declared_xml_suites',
+                 'declared_test_tasks', 'preserved_xml_suites', 'expected_mainnav_files',
++                'expected_mainnav_role_files', 'expected_pva027_crop_files',
+                 'mainnav_child_roles_planned', 'mainnav_crash_diagnostics'))
+                 and result['declared_rendering_cases'] == 4
+                 and result['declared_xml_suites'] == result['preserved_xml_suites'] == 4
+                 and result['declared_test_tasks'] == 2
+-                and result['expected_mainnav_files'] == 27 and result['mainnav_child_roles_planned'] == 9
++                and result['expected_mainnav_files'] == 32 and result['expected_mainnav_role_files'] == 27
++                and result['expected_pva027_crop_files'] == 5 and result['mainnav_child_roles_planned'] == 9
+                 and result['mainnav_crash_diagnostics'] == 0,
+                 'success requires four exact cases/four XML suites/two KMP tasks and three isolated Main receipt sets; '
+                 'still pending independent reconciliation')

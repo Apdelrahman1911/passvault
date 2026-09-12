@@ -1,0 +1,20 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/migration_integrity_author/c20/gui/LAUNCH04.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/gui_author/instance-template01/LAUNCH04.py.txt
+@@ -28,7 +28,7 @@
+ E = B / 'runs/linux-desktop-integration04'
+ SELF = B / 'reviews/desktop-integration04-outer/LAUNCH.py'
+ REQUEST = B / 'requests/LINUX-DESKTOP-INTEGRATION-04.json'
+-APPROVAL = B / 'reviews/team20/migration_integrity_review/c20/gui/INSTANCE-ACCEPT.json'
++APPROVAL = B / 'reviews/team20/resume12/gui_review/INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+ # Fresh GUI/tool/directory/original-lock identities remain unbound.
+ # Never borrow GUI03 or other consumed-instance authority; old runtime HOLD remains.
+@@ -681,7 +681,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-desktop-integration04-approval-v1' and approval['reviewer'] == '/root/migration_integrity_review' and
++            approval['format'] == 'passvault-linux-desktop-integration04-approval-v1' and approval['reviewer'] == '/root/c20_gui_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE)}, 'missing/stale/nonaccepting genuine review')

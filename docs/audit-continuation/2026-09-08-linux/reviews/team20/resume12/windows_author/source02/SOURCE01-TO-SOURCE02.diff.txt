@@ -1,0 +1,22 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/windows_kdf_known_answer_01.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source02/windows_kdf_known_answer_01.py.txt
+@@ -32,8 +32,8 @@
+ REQUEST = f"{BASE}/requests/windows-kdf-known-answer-01.json"
+ HELPER = "scripts/audit/windows_kdf_known_answer_01.py"
+ WORKFLOW = ".github/workflows/audit-windows-kdf-known-answer.yml"
+-SCOPE = f"{BASE}/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/SOURCE-SCOPE.md"
+-REVIEW = f"{BASE}/reviews/team20/desktop_main_review/c20/windows-kdf/INSTANCE-ACCEPT.json"
++SCOPE = f"{BASE}/reviews/team20/resume12/windows_author/source02/SOURCE-SCOPE.md"
++REVIEW = f"{BASE}/reviews/team20/resume12/windows_review/INSTANCE-ACCEPT.json"
+ SUITE = "windows-kdf-known-answer-01"
+ SDK = "10.0.26100.0"
+ TARGET = "passvault_biometric_windows_security_test"
+@@ -988,7 +988,7 @@
+     review_data = frozen_bytes(workspace / review_path)
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
+-    require(review.get("schema") == 1 and review.get("reviewer") == "/root/desktop_main_review" and
++    require(review.get("schema") == 1 and review.get("reviewer") == "/root/c20_windows_review" and
+             review.get("disposition") == "ACCEPT_WINDOWS_KDF_KNOWN_ANSWER_01_INSTANCE",
+             "Missing genuine independent KDF01 instance acceptance")
+     require(review.get("suite") == SUITE and review.get("nonce") == request["nonce"] and

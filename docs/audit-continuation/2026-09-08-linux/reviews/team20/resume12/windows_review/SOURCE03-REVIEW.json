@@ -1,0 +1,229 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-12",
+  "reviewer": "/root/c20_windows_review",
+  "author_reviewed": "/root/c20_windows_author",
+  "disposition": "ACCEPT_EXACT_INERT_SOURCE03_FOUR_CASE_CONTRACT_ONLY",
+  "instance_acceptance": false,
+  "authority_ceiling": "Source/content acceptance only. No nonce, request, current Git/remote identity, live resources/exclusivity, source/activation push, build/test/CI, cleanup or release admission. This file is not IO-BATCH-INSTANCE-ACCEPT.json.",
+  "reviewed_files": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/windows_kdf_file_io_01.py.txt",
+      "bytes": 75311,
+      "sha256": "1f07418b060000e1109c269d624423017e8699476a4c500e5f383bd435bf0a5c"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/audit-windows-kdf-file-io-validation.yml.txt",
+      "bytes": 2469,
+      "sha256": "df1bcec6be613216fda57b9d593659c0da86383c7a02001b8544d3d811b7dfe3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/SOURCE-SCOPE.md",
+      "bytes": 12461,
+      "sha256": "0c32ba79a2eee3c59bf99c94fb170bbea4216553e46f07f8fc6957b54d6337ee"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/SOURCE02-TO-SOURCE03.diff.txt",
+      "bytes": 16015,
+      "sha256": "a0726d0d3991ca26d800fea20926c7a52f10c42ed08bc7a4cbdedb31bed0a7a3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source03/WORKFLOW01-TO-SOURCE03.diff.txt",
+      "bytes": 3173,
+      "sha256": "5e1474d87f4ec7971f30fb71aceda844afd8af26386f703723c4529995e7b3d5"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_author/source02/windows_kdf_known_answer_01.py.txt",
+      "bytes": 73655,
+      "sha256": "7fbf6c70469697fe097c989efaea9c78a8ed9a3a3ab9e3183c0c043e891be92f"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/audit-windows-kdf-known-answer.yml.txt",
+      "bytes": 2494,
+      "sha256": "20eb2ede7a856e69b81953549fc1d6c04c472d4d686e691e26f8aadcfa25e45b"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_review/SOURCE02-REVIEW.json",
+      "bytes": 5313,
+      "sha256": "446bf160fa604885513b714de1033fd01da2ad0a5ff07218190c137c0683a019"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_review/IO01-SOURCE-REVIEW.json",
+      "bytes": 11406,
+      "sha256": "a13876a95a1c13e51a7ead1328263bc2467a61e4ef51a0c34729db2f10ec08e6"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-WINDOWS-IO-INTEGRATION.json",
+      "bytes": 2153,
+      "sha256": "9e95bd776e407826706132ae137973a43e72c85e2f2e566adb06350795ab4b58"
+    }
+  ],
+  "independent_literal_comparison": {
+    "complete_helper_and_workflow_diffs_equal_author": true,
+    "changes": [
+      {
+        "kind": "helper",
+        "hunks": 10,
+        "added": 78,
+        "removed": 51
+      },
+      {
+        "kind": "workflow",
+        "hunks": 3,
+        "added": 11,
+        "removed": 11
+      }
+    ],
+    "Windows_class": {
+      "literal_equal": true,
+      "bytes": 6244,
+      "sha256": "a56d7c5ab11f061e2e0185328beb525c833ec9f7bb3f61c035739cd1a9c68089"
+    },
+    "Run_class": {
+      "only_change": "exact command-log ceiling/message9 to12",
+      "all_other_bytes_equal": true,
+      "bytes": 34906,
+      "sha256": "78faa77bcc677503ebdadc7a3a28522a95e061f787ed5d9fdfc4f30fa58a6463"
+    },
+    "bootstrap_reader_Win32_definitions_and_installed_tool_PE_readers": "literal equal",
+    "coverage": "Every supplied changed hunk and complete new workflow/scope read. Existing accepted source01/source02 lifecycle review retained for unchanged algorithms; no broad re-execution or old-run revival."
+  },
+  "current_fixed_inputs": [
+    {
+      "path": ".gitattributes",
+      "bytes": 270,
+      "sha256": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "bytes": 9982,
+      "sha256": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/include/passvault_biometric.h",
+      "bytes": 4540,
+      "sha256": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "bytes": 99579,
+      "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.rc",
+      "bytes": 812,
+      "sha256": "13ef2e1a88a6a8d6c7f7e4ce8b679cdf75f32a8ff35e6883875c3bdc6295a39c"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/passvault_biometric_abi_test.cpp",
+      "bytes": 826,
+      "sha256": "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "bytes": 48464,
+      "sha256": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json",
+      "bytes": 13800,
+      "sha256": "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md",
+      "bytes": 3723,
+      "sha256": "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-NATIVE-TEST-INTEGRATION.json",
+      "bytes": 1467,
+      "sha256": "227fae154a727b51e1f03b00a17fe48bf8d380c8d3237b86b944a2e17082dac5"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/windows_file_review/IO01-SOURCE-REVIEW.json",
+      "bytes": 11406,
+      "sha256": "a13876a95a1c13e51a7ead1328263bc2467a61e4ef51a0c34729db2f10ec08e6"
+    }
+  ],
+  "applied_IO01_reconciliation": {
+    "root_receipt": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-WINDOWS-IO-INTEGRATION.json",
+      "sha256": "9e95bd776e407826706132ae137973a43e72c85e2f2e566adb06350795ab4b58"
+    },
+    "root_prospective_release": {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/root/C20-WINDOWS-IO-SOURCE-EDIT-RELEASE.json",
+      "sha256": "ec707f392eff9523ce89bf089d85e60536dcdffbe97433d10ec049048701f477"
+    },
+    "all_three_current_W_native_afterimages_match_IO01_review_and_receipt": true,
+    "qualification": "Bounded raw-byte point reconciliation. Root explicit release includes production Windows.cpp; it releases no historical C18/held-runtime/source-after obligation. Older C20-NATIVE-TEST-INTEGRATION remains historical KDF-only application, not current IO01 proof. No Git/full-source capture/runtime result inferred."
+  },
+  "four_case_contract": {
+    "target": "passvault_biometric_windows_security_test",
+    "ordered_case_argv": {
+      "passvault_biometric_windows_kdf_known_answer": [
+        "--kdf-known-answer"
+      ],
+      "passvault_biometric_windows_file_io_write_failure": [
+        "--file-io-case",
+        "write_failure"
+      ],
+      "passvault_biometric_windows_file_io_flush_failure": [
+        "--file-io-case",
+        "flush_failure"
+      ],
+      "passvault_biometric_windows_file_io_close_failure": [
+        "--file-io-case",
+        "close_failure"
+      ]
+    },
+    "ordered_xml": [
+      "kdf.xml",
+      "file-io-write.xml",
+      "file-io-flush.xml",
+      "file-io-close.xml"
+    ],
+    "inventory_gate": "Anchored escaped four-name union; list length4; every name a unique exact whitelist member; exact absolute fresh normal Release EXE and exact per-case argv; final nameset equality. Missing/extra/duplicate/wrong image/default/extra selector arguments refuse before any CTest.",
+    "execution": "One normal Release build, one inventory, four ordered individually anchored CTests with parallel1/timeout30/no-tests=error and separate exact XML. Earlier failure aborts remainder as UNSTARTED. Twelve maximum parent command invocations, not twelve total processes. No old8/16/24 case loop, historical/PRK/ABI/DLL target build or general CLI."
+  },
+  "source_and_authority": [
+    "Fresh suite/request/helper/workflow/scope/acceptance and G/E namespaces; old KDF1 and consumed Windows05 sources/requests/roots are not modified or admitted.",
+    "Request/review must agree exact ordered names, full per-case argv map, target, controlsfalse, suite/nonce,11-input map and helper/workflow/scope hashes; request additionally fixes root six attestations, SDK/480s and source commit/tree. Genuine fixed reviewer/path/disposition required.",
+    "Runtime original Job contains all Git children. HEAD=GITHUB_SHA, exact request-parent source commit/tree, exactly one parent, A-only fresh request diff and clean checkout remain enforced. Captured source/authority bytes are rechecked after observed settlement.",
+    "Content/nonce acceptance is not self-referential commit or live execution acceptance. Root must independently bind actual source commit/tree, entire pushed delta, exact request bytes and fresh queue/PR/slot/cleanup evidence before activation.",
+    "Standalone native six-source dependency set plus attributes and four authority receipts is sufficient for this exact normal target; no Linux full SOURCE/index capture or Detekt cycle prerequisite. Current code/fixtures and current native hashes, not an old source label, bind the run."
+  ],
+  "workflow_and_scheduling": [
+    "One windows-2022/X64 job with600s maximum, dedicated-branch/exact-request push plus exact repository/ref/event/not-deleted/attempt1 gate. No dispatch/PR/matrix/cache/install/release workflow reuse.",
+    "contents:read only; immutable checkout/upload; exact github.sha/depth2/persist-credentialsfalse/submodulesfalse/LFSfalse; no configured secret input/environment/signing/OIDC/Store/application publication. Platform checkout/upload credentials are not claimed absent from host; child allowlist remains unchanged.",
+    "Owned E output gate, fixed fresh flat JSON/JSONL/log/XML prefix and3day retention; no native binaries, object/profile/cache/archive upload.",
+    "Nineteen current W workflow byte hashes/name set still match CURRENT-SOURCE-TRIGGERS source assessment. New request path is distinct. A source push without request does not satisfy this workflow path filter; open protected-base PR synchronize may trigger unrelated CI. No live PR/queue observation performed.",
+    "cancel-in-progress:false can replace older pending runs. Root must freshly exclude queued/pending/waiting/running audit work AND local resource-heavy work before BOTH source and activation pushes, and inspect actual pushed delta/other triggers. Old point facts and booleans do not establish current exclusivity."
+  ],
+  "lifetime_retention_cleanup": [
+    "Windows/Run original Job/HANDLE_LIST/creation-time JOB_LIST/suspended creation/original process HANDLE waits, sticky cancellation, sole termination attempt, settlement, owned roots and descriptor-bound cleanup algorithms unchanged except log count12.",
+    "Nonrenewable480s commands/540s cleanup/600s job;16 processes/3GiB;12GiB/25% launch and8GiB/20% running floors retained. Extra command budgets cannot extend whole envelope.",
+    "Max12 command logs2MiB each/8MiB total; four exact nonempty XMLs512KiB each, bounded JSON/journal; raw retention must succeed BEFORE deleting the fresh generated root. Failed tests may still allow safe cleanup; failed settlement/evidence/handle/source/identity does not.",
+    "Original Jobzero plus complete retention and all-descendant original-handle collection precede deletion. Reparse/link/ownership/change/close uncertainty remains HOLD; parent exit, kill-on-close or hosted disposal is not observed settlement. Previous Windows05 reparse HOLD is not cured. Gradle stop N/A because no Gradle invocation."
+  ],
+  "mandatory_actual_adoption": [
+    "Operational exit is raw XML awaiting independent scoring. Exactly four named XMLs, one exact case each; tests1/failures0/disabled0/skipped0/errors absent-or0, exact name/classname/status=run and no failure/error/skipped children.",
+    "KDF may have empty system-out and represents two source-qualified vectors within one case. Each IO XML must retain its matching PVA036_IO status_injection=YES/real_io=PASS/pre_teardown=PASS native-ID/cleanup=PASS terminal record. No marker/case-count fabrication.",
+    "Reconcile actual source/request/run/job, selected argv, fresh effective Release compilation/link hardening/instrumentation absence, settled AMD64 normal PE, command exits/raw XML and complete received-artifact byte/SHA inventory. Test observations and whole-helper cleanup remain separate.",
+    "IO cases are mixed real Win32 files/handles/ACL with deliberately reported statuses, not actual OS faults, leaked handles, process crash, application cancellation/rollback, provider/Hello/hardware, broad durability or family closure."
+  ],
+  "blocking_source_findings": [],
+  "remaining_gates": [
+    "root canonical helper/workflow integration plus any dormant source-content nonce acceptance",
+    "fresh source publication admission and actual source commit/tree/request-byte reconciliation",
+    "fresh both-push PR/queue/exclusive-build/resource/retention/cleanup admission",
+    "root-only execution and independent actual-result/cleanup review"
+  ],
+  "counters": {
+    "cases_selected": 4,
+    "new_case_executions": 0,
+    "new_closures": 0,
+    "new_requests_or_instance_acceptances": 0
+  },
+  "method_and_limits": "Bounded inert source/review/receipt reads; stdlib JSON/difflib/literal byte comparison and hashes. No subject import/AST/syntax/compile/execute, Git/T/network/CI, host/process/SDK/runtime/held-root probes, canonical edit or cleanup. Current byte observations are not continuous custody or full source identity.",
+  "preserved": "PVU007 STOP; PVU011 NO RETRY/no procedure inquiry; PVA02949/44/5 failure/no automatic retry; G7/G8 CLOSED; native refusal and historical partial-edit provenance; all earlier FAIL/HOLDs; eight PVD decisions; hardware/provider/package gaps; protected refs/tags/dependencies/versions/identities/signing/Store/publication/1017001 boundaries."
+}

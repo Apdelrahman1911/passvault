@@ -1,0 +1,165 @@
+--- a/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt
++++ b/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt
+@@ -6,6 +6,7 @@
+ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+ import androidx.sqlite.execSQL
+ import java.nio.file.Files
++import java.nio.file.LinkOption
+ import java.nio.file.Path
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.test.runTest
+@@ -18,6 +19,7 @@
+ import kotlin.test.assertContentEquals
+ import kotlin.test.assertEquals
+ import kotlin.test.assertFails
++import kotlin.test.assertFailsWith
+ import kotlin.test.assertNull
+ import kotlin.test.assertTrue
+ 
+@@ -126,6 +128,62 @@
+         }
+     }
+ 
++    @Test
++    @Suppress("LongMethod") // Keep the failure, rollback, successful upgrade and reopen in one explicit sequence.
++    fun `Room validation failure rolls back the full upgrade and a clean reopen persists it`() = runTest {
++        val directory = Files.createTempDirectory("passvault-room-chain-validation-")
++        val path = directory.resolve("vault.db")
++        withPreservingCleanup(cleanup = { deleteOwnedChainFixture(directory) }) {
++            createDatabaseWithCredentialGraph(path, version = 1)
++            val original = databaseSnapshot(path)
++            var invalidSchemaCreated = false
++            val invalidFinalMigration = object : Migration(4, 5) {
++                override fun migrate(connection: SQLiteConnection) {
++                    MIGRATION_4_5.migrate(connection)
++                    // Valid SQL succeeds only after all real migration edges. Room, not this hook, must reject it.
++                    connection.execSQL("DROP INDEX `index_credential_records_folder_id`")
++                    invalidSchemaCreated = true
++                }
++            }
++            val failedDatabase = Room.databaseBuilder<VaultDatabase>(name = path.toString())
++                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, invalidFinalMigration)
++                .setDriver(BundledSQLiteDriver())
++                .setQueryCoroutineContext(Dispatchers.IO)
++                .build()
++            withPreservingCleanup(cleanup = failedDatabase::close) {
++                val failure = assertFailsWith<IllegalStateException> {
++                    failedDatabase.credentialDao().getById("credential-existing")
++                }
++                assertTrue(invalidSchemaCreated, "The final migration must reach the deliberate schema mismatch")
++                assertTrue(failure.message.orEmpty().contains("Migration didn't properly handle"))
++                assertTrue(failure.message.orEmpty().contains("credential_records"))
++            }
++
++            // Includes version, Room identity, schema DDL, every seeded column and both old folder cross-refs.
++            // Do not compare database-file bytes: legitimate journal/header bookkeeping can differ on open.
++            assertEquals(original, databaseSnapshot(path))
++
++            val migratedDatabase = openMigratedDatabase(path)
++            withPreservingCleanup(cleanup = migratedDatabase::close) {
++                val credential = requireNotNull(migratedDatabase.credentialDao().getById("credential-existing"))
++                assertEquals("folder-existing", credential.folderId)
++                val orphan = requireNotNull(migratedDatabase.credentialDao().getById("credential-orphan"))
++                assertNull(orphan.folderId)
++            }
++            val committed = databaseSnapshot(path)
++            assertEquals(5L, committed.version)
++            assertEquals(0L, queryLong(path, "SELECT COUNT(*) FROM pragma_foreign_key_check"))
++
++            val reopenedDatabase = openMigratedDatabase(path)
++            withPreservingCleanup(cleanup = reopenedDatabase::close) {
++                val credential = requireNotNull(reopenedDatabase.credentialDao().getById("credential-existing"))
++                assertContentEquals(byteArrayOf(1, 2, 3), credential.summaryPayload)
++                assertContentEquals(byteArrayOf(4, 5, 6), credential.secretPayload)
++            }
++            assertEquals(committed, databaseSnapshot(path))
++        }
++    }
++
+     private fun openMigratedDatabase(path: Path): VaultDatabase =
+         Room.databaseBuilder<VaultDatabase>(name = path.toString())
+             .addVaultMigrations()
+@@ -297,6 +355,83 @@
+             }
+         }
+ 
++    private fun databaseSnapshot(path: Path): DatabaseSnapshot =
++        BundledSQLiteDriver().open(path.toString()).use { connection ->
++            val version = connection.prepare("PRAGMA user_version").use { statement ->
++                check(statement.step())
++                statement.getLong(0)
++            }
++            val schema = connection.textRows(
++                "SELECT quote(type), quote(name), quote(tbl_name), quote(sql) " +
++                    "FROM sqlite_master ORDER BY type, name",
++                columnCount = 4,
++            )
++            val tables = connection.textRows(
++                "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
++                columnCount = 1,
++            ).map { it.single() }
++            val rows = tables.associateWith { table ->
++                val quotedTable = "\"${table.replace("\"", "\"\"")}\""
++                val columns = buildList {
++                    connection.prepare("PRAGMA table_info($quotedTable)").use { statement ->
++                        while (statement.step()) add(statement.getText(1))
++                    }
++                }
++                val values = columns.joinToString { column ->
++                    val quotedColumn = "\"${column.replace("\"", "\"\"")}\""
++                    "typeof($quotedColumn) || ':' || hex(CAST($quotedColumn AS BLOB))"
++                }
++                val order = columns.indices.joinToString { (it + 1).toString() }
++                connection.textRows("SELECT $values FROM $quotedTable ORDER BY $order", columns.size)
++            }
++            DatabaseSnapshot(version, schema, rows)
++        }
++
++    private fun SQLiteConnection.textRows(sql: String, columnCount: Int): List<List<String>> = buildList {
++        prepare(sql).use { statement ->
++            while (statement.step()) add(List(columnCount) { statement.getText(it) })
++        }
++    }
++
++    @Suppress("TooGenericExceptionCaught") // Preserve primary assertion/cancellation and independent cleanup errors.
++    private inline fun <T> withPreservingCleanup(cleanup: () -> Unit, block: () -> T): T {
++        var primary: Throwable? = null
++        try {
++            return block()
++        } catch (failure: Throwable) {
++            primary = failure
++            throw failure
++        } finally {
++            try {
++                cleanup()
++            } catch (cleanupFailure: Throwable) {
++                val failure = primary ?: throw cleanupFailure
++                if (failure !== cleanupFailure) failure.addSuppressed(cleanupFailure)
++            }
++        }
++    }
++
++    private fun deleteOwnedChainFixture(directory: Path) {
++        check(directory.fileName.toString().startsWith("passvault-room-chain-validation-"))
++        check(!Files.isSymbolicLink(directory))
++        check(directory.parent.toRealPath() == Path.of(System.getProperty("java.io.tmpdir")).toRealPath())
++        listOf("vault.db", "vault.db-wal", "vault.db-shm", "vault.db-journal").forEach { name ->
++            val file = directory.resolve(name)
++            if (Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
++                check(Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS))
++                Files.delete(file)
++            }
++        }
++        // Unexpected entries refuse the directory deletion rather than widening cleanup authority.
++        Files.delete(directory)
++    }
++
++    private data class DatabaseSnapshot(
++        val version: Long,
++        val schema: List<List<String>>,
++        val rows: Map<String, List<List<String>>>,
++    )
++
+     private fun exportedForeignKeys(version: Int, tableName: String): List<ForeignKeyInfo> =
+         exportedSchema(version).entities.single { it.tableName == tableName }.foreignKeys
+ 

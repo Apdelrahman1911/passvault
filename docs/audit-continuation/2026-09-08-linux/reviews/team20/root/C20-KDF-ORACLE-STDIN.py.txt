@@ -1,0 +1,34 @@
+import hashlib
+import hmac
+import json
+
+domain = b"PassVault Windows Hello vault-key wrapping v1"
+prf = bytes(range(0x47, 0x67))
+salt = bytes(range(0x33, 0x53))
+vault = bytes(range(0x01, 0x21))
+assert (len(domain), len(prf), len(salt), len(vault)) == (45, 32, 32, 32)
+
+def explicit_hmac(key, message):
+    assert len(key) == 32
+    block = key + bytes(32)
+    inner_pad = bytes(value ^ 0x36 for value in block)
+    outer_pad = bytes(value ^ 0x5c for value in block)
+    return hashlib.sha256(outer_pad + hashlib.sha256(inner_pad + message).digest()).digest()
+
+records = []
+for name, vault_hash in (("ascending", vault), ("vault_first_byte_zero", b"\x00" + vault[1:])):
+    info = domain + vault_hash + b"\x01"
+    assert len(vault_hash) == 32 and len(info) == 78
+    prk = hmac.new(salt, prf, hashlib.sha256).digest()
+    output = hmac.new(prk, info, hashlib.sha256).digest()
+    reference_prk = explicit_hmac(salt, prf)
+    reference_output = explicit_hmac(reference_prk, info)
+    assert len(prk) == len(output) == 32
+    assert prk == reference_prk and output == reference_output
+    records.append({"name": name, "vault_hash_hex": vault_hash.hex(),
+                    "info_hex": info.hex(), "output_hex": output.hex()})
+assert records[0]["output_hex"] != records[1]["output_hex"]
+print(json.dumps({"schema": 1, "algorithm": "HMAC-SHA256 extract then one-block expand",
+                  "domain_hex": domain.hex(), "prf_hex": prf.hex(), "salt_hex": salt.hex(),
+                  "output_bytes": 32, "vectors": records},
+                 sort_keys=True, separators=(",", ":")))

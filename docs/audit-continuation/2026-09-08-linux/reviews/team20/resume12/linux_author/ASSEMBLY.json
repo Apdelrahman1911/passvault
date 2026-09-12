@@ -1,0 +1,191 @@
+{
+  "afterimages": [
+    {
+      "byte_identical_to_accepted": true,
+      "bytes": 3930,
+      "lf": 86,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/DETEKT-05.init.gradle.txt",
+      "sha256": "a539da7932f305a7dd99afb0e7b36428e533aae79f95a5f301a1967003105417"
+    },
+    {
+      "byte_identical_to_accepted": true,
+      "bytes": 56230,
+      "lf": 972,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/LINUX-DETEKT-05.py.txt",
+      "sha256": "53343670f556959551f48a2d2eef9527781b3bef5bbacf05ac03a98b85089361"
+    },
+    {
+      "byte_identical_to_accepted": false,
+      "bytes": 61049,
+      "lf": 1040,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/LAUNCH.py.txt",
+      "sha256": "ebf2ba8f2ea88c540cbab8b1f1d53d08caed14a9ff1a2b5028cba212d293fd26"
+    },
+    {
+      "byte_identical_to_accepted": true,
+      "bytes": 40078,
+      "lf": 704,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/linux_focused_regression_02.py.txt",
+      "sha256": "1bae5c731ace9d49589caf7198a38bb642cb998e6936b2be7c7ccf9b42ad9d41"
+    },
+    {
+      "byte_identical_to_accepted": true,
+      "bytes": 7675,
+      "lf": 117,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/focused_regression_02.init.gradle.txt",
+      "sha256": "90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8"
+    },
+    {
+      "byte_identical_to_accepted": false,
+      "bytes": 51411,
+      "lf": 861,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/LAUNCH.py.txt",
+      "sha256": "e347b1e5706be90c08f2f647ae5a963c5137ac73770af7389be9251372d3162a"
+    },
+    {
+      "byte_identical_to_accepted": true,
+      "bytes": 1374,
+      "lf": 4,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/CLASSES.tsv.txt",
+      "sha256": "e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c"
+    },
+    {
+      "byte_identical_to_accepted": true,
+      "bytes": 812,
+      "lf": 10,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/METHODS.tsv.txt",
+      "sha256": "56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c"
+    },
+    {
+      "byte_identical_to_accepted": false,
+      "bytes": 3476,
+      "lf": 121,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/REQUEST.template.json",
+      "sha256": "413b95ae8ec916e0cb8fccebe00ed30f4fbb3b8a308cb783fad201f26fa98a80"
+    },
+    {
+      "byte_identical_to_accepted": false,
+      "bytes": 2733,
+      "lf": 83,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/REQUEST.template.json",
+      "sha256": "0fc0ac122e919c45bffc7e39075e89a6775b3e78a9596a8728ff242455bc6246"
+    }
+  ],
+  "author": "/root/c20_linux_author",
+  "changes": [
+    {
+      "file": "detekt05/LAUNCH.py.txt",
+      "new": "APPROVAL = B / 'reviews/team20/resume12/linux_review/detekt05-INSTANCE-ACCEPT.json'",
+      "occurrences": 1,
+      "old": "APPROVAL = B / 'reviews/team20/focused_validation_review/INSTANCE-ACCEPT-DETEKT05.json'"
+    },
+    {
+      "file": "detekt05/LAUNCH.py.txt",
+      "new": "approval['reviewer'] == '/root/c20_linux_review'",
+      "occurrences": 1,
+      "old": "approval['reviewer'] == '/root/focused_validation_review'"
+    },
+    {
+      "file": "focused02/LAUNCH.py.txt",
+      "new": "APPROVAL = B / 'reviews/team20/resume12/linux_review/focused02-INSTANCE-ACCEPT.json'",
+      "occurrences": 1,
+      "old": "APPROVAL = B / 'reviews/team20/android_fixture_review/focused-regression02/INSTANCE-ACCEPT.json'"
+    },
+    {
+      "file": "focused02/LAUNCH.py.txt",
+      "new": "approval['reviewer'] == '/root/c20_linux_review'",
+      "occurrences": 1,
+      "old": "approval['reviewer'] == '/root/android_fixture_review'"
+    },
+    {
+      "file": "focused02/LAUNCH.py.txt",
+      "new": "# Fixed T destination only; current standalone source/store/instance admission remains UNBOUND.",
+      "occurrences": 1,
+      "old": "# UNBOUND: root may bind only the current standalone publication T store, never a retired store."
+    },
+    {
+      "file": "focused02/LAUNCH.py.txt",
+      "new": "Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')",
+      "occurrences": 2,
+      "old": "Path('/UNBOUND_C20_PUBLICATION_GITDIR')"
+    },
+    {
+      "file": "focused02/LAUNCH.py.txt",
+      "new": "EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original Linux lock obligation only; fresh same-object observation remains UNBOUND. Never recreate/replace.",
+      "occurrences": 1,
+      "old": "EXPECTED_LOCK = 'UNBOUND_C20_ORIGINAL_LOCK_PIN'  # Bind the ORIGINAL existing lock; never create or replace it."
+    }
+  ],
+  "delta": {
+    "bytes": 6113,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/BINDING-DELTA.txt",
+    "sha256": "d4691766d1af291915b5f887f3dce7806523113254fadcfd6a4d74b654d857cc"
+  },
+  "final_minimal_steps": [
+    "Bind actual SOURCE and measured N/N*41 at four sites per cohort; prove unchanged128MiB stream and32MiB individual limits against captured raw framing",
+    "Bind true current store/device/exclude facts while preserving original lock identity and accepted guards",
+    "Refresh init/tables -> inner -> outer -> request images/hash -> genuine independent approval; root alone promotes and executes"
+  ],
+  "format": "passvault-c20-resumed-linux-inert-assembly-v1",
+  "known_only": [
+    "Fixed T destination, not current store/index proof",
+    "Genuine resumed reviewer /root/c20_linux_review and own approval destinations",
+    "Original Linux lock obligation, not a fresh same-object observation",
+    "Unchanged accepted init/inner/TSV source images, not actual promoted metadata"
+  ],
+  "method": "Read the eight pinned accepted control/table images as bytes; bounded literal replacements and unified text diff only. No candidate imports/evaluation/AST/compilation, Git, build/test, host/runtime/SDK probes, cleanup or approvals.",
+  "not_bound": [
+    "Actual C20 SOURCE path/digest/commit/tree/MEMBERS",
+    "Both member ceilings and both ordered-OID caps per cohort; old3500/144KiB bounds remain insufficient and unadmitted",
+    "Current parent/tool/input/image/namespace/device/store/index/config/exclude facts",
+    "Current original-lock same-object proof",
+    "Per-cohort quiet/no-CI/resource admission and root/reviewer request acceptance",
+    "Static13 omitted-module final-source/config reuse projection",
+    "Unusedness of future R/E and canonical promoted control/request paths"
+  ],
+  "originals": [
+    {
+      "bytes": 3930,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/c20/detekt05/DETEKT-05.init.gradle.txt",
+      "sha256": "a539da7932f305a7dd99afb0e7b36428e533aae79f95a5f301a1967003105417"
+    },
+    {
+      "bytes": 56230,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/c20/detekt05/LINUX-DETEKT-05.py.txt",
+      "sha256": "53343670f556959551f48a2d2eef9527781b3bef5bbacf05ac03a98b85089361"
+    },
+    {
+      "bytes": 61062,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/c20/detekt05/LAUNCH.py.txt",
+      "sha256": "6888b970c2345abebf12248c21950fa4b682fb3136fe53c37d92f88bf2d63012"
+    },
+    {
+      "bytes": 40078,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch/linux_focused_regression_02.py.txt",
+      "sha256": "1bae5c731ace9d49589caf7198a38bb642cb998e6936b2be7c7ccf9b42ad9d41"
+    },
+    {
+      "bytes": 7675,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch/focused_regression_02.init.gradle.txt",
+      "sha256": "90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8"
+    },
+    {
+      "bytes": 51207,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch/LAUNCH.py.txt",
+      "sha256": "eab843bdf20a06116228e9dd5100e1b567dbf76a3dfc8bd5a09dd506360599e9"
+    },
+    {
+      "bytes": 1374,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch/CLASSES.tsv.txt",
+      "sha256": "e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c"
+    },
+    {
+      "bytes": 812,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch/METHODS.tsv.txt",
+      "sha256": "56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c"
+    }
+  ],
+  "preservation": "Every predecessor and historical HOLD/FAIL/STOP/NO-RETRY/CLOSED/native-refusal/1017001 restriction is unchanged. No runtime, approval, case or closure was created.",
+  "request_templates": "Exact outer request top-level keys only. Nulls and UNBOUND are deliberate nonaccepting data. SHA256s identify the current inert proposed bytes only; every pin and observed alias stays null. Regenerate all affected hashes after actual source/binding deltas. Static optional-exclude image set cannot be completed until actual EXCLUDE_STATE is known. Templates are not placed at canonical REQUEST paths and must not be promoted as valid requests.",
+  "status": "SOURCE_ONLY_UNBOUND_NO_PROMOTION_NO_INSTANCE_ADMISSION"
+}

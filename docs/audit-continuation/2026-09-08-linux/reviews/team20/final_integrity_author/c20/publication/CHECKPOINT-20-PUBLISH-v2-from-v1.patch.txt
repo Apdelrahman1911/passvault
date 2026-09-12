@@ -1,0 +1,11 @@
+--- a/CHECKPOINT-20-PUBLISH.py.txt
++++ b/CHECKPOINT-20-PUBLISH-v2.py.txt
+@@ -262,6 +262,8 @@
+  commit,tree=git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()
+  req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'source not sole base child')
+  req(entries(git(['ls-tree','-r','-z','--full-tree','HEAD']))==whole,'source committed-tree drift')
++ quoted_path_bytes=[len(json.dumps(p,ensure_ascii=True,separators=(',',':')).encode('utf-8')) for p in whole]
++ rec['source_capture_path_aggregates']={'N':len(whole),'Q':sum(quoted_path_bytes),'max_json_quoted_path_bytes':max(quoted_path_bytes),'encoding':'UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL','qualification':'Already verified complete committed-tree path map only; no -l, file-byte sum or max-member-size claim.'}
+  rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,selected_paths=len(expected),changed_paths=len(changes))
+  req(remote(git(remote_args))==want,'remote advanced before source push')
+  git(['push','--no-signed','--no-follow-tags','--recurse-submodules=no','origin','HEAD:refs/heads/'+BRANCH],seconds=120)

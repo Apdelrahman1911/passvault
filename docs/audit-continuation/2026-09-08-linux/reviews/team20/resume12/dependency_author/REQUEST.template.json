@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "status": "INERT_PROPOSAL_NOT_EXECUTABLE_ADMISSION",
+  "author": "/root/c20_dependency_author",
+  "sole_executor": "/root",
+  "proposed_run_id": "linux-dependency-inventory01",
+  "purpose": "Only the three unproved current normalized production coordinate inventories; no fixed-data predicate repeat, aggregate gate, compile/test/package or archive hunt.",
+  "bindings": {
+    "source_commit": "UNBOUND",
+    "source_tree": "UNBOUND",
+    "full_source_manifest_and_capacity": "UNBOUND",
+    "tool_identities": "UNBOUND",
+    "original_coordination_parent_lock_and_runtime_pins": "UNBOUND",
+    "fresh_quiet_window_and_resource_observations": "UNBOUND",
+    "executor_source_and_independent_review": "UNBOUND",
+    "cleanup_source_and_independent_review": "UNBOUND",
+    "exact_credential_free_environment": "UNBOUND"
+  },
+  "prospective_paths_not_probed": {
+    "runtime": "/root/projects/PassVault/audit-runtime-linux-dependency-inventory01",
+    "checkout": "/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/checkout",
+    "copied_init": "/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/inventory-only-01.init.gradle",
+    "retained_evidence": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-dependency-inventory01"
+  },
+  "source_subjects": [
+    {
+      "path": "INVENTORY-ONLY-01.init.gradle.txt",
+      "bytes": 6001,
+      "sha256": "65feca52b8417a1c15517edb1cb6bae172b76bca2c556666e1e32d6113e6b85c"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 10705,
+      "sha256": "0f7df80e1600a6e13ad23bc0c3d6eec833c9e71b1f0fdd051a3e2dfa03d98610"
+    },
+    {
+      "path": "SOURCE-PINS.json",
+      "bytes": 9949,
+      "sha256": "5418707c9259bf5864ffef14b88feac0c0104601ebd2e9b0ebd7211d4d87025a"
+    }
+  ],
+  "command": [
+    "/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/checkout/gradlew",
+    "--init-script",
+    "/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/inventory-only-01.init.gradle",
+    ":app-android:generateAndroidThirdPartyDependencyInventory",
+    ":app-desktop:generateDesktopThirdPartyDependencyInventory",
+    ":shared:generateIosArm64ThirdPartyDependencyInventory",
+    "--continue",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_stop_command": [
+    "/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/checkout/gradlew",
+    "--stop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "task_graph": {
+    "exact_nodes": [
+      ":app-android:generateAndroidThirdPartyDependencyInventory",
+      ":app-desktop:generateDesktopThirdPartyDependencyInventory",
+      ":shared:generateIosArm64ThirdPartyDependencyInventory"
+    ],
+    "task_type": "GenerateThirdPartyDependencyScopeTask",
+    "actions_per_task": 1,
+    "dependency_edges": 0,
+    "finalizer_edges": 0,
+    "must_run_after_edges": 0,
+    "should_run_after_edges": 0,
+    "producers_mutated": false,
+    "task_graph_observed": false
+  },
+  "expected_outputs": [
+    {
+      "scope": "android",
+      "task": ":app-android:generateAndroidThirdPartyDependencyInventory",
+      "configuration": ":app-android:releaseRuntimeClasspath",
+      "path": "app-android/build/reports/legal/android-production-dependencies.lock",
+      "expected_rows": 151,
+      "expected_bytes": 8242,
+      "expected_sha256": "38335a6e4574ef086af43dd36bb8ce276215163ac49b18c7bf3b0af1f2008235"
+    },
+    {
+      "scope": "desktop",
+      "task": ":app-desktop:generateDesktopThirdPartyDependencyInventory",
+      "configuration": ":app-desktop:desktopRuntimeClasspath",
+      "path": "app-desktop/build/reports/legal/desktop-production-dependencies.lock",
+      "expected_rows": 80,
+      "expected_bytes": 4866,
+      "expected_sha256": "45715dbe1dbb876cf167f3f7d78b222a29bf97c7513d1a72bffd79f96942b774"
+    },
+    {
+      "scope": "iosArm64",
+      "task": ":shared:generateIosArm64ThirdPartyDependencyInventory",
+      "configuration": ":shared:iosArm64CompileKlibraries",
+      "path": "shared/build/reports/legal/iosArm64-production-dependencies.lock",
+      "expected_rows": 66,
+      "expected_bytes": 4424,
+      "expected_sha256": "980ce402967ad661eefbfafe1c743540f2fdeac6cbbae1128eb84eb6e8ab09a6"
+    }
+  ],
+  "expected_inventory_lock": {
+    "bytes": 17552,
+    "path": "legal/third-party-dependencies.lock",
+    "sha256": "252661ae65b520539b6d7a1e301cb1f6de505a17576301e970668b1778d150e2"
+  },
+  "limits": {
+    "work_seconds": 600,
+    "original_stop_seconds": 120,
+    "settlement_retention_cleanup_seconds": 120,
+    "outer_hard_total_seconds": 900,
+    "gradle_heap_bytes": 2147483648,
+    "wrapper_heap_bytes": 536870912,
+    "workers": 1,
+    "launch_disk_bytes": 12884901888,
+    "running_disk_bytes": 8589934592,
+    "launch_available_ram_percent": 25,
+    "running_available_ram_percent": 20,
+    "each_inventory_capture_bytes": 65536,
+    "inventory_capture_total_bytes": 196608,
+    "stdout_capture_bytes": 4194304,
+    "stderr_capture_bytes": 1048576,
+    "result_metadata_bytes": 262144
+  },
+  "result_contract": {
+    "all_pass_requires": "Exact frozen source and guard, accepted three-node graph, one START/FINISH per producer with executed/didWork true and skipped/upToDate/noSource false, failureClass null, original exit0, all three stable captured outputs exactly matching expected sizes/hashes/header/scope/sorted-unique rows and expected-lock projections, original stop0, owned worker settlement and independently accepted source-after/cleanup.",
+    "partial_policy": "Preserve original nonzero/configuration/task/capture/stop/source/cleanup failures and every produced report. Missing outputs are UNSTARTED/FAILED as supported, never guessed. No current scope promoted without its complete evidence and independent acceptance. No automatic replay of successful unchanged scopes.",
+    "accounting": {
+      "prospective_inventory_producer_tasks": 3,
+      "expected_scoped_rows": 297,
+      "expected_unique_coordinates": 277,
+      "application_tests": 0,
+      "junit_xml": 0,
+      "new_findings": 0,
+      "new_closures": 0
+    }
+  },
+  "isolation_requirements": [
+    "New original-owned raw source snapshot and private HOME/GRADLE_USER_HOME/project state/TMP/JNA/SQLite/XDG/Android-user/Konan; no W build or retired W Git.",
+    "Exact constructed environment rather than inherited signing/keychain/keystore/support overrides, user Gradle properties/init scripts, local.properties or arbitrary project-property injection. Optional release/publisher.properties must remain absent; no invented source publisher/support input.",
+    "JDK17/checked-in wrapper, strict verification, no offline fallback, no refresh/write-verification/write-lock/update-dependency flags; no SDK/JDK auto-provisioning.",
+    "Ordinary existing declared-artifact/metadata downloads and transforms can occur under full outer bounds; no new repository/dependency, native compiler, package/device or unadmitted toolchain provisioning.",
+    "After this invocation stop with original configuration and clean only validated run-created allowlist through admitted original descriptor lifecycle, preserving compact evidence and private cache reports first. No unrelated process/cache/SDK/toolchain/held-runtime cleanup."
+  ],
+  "retained_fences": [
+    "PVU007 STOP",
+    "PVU011 NO RETRY",
+    "PVA029 49checks/44PASS/5FAIL no automatic retry",
+    "G7/G8 CLOSED",
+    "original native refusal and held runtimes unchanged",
+    "protected refs/tags/version/dependencies/identities/build1017001 unchanged",
+    "eight PVD owner decisions separate"
+  ]
+}

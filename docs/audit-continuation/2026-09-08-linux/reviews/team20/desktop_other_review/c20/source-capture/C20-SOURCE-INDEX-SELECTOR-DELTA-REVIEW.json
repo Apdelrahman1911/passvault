@@ -1,0 +1,280 @@
+{
+  "schema": 1,
+  "date_utc": "2026-09-11",
+  "reviewer": "/root/desktop_other_review",
+  "author_reviewed": "/root/native_security_author",
+  "disposition": "ACCEPT_UNBOUND_C20_SOURCE_INDEX_SELECTOR_IDENTITY_DELTA_ONLY",
+  "scope": "Only changed namespace/status/comment/identity bindings and their source-capture safety boundary. Reuse accepted C18 predecessor source/cap/instance/actual semantics; no duplicate native/KDF audit or full predecessor machinery recertification.",
+  "authority": {
+    "capacity_increase": false,
+    "promotion": false,
+    "actual_binding": false,
+    "instance_admission": false,
+    "capture_execution": false,
+    "consumer_admission": false,
+    "predecessor_replay": false,
+    "retry_or_cleanup": false
+  },
+  "independence": "Reviewer did not author candidates or captured facts, invoke a predecessor, publish C20, or supply capacities. Independently read selected accepted predecessor review fields, current candidate delta/rationale/contract and relevant entry/binding/output windows, and verified complete byte transformations.",
+  "exact_proof": {
+    "files": [
+      {
+        "baseline": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+        "candidate": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/SOURCE-PREPARE.py.txt",
+        "baseline_sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3",
+        "candidate_sha256": "9ebf3df7eddbf3501806143886f428c579fb7985baf8840a3a6bd31ae4510321",
+        "changed_physical_lines": [
+          2,
+          4,
+          14,
+          19,
+          21,
+          22,
+          28,
+          208,
+          212,
+          221
+        ],
+        "line_count_preserved": true,
+        "full_inverse_recovers_bound_c18": true,
+        "full_forward_recovers_candidate": true,
+        "old_instance_constants_absent": true,
+        "unbound_lines": [
+          "P, TREE = None, None  # UNBOUND C20; actual publication and separate execution admission required.",
+          "FACTS, FACTS_SHA = B / 'reviews/checkpoint20/SOURCE-STORE-ADMISSION.json', None",
+          "PUB, PUB_SHA = B / 'publication/CHECKPOINT-20-PUBLISHED.json', None"
+        ]
+      },
+      {
+        "baseline": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py",
+        "candidate": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/INDEX-CAPTURE.py.txt",
+        "baseline_sha256": "525dd35db0c1d4520cb03be3a5ceb33e2e5a6151a76623873a1057cecdb98e9c",
+        "candidate_sha256": "65f5795510b364c007703db859454fe652dcb2d551fca089745336407483998e",
+        "changed_physical_lines": [
+          2,
+          13,
+          19,
+          20,
+          21,
+          22,
+          23,
+          40
+        ],
+        "line_count_preserved": true,
+        "full_inverse_recovers_bound_c18": true,
+        "full_forward_recovers_candidate": true,
+        "old_instance_constants_absent": true,
+        "unbound_lines": [
+          "P, TREE = None, None  # UNBOUND: actual C20 publication required.",
+          "SOURCE, SOURCE_SHA = B / 'reviews/checkpoint20/source-prepare01/SOURCE.json', None",
+          "FACTS, FACTS_SHA = B / 'reviews/checkpoint20/SOURCE-STORE-ADMISSION.json', None",
+          "EXTRA, EXTRA_SHA = B / 'reviews/checkpoint20/C20-READONLY-FACTS-01.json', None  # UNBOUND: fresh root metadata, never old pins.",
+          "CONFIG_SHA = None  # UNBOUND: exact fresh SOURCE-STORE-ADMISSION config."
+        ]
+      }
+    ],
+    "control_delta": {
+      "sections": 2,
+      "hunks": 9,
+      "added": 18,
+      "removed": 18,
+      "exact_reconstruction": true
+    },
+    "unbound_only": true,
+    "all_unlisted_policy_parser_command_guard_and_cleanup_bytes_unchanged": true,
+    "body_text_qualification": "Main-body publication status and diagnostic labels change on the declared lines; only all unlisted bytes are identical, not every byte of every function body."
+  },
+  "candidates": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/SOURCE-PREPARE.py.txt",
+      "bytes": 17630,
+      "lf": 288,
+      "sha256": "9ebf3df7eddbf3501806143886f428c579fb7985baf8840a3a6bd31ae4510321"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/INDEX-CAPTURE.py.txt",
+      "bytes": 26508,
+      "lf": 447,
+      "sha256": "65f5795510b364c007703db859454fe652dcb2d551fca089745336407483998e"
+    }
+  ],
+  "baselines": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+      "bytes": 17797,
+      "lf": 288,
+      "sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py",
+      "bytes": 26778,
+      "lf": 447,
+      "sha256": "525dd35db0c1d4520cb03be3a5ceb33e2e5a6151a76623873a1057cecdb98e9c"
+    }
+  ],
+  "preserved_predecessor_evidence": {
+    "source": "C18 SOURCE source31673e86... follows original source review4e272063..., accepted PUB-cap delta651d7370..., bound instancebc26c20c..., and consumed actual0e151234.... Historical3432 members/SOURCE1879327B/two owned Git children with separately reconciled original terminal. This is accepted retained evidence, not current C20 count, capacity, runtime or capture authority.",
+    "index": "C18 index source525dd35d... follows source review48b53891..., facts02 selector delta12664c62..., bound instanceb46ec4dc..., and consumed actual0bfede7d.... Historical3432 exact SOURCE/DIRCv2/stage0 tuples and original terminal accepted; TREE framing only. Failed C18 metadata01 remains failed/consumed, metadata02 and capture consumed. None is replayable or fresh C20 metadata.",
+    "review_limit": "Selected substantive acceptance/guard/cap/settlement fields were read without raw SOURCE/index/terminal recapture or a second whole implementation audit. Byte hashing does not enlarge semantic coverage."
+  },
+  "changed_bindings": {
+    "source": "Only doc labels2/4, D14, P/TREE19, FACTS/FACTS_SHA21, PUB/PUB_SHA22, report format28, exact publication status208 and diagnostic labels212/221 change. Proposed D/FACTS/PUB names become checkpoint20/CHECKPOINT-20 and all four current identity values are None.",
+    "index": "Only doc2, D13, P/TREE19, SOURCE/SOURCE_SHA20, FACTS/FACTS_SHA21, EXTRA/EXTRA_SHA22, CONFIG_SHA23 and report format40 change. Fresh C20 source/facts/metadata01 selectors replace old C18 inputs; all seven current identity values are None.",
+    "original_control_selectors": "W/B/T/G/REF/LOCK are unchanged fixed selectors, not permission to inspect/mutate a store or recreate its original lock. Fixed C20 publication status/path must match actual root evidence later; no fallback to a C18/C19 receipt or alternate metadata selector.",
+    "retained_eol_data": "Historical GUI02 SOURCE/capture references and hashes remain only bounded retained EOL input data. The15 allowed paths/two historical qualifications and exact unchanged script+raw-copy Git-tuple guards are preserved. This neither replays GUI02 nor authorizes an old runtime/store read or fresh historical EOL execution claim."
+  },
+  "unbound_gates": {
+    "source": "Proposed line196 calls checked(FACTS,None,65536) after fixed SELF/isolated-root entry but before original lock/T/Git/resource work. read62-81 can read the selected W facts leaf first; checked93-97 compares a SHA256 hexdigest string to None and cannot pass. No executed refusal test is claimed.",
+    "index": "Existing373 requires EXTRA_SHA to be a full64-hex string before directory/resource/lock/T work; None fails. SOURCE/FACTS/CONFIG and P/TREE are also reset, so old image pins cannot silently supply the new instance.",
+    "unpromoted_path": "These own-lane .py.txt leaves are not the fixed future SELF .py paths. No future output directory, SOURCE/INDEX, request, runtime or binding was created by this reviewer; no live output-vacancy assertion."
+  },
+  "preserved_safety": {
+    "source_operations": "Exactly the accepted two fixed read-only rev-parse and recursive ls-tree children, one observed checkout buffer per member and exact raw candidate OID/size/mode accounting. No cat-file, new child, command/environment expansion, discovery, source edit or new consumer action.",
+    "index_operations": "Exactly the accepted one read-only ls-files --stage/-z/--full-name child. Entire SOURCE/DIRCv2/stage0 mappings must agree; fixed tools/aliases/config/exclude/JDK projection and original images still need fresh C20 facts.",
+    "input_and_ownership": "Unlisted no-follow path/type/root-owner/single-link/size/full-pin/hash checks, metadata/HEAD/ref/shallow/absence before-after preservation, original-lock non-recreation and nonblocking ownership checks remain byte-identical. Accepted hostile-root/atomic-checkout/future-freeze limits remain.",
+    "outputs_and_settlement": "Unlisted fixed exclusive0600/no-follow output writes, caps/fsync/readback, direct owned-child/pipes/descriptors/lock settlement, signal/deadline/resource handling and HOLD/no automatic retry remain byte-identical. No deletion/overwrite/cleanup expansion or arbitrary-descendant/global-idleness/hard-kernel-deadline proof.",
+    "old_scopes": "New fixed C20 selectors do not reuse C18 output names, adopt C18 pending labels as current success, reopen failed metadata01, or discharge a consumed/HOLD/NO-RETRY scope."
+  },
+  "capacity_not_accepted": {
+    "current_c20_fields": {
+      "commit": null,
+      "config_hash": null,
+      "extra_facts_hash": null,
+      "facts_hash": null,
+      "full_member_count": null,
+      "json_quoted_path_bytes": null,
+      "publication_receipt_hash": null,
+      "source_bytes": null,
+      "source_hash": null,
+      "tree": null
+    },
+    "source_unchanged": "3500 members at223; listing222 <=2MiB; writer175 strictly <2MiB and readback189 <=2MiB; raw and checkout128MiB each; member32MiB; PUB206 cap131072 (accepted C18 receipt delta retained); all other caps/deadlines/floors unchanged.",
+    "index_unchanged": "3500 member/count declarations at239/252/284/401 and SOURCE377 <=2MiB remain. Index4MiB/listing2MiB/metadata64KiB/tools32MiB/total outputs7MiB and180s/30s plus entry12GiB/25%, active8GiB/20% remain.",
+    "no_fit_inference": "C18 count3432 and manifest1879327B cannot establish final C20 fit. Even a member count<=3500 does not guarantee byte/serialization/resource/strict-output fit. An unbound proposal retaining old caps is not a usable final current instance.",
+    "downstream_separation": "144KiB OID transport is downstream coupling only; no OID generator/reader/guard is added to these preparers. Author-reported consumer reader/count capacities and prospective formulas are not independently accepted in this selector review.",
+    "next_capacity_gate": "Actual final C20 publication full-tree inventory metrics and exact fresh metadata must ground any separately reviewed minimum scalar changes. No selected-row/historical count substitution, preliminary failed capture to discover capacity, guessed count/manifest length, automatic expansion, omitted rows or per-consumer recapture."
+  },
+  "actual_current_source_gate": "Root's five reviewed test edits motivate a new current capture, not an inferred tuple list here. The later exact request and actual SOURCE must bind the final published C20 commit/tree and all five accepted after-image identities with correct raw/checkout/EOL qualification. This review does not repeat their source semantics or assert publication/application from a planned count.",
+  "required_next_steps": [
+    "Root actual C20 publication, full-tree inventory facts, original external terminal and independent publication actual acceptance; no fabricated current Git identity.",
+    "Separate inventory/schema-grounded capacity review, fresh source-store facts, exact literal promotion/binding and root-only once-only source instance/command/coordination/resource/retention admission.",
+    "One actual SOURCE capture and independent exact manifest/tree/EOL/content/terminal/descriptor reconciliation; failure or drift HOLD/no retry.",
+    "Fresh original index/config/exclude/tool/alias/JDK facts, actual SOURCE length/count reconciliation, separate index bound-instance admission and one independently reconciled index capture.",
+    "Each consumer separately binds the one current shared SOURCE/index evidence and its own count/OID/schema/freeze/lock/request. No shared runtime, old GUI continuation or consumer authority follows from this review."
+  ],
+  "accounting": {
+    "reviewer_helper_or_git_executions": 0,
+    "captures": 0,
+    "tests": 0,
+    "builds": 0,
+    "new_findings": 0,
+    "closures": 0,
+    "central_denominator_change": 0
+  },
+  "preserved_restrictions": "PVU007 STOP, PVU011 NO RETRY, PVA029 recorded49/44/5FAIL/no automatic retry, G7/G8 CLOSED, original native refusal and partial-edit/root-completion provenance, every consumed/failed/held-runtime/cleanup qualification, eight PVD choices, protected refs/dependencies/version/identity/signing/Store/occupied1017001 boundaries survive. Root alone owns actual Git/publication/admission/execution/cleanup/notifications.",
+  "method": "Named W source/evidence reads plus inert JSON/string/hash/integer comparisons only. Complete candidate diff reconstructed in memory; before/context/hunk/after checks and whole-string forward/inverse comparisons are not helper execution or a syntax/AST test. No helper import/execution, Git/T/runtime/process/provider/compiler/SDK/network probe, build/test, capture, existing-file edit, cleanup or stop. Only this new own-lane report, exclusively created0600 with fsync/readback.",
+  "inputs": [
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/CONTROL-DELTA.txt",
+      "bytes": 6956,
+      "lf": 92,
+      "sha256": "e2fe4d437e75de2a1eee322f3c42022b57ec50ef085f84eae9cb46afd901e569"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/DELTA.md",
+      "bytes": 6678,
+      "lf": 35,
+      "sha256": "0a82668a3fdf28f8048c98c151b040c1637b6bc0027d43cea06e906d96ac83f1"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/CONTRACT.json",
+      "bytes": 6041,
+      "lf": 192,
+      "sha256": "4d24acb5c4e0f59b54835ca1b97897daf0a97fdf11201ce374410ef820bc0cd0"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/SOURCE-PREPARE.py.txt",
+      "bytes": 17630,
+      "lf": 288,
+      "sha256": "9ebf3df7eddbf3501806143886f428c579fb7985baf8840a3a6bd31ae4510321"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/native_security_author/c20/source-capture/INDEX-CAPTURE.py.txt",
+      "bytes": 26508,
+      "lf": 447,
+      "sha256": "65f5795510b364c007703db859454fe652dcb2d551fca089745336407483998e"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/SOURCE-PREPARE.py",
+      "bytes": 17797,
+      "lf": 288,
+      "sha256": "31673e8670a0277ab2e11217c62456468f4b956f42d230fabb57f19b305608a3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/index-prepare01/INDEX-CAPTURE.py",
+      "bytes": 26778,
+      "lf": 447,
+      "sha256": "525dd35db0c1d4520cb03be3a5ceb33e2e5a6151a76623873a1057cecdb98e9c"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/source-prepare01/BINDING.json",
+      "bytes": 2100,
+      "lf": 30,
+      "sha256": "768be8aa2f892fb30bea0f409b5cb3d4819c2777f2b4b48a81de662376ce200e"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_review/C18-SOURCE-PREPARE-REVIEW.json",
+      "bytes": 7075,
+      "lf": 143,
+      "sha256": "4e272063b550c4a8d7a21c990490cfb09832cd094ca282cb2455df47de25f2a8"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_review/C18-SOURCE-PREPARE-RECEIPT-CAP-REVIEW.json",
+      "bytes": 3285,
+      "lf": 47,
+      "sha256": "651d7370aa81ba3784f9126f4ddc9b7b5f95a3c310c7c6f384a772248a69e6c3"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_review/C18-SOURCE-PREPARE-INSTANCE-REVIEW.json",
+      "bytes": 6600,
+      "lf": 89,
+      "sha256": "bc26c20c2b790aff9a51d8cc08bdb4182bd22a0271a2a6232bedd8db86e872f8"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/database_review/C18-SOURCE-PREPARE-ACTUAL-REVIEW.json",
+      "bytes": 9478,
+      "lf": 130,
+      "sha256": "0e15123442d58bfd38c0defe72a42246b40ece14287fc48f432ac82414132988"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint18/index-prepare01/BINDING.json",
+      "bytes": 940,
+      "lf": 13,
+      "sha256": "28a04ebd335304397dd9f0d76ff00c6b5f26598177d1e5ff3ea811c0482b3d19"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_review/c18-index-prepare/SOURCE-REVIEW.json",
+      "bytes": 14336,
+      "lf": 312,
+      "sha256": "48b53891243c7d624d4a1ed7830285972e00811ba68bdc4bc8beeda0f200b958"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_review/c18-index-prepare/FACTS02-DELTA-REVIEW.json",
+      "bytes": 6149,
+      "lf": 101,
+      "sha256": "12664c62993251dc6520149e42c2370aad94e92d86478da12613a9a3b1b8d46b"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_review/c18-index-prepare/INSTANCE-REVIEW.json",
+      "bytes": 10020,
+      "lf": 211,
+      "sha256": "b46ec4dc2952b31a983d66ce78dfc924c4b1a64457a01e61126c03abb8603c80"
+    },
+    {
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/pva031_review/c18-index-prepare/ACTUAL-REVIEW.json",
+      "bytes": 6873,
+      "lf": 62,
+      "sha256": "0bfede7df3aefbfedc27da99399ad0927f4541cfa9095e097f3c0b870c613927"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "application_or_validation_test_cases": 0,
+  "changes": [
+    "Bounded diagnostic conservation before original deletion loop and saved-copy recheck afterward.",
+    "SOURCE pin.bytes must equal declared SOURCE_BYTES in both inner and outer.",
+    "Updated exact inert inner/outer request hash references; all actual binding nulls retained."
+  ],
+  "files": {
+    "LAUNCH-GRAPH01.py.txt": {
+      "after_bytes": 74166,
+      "after_sha256": "b05e9852eddc4d6a7e18246637498d1cf8ed23e1ad7c98ce2f9c119c872f9a74",
+      "before_bytes": 66481,
+      "before_sha256": "1e8fb0ecc3568626e1a48cc2130c89250ebd67b37ebda9930128f5be2ce9112a"
+    },
+    "LINUX-ANDROID-HOST-GRAPH01.py.txt": {
+      "after_bytes": 66659,
+      "after_sha256": "740968caf0e878f70b0fedf66be9e61d907abb423d51b8b247285ee86194e25c",
+      "before_bytes": 66550,
+      "before_sha256": "56f78ebbf3b6f07ea4bd72df367ef4f0271e97cb457387e8bbb21ff90fe9047e"
+    },
+    "REQUEST-GRAPH01.template.json": {
+      "after_bytes": 9948,
+      "after_sha256": "5e0f6572299b76f9f31a2501e274658a104d8d3ee5a6494c216ca894424beffd",
+      "before_bytes": 9948,
+      "before_sha256": "440560cd18c5590412e5dcfb3982fe1c23a55338b3a5fa183bb04a8ce355a491"
+    }
+  },
+  "format": "passvault-android-host-graph01-retention-source-delta-v1",
+  "patch_sha256": "cf2940e3d259f9b3afd4c6aebbbc04da9ec37e01bb599bd45ea481f74e7f931f",
+  "reversible_patch": "GRAPH01-DIAGNOSTIC-RETENTION.patch",
+  "source_only_no_helper_import_parse_as_code_or_execution": true,
+  "text_reuse_references": [
+    "reviews/team20/resume12/cleanup_author/DETEKT04-CLOSEOUT02.py.txt:281-387",
+    "reviews/team20/resume12/cleanup_review/STATIC02-SOURCE-REVIEW.md:44-85"
+  ]
+}

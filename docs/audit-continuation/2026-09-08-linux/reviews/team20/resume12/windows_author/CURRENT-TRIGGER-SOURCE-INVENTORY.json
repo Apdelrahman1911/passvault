@@ -1,0 +1,168 @@
+{
+  "actual_source_commit_tree": "UNBOUND",
+  "author": "/root/c20_windows_author",
+  "date_utc": "2026-09-12",
+  "files": [
+    {
+      "bytes": 3097,
+      "lf": 75,
+      "on_block": "on:\n  push:\n    branches:\n      - codex/audit-continuation-linux-20260908\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/ios-focused-01.json\n\n",
+      "on_block_sha256": "473e793453a4adb13570abbf21798aafc53b174d4e70fa558632b94e79dba072",
+      "path": ".github/workflows/audit-ios-focused-validation.yml",
+      "sha256": "d1a1b3b5c06b46446e935ce3ff2e75ec2a829d9d6179df0b90f75ddf7c2a9dfa"
+    },
+    {
+      "bytes": 2651,
+      "lf": 68,
+      "on_block": "on:\n  push:\n    branches:\n      - codex/audit-continuation-linux-20260908\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/macos-focused-02.json\n\n",
+      "on_block_sha256": "7326893e87d33b92ff335cf5833294e430670e52164f921fa12ad693a03b8866",
+      "path": ".github/workflows/audit-macos-focused-validation.yml",
+      "sha256": "e552c5779db191cf63a209a7890f90f8bd815add5608c8d3d74ff6c62286489b"
+    },
+    {
+      "bytes": 3777,
+      "lf": 83,
+      "on_block": "on:\n  push:\n    branches:\n      - codex/audit-continuation-linux-20260908\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/macos-native-01.json\n\n",
+      "on_block_sha256": "0dce41a423ce9d9fde3b14a0507e732a911b18a03f6d9600c54cedf4dffe15b4",
+      "path": ".github/workflows/audit-macos-native-validation.yml",
+      "sha256": "4f6ffba8376203095f14ca4f1ddbb6db126e6b5d6506e3171fdc6d432bbe485d"
+    },
+    {
+      "bytes": 2177,
+      "lf": 54,
+      "on_block": "on:\n  push:\n    branches: [codex/audit-continuation-linux-20260908]\n    paths:\n      - docs/audit-continuation/2026-09-08-linux/requests/windows-cohort-05.json\n\n",
+      "on_block_sha256": "a2ff797915791d728f370928e0be1fedf97429f9f238f1d04610a658c733e0e1",
+      "path": ".github/workflows/audit-windows-native-validation.yml",
+      "sha256": "d70ba4a276957158d2904a426e421c7303bea9c47de4fc7a96cf060ce2bb1d21"
+    },
+    {
+      "bytes": 15186,
+      "lf": 313,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Testing candidate tag to verify\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "fbd16eb191519b2d203f90fe6d34d7e70b0bd0a9afa91048eddb8dfa05bf413b",
+      "path": ".github/workflows/candidate-readiness.yml",
+      "sha256": "b17a0d94f2e4a04f83a77fa99ff4a6300d3eaea4961bff31bb302ba6a667acd2"
+    },
+    {
+      "bytes": 10177,
+      "lf": 315,
+      "on_block": "on:\n  push:\n    branches: [ main, testing, release ]\n  pull_request:\n    branches: [ main, testing, release ]\n\n",
+      "on_block_sha256": "e92c89ef7c06cf4c95dc8c5832dcc10006d7ae9a826548801a390408e4ce1adf",
+      "path": ".github/workflows/ci.yml",
+      "sha256": "eddfa5917a77fa606c115c418b433a3aa04c4a061cd757af5040fbdd452d9af2"
+    },
+    {
+      "bytes": 917,
+      "lf": 35,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform to build once and upload to internal testing\n        required: true\n        default: android\n        type: choice\n        options:\n          - android\n          - ios\n          - both\n      confirmation:\n        description: candidate:<platform>:<version>:<build>\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "938d6d1edb1f3c9156bda039af63977e5d3ab880be6808e7b48d610b4ad5e270",
+      "path": ".github/workflows/mobile-release-candidate.yml",
+      "sha256": "bc776feeadf166d5c7f3252f11b29a23a00149fa9307fb385886f273b6755760"
+    },
+    {
+      "bytes": 1118,
+      "lf": 40,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform whose exact internal build should be promoted\n        required: true\n        default: android\n        type: choice\n        options:\n          - android\n          - ios\n          - both\n      candidate_run_id:\n        description: Successful candidate workflow run ID\n        required: true\n        type: string\n      confirmation:\n        description: external-testing:<platform>:<version>:<build>\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "da5c185a5a7f4887939a79c72ae877039b93d5cb7b33aed6363e7863aae1ceb6",
+      "path": ".github/workflows/mobile-release-external-testing.yml",
+      "sha256": "fe250fea16e1fcf8ff4b74af591b43346af66bacc3dee0883c0e7c560c2f328b"
+    },
+    {
+      "bytes": 589,
+      "lf": 25,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform to validate\n        required: true\n        default: android\n        type: choice\n        options:\n          - android\n          - ios\n          - both\n\n",
+      "on_block_sha256": "268466dc15b98cc257963bb5bb0432ff20688ab9de748405ebc498305e69e893",
+      "path": ".github/workflows/mobile-release-preflight.yml",
+      "sha256": "15f25e2c07951a8481cb1203eb4076714699efdccd6e2712a043a53de76c51c9"
+    },
+    {
+      "bytes": 53353,
+      "lf": 1090,
+      "on_block": "on:\n  workflow_call:\n    inputs:\n      platform:\n        required: true\n        type: string\n      channel:\n        required: true\n        type: string\n      operation:\n        required: true\n        type: string\n      version:\n        required: true\n        type: string\n      build_number:\n        required: true\n        type: string\n      candidate_tag:\n        required: false\n        default: ''\n        type: string\n      candidate_commit:\n        required: false\n        default: ''\n        type: string\n      testflight_distribution:\n        required: false\n        default: email-list\n        type: string\n      production_confirmation:\n        required: false\n        default: ''\n        type: string\n      testing_confirmation:\n        required: false\n        default: ''\n        type: string\n      review_withdrawal_confirmation:\n        required: false\n        default: ''\n        type: string\n      pipeline_lock_held:\n        description: The protected caller already holds the repository-wide release-pipeline lock\n        required: false\n        default: false\n        type: boolean\n  workflow_dispatch:\n    inputs:\n      platform:\n        description: Platform to build and upload\n        required: true\n        default: both\n        type: choice\n        options:\n          - both\n          - android\n          - ios\n      channel:\n        description: Store destination\n        required: true\n        default: internal\n        type: choice\n        options:\n          - internal\n          - external\n          - production\n      operation:\n        description: Upload a new internal binary or promote the exact existing build\n        required: true\n        default: upload\n        type: choice\n        options:\n          - upload\n          - promote\n          - store-assets\n      version:\n        description: Exact marketing version; blank uses version.properties\n        required: false\n        type: string\n      build_number:\n        description: Exact committed Store build number from version.properties\n        required: true\n        type: string\n      candidate_tag:\n        description: Required readiness-approved candidate tag for production\n        required: false\n        type: string\n      testflight_distribution:\n        description: External iOS invitation method\n        required: true\n        default: email-list\n        type: choice\n        options:\n          - email-list\n      production_confirmation:\n        description: Type I_APPROVE_PRODUCTION only for a production upload\n        required: false\n        type: string\n      testing_confirmation:\n        description: Type I_CONFIRM_REQUIRED_TESTING_COMPLETED only after required store testing is complete\n        required: false\n        type: string\n      review_withdrawal_confirmation:\n        description: Type I_APPROVE_REVIEW_WITHDRAWAL to withdraw review and replace iOS store assets\n        required: false\n        type: string\n\n",
+      "on_block_sha256": "ce6a29eaad69717fdf54f89f0b71de7df6a36f031298d4e87a4690bb922ba670",
+      "path": ".github/workflows/mobile-store-release.yml",
+      "sha256": "fdefa6745a686e180f75102d671914951e3fa5df77b07f1d2838afa2fd31c558"
+    },
+    {
+      "bytes": 1758,
+      "lf": 65,
+      "on_block": "on:\n  push:\n    branches:\n      - main\n    paths:\n      - '.github/workflows/pages.yml'\n      - 'site/**'\n      - 'scripts/build-public-site.rb'\n      - 'iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png'\n  workflow_dispatch:\n\n",
+      "on_block_sha256": "9317a5afce49f5817a6842fcdc832293dcf10c821582f184bfbcb843f1ea3023",
+      "path": ".github/workflows/pages.yml",
+      "sha256": "3da09e8e67b8502cd2e9a311e890b96bdb874e85b490afd323d5925df045a933"
+    },
+    {
+      "bytes": 3196,
+      "lf": 92,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      confirmation:\n        description: Type VERIFY_ONLY_NO_UPLOAD to run the disposable-edit check\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "27df72e2da1889463f6eada3616fafd9f3df00a022c3ebc1168fd55af9e8dbe8",
+      "path": ".github/workflows/play-access-check.yml",
+      "sha256": "f9f001ffffc7512a3da6e2b42b15cf539e25eb851cf35e2761ef5c5bbfca0040"
+    },
+    {
+      "bytes": 8394,
+      "lf": 193,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Readiness-approved candidate tag\n        required: true\n        type: string\n      platform:\n        description: Store to submit; choose one when retrying a partial failure\n        required: true\n        default: both\n        type: choice\n        options:\n          - both\n          - android\n          - ios\n      authorization_run_id:\n        description: Successful Request Mobile Production Release run ID\n        required: true\n        type: string\n      authorization_sha:\n        description: Exact protected-main SHA that authorized this child run\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "fd9b45152c0d3f34f18ce71b4716be85cdb7fa0ce15519cf3f1c7a553fabc613",
+      "path": ".github/workflows/production-release.yml",
+      "sha256": "3cf6b2ce6fc6270b007132777e0681a221d3fe3544ef39899f2917333f87d2c5"
+    },
+    {
+      "bytes": 5390,
+      "lf": 133,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Readiness-approved candidate tag to sign without publishing\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "982b0073b55ab71b62f04845c3d77addd98616ec2917ecc365b9666ae8abc7a1",
+      "path": ".github/workflows/production-signing-validation.yml",
+      "sha256": "3d530176598e68a3332c47e72f43b5ff0120a6a12a669ec70f09e8a40aafa338"
+    },
+    {
+      "bytes": 11208,
+      "lf": 241,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Production candidate whose stores are live\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "0f125ddf46829494d5fae7a1bb645cbfeeeab96959cba7b03b32e1ffc5a3c6ec",
+      "path": ".github/workflows/publish-stable-release.yml",
+      "sha256": "65d91bad705bbe9b3216d07fac954869d39f48ae6253c9a09b950a0bf0cad9f1"
+    },
+    {
+      "bytes": 59483,
+      "lf": 1238,
+      "on_block": "on:\n  workflow_call:\n    inputs:\n      version:\n        required: true\n        type: string\n      candidate_tag:\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "b66ec8519fc8831fd6d648b386d0978e69ca5cd11f47a64d782b7ad8075c19b9",
+      "path": ".github/workflows/release.yml",
+      "sha256": "e6b842aad78a7eb8697d860265531fa606111b86e8ced44186ef64e5b0ec12b9"
+    },
+    {
+      "bytes": 3113,
+      "lf": 91,
+      "on_block": "on:\n  workflow_dispatch:\n    inputs:\n      candidate_tag:\n        description: Readiness-approved mobile candidate tag\n        required: true\n        type: string\n      platform:\n        description: Store to promote; choose one only when retrying a partial failure\n        required: true\n        default: both\n        type: choice\n        options:\n          - both\n          - android\n          - ios\n      confirmation:\n        description: Type I_APPROVE_MOBILE_PRODUCTION\n        required: true\n        type: string\n\n",
+      "on_block_sha256": "ac1efa78e198de67eeafad5f351d97845761cd2283b69ec35c0128dd6b9c7abd",
+      "path": ".github/workflows/request-mobile-production.yml",
+      "sha256": "45525424359e72b37fbc0ec8fe38c92486211b486f5b859aed71361c122150f3"
+    },
+    {
+      "bytes": 8010,
+      "lf": 176,
+      "on_block": "on:\n  workflow_dispatch:\n\n",
+      "on_block_sha256": "f5fd25de76466c03b44516e2cbdf59ee841a5a1fe1b0d4eb07589a2fb4b1123c",
+      "path": ".github/workflows/store-screenshots.yml",
+      "sha256": "6f0230f49c724372a352855a58edbf8234cd9253e58e0b839fde0ccbbb2bdeb5"
+    },
+    {
+      "bytes": 26346,
+      "lf": 552,
+      "on_block": "on:\n  push:\n    branches: [ testing ]\n  workflow_dispatch:\n    inputs:\n      resume_existing_internal_uploads:\n        description: Reuse attested internal receipts instead of uploading Android/iOS again\n        required: true\n        type: boolean\n        default: false\n      resume_confirmation:\n        description: Required as resume:<version>:<build> when resuming existing internal uploads\n        required: false\n        type: string\n        default: ''\n\n",
+      "on_block_sha256": "cf6003b75cf537b11d5a1c4eed7df1e6da4b4d5e8dc9948834c7bea54cc36777",
+      "path": ".github/workflows/testing-release.yml",
+      "sha256": "b2df9bf0d52073dbcc7351f6847d2edb4e5e903a41eae04589b9b4bfbed9a6d4"
+    }
+  ],
+  "local_build_slot": "UNOBSERVED",
+  "native_cases_executed": 0,
+  "new_workflow": "Source01 unchanged afterimage, separately hash-bound in SOURCE02-FILES.json; not present canonically in this snapshot.",
+  "open_PR_state": "UNOBSERVED",
+  "queued_pending_running_CI": "UNOBSERVED",
+  "remote_current_workflows": "UNOBSERVED",
+  "schema": 1,
+  "status": "WORKING_SOURCE_ONLY_NOT_GIT_OR_LIVE_QUEUE_FACTS",
+  "workflow_count": 19
+}

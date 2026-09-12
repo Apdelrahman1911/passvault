@@ -1,0 +1,101 @@
+import groovy.json.JsonOutput
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.Task
+import org.gradle.api.artifacts.verification.DependencyVerificationMode
+import org.gradle.api.tasks.TaskState
+
+// INERT new inventory-only scope guard. Root must bind, copy and admit this exact
+// source with its new one-shot outer envelope. No standalone execution authority.
+// This does not replace/mutate the checked-in coordinates provider or task action.
+def expectedRoot = new File('/root/projects/PassVault/audit-runtime-linux-dependency-inventory01/checkout')
+def scopes = [
+    ':app-android:generateAndroidThirdPartyDependencyInventory': [
+        scope: 'android', configuration: 'releaseRuntimeClasspath',
+        output: 'app-android/build/reports/legal/android-production-dependencies.lock',
+    ],
+    ':app-desktop:generateDesktopThirdPartyDependencyInventory': [
+        scope: 'desktop', configuration: 'desktopRuntimeClasspath',
+        output: 'app-desktop/build/reports/legal/desktop-production-dependencies.lock',
+    ],
+    ':shared:generateIosArm64ThirdPartyDependencyInventory': [
+        scope: 'iosArm64', configuration: 'iosArm64CompileKlibraries',
+        output: 'shared/build/reports/legal/iosArm64-production-dependencies.lock',
+    ],
+]
+def selected = scopes.keySet().toList()
+def start = gradle.startParameter
+if (gradle.gradleVersion != '9.7.1' || System.getProperty('java.specification.version') != '17' ||
+        System.getProperty('os.name') != 'Linux' || !(System.getProperty('os.arch') in ['amd64', 'x86_64']) ||
+        start.taskNames != selected || !start.continueOnFailure || !start.excludedTaskNames.empty ||
+        start.parallelProjectExecutionEnabled || start.configureOnDemand || start.maxWorkerCount != 1 ||
+        start.buildCacheEnabled || start.offline || start.refreshDependencies || start.dryRun ||
+        start.initScripts.size() != 1 ||
+        start.dependencyVerificationMode != DependencyVerificationMode.STRICT) {
+    throw new GradleException('Inventory01 requires the exact online three-producer command, Linux/JDK17, serial strict verification')
+}
+
+def admitted = [:]
+def started = new LinkedHashSet<String>()
+def finished = new LinkedHashSet<String>()
+def graphAccepted = false
+gradle.taskGraph.whenReady { graph ->
+    def root = gradle.rootProject
+    if (root.projectDir.absoluteFile != expectedRoot || root.projectDir.canonicalFile != expectedRoot ||
+            graph.allTasks.size() != 3 || graph.allTasks.collect { it.path }.toSet() != scopes.keySet()) {
+        throw new GradleException('Inventory01 forbids a different source root or any graph expansion')
+    }
+    def rows = []
+    graph.allTasks.each { task ->
+        def declaration = task.class.superclass
+        def spec = scopes[task.path]
+        def dependencies = task.taskDependencies.getDependencies(task).collect { it.path }.sort()
+        def finalizers = task.finalizedBy.getDependencies(task).collect { it.path }.sort()
+        def mustRunAfter = task.mustRunAfter.getDependencies(task).collect { it.path }.sort()
+        def shouldRunAfter = task.shouldRunAfter.getDependencies(task).collect { it.path }.sort()
+        if (!task.enabled || declaration.simpleName != 'GenerateThirdPartyDependencyScopeTask' ||
+                declaration.superclass != DefaultTask || task.actions.size() != 1 ||
+                !dependencies.empty || !finalizers.empty || !mustRunAfter.empty || !shouldRunAfter.empty) {
+            throw new GradleException('Inventory01 requires original single-action producers with no task edges')
+        }
+        def configuration = task.project.configurations.getByName(spec.configuration)
+        def output = new File(expectedRoot, spec.output)
+        if (task.scope.get() != spec.scope || !configuration.canBeResolved ||
+                task.outputFile.get().asFile.absoluteFile != output ||
+                task.outputFile.get().asFile.canonicalFile != output ||
+                task.outputs.files.files.collect { it.absoluteFile }.toSet() != [output].toSet()) {
+            throw new GradleException('Inventory01 producer scope/configuration/output changed')
+        }
+        // Do NOT query coordinates or task.inputs here: those realize the original
+        // artifact provider. Configuration/transform costs remain under outer guards.
+        admitted[task.path] = task
+        rows.add([
+            task: task.path, declaredType: declaration.name, scope: spec.scope,
+            project: task.project.path, configuration: spec.configuration, output: spec.output,
+            dependencies: dependencies, finalizers: finalizers,
+            mustRunAfter: mustRunAfter, shouldRunAfter: shouldRunAfter,
+        ])
+    }
+    graphAccepted = true
+    println('PASSVAULT_INVENTORY01_GRAPH=' + JsonOutput.toJson(rows.sort { it.task }))
+}
+
+// These bounded task-state markers add no action, resolve no extra configuration,
+// and are not a replacement for original exit/log/file/source/cleanup evidence.
+gradle.taskGraph.beforeTask { Task task ->
+    if (!graphAccepted || !admitted.containsKey(task.path) || !admitted[task.path].is(task) || !started.add(task.path)) {
+        throw new GradleException('Inventory01 refused an unadmitted or duplicate task start')
+    }
+    println('PASSVAULT_INVENTORY01_START=' + JsonOutput.toJson([task: task.path]))
+}
+gradle.taskGraph.afterTask { Task task, TaskState state ->
+    if (!graphAccepted || !admitted.containsKey(task.path) || !admitted[task.path].is(task) ||
+            !started.contains(task.path) || !finished.add(task.path)) {
+        throw new GradleException('Inventory01 refused an unadmitted or duplicate task finish')
+    }
+    println('PASSVAULT_INVENTORY01_FINISH=' + JsonOutput.toJson([
+        task: task.path, executed: state.executed, didWork: state.didWork,
+        skipped: state.skipped, upToDate: state.upToDate, noSource: state.noSource,
+        failureClass: state.failure == null ? null : state.failure.class.name,
+    ]))
+}

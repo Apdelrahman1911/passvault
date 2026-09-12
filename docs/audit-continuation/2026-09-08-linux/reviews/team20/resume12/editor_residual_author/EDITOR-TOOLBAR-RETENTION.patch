@@ -1,0 +1,53 @@
+--- a/shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt
++++ b/shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt
+@@ -124,6 +124,8 @@
+                 assertTrue(draft.isSecret)
+                 assertTrue(state.hasUnsavedChanges)
+             }
++            // Actual toolbar/dialog wiring, not an OS/central Back or no-navigation assertion.
++            editor.keepEditingAfterToolbarBack(added.last().id)
+             // Deliberately do not save the row: the real page Save must consume its visible draft.
+             editor.saveCloseAndReopen()
+             val expected = seedValues() + FieldValue(added.last().id, "roomdraft", "roomdraftvalue", true)
+@@ -357,6 +359,41 @@
+             }
+         }
+ 
++        fun keepEditingAfterToolbarBack(fieldId: String) {
++            val accepted = fields()
++            val pending = onEdt {
++                val state = model.state.value
++                assertFalse(state.isBusy, "ROOM_EDITOR_BACK_WHILE_BUSY")
++                assertFalse(state.showDiscardConfirmation, "ROOM_EDITOR_PRIOR_DISCARD_DIALOG")
++                val draft = assertNotNull(state.customFieldDrafts[CustomFieldId(fieldId)])
++                FieldValue(fieldId, draft.name, draft.value, draft.isSecret)
++            }
++            clickEvent(button("Back"), "OnCancelClick")
++            settle()
++            assertTrue(onEdt { model.state.value.showDiscardConfirmation }, "ROOM_EDITOR_BACK_DID_NOT_WARN")
++            assertTrue(visible(named("Discard changes?")), "ROOM_EDITOR_DISCARD_WARNING_NOT_VISIBLE")
++            clickEvent(button("Keep editing"), "OnDiscardCancel")
++            await("ROOM_EDITOR_DISCARD_DIALOG_NOT_DISMISSED") {
++                onEdt {
++                    !model.state.value.showDiscardConfirmation &&
++                        snapshot().none { it.name == "Discard changes?" }
++                }
++            }
++            settle()
++            assertEquals(accepted, fields(), "ROOM_EDITOR_KEEP_EDITING_CHANGED_ACCEPTED_FIELDS")
++            onEdt {
++                val state = model.state.value
++                assertTrue(state.hasUnsavedChanges, "ROOM_EDITOR_KEEP_EDITING_CLEARED_DIRTY_STATE")
++                val draft = assertNotNull(state.customFieldDrafts[CustomFieldId(fieldId)])
++                assertEquals(
++                    pending, FieldValue(fieldId, draft.name, draft.value, draft.isSecret),
++                    "ROOM_EDITOR_KEEP_EDITING_CHANGED_PENDING_TUPLE",
++                )
++            }
++            assertEquals(pending.name, scrollTo(textField("Field Name")).text, "ROOM_EDITOR_KEPT_DRAFT_NAME")
++            assertEquals(pending.secret, find(checkBox()).checked, "ROOM_EDITOR_KEPT_DRAFT_SECRET_STATE")
++        }
++
+         fun saveCloseAndReopen() {
+             clickEvent(button("Save", first = true), "OnSaveClick")
+             await("ROOM_EDITOR_REAL_SAVE_COMPLETION") {

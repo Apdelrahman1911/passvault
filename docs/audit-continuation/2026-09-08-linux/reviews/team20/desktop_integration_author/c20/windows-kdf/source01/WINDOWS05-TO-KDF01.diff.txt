@@ -1,0 +1,306 @@
+INERT COMPARISON ONLY. Never apply this diff to or execute the consumed Windows05 helper.
+--- INERT-PRECEDENT/scripts/audit/windows_native_validation.py
++++ PROPOSED-NEW/scripts/audit/windows_kdf_known_answer_01.py
+@@ -1,8 +1,11 @@
+-"""Fresh Windows native-24 cohort; no automatic retry, general runner or recovery.
+-
+-Authors: /root/native and /root. Read WINDOWS-COHORT-05-SCOPE.md before admitting a new run.
+-Only root may activate this helper with an independently accepted request. No
+-Gradle, signing, installation, credential inventory, or Hello operation is run.
++"""One fresh Windows KDF known-answer case; no automatic retry or general runner.
++
++Author: /root/desktop_integration_author. Inert source until root separately
++admits the exact SOURCE-SCOPE.md, source, request and genuine independent review.
++Windows/Run lifetime primitives are copied from the reviewed Windows05 helper
++SHA256 35c14451f4e08b6c6f222f2b0f1297370b7534422f6b4194616bcecc92fc171a;
++that helper is never imported/executed and its consumed instance stays HOLD.
++No Gradle, signing, installation, old case, credential inventory or Hello call.
+ One Job encloses all commands; a command return is not whole-cohort settlement.
+ """
+ 
+@@ -26,19 +29,38 @@
+ 
+ BRANCH = "refs/heads/codex/audit-continuation-linux-20260908"
+ BASE = "docs/audit-continuation/2026-09-08-linux"
+-REQUEST = f"{BASE}/requests/windows-cohort-05.json"
+-HELPER = "scripts/audit/windows_native_validation.py"
+-WORKFLOW = ".github/workflows/audit-windows-native-validation.yml"
+-SCOPE = f"{BASE}/reviews/native/WINDOWS-COHORT-05-SCOPE.md"
+-REVIEW = f"{BASE}/reviews/native-independent/WINDOWS-COHORT-05-ADMISSION.json"
+-SUITE = "windows-native-24-cohort-v5"
++REQUEST = f"{BASE}/requests/windows-kdf-known-answer-01.json"
++HELPER = "scripts/audit/windows_kdf_known_answer_01.py"
++WORKFLOW = ".github/workflows/audit-windows-kdf-known-answer.yml"
++SCOPE = f"{BASE}/reviews/team20/desktop_integration_author/c20/windows-kdf/source01/SOURCE-SCOPE.md"
++REVIEW = f"{BASE}/reviews/team20/desktop_main_review/c20/windows-kdf/INSTANCE-ACCEPT.json"
++SUITE = "windows-kdf-known-answer-01"
+ SDK = "10.0.26100.0"
++TARGET = "passvault_biometric_windows_security_test"
++CASE = "passvault_biometric_windows_kdf_known_answer"
++SELECTOR = "--kdf-known-answer"
++CASES = [CASE]
++PROJECTS = (TARGET,)
++INSTRUMENTATION = (
++    "PASSVAULT_BIOMETRIC_PVA036_HISTORICAL_TEST",
++    "PASSVAULT_BIOMETRIC_PVA036_SOURCE",
++    "PASSVAULT_BIOMETRIC_PRK_ALLOCATION_TEST",
++    "HISTORICAL-PVA036-WINDOWS.cpp.txt",
++)
++# These are root attestations, not helper probes or proof of global exclusivity.
++# cancel-in-progress:false does not protect older pending workflow runs.
++ROOT_ATTESTATIONS = (
++    "exclusive_build_slot",
++    "source_push_excludes_queued_pending_running_local_ci",
++    "activation_push_excludes_queued_pending_running_local_ci",
++    "source_push_other_workflow_triggers_reviewed",
++    "activation_push_other_workflow_triggers_reviewed",
++    "generated_cleanup_admitted",
++)
+ NATIVE = "app-desktop/native/biometric-bridge/"
+ INPUTS = {
+-    BASE + "/reviews/native/HISTORICAL-PVA036-WINDOWS.cpp.txt":
+-        "4f041972054d403dba6ddef5f4971c9614aa0c8f9ba0f054dc7e89289bf8016b",
+     ".gitattributes": "8884ed2a100ce791326a3a8d8d4c12a5e0f68d96ecb382fd3a6612ad827604c5",
+-    NATIVE + "CMakeLists.txt": "976be93860deacf21db1542f26c5a4b2fbcc09d84cabba6990a0518666e409d8",
++    NATIVE + "CMakeLists.txt": "e27e27f3c1750c88c308341273410785b72de3c79af9a25f0d3e30c295a555fe",
+     NATIVE + "include/passvault_biometric.h": "dc76bea46e1abc0a2950f55b549fe68cf1399d256756e85ad0a79ef52b228b85",
+     NATIVE + "src/windows/passvault_biometric_windows.cpp":
+         "a7c0c97a3b09156afe463c2b1c825bae8330ac07488e9f2667baa2dcab27f215",
+@@ -47,30 +69,14 @@
+     NATIVE + "tests/passvault_biometric_abi_test.cpp":
+         "354d7e1904d46a2155774052ce20c476763c97f9ed293b94c4bce54208fa3785",
+     NATIVE + "tests/windows/passvault_biometric_windows_security_test.cpp":
+-        "ed5f23e50ca24d01f12c99d2800fab06ad93d42e004656676b87400ad49e588a",
++        "b33f12ddf18f519e83dbac57797032a25192bbeb5bf071c9d62697c763576653",
++    BASE + "/reviews/team20/desktop_other_review/c20/NATIVE-KDF-EXACT-PATCH-REVIEW.json":
++        "6de5ea70be36aa4d9416f0de0135276a7a757975c8d1c3bddcdbdf9cf9e62321",
++    BASE + "/reviews/team20/android_fixture_review/c20/KDF-ORACLE-LITERAL-REVIEW.md":
++        "7adafc2fc5985025f5388673d495f10e6f1cf1d48e1d68d17a1d6d9c0d3ce2f2",
++    BASE + "/reviews/team20/root/C20-NATIVE-TEST-INTEGRATION.json":
++        "227fae154a727b51e1f03b00a17fe48bf8d380c8d3237b86b944a2e17082dac5",
+ }
+-CASES = [
+-    "passvault_biometric_windows_file_" + name
+-    for name in (
+-        "success", "validation_failure", "dacl_failure", "collision",
+-        "empty_payload", "oversized_payload", "empty_suffix", "rename_failure",
+-    )
+-] + [
+-    "passvault_biometric_windows_secret_" + name
+-    for name in (
+-        "normal_scope", "early_return", "allocation_exception", "nested_exception",
+-    )
+-] + ["passvault_biometric_abi", "passvault_biometric_windows_security"] + [
+-    "passvault_biometric_windows_historical_" + name
+-    for name in (
+-        "success", "validation_failure", "dacl_failure", "collision",
+-        "empty_payload", "oversized_payload", "empty_suffix", "rename_failure",
+-    )
+-] + ["passvault_biometric_windows_prk_unarmed", "passvault_biometric_windows_prk_allocation_cut"]
+-PROJECTS = (
+-    "passvault_biometric", "passvault_biometric_windows_security_test",
+-    "passvault_biometric_windows_historical_writer_test", "passvault_biometric_windows_prk_allocation_test",
+-)
+ GiB = 1024 ** 3
+ LOG_LIMIT = 2 * 1024 ** 2
+ LOG_TOTAL_LIMIT = 8 * 1024 ** 2
+@@ -549,7 +555,7 @@
+     def check_outputs(self):
+         # Every original stdout handle remains live: old compiler descendants
+         # can still write earlier logs while the next phase's parent runs.
+-        require(len(self.logs) <= 32, "Exact 24-case cohort command log count exceeded")
++        require(len(self.logs) <= 9, "Exact one-case KDF command log count exceeded")
+         total = 0
+         for entry in self.logs:
+             size = self.log_state(entry)["size"]
+@@ -962,10 +968,12 @@
+     request_data = frozen_bytes(workspace / REQUEST)
+     request = json.loads(request_data, object_pairs_hook=no_duplicate_keys)
+     require(request.get("schema") == 1 and request.get("suite") == SUITE, "Wrong request schema/suite")
+-    require(request.get("owner") == "/root" and request.get("exclusive_build_slot") is True,
+-            "Root cross-local/CI build-slot attestation required")
++    require(request.get("owner") == "/root" and all(request.get(key) is True for key in ROOT_ATTESTATIONS),
++            "Fresh root queued/pending/running local-CI, both-push trigger and owned-cleanup attestations required")
+     require(re.fullmatch(r"[0-9a-f]{32}", request.get("nonce", "")) is not None, "Invalid request nonce")
+-    require(request.get("case_names") == CASES, "Exact ordered 24 cases required")
++    require(request.get("case_names") == CASES and request.get("target") == TARGET and
++            request.get("selector") == SELECTOR and request.get("audit_controls") is False,
++            "Only one normal-target KDF selector with audit controls OFF is admitted")
+     require(request.get("sdk") == SDK and request.get("max_seconds") == COMMAND_SECONDS,
+             "Changed target/resource contract")
+     require(all(re.fullmatch(r"[0-9a-f]{40}", request.get(key, "")) for key in ("source_commit", "source_tree")),
+@@ -976,17 +984,24 @@
+         require(request.get(key) == hashlib.sha256(data).hexdigest(), f"Request hash mismatch: {path}")
+         captures[path] = data
+     review_path = request.get("independent_review_path", "")
+-    require(review_path == REVIEW, "Wrong cohort-05 independent-review path")
++    require(review_path == REVIEW, "Wrong new Windows KDF01 independent-review path")
+     review_data = frozen_bytes(workspace / review_path)
+     require(request.get("independent_review_sha256") == hashlib.sha256(review_data).hexdigest(), "Review hash mismatch")
+     review = json.loads(review_data, object_pairs_hook=no_duplicate_keys)
+-    require(review.get("reviewer") == "/root/native_review" and
+-            review.get("disposition") == "ACCEPT_WINDOWS_NATIVE_24_COHORT_05_ADMISSION", "Missing genuine accepting review")
++    require(review.get("schema") == 1 and review.get("reviewer") == "/root/desktop_main_review" and
++            review.get("disposition") == "ACCEPT_WINDOWS_KDF_KNOWN_ANSWER_01_INSTANCE",
++            "Missing genuine independent KDF01 instance acceptance")
++    require(review.get("suite") == SUITE and review.get("nonce") == request["nonce"] and
++            review.get("case_names") == CASES and review.get("target") == TARGET and
++            review.get("selector") == SELECTOR and review.get("audit_controls") is False and
++            review.get("input_sha256") == INPUTS,
++            "Independent acceptance does not bind this one-case nonce/source contract")
+     for key in ("helper_sha256", "workflow_sha256", "scope_sha256"):
+         require(review.get(key) == request.get(key), "Acceptance does not bind the exact candidate")
+-    # Inline current native inputs are bound by the reviewed helper bytes. The
+-    # old request/SOURCE_BINDINGS remain historical, never reused or modified.
+-    binding = {"suite": SUITE, "case_names": CASES,
++    # Six native configure inputs, checkout attributes, three authority receipts.
++    # No historical source is read; the old helper/request remain untouched.
++    binding = {"suite": SUITE, "case_names": CASES, "target": TARGET, "selector": SELECTOR,
++               "audit_controls": False,
+                "files": [{"path": path, "sha256": expected} for path, expected in INPUTS.items()]}
+     for member in binding["files"]:
+         data = frozen_bytes(workspace / member["path"])
+@@ -997,6 +1012,7 @@
+ 
+ 
+ def main():
++    require(len(sys.argv) == 1, "Fixed helper only; no command-line overrides")
+     require(sys.platform == "win32" and struct.calcsize("P") == 8, "Windows x64 Python required")
+     require(sys.version_info >= (3, 11), "Preinstalled Python >=3.11 required; no automatic install")
+     require(os.environ.get("GITHUB_REPOSITORY") == "Apdelrahman1911/passvault", "Wrong repository")
+@@ -1017,8 +1033,8 @@
+         signal.signal(number, cancel)
+     request, binding, captures = validated_inputs(workspace)
+     require(not CANCELLED, "Cancellation before allocation")
+-    temp = runner_temp / f"passvault-windows-cohort-05-{run_id}-1-{request['nonce']}"
+-    evidence = runner_temp / f"passvault-windows-cohort-05-{run_id}-1-evidence"
++    temp = runner_temp / f"passvault-windows-kdf-known-answer-01-{run_id}-1-{request['nonce']}"
++    evidence = runner_temp / f"passvault-windows-kdf-known-answer-01-{run_id}-1-evidence"
+     require_absent(temp)
+     require_absent(evidence)
+     evidence.mkdir()
+@@ -1100,45 +1116,59 @@
+         native = workspace / "app-desktop/native/biometric-bridge"
+         run.command([cmake, "-S", native, "-B", build, "-G", "Visual Studio 17 2022", "-A", "x64",
+                      f"-DCMAKE_SYSTEM_VERSION={SDK}", "-DBUILD_TESTING=ON",
+-                     "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS=ON"], 120, "configure")
++                     "-DPASSVAULT_AUDIT_PVA036_037_CONTROLS=OFF"], 120, "configure")
+         configured = True
+         # Bounded pre-build snapshots, not settled generated-file identities or
+         # evidence of the effective product compilation. Final hashes follow
+         # whole-cohort settlement; verbose compiler output remains necessary.
+         cache = run.read_generated(build / "CMakeCache.txt").decode("utf-8")
++        require("BUILD_TESTING:BOOL=ON" in cache.splitlines() and
++                "PASSVAULT_AUDIT_PVA036_037_CONTROLS:BOOL=OFF" in cache.splitlines(),
++                "Generated cache must retain testing ON and historical/PRK controls OFF")
+         selected_cache = [line for line in cache.splitlines() if re.match(
+-            r"CMAKE_(CXX_FLAGS|CXX_COMPILER|C_COMPILER|GENERATOR|VS_WINDOWS_TARGET_PLATFORM_VERSION|SYSTEM_VERSION)", line)]
++            r"(BUILD_TESTING|PASSVAULT_AUDIT_PVA036_037_CONTROLS|"
++            r"CMAKE_(CXX_FLAGS|CXX_COMPILER|C_COMPILER|GENERATOR|VS_WINDOWS_TARGET_PLATFORM_VERSION|SYSTEM_VERSION))", line)]
+         projects = {}
+         for name in PROJECTS:
+             project = build / f"{name}.vcxproj"
+             project_bytes = run.read_generated(project)
+             text = project_bytes.decode("utf-8-sig")
++            require(not any(token in text for token in INSTRUMENTATION),
++                    "Normal KDF target must not compile historical/PRK instrumentation or source")
+             for token in ("stdcpp20", "<ExceptionHandling>Sync</ExceptionHandling>",
+                           "<WarningLevel>Level4</WarningLevel>", "<TreatWarningAsError>true</TreatWarningAsError>",
+                           "<SDLCheck>true</SDLCheck>", "<ControlFlowGuard>Guard</ControlFlowGuard>"):
+                 require(token in text, f"Required compiler configuration absent: {name}: {token}")
+             projects[name] = {"snapshot_sha256": hashlib.sha256(project_bytes).hexdigest(),
+-                              "required_compile_predicates": "PRESENT"}
++                              "required_compile_predicates": "PRESENT",
++                              "historical_prk_instrumentation": "ABSENT_IN_SNAPSHOT; effective compile review still required"}
+         write_json(evidence / "compile-configuration-snapshot.json", {
+             "qualification": "Pre-build bounded snapshots; not settled-file or effective compiler proof",
+             "cache": selected_cache, "projects": projects,
+         })
+-        run.command([cmake, "--build", build, "--config", "Release", "--target",
+-                     "passvault_biometric_windows_security_test", "passvault_biometric_abi_test",
+-                     "passvault_biometric_windows_historical_writer_test",
+-                     "passvault_biometric_windows_prk_allocation_test",
++        run.command([cmake, "--build", build, "--config", "Release", "--target", TARGET,
+                      "--parallel", "1", "--verbose", "--", "/nodeReuse:false"], 240, "build")
+         build_returned = True
+-        inventory = json.loads(run.command([ctest, "--test-dir", build, "-C", "Release", "--show-only=json-v1"],
+-                                          30, "ctest-inventory"))
+-        require(sorted(test["name"] for test in inventory["tests"]) == sorted(CASES), "CTest inventory differs from exact 24")
++        exact_filter = "^" + re.escape(CASE) + "$"
++        inventory = json.loads(run.command(
++            [ctest, "--test-dir", build, "-C", "Release", "--show-only=json-v1", "-R", exact_filter],
++            30, "ctest-inventory"), object_pairs_hook=no_duplicate_keys)
++        tests = inventory.get("tests")
++        require(isinstance(tests, list) and len(tests) == 1 and isinstance(tests[0], dict) and
++                tests[0].get("name") == CASE, "Filtered CTest inventory must contain exactly the KDF case")
++        selected_argv = tests[0].get("command")
++        normal_executable = build / "Release" / (TARGET + ".exe")
++        require(isinstance(selected_argv, list) and len(selected_argv) == 2 and
++                isinstance(selected_argv[0], str) and Path(selected_argv[0]).is_absolute() and
++                Path(selected_argv[0]) == normal_executable and selected_argv[1] == SELECTOR,
++                "KDF inventory must name this normal Release executable plus sole --kdf-known-answer argument")
++        plain_path(normal_executable)
+         write_json(evidence / "ctest-inventory.json", inventory)
+-        for index, name in enumerate(CASES, 1):
+-            xml = temp / "logs" / f"case-{index:02d}.xml"
+-            run.xml_paths[name] = xml
+-            run.command([ctest, "--test-dir", build, "-C", "Release", "--parallel", "1",
+-                         "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit", xml,
+-                         "-R", "^" + re.escape(name) + "$"], 45, f"case-{index:02d}", case=name)
++        xml = temp / "logs" / "kdf.xml"
++        run.xml_paths[CASE] = xml
++        run.command([ctest, "--test-dir", build, "-C", "Release", "--parallel", "1",
++                     "--timeout", "30", "--no-tests=error", "--output-on-failure", "--output-junit", xml,
++                     "-R", exact_filter], 45, "kdf-known-answer", case=CASE)
+         require(not CANCELLED, "Cancellation before result/cleanup")
+         commands_returned = True
+     except BaseException as error:
+@@ -1166,21 +1196,24 @@
+                                 require(actual == expected, f"Source/authority drifted: {path}")
+                             write_json(evidence / "final-source-inputs.json", final_inputs)
+                             if configured:
+-                                project_hashes = {}
++                                cache_bytes = run.read_generated(temp / "build/CMakeCache.txt", settled=True)
++                                cache_lines = cache_bytes.decode("utf-8").splitlines()
++                                require("BUILD_TESTING:BOOL=ON" in cache_lines and
++                                        "PASSVAULT_AUDIT_PVA036_037_CONTROLS:BOOL=OFF" in cache_lines,
++                                        "Settled cache changed testing/control selection")
++                                configuration_hashes = {"CMakeCache.txt": hashlib.sha256(cache_bytes).hexdigest()}
+                                 for name in PROJECTS:
+                                     path = temp / "build" / f"{name}.vcxproj"
+-                                    project_hashes[path.name] = hashlib.sha256(
+-                                        run.read_generated(path, settled=True)).hexdigest()
+-                                write_json(evidence / "settled-project-hashes.json", project_hashes)
++                                    project_bytes = run.read_generated(path, settled=True)
++                                    require(not any(token in project_bytes.decode("utf-8-sig") for token in INSTRUMENTATION),
++                                            "Settled normal target contains historical/PRK instrumentation or source")
++                                    configuration_hashes[path.name] = hashlib.sha256(project_bytes).hexdigest()
++                                write_json(evidence / "settled-configuration-hashes.json", configuration_hashes)
+                             if build_returned:
+-                                binaries = [temp / "build/Release" / name for name in (
+-                                    "passvault_biometric.dll", "passvault_biometric_windows_security_test.exe",
+-                                    "passvault_biometric_abi_test.exe",
+-                                    "passvault_biometric_windows_historical_writer_test.exe",
+-                                    "passvault_biometric_windows_prk_allocation_test.exe")]
++                                binary = temp / "build/Release" / (TARGET + ".exe")
+                                 write_json(evidence / "native-artifacts.json", {
+                                     "owned_job_settled": True,
+-                                    "binaries": [run.settled_file(path, pe_identity) for path in binaries],
++                                    "binaries": [run.settled_file(binary, pe_identity)],
+                                 })
+                         except BaseException as error:
+                             evidence_ready = False
+@@ -1232,9 +1265,10 @@
+         result["original_handle_close_failures"] = run.close_failures if run is not None else []
+         result["sdk_header_observation"] = run.sdk_header_observation if run is not None else None
+         result["generated_file_observations"] = run.generated_file_observations if run is not None else []
+-        result["source_qualification"] = ("Current14 plus8 exact instrumented historical writer controls and2 real-CNG PRK allocation cases; "
+-                                          "not a shipped historical binary, fixed KDF vector, caller PRF/wrapping-array cuts, "
+-                                          "provider-object lifetime or Hello hardware proof")
++        result["source_qualification"] = ("One normal-image KDF known-answer selector with two source-qualified fixed-vector "
++                                          "assertions and success/input guards; no per-vector stdout markers or inferred case/HMAC count. "
++                                          "No old-case replay, caller PRF/wrapping-array cut, provider-object lifetime, "
++                                          "hardware/Hello, security-family closure or cure of any earlier HOLD")
+         if (commands_returned and not result["failures"] and not result["original_handle_close_failures"]
+                 and result["cleanup"] == "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED"):
+             result["operational_status"] = "COMMANDS_RETURNED_WITH_RAW_XML_AWAITING_INDEPENDENT_RESULT_REVIEW"

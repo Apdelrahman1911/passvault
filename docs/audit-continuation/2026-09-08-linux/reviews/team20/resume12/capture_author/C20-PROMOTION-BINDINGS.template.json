@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "status": "INERT_PARAMETER_LEDGER_NOT_EXECUTABLE_INPUT_NOT_ADMISSION",
+  "author": "/root/c20_capture_author",
+  "destinations": {
+    "metadata": "reviews/checkpoint20/C20-READONLY-FACTS-01.py",
+    "source": "reviews/checkpoint20/source-prepare01/SOURCE-PREPARE.py",
+    "index": "reviews/checkpoint20/index-prepare01/INDEX-CAPTURE.py",
+    "source_store_facts": "reviews/checkpoint20/SOURCE-STORE-ADMISSION.json",
+    "index_tool_facts": "reviews/checkpoint20/C20-READONLY-FACTS-01.json",
+    "publication_receipt": "publication/CHECKPOINT-20-PUBLISHED.json"
+  },
+  "publication": {
+    "commit": null,
+    "tree": null,
+    "receipt_sha256": null,
+    "external_path": null,
+    "external_sha256": null,
+    "actual_review_path": null,
+    "actual_review_sha256": null,
+    "actual_review_disposition": null,
+    "genuine_actual_reviewer": "/root/c20_coverage_review",
+    "N": null,
+    "Q": null,
+    "max_json_quoted_path_bytes": null
+  },
+  "metadata": {
+    "source_sha256": "b671ec2222bea3eb6ca0bed6a2a292148a47f8181da5853b3ac328e8c55926cb",
+    "cooperative_freeze_accepted": false,
+    "facts_sha256": null,
+    "facts_shallow_Z": null,
+    "extra_sha256": null,
+    "new_index_image": null,
+    "config_sha256": null,
+    "extra_actual_review": null,
+    "external_terminal": null,
+    "no_future_source_image": true
+  },
+  "source": {
+    "P": null,
+    "TREE": null,
+    "FACTS_SHA": null,
+    "PUB_SHA": null,
+    "MEMBERS_MAX": null,
+    "SOURCE_OUTPUT_CAP": null,
+    "actual_SOURCE_hash": null,
+    "actual_SOURCE_bytes": null,
+    "actual_SOURCE_count": null
+  },
+  "index": {
+    "P": null,
+    "TREE": null,
+    "SOURCE_SHA": null,
+    "FACTS_SHA": null,
+    "EXTRA_SHA": null,
+    "CONFIG_SHA": null,
+    "MEMBERS_MAX": null,
+    "SOURCE_READER_CAP": null,
+    "actual_INDEX_hash": null,
+    "actual_STAGE0_hash": null
+  },
+  "measured_algebra": {
+    "M": "3+ceil(N/128)",
+    "Smax": "5378+529*N+Q+130*M+Z+d(N)",
+    "Rmax": "3699+130*M+Z+d(N)+d(Smax)",
+    "MEMBERS_MAX": "max(3500,N)",
+    "SOURCE_OUTPUT_CAP": "max(2097152,Smax+1,Rmax+1)",
+    "SOURCE_READER_CAP": "max(2097152,actual independently accepted SOURCE bytes)",
+    "source_listing": "61*N+Q <=2097152",
+    "index_listing": "49*N+Q <=2097152",
+    "raw_path_sufficient_check": "max_json_quoted_path_bytes-2 <=1024",
+    "consumer_full_oid_vector_bytes": "41*N"
+  },
+  "review_succession": {
+    "source_author": "/root/c20_capture_author",
+    "independent_source_instance_actual_reviewer": "/root/c20_capture_review",
+    "publication_actual_reviewer": "/root/c20_coverage_review",
+    "rule": "Retained native_security_author/desktop_other_review and C18 identities remain historical. New review must use genuine current reviewer, not substitute an old identity."
+  },
+  "authority": {
+    "promotion": false,
+    "metadata_or_capture_execution": false,
+    "build_or_CI": false,
+    "cleanup_or_floor_exception": false,
+    "predecessor_replay": false
+  },
+  "qualification": "Actual C20 identity/counts/new index facts remain UNBOUND. Known original directory/lock/config expectations in metadata source must match newly observed originals; they are not fresh facts by copying. This JSON is a root binding worksheet only and no candidate imports it."
+}

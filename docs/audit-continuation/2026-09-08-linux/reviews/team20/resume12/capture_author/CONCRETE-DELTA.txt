@@ -1,0 +1,388 @@
+--- reviews/team20/native_security_author/c20/source-capture/SOURCE-PREPARE.py.txt
++++ reviews/team20/resume12/capture_author/SOURCE-PREPARE.py.txt
+@@ -17,6 +17,8 @@
+ G = T / '.git'
+ LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+ P, TREE = None, None  # UNBOUND C20; actual publication and separate execution admission required.
++MEMBERS_MAX = None  # UNBOUND: max(3500, actual published full-tree N).
++SOURCE_OUTPUT_CAP = None  # UNBOUND: max(2097152, accepted Smax+1, Rmax+1).
+ REF = 'refs/heads/codex/audit-continuation-linux-20260908'
+ FACTS, FACTS_SHA = B / 'reviews/checkpoint20/SOURCE-STORE-ADMISSION.json', None
+ PUB, PUB_SHA = B / 'publication/CHECKPOINT-20-PUBLISHED.json', None
+@@ -172,7 +174,7 @@
+                     item['streams'] = [{'bytes': len(b), 'sha256': hashlib.sha256(b).hexdigest()} for b in buffers]
+ 
+ def write(name, data):
+-    require(name in ('SOURCE.json', 'SOURCE-CAPTURE.json') and len(data) < 2 * MIB, 'output name/size')
++    require(name in ('SOURCE.json', 'SOURCE-CAPTURE.json') and len(data) < SOURCE_OUTPUT_CAP, 'output name/size')
+     parent, fd = od(D), None
+     try:
+         fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=parent)
+@@ -186,13 +188,15 @@
+         try:
+             if fd is not None: os.close(fd)
+         finally: os.close(parent)
+-    observed, _ = read(D / name, 2 * MIB); require(observed == data, 'output readback')
++    observed, _ = read(D / name, SOURCE_OUTPUT_CAP); require(observed == data, 'output readback')
+ 
+ def encoded(value): return json.dumps(value, separators=(',', ':'), ensure_ascii=True, allow_nan=False).encode() + b'\n'
+ 
+ def main():
+     require(sys.argv == [str(SELF)] and sys.flags.isolated and sys.flags.no_site
+             and sys.dont_write_bytecode and os.getuid() == os.geteuid() == 0, 'fixed isolated root entry')
++    require(type(MEMBERS_MAX) is int and MEMBERS_MAX >= 3500
++            and type(SOURCE_OUTPUT_CAP) is int and SOURCE_OUTPUT_CAP >= 2 * MIB, 'UNBOUND measured source capacities')
+     facts = json.loads(checked(FACTS, FACTS_SHA, 65536))
+     require((facts['source_commit'], facts['source_tree'], facts['store']) == (P, TREE, str(G)), 'facts binding')
+     lock = None
+@@ -220,7 +224,7 @@
+             report['recipe' if path == SELF else 'git_image'] = {'sha256': hashlib.sha256(data).hexdigest(), 'pin': identity}
+         require(git(['rev-parse', P, P + '^{tree}'], 82, facts, lock) == (P + '\n' + TREE + '\n').encode(), 'actual C20 identity')
+         listing = git(['ls-tree', '-r', '-z', '-l', '--full-tree', P], 2 * MIB, facts, lock)
+-        entries = listing.split(b'\0'); require(entries.pop() == b'' and 0 < len(entries) <= 3500, 'complete NUL inventory/count')
++        entries = listing.split(b'\0'); require(entries.pop() == b'' and 0 < len(entries) <= MEMBERS_MAX, 'complete NUL inventory/count')
+         rows, seen, derived, raw_total, checkout_total = [], set(), [], 0, 0
+         for index, entry in enumerate(entries):
+             tick()
+--- reviews/team20/native_security_author/c20/source-capture/INDEX-CAPTURE.py.txt
++++ reviews/team20/resume12/capture_author/INDEX-CAPTURE.py.txt
+@@ -17,6 +17,8 @@
+ LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+ REF = 'refs/heads/codex/audit-continuation-linux-20260908'
+ P, TREE = None, None  # UNBOUND: actual C20 publication required.
++MEMBERS_MAX = None  # UNBOUND: max(3500, actual published full-tree N).
++SOURCE_READER_CAP = None  # UNBOUND: max(2097152, actual accepted SOURCE byte length).
+ SOURCE, SOURCE_SHA = B / 'reviews/checkpoint20/source-prepare01/SOURCE.json', None
+ FACTS, FACTS_SHA = B / 'reviews/checkpoint20/SOURCE-STORE-ADMISSION.json', None
+ EXTRA, EXTRA_SHA = B / 'reviews/checkpoint20/C20-READONLY-FACTS-01.json', None  # UNBOUND: fresh root metadata, never old pins.
+@@ -236,7 +238,7 @@
+ 
+ def source_entries(source):
+     require(source['format'] == 'passvault-linux-checkout-source-v1' and (source['commit'], source['tree']) == (P, TREE), 'shared SOURCE identity')
+-    rows = source['files']; require(isinstance(rows, list) and 0 < len(rows) <= 3500, 'shared SOURCE count')
++    rows = source['files']; require(isinstance(rows, list) and 0 < len(rows) <= MEMBERS_MAX, 'shared SOURCE count')
+     result = {}
+     for row in rows:
+         resources(); path = pathname(row['path'].encode('utf-8'))
+@@ -249,7 +251,7 @@
+ def binary_index(data, source):
+     require(32 <= len(data) <= 4 * MIB and data[:4] == b'DIRC', 'DIRC header/bound')
+     version, count = struct.unpack('!II', data[4:12])
+-    require(version == 2 and 0 < count <= 3500 and count == len(source), 'grounded ordinary v2/count')
++    require(version == 2 and 0 < count <= MEMBERS_MAX and count == len(source), 'grounded ordinary v2/count')
+     end = len(data) - 20
+     require(hashlib.sha1(data[:end]).digest() == data[end:], 'DIRC SHA1 trailer')
+     offset, result, previous = 12, {}, None
+@@ -281,7 +283,7 @@
+ 
+ def stage_listing(data, source):
+     require(len(data) <= 2 * MIB and data.endswith(b'\0'), 'bounded NUL stage listing')
+-    records = data.split(b'\0'); require(records.pop() == b'' and len(records) == len(source) <= 3500, 'stage count')
++    records = data.split(b'\0'); require(records.pop() == b'' and len(records) == len(source) <= MEMBERS_MAX, 'stage count')
+     result, previous = {}, None
+     for record in records:
+         resources(); header, separator, path = record.partition(b'\t'); fields = header.split(b' ')
+@@ -371,10 +373,12 @@
+     require(sys.argv == [str(SELF)] and sys.flags.isolated and sys.flags.no_site and sys.dont_write_bytecode
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated root entry')
+     require(isinstance(EXTRA_SHA, str) and re.fullmatch(r'[0-9a-f]{64}', EXTRA_SHA), 'UNBOUND extra facts: no capture authority')
++    require(type(MEMBERS_MAX) is int and MEMBERS_MAX >= 3500
++            and type(SOURCE_READER_CAP) is int and SOURCE_READER_CAP >= 2 * MIB, 'UNBOUND measured index capacities')
+     output_directory = directory(D); resources(True)
+     facts = json.loads(checked(FACTS, FACTS_SHA, 65536))
+     extra = json.loads(checked(EXTRA, EXTRA_SHA, 65536))
+-    source = json.loads(checked(SOURCE, SOURCE_SHA, 2 * MIB))
++    source = json.loads(checked(SOURCE, SOURCE_SHA, SOURCE_READER_CAP))
+     _, self_image = read_file(SELF, 65536, False); inputs[SELF] = (self_image, 65536); report['recipe'] = self_image
+     require((facts['source_commit'], facts['source_tree'], facts['store']) == (P, TREE, str(G)), 'fresh source/store facts')
+     require(facts['config']['sha256'] == CONFIG_SHA and extra['images'][str(G / 'config')] == facts['config'], 'fresh exact config cross-binding')
+@@ -398,7 +402,7 @@
+         intent = {'format': report['format'], 'status': 'INTENT_ONLY_NO_EXIT_OR_CONSUMER_PROOF', 'commit': P, 'tree': TREE,
+                   'source_sha256': SOURCE_SHA, 'store_facts_sha256': FACTS_SHA, 'extra_facts_sha256': EXTRA_SHA,
+                   'recipe': self_image, 'argv': CMD, 'env': ENV, 'cwd': str(T), 'output_caps': CAPS,
+-                  'members_max': 3500, 'git_seconds': 30, 'work_seconds': 180, 'total_output_bytes': 7 * MIB,
++                  'members_max': MEMBERS_MAX, 'git_seconds': 30, 'work_seconds': 180, 'total_output_bytes': 7 * MIB,
+                   'tool_image_bytes': 32 * MIB, 'lock': facts['original_lock'], 'qualification': report['qualification']}
+         write_once('INDEX-CAPTURE-INTENT.json', encoded(intent))
+         before, index_data = snapshot('before', facts, extra, lock, jdk)
+--- reviews/checkpoint18/C18-READONLY-FACTS-02.py
++++ reviews/team20/resume12/capture_author/C20-READONLY-FACTS-01.py.txt
+@@ -1,8 +1,8 @@
+ #!/usr/bin/python3
+-"""Fresh C18 read-only metadata observer; root promotes/adopts exact reviewed source.
+-No Git/subprocess/build/test, executable invocation, SDK modification or deletion.
+-One-shot exclusive evidence; 180s cooperative work deadline, HOLD/no retry.
+-Two stable observations are not continuous/hostile-host or external-terminal proof.
++"""New C20 pre-SOURCE metadata point; exact root promotion/admission required.
++No Git/subprocess/build/test, SOURCE read, SDK access, executable invocation or deletion.
++One-shot exclusive facts/index-tool projection; 180s cooperative deadline, HOLD/no retry.
++Stable first/final observations are not continuous/hostile-host or external-terminal proof.
+ """
+ import fcntl, hashlib, json, os, signal, stat, sys, time
+ from datetime import datetime, timezone
+@@ -10,30 +10,44 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-D = B / 'reviews/checkpoint18'
+-SELF = D / 'C18-READONLY-FACTS-02.py'
+-INTENT, RESULT = 'C18-READONLY-FACTS-02-INTENT.json', 'C18-READONLY-FACTS-02.json'
++D = B / 'reviews/checkpoint20'
++SELF = D / 'C20-READONLY-FACTS-01.py'
++INTENT, RESULT = 'C20-READONLY-FACTS-01-INTENT.json', 'C20-READONLY-FACTS-01.json'
++FACTS_NAME = 'SOURCE-STORE-ADMISSION.json'
+ T = Path('/root/projects/PassVault/passvault-publication-20260910-01')
+ G = T / '.git'
+ LOCK = T.parent / '.audit-coordination-linux-20260908/build.lock'
+-FACTS = D / 'SOURCE-STORE-ADMISSION.json'
+-FACTS_SHA = 'cf92d6783a3f8a6d97cda909354b5cfa733fe649c0a65a3cd9bb16378e2abd9a'
+-SOURCE = D / 'source-prepare01/SOURCE.json'
+-SOURCE_SHA = 'a34aee1c7ea19fb693adf67437ec67e8b9e0ee34232936cb76127764c7b242d3'
+-COMMIT, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
++PUB = B / 'publication/CHECKPOINT-20-PUBLISHED.json'
++PUB_SHA = None  # UNBOUND: independently accepted actual C20 receipt.
++PUB_EXTERNAL_PATH, PUB_EXTERNAL_SHA = None, None  # UNBOUND: exact root-retained original external JSON.
++PUB_REVIEW_PATH, PUB_REVIEW_SHA = None, None  # UNBOUND: actual independent publication review, not a source review.
++PUB_REVIEW_DISPOSITION = None  # UNBOUND: actual accepted disposition; genuine reviewer fixed below.
++COMMIT, TREE = None, None  # UNBOUND: actual published C20 commit/tree.
++N, Q, MAX_QUOTED_PATH_BYTES = None, None, None  # UNBOUND: actual complete committed-tree aggregates.
++COOPERATIVE_FREEZE_ACCEPTED = False  # Root must explicitly adopt current T/index/config/tool freeze through both captures.
+ REF = 'refs/heads/codex/audit-continuation-linux-20260908'
+ ABSENCES = ('commondir', 'config.worktree', 'info/attributes',
+             'objects/info/alternates', 'objects/info/http-alternates')
+-JAVA, SDK = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/opt/android-sdk')
++JAVA = Path('/usr/lib/jvm/java-17-openjdk-amd64')
+ TOOLS = tuple(Path('/usr/bin') / name for name in ('git', 'ruby3.2', 'python3.12', 'env', 'mount', 'unshare'))
+ ALIASES = {Path('/usr/bin/git'): Path('/usr/bin/git'), Path('/usr/bin/ruby'): Path('/usr/bin/ruby3.2')}
+ PYTHON_ALIAS, PYTHON_IMAGE = Path('/usr/bin/python3'), Path('/usr/bin/python3.12')
+-SDK_METADATA = tuple(SDK / name for name in ('platforms/android-37.0/source.properties',
+-    'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+-    'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
++# These are retained original-object expectations, not new current observations.
++DIR_EXPECTATIONS = {
++    T.parent: {'dev': 23, 'ino': 580, 'uid': 0, 'mode': 16877},
++    LOCK.parent: {'dev': 23, 'ino': 51356, 'uid': 0, 'mode': 16832},
++    T: {'dev': 23, 'ino': 51357, 'uid': 0, 'mode': 16832},
++    G: {'dev': 23, 'ino': 51994, 'uid': 0, 'mode': 16832},
++}
++ORIGINAL_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0,
++                 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}
++ORIGINAL_CONFIG = {'pin': {'dev': 24, 'ino': 14293053, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 435,
++                          'mtime_ns': 1789001766988319322, 'ctime_ns': 1789001766988319322},
++                   'sha256': '036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5'}
++SHALLOW_BOUNDARY = 'b2e826fd534be8fefede169d28e30c22e37530a9'
+ MIB, ODIR = 1024 ** 2, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+ START, CANCEL = time.monotonic(), set()
+-CAPTURED = 'C18_READONLY_FACTS_CAPTURED_NOT_INDEX_OR_BUILD_ADMISSION'
++CAPTURED = 'C20_READONLY_FACTS_CAPTURED_NOT_SOURCE_INDEX_OR_BUILD_ADMISSION'
+ 
+ 
+ def require(ok, message):
+@@ -238,9 +252,9 @@
+ 
+ 
+ def write_record(name, value, evidence_directory, created):
+-    require(name in (INTENT, RESULT), 'fixed new evidence name')
++    require(name in (INTENT, RESULT, FACTS_NAME), 'fixed new evidence name')
+     data = encoded(value)
+-    require(len(data) <= 128 * 1024, 'evidence byte cap')
++    require(len(data) <= 65536, 'consumer-compatible evidence byte cap')
+     parent = fd = None
+     try:
+         parent = od(D)
+@@ -271,14 +285,12 @@
+ 
+ 
+ def main():
+-    report = {'format': 'passvault-c18-readonly-facts-02-v1', 'owner': '/root', 'status': 'HOLD_NO_AUTOMATIC_RETRY',
++    report = {'format': 'passvault-c20-readonly-facts-01-v1', 'owner': '/root', 'status': 'HOLD_NO_AUTOMATIC_RETRY',
+               'utc': datetime.now(timezone.utc).isoformat(), 'source_commit': COMMIT, 'source_tree': TREE,
+-              'source_sha256': SOURCE_SHA, 'source_store_admission_sha256': FACTS_SHA,
+               'images': {}, 'resource_points': [], 'errors': [], 'additional_tests': 0, 'additional_closures': 0,
+-              'qualification': 'Metadata/hash observations only; no full-index/source-match/config/exclude semantic '
+-                  'review assertions, executable availability, global idle, SDK provenance/license acceptance, '
+-                  'build/cleanup admission or repaired older HOLD/STOP/NO-RETRY/CLOSED/terminal gaps. '
+-                  'Final file close/stdout/external tool settlement requires separate actual reconciliation.'}
++              'qualification': 'One pre-SOURCE metadata point only; no current SOURCE image, full-index agreement, '
++                  'executable availability, global idle, SDK/license, build/cleanup admission or older HOLD repair. '
++                  'Exact original external terminal and independent actual acceptance remain mandatory.'}
+     lock = parent = None
+     acquired, created, captures, evidence_directory, result_sha = False, set(), {}, None, None
+ 
+@@ -287,63 +299,110 @@
+         if len(report['errors']) < 12:
+             report['errors'].append(type(error).__name__ + ': ' + str(error)[:1024])
+ 
+-    def take(path, cap, keep=False, bucket=None):
++    def take(path, cap, keep=False):
+         image, data = read_image(path, cap, keep)
+         captures[path] = (cap, image)
+-        (report['images'] if bucket is None else bucket)[str(path)] = image
++        report['images'][str(path)] = image
+         return data
++
++    def full_hex(value, length):
++        return isinstance(value, str) and len(value) == length and all(c in '0123456789abcdef' for c in value)
+ 
+     try:
+         require(sys.argv == [str(SELF)] and sys.flags.isolated and sys.flags.no_site
+                 and sys.dont_write_bytecode and os.getuid() == os.geteuid() == 0, 'fixed isolated root entry')
+-        facts = json.loads(take(FACTS, 65536, True))
+-        require(report['images'][str(FACTS)]['sha256'] == FACTS_SHA and facts['owner'] == '/root'
+-                and (facts['source_commit'], facts['source_tree'], facts['store']) == (COMMIT, TREE, str(G))
+-                and facts['status'] == 'C18_READ_ONLY_SOURCE_PREPARATION_FACTS_NOT_BUILD_EXECUTION_ADMISSION',
+-                'accepted C18 source-store admission binding')
++        require(full_hex(COMMIT, 40) and full_hex(TREE, 40)
++                and all(full_hex(v, 64) for v in (PUB_SHA, PUB_EXTERNAL_SHA, PUB_REVIEW_SHA))
++                and type(N) is int and N > 0 and type(Q) is int and Q >= 2 * N
++                and type(MAX_QUOTED_PATH_BYTES) is int and 2 < MAX_QUOTED_PATH_BYTES <= 1026
++                and 61 * N + Q <= 2 * MIB and 49 * N + Q <= 2 * MIB
++                and COOPERATIVE_FREEZE_ACCEPTED is True, 'UNBOUND current C20 publication/capacity/freeze')
++        require(isinstance(PUB_EXTERNAL_PATH, str) and isinstance(PUB_REVIEW_PATH, str)
++                and isinstance(PUB_REVIEW_DISPOSITION, str) and PUB_REVIEW_DISPOSITION.startswith('ACCEPT'),
++                'UNBOUND original publication external/actual review')
++        external_path, review_path = Path(PUB_EXTERNAL_PATH), Path(PUB_REVIEW_PATH)
++        require(external_path.parent == B / 'publication'
++                and review_path.parent == B / 'reviews/team20/resume12/coverage_review'
++                and external_path.suffix == review_path.suffix == '.json', 'fixed publication evidence parents')
++        publication = json.loads(take(PUB, 131072, True))
++        require(report['images'][str(PUB)]['sha256'] == PUB_SHA
++                and (publication['commit'], publication['tree'], publication['publication_clone'], publication['status']) ==
++                    (COMMIT, TREE, str(T), 'PUBLISHED_EXACT_C20_SOURCE')
++                and publication['namespace_identity'] == [23, 51357, 0, 16832]
++                and publication['preserved_config_after'] == ORIGINAL_CONFIG, 'actual C20 publication binding')
++        aggregates = publication['source_capture_path_aggregates']
++        require((aggregates['N'], aggregates['Q'], aggregates['max_json_quoted_path_bytes'], aggregates['encoding']) ==
++                (N, Q, MAX_QUOTED_PATH_BYTES, 'UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL'),
++                'actual full committed-tree aggregates')
++        external = json.loads(take(external_path, 65536, True))
++        review = json.loads(take(review_path, 131072, True))
++        require(report['images'][str(external_path)]['sha256'] == PUB_EXTERNAL_SHA and isinstance(external, dict)
++                and report['images'][str(review_path)]['sha256'] == PUB_REVIEW_SHA
++                and review['reviewer'] == '/root/c20_coverage_review'
++                and review['disposition'] == PUB_REVIEW_DISPOSITION, 'genuine bound current publication actual review')
++        # Root's separately reviewed instance must bind actual terminal/source/receipt content.
++        # This reader preserves exact descriptors; it does not invent a universal external JSON schema.
+         take(SELF, 128 * 1024)
+         evidence_directory = identity(directory_pin(D))
+-        require(absent(D / INTENT) and absent(D / RESULT), 'consumed evidence names; no retry')
++        require(all(absent(D / name) for name in (INTENT, RESULT, FACTS_NAME)), 'consumed evidence names; no retry')
+         parent = od(LOCK.parent)
+-        require(pin(os.fstat(parent), True) == facts['coordination_parent_identity'], 'original coordination parent')
++        require(identity(pin(os.fstat(parent), True)) == DIR_EXPECTATIONS[LOCK.parent], 'original coordination parent')
+         lock = os.open(LOCK.name, os.O_RDWR | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+-        require(pin(os.fstat(lock)) == facts['original_lock'], 'original lock; never create or replace')
++        require(pin(os.fstat(lock)) == ORIGINAL_LOCK, 'original lock; never create or replace')
+         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+         acquired = True
+-        require(absent(D / INTENT) and absent(D / RESULT), 'consumed evidence names under lock')
+-        intent = {'format': 'passvault-c18-readonly-facts-02-intent-v1', 'owner': '/root',
+-                  'status': 'ONE_READONLY_OBSERVATION_INTENT_NOT_DOWNSTREAM_ADMISSION',
++        require(all(absent(D / name) for name in (INTENT, RESULT, FACTS_NAME)), 'consumed evidence names under lock')
++        intent = {'format': 'passvault-c20-readonly-facts-01-intent-v1', 'owner': '/root',
++                  'status': 'ONE_PRE_SOURCE_METADATA_POINT_INTENT_NOT_DOWNSTREAM_ADMISSION',
+                   'source': {'path': str(SELF), **report['images'][str(SELF)]},
+-                  'source_store_admission_sha256': FACTS_SHA, 'source_sha256': SOURCE_SHA,
+-                  'result': str(D / RESULT), 'work_deadline_seconds': 180,
+-                  'operation': 'Fixed metadata/hash reads only; no Git/subprocess/SDK write/deletion or retry'}
++                  'source_commit': COMMIT, 'source_tree': TREE, 'publication_receipt_sha256': PUB_SHA,
++                  'publication_external_sha256': PUB_EXTERNAL_SHA, 'publication_actual_review_sha256': PUB_REVIEW_SHA,
++                  'full_tree_path_aggregates': {'N': N, 'Q': Q, 'max_json_quoted_path_bytes': MAX_QUOTED_PATH_BYTES},
++                  'outputs': [str(D / name) for name in (FACTS_NAME, RESULT)], 'work_deadline_seconds': 180,
++                  'operation': 'Fixed metadata/hash reads only; no Git/subprocess/SOURCE/SDK read/deletion or retry'}
+         report['intent_serialization_sha256'] = write_record(INTENT, intent, evidence_directory, created)
+         resource_point('before metadata observations', True, report['resource_points'])
++        facts = {'schema': 1, 'owner': '/root', 'status': 'C20_READ_ONLY_SOURCE_PREPARATION_FACTS_NOT_BUILD_EXECUTION_ADMISSION',
++                 'utc': report['utc'], 'source_commit': COMMIT, 'source_tree': TREE, 'store': str(G),
++                 'original_lock': ORIGINAL_LOCK,
++                 'publication_receipt': report['images'][str(PUB)],
++                 'publication_external_observation': {'path': str(external_path.relative_to(B)), 'sha256': PUB_EXTERNAL_SHA},
++                 'publication_actual_review': {'path': str(review_path.relative_to(B)), 'sha256': PUB_REVIEW_SHA},
++                 'source_capture_path_aggregates': {'N': N, 'Q': Q, 'max_json_quoted_path_bytes': MAX_QUOTED_PATH_BYTES},
++                 'preservation': 'Root-bound cooperative T/store/checkout/index/config/tools freeze through one SOURCE and INDEX capture. '
++                     'No actual frozen SOURCE is claimed yet. No held runtime or retired-store access; separate downstream admission.',
++                 'cleanup': 'No subprocess/runtime/cache/temp/deletion. Original lock/directory descriptors close in finally; '
++                     'actual external terminal and independent result review still required.',
++                 'config_semantics': 'Fresh complete buffer/hash/pin must equal retained original public/basic config; '
++                     'no config mutation or new config text copy. Exact unchanged semantics reused, not a new parser certification.'}
++        for path, key in ((T, 'checkout_identity'), (G, 'store_identity'),
++                          (LOCK.parent, 'coordination_parent_identity'), (T.parent, 'workspace_parent_identity')):
++            observed = directory_pin(path)
++            require(identity(observed) == DIR_EXPECTATIONS[path], 'original directory expectation: ' + str(path))
++            facts[key] = observed
++        facts['absence'] = {name: absent(G / name) for name in ABSENCES}
++        require(all(facts['absence'].values()), 'original store redirects/config/attributes')
+         before_guard = store_guard(facts, lock)
+         report['metadata_directory'] = identity(before_guard['directories'][str(G)])
+         for name, key in (('config', 'config'), ('HEAD', 'head'), (REF, 'branch_ref'), ('shallow', 'shallow')):
+             data = take(G / name, 65536, key != 'config')
+-            require(report['images'][str(G / name)] == {'pin': facts[key]['pin'], 'sha256': facts[key]['sha256']},
+-                    'original bound store image: ' + name)
++            facts[key] = dict(report['images'][str(G / name)])
++            if key == 'config':
++                require(facts[key] == ORIGINAL_CONFIG, 'original exact public/basic config')
+             if key == 'head':
+                 require(data == ('ref: ' + REF + '\n').encode(), 'original symbolic HEAD')
+             if key == 'branch_ref':
+-                require(data == (COMMIT + '\n').encode(), 'current C18 branch')
++                require(data == (COMMIT + '\n').encode(), 'current C20 branch')
+             if key == 'shallow':
+-                require(data == (facts[key]['boundary_commit'] + '\n').encode(), 'original shallow boundary')
+-        source = json.loads(take(SOURCE, 2 * MIB, True))
+-        require(report['images'][str(SOURCE)]['sha256'] == SOURCE_SHA
+-                and (source['format'], source['commit'], source['tree']) ==
+-                    ('passvault-linux-checkout-source-v1', COMMIT, TREE), 'accepted shared SOURCE binding')
+-        report['source_manifest_members'] = len(source['files'])
+-        del source
+-        take(G / 'index', 4 * MIB)
++                require(data == (SHALLOW_BOUNDARY + '\n').encode(), 'original shallow boundary')
++                facts[key]['boundary_commit'] = SHALLOW_BOUNDARY
++        take(G / 'index', 4 * MIB)  # Fresh original image only; no guessed new index pin or content proof.
+         report['excludes'] = excludes()
+         if report['excludes']['state'] == 'FILE':
+             take(G / 'info/exclude', 65536)
+         for path in TOOLS + (JAVA / 'bin/java',):
+             take(path, 32 * MIB)
+-        release = take(JAVA / 'release', 32 * MIB, True)
++        release = take(JAVA / 'release', 65536, True)
+         metadata = {}
+         for line in release.decode('utf-8', 'strict').splitlines():
+             key, separator, value = line.partition('=')
+@@ -359,26 +418,27 @@
+         report['python3_alias'] = alias(PYTHON_ALIAS, PYTHON_IMAGE)
+         require(all(absent(JAVA / 'bin' / name) for name in ('git', 'ruby')), 'JDK-bin Git/Ruby shadow present')
+         report['jdk_bin_shadow_absence'] = {'git': True, 'ruby': True}
+-        sdk_pin = directory_pin(SDK)
+-        sdk = {'root': str(SDK), 'directory': identity(sdk_pin), 'directory_pin': sdk_pin,
+-               'metadata_paths': [str(path) for path in SDK_METADATA], 'images': {},
+-               'operation': 'READ_ONLY_EXISTING_SDK_METADATA_NO_INSTALL_COPY_MODIFICATION_LICENSE_ACCEPTANCE',
+-               'qualification': 'Existing /opt/android-sdk projection metadata only; not full SDK/compiler '
+-                   'availability, license assent, a new read-only mount or host-wide immutable snapshot.'}
+-        report['sdk_metadata_observation'] = sdk
+-        for path in SDK_METADATA:
+-            take(path, 128 * 1024, bucket=sdk['images'])
+         for path, (cap, expected) in captures.items():
+             require(read_image(path, cap)[0] == expected, 'final full pin/hash drift: ' + str(path))
+         require(report['tool_aliases'] == {str(path): alias(path, target) for path, target in ALIASES.items()}
+                 and report['python3_alias'] == alias(PYTHON_ALIAS, PYTHON_IMAGE), 'final alias drift')
+         require(all(absent(JAVA / 'bin' / name) for name in ('git', 'ruby')), 'final JDK-bin shadow drift')
+-        require(directory_pin(SDK) == sdk_pin and excludes() == report['excludes'], 'final SDK/exclude directory drift')
++        require(excludes() == report['excludes'], 'final exclude directory drift')
+         after_guard = store_guard(facts, lock)
+         require(after_guard == before_guard, 'final source-store guard drift')
+         report['source_store_rechecks'] = {'before': before_guard, 'after': after_guard,
+                                          'captured_file_pins_and_hashes_equal_at_second_read': True}
+         resource_point('after metadata observations', False, report['resource_points'])
++        facts['point_resources'] = report['resource_points'][-1]
++        facts_sha = write_record(FACTS_NAME, facts, evidence_directory, created)
++        observed_facts = take(D / FACTS_NAME, 65536, True)
++        require(report['images'][str(D / FACTS_NAME)]['sha256'] == facts_sha
++                and observed_facts == encoded(facts), 'new facts exact readback')
++        report['source_store_admission_sha256'] = facts_sha
++        report['publication_receipt_sha256'] = PUB_SHA
++        report['source_capture_path_aggregates'] = facts['source_capture_path_aggregates']
++        report['fresh_shallow_json_bytes_without_lf'] = len(encoded(facts['shallow'])) - 1
++        store_guard(facts, lock)
+         tick()
+         report['status'] = CAPTURED
+     except BaseException as error:

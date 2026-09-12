@@ -1,0 +1,63 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_author/c20/detekt05/LAUNCH.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/detekt05/LAUNCH.py.txt
+@@ -25,7 +25,7 @@
+ E = B / 'runs/linux-detekt05'
+ SELF = B / 'reviews/detekt05/LAUNCH.py'
+ REQUEST = B / 'requests/LINUX-DETEKT-05.json'
+-APPROVAL = B / 'reviews/team20/focused_validation_review/INSTANCE-ACCEPT-DETEKT05.json'
++APPROVAL = B / 'reviews/team20/resume12/linux_review/detekt05-INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+ # Actual source/store/index/tool/exclude identities require root's fresh review.
+ # Paths or old receipts alone never admit the retired source store or an index.
+@@ -840,7 +840,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-detekt05-approval-v1' and approval['reviewer'] == '/root/focused_validation_review' and
++            approval['format'] == 'passvault-linux-detekt05-approval-v1' and approval['reviewer'] == '/root/c20_linux_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE)}, 'missing/stale/nonaccepting genuine review')
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/android_fixture_author/c20/focused-batch/LAUNCH.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/linux_author/focused02/LAUNCH.py.txt
+@@ -25,10 +25,10 @@
+ E = B / 'runs/linux-focused-regression02'
+ SELF = B / 'reviews/focused-regression02/LAUNCH.py'
+ REQUEST = B / 'requests/LINUX-FOCUSED-REGRESSION-02.json'
+-APPROVAL = B / 'reviews/team20/android_fixture_review/focused-regression02/INSTANCE-ACCEPT.json'
++APPROVAL = B / 'reviews/team20/resume12/linux_review/focused02-INSTANCE-ACCEPT.json'
+ LOCK = Path('/root/projects/PassVault/.audit-coordination-linux-20260908/build.lock')
+-# UNBOUND: root may bind only the current standalone publication T store, never a retired store.
+-GITDIR = Path('/UNBOUND_C20_PUBLICATION_GITDIR')
++# Fixed T destination only; current standalone source/store/instance admission remains UNBOUND.
++GITDIR = Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+ INNER, INIT = W / 'scripts/audit/linux_focused_regression_02.py', W / 'scripts/audit/focused_regression_02.init.gradle'
+ SOURCE = B / 'UNBOUND_C20_SOURCE_MANIFEST_PATH'
+ CLASSES, METHODS = (B / ('reviews/focused-regression02/' + p + '.tsv') for p in ('CLASSES', 'METHODS'))
+@@ -42,7 +42,7 @@
+ IMAGES = REQUIRED + (SELF, Path(GIT), Path(UNSHARE), Path(PYTHON), Path(INNER_PYTHON), Path('/usr/bin/env'))
+ PARENTS = (R.parent, E.parent, GITDIR, LOCK.parent)
+ DEVICE = {'directory_device': 'UNBOUND_C20_DIRECTORY_DEVICE', 'regular_file_device': 'UNBOUND_C20_REGULAR_FILE_DEVICE'}
+-EXPECTED_LOCK = 'UNBOUND_C20_ORIGINAL_LOCK_PIN'  # Bind the ORIGINAL existing lock; never create or replace it.
++EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Original Linux lock obligation only; fresh same-object observation remains UNBOUND. Never recreate/replace.
+ FROZEN = {INNER: '1bae5c731ace9d49589caf7198a38bb642cb998e6936b2be7c7ccf9b42ad9d41', INIT: '90b828b5d97b3007604792a0196c5394190ce925e1ba2794926d0e7d26d225d8', SOURCE: 'UNBOUND_C20_SOURCE_MANIFEST_SHA256', CLASSES: 'e8e707ff65f4a2e286b5a84bfc8d42db49406cfccf6fd9959f66e3ca4f96ae8c', METHODS: '56840f6aba3a41ef5131c30190924834be430f31e8efef540bcb3bdd34e9fd5c'}
+ TOP = 'checkout home tmp jna sqlite gradle-home konan android-user xdg-cache xdg-config xdg-data xdg-state workers'.split()
+ WORKERS = ['database', 'credential']
+@@ -645,7 +645,7 @@
+             sys.flags.no_site and sys.dont_write_bytecode and dict(os.environ) == ENV and os.getuid() == os.geteuid() == 0, 'fixed entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+             and type(MEMBERS) is int and 1 <= MEMBERS <= 3500
+-            and GITDIR == Path('/UNBOUND_C20_PUBLICATION_GITDIR')
++            and GITDIR == Path('/root/projects/PassVault/passvault-publication-20260910-01/.git')
+             and isinstance(DEVICE, dict) and set(DEVICE) == {'directory_device', 'regular_file_device'}
+             and all(type(value) is int and value >= 0 for value in DEVICE.values())
+             and isinstance(EXPECTED_LOCK, dict)
+@@ -671,7 +671,7 @@
+     receipt['parent_at_entry'] = entry_parent  # Provenance only, never signalling/adoption/deletion authority.
+     require(set(request['directories']) == {str(p) for p in PARENTS} and set(request['images']) == {str(p) for p in IMAGES}, 'fixed sets')
+     require(set(approval) == {'format', 'reviewer', 'disposition', 'purpose', 'run_id', 'request_sha256', 'sources'} and
+-            approval['format'] == 'passvault-linux-focused-regression02-approval-v1' and approval['reviewer'] == '/root/android_fixture_review' and
++            approval['format'] == 'passvault-linux-focused-regression02-approval-v1' and approval['reviewer'] == '/root/c20_linux_review' and
+             approval['disposition'] == 'ACCEPT_EXACT_NEW_INSTANCE' and approval['purpose'] == PURPOSE and approval['run_id'] == RUN and
+             approval['request_sha256'] == request_image['sha256'] and approval['sources'] ==
+             {str(p): request['images'][str(p)]['sha256'] for p in (SELF, INNER, INIT, SOURCE, CLASSES, METHODS)}, 'missing/stale/nonaccepting genuine review')

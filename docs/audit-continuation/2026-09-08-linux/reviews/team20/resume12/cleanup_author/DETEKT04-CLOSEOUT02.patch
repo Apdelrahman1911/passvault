@@ -1,0 +1,135 @@
+--- reviews/detekt04-closeout01/CLOSEOUT.py
++++ reviews/detekt04-closeout02/CLOSEOUT.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/python3.12
+-"""NEW current Detekt04 whole-R closeout01; SOURCE ONLY until separately admitted.
++"""NEW current Detekt04 whole-R closeout02; SOURCE ONLY until separately admitted.
+ 
+ Fixed-path/once-only, original-cohort cooperative freeze, not hostile-root safety.
+ No subprocess, build/stop, process census/signals, Git/SDK/network, mount action,
+@@ -17,15 +17,15 @@
+ import time
+ 
+ B = Path('/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux')
+-D = B / 'reviews/detekt04-closeout01'
++D = B / 'reviews/detekt04-closeout02'
+ SELF, REQUEST, ACCEPT = D / 'CLOSEOUT.py', D / 'REQUEST.json', D / 'ACCEPT.json'
+ R = Path('/root/projects/PassVault/audit-runtime-linux-detekt04')
+-E, OUT = B / 'runs/linux-detekt04', B / 'runs/linux-detekt04/closeout01'
++E, OUT = B / 'runs/linux-detekt04', B / 'runs/linux-detekt04/closeout02'
+ LOCK = R.parent / '.audit-coordination-linux-20260908/build.lock'
+ LOCK_PIN = (24, 14189001, 0, 33152, 1, 0, 1788910891124735946, 1788910891124735946)
+ SLOT = B / 'EXECUTION_SLOT.json'
+ SOURCE = B / 'reviews/checkpoint18/source-prepare01/SOURCE.json'
+-PURPOSE = 'ONE_CURRENT_DETEKT04_WHOLE_R_CLOSEOUT01'
++PURPOSE = 'ONE_CURRENT_DETEKT04_WHOLE_R_CLOSEOUT02'
+ COMMIT, TREE = '6489252e88ad553a867d67578eff45a402e62a48', '57d338a931ab0fb4e072aabcbbfd27bead8ef08a'
+ RAW_IDENTITY = 'df744d8d7a3836853500d96b465af56206122736b2b1300d7c4059380f557878'
+ MIB = 1024 ** 2
+@@ -61,12 +61,26 @@
+     'inner': (E / 'INNER-RESULT.json', '15c32402f1571485bed91c49a1f9000b2c0ac2dfba315b1959df00716a7c33f8'),
+     'index': (E / 'OUTER-INDEX-COPY.json', '82f7ed23c2dc9bfdb5d4b92b85e84da8c2b6976ce279e2e008d9c111b3200add'),
+     'terminal': (B / 'reviews/detekt04-host02/EXTERNAL-RESULT.json', 'a082d32315cbe5eef67706008e16577e18c38a4d04bb75fa69f0eba7f2f94361'),
++    'consumed_static01_result': (B / 'runs/linux-detekt04/closeout01/RESULT.json', '1d97e7c4b51f4eabe8e5024d3c140178548b0b826126670c2d1f6b580188b4ed'),
++    'consumed_static01_terminal': (B / 'reviews/detekt04-closeout01/EXTERNAL-RESULT.json', '9dbb80c95f66c975f5e6100e417c709b79c93adc021136a5e7022a6b7ca87b31'),
++    'consumed_static01_request': (B / 'reviews/detekt04-closeout01/REQUEST.json', '4d8718fab7d08bd8a379f20ed70561309260aeb3cf269ec1cd5aba87b1919eaa'),
++    'consumed_static01_accept': (B / 'reviews/detekt04-closeout01/ACCEPT.json', '80f2326c916f2c4170f992e16a3b1199f9cb7c3051e1ed9ffc207534ab693ac1'),
++    'consumed_static01_admission': (B / 'reviews/detekt04-closeout01/ROOT-EXECUTION-ADMISSION.json', '61e376269462655aa674bacfbac7d3ae72e434fa7b5cc538ef185dd425ab7b5e'),
++    'consumed_static01_adoption': (B / 'reviews/team20/root/C20-STATIC04-CLOSEOUT01-ADOPTION.json', '3e7d6bdd8acd5f43a56252eb1878453f14ce8d024e6978d9dd7b657a59c27b39'),
+ }
+ TEXT_INPUTS = {
+     B / 'reviews/detekt04-host02/LAUNCH.py':
+         '0a42b59a5a14b3c8d607b4ca09a04ad6ca60ff340bf14006d07e7d3790c3a130',
+     B / 'reviews/team20/focused_validation_review/DETEKT04-HOST02-ACTUAL-REVIEW.json':
+         'd91b3e6e51e34cc93685bbdbaa1e9fea472d6e0a8fd07a9b33169a83eafda734',
++    B / 'reviews/detekt04-closeout01/CLOSEOUT.py':
++        'e9e43ca9c363a771e0427e6809c73da715e3739c9bbc0673e050e65dc2ffcbb2',
++    B / 'reviews/team20/android_compile_review/c20/cleanup/C20-FIXED-CLOSEOUT-SOURCE-REVIEW.md':
++        '9eb889aaca184e738b3722415ccea438de989fb4deaa105fcac53cb8e788b12c',
++    B / 'reviews/team20/android_compile_review/c20/cleanup/DETEKT04-BOUND-REQUEST-REVIEW.md':
++        '471d6c380cd6fd693abb7ef43fe6d9261ac6993a9179bda30fe1f930bc94fbe1',
++    B / 'reviews/team20/android_compile_review/c20/cleanup/DETEKT04-CLOSEOUT01-ACTUAL-REVIEW.md':
++        'f4a583485eab3e7a98a4cf8786b21cb95fa1cd1c17e79debe0b6f0e85f300e65',
+ }
+ CACHE_LIMITS = {'roots': 4, 'files': 16, 'file_bytes': 1048576, 'total_bytes': 4194304, 'descendant_levels': 8, 'relative_json_bytes': 512}
+ BASE_HASH_BYTES = 227546164
+@@ -222,7 +236,7 @@
+     finally:
+         os.close(fd)
+     os.fsync(parent)
+-    return {'path': 'closeout01/INVENTORY.json', 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(), 'pin': pin}
++    return {'path': 'closeout02/INVENTORY.json', 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(), 'pin': pin}
+ 
+ 
+ def mounts():
+@@ -266,13 +280,18 @@
+ 
+ def cache_report_root(relative, is_directory):
+     parts = relative.split('/')
+-    if (len(parts) < 6 or parts[:4] != ['gradle-home', 'caches', '9.7.1', 'groovy-dsl']
+-            or len(parts[4]) != 32 or any(c not in '0123456789abcdef' for c in parts[4])
+-            or parts[5] != 'reports'):
++    if len(parts) >= 6 and parts[:4] == ['gradle-home', 'caches', '9.7.1', 'groovy-dsl']:
++        root_parts = 6
++    elif len(parts) >= 7 and parts[:5] == ['gradle-home', 'caches', '9.7.1', 'kotlin-dsl', 'scripts']:
++        root_parts = 7
++    else:
+         return None
+-    require(len(parts) - 6 <= CACHE_LIMITS['descendant_levels']
++    digest = parts[root_parts - 2]
++    if len(digest) != 32 or any(c not in '0123456789abcdef' for c in digest) or parts[root_parts - 1] != 'reports':
++        return None
++    require(len(parts) - root_parts <= CACHE_LIMITS['descendant_levels']
+             and len(encode(relative)) <= CACHE_LIMITS['relative_json_bytes'], 'cache report depth/path cap')
+-    root = '/'.join(parts[:6])
++    root = '/'.join(parts[:root_parts])
+     require(relative != root or is_directory, 'fixed cache reports root must be a directory')
+     require(relative == root or root in CACHE_ROOTS, 'cache report root must precede every descendant')
+     return root
+@@ -491,6 +510,29 @@
+     require(names(fd) == ([] if deleting else expected), 'final remaining membership changed')
+     if deleting:
+         os.fsync(fd)
++
++
++def bind_consumed_static01(inputs):
++    previous = inputs['consumed_static01_result']
++    terminal = inputs['consumed_static01_terminal']['actual_tool_result']
++    final = decode(terminal['output'].encode())
++    reason = ('RuntimeError: unexpected diagnostic/test evidence: HOLD '
++              'gradle-home/caches/9.7.1/kotlin-dsl/scripts/4390485c363a3fea299fef2ccf0168e2/reports')
++    require(previous['purpose'] == 'ONE_CURRENT_DETEKT04_WHOLE_R_CLOSEOUT01'
++            and previous['status'] == final['status'] == 'HOLD_CONSUMED_NO_AUTOMATIC_RETRY'
++            and previous['error'] == final['error'] == reason
++            and all(previous[key] == final[key] == 0 for key in
++                    ('removed_files', 'removed_directories_including_R', 'removed_logical_bytes'))
++            and previous['builds_tests_stops'] == 0 and final['removed_R'] is False
++            and final['descriptor_close_uncertainty'] is False and final['receipt_error'] is None
++            and final['external_pending_code'] == terminal['exit_code'] == 1
++            and terminal['chunk_id'] == '64a263' and 'session_id' not in terminal,
++            'consumed static01 exact predeletion failure/terminal binding; never replay')
++    require(inputs['consumed_static01_adoption']['status'] ==
++            'ADOPT_CONSUMED_FAILURE_AND_RELEASE_ONLY_CLEANUP01_SCHEDULING', 'retained root source-only successor decision')
++    record['consumed_static01'] = {'terminal_exit': 1, 'removed_files': 0, 'removed_directories_including_R': 0,
++                                  'removed_logical_bytes': 0, 'reason': reason,
++                                  'qualification': 'Frozen failure history only; no replay, current custody or SOURCE_AFTER repair'}
+ 
+ 
+ def bind_retained(inputs):
+@@ -620,7 +662,7 @@
+     source_hash = hashlib.sha256(capture(SELF, MIB)).hexdigest()
+     require(request['purpose'] == PURPOSE and request['source_sha256'] == source_hash and request['limits'] == LIMITS
+             and request['cache_limits'] == CACHE_LIMITS
+-            and approval == {'purpose': PURPOSE, 'reviewer': '/root/android_compile_review', 'disposition': 'ACCEPT_EXACT_ONCE',
++            and approval == {'purpose': PURPOSE, 'reviewer': '/root/c20_cleanup_review', 'disposition': 'ACCEPT_EXACT_ONCE',
+                              'request_sha256': hashlib.sha256(request_raw).hexdigest(), 'source_sha256': source_hash}, 'exact independent admission')
+     require(request['binding_complete'] is True and request['sole_team_launcher'] == '/root'
+             and request['cooperative_audit_team_no_build_or_ci'] is True and request['no_known_external_scheduler'] is True
+@@ -653,6 +695,7 @@
+     inputs = {key: decode(capture(path, 2 * MIB, digest)) for key, (path, digest) in INPUTS.items()}
+     for path, digest in TEXT_INPUTS.items():
+         capture(path, MIB, digest)
++    bind_consumed_static01(inputs)
+     absent = bind_retained(inputs)
+     coordination(request)
+     record.update(retained_bindings_verified=True, mount_before=mounts(), status='VERIFYING_WHOLE_CURRENT_R')

@@ -1,0 +1,116 @@
+{
+  "authority": {
+    "apple_collector_admitted": false,
+    "execution_performed": false,
+    "publication_admitted": false,
+    "root_one_shot_admission_granted": false,
+    "stop_or_cleanup_admitted": false
+  },
+  "delta": {
+    "forward_and_reverse_whole_byte_identity": true,
+    "line_counts": {
+      "added": 14,
+      "equal": 161,
+      "removed": 5
+    },
+    "literal_replacements": 6,
+    "unified_diff": {
+      "bytes": 4840,
+      "context_lines": 7,
+      "fromfile": "C20-CONTEXT-PR-POINT-v1.py.txt",
+      "sha256": "f702e86a260d5150cd85e81e0ed2047f550793013792154557968573706d0532",
+      "tofile": "C20-CONTEXT-PR-POINT.py"
+    }
+  },
+  "disposition": "ACCEPT_NARROW_SOURCE_SUCCESSOR_ROOT_ONE_SHOT_ADMISSION_REQUIRED",
+  "findings_resolved": [
+    {
+      "id": "PIPE_SETUP_AND_CLOSE_FAILURE",
+      "resolution": "Both child pipe handles are assigned before set_blocking/register. Each pipe and selector close has an independent guarded attempt; close error names are recorded, code is nonzero and final status is HOLD. An ordinary close failure cannot skip the remaining handle, selector attempt or receipt attempt."
+    },
+    {
+      "id": "DECLARED_PIPE_CAP",
+      "resolution": "Prospective retained-buffer length is checked before extend, so each retained buffer is at most32768B. One at-most4096B just-read chunk may trigger rejection before retention; cap failure is HOLD, not a complete accepted response."
+    },
+    {
+      "id": "NORMAL_GH_AUTH_SCOPE",
+      "resolution": "Scope expressly distinguishes no collector credential-file/value inspection or disclosure from normal gh use of existing authorized authentication config. Allowed existing context values are transported unlogged; receipt exposure remains credential-context ENV-key presence only."
+    },
+    {
+      "id": "COOPERATIVE_DEADLINE_WORDING",
+      "resolution": "Source scope explicitly labels deadlines cooperative, not hard filesystem-IO bounds."
+    }
+  ],
+  "format": "C20_CONTEXT_PR_POINT_SOURCE_REVIEW_V2",
+  "method": "Narrow static successor review only. Rehashed preserved v1/canonical successor/prior findings; read entire new unified delta; independently reconstructed successor and predecessor by six exact single-occurrence ordered literal replacements and reverse replacements with whole-byte identity. Accepted unchanged body is reused, not executed or re-audited as a new framework.",
+  "owner": "focused_validation_review",
+  "preservation": "No helper execution/import/AST/compilation, Git, network, process/runtime/SDK probe, build/test, source capture, replay, source promotion or central edit by reviewer. Only own-lane review output is written. Original lock/config, immutable source/index/object evidence, all old R HOLDs, STOP/NO-RETRY/CLOSED/native refusal/protected refs/1017001 and historical terminal gaps remain unchanged.",
+  "preserved_predecessor": {
+    "bytes": 7903,
+    "lf": 166,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint20/C20-CONTEXT-PR-POINT-v1.py.txt",
+    "qualification": "Root reports unexecuted v1; retained as source only, not a query receipt or retry authority.",
+    "sha256": "6b38ae8e194b331eff4749542fd3b486ca72fa1201003f3224e925cb21ecdada"
+  },
+  "prior_findings": {
+    "bytes": 4776,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/focused_validation_review/c20/C20-CONTEXT-PR-POINT-SOURCE-REVIEW-01.json",
+    "sha256": "dc8f9fb1f8345b6ba44e0a3139fcf4b153a905e41080050b97b3f06b6b908884"
+  },
+  "required_actual_interpretation": [
+    "Root exact one-shot admission and original external terminal result are separately required. A private saved receipt or pending_code cannot alone prove terminal completion, pipe cleanup or child settlement.",
+    "Accept actual success only with the exact intended projection, status, zero original terminal/child exits, reaped original child, no close/settlement errors and acceptable caps/deadlines. The cleanup description string is not independent proof if flags/errors or terminal disagree.",
+    "POINT_MATCHING_OPEN_PR_REQUIRES_ADMISSION_REASSESSMENT can accompany exit0; it does not permit publication. POINT_NO_MATCHING_OPEN_PR is only one finite exact-branch metadata point, not continuous custody or universal/future synchronize-workflow exclusion.",
+    "Executable pins and own namespace values are point observations for later Apple collector binding, not continuous guarantees or automatic Apple invocation authority. No CLI-internal credential behavior audit, SDK/CI result or collector execution is claimed.",
+    "Failure consumes this finite attempt without automatic retry. C19 query is consumed and supplies no replay authority; neither retained v1 nor this source review is a fresh GET result."
+  ],
+  "source": {
+    "bytes": 8423,
+    "lf": 175,
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint20/C20-CONTEXT-PR-POINT.py",
+    "sha256": "0b079fc4732f6dcd7d87a1c1cda5c84ccb7eedcbb26fb363f67d4b2e3f455a7e"
+  },
+  "unchanged_finite_scope": {
+    "child_argv": [
+      "/usr/bin/gh",
+      "api",
+      "--hostname",
+      "github.com",
+      "--method",
+      "GET",
+      "repos/Apdelrahman1911/passvault/pulls",
+      "-f",
+      "state=open",
+      "-f",
+      "head=Apdelrahman1911:codex/audit-continuation-linux-20260908",
+      "-f",
+      "per_page=100",
+      "--jq",
+      "map({number,head:{ref:.head.ref,sha:.head.sha},base:{ref:.base.ref},state})"
+    ],
+    "child_cwd": "/root/projects/PassVault/passvault-publication-20260910-01",
+    "command_seconds": 45,
+    "credential_environment_key_presence": [
+      "HOME",
+      "GH_CONFIG_DIR",
+      "XDG_CONFIG_HOME",
+      "GH_TOKEN",
+      "GITHUB_TOKEN"
+    ],
+    "entry": "Root must separately admit this exact canonical source and intended /usr/bin/python3.12 -I -S -B entry in its existing authorized context. The helper requires its exact argv and isolated/no-site/no-bytecode flags. It is not the stricter static05 ENV contract.",
+    "executable_bytes_each_max": 67108864,
+    "executable_metadata_only": [
+      "/usr/bin/gh",
+      "/usr/bin/curl"
+    ],
+    "own_namespace_readlinks": [
+      "/proc/self/ns/pid",
+      "/proc/self/ns/mnt"
+    ],
+    "receipt_bytes_each": 65536,
+    "receipts": "Exclusive private PR-STATE-INTENT.json and PR-STATE.json under checkpoint20 only; bounded, fsynced, read back. Stderr/raw child response and credential values are not dumped; buffers are represented by byte counts/digests, plus the narrow PR projection.",
+    "retained_bytes_each_pipe": 32768,
+    "settlement": "Original direct child only; conditional kill only while original child remains unreaped, then bounded wait. No process/name/group stop; no abnormal-descendant absence proof. Both child pipes and selector are separately closed/attempted.",
+    "total_cooperative_seconds": 60
+  }
+}

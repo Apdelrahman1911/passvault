@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "purpose": "ONE_CURRENT_DETEKT04_WHOLE_R_CLOSEOUT01",
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt04-closeout01/CLOSEOUT.py"
+  ],
+  "actual_tool_result": {
+    "chunk_id": "64a263",
+    "wall_time_seconds": 0.504545359,
+    "exit_code": 1,
+    "original_token_count": 126,
+    "output": "{\"descriptor_close_uncertainty\":false,\"error\":\"RuntimeError: unexpected diagnostic/test evidence: HOLD gradle-home/caches/9.7.1/kotlin-dsl/scripts/4390485c363a3fea299fef2ccf0168e2/reports\",\"external_pending_code\":1,\"qualification\":\"Receipt precedes descriptor closure and actual tool exit; root must reconcile both. No automatic retry.\",\"receipt_error\":null,\"removed_R\":false,\"removed_directories_including_R\":0,\"removed_files\":0,\"removed_logical_bytes\":0,\"status\":\"HOLD_CONSUMED_NO_AUTOMATIC_RETRY\"}\n"
+  },
+  "root_interpretation": "Consumed once, original terminal1/no ongoing session. Descriptor closes unambiguous; zero deletion. Fixed private kotlin-dsl report root refused as unexpected diagnostic/test evidence. Original R remains HOLD; no automatic retry or focused01 chaining, no extra Gradle stop.",
+  "new_application_cases": 0
+}

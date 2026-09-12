@@ -1,4 +1,32 @@
-## Current C19 evidence/publication ownership — 2026-09-11
+## Current C20 ownership — 2026-09-12
+
+Root alone owns canonical integration, builds/tests/CI, Git in T, central ledgers,
+execution admission and cleanup. Twenty existing agents have completed bounded
+non-overlapping source/proposal/review assignments in `C20-WORKSTREAMS.json`;
+publication/final coverage review remains separate. No subagent launches builds.
+
+All independently accepted C20 application/test/documentation changes are now
+integrated, including the standalone native-host exact-case Test task. Final
+Linux/dependency/GUI controls and the fixed17 publisher are source accepted, not
+execution-admitted. Actual current source/capacity/instance, native-host graph,
+Kotlin/Native no-new-provisioning and platform evidence remain unbound.
+
+Static04-closeout02 is consumed: independently reconciled resource refusal, zero
+deletion, original R HOLD. Its scheduling reservation was released, not runtime
+custody or a retry. The12GiB launch floor remains; the requested cleanup-only
+exception is unanswered. Latest02:01Z disk point is8.50GiB. Apple metadata capture
+is complete and its original CLI children/tool session settled. No C20 build/test/
+CI has run or is scheduled, and no commit/push has been attempted.
+
+Root source integrations release only their exact prospective W edits, not old
+source-after/evidence/index/object or runtime HOLD obligations. All original
+STOP/NO-RETRY/CLOSED/native-refusal boundaries and protected refs/build1017001
+remain. No real vault/provider enrollment, shared-cache or unrelated-process
+cleanup is authorized. Disclosed instruction-name traversal variances remain;
+there is no blanket no-held-access claim. Retain compact permanent evidence;
+no new build worker or disposable runtime needs stopping/removal in this source phase.
+
+## Historical C19 evidence/publication ownership — 2026-09-11
 
 Root alone owns builds/tests/CI, Git in T, central ledgers, admission and cleanup.
 All three HOST02 cohorts are consumed; original stops completed. No audit-owned
