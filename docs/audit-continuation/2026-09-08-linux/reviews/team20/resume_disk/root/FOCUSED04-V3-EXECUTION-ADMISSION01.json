@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T16:53:10.609373+00:00",
+  "status": "ADMITTED_ONCE_FOCUSED04_V3_AND_IMMEDIATE_ORIGINAL_CLEANUP",
+  "finding_ids": [
+    "PVA-007",
+    "PVA-026",
+    "PVA-031",
+    "PVA-035"
+  ],
+  "why": "Existing ten-method contract cohort: real Room migration-validation rollback/reopen, historical schema-one encrypted backup restore/reopen, eight editor freshness/ownership regressions; separate Desktop test compilation. No hardware or whole-family closure by task count.",
+  "source_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "source_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+  "source_members": 4113,
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-FOCUSED-REGRESSION-04.json",
+    "bytes": 13638,
+    "sha256": "5494e91e76b0365e91a83b68e8c16406f8394554eafbcbb0543f98a18f060985"
+  },
+  "genuine_independent_approval": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/dependency_review/resumed03/scheduling_accounting01/FOCUSED04-INSTANCE-ACCEPT.json",
+    "bytes": 1474,
+    "sha256": "443437680f7a6c120ed2631b213af5ae0424e626a322bf7041c2ab459c683995"
+  },
+  "genuine_independent_instance_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/dependency_review/resumed03/scheduling_accounting01/FOCUSED04-INSTANCE-REVIEW.json",
+    "bytes": 10074,
+    "sha256": "900c60a3e490a3d46332a91f6cc1a421671a5416e8dd3a31f506a343fbb63491"
+  },
+  "reservation": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/FOCUSED04-V3-SCHEDULER-RESERVATION01.json",
+    "bytes": 18240,
+    "sha256": "5bdff06887186b02158ad276544255ef74446473651f10e7c1017f8189f99724"
+  },
+  "source_images": {
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint21/source-prepare01/SOURCE.json": "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression04/CLASSES.tsv": "ddc1e33cd8413eecb1e9845b90f898a6550b220a0a1537ec62636df2800f5c3a",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression04/LAUNCH.py": "c1b405fb3585ddfb2f7a3dc4540e0873401062616efdb14487595beb0c35e443",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression04/METHODS.tsv": "fc327a709fa64dcdf867c4788e3bf9b1ba0aceb78018393e09e1e0142482a9cd",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/focused_regression_04.init.gradle": "e2acab97c832b3b8198c0d8b7ea7a109133667f5622b5ca516276e864b143380",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/linux_focused_regression_04.py": "d9cee1011b3cc0a48a33eb7e5e04456b18e49a2fa34a8169f79ef0992506bbf1"
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression04/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "planned_gradle_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-focused-regression04/checkout/gradlew",
+    "--init-script",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/focused_regression_04.init.gradle",
+    "-Ppassvault.audit.mode=focused",
+    ":core:database:desktopTest",
+    ":feature:credential:desktopTest",
+    ":app-desktop:compileTestKotlinDesktop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_stop_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-focused-regression04/checkout/gradlew",
+    "--stop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_T_readonly_execution_explicitly_admitted": {
+    "argv": [
+      "/usr/bin/git",
+      "--git-dir=/root/projects/PassVault/passvault-publication-20260910-01/.git",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "gc.auto=0",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "protocol.allow=never",
+      "-c",
+      "commit.gpgsign=false",
+      "cat-file",
+      "--batch"
+    ],
+    "scope": "Fixed4113 OID raw consumer/original sealed index/config intake only. Original T stays frozen. No W Git/U access, writes, lazy fetch or network Git. Exact accepted private HOME/XDG/GIT environment,120s/rawstream128MiB. Shared SOURCE/INDEX reused."
+  },
+  "expected_evidence": "10 selected actual method outcomes across4 nonempty XML suites, successful fresh twoTest task actions and app-desktop Kotlin test compilation, source BEFORE/AFTER, original stop and scoped settlement plus validated originalR cleanup; independently reconcile actual external exit. Failed partial outcomes remain failures.",
+  "fresh_root_checks": "All13image pins/hashes plus Python alias,4parent identities,original lock/namespaces,14descriptor occurrences/10unique records,genuine approval/request,live reservation and absentR/E matched. Current physical facts remain within approved invariants. All20 lanes completed/tool-quiescent; android_author explicit safe-boundary pause ACK retained in conversation.",
+  "resources": {
+    "disk_available_bytes": 15551508480,
+    "padded_entry_bytes": 13421772800,
+    "launch_floor_bytes": 12884901888,
+    "running_floor_bytes": 8589934592,
+    "runtime_sample_cap_bytes": 3221225472,
+    "ram_available_bytes": 63187402752,
+    "ram_total_bytes": 67435888640,
+    "launch_ram_fraction": 0.25,
+    "running_ram_fraction": 0.2,
+    "workers": 1,
+    "fallback_3GiB_elected": false
+  },
+  "limits": "Outer6000/work5250/build3600/originalstop600/settlement120seconds. JDK17 checkedwrapper worker1 non-daemon noCoD strictverification. Soft sharedhost limits, no capacity reservation/hardquota/globalidle claim.",
+  "coordination": "Root sole local/CI/Git/build/probe/cleanup owner using original lock and one reserved slot through original cleanup and independent actual reconciliation. ALL-TOOLS pause before entry. Reviewer clarification accepted: only after root-confirmed entry may expressly named disjoint inert W source/data tasks resume, excluding frozen inputs,T,U,tools,shared caches,runtime and all probe/Git/network/build/helper/cleanup/process work. No other audit execution/CI/worker/originalstop known inflight.",
+  "historical_accounting": "Accepted23 Linuxproject intents/25originalstop0event scheduling accounting reused,not cases or universal historical settlement. All historical UNKNOWN/HOLDs immutable. No previous helper/stop/recovery replay.",
+  "cleanup_installed_before_child": "Accepted outer signal/originaldescriptor/ownedchild finalizers and inner originalstop installed before projectcommand. Preserve compact logs/XML/hash/task/source receipts outsideR. Immediate once-only original wrapperstop when armed,original namespace/worker settlement and descriptorvalidated freshR removal. Uncertainty HOLD,no automatic retry,unrelated signals or sharedcache deletion.",
+  "fences": "PVU007STOP;PVU011NORETRY/no procedure inquiry;PVA02949/44PASS/5FAILno automaticretry;G7G8CLOSED;original native refusal/allHOLDs;EOL;8PVD/hardware. Protected refs/tags/dependencies/versions/identities/signing/Store/build1017001 unchanged. Synthetic data only."
+}

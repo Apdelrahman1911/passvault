@@ -1,0 +1,308 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/publication_author/pgraph_publish_u01/PGRAPH-PUBLISH-U01.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/publication_author/resumed03/pgraph02_publish_u01/PGRAPH02-PUBLISH-U01.py.txt
+@@ -1,36 +1,48 @@
+ #!/usr/bin/python3
+-# INERT: one fresh root Pgraph add-only transport; NOT execution admission.
+-# Fresh independent U; original T/index stays frozen for unconsumed local checks.
+-# Fixed Sfix parent; all4113 PRODUCT rows preserved; BOTH new requests absent.
+-# Reuses corrected Sfix V2 child/inventory primitives AS TEXT, never replayed.
+-# T only; no W edit, helper import, build, dispatch, signing or release.
++# INERT: one fresh root Pgraph02 add-only transport; NOT execution admission.
++# Existing independent U only; original T/index remains frozen and unaccessed.
++# Fixed Agraph4369 parent preserved in full; Sfix4113 PRODUCT remains unchanged.
++# Consumed graph01 request stays; graph02 and real-JNA requests remain absent.
++# Reuses accepted Pgraph U01 child/inventory primitives AS TEXT, never replayed.
++# T below names U only; no W edit, helper import, build, dispatch or release.
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+-PUB=B/'reviews/team20/resume_disk/publication_author/pgraph_publish_u01'
+-CONFIG=PUB/'PGRAPH-PUBLISH-U01-CONFIG.json'
+-MANIFEST=PUB/'PGRAPH-PUBLISH-U01-MANIFEST.json'
+-OUT=B/'publication/PGRAPH-PUBLISH-U01-ACTUAL.json'
++PUB=B/'reviews/team20/resume_disk/publication_author/resumed03/pgraph02_publish_u01'
++CONFIG=PUB/'PGRAPH02-PUBLISH-U01-CONFIG.json'
++MANIFEST=PUB/'PGRAPH02-PUBLISH-U01-MANIFEST.json'
++OUT=B/'publication/PGRAPH02-PUBLISH-U01-ACTUAL.json'
+ P=S.parent;T=P/'passvault-publication-20260912-02'
+ OLD_T=P/'passvault-publication-20260910-01'  # historical receipt label only; never accessed
+ URL='https://github.com/Apdelrahman1911/passvault.git'
+ BRANCH='codex/audit-continuation-linux-20260908'
+-BASE='e9cca961837789048503aaffc74ab1a1e7e536ec'
+-BASE_TREE='7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d'
+-PARENT='2ddeaa8412c06cef07e23b7dda951db3434f1f9c'
++BASE='55e42c25443b27b33bc518d339be46f2a787bcb4'
++BASE_TREE='b689bba0300e233c642bdb90fc3cbb0570ef56f5'
++PARENT='96fc40697ba036cfe222bf558f8e97639ba2525e'
++PARENT_TREE='1a1b58a18d30ee48b5c32b875c1895c13dc82046'
++BASE_MEMBERS=4369
++BASE_TREE_STREAM_BYTES=633228
++BASE_TREE_STREAM_SHA='236713739b10c59ff9cb703d116037ccd3bab4d006ab617523b584aff84e3422'
++BASE_INDEX_STREAM_BYTES=620121
++BASE_INDEX_STREAM_SHA='f7cafac523b56c6a7a474aa101d727b6c6dc4f984cc34e6c19bcf0e74012e589'
++SOURCE_COMMIT='e9cca961837789048503aaffc74ab1a1e7e536ec'
++SOURCE_TREE='7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d'
+ PREFIX='docs/audit-continuation/2026-09-08-linux/'
+ SOURCE=PREFIX+'reviews/checkpoint21/source-prepare01/SOURCE.json'
+ SOURCE_SHA='887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74'
+ SOURCE_BYTES=2266654
+-BASE_RECEIPT=B/'publication/CHECKPOINT-21-SFIX-PUBLISHED.json'
+-BASE_RECEIPT_SHA='08046469656f6b9d28c550cab2bc68f5c0db0c5a8830ebdfea8ab244d080bd29'
+-INSTANCE=PREFIX+'reviews/team20/resume_disk/native_lifetime_review/resumed01/INSTANCE-ACCEPT.json'
+-ABSENT_REQUESTS=(PREFIX+'requests/windows-jna-graph-01.json',PREFIX+'requests/windows-real-jna-01.json')
++BASE_RECEIPT=B/'reviews/team20/resume_disk/windows_author/resumed01/agraph_transport01/AGRAPH-U01-ACTUAL.json'
++BASE_RECEIPT_SHA='84f5669e32c8e58f31e7d77fe0926b0e47774a4024c48df6ac49fe81b4e9aa2c'
++BASE_RECEIPT_BYTES=35094
++INSTANCE=PREFIX+'reviews/team20/resume_disk/windows_review/resumed02/graph_path02/INSTANCE-ACCEPT.json'
++PRESERVED_REQUEST=PREFIX+'requests/windows-jna-graph-01.json'
++PRESERVED_REQUEST_BLOB='05463164681db47ad1135ab47841537266ce6453'
++ABSENT_REQUESTS=(PREFIX+'requests/windows-jna-graph-02.json',PREFIX+'requests/windows-real-jna-01.json')
+ REFS={'refs/heads/'+BRANCH,'refs/heads/codex/remediation-handoff-20260908',
+       'refs/heads/main','refs/heads/release','refs/heads/testing','refs/tags/v1.0.7-rc.1017001'}
+ LIVE_SLOT=B/'reviews/team20/resume_disk/root/EXECUTION_SLOT.json'
+-CORE=[{'bytes': 2183, 'destination': '.github/workflows/audit-windows-jna-graph-validation.yml', 'git_mode': '100644', 'publication_change': 'A_ONLY', 'sha256': '5f453c9c410ce70175e54d6232c46351a88db458ab1bf1e1ef4a5adf72d9480e', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/audit-windows-jna-graph-validation.yml.txt'}, {'destination': '.github/workflows/audit-windows-real-jna-validation.yml', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed01/sfix_windows_graph01/audit-windows-real-jna-validation.yml.txt', 'bytes': 2327, 'sha256': 'bdc67cd9a1790e520d57ae4c0006dbb249d809ef1226c6b25da54bb3057e2d16', 'git_mode': '100644', 'publication_change': 'A_ONLY'}, {'bytes': 2266654, 'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/checkpoint21/source-prepare01/SOURCE.json', 'git_mode': '100644', 'publication_change': 'A_ONLY', 'sha256': '887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/checkpoint21/source-prepare01/SOURCE.json'}, {'bytes': 3422, 'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt', 'git_mode': '100644', 'publication_change': 'A_ONLY', 'sha256': 'c95ecfcfd9e5c81a396bd1829e48f3c1712460032484d53d3ddbcac23c07161b', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt'}, {'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v3/SOURCE-SCOPE.txt', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v3/SOURCE-SCOPE.txt', 'bytes': 3375, 'sha256': 'b78b925442b33212e675d1bd6bbf69ea2c7e2e18898a4b344613f6a187f09836', 'git_mode': '100644', 'publication_change': 'A_ONLY'}, {'bytes': 5979, 'destination': 'scripts/audit/windows_jna_graph_01.init.gradle', 'git_mode': '100644', 'publication_change': 'A_ONLY', 'sha256': '952d4337fbe4a35f393ca542f05629e0fb6657a13a9d1dd5f34a71640f37adce', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/graph01/windows_jna_graph_01.init.gradle.txt'}, {'bytes': 89547, 'destination': 'scripts/audit/windows_jna_graph_01.py', 'git_mode': '100644', 'publication_change': 'A_ONLY', 'sha256': '1185097a48b5e72b9dbb7de78ae26d674fc2c838ccac871fecf7eae5f2bd0ee5', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/windows_jna_graph_01.py.txt'}, {'destination': 'scripts/audit/windows_real_jna_01.init.gradle', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v2/windows_real_jna_01.init.gradle.txt', 'bytes': 8448, 'sha256': '47dc1f6c2839429bee44c21b70bf64c9cf547f70b05420f4deb3a150c692b755', 'git_mode': '100644', 'publication_change': 'A_ONLY'}, {'destination': 'scripts/audit/windows_real_jna_01.py', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/runtime_adapter01/v3/windows_real_jna_01.py.txt', 'bytes': 119983, 'sha256': '094736f53231348dd4da1b2910160204c048e0bd813be8da639d8831ff48883a', 'git_mode': '100644', 'publication_change': 'A_ONLY'}]
+-MANDATORY_EVIDENCE={'Sfix_actual_review': {'path': 'reviews/team20/resume_disk/publication_review/sfix_publish01/SFIX-PUBLISH01-ACTUAL-REVIEW.json', 'bytes': 10243, 'sha256': '89c623a40f76d38fa2ba130a32eb7c8809ad7b8e6bdd8bc77c3fcc5cbd592aa3'}, 'shared_SOURCE_actual_review': {'path': 'reviews/team20/resume_disk/capture_review/resumed01/source_sfix01/ACTUAL-REVIEW.json', 'bytes': 5851, 'sha256': 'fec3babf6f7299bf7d9a6a5e5015da5f7ba69ce4ff85cdaf5658916576740519'}, 'shared_INDEX_actual_review': {'path': 'reviews/team20/resume_disk/capture_review/resumed01/index_sfix01/ACTUAL-REVIEW.json', 'bytes': 7557, 'sha256': 'f9115b02b45e8b910aa5f7c5678d1ca82a82b09b4bed55fbe4252f1190bf9a25'}, 'graph_source_review': {'path': 'reviews/team20/resume_disk/native_lifetime_review/resumed01/ACTUAL-SFIX-BINDING-REVIEW.md', 'bytes': 5028, 'sha256': '27d98bd20dddf74c9cdecfa14c99ee1691af9b9fb1578ad31fd0e586a68fda0e'}, 'real_JNA_V3_source_review': {'path': 'reviews/team20/resume_disk/native_lifetime_review/resumed01/REAL-JNA-ADAPTER-V3-SOURCE-REVIEW.md', 'bytes': 4923, 'sha256': 'e839e53e677a6587de26d4c924405b9826d562f48d8423742d7334cf2119837a'}, 'receivers_source_review': {'path': 'reviews/team20/resume_disk/windows_review/resumed01/SFIX-WINDOWS-GRAPH-REALJNA-RECEIVER-REVIEW.json', 'bytes': 9588, 'sha256': '515c2cab4eb1cef41b7736928ab35c1479e9af67efdd2a544d1a43c4119154d2'}, 'Windows4_HOLD_adoption': {'path': 'reviews/team20/resume_disk/root/WINDOWS4-ACTUAL-ADOPTION-AND-SLOT-RELEASE.json', 'bytes': 3269, 'sha256': '963bc0f5d384b59d29416b2d08b6a58b40122ed973b2e8cae697701c92f5086e'}, 'split_policy_review': {'path': 'reviews/team20/resume_disk/publication_review/resumed02/PGRAPH-SUFFIX-DEFERRAL-POLICY-REVIEW.json', 'bytes': 5222, 'sha256': 'a408a046e0967a45e88a8f8feb5ac5acaebb32d21a5f43bdc0e5a934d6918b1b'}}
++CORE=[{'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed02/graph_path02/audit-windows-jna-graph-02-validation.yml.txt', 'destination': '.github/workflows/audit-windows-jna-graph-02-validation.yml', 'bytes': 2183, 'sha256': 'bf9e3e30a4e9a3c90c5e34cac2db30986a3fbc6968596493eff226e4290887b2', 'git_mode': '100644', 'publication_change': 'A_ONLY'}, {'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed02/graph_path02/SOURCE-SCOPE.txt', 'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed02/graph_path02/SOURCE-SCOPE.txt', 'bytes': 7603, 'sha256': '9a6871fbdcbbd9b8de2cb31bae3fe54991935874a471fdfa1a1d25f81c564f27', 'git_mode': '100644', 'publication_change': 'A_ONLY'}, {'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed02/graph_path02/windows_jna_graph_02.init.gradle.txt', 'destination': 'scripts/audit/windows_jna_graph_02.init.gradle', 'bytes': 5979, 'sha256': '848a8d24ca8ebffb30b63375d253be3633d15d31f551d222b335d3eefe946b8a', 'git_mode': '100644', 'publication_change': 'A_ONLY'}, {'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed02/graph_path02/windows_jna_graph_02.py.txt', 'destination': 'scripts/audit/windows_jna_graph_02.py', 'bytes': 90205, 'sha256': '21af2ad63602255672c0099000a1c577d77b2dd63282c258ec81c292d9775ede', 'git_mode': '100644', 'publication_change': 'A_ONLY'}]
++MANDATORY_EVIDENCE={'Pgraph01_actual': {'path': 'publication/PGRAPH-PUBLISH-U01-ACTUAL.json', 'bytes': 76376, 'sha256': 'e2778fef4af56054eec47b357a583e3e45c6ae1f4fa07d0b47581c119249296e'}, 'Pgraph01_actual_review': {'path': 'reviews/team20/resume_disk/publication_review/resumed02/PGRAPH-PUBLISH-U01-ACTUAL-REVIEW.json', 'bytes': 9796, 'sha256': '8a4b0eb43b191260990c1c495d29d82214b7ce3c4e16dc4b06b6f4ea8e604903'}, 'Agraph01_actual': {'path': 'reviews/team20/resume_disk/windows_author/resumed01/agraph_transport01/AGRAPH-U01-ACTUAL.json', 'bytes': 35094, 'sha256': '84f5669e32c8e58f31e7d77fe0926b0e47774a4024c48df6ac49fe81b4e9aa2c'}, 'Agraph01_actual_review': {'path': 'reviews/team20/resume_disk/windows_review/resumed01/AGRAPH-U01-ACTUAL-REVIEW.json', 'bytes': 10131, 'sha256': 'ad8cad35c0cc0ec16d4466c003aaebfbfcd67da53d3136840a2266cf52f62b86'}, 'graph01_actual_review': {'path': 'reviews/team20/resume_disk/native_lifetime_review/resumed01/graph_observer01/ACTUAL-REVIEW.json', 'bytes': 13166, 'sha256': 'a2fc0b3dceea8d2b87912a862e326f1a610cdd8244c2229f26067cc07d6a2edf'}, 'graph01_attribution_only': {'path': 'reviews/team20/resume_disk/native_lifetime_review/resumed01/graph_observer01/ACTUAL-REVIEW-ATTRIBUTION.json', 'bytes': 506, 'sha256': 'db196384a5eeeb1e1018292ee49b4804f1c14d7b3a0f160b0f7df3bc4dad5fe3'}, 'graph01_failure_and_settlement_adoption': {'path': 'reviews/team20/resume_disk/root/WINDOWS-GRAPH01-ACTUAL-ADOPTION-AND-SLOT-RELEASE.json', 'bytes': 2728, 'sha256': '73aa86c403af67fea60eae51c1ece53871caabeee614b8e99cde4e76e1917eef'}, 'graph01_raw_result': {'path': 'reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_observer01/actual/intake/evidence/result.json', 'bytes': 5289, 'sha256': '19a169fa294e93eb9298fc0404d39a501581e69d19abeb79a4064528b9f1f3d8'}, 'graph01_artifact_inventory': {'path': 'reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_observer01/actual/intake/artifact-inventory.json', 'bytes': 2837, 'sha256': 'bff1afd4423185f04aac38b63d41ae9e3f7ae4295c06a794b47aa0fbc985081b'}, 'graph02_source_review': {'path': 'reviews/team20/resume_disk/windows_review/resumed02/graph_path02/SOURCE-REVIEW.json', 'bytes': 10072, 'sha256': 'b0a2a8d36f3c7ef4dd9d70a1fc9b3902d0670a31974b36ae5b14b8fe0931f175'}, 'graph02_content_nonce': {'path': 'reviews/team20/resume_disk/root/WINDOWS-GRAPH02-CONTENT-NONCE01.json', 'bytes': 4674, 'sha256': '5771adda586047c91c6767adef3fcb24264541496a9d8bc0298d1b9ef858b6ef'}, 'current_report02': {'path': 'reviews/team20/resume_disk/report_author/resumed03/current_report02/OWNER_PROGRESS.md', 'bytes': 6972, 'sha256': 'f6a055b9f5fd2bc82e12a70cac87abaa4e100e6e5498ace9d6b480f927430f00'}, 'current_ledger02': {'path': 'reviews/team20/resume_disk/report_author/resumed03/current_report02/LEDGER_DELTA.json', 'bytes': 10720, 'sha256': '0336ae092ae25ad9f131026610a0fa2db4bd8b298f62134c89950af396e3e0a1'}, 'current_report02_independent_review': {'path': 'reviews/team20/resume_disk/coverage_review/resumed03/current_report02/REVIEW.json', 'bytes': 5448, 'sha256': 'c12689814eb3a7791ccb70d480f9b5f3372d9ec955ffda9a2b2d4ecb309779bb'}}
+ START=time.monotonic();CANCEL=False;child=None;lockfd=None;parentfd=None;rootfd=None;recfd=None
+ CFG=None
+ rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'source_workspace':str(S),'publication_clone':str(T),'commands':[],'resource_samples':[],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
+@@ -119,10 +131,10 @@
+   decoded=bytes(out).decode('utf-8','strict')
+   r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr_sha256=digest(err),stderr_bytes=len(err))
+   if len(err)<=4096:r['stderr']=bytes(err).decode('utf-8','strict')
+-  else:r['stderr_file']=write_once('PGRAPH-PUBLISH-U01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
++  else:r['stderr_file']=write_once('PGRAPH02-PUBLISH-U01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
+   if len(out)<=2048:r['stdout']=decoded
+   if args[:3]==['diff','--cached','--check']:
+-   p=PUB/'PGRAPH-PUBLISH-U01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++   p=PUB/'PGRAPH02-PUBLISH-U01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+     view=memoryview(out)
+     while view:view=view[os.write(fd,view):]
+@@ -169,7 +181,7 @@
+ def fullpin(a):
+  return {('bytes' if k=='size' else k):getattr(a,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')}
+ def write_once(name,raw):
+- req('/' not in name and name.startswith('PGRAPH-PUBLISH-U01-'),'fixed output name')
++ req('/' not in name and name.startswith('PGRAPH02-PUBLISH-U01-'),'fixed output name')
+  p=safe_parent(PUB,name);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+  try:
+   at=0
+@@ -204,19 +216,21 @@
+  req(read_file(CONFIG,cap=32768)[0]==config_raw,'exact config changed')
+  req(read_file(MANIFEST,cap=131072)[0]==manifest_raw,'exact manifest changed')
+  req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'sole reserved slot changed')
+- req(read_file(BASE_RECEIPT,cap=40440)[0]==base_receipt_raw,'Sfix actual changed')
++ req(read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES)[0]==base_receipt_raw,'Agraph actual changed')
++ req(read_file(S/SOURCE,cap=SOURCE_BYTES)[0]==source_raw,'retained shared SOURCE changed')
+  req(evidence(CFG['U_setup_receipt'])==setup_raw,'fresh U setup evidence changed')
+  for row in rows:source_row(row)
+  for desc in MANDATORY_EVIDENCE.values():evidence(desc)
+  for desc in CFG['evidence'].values():evidence(desc)
+ def request_absence():
+- for path in ABSENT_REQUESTS:req(not os.path.lexists(T/path),'Pgraph cannot contain graph/realJNA activation request')
++ for path in ABSENT_REQUESTS:req(not os.path.lexists(T/path),'Pgraph02 cannot contain new graph02/realJNA activation request')
+ def validate_manifest(raw):
+  m=parsed(raw)
+- req(set(m)=={'schema','kind','product','additions','whitespace_paths'},'fixed manifest fields')
+- req(m['schema']==1 and m['kind']=='PGRAPH_EXACT_ADD_ONLY_CONTROLS_AND_EVIDENCE','fixed add-only manifest schema')
+- req(m['product']=={'commit':BASE,'tree':BASE_TREE,'source_sha256':SOURCE_SHA,'members':4113,'raw_bytes':125708841},'manifest PRODUCT is not exact Sfix4113')
+- selected=m['additions'];req(isinstance(selected,list) and 9<len(selected)<=256,'finite selected addition count')
++ req(set(m)=={'schema','kind','product','base','additions','whitespace_paths'},'fixed manifest fields')
++ req(m['schema']==1 and m['kind']=='PGRAPH02_EXACT_ADD_ONLY_CONTROLS_AND_EVIDENCE','fixed add-only manifest schema')
++ req(m['product']=={'commit':SOURCE_COMMIT,'tree':SOURCE_TREE,'source_sha256':SOURCE_SHA,'members':4113,'raw_bytes':125708841},'manifest PRODUCT is not exact Sfix4113')
++ req(m['base']=={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS},'manifest full Agraph4369 base differs')
++ selected=m['additions'];req(isinstance(selected,list) and 4<len(selected)<=256,'finite selected addition count')
+  destinations=[];total=0
+  for row in selected:
+   req(set(row)=={'destination','source_afterimage','bytes','sha256','git_mode','publication_change'},'fixed addition row fields')
+@@ -230,11 +244,11 @@
+  req(sum(len(p.encode())+1 for p in destinations)<=49152 and total<=16*1024**2,'bounded paths48KiB/selected data16MiB')
+  bypath={r['destination']:r for r in selected}
+  for required in CORE:req(bypath.get(required['destination'])==required,'missing/changed fixed reviewed control:'+required['destination'])
+- req(INSTANCE in bypath,'genuine graph nonce/content record required in Pgraph')
++ req(INSTANCE in bypath,'genuine graph02 nonce/content record required in Pgraph02')
+  for desc in MANDATORY_EVIDENCE.values():
+-  r=bypath.get(PREFIX+desc['path']);req(r is not None and (r['bytes'],r['sha256'])==(desc['bytes'],desc['sha256']),'missing fixed review/HOLD ancestry:'+desc['path'])
++  r=bypath.get(PREFIX+desc['path']);req(r is not None and (r['bytes'],r['sha256'])==(desc['bytes'],desc['sha256']),'missing fixed accepted failure/review/report ancestry:'+desc['path'])
+  expected_whitespace=sorted(r['destination'] for r in CORE if not r['destination'].startswith(PREFIX))
+- req(m['whitespace_paths']==expected_whitespace,'only six reviewed authored control paths get whitespace check')
++ req(m['whitespace_paths']==expected_whitespace,'only three reviewed authored graph02 control paths get whitespace check')
+  return m,selected,bypath,total
+ 
+ try:
+@@ -245,79 +259,92 @@
+  try:os.fsync(pfd)
+  finally:os.close(pfd)
+  config_raw,_=read_file(CONFIG,cap=32768);CFG=parsed(config_raw)
+- req(set(CFG)=={'namespace_parent','slot_sha256','slot_state','remotes','receipt_path','commit_message','manifest_sha256','graph_nonce','root_admission','evidence','U_setup_receipt'},'fixed Pgraph config fields')
++ req(set(CFG)=={'namespace_parent','slot_sha256','slot_state','remotes','receipt_path','commit_message','manifest_sha256','graph_nonce','root_admission','evidence','U_setup_receipt'},'fixed Pgraph02 config fields')
+  req(CFG['namespace_parent']==[23,580,0,16877],'original namespace parent required')
+- req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE,'six exact refs/Sfix head required')
++ req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE,'six exact refs/Agraph head required')
+  req(all(re.fullmatch(r'[0-9a-f]{40}',v) for v in CFG['remotes'].values()),'remote object format')
+- req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Publish reviewed Windows validation controls and continuation evidence','fixed Pgraph receipt/message')
++ req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Publish reviewed Windows graph02 controls and continuation evidence','fixed Pgraph02 receipt/message')
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['manifest_sha256']) is not None and re.fullmatch(r'[0-9a-f]{32}',CFG['graph_nonce']) is not None,'manifest/graph nonce unbound')
+- admission=CFG['root_admission'];req(admission['status']=='ADMITTED_PGRAPH_U_ONCE_ONLY_ADD_ONLY','root admission unbound')
++ admission=CFG['root_admission'];req(admission['status']=='ADMITTED_PGRAPH02_U_ONCE_ONLY_ADD_ONLY','root admission unbound')
+  for key in ('Sfix_publication_and_shared_capture_independently_accepted','original_T_and_unconsumed_consumer_facts_remain_frozen_no_access',
+              'retained_local_consumers_do_not_require_unchanged_remote_head',
+-             'fresh_U_setup_namespace_and_config_independently_accepted',
++             'existing_U_current_Agraph_namespace_and_config_independently_accepted',
+              'all4113_PRODUCT_paths_bytes_modes_preserved_and_suffix_moves_deferred','Windows4_filesystem_HOLD_immutable_no_old_root_access',
+-             'fresh_all_base_head_PR_and_all_repo_queues_reviewed','both_new_receiver_and_other_trigger_delta_reviewed',
+-             'exclusive_local_CI_slot_reserved','bounded_physical_T_inventory_guard_admitted',
++             'all4369_Agraph_rows_preserved_including_consumed_graph01_request',
++             'graph01_original_failure_and_cleanup_adopted_no_cause_or_runtime_success_claim',
++             'fresh_all_base_head_PR_and_all_repo_queues_reviewed','new_graph02_receiver_and_other_trigger_delta_reviewed',
++             'exclusive_local_CI_slot_reserved','bounded_physical_U_inventory_guard_admitted',
+              'original_child_cleanup_and_partial_addition_HOLD_admitted','publisher_source_manifest_and_exact_instance_independently_accepted',
+-             'genuine_graph_nonce_content_review_adopted','dormant_realJNA_UNBOUND_gates_preserved_and_both_requests_absent','selected_W_sources_frozen'):
++             'genuine_graph02_nonce_content_review_adopted','dormant_realJNA_UNBOUND_gates_preserved_and_new_graph02_realJNA_requests_absent','selected_W_sources_frozen'):
+   req(admission[key] is True,'missing explicit root admission:'+key)
+- req(admission['allow_3GiB_VPS_fallback'] is False,'fresh U requires strict12GiB entry; no fallback')
++ req(admission['allow_3GiB_VPS_fallback'] is False,'existing U transport requires strict12GiB entry; no fallback')
+  req(set(CFG['evidence'])=={'U_setup_actual_review','retained_consumer_remote_independence_review','fresh_PR_queue_preflight_actual','fresh_PR_queue_preflight_review','trigger_delta_review','publisher_source_manifest_review','graph_content_review'},'exact independent admission evidence set')
+  for desc in CFG['evidence'].values():evidence(desc)
+  for desc in MANDATORY_EVIDENCE.values():evidence(desc)
+  req(CFG['U_setup_receipt']['path']=='publication/PGRAPH-U-SETUP01-ACTUAL.json','one fixed fresh U setup receipt')
+  setup_raw=evidence(CFG['U_setup_receipt']);setup=parsed(setup_raw)
+  req(setup['schema']==1 and setup['owner']=='/root' and setup['status']=='PGRAPH_U_SETUP_OBSERVED_AWAITING_INDEPENDENT_REVIEW','fresh U setup not observed/adopted')
+- req(setup['publication_clone']==str(T) and setup['source_commit']==BASE and setup['source_tree']==BASE_TREE and setup['remote_after']==CFG['remotes'],'fresh U source/namespace/sixrefs mismatch')
++ setup_refs=dict(CFG['remotes']);setup_refs['refs/heads/'+BRANCH]=SOURCE_COMMIT
++ req(setup['publication_clone']==str(T) and setup['source_commit']==SOURCE_COMMIT and setup['source_tree']==SOURCE_TREE and setup['remote_after']==setup_refs,'historical U setup Sfix/namespace/protected refs mismatch')
+  req(setup['original_T_accessed'] is False and setup['independent_clone_no_alternates_or_hardlinks'] is True,'new U may not borrow original T custody/storage')
+  uid=setup['namespace_identity'];req(isinstance(uid,list) and len(uid)==4 and all(type(v) is int for v in uid) and uid[2]==0 and uid[3]==16832,'new U original root-owned0700 namespace identity required')
+  manifest_raw,_=read_file(MANIFEST,cap=131072);req(digest(manifest_raw)==CFG['manifest_sha256'],'manifest hash drift')
+  manifest,rows,bypath,selected_bytes=validate_manifest(manifest_raw)
+  copies={row['destination']:source_row(row) for row in rows}
+  expected={path:('100644',rawblob(raw)) for path,raw in copies.items()}
+- product=parsed(copies[SOURCE])
+- req(len(copies[SOURCE])==SOURCE_BYTES and digest(copies[SOURCE])==SOURCE_SHA and product['commit']==BASE and product['tree']==BASE_TREE,'shared source identity drift')
++ source_raw,_=read_file(S/SOURCE,cap=SOURCE_BYTES);product=parsed(source_raw)
++ req(len(source_raw)==SOURCE_BYTES and digest(source_raw)==SOURCE_SHA and product['commit']==SOURCE_COMMIT and product['tree']==SOURCE_TREE,'retained shared Sfix source identity drift')
+  productrows=product['files'];req(len(productrows)==4113 and sum(r['raw_size'] for r in productrows)==125708841,'shared Sfix count/raw bytes drift')
+  productmap={r['path']:(r['git_mode'],r['git_blob']) for r in productrows};req(len(productmap)==4113,'duplicate PRODUCT paths')
+  req(not set(expected)&set(productmap),'every selected row must be absent from Sfix PRODUCT; no suffix move/replacement')
+  content=CFG['evidence']['graph_content_review'];req(PREFIX+content['path']==INSTANCE and (content['bytes'],content['sha256'])==(bypath[INSTANCE]['bytes'],bypath[INSTANCE]['sha256']),'genuine graph content review row mismatch')
+  instance=parsed(copies[INSTANCE])
+- req(instance.get('schema')==1 and instance.get('reviewer')=='/root/native_review_c20' and instance.get('disposition')=='ACCEPT_WINDOWS_JNA_GRAPH_01_INSTANCE' and instance.get('nonce')==CFG['graph_nonce'],'genuine graph nonce/content acceptance required')
+- req(instance.get('project_commit')==BASE and instance.get('project_tree')==BASE_TREE and instance.get('source_manifest_sha256')==SOURCE_SHA and instance.get('case_count')==0 and instance.get('dry_run') is True,'graph content/product contract drift')
+- for key,path in [('helper_sha256','scripts/audit/windows_jna_graph_01.py'),('init_sha256','scripts/audit/windows_jna_graph_01.init.gradle'),('workflow_sha256','.github/workflows/audit-windows-jna-graph-validation.yml'),('scope_sha256',PREFIX+'reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_actual_sfix01/SOURCE-SCOPE.txt')]:
+-  req(instance.get(key)==bypath[path]['sha256'],'graph content does not bind exact control:'+key)
+- base_receipt_raw,_=read_file(BASE_RECEIPT,cap=40440);req(len(base_receipt_raw)==40440 and digest(base_receipt_raw)==BASE_RECEIPT_SHA,'actual Sfix receipt drift')
++ req(instance.get('schema')==1 and instance.get('reviewer')=='/root/windows_review' and instance.get('disposition')=='ACCEPT_WINDOWS_JNA_GRAPH_02_INSTANCE' and instance.get('nonce')==CFG['graph_nonce'],'genuine graph02 nonce/content acceptance required')
++ req(instance.get('project_commit')==SOURCE_COMMIT and instance.get('project_tree')==SOURCE_TREE and instance.get('source_manifest_sha256')==SOURCE_SHA and type(instance.get('case_count')) is int and instance['case_count']==0 and instance.get('dry_run') is True,'graph02 content/product contract drift')
++ req(instance.get('suite')=='windows-jna-graph-02' and instance.get('source_members')==4113 and instance.get('source_raw_bytes')==125708841 and instance.get('execution_admission') is False and instance.get('activation_admission') is False,'content review is not runtime/activation authority')
++ for key,path in [('helper_sha256','scripts/audit/windows_jna_graph_02.py'),('init_sha256','scripts/audit/windows_jna_graph_02.init.gradle'),('workflow_sha256','.github/workflows/audit-windows-jna-graph-02-validation.yml'),('scope_sha256',PREFIX+'reviews/team20/resume_disk/windows_author/resumed02/graph_path02/SOURCE-SCOPE.txt')]:
++  req(instance.get(key)==bypath[path]['sha256'],'graph02 content does not bind exact control:'+key)
++ base_receipt_raw,_=read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES);req(len(base_receipt_raw)==BASE_RECEIPT_BYTES and digest(base_receipt_raw)==BASE_RECEIPT_SHA,'actual Agraph receipt drift')
+  prior=parsed(base_receipt_raw)
+- req(prior['status']=='PUBLISHED_EXACT_SFIX_SOURCE' and (prior['commit'],prior['tree'],prior['parent'])==(BASE,BASE_TREE,PARENT),'Sfix not successful expected direct Awin child')
+- req(prior['publication_clone']==str(OLD_T) and prior['remote_after']==CFG['remotes'],'historical Sfix T lineage/sixrefs differ; never relabel as U observation')
++ req(prior['status']=='PUSHED_AGRAPH_U01_A_ONLY_ACTIVATION_REQUEST' and (prior['commit'],prior['tree'],prior['parent'],prior['parent_tree'])==(BASE,BASE_TREE,PARENT,PARENT_TREE),'Agraph not successful expected direct Pgraph child')
++ req(prior['publication_clone']==str(T) and prior['remote_after']==CFG['remotes'] and prior['original_T_accessed'] is False,'current U Agraph lineage/sixrefs differ')
++ req(prior['namespace_identity']==uid and prior['preserved_config_after']==setup['preserved_config_after'],'current Agraph U namespace/config differs from accepted setup')
+  rec['configuration']={'path':str(CONFIG.relative_to(B)),'bytes':len(config_raw),'sha256':digest(config_raw)}
+  rec['manifest']={'path':str(MANIFEST.relative_to(B)),'bytes':len(manifest_raw),'sha256':digest(manifest_raw),'additions':len(rows),'raw_bytes':selected_bytes}
+  rec['root_admission']=admission;rec['adopted_evidence']=CFG['evidence'];rec['fixed_review_evidence']=MANDATORY_EVIDENCE
+- rec['fresh_U_setup']=CFG['U_setup_receipt'];rec['original_T']='HISTORICAL_SOURCE_LINEAGE_ONLY; NOT_ACCESSED_OR_MUTATED; LOCAL_CONSUMER_FREEZE_RETAINED'
++ rec['retained_U_setup']=CFG['U_setup_receipt'];rec['accepted_Agraph_receipt']={'path':str(BASE_RECEIPT.relative_to(B)),'bytes':BASE_RECEIPT_BYTES,'sha256':BASE_RECEIPT_SHA};rec['original_T']='HISTORICAL_SOURCE_LINEAGE_ONLY; NOT_ACCESSED_OR_MUTATED; LOCAL_CONSUMER_FREEZE_RETAINED'
+  rec['admission_qualification']='Pinned root-reviewed evidence plus separately required exact-instance acceptance, not self-authorization; fresh PR/queue point is not continuous exclusivity. Native/source review is not execution or hardware credit.'
+  slotraw,_=read_file(LIVE_SLOT,cap=32768)
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot unbound/drifted')
+- req(CFG['slot_state'].startswith('RESERVED_PGRAPH_U') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root Pgraph reservation required')
++ req(CFG['slot_state'].startswith('RESERVED_PGRAPH02_U') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root Pgraph02 reservation required')
+  lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+  parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+  req((a.st_dev,a.st_ino,a.st_uid,a.st_mode,a.st_nlink,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(24,14189001,0,33152,1,0,1788910891124735946,1788910891124735946),'original lock changed')
+  fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+- stable_inputs();resource('before Pgraph add-only transport',launch=True)
++ stable_inputs();resource('before Pgraph02 add-only transport',launch=True)
+  req(dtuple(T.lstat())==setup['namespace_identity'],'original admitted U namespace changed')
+- rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=setup['namespace_identity'];root_check();inventory('before Pgraph in U')
++ rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=setup['namespace_identity'];root_check();inventory('before Pgraph02 in existing U')
+  request_absence()
+  gd=T/'.git'
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+  config_before_raw,config_before_stat=read_file(gd/'config')
+  rec['preserved_config_before']={'sha256':digest(config_before_raw),'pin':fullpin(config_before_stat)}
+- req(rec['preserved_config_before']==setup['preserved_config_after'],'fresh U original config bytes/full pin differ from independently accepted setup')
++ req(rec['preserved_config_before']==prior['preserved_config_after'],'existing U original config bytes/full pin differ from independently accepted Agraph')
+  dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((T/x).resolve()==gd for x in dirs),'external Git store')
+- req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'exact Sfix parent required; no interposed commit')
++ req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'exact Agraph parent required; no interposed commit')
+  req(git(['symbolic-ref','--short','HEAD']).strip()==BRANCH,'dedicated continuation branch mismatch')
+- req(git(['rev-list','--parents','-n','1','HEAD']).split()==[BASE,PARENT],'Sfix is not sole expected Awin child')
+- base=entries(git(['ls-tree','-r','-z','--full-tree','HEAD']));req(base==productmap,'complete Sfix PRODUCT map differs')
+- req(entries(git(['ls-files','--stage','-z']),True)==base,'index not exact Sfix')
++ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[BASE,PARENT],'Agraph is not sole expected Pgraph child')
++ base_raw=git(['ls-tree','-r','-z','--full-tree','HEAD'])
++ req(len(base_raw.encode())==BASE_TREE_STREAM_BYTES and digest(base_raw.encode())==BASE_TREE_STREAM_SHA,'complete accepted Agraph tree stream drift')
++ base=entries(base_raw);req(len(base)==BASE_MEMBERS,'complete Agraph4369 map differs')
++ req(all(base.get(path)==row for path,row in productmap.items()),'Sfix4113 PRODUCT tuple subset differs')
++ req(base.get(SOURCE)==('100644',rawblob(source_raw)),'published shared SOURCE blob differs')
++ req(base.get(PRESERVED_REQUEST)==('100644',PRESERVED_REQUEST_BLOB),'consumed graph01 request missing/modified')
++ req(not set(expected)&set(base),'every selected row must be new to complete Agraph4369; no replacement')
++ index_raw=git(['ls-files','--stage','-z'])
++ req(len(index_raw.encode())==BASE_INDEX_STREAM_BYTES and digest(index_raw.encode())==BASE_INDEX_STREAM_SHA and entries(index_raw,True)==base,'index not exact complete Agraph4369')
++ rec['base_map']={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS,'tree_stream_bytes':BASE_TREE_STREAM_BYTES,'tree_stream_sha256':BASE_TREE_STREAM_SHA,'stage0_stream_bytes':BASE_INDEX_STREAM_BYTES,'stage0_stream_sha256':BASE_INDEX_STREAM_SHA,'product_subset_members':4113,'qualification':'Complete accepted Agraph HEAD/index preserved; original SOURCE reused as data, no recapture or reread of old255 mutable W afterimages.'}
+  req(git(['diff','--name-only','-z'])=='','preexisting unstaged work; never overwrite')
+  req(git(['ls-files','--others','--exclude-standard','-z'])=='','preexisting untracked work; never overwrite')
+  req(git(['remote','get-url','--push','--all','origin']).splitlines()==[URL],'wrong push destination')
+@@ -347,33 +374,33 @@
+  inp=''.join('100644 '+expected[p][1]+'\t'+p+'\0' for p in paths).encode()
+  git(['update-index','--add','-z','--index-info'],input_bytes=inp)
+  whole=dict(base);whole.update(expected)
+- req(len(whole)==4113+len(rows) and entries(git(['ls-files','--stage','-z']),True)==whole,'index differs beyond exact additive map')
++ req(len(whole)==BASE_MEMBERS+len(rows) and entries(git(['ls-files','--stage','-z']),True)==whole,'index differs beyond exact additive map')
+  req(git(['diff','--cached','--no-renames','--name-only','-z'])==''.join(p+'\0' for p in paths),'unexpected staged names')
+  req(git(['diff','--cached','--check','--',*manifest['whitespace_paths']])=='','authored-control whitespace failure')
+- rec['whitespace']={'status':'PASS_SIX_AUTHORED_CONTROL_PATHS_ONLY','exit':0,'paths':manifest['whitespace_paths'],'qualification':'No whole-tree, captured SOURCE or retained raw-evidence formatting claim.'}
++ rec['whitespace']={'status':'PASS_THREE_AUTHORED_GRAPH02_CONTROL_PATHS_ONLY','exit':0,'paths':manifest['whitespace_paths'],'qualification':'No whole-tree, captured SOURCE or retained raw-evidence formatting claim.'}
+  req(frozen(T,frozen_rows)==expected,'new additions changed before commit')
+- stable_inputs();request_absence();req(remote(git(remote_args))==want,'remote advanced before Pgraph commit')
++ stable_inputs();request_absence();req(remote(git(remote_args))==want,'remote advanced before Pgraph02 commit')
+  git(['-c','user.name=Codex','-c','user.email=codex@openai.com','commit','-m',CFG['commit_message']])
+  commit,tree=git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()
+- req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'Pgraph not sole Sfix direct child')
+- req(entries(git(['ls-tree','-r','-z','--full-tree','HEAD']))==whole,'Pgraph complete committed tree drift')
++ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'Pgraph02 not sole Agraph direct child')
++ req(entries(git(['ls-tree','-r','-z','--full-tree','HEAD']))==whole,'Pgraph02 complete committed tree drift')
+  delta=git(['diff-tree','--no-commit-id','--no-renames','--name-status','-r',BASE,'HEAD'])
+- req(delta==''.join('A\t'+p+'\n' for p in paths),'Pgraph delta not exact finite A-only map')
+- rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,selected_paths=len(rows),changed_paths=len(rows),modified_paths=0,removed_paths=0,preserved_PRODUCT_rows=4113,
++ req(delta==''.join('A\t'+p+'\n' for p in paths),'Pgraph02 delta not exact finite A-only map')
++ rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,selected_paths=len(rows),changed_paths=len(rows),modified_paths=0,removed_paths=0,preserved_BASE_rows=BASE_MEMBERS,preserved_PRODUCT_rows=4113,
+             committed_delta={'rows':len(rows),'bytes':len(delta.encode()),'sha256':digest(delta.encode()),'qualification':'Exact manifest-ordered A-tab-path-LF stream checked, not truncated; reconstruct from frozen manifest.'})
+  req(entries(git(['ls-files','--stage','-z']),True)==whole and git(['diff','--name-only','-z'])=='' and git(['ls-files','--others','--exclude-standard','-z'])=='','postcommit index/worktree drift')
+- stable_inputs();request_absence();req(remote(git(remote_args))==want,'remote advanced before Pgraph push')
+- rec['push_intent']='Dedicated non-force add-only controls/reports push, both activation requests absent. An uncertain push is external state; no automatic retry/reset.';durable()
++ stable_inputs();request_absence();req(remote(git(remote_args))==want,'remote advanced before Pgraph02 push')
++ rec['push_intent']='Dedicated non-force add-only graph02 controls/reports push; consumed graph01 request preserved, new graph02/realJNA requests absent. An uncertain push is external state; no automatic retry/reset.';durable()
+  git(['push','--no-signed','--no-follow-tags','--recurse-submodules=no','origin','HEAD:refs/heads/'+BRANCH],seconds=120)
+  want_after=dict(want);want_after['refs/heads/'+BRANCH]=commit
+- rec['remote_after']=remote(git(remote_args));req(rec['remote_after']==want_after,'Pgraph remote mismatch')
+- inventory('after Pgraph');resource('after Pgraph add-only transport')
++ rec['remote_after']=remote(git(remote_args));req(rec['remote_after']==want_after,'Pgraph02 remote mismatch')
++ inventory('after Pgraph02');resource('after Pgraph02 add-only transport')
+  config_after_raw,config_after_stat=read_file(gd/'config')
+  rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':fullpin(config_after_stat)}
+  req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'fresh U original config bytes/full pin changed')
+  stable_inputs();request_absence()
+- rec.update(status='PUBLISHED_EXACT_PGRAPH_ADD_ONLY_CONTROLS',clone_is_build_workspace=False,source_workspace_modified=False,
+-            absent_activation_requests=list(ABSENT_REQUESTS),slot='UNCHANGED_ROOT_PGRAPH_U_RESERVATION; ORIGINAL_T_FREEZE_RETAINED; NO_GRAPH_OR_REAL_JNA_ACTIVATION_OR_CASE_CLAIM')
++ rec.update(status='PUBLISHED_EXACT_PGRAPH02_ADD_ONLY_CONTROLS',clone_is_build_workspace=False,source_workspace_modified=False,
++            preserved_graph01_request=PRESERVED_REQUEST,absent_activation_requests=list(ABSENT_REQUESTS),slot='UNCHANGED_ROOT_PGRAPH02_U_RESERVATION; ORIGINAL_T_FREEZE_RETAINED; NO_NEW_GRAPH_OR_REAL_JNA_ACTIVATION_OR_CASE_CLAIM')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+ finally:
+@@ -391,4 +418,4 @@
+  finally:
+   if recfd is not None:os.close(recfd)
+  print(json.dumps({'status':rec['status'],'error':rec.get('error'),'commit':rec.get('commit'),'tree':rec.get('tree'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+- if rec['status']!='PUBLISHED_EXACT_PGRAPH_ADD_ONLY_CONTROLS':raise SystemExit(1)
++ if rec['status']!='PUBLISHED_EXACT_PGRAPH02_ADD_ONLY_CONTROLS':raise SystemExit(1)

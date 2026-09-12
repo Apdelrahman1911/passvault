@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T16:00:42.816419+00:00",
+  "status": "ADMITTED_ONCE_ANDROIDGRAPH02_V3_AND_IMMEDIATE_ORIGINAL_CLEANUP",
+  "finding_ids": [
+    "PVA-009",
+    "PVA-030"
+  ],
+  "why": "Narrow diagnostic for pending Android clipboard host graph/first ARG guard. Every task action forbidden; no Android32/native/framework/compilation/test credit.",
+  "source_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "source_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+  "source_members": 4113,
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-ANDROID-HOST-GRAPH-02.json",
+    "bytes": 19614,
+    "sha256": "993741c122e469e9c2132a34757d524065a4c8c88fb20764540449b0589b9247"
+  },
+  "genuine_independent_approval": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/resumed04/scheduling_accounting01/INSTANCE-ACCEPT.json",
+    "bytes": 1081,
+    "sha256": "3a397b5ad2c149e3eae3498c053c4d5429c22f864b0e38348993a3941689f7ec"
+  },
+  "genuine_independent_instance_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/android_review/resumed04/scheduling_accounting01/INSTANCE-REVIEW.json",
+    "bytes": 12011,
+    "sha256": "825e4c93151139ae008c455a67e32b41b6c6d1a5dd03f93308d83d7be29b0212"
+  },
+  "reservation": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/ANDROIDGRAPH02-V3-SCHEDULER-RESERVATION01.json",
+    "bytes": 16444,
+    "sha256": "11cbfbb3b2cba6c264a3d136a2e98585d0e611dc52a3f8866f224c7150f21369"
+  },
+  "source_images": {
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-host-graph02-outer/LAUNCH.py": "6523a67334789405cd087b4b5dd19eef10daab23dbc3d70520384bf97ec07fe5",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_host_graph_02.py": "ad67f7759c3e90daf92602b8dbb4568b63a059ebd3bebc1f2846286cbaf54a1c",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/android_host_graph_02.init.gradle": "baa8848a77638b2f4c6a49f7b8d5bd21fab9a089faeed1d24d758cdb3022e5c0",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint21/source-prepare01/SOURCE.json": "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74"
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-host-graph02-outer/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "planned_gradle_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-android-host-graph02/checkout/gradlew",
+    "--init-script",
+    "/root/projects/PassVault/passvault-linux/scripts/audit/android_host_graph_02.init.gradle",
+    ":app-android:testDebugUnitTest",
+    "--info",
+    "--dry-run",
+    "-Ppassvault.audit.mode=android-host-graph-only",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_stop_argv": [
+    "/root/projects/PassVault/audit-runtime-linux-android-host-graph02/checkout/gradlew",
+    "--stop",
+    "--no-daemon",
+    "--max-workers=1",
+    "--console=plain",
+    "--no-parallel",
+    "--no-configure-on-demand",
+    "--no-configuration-cache",
+    "--no-build-cache",
+    "--dependency-verification=strict",
+    "--stacktrace",
+    "-Pkotlin.compiler.execution.strategy=in-process",
+    "-Pandroid.builder.sdkDownload=false",
+    "-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8",
+    "-Dorg.gradle.java.installations.auto-download=false",
+    "-Dorg.gradle.java.installations.auto-detect=false",
+    "-Dorg.gradle.java.installations.paths=/usr/lib/jvm/java-17-openjdk-amd64"
+  ],
+  "original_T_readonly_execution_explicitly_admitted": {
+    "argv": [
+      "/usr/bin/git",
+      "--git-dir=/root/projects/PassVault/passvault-publication-20260910-01/.git",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "gc.auto=0",
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "protocol.allow=never",
+      "-c",
+      "commit.gpgsign=false",
+      "cat-file",
+      "--batch"
+    ],
+    "scope": "Only fixed4113OID rawconsumer and originalindex/config metadata intake. T stays frozen; no other Git, object/index/config/ref write, lazyfetch/network or U access.",
+    "environment": "Exact accepted outer1123-1126 private HOME/XDG, externalconfigs/optionallocks/prompt/askpass/ssh/replacements/lazyfetch disabled.120s/rawstream128MiB. Shared SOURCE/INDEX reused."
+  },
+  "expected_evidence": "Two exact init receipts with callback-local intended pre-action refusal and complete originalGradle exit1; rawlog/firstARG/taskfacts/terminal/stop/source/namespace/cleanup independentlyreviewed. Arbitraryfailure or outer0 insufficient.0cases.",
+  "fresh_root_checks": "All20fullpins+hashes including exactPythonalias,4parentpins,originallock/namespaces,SDK/toolaliases,14descriptors/10records,genuineapproval+request and absentR/E matched. Activepublication/Androidlanes explicitlytoolpaused; allotherscomplete. No known other auditcommand/worker/requiredstop/CIinflight.",
+  "resources": {
+    "disk_available_bytes": 15968538624,
+    "launch_floor_bytes": 12884901888,
+    "running_floor_bytes": 8589934592,
+    "runtime_sample_cap_bytes": 3221225472,
+    "ram_available_bytes": 63277060096,
+    "ram_total_bytes": 67435888640,
+    "launch_ram_fraction": 0.25,
+    "running_ram_fraction": 0.2,
+    "workers": 1,
+    "fallback_3GiB_elected": false
+  },
+  "limits": "Outer6000/work5250/graph900/originalstop600 seconds; original supervised settlement unchanged. JDK17/checkedwrapper/non-daemon/worker1/noCoD/strictverification. ExistingSDK readonly; no image/install/license/emulator.",
+  "coordination": "Root sole local/CI/Git/build/cleanup owner with originallock and oneslot through originalcloseout plus actualreview. All20complete/toolpaused. Cooperative custody/sharedhost assumption not globalidle or unknownownership. No concurrent publication or activation.",
+  "historical_accounting": "Accepted22intent/24stop0 finite accounting reused; schedulingonly cycle01/02 owned_settled=false and allUNKNOWN/HOLDs remain. No originalhelper/stop/PID/recovery replay. Additional inertreads completed. Wrong matrix path and overstrictPythonalias prechecks failed before any write/allocation/admission; no projectcommand invoked.",
+  "cleanup_installed_before_child": "Accepted outer signal/originaldescriptor/ownedchild finalizers plus inner originalstop installed before projectcommand. Preserve compactevidence outsideR. Immediate once-only originalwrapperstop whenarmed, namespace/worker settlement and descriptorvalidated freshR removal; uncertaintyHOLD, noautomaticretry/unrelatedsignal/sharedcachedeletion.",
+  "fences": "PVU007STOP;PVU011NORETRY/noinquiry;PVA02949/44PASS/5FAILnoautoretry;G7G8CLOSED;originalnative&allHOLDs;EOL;8PVD&hardware. Protectedrefs/tags/dependencies/versions/identities/signing/Store/build1017001 unchanged. Syntheticdataonly."
+}

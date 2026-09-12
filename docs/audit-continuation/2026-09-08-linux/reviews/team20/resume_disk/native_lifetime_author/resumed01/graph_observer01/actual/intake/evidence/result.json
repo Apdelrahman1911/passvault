@@ -1,0 +1,158 @@
+{
+  "cleanup": "SETTLED_ALLOWLISTED_GENERATED_ROOT_REMOVED",
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}",
+        "HEAD^",
+        "HEAD^^{tree}"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "01-git-identity.log",
+      "parent_output_snapshot_sha256": "fc145060a1fe1a813dc1b6c78c50edb09a266f238af537602b55896826d54fe6",
+      "pid": 3988,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4688
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "rev-list",
+        "--parents",
+        "-n",
+        "1",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "02-one-parent.log",
+      "parent_output_snapshot_sha256": "ee7b71db457e15c0ca9699cdf2e2f4ca3c65be9606e9adc76a037c215629fcc8",
+      "pid": 2340,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 3752
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "diff",
+        "--name-status",
+        "HEAD^",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 1,
+      "log": "03-request-only-diff.log",
+      "parent_output_snapshot_sha256": "36f5839f51b955b6bbda253da5399df55545765e41c68ac46161452cba5c14fb",
+      "pid": 3972,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 4348
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\bin\\git.exe",
+        "-c",
+        "core.hooksPath=NUL",
+        "-c",
+        "core.fsmonitor=false",
+        "-c",
+        "gc.auto=0",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "job_active_after_parent": 0,
+      "log": "04-clean-source.log",
+      "parent_output_snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pid": 2304,
+      "readonly_job_zero_observed": true,
+      "snapshot_qualification": "Not a settled-log hash; owned descendants may still write",
+      "state": "PARENT_EXIT_OBSERVED",
+      "tid": 6212
+    }
+  ],
+  "control_source_commit": "96fc40697ba036cfe222bf558f8e97639ba2525e",
+  "control_source_tree": "1a1b58a18d30ee48b5c32b875c1895c13dc82046",
+  "entry_refusals": [],
+  "failures": [
+    "RuntimeError: Wrapper/JDK/runtime path contains whitespace, shell grammar or unsupported path form"
+  ],
+  "gradle_stop": {
+    "attempted": false,
+    "fulfilled": false,
+    "state": "NOT_ARMED"
+  },
+  "graph_snapshot": null,
+  "job_settlement": {
+    "errors": [],
+    "observed_zero": true,
+    "termination_attempted": false
+  },
+  "operational_status": "FAILED_OR_INCOMPLETE",
+  "original_handle_close_failures": [],
+  "profile_entry_cleanup": [],
+  "project_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "project_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+  "qualification": "Configuration/dry-run only; no Test/native/packaging execution or family closure",
+  "request_commit": "55e42c25443b27b33bc518d339be46f2a787bcb4",
+  "request_tree": "b689bba0300e233c642bdb90fc3cbb0570ef56f5",
+  "source_copy": {
+    "derived_crlf_paths": [
+      "gradlew.bat",
+      "scripts/apply-signpath-windows-result.ps1",
+      "scripts/build-signed-android.ps1",
+      "scripts/create-windows-signing-catalog.ps1",
+      "scripts/package-signed-windows-installers.ps1",
+      "scripts/prepare-signpath-windows-request.ps1",
+      "scripts/prepare-windows-runtime-signing.ps1",
+      "scripts/restore-promoted-windows-app-image.ps1",
+      "scripts/select-android-build-tool.ps1",
+      "scripts/sign-windows-artifacts.ps1",
+      "scripts/smoke-test-desktop-release.ps1",
+      "scripts/test-windows-checksum-boundary.ps1",
+      "scripts/update-desktop-biometric-checksum.ps1",
+      "scripts/verify-android-signatures.ps1",
+      "scripts/verify-windows-release-artifacts.ps1"
+    ],
+    "files": 4113,
+    "manifest_sha256": "887d3b93b82ec9cc3b2b3ef33ed67f3ab0f96d2e4aab33e73d0a3ed5e4287d74",
+    "ordered_path_raw_sha256_digest": "fd7b27b989f8c22da7254165d49ec76e5493c1fb20025e151731d372461a5287",
+    "project_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+    "project_tree": "7a05dffb2fec8f0dd3b15572558e58f0c0a22f8d",
+    "qualification": "Raw byte identities only; Linux inode/EOL/runtime authority not inherited",
+    "raw_bytes": 125708841,
+    "state": "COMPLETE"
+  },
+  "suite": "windows-jna-graph-01",
+  "tests": 0,
+  "windows_long_paths_enabled": true
+}
