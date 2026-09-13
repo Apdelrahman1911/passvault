@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-13T07:33:27.794660+00:00",
+  "status": "UNAPPLIED_PROPOSAL_INDEPENDENT_REVIEW_REQUIRED",
+  "subject": "Six actual Static07 diagnostics in four permanent test files; no production defect or runtime behavior change claimed",
+  "diagnostics_evidence": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/logs/detekt.log",
+    "sha256": "e415569ac7063d59b7ecd39be0f2dca505f237fdc104914981aeda3e3eaf4236"
+  },
+  "patch": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/static07_fix02/FIXES.patch",
+    "bytes": 4514,
+    "sha256": "b86815265131531dee0d63ffa160c2be3f105614021a6062257618441fc28ed0"
+  },
+  "files": [
+    {
+      "source": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "before": {
+        "bytes": 88480,
+        "sha256": "992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f"
+      },
+      "after": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/static07_fix02/CredentialMainNavHostRoomIntegrationTest.kt.txt",
+        "bytes": 88602,
+        "sha256": "5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3"
+      }
+    },
+    {
+      "source": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt",
+      "before": {
+        "bytes": 18594,
+        "sha256": "4a604009911522d2ea952b37c44a3ec19724e146b2eb781016137065bbbdedf6"
+      },
+      "after": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/static07_fix02/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt.txt",
+        "bytes": 18846,
+        "sha256": "ef20ae3ab97b3d4603d77ad11d9f16ef4a03c735a1c6f071fccfd72070beba9f"
+      }
+    },
+    {
+      "source": "core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+      "before": {
+        "bytes": 22968,
+        "sha256": "7f444c01177999b2fd2271e2d7ed1f005c54670fc9e2364795d37e2b2bedd2cc"
+      },
+      "after": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/static07_fix02/CredentialFolderForeignKeyMigrationTest.kt.txt",
+        "bytes": 23038,
+        "sha256": "02f5fd29569f1ed849f19f452dd00475b5b0afd7730206d2bb4472fcef781bf6"
+      }
+    },
+    {
+      "source": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+      "before": {
+        "bytes": 39219,
+        "sha256": "a136ec3fe0ca70b469f8b6ecf2555da65f1a480d2d39a43d21255175f96b944d"
+      },
+      "after": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/static07_fix02/VaultBackupUnicodePaginationTest.kt.txt",
+        "bytes": 39278,
+        "sha256": "6e5422a065440d94514ade48cfe11a89453c46f0ceceecceb74a91133bc01294"
+      }
+    }
+  ],
+  "reasoning": [
+    "Two MaxLineLength sites: formatting only, preserving the exact listener removal then ownership flag and rectangle predicate.",
+    "JNA scenario LongMethod: localized documented test exception keeps admission, native-handle lifetime, managed gates and finally cleanup in one ownership scope. No assertions, gates or cleanup removed; no production rule changed.",
+    "JNA proxy TooGenericExceptionCaught: localized property-level annotation documents deliberate retention of the first callback failure and rethrow of every Throwable, including AssertionError. Replacing Throwable by Exception would silently weaken this boundary.",
+    "Two ThrowingExceptionFromFinally sites: existing code deliberately preserves and rethrows original assertion/cancellation, adds distinct cleanup failure as suppressed, and throws cleanup alone only if the test body succeeded. Local helper-level annotations document this conditional contract instead of hiding it behind a new helper or silently discarding cleanup failure."
+  ],
+  "validation": "Independent source challenge of annotation scope/control flow and exact formatting. Reuse DB1/DB2 and other successful behavior evidence on unchanged behavior; no expensive behavior rerun just for annotations. After accepted integration/publication, only affected Desktop/database/root static analyzers plus unchanged inventory guard remain; reuse accepted other analyses. These annotations are not new test passes.",
+  "custody": "No W canonical source changed, no U/index/config/Git/network/runtime access. Four prospective W test-path write/custody release remains separate and must preserve immutable current P/SOURCE/INDEX for unconsumed users.",
+  "restrictions": "PVA029 noautomaticretry49/44/5FAIL;PVU007STOP;PVU011NO_RETRY;G7G8CLOSED;native refusal and oldHOLDs;protectedrefs/tags/build1017001/versions/dependencies/identities/signing/Store unchanged.",
+  "revised_from": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/static07_fix01/PROPOSAL.json",
+    "bytes": 5134,
+    "sha256": "0d49110bc7b0859d12b9b28f8ac0b363602b2303b9e87362c5475aa9108ff971"
+  },
+  "revision": "Only proxy comment precision, independently requested by platform_review; retains first failure, rethrows every failure. No canonical source changes."
+}

@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T06:29:54.166200+00:00",
+  "status": "FOCUSED02_CLOSEOUT01_ORIGINAL_EXIT0_PENDING_INDEPENDENT_ACTUAL_REVIEW",
+  "initial_tool_chunk": "2e1701",
+  "original_session_id": 93469,
+  "terminal_chunk": "553794",
+  "terminal_exit_code": 0,
+  "remaining_tool_session": null,
+  "evidence": [
+    {
+      "path": "runs/linux-focused-regression02/closeout01/GENERATED-REPORTS.json",
+      "bytes": 1086,
+      "sha256": "f3220fafb28049395e5a5b2f57e57d40b1a06f24aaac35b4c87269d19760e468"
+    },
+    {
+      "path": "runs/linux-focused-regression02/closeout01/ORIGINAL-ANCHORS.json",
+      "bytes": 5650,
+      "sha256": "f23f4701e9c2de4e5ae35c03de53a77b11c84030d0c4d4fdaff88700b4b2d373"
+    },
+    {
+      "path": "runs/linux-focused-regression02/closeout01/RECEIPT.json",
+      "bytes": 3268,
+      "sha256": "185b715b2056e1e4d95572aefc24df6c3f13404d30538c8a8864830b53d70b79"
+    },
+    {
+      "path": "runs/linux-focused-regression02/closeout01/RUNTIME-SNAPSHOT.json",
+      "bytes": 1935890,
+      "sha256": "483681e7ca02d37a8319e63252ff43c1de7c2fc5e9edc16c4b3886c3cdb4ac2a"
+    },
+    {
+      "path": "runs/linux-focused-regression02/closeout01/SOURCE-DISPOSAL-PROOF.json",
+      "bytes": 2651,
+      "sha256": "ea3a560ed1699d8274fb4dab8b6ac76ac4a6a3857c90233cdbcf5032ad82b7b1"
+    }
+  ],
+  "actual_cleanup": {
+    "original_name_absent": true,
+    "original_runtime_removed": true,
+    "removed_allocated_bytes": 439525376,
+    "removed_directories": 1206,
+    "removed_files": 4912,
+    "removed_logical_bytes": 423115341,
+    "status": "REMOVED_ORIGINAL_RUNTIME_AND_EVIDENCE_REVERIFIED"
+  },
+  "fresh_disposal_source_proof": true,
+  "originals_reverified_after": true,
+  "original_source_after": false,
+  "original_stop0": "PRESERVED_NOT_REPEATED",
+  "current_original_runtime_name_absent": true,
+  "resource_after": {
+    "disk_available_bytes": 8672862208,
+    "MemTotal": 67435888640,
+    "MemAvailable": 59530293248
+  },
+  "qualification": "Counters are original successful unlink/rmdir metadata sums, not measured net disk reclaim. Only admitted focused02 runtime disposed; old held runtimes/source/permanent reports/toolchains/shared caches untouched. Source proof is disposal-only, not repaired original source-after or test credit. No closer subprocess/build/test/Gradle stop; original tool settled.",
+  "metadata_capture_variance": {
+    "tool_chunk": "f6a1ed",
+    "exit": 1,
+    "scope": "Administrative read-only evidence hasher asserted full stat tuple equality, including access time; exact failed field not retained. No output record or cleanup invocation occurred. This capture checks explicit mode/uid/nlink/dev/inode/size/mtime/ctime pins, excluding access time. Original cleanup not rerun."
+  },
+  "next": "Independent actual reconciliation then release sole reserved cleanup slot; no automatic follow-on build or retry."
+}

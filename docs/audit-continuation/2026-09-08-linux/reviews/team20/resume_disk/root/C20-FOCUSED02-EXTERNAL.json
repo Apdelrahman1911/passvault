@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T06:01:04.125029+00:00",
+  "disposition": "CONSUMED_FOCUSED02_HOLD_EXTERNAL_BUILDLIKE_CONFLICT_PENDING_INDEPENDENT_RECONCILIATION",
+  "tool_start_chunk": "278f24",
+  "original_session_id": 59908,
+  "terminal_chunk": "9fa925",
+  "terminal_exit_code": 70,
+  "remaining_tool_session": null,
+  "evidence": [
+    {
+      "path": "runs/linux-focused-regression02/OUTER-RECEIPT.json",
+      "bytes": 9551,
+      "sha256": "dcf0827a7e93434239bc236623e4166a7163e014bf081f36e7196c0ae1040bb5"
+    },
+    {
+      "path": "runs/linux-focused-regression02/INNER-RESULT.json",
+      "bytes": 4732,
+      "sha256": "27e0abc1fb03e878c549ddfc4864f1fc4934299e79a4fb65a65974791cef1b69"
+    },
+    {
+      "path": "runs/linux-focused-regression02/PHASE-focused.json",
+      "bytes": 2732,
+      "sha256": "36f3a03355a67c598e240497d0aa7c514bb3b4b7b0119253b711d1c6b709a9bc"
+    },
+    {
+      "path": "runs/linux-focused-regression02/TASK-RESULTS.json",
+      "bytes": 488,
+      "sha256": "91617adcd73c017cc3678f289eebd0ab72233886a9c5618dc5252c17cd4681ca"
+    },
+    {
+      "path": "runs/linux-focused-regression02/OUTER-ALLOCATION.json",
+      "bytes": 3863,
+      "sha256": "8405a84faeb59df612771a630ff4153a7464c3519aae81404336064ff2c19ade"
+    },
+    {
+      "path": "runs/linux-focused-regression02/SOURCE-BEFORE.json",
+      "bytes": 1334,
+      "sha256": "58067a94fa91c79a96bf28afa0c9bd464854c02efd5355d2be64ea0b7081b3ec"
+    },
+    {
+      "path": "runs/linux-focused-regression02/logs/focused.log",
+      "bytes": 1298,
+      "sha256": "b6a860e1c395268ef38bbb1c430513f180fa634b14284f43cc8b815aafe84b9e"
+    },
+    {
+      "path": "runs/linux-focused-regression02/logs/focused-stop.log",
+      "bytes": 454,
+      "sha256": "8920322a902e78fb901c52dba422fada0df56e8e6a826b1b8c69ced2f8a83031"
+    },
+    {
+      "path": "runs/linux-focused-regression02/CANCEL",
+      "bytes": 124,
+      "sha256": "b5f34f38373370131db2466b9654a7b478bb6bb491e5ba4ace4ac3dc075be6ad"
+    }
+  ],
+  "actual": "Original outer27.588s; distinct host-parent-namespace Java birth30530/30353/6221149 failed owned-domain proof and triggered cancellation. Original Gradle started then143; original samewrapper--stop0; inner records settledtrue/namespaceempty; no task state/XML/testcase. sourceafterfalse/cancelled and cleanup_safefalse; outercleanupNOT_ATTEMPTED/RHOLD. Not testfailure or compilecompletion, no automaticretry/additionalstop/deletion.",
+  "limited_followup_process_points": [
+    {
+      "pid": 30530,
+      "state": "ABSENT_AT_THIS_POINT_NOT_IDENTITY_OR_OWNERSHIP_PROOF"
+    },
+    {
+      "pid": 30353,
+      "state": "ABSENT_AT_THIS_POINT_NOT_IDENTITY_OR_OWNERSHIP_PROOF"
+    }
+  ],
+  "privacy": "Only named conflicting PID+parent stat/comm/ns and binary under-project/exe-basename metadata; no cmdline/env/privatefile/content. No unrelated signal, process adoption or project-path publication.",
+  "counts": {
+    "tests_observed": 0,
+    "xml": 0,
+    "compile_completed": false,
+    "closure_delta": 0,
+    "removed_files": 0,
+    "removed_bytes": 0
+  },
+  "next": "Independently reconcile actual; fresh exact current-run cleanup needed, not archived scope reuse. Preserve original failure, sourceafter uncertainty and all earlierHOLD/STOP/NO-RETRY/CLOSED. No next build admitted."
+}

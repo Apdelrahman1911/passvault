@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "author": "/root/current_report_review",
+  "status": "TWO_EXACT_CONTENT_REPLACEMENTS_FOR_FUTURE_NEW_SUCCESSOR_ONLY",
+  "donor": {
+    "path": "/root/projects/PassVault/passvault-linux/scripts/audit/ios_focused_validation.py",
+    "bytes": 68219,
+    "sha256": "61f7e3627758c95eed5d03aa2dd8e165e3b6fab6f3e7be7a6d3da244d1e88fc9",
+    "pin": {
+      "dev": 24,
+      "ino": 13776158,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "bytes": 68219,
+      "mtime_ns": 1789013793577602481,
+      "ctime_ns": 1789013793577602481
+    }
+  },
+  "operations": [
+    {
+      "old": "LOG_CAP, XML_CAP, EVIDENCE_CAP, RAW_CAP = 2 * MIB, 512 * 1024, 16 * MIB, 128 * MIB",
+      "new": "LOG_CAP, XML_CAP, EVIDENCE_CAP, RAW_CAP = 2 * MIB, 512 * 1024, 16 * MIB, 160 * MIB",
+      "count": 1,
+      "reason": "Existing accepted complete checkpoint22 payload already exceeds128MiB stream cap;160MiB fits that measured exact stream. Final new-source fit and independent Apple cap review remain mandatory. Not a RAM/disk-floor relaxation."
+    },
+    {
+      "old": "        \"9e18f0bd193ba3308982ec05b45ab6d025e40f9b8b35baf880aa9ff66d640400\",",
+      "new": "        \"0e1abfdb321a13f3a88095c2a2446b3886e1e23f1e88152c03beb2798e9d8bbe\",",
+      "count": 1,
+      "reason": "Already independently reviewed/applied same-method PVA014 default-publication assertion extension; actual current W fixture1932B. Not a new method or product fix, nor a host workaround."
+    }
+  ],
+  "diff": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/ios02_next01/SUPPORTED_CONTENT_DELTA.diff.txt",
+    "bytes": 1231,
+    "sha256": "74b0866d1da4ebce03b4cb3f8ed0790adf099f79c1dcc87d0063727ddd6cbb92",
+    "pin": {
+      "dev": 24,
+      "ino": 15255221,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "bytes": 1231,
+      "mtime_ns": 1789287340852752987,
+      "ctime_ns": 1789287340852752987
+    }
+  },
+  "forward_inverse_whole_buffer_equality": true,
+  "not_created": [
+    "full new helper afterimage",
+    "workflow",
+    "request",
+    "host label",
+    "nonce",
+    "runtime",
+    "activation"
+  ],
+  "not_authorized": "Do not apply to consumed IOS01 helper. Host prerequisite and new identity bindings remain unresolved. This is not independent approval or execution admission."
+}

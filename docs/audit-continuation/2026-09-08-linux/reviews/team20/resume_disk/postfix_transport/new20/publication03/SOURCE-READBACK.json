@@ -1,0 +1,49 @@
+{
+  "author": "/root/postfix_transport",
+  "changes": {
+    "from": "read_file(LIVE_SLOT,cap=32768)",
+    "occurrences": 2,
+    "reason": "Root elected narrow correction after independent reviewer reported fresh live scheduler40067B; old32KiB cap would reject. Reported size is not copied as fresh author admission; root still binds actual reserved-slot hash/size.",
+    "source_lines": [
+      228,
+      327
+    ],
+    "to": "read_file(LIVE_SLOT,cap=65536)"
+  },
+  "delta": {
+    "bytes": 1992,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new20/publication03/LIVE-SLOT-64K-DELTA.patch.txt",
+    "sha256": "9cf423d3e2ac0343621671f30fc741dc7222b842acce2a632f909a3904a707a3"
+  },
+  "donor": {
+    "bytes": 47907,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new19/publication03/CHECKPOINT23-PUBLISH-V01.py.txt",
+    "sha256": "f263d384a89fb9db6718a7ba9a2a9e974fe8d2decdcd1618e8c5b004c5eceb7a"
+  },
+  "method": "Bounded source bytes/hash/literal/diff/JSON only. No subject import/eval/AST/compile/execution, Git/network or runtime/SDK/private-config/process probes, V allocation or cleanup.",
+  "proof": {
+    "added_lines": 2,
+    "all_other_bytes_identical": true,
+    "generic_CONFIG_limit_still32768_two_reads": true,
+    "hunks": 2,
+    "literal_forward_and_inverse_exact": true,
+    "removed_lines": 2,
+    "runtime_PUB_still_new19_uninvoked_namespace": true,
+    "same_total_source_bytes": true,
+    "unified_forward_and_inverse_exact": true
+  },
+  "result_credit": {
+    "closures": 0,
+    "execution": 0,
+    "publication": 0,
+    "tests": 0
+  },
+  "schema": "checkpoint23-new20-two-literal-source-readback-v1",
+  "source": {
+    "bytes": 47907,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new20/publication03/CHECKPOINT23-PUBLISH-V01.py.txt",
+    "sha256": "d22ca2b17188cdb3bb6bf5147a5e5be71803774b1bd88ba42d1121c6acda108c"
+  },
+  "source_scope": "No changes to manifest schema/role/path/source/output/Git/child/temp/cleanup/deadlines/resources/trigger/ref guards or status. New19 source and Candidate02 retained unchanged. No scheduler mutation/compaction or historical authority rewrite.",
+  "status": "EXACT_TWO_LIVE_SLOT_CAP_SUBSTITUTIONS_ONLY_NOT_ADMISSION"
+}

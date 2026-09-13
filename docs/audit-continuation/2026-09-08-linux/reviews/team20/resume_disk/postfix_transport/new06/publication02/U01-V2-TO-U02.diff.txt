@@ -1,0 +1,112 @@
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new02/publication01/review_delta01/POSTFIX-PUBLISH-U01-v2.py.txt
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new06/publication02/POSTFIX-PUBLISH-U02.py.txt
+@@ -8,10 +8,10 @@
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+-PUB=B/'reviews/team20/resume_disk/postfix_transport/new02/publication01'
+-CONFIG=PUB/'POSTFIX-PUBLISH-U01-CONFIG.json'
+-MANIFEST=PUB/'POSTFIX-PUBLISH-U01-MANIFEST.json'
+-OUT=PUB/'POSTFIX-PUBLISH-U01-ACTUAL.json'
++PUB=B/'reviews/team20/resume_disk/postfix_transport/new06/publication02'
++CONFIG=PUB/'POSTFIX-PUBLISH-U02-CONFIG.json'
++MANIFEST=PUB/'POSTFIX-PUBLISH-U02-MANIFEST.json'
++OUT=PUB/'POSTFIX-PUBLISH-U02-ACTUAL.json'
+ P=S.parent;T=P/'passvault-publication-20260912-02'  # T variable means existing U only
+ URL='https://github.com/Apdelrahman1911/passvault.git'
+ BRANCH='codex/audit-continuation-linux-20260908'
+@@ -125,10 +125,10 @@
+   decoded=bytes(out).decode('utf-8','strict')
+   r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr_sha256=digest(err),stderr_bytes=len(err))
+   if len(err)<=4096:r['stderr']=bytes(err).decode('utf-8','strict')
+-  else:r['stderr_file']=write_once('POSTFIX-PUBLISH-U01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
++  else:r['stderr_file']=write_once('POSTFIX-PUBLISH-U02-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
+   if len(out)<=2048:r['stdout']=decoded
+   if args[:3]==['diff','--cached','--check']:
+-   p=PUB/'POSTFIX-PUBLISH-U01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++   p=PUB/'POSTFIX-PUBLISH-U02-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+     view=memoryview(out)
+     while view:view=view[os.write(fd,view):]
+@@ -175,7 +175,7 @@
+ def fullpin(a):
+  return {('bytes' if k=='size' else k):getattr(a,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')}
+ def write_once(name,raw):
+- req('/' not in name and name.startswith('POSTFIX-PUBLISH-U01-'),'fixed output name')
++ req('/' not in name and name.startswith('POSTFIX-PUBLISH-U02-'),'fixed output name')
+  p=safe_parent(PUB,name);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+  try:
+   at=0
+@@ -251,7 +251,7 @@
+  for row in reports:
+   p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()
+   req(p.startswith(PREFIX),'additional rows are finite B report evidence only')
+-  req(pathlib.PurePosixPath(p).suffix.lower() in ('.md','.json','.jsonl','.txt','.log') and not re.search(r'.(py|kt|kts|ps1|sh|gradle|toml)(.|$)',name),'no new control/source afterimage among reports')
++  req(pathlib.PurePosixPath(p).suffix.lower() in ('.md','.json','.jsonl','.txt','.log') and not re.search(r'\.(py|kt|kts|ps1|sh|gradle|toml)(\.|$)',name),'no new control/source afterimage among reports')
+  req(len(destinations)==len(set(destinations)),'duplicate selected path')
+  remove_paths={r['path'] for r in REMOVALS}
+  req(len(remove_paths)==2 and not remove_paths.intersection(destinations),'exact two removals must be disjoint from afterimages')
+@@ -279,7 +279,7 @@
+  req(all(re.fullmatch(r'[0-9a-f]{40}',v) for v in CFG['remotes'].values()),'remote object format')
+  req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Publish reviewed post-Sfix fixtures and inert evidence paths','fixed receipt/message')
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['manifest_sha256']) is not None,'finite manifest UNBOUND')
+- admission=CFG['root_admission'];req(admission['status']=='ADMITTED_POSTFIX_U01_ONCE_ONLY_FINITE_SOURCE','root admission UNBOUND')
++ admission=CFG['root_admission'];req(admission['status']=='ADMITTED_POSTFIX_U02_ONCE_ONLY_FINITE_SOURCE','root admission UNBOUND')
+  for key in ('current_Agraph02_U_namespace_config_full_tree_index_independently_accepted',
+              'WindowsGraph02_failure_and_cleanup_independently_reviewed_and_adopted',
+              'unentered_original_Sfix_realJNA_GUI4_Dependency3_explicitly_disposed_without_replay',
+@@ -320,7 +320,7 @@
+  rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. Source/publication review is not application or hardware credit.'
+  slotraw,_=read_file(LIVE_SLOT,cap=32768)
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot UNBOUND/drifted')
+- req(CFG['slot_state'].startswith('RESERVED_POSTFIX_U01') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root post-Sfix reservation required')
++ req(CFG['slot_state'].startswith('RESERVED_POSTFIX_U02') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root post-Sfix reservation required')
+  lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+  parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+@@ -362,7 +362,7 @@
+    before,st=read_file(safe_parent(T,path),cap=b['bytes'])
+    req(len(before)==b['bytes'] and digest(before)==b['sha256'] and rawblob(before)==b['git_blob'] and not st.st_mode&0o111,'M before raw/mode differs:'+path)
+    originals[path]=(before,fullpin(st))
+-   tmp=str(pathlib.PurePosixPath(path).parent/('.postfix-publish-u01-'+str(i).zfill(3)+'.tmp'))
++   tmp=str(pathlib.PurePosixPath(path).parent/('.postfix-publish-u02-'+str(i).zfill(3)+'.tmp'))
+    temp_paths[path]=safe_parent(T,tmp);req(not os.path.lexists(temp_paths[path]),'fixed disposable sibling exists; no reuse')
+    mod_indices.append(i)
+  for r in REMOVALS:
+@@ -477,8 +477,8 @@
+  rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':fullpin(config_after_stat)}
+  req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'U original config bytes/full pin changed')
+  stable_inputs();req(all(not os.path.lexists(p) for p in temp_paths.values()),'disposable sibling unexpectedly remains')
+- rec.update(status='PUBLISHED_EXACT_POSTFIX_U01_FINITE_SOURCE',clone_is_build_workspace=False,source_workspace_modified=False,
+-            slot='UNCHANGED_ROOT_POSTFIX_U01_RESERVATION; ROOT RETAINS U FOR ACTUAL REVIEW THEN ONE FRESH FULL METADATA/SOURCE/INDEX; NO_EXECUTION_OR_READINESS_CREDIT')
++ rec.update(status='PUBLISHED_EXACT_POSTFIX_U02_FINITE_SOURCE',clone_is_build_workspace=False,source_workspace_modified=False,
++            slot='UNCHANGED_ROOT_POSTFIX_U02_RESERVATION; ROOT RETAINS U FOR ACTUAL REVIEW THEN ONE FRESH FULL METADATA/SOURCE/INDEX; NO_EXECUTION_OR_READINESS_CREDIT')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+ finally:
+@@ -514,4 +514,4 @@
+  finally:
+   if recfd is not None:os.close(recfd)
+  print(json.dumps({'status':rec['status'],'error':rec.get('error'),'commit':rec.get('commit'),'tree':rec.get('tree'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+- if rec['status']!='PUBLISHED_EXACT_POSTFIX_U01_FINITE_SOURCE':raise SystemExit(1)
++ if rec['status']!='PUBLISHED_EXACT_POSTFIX_U02_FINITE_SOURCE':raise SystemExit(1)
+--- docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new02/publication01/POSTFIX-PUBLISH-U01-CONFIG.template.json
++++ docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new06/publication02/POSTFIX-PUBLISH-U02-CONFIG.template.json
+@@ -6,7 +6,7 @@
+     16877
+   ],
+   "slot_sha256": null,
+-  "slot_state": "RESERVED_POSTFIX_U01_UNBOUND",
++  "slot_state": "RESERVED_POSTFIX_U02_UNBOUND",
+   "remotes": {
+     "refs/heads/codex/audit-continuation-linux-20260908": "b271e67adb637986d2049919227619255a75fa7c",
+     "refs/heads/codex/remediation-handoff-20260908": "9bdf9559b7a801a6f2fa49be3d7836ea6ef4d0ed",
+@@ -15,7 +15,7 @@
+     "refs/heads/testing": "2ae65df7111a9c5493740e8b772932be77eb98bc",
+     "refs/tags/v1.0.7-rc.1017001": "61f55216302023d9872aba17546126450e5fbad3"
+   },
+-  "receipt_path": "reviews/team20/resume_disk/postfix_transport/new02/publication01/POSTFIX-PUBLISH-U01-ACTUAL.json",
++  "receipt_path": "reviews/team20/resume_disk/postfix_transport/new06/publication02/POSTFIX-PUBLISH-U02-ACTUAL.json",
+   "commit_message": "Publish reviewed post-Sfix fixtures and inert evidence paths",
+   "manifest_sha256": null,
+   "root_admission": {

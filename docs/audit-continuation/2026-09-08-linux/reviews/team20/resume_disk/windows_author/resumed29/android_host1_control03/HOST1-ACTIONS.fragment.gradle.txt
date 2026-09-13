@@ -1,0 +1,416 @@
+// New Host1 action core; inert proposed source, not an execution/admission helper.
+// Integration requires the separate reviewed root outer/inner lifecycle delta.
+// Graph04 stays consumed: this reads its accepted JSON as data, never its helper.
+final String EXPECTED_GRAPH_PATH = '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-host-graph04/reports/graph-init-01.json'
+final String EXPECTED_GRAPH_SHA = '16908a3e0a4120fa6ccc4c8dead1a35d8d39270d05f0f34e1212ea8109f9e459'
+final String MAIN_COMPILER = ':app-android:compileDebugKotlin'
+final String TEST_COMPILER = ':app-android:compileDebugUnitTestKotlin'
+final String ROOM = ':core:database:copyRoomSchemas'
+final String PACKAGE = ':app-android:packageDebugUnitTestForUnitTest'
+final String CONFIG = ':app-android:generateDebugUnitTestConfig'
+final String CLASS_NAME = 'com.passvault.android.security.AndroidClipboardServiceTest'
+final String METHOD_NAME = 'newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry'
+final String CLASS_PACKAGE = 'com/passvault/android/security/'
+final String CONFIG_RESOURCE = 'com/android/tools/test_config.properties'
+final Map SOURCE_INPUTS = [
+    (MAIN_COMPILER): [relative: 'app-android/src/main/kotlin/com/passvault/android/security/AndroidClipboardService.kt', sha256: 'db1b9e5387e7059719e0f49b4a8c9340f8abcf210d16a808a5408c17443e00cf', prefixes: ['AndroidClipboardService', 'AndroidClipboardAccess', 'AndroidClipboardContents', 'SystemAndroidClipboardAccess'], base: 'AndroidClipboardService'],
+    (TEST_COMPILER): [relative: 'app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt', sha256: SUBJECT_SHA, prefixes: ['AndroidClipboardServiceTest', 'FakeClipboard'], base: 'AndroidClipboardServiceTest'],
+]
+final Map SCHEMAS = [
+    'com.passvault.core.database.VaultDatabase/1.json': '76985152ec6593ee7eb13343bf30e86b1fd7beacbb27e89c4a2cfcb286eeb586',
+    'com.passvault.core.database.VaultDatabase/2.json': '3c09e59f2ab2b59a2535c82a404b9af27b9e3934f88e4161c1a9478cdef38d94',
+    'com.passvault.core.database.VaultDatabase/3.json': '080ac957b9dcdb58bc4950cb3e1f6a8279a0432e2a3ea580ba3aa0c84add9136',
+    'com.passvault.core.database.VaultDatabase/4.json': '9dc4f187784ca4a409b258debab1fbf9ad8a700778e060c44b98d9d4d8d14224',
+    'com.passvault.core.database.VaultDatabase/5.json': '431ed8a2dbfcde5c132f45a2e4443894d45aa0010bf9b6616780f62be3cd354b',
+]
+def schemaRoot = checkout.resolve('core/database/schemas')
+def workerRoot = runtime.resolve('workers/clipboard')
+final List WORKER_CHILDREN = ['home', 'tmp', 'jna', 'sqlite', 'android-user', 'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state']
+def outputs = [:], expectedByPath = [:], produced = [:], compilerStarted = []
+def entered = [], completedTasks = [], outputRows = [], archiveEvidence = null, configEvidence = null
+long hashedBytes = 0L
+
+// Cooperative original-root/path guards, not a sandbox against arbitrary plugin
+// code or hostile concurrent root writers. The outer binds the original R inode.
+def checked = { File file, boolean outputPath ->
+    def p = file.toPath().toAbsolutePath().normalize()
+    if (!(outputPath ? p.startsWith(checkout) : readRoots.any { p.startsWith(new File(it).toPath()) })) reject('path escaped fixed private read/write envelope')
+    for (def q = p; q != null; q = q.parent) {
+        if (Files.isSymbolicLink(q)) reject('symlink in a selected input/output path')
+        if (Files.exists(q, LinkOption.NOFOLLOW_LINKS)) {
+            def a = Files.readAttributes(q, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+            if (!a.isDirectory() && !a.isRegularFile()) reject('nonregular selected path/ancestor')
+            if (outputPath || q.startsWith(runtime)) {
+                if (Files.getAttribute(q, 'unix:uid', LinkOption.NOFOLLOW_LINKS) != 0) reject('nonowned private path')
+                if (a.isRegularFile() && Files.getAttribute(q, 'unix:nlink', LinkOption.NOFOLLOW_LINKS) != 1) reject('hardlinked private file')
+            }
+        }
+    }
+    p
+}
+def hashed = { p ->
+    def a = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+    if (!a.isRegularFile() || a.size() > 256L * 1024 * 1024 || (hashedBytes += a.size()) > 512L * 1024 * 1024) reject('finite regular-file/hash budget exceeded')
+    def md = MessageDigest.getInstance('SHA-256')
+    byte[] buf = new byte[65536], header = new byte[8]
+    long seen = 0L; int copied = 0
+    Files.newInputStream(p, LinkOption.NOFOLLOW_LINKS).withCloseable { stream ->
+        int n
+        while ((n = stream.read(buf)) != -1) {
+            if (n == 0) continue
+            if ((seen += n) > a.size()) reject('file grew during read')
+            int take = Math.min(n, 8 - copied)
+            if (take > 0) { System.arraycopy(buf, 0, header, copied, take); copied += take }
+            md.update(buf, 0, n)
+        }
+    }
+    def z = Files.readAttributes(p, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+    if (seen != a.size() || z.size() != a.size() || z.lastModifiedTime() != a.lastModifiedTime() || z.fileKey() != a.fileKey()) reject('unstable file identity/read')
+    [path: p.toString(), bytes: seen, sha256: md.digest().encodeHex().toString(), header: header.encodeHex().toString()]
+}
+def members = { List roots, boolean mayBeAbsent ->
+    def files = new TreeMap(); int examined = 0
+    roots.each { File rootFile ->
+        def p = checked(rootFile, true)
+        if (!Files.exists(p, LinkOption.NOFOLLOW_LINKS)) {
+            if (!mayBeAbsent) reject('required private output absent')
+        } else {
+            Files.walk(p).withCloseable { stream ->
+                def iterator = stream.iterator()
+                while (iterator.hasNext()) {
+                    def q = checked(iterator.next().toFile(), true)
+                    if (++examined > 32768) reject('private output traversal bound')
+                    if (!Files.isDirectory(q, LinkOption.NOFOLLOW_LINKS)) files[q.toString()] = q
+                }
+            }
+        }
+    }
+    files.values().toList()
+}
+def schemaEqual = { String at ->
+    def rows = members([schemaRoot.toFile()], false).collect { hashed(it) }
+    def actual = rows.collectEntries { [(schemaRoot.relativize(new File(it.path).toPath()).toString()): it.sha256] }
+    if (actual != SCHEMAS) reject('runtime-copy canonical schema set/bytes drift')
+    emit(common() + [kind: 'schema-equality', at: at, root: schemaRoot.toString(), files: rows, equal: true])
+}
+def classRows = { String compiler, boolean mayBeAbsent ->
+    def specification = SOURCE_INPUTS[compiler]
+    members(outputs[compiler], mayBeAbsent).findAll { p ->
+        String name = p.fileName.toString()
+        p.parent.endsWith(CLASS_PACKAGE.substring(0, CLASS_PACKAGE.length() - 1)) &&
+            specification.prefixes.any { name == it + '.class' || (name.startsWith(it + '$') && name.endsWith('.class')) }
+    }.collect { p ->
+        def row = hashed(p)
+        row.relativeClass = CLASS_PACKAGE + p.fileName.toString()
+        if (row.header != 'cafebabe0000003d') reject('critical class must have JVM17 header')
+        row
+    }
+}
+def genericSourceAffinity = { task ->
+    def expected = SOURCE_INPUTS[task.path]
+    def source = checked(checkout.resolve(expected.relative).toFile(), false)
+    def inputs = task.inputs.files.files.toList()
+    if (inputs.empty || inputs.size() > 8192) reject('compiler generic input-root count')
+    def roots = inputs.collect { checked(it, false) }
+    if (!roots.any { it == source || (Files.isDirectory(it, LinkOption.NOFOLLOW_LINKS) && source.startsWith(it)) } || hashed(source).sha256 != expected.sha256) reject('critical source is not an exact generic task input')
+    emit(common() + [kind: 'compiler-source-affinity', task: task.path, source: source.toString(), sha256: expected.sha256,
+        api: 'Task.inputs.files', qualification: 'Generic input membership, not internal compiler visitation or classpath attribution'])
+}
+def outputPaths = { task ->
+    def roots = task.outputs.files.files.toList()
+    if (roots.size() > 64) reject('per-task output-root bound')
+    def module = checkout.resolve(task.project.path.substring(1).replace(':', '/'))
+    def build = module.resolve('build')
+    def paths = roots.collect { checked(it, true) }.unique().sort { it.toString() }
+    paths.each { p ->
+        if (task.path == ROOM) {
+            if (p != schemaRoot) reject('Room finalizer output must be only the original private copied schemas')
+        } else if (p == build || !p.startsWith(build) || p.startsWith(build.resolve('outputs/apk')) || p.startsWith(build.resolve('outputs/bundle'))) {
+            reject('output is not an allowed module build intermediate/report')
+        }
+    }
+    if (task.path == ROOM && paths != [schemaRoot]) reject('Room generic output must bind exactly one copied schema tree')
+    if (task.path in [MAIN_COMPILER, TEST_COMPILER, TARGET, LEGAL, PACKAGE, CONFIG] && paths.empty) reject('required producer has no bound generic output')
+    paths.collect { it.toFile() }
+}
+
+def workerEnvironment = [
+    PATH: JDK + '/bin:/usr/bin:/bin', JAVA_HOME: JDK, LANG: 'C.UTF-8', LC_ALL: 'C.UTF-8', TZ: 'UTC',
+    HOME: workerRoot.resolve('home').toString(), TMPDIR: workerRoot.resolve('tmp').toString(),
+    TMP: workerRoot.resolve('tmp').toString(), TEMP: workerRoot.resolve('tmp').toString(),
+    SQLITE_TMPDIR: workerRoot.resolve('sqlite').toString(), ANDROID_USER_HOME: workerRoot.resolve('android-user').toString(),
+    ANDROID_HOME: runtime.resolve('sdk-readonly').toString(), ANDROID_SDK_ROOT: runtime.resolve('sdk-readonly').toString(),
+    XDG_CACHE_HOME: workerRoot.resolve('xdg-cache').toString(), XDG_CONFIG_HOME: workerRoot.resolve('xdg-config').toString(),
+    XDG_DATA_HOME: workerRoot.resolve('xdg-data').toString(), XDG_STATE_HOME: workerRoot.resolve('xdg-state').toString(),
+]
+def startupProperties = ['file.encoding': 'UTF-8', 'user.home': workerRoot.resolve('home').toString(),
+    'java.io.tmpdir': workerRoot.resolve('tmp').toString(), 'jna.tmpdir': workerRoot.resolve('jna').toString(),
+    'org.sqlite.tmpdir': workerRoot.resolve('sqlite').toString()]
+def testPolicy = { Test test ->
+    if (!test.enabled || test.filter.includePatterns.toList() != [FILTER] || !test.filter.excludePatterns.empty ||
+            !test.filter.commandLineIncludePatterns.empty || !test.filter.failOnNoMatchingTests || test.ignoreFailures ||
+            test.maxParallelForks != 1 || test.forkEvery != 0 || test.maxHeapSize != '512m' ||
+            !(test.options instanceof org.gradle.api.tasks.testing.junit.JUnitOptions) ||
+            new File(test.executable).canonicalFile != new File(JDK + '/bin/java').canonicalFile ||
+            test.environment != workerEnvironment || test.workingDir.toPath().toAbsolutePath().normalize() != workerRoot ||
+            !startupProperties.every { k, v -> test.systemProperties[k] == v } ||
+            !test.jvmArgs.contains('-XX:-UsePerfData') || test.reports.html.required.get() || !test.reports.junitXml.required.get() ||
+            test.reports.junitXml.outputLocation.get().asFile.toPath().toAbsolutePath().normalize() != checkout.resolve('app-android/build/test-results/testDebugUnitTest')) reject('exact effective Test filter/worker/startup/report policy drift')
+}
+gradle.beforeProject { project ->
+    if (project.path != ':app-android') return
+    project.tasks.withType(Test).configureEach { Test test ->
+        if (test.path != TARGET) return
+        test.filter.setIncludePatterns([FILTER] as String[])
+        test.filter.failOnNoMatchingTests = true
+        test.ignoreFailures = false; test.maxParallelForks = 1; test.forkEvery = 0
+        test.executable = JDK + '/bin/java'; test.maxHeapSize = '512m'
+        test.jvmArgs('-XX:-UsePerfData')
+        test.setEnvironment(workerEnvironment); test.workingDir(workerRoot.toFile())
+        startupProperties.each { key, value -> test.systemProperty(key, value) }
+        test.reports.junitXml.required.set(true); test.reports.html.required.set(false)
+        // Preserve app source's useJUnit()/includeAndroidResources, no custom engine or resource bypass.
+        test.beforeTest { description ->
+            if (!control.gate || description.className != CLASS_NAME || description.name != METHOD_NAME || ++control.caseStarts != 1) reject('unexpected actual host test start')
+            emit(common() + [kind: 'case-start', className: description.className, method: description.name])
+        }
+        test.afterTest { description, result ->
+            boolean pass = description.className == CLASS_NAME && description.name == METHOD_NAME &&
+                result.resultType.toString() == 'SUCCESS' && result.testCount == 1 && result.successfulTestCount == 1 && result.failedTestCount == 0 && result.skippedTestCount == 0
+            control.caseCompletes++
+            if (pass) control.casePasses++
+            emit(common() + [kind: 'case-result', className: description.className, method: description.name,
+                result: result.resultType.toString(), tests: result.testCount, successes: result.successfulTestCount,
+                failures: result.failedTestCount, skipped: result.skippedTestCount])
+            if (!pass || control.caseStarts != 1 || control.caseCompletes != 1) reject('not one exact successful actual host case')
+        }
+    }
+}
+
+// Inspect the actual PackageForHostTest output only. This is not the app APK lane.
+def resourceArchive = { ->
+    def files = members(outputs[PACKAGE], false)
+    if (files.size() != 1) reject('host resource package must expose exactly one private file')
+    def p = files[0]
+    if (!p.startsWith(checkout.resolve('app-android/build/intermediates'))) reject('host resource archive outside private intermediates')
+    def identity = hashed(p)
+    if (!identity.header.startsWith('504b0304')) reject('host resource output must be an ordinary ZIP, not a binary launcher')
+    // This small ZIP32 check rejects a recognized APK signing block, ZIP64,
+    // appended material and self-extracting prefixes; no authenticity claim.
+    new RandomAccessFile(p.toFile(), 'r').withCloseable { f ->
+        long n = f.length(); int take = (int)Math.min(n, 65557L)
+        byte[] tail = new byte[take]; f.seek(n - take); f.readFully(tail)
+        def u16 = { int i -> (tail[i] & 255) | ((tail[i + 1] & 255) << 8) }
+        def u32 = { int i -> ((long)(tail[i] & 255)) | ((long)(tail[i + 1] & 255) << 8) | ((long)(tail[i + 2] & 255) << 16) | ((long)(tail[i + 3] & 255) << 24) }
+        int eocd = -1
+        for (int i = take - 22; i >= 0; --i) {
+            if (u32(i) == 0x06054b50L && i + 22 + u16(i + 20) == take) { eocd = i; break }
+        }
+        if (eocd < 0 || u16(eocd + 4) != 0 || u16(eocd + 6) != 0 || u16(eocd + 8) != u16(eocd + 10) || u16(eocd + 10) > 32768) reject('host resource ZIP32 terminal shape')
+        long central = u32(eocd + 16), size = u32(eocd + 12)
+        if (central < 4 || central + size != n - take + eocd) reject('host resource ZIP32 directory offset')
+        if (central >= 16) {
+            byte[] marker = new byte[16]; f.seek(central - 16); f.readFully(marker)
+            if (new String(marker, 'US-ASCII') == 'APK Sig Block 42') reject('signed APK block forbidden for host resource scope')
+        }
+    }
+    def names = new HashSet(), essential = [:]; long total = 0L; int count = 0
+    new ZipFile(p.toFile()).withCloseable { zip ->
+        def entries = zip.entries()
+        while (entries.hasMoreElements()) {
+            def entry = entries.nextElement(); String name = entry.name
+            if (++count > 32768 || !names.add(name) || name.empty || name.length() > 1024 || name.startsWith('/') || name.indexOf(92) >= 0 || name.indexOf(0) >= 0 || name.split('/').any { it == '..' || it == '.' }) reject('unsafe/duplicate host resource ZIP name')
+            boolean allowed = name in ['AndroidManifest.xml', 'resources.arsc', 'res/', 'assets/'] || name.startsWith('res/') || name.startsWith('assets/')
+            if (!allowed) reject('host resource ZIP contains non-resource/signing/DEX/native-package namespace')
+            if (entry.isDirectory()) continue
+            if (entry.size < 0 || entry.size > 64L * 1024 * 1024 || (total += entry.size) > 128L * 1024 * 1024) reject('host resource ZIP expansion bound')
+            def md = MessageDigest.getInstance('SHA-256'); long seen = 0L; byte[] buffer = new byte[65536]
+            zip.getInputStream(entry).withCloseable { stream ->
+                int n
+                while ((n = stream.read(buffer)) != -1) {
+                    if (n == 0) continue
+                    if ((seen += n) > entry.size) reject('host resource entry expansion/size mismatch')
+                    md.update(buffer, 0, n)
+                }
+            }
+            if (seen != entry.size) reject('host resource entry incomplete')
+            if (name in ['AndroidManifest.xml', 'resources.arsc']) essential[name] = [bytes: seen, sha256: md.digest().encodeHex().toString()]
+        }
+    }
+    if (essential.keySet() != ['AndroidManifest.xml', 'resources.arsc'].toSet() || essential.values().any { it.bytes == 0 }) reject('required binary manifest/resource table absent')
+    if (hashed(p) != identity) reject('resource archive changed during inspection')
+    [identity: identity, entries: count, expandedBytes: total, essential: essential,
+     qualification: 'Unsigned resource-only intermediate structure, not app APK/native-loader/install/hardware evidence']
+}
+def hostConfiguration = { ->
+    // Android's generated host-test resource protocol, not a guessed task getter.
+    // Only declared output bytes are parsed; no source/SDK/cache discovery.
+    def files = members(outputs[CONFIG], false)
+    if (files.size() != 1 || Files.size(files[0]) > 65536) reject('one bounded generated host configuration required')
+    def p = files[0], identity = hashed(p)
+    def values = new Properties()
+    Files.newInputStream(p, LinkOption.NOFOLLOW_LINKS).withCloseable { stream -> values.load(stream) }
+    def resource = values.getProperty('android_resource_apk')
+    if (values.size() > 16 || resource == null || resource.length() > 1024) reject('bounded android_resource_apk property required')
+    def resourcePath = absolutePath(resource)
+    if (checked(resourcePath.toFile(), true).toString() != archiveEvidence.identity.path ||
+            hashed(resourcePath) != archiveEvidence.identity || hashed(p) != identity) reject('host configuration does not name the exact inspected resource archive')
+    [identity: identity, consumerResource: CONFIG_RESOURCE, resourceArchive: archiveEvidence.identity,
+        qualification: 'Actual generated properties-to-resource-package join; configuration resource still must match the effective Test classpath']
+}
+def joinConsumer = { Test test ->
+    def wanted = [:]
+    produced.values().flatten().each { row ->
+        if (wanted.containsKey(row.relativeClass)) reject('duplicate critical produced class')
+        wanted[row.relativeClass] = row
+    }
+    if (!wanted.containsKey(CLASS_PACKAGE + 'AndroidClipboardService.class') || !wanted.containsKey(CLASS_PACKAGE + 'AndroidClipboardServiceTest.class')) reject('both actual critical compiler base classes required')
+    if (configEvidence == null || wanted.containsKey(CONFIG_RESOURCE)) reject('exact host configuration join prerequisite')
+    wanted[CONFIG_RESOURCE] = configEvidence.identity
+    def directories = test.testClassesDirs.files.toList().collect { checked(it, false) }
+    if (directories.empty || directories.size() > 16) reject('Test class directory bound')
+    produced[TEST_COMPILER].each { row ->
+        def p = new File(row.path).toPath()
+        if (directories.count { p == it.resolve(row.relativeClass) } != 1 || hashed(p).sha256 != row.sha256) reject('fresh compiler class not the exact Test class-directory member')
+    }
+    def cp = test.classpath.files.toList()
+    if (cp.empty || cp.size() > 1024) reject('Test classpath bound')
+    def found = [:].withDefault { [] }
+    cp.collect { checked(it, false) }.unique().each { carrier ->
+        if (!Files.exists(carrier, LinkOption.NOFOLLOW_LINKS)) return
+        if (Files.isDirectory(carrier, LinkOption.NOFOLLOW_LINKS)) {
+            wanted.each { relative, expected ->
+                def file = carrier.resolve(relative)
+                if (Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
+                    def row = hashed(checked(file.toFile(), false))
+                    if (row.sha256 != expected.sha256) reject('directory classpath has a stale critical class')
+                    found[relative].add([carrier: carrier.toString(), classSha256: row.sha256])
+                }
+            }
+        } else {
+            def before = Files.readAttributes(carrier, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+            if (!before.isRegularFile() || before.size() > 256L * 1024 * 1024) reject('classpath ZIP size/type bound')
+            new ZipFile(carrier.toFile()).withCloseable { zip ->
+                def entries = zip.entries(); int count = 0; def criticalSeen = new HashSet()
+                while (entries.hasMoreElements()) {
+                    def entry = entries.nextElement()
+                    if (++count > 65536) reject('classpath ZIP entry bound')
+                    if (entry.name.startsWith('META-INF/versions/') && wanted.keySet().any { entry.name.endsWith('/' + it) }) reject('alternate multi-release critical class/configuration forbidden')
+                    if (!wanted.containsKey(entry.name)) continue
+                    if (!criticalSeen.add(entry.name) || entry.isDirectory() || entry.size < 8 || entry.size > 1024 * 1024) reject('ambiguous critical class ZIP entry')
+                    def md = MessageDigest.getInstance('SHA-256'); long seen = 0L; byte[] buffer = new byte[65536]
+                    zip.getInputStream(entry).withCloseable { stream ->
+                        int n
+                        while ((n = stream.read(buffer)) != -1) {
+                            if (n == 0) continue
+                            if ((seen += n) > entry.size) reject('classpath class expansion bound')
+                            md.update(buffer, 0, n)
+                        }
+                    }
+                    String digest = md.digest().encodeHex().toString()
+                    if (seen != entry.size || digest != wanted[entry.name].sha256) reject('runtime carrier class differs from fresh compiler output')
+                    found[entry.name].add([carrier: carrier.toString(), classSha256: digest])
+                }
+            }
+            def after = Files.readAttributes(carrier, BasicFileAttributes, LinkOption.NOFOLLOW_LINKS)
+            if (after.fileKey() != before.fileKey() || after.size() != before.size() || after.lastModifiedTime() != before.lastModifiedTime()) reject('classpath carrier changed during selected entry join')
+        }
+    }
+    if (wanted.keySet().any { found[it].size() != 1 }) reject('missing or alternate critical classpath winner')
+    emit(common() + [kind: 'compiler-test-join', classDirectories: directories.collect { it.toString() }, classesAndConfig: found,
+        resourceConfiguration: configEvidence,
+        qualification: 'Fresh declared compiler outputs match the effective configured Test consumer; not internal compiler visitation or hostile-code confinement'])
+}
+
+gradle.taskGraph.whenReady { graph ->
+    readyCount++; phase = 'host-pre-action'
+    if (!bindingOk || readyCount != 1 || start.dryRun) reject('one actual bound Host1 graph required')
+    def graphPath = new File(EXPECTED_GRAPH_PATH).toPath()
+    for (def q = graphPath; q != null; q = q.parent) if (Files.isSymbolicLink(q)) reject('graph-data symlink')
+    if (!Files.isRegularFile(graphPath, LinkOption.NOFOLLOW_LINKS) || Files.size(graphPath) != 131015) reject('exact retained graph-data file')
+    byte[] bytes = Files.readAllBytes(graphPath)
+    if (MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString() != EXPECTED_GRAPH_SHA) reject('retained graph-data hash')
+    def prior = new JsonSlurper().parseText(new String(bytes, 'UTF-8'))
+    if (prior.sourceManifestSha256 != ADMITTED.sourceManifestSha256 || prior.subjectSha256 != SUBJECT_SHA || prior.taskCount != 333 || prior.edgeReferences != 663) reject('retained graph/source tuple')
+    expectedByPath = prior.tasks.collectEntries { [(it.path): it] }
+    def edge = { collection -> collection.collect { it.path }.sort() }
+    def rows = graph.allTasks.collect { t ->
+        [path: t.path, type: t.class.name, enabled: t.enabled, isTest: t instanceof Test, isExec: t instanceof Exec,
+         isJavaExec: t instanceof JavaExec, isArchive: t instanceof AbstractArchiveTask,
+         dependencies: edge(graph.getDependencies(t)), finalizers: edge(t.finalizedBy.getDependencies(t)),
+         mustRunAfter: edge(t.mustRunAfter.getDependencies(t)), shouldRunAfter: edge(t.shouldRunAfter.getDependencies(t))]
+    }
+    if (rows.size() != 333 || rows.collectEntries { [(it.path): it] } != expectedByPath || rows.findAll { it.isTest }.collect { it.path } != [TARGET]) reject('Host1 exact typed graph/edges changed; no expansion or dropped finalizer')
+    if (gradle.rootProject.projectDir.toPath().toAbsolutePath().normalize() != checkout) reject('actual project root is not original copied checkout')
+    WORKER_CHILDREN.each { name ->
+        def p = workerRoot.resolve(name)
+        // Worker allocation is outside checkout and belongs to outer/inner intake.
+        for (def q = p; q != null; q = q.parent) if (Files.isSymbolicLink(q)) reject('worker allocation symlink')
+        if (!Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS) || Files.getAttribute(p, 'unix:uid', LinkOption.NOFOLLOW_LINKS) != 0) reject('original worker directory not bound')
+        Files.newDirectoryStream(p).withCloseable { stream -> if (stream.iterator().hasNext()) reject('worker directory not fresh') }
+    }
+    graph.allTasks.each { task ->
+        outputs[task.path] = outputPaths(task)
+        outputRows.add([task: task.path, type: task.class.name, outputs: outputs[task.path].collect { it.toString() },
+            role: task.path == ROOM ? 'PRIVATE_SOURCE_COPY_SCHEMA_EXCEPTION' : 'PRIVATE_MODULE_BUILD_INTERMEDIATE_OR_REPORT'])
+    }
+    def legal = graph.allTasks.find { it.path == LEGAL }
+    if (legal.class.name != 'Build_gradle$PrepareAndroidLegalAssets_Decorated' || legal.class.superclass?.name != 'Build_gradle$PrepareAndroidLegalAssets') reject('source legal class hierarchy')
+    def legalRoot = checkout.resolve('app-android/build/generated/assets/prepareAndroidLegalAssets')
+    if (checked(legal.outputDirectory.get().asFile, true) != legalRoot || outputs[LEGAL].collect { it.toPath() } != [legalRoot] ||
+            legal.legalDocuments.files.collect { checked(it, false).toString() }.toSet() != ['LICENSE.txt', 'NOTICE.txt', 'THIRD_PARTY_NOTICES.md'].collect { checkout.resolve(it).toString() }.toSet() ||
+            checked(legal.thirdPartyLicenseDirectory.get().asFile, false) != checkout.resolve('THIRD_PARTY_LICENSES')) reject('exact source legal input/Sync deletion boundary')
+    if (!members(outputs[LEGAL], true).empty) reject('legal Sync destination must be freshly owned and empty')
+    SOURCE_INPUTS.keySet().each { if (!classRows(it, true).empty) reject('critical class exists before compiler actions') }
+    schemaEqual('before-actions')
+    testPolicy((Test)graph.allTasks.find { it.path == TARGET })
+    emit(common() + [kind: 'action-admission', graphDataSha256: EXPECTED_GRAPH_SHA, taskCount: 333, edgeReferences: 663,
+        outputRoots: outputRows, schemaException: schemaRoot.toString(), packageType: expectedByPath[PACKAGE].type,
+        qualification: 'Finite typed actions plus actual generic outputs; cooperative path guards, not arbitrary-plugin sandbox'])
+    graphCount++; control.actionsAdmitted = true; control.gate = true
+}
+
+beforeAction = { task ->
+    phase = 'host-actions'
+    if (!control.gate || control.failed || !expectedByPath.containsKey(task.path) || entered.contains(task.path) ||
+            task.class.name != expectedByPath[task.path].type || outputPaths(task) != outputs[task.path]) reject('task/output identity drift before entry')
+    entered.add(task.path)
+    if (task.path == ROOM) schemaEqual('before-schema-finalizer')
+    if (task.path == LEGAL && !members(outputs[LEGAL], true).empty) reject('legal Sync acquired foreign output before action')
+    if (SOURCE_INPUTS.containsKey(task.path)) {
+        if (!classRows(task.path, true).empty) reject('critical compiler output became nonempty before action')
+        genericSourceAffinity(task); compilerStarted.add(task.path)
+    }
+    if (task.path == TARGET) {
+        if (control.compilerCompleted.toSet() != SOURCE_INPUTS.keySet() || archiveEvidence == null || !control.schemaFinalizerComplete) reject('required compiled/resource/schema prerequisites not accepted')
+        testPolicy((Test)task); schemaEqual('before-test')
+        configEvidence = hostConfiguration(); joinConsumer((Test)task)
+        emit(common() + [kind: 'host-config-output', evidence: configEvidence,
+            qualification: 'Actual declared generated configuration joined to inspected resource archive and effective Test consumer; not instrumentation/component/hardware evidence'])
+    }
+}
+afterAction = { task, state ->
+    if (!entered.contains(task.path) || completedTasks.contains(task.path)) reject('unexpected/repeated task outcome')
+    completedTasks.add(task.path)
+    emit(common() + [kind: 'task-state', task: task.path, type: task.class.name, executed: state.executed,
+        skipped: state.skipped, upToDate: state.upToDate, noSource: state.noSource, didWork: state.didWork,
+        skipMessage: state.skipMessage, failureType: state.failure?.class?.name])
+    if (state.failure != null) return
+    if (task.path in [MAIN_COMPILER, TEST_COMPILER, TARGET, ROOM, PACKAGE, CONFIG] &&
+            (!state.executed || state.skipped || state.upToDate || state.noSource || state.skipMessage != null ||
+                (task.path != ROOM && !state.didWork))) reject('critical Host1 task did not execute fresh successful actions')
+    // Schema finalizer must actually execute, but idempotent equality need not
+    // rewrite unchanged canonical JSON and therefore need not report didWork.
+    if (SOURCE_INPUTS.containsKey(task.path)) {
+        def classes = classRows(task.path, false)
+        if (!compilerStarted.contains(task.path) || classes.size() > 512 || classes.count { it.relativeClass == CLASS_PACKAGE + SOURCE_INPUTS[task.path].base + '.class' } != 1) reject('fresh critical compiler class cohort missing')
+        produced[task.path] = classes; control.compilerCompleted.add(task.path)
+        emit(common() + [kind: 'compiler-classes', task: task.path, classes: classes, testCases: 0])
+    }
+    if (task.path == ROOM) { schemaEqual('after-schema-finalizer'); control.schemaFinalizerComplete = true }
+    if (task.path == PACKAGE) { archiveEvidence = resourceArchive(); emit(common() + [kind: 'host-resource-archive', evidence: archiveEvidence]) }
+    if (task.path == TARGET) {
+        if (control.caseStarts != 1 || control.caseCompletes != 1 || control.casePasses != 1) reject('fresh Test lacks the exact actual case stream')
+        control.testComplete = true
+    }
+}

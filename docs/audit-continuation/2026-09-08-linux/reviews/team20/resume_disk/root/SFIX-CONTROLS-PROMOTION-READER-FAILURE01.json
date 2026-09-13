@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T09:38:33.346254+00:00",
+  "status": "AD_HOC_PROMOTION_READER_REFUSED_BEFORE_MUTATION",
+  "original_tool_chunk": "3454d6",
+  "exit": 1,
+  "location": "read() line13 called from line18 Android independent source-review read",
+  "error": "AssertionError in whole os.stat_result equality/length assertion. Precise differing field was not retained; atime was unnecessarily included in this equality.",
+  "reached": "Read-only review/assembly loading, before original lock acquisition, destination checks, mkdir or file writes. No controls promoted or project/build/test command invoked.",
+  "next": "Use established explicit stable pin fields (dev,ino,uid,mode,nlink,bytes,mtime_ns,ctime_ns) plus exact expected SHA; do not require atime conservation. Preserve failure; not a retry of any consumed runner/build/stop."
+}

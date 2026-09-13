@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "status": "BOUND_CURRENT_PREFLIGHT_REQUEST_PENDING_GENUINE_REVIEW",
+  "suite": "WINDOWS-ACTIVATION-PREFLIGHT-01",
+  "source": {
+    "path": "reviews/team20/resume_disk/publication_author/windows_activation01/WINDOWS-ACTIVATION-PREFLIGHT-01.py.txt",
+    "bytes": 31801,
+    "sha256": "89bfbfde3a574a8ae10a7f55106e78e1eec500b424260aa8317c027458a156e1"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/publication_author/windows_activation01/WINDOWS-ACTIVATION-PREFLIGHT-01.py.txt"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "required_independent_source_review": {
+    "reviewer": "/root/c20_coverage_review",
+    "path": "reviews/team20/resume_disk/coverage_review/WINDOWS-ACTIVATION01-BOUNDED-V2-SOURCE-REVIEW.json",
+    "sha256": "5e652276185957f0fcf2cdd89979f0339345c10631240cac2b904494b3760e68"
+  },
+  "root_admission": {
+    "utc": "2026-09-12T07:04:56.665278+00:00",
+    "source_request_sha256": "13441b775af0b97bfe5d2e13c0ae1995f50e4e7ea89f70e10f434ab511d7c7c1",
+    "explicit_post_cleanup_only": true,
+    "quiet_source_metadata_window": "No build/CI/rootTwriter;parallel agents only inert source/review outsideTandcurrentinputs. Sole root slotreserved.",
+    "actual_disk_policy": {
+      "point": {
+        "disk_available_bytes": 9319387136,
+        "reserve_bytes": 3221225472,
+        "transport_and_evidence_growth_allowance_bytes": 67108864,
+        "MemTotal": 67435888640,
+        "MemAvailable": 63040651264
+      },
+      "authority": "Owner temporary3GiBreserve;cheapreadonly preflight/transport64MiBgrowth allowance,notWindowsflooroverride"
+    },
+    "namespace_custody_release": {
+      "path": "reviews/team20/resume_disk/root/C20-T-FREEZE-RELEASE-AWIN.json",
+      "bytes": 3043,
+      "sha256": "85dbf9d24ad015b077bcbae956eb5e96f25c2edd475c3ab7095f8e193f85f7e4"
+    },
+    "source_executor_identity": {
+      "path": "/usr/bin/python3.12",
+      "pin": {
+        "dev": 25,
+        "ino": 1088,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "bytes": 8020928,
+        "mtime_ns": 1781873160000000000,
+        "ctime_ns": 1787292627933100530
+      },
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+      "source": {
+        "path": "reviews/team20/resume_disk/publication_author/windows_activation01/WINDOWS-ACTIVATION-PREFLIGHT-01.py.txt",
+        "bytes": 31801,
+        "sha256": "89bfbfde3a574a8ae10a7f55106e78e1eec500b424260aa8317c027458a156e1"
+      }
+    },
+    "no_other_audit_build_or_test_owner": "Rootsoleowner;allagentsnobuild/CI/tools outside owninert sourceleaves;freshglobalqueuesandcommprobeinpreflightstillrequired."
+  },
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "sha256": "6dd455da5a0763bdd2ea80d89033b8be911a25e50a84f2e73f14ec7b09f142f2",
+    "state": "RESERVED_WINDOWS4_PREFLIGHT_ACTIVATION_AND_CI",
+    "note": "Source reads before/after under original physical lock; outer root admission must bind current expected bytes/state. Frozen selected oldslot stays untouched."
+  },
+  "fixed_commands": [
+    "one Git ls-remote to exact six named protected/candidate refs, cwdT only",
+    "one exact-head/all-base state=open PR GET,per_page100",
+    "five unfiltered repository actions/runs GETs,statuses queued,pending,waiting,requested,in_progress,per_page100"
+  ],
+  "queue_semantics": "Five status sets, not branch/workflow filters. Each total_count must be integer0..99 and equal projected unique run count; every projected status must match query. Zero counts+empty arrays required for no-observed-conflict result. Any nonzero is explicit conflict, not job cancellation. Saturated/incomplete/malformed/error produces HOLD; no page loop or retry.",
+  "bounds": {
+    "total_seconds": 60,
+    "prelaunch_seconds": 15,
+    "all_commands_deadline_seconds": 55,
+    "per_child_seconds": 45,
+    "abnormal_direct_child_settlement_seconds": 5,
+    "commands": 7,
+    "pipe_bytes_each": 32768,
+    "receipt_bytes_each": 65536,
+    "proc_entries": 8192,
+    "process_screen_seconds": 5,
+    "regular_executable_bytes_each": 67108864,
+    "live_slot_bytes": 262144
+  },
+  "resource_scope": "Per explicit root instruction this cheap read-only batch observes disk bytes, validates nonnegative units and keeps RAM25% minimum; it does not enforce historical12GiB or authorize3GiB publication. Root must bind actual disk admission after cleanup. No build workload is launched.",
+  "outputs": [
+    {
+      "path": "reviews/team20/resume_disk/publication_author/windows_activation01/PREFLIGHT-01-INTENT.json",
+      "must_be_absent_before_once_only_attempt": true
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/windows_activation01/PREFLIGHT-01-RESULT.json",
+      "must_be_absent_before_once_only_attempt": true
+    }
+  ],
+  "root_retention": "Retain original external terminal exit/envelope plus compact exact output tuple. Hard interruption or unproven abnormal descendants remains HOLD/no retry; do not invoke this consumed name again or kill unrelated processes. No old helper or old metadata receipt is replayed.",
+  "qualification": "New one-shot activation point, NOT replay of consumed C20 preflight. Exactly five literal source replacements: own new leaf/SELF/P ref/format/purpose. All7 commands/protocol/metadata/limits/privacy/settlement remain unchanged. Zero executions or current queue/custody/admission claims. Root reserves Windows4 global slot before point then binds exact point/current slot before A transport; no interposed T commit.",
+  "template_sha_semantics": "Any root instance source_request_sha256 means this immutable template hash; root instance hash is bound separately in outer admission, not recursively inside itself."
+}

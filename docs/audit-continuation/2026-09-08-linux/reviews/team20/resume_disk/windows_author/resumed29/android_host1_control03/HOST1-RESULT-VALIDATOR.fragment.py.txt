@@ -1,0 +1,177 @@
+# Inert proposed Host1 result mapper. Called only by a future admitted Host1 inner.
+HOST_CLASS = 'com.passvault.android.security.AndroidClipboardServiceTest'
+HOST_METHOD = 'newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry'
+HOST_CLASS_PACKAGE = 'com/passvault/android/security/'
+HOST_CONFIG_RESOURCE = 'com/android/tools/test_config.properties'
+HOST_MAIN_COMPILER = ':app-android:compileDebugKotlin'
+HOST_TEST_COMPILER = ':app-android:compileDebugUnitTestKotlin'
+HOST_ROOM = ':core:database:copyRoomSchemas'
+HOST_PACKAGE = ':app-android:packageDebugUnitTestForUnitTest'
+HOST_CONFIG = ':app-android:generateDebugUnitTestConfig'
+HOST_SCHEMAS = {
+    'com.passvault.core.database.VaultDatabase/1.json': '76985152ec6593ee7eb13343bf30e86b1fd7beacbb27e89c4a2cfcb286eeb586',
+    'com.passvault.core.database.VaultDatabase/2.json': '3c09e59f2ab2b59a2535c82a404b9af27b9e3934f88e4161c1a9478cdef38d94',
+    'com.passvault.core.database.VaultDatabase/3.json': '080ac957b9dcdb58bc4950cb3e1f6a8279a0432e2a3ea580ba3aa0c84add9136',
+    'com.passvault.core.database.VaultDatabase/4.json': '9dc4f187784ca4a409b258debab1fbf9ad8a700778e060c44b98d9d4d8d14224',
+    'com.passvault.core.database.VaultDatabase/5.json': '431ed8a2dbfcde5c132f45a2e4443894d45aa0010bf9b6616780f62be3cd354b',
+}
+
+
+def validate_host_rows(rows, prior):
+    common = {'format': 'passvault-android-host1-receipt-v1', 'runId': RUN_ID,
+        'sourceManifestSha256': FROZEN[SOURCE], 'subjectSha256': HOST_SUBJECT_SHA,
+        'selector': [HOST_TARGET], 'methodFilter': HOST_FILTER, 'graphOnly': False}
+    kinds = {'schema-equality', 'action-admission', 'compiler-source-affinity', 'compiler-classes',
+        'host-resource-archive', 'compiler-test-join', 'host-config-output', 'case-start', 'case-result',
+        'task-state', 'finished'}
+    require(isinstance(rows, list) and len(rows) == 348 and all(isinstance(row, dict)
+        and all(row.get(k) == v for k, v in common.items()) and row.get('kind') in kinds for row in rows),
+        'exact bounded Host1 receipt/common/348-event stream')
+    selected = {kind: [row for row in rows if row['kind'] == kind] for kind in kinds}
+    require(len(selected['schema-equality']) == 4 and len(selected['task-state']) == 333
+        and len(selected['compiler-source-affinity']) == len(selected['compiler-classes']) == 2
+        and all(len(selected[k]) == 1 for k in kinds - {'schema-equality', 'task-state',
+            'compiler-source-affinity', 'compiler-classes'}), 'exact Host1 event multiplicities')
+    graph = selected['action-admission'][0]
+    expected = {row['path']: row for row in prior['tasks']}
+    require(prior['sourceManifestSha256'] == FROZEN[SOURCE] and prior['taskCount'] == len(expected) == 333
+        and prior['edgeReferences'] == 663 and graph['graphDataSha256'] == FROZEN[GRAPH_DATA]
+        and graph['taskCount'] == 333 and graph['edgeReferences'] == 663,
+        'accepted original graph-data/source tuple')
+    output_rows = graph['outputRoots']
+    require(isinstance(output_rows, list) and len(output_rows) == 333
+        and {r['task'] for r in output_rows} == set(expected), '333 actual task-output bindings')
+    outputs = {}
+    schema_root = CHECKOUT / 'core/database/schemas'
+    for row in output_rows:
+        name = row['task']
+        require(row['type'] == expected[name]['type'] and isinstance(row['outputs'], list)
+            and len(row['outputs']) <= 64 and len(set(row['outputs'])) == len(row['outputs']),
+            'exact concrete task type/unique bounded generic output roots')
+        module = CHECKOUT.joinpath(*name[1:].split(':')[:-1]) / 'build'
+        paths = [Path(p) for p in row['outputs']]
+        require(all(p.is_absolute() and '..' not in p.parts and len(str(p)) <= 1024 for p in paths),
+            'normalized bounded actual output path')
+        if name == HOST_ROOM:
+            require(paths == [schema_root] and row['role'] == 'PRIVATE_SOURCE_COPY_SCHEMA_EXCEPTION',
+                'only copied canonical Room schema output exception')
+        else:
+            require(row['role'] == 'PRIVATE_MODULE_BUILD_INTERMEDIATE_OR_REPORT'
+                and all(p != module and p.is_relative_to(module)
+                    and not p.is_relative_to(module / 'outputs/apk')
+                    and not p.is_relative_to(module / 'outputs/bundle') for p in paths),
+                'only exact private module build outputs; no final app APK/bundle producer')
+        outputs[name] = paths
+    critical = {HOST_MAIN_COMPILER, HOST_TEST_COMPILER, HOST_TARGET, HOST_ROOM, HOST_PACKAGE, HOST_CONFIG}
+    require(all(outputs[t] for t in critical | {HOST_LEGAL}), 'critical declared producer roots required')
+    states = selected['task-state']
+    require({row['task'] for row in states} == set(expected), 'one outcome for each admitted task')
+    for row in states:
+        require(row['type'] == expected[row['task']]['type'] and row['failureType'] is None
+            and all(type(row[k]) is bool for k in ('executed', 'skipped', 'upToDate', 'noSource', 'didWork')),
+            'typed successful task-state observations')
+        if row['task'] in critical:
+            require(row['executed'] and not any(row[k] for k in ('skipped', 'upToDate', 'noSource'))
+                and row['skipMessage'] is None and (row['task'] == HOST_ROOM or row['didWork']),
+                'critical compiler/config/package/finalizer/Test actions must execute freshly')
+    schema_rows = selected['schema-equality']
+    require([r['at'] for r in schema_rows] == ['before-actions', 'before-schema-finalizer',
+        'after-schema-finalizer', 'before-test'], 'complete before/after schema-finalizer ordering')
+    for row in schema_rows:
+        require(row['equal'] is True and row['root'] == str(schema_root) and len(row['files']) == 5
+            and {str(Path(f['path']).relative_to(schema_root)): f['sha256'] for f in row['files']} == HOST_SCHEMAS,
+            'all five canonical runtime-copy schemas unchanged')
+    affinities = selected['compiler-source-affinity']
+    require({r['task'] for r in affinities} == {HOST_MAIN_COMPILER, HOST_TEST_COMPILER}
+        and all(r['api'] == 'Task.inputs.files' for r in affinities), 'two generic compiler source affinities')
+    sources = {
+        HOST_MAIN_COMPILER: ('app-android/src/main/kotlin/com/passvault/android/security/AndroidClipboardService.kt',
+            'db1b9e5387e7059719e0f49b4a8c9340f8abcf210d16a808a5408c17443e00cf'),
+        HOST_TEST_COMPILER: ('app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt',
+            HOST_SUBJECT_SHA),
+    }
+    for row in affinities:
+        relative, digest = sources[row['task']]
+        require(row['source'] == str(CHECKOUT / relative) and row['sha256'] == digest,
+            'exact selected current source path/SHA, not just compiler-task affinity labels')
+    wanted = {}
+    producers = selected['compiler-classes']
+    require({r['task'] for r in producers} == {HOST_MAIN_COMPILER, HOST_TEST_COMPILER}, 'both fresh compiler cohorts')
+    for producer in producers:
+        require(isinstance(producer['classes'], list) and 1 <= len(producer['classes']) <= 512
+            and producer['testCases'] == 0, 'bounded compiler cohort is not test-case evidence')
+        for row in producer['classes']:
+            relative = row['relativeClass']
+            require(relative.startswith(HOST_CLASS_PACKAGE) and relative.endswith('.class')
+                and relative not in wanted and row['header'] == 'cafebabe0000003d'
+                and re.fullmatch(r'[0-9a-f]{64}', row['sha256'])
+                and any(Path(row['path']).is_relative_to(p) for p in outputs[producer['task']]),
+                'unique fresh JVM17 classes in actual declared compiler roots')
+            wanted[relative] = row['sha256']
+    require(all(HOST_CLASS_PACKAGE + name + '.class' in wanted for name in
+        ('AndroidClipboardService', 'AndroidClipboardServiceTest')), 'both critical base classes produced')
+    archive = selected['host-resource-archive'][0]['evidence']
+    identity = archive['identity']
+    require(Path(identity['path']).is_relative_to(CHECKOUT / 'app-android/build/intermediates')
+        and any(Path(identity['path']).is_relative_to(p) for p in outputs[HOST_PACKAGE])
+        and re.fullmatch(r'[0-9a-f]{64}', identity['sha256'])
+        and identity['header'].startswith('504b0304') and 1 <= archive['entries'] <= 32768
+        and 0 < archive['expandedBytes'] <= 128 * MIB
+        and set(archive['essential']) == {'AndroidManifest.xml', 'resources.arsc'},
+        'bounded actual unsigned resource-only host archive evidence')
+    config = selected['host-config-output'][0]['evidence']
+    require(config['consumerResource'] == HOST_CONFIG_RESOURCE and config['resourceArchive'] == identity
+        and any(Path(config['identity']['path']).is_relative_to(p) for p in outputs[HOST_CONFIG]),
+        'actual host properties identify exact inspected resource archive')
+    wanted[HOST_CONFIG_RESOURCE] = config['identity']['sha256']
+    join = selected['compiler-test-join'][0]
+    require(join['resourceConfiguration'] == config and set(join['classesAndConfig']) == set(wanted),
+        'exact fresh compiler/configuration consumer join keys')
+    for relative, digest in wanted.items():
+        rows_for_class = join['classesAndConfig'][relative]
+        require(isinstance(rows_for_class, list) and len(rows_for_class) == 1
+            and rows_for_class[0]['classSha256'] == digest
+            and any(Path(rows_for_class[0]['carrier']).is_relative_to(p) for p in READ_ROOT_ENVELOPE),
+            'one exact private/read-only effective classpath carrier; no alternate critical winner')
+    directories = join['classDirectories']
+    require(isinstance(directories, list) and 1 <= len(directories) <= 16
+        and len(set(directories)) == len(directories)
+        and all(Path(p).is_absolute() and '..' not in Path(p).parts
+            and any(Path(p).is_relative_to(root) for root in READ_ROOT_ENVELOPE) for p in directories),
+        'finite effective Test class-directory roots')
+    test_producer = next(row for row in producers if row['task'] == HOST_TEST_COMPILER)
+    for row in test_producer['classes']:
+        require(sum(Path(row['path']) == Path(p) / row['relativeClass'] for p in directories) == 1,
+            'each fresh test compiler output belongs to exactly one effective Test class directory')
+    positions = {id(row): number for number, row in enumerate(rows)}
+    state_by_task = {row['task']: row for row in states}
+    position = lambda row: positions[id(row)]
+    for affinity in affinities:
+        produced = next(row for row in producers if row['task'] == affinity['task'])
+        require(position(graph) < position(affinity) < position(state_by_task[affinity['task']])
+            < position(produced) < position(join), 'source affinity then fresh task outcome/classes then Test join')
+    require(position(schema_rows[0]) < position(graph) < position(schema_rows[1])
+        < position(state_by_task[HOST_ROOM]) < position(schema_rows[2]) < position(schema_rows[3])
+        < position(join), 'canonical schemas before action, around finalizer and before Test join')
+    require(position(state_by_task[HOST_PACKAGE]) < position(selected['host-resource-archive'][0])
+        < position(join) and position(state_by_task[HOST_CONFIG]) < position(join)
+        and position(join) < position(selected['host-config-output'][0]) < position(selected['case-start'][0])
+        < position(selected['case-result'][0]) < position(state_by_task[HOST_TARGET])
+        < position(selected['finished'][0]), 'actual producer/configuration joins before sole case and Test completion')
+    start, result = selected['case-start'][0], selected['case-result'][0]
+    require(all(row['className'] == HOST_CLASS and row['method'] == HOST_METHOD for row in (start, result))
+        and result['result'] == 'SUCCESS' and result['tests'] == result['successes'] == 1
+        and result['failures'] == result['skipped'] == 0, 'one exact real unsuffixed method callback')
+    terminal = selected['finished'][0]
+    require(rows[-1] is terminal and terminal['localHostPass'] is True and terminal['failureType'] is None
+        and terminal['controlFailure'] is False and terminal['taskActionsAdmitted'] is True
+        and terminal['graphCount'] == terminal['whenReadyEntries'] == terminal['finishCallbacks'] == 1
+        and terminal['beforeTaskEntries'] == terminal['afterTaskEvents'] == 333
+        and terminal['schemaFinalizerComplete'] is True and terminal['testComplete'] is True
+        and set(terminal['compilerCompletions']) == {HOST_MAIN_COMPILER, HOST_TEST_COMPILER}
+        and terminal['caseStarts'] == terminal['caseCompletions'] == terminal['casePasses'] == 1
+        and terminal['finalProcessAndXmlReviewRequired'] is True, 'complete callback-local Host1 terminal')
+    return {'actual_method_callbacks': 1, 'actual_task_outcomes': 333, 'accepted_graph_sha256': FROZEN[GRAPH_DATA],
+        'critical_class_count': len(wanted) - 1, 'resource_archive': identity, 'configuration': config['identity'],
+        'qualification': 'Callback/producer-consumer evidence only. Original exit0 and exact XML still required; '
+            'injected clipboard policy regression, not actual Android clipboard/native/device/hardware closure.'}

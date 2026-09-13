@@ -1,0 +1,26 @@
+{
+  "owner": "/root",
+  "started_utc": "2026-09-12T09:40:30.883841+00:00",
+  "argv": [
+    "/usr/bin/gh",
+    "api",
+    "--hostname",
+    "github.com",
+    "repos/Apdelrahman1911/passvault/actions/runs?branch=codex%2Faudit-continuation-linux-20260908&per_page=100",
+    "--jq",
+    "{total_count:.total_count,runs:[.workflow_runs[]|{id,head_sha,status,conclusion,event,path,created_at}]}"
+  ],
+  "exit": 0,
+  "direct_child_reaped": true,
+  "status": "COMMAND_COMPLETED",
+  "elapsed_seconds": 0.8216973300004611,
+  "stdout": {
+    "bytes": 2106,
+    "sha256": "25a768a02500129e2b21539b12567bd04eb50aec7a138244b77cff3625bf6865"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "qualification": "Single point not continuous exclusion; no application/Gradle duty or CI activation. Do not cancel unrelated jobs."
+}

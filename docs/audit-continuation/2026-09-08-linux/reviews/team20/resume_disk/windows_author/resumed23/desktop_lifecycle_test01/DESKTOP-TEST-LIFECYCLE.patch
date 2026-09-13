@@ -1,0 +1,10 @@
+--- a/app-desktop/build.gradle.kts
++++ b/app-desktop/build.gradle.kts
+@@ -1142,6 +1142,7 @@
+         val desktopTest = getByName("desktopTest") {
+             dependencies {
+                 implementation(kotlin("test"))
++                implementation(libs.lifecycle.viewmodel)
+                 implementation(libs.kotlinx.coroutines.test)
+             }
+         }

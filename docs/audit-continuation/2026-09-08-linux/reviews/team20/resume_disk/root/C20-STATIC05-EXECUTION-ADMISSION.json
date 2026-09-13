@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T06:43:53.887721+00:00",
+  "disposition": "ADMIT_EXACT_ONCE_LINUX_STATIC05",
+  "finding_ids": [
+    "PVA-039"
+  ],
+  "scope": "Seven affected Detekt analyzers plus verifyStaticAnalysisCoverage;21 expected reports,zero application tests. Reuse13 prior clean modules/146 unchanged inputs/24 configs;two empty aggregates remain nonpasses.",
+  "source_commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+  "source_tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-DETEKT-05.json",
+    "bytes": 6328,
+    "sha256": "ad15cb8489aea19419a2e65bebab5ce00b309e5cb9c37870fc7c09a7b3f2aceb"
+  },
+  "genuine_approval": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/linux_review/detekt05-INSTANCE-ACCEPT.json",
+    "bytes": 949,
+    "sha256": "3c003d7a18029ff73e7811bb22f05e0f0e46b50165053e62f95fcb9f49021a74"
+  },
+  "source_review_sha256": "b235c2dde6f6786bacce3c3dfc192c085f7f636b99bdc877392f3aa0e3fc1067",
+  "instance_sha256": "fb5b7f5bc6ccab390243976aa8f2ac73f95f6f4dd0f546ae8e9f665146c0f5a4",
+  "cleanup_adoption_sha256": "e7dc5b67b49f16491b7e5133c8e7dff8c3bf58c8a550d48351df07aebce5e763",
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt05/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "resource_points": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux",
+      "available_bytes": 9463955456,
+      "planned_start_required_bytes": 8053063680,
+      "projected_after_initial_R_384MiB": 9061302272
+    },
+    {
+      "path": "/root/projects/PassVault",
+      "available_bytes": 9463955456,
+      "planned_start_required_bytes": 8053063680,
+      "projected_after_initial_R_384MiB": 9061302272
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs",
+      "available_bytes": 9463955456,
+      "planned_start_required_bytes": 8053063680,
+      "projected_after_initial_R_384MiB": 9061302272
+    }
+  ],
+  "RAM": {
+    "MemTotal": 67435888640,
+    "MemAvailable": 63103877120
+  },
+  "host_point": {
+    "positive": [],
+    "vanished": 0,
+    "proc_entries": 304,
+    "qualification": "Bounded comm-only point,not universal idle or future exclusivity."
+  },
+  "budget": "7.5GiB entry=3reserve+3entireR+256MiBE+256MiBoutside+1GiBslack;384MiB initialR included. Sampled3GiB floor/R cap,not quotas. RAM25%entry20%running;outer6000s/work5250s;originalstop bounded600s.",
+  "coordination": "Original same lock acquired nonblocking for admission then released to fixed outer;all20 lanes tool-quiescent,linux reviewer settled,dependency pair paused;root sole local/CI build owner. Latest branch queue8/8completed at06:33:49 and no subsequent rootCI launch,no known external scheduler. T/source/index/config/control/request freeze retained;only this build/cleanup permitted until terminal.",
+  "queue_record_sha256": "02714bc53392c0d6e2d69dbece76c84e69f07f70487a3baf2a4ba8e11df2d746",
+  "cleanup_installed": "Accepted inner/outer installs cancellation,original isolated checked-in-wrapper --stop,owned namespace settlement,source-before/after,compact static+DSL diagnostics retention,and exact allowlisted wholeR cleanup. Failure/ambiguity remains HOLD,no extra completedstop or old cleanup replay.",
+  "expected_evidence": "Actual terminal,outerreceipt,innerresult,exactcommands/logs/stops,7analyzer+guard task mappings and21 reports,source/index invariance,owned settlement,evidence conservation/disposal;independent actual review.",
+  "restrictions": "PVU007 STOP;PVU011 NO RETRY;PVA02949/44/5FAIL no automatic retry;G7/G8 CLOSED;original native refusal;protected refs/tags/build1017001 unchanged. EightPVD decisions separate;no dependency/version/identity/signing/store action."
+}

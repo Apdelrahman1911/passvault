@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-13T06:22:04.470850+00:00",
+  "status": "OWNER_AUTHORIZATION_PENDING_NOT_APPLIED",
+  "scope": "Desktop test-only classpath wiring, separate from eight PVD product-design decisions",
+  "source_before": {
+    "path": "app-desktop/build.gradle.kts",
+    "bytes": 63918,
+    "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+  },
+  "proposed_change": "Add implementation(libs.lifecycle.viewmodel) inside existing desktopTest.dependencies only. Existing catalog resolves org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.11.0; no version or production runtime dependency change proposed.",
+  "reason": "Focused05 actual Desktop test compiler produced nine inaccessible androidx.lifecycle.ViewModel supertype diagnostics on meaningful real BackupViewModel/SettingsViewModel state observations. Database/credential test task actions finished; original failed compiler retained. No workaround by test removal, reflection/suppression, broader production API export or version change.",
+  "boundary": "Owner explicitly requires separate authorization for dependency changes, including declaration wiring. No source/dependency modification made. windows_author preparing exact single-line proposal; root independently inspected relevant existing source-set and real test state reads.",
+  "question_sent": "Normal terminal question plus one accepted PocketTerminal question (launch49a201/session68120/terminal21acd7 exit0). Acceptance is delivery only, not owner approval/read receipt.",
+  "next": "Await explicit approval before any dependency declaration edit; continue independent Android Graph04/Static07/remaining permitted source work. Do not rerun consumed Focused05; reuse accepted actual regressions after review and later narrowly validate changed compiler/GUI source if authorized."
+}

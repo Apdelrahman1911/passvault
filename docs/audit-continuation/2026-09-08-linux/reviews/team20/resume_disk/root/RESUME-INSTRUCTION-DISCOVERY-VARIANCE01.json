@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-13T07:03:20.329564+00:00",
+  "status": "READ_ONLY_INSTRUCTION_DISCOVERY_LIMITATION",
+  "command": "find . -name AGENTS.md -not -path './.git/*' -not -path './agent-skills/*' -not -path './docs/audit-handoff/*'",
+  "qualification": "The actual instruction-discovery command used a non-pruning .git/* predicate, so traversal of a retired metadata directory cannot be ruled out. Only ./AGENTS.md was returned. No Git invocation/store content read/adoption or runtime use followed from that command. No blanket no-metadata-traversal claim; subsequent reads use exact allowlisted paths."
+}

@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "status": "ROOT_ENTRY_REFUSED_BEFORE_COLLECTOR_EXEC_NO_RETRY",
+  "tool": {"chunk_id": "f781b6", "exit_code": 1, "session_id": null},
+  "error": "AssertionError at stdin line25 -> raw line5: r=p.read_bytes(); assert a==p.lstat()",
+  "guard": "Root entry compared whole stat_result, including read-sensitive access time. Exact differing field/before-after values were not retained; access-time drift is a plausible guard problem, not an established observed cause.",
+  "reached": "U02 actual adoption and consumed-slot snapshot were durably written; sole slot now reserves static javap02. Original accepted publication is unchanged.",
+  "not_reached": "ANDROID-JAVAP02-EXECUTION-ADMISSION.json creation, admission stdout, collector os.execve and android-property-javap02 OUT creation. The collector namespace is unentered, not a consumed collector invocation.",
+  "post_observation": {
+    "tool_chunk": "368f24",
+    "U02_adoption_sha256": "6a2cb2ed5c092750eee9017d5c482293ae3abab5149583d0fff3d5bef8fede31",
+    "U02_consumed_slot_sha256": "2d334b9c75172a285893a696d7ee515fb9a595da9f0d364e1a06803f0c316bc2",
+    "slot_state": "RESERVED_STATIC_ANDROID_JAVAP02",
+    "javap02_admission_absent": true,
+    "javap02_output_absent": true
+  },
+  "cleanup": "No child, Java, Gradle, temporary class archive, HOME/TMP or runtime allocation reached; no process/stop/disposal duty. Preserve root records. No automatic replay of this combined adoption/entry command.",
+  "proposed_narrow_successor": "Resume only the still-unentered collector entry after independent review. Use the standard explicit stable identity tuple dev/ino/uid/mode/nlink/size/mtime_ns/ctime_ns plus exact content hash, excluding read-sensitive atime; retain all security/content checks and original slot/adoption. Do not recreate or overwrite those records.",
+  "credit": {"tests": 0, "builds": 0, "closures": 0}
+}

@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "status": "BOUNDED_METADATA_ASSESSMENT_CONDITIONAL_3GIB_CLEANUP03_FALLBACK_NOT_DELETION_ADMISSION",
+  "resource_point": {
+    "utc": "2026-09-12T04:26:18.892226+00:00",
+    "disk_available_bytes": 8969728000,
+    "ram_available_bytes": 63951826944,
+    "ram_total_bytes": 67435888640
+  },
+  "owner_scope": {
+    "path": "reviews/team20/resume_disk/root/OWNER-SCOPE.json",
+    "sha256": "7c3d609cfd6f59e513cc056201fe0df28cba0a59a8e6f74a045acabaa45101f5",
+    "bytes": 2318
+  },
+  "metadata_commands": [
+    {
+      "tool_chunks": [
+        "682e4c"
+      ],
+      "scope": "df/memory point plus direct parent entries only; included held-root entry lstat, no held descendants"
+    },
+    {
+      "tool_chunks": [
+        "5c2bbf",
+        "128e8b"
+      ],
+      "scope": "bounded du aggregate conventional caches/logs, no file contents"
+    },
+    {
+      "tool_chunks": [
+        "ab17aa",
+        "385f05"
+      ],
+      "scope": "du other projects with PassVault excluded, toolchains, small cache children, tmpfs capacity"
+    },
+    {
+      "tool_chunks": [
+        "655f22",
+        "2ce863"
+      ],
+      "scope": "du aggregate system/agent roots and29 other-session directories only; no file contents"
+    }
+  ],
+  "observed_allocated_metadata_bytes": {
+    "other_projects_excluding_PassVault": 603701248,
+    "required_shared_gradle_cache": 273575936,
+    "required_shared_konan": 122314752,
+    "opt_toolchains": 61739008,
+    "other_session_workspaces_29_combined": 39018496,
+    "agent_state_codex": 30175232,
+    "usr": 27643904,
+    "cargo_toolchain": 22958080,
+    "npm_cache_and_logs": 15056896,
+    "usr_local_subset_of_usr": 10203136,
+    "small_cache": 2596864,
+    "var_lib": 786432,
+    "rustup": 143360,
+    "local_tools": 61440,
+    "apt_cache": 40960,
+    "system_logs": 28672,
+    "claude_agent_state": 16384
+  },
+  "tmp_volume": {
+    "kind": "tmpfs",
+    "used_bytes": 87343104,
+    "available_bytes": 33630601216,
+    "qualification": "Different memory-backed volume; deleting its session files would not recover the overlay disk deficit."
+  },
+  "preservation": "No source/evidence/session/cache file deleted by these observations. Other projects, agent state and29 source/review/session directories have no established disposal eligibility. Shared Gradle/Konan/toolchains remain needed. Tiny ordinary caches cannot supply the roughly4GB shortfall; no guessed unused-session removal. This is bounded inspection, not a complete backing-filesystem census or explanation of every used byte.",
+  "fallback_rationale": "Normal12GiB is not presently reachable through clearly disposable unrestricted observations. Current static04-only original temporary namespace has a2GiB logical inspection cap but no current size/net-reclaim claim and requires separate exact closeout. New owner condition permits that low-allocation cleanup at3GiB to attempt reclamation; no build floor automatically changed.",
+  "cleanup03_growth_budget": "No build/network/subprocess/toolchain/cache production. Retained inventory<=16MiB, conserved diagnostics<=4MiB and compact receipts;<24MiB planned additional evidence under current8+GiB free. Existing3GiB actual guard, unchangedRAM25/20%,180s, no automatic retry and complete pre-unlink conservation remain.",
+  "qualification": "du reports allocated metadata in this visible namespace; not proof of physical/net reclaim, current global inactivity or permission to inspect/dispose any held target. A fresh admitted closer supplies original-R checks before deletion; original G7/G8/PVU/PVA029/refusal constraints remain."
+}

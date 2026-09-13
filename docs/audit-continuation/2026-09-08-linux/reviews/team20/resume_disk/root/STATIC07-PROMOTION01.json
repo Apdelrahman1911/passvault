@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-13T06:39:45.491505+00:00",
+  "status": "SOURCE_BINDING_AND_PROMOTION_NOT_FINAL_INSTANCE_OR_EXECUTION",
+  "packet": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new12/detekt07/PACKET.json",
+    "bytes": 18340,
+    "sha256": "a2812cd2c24d7aef85f2d2ce394bd9eae144043f0445756e1b1aa5b0dc364a97"
+  },
+  "independent_semantic_and_literal_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new06/STATIC07-SOURCE-INDEX-BINDING-REVIEW.json",
+    "bytes": 16160,
+    "sha256": "926fc4f77ad973b227522e73302ede9c2a32ff5c573bd7b2cf5ea22b3e57fb5e"
+  },
+  "point_fact_basis": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/ANDROIDGRAPH04-CURRENT-FACTS01.json",
+    "bytes": 10215,
+    "sha256": "3593709f6e10b63e689b84a528194cd0c8a28542cec113e2bcd514692cd13eb9"
+  },
+  "accepted17_replacements_forward_and_inverse": "EXACT_COMPLETE_DONOR_AND_ACCEPTED_AFTERIMAGES",
+  "additional_root_physical_binding_operations": [
+    {
+      "role": "outer",
+      "before": "DEVICE = {'directory_device': None, 'regular_file_device': None}  # Fresh current-U instance facts UNBOUND.",
+      "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Root point facts; final instance/entry required.",
+      "occurrences": 1
+    },
+    {
+      "role": "outer",
+      "before": "EXPECTED_LOCK = {'dev': None, 'ino': None, 'uid': None, 'mode': None, 'nlink': None, 'bytes': None, 'mtime_ns': None, 'ctime_ns': None}  # UNBOUND fresh fullpin of SAME original Linux lock (24/14189001); never recreate/replace.",
+      "after": "EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Same original Linux lock24/14189001; never recreate/replace. Final exact instance/entry required.",
+      "occurrences": 1
+    }
+  ],
+  "additional_complete_inverse": "RESTORES_ACCEPTED_NEW12_OUTER_EXACTLY",
+  "entries": [
+    {
+      "role": "inner",
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_07.py",
+        "bytes": 57240,
+        "sha256": "bd324c26690344e734e6d46083f3edba1a3ec1dc76e1b7603a7ddee62b9aaa43"
+      },
+      "accepted_base": {
+        "afterimage_bytes": 57240,
+        "afterimage_persisted": false,
+        "afterimage_sha256": "bd324c26690344e734e6d46083f3edba1a3ec1dc76e1b7603a7ddee62b9aaa43",
+        "donor": {
+          "bytes": 57165,
+          "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new08/detekt07/LINUX-DETEKT-07.py.txt",
+          "sha256": "c82d65769869ef82e6fa41af4820fdddc91e3db40798cbdd64157c2700798593"
+        },
+        "prospective_canonical_path": "scripts/audit/linux_detekt_07.py",
+        "role": "inner"
+      }
+    },
+    {
+      "role": "outer",
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/detekt07/LAUNCH.py",
+        "bytes": 72162,
+        "sha256": "9866e485c7bb92435e3292e666998a671c8d21480cd51c1830a72693735cfedf"
+      },
+      "accepted_base": {
+        "afterimage_bytes": 72124,
+        "afterimage_persisted": false,
+        "afterimage_sha256": "547f4a1b40d5fef03d8f7d1d4149dbd15ddadd5497d81011587110832fe8a5a1",
+        "donor": {
+          "bytes": 72044,
+          "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new08/detekt07/LAUNCH.py.txt",
+          "sha256": "ad3cac69ebd226828dbd6e5b5d5cecc05ecf1edd9503ce56b1849c687e4c0bff"
+        },
+        "prospective_canonical_path": "docs/audit-continuation/2026-09-08-linux/reviews/detekt07/LAUNCH.py",
+        "role": "outer"
+      }
+    },
+    {
+      "role": "init",
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_07.init.gradle",
+        "bytes": 3930,
+        "sha256": "6ae7d4fdf1b8479238f31a6ce2d804e27286a68f9425482695d70abb9d2150c8"
+      },
+      "accepted_base": {
+        "bytes": 3930,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new08/detekt07/DETEKT-07.init.gradle.txt",
+        "sha256": "6ae7d4fdf1b8479238f31a6ce2d804e27286a68f9425482695d70abb9d2150c8"
+      }
+    }
+  ],
+  "scope": "Same complete checkpoint22 SOURCE/INDEX and unchanged init; only two prospective DEVICE/EXPECTED_LOCK binding lines beyond independently accepted source. Genuine independent final instance must challenge these values plus current pins/quiet/resource/strict-positive-host-screen facts. No predicate/command/resource/cleanup/host-policy change or tool execution. Graph04 reserved, no static run admitted."
+}

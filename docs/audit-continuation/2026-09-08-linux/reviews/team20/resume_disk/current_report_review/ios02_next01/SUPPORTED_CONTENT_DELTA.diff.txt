@@ -1,0 +1,20 @@
+--- DONOR_DATA_ONLY/ios_focused_validation.py
++++ FUTURE_IOS02_ONLY/UNBOUND_SUCCESSOR_NOT_THE_CONSUMED_DONOR
+@@ -31,7 +31,7 @@
+ PATH = "/usr/bin:/bin:/usr/sbin:/sbin"
+ DIR_FLAGS = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+-LOG_CAP, XML_CAP, EVIDENCE_CAP, RAW_CAP = 2 * MIB, 512 * 1024, 16 * MIB, 128 * MIB
++LOG_CAP, XML_CAP, EVIDENCE_CAP, RAW_CAP = 2 * MIB, 512 * 1024, 16 * MIB, 160 * MIB
+ WORK_SECONDS, CLEANUP_SECONDS = 24 * 60, 27 * 60
+ CRYPTO_CLASS = "com.passvault.core.crypto.SecurityTest"
+ ATTACHMENT_CLASS = "com.passvault.shared.platform.IosAttachmentFileStoreTest"
+@@ -53,7 +53,7 @@
+     "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosAttachmentFileStoreTest.kt":
+         "406c47fd2ea71afe50a57acfbc5050bcda05a3050e94a16c5555a5e053bdc337",
+     "shared/src/iosTest/kotlin/com/passvault/shared/platform/IosBiometricPromptStringsTest.kt":
+-        "9e18f0bd193ba3308982ec05b45ab6d025e40f9b8b35baf880aa9ff66d640400",
++        "0e1abfdb321a13f3a88095c2a2446b3886e1e23f1e88152c03beb2798e9d8bbe",
+     "core/crypto/src/commonTest/kotlin/com/passvault/core/crypto/SecurityTest.kt":
+         "867a98c43713ce879e129953e4fcdd4c314f3e737a85a5b7e7b78ed5360639f6",
+ }

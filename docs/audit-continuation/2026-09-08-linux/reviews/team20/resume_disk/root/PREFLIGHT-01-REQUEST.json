@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "status": "EXACT_ROOT_BOUND_REQUEST_PENDING_INDEPENDENT_INSTANCE_REVIEW",
+  "suite": "C20-PUBLICATION-PREFLIGHT-01",
+  "source": {
+    "path": "reviews/team20/resume_disk/publication_author/C20-PUBLICATION-PREFLIGHT-01.py.txt",
+    "bytes": 31771,
+    "sha256": "8cc59e002457a37c0f8385ec5d6409fecf886ad0e385b2c4d04bae3d78a2cd15"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/publication_author/C20-PUBLICATION-PREFLIGHT-01.py.txt"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "required_independent_source_review": {
+    "reviewer": "/root/c20_coverage_review",
+    "path": "reviews/team20/resume_disk/coverage_review/PREFLIGHT-01-SOURCE-REVIEW.json",
+    "sha256": "0b4d45b87c758c3345a6be87537c29ea0a58547a409efc9ccb3ee52ed7c04437"
+  },
+  "root_admission": {
+    "utc": "2026-09-12T04:50:46.006128+00:00",
+    "source_request_sha256": "2a1c91c779c8f77046ef72b26eb1d1fcc877d8fbf6cb58b6d1d144239333077e",
+    "explicit_post_cleanup_only": true,
+    "quiet_source_metadata_window": "Root sole audit launcher; no audit build/test/CI/Git or known external audit scheduler; other agents source/data reads only. This observes current host conflicts without asserting global idle.",
+    "actual_disk_policy": "Root FLOOR-ELECTION.json2078B/ba16391a0d84ccbfeb927457fb16cd3869dea24ffc8d2c6b95587ca408b103bc;3GiB minimum prospective policy. This read-only facts batch observes disk and enforces RAM25%, creates compact evidence only, not a build or publication admission.",
+    "namespace_custody_release": "STATIC03-ACTUAL-ADOPTION.json1257B/2bd8a61844d61b4c41cdae06145df58156bbdd2f6d7a857ede936de9b4a32342 releases only consumed scheduling; static04 originalR remains HOLD. No heldR access or old-helper retry.",
+    "source_executor_identity": {
+      "interpreter": "/usr/bin/python3.12",
+      "isolated": true,
+      "no_site": true,
+      "dont_write_bytecode": true,
+      "source_sha256": "8cc59e002457a37c0f8385ec5d6409fecf886ad0e385b2c4d04bae3d78a2cd15"
+    },
+    "no_other_audit_build_or_test_owner": true,
+    "source_request_sha256_semantics": "Hash of immutable TEMPLATE input above, NOT self hash. Exact final filled-instance hash belongs only in separate review/admission."
+  },
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "sha256": "03894f3ab0b812c13e00844a36674f40efee7d76003abaf467fafa28c7010556",
+    "state": "IDLE_NO_AUDIT_BUILD_ADMITTED",
+    "note": "Source reads before/after under original physical lock; outer root admission must bind current expected bytes/state. Frozen selected oldslot stays untouched."
+  },
+  "fixed_commands": [
+    "one Git ls-remote to exact six named protected/candidate refs, cwdT only",
+    "one exact-head/all-base state=open PR GET,per_page100",
+    "five unfiltered repository actions/runs GETs,statuses queued,pending,waiting,requested,in_progress,per_page100"
+  ],
+  "queue_semantics": "Five status sets, not branch/workflow filters. Each total_count must be integer0..99 and equal projected unique run count; every projected status must match query. Zero counts+empty arrays required for no-observed-conflict result. Any nonzero is explicit conflict, not job cancellation. Saturated/incomplete/malformed/error produces HOLD; no page loop or retry.",
+  "bounds": {
+    "total_seconds": 60,
+    "prelaunch_seconds": 15,
+    "all_commands_deadline_seconds": 55,
+    "per_child_seconds": 45,
+    "abnormal_direct_child_settlement_seconds": 5,
+    "commands": 7,
+    "pipe_bytes_each": 32768,
+    "receipt_bytes_each": 65536,
+    "proc_entries": 8192,
+    "process_screen_seconds": 5,
+    "regular_executable_bytes_each": 67108864,
+    "live_slot_bytes": 262144
+  },
+  "resource_scope": "Per explicit root instruction this cheap read-only batch observes disk bytes, validates nonnegative units and keeps RAM25% minimum; it does not enforce historical12GiB or authorize3GiB publication. Root must bind actual disk admission after cleanup. No build workload is launched.",
+  "outputs": [
+    {
+      "path": "reviews/team20/resume_disk/publication_author/PREFLIGHT-01-INTENT.json",
+      "must_be_absent_before_once_only_attempt": true
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/PREFLIGHT-01-RESULT.json",
+      "must_be_absent_before_once_only_attempt": true
+    }
+  ],
+  "root_retention": "Retain original external terminal exit/envelope plus compact exact output tuple. Hard interruption or unproven abnormal descendants remains HOLD/no retry; do not invoke this consumed name again or kill unrelated processes. No old helper or old metadata receipt is replayed.",
+  "qualification": "This is an inert request proposal; the helper follows reviewed old pattern of requiring separate root outer admission rather than importing this template. Zero application/native tests, publication, source/index capture or closure. Final394/publisherv5 and all STOP/NO-RETRY/CLOSED/native-refusal/protected/build1017001 fences remain untouched.",
+  "cooperative_freeze": "Root freezes exact source/template/instance/live-slot/selected394/canonicalpublisher/finalreview and original named metadata through terminal. Only new retained preflight outputs/admission allowed. No namespace/source writes by other agents."
+}

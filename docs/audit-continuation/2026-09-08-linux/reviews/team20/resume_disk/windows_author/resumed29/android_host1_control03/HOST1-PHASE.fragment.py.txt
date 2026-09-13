@@ -1,0 +1,184 @@
+    def preserve_host_xml(self, state):
+        root = CHECKOUT / 'app-android/build/test-results/testDebugUnitTest'
+        expected = root / ('TEST-' + HOST_CLASS + '.xml')
+        captures, errors, observed, total = [], [], set(), 0
+        mapping, enumerated = False, False
+        try:
+            try:
+                names = sorted(n for n in os.listdir(self.f.directory(root))
+                               if n.startswith('TEST-') and n.endswith('.xml'))
+            except FileNotFoundError:
+                names = []  # An absent settled output is retained as absent, never a passing test.
+            require(len(names) <= 16, 'bounded host XML file count')
+            enumerated = True
+            for name in names:
+                path = root / name
+                data, original = self.f.read(path, 2 * MIB)
+                total += len(data)
+                require(total <= 4 * MIB, 'aggregate host XML byte bound')
+                saved = self.f.write(E / 'xml' / name, data)
+                captures.append({'source': str(path), 'original': original, 'saved': saved})
+                observed.add(path)
+                try:
+                    raw = data.decode('utf-8')
+                    require(path == expected and raw and '\x00' not in raw
+                        and '<!DOCTYPE' not in raw and '<!ENTITY' not in raw,
+                        'unexpected/empty/declaring/non-UTF8 host XML')
+                    suite = ET.fromstring(raw)
+                    cases = suite.findall('testcase')
+                    require(suite.tag == 'testsuite' and suite.get('name') == HOST_CLASS
+                        and len(list(suite.iter('testsuite'))) == 1 and len(cases) == 1
+                        and len(list(suite.iter('testcase'))) == 1
+                        and cases[0].get('classname') == HOST_CLASS and cases[0].get('name') == HOST_METHOD,
+                        'exact one unsuffixed Android host suite/method; no Desktop aliases')
+                    require(suite.get('tests') == '1'
+                        and all(suite.get(k) == '0' for k in ('failures', 'errors', 'skipped'))
+                        and all(not list(suite.iter(k)) for k in ('failure', 'error', 'skipped')),
+                        'host suite failure/error/skipped case')
+                    mapping = True
+                except (RuntimeError, ValueError, UnicodeError, ET.ParseError) as error:
+                    note(errors, error)
+        except Exception as error:
+            enumerated = False
+            note(errors, 'host XML retention: ' + str(error))
+        preserved = enumerated and len(captures) == len(observed)
+        mapping = bool(preserved and mapping and observed == {expected} and not errors)
+        state['xml'] = {'root': str(root), 'expected': str(expected), 'captures': captures,
+            'observed_file_count': len(observed), 'bytes': total, 'preserved': preserved,
+            'mapping_ok': mapping, 'errors': errors, 'actual_successful_cases': 1 if mapping else 0}
+        self.xml_preserved, self.xml_mapping_ok = preserved, mapping
+        self.f.write(E / 'HOST-XML.json', canonical(state['xml']))
+        if not preserved:
+            self.note('Host XML preservation incomplete; original cleanup not admitted')
+        if not mapping:
+            self.note('Host exact XML absent/failed/unmatched; no case pass inferred')
+
+    def preserve_host(self, state):
+        # Raw log is already durable; conserve marker suffixes before interpreting them.
+        prefix, argument_prefix = b'PASSVAULT_ANDROID_HOST1=', b'PASSVAULT_ANDROID_ARG_VECTOR='
+        captures, rows, argument_rows, collection_errors, validation_errors = [], [], [], [], []
+        events, arguments, log_image, summary, argument_summary = [], [], None, None, None
+        marker_count, argument_count = 0, 0
+        signals = {'dry_run_outcomes': 0, 'build_success_lines': 0, 'build_failure_lines': 0,
+            'misaligned_markers': 0, 'misaligned_argument_vectors': 0}
+        mapped = False
+
+        def pairs(items):
+            value = {}
+            for key, item in items:
+                require(key not in value, 'duplicate Host1 receipt JSON key')
+                value[key] = item
+            return value
+
+        try:
+            raw, log_image = self.f.read(E / 'logs/host1.log', 4 * MIB)
+            require(log_image == self.f.evidence[E / 'logs/host1.log'], 'original Host1 log changed')
+            for number, line in enumerate(raw.splitlines(keepends=True), 1):
+                signals['dry_run_outcomes'] += int(re.fullmatch(rb':[A-Za-z0-9:_-]+ SKIPPED\s*', line) is not None)
+                signals['build_success_lines'] += int(line.startswith(b'BUILD SUCCESSFUL'))
+                signals['build_failure_lines'] += int(line.startswith(b'BUILD FAILED'))
+                signals['misaligned_markers'] += int(prefix in line and not line.startswith(prefix))
+                signals['misaligned_argument_vectors'] += int(argument_prefix in line and not line.startswith(argument_prefix))
+                is_argument = line.startswith(argument_prefix)
+                if not is_argument and not line.startswith(prefix):
+                    continue
+                if is_argument:
+                    argument_count += 1
+                    body = line[len(argument_prefix):]
+                    ordinal = argument_count
+                else:
+                    marker_count += 1
+                    body = line[len(prefix):]
+                    ordinal = marker_count
+                try:
+                    require((argument_count <= 1 and len(body) <= 4097) if is_argument
+                        else (marker_count <= 384 and len(body) <= MIB + 1), 'Host1 marker count/size bound')
+                    (arguments if is_argument else events).append(body)
+                    captures.append({'line': number, 'kind': 'argument' if is_argument else 'host',
+                        'ordinal': ordinal, 'bytes': len(body), 'sha256': sha(body)})
+                    require(body.endswith(b'\n') and not body.endswith(b'\r\n'), 'complete original LF-only marker suffix')
+                    row = json.loads(body.decode('utf-8'), object_pairs_hook=pairs,
+                        parse_constant=lambda _: require(False, 'nonfinite Host1 JSON'))
+                    require(isinstance(row, dict), 'Host1 marker JSON object')
+                    if is_argument:
+                        require(marker_count == 0, 'argument vector precedes Host1 action events')
+                        argument_rows.append(row)
+                    else:
+                        rows.append(row)
+                except Exception as error:
+                    note(validation_errors, 'Host1 marker: ' + str(error))
+            self.f.write(E / 'reports/host-init.ndjson', b''.join(events))
+            self.f.write(E / 'reports/host-arguments.ndjson', b''.join(arguments))
+        except Exception as error:
+            note(collection_errors, 'Host1 log/marker retention: ' + str(error))
+        try:
+            require(not collection_errors and not validation_errors and marker_count == len(rows) == 348
+                and argument_count == len(argument_rows) == 1
+                and signals == {'dry_run_outcomes': 0, 'build_success_lines': 1, 'build_failure_lines': 0,
+                    'misaligned_markers': 0, 'misaligned_argument_vectors': 0},
+                'exact complete actual Host1 stream; never map graph refusal to pass')
+            commands = [c for c in state['commands'] if c['label'] == 'host1']
+            require(len(commands) == 1 and commands[0]['argv'] == HOST_COMMAND
+                and commands[0]['started'] is True and commands[0]['complete'] is True
+                and type(commands[0]['exit']) is int and commands[0]['exit'] == 0
+                and not commands[0]['errors'] and commands[0].get('log') == log_image
+                and state['command_zero_exit'] is True, 'one exact original completed Host1 exit0 command')
+            argument_summary = validate_argument_vector(argument_rows[0])
+            summary = validate_host_rows(rows, self.expected_graph)
+            mapped = True
+        except Exception as error:
+            note(validation_errors, 'Host1 actual result mapping: ' + str(error))
+        preserved = log_image is not None and not collection_errors
+        state['host'] = {'log_image': log_image, 'marker_captures': captures, 'marker_count': marker_count,
+            'argument_vector_count': argument_count, 'argument_summary': argument_summary,
+            'summary': summary, 'log_signals': signals, 'collection_errors': collection_errors,
+            'validation_errors': validation_errors, 'evidence_preserved': preserved,
+            'actual_action_case_mapping_ok': mapped, 'independent_final_review_required': True,
+            'callback_case_count': 1 if mapped else 0,
+            'qualification': 'Actual action/case callbacks and producer/configured-consumer joins; '
+                'exact retained XML, original stop/settlement and independent actual review still required. '
+                'No APK/instrumentation/Android32/native/security-hardware or PVA009 closure.'}
+        self.f.write(E / 'HOST-EVIDENCE.json', canonical(state['host']))
+        self.host_preserved, self.host_mapping_ok = preserved, mapped
+        if not preserved:
+            self.note('Host evidence retention uncertain; no automatic cleanup')
+        if not mapped:
+            self.note('Host action/case mapping failed; retained/no automatic retry')
+
+    def execute_host(self):
+        state = self.state('android-host1')
+        state['command_zero_exit'], state['host_ok'] = False, False
+        state['xml'] = {'preserved': False, 'mapping_ok': False}
+        try:
+            self.check_inputs()
+            self.binding_check()
+            require(self.git_bound and self.settle() and not self.cancelled(), 'fresh original Git/SDK-isolated Host1 phase')
+            self.verify_host_subject()
+            self.verify_host_properties()
+            root = R / 'workers/clipboard'
+            require(set(os.listdir(self.f.directory(R / 'workers'))) == {'clipboard'}
+                and set(os.listdir(self.f.directory(root))) == set(WORKER_CHILDREN)
+                and all(not os.listdir(self.f.directory(root / name)) for name in WORKER_CHILDREN),
+                'exact original private one-worker membership, all startup storage empty')
+            self.resources(True)
+            # One real invocation, no --dry-run/-x/rerun and no graph-discovery retry.
+            state['command_zero_exit'] = self.command('host1', HOST_COMMAND, ENV, 3600, state)
+        finally:
+            if state['stop_required']:
+                try:
+                    self.check_inputs(stopping=True)
+                    self.source_check('STOP', True)
+                    state['stop_ok'] = self.command('host1-stop', STOP, ENV, 600, state, stopping=True)
+                except Exception as error:
+                    self.note('original Host1 wrapper stop incomplete/no retry: ' + str(error))
+            try:
+                state['settled'] = self.settle()
+                if state['settled'] and state['stop_required']:
+                    self.preserve_host_xml(state)
+                    self.preserve_host(state)
+            except Exception as error:
+                self.note('Host1 evidence/settlement uncertainty: ' + str(error))
+            state['host_ok'] = bool(state['command_zero_exit'] and state['stop_ok'] and state['settled']
+                and self.host_mapping_ok and self.xml_mapping_ok and not self.cancelled())
+            state['record_image'] = self.f.write(E / 'PHASE-android-host1.json', canonical(state))
+        require(state['host_ok'], 'AndroidHost1 incomplete; no automatic retry')

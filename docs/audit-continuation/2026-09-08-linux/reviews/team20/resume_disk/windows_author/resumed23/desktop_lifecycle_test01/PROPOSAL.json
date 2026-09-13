@@ -1,0 +1,319 @@
+{
+  "activity": "Read named W source/build/catalog/verification metadata and retained actual log as inert bytes; ordinary string/hash/diff and exact verification component extraction only; write own inert resumed23 proposals. No project-helper import/AST/compile/run, dependency/tool/network/runtime observation, canonical edit or build/test/cleanup.",
+  "author": "/root/windows_author",
+  "credit": {
+    "execution_admitted": false,
+    "new_closures": 0,
+    "new_fixes_applied": 0,
+    "new_product_findings": 0,
+    "new_tests": 0
+  },
+  "dependency": {
+    "alias": "libs.lifecycle.viewmodel",
+    "already_used_in_production_sources": true,
+    "authorized": false,
+    "catalog_alias_line": 67,
+    "catalog_version_line": 25,
+    "coordinate": "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel",
+    "qualification": "Fixed catalog and checked-in artifact checksums only. No resolved classpath, artifact installation/cache availability, fresh dependency lockfile or transitive-version proof.",
+    "scope": "app-desktop desktopTest implementation only",
+    "separate_owner_authorization_required": true,
+    "verification_entries": [
+      {
+        "artifacts": [
+          {
+            "name": "lifecycle-viewmodel-2.11.0.module",
+            "sha256": "783307f82d161dbb1f36762ce16fb497fd92c9dbcb2b5f40f5a734a8c45f62c9"
+          },
+          {
+            "name": "lifecycle-viewmodel-metadata-2.11.0.jar",
+            "sha256": "bd4b3a39ba8171b09461c569bef335760f5c52a7913b3f54bc36af2a374fd5b8"
+          }
+        ],
+        "group": "org.jetbrains.androidx.lifecycle",
+        "name": "lifecycle-viewmodel",
+        "verification_line": 8511,
+        "version": "2.11.0"
+      },
+      {
+        "artifacts": [
+          {
+            "name": "lifecycle-viewmodel-desktop-2.11.0.jar",
+            "sha256": "38384ad114f3231a5bfe04608c2c514747574fff3e347a7266e12e6ad35a6a1c"
+          },
+          {
+            "name": "lifecycle-viewmodel-desktop-2.11.0.module",
+            "sha256": "9d1f3e0cde54ed6d8d35666920a94ce7d67acf97e400fc0f535fe46e8dee227d"
+          }
+        ],
+        "group": "org.jetbrains.androidx.lifecycle",
+        "name": "lifecycle-viewmodel-desktop",
+        "verification_line": 8591,
+        "version": "2.11.0"
+      },
+      {
+        "artifacts": [
+          {
+            "name": "lifecycle-viewmodel-2.11.0.aar",
+            "sha256": "4b809cf9eb7323d200504e95921feb777ff080215cadb8237742d5ed0ba5b792"
+          },
+          {
+            "name": "lifecycle-viewmodel-2.11.0.module",
+            "sha256": "8393aa093e7e848902de9b3ccc0a12269106ac6e773d75ff97f9754295c49298"
+          },
+          {
+            "name": "lifecycle-viewmodel-metadata-2.11.0.jar",
+            "sha256": "7cba4aa1ce8a69e5a54cdb76b2e6b6e5bd636d733b76b82d23130a436dbfa7f4"
+          }
+        ],
+        "group": "androidx.lifecycle",
+        "name": "lifecycle-viewmodel",
+        "verification_line": 2484,
+        "version": "2.11.0"
+      },
+      {
+        "artifacts": [
+          {
+            "name": "lifecycle-viewmodel-desktop-2.11.0.jar",
+            "sha256": "175c349266ccbb6a2036615725b7066ee3f3319665c98af42206ab3a582a43c3"
+          },
+          {
+            "name": "lifecycle-viewmodel-desktop-2.11.0.module",
+            "sha256": "f3dc0eee174e29700719a403833dadfbb8e7dfa93dc874235e008f386d289659"
+          }
+        ],
+        "group": "androidx.lifecycle",
+        "name": "lifecycle-viewmodel-desktop",
+        "verification_line": 2610,
+        "version": "2.11.0"
+      }
+    ],
+    "version": "2.11.0"
+  },
+  "exact_proposed_delta": {
+    "added_lines": 1,
+    "after": {
+      "bytes": 63975,
+      "sha256": "d0ead442c57c9465333d036bcb4d96f1ac5b06fd8d04dfe5b45fc571100265e3"
+    },
+    "author_validation": "Literal/string/hash only, not Gradle/Kotlin compilation or dependency resolution",
+    "before": {
+      "bytes": 63918,
+      "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+    },
+    "new_block": "        val desktopTest = getByName(\"desktopTest\") {\n            dependencies {\n                implementation(kotlin(\"test\"))\n                implementation(libs.lifecycle.viewmodel)\n                implementation(libs.kotlinx.coroutines.test)\n            }\n        }\n",
+    "old_block": "        val desktopTest = getByName(\"desktopTest\") {\n            dependencies {\n                implementation(kotlin(\"test\"))\n                implementation(libs.kotlinx.coroutines.test)\n            }\n        }\n",
+    "path": "app-desktop/build.gradle.kts",
+    "removed_lines": 0,
+    "whole_inverse_equals_original": true
+  },
+  "inputs": [
+    {
+      "bytes": 63918,
+      "path": "app-desktop/build.gradle.kts",
+      "sha256": "9263cf5e857f55afd4669aa524eaf36f37d3b5a18f4eca293da148bd55b3e709"
+    },
+    {
+      "bytes": 88480,
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "sha256": "992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f"
+    },
+    {
+      "bytes": 3296,
+      "path": "shared/build.gradle.kts",
+      "sha256": "826cc234a59c05efdbbcd6a0ea62f25362f0a54d588e996582903f44d09949ad"
+    },
+    {
+      "bytes": 1721,
+      "path": "feature/backup/build.gradle.kts",
+      "sha256": "6dc0a52f1ec1d191d40a185cd2f07a502ccea9db538b3934302829e6427ec15a"
+    },
+    {
+      "bytes": 1780,
+      "path": "feature/settings/build.gradle.kts",
+      "sha256": "764513fb7e456e0f460591d6f2f3105571d539c2bd79007d45b7669f8cf2eadf"
+    },
+    {
+      "bytes": 28938,
+      "path": "feature/backup/src/commonMain/kotlin/com/passvault/feature/backup/presentation/BackupViewModel.kt",
+      "sha256": "afd73521b4fc0d1b06af29bdc7d4940f4646507a66fcc4e55d801f2448060e63"
+    },
+    {
+      "bytes": 32872,
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt",
+      "sha256": "a19baf0425234acdae2c2d923d74dbabf1e2b6a4822d923d80b9cccabfd6d723"
+    },
+    {
+      "bytes": 5973,
+      "path": "gradle/libs.versions.toml",
+      "sha256": "49775212b92b73197492f36f7c219dbf5d2521b6bbc197c70be50d203c58c57a"
+    },
+    {
+      "bytes": 822452,
+      "path": "gradle/verification-metadata.xml",
+      "sha256": "21ab6f9c2873325558f5bb96c7e7f68bfbb674e2a7ce867ffe19dabdae60c299"
+    },
+    {
+      "bytes": 95100,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/logs/focused.log",
+      "sha256": "e0645c8e843149acba4aaf62740d18ab1590ca38d04ac23995a66b11762ca0e1"
+    }
+  ],
+  "next_validation": {
+    "admission": "Fresh independently reviewed source/instance/build/cleanup after explicit owner authorization; not original Focused05 retry",
+    "batch": "Next already-needed Desktop focused cycle; preserve successful unchanged DB/credential evidence",
+    "not_credit": "Compilation does not establish Desktop UI/Room/modal/tray/native product-family closure",
+    "owner": "/root",
+    "smallest_risk_task": ":app-desktop:compileTestKotlinDesktop"
+  },
+  "not_proposed": [
+    "compiler diagnostic suppression",
+    "reflection/state getter bridges",
+    "mock ViewModels",
+    "test source deletion/exclusion",
+    "product-interface widening",
+    "shared implementation-to-api broadening",
+    "new version/coordinate/catalog or checksum changes",
+    "rerun original Focused05"
+  ],
+  "original_failure": {
+    "diagnostic_count": 9,
+    "log_lines": [
+      382,
+      390
+    ],
+    "meaning": "One source-supported missing public superclass compile-classpath cause, not nine product findings. Original run remains consumed/failed; root reports cleanup complete.",
+    "run": "linux-focused-regression05",
+    "source_sites": [
+      {
+        "line": 430,
+        "type": "BackupViewModel",
+        "uses": 1
+      },
+      {
+        "line": 443,
+        "type": "BackupViewModel",
+        "uses": 1
+      },
+      {
+        "line": 465,
+        "type": "BackupViewModel",
+        "uses": 1
+      },
+      {
+        "line": 478,
+        "type": "BackupViewModel",
+        "uses": 1
+      },
+      {
+        "line": 503,
+        "type": "BackupViewModel",
+        "uses": 1
+      },
+      {
+        "line": 509,
+        "type": "BackupViewModel",
+        "uses": 1
+      },
+      {
+        "line": 576,
+        "type": "SettingsViewModel",
+        "uses": 1
+      },
+      {
+        "line": 633,
+        "type": "SettingsViewModel",
+        "uses": 2
+      }
+    ],
+    "task": ":app-desktop:compileTestKotlinDesktop"
+  },
+  "outputs": [
+    {
+      "bytes": 368,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed23/desktop_lifecycle_test01/DESKTOP-TEST-LIFECYCLE.patch",
+      "sha256": "c75285b9c36020e2f2f22d3ae7fb193a87874d33b618be0340b735e25a20fc2b"
+    },
+    {
+      "bytes": 4320,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed23/desktop_lifecycle_test01/PROPOSAL.md",
+      "sha256": "efd203e1dc9d7949aaae98cccfb7aa41f968c8a9934e9116c84e5e6f62f35b08"
+    }
+  ],
+  "schema": 1,
+  "source_reachability": [
+    {
+      "claim": "desktopMain implementation(shared); desktopTest kotlin(test) plus coroutines-test only.",
+      "lines": [
+        1128,
+        1147
+      ],
+      "path": "app-desktop/build.gradle.kts"
+    },
+    {
+      "claim": "ViewModel implementation dependency; api exposures of settings/backup features.",
+      "lines": [
+        61,
+        86
+      ],
+      "path": "shared/build.gradle.kts"
+    },
+    {
+      "claim": "Existing Lifecycle implementation dependency.",
+      "lines": [
+        46,
+        47
+      ],
+      "path": "feature/backup/build.gradle.kts"
+    },
+    {
+      "claim": "Existing Lifecycle implementation dependency.",
+      "lines": [
+        46,
+        47
+      ],
+      "path": "feature/settings/build.gradle.kts"
+    },
+    {
+      "claim": "Direct ViewModel superclass; read-only StateFlow class member.",
+      "lines": [
+        52,
+        59
+      ],
+      "path": "feature/backup/src/commonMain/kotlin/com/passvault/feature/backup/presentation/BackupViewModel.kt"
+    },
+    {
+      "claim": "Direct ViewModel superclass; read-only StateFlow class member.",
+      "lines": [
+        45,
+        52
+      ],
+      "path": "feature/settings/src/commonMain/kotlin/com/passvault/feature/settings/presentation/SettingsViewModel.kt"
+    },
+    {
+      "claim": "Opt-in/display restrictions govern runtime, not Kotlin source-set compilation.",
+      "lines": [
+        94,
+        130
+      ],
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt"
+    },
+    {
+      "claim": "Real singleton after native route; export active-state and cleanup/cancel observations retained.",
+      "lines": [
+        418,
+        519
+      ],
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt"
+    },
+    {
+      "claim": "Real Settings singleton/state and installed tray identity/listener/language observations retained.",
+      "lines": [
+        572,
+        644
+      ],
+      "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt"
+    }
+  ],
+  "status": "PROPOSED_TEST_ONLY_DEPENDENCY_DECLARATION_REQUIRES_SEPARATE_OWNER_AUTHORIZATION_NOT_APPLIED"
+}

@@ -1,0 +1,15 @@
+{
+  "owner": "/root",
+  "utc": "2026-09-12T06:33:48.887951+00:00",
+  "purpose": "Read-only dedicated continuation CI queue point before serial local static05; no dispatch/rerun/cancel/push",
+  "argv": [
+    "/usr/bin/gh",
+    "api",
+    "--hostname",
+    "github.com",
+    "repos/Apdelrahman1911/passvault/actions/runs?branch=codex%2Faudit-continuation-linux-20260908&per_page=100",
+    "--jq",
+    "{total_count:.total_count,runs:[.workflow_runs[]|{id,head_sha,status,conclusion,event,path,created_at}]}"
+  ],
+  "bounds": "45s one public metadata response, <=100 projected runs; no pagination or credential output. Direct child killed/reaped on timeout by subprocess.run. No build/test/worker or disposable runtime."
+}

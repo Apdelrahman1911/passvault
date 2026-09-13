@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T04:53:02.661053+00:00",
+  "disposition": "ADMIT_EXACT_ONCE_C20_READONLY_PREFLIGHT01",
+  "bindings": {
+    "reviews/team20/resume_disk/root/PREFLIGHT-01-REQUEST.json": "54fa0620758f788a3c6dd9ba3f28b4a83cc96055163d8e4dac5c9bef3bb005ec",
+    "reviews/team20/resume_disk/coverage_review/PREFLIGHT-01-INSTANCE-REVIEW.json": "8adc9e4780eac199bfaaeadee5ed9974ca7339df20546d0af87aa77138abc203",
+    "reviews/team20/resume_disk/publication_author/C20-PUBLICATION-PREFLIGHT-01.py.txt": "8cc59e002457a37c0f8385ec5d6409fecf886ad0e385b2c4d04bae3d78a2cd15",
+    "reviews/team20/resume_disk/root/EXECUTION_SLOT.json": "03894f3ab0b812c13e00844a36674f40efee7d76003abaf467fafa28c7010556"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/publication_author/C20-PUBLICATION-PREFLIGHT-01.py.txt"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "limits": {
+    "total_seconds": 60,
+    "prelaunch_seconds": 15,
+    "all_commands_deadline_seconds": 55,
+    "per_child_seconds": 45,
+    "abnormal_direct_child_settlement_seconds": 5,
+    "commands": 7,
+    "pipe_bytes_each": 32768,
+    "receipt_bytes_each": 65536,
+    "proc_entries": 8192,
+    "process_screen_seconds": 5,
+    "regular_executable_bytes_each": 67108864,
+    "live_slot_bytes": 262144
+  },
+  "scope": "Fixed7command metadata batch only: six exact remote refs, exact-head/all-base openPR, five complete bounded nonterminal workflow status queries; narrow local process/resource/metadata point. No build/test/CI dispatch or publication.",
+  "coordination_and_resources": {
+    "utc": "2026-09-12T04:50:46.006128+00:00",
+    "source_request_sha256": "2a1c91c779c8f77046ef72b26eb1d1fcc877d8fbf6cb58b6d1d144239333077e",
+    "explicit_post_cleanup_only": true,
+    "quiet_source_metadata_window": "Root sole audit launcher; no audit build/test/CI/Git or known external audit scheduler; other agents source/data reads only. This observes current host conflicts without asserting global idle.",
+    "actual_disk_policy": "Root FLOOR-ELECTION.json2078B/ba16391a0d84ccbfeb927457fb16cd3869dea24ffc8d2c6b95587ca408b103bc;3GiB minimum prospective policy. This read-only facts batch observes disk and enforces RAM25%, creates compact evidence only, not a build or publication admission.",
+    "namespace_custody_release": "STATIC03-ACTUAL-ADOPTION.json1257B/2bd8a61844d61b4c41cdae06145df58156bbdd2f6d7a857ede936de9b4a32342 releases only consumed scheduling; static04 originalR remains HOLD. No heldR access or old-helper retry.",
+    "source_executor_identity": {
+      "interpreter": "/usr/bin/python3.12",
+      "isolated": true,
+      "no_site": true,
+      "dont_write_bytecode": true,
+      "source_sha256": "8cc59e002457a37c0f8385ec5d6409fecf886ad0e385b2c4d04bae3d78a2cd15"
+    },
+    "no_other_audit_build_or_test_owner": true,
+    "source_request_sha256_semantics": "Hash of immutable TEMPLATE input above, NOT self hash. Exact final filled-instance hash belongs only in separate review/admission."
+  },
+  "freeze": "Root freezes exact source/template/instance/live-slot/selected394/canonicalpublisher/finalreview and original named metadata through terminal. Only new retained preflight outputs/admission allowed. No namespace/source writes by other agents.",
+  "cleanup": "Accepted signal handlers/owned original direct-child settlement and FD/pipe closure installed before subprocess; retain original tool exit/output/session and internalreceipt. Normal original child reaping is not global idle. No wrapper stop applicable. Anyfailure/hardloss/abnormaldescendantuncertainty remains HOLD, no replay or unrelated signals."
+}

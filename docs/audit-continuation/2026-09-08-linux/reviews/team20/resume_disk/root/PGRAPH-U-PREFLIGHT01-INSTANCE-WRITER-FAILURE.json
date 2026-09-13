@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "purpose": "Retain root metadata-writer failure, not a project/helper execution",
+  "error": "AssertionError in initial file() metadata read, before admission output or any Git/network/build child. Original equality included atime; exact failed subassertion not instrumented, so cause not claimed proved.",
+  "correction": "Use stable identity/size/mode/mtime/ctime tuple, excluding read-driven atime; still require exact original source/plan/review/slot hashes. No hash rebase.",
+  "preflight_invoked": false,
+  "application_cases": 0,
+  "output_cleanup": "No disposable output created by failed preparation; required source retained."
+}

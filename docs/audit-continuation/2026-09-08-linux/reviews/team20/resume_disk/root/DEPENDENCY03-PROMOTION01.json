@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-13T07:22:24.918342+00:00",
+  "status": "PROMOTED_ACCEPTED_DEPENDENCY03_SOURCE_PLUS_TWO_PHYSICAL_LITERALS_FINAL_INSTANCE_PENDING",
+  "author_packet": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new14/dependency03/PACKET.json",
+    "bytes": 19876,
+    "sha256": "3006691a41ba558252f679f4f33b26ac1ad06248dbf5b44bb66f1bbfb0ec18b6"
+  },
+  "independent_source_review": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new08/DEPENDENCY03-SOURCE-INDEX-BINDING-REVIEW.json",
+    "bytes": 21928,
+    "sha256": "8aa0dd8bb762b7f06e027a7e2558a8d27e8329f9e66ecd242c4672c3cfdb4e7b"
+  },
+  "physical_literal_basis": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/STATIC07-CURRENT-FACTS02.json",
+    "bytes": 9089,
+    "sha256": "7967d5eabc4b3fc1792fb14c76e7883b681c5ddddba8e51a701b8d47b4e2de01"
+  },
+  "controls": [
+    {
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_dependency_inventory_01.py",
+        "bytes": 44470,
+        "sha256": "15a11273e3c42371479d3e512208542f016745075fe166c85c7313b2248459d3"
+      },
+      "accepted_effective_before_physical": {
+        "bytes": 44470,
+        "sha256": "15a11273e3c42371479d3e512208542f016745075fe166c85c7313b2248459d3"
+      },
+      "donor": {
+        "bytes": 44389,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new08/dependency03/linux_dependency_inventory_01.py.txt",
+        "sha256": "a5fff923ff1ad0e6cc23f0624280fb8a6e565b970134041a501e9607a2910742"
+      },
+      "accepted_literal_substitutions": 7,
+      "whole_inverse_verified": true,
+      "additional_physical_substitutions": []
+    },
+    {
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/dependency-inventory01/LAUNCH.py",
+        "bytes": 68748,
+        "sha256": "8a14f235394acf2476cf042246daff050e13a4cd34d7acca6b784baa7560a489"
+      },
+      "accepted_effective_before_physical": {
+        "bytes": 68716,
+        "sha256": "018fe47cd6453a0eeaf3bdb7d42fa70f1320f1900c02a62aa766d0000671b450"
+      },
+      "donor": {
+        "bytes": 68635,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new08/dependency03/LAUNCH-DEPENDENCY3-v3.py.txt",
+        "sha256": "b23e24644b4dcba1c4bd43578dbe6442f7acc953df0659eacc7fdd61a8ecee31"
+      },
+      "accepted_literal_substitutions": 8,
+      "whole_inverse_verified": true,
+      "additional_physical_substitutions": [
+        {
+          "before": "DEVICE = {'directory_device': None, 'regular_file_device': None}  # Fresh instance facts remain root-owned and unbound.",
+          "after": "DEVICE = {'directory_device': 23, 'regular_file_device': 24}  # Root point facts; final exact instance/entry required."
+        },
+        {
+          "before": "EXPECTED_LOCK = {'dev': None, 'ino': None, 'uid': None, 'mode': None, 'nlink': None, 'bytes': None, 'mtime_ns': None, 'ctime_ns': None}  # UNBOUND fresh fullpin of SAME original Linux lock (24/14189001); never recreate/replace.",
+          "after": "EXPECTED_LOCK = {'dev': 24, 'ino': 14189001, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 0, 'mtime_ns': 1788910891124735946, 'ctime_ns': 1788910891124735946}  # Same original Linux lock24/14189001; never recreate/replace. Final exact instance/entry required."
+        }
+      ]
+    },
+    {
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/scripts/audit/dependency_inventory_01.init.gradle",
+        "bytes": 8343,
+        "sha256": "8463d43071fd7c7f1bf6b014ac6a0a8cf9aa366ced9e5a09cbf4f5a19f1ed0cd"
+      },
+      "unchanged_donor": {
+        "bytes": 8343,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/dependency_author/konan01/dependency_inventory_01.init.gradle.txt",
+        "sha256": "8463d43071fd7c7f1bf6b014ac6a0a8cf9aa366ced9e5a09cbf4f5a19f1ed0cd"
+      }
+    },
+    {
+      "canonical": {
+        "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/dependency-inventory01/INVENTORY.tsv",
+        "bytes": 767,
+        "sha256": "905c5b05aa394db81e010775609ef556b7cb1f7d08fe9dc03c200a406018af67"
+      },
+      "unchanged_donor": {
+        "bytes": 767,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/dependency_author/integration01/INVENTORY.tsv.txt",
+        "sha256": "905c5b05aa394db81e010775609ef556b7cb1f7d08fe9dc03c200a406018af67"
+      }
+    }
+  ],
+  "scope": "Three existing inventory producers;expectedAndroid151/Desktop80/iOSArm6466;zero application tests. Complete new14 literal inverses reconstructed; only additional DEVICE/original-lock lines differ from accepted output. No predicates/flags/no-new-Konan denial/commands/time/cleanup changed.",
+  "not_authority": "No request/approval/runtime/build/test/SDK/network/Git/cache allocation or stop/deletion. Immutable current SOURCE/U/index/config and every old restriction retained."
+}

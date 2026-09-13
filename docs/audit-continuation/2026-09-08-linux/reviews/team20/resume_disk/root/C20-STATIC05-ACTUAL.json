@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T06:48:03.259484+00:00",
+  "status": "ACTUAL_CONFIGURATION_COMPILATION_FAILED_CLEANED_PENDING_INDEPENDENT_RECONCILIATION",
+  "run_id": "linux-detekt05",
+  "source_commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+  "source_tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+  "command_launch_chunk": "f7a8e8",
+  "terminal_chunk": "c201f9",
+  "session": 48715,
+  "outer_exit": 1,
+  "inner_exit": 1,
+  "elapsed_seconds": 119.387,
+  "evidence": [
+    {
+      "path": "runs/linux-detekt05/OUTER-RECEIPT.json",
+      "bytes": 12327,
+      "sha256": "80dab0daa5009afe82070d2e5407178990f6e660d8d9027a1c8d768eb78912bc"
+    },
+    {
+      "path": "runs/linux-detekt05/INNER-RESULT.json",
+      "bytes": 40412,
+      "sha256": "8441a18c11b4a23e5ec2ff21246ddf5f6dfd675c79151cd6c990dd0abdd36956"
+    },
+    {
+      "path": "runs/linux-detekt05/SOURCE-BEFORE.json",
+      "bytes": 1334,
+      "sha256": "58067a94fa91c79a96bf28afa0c9bd464854c02efd5355d2be64ea0b7081b3ec"
+    },
+    {
+      "path": "runs/linux-detekt05/detekt-INTENT.json",
+      "bytes": 1340,
+      "sha256": "cc0a2cd59d04f4fc7b4e570e222eed559d23e969ecf101624f91ba1de8abf06e"
+    },
+    {
+      "path": "runs/linux-detekt05/logs/detekt.log",
+      "bytes": 41261,
+      "sha256": "9d1558f5927ab6011dc71269755c4f14ed9dd16978ba63dec7a1fade568cee25"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "git-isolation",
+      "commands": [
+        {
+          "label": "metadata-bind",
+          "exit": 0,
+          "started": true,
+          "complete": true
+        },
+        {
+          "label": "metadata-readonly",
+          "exit": 0,
+          "started": true,
+          "complete": true
+        },
+        {
+          "label": "index-bind",
+          "exit": 0,
+          "started": true,
+          "complete": true
+        },
+        {
+          "label": "index-readonly",
+          "exit": 0,
+          "started": true,
+          "complete": true
+        }
+      ],
+      "stop_required": false,
+      "stop_ok": false,
+      "settled": true
+    },
+    {
+      "phase": "detekt",
+      "commands": [
+        {
+          "label": "detekt",
+          "exit": 1,
+          "started": true,
+          "complete": true
+        },
+        {
+          "label": "detekt-stop",
+          "exit": 0,
+          "started": true,
+          "complete": true
+        }
+      ],
+      "stop_required": true,
+      "stop_ok": true,
+      "settled": true
+    }
+  ],
+  "error": "app-desktop/build.gradle.kts new standalone native-host Test task: java.time/java.nio fully-qualified expressions shadowed by Gradle java extension in Kotlin DSL; compiler reports12 errors at1089 and1111-1119. Narrow source diagnosis requires independent review.",
+  "actual_test_cases": 0,
+  "completed_static_analyzers": 0,
+  "coverage_guard_completed": false,
+  "required_static_reports_produced": 0,
+  "source_after": true,
+  "original_wrapper_stop": "COMPLETE_EXIT0_NO_REPEAT",
+  "owned_namespace_settlement": true,
+  "cleanup": {
+    "removed": 13471,
+    "snapshot_entries": 13471,
+    "status": "REMOVED_ORIGINAL_RUNTIME"
+  },
+  "generated_report_preservation": {
+    "copied_files": 0,
+    "copied_logical_bytes": 0,
+    "manifest": {
+      "pin": {
+        "bytes": 1861,
+        "ctime_ns": 1789195567767223090,
+        "dev": 24,
+        "ino": 14181844,
+        "mode": 33152,
+        "mtime_ns": 1789195567767223090,
+        "nlink": 1,
+        "uid": 0
+      },
+      "sha256": "6401e9eafcd5086139e440603008ec438cc8aa06bb45c6e474b70a0352f66b9f"
+    },
+    "previously_retained_files": 0,
+    "saved_reverified_after_cleanup": true,
+    "source_and_saved_reverified_before_unlink": true
+  },
+  "resource_after": {
+    "disk_available_bytes": 9489895424,
+    "MemTotal": 67435888640,
+    "MemAvailable": 63082708992
+  },
+  "counts": "No new tests,closures or static credit;original19/25,all26/39,suspicions2/12 unchanged.",
+  "restrictions": "No automatic replay of this consumed instance;all original failed/HOLD/STOP/NO-RETRY/CLOSED/native/protectedrefs/build1017001 restrictions retained."
+}

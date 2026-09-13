@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T06:27:24.971815+00:00",
+  "status": "ADMIT_EXACT_FOCUSED02_CLOSEOUT01_ONCE",
+  "run_id": "focused02-closeout01",
+  "references": {
+    "request": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/FOCUSED02-CLOSEOUT01-REQUEST.json",
+      "bytes": 1868,
+      "sha256": "9ac66c70228feba28d5b88d5223f5a8cd30b686b2d478028cfcc17c7c8de6762"
+    },
+    "approval": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/focused02_cleanup_review/FOCUSED02-CLOSEOUT01-ACCEPT.json",
+      "bytes": 745,
+      "sha256": "aee5a55b501d91e8bc145259849e1501923a6d76280329a80ff97f9da39b5afb"
+    },
+    "source_review": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/focused02_cleanup_review/FOCUSED02-CLOSEOUT01-SOURCE-REVIEW.md",
+      "bytes": 8666,
+      "sha256": "3d34a1bfa74009530475c5a6d10a7a845cb82b0ab51699502fc2c8a97871ca9f"
+    },
+    "instance_review": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/focused02_cleanup_review/FOCUSED02-CLOSEOUT01-INSTANCE-REVIEW.md",
+      "bytes": 4534,
+      "sha256": "b29995600df105bd28a27d2de983ed60480bc455112343553ccfa4f00e9d649b"
+    },
+    "slot": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+      "bytes": 3107,
+      "sha256": "ff2cb809cdbd3725742da860d96b46a155ca1109166ca3301f2543ac77a805c2"
+    },
+    "source": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/focused02_cleanup_author/CLOSEOUT01.py",
+      "bytes": 46391,
+      "sha256": "8b59997e70e315ed0e3e59b2c562c9667d236f4164e1749f14589d76890fba41"
+    },
+    "plan": {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/focused02_cleanup_author/PLAN.json",
+      "bytes": 6152,
+      "sha256": "154b59ce44858b447b457913777fe60ac42f51656ebb1547e6bdba718388c818"
+    }
+  },
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "-S",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/focused02_cleanup_author/CLOSEOUT01.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "resources": {
+    "disk_available_bytes": 8951394304,
+    "MemTotal": 67435888640,
+    "MemAvailable": 61089124352
+  },
+  "bounds": "300s cooperative total/180s source proof;250000 snapshot entries/80MiB total evidence;3GiB reserve+96MiB launch evidence allowance. Not hard syscall/peak bounds.",
+  "scope": "Only original audit-runtime-linux-focused-regression02 disposal, fresh complete4112-file raw source/transport proof, descriptor/mount/ownership guards,128 diagnostic roots/16files/4MiB plus selected auxiliary evidence conserved. Original source_after=false and stop0 unchanged; no Gradle/subprocess/process census/other runtime/source/T access or tests.",
+  "coordination": "Bound sole slot stays frozen through invocation. No audit build/test/CI running. Original tool settled; current writer/mount/evidence freeze maintained. No global-idle/no-escape guarantee.",
+  "completion": "Retain original terminal, exact cleanup/source proof/inventory/conservation and independent actual review before slot release. Failure/partial removal consumed, no automatic retry/follow-on.",
+  "metadata_refusal_preserved": {
+    "tool_chunk": "9a25eb",
+    "exit": 1,
+    "reason": "Abbreviated instance review pathname did not exist; writer ended before any output/admission/closer execution. Exact author-confirmed path used here; no cleanup retry occurred."
+  }
+}

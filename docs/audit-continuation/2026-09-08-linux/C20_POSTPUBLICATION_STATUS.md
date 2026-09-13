@@ -1,27 +1,29 @@
 # Current C20 postpublication status — 2026-09-13
 
-**NOT READY.** Read [the consolidated report](C20_CONSOLIDATED_REPORT.md) and
-[the exact current state/evidence](C20_CURRENT_STATE.json), then the three ledgers.
+**NOT READY.** Read [the consolidated report](C20_CONSOLIDATED_REPORT.md),
+[C20_CURRENT_STATE.json](C20_CURRENT_STATE.json) and the three current ledgers.
 
-26/39 confirmed families closed (66.7%); original19/25 (76%); original suspicions2/12
-(16.7%); eight documented PVD explanations/owner choices separate. 221 mixed XML
-case elements are not221passes. No new closure is credited by source integration.
+Qualified confirmed closures26/39(66.7%); original19/25(76%); original suspicions
+2/12(16.7%); eight PVD explanations/owner choices separate.230mixedXML elements,
+not230passes. Dependency03 three inventories and Static07 add no application cases.
 
-Latest observed publication b271e67adb637986d2049919227619255a75fa7c /
-734245d6768f48a03eede363d4b46cc18396a9bb. New seven-path fixture/archive changes are
-independently integrated in W, not yet published or runtime-tested. WindowsGraph02
-failed before Gradle and its original cleanup is accepted. Prospective Sfix W
-custody released; original T/captures and old HOLDs stay untouched. Android passive
-metadata lookup accepted; no graph/runtime credit.
+Latest accepted publication: d2d79ad52ce816a36f708bd35bd736a7d8068789 /
+2e83afec1894238f59c1e9916cbf548ad54f5da2 (4548members). Keep its checkpoint22
+SOURCE/INDEX and U transport frozen. Four independently reviewed static-only test
+fixes are applied in W, unpublished. Host1 and Static08 controls are source-accepted,
+not execution-admitted. NewV publication and one complete P23 capture are next.
 
-Next: finite publication -> one complete160MiB-bounded new SOURCE/INDEX -> focused9
-plus Desktop compilation,GUI4,static7+guard,dependency3, then fresh matching-source
-Windows graph/real-JNA and remaining Android/Desktop/Apple/native work. Preserve
-successful unchanged evidence. Do not classify unfinished packaging/software as
-hardware-only. Runtime scheduling is exclusively root's W
-`reviews/team20/resume_disk/root/EXECUTION_SLOT.json`, not historical root-level slots.
+Focused05 nine tests PASS/wholeFAIL due Desktop compiler; Static07 four analyzer
+successes/two failures/rootUNSTARTED; Dependency03 three exact inventories PASS.
+Original stops/settlement/disposal accepted; no repeat stop or replay. Reuse those
+successes. Next: Host1(onehostcase), narrowed Static08(threeanalyzers+guard), owner-
+authorized Desktop test dependency/compilation, GUI4/WindowsJNA1, Android package/
+32-bit, installed Desktop, Apple and permitted native/investigation gaps. Package
+output-provider realization must be corrected before admission. Do not call
+unfinished software verification hardware-only.
 
-Normal12GiB disk floor currently met; root sole build owner,one heavyjob,max6agents
-includingroot. Immediate originalcleanup after every actual run;no broad deletion.
-All STOP/NO-RETRY/CLOSED/protectedrefs/build1017001 restrictions remain. Conditional
-remaining effort2–4engineeringweeks, high uncertainty, external waits excluded.
+Normal12GiB disk floor met;3GiB fallback not elected. Root sole job/cleanup owner;
+6available concurrency slots includingroot. Live scheduler is root/EXECUTION_SLOT
+under reviews/team20/resume_disk; older root-level slots are historical. Preserve
+STOP/NO-RETRY/CLOSED/HOLD, protected refs/tags/build1017001 and all evidence.
+Conditional estimate2–4engineeringweeks, high uncertainty, external waits excluded.

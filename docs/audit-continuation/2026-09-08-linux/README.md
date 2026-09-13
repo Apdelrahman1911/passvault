@@ -1,3 +1,19 @@
+# Current C20 continuation — 2026-09-13
+
+**NOT READY.** Start with [C20_CONSOLIDATED_REPORT.md](C20_CONSOLIDATED_REPORT.md)
+and [C20_CURRENT_STATE.json](C20_CURRENT_STATE.json), then the current three ledgers.
+Latest accepted publication d2d79ad52ce816a36f708bd35bd736a7d8068789 /
+2e83afec1894238f59c1e9916cbf548ad54f5da2; checkpoint22 SOURCE/INDEX frozen.
+Four reviewed static-only test fixes are applied, unpublished; Dependency03 actual
+three inventories/cleanup accepted; Focused05 ninePASS/wholeFAIL and Static07FAIL
+preserved. Host1 exact instance and newP23 narrowed Static08 remain unfinished.
+Counts19/25(76%),26/39(66.7%),2/12(16.7%) are separate;230mixedXML are notpasses.
+No build/test/CI active at this report cut; root sole execution owner; normal12GiB
+floor met. All prior restrictions/held evidence remain. Older entries below are
+historical where they conflict with these exact current records.
+
+---
+
 ## Current C20 resume — 2026-09-13
 
 **INCOMPLETE / NOT READY.** The following earlier checkpoint paragraphs are

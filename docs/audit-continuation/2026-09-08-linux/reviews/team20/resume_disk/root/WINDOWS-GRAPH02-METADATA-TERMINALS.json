@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "original_executions": [
+    {
+      "name": "RUN.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34734989950",
+        "--jq",
+        "{id,run_attempt,workflow_id,path,head_sha,head_branch,event,status,conclusion,repository:{full_name:.repository.full_name},head_repository:{full_name:.head_repository.full_name}}"
+      ],
+      "result": {
+        "chunk_id": "ff3414",
+        "wall_time_seconds": 0.374189612,
+        "exit_code": 0,
+        "original_token_count": 103,
+        "output": "{\"conclusion\":\"failure\",\"event\":\"push\",\"head_branch\":\"codex/audit-continuation-linux-20260908\",\"head_repository\":{\"full_name\":\"Apdelrahman1911/passvault\"},\"head_sha\":\"b271e67adb637986d2049919227619255a75fa7c\",\"id\":34734989950,\"path\":\".github/workflows/audit-windows-jna-graph-02-validation.yml\",\"repository\":{\"full_name\":\"Apdelrahman1911/passvault\"},\"run_attempt\":1,\"status\":\"completed\",\"workflow_id\":356877203}\n"
+      }
+    },
+    {
+      "name": "JOBS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34734989950/attempts/1/jobs",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,jobs:[.jobs[]|{id,run_id,run_attempt,head_sha,name,status,conclusion}]}"
+      ],
+      "result": {
+        "chunk_id": "c15b9a",
+        "wall_time_seconds": 0.392868956,
+        "exit_code": 0,
+        "original_token_count": 51,
+        "output": "{\"jobs\":[{\"conclusion\":\"failure\",\"head_sha\":\"b271e67adb637986d2049919227619255a75fa7c\",\"id\":103664693361,\"name\":\"graph-only\",\"run_attempt\":1,\"run_id\":34734989950,\"status\":\"completed\"}],\"total_count\":1}\n"
+      }
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34734989950/artifacts",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,artifacts:[.artifacts[]|{id,name,size_in_bytes,digest,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha,head_branch:.workflow_run.head_branch}}]}"
+      ],
+      "result": {
+        "chunk_id": "f2ac06",
+        "wall_time_seconds": 0.310559314,
+        "exit_code": 0,
+        "original_token_count": 92,
+        "output": "{\"artifacts\":[{\"digest\":\"sha256:57360df9d045e9243813c7d156626eaafcb1564be59334855e1705049e21fc18\",\"expired\":false,\"id\":10309879264,\"name\":\"audit-windows-jna-graph-02-34734989950-1\",\"size_in_bytes\":78327,\"workflow_run\":{\"head_branch\":\"codex/audit-continuation-linux-20260908\",\"head_sha\":\"b271e67adb637986d2049919227619255a75fa7c\",\"id\":34734989950}}],\"total_count\":1}\n"
+      }
+    }
+  ],
+  "qualification": "Three original normal0 bounded terminal GETs, no retries/raw logs/privatefields/builds. Hosted graph failure preserved, not cause/cleanup adjudication. No created Gradle/runtime/caches or temporary outputs, no stop/deletion duty."
+}

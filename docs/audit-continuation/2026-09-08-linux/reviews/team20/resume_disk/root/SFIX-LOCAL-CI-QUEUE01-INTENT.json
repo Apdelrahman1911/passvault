@@ -1,0 +1,16 @@
+{
+  "owner": "/root",
+  "utc": "2026-09-12T09:40:30.883841+00:00",
+  "purpose": "Read-only audit continuation CI point before serial Sfix local cohorts; no dispatch/rerun/cancel/push",
+  "source_commit": "e9cca961837789048503aaffc74ab1a1e7e536ec",
+  "argv": [
+    "/usr/bin/gh",
+    "api",
+    "--hostname",
+    "github.com",
+    "repos/Apdelrahman1911/passvault/actions/runs?branch=codex%2Faudit-continuation-linux-20260908&per_page=100",
+    "--jq",
+    "{total_count:.total_count,runs:[.workflow_runs[]|{id,head_sha,status,conclusion,event,path,created_at}]}"
+  ],
+  "bounds": "Reuse accepted single45s public metadata route; <=100 projected runs,no pagination/credentials output. Directchild timeout kill/reap installed by subprocess.run; no build, worker, cache or runtime. Source captures not repeated."
+}

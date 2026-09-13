@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "status": "ADMITTED_ONCE_EXACT_THREE_TERMINAL_METADATA_GETS",
+  "discovery_run": {
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/audit-continuation-linux-20260908",
+    "head_repository": {
+      "full_name": "Apdelrahman1911/passvault"
+    },
+    "head_sha": "b271e67adb637986d2049919227619255a75fa7c",
+    "id": 34734989950,
+    "path": ".github/workflows/audit-windows-jna-graph-02-validation.yml",
+    "repository": {
+      "full_name": "Apdelrahman1911/passvault"
+    },
+    "run_attempt": 1,
+    "status": "completed",
+    "workflow_id": 356877203
+  },
+  "discovery_original_tool_result": {
+    "chunk_id": "b31fcf",
+    "wall_time_seconds": 0.464237132,
+    "exit_code": 0,
+    "original_token_count": 112,
+    "output": "{\"total_count\":1,\"workflow_runs\":[{\"conclusion\":\"failure\",\"event\":\"push\",\"head_branch\":\"codex/audit-continuation-linux-20260908\",\"head_repository\":{\"full_name\":\"Apdelrahman1911/passvault\"},\"head_sha\":\"b271e67adb637986d2049919227619255a75fa7c\",\"id\":34734989950,\"path\":\".github/workflows/audit-windows-jna-graph-02-validation.yml\",\"repository\":{\"full_name\":\"Apdelrahman1911/passvault\"},\"run_attempt\":1,\"status\":\"completed\",\"workflow_id\":356877203}]}\n"
+  },
+  "commands": [
+    {
+      "name": "RUN.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34734989950",
+        "--jq",
+        "{id,run_attempt,workflow_id,path,head_sha,head_branch,event,status,conclusion,repository:{full_name:.repository.full_name},head_repository:{full_name:.head_repository.full_name}}"
+      ]
+    },
+    {
+      "name": "JOBS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34734989950/attempts/1/jobs",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,jobs:[.jobs[]|{id,run_id,run_attempt,head_sha,name,status,conclusion}]}"
+      ]
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34734989950/artifacts",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,artifacts:[.artifacts[]|{id,name,size_in_bytes,digest,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha,head_branch:.workflow_run.head_branch}}]}"
+      ]
+    }
+  ],
+  "cwd": "/root/projects/PassVault",
+  "destination": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed06/graph_observer02",
+  "source_recipe_review_sha256": "80f6c86ca8bac42035e577bc04f3c1bb86d7cf5b87e630c330e9eba1c5dded58",
+  "bounds": "Each fixed GET30s+5s original timeout grace; page10; untruncated complete projected JSON<=1MiB. No retries, arbitrary endpoints/raw workflow logs/private fields. Failure conclusion preserved.",
+  "cleanup": "Normal timeout completion reaps gh; no new build/runtime/cache/Gradle-stop/deletion duty. Abnormal descendant/timeout uncertainty retained.",
+  "coordination": "Original Agraph02 logical slot retained, no local build. Terminal failure is NOT graph-cause or Windows original cleanup acceptance."
+}

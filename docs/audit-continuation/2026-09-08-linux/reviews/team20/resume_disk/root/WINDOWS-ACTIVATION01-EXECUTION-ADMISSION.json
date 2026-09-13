@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T07:53:06.482300+00:00",
+  "status": "ADMITTED_ONCE_A_ONLY_WINDOWS4_ACTIVATION_AND_CI_CLEANUP",
+  "effective_source": {
+    "path": "reviews/team20/resume_disk/windows_author/resumed01/transport_cleanup_v3.py.txt",
+    "bytes": 21819,
+    "sha256": "5930a661487da2d98612b8d20cdc22cb137507143951cc4e9a3887134bd4313f"
+  },
+  "config": {
+    "path": "reviews/team20/resume_disk/publication_author/windows_activation01/WINDOWS-ACTIVATION-01-CONFIG.json",
+    "bytes": 5470,
+    "sha256": "c9880783ba2e774b479d8f138c6770e04c6a32ff7c22a00dff11d6c143fd3a13"
+  },
+  "genuine_instance_review": {
+    "path": "reviews/team20/resume_disk/windows_review/resumed01/WINDOWS-ACTIVATION01-CONFIG-V3-INSTANCE-REVIEW.json",
+    "bytes": 10299,
+    "sha256": "23b4188002185aeacf96987751e4a39eb380b0dfa92b75e5eb101ebbe356fa56"
+  },
+  "genuine_custody_addendum": {
+    "path": "reviews/team20/resume_disk/windows_review/resumed01/WINDOWS-ACTIVATION01-CONFIG-V3-INSTANCE-CUSTODY-ADDENDUM.json",
+    "bytes": 1491,
+    "sha256": "6c71fb62788d42595036614fd09be648a25dd4e88e6ee2f91345a42b13cf6baf"
+  },
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "bytes": 5232,
+    "sha256": "6dd455da5a0763bdd2ea80d89033b8be911a25e50a84f2e73f14ec7b09f142f2"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed01/transport_cleanup_v3.py.txt"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "release_qualification": "Root explicitly adopts independently confirmed V3 cleanup-only successor to historical freeze-release V2 label; same A-only transaction/source/namespace/request and original100000files/512MiB before-after inventory; no census bypass. V2 never invoked.",
+  "source_identity": {
+    "commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+    "tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+    "activation_delta": "sole direct child adds only requests/windows-kdf-file-io-01.json1888B;no companion/fix/control/report"
+  },
+  "finding_scope": {
+    "PVA-036": "realWin32syntheticfiles/ACLs with deliberately reported write/flush/closefailure statuses;not actualOSfailure,crash/cancellation or fullfamilyclosure",
+    "PVU-008": "CNG KDF output compatibility only;provider-object-content/destroy status remains UNVERIFIED",
+    "PVA-037": "retained related context only;fourcases do NOT establish caller-secret lifetime/production-cut/Hello behavior"
+  },
+  "why_windows": "ActualWindowsCNGandWin32file/ACLboundarycannotbeexecutedonLinux;oneimportantboundedplatformgap,notareleasecandidate.",
+  "hosted_commands": {
+    "entry": [
+      "python",
+      "-I",
+      "-B",
+      "scripts/audit/windows_kdf_file_io_01.py"
+    ],
+    "exact_embedded_commands_source_sha256": "1f07418b060000e1109c269d624423017e8699476a4c500e5f383bd435bf0a5c",
+    "scope_source_sha256": "0c32ba79a2eee3c59bf99c94fb170bbea4216553e46f07f8fc6957b54d6337ee",
+    "selection": [
+      "passvault_biometric_windows_kdf_known_answer",
+      "passvault_biometric_windows_file_io_write_failure",
+      "passvault_biometric_windows_file_io_flush_failure",
+      "passvault_biometric_windows_file_io_close_failure"
+    ],
+    "target": "passvault_biometric_windows_security_test",
+    "configuration": "Release;BUILD_TESTING=ON;controlsOFF;parallel1;/nodeReuse:false",
+    "counting": "Exactly4CTestcases;KDF2vectorscount1case;12parentcommandsmaximum,nottests."
+  },
+  "platform_bounds": {
+    "runner": "windows-2022/x64",
+    "toolchain": "VS17 2022,x64,SDK10.0.26100.0;preinstalledCMake/CTest/Python>=3.11;noinstallation/fallback",
+    "disk_launch_bytes": 12884901888,
+    "disk_running_bytes": 8589934592,
+    "RAM_launch_fraction": 0.25,
+    "RAM_running_fraction": 0.2,
+    "Job_committed_bytes": 3221225472,
+    "Job_process_limit": 16,
+    "commands_seconds": 480,
+    "cleanup_seconds": 540,
+    "workflow_seconds": 600,
+    "artifact_retention_days": 3
+  },
+  "cleanup": "V3 installs originalGit-childfinally beforePopen;allownednormalchildrenmustbereaped;onlyownoriginalhandlesonabnormalfailure. Hosted helper previously independently reviewed originalJobzero/handle settlement/evidence-first descriptorboundgenerateddeletion onalloutcomes. Preserve compactlogs/XML/hash/evidenceonly,nobinaries. NoGradle forCMakenativebatch;stopNOT_APPLICABLE. A successfulpushmayactivateCIeveniflatertransportfails:reservationMUSTremainuntilactualownedjob/cleanupsettled. Noautomaticretry/cancelofunrelatedwork.",
+  "fresh_resources": {
+    "disk_available_bytes": 19757752320,
+    "MemAvailable": 64560795648,
+    "MemTotal": 67435888640,
+    "local_entry_reserve_bytes": 12884901888,
+    "local_transport_evidence_growth_bytes": 67108864
+  },
+  "custody": "RootsoleGit/build/test/CIowner;agentsinertWleavesonly;nootherauditoperationlaunchedsinceacceptedpreflight;66b6a7emptybuildlikepointandfreshoutputabsence. Config/source/request/slotremainfrozen. Independentactualreviewrequiredfortransportandhostedcase/cleanupoutcomes.",
+  "fences": "Protectedrefs/tags/dependencies/identities/versions/productionsecrets/store/build1017001unchanged;PVU007STOP;PVU011NORETRY;PVA02949/44/5FAILnoautoretry;G7G8CLOSED;originalnative refusal+heldroots preserved."
+}

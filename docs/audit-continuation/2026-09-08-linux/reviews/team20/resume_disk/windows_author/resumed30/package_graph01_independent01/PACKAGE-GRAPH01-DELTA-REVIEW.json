@@ -1,0 +1,129 @@
+{
+  "activity_note": "One reviewer data assertion initially expected DEVICE=None; source actually has a two-null-field DEVICE map plus EXPECTED_LOCK=None. Corrected by reading exact inert source. Neither is execution admission; no helper was run.",
+  "actual_builds": 0,
+  "actual_tests": 0,
+  "author": "/root/postfix_transport",
+  "blockers": [
+    {
+      "counterexample": "A public @OutputDirectory DirectoryProperty getter may read signing inputs in its body, or return a mapped provider that reads signingConfigData before returning a private build path. All current checks can pass. This is a source-contract counterexample, not an executed probe or evidence actual AGP read a key.",
+      "finding": "The27 public output candidates can invoke arbitrary matching getter/provider chains after only return-type/output-annotation checks. Those checks do not establish absence of indirect signing/key-input realization, especially for package/signing tasks. Path filtering occurs after evaluation; null/redaction and later task refusal cannot undo access.",
+      "id": "PG01-REVIEW-01",
+      "independent_author_challenge": "postfix_transport explicitly confirmed no supplied/read retained pinned AGP/plugin source proves the27 getter/provider chains safe; author agrees blocker remains and no SDK/cache probe is authorized.",
+      "init_sha256": "df41ef4b0add8991472692e863f157b8105e9290d29fb19d3e118a7b484e5dd5",
+      "kind": "PRE_RUN_PROVIDER_SAFETY_ADMISSION_GAP_NOT_OBSERVED_PRODUCT_VULNERABILITY",
+      "lines": {
+        "def location = provider.getOrNull()": [
+          566
+        ],
+        "def provider = getter.invoke(task)": [
+          561
+        ]
+      },
+      "required_correction": [
+        "For unproven output candidates, inspect public signature/annotation only. Do not call getter.invoke, provider.get/getOrNull, or location/asFile.",
+        "Emit explicit annotated-signature-only/unadmitted-provider state with root=null and realization=false. Preserve declaringType/returnType/annotationOwner/outputKind when available.",
+        "Update inner state/schema and policy labels to permit no lexical output-path or signing/action claim. Keep all27 candidate rows and eight noninvoked signing signatures, graph bounds and metadata.",
+        "Rebind the new init->inner->outer->partial-request hash cascade only; retain donor/P/U/index/source and all STOP/NO-RETRY/CLOSED restrictions.",
+        "Alternative: supply named retained pinned provider-chain source proof and independently review it before any call. Do not run/probe or search installed SDK/cache to see whether it is safe."
+      ]
+    }
+  ],
+  "composition_findings": [
+    "Exact9 is six CLI Strings plus three fixed-toolchain Strings; both native route flags true, fixed fresh empty Konan path and no native home/version/reinstall overrides; beforeProject shadow check and beforeResolve denial listener remain before project configuration.",
+    "Denied native resolution latches false acceptance in graph/finished and inner common schema, even if output observation catches the resulting exception. This is no general native-download or platform readiness claim.",
+    "Original unconditional beforeTask/afterTask refusal, graph exit1 mapping, zero action/test credit and original same-environment stop remain. Actual global/final log acceptance still requires independent root review.",
+    "63 fresh physical/admission null fields and unbound DEVICE members/EXPECTED_LOCK leave request/outer rejecting. This does not cure unsafe provider realization after future binding.",
+    "No resource widening: normal12/8GiB floors and original RAM/runtime cap; graph900/stop600 and outer6000/work5250.",
+    "Source/data reconstruction matched all four candidate hashes and hunk counts. No control import/eval/AST/compile/execution, tool/SDK/process/Git/network/private-config probe or canonical mutation."
+  ],
+  "disposition": "CHANGES_REQUIRED_PROVIDER_REALIZATION_UNADMITTED",
+  "exact_effective_candidates": {
+    "init": {
+      "bytes": 34433,
+      "hunks": 15,
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/android_crypto_package_graph_01.init.gradle",
+      "sha256": "df41ef4b0add8991472692e863f157b8105e9290d29fb19d3e118a7b484e5dd5"
+    },
+    "inner": {
+      "bytes": 79498,
+      "hunks": 21,
+      "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_android_crypto_package_graph_01.py",
+      "sha256": "a9c0b3c87ce96cfddc901ccb9885588ed237302e46cf9b30f1f0c5b73fcc43e9"
+    },
+    "outer": {
+      "bytes": 80632,
+      "hunks": 16,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/android-crypto-package-graph01-outer/LAUNCH.py",
+      "sha256": "dbbc31983862e18667d555e277cd68d9ddc0355d96533180b582c708cfd730af"
+    },
+    "request": {
+      "bytes": 8646,
+      "hunks": 2,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-ANDROID-CRYPTO-PACKAGE-GRAPH-01.json",
+      "sha256": "8a7b11080676db607225c19cb544aa256c899de9cd86c1298c0ccf205947c964"
+    }
+  },
+  "execution_admitted": false,
+  "finite_data_and_literal_checks": {
+    "ENV_unchanged_source_text": true,
+    "FLAGS_unchanged_source_text": true,
+    "P_tree_capacity_preserved": true,
+    "STOP_unchanged_source_text": true,
+    "budgets_unchanged": true,
+    "command_and_child_signal_unchanged_source_text": true,
+    "early_root_facts_unbound": true,
+    "eight_signing_signatures_no_invocation": true,
+    "exact9_contract_composition": true,
+    "fixed_27_output_candidates_on14_tasks": true,
+    "native_denial_excluded_from_acceptance": true,
+    "native_route_named_donor_pin": true,
+    "new_hash_cascade": true,
+    "normal_floors_unchanged": true,
+    "outer_remove_runtime_unchanged_source_text": true,
+    "selector_no_test_filter": true,
+    "source_and_subject_pins": true
+  },
+  "fixes_or_closures": 0,
+  "format": "passvault-package-graph01-independent-source-delta-review-v1",
+  "inputs": {
+    "author_readback": {
+      "bytes": 3124,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new17/package_graph01/SOURCE-READBACK.json",
+      "sha256": "c22d0928c94cfa8b6996b88f92255ea422cbd33a19c0be372e6ab7e83e08aef9"
+    },
+    "native_route_donor": {
+      "bytes": 8343,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/dependency_author/konan01/dependency_inventory_01.init.gradle.txt",
+      "sha256": "8463d43071fd7c7f1bf6b014ac6a0a8cf9aa366ced9e5a09cbf4f5a19f1ed0cd"
+    },
+    "packet": {
+      "bytes": 45193,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new17/package_graph01/PACKAGE-GRAPH01-PACKET.json",
+      "sha256": "3b22909871c145aa18c43de530aee2f3234ffcbeeee2aee776c52c88b7cd6f37"
+    },
+    "patch": {
+      "bytes": 112586,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new17/package_graph01/PACKAGE-GRAPH01.patch.txt",
+      "sha256": "a9c047f3aef158127e6a51e342668aa35446f4dd8e7b5fbde8ced1e44dd91d63"
+    },
+    "source_manifest": {
+      "bytes": 2519894,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint22/source-prepare01/SOURCE.json",
+      "sha256": "5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6"
+    },
+    "subject": {
+      "bytes": 2805,
+      "path": "/root/projects/PassVault/passvault-linux/core/crypto/build.gradle.kts",
+      "sha256": "a18a2ee9127da9861d4310ab7588573d0596d31c317e3ff393c8e30f70888112"
+    },
+    "text_reconstruction": {
+      "bytes": 2834,
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed30/package_graph01_independent01/TEXT-RECONSTRUCTION.json",
+      "sha256": "fba92508214f8fd274cfefadf3dacc6afb50904e0cd1b765a9710bc4aeb61c4a"
+    }
+  },
+  "restrictions_preserved": "PVU007 STOP; PVU011 NO-RETRY/no inquiry; PVA02949/44PASS/5FAIL/no retry; G7/G8 CLOSED; native-author refusal; PVU008 restrictions; all FAIL/HOLD/UNKNOWN and eightPVD; protected refs/tags/build1017001/versions/dependencies/identities; Graph03/04 failures and consumed cohorts no replay.",
+  "reviewer": "/root/windows_author",
+  "scope": "Only new postfix-authored delta/composition. Old Graph04 body retains prior independent review; not a new self-review of that donor.",
+  "source_delta_accepted": false
+}

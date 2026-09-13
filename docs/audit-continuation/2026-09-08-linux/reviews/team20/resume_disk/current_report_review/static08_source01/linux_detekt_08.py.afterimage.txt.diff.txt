@@ -1,0 +1,171 @@
+--- /root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_07.py
++++ /root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_08.py
+@@ -1,11 +1,11 @@
+ #!/usr/bin/python3
+-"""NEW fixed Detekt07 PID1 source, NOT execution admission.
++"""NEW fixed Detekt08 PID1 source, NOT execution admission.
+ 
+ Text-reuses Linux03 Files/resource/pidfd/stop/settlement and GUI02's distinction
+ between namespace setup and Gradle commands. No old helper import or replay.
+ Root owns fresh source/index transport, store freeze, original allocations/lock,
+ outer admission, pidfd/wait and allowlisted cleanup. No deletion or host signals.
+-One root + six-module Detekt cycle plus original stop; no tests, GUI, native or packaging.
++One root + two-module Detekt cycle plus original stop; no tests, GUI, native or packaging.
+ """
+ import hashlib
+ import json
+@@ -23,27 +23,27 @@
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-detekt07')
+-E = B / 'runs/linux-detekt07'
++R = Path('/root/projects/PassVault/audit-runtime-linux-detekt08')
++E = B / 'runs/linux-detekt08'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = W / 'scripts/audit/linux_detekt_07.py', W / 'scripts/audit/detekt_07.init.gradle'
+-SOURCE = B / 'reviews/checkpoint22/source-prepare01/SOURCE.json'  # Root supplies the one final post-integration capture path.
++SELF, INIT = W / 'scripts/audit/linux_detekt_08.py', W / 'scripts/audit/detekt_08.init.gradle'
++SOURCE = B / 'reviews/checkpoint23/source-prepare01/SOURCE.json'  # Root supplies the one final post-integration capture path.
+ JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
+-PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260912-02/.git')
++PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260913-03/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+ GIT_CONFIG, GIT_EXCLUDE = GIT_DIR / 'config', GIT_DIR / 'info/exclude'
+ # Final published snapshot and exact regular tool/alias/optional-exclude identities
+ # require root's fresh review. None is a hard pre-launch HOLD, not a fallback.
+-COMMIT = 'd2d79ad52ce816a36f708bd35bd736a7d8068789'  # No launch before final post-integration source admission.
+-TREE = '2e83afec1894238f59c1e9916cbf548ad54f5da2'  # No C18/C19 source identity is inherited as current.
+-MEMBERS = 4548  # Accepted shared checkpoint22 SOURCE ordered member count; not execution admission.
++COMMIT = None  # UNBOUND checkpoint23 publication commit; no execution admission.
++TREE = None  # UNBOUND checkpoint23 publication tree; no prior source identity inherited.
++MEMBERS = 0  # UNBOUND exact checkpoint23 N; bind positive N and both member ceilings before admission.
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+-EXCLUDE_STATE = 'INFO_ABSENT'  # Fixed absence obligation; current U store facts require root admission.
+-FROZEN = {SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: '6ae7d4fdf1b8479238f31a6ce2d804e27286a68f9425482695d70abb9d2150c8'}  # Accepted shared SOURCE; final instance admission remains UNBOUND.
++EXCLUDE_STATE = 'INFO_ABSENT'  # Prospective constraint only; new store state requires root review.
++FROZEN = {SOURCE: None, INIT: '897e10236f3cf15d4656f2f6e4c165df8a6ed2862c06b70a38f607ae413ecaab'}  # UNBOUND new SOURCE; init afterimage hash is not installed-instance authority.
+ INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX)
+ GUARD_SHA256 = '7bc2995f85a77cbe45621592a2584908b8802e412a4f90c15130eb65a7960945'
+-RUN_ID = 'linux-detekt07'
++RUN_ID = 'linux-detekt08'
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+@@ -53,10 +53,14 @@
+            'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
+ # Outer separately owns the empty metadata mountpoint; its inode is not the bind view's inode.
+ ORIGINAL_DIRS = (R, E, E / 'logs', E / 'reports') + tuple(R / p for p in PRIVATE)
+-MODULES = ('', 'app-android', 'app-desktop', 'shared', 'core/crypto', 'core/database', 'feature/credential')
+-# Exact task omissions only: independently qualified unchanged03 evidence must
+-# match the new source/configuration. No Detekt source/rule/Git exclusion change.
++MODULES = ('', 'app-desktop', 'core/database')
++# Exact task omissions: 17 prior qualified analyzers + two zero-input aggregates;
++# require source/config affinity. No Detekt source/rule/Git exclusion change.
+ OMITTED_TASKS = (
++    ':app-android:detekt',
++    ':shared:detekt',
++    ':core:crypto:detekt',
++    ':feature:credential:detekt',
+     ':core:designsystem:detekt',
+     ':core:detekt',
+     ':core:domain:detekt',
+@@ -312,7 +316,7 @@
+     return {'parent': parent, 'self': current, 'nonpropagating_mounts': True, 'mount_rows': len(lines)}
+ 
+ 
+-class Detekt07:
++class Detekt08:
+     def __init__(self, files, parent):
+         self.f, self.parent, self.started = files, parent, time.monotonic()
+         self.errors, self.phases, self.inputs = [], [], {}
+@@ -337,10 +341,10 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = self.outer = json.loads(data)
+-        require(value['format'] == 'passvault-linux-detekt07-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-detekt08-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent,
+-                'fixed fresh Detekt07 intake; not independent execution admission')
++                'fixed fresh Detekt08 intake; not independent execution admission')
+         self.f.expected = dict(value['directories'])
+         # Do not compare the future mounted alias against its outer empty-directory inode.
+         self.f.expected.pop(str(GIT_DIR), None)
+@@ -722,10 +726,10 @@
+                 relative = Path(module) / 'build/reports/detekt' / ('detekt' + suffix)
+                 report_paths[task][kind] = str(relative)
+                 candidates.append((task, kind, relative, 4 * MIB))
+-        # Explicit extra diagnostic: 21 Detekt files + one <=1MiB Gradle HTML,
++        # Explicit extra diagnostic: 9 Detekt files + one <=1MiB Gradle HTML,
+         # sharing the original combined 32MiB capture budget, not extending it.
+         candidates.append((None, 'problems_html', Path('build/reports/problems/problems-report.html'), MIB))
+-        require(len(candidates) == 22, 'fixed 21 selected static reports plus one bounded diagnostic')
++        require(len(candidates) == 10, 'fixed 9 selected static reports plus one bounded diagnostic')
+         captures, absent, collection_errors, validation_errors = [], [], [], []
+         charged = 0
+         for task, kind, relative, cap in candidates:
+@@ -812,7 +816,7 @@
+                     and ((not module and r['path'].endswith('.gradle.kts'))
+                          or (module and r['path'].startswith(module + '/src/')
+                              and r['path'].endswith(('.kt', '.kts')))))
+-            prefix = 'PASSVAULT_DETEKT07_TASK='
++            prefix = 'PASSVAULT_DETEKT08_TASK='
+             seen = set()
+             for line in lines:
+                 if not line.startswith(prefix):
+@@ -837,7 +841,7 @@
+         except Exception as error:
+             note(validation_errors, 'static source/inventory mapping: ' + str(error))
+         if plan_count != len(TASKS) or valid_plans != set(TASKS):
+-            note(validation_errors, 'full exact seven-analyzer static inventory missing or invalid')
++            note(validation_errors, 'full exact three-analyzer static inventory missing or invalid')
+         if headers['outcomes'][':verifyStaticAnalysisCoverage'] != 'BARE':
+             note(validation_errors, 'Ruby coverage guard lacks expected bare task evidence')
+         for task, expected in source_sets.items():
+@@ -850,7 +854,7 @@
+                    and set(source_sets) == set(TASKS) and headers['unique_tasks'] == len(all_tasks))
+         state['reports'] = {'captures': captures, 'absent': absent,
+             'bytes': sum(c['saved']['pin']['bytes'] for c in captures), 'budget_bytes_charged': charged,
+-            'capture_file_limit': 22, 'capture_bytes_limit': 32 * MIB, 'diagnostic_file_bytes_limit': MIB,
++            'capture_file_limit': 10, 'capture_bytes_limit': 32 * MIB, 'diagnostic_file_bytes_limit': MIB,
+             'checkstyle_findings': findings, 'parsed_checkstyle_reports': parsed_checkstyle,
+             'findings_scope': 'Subtotal in successfully parsed retained Checkstyle reports only; not full coverage',
+             'planned_source_sets': source_sets, 'planned_inventory_rows': plan_count,
+@@ -889,7 +893,7 @@
+                 self.note('static report/settlement uncertainty: ' + str(error))
+             state['record_image'] = self.f.write(E / 'PHASE-detekt.json', canonical(state))
+         require(state['build_ok'] and state['stop_ok'] and state['settled'] and self.mapping_ok
+-                and not self.cancelled(), 'Detekt07 failed; no automatic retry')
++                and not self.cancelled(), 'Detekt08 failed; no automatic retry')
+ 
+ 
+ def main():
+@@ -897,7 +901,7 @@
+             and sys.flags.isolated and sys.dont_write_bytecode and sys.flags.no_site
+             and os.getuid() == os.geteuid() == 0, 'fixed isolated absolute root entry')
+     require(all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value) for value in (COMMIT, TREE))
+-            and type(MEMBERS) is int and 1 <= MEMBERS <= 4548  # Exact same accepted N as MEMBERS; no speculative headroom.
++            and type(MEMBERS) is int and 1 <= MEMBERS <= 0  # UNBOUND exact N ceiling; zero fails closed, no headroom.
+             and all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) for value in FROZEN.values())
+             and all(isinstance(path, Path) and path.is_absolute() and '..' not in path.parts
+                     for path in (GIT_IMAGE, RUBY_IMAGE))
+@@ -908,7 +912,7 @@
+     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+         signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+     files = Files()
+-    batch = Detekt07(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
++    batch = Detekt08(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
+     settled, code = False, 70
+     try:
+         batch.intake()
+@@ -946,7 +950,7 @@
+                 and (not attempted or batch.reports_preserved))
+         passed = safe and attempted and batch.mapping_ok and all(
+             p.get('setup_ok') if p['phase'] == 'git-isolation' else p['build_ok'] for p in batch.phases)
+-        result = {'format': 'passvault-linux-detekt07-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
++        result = {'format': 'passvault-linux-detekt08-inner-v1', 'run_id': RUN_ID, 'commit': COMMIT, 'tree': TREE,
+             'parent_namespaces': batch.parent, 'source_before': batch.before, 'source_after': batch.after,
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+             'git_bindings_established': batch.git_bound, 'git_bindings_stable': batch.git_stable,

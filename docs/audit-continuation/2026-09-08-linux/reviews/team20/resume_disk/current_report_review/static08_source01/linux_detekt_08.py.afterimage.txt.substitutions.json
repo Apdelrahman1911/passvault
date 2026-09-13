@@ -1,0 +1,165 @@
+{
+  "format": "passvault-static08-literal-substitutions-v1",
+  "author": "/root/current_report_review",
+  "donor": {
+    "path": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_07.py",
+    "bytes": 57240,
+    "sha256": "bd324c26690344e734e6d46083f3edba1a3ec1dc76e1b7603a7ddee62b9aaa43",
+    "pin": {
+      "dev": 24,
+      "ino": 13638193,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 57240,
+      "mtime_ns": 1789281585486096034,
+      "ctime_ns": 1789281585486096034
+    }
+  },
+  "prospective_target": "/root/projects/PassVault/passvault-linux/scripts/audit/linux_detekt_08.py",
+  "afterimage": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/static08_source01/linux_detekt_08.py.afterimage.txt",
+    "bytes": 57182,
+    "sha256": "45e9e50f9af7cf51d7f616b77baf02e2bef06cd79932de10febbe6c2ab7cb0c1",
+    "pin": {
+      "dev": 24,
+      "ino": 15255169,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 57182,
+      "mtime_ns": 1789286852068782121,
+      "ctime_ns": 1789286852068782121
+    }
+  },
+  "operations": [
+    {
+      "old": "Detekt07",
+      "new": "Detekt08",
+      "count": 5,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "detekt07",
+      "new": "detekt08",
+      "count": 5,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "DETEKT07",
+      "new": "DETEKT08",
+      "count": 1,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "linux_detekt_07.py",
+      "new": "linux_detekt_08.py",
+      "count": 1,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "detekt_07.init.gradle",
+      "new": "detekt_08.init.gradle",
+      "count": 1,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "reviews/checkpoint22/source-prepare01/SOURCE.json",
+      "new": "reviews/checkpoint23/source-prepare01/SOURCE.json",
+      "count": 1,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "/root/projects/PassVault/passvault-publication-20260912-02/.git",
+      "new": "/root/projects/PassVault/passvault-publication-20260913-03/.git",
+      "count": 1,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "One root + six-module Detekt cycle",
+      "new": "One root + two-module Detekt cycle",
+      "count": 1,
+      "kind": "scope_comment"
+    },
+    {
+      "old": "COMMIT = 'd2d79ad52ce816a36f708bd35bd736a7d8068789'  # No launch before final post-integration source admission.",
+      "new": "COMMIT = None  # UNBOUND checkpoint23 publication commit; no execution admission.",
+      "count": 1,
+      "kind": "unbound_source_identity"
+    },
+    {
+      "old": "TREE = '2e83afec1894238f59c1e9916cbf548ad54f5da2'  # No C18/C19 source identity is inherited as current.",
+      "new": "TREE = None  # UNBOUND checkpoint23 publication tree; no prior source identity inherited.",
+      "count": 1,
+      "kind": "unbound_source_identity"
+    },
+    {
+      "old": "MEMBERS = 4548  # Accepted shared checkpoint22 SOURCE ordered member count; not execution admission.",
+      "new": "MEMBERS = 0  # UNBOUND exact checkpoint23 N; bind positive N and both member ceilings before admission.",
+      "count": 1,
+      "kind": "unbound_exact_member_bound"
+    },
+    {
+      "old": "EXCLUDE_STATE = 'INFO_ABSENT'  # Fixed absence obligation; current U store facts require root admission.",
+      "new": "EXCLUDE_STATE = 'INFO_ABSENT'  # Prospective constraint only; new store state requires root review.",
+      "count": 1,
+      "kind": "prospective_constraint_not_observed_fact"
+    },
+    {
+      "old": "FROZEN = {SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: '6ae7d4fdf1b8479238f31a6ce2d804e27286a68f9425482695d70abb9d2150c8'}  # Accepted shared SOURCE; final instance admission remains UNBOUND.",
+      "new": "FROZEN = {SOURCE: None, INIT: '897e10236f3cf15d4656f2f6e4c165df8a6ed2862c06b70a38f607ae413ecaab'}  # UNBOUND new SOURCE; init afterimage hash is not installed-instance authority.",
+      "count": 1,
+      "kind": "afterimage_init_hash_and_unbound_source"
+    },
+    {
+      "old": "MODULES = ('', 'app-android', 'app-desktop', 'shared', 'core/crypto', 'core/database', 'feature/credential')",
+      "new": "MODULES = ('', 'app-desktop', 'core/database')",
+      "count": 1,
+      "kind": "exact_three_selected_modules"
+    },
+    {
+      "old": "# Exact task omissions only: independently qualified unchanged03 evidence must\n# match the new source/configuration. No Detekt source/rule/Git exclusion change.",
+      "new": "# Exact task omissions: 17 prior qualified analyzers + two zero-input aggregates;\n# require source/config affinity. No Detekt source/rule/Git exclusion change.",
+      "count": 1,
+      "kind": "reuse_qualification_comment"
+    },
+    {
+      "old": "OMITTED_TASKS = (\n    ':core:designsystem:detekt',\n    ':core:detekt',\n    ':core:domain:detekt',\n    ':core:navigation:detekt',\n    ':core:otp:detekt',\n    ':core:security:detekt',\n    ':core:testing:detekt',\n    ':feature:backup:detekt',\n    ':feature:detekt',\n    ':feature:generator:detekt',\n    ':feature:health:detekt',\n    ':feature:onboarding:detekt',\n    ':feature:settings:detekt',\n    ':feature:unlock:detekt',\n    ':feature:vault:detekt',\n)",
+      "new": "OMITTED_TASKS = (\n    ':app-android:detekt',\n    ':shared:detekt',\n    ':core:crypto:detekt',\n    ':feature:credential:detekt',\n    ':core:designsystem:detekt',\n    ':core:detekt',\n    ':core:domain:detekt',\n    ':core:navigation:detekt',\n    ':core:otp:detekt',\n    ':core:security:detekt',\n    ':core:testing:detekt',\n    ':feature:backup:detekt',\n    ':feature:detekt',\n    ':feature:generator:detekt',\n    ':feature:health:detekt',\n    ':feature:onboarding:detekt',\n    ':feature:settings:detekt',\n    ':feature:unlock:detekt',\n    ':feature:vault:detekt',\n)",
+      "count": 1,
+      "kind": "four_new_omissions_no_rule_exclusion_change"
+    },
+    {
+      "old": "# Explicit extra diagnostic: 21 Detekt files + one <=1MiB Gradle HTML,",
+      "new": "# Explicit extra diagnostic: 9 Detekt files + one <=1MiB Gradle HTML,",
+      "count": 1,
+      "kind": "reduced_report_budget_count"
+    },
+    {
+      "old": "require(len(candidates) == 22, 'fixed 21 selected static reports plus one bounded diagnostic')",
+      "new": "require(len(candidates) == 10, 'fixed 9 selected static reports plus one bounded diagnostic')",
+      "count": 1,
+      "kind": "reduced_exact_report_count"
+    },
+    {
+      "old": "full exact seven-analyzer static inventory missing or invalid",
+      "new": "full exact three-analyzer static inventory missing or invalid",
+      "count": 1,
+      "kind": "scope_message"
+    },
+    {
+      "old": "'capture_file_limit': 22,",
+      "new": "'capture_file_limit': 10,",
+      "count": 1,
+      "kind": "reduced_report_capture_limit"
+    },
+    {
+      "old": "and type(MEMBERS) is int and 1 <= MEMBERS <= 4548  # Exact same accepted N as MEMBERS; no speculative headroom.",
+      "new": "and type(MEMBERS) is int and 1 <= MEMBERS <= 0  # UNBOUND exact N ceiling; zero fails closed, no headroom.",
+      "count": 1,
+      "kind": "unbound_exact_member_ceiling"
+    }
+  ],
+  "forward_and_reverse_whole_buffer_equality": true,
+  "qualification": "Author stdlib text arithmetic only, not execution, compilation, tests, admission or independent acceptance."
+}

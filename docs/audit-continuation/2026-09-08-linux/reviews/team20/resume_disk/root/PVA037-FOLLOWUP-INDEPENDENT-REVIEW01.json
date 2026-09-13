@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "reviewer": "/root",
+  "author": "/root/postfix_transport",
+  "utc": "2026-09-13T06:06:35.533141+00:00",
+  "disposition": "ACCEPT_APPEND_ONLY_PVA037_CURRENT_KDF_AFFINITY_AND_REMAINING_CALLER_CUT_QUALIFICATION",
+  "subject": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new09/PVA037-SOURCE-OUTCOME.md",
+    "bytes": 7737,
+    "sha256": "b3b28951d5b978653c81a1d6ac194f553e0914613edec2337b1c179e06c1025a"
+  },
+  "proposal": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new09/PVA037-LEDGER-FOLLOWUP-PROPOSAL.json",
+    "bytes": 2455,
+    "sha256": "88e242c972564cfe089215d935331da8c46548b8eba1fd58cda4c67e6241b69d"
+  },
+  "source_affinity": [
+    {
+      "path": "app-desktop/native/biometric-bridge/src/windows/passvault_biometric_windows.cpp",
+      "bytes": 99579,
+      "sha256": "93746b0cdb399aa17dd8c3c915e907244d4e86e5b566c51714ccc7f80310bd5d"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/tests/windows/passvault_biometric_windows_security_test.cpp",
+      "bytes": 48464,
+      "sha256": "7042b2e340640d189ced072c75c17f7a10d0fb287d43d77b3c722279a071bb60"
+    },
+    {
+      "path": "app-desktop/native/biometric-bridge/CMakeLists.txt",
+      "bytes": 9982,
+      "sha256": "89fa2928be4da01c17f09cc0813fbf1f284f76ecc6d05a20176389cff9903b10"
+    }
+  ],
+  "retained_actual_review": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_review/resumed01/WINDOWS4-ACTUAL-RESULT-REVIEW.json",
+    "bytes": 21562,
+    "sha256": "830660f5f4f13c1a5ea4685bda0063039dd29eff22667a3c2740b549442cd9e1"
+  },
+  "original_kdf_xml": {
+    "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/windows_author/resumed01/observer01/actual/intake/evidence/kdf.xml",
+    "bytes": 431,
+    "sha256": "fa2600d01f40cbca44604e934c8c3c4d0f946c47a3a4d31447b737b9a092e5b5"
+  },
+  "independent_challenge": [
+    "Directly inspected both current caller guard ordering, post-PRF AAD reserve, both AES key-object vector allocations and late create allocations; guards precede secret population and their borrowed arrays remain live during unwind. Initial AAD cut has unpopulated wrapping key, unlike post-KDF AES cuts.",
+    "AES provider setup and nonzero object-length checks gate key-object allocation, whereas ciphertext assign occurs even after key-generation failure; no unconditional reachability claim. Later encode AAD is a distinct call from initial AAD.",
+    "Current test has two fixed literal outputs, input/canary preservation and changed-vault binding; original accepted Windows4 KDF XML records one successful CTest case, not two cases or a new execution. Three current file hashes match retained source identity.",
+    "Guard4 and PRK2 cannot establish create/retrieve caller arrays; no available caller injection seam established. No new provider/refactoring seam is admitted under native-author refusal, and this is not automatically hardware-only."
+  ],
+  "decision": "Append current followup only. Preserve stale historical no-vector prose as history, explicit PVA037 open status, Windows4 overallFAIL/filesystemHOLD, PVU008 provider boundary, all STOP/NO-RETRY/CLOSED/native restrictions and unchanged denominators. Zero new tests/fixes/closures."
+}

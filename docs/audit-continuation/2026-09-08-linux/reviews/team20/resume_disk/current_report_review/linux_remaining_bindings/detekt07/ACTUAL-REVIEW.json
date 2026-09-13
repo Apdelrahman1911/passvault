@@ -1,0 +1,603 @@
+{
+  "actual_evidence": [
+    {
+      "bytes": 12535,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/OUTER-RECEIPT.json",
+      "sha256": "f6a55ad303b22aa304732527236d3485378bdae9a0914e1636faa2f268163d06"
+    },
+    {
+      "bytes": 49515,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/INNER-RESULT.json",
+      "sha256": "dbd7e34abdc8922d156a595b4681464be526dd60f3f97edcee53c8e83fbf27fe"
+    },
+    {
+      "bytes": 12859,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/OUTER-INTENT.json",
+      "sha256": "ebdd86fafc6e84d5f02c00bee54242c33bd51a964b736b5440c57d250295954e"
+    },
+    {
+      "bytes": 3087,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/OUTER-ALLOCATION.json",
+      "sha256": "54c56f87255b0e173439e412a235f363827a78d9eaa48f23f07271fc8cbf9e47"
+    },
+    {
+      "bytes": 703,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/OUTER-INDEX-COPY.json",
+      "sha256": "201454bed3b770fab5c12ac97beabefa151b29488357ec5468b9368375ecc8ed"
+    },
+    {
+      "bytes": 167,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/INNER-PREFLIGHT.json",
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    {
+      "bytes": 1765,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/GIT-PREFLIGHT.json",
+      "sha256": "f4735f5aa518793efc45b417f66cbb2f2fec02f8be0b85cf7d624bffd857b7be"
+    },
+    {
+      "bytes": 1334,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/SOURCE-BEFORE.json",
+      "sha256": "eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766"
+    },
+    {
+      "bytes": 1334,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/SOURCE-AFTER.json",
+      "sha256": "eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766"
+    },
+    {
+      "bytes": 2397,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/PHASE-git-isolation.json",
+      "sha256": "d443677cf29599f1defdbc64f7c6e2e958265147f894800af5de7d2b05a0b9f5"
+    },
+    {
+      "bytes": 43187,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/PHASE-detekt.json",
+      "sha256": "669801d6d61715664ef5e41ce850068785db2ab7f54c64fabb68049c863254ac"
+    },
+    {
+      "bytes": 40682,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/STATIC-REPORTS.json",
+      "sha256": "43e29a7ddde84e02dd5d3aa790f5394517e361a2cf5ba8162f7e95e71972c757"
+    },
+    {
+      "bytes": 19334,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/GENERATED-REPORTS.json",
+      "sha256": "63c946000f14902dfee7dedaac6ab6085e5daafdcb56c55709e594df1fd4b52d"
+    },
+    {
+      "bytes": 1340,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/detekt-INTENT.json",
+      "sha256": "1716bfc353c7614adb784cd5e2eed52fad8e801523ce6517b83034c674830a51"
+    },
+    {
+      "bytes": 797,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/detekt-stop-INTENT.json",
+      "sha256": "3fb137b07ad76578e3631b20371897edd71f83dc057e91ace832851f295d78db"
+    },
+    {
+      "bytes": 75007,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/logs/detekt.log",
+      "sha256": "e415569ac7063d59b7ecd39be0f2dca505f237fdc104914981aeda3e3eaf4236"
+    },
+    {
+      "bytes": 406,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/logs/detekt-stop.log",
+      "sha256": "5826fc30a58cf8d057e77fb76e54edeeec7c6e943edf8e70c964703b0ee1b1eb"
+    }
+  ],
+  "actual_result": {
+    "actual_analyzer_tasks": 6,
+    "actual_gradle_task_events_not_cases": [
+      {
+        "line": 56,
+        "suffix": null,
+        "task": ":verifyStaticAnalysisCoverage"
+      },
+      {
+        "line": 59,
+        "suffix": null,
+        "task": ":app-android:detekt"
+      },
+      {
+        "line": 61,
+        "suffix": "FAILED",
+        "task": ":app-desktop:detekt"
+      },
+      {
+        "line": 71,
+        "suffix": null,
+        "task": ":shared:detekt"
+      },
+      {
+        "line": 72,
+        "suffix": null,
+        "task": ":core:crypto:detekt"
+      },
+      {
+        "line": 74,
+        "suffix": "FAILED",
+        "task": ":core:database:detekt"
+      },
+      {
+        "line": 82,
+        "suffix": null,
+        "task": ":feature:credential:detekt"
+      }
+    ],
+    "actual_task_total": 7,
+    "application_test_cases": 0,
+    "family_closures_added": 0,
+    "four_successful_analyzers_planned_inputs_not_visitation": 159,
+    "inner_errors": [
+      "Static task/input/report mapping incomplete; no success from task count or compilation",
+      "RuntimeError: Detekt07 failed; no automatic retry"
+    ],
+    "inner_exit": 1,
+    "inventory_guard": {
+      "actual": "PASS",
+      "qualification": "Inventory coverage floor satisfied, not708 tests, analyzer engine visitation or OpenGrep execution.",
+      "security_analysis_target_inventory_count": 708,
+      "task": ":verifyStaticAnalysisCoverage"
+    },
+    "launch_chunk": "6fec4e",
+    "mapping_errors": [
+      ":detekt: outcome UNSTARTED; not qualified success",
+      ":detekt: required nonempty valid report triplet incomplete",
+      ":app-desktop:detekt: outcome FAILED; not qualified success",
+      ":core:database:detekt: outcome FAILED; not qualified success"
+    ],
+    "original_run_elapsed_seconds": 155.625,
+    "original_tool_session": 28180,
+    "outer_reasons": [],
+    "outer_status": "VALIDATION_FAILED_CLEANED",
+    "outer_terminal_exit": 1,
+    "root_reports_absent": [
+      {
+        "absent_entry": "build/reports/detekt",
+        "kind": "checkstyle",
+        "source": "build/reports/detekt/detekt.xml",
+        "task": ":detekt"
+      },
+      {
+        "absent_entry": "build/reports/detekt",
+        "kind": "html",
+        "source": "build/reports/detekt/detekt.html",
+        "task": ":detekt"
+      },
+      {
+        "absent_entry": "build/reports/detekt",
+        "kind": "sarif",
+        "source": "build/reports/detekt/detekt.sarif",
+        "task": ":detekt"
+      }
+    ],
+    "selected_analyzers": 7,
+    "selected_planned_inputs_not_visitation": 296,
+    "semantic_validation_mapping": false,
+    "six_executed_analyzers_planned_inputs_not_visitation": 275,
+    "static_task_outcomes": [
+      {
+        "actual_outcome": "BARE",
+        "checkstyle_diagnostics": 0,
+        "independent_disposition": "QUALIFIED_STATIC_SUCCESS",
+        "planned_inputs_not_visitation": 25,
+        "retained_reports": 3,
+        "task": ":app-android:detekt"
+      },
+      {
+        "actual_outcome": "FAILED",
+        "checkstyle_diagnostics": 4,
+        "independent_disposition": "FAILED",
+        "planned_inputs_not_visitation": 40,
+        "retained_reports": 3,
+        "task": ":app-desktop:detekt"
+      },
+      {
+        "actual_outcome": "BARE",
+        "checkstyle_diagnostics": 0,
+        "independent_disposition": "QUALIFIED_STATIC_SUCCESS",
+        "planned_inputs_not_visitation": 19,
+        "retained_reports": 3,
+        "task": ":core:crypto:detekt"
+      },
+      {
+        "actual_outcome": "FAILED",
+        "checkstyle_diagnostics": 2,
+        "independent_disposition": "FAILED",
+        "planned_inputs_not_visitation": 76,
+        "retained_reports": 3,
+        "task": ":core:database:detekt"
+      },
+      {
+        "actual_outcome": "UNSTARTED",
+        "checkstyle_diagnostics": 0,
+        "independent_disposition": "UNSTARTED",
+        "planned_inputs_not_visitation": 21,
+        "retained_reports": 0,
+        "task": ":detekt"
+      },
+      {
+        "actual_outcome": "BARE",
+        "checkstyle_diagnostics": 0,
+        "independent_disposition": "QUALIFIED_STATIC_SUCCESS",
+        "planned_inputs_not_visitation": 23,
+        "retained_reports": 3,
+        "task": ":feature:credential:detekt"
+      },
+      {
+        "actual_outcome": "BARE",
+        "checkstyle_diagnostics": 0,
+        "independent_disposition": "QUALIFIED_STATIC_SUCCESS",
+        "planned_inputs_not_visitation": 92,
+        "retained_reports": 3,
+        "task": ":shared:detekt"
+      }
+    ],
+    "terminal_chunk": "9e2904",
+    "whole_batch": "FAIL"
+  },
+  "admission_and_bindings": {
+    "coordination": "Root admission records four working agents explicitly toolsQUIET, pending-init android_review not falsely acknowledged, root sole owner/no CI. Strict positive-buildlike screen unchanged; original unclassified_host_churn0. Root-origin terminal external evidence, not a reviewer process census.",
+    "references": [
+      {
+        "bytes": 8905,
+        "path": "docs/audit-continuation/2026-09-08-linux/requests/LINUX-DETEKT-07.json",
+        "sha256": "b2d83046dbff4a414450ef67295662942b14c43c4f5f3aa2f6c44a75219766a4"
+      },
+      {
+        "bytes": 6301,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/linux_remaining_bindings/detekt07/SOURCE-PROMOTION-REVIEW.json",
+        "sha256": "5ea056954905b692f41e9a1050d38fc52a590340c5a4a6314a170124cba6ea48"
+      },
+      {
+        "bytes": 14085,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/linux_remaining_bindings/detekt07/INSTANCE-REVIEW.json",
+        "sha256": "5dc90ab1407143218f86e7977357dcfe1d8aa92be22f4c48c705df6c1c21fae6"
+      },
+      {
+        "bytes": 1010,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/linux_remaining_bindings/detekt07/INSTANCE-ACCEPT.json",
+        "sha256": "74c26c1cfe0ed152a3bf82612c12cbbae5d122207e0c6b9992c706f5d932f4b4"
+      },
+      {
+        "bytes": 16160,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new06/STATIC07-SOURCE-INDEX-BINDING-REVIEW.json",
+        "sha256": "926fc4f77ad973b227522e73302ede9c2a32ff5c573bd7b2cf5ea22b3e57fb5e"
+      },
+      {
+        "bytes": 3738,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/STATIC07-EXECUTION-ADMISSION01.json",
+        "sha256": "cb62e45778024edaa70dfdb78c45b810a7051ca747cce120a801869b923bd6db"
+      },
+      {
+        "bytes": 624,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/STATIC07-EXTERNAL-RESULT01.json",
+        "sha256": "e9c1d35c312bdd9214a3e43fdb99634f9bcb842527dfebe7e7ec269988a42eaf"
+      }
+    ],
+    "relationships": "Consumed request/approval fullpins equal allocation, intent and outer receipt. Four named W source/control current fullpins and hashes match request and approval. Original four parent identities match allocation. Intent outer-images exactly request15 plus original sealed-index copy; inner-images exactly required8 plus sealed-index and metadata/config shadow. Original index source/copy hash0eaa0642a49f0f99a6cd0a0054157de8efc114945a7f4303aeee707361df28f3,766644B, matches request, namespace preflight and post-exit underlying record. No U/tool/runtime recapture."
+  },
+  "authority": "Supports root adoption of the actual result and release of this consumed build slot. NOT entry, retry, second-stop, recovery, cleanup, publication or future-run admission. Root remains sole build owner.",
+  "disposition": "ACCEPT_SCOPED_ACTUAL_FAILURE_FOUR_STATIC_SUCCESSES_AND_ORIGINAL_CLEANUP_ONLY",
+  "independent_log_and_report_challenge": {
+    "data_reconciliation_checks_passed": [
+      "whole_batch_failure",
+      "original_packet",
+      "allocation",
+      "source_identity",
+      "request_bound_outer_images",
+      "bound_index_copy",
+      "inner_images",
+      "four_control_source_images",
+      "record_bindings",
+      "phase_bindings",
+      "reports_binding",
+      "retained_report_images",
+      "conserved_reports",
+      "report_totals",
+      "stop_once",
+      "build_stop_intents",
+      "build_stop_logs",
+      "all_phase_commands_terminal",
+      "namespace_binding",
+      "readonly_git_binding",
+      "outer_child_outputs",
+      "source_before_after",
+      "source_metadata_reconstruction",
+      "transport_metadata",
+      "original_disposal",
+      "runtime_samples_complete"
+    ],
+    "diagnostics": [
+      {
+        "column": 1,
+        "line": 1147,
+        "message": "Line detected, which is longer than the defined maximum line length in the code style.",
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "rule": "detekt.MaxLineLength",
+        "task": ":app-desktop:detekt"
+      },
+      {
+        "column": 1,
+        "line": 1226,
+        "message": "Line detected, which is longer than the defined maximum line length in the code style.",
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "rule": "detekt.MaxLineLength",
+        "task": ":app-desktop:detekt"
+      },
+      {
+        "column": 9,
+        "line": 43,
+        "message": "The function closeReservationProtectsRealContextUntilCancellationReturns is too long (96). The maximum length is 60.",
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt",
+        "rule": "detekt.LongMethod",
+        "task": ":app-desktop:detekt"
+      },
+      {
+        "column": 22,
+        "line": 268,
+        "message": "The caught exception is too generic. Prefer catching specific exceptions to the case that is currently handled.",
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt",
+        "rule": "detekt.TooGenericExceptionCaught",
+        "task": ":app-desktop:detekt"
+      },
+      {
+        "column": 42,
+        "line": 408,
+        "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing.",
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+        "rule": "detekt.ThrowingExceptionFromFinally",
+        "task": ":core:database:detekt"
+      },
+      {
+        "column": 42,
+        "line": 446,
+        "message": "Do not throw an exception within a finally statement. This can discard exceptions and is confusing.",
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt",
+        "rule": "detekt.ThrowingExceptionFromFinally",
+        "task": ":core:database:detekt"
+      }
+    ],
+    "full_log_lines": 496,
+    "log_mapping": "Seven planned PASSVAULT_DETEKT07_TASK markers independently bound to exact captured SOURCE sets and report destinations. Seven actual task banners independently parsed at lines56,59,61,71,72,74,82, equal collector records. Exactly Desktop and DB failure chains; BUILD FAILED in2m15s and7 actionable tasks/7 executed. No root analyzer start. Linux-disabled Apple/cinterop warnings retained, no Apple credit. Entire actual non-stack log and both failure exception chains reconciled; no success inferred from compiler/task count.",
+    "retained_reports": {
+      "all_current_saved_fullpins_and_hashes_match": true,
+      "all_original_saved_bytes_and_hashes_match": true,
+      "all_six_checkstyle_reports_parse": true,
+      "all_six_html_reports_nonempty_valid_markers": true,
+      "all_six_sarif_reports_parse": true,
+      "analyzer_triplets": 6,
+      "checkstyle_sarif_rawlog_diagnostics_agree": true,
+      "collection_errors": [],
+      "diagnostic_only_gradle_problems_files": 1,
+      "header_errors": [],
+      "qualification": "Four successful analyzer triplets contain no XML or SARIF diagnostics. Two failed analyzers contain six matching diagnostics. These are static diagnostics in four test files, not six new product findings. HTML markers are report integrity checks, not semantic tests.",
+      "root_missing_triplet": true,
+      "rule_namespace_mapping": {
+        "LongMethod": "detekt.complexity.LongMethod",
+        "MaxLineLength": "detekt.style.MaxLineLength",
+        "ThrowingExceptionFromFinally": "detekt.exceptions.ThrowingExceptionFromFinally",
+        "TooGenericExceptionCaught": "detekt.exceptions.TooGenericExceptionCaught"
+      },
+      "sarif_rule_ids_defined_in_driver": true,
+      "total_bytes": 942767,
+      "total_files": 19
+    },
+    "saved_report_images": [
+      {
+        "bytes": 79,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/app-android-checkstyle.xml",
+        "sha256": "f491e274f0d208f81c3edbc7c1097c30db590a3822fcf579468ac814d9ccc62b"
+      },
+      {
+        "bytes": 10565,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/app-android-html.html",
+        "sha256": "ea79f440cfeb50b6e7480e95d4601ed06aa84e1ef3b8e4a095a714d4cc71e07a"
+      },
+      {
+        "bytes": 122279,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/app-android-sarif.sarif",
+        "sha256": "48fc534501f1f9b28c5c4773b7e0ad3dbdfe839b64a9cd887a52c6840fbb7819"
+      },
+      {
+        "bytes": 1126,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/app-desktop-checkstyle.xml",
+        "sha256": "4ad8005a64163d8eaa1421c39cd149917eae2d5c2c9db0ef0f7a53dc1eaee923"
+      },
+      {
+        "bytes": 15914,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/app-desktop-html.html",
+        "sha256": "473127974de62193c20f730bd150e2327ed5b5bbc07dff834e35a76dd343ba6c"
+      },
+      {
+        "bytes": 125886,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/app-desktop-sarif.sarif",
+        "sha256": "6cc201ebcc770735cf0514f5b5440c079688d3005cd6816b128ef23bf7f6b158"
+      },
+      {
+        "bytes": 79,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/shared-checkstyle.xml",
+        "sha256": "f491e274f0d208f81c3edbc7c1097c30db590a3822fcf579468ac814d9ccc62b"
+      },
+      {
+        "bytes": 10574,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/shared-html.html",
+        "sha256": "62a8e94b1ae2b8642113c80c74c1c828946f800d959627d5e5574a3768936651"
+      },
+      {
+        "bytes": 122279,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/shared-sarif.sarif",
+        "sha256": "48fc534501f1f9b28c5c4773b7e0ad3dbdfe839b64a9cd887a52c6840fbb7819"
+      },
+      {
+        "bytes": 79,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/core-crypto-checkstyle.xml",
+        "sha256": "f491e274f0d208f81c3edbc7c1097c30db590a3822fcf579468ac814d9ccc62b"
+      },
+      {
+        "bytes": 10566,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/core-crypto-html.html",
+        "sha256": "35d0e49b66c253c9dceee8be0a6d594acf18b6721f4de6bff60b9c323453457e"
+      },
+      {
+        "bytes": 122279,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/core-crypto-sarif.sarif",
+        "sha256": "48fc534501f1f9b28c5c4773b7e0ad3dbdfe839b64a9cd887a52c6840fbb7819"
+      },
+      {
+        "bytes": 751,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/core-database-checkstyle.xml",
+        "sha256": "634fc3e618ee4796aa667bd9a3b88c4150181a788c14791e0e6daf6dfb964a82"
+      },
+      {
+        "bytes": 12792,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/core-database-html.html",
+        "sha256": "e64cb342b662fe7e5b5ef9122eed897485af55eceeeced19f3facb63aef2eb3b"
+      },
+      {
+        "bytes": 124101,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/core-database-sarif.sarif",
+        "sha256": "df1ee5dd6cbc18a4f16faf59b9173b47e313ecdba269cab95018668faa4a2b3e"
+      },
+      {
+        "bytes": 79,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/feature-credential-checkstyle.xml",
+        "sha256": "f491e274f0d208f81c3edbc7c1097c30db590a3822fcf579468ac814d9ccc62b"
+      },
+      {
+        "bytes": 10565,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/feature-credential-html.html",
+        "sha256": "63061f4d5478b89fb89b8b2c00f87eef65160362d757c2f3ff4761fe4922e2b5"
+      },
+      {
+        "bytes": 122279,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/feature-credential-sarif.sarif",
+        "sha256": "48fc534501f1f9b28c5c4773b7e0ad3dbdfe839b64a9cd887a52c6840fbb7819"
+      },
+      {
+        "bytes": 130495,
+        "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-detekt07/reports/gradle-problems.html",
+        "sha256": "077cc100c8a55fe02d644fa03f22eebbbaea0ff26a556d3c521ead8c8b1185bc"
+      }
+    ],
+    "source_set_challenge": "Module sources limited to module/src plus .kt/.kts; whole component build/.gradle/.kotlin/generated/resources excluded; root .gradle.kts also excludes .idea. Independently derived exact source lists match all7 planned markers and collector. Planned source membership is not proof the analyzer engine visited every file."
+  },
+  "original_stop_settlement_cleanup": {
+    "accepted": true,
+    "cleanup_installed_before_build": "Exact accepted inner finally, no ad hoc recovery. Build namespacepid6 exit1; original stop namespacepid465 exit0, exactly once, same private ENV digest8f412b117140997b5f71448ac540259ec7fd7d5f696a289dcf7ce6ccfc511271 and original checked-in wrapper; No Gradle daemons are running. Four metadata/index mount commands namespacepid2..5 exit0; no stop applicable to setup.",
+    "conservation": "GENERATED-REPORTS19 already-retained rows exactly map fixed source/destination caps and inner captures, all source/saved descriptors; extra copied files0/bytes0,44 empty cache-report roots,cachefiles0. Original source+saved reverified before first unlink and saved after cleanup. Complete allowlisted no-symlink owner/device snapshot, no-runtime-mount recheck, original descriptor-bound bottom-up removal, empty/original R check/fsync/nlink0/name absent precede terminal status. No permanent source, tests, reports, dependencies, shared caches or toolchains removed by this review.",
+    "final_exit_challenge": "Receipt is explicitly preterminal. Root-recorded actual terminal exit1, no continuing session, agrees with validation failure rather than exit70 descriptor/settlement uncertainty. Accepted exact outer source719..730,895..960,1118..1203 confirms original guards, source-after gate, disposal and final descriptor-close paths. No second stop, process census, replay or cleanup performed/requested.",
+    "limitations": "Cooperative quiet-host admission, nonexhaustive comm screen/generic-interpreter blind spot, mutable external store is not hostile-root snapshot protection. No global-idle/no-escape/continuous-peak/hard-deadline proof. A failed validation does not defeat separately established original safety/evidence obligations.",
+    "namespace_binding": "Original child birth/parent records, private differing PID/mount namespaces, nonpropagating mount preflight, readonly/nosuid/nodev/noexec metadata and index mounts and original sealed index agree. Outer direct children exit0(Git transport) and1(private inner), no pidfd-kill needed; logs match images. Child/phase terminal records and accepted source guards establish scoped original settlement, not global process idleness.",
+    "original_runtime_root_removed_additionally": true,
+    "removed_snapshot_descendants": 15506,
+    "safety_flags": {
+      "all_required_stops_ok": true,
+      "cleanup_safe": true,
+      "git_bindings_established": true,
+      "git_bindings_stable": true,
+      "namespace_empty_before_exit": true,
+      "sealed_index_unchanged": true,
+      "source_after": true,
+      "source_before": true
+    }
+  },
+  "preserved_restrictions": "PVU007 STOP; PVU011 NO-RETRY/no inquiry; PVA029 recorded failure/no automatic retry; G7/G8 CLOSED and all old HOLD/native refusals; no archived helper or unadmitted runner execution; eight PVD design limitations separate from owner decisions; protected refs/tags/build1017001, versions, dependencies, identities, signing/Store/publication boundaries unchanged.",
+  "pva039": {
+    "captured_source_affinity": [
+      {
+        "bytes": 7614,
+        "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/Main.kt",
+        "sha256": "9a67a8a5c2f05331e91ec5c18f6317a3562bd26e2c720105a8a21773edd8ae93"
+      },
+      {
+        "bytes": 402,
+        "path": "app-desktop/src/desktopMain/kotlin/com/passvault/desktop/DesktopApplicationLoop.kt",
+        "sha256": "fc8c553ee02f6c84fc535ea0672436b9688dde6753101f9d952858a05516bfac"
+      },
+      {
+        "bytes": 9949,
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/DesktopApplicationLifecycleIntegrationTest.kt",
+        "sha256": "0b40e53ceceaf11e6cbc5baaeb4be5f771bb17d939f2c7c2ae54fbb19ab00275"
+      }
+    ],
+    "eligibility": "PENDING_AFFECTED_STATIC_NOT_CLOSED",
+    "excluded_credit": "Not full Main cleanup, provider/native cleanup, PVU006 resolution, hard2.5-second bound, physical Apple/Windows/Android32/hardware or publication proof.",
+    "prior_case_scope": "One actual Linux Compose-return integration case at C14: default child WINDOW_READY/CLOSE_REQUEST exit0, production-helper child additionally CALLER_CLEANUP/CONTINUATION exit23. Whole original integration batch remains FAIL. Current production files unchanged; C18 lifecycle-test helper extraction and narrowly scoped cleanup suppression independently accepted with oracles/child/probe/argv/finally semantics unchanged. Do not rerun unchanged expensive lifecycle case for reassurance.",
+    "prior_evidence": [
+      {
+        "bytes": 9843,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/storage/INTEGRATION02-ACTUAL-RESULT-REVIEW.json",
+        "sha256": "254b133bbdf4b4f8e903cb3b53b3739518f5d8a3d57a81f6a744d17dfadccf2f"
+      },
+      {
+        "bytes": 13090,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/native-independent/PVA039-IMPLEMENTATION-REGRESSION-INDEPENDENT.md",
+        "sha256": "beb2d3e5578fd4d232b6999e2055a8790d741d57fa9a3185c861f30c921af379"
+      },
+      {
+        "bytes": 8081,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/desktop_other_review/02-LIFECYCLE-TRAY-PATCH-REVIEW.md",
+        "sha256": "873af272cddf06cb1b2e9fff3e24c74cf7bf9c28722391898e5709ef98608f49"
+      },
+      {
+        "bytes": 38402,
+        "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/coverage_review/C18-INTEGRATION-REVIEW.json",
+        "sha256": "513a249f95d34cae6dc2eb06cd9d494e6066ee7d95bba59e4cb6b9c9a730712c"
+      }
+    ],
+    "prior_real_lifecycle_pass_preserved": true,
+    "reason": "The actual Desktop analyzer failed and root analyzer was unstarted. No family closure from absence of diagnostics on the three PVA039-specific files."
+  },
+  "remaining_actionable_scope": {
+    "ledger_ownership": "Root updates canonical issue/coverage counts and final report. No closure percentage or overall readiness is increased by Static07. Preserve Focused05 nine PASS cases/wholeFAIL and earlier failures without double counting.",
+    "next_candidate": "Independently review/land the six meaningful test-source diagnostic fixes, then consider only failed Desktop+DB analyzers plus unstarted root and the required unchanged inventory guard. Keep17 unaffected successful analyzers out unless a real changed-risk/config affinity requires rerun. Every subsequent execution still needs fresh exact independent instance/root admission; this is not an automatic retry.",
+    "retained_successes": "Reuse prior13 independently qualified analyzers/39reports and new4 analyzers/12reports only where latest source/config affinity remains valid; this invocation adds0 application cases and0 family closures. Two zero-input aggregates remain omitted, not analyzer passes."
+  },
+  "resource_evidence": {
+    "entry_from_root": {
+      "disk_available_bytes": 13613879296,
+      "fallback_elected": false,
+      "normal_floor_met": true,
+      "ram_available_bytes": 63389270016,
+      "ram_total_bytes": 67435888640
+    },
+    "inner_complete_sample_count": 7,
+    "inner_incomplete_samples": 0,
+    "max_sampled_runtime_allocated_bytes": 1044639744,
+    "max_sampled_runtime_logical_bytes": 997453314,
+    "outer_sample_count": 6,
+    "qualification": "Point samples only, not continuous/absolute peaks, owned-RSS attribution or net reclaimed bytes. Original stop/disposal accepted separately. Reviewer left no build/runtime/cache/temporary process; only this compact own review artifact.",
+    "sampled_disk_max_bytes": 13613756416,
+    "sampled_disk_min_bytes": 12532633600,
+    "sampled_ram_available_max_bytes": 63371816960,
+    "sampled_ram_available_min_bytes": 60689285120,
+    "sampled_ram_total_bytes": 67435888640
+  },
+  "reviewer": "/root/current_report_review",
+  "reviewer_diagnostics": "Earlier display treated planned_inventory_rows as list (actual integer7); corrected. Initial cross-format expression compared unqualified XML rule names to qualified SARIF names; corrected by exact four-rule namespace map. These were inert reviewer schema/display issues, not helper/product executions or findings. No remaining mismatched data comparison.",
+  "run_id": "linux-detekt07",
+  "schema": 1,
+  "scope": "Independent inert source/evidence reconciliation of the one consumed Static07 invocation. Reviewer authored neither the executed helper nor the actual output. No build/test/helper execution/import/eval/AST/compile, Git/network/tool/SDK/private-config/U/T/runtime/process probe, cleanup, canonical edit or child agent was performed for this review.",
+  "source": {
+    "commit": "d2d79ad52ce816a36f708bd35bd736a7d8068789",
+    "framed_bytes": 140710962,
+    "manifest": {
+      "bytes": 2519894,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint22/source-prepare01/SOURCE.json",
+      "sha256": "5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6"
+    },
+    "members": 4548,
+    "observed_checkout_bytes": 140476240,
+    "oid_bytes": 186468,
+    "oid_sha256": "cc77f2f0ed851e2b2702ea131168b86a296010a9229077ae6a5b927cd62ab85c",
+    "original_transport_sha256": "8cefb28ce5f43917588fb2da9e880434407ad31483588e3af49edf569fc84978",
+    "qualification": "Raw tuple hash, ordered OIDs and framed length independently reconstructed from captured SOURCE metadata. Original two full stream passes and before/after source equality accepted through exact source-controlled execution records; disposed stream cannot be freshly rehashed from metadata. Fifteen non-checkout-normalized files and both historical checkout-EOL qualifications remain, not fresh Windows/runtime coverage.",
+    "raw_bytes": 140474293,
+    "raw_identity_sha256": "5ebc10615710ecb56d381ad41b803c18bc087edfc1d3a9784a8fa18d0f22b717",
+    "source_before_after_identical": true,
+    "tree": "2e83afec1894238f59c1e9916cbf548ad54f5da2"
+  },
+  "utc": "2026-09-13T07:29:02.736615+00:00"
+}

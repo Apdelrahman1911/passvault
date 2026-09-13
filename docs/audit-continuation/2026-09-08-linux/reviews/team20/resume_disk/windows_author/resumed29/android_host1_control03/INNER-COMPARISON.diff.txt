@@ -1,0 +1,969 @@
+--- DONOR_DATA_ONLY/scripts/audit/linux_android_host_graph_04.py
++++ INERT_PROPOSAL_NOT_APPLY_PATCH/linux_android_host_01.py.proposed.txt
+@@ -1,11 +1,10 @@
+ #!/usr/bin/python3
+-"""NEW fixed AndroidHostGraph04 PID1 source template; NOT execution admission.
+-Text-reuses accepted Compile03 lifecycle only, never imports/replays old helpers.
+-One bounded current app-unit-test graph collection; every Gradle task action is
+-unconditionally refused by its exact init, with an original wrapper stop.
+-Exit0 is local graph protocol collection pending independent final log review;
+-zero compiler/application/native/runtime test credit. Root owns final binding,
+-quiet-host admission, original-object launch/settlement and bounded cleanup.
++"""INERT proposed fixed Host1 PID1 source; NOT execution admission.
++Text-reuses accepted Graph04 lifecycle, never imports/runs its consumed helper.
++One actual Android host clipboard policy case with fresh compiler/resource/Test
++joins, exact retained XML, original same-environment stop and bounded cleanup.
++A result is pending independent actual review; no device/native/PVA009 closure.
++Root owns fresh request/instance/quiet-host/SDK/Git bindings and original cleanup.
+ """
+ import hashlib
+ import json
+@@ -19,13 +18,15 @@
+ import subprocess
+ import sys
+ import time
++import xml.etree.ElementTree as ET
+ 
+ W = Path('/root/projects/PassVault/passvault-linux')
+ B = W / 'docs/audit-continuation/2026-09-08-linux'
+-R = Path('/root/projects/PassVault/audit-runtime-linux-android-host-graph04')
+-E = B / 'runs/linux-android-host-graph04'
++R = Path('/root/projects/PassVault/audit-runtime-linux-android-host01')
++E = B / 'runs/linux-android-host01'
+ CHECKOUT = R / 'checkout'
+-SELF, INIT = W / 'scripts/audit/linux_android_host_graph_04.py', W / 'scripts/audit/android_host_graph_04.init.gradle'
++SELF, INIT = W / 'scripts/audit/linux_android_host_01.py', W / 'scripts/audit/android_host_01.init.gradle'
++GRAPH_DATA = B / 'runs/linux-android-host-graph04/reports/graph-init-01.json'
+ SOURCE = B / 'reviews/checkpoint22/source-prepare01/SOURCE.json'  # Proposed current capture bytes/hash; independent actual adoption and instance pending.
+ JAVA, MOUNT = Path('/usr/lib/jvm/java-17-openjdk-amd64'), Path('/usr/bin/mount')
+ SDK, SDK_VIEW = Path('/opt/android-sdk'), R / 'sdk-readonly'
+@@ -33,7 +34,7 @@
+     'platforms/android-37.0/package.xml', 'build-tools/36.0.0/source.properties',
+     'build-tools/36.0.0/package.xml', 'licenses/android-sdk-license'))
+ SDK_OPERATION = 'READ_ONLY_EXISTING_COMPILE_SDK_NO_COPY_INSTALL_LICENSE_CHANGES'
+-GRAPH_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-android-host-graph04', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-host-graph04', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-host-graph04/checkout', '/root/projects/PassVault/audit-runtime-linux-android-host-graph04/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-host-graph04/tmp', '/root/projects/PassVault/audit-runtime-linux-android-host-graph04/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-host-graph04/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', 'subjectSha256': 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332'}  # Proposed current SOURCE literals; independent actual adoption/instance remains root-owned.
++HOST_BINDING = {'runtimeRoot': '/root/projects/PassVault/audit-runtime-linux-android-host01', 'evidenceRoot': '/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs/linux-android-host01', 'readRoots': ['/root/projects/PassVault/audit-runtime-linux-android-host01/checkout', '/root/projects/PassVault/audit-runtime-linux-android-host01/gradle-home', '/root/projects/PassVault/audit-runtime-linux-android-host01/tmp', '/root/projects/PassVault/audit-runtime-linux-android-host01/konan', '/usr/lib/jvm/java-17-openjdk-amd64', '/root/projects/PassVault/audit-runtime-linux-android-host01/sdk-readonly'], 'offline': False, 'sourceManifestSha256': '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', 'subjectSha256': 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332'}  # Proposed current SOURCE literals; independent actual adoption/instance remains root-owned.
+ READ_ROOT_ENVELOPE = (CHECKOUT, R / 'gradle-home', R / 'tmp', R / 'konan', JAVA, SDK_VIEW)
+ PUBLICATION_GIT = Path('/root/projects/PassVault/passvault-publication-20260912-02/.git')
+ GIT_DIR, GIT_INDEX = R / 'git-metadata', R / 'git-index'
+@@ -51,28 +52,30 @@
+ GIT_IMAGE = Path('/usr/bin/git')
+ RUBY_IMAGE = Path('/usr/bin/ruby3.2')
+ EXCLUDE_STATE = 'INFO_ABSENT'  # Retained checkpoint22 candidate; root must admit unchanged current U.
+-FROZEN = {SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: '25acb56408c1c81651d1e27d0d8f6fd0124c7ea1df8250f1af096c7bab684264'}  # Proposed source/control hashes; independent actual adoption/instance pending.
+-INPUTS = (SELF, INIT, SOURCE, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX) + SDK_METADATA
+-RUN_ID = 'linux-android-host-graph04'
++FROZEN = {SOURCE: '5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6', INIT: '9ebd1a2af73f4a08e3f2193e1e3b2f8944b6149ec9333a4439f44e035b36e287', GRAPH_DATA: '16908a3e0a4120fa6ccc4c8dead1a35d8d39270d05f0f34e1212ea8109f9e459'}  # Proposed source/control hashes; independent actual adoption/instance pending.
++INPUTS = (SELF, INIT, SOURCE, GRAPH_DATA, JAVA / 'bin/java', JAVA / 'release', MOUNT, GIT_INDEX) + SDK_METADATA
++RUN_ID = 'linux-android-host01'
+ REVIEW_ASSERTIONS = (
+     'ordinary_full_stage0_index_matches_source', 'no_split_sparse_unmerged_index',
+     'standalone_store_without_redirects', 'local_config_and_excludes_reviewed',
+     'no_external_git_config_or_executable_mechanisms', 'publication_store_frozen_for_run',
+ )
++WORKER_CHILDREN = ('home', 'tmp', 'jna', 'sqlite', 'android-user', 'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
++WORKER_DIRS = ('workers', 'workers/clipboard') + tuple('workers/clipboard/' + n for n in WORKER_CHILDREN)
+ PRIVATE = ('checkout', 'home', 'tmp', 'jna', 'sqlite', 'gradle-home', 'konan', 'android-user',
+            'xdg-cache', 'xdg-config', 'xdg-data', 'xdg-state')
+ # Outer separately owns empty Git/SDK mountpoints; their inodes are not the bound views.
+-ORIGINAL_DIRS = (R, E, E / 'logs', E / 'reports') + tuple(R / p for p in PRIVATE)
++ORIGINAL_DIRS = (R, E, E / 'logs', E / 'reports', E / 'xml') + tuple(R / p for p in PRIVATE + WORKER_DIRS)
+ MIB, GIB = 1024 ** 2, 1024 ** 3
+ FLAGS = ['--no-daemon', '--max-workers=1', '--console=plain', '--no-parallel', '--no-configure-on-demand',
+          '--no-configuration-cache', '--no-build-cache', '--dependency-verification=strict', '--stacktrace',
+          '-Pkotlin.compiler.execution.strategy=in-process', '-Pandroid.builder.sdkDownload=false',
+          '-Dorg.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8', '-Dorg.gradle.java.installations.auto-download=false',
+          '-Dorg.gradle.java.installations.auto-detect=false', '-Dorg.gradle.java.installations.paths=' + str(JAVA)]
+-GRAPH_COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT),
+-    ':app-android:testDebugUnitTest', '--info', '--dry-run', '-Ppassvault.audit.mode=android-host-graph-only'] + FLAGS
+-if GRAPH_BINDING['offline']:
+-    GRAPH_COMMAND += ['--offline']  # Fixed policy, never a resolution fallback.
++HOST_COMMAND = [str(CHECKOUT / 'gradlew'), '--init-script', str(INIT),
++    ':app-android:testDebugUnitTest', '--info', '-Ppassvault.audit.mode=android-host1'] + FLAGS
++if HOST_BINDING['offline']:
++    HOST_COMMAND += ['--offline']  # Fixed policy, never a resolution fallback.
+ STOP = [str(CHECKOUT / 'gradlew'), '--stop'] + FLAGS
+ ENV = {'PATH': str(JAVA / 'bin') + ':/usr/bin:/bin', 'JAVA_HOME': str(JAVA), 'LANG': 'C.UTF-8',
+        'LC_ALL': 'C.UTF-8', 'TZ': 'UTC', 'HOME': str(R / 'home'), 'GRADLE_USER_HOME': str(R / 'gradle-home'),
+@@ -128,19 +131,13 @@
+             errors.append('Additional errors omitted at the 128-entry evidence bound')
+ 
+ 
+-GRAPH_TARGET = ':app-android:testDebugUnitTest'
+-GRAPH_FILTER = ('com.passvault.android.security.AndroidClipboardServiceTest.'
++HOST_TARGET = ':app-android:testDebugUnitTest'
++HOST_FILTER = ('com.passvault.android.security.AndroidClipboardServiceTest.'
+                 'newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry')
+-GRAPH_SUBJECT_SHA = 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332'
+-GRAPH_LEGAL = ':app-android:prepareAndroidLegalAssets'
+-GRAPH_WRAPPERS = {'org.gradle.internal.exceptions.LocationAwareException',
+-                  'org.gradle.internal.event.ListenerNotificationException',
+-                  'org.gradle.execution.MultipleBuildFailures'}
+-GRAPH_OUTPUT_SCOPE = 'LEXICAL_ONLY_PHYSICAL_AND_SYNC_DELETE_BOUNDARY_UNBOUND'
+-
+-
+-GRAPH_PROPERTY_CONTRACT = 'EXACT_CLI_PLUS_FIXED_TOOLCHAIN_6_V1'
+-GRAPH_PROPERTY_SOURCE = {
++HOST_SUBJECT_SHA = 'ea3b535b99390d4850269bcc2089c8f6e26c1096cd17052ef361fae3ba5b3332'
++HOST_LEGAL = ':app-android:prepareAndroidLegalAssets'
++HOST_PROPERTY_CONTRACT = 'EXACT_CLI_PLUS_FIXED_TOOLCHAIN_6_V1'
++HOST_PROPERTY_SOURCE = {
+     'path': 'gradle.properties', 'git_mode': '100644',
+     'git_blob': 'a0f3d9ab2e45cae4e85feb468ba6d18b2aa9d57b', 'git_size': 1173,
+     'raw_size': 1173, 'raw_sha256': '323971ec6c0f02ff28c724b4c4f3120b5b8843faf3d77608485c1e15fb633235',
+@@ -149,10 +146,10 @@
+ 
+ 
+ def validate_argument_vector(row):
+-    # Additional receipt condition only. It never replaces the graph/finished pair.
++    # Additional receipt condition only. It never replaces action/case callbacks, exit0 or exact XML.
+     expected = {'format': 'passvault-android-argument-vector-v3', 'runId': RUN_ID,
+         'phase': 'AFTER_ARG12_BEFORE_ARG13', 'sourceManifestSha256': 'UNBOUND',
+-        'propertySourceSha256': GRAPH_PROPERTY_SOURCE['raw_sha256'], 'propertyContract': GRAPH_PROPERTY_CONTRACT,
++        'propertySourceSha256': HOST_PROPERTY_SOURCE['raw_sha256'], 'propertyContract': HOST_PROPERTY_CONTRACT,
+         'qualification': 'NEW_EXACT_CONTRACT_NOT_REPRODUCED_CAUSE_OR_TASK_AUTHORITY',
+         'projectMapKind': 'MAP', 'systemMapKind': 'MAP'}
+     require(isinstance(row, dict) and set(row) == set(expected) | {
+@@ -183,152 +180,187 @@
+             and all(outcomes[k] == 'ACCEPT' for k in ('ARG14', 'ARG15', 'ARG16', 'ARG17', 'ARG18', 'ARG19', 'ARG20')),
+             'complete successful bounded ARG14-20 observations; legacy ARG13 is diagnostic only')
+     return {'compatibility_shape': shape, 'legacy_arg13': outcomes['LEGACY_ARG13'],
+-            'property_source_sha256': GRAPH_PROPERTY_SOURCE['raw_sha256'],
++            'property_source_sha256': HOST_PROPERTY_SOURCE['raw_sha256'],
+             'diagnostic_not_graph_or_task_authority': True}
+ 
+ 
+-def validate_host_graph_rows(rows, binding):
+-    require(isinstance(binding, dict) and binding.get('subjectSha256') == GRAPH_SUBJECT_SHA
+-            and isinstance(binding.get('sourceManifestSha256'), str)
+-            and re.fullmatch(r'[0-9a-f]{64}', binding['sourceManifestSha256']), 'UNBOUND graph/source binding')
+-    require(isinstance(rows, list) and len(rows) == 2, 'exact graph then finished receipt pair')
+-    common = {'format': 'passvault-android-host-graph04-receipt-v1', 'runId': 'linux-android-host-graph04',
+-              'sourceManifestSha256': binding['sourceManifestSha256'], 'subjectSha256': GRAPH_SUBJECT_SHA,
+-              'selector': [GRAPH_TARGET], 'methodFilter': GRAPH_FILTER, 'graphOnly': True}
+-    graph, finished = rows
+-    for row in rows:
+-        require(isinstance(row, dict) and all(row.get(k) == v for k, v in common.items())
+-                and row['graphOnly'] is True, 'receipt source/selector/mode identity')
+-    require(set(graph) == set(common) | {'kind', 'taskCount', 'tasks', 'testTasks', 'targetPolicy',
+-                'selectedOutputs', 'edgeReferences', 'legalGetterBinding', 'outputPathScope', 'otherOutputRoles',
+-                'allTasksAreObservationsNotAnExecutionAllowlist'} and graph['kind'] == 'graph', 'exact graph schema')
+-    require(type(graph['taskCount']) is int and 1 <= graph['taskCount'] <= 512
+-            and isinstance(graph['tasks'], list) and len(graph['tasks']) == graph['taskCount'], 'task count bound')
+-
+-    def text_field(value, cap, pattern=None):
+-        require(isinstance(value, str) and 0 < len(value) <= cap
+-                and all(32 <= ord(c) <= 126 for c in value)
+-                and (pattern is None or re.fullmatch(pattern, value)), 'bounded metadata text')
+-        return value
+-
+-    def task_path(value):
+-        return text_field(value, 512, r':(?:[A-Za-z0-9_-]+:)*[A-Za-z0-9_-]+')
+-
+-    def type_name(value):
+-        return text_field(value, 512, r'[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*')
+-
+-    edge_names = ('dependencies', 'finalizers', 'mustRunAfter', 'shouldRunAfter')
+-    paths, total_edges = {}, 0
+-    for task in graph['tasks']:
+-        require(isinstance(task, dict) and set(task) == {'path', 'type', 'enabled', 'isTest', 'isExec',
+-                'isJavaExec', 'isArchive', *edge_names}, 'exact observed task schema')
+-        path = task_path(task['path'])
+-        require(path not in paths, 'unique observed task path')
+-        paths[path] = task
+-        type_name(task['type'])
+-        require(all(type(task[k]) is bool for k in ('enabled', 'isTest', 'isExec', 'isJavaExec', 'isArchive')),
+-                'observed task Boolean types')
+-        for name in edge_names:
+-            edges = task[name]
+-            require(isinstance(edges, list) and len(edges) <= 128, 'observed edge list bound')
+-            for value in edges:
+-                task_path(value)
+-            require(edges == sorted(set(edges)), 'unique sorted edge references')
+-            total_edges += len(edges)
+-            require(total_edges <= 8192, 'observed edge-reference total bound')
+-    require(type(graph['edgeReferences']) is int and graph['edgeReferences'] == total_edges
+-            and all(set(t['dependencies']) <= set(paths) for t in paths.values()), 'populated graph dependency mapping')
+-    tests = sorted(p for p, t in paths.items() if t['isTest'])
+-    require(tests == graph['testTasks'] == [GRAPH_TARGET] and paths[GRAPH_TARGET]['enabled'], 'sole enabled selected Test')
+-    policy = graph['targetPolicy']
+-    expected_policy = {'enabled': True, 'includePatterns': [GRAPH_FILTER], 'excludePatterns': [],
+-                       'commandLineIncludePatterns': [], 'failOnNoMatchingTests': True, 'ignoreFailures': False,
+-                       'maxParallelForks': 1, 'forkEvery': 0}
+-    require(isinstance(policy, dict) and policy == expected_policy
+-            and all(type(policy[k]) is bool for k in ('enabled', 'failOnNoMatchingTests', 'ignoreFailures'))
+-            and type(policy['maxParallelForks']) is int and type(policy['forkEvery']) is int, 'exact host Test policy')
+-    require(graph['outputPathScope'] == GRAPH_OUTPUT_SCOPE and graph['otherOutputRoles'] == 'UNBOUND_NOT_QUERIED'
+-            and graph['allTasksAreObservationsNotAnExecutionAllowlist'] is True, 'observation and output qualifications')
+-    legal_state = graph['legalGetterBinding']
+-    wanted_outputs = {GRAPH_TARGET: 'Test.reports.junitXml.outputLocation'}
+-    if GRAPH_LEGAL not in paths:
+-        require(legal_state == 'NOT_IN_GRAPH', 'absent legal task must remain unqueried')
+-    else:
+-        require(legal_state in ('UNBOUND_TYPE_NOT_QUERIED', 'SOURCE_HIERARCHY_MATCHED_LEXICAL_PATH_ONLY'),
+-                'legal getter query state')
+-        if legal_state == 'SOURCE_HIERARCHY_MATCHED_LEXICAL_PATH_ONLY':
+-            require(paths[GRAPH_LEGAL]['type'] == 'Build_gradle$PrepareAndroidLegalAssets_Decorated',
+-                    'exact source/decorated legal class; pinned init additionally checks direct superclass')
+-            wanted_outputs[GRAPH_LEGAL] = 'PrepareAndroidLegalAssets.getOutputDirectory'
+-    require(isinstance(graph['selectedOutputs'], list) and len(graph['selectedOutputs']) == len(wanted_outputs),
+-            'fixed selected output descriptor count')
+-    seen_outputs = set()
+-    boundary = Path(binding['runtimeRoot']) / 'checkout/app-android/build'
+-    for output in graph['selectedOutputs']:
+-        require(isinstance(output, dict) and set(output) == {'task', 'api', 'root'}, 'selected output descriptor schema')
+-        task = output['task']
+-        require(task in wanted_outputs and task not in seen_outputs and output['api'] == wanted_outputs[task],
+-                'fixed selected output getter')
+-        seen_outputs.add(task)
+-        root = text_field(output['root'], 1024)
+-        path = Path(root)
+-        require(path.is_absolute() and str(path) == root and '..' not in path.parts
+-                and path != boundary and path.is_relative_to(boundary), 'lexical output root only; not symlink/physical proof')
+-        if task == GRAPH_TARGET:
+-            require(path == boundary / 'test-results/testDebugUnitTest', 'fixed default selected Test XML root')
+-
+-    required_finish = {'kind', 'phase', 'graphCount', 'whenReadyEntries', 'finishCallbacks', 'beforeTaskEntries',
+-                       'afterTaskEvents', 'taskActionsAdmitted', 'localExpectedRefusal', 'failureTree',
+-                       'finalProcessAndLogReviewRequired', 'observedTestCases', 'qualification'}
+-    require(set(finished) == set(common) | required_finish and finished['kind'] == 'finished'
+-            and finished['phase'] == 'intended-refusal', 'exact terminal callback receipt')
+-    for key, value in {'graphCount': 1, 'whenReadyEntries': 1, 'finishCallbacks': 1,
+-                       'beforeTaskEntries': 0, 'afterTaskEvents': 0, 'observedTestCases': 0}.items():
+-        require(type(finished[key]) is int and finished[key] == value, 'exact callback/action-entry count: ' + key)
+-    require(finished['taskActionsAdmitted'] is False and finished['localExpectedRefusal'] is True
+-            and finished['finalProcessAndLogReviewRequired'] is True
+-            and finished['qualification'] == 'Callback-local tree and task-entry guards; configuration can execute code and write files.',
+-            'local-only refusal and zero-action admission')
+-    tree = finished['failureTree']
+-    require(isinstance(tree, dict) and set(tree) == {'complete', 'onlyIntendedAtCallback', 'root', 'nodes', 'errorType'}
+-            and tree['complete'] is True and tree['onlyIntendedAtCallback'] is True and tree['errorType'] is None
+-            and type(tree['root']) is int and tree['root'] == 0
+-            and isinstance(tree['nodes'], list) and 1 <= len(tree['nodes']) <= 32, 'complete bounded local failure tree')
+-    nodes, sentinel_count, failure_edges = tree['nodes'], 0, 0
+-    for index, node in enumerate(nodes):
+-        require(isinstance(node, dict) and set(node) == {'id', 'type', 'intendedIdentity', 'children', 'suppressedCount'}
+-                and type(node['id']) is int and node['id'] == index and type(node['intendedIdentity']) is bool
+-                and type(node['suppressedCount']) is int and node['suppressedCount'] == 0
+-                and isinstance(node['children'], list) and len(node['children']) <= 17, 'failure node schema/bound')
+-        type_name(node['type'])
+-        require(all(type(i) is int and 0 <= i < len(nodes) for i in node['children'])
+-                and len(set(node['children'])) == len(node['children']), 'unique bounded failure edges')
+-        failure_edges += len(node['children'])
+-        require(failure_edges <= 64, 'failure edge total')
+-        if node['intendedIdentity']:
+-            sentinel_count += 1
+-            require(node['type'] == 'PassVaultAndroidHostGraphOnlyRefusal' and not node['children'], 'intended identity leaf')
++# Inert proposed Host1 result mapper. Called only by a future admitted Host1 inner.
++HOST_CLASS = 'com.passvault.android.security.AndroidClipboardServiceTest'
++HOST_METHOD = 'newSensitiveCopyDoesNotInheritAnUnavailablePendingClearOrPriorExpiry'
++HOST_CLASS_PACKAGE = 'com/passvault/android/security/'
++HOST_CONFIG_RESOURCE = 'com/android/tools/test_config.properties'
++HOST_MAIN_COMPILER = ':app-android:compileDebugKotlin'
++HOST_TEST_COMPILER = ':app-android:compileDebugUnitTestKotlin'
++HOST_ROOM = ':core:database:copyRoomSchemas'
++HOST_PACKAGE = ':app-android:packageDebugUnitTestForUnitTest'
++HOST_CONFIG = ':app-android:generateDebugUnitTestConfig'
++HOST_SCHEMAS = {
++    'com.passvault.core.database.VaultDatabase/1.json': '76985152ec6593ee7eb13343bf30e86b1fd7beacbb27e89c4a2cfcb286eeb586',
++    'com.passvault.core.database.VaultDatabase/2.json': '3c09e59f2ab2b59a2535c82a404b9af27b9e3934f88e4161c1a9478cdef38d94',
++    'com.passvault.core.database.VaultDatabase/3.json': '080ac957b9dcdb58bc4950cb3e1f6a8279a0432e2a3ea580ba3aa0c84add9136',
++    'com.passvault.core.database.VaultDatabase/4.json': '9dc4f187784ca4a409b258debab1fbf9ad8a700778e060c44b98d9d4d8d14224',
++    'com.passvault.core.database.VaultDatabase/5.json': '431ed8a2dbfcde5c132f45a2e4443894d45aa0010bf9b6616780f62be3cd354b',
++}
++
++
++def validate_host_rows(rows, prior):
++    common = {'format': 'passvault-android-host1-receipt-v1', 'runId': RUN_ID,
++        'sourceManifestSha256': FROZEN[SOURCE], 'subjectSha256': HOST_SUBJECT_SHA,
++        'selector': [HOST_TARGET], 'methodFilter': HOST_FILTER, 'graphOnly': False}
++    kinds = {'schema-equality', 'action-admission', 'compiler-source-affinity', 'compiler-classes',
++        'host-resource-archive', 'compiler-test-join', 'host-config-output', 'case-start', 'case-result',
++        'task-state', 'finished'}
++    require(isinstance(rows, list) and len(rows) == 348 and all(isinstance(row, dict)
++        and all(row.get(k) == v for k, v in common.items()) and row.get('kind') in kinds for row in rows),
++        'exact bounded Host1 receipt/common/348-event stream')
++    selected = {kind: [row for row in rows if row['kind'] == kind] for kind in kinds}
++    require(len(selected['schema-equality']) == 4 and len(selected['task-state']) == 333
++        and len(selected['compiler-source-affinity']) == len(selected['compiler-classes']) == 2
++        and all(len(selected[k]) == 1 for k in kinds - {'schema-equality', 'task-state',
++            'compiler-source-affinity', 'compiler-classes'}), 'exact Host1 event multiplicities')
++    graph = selected['action-admission'][0]
++    expected = {row['path']: row for row in prior['tasks']}
++    require(prior['sourceManifestSha256'] == FROZEN[SOURCE] and prior['taskCount'] == len(expected) == 333
++        and prior['edgeReferences'] == 663 and graph['graphDataSha256'] == FROZEN[GRAPH_DATA]
++        and graph['taskCount'] == 333 and graph['edgeReferences'] == 663,
++        'accepted original graph-data/source tuple')
++    output_rows = graph['outputRoots']
++    require(isinstance(output_rows, list) and len(output_rows) == 333
++        and {r['task'] for r in output_rows} == set(expected), '333 actual task-output bindings')
++    outputs = {}
++    schema_root = CHECKOUT / 'core/database/schemas'
++    for row in output_rows:
++        name = row['task']
++        require(row['type'] == expected[name]['type'] and isinstance(row['outputs'], list)
++            and len(row['outputs']) <= 64 and len(set(row['outputs'])) == len(row['outputs']),
++            'exact concrete task type/unique bounded generic output roots')
++        module = CHECKOUT.joinpath(*name[1:].split(':')[:-1]) / 'build'
++        paths = [Path(p) for p in row['outputs']]
++        require(all(p.is_absolute() and '..' not in p.parts and len(str(p)) <= 1024 for p in paths),
++            'normalized bounded actual output path')
++        if name == HOST_ROOM:
++            require(paths == [schema_root] and row['role'] == 'PRIVATE_SOURCE_COPY_SCHEMA_EXCEPTION',
++                'only copied canonical Room schema output exception')
+         else:
+-            require(node['type'] in GRAPH_WRAPPERS and bool(node['children']), 'known pass-through wrapper only')
+-    visited, active = set(), set()
+-
+-    def visit(index):
+-        require(index not in active, 'cyclic failure tree')
+-        if index in visited:
+-            return
+-        active.add(index)
+-        for child in nodes[index]['children']:
+-            visit(child)
+-        active.remove(index)
+-        visited.add(index)
+-
+-    visit(0)
+-    require(sentinel_count == 1 and visited == set(range(len(nodes))), 'one sentinel and no unreachable failure node')
+-    return {'task_count': len(paths), 'edge_references': total_edges, 'legal_getter_binding': legal_state,
+-            'output_path_scope': GRAPH_OUTPUT_SCOPE,
+-            'out_of_graph_ordering_references': sum(p not in paths for t in paths.values()
+-                                                    for name in edge_names[1:] for p in t[name])}
+-
++            require(row['role'] == 'PRIVATE_MODULE_BUILD_INTERMEDIATE_OR_REPORT'
++                and all(p != module and p.is_relative_to(module)
++                    and not p.is_relative_to(module / 'outputs/apk')
++                    and not p.is_relative_to(module / 'outputs/bundle') for p in paths),
++                'only exact private module build outputs; no final app APK/bundle producer')
++        outputs[name] = paths
++    critical = {HOST_MAIN_COMPILER, HOST_TEST_COMPILER, HOST_TARGET, HOST_ROOM, HOST_PACKAGE, HOST_CONFIG}
++    require(all(outputs[t] for t in critical | {HOST_LEGAL}), 'critical declared producer roots required')
++    states = selected['task-state']
++    require({row['task'] for row in states} == set(expected), 'one outcome for each admitted task')
++    for row in states:
++        require(row['type'] == expected[row['task']]['type'] and row['failureType'] is None
++            and all(type(row[k]) is bool for k in ('executed', 'skipped', 'upToDate', 'noSource', 'didWork')),
++            'typed successful task-state observations')
++        if row['task'] in critical:
++            require(row['executed'] and not any(row[k] for k in ('skipped', 'upToDate', 'noSource'))
++                and row['skipMessage'] is None and (row['task'] == HOST_ROOM or row['didWork']),
++                'critical compiler/config/package/finalizer/Test actions must execute freshly')
++    schema_rows = selected['schema-equality']
++    require([r['at'] for r in schema_rows] == ['before-actions', 'before-schema-finalizer',
++        'after-schema-finalizer', 'before-test'], 'complete before/after schema-finalizer ordering')
++    for row in schema_rows:
++        require(row['equal'] is True and row['root'] == str(schema_root) and len(row['files']) == 5
++            and {str(Path(f['path']).relative_to(schema_root)): f['sha256'] for f in row['files']} == HOST_SCHEMAS,
++            'all five canonical runtime-copy schemas unchanged')
++    affinities = selected['compiler-source-affinity']
++    require({r['task'] for r in affinities} == {HOST_MAIN_COMPILER, HOST_TEST_COMPILER}
++        and all(r['api'] == 'Task.inputs.files' for r in affinities), 'two generic compiler source affinities')
++    sources = {
++        HOST_MAIN_COMPILER: ('app-android/src/main/kotlin/com/passvault/android/security/AndroidClipboardService.kt',
++            'db1b9e5387e7059719e0f49b4a8c9340f8abcf210d16a808a5408c17443e00cf'),
++        HOST_TEST_COMPILER: ('app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt',
++            HOST_SUBJECT_SHA),
++    }
++    for row in affinities:
++        relative, digest = sources[row['task']]
++        require(row['source'] == str(CHECKOUT / relative) and row['sha256'] == digest,
++            'exact selected current source path/SHA, not just compiler-task affinity labels')
++    wanted = {}
++    producers = selected['compiler-classes']
++    require({r['task'] for r in producers} == {HOST_MAIN_COMPILER, HOST_TEST_COMPILER}, 'both fresh compiler cohorts')
++    for producer in producers:
++        require(isinstance(producer['classes'], list) and 1 <= len(producer['classes']) <= 512
++            and producer['testCases'] == 0, 'bounded compiler cohort is not test-case evidence')
++        for row in producer['classes']:
++            relative = row['relativeClass']
++            require(relative.startswith(HOST_CLASS_PACKAGE) and relative.endswith('.class')
++                and relative not in wanted and row['header'] == 'cafebabe0000003d'
++                and re.fullmatch(r'[0-9a-f]{64}', row['sha256'])
++                and any(Path(row['path']).is_relative_to(p) for p in outputs[producer['task']]),
++                'unique fresh JVM17 classes in actual declared compiler roots')
++            wanted[relative] = row['sha256']
++    require(all(HOST_CLASS_PACKAGE + name + '.class' in wanted for name in
++        ('AndroidClipboardService', 'AndroidClipboardServiceTest')), 'both critical base classes produced')
++    archive = selected['host-resource-archive'][0]['evidence']
++    identity = archive['identity']
++    require(Path(identity['path']).is_relative_to(CHECKOUT / 'app-android/build/intermediates')
++        and any(Path(identity['path']).is_relative_to(p) for p in outputs[HOST_PACKAGE])
++        and re.fullmatch(r'[0-9a-f]{64}', identity['sha256'])
++        and identity['header'].startswith('504b0304') and 1 <= archive['entries'] <= 32768
++        and 0 < archive['expandedBytes'] <= 128 * MIB
++        and set(archive['essential']) == {'AndroidManifest.xml', 'resources.arsc'},
++        'bounded actual unsigned resource-only host archive evidence')
++    config = selected['host-config-output'][0]['evidence']
++    require(config['consumerResource'] == HOST_CONFIG_RESOURCE and config['resourceArchive'] == identity
++        and any(Path(config['identity']['path']).is_relative_to(p) for p in outputs[HOST_CONFIG]),
++        'actual host properties identify exact inspected resource archive')
++    wanted[HOST_CONFIG_RESOURCE] = config['identity']['sha256']
++    join = selected['compiler-test-join'][0]
++    require(join['resourceConfiguration'] == config and set(join['classesAndConfig']) == set(wanted),
++        'exact fresh compiler/configuration consumer join keys')
++    for relative, digest in wanted.items():
++        rows_for_class = join['classesAndConfig'][relative]
++        require(isinstance(rows_for_class, list) and len(rows_for_class) == 1
++            and rows_for_class[0]['classSha256'] == digest
++            and any(Path(rows_for_class[0]['carrier']).is_relative_to(p) for p in READ_ROOT_ENVELOPE),
++            'one exact private/read-only effective classpath carrier; no alternate critical winner')
++    directories = join['classDirectories']
++    require(isinstance(directories, list) and 1 <= len(directories) <= 16
++        and len(set(directories)) == len(directories)
++        and all(Path(p).is_absolute() and '..' not in Path(p).parts
++            and any(Path(p).is_relative_to(root) for root in READ_ROOT_ENVELOPE) for p in directories),
++        'finite effective Test class-directory roots')
++    test_producer = next(row for row in producers if row['task'] == HOST_TEST_COMPILER)
++    for row in test_producer['classes']:
++        require(sum(Path(row['path']) == Path(p) / row['relativeClass'] for p in directories) == 1,
++            'each fresh test compiler output belongs to exactly one effective Test class directory')
++    positions = {id(row): number for number, row in enumerate(rows)}
++    state_by_task = {row['task']: row for row in states}
++    position = lambda row: positions[id(row)]
++    for affinity in affinities:
++        produced = next(row for row in producers if row['task'] == affinity['task'])
++        require(position(graph) < position(affinity) < position(state_by_task[affinity['task']])
++            < position(produced) < position(join), 'source affinity then fresh task outcome/classes then Test join')
++    require(position(schema_rows[0]) < position(graph) < position(schema_rows[1])
++        < position(state_by_task[HOST_ROOM]) < position(schema_rows[2]) < position(schema_rows[3])
++        < position(join), 'canonical schemas before action, around finalizer and before Test join')
++    require(position(state_by_task[HOST_PACKAGE]) < position(selected['host-resource-archive'][0])
++        < position(join) and position(state_by_task[HOST_CONFIG]) < position(join)
++        and position(join) < position(selected['host-config-output'][0]) < position(selected['case-start'][0])
++        < position(selected['case-result'][0]) < position(state_by_task[HOST_TARGET])
++        < position(selected['finished'][0]), 'actual producer/configuration joins before sole case and Test completion')
++    start, result = selected['case-start'][0], selected['case-result'][0]
++    require(all(row['className'] == HOST_CLASS and row['method'] == HOST_METHOD for row in (start, result))
++        and result['result'] == 'SUCCESS' and result['tests'] == result['successes'] == 1
++        and result['failures'] == result['skipped'] == 0, 'one exact real unsuffixed method callback')
++    terminal = selected['finished'][0]
++    require(rows[-1] is terminal and terminal['localHostPass'] is True and terminal['failureType'] is None
++        and terminal['controlFailure'] is False and terminal['taskActionsAdmitted'] is True
++        and terminal['graphCount'] == terminal['whenReadyEntries'] == terminal['finishCallbacks'] == 1
++        and terminal['beforeTaskEntries'] == terminal['afterTaskEvents'] == 333
++        and terminal['schemaFinalizerComplete'] is True and terminal['testComplete'] is True
++        and set(terminal['compilerCompletions']) == {HOST_MAIN_COMPILER, HOST_TEST_COMPILER}
++        and terminal['caseStarts'] == terminal['caseCompletions'] == terminal['casePasses'] == 1
++        and terminal['finalProcessAndXmlReviewRequired'] is True, 'complete callback-local Host1 terminal')
++    return {'actual_method_callbacks': 1, 'actual_task_outcomes': 333, 'accepted_graph_sha256': FROZEN[GRAPH_DATA],
++        'critical_class_count': len(wanted) - 1, 'resource_archive': identity, 'configuration': config['identity'],
++        'qualification': 'Callback/producer-consumer evidence only. Original exit0 and exact XML still required; '
++            'injected clipboard policy regression, not actual Android clipboard/native/device/hardware closure.'}
+ 
+ 
+ def proc_read(path, cap):
+@@ -464,14 +496,16 @@
+     return {'parent': parent, 'self': current, 'nonpropagating_mounts': True, 'mount_rows': len(lines)}
+ 
+ 
+-class AndroidHostGraph04:
++class AndroidHost01:
+     def __init__(self, files, parent):
+         self.f, self.parent, self.started = files, parent, time.monotonic()
+         self.errors, self.phases, self.inputs = [], [], {}
+         self.source = self.outer = self.initial = None
+         self.before = self.after = self.namespace_ok = self.evidence_ok = False
+         self.git_bound = self.git_stable = self.index_unchanged = False
+-        self.graph_preserved = self.graph_local_mapping_ok = False
++        self.host_preserved = self.host_mapping_ok = False
++        self.xml_preserved = self.xml_mapping_ok = False
++        self.expected_graph = None
+         self.last_resource = self.last_inventory = 0.0
+         self.settlement_remaining, self.inventories = 120.0, []
+ 
+@@ -489,11 +523,11 @@
+     def intake(self):
+         data, image = self.f.read(E / 'OUTER-INTENT.json', 4 * MIB)
+         value = self.outer = json.loads(data)
+-        require(value['format'] == 'passvault-linux-android-host-graph04-outer-v1' and value['run_id'] == RUN_ID
++        require(value['format'] == 'passvault-linux-android-host01-outer-v1' and value['run_id'] == RUN_ID
+                 and value['commit'] == COMMIT and value['tree'] == TREE and value['source_members'] == MEMBERS
+                 and value['source_representation'] == 'RAW_GIT_BLOBS' and value['parent_namespaces'] == self.parent
+                 and value['source_capacity'] == SOURCE_CAPACITY,
+-                'fixed fresh AndroidHostGraph04 intake; not independent execution admission')
++                'fixed fresh AndroidHost01 intake; not independent execution admission')
+         self.f.expected = dict(value['directories'])
+         # Do not compare the future mounted alias against its outer empty-directory inode.
+         self.f.expected.pop(str(GIT_DIR), None)
+@@ -515,6 +549,8 @@
+         require(b'JAVA_VERSION="17.' in captured[JAVA / 'release']
+                 and b'OS_ARCH="x86_64"' in captured[JAVA / 'release'], 'JDK17 x86_64')
+         self.source = json.loads(captured[SOURCE])
++        require(len(captured[GRAPH_DATA]) == 131015, 'exact independently accepted graph-data length')
++        self.expected_graph = json.loads(captured[GRAPH_DATA])
+         require(self.source['format'] == 'passvault-linux-checkout-source-v1'
+                 and self.source['commit'] == COMMIT and self.source['tree'] == TREE
+                 and len(self.source['files']) == MEMBERS
+@@ -532,11 +568,12 @@
+                 and receipt['source_sha256'] == receipt['source_image']['sha256'] == binding['index_sha256']
+                 and self.inputs[GIT_INDEX]['pin']['mode'] == stat.S_IFREG | 0o400, 'sealed original index copy')
+         require(not os.path.lexists(CHECKOUT / '.git'), 'raw snapshot only; never a borrowed/fake local repository')
+-        require(not os.listdir(self.f.directory(E / 'reports')), 'fresh graph-receipt evidence directory')
++        require(not os.listdir(self.f.directory(E / 'reports')) and not os.listdir(self.f.directory(E / 'xml')),
++                'fresh Host1 receipt/XML evidence directories')
+         sdk = value['sdk_existing_use']
+-        require(value['graph_binding'] == GRAPH_BINDING and sdk['root'] == str(SDK)
++        require(value['host_binding'] == HOST_BINDING and sdk['root'] == str(SDK)
+                 and sdk['metadata_paths'] == [str(p) for p in SDK_METADATA]
+-                and sdk['operation'] == SDK_OPERATION, 'exact reviewed graph/read-only existing SDK scope')
++                and sdk['operation'] == SDK_OPERATION, 'exact reviewed Host1/read-only existing SDK scope')
+         self.check_aliases()
+ 
+     def check_aliases(self):
+@@ -712,7 +749,7 @@
+                         note(record['errors'], error)
+                     cancelled = self.cancelled()
+                     now = time.monotonic()  # Resource/syscall time is not subtracted from cooperative deadlines.
+-                    # Compile900/original-stop600 include their 20s TERM/KILL tail; bind primitive unchanged.
++                    # Host3600/original-stop600 include their 20s TERM/KILL tail; lifecycle primitive unchanged.
+                     expired = now - started >= seconds - (20 if gradle else 0)
+                     expired = expired or (not stopping and now - self.started >= 6000)
+                     if expired or record['errors'] or (cancelled and not stopping):
+@@ -884,183 +921,224 @@
+ 
+ 
+ 
+-    def verify_host_graph_subject(self):
++    def verify_host_subject(self):
+         # Passive source affinity, NOT compiler input visitation or a test outcome.
+         relative = 'app-android/src/test/kotlin/com/passvault/android/security/AndroidClipboardServiceTest.kt'
+         rows = [r for r in self.source['files'] if r['path'] == relative]
+         require(len(rows) == 1, 'exact host subject membership in final source manifest')
+         data, image = self.f.read(CHECKOUT / relative, MIB)
+-        require(sha(data) == GRAPH_SUBJECT_SHA
++        require(sha(data) == HOST_SUBJECT_SHA
+                 and hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == rows[0]['git_blob'],
+                 'host subject SHA256/final raw Git-blob affinity')
+         self.f.write(E / 'HOST-SUBJECT.json', canonical({'relative_source': relative, 'image': image,
+-                     'sha256': GRAPH_SUBJECT_SHA, 'source_manifest_sha256': GRAPH_BINDING['sourceManifestSha256'],
++                     'sha256': HOST_SUBJECT_SHA, 'source_manifest_sha256': HOST_BINDING['sourceManifestSha256'],
+                      'not_compiler_visitation_or_test_evidence': True}))
+ 
+ 
+ 
+-    def verify_host_graph_properties(self):
++    def verify_host_properties(self):
+         # Exact complete checked-in file affinity, not a claim about Gradle merge behavior.
+-        relative = GRAPH_PROPERTY_SOURCE['path']
++        relative = HOST_PROPERTY_SOURCE['path']
+         rows = [r for r in self.source['files'] if r['path'] == relative]
+         # Keep the whole SOURCE row; its observed_checkout_pin is historical, not runtime authority.
+-        require(len(rows) == 1 and set(rows[0]) == (set(GRAPH_PROPERTY_SOURCE) | {'observed_checkout_pin'})
+-                and {key: rows[0][key] for key in GRAPH_PROPERTY_SOURCE} == GRAPH_PROPERTY_SOURCE,
++        require(len(rows) == 1 and set(rows[0]) == (set(HOST_PROPERTY_SOURCE) | {'observed_checkout_pin'})
++                and {key: rows[0][key] for key in HOST_PROPERTY_SOURCE} == HOST_PROPERTY_SOURCE,
+                 'exact checked-property source schema/raw-affinity projection')
+-        data, image = self.f.read(CHECKOUT / relative, GRAPH_PROPERTY_SOURCE['raw_size'])
+-        require(len(data) == GRAPH_PROPERTY_SOURCE['raw_size'] and sha(data) == GRAPH_PROPERTY_SOURCE['raw_sha256']
++        data, image = self.f.read(CHECKOUT / relative, HOST_PROPERTY_SOURCE['raw_size'])
++        require(len(data) == HOST_PROPERTY_SOURCE['raw_size'] and sha(data) == HOST_PROPERTY_SOURCE['raw_sha256']
+                 and hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+-                    == GRAPH_PROPERTY_SOURCE['git_blob'], 'checked-property raw SHA256/Git-blob affinity')
++                    == HOST_PROPERTY_SOURCE['git_blob'], 'checked-property raw SHA256/Git-blob affinity')
+         self.f.write(E / 'PROPERTY-CONTRACT-SOURCE.json', canonical({'relative_source': relative, 'image': image,
+-            'source_record': rows[0], 'source_manifest_sha256': GRAPH_BINDING['sourceManifestSha256'],
+-            'contract': GRAPH_PROPERTY_CONTRACT,
++            'source_record': rows[0], 'source_manifest_sha256': HOST_BINDING['sourceManifestSha256'],
++            'contract': HOST_PROPERTY_CONTRACT,
+             'qualification': 'Exact raw-affinity projection; observed_checkout_pin is historical whole-SOURCE-bound metadata, '
+                 'not current runtime identity. No observed Gradle merge/cause or task authority.'}))
+ 
+ 
+-    def preserve_host_graph(self, state):
+-        # Raw command log is already durable. Save exact marker bodies before JSON interpretation.
+-        captures, rows, collection_errors, validation_errors = [], [], [], []
+-        argument_captures, argument_rows = [], []
+-        prefix, argument_prefix = b'PASSVAULT_ANDROID_HOST_GRAPH04=', b'PASSVAULT_ANDROID_ARG_VECTOR='
+-        log_image, marker_count, summary, mapped = None, 0, None, False
+-        argument_count, argument_summary = 0, None
+-        signals = {'task_headers': 0, 'dry_run_outcomes': 0, 'build_success_lines': 0,
+-                   'misaligned_markers': 0, 'misaligned_argument_vectors': 0}
+-
+-        def receipt_pairs(items):
++    def preserve_host_xml(self, state):
++        root = CHECKOUT / 'app-android/build/test-results/testDebugUnitTest'
++        expected = root / ('TEST-' + HOST_CLASS + '.xml')
++        captures, errors, observed, total = [], [], set(), 0
++        mapping, enumerated = False, False
++        try:
++            try:
++                names = sorted(n for n in os.listdir(self.f.directory(root))
++                               if n.startswith('TEST-') and n.endswith('.xml'))
++            except FileNotFoundError:
++                names = []  # An absent settled output is retained as absent, never a passing test.
++            require(len(names) <= 16, 'bounded host XML file count')
++            enumerated = True
++            for name in names:
++                path = root / name
++                data, original = self.f.read(path, 2 * MIB)
++                total += len(data)
++                require(total <= 4 * MIB, 'aggregate host XML byte bound')
++                saved = self.f.write(E / 'xml' / name, data)
++                captures.append({'source': str(path), 'original': original, 'saved': saved})
++                observed.add(path)
++                try:
++                    raw = data.decode('utf-8')
++                    require(path == expected and raw and '\x00' not in raw
++                        and '<!DOCTYPE' not in raw and '<!ENTITY' not in raw,
++                        'unexpected/empty/declaring/non-UTF8 host XML')
++                    suite = ET.fromstring(raw)
++                    cases = suite.findall('testcase')
++                    require(suite.tag == 'testsuite' and suite.get('name') == HOST_CLASS
++                        and len(list(suite.iter('testsuite'))) == 1 and len(cases) == 1
++                        and len(list(suite.iter('testcase'))) == 1
++                        and cases[0].get('classname') == HOST_CLASS and cases[0].get('name') == HOST_METHOD,
++                        'exact one unsuffixed Android host suite/method; no Desktop aliases')
++                    require(suite.get('tests') == '1'
++                        and all(suite.get(k) == '0' for k in ('failures', 'errors', 'skipped'))
++                        and all(not list(suite.iter(k)) for k in ('failure', 'error', 'skipped')),
++                        'host suite failure/error/skipped case')
++                    mapping = True
++                except (RuntimeError, ValueError, UnicodeError, ET.ParseError) as error:
++                    note(errors, error)
++        except Exception as error:
++            enumerated = False
++            note(errors, 'host XML retention: ' + str(error))
++        preserved = enumerated and len(captures) == len(observed)
++        mapping = bool(preserved and mapping and observed == {expected} and not errors)
++        state['xml'] = {'root': str(root), 'expected': str(expected), 'captures': captures,
++            'observed_file_count': len(observed), 'bytes': total, 'preserved': preserved,
++            'mapping_ok': mapping, 'errors': errors, 'actual_successful_cases': 1 if mapping else 0}
++        self.xml_preserved, self.xml_mapping_ok = preserved, mapping
++        self.f.write(E / 'HOST-XML.json', canonical(state['xml']))
++        if not preserved:
++            self.note('Host XML preservation incomplete; original cleanup not admitted')
++        if not mapping:
++            self.note('Host exact XML absent/failed/unmatched; no case pass inferred')
++
++    def preserve_host(self, state):
++        # Raw log is already durable; conserve marker suffixes before interpreting them.
++        prefix, argument_prefix = b'PASSVAULT_ANDROID_HOST1=', b'PASSVAULT_ANDROID_ARG_VECTOR='
++        captures, rows, argument_rows, collection_errors, validation_errors = [], [], [], [], []
++        events, arguments, log_image, summary, argument_summary = [], [], None, None, None
++        marker_count, argument_count = 0, 0
++        signals = {'dry_run_outcomes': 0, 'build_success_lines': 0, 'build_failure_lines': 0,
++            'misaligned_markers': 0, 'misaligned_argument_vectors': 0}
++        mapped = False
++
++        def pairs(items):
+             value = {}
+             for key, item in items:
+-                require(key not in value, 'duplicate init JSON key')
++                require(key not in value, 'duplicate Host1 receipt JSON key')
+                 value[key] = item
+             return value
+ 
+         try:
+-            raw, log_image = self.f.read(E / 'logs/host-graph.log', 4 * MIB)
+-            require(log_image == self.f.evidence[E / 'logs/host-graph.log'], 'original graph log changed')
++            raw, log_image = self.f.read(E / 'logs/host1.log', 4 * MIB)
++            require(log_image == self.f.evidence[E / 'logs/host1.log'], 'original Host1 log changed')
+             for number, line in enumerate(raw.splitlines(keepends=True), 1):
+-                signals['task_headers'] += int(line.lstrip().startswith(b'> Task '))
+                 signals['dry_run_outcomes'] += int(re.fullmatch(rb':[A-Za-z0-9:_-]+ SKIPPED\s*', line) is not None)
+                 signals['build_success_lines'] += int(line.startswith(b'BUILD SUCCESSFUL'))
++                signals['build_failure_lines'] += int(line.startswith(b'BUILD FAILED'))
+                 signals['misaligned_markers'] += int(prefix in line and not line.startswith(prefix))
+                 signals['misaligned_argument_vectors'] += int(argument_prefix in line and not line.startswith(argument_prefix))
+-                if line.startswith(argument_prefix):
++                is_argument = line.startswith(argument_prefix)
++                if not is_argument and not line.startswith(prefix):
++                    continue
++                if is_argument:
+                     argument_count += 1
+-                    body = line[len(argument_prefix):]  # Preserve original suffix/terminator; never repair JSON.
+-                    if argument_count > 1 or len(body) > 4097:
+-                        note(validation_errors, 'argument-vector count/size exceeded; raw log retained')
+-                        continue
+-                    destination = 'reports/graph-arguments-01.json'
+-                    try:
+-                        saved = self.f.write(E / destination, body)
+-                        argument_captures.append({'line': number, 'destination': destination, 'saved': saved})
+-                    except Exception as error:
+-                        note(collection_errors, 'argument-vector retention: ' + str(error))
+-                        continue
+-                    try:
+-                        require(marker_count == 0, 'argument vector must precede the graph/finished pair')
+-                        require(body.endswith(b'\n') and not body.endswith(b'\r\n'),
+-                                'argument vector is not a complete LF-only record; original suffix retained')
+-                        row = json.loads(body.decode('utf-8'), object_pairs_hook=receipt_pairs,
+-                                         parse_constant=lambda _: require(False, 'nonfinite argument JSON'))
+-                        require(isinstance(row, dict), 'argument-vector JSON object required')
++                    body = line[len(argument_prefix):]
++                    ordinal = argument_count
++                else:
++                    marker_count += 1
++                    body = line[len(prefix):]
++                    ordinal = marker_count
++                try:
++                    require((argument_count <= 1 and len(body) <= 4097) if is_argument
++                        else (marker_count <= 384 and len(body) <= MIB + 1), 'Host1 marker count/size bound')
++                    (arguments if is_argument else events).append(body)
++                    captures.append({'line': number, 'kind': 'argument' if is_argument else 'host',
++                        'ordinal': ordinal, 'bytes': len(body), 'sha256': sha(body)})
++                    require(body.endswith(b'\n') and not body.endswith(b'\r\n'), 'complete original LF-only marker suffix')
++                    row = json.loads(body.decode('utf-8'), object_pairs_hook=pairs,
++                        parse_constant=lambda _: require(False, 'nonfinite Host1 JSON'))
++                    require(isinstance(row, dict), 'Host1 marker JSON object')
++                    if is_argument:
++                        require(marker_count == 0, 'argument vector precedes Host1 action events')
+                         argument_rows.append(row)
+-                    except Exception as error:
+-                        note(validation_errors, 'argument-vector JSON row: ' + str(error))
+-                    continue
+-                if not line.startswith(prefix):
+-                    continue
+-                marker_count += 1
+-                body = line[len(prefix):]  # Exact raw suffix, including its original terminator (if any).
+-                if marker_count > 2 or len(body) > MIB + 1:
+-                    note(validation_errors, 'marker count/size exceeded; raw log retained')
+-                    continue
+-                destination = 'reports/graph-init-%02d.json' % marker_count
+-                try:
+-                    saved = self.f.write(E / destination, body)
+-                    captures.append({'line': number, 'destination': destination, 'saved': saved})
++                    else:
++                        rows.append(row)
+                 except Exception as error:
+-                    note(collection_errors, 'receipt retention: ' + str(error))
+-                    continue
+-                try:
+-                    require(body.endswith(b'\n') and not body.endswith(b'\r\n'),
+-                            'marker is not a complete LF-only record; original suffix retained without repair')
+-                    row = json.loads(body.decode('utf-8'), object_pairs_hook=receipt_pairs,
+-                                     parse_constant=lambda _: require(False, 'nonfinite init JSON'))
+-                    require(isinstance(row, dict), 'init JSON object required')
+-                    require(row.get('kind') != 'finished' or len(body) <= 32769, 'terminal receipt size bound')
+-                    rows.append(row)
+-                except Exception as error:
+-                    note(validation_errors, 'init JSON row: ' + str(error))
++                    note(validation_errors, 'Host1 marker: ' + str(error))
++            self.f.write(E / 'reports/host-init.ndjson', b''.join(events))
++            self.f.write(E / 'reports/host-arguments.ndjson', b''.join(arguments))
+         except Exception as error:
+-            note(collection_errors, 'graph log/receipt retention: ' + str(error))
+-        try:
+-            require(not collection_errors and not validation_errors and not any(signals.values())
+-                    and len(rows) == marker_count == len(captures) == 2
+-                    and len(argument_rows) == argument_count == len(argument_captures) == 1,
+-                    'exact zero-task graph/refusal pair and additional argument-vector stream')
+-            commands = [c for c in state['commands'] if c['label'] == 'host-graph']
+-            require(len(commands) == 1, 'exact original graph command record')
+-            command = commands[0]
+-            require(command['argv'] == GRAPH_COMMAND and command['started'] is True and command['complete'] is True
+-                    and type(command['exit']) is int and command['exit'] == 1 and not command['errors']
+-                    and command.get('log') == log_image and state['command_zero_exit'] is False,
+-                    'complete exact graph command/exit1/log; arbitrary failure is not acceptance')
++            note(collection_errors, 'Host1 log/marker retention: ' + str(error))
++        try:
++            require(not collection_errors and not validation_errors and marker_count == len(rows) == 348
++                and argument_count == len(argument_rows) == 1
++                and signals == {'dry_run_outcomes': 0, 'build_success_lines': 1, 'build_failure_lines': 0,
++                    'misaligned_markers': 0, 'misaligned_argument_vectors': 0},
++                'exact complete actual Host1 stream; never map graph refusal to pass')
++            commands = [c for c in state['commands'] if c['label'] == 'host1']
++            require(len(commands) == 1 and commands[0]['argv'] == HOST_COMMAND
++                and commands[0]['started'] is True and commands[0]['complete'] is True
++                and type(commands[0]['exit']) is int and commands[0]['exit'] == 0
++                and not commands[0]['errors'] and commands[0].get('log') == log_image
++                and state['command_zero_exit'] is True, 'one exact original completed Host1 exit0 command')
+             argument_summary = validate_argument_vector(argument_rows[0])
+-            summary = validate_host_graph_rows(rows, GRAPH_BINDING)
++            summary = validate_host_rows(rows, self.expected_graph)
+             mapped = True
+         except Exception as error:
+-            note(validation_errors, 'graph local-refusal mapping: ' + str(error))
++            note(validation_errors, 'Host1 actual result mapping: ' + str(error))
+         preserved = log_image is not None and not collection_errors
+-        state['graph'] = {'log_image': log_image, 'init_receipts': captures, 'marker_count': marker_count,
+-                          'argument_vectors': argument_captures, 'argument_vector_count': argument_count,
+-                          'argument_summary': argument_summary,
+-                          'summary': summary, 'task_or_success_log_signals': signals,
+-                          'collection_errors': collection_errors, 'validation_errors': validation_errors,
+-                          'evidence_preserved': preserved, 'callback_local_refusal_mapping_ok': mapped,
+-                          'exclusive_global_failure_established': False, 'independent_final_log_review_required': True,
+-                          'declared_test_cases': 0, 'compiler_or_runtime_credit': False,
+-                          'qualification': 'Complete process evidence plus callback-local sentinel proof only; '
+-                              'later listener/shutdown failures require independent final raw-log review. '
+-                              'Graph/lexical output observations admit no future actions or cleanup.'}
+-        self.f.write(E / 'GRAPH-EVIDENCE.json', canonical(state['graph']))
+-        self.graph_preserved, self.graph_local_mapping_ok = preserved, mapped
++        state['host'] = {'log_image': log_image, 'marker_captures': captures, 'marker_count': marker_count,
++            'argument_vector_count': argument_count, 'argument_summary': argument_summary,
++            'summary': summary, 'log_signals': signals, 'collection_errors': collection_errors,
++            'validation_errors': validation_errors, 'evidence_preserved': preserved,
++            'actual_action_case_mapping_ok': mapped, 'independent_final_review_required': True,
++            'callback_case_count': 1 if mapped else 0,
++            'qualification': 'Actual action/case callbacks and producer/configured-consumer joins; '
++                'exact retained XML, original stop/settlement and independent actual review still required. '
++                'No APK/instrumentation/Android32/native/security-hardware or PVA009 closure.'}
++        self.f.write(E / 'HOST-EVIDENCE.json', canonical(state['host']))
++        self.host_preserved, self.host_mapping_ok = preserved, mapped
+         if not preserved:
+-            self.note('Graph evidence retention uncertain; no automatic cleanup')
++            self.note('Host evidence retention uncertain; no automatic cleanup')
+         if not mapped:
+-            self.note('Graph local-refusal mapping incomplete; retained/no automatic retry')
+-
+-    def observe_host_graph(self):
+-        state = self.state('android-host-graph')
+-        state['command_zero_exit'], state['observation_ok'] = False, False
+-        try:
+-            require(isinstance(GRAPH_BINDING, dict) and isinstance(GRAPH_COMMAND, list), 'UNBOUND graph contract')
++            self.note('Host action/case mapping failed; retained/no automatic retry')
++
++    def execute_host(self):
++        state = self.state('android-host1')
++        state['command_zero_exit'], state['host_ok'] = False, False
++        state['xml'] = {'preserved': False, 'mapping_ok': False}
++        try:
+             self.check_inputs()
+             self.binding_check()
+-            require(self.git_bound and self.settle() and not self.cancelled(), 'admitted Git/SDK-isolated graph phase')
+-            self.verify_host_graph_subject()
+-            self.verify_host_graph_properties()
++            require(self.git_bound and self.settle() and not self.cancelled(), 'fresh original Git/SDK-isolated Host1 phase')
++            self.verify_host_subject()
++            self.verify_host_properties()
++            root = R / 'workers/clipboard'
++            require(set(os.listdir(self.f.directory(R / 'workers'))) == {'clipboard'}
++                and set(os.listdir(self.f.directory(root))) == set(WORKER_CHILDREN)
++                and all(not os.listdir(self.f.directory(root / name)) for name in WORKER_CHILDREN),
++                'exact original private one-worker membership, all startup storage empty')
+             self.resources(True)
+-            # command() is byte-for-byte unchanged: exit1 ordinarily RETURNS FALSE.
+-            state['command_zero_exit'] = self.command('host-graph', GRAPH_COMMAND, ENV, 900, state)
++            # One real invocation, no --dry-run/-x/rerun and no graph-discovery retry.
++            state['command_zero_exit'] = self.command('host1', HOST_COMMAND, ENV, 3600, state)
+         finally:
+             if state['stop_required']:
+                 try:
+                     self.check_inputs(stopping=True)
+                     self.source_check('STOP', True)
+-                    state['stop_ok'] = self.command('host-graph-stop', STOP, ENV, 600, state, stopping=True)
++                    state['stop_ok'] = self.command('host1-stop', STOP, ENV, 600, state, stopping=True)
+                 except Exception as error:
+-                    self.note('original wrapper stop incomplete/no retry: ' + str(error))
++                    self.note('original Host1 wrapper stop incomplete/no retry: ' + str(error))
+             try:
+                 state['settled'] = self.settle()
+                 if state['settled'] and state['stop_required']:
+-                    self.preserve_host_graph(state)
++                    self.preserve_host_xml(state)
++                    self.preserve_host(state)
+             except Exception as error:
+-                self.note('graph evidence/settlement uncertainty: ' + str(error))
+-            state['observation_ok'] = bool(state['stop_ok'] and state['settled'] and self.graph_local_mapping_ok
+-                                           and not self.cancelled())
+-            state['record_image'] = self.f.write(E / 'PHASE-android-host-graph.json', canonical(state))
+-        require(state['observation_ok'], 'AndroidHostGraph04 incomplete; no automatic retry')
++                self.note('Host1 evidence/settlement uncertainty: ' + str(error))
++            state['host_ok'] = bool(state['command_zero_exit'] and state['stop_ok'] and state['settled']
++                and self.host_mapping_ok and self.xml_mapping_ok and not self.cancelled())
++            state['record_image'] = self.f.write(E / 'PHASE-android-host1.json', canonical(state))
++        require(state['host_ok'], 'AndroidHost1 incomplete; no automatic retry')
+ 
+ 
+ def main():
+@@ -1076,20 +1154,20 @@
+                     for path in (GIT_IMAGE, RUBY_IMAGE))
+             and EXCLUDE_STATE in ('INFO_ABSENT', 'EXCLUDE_ABSENT', 'FILE'),
+             'PENDING final source/tool/exclude identities; no execution admission')
+-    require(isinstance(GRAPH_BINDING, dict) and set(GRAPH_BINDING) == {
++    require(isinstance(HOST_BINDING, dict) and set(HOST_BINDING) == {
+                 'runtimeRoot', 'evidenceRoot', 'readRoots', 'offline', 'sourceManifestSha256', 'subjectSha256'}
+-            and GRAPH_BINDING['runtimeRoot'] == str(R) and GRAPH_BINDING['evidenceRoot'] == str(E)
+-            and GRAPH_BINDING['readRoots'] == [str(p) for p in READ_ROOT_ENVELOPE]
+-            and type(GRAPH_BINDING['offline']) is bool
+-            and GRAPH_BINDING['sourceManifestSha256'] == FROZEN[SOURCE]
+-            and GRAPH_BINDING['subjectSha256'] == GRAPH_SUBJECT_SHA,
+-            'UNBOUND exact new graph/source/read-root/offline binding')
++            and HOST_BINDING['runtimeRoot'] == str(R) and HOST_BINDING['evidenceRoot'] == str(E)
++            and HOST_BINDING['readRoots'] == [str(p) for p in READ_ROOT_ENVELOPE]
++            and type(HOST_BINDING['offline']) is bool
++            and HOST_BINDING['sourceManifestSha256'] == FROZEN[SOURCE]
++            and HOST_BINDING['subjectSha256'] == HOST_SUBJECT_SHA,
++            'UNBOUND exact new Host1/source/read-root/offline binding')
+     os.umask(0o077)
+     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+     for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+         signal.signal(sig, lambda number, _frame: CANCEL.add(number))
+     files = Files()
+-    batch = AndroidHostGraph04(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
++    batch = AndroidHost01(files, dict(zip(('pid', 'mnt'), sys.argv[1:])))
+     settled, code = False, 70
+     try:
+         batch.intake()
+@@ -1100,7 +1178,7 @@
+         batch.source_check('BEFORE')
+         batch.before = True
+         batch.isolation()
+-        batch.observe_host_graph()
++        batch.execute_host()
+     except Exception as error:
+         batch.note(type(error).__name__ + ': ' + str(error))
+     finally:
+@@ -1122,39 +1200,40 @@
+         complete = all('record_image' in p and all(c['complete'] and 'log' in c and not c['errors']
+                        for c in p['commands']) for p in batch.phases)
+         phase_names = [p['phase'] for p in batch.phases]
+-        phase_contract = phase_names in (['git-sdk-isolation'], ['git-sdk-isolation', 'android-host-graph'])
+-        attempted = any(p['phase'] == 'android-host-graph' and p['stop_required'] for p in batch.phases)
++        phase_contract = phase_names in (['git-sdk-isolation'], ['git-sdk-isolation', 'android-host1'])
++        attempted = any(p['phase'] == 'android-host1' and p['stop_required'] for p in batch.phases)
+         safe = (batch.namespace_ok and batch.before and batch.after and stops and settled and batch.evidence_ok
+                 and complete and phase_contract and batch.git_bound and batch.git_stable
+-                and batch.index_unchanged and not CANCEL and (not attempted or batch.graph_preserved))
+-        collected = bool(safe and attempted and batch.graph_local_mapping_ok
+-            and phase_names == ['git-sdk-isolation', 'android-host-graph']
+-            and all(p.get('setup_ok') if p['phase'] == 'git-sdk-isolation' else p.get('observation_ok')
++                and batch.index_unchanged and not CANCEL
++                and (not attempted or (batch.host_preserved and batch.xml_preserved)))
++        collected = bool(safe and attempted and batch.host_mapping_ok and batch.xml_mapping_ok
++            and phase_names == ['git-sdk-isolation', 'android-host1']
++            and all(p.get('setup_ok') if p['phase'] == 'git-sdk-isolation' else p.get('host_ok')
+                     for p in batch.phases))
+-        result = {'format': 'passvault-linux-android-host-graph04-inner-v1', 'run_id': RUN_ID,
++        result = {'format': 'passvault-linux-android-host01-inner-v1', 'run_id': RUN_ID,
+             'commit': COMMIT, 'tree': TREE, 'parent_namespaces': batch.parent,
+             'source_before': batch.before, 'source_after': batch.after, 'source_capacity': SOURCE_CAPACITY,
+             'all_required_stops_ok': stops, 'namespace_empty_before_exit': settled, 'cleanup_safe': safe,
+             'git_bindings_established': batch.git_bound, 'git_bindings_stable': batch.git_stable,
+-            'sealed_index_unchanged': batch.index_unchanged, 'graph_evidence_preserved': batch.graph_preserved,
+-            'callback_local_refusal_mapping_ok': batch.graph_local_mapping_ok,
+-            'graph_observation_collected': collected, 'gradle_graph_selector': GRAPH_TARGET,
+-            'method_filter': GRAPH_FILTER, 'graph_binding': GRAPH_BINDING,
+-            'independent_final_log_review_required': True, 'exclusive_global_failure_established': False,
++            'sealed_index_unchanged': batch.index_unchanged, 'host_evidence_preserved': batch.host_preserved,
++            'actual_action_case_mapping_ok': batch.host_mapping_ok, 'xml_preserved': batch.xml_preserved,
++            'xml_mapping_ok': batch.xml_mapping_ok, 'host_test_pass_collected': collected,
++            'gradle_selector': HOST_TARGET, 'method_filter': HOST_FILTER, 'host_binding': HOST_BINDING,
++            'independent_final_review_required': True, 'independent_semantic_acceptance': False,
+             'sdk_readonly_view_established': batch.git_bound, 'sdk_readonly_view_stable': batch.git_stable,
+-            'declared_test_cases': 0, 'errors': batch.errors, 'phases': batch.phases,
+-            'independent_semantic_acceptance': False,
++            'declared_test_cases': 1, 'actual_pass_collected_cases': 1 if collected else 0,
++            'errors': batch.errors, 'phases': batch.phases,
+             'source_references': {'manifest_sha256': FROZEN[SOURCE], 'init_sha256': FROZEN[INIT],
+-                                  'representation': 'RAW_GIT_BLOBS'},
++                'accepted_graph_sha256': FROZEN[GRAPH_DATA], 'representation': 'RAW_GIT_BLOBS'},
+             'resource_point_samples_not_ownership_or_cleanup_proof': batch.inventories,
+             'incomplete_resource_samples': sum(not s['traversal_finished'] or bool(s['vanished_entries']
+                 or s['vanished_scan_directories']) for s in batch.inventories),
+-            'qualification': 'Graph collection and callback-local intended-refusal protocol only; '
+-                'independent final raw-log/terminal review remains required. Configuration can execute '
+-                'plugin code and write files; no task/compiler/application/native/runtime pass or '
+-                'future graph-action admission. RO Git/SDK aliases are not immutable snapshots '
+-                'against outside mutation. Outer must prove exit, no runtime mounts, original '
+-                'ownership and allowlisted cleanup.'}
++            'qualification': 'One injected Android host clipboard policy regression only; fresh compiler '
++                'outputs and generated resource config joined to the effective Test consumer, exact '
++                'unsuffixed XML and original exit0/stop required. No app APK, instrumentation, Android32, '
++                'native or physical-device security evidence or PVA009 closure. Configuration/plugins '
++                'are not sandboxed against arbitrary code or hostile root writers. Outer must prove '
++                'original exit/no mounts/ownership and conserve reports before allowlisted cleanup.'}
+         try:
+             files.write(E / 'INNER-RESULT.json', canonical(result))
+             files.verify()

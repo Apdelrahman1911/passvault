@@ -1,0 +1,75 @@
+{
+  "format": "passvault-static08-literal-substitutions-v1",
+  "author": "/root/current_report_review",
+  "donor": {
+    "path": "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_07.init.gradle",
+    "bytes": 3930,
+    "sha256": "6ae7d4fdf1b8479238f31a6ce2d804e27286a68f9425482695d70abb9d2150c8",
+    "pin": {
+      "dev": 24,
+      "ino": 13638195,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 3930,
+      "mtime_ns": 1789281585490096033,
+      "ctime_ns": 1789281585490096033
+    }
+  },
+  "prospective_target": "/root/projects/PassVault/passvault-linux/scripts/audit/detekt_08.init.gradle",
+  "afterimage": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/static08_source01/detekt_08.init.gradle.afterimage.txt",
+    "bytes": 3929,
+    "sha256": "897e10236f3cf15d4656f2f6e4c165df8a6ed2862c06b70a38f607ae413ecaab",
+    "pin": {
+      "dev": 24,
+      "ino": 15255175,
+      "uid": 0,
+      "mode": 33152,
+      "nlink": 1,
+      "size": 3929,
+      "mtime_ns": 1789286852075782120,
+      "ctime_ns": 1789286852075782120
+    }
+  },
+  "operations": [
+    {
+      "old": "Detekt07",
+      "new": "Detekt08",
+      "count": 6,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "DETEKT07",
+      "new": "DETEKT08",
+      "count": 1,
+      "kind": "exact_unique_name_or_prospective_path"
+    },
+    {
+      "old": "// NEW Detekt08 scope guard/metadata only; not execution admission. Root + six\n// affected analyzers; exact task-level omissions reuse reviewed unchanged03 evidence.",
+      "new": "// NEW Detekt08 scope guard/metadata only; not execution admission. Root + two\n// affected analyzers; exact omissions require unchanged03/07 source/config affinity.",
+      "count": 1,
+      "kind": "scope_comment"
+    },
+    {
+      "old": "def selectedTaskPaths = [\n    ':detekt',\n    ':app-android:detekt',\n    ':app-desktop:detekt',\n    ':shared:detekt',\n    ':core:crypto:detekt',\n    ':core:database:detekt',\n    ':feature:credential:detekt',\n]",
+      "new": "def selectedTaskPaths = [\n    ':detekt',\n    ':app-desktop:detekt',\n    ':core:database:detekt',\n]",
+      "count": 1,
+      "kind": "exact_three_selected_tasks"
+    },
+    {
+      "old": "def omittedTaskPaths = [\n    ':core:designsystem:detekt',\n    ':core:detekt',\n    ':core:domain:detekt',\n    ':core:navigation:detekt',\n    ':core:otp:detekt',\n    ':core:security:detekt',\n    ':core:testing:detekt',\n    ':feature:backup:detekt',\n    ':feature:detekt',\n    ':feature:generator:detekt',\n    ':feature:health:detekt',\n    ':feature:onboarding:detekt',\n    ':feature:settings:detekt',\n    ':feature:unlock:detekt',\n    ':feature:vault:detekt',\n]",
+      "new": "def omittedTaskPaths = [\n    ':app-android:detekt',\n    ':shared:detekt',\n    ':core:crypto:detekt',\n    ':feature:credential:detekt',\n    ':core:designsystem:detekt',\n    ':core:detekt',\n    ':core:domain:detekt',\n    ':core:navigation:detekt',\n    ':core:otp:detekt',\n    ':core:security:detekt',\n    ':core:testing:detekt',\n    ':feature:backup:detekt',\n    ':feature:detekt',\n    ':feature:generator:detekt',\n    ':feature:health:detekt',\n    ':feature:onboarding:detekt',\n    ':feature:settings:detekt',\n    ':feature:unlock:detekt',\n    ':feature:vault:detekt',\n]",
+      "count": 1,
+      "kind": "four_new_omissions_no_rule_exclusion_change"
+    },
+    {
+      "old": "with exact15 task omissions",
+      "new": "with exact19 task omissions",
+      "count": 1,
+      "kind": "exact_omission_count_message"
+    }
+  ],
+  "forward_and_reverse_whole_buffer_equality": true,
+  "qualification": "Author stdlib text arithmetic only, not execution, compilation, tests, admission or independent acceptance."
+}

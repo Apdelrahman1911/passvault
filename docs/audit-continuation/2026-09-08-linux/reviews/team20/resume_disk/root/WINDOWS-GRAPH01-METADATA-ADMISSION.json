@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T14:39:20.111329+00:00",
+  "status": "ADMITTED_ONCE_EXACT_THREE_TERMINAL_METADATA_GETS",
+  "discovery": {
+    "path": "reviews/team20/resume_disk/root/WINDOWS-GRAPH01-DISCOVERY.json",
+    "bytes": 330,
+    "sha256": "228d70a74520ceb2f05d470e3d9eb3bd74075398fd26c701e950973ee52c5973"
+  },
+  "run": {
+    "conclusion": "failure",
+    "event": "push",
+    "head_branch": "codex/audit-continuation-linux-20260908",
+    "head_sha": "55e42c25443b27b33bc518d339be46f2a787bcb4",
+    "id": 34699687714,
+    "path": ".github/workflows/audit-windows-jna-graph-validation.yml",
+    "run_attempt": 1,
+    "status": "completed",
+    "workflow_id": 356559598
+  },
+  "commands": [
+    {
+      "name": "RUN.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34699687714",
+        "--jq",
+        "{id,run_attempt,workflow_id,path,head_sha,head_branch,event,status,conclusion,repository:{full_name:.repository.full_name},head_repository:{full_name:.head_repository.full_name}}"
+      ]
+    },
+    {
+      "name": "JOBS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34699687714/attempts/1/jobs",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,jobs:[.jobs[]|{id,run_id,run_attempt,head_sha,name,status,conclusion}]}"
+      ]
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34699687714/artifacts",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,artifacts:[.artifacts[]|{id,name,size_in_bytes,digest,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha,head_branch:.workflow_run.head_branch}}]}"
+      ]
+    }
+  ],
+  "cwd": "/root/projects/PassVault",
+  "destination": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_observer01",
+  "bounds": "Each one GET30s+5s original timeout group grace; projected JSON<=1MiB/page10. No retries/unbounded logs/raw private metadata. Refuse truncation/ambiguity.",
+  "cleanup": "Normal GNUtimeout completion reaps original gh child. No build/runtime/cache/service/Gradlestop/deletion obligation; abnormal descendants uncertainty retained, no unrelated signals.",
+  "coordination": "Sole Agraph audit slot retained; no local build. Metadata observation is not Windows cleanup or application case credit."
+}

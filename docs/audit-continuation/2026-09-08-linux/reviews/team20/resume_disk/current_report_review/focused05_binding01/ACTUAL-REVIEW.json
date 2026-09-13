@@ -1,0 +1,392 @@
+{
+  "actual_cases": {
+    "errors": 0,
+    "failures": 0,
+    "independent_checks": "All three original saved XML parsed as inert data with DOCTYPE/ENTITY refused. Exact selected class/name+[desktop] method sets, no duplicate cases, simple-class+[desktop] suite name, zero failure/error/skipped children and consistent suite totals; finite nonnegative durations. XML bytes match original source and saved descriptors. Nine testcase elements are nine actual cases, not task-count assertions.",
+    "passed": 9,
+    "prior_DB2": "Deliberately not rerun; preserve previous accepted PASS and unchanged captured source. DB1 prior Focused04 failure remains historical evidence.",
+    "prior_focused04_actual_review": {
+      "bytes": 18905,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/dependency_review/resumed04/focused04_actual01/ACTUAL-REVIEW.json",
+      "sha256": "09bd17b97c19880b1566b07d18d1ef266d584597f81add973e0e2b864ac00784"
+    },
+    "scope": "DB1 full Room upgrade rollback after validation failure and clean reopen persistence; C01 six draft freshness/owner/security-boundary cases; C02 two duplicate/unchanged-row Save cases including page persistence. No extra GUI/Android/native/hardware/runtime evidence inferred.",
+    "skipped": 0,
+    "suites": [
+      {
+        "class": "com.passvault.core.database.CredentialFolderForeignKeyMigrationTest",
+        "id": "DB1",
+        "methods": [
+          "Room validation failure rolls back the full upgrade and a clean reopen persists it"
+        ],
+        "passed": 1,
+        "testcases": 1,
+        "xml": {
+          "bytes": 535,
+          "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/xml/focused-TEST-com.passvault.core.database.CredentialFolderForeignKeyMigrationTest.xml",
+          "sha256": "f02ee35c4bae617f6d3c777df57e17163b820240d41d1a76ff0a40abe8ceb2db"
+        }
+      },
+      {
+        "class": "com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest",
+        "id": "C01",
+        "methods": [
+          "row Save captured before further edits adopts the latest draft and preserves another row",
+          "a latest blank name rejects stale enabled row Save without losing its draft",
+          "unchanged and duplicate row Saves preserve the live value owner",
+          "late row Save cannot resurrect an unknown cancelled removed or locked draft",
+          "busy generation rejects row Save while the pending draft still exists",
+          "explicit update keeps supplied payload bounds and does not become draft Save"
+        ],
+        "passed": 6,
+        "testcases": 6,
+        "xml": {
+          "bytes": 1620,
+          "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/xml/focused-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldSaveFreshnessTest.xml",
+          "sha256": "47fa4cf2f13a1e259cf5218676b840e629ea6cd073f9dc37eed0a18a7acb69a1"
+        }
+      },
+      {
+        "class": "com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest",
+        "id": "C02",
+        "methods": [
+          "duplicate row Save preserves the live value and page Save persists it",
+          "unchanged row Save in a dirty editor never clears the live owner"
+        ],
+        "passed": 2,
+        "testcases": 2,
+        "xml": {
+          "bytes": 720,
+          "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/xml/focused-TEST-com.passvault.feature.credential.presentation.CredentialCustomFieldDraftTest.xml",
+          "sha256": "7a6f885f472b72feec495505031e0d7357bb5953b439ea7b318243d893a8f703"
+        }
+      }
+    ],
+    "test_tasks": 2,
+    "testcases": 9,
+    "xml_suites": 3
+  },
+  "admission": {
+    "entry": {
+      "bytes": 4792,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/FOCUSED05-EXECUTION-ADMISSION01.json",
+      "sha256": "2a4230c0eaa91ded8347ae5a2719e2502aaedd5d463f02638d5919b287712b73"
+    },
+    "genuine_consumed_approval": {
+      "bytes": 1478,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/focused05_binding01/INSTANCE-ACCEPT.json",
+      "sha256": "9d8f650938319ce114e437f9b9e410316d895179c2ab95dd58dbb1f9cb4eaff2"
+    },
+    "independent_instance_review": {
+      "bytes": 11270,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/focused05_binding01/INSTANCE-REVIEW.json",
+      "sha256": "3e150706d46645f471f2b7b763587aab42984d7c0ed5232c1ecf8338d34c359d"
+    },
+    "independent_source_review": {
+      "bytes": 6933,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/current_report_review/focused05_binding01/SOURCE-REVIEW.json",
+      "sha256": "c0fa1a3961fe3c490752739f4400e7d62d2798e3ad8584e3b7719f46c01d9960"
+    },
+    "mutable_slot_qualification": "The current-slot digest is the historical entry snapshot, not equality to the subsequently mutable slot file.",
+    "quiet_window": "Four explicitly acknowledged active agents; android_review pending_init is explicitly not an acknowledgment. Root custody assertion is audit-only scheduling policy, not exhaustive global-host-idle or unknown-original-parent proof.",
+    "reconciliation": "Exact entry descriptors, request/approval hash+size+recorded fullpins, all six current W control/source images, 13 original recorded image identities, OUTER-INTENT image sets/packet, allocation, parent namespaces/device model, source commit/tree/member count and root host-policy assertions/evidence match the accepted instance. Installed tools were not re-probed. Original allocation equals the full allocation embedded in OUTER-RECEIPT.",
+    "request": {
+      "bytes": 17593,
+      "path": "docs/audit-continuation/2026-09-08-linux/requests/LINUX-FOCUSED-REGRESSION-05.json",
+      "sha256": "f9d654258c298903b5b7bdd4c36de6cd13191a795f6b270ae033aed9e80ff563"
+    },
+    "single_entry_no_replay": true
+  },
+  "adoption_and_remaining_work": {
+    "family_closures_from_this_review": 0,
+    "ledger": "Add nine precisely identified actual PASS cases without converting the whole batch or prior failed attempts to PASS. Reconcile family evidence/coverage separately before changing denominators. Prior accepted cut remains original19/25, all26/39, suspicions2/12, PVD8separate until root independently reviewed mapping changes.",
+    "readiness": "NOT READY; no overall percentage manufactured.",
+    "remaining": "Desktop test compilation defect blocks Desktop integration; independent author/reviewer work continues. Android32/native/runtime, Apple/Windows/hardware and other remaining work do not inherit evidence from this Linux-focused batch.",
+    "restrictions": "PVU007STOP; PVU011NO-RETRY; PVA029 recorded failure/no automatic retry; G7/G8CLOSED; all prior HOLD/native refusals; PVD8 owner/product limitations; no protected branches/tags/build1017001/dependency/version/identity/signing/store changes.",
+    "scheduling": "Root may adopt this original terminal/settlement/disposal result for scheduling-only slot release. This is not a next-entry admission and does not authorize automatic chain/retry. Every new execution requires its own exact independent admission."
+  },
+  "diagnostic_conservation": {
+    "auxiliary_bytes": 47912,
+    "auxiliary_files": 17,
+    "cache_files": 0,
+    "credit": "Opaque reports/binary result files preserved for handoff; zero additional testcase or product/hardware credit.",
+    "empty_cache_report_roots": 44,
+    "files": 21,
+    "independent_checks": "All21 named saved diagnostic byte lengths, hashes and current fullpins match original saved_image; same byte lengths/hashes equal source_image. Manifest descriptor matches OUTER-RECEIPT. No original R access. Source+saved reverified before unlink and saved after cleanup by original accepted launcher.",
+    "manifest": {
+      "bytes": 22151,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/GENERATED-REPORTS.json",
+      "sha256": "2cbbe18ccab0c8487f7d8468bb14a3a306214bfe3508d8daa41fbfe04c99a884"
+    },
+    "new_files": 18,
+    "new_logical_bytes": 185734,
+    "original_preservation": {
+      "copied_files": 18,
+      "copied_logical_bytes": 185734,
+      "manifest": {
+        "pin": {
+          "bytes": 22151,
+          "ctime_ns": 1789280196930178798,
+          "dev": 24,
+          "ino": 14696558,
+          "mode": 33152,
+          "mtime_ns": 1789280196930178798,
+          "nlink": 1,
+          "uid": 0
+        },
+        "sha256": "2cbbe18ccab0c8487f7d8468bb14a3a306214bfe3508d8daa41fbfe04c99a884"
+      },
+      "previously_retained_files": 3,
+      "saved_reverified_after_cleanup": true,
+      "source_and_saved_reverified_before_unlink": true
+    },
+    "previous_selected_xml_bytes": 2875,
+    "previous_selected_xml_files": 3,
+    "problems_report_bytes": 137822
+  },
+  "disposition": "ACCEPT_NINE_PASS_CASES_AND_FAILED_DESKTOP_COMPILATION_WITH_ORIGINAL_CLEANUP_SCHEDULING_ONLY",
+  "evidence": [
+    {
+      "bytes": 3937,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/OUTER-ALLOCATION.json",
+      "sha256": "5bc66a6b794406346a58455ad9fe12b6befa8bd27ea139d859946fcb9933a0c4"
+    },
+    {
+      "bytes": 12842,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/OUTER-INTENT.json",
+      "sha256": "c67bc35c58851428cf3c36caf708425728825551b96c3813dc17a2b73df14751"
+    },
+    {
+      "bytes": 21963,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/OUTER-RECEIPT.json",
+      "sha256": "be91ad7abd372b0e270e5d8f2d2ed4c1b1009e75503880b4dbefcba58851b4f7"
+    },
+    {
+      "bytes": 167,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/INNER-PREFLIGHT.json",
+      "sha256": "3ce71b90583f9bc4a24b71b2c9046a94d9b25985dc3aefdeace2fe9b5a248dbf"
+    },
+    {
+      "bytes": 9246,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/INNER-RESULT.json",
+      "sha256": "37e2d6640e2ecf8870034a0cc49b25417963be683752511d153fe194e83615c6"
+    },
+    {
+      "bytes": 4699,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/PHASE-focused.json",
+      "sha256": "e073a8223309bf5dc8b4abaf34dcd8b2cae07be3fcc37c7e70b7e5472d08f812"
+    },
+    {
+      "bytes": 45337,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/TASK-RESULTS.json",
+      "sha256": "96edf94452ced640d0a30f4983dffd0fced3ef873e50f70e993f62c42168782e"
+    },
+    {
+      "bytes": 1334,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/SOURCE-BEFORE.json",
+      "sha256": "eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766"
+    },
+    {
+      "bytes": 1334,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/SOURCE-AFTER.json",
+      "sha256": "eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766"
+    },
+    {
+      "bytes": 1056,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/focused-INTENT.json",
+      "sha256": "3633f25b778565702bb7d80e54410559a9fcdccb91dbbae0b09d5b3709450023"
+    },
+    {
+      "bytes": 821,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/focused-stop-INTENT.json",
+      "sha256": "e2bc8f73b06dfee9ede1850d3bd467e1fbc750889ffc177b40955d5704764efc"
+    },
+    {
+      "bytes": 95100,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/logs/focused.log",
+      "sha256": "e0645c8e843149acba4aaf62740d18ab1590ca38d04ac23995a66b11762ca0e1"
+    },
+    {
+      "bytes": 454,
+      "path": "docs/audit-continuation/2026-09-08-linux/runs/linux-focused-regression05/logs/focused-stop.log",
+      "sha256": "3f04b3d30cc9f62a3ca1291c2618b2670075c5a7815be011976cbddf290fb44c"
+    }
+  ],
+  "format": "passvault-focused05-independent-actual-review-v1",
+  "original_execution": {
+    "continuing_session_reported": false,
+    "external": {
+      "bytes": 1797,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/root/FOCUSED05-EXTERNAL-RESULT01.json",
+      "sha256": "39bd329cb9cc81baa1417fa129a40907921beb89d1d6e04966cbae499c198086"
+    },
+    "external_exit": 1,
+    "external_stdout_bytes": 0,
+    "inner_errors": [
+      "focused graph/compile outcome: selected task did not complete fresh successful actions",
+      "RuntimeError: focused failed; no retry"
+    ],
+    "inner_validation_mapping_ok": false,
+    "launch_chunk": "65682c",
+    "outer_elapsed_seconds": 458.321,
+    "outer_reasons": [],
+    "outer_status": "VALIDATION_FAILED_CLEANED",
+    "session_id_historical": 48793,
+    "terminal_chunk": "240145",
+    "whole_batch": "FAIL: nine tests passed but actual selected Desktop test compilation failed; neither UNSTARTED nor whole-batch PASS."
+  },
+  "original_stop_settlement_and_disposal": {
+    "all_required_stops_ok": true,
+    "bounds": "Original build3600s/stop600s and sufficient reserved cleanup window; no automatic retry.",
+    "build": "Exactly original isolated checked-in wrapper invocation, JDK17, worker1, non-daemon, nonparallel, configure-on-demand disabled, strict dependency verification, private HOME/cache/temp; exit1 complete/errors empty.",
+    "cleanup_safe": true,
+    "disposal_proof": "Original outer current-source/no-runtime-mount guards before first unlink, original fullpins and descriptor-relative O_NOFOLLOW walk, finite exact snapshot27913, then empty original R/full name binding/st_nlink0/name absent. Runtime root is additional to descendant loop count. Original external exit1 rather than70 supports normal final descriptor closes after preterminal receipt. Root separately records R absent; reviewer did not inspect R.",
+    "evidence_original_identity": {
+      "dev": 23,
+      "ino": 589095
+    },
+    "inner_source_after": true,
+    "inner_source_before": true,
+    "limitations": "Original evidence supports scoped normal owned-worker settlement and exact disposable runtime cleanup only. Hard outer-tool kill/crash/interruption, global host idleness, unknown/historical workers, escape impossibility and old HOLD roots remain unproved/unchanged.",
+    "namespace": "Fresh pid4026532116/mnt4026532115; parent pid4026531836/mnt4026531841; original preflight reports nonpropagating mounts. Accepted PID1 waitpid reaping/two empty-owned-namespace samples, original command poll/EOF/FD settlement, and inner stop/source/cleanup flags reconcile.",
+    "namespace_empty_before_exit": true,
+    "no_additional_duty": "No second stop/deletion/replay is needed or authorized by this review. No reviewer runtime, process, cache or temporary output exists.",
+    "outer_children": "Original Git pid6508 exit0 and unshare pid6529 exit1, their recorded births retained, pidfd_kill_attempted false. Source-qualified poll/reap/EOF/final FD close handling accepted; no new process census or unknown-process ownership inferred.",
+    "removed_original_runtime_root_additionally": true,
+    "removed_snapshot_descendants": 27913,
+    "runtime_original_identity": {
+      "dev": 23,
+      "ino": 589096
+    },
+    "stop": "Exactly one original wrapper --stop immediately in phase finally, same original environment digest e13b35f0573091b9022670d6cdc0a5dd0c76b94658ba58430a699e8d358508dc; exit0 complete/errors empty; No Gradle daemons are running."
+  },
+  "raw_source_reconciliation": {
+    "eol_qualification": "No inherited raw-byte runtime coverage for the historical Windows checkout qualifications; no LF/CRLF normalization shortcut.",
+    "framed_stream_bytes": 140710962,
+    "independent_reconstruction": "4548 captured rows sorted by path, tuples [path,git_mode,git_blob,raw_size,raw_sha256], literal JSON sort_keys=True separators=(comma,colon) allow_nan=False and final newline reproduce outer source_before and OUTER-INTENT.raw_source.",
+    "inner_source_before_after": "Identical 1334-byte records, same N/commit/tree/raw byte sum and both historical EOL qualification objects; SHA256 eb521a5a9002e71a7b7b7c7d178a4d7af38a3d26b0884e3dcd667ac1e481e766.",
+    "oid_request_bytes": 186468,
+    "oid_request_sha256": "cc77f2f0ed851e2b2702ea131168b86a296010a9229077ae6a5b927cd62ab85c",
+    "outer_raw_identity_sha256": "5ebc10615710ecb56d381ad41b803c18bc087edfc1d3a9784a8fa18d0f22b717",
+    "raw_source_bytes": 140474293,
+    "raw_vs_checkout_paths": 15,
+    "recorded_framed_stream_sha256": "8cefb28ce5f43917588fb2da9e880434407ad31483588e3af49edf569fc84978",
+    "transport_qualification": "OID input bytes/hash and full framed byte count independently reproduced from SOURCE rows. Disposed framed blob stream cannot be independently rehashed from metadata; its original hash/two complete passes/current-original input checks are accepted source-qualified transport evidence, not a new observation."
+  },
+  "resources": {
+    "entry_disk_bytes": 13844910080,
+    "external_post_disk_bytes": 13834371072,
+    "external_post_ram_bytes": 63495262208,
+    "fallback_elected": false,
+    "incomplete_runtime_samples": 0,
+    "inner_complete_runtime_samples": 16,
+    "observed_disk_max_bytes": 13844877312,
+    "observed_disk_min_bytes": 12461887488,
+    "observed_ram_max_bytes": 63481421824,
+    "observed_ram_min_bytes": 59892940800,
+    "observed_runtime_max_allocated_bytes": 1361248256,
+    "observed_runtime_max_logical_bytes": 1279752051,
+    "outer_point_samples": 16,
+    "qualification": "Discrete samples satisfied original normal start/running floors and sampled3GiB runtime cap. Not continuous/absolute peak measurements, net reclaimed-byte attribution, hard quota or global-host-idle proof.",
+    "ram_total_bytes": 67435888640
+  },
+  "review_boundary": "Independent read-only source/data reconciliation of the original admitted entry. No build/test/helper execution, helper import/AST/compile, Git/network, installed-tool/runtime/process/SDK/private-config probe, current R inspection, extra stop/deletion or canonical edit. Only this exclusive compact reviewer record is written. Root remains sole build owner and execution/cleanup/publishing authority.",
+  "reviewer": "/root/current_report_review",
+  "reviewer_notes": "Two transient reviewer display/schema assumptions were corrected before acceptance (attempted dictionary formatting on error strings; initial FQCN suite-name assumption instead of actual simple-class+[desktop]); they neither executed subject code nor establish product defects.",
+  "run_id": "linux-focused-regression05",
+  "source": {
+    "commit": "d2d79ad52ce816a36f708bd35bd736a7d8068789",
+    "complete_source": {
+      "bytes": 2519894,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/checkpoint22/source-prepare01/SOURCE.json",
+      "sha256": "5eed5ec803e336c3868d1fe4255f02535fda3672ed5455e7499d7b9ffc881aa6"
+    },
+    "index_acceptance_reused": {
+      "bytes": 9750,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new04/INDEX-ACTUAL-REVIEW.json",
+      "sha256": "98f179e9542f905e816f2cda0e3c6a31d14fb8f5516c14c4278ec100b7c92488"
+    },
+    "members": 4548,
+    "qualification": "Raw Git blob execution identity, not a CRLF-normalized checkout claim. Current selected test affinity was independently checked at instance review. Captured P row binds the failing Desktop fixture; no future edited source automatically inherits this result.",
+    "source_acceptance_reused": {
+      "bytes": 9685,
+      "path": "docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/platform_review/new03/SOURCE-ACTUAL-REVIEW.json",
+      "sha256": "866a366284e127bd8b71c4eee8edd669b5547d7c0429a37acea1b9c9145212ca"
+    },
+    "subject_captured_rows": [
+      {
+        "checkout_sha256": "992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f",
+        "checkout_size": 88480,
+        "git_blob": "49a72fbadba678f5cfa3af72171bbeede7cbda3a",
+        "git_mode": "100644",
+        "path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+        "raw_sha256": "992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f",
+        "raw_size": 88480
+      },
+      {
+        "checkout_sha256": "7f444c01177999b2fd2271e2d7ed1f005c54670fc9e2364795d37e2b2bedd2cc",
+        "checkout_size": 22968,
+        "git_blob": "cfacb806d2e685246639553557f63d48e937ae92",
+        "git_mode": "100644",
+        "path": "core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt",
+        "raw_sha256": "7f444c01177999b2fd2271e2d7ed1f005c54670fc9e2364795d37e2b2bedd2cc",
+        "raw_size": 22968
+      },
+      {
+        "checkout_sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+        "checkout_size": 15170,
+        "git_blob": "c790bd877a79bb6a96577a614e28ac28f3b79c06",
+        "git_mode": "100644",
+        "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldDraftTest.kt",
+        "raw_sha256": "b45ded2bb7e092e73975f7b7d4e77c8e649ae72f1b7f07db9445b47559c176c2",
+        "raw_size": 15170
+      },
+      {
+        "checkout_sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+        "checkout_size": 26264,
+        "git_blob": "6bb1b358476420d8cc4e7f551da31e4f292538c7",
+        "git_mode": "100644",
+        "path": "feature/credential/src/commonTest/kotlin/com/passvault/feature/credential/presentation/CredentialCustomFieldSaveFreshnessTest.kt",
+        "raw_sha256": "68eb476cd47b9cda26c86b1ecb2ce9e64f167770291a818beb41400e96953819",
+        "raw_size": 26264
+      }
+    ],
+    "tree": "2e83afec1894238f59c1e9916cbf548ad54f5da2"
+  },
+  "task_and_failure_reconciliation": {
+    "actual_task_summary": "131 actionable tasks: 131 executed; not 131 tests. BUILD FAILED in 7m18s. XML mapping succeeds; selected graph/compile completion and whole validation fail.",
+    "compile_failure": {
+      "cause_not_yet_adjudicated": "No particular dependency cause or fix accepted by this actual review. Independently review a narrowly scoped author change and validate affected compilation/integration only.",
+      "compiler_diagnostics": 9,
+      "diagnostic": "Cannot access androidx.lifecycle.ViewModel supertype of BackupViewModel or SettingsViewModel; check missing or conflicting module classpath dependencies.",
+      "did_work": true,
+      "executed": true,
+      "failure_type": "org.gradle.api.tasks.TaskExecutionException",
+      "log_lines": [
+        382,
+        390
+      ],
+      "source_path": "app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt",
+      "source_positions": [
+        "430:36",
+        "443:39",
+        "465:35",
+        "478:39",
+        "503:70",
+        "509:48",
+        "576:77",
+        "633:30",
+        "633:73"
+      ],
+      "task": ":app-desktop:compileTestKotlinDesktop"
+    },
+    "desktop_runtime_credit": 0,
+    "independent_checks": "Exactly four PASSVAULT_FOCUSED_REGRESSION05 JSON markers independently extracted from raw focused.log equal TASK-RESULTS.records: one graph and three selected task-result records. Graph has 322 unique tasks, exact three selectors and two Test tasks. Both Test tasks actually executed fresh successful actions; no skip/up-to-date/no-source substitute.",
+    "selected_tasks": [
+      ":core:database:desktopTest",
+      ":feature:credential:desktopTest",
+      ":app-desktop:compileTestKotlinDesktop"
+    ]
+  },
+  "utc": "2026-09-13T06:28:21.442491+00:00"
+}

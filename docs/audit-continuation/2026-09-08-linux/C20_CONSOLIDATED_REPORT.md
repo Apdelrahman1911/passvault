@@ -1,8 +1,8 @@
 # C20 consolidated continuation status — 2026-09-13
 
-**INCOMPLETE / NOT READY.** Current machine-readable details and exact evidence:
-[`C20_CURRENT_STATE.json`](C20_CURRENT_STATE.json). This is a resumable status,
-not a release approval or a claim that unfinished checks passed.
+**INCOMPLETE / NOT READY.** Exact current source/evidence and limitations are in
+[C20_CURRENT_STATE.json](C20_CURRENT_STATE.json). This report continues the audit;
+it is not a release approval or a replacement candidate.
 
 ## Progress — separate denominators
 
@@ -13,105 +13,125 @@ not a release approval or a claim that unfinished checks passed.
 | Original suspicions | **2/12 (16.7%)** | 10 |
 | Original PVD explanations | **8/8 documented** | Owner decisions separate |
 
-These are not overall readiness or effort-completion percentages. Open confirmed
-IDs: **001, 007, 008, 009, 010, 014, 027, 029, 030, 031, 036, 037, 039**.
-Retained XML has **221 mixed testcase elements**, not 221 passes:
-199 prior +12 partial-HOLD +4 Windows4 +2 Focused04 +3 infrastructure +1 producer.
+These are not overall readiness, effort-completion or source-coverage percentages.
+Open confirmed IDs: **001,007,008,009,010,014,027,029,030,031,036,037,039**.
+Retained XML has **230 mixed testcase elements**, not230passes:
+199prior+12partial-HOLD+4Windows4+2Focused04+9Focused05+3infrastructure+1producer.
+Static07, Dependency03 and the latest source fixes add **zero application cases
+and zero qualified closures**. Earlier failed/HOLD cases remain in the accounting.
 
 ## Completed and independently verified
 
-- Preserve all previously qualified fixes and exact historical successes, including
-  Linux03's 166 regressions, Mac02's five scoped events and successful Desktop
-  lifecycle/tray/GUI evidence. Their original limitations still apply; no replay.
-- Windows4's KDF known-answer and three real-file **reported-status injection**
-  events are retained successes under overall FAIL/filesystem HOLD. They are not
-  actual OS-fault, Hello, crash/durability or clean whole-cohort evidence.
-- Focused04's historical-schema-one encrypted-backup compatibility case (DB2)
-  passed. DB1 failed fixture cleanup; its subsequent original runtime disposal
-  was independently accepted. The failed testcase is not rewritten as a pass.
-- **Now integrated and independently reviewed:** DB1's exact `vault.db.lck`
-  fixture-teardown allowlist correction; existing Room regression's native Enter
-  rejection → repair → real-storage/reopen extension; two byte-preserving inert
-  archive suffix moves and exact locator. Runtime verification is still pending.
-- WindowsGraph02 ran and failed at SDK-path grammar **before Java/Gradle**.
-  Zero tests/accepted graphs. Original Windows generated-root and Linux intake
-  cleanup were independently accepted. No Gradle stop duty arose. The exact SDK
-  offending value remains unknown. Narrow SDK-data-path and 160MiB-cap corrections
-  plus fresh Graph03/real-JNA control composition are independently source-reviewed.
-- Android's one passive lookup identified 21 scoped class names in two hash-bound
-  installed JARs. Independent result/descriptor cleanup review accepted it; no
-  Gradle/build/test was run and Graph03's three extra properties remain unknown.
-- Prospective original-Sfix source custody was explicitly reconciled, allowing
-  these W edits while preserving original captures/T and every entered or uncertain
-  historical debt. No old HOLD, cleanup namespace or stopped scope was reopened.
+- Previously qualified fixes and original successes remain supported on their
+  stated scope/source affinity, including Linux03's166 regressions, Mac02's five
+  scoped events and successful Desktop lifecycle/tray/Compose-return evidence.
+- **Focused05:** corrected historical migration fixture DB1 plus eight credential
+  cases passed: **nine methods/three XML classes/two Test tasks**. Whole batch
+  still **FAIL** because Desktop test compilation produced nine missing-or-
+  conflicting ViewModel-superclass diagnostics. Original stop/settlement/runtime
+  disposal were independently accepted. Do not rerun the nine unchanged cases.
+- **Focused04 DB2:** historical-schema-one encrypted-backup compatibility passed;
+  earlier DB1 fixture-cleanup failure and its accepted separate disposal remain.
+- **Dependency03:** three real inventory producers passed with **151 Android,
+  80 Desktop and66 iOSArm64 rows**; exact bytes independently reconciled. Original
+  stop0/namespace settlement and19,955 descendants plus runtime-root disposal
+  accepted. Preserve53 UNKNOWN parent-namespace **observations**, not53 unique
+  processes or proof of unrelated/global-idle state. Inventories are not tests,
+  Apple compilation, native runtime or blanket legal/security clearance.
+- **Static07:** inventory guard passed; four analyzers passed; Desktop/database
+  failed with six diagnostics and root analyzer was unstarted. Overall **FAIL**
+  retained. Original stop0/settlement and15,506 descendants plus runtime-root
+  disposal independently accepted. Reuse17 qualified analyzers on source affinity.
+- **Four test-only static fixes applied:** two formatting sites and four local,
+  documented rule exceptions. Independently reviewed; no assertion, test body,
+  cleanup behavior, production code, dependency or version changes. New narrowed
+  static verification is still required; existing behavior evidence is reusable.
+- **AndroidGraph04:**333 planned tasks,662 dependencies and one finalizer observed
+  before intentional action refusal; zero compiler/tests/task actions. Its original
+  cleanup is accepted. Compile03 compiler-only evidence remains separate, not APK
+  or native-runtime proof. Earlier Graph03 failure/unknown properties stay recorded.
+- **Windows4:** one KDF known-answer event and three real-file reported-status
+  injection events remain successes under overallFAIL/filesystemHOLD; not actual
+  OS faults, Windows Hello, crash durability or a passing whole cohort.
+- Fresh Host1 controls and a three-analyzer Static08 successor are independently
+  source-reviewed and installed **without execution admission**. PackageGraph01
+  review rejected unsafe output-provider realization; correction remains pending.
 
 ## Exact actionable remainder
 
-1. Publish the finite reviewed source/report batch. Make **one complete new shared
-   SOURCE/INDEX capture**, using the independently accepted 160MiB bounds and actual
-   member/raw/checkout/framed sizes. Do not subset source or recapture per cohort.
-2. **Linux focused:** corrected DB1 + eight unstarted credential methods = **nine
-   methods / three XML classes**, two Test tasks and real Desktop test compilation.
-   Reuse passed DB2. **GUI:** four unstarted Room/Main methods in two serial tasks,
-   with five required independently inspected native crops. **Static:** unchanged
-   inventory guard + seven unfinished analyzers /21 reports; reuse 13 qualified
-   unchanged analyses /39 reports. **Dependencies:** three inventory producers,
-   not application tests; keep the accepted no-new-Konan conditional denial guard.
-3. **Windows:** fresh graph and one real-JNA case on the **same complete new SOURCE**.
-   Native-active/provider, packaged loader, cancellation/crash/durability and genuine
-   interactive-device obligations remain distinct from this minimal case.
-4. **Android:** finish the bounded property-ingress explanation without speculative
-   graph retries; then required host/platform, package/merged-manifest/AAR/DEX/APK/
-   ELF32/minifier checks. Those are unfinished software work, not automatically
-   physical-hardware blockers. Android32 KDF/compatibility remains first risk priority
-   when a licensed, admitted 32-bit target is available; 64-bit execution is not proof.
-5. **Desktop:** private support-email configuration check and one nonpublishing
-   installed-image legal/runtime/native-bridge integration. Wider supported editor/
-   input/chooser/lifecycle and permitted investigation gaps remain as recorded.
-6. **Apple:** suitable allocated host for the ten original focused checks and
-   Foundation/native-language coverage; reuse Mac02. One consumed runner RAM refusal
-   and zero configured self-hosted runners do not prove all Apple validation impossible.
-7. Reconcile actual source affinity, results, artifact/legal/provenance and all
-   remaining permitted native/investigation obligations; independent final ledger
-   and report review. Source/compilation/mocks/runtime/hardware stay distinct.
+1. **Android host:** bind/admit one existing synthetic clipboard host Test against
+   original checkpoint22 P/U/SOURCE/INDEX, retaining all333 graph tasks and the
+   runtime-only Room finalizer. Require actual compiler/resource/class/XML joins.
+2. **Publish/Static:** publish the finite continuation delta into new transport V,
+   leaving U frozen. One complete new checkpoint23 SOURCE/INDEX capture, then only
+   **root/Desktop/database analyzers + unchanged inventory guard**: nine reports
+   and one bounded diagnostic. Do not repeat17 unaffected qualified analyzers.
+3. **Desktop compiler/GUI/Windows JNA:** owner approval is pending for test-only
+   `implementation(libs.lifecycle.viewmodel)` using the existing pinned2.11.0.
+   Then focused compilation and four unstarted Room/Main GUI methods in two serial
+   tasks with five native crops; fresh Windows graph and one real-JNA method.
+   The proposal is not yet applied and does not guarantee compiler success.
+4. **Android software/32-bit:** fix graph output observation before new admission;
+   finish crypto device-test APK, Debug package/manifest/AAR/DEX/ELF32 and relevant
+   minifier provenance. A licensed, admitted32-bit runtime is still needed for KDF
+   compatibility. The installed64-bit image is not32-bit evidence.
+5. **Installed Desktop:** one nonpublishing image for three existing legal/runtime/
+   nativebridge selectors. Private support-email ingress and graph/cleanup admission
+   remain unfinished; VISIBLE_NONEMPTY_UNVALIDATED is not validated contact ownership.
+   The declared image graph is separate from desktopTest compilation.
+6. **Apple:** allocate a suitable compatible ARMhost for the ten focused checks,
+   Foundation and prompt-language scope; reuse Mac02. Preserve IOS01's RAM refusal,
+   but do not infer all Apple runners unavailable. Successor prompt-fixture pin and
+   stream-cap correction plus actual source/resource binding are still required.
+7. **Native/permitted investigations:** actual supported provider/cancel/recovery/
+   crash/durability/input witnesses where permitted. PVA037 real-caller post-PRF
+   AAD/post-KDF AES/later-create allocation cuts remain **software-unverified under
+   native refusal**, not merely hardware-blocked. No speculative seam is evidence.
+8. **Final reconciliation:** source affinity, remaining legal/artifact/provenance
+   obligations and independent final coverage/report review. Authored cases,
+   compilation, static results, mocks, actual software tests and hardware differ.
 
 ## External, owner and restricted items
 
-- Licensed 32-bit target admission; physical iPhone security/biometrics, Android
-  Keystore/device behavior and Windows Hello/interactive-device checks.
-- Eight PVD choices remain owner decisions, not silent compatibility redesigns.
-- PVA-029 remains **49 checks /44 PASS /5 FAIL, no automatic retry**.
-  PVU-007 STOP; PVU-011 NO RETRY/no inquiry; G7/G8 CLOSED; old native refusals and
-  historical HOLD/UNKNOWN scopes remain protected, not queued for replay.
-- Missing authoritative skill-ledger validator remains **NOT_SUPPLIED_NOT_RUN**.
-  Manual independent reconciliation is not execution of that missing tool.
-- Production signing, accounts, Store/release/candidate promotion and Desktop
-  publication remain separate. Protected refs/tags, versions/identities/dependencies
-  and occupied mobile **1017001** must not change without separate authority.
+- Licensed32-bit target; physical iPhone security/biometrics, Android Keystore and
+  Windows Hello/interactive-device evidence remain genuine target/hardware gaps.
+- The test dependency above needs separate authorization; eight PVD choices remain
+  separate owner decisions, not permission for silent compatibility redesign.
+- PVA029 remains **49 checks/44PASS/5FAIL, no automatic retry**. PVU007 STOP;
+  PVU011 NO RETRY/no inquiry; G7/G8 CLOSED. Preserve old HOLD/UNKNOWN/native refusal
+  scopes; none are silently scheduled for recovery or discarded to free disk.
+- Authoritative skill-ledger validator: **NOT_SUPPLIED_NOT_RUN**. Independent
+  manual reconciliation is not execution of that unavailable tool.
+- No protected branch/tag, dependency version, identity, Store/build-number,
+  signing, deployment, publication or occupied mobile1017001 change. Desktop
+  publication remains deferred; validation is not a replacement release candidate.
 
-## Identity, resources and estimate
+## Identity, resources, coordination and estimate
 
-Latest independently accepted transport: `b271e67adb637986d2049919227619255a75fa7c`,
-tree `734245d6768f48a03eede363d4b46cc18396a9bb` (4485 members). The new W seven-path
-batch and these current reports are **not yet published** at this report cut.
-Original Sfix capture remains immutable and does not describe changed W as identical.
-Actual future publication/capture identities belong in their subsequent receipts.
+Latest independently accepted publication:
+`d2d79ad52ce816a36f708bd35bd736a7d8068789`, tree
+`2e83afec1894238f59c1e9916cbf548ad54f5da2` (**4548 members**).
+Checkpoint22 SOURCE/INDEX remain immutable. Four applied static test-file changes,
+new controls and current reports are **not yet published** at this report cut.
+New V/P23 identities must come from later actual publication/capture receipts.
+Fifteen checkout-EOL differences and the two original raw-copy qualifications remain.
 
-Current resource point is approximately **14GiB free disk /59GiB available RAM**;
-normal 12GiB floor is met and the owner's 3GiB fallback has not been invoked.
-Root alone launches build/test/CI/Git/cleanup; platform capacity is six concurrent
-agents **including root**, with bounded authors/reviewers rotated. One heavy local
-or CI job at a time, JDK17/wrapper/one worker, immediate original-stop/settlement/
-allowlisted cleanup; no required source/evidence/shared tools or held roots deleted.
-The only live W scheduler is `reviews/team20/resume_disk/root/EXECUTION_SLOT.json`;
-this report's idle point is not future execution permission.
+Recorded disk is above the **12GiB normal floor**, RAM approximately59GiB available;
+3GiB fallback is not elected. No new disposable build outputs or task workers are
+left by the accepted latest runs. Required source/evidence, shared caches/SDKs,
+held runtimes and old stores are protected, not generic cleanup targets.
+Root is sole build/test/CI/Git/cleanup owner; maximum six concurrent agents including
+root, with bounded authors/reviewers rotated. Exactly one heavy local or CI job;
+JDK17/checked wrapper/worker1/non-daemon/strict verification/serial Detekt and
+immediate original-stop/owned-settlement/allowlisted disposal after each invocation.
+Live scheduler: `reviews/team20/resume_disk/root/EXECUTION_SLOT.json`.
 
-**Conditional estimate:** approximately **2–4 engineering weeks**, high uncertainty;
-external hardware/account/license/owner/Store waits are excluded. This is a planning
-range, not a promise or measured remaining-effort percentage. Continue actionable
-work in parallel rather than stopping for one external blocker.
+**Planning estimate: 2–4 engineering weeks**, high uncertainty, excluding external
+hardware/account/license/owner/Store waits and new findings. This is not a release
+date or a measured remaining-effort percentage. Work continues across independent
+lanes rather than stopping at an external blocker.
 
-Previous report bytes/fields are preserved through published ancestry and the
-explicit before-descriptor/history fields. New status supersedes only the named
-stale pending claims; original evidence, rejected findings, grouped variants,
-failures, source-coverage/EOL qualifications and disagreements remain normative.
+Exact previous report bytes are retained by CHECKPOINT23-RECONCILIATION01 and
+published ancestry. Current updates supersede named stale pending claims only;
+original successes, rejected findings, grouped variants, failures, source-coverage
+qualifications and disagreements remain normative.

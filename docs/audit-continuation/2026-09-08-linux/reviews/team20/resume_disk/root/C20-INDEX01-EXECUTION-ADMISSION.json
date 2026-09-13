@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T05:37:34.677245+00:00",
+  "disposition": "ADMIT_EXACT_ONCE_C20_INDEX01",
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/checkpoint20/index-prepare01/INDEX-CAPTURE.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "bound_inputs": {
+    "reviews/team20/resume_disk/capture_author/INDEX-CAPTURE-BOUND.py.txt": "98364c8be08cfde3d5e093f81095af1a55051ff4bdc671769e05e12fcba4a7bb",
+    "reviews/team20/resume_disk/capture_review/INDEX01-BINDING-REVIEW.json": "401a0994f97eee39feb8f1b028ea0b9346a8bb96405979d9d40b3bd2bc56d511",
+    "reviews/team20/resume_disk/capture_review/SOURCE01-ACTUAL-REVIEW.json": "8d1d906c824f91065230c081720f1786e21268145483c9e24ea415a2e242625b",
+    "reviews/team20/resume_disk/root/C20-PUBLICATION-ADOPTION-CAPTURE-FREEZE.json": "51a3f8a97f9ffaf5b1e1cc0f9d8500373b1dea1ad0630408cb1d4ddd04545cdc",
+    "reviews/team20/resume_disk/root/EXECUTION_SLOT.json": "03894f3ab0b812c13e00844a36674f40efee7d76003abaf467fafa28c7010556",
+    "reviews/team20/resume_disk/root/FLOOR-ELECTION.json": "ba16391a0d84ccbfeb927457fb16cd3869dea24ffc8d2c6b95587ca408b103bc",
+    "reviews/checkpoint20/source-prepare01/SOURCE.json": "dc7ef1cf29926b5e64048485dad26cc154c9c42d7389add18368e4217395d686"
+  },
+  "scope": "Shared current C20 index/tool capture only;1read-only Git child, original lock/facts/current source index all checked. No SDK/build/test/version/network/heldR walk/delete/capture replay. T/index/config/tools and selected source/evidence freeze remains unchanged through original terminal. Root sole launcher; agents source-only outside frozen inputs, no known competing auditbuild/CI/scheduler.",
+  "outputs_vacant_at_promotion": [
+    "INDEX-CAPTURE-INTENT.json",
+    "INDEX.bin",
+    "INDEX-STAGE0.raw",
+    "INDEX-SOURCE-CAPTURE.json",
+    "INDEX-STDERR.raw"
+  ],
+  "resources": {
+    "disk_available_bytes": 8938258432,
+    "ram_available_bytes": 63617974272,
+    "ram_total_bytes": 67435888640,
+    "disk_floor_bytes": 3221225472,
+    "ram_percent_entry_running": [
+      25,
+      20
+    ]
+  },
+  "bounds": "180s work,30s child,4MiB index/2MiB stage/32MiB tool read/7MiB total evidence with16MiB allocation slack;no new runtime/cache/source checkout. Original collector handles fresh guard points.",
+  "cleanup": "Accepted signal, direct-child terminate/reap,pipe/selector and original FD handlers installed before child. Preserve original intent/index/stage/receipt/terminal then independent actual reconciliation. No Gradle stop applies. Any failure consumes namespace; no automatic retry, descendant/hardkill/kernelblocking limitations unchanged.",
+  "source_actual_adopted": true,
+  "new_tests_closures": 0
+}

@@ -1,0 +1,20 @@
+--- new19/CHECKPOINT23-PUBLISH-V01.py.txt
++++ new20/CHECKPOINT23-PUBLISH-V01.py.txt
+@@ -225,7 +225,7 @@
+ def stable_inputs():
+  req(read_file(CONFIG,cap=32768)[0]==config_raw,'exact config changed')
+  req(read_file(MANIFEST,cap=393216)[0]==manifest_raw,'exact manifest changed')
+- req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'sole reserved slot changed')
++ req(read_file(LIVE_SLOT,cap=65536)[0]==slotraw,'sole reserved slot changed')
+  req(read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES)[0]==base_receipt_raw,'accepted checkpoint22 actual changed')
+  for row in rows:source_row(row)
+  for r in REMOVALS:req(not os.path.lexists(safe_parent(S,r['path'])),'old W archive path reappeared; no alias/stub')
+@@ -324,7 +324,7 @@
+  rec['retained_checkpoint22_U02_receipt']={'path':str(BASE_RECEIPT.relative_to(B)),'bytes':BASE_RECEIPT_BYTES,'sha256':BASE_RECEIPT_SHA}
+  rec['original_T_accessed']=False
+  rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. A protected-base PR from this branch forbids admission. Actual one-commit/all-changed-path review is required; GitHub path-filter300-file limits and diff-timeout/>1000-commit fallbacks are not suppressed by a path count. [skip ci] is supplementary, not proof against every event or publisher. Source/publication review and inert control storage give no execution/application/hardware credit.'
+- slotraw,_=read_file(LIVE_SLOT,cap=32768)
++ slotraw,_=read_file(LIVE_SLOT,cap=65536)
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot UNBOUND/drifted')
+  req(CFG['slot_state'].startswith('RESERVED_CHECKPOINT23_V01') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root checkpoint23 reservation required')
+  lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')

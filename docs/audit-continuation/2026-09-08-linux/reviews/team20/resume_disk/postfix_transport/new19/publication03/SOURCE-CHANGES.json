@@ -1,0 +1,216 @@
+{
+  "after": {
+    "bytes": 47907,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new19/publication03/CHECKPOINT23-PUBLISH-V01.py.txt",
+    "sha256": "f263d384a89fb9db6718a7ba9a2a9e974fe8d2decdcd1618e8c5b004c5eceb7a"
+  },
+  "literal_changes": [
+    {
+      "after": "# audit-control/retained-evidence/report A/M manifest, including inert unadmitted\n# successor controls as DATA only. No workflow or production/dependency edits.",
+      "after_sha256": "63d4cfe4d587967feeeab30c152cfc978a95a7e77b504c688b4283e5b15cfe3e",
+      "before": "# completed-control/report A/M manifest. No workflow or production/dependency edits.",
+      "before_sha256": "b1251163c56d0ba8864aa54e82c9e3bc8bee3283f2eeb97d0cb667c73ef7ed16",
+      "occurrences": 1,
+      "reason": "exact retained classes are not all completed or admitted controls"
+    },
+    {
+      "after": "PUB=B/'reviews/team20/resume_disk/postfix_transport/new19/publication03'",
+      "after_sha256": "b0af17b38e633f12a85c8d4f01e9dcc51336556abb93c8c4205bd9c898522d4c",
+      "before": "PUB=B/'reviews/team20/resume_disk/postfix_transport/new18/publication03'",
+      "before_sha256": "adcd355d68f1d5008a9aa09fbe05f8dc653c9cf68a783446431f313fe0a5303e",
+      "occurrences": 1,
+      "reason": "fresh inert source cohort; no existing invocation replay"
+    },
+    {
+      "after": "req(len(raw)<=262144,'publication receipt256KiB cap')",
+      "after_sha256": "82829a9f7d1497f6bccf65104c0b41ec62994a2ee2b82fcae237f9a31ce05055",
+      "before": "req(len(raw)<=131072,'publication receipt128KiB cap')",
+      "before_sha256": "74545f65f0443502517481ac3e6b788a843108a91b403b369b63d3f419363d3f",
+      "occurrences": 1,
+      "reason": "explicit proposed bounded receipt cap128KiB->256KiB, pending review"
+    },
+    {
+      "after": "read_file(MANIFEST,cap=393216)",
+      "after_sha256": "d43d2533a3494384c225bedac3701777c3f50d39dc90093ac86410c692b0c986",
+      "before": "read_file(MANIFEST,cap=131072)",
+      "before_sha256": "cff64d767c3b3ff610799b83dd8111de56c037d27879253bc5abb1a4a7c53800",
+      "occurrences": 2,
+      "reason": "explicit proposed manifest128KiB->384KiB for measured307169B shape"
+    },
+    {
+      "after": "{'schema','kind','base','fixed_afterimages','removals','audit_controls','retained_evidence','reports','whitespace_paths'}",
+      "after_sha256": "bd056d73fb3af822546724b40ad1e8b5415e17380f4b2636a230d7dff121b31a",
+      "before": "{'schema','kind','base','fixed_afterimages','removals','completed_controls','reports','whitespace_paths'}",
+      "before_sha256": "38e55c7bec21e40cb4ce9a0ac2ad9beb6ff677d1688d7c7647cbe7d4d7e88670",
+      "occurrences": 1,
+      "reason": "exact finite three-role metadata schema"
+    },
+    {
+      "after": "CHECKPOINT23_EXACT_4M_PLUS_FINITE_RETAINED_AUDIT_METADATA",
+      "after_sha256": "973406ba4fcfb156b557a6de7840af8536bf82b0170d4247fe7baae876009bf7",
+      "before": "CHECKPOINT23_EXACT_4M_PLUS_FINITE_COMPLETED_METADATA",
+      "before_sha256": "e1ed45ec43e24c9fbe5abbcd57495a005a7fd1f2b7be88255f46b31bd7b8529b",
+      "occurrences": 1,
+      "reason": "no completed-status implication for inert successor/control archives"
+    },
+    {
+      "after": "reports=m['reports'];controls=m['audit_controls'];retained=m['retained_evidence']",
+      "after_sha256": "a8f054e764bbceb8b597e9fad8fcb69245d6743e6ddcc513329202c190188654",
+      "before": "reports=m['reports'];controls=m['completed_controls']",
+      "before_sha256": "15ef5ed4f3f1b65d76fb49faf6644d6bef704518b76c0773e7cfafdf1d86b552",
+      "occurrences": 1,
+      "reason": "explicit separately sorted retained raw evidence"
+    },
+    {
+      "after": "req(isinstance(reports,list) and isinstance(controls,list) and isinstance(retained,list) and len(CORE)+len(reports)+len(controls)+len(retained)<=640,'finite metadata set UNBOUND or640-path cap exceeded')",
+      "after_sha256": "a23cb3984feb2d1743d96d0fa0ce507699366b40d79964a16c9126c28ca8c8c5",
+      "before": "req(isinstance(reports,list) and isinstance(controls,list) and len(CORE)+len(reports)+len(controls)<=256,'finite metadata set UNBOUND or too large')",
+      "before_sha256": "9c28d252eb905a89dd5417689fb6d581b71da70421404ddae9ffc00c34a18295",
+      "occurrences": 1,
+      "reason": "explicit proposed count256->640; exact final pinned list still mandatory"
+    },
+    {
+      "after": " req([r['destination'] for r in controls]==sorted(set(r['destination'] for r in controls)),'sorted unique audit controls required')\n req([r['destination'] for r in retained]==sorted(set(r['destination'] for r in retained)),'sorted unique retained evidence required')\n",
+      "after_sha256": "996db5e0870801cd74d6ee0e75dc2d610fed5e5ba406824b3916ee58f79d7b79",
+      "before": " req([r['destination'] for r in controls]==sorted(set(r['destination'] for r in controls)),'sorted unique completed controls required')\n",
+      "before_sha256": "ed40ec213871d51fea465ca05d2044326a8fb4df9783c170a77240d0a0be4803",
+      "occurrences": 1,
+      "reason": "no duplicate or dynamically discovered raw evidence"
+    },
+    {
+      "after": "selected=sorted(CORE+controls+retained+reports,",
+      "after_sha256": "85318539ec96a58af7af5abf6157f5fa0c0b9b50ffe4f8b258ff37b547ac9bc4",
+      "before": "selected=sorted(CORE+controls+reports,",
+      "before_sha256": "9dd249282a5f282a769a8503b5fae820cdcec50deb5b5520a9f840df31c922ca",
+      "occurrences": 1,
+      "reason": "entire finite explicit manifest only"
+    },
+    {
+      "after": "'audit controls, including inert unadmitted archives/successors, only in finite audit namespaces; never workflow/production/dependency paths'",
+      "after_sha256": "49fff527fb955aa2138c363188d9b19b17430cb1ca9af11a892cafe1c16fb731",
+      "before": "'completed controls only in finite audit namespaces; never workflow/production/dependency paths'",
+      "before_sha256": "75ef40a3928d10d4708a2afdec489eb70e437c9669caa86d5103927bc3596856",
+      "occurrences": 1,
+      "reason": "explicit source-role boundary not execution credit"
+    },
+    {
+      "after": " for row in retained:\n  p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()\n  req(p.startswith(PREFIX),'retained raw evidence only in finite B archive namespaces')\n  req(pathlib.PurePosixPath(p).suffix.lower() in ('.bin','.raw','.sarif','.xml','.html','.lock','.stdout','.stderr','.tsv') and not protected_path(p) and not re.search(r'\\.(py|kt|kts|ps1|sh|gradle|toml)(\\.|$)',name),'raw evidence may not disguise workflow/request/control source; exact listed archives only')\n for row in reports:\n  p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()",
+      "after_sha256": "29729db391b2ae13e4fd6d93fb6d5a0007791f40d47734e974df9e5aa822e59b",
+      "before": " for row in reports:\n  p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()",
+      "before_sha256": "7ff57612b9216c0fddfff32d459484cb20c534ce55c669bd4a4742313dfd07c7",
+      "occurrences": 1,
+      "reason": "finite raw-evidence format guard keeps old report code guard intact"
+    },
+    {
+      "after": "sum(len(p.encode())+1 for p in allpaths)<=81920 and total<=16*1024**2 and before_total<=16*1024**2,'bounded paths80KiB/afterimages16MiB/originals16MiB'",
+      "after_sha256": "5880b33ba6157b82c8c4d2f09dbd514a9676ab28471ccd0f68fc3bee6c7d0918",
+      "before": "sum(len(p.encode())+1 for p in allpaths)<=49152 and total<=16*1024**2 and before_total<=16*1024**2,'bounded paths48KiB/afterimages16MiB/originals16MiB'",
+      "before_sha256": "9de4e199509c5aca5577ca0ee96d08d969ef200401b0a54487e2447a453b7d89",
+      "occurrences": 1,
+      "reason": "explicit proposed path bytes48KiB->80KiB; no source/before buffer increase"
+    },
+    {
+      "after": "before any Git/V mutation.",
+      "after_sha256": "8a9d0509b630cde9675cf7af0fe9f219e1c4afec49682397dba11c392a3c6220",
+      "before": "before any Git/U mutation.",
+      "before_sha256": "0190d8cf1452aae3403cd809505029abd30124854e927b3a7977ac19fe29b539",
+      "occurrences": 1,
+      "reason": "correct stale old-worktree comment"
+    },
+    {
+      "after": "finite_audit_control_retained_evidence_and_report_set_frozen_independently_reviewed_no_private_fixture_residue",
+      "after_sha256": "90a313456da2703c36bd76441ca5846f63df44f07dc1ecf844b1baee7f10fdd4",
+      "before": "finite_completed_control_and_report_set_frozen_independently_reviewed_no_private_fixture_residue",
+      "before_sha256": "d233683689e67031d67bedf34454264df50f52e85b2119524a801db9102e443c",
+      "occurrences": 1,
+      "reason": "root exact three-role classification adoption"
+    },
+    {
+      "after": "no_workflow_change_and_only_exact_listed_audit_controls_requests_added_modified",
+      "after_sha256": "1c62a578c93b527b15914674806a2d33b74c11f406fb685fb22f4a9d460abd50",
+      "before": "no_workflow_change_and_only_exact_listed_completed_audit_controls_requests_added_modified",
+      "before_sha256": "a39a2a172d43aeac99a3b0db0b7597529a7693accaddf62ed98fc2ecc7bb8f05",
+      "occurrences": 1,
+      "reason": "root exact listed request/control custody, no implied completion"
+    },
+    {
+      "after": "'selected_W_sources_frozen', 'no_open_PR_from_dedicated_branch_into_main_testing_release', 'actual_one_commit_finite_changed_paths_and_pathfilter_fallbacks_independently_reviewed'):",
+      "after_sha256": "8463ec0324e5098dcffbf8fa7d1732a7869542a2831fe24862ea5a1a9efe9d87",
+      "before": "'selected_W_sources_frozen'):",
+      "before_sha256": "d110290a549a6661d99c0b32a87258d2e75812001603596288a22ff373cb46e2",
+      "occurrences": 1,
+      "reason": "explicit protected-PR and actual-diff trigger admission conditions"
+    },
+    {
+      "after": "'audit_controls':len(manifest['audit_controls']),'retained_evidence':len(manifest['retained_evidence']),'reports':len(manifest['reports'])",
+      "after_sha256": "e19bd80097d5fc729939fc695d4fd8faa057f3cae64fc6c2c6b9000f9c39e117",
+      "before": "'completed_controls':len(manifest['completed_controls']),'reports':len(manifest['reports'])",
+      "before_sha256": "e4ca46c7f311057e4e8e32851269857ddb415aee2925e14d59b8472e57f40b34",
+      "occurrences": 1,
+      "reason": "accurate role counts"
+    },
+    {
+      "after": "rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. A protected-base PR from this branch forbids admission. Actual one-commit/all-changed-path review is required; GitHub path-filter300-file limits and diff-timeout/>1000-commit fallbacks are not suppressed by a path count. [skip ci] is supplementary, not proof against every event or publisher. Source/publication review and inert control storage give no execution/application/hardware credit.'",
+      "after_sha256": "c293ea8b73cc944f1dd9dec60f71e186bc150256e775e283c75a7686be300020",
+      "before": "rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. Source/publication review is not application or hardware credit.'",
+      "before_sha256": "724cec7786d05a83629e229f049dee7387ca37413d40febe947372d08f5427d2",
+      "occurrences": 1,
+      "reason": "explicit pathfilter fallback and supplementary skip-ci qualification"
+    },
+    {
+      "after": "new V original config bytes/full pin differ from fresh root-admitted V preparation",
+      "after_sha256": "7bd5cc7b7900c1a9f788eaeed18db010fbe2e0f76833e4369dfbca4fd68b84b2",
+      "before": "new V original config bytes/full pin differ from accepted checkpoint22",
+      "before_sha256": "161f861ba357b35b18e38a3eb4586ec9fc7aa1eaba5b7e294647cc9c5a8c5e83",
+      "occurrences": 1,
+      "reason": "correct stale config donor diagnostic"
+    },
+    {
+      "after": "'exact_listed_request_control_paths':sorted(p for p in expected if protected_path(p))",
+      "after_sha256": "02c9e023ade3dffe44cc122ac42d2842446d9e0dc8fbe1438d398aadccd57eef",
+      "before": "'exact_completed_request_control_paths':sorted(p for p in expected if protected_path(p))",
+      "before_sha256": "2c7015ddd27a1e5953f57911d0456b61117e9d52b92fe83cacdad02288ef362b",
+      "occurrences": 1,
+      "reason": "avoid completed-control overclaim"
+    },
+    {
+      "after": " req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'checkpoint23 not sole checkpoint22 direct child')\n req(git(['rev-list','--count',BASE+'..HEAD']).strip()=='1' and len(changes)<=640 and len(changes)<=1000,'actual commit count must be1 (<=1000) and changed paths finite<=640')",
+      "after_sha256": "b32076bda0a27093b22f2a04efe5700eb83d38c864c7155d97823cd65c3e2fcb",
+      "before": " req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'checkpoint23 not sole checkpoint22 direct child')",
+      "before_sha256": "519dec1882e0b9aec358be670b333b826619f2fe763792ac96f8844d6fe9144c",
+      "occurrences": 1,
+      "reason": "actual one-commit and changed-path guard before push"
+    },
+    {
+      "after": " req(delta==expected_delta,'committed delta not exact sorted finite A/D/M map')\n rec['finite_push_diff']={'actual_commit_count':1,'commit_count_ceiling':1000,'actual_changed_paths':len(changes),'selected_path_ceiling':640,'all_actual_changed_paths_equal_exact_manifest':True,'qualification':'All actual paths reviewed, never only first300. GitHub300-file filtering and diff-timeout/>1000-commit fallback remain separate trigger risks; [skip ci] supplementary only. Fresh protected-base PR/queue and genuine trigger review required.'}",
+      "after_sha256": "10a3ecf83a7472a1dd0524cf888804db441af1f4f4e5699e369d25d86f840fba",
+      "before": " req(delta==expected_delta,'committed delta not exact sorted finite A/D/M map')",
+      "before_sha256": "631cd8fd9ab2ce6a07896972a14c618e5f8cbf81a55b641c3aebd132d826b57a",
+      "occurrences": 1,
+      "reason": "record actual bounded diff rather than assuming skip-ci/path filtering"
+    },
+    {
+      "after": "selected_W_afterimages_modified=False,source_W_writes_only_fixed_publication_receipt_and_logs=True,",
+      "after_sha256": "3718ce9ef9fa3fd58d877a2048392879eff03f640194bbb6857cb3619f933bc5",
+      "before": "source_workspace_modified=False,",
+      "before_sha256": "2126bc75ead40c28fc6f128ab33cd75b546f39d74d81af6da2a41793a32bf5a1",
+      "occurrences": 1,
+      "reason": "receipt/log writes in W are not falsely declared no workspace writes"
+    },
+    {
+      "after": "new V/config and every intended afterimage/index/commit retained.",
+      "after_sha256": "cc709e950539eefe9bc90787e54a3ad1019a3a27b70452370d4e122ed821c159",
+      "before": "new V/config and every intended source/alias/removal/index/commit retained.",
+      "before_sha256": "e9952f33d511d9bead9e1c0463115494e2cf9f2540891b30680ca4aab58cd050",
+      "occurrences": 1,
+      "reason": "accurate zero-removal cleanup prose"
+    }
+  ],
+  "prior": {
+    "bytes": 45831,
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/postfix_transport/new18/publication03/CHECKPOINT23-PUBLISH-V01.py.txt",
+    "sha256": "864e65e86fd68ef90f1c2f67cb104c98fb224507353b7e9d7cf16802b1ce319f"
+  },
+  "schema": "checkpoint23-new19-literal-source-delta-v1",
+  "status": "INERT_AUTHOR_PROPOSAL_PENDING_ROOT_CAP_AND_INDEPENDENT_REVIEW"
+}

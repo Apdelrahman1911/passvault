@@ -1,0 +1,47 @@
+{
+  "owner": "/root",
+  "utc": "2026-09-12T04:57:36.508450+00:00",
+  "scope": "Two serial bounded source/official-public-document inspection commands only, no build/test/Git/CI or class execution. Exact cached public KGP artifact is immutable input; no cache deletion. javap disassembles named class bytes without initializing them.",
+  "commands": [
+    [
+      "/usr/lib/jvm/java-17-openjdk-amd64/bin/javap",
+      "-J-Xmx256m",
+      "-J-XX:-UsePerfData",
+      "-c",
+      "-p",
+      "-classpath",
+      "/root/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-gradle-plugin/2.4.10/54e85b6639aa6819abc9985612e470576540e8ec/kotlin-gradle-plugin-2.4.10-gradle813.jar",
+      "org.jetbrains.kotlin.gradle.internal.properties.NativePropertiesLoader",
+      "org.jetbrains.kotlin.gradle.utils.NativeCompilerDownloaderKt",
+      "org.jetbrains.kotlin.gradle.utils.NativeCompilerDownloader",
+      "org.jetbrains.kotlin.gradle.targets.native.toolchain.NativeToolchainProjectSetupActionKt$NativeToolchainProjectSetupAction$1",
+      "org.jetbrains.kotlin.gradle.targets.native.toolchain.KotlinNativeFromToolchainProvider",
+      "org.jetbrains.kotlin.gradle.targets.native.internal.KotlinNativeDownloadTaskKt$getOrRegisterDownloadKotlinNativeDistributionTask$1$1",
+      "org.jetbrains.kotlin.gradle.internal.properties.NativePropertiesLoader$isToolchainEnabled$1",
+      "org.jetbrains.kotlin.gradle.internal.properties.NativePropertiesLoader$isToolchainEnabled$1$1"
+    ],
+    [
+      "/usr/bin/curl",
+      "-q",
+      "--location",
+      "--max-redirs",
+      "3",
+      "--proto",
+      "=https",
+      "--proto-redir",
+      "=https",
+      "--connect-timeout",
+      "5",
+      "--max-time",
+      "20",
+      "--max-filesize",
+      "2097152",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners"
+    ]
+  ],
+  "limits": "javap JVM heap256MiB; each child25s with original-direct-child kill/wait5s on timeout/interruption; stdout4MiB javap/2MiBcurl expected bound; curl maxfilesize2MiB/max-time20; no retry. Minimal environment clears Java agent/options and curl-q prevents local curlrc.",
+  "cleanup": "Install termination handlers before launch; finally reap only original child/close pipes. Retain compact exact public outputs/results; no temporary namespace, Gradle/cache/application launch or wrapper stop applies. SIGKILL/kernel block may prevent cleanup; never infer global idle."
+}

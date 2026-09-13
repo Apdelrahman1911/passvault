@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T14:41:52.162904+00:00",
+  "metadata": {
+    "RUN.json": {
+      "path": "reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_observer01/RUN.json",
+      "bytes": 409,
+      "sha256": "832c91d208e310e4aac1acea266f1743cc63bd0c1f39970a768d259d5a1c0985"
+    },
+    "JOBS.json": {
+      "path": "reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_observer01/JOBS.json",
+      "bytes": 202,
+      "sha256": "3def0f63371e89b9b1ac5f020ad4ab503330d577bf6db30ff063e6ca9b8e8d70"
+    },
+    "ARTIFACTS.json": {
+      "path": "reviews/team20/resume_disk/native_lifetime_author/resumed01/graph_observer01/ARTIFACTS.json",
+      "bytes": 366,
+      "sha256": "7707edeca79e81888f13a49750f7da471ca7bd106b9cfeed944cd603e7d508a0"
+    }
+  },
+  "original_executions": [
+    {
+      "name": "RUN.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34699687714",
+        "--jq",
+        "{id,run_attempt,workflow_id,path,head_sha,head_branch,event,status,conclusion,repository:{full_name:.repository.full_name},head_repository:{full_name:.head_repository.full_name}}"
+      ],
+      "result": {
+        "chunk_id": "3055da",
+        "wall_time_seconds": 0.344517808,
+        "exit_code": 0,
+        "original_token_count": 103,
+        "output": "{\"conclusion\":\"failure\",\"event\":\"push\",\"head_branch\":\"codex/audit-continuation-linux-20260908\",\"head_repository\":{\"full_name\":\"Apdelrahman1911/passvault\"},\"head_sha\":\"55e42c25443b27b33bc518d339be46f2a787bcb4\",\"id\":34699687714,\"path\":\".github/workflows/audit-windows-jna-graph-validation.yml\",\"repository\":{\"full_name\":\"Apdelrahman1911/passvault\"},\"run_attempt\":1,\"status\":\"completed\",\"workflow_id\":356559598}\n"
+      }
+    },
+    {
+      "name": "JOBS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34699687714/attempts/1/jobs",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,jobs:[.jobs[]|{id,run_id,run_attempt,head_sha,name,status,conclusion}]}"
+      ],
+      "result": {
+        "chunk_id": "2900c1",
+        "wall_time_seconds": 0.375059337,
+        "exit_code": 0,
+        "original_token_count": 51,
+        "output": "{\"jobs\":[{\"conclusion\":\"failure\",\"head_sha\":\"55e42c25443b27b33bc518d339be46f2a787bcb4\",\"id\":103569126874,\"name\":\"graph-only\",\"run_attempt\":1,\"run_id\":34699687714,\"status\":\"completed\"}],\"total_count\":1}\n"
+      }
+    },
+    {
+      "name": "ARTIFACTS.json",
+      "argv": [
+        "/usr/bin/timeout",
+        "--signal=TERM",
+        "--kill-after=5s",
+        "30s",
+        "/usr/bin/env",
+        "-u",
+        "GH_DEBUG",
+        "/usr/bin/gh",
+        "api",
+        "--hostname",
+        "github.com",
+        "--method",
+        "GET",
+        "repos/Apdelrahman1911/passvault/actions/runs/34699687714/artifacts",
+        "-f",
+        "per_page=10",
+        "--jq",
+        "{total_count,artifacts:[.artifacts[]|{id,name,size_in_bytes,digest,expired,workflow_run:{id:.workflow_run.id,head_sha:.workflow_run.head_sha,head_branch:.workflow_run.head_branch}}]}"
+      ],
+      "result": {
+        "chunk_id": "bbb571",
+        "wall_time_seconds": 0.323901975,
+        "exit_code": 0,
+        "original_token_count": 92,
+        "output": "{\"artifacts\":[{\"digest\":\"sha256:d7f12062017b7546345aa609d8def4553f708a8fe3c39b853e03c9fca2725303\",\"expired\":false,\"id\":10299432935,\"name\":\"audit-windows-jna-graph-01-34699687714-1\",\"size_in_bytes\":78983,\"workflow_run\":{\"head_branch\":\"codex/audit-continuation-linux-20260908\",\"head_sha\":\"55e42c25443b27b33bc518d339be46f2a787bcb4\",\"id\":34699687714}}],\"total_count\":1}\n"
+      }
+    }
+  ],
+  "qualification": "Three original normal0 bounded terminal GETs; no retries, raw logs/private fields, build/stop/deletion. Results retain failed hosted graph; not cause/cleanup adjudication."
+}

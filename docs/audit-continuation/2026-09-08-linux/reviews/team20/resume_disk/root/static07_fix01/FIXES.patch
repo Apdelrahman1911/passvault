@@ -1,0 +1,78 @@
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt
+@@ -1143,9 +1143,14 @@
+         failures.release { onEdt {
+             if (mouseRegistered) { owner.icon.removeMouseListener(mouseObserver); mouseRegistered = false }
+         } }
+-        failures.release { onEdt {
+-            if (postLockRegistered) { owner.items[1].removeActionListener(postLockObserver); postLockRegistered = false }
+-        } }
++        failures.release {
++            onEdt {
++                if (postLockRegistered) {
++                    owner.items[1].removeActionListener(postLockObserver)
++                    postLockRegistered = false
++                }
++            }
++        }
+         failures.release { onEdt {
+             if (!keepExitObserver && actionRegistered) {
+                 Toolkit.getDefaultToolkit().removeAWTEventListener(actionObserver); actionRegistered = false
+@@ -1223,7 +1228,10 @@
+         val rectangles = boxes.map { Rectangle(it[0], it[1], it[2] - it[0] + 1, it[3] - it[1] + 1) }
+         val bounds = rectangles.reduce(Rectangle::union)
+         val image = requireNotNull(marker)
+-        assertTrue(bounds.width in image.width / 2..image.width + 4 && bounds.height in image.height / 2..image.height + 4)
++        assertTrue(
++            bounds.width in image.width / 2..image.width + 4 &&
++                bounds.height in image.height / 2..image.height + 4,
++        )
+         val (top, left, right) = rectangles
+         assertTrue(
+             kotlin.math.abs(top.x - left.x) <= 2 &&
+--- a/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt
++++ b/app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt
+@@ -39,7 +39,8 @@
+  */
+ class JnaDesktopBiometricNativeLifetimeIntegrationTest {
+     @Test
+-    @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
++    // Keep native admission, worker gates and handle settlement in one visible ownership scope.
++    @Suppress("LongMethod", "TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+     fun closeReservationProtectsRealContextUntilCancellationReturns() {
+         val selected = System.getProperty(PREFIX + "enabled")
+         assumeTrue("Real JNA lifetime requires explicit execution admission", selected != null)
+@@ -244,6 +245,8 @@
+         private var destructionReturned = false
+         private var firstFailure: Throwable? = null
+ 
++        // Record and rethrow every callback failure, including assertions, before context cleanup is considered.
++        @Suppress("TooGenericExceptionCaught")
+         val api: NativeApi = Proxy.newProxyInstance(
+             NativeApi::class.java.classLoader, arrayOf(NativeApi::class.java),
+         ) { proxy, method, nullableArguments ->
+--- a/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt
++++ b/core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt
+@@ -393,7 +393,8 @@
+         }
+     }
+ 
+-    @Suppress("TooGenericExceptionCaught") // Preserve primary assertion/cancellation and independent cleanup errors.
++    // Cleanup fails the test only when there is no primary failure; otherwise retain both without replacing it.
++    @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+     private inline fun <T> withPreservingCleanup(cleanup: () -> Unit, block: () -> T): T {
+         var primary: Throwable? = null
+         try {
+--- a/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt
++++ b/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt
+@@ -430,8 +430,8 @@
+         passwordHistory = snapshot.passwordHistory.sortedBy { it.id },
+     )
+ 
+-    // Preserve assertion/cancellation failures while attempting every owned cleanup.
+-    @Suppress("TooGenericExceptionCaught")
++    // Cleanup fails the test only when there is no primary failure; otherwise retain both without replacing it.
++    @Suppress("TooGenericExceptionCaught", "ThrowingExceptionFromFinally")
+     private suspend fun <T> withHistoricalCleanup(cleanup: suspend () -> Unit, block: suspend () -> T): T {
+         var primary: Throwable? = null
+         try {

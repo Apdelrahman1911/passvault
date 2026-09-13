@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "status": "BOUND_SFIX_PREFLIGHT_PENDING_GENUINE_INSTANCE_REVIEW",
+  "suite": "SFIX-PUBLICATION-PREFLIGHT-01",
+  "source": {
+    "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/preflight01/SFIX-PUBLICATION-PREFLIGHT-01.py.txt",
+    "bytes": 31801,
+    "sha256": "ddee9ca87eb5b9acc671210fed5cdc94a396e0fdfe18f178e1937ae04dc562ba"
+  },
+  "command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/publication_author/sfix_publish01/preflight01/SFIX-PUBLICATION-PREFLIGHT-01.py.txt"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "required_independent_source_review": {
+    "reviewer": "/root/publication_review",
+    "path": "reviews/team20/resume_disk/publication_review/sfix_publish01/SFIX-PREFLIGHT01-SOURCE-REVIEW.json",
+    "bytes": 6809,
+    "sha256": "a0e6ac2817738a394ae6414d8add53b3b2da9fae2e658c429808f94ea6061382"
+  },
+  "root_admission": {
+    "utc": "2026-09-12T08:27:34.551243+00:00",
+    "source_request_sha256": "865cca29b9d191d4ba7889c42299c9d98897ad807457308df837756fcfc554cc",
+    "explicit_post_cleanup_only": true,
+    "quiet_source_metadata_window": "Windows4 original execution settled and filesystem HOLD retained separately per bound adoption. No rootT writer/localbuild/CI; activeagents confined to own inertWleaves. Fresh process/queue point still required.",
+    "actual_disk_policy": {
+      "point": {
+        "path": "reviews/team20/resume_disk/root/RESUME02-RESOURCE-CUSTODY-POINT.json",
+        "bytes": 2337,
+        "sha256": "7459c0f2428a6fc13e60d8bba4f78c70219f5d0d8ee5c51fd07a56d2e15ebc98"
+      },
+      "disk_available_bytes": 18984194048,
+      "reserve_bytes": 12884901888,
+      "growth_allowance_bytes": 67108864,
+      "ram_available_bytes": 64551944192,
+      "ram_total_bytes": 67435888640,
+      "fallback_3GiB": false
+    },
+    "namespace_custody_release": {
+      "path": "reviews/team20/resume_disk/root/SFIX-T-CUSTODY-RELEASE01.json",
+      "bytes": 1736,
+      "sha256": "268d91160dc2bb0ac672f54811631ea459d44f6bde7770e73af4aa88c5d2fb6b"
+    },
+    "source_executor_identity": {
+      "path": "/usr/bin/python3.12",
+      "pin": {
+        "dev": 25,
+        "ino": 1088,
+        "uid": 0,
+        "mode": 33261,
+        "nlink": 1,
+        "bytes": 8020928,
+        "mtime_ns": 1781873160000000000,
+        "ctime_ns": 1787292627933100530
+      },
+      "sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+      "source": {
+        "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/preflight01/SFIX-PUBLICATION-PREFLIGHT-01.py.txt",
+        "bytes": 31801,
+        "sha256": "ddee9ca87eb5b9acc671210fed5cdc94a396e0fdfe18f178e1937ae04dc562ba"
+      }
+    },
+    "no_other_audit_build_or_test_owner": "Root sole launcher; original physicallock retained; no duplicate slot. Fresh allrepoqueues/comm probe in preflight required."
+  },
+  "live_slot": {
+    "path": "reviews/team20/resume_disk/root/EXECUTION_SLOT.json",
+    "bytes": 6218,
+    "sha256": "e7c677c639293a6566bd20a17c529a2046984f1237abf05da26a0f3a6f09a2e6",
+    "state": "RESERVED_SFIX_PREFLIGHT_PUBLICATION_AND_SHARED_CAPTURE",
+    "note": "Original physical lock; exact slot frozen through preflight/transport. Frozen top-level slot is history only."
+  },
+  "fixed_commands": [
+    "one Git ls-remote to exact six named protected/candidate refs, cwdT only",
+    "one exact-head/all-base state=open PR GET,per_page100",
+    "five unfiltered repository actions/runs GETs,statuses queued,pending,waiting,requested,in_progress,per_page100"
+  ],
+  "queue_semantics": "Five status sets, not branch/workflow filters. Each total_count must be integer0..99 and equal projected unique run count; every projected status must match query. Zero counts+empty arrays required for no-observed-conflict result. Any nonzero is explicit conflict, not job cancellation. Saturated/incomplete/malformed/error produces HOLD; no page loop or retry.",
+  "bounds": {
+    "total_seconds": 60,
+    "prelaunch_seconds": 15,
+    "all_commands_deadline_seconds": 55,
+    "per_child_seconds": 45,
+    "abnormal_direct_child_settlement_seconds": 5,
+    "commands": 7,
+    "pipe_bytes_each": 32768,
+    "receipt_bytes_each": 65536,
+    "proc_entries": 8192,
+    "process_screen_seconds": 5,
+    "regular_executable_bytes_each": 67108864,
+    "live_slot_bytes": 262144
+  },
+  "resource_scope": "Per explicit root instruction this cheap read-only batch observes disk bytes, validates nonnegative units and keeps RAM25% minimum; it does not enforce historical12GiB or authorize3GiB publication. Root must bind actual disk admission after cleanup. No build workload is launched.",
+  "outputs": [
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/preflight01/PREFLIGHT-01-INTENT.json",
+      "must_be_absent_before_once_only_attempt": true
+    },
+    {
+      "path": "reviews/team20/resume_disk/publication_author/sfix_publish01/preflight01/PREFLIGHT-01-RESULT.json",
+      "must_be_absent_before_once_only_attempt": true
+    }
+  ],
+  "root_retention": "Retain original external terminal exit/envelope plus compact exact output tuple. Hard interruption or unproven abnormal descendants remains HOLD/no retry; do not invoke this consumed name again or kill unrelated processes. No old helper or old metadata receipt is replayed.",
+  "qualification": "New one-shot Sfix point, NOT replay of either consumed C20/Windows activation preflight. Exactly five literal source replacements: own new leaf/SELF/expectedAwinref/format/purpose. All7 commands/protocol/metadata/limits/privacy/settlement remain unchanged. Expected Awin2ddeaa8412c06cef07e23b7dda951db3434f1f9c/tree6fd5ed8eae6903eabe898878054c493514654b13 is retained comparison evidence, not a fresh remote observation. Zero executions or current queue/custody/admission claims. Root waits for independently accepted Windows4 terminal result/original cleanup, reserves Sfix sole slot and binds exact point/current slot before the separately reviewed Sfix transport. No interposed T commit or unreviewed instance substitution. Root distinguishes independently accepted actual cleanup disposition (HOLD) from deletion success. Windows4 observed terminal/Jobzero/handle settlement permits fresh execution reservation, not retry or cleanup of original root.",
+  "template_sha_semantics": "Any root instance source_request_sha256 means this immutable template hash; root instance hash is bound separately in outer admission, not recursively inside itself."
+}

@@ -1,0 +1,172 @@
+--- new18/CHECKPOINT23-PUBLISH-V01.py.txt
++++ new19/CHECKPOINT23-PUBLISH-V01.py.txt
+@@ -2,14 +2,15 @@
+ # INERT checkpoint23 source proposal: root-owned NEW V publication, not admission.
+ # Reuses the reviewed U02 Git/child/temp/full-map mechanisms; never replays U02.
+ # Four exact static-fixture M rows, ZERO removals, and a separately frozen finite
+-# completed-control/report A/M manifest. No workflow or production/dependency edits.
++# audit-control/retained-evidence/report A/M manifest, including inert unadmitted
++# successor controls as DATA only. No workflow or production/dependency edits.
+ # Root prepares standalone V from the verified public URL under the separate finite
+ # plan, then binds fresh namespace/config/slot/trigger/instance evidence.
+ # Existing U/index/config/store, original T and retired W Git remain untouched.
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+-PUB=B/'reviews/team20/resume_disk/postfix_transport/new18/publication03'
++PUB=B/'reviews/team20/resume_disk/postfix_transport/new19/publication03'
+ CONFIG=PUB/'CHECKPOINT23-PUBLISH-V01-CONFIG.json'
+ MANIFEST=PUB/'CHECKPOINT23-PUBLISH-V01-MANIFEST.json'
+ OUT=PUB/'CHECKPOINT23-PUBLISH-V01-ACTUAL.json'
+@@ -53,7 +54,7 @@
+ def dtuple(a):return [a.st_dev,a.st_ino,a.st_uid,a.st_mode]
+ def durable():
+  if recfd is None:return
+- raw=(json.dumps(rec,ensure_ascii=False,indent=2)+'\n').encode();req(len(raw)<=131072,'publication receipt128KiB cap');os.lseek(recfd,0,os.SEEK_SET);os.ftruncate(recfd,0)
++ raw=(json.dumps(rec,ensure_ascii=False,indent=2)+'\n').encode();req(len(raw)<=262144,'publication receipt256KiB cap');os.lseek(recfd,0,os.SEEK_SET);os.ftruncate(recfd,0)
+  at=0
+  while at<len(raw):at+=os.write(recfd,raw[at:])
+  os.fsync(recfd)
+@@ -223,7 +224,7 @@
+ 
+ def stable_inputs():
+  req(read_file(CONFIG,cap=32768)[0]==config_raw,'exact config changed')
+- req(read_file(MANIFEST,cap=131072)[0]==manifest_raw,'exact manifest changed')
++ req(read_file(MANIFEST,cap=393216)[0]==manifest_raw,'exact manifest changed')
+  req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'sole reserved slot changed')
+  req(read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES)[0]==base_receipt_raw,'accepted checkpoint22 actual changed')
+  for row in rows:source_row(row)
+@@ -233,16 +234,17 @@
+ 
+ def validate_manifest(raw):
+  m=parsed(raw)
+- req(set(m)=={'schema','kind','base','fixed_afterimages','removals','completed_controls','reports','whitespace_paths'},'fixed manifest fields')
+- req(m['schema']==1 and m['kind']=='CHECKPOINT23_EXACT_4M_PLUS_FINITE_COMPLETED_METADATA','fixed checkpoint23 manifest kind')
++ req(set(m)=={'schema','kind','base','fixed_afterimages','removals','audit_controls','retained_evidence','reports','whitespace_paths'},'fixed manifest fields')
++ req(m['schema']==1 and m['kind']=='CHECKPOINT23_EXACT_4M_PLUS_FINITE_RETAINED_AUDIT_METADATA','fixed checkpoint23 manifest kind')
+  req(m['base']=={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS},'manifest is not full checkpoint22 base')
+  req(m['fixed_afterimages']==CORE and m['removals']==REMOVALS,'fixed four-static-fixture delta drift')
+- reports=m['reports'];controls=m['completed_controls']
+- req(isinstance(reports,list) and isinstance(controls,list) and len(CORE)+len(reports)+len(controls)<=256,'finite metadata set UNBOUND or too large')
+- req([r['destination'] for r in controls]==sorted(set(r['destination'] for r in controls)),'sorted unique completed controls required')
++ reports=m['reports'];controls=m['audit_controls'];retained=m['retained_evidence']
++ req(isinstance(reports,list) and isinstance(controls,list) and isinstance(retained,list) and len(CORE)+len(reports)+len(controls)+len(retained)<=640,'finite metadata set UNBOUND or640-path cap exceeded')
++ req([r['destination'] for r in controls]==sorted(set(r['destination'] for r in controls)),'sorted unique audit controls required')
++ req([r['destination'] for r in retained]==sorted(set(r['destination'] for r in retained)),'sorted unique retained evidence required')
+  control_paths={r['destination'] for r in controls}
+  req([r['destination'] for r in reports]==sorted(set(r['destination'] for r in reports)),'sorted unique reports required')
+- selected=sorted(CORE+controls+reports,key=lambda r:r['destination']);destinations=[];total=0;before_total=0
++ selected=sorted(CORE+controls+retained+reports,key=lambda r:r['destination']);destinations=[];total=0;before_total=0
+  for row in selected:
+   req(set(row)=={'destination','source_afterimage','bytes','sha256','git_mode','git_blob','publication_change','before'},'fixed afterimage row fields')
+   path=relpath(row['destination']);src=relpath(row['source_afterimage'])
+@@ -259,7 +261,11 @@
+   destinations.append(path);total+=row['bytes']
+  for row in controls:
+   p=row['destination']
+-  req((p.startswith(PREFIX) or p.startswith('scripts/audit/')) and not workflow_path(p),'completed controls only in finite audit namespaces; never workflow/production/dependency paths')
++  req((p.startswith(PREFIX) or p.startswith('scripts/audit/')) and not workflow_path(p),'audit controls, including inert unadmitted archives/successors, only in finite audit namespaces; never workflow/production/dependency paths')
++ for row in retained:
++  p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()
++  req(p.startswith(PREFIX),'retained raw evidence only in finite B archive namespaces')
++  req(pathlib.PurePosixPath(p).suffix.lower() in ('.bin','.raw','.sarif','.xml','.html','.lock','.stdout','.stderr','.tsv') and not protected_path(p) and not re.search(r'\.(py|kt|kts|ps1|sh|gradle|toml)(\.|$)',name),'raw evidence may not disguise workflow/request/control source; exact listed archives only')
+  for row in reports:
+   p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()
+   req(p.startswith(PREFIX),'additional rows are finite B report evidence only')
+@@ -268,7 +274,7 @@
+  remove_paths={r['path'] for r in REMOVALS}
+  req(not remove_paths and not REMOVALS,'checkpoint23 forbids every removal')
+  allpaths=sorted(destinations+list(remove_paths))
+- req(sum(len(p.encode())+1 for p in allpaths)<=49152 and total<=16*1024**2 and before_total<=16*1024**2,'bounded paths48KiB/afterimages16MiB/originals16MiB')
++ req(sum(len(p.encode())+1 for p in allpaths)<=81920 and total<=16*1024**2 and before_total<=16*1024**2,'bounded paths80KiB/afterimages16MiB/originals16MiB')
+  bypath={r['destination']:r for r in selected}
+  for r in REMOVALS:
+   a=bypath[r['to']]
+@@ -278,7 +284,7 @@
+  return m,selected,bypath,total
+ 
+ try:
+- # Fresh O_EXCL receipt consumes this invocation before any Git/U mutation.
++ # Fresh O_EXCL receipt consumes this invocation before any Git/V mutation.
+  safe_parent(S,str(OUT.relative_to(S)))
+  recfd=os.open(OUT,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600);durable()
+  pfd=os.open(OUT.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+@@ -295,13 +301,13 @@
+  req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Checkpoint23: reviewed static fixture corrections and audit evidence [skip ci]','fixed receipt/message')
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['manifest_sha256']) is not None,'finite manifest UNBOUND')
+  admission=CFG['root_admission'];req(admission['status']=='ADMITTED_CHECKPOINT23_V01_ONCE_ONLY_FINITE_SOURCE','root admission UNBOUND')
+- for key in ('fresh_V_namespace_config_full_tree_index_and_preparation_independently_accepted', 'V_standalone_no_shared_objects_hardlinks_alternates_redirects_or_mount_alias_to_old_stores', 'U_original_index_config_store_and_all_raw_P_consumers_remain_frozen_unmodified', 'original_T_retired_W_Git_and_all_runtime_HOLDs_unaccessed_unmodified_not_released', 'exact_four_static_fixture_W_transitions_independently_reviewed_and_adopted', 'finite_completed_control_and_report_set_frozen_independently_reviewed_no_private_fixture_residue', 'no_workflow_change_and_only_exact_listed_completed_audit_controls_requests_added_modified', 'fresh_all_base_head_PR_and_all_repository_queues_reviewed', 'skip_ci_message_and_actual_finite_source_push_trigger_delta_independently_reviewed_no_full_CI_or_publishing', 'exclusive_local_CI_slot_reserved_for_NEW_V_only', 'bounded_V_inventory_peak_resources_and_receipt_size_reviewed', 'original_child_cleanup_temp_disposal_partial_mutation_HOLD_and_no_retry_admitted', 'publisher_source_final_manifest_and_genuine_exact_instance_independently_accepted', 'selected_W_sources_frozen'):
++ for key in ('fresh_V_namespace_config_full_tree_index_and_preparation_independently_accepted', 'V_standalone_no_shared_objects_hardlinks_alternates_redirects_or_mount_alias_to_old_stores', 'U_original_index_config_store_and_all_raw_P_consumers_remain_frozen_unmodified', 'original_T_retired_W_Git_and_all_runtime_HOLDs_unaccessed_unmodified_not_released', 'exact_four_static_fixture_W_transitions_independently_reviewed_and_adopted', 'finite_audit_control_retained_evidence_and_report_set_frozen_independently_reviewed_no_private_fixture_residue', 'no_workflow_change_and_only_exact_listed_audit_controls_requests_added_modified', 'fresh_all_base_head_PR_and_all_repository_queues_reviewed', 'skip_ci_message_and_actual_finite_source_push_trigger_delta_independently_reviewed_no_full_CI_or_publishing', 'exclusive_local_CI_slot_reserved_for_NEW_V_only', 'bounded_V_inventory_peak_resources_and_receipt_size_reviewed', 'original_child_cleanup_temp_disposal_partial_mutation_HOLD_and_no_retry_admitted', 'publisher_source_final_manifest_and_genuine_exact_instance_independently_accepted', 'selected_W_sources_frozen', 'no_open_PR_from_dedicated_branch_into_main_testing_release', 'actual_one_commit_finite_changed_paths_and_pathfilter_fallbacks_independently_reviewed'):
+   req(admission[key] is True,'missing explicit root admission:'+key)
+  req(admission['allow_3GiB_VPS_fallback'] is False,'strict12/8GiB transport; no fallback')
+  req(set(CFG['evidence'])=={'checkpoint22_publication_actual_review', 'trigger_delta_review', 'fresh_PR_queue_preflight_actual', 'fresh_V_preparation_actual', 'fresh_PR_queue_preflight_review', 'publisher_source_manifest_review', 'fresh_V_preparation_review', 'root_frozen_U_T_WGit_custody_and_V_only_scope'},'exact independent V/source/trigger evidence set')
+  for desc in CFG['evidence'].values():evidence(desc)
+  for desc in FIX_REVIEWS.values():evidence(desc)
+- manifest_raw,_=read_file(MANIFEST,cap=131072);req(digest(manifest_raw)==CFG['manifest_sha256'],'manifest hash drift')
++ manifest_raw,_=read_file(MANIFEST,cap=393216);req(digest(manifest_raw)==CFG['manifest_sha256'],'manifest hash drift')
+  manifest,rows,bypath,selected_bytes=validate_manifest(manifest_raw)
+  copies={row['destination']:source_row(row) for row in rows}
+  expected={path:('100644',rawblob(raw)) for path,raw in copies.items()}
+@@ -313,11 +319,11 @@
+  req(prior['publication_clone']==RETAINED_U_PATH and prior['remote_after']==CFG['remotes'] and prior['original_T_accessed'] is False,'retained checkpoint22 lineage/sixrefs differ')
+  req(prior['committed_map']=={'members':BASE_MEMBERS,'tree_stream_bytes':BASE_TREE_STREAM_BYTES,'tree_stream_sha256':BASE_TREE_STREAM_SHA,'stage0_stream_bytes':BASE_INDEX_STREAM_BYTES,'stage0_stream_sha256':BASE_INDEX_STREAM_SHA},'retained checkpoint22 complete map differs; no current U probe')
+  rec['configuration']={'path':str(CONFIG.relative_to(B)),'bytes':len(config_raw),'sha256':digest(config_raw)}
+- rec['manifest']={'path':str(MANIFEST.relative_to(B)),'bytes':len(manifest_raw),'sha256':digest(manifest_raw),'afterimages':len(rows),'removals':0,'completed_controls':len(manifest['completed_controls']),'reports':len(manifest['reports']),'selected_afterimage_raw_bytes':selected_bytes}
++ rec['manifest']={'path':str(MANIFEST.relative_to(B)),'bytes':len(manifest_raw),'sha256':digest(manifest_raw),'afterimages':len(rows),'removals':0,'audit_controls':len(manifest['audit_controls']),'retained_evidence':len(manifest['retained_evidence']),'reports':len(manifest['reports']),'selected_afterimage_raw_bytes':selected_bytes}
+  rec['root_admission']=admission;rec['adopted_evidence']=CFG['evidence'];rec['fixed_review_evidence']=FIX_REVIEWS
+  rec['retained_checkpoint22_U02_receipt']={'path':str(BASE_RECEIPT.relative_to(B)),'bytes':BASE_RECEIPT_BYTES,'sha256':BASE_RECEIPT_SHA}
+  rec['original_T_accessed']=False
+- rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. Source/publication review is not application or hardware credit.'
++ rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. A protected-base PR from this branch forbids admission. Actual one-commit/all-changed-path review is required; GitHub path-filter300-file limits and diff-timeout/>1000-commit fallbacks are not suppressed by a path count. [skip ci] is supplementary, not proof against every event or publisher. Source/publication review and inert control storage give no execution/application/hardware credit.'
+  slotraw,_=read_file(LIVE_SLOT,cap=32768)
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot UNBOUND/drifted')
+  req(CFG['slot_state'].startswith('RESERVED_CHECKPOINT23_V01') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root checkpoint23 reservation required')
+@@ -333,7 +339,7 @@
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+  config_before_raw,config_before_stat=read_file(gd/'config')
+  rec['preserved_config_before']={'sha256':digest(config_before_raw),'pin':fullpin(config_before_stat)}
+- req(rec['preserved_config_before']==V_CONFIG,'new V original config bytes/full pin differ from accepted checkpoint22')
++ req(rec['preserved_config_before']==V_CONFIG,'new V original config bytes/full pin differ from fresh root-admitted V preparation')
+  dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((V/x).resolve()==gd for x in dirs),'external Git store')
+  req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'exact checkpoint22 parent required; no interposed commit')
+  req(git(['symbolic-ref','--short','HEAD']).strip()==BRANCH,'dedicated continuation branch mismatch')
+@@ -445,7 +451,7 @@
+  expected_protected=dict(protected);expected_protected.update({p:v for p,v in expected.items() if protected_path(p)})
+  req({p:v for p,v in whole.items() if protected_path(p)}==expected_protected,'unlisted parent request/workflow map changed')
+  req({p:v for p,v in whole.items() if workflow_path(p)}=={p:v for p,v in base.items() if workflow_path(p)},'any workflow map change forbidden')
+- rec['protected_map_policy']={'all_workflow_rows_unchanged':True,'unselected_request_rows_unchanged':True,'exact_completed_request_control_paths':sorted(p for p in expected if protected_path(p))}
++ rec['protected_map_policy']={'all_workflow_rows_unchanged':True,'unselected_request_rows_unchanged':True,'exact_listed_request_control_paths':sorted(p for p in expected if protected_path(p))}
+  req(entries(git(['ls-files','--stage','-z']),True)==whole,'index differs beyond finite exact A/D/M map')
+  changes={p:r['publication_change'] for p,r in bypath.items()};changes.update({p:'D' for p in remove_paths})
+  expected_delta=''.join(changes[p]+'\t'+p+'\n' for p in sorted(changes))
+@@ -458,10 +464,12 @@
+  git(['-c','user.name=Codex','-c','user.email=codex@openai.com','commit','-m',CFG['commit_message']])
+  commit,tree=git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()
+  req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'checkpoint23 not sole checkpoint22 direct child')
++ req(git(['rev-list','--count',BASE+'..HEAD']).strip()=='1' and len(changes)<=640 and len(changes)<=1000,'actual commit count must be1 (<=1000) and changed paths finite<=640')
+  final_tree_raw=git(['ls-tree','-r','-z','--full-tree','HEAD'])
+  req(entries(final_tree_raw)==whole,'complete committed tree drift')
+  delta=git(['diff-tree','--no-commit-id','--no-renames','--name-status','-r',BASE,'HEAD'])
+  req(delta==expected_delta,'committed delta not exact sorted finite A/D/M map')
++ rec['finite_push_diff']={'actual_commit_count':1,'commit_count_ceiling':1000,'actual_changed_paths':len(changes),'selected_path_ceiling':640,'all_actual_changed_paths_equal_exact_manifest':True,'qualification':'All actual paths reviewed, never only first300. GitHub300-file filtering and diff-timeout/>1000-commit fallback remain separate trigger risks; [skip ci] supplementary only. Fresh protected-base PR/queue and genuine trigger review required.'}
+  quoted=[len(json.dumps(p,ensure_ascii=True,separators=(',',':')).encode('utf-8')) for p in whole]
+  rec['source_capture_path_aggregates']={'N':len(whole),'Q':sum(quoted),'max_json_quoted_path_bytes':max(quoted),'encoding':'UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL','qualification':'Actual verified complete committed-tree path map; not raw/checkout/framed bytes, member-size or runtime proof.'}
+  rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,selected_paths=len(rows),changed_paths=len(changes),added_paths=len(additions),modified_paths=len(modifications),removed_paths=0,
+@@ -480,7 +488,7 @@
+  rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':fullpin(config_after_stat)}
+  req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'V original config bytes/full pin changed')
+  stable_inputs();req(all(not os.path.lexists(p) for p in temp_paths.values()),'disposable sibling unexpectedly remains')
+- rec.update(status='PUBLISHED_EXACT_CHECKPOINT23_V01_FINITE_SOURCE',clone_is_build_workspace=False,source_workspace_modified=False,
++ rec.update(status='PUBLISHED_EXACT_CHECKPOINT23_V01_FINITE_SOURCE',clone_is_build_workspace=False,selected_W_afterimages_modified=False,source_W_writes_only_fixed_publication_receipt_and_logs=True,
+             slot='UNCHANGED_ROOT_CHECKPOINT23_V01_RESERVATION; ROOT RETAINS NEW V FOR INDEPENDENT ACTUAL REVIEW; U AND RAW_P_CONSUMERS REMAIN FROZEN; NO_EXECUTION_OR_READINESS_CREDIT')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+@@ -512,7 +520,7 @@
+     os.close(fd)
+    except OSError as error:rec[label+'_close_error']=repr(error);rec['status']='FAIL_CLEANUP_HOLD'
+  rec['elapsed_seconds']=time.monotonic()-START
+- rec['cleanup']='Normal original foreground Git children reaped; new V/config and every intended source/alias/removal/index/commit retained. Only original uninstalled fixed temp may be disposed by descriptor/full-pin check. Original U/index/config/store, T and retired W Git untouched; no build/cache/service/emulator or Gradle duty. Partial directories/additions/replacements/removals, abnormal descendants, uncertain push and hard interruption remain HOLD; no rollback/reset/restore or automatic retry. This is not release of old runtime HOLDs or the root V reservation or any frozen U consumer.'
++ rec['cleanup']='Normal original foreground Git children reaped; new V/config and every intended afterimage/index/commit retained. Only original uninstalled fixed temp may be disposed by descriptor/full-pin check. Original U/index/config/store, T and retired W Git untouched; no build/cache/service/emulator or Gradle duty. Partial directories/additions/replacements/removals, abnormal descendants, uncertain push and hard interruption remain HOLD; no rollback/reset/restore or automatic retry. This is not release of old runtime HOLDs or the root V reservation or any frozen U consumer.'
+  try:durable()
+  finally:
+   if recfd is not None:os.close(recfd)

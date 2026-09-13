@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "owner": "/root",
+  "utc": "2026-09-12T05:56:23.228325+00:00",
+  "disposition": "ADMIT_EXACT_ONCE_LINUX_FOCUSED_REGRESSION02",
+  "finding_ids": [
+    "PVA-007",
+    "PVA-031"
+  ],
+  "scope": "10exact selected Kotlin regressions in4XML/2Test tasks, including database rollback/reopen and historical-layout migration->backup->restore->newinstanceunlock, plus8 missing credential methods; Desktop test compilation only. No GUI/native runtime/Android/iOS/PVA029 retry or aggregate suite.",
+  "source_commit": "7459cb4bdaad00cfc8823a4c5b376e00c805d918",
+  "source_tree": "550624b7b864ee687eaf8a50b0d83c9fc037fe6e",
+  "request": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/requests/LINUX-FOCUSED-REGRESSION-02.json",
+    "sha256": "93f7ba35b77bd8f23884713cb83aad4506fbaedffbee07d1c57a00873c0579fd",
+    "bytes": 4917
+  },
+  "genuine_approval": {
+    "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/team20/resume_disk/linux_review/focused02-INSTANCE-ACCEPT.json",
+    "sha256": "6612194f9aba69203137485fc65bb6f11986fff3e69943da1289c9147a84ba3b",
+    "bytes": 1405
+  },
+  "source_review_sha256": "ee1667f96bb7416560fe81522ed5d7b80dd573f2fe4c62e633f2812078f5666b",
+  "promotion_sha256": "4c6778558535d929bc47d5b8bccbe94d8221182607dd0f69be6fc044976096b4",
+  "command": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TZ=UTC",
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/reviews/focused-regression02/LAUNCH.py"
+  ],
+  "cwd": "/root/projects/PassVault/passvault-linux",
+  "resource_points": [
+    {
+      "path": "/root/projects/PassVault/passvault-linux",
+      "free_bytes": 8970465280,
+      "required_planned_start_bytes": 8053063680,
+      "projected_free_after_padded_materialization": 8567812096
+    },
+    {
+      "path": "/root/projects/PassVault",
+      "free_bytes": 8970465280,
+      "required_planned_start_bytes": 8053063680,
+      "projected_free_after_padded_materialization": 8567812096
+    },
+    {
+      "path": "/root/projects/PassVault/passvault-linux/docs/audit-continuation/2026-09-08-linux/runs",
+      "free_bytes": 8970465280,
+      "required_planned_start_bytes": 8053063680,
+      "projected_free_after_padded_materialization": 8567812096
+    }
+  ],
+  "RAM": {
+    "available": 63525576704,
+    "total": 67435888640,
+    "entry_running_percent": [
+      25,
+      20
+    ]
+  },
+  "budget": "7.5GiB planned start: reserve3GiB+wholeR3GiB+E256MiB+outside256MiB+1GiBslack. Padded initialR384MiB included, not extra. Runtime logical+allocated sampled3GiB limits/disk3GiB low-water; not hard quotas/peak guarantee. Outer6000s/work5250s; Gradle3600s plus originalstop600s and bounded terminal cleanup.",
+  "coordination": "Original sole physical lock acquired nonblocking for admission and closed before controlledhandoff to outer, which refreshes it before allocation. Root remains sole build/test/CI launcher; no audit CI running/queued by root, no known external audit scheduler. Other agents restricted to inert source/review outside admitted inputs/runtime/T; no buildlike positive at latest bounded hostpoint and outer rechecks current host underlock. No other audit launch permitted until actual terminal reconciliation.",
+  "cleanup_installed": "Exact accepted inner/outer source installs cancel/process namespace supervision and original private checked-in wrapper --stop obligation before launch; direct children and owned PID namespace settlement; sourcebefore/after and compact log/XML/GradleDSL128roots16files4MiB+Problems1MiB+4auxroots64files4MiB conservation before validated wholeR unlink. Any unknown output/ownership/stop/source failure remains HOLD with actual deletion facts retained; no oldscope replay or automatic retry/extra completedstop.",
+  "expected_evidence": "Original terminal,outerreceipt,innerresult,exactlogs/command+stopintents,4nonemptyXML with10exact testcase outcomes,compile task graph/outcome,sourcebefore/after,namespace settlement,diagnostic manifests/deletion receipts; independent actual review required.",
+  "restrictions": "PVU007STOP,PVU011NORETRY,PVA02949/44/5FAILnoautoretry,G7/G8CLOSED,originalnative refusal,allpreviousHOLD,PVD/protectedrefs/tags/dependencies/version/identity/signing/Store/build1017001 unchanged."
+}

@@ -1,0 +1,494 @@
+--- donor/POSTFIX-PUBLISH-U02.py.txt
++++ candidate/CHECKPOINT23-PUBLISH-V01.py.txt
+@@ -1,45 +1,47 @@
+ #!/usr/bin/python3
+-# INERT source preparation: one fresh root-only post-Sfix U publication.
+-# Actual Agraph02 parent pins below are retained evidence, not live admission.
+-# Exactly two inert archive removals, three additions, two fixture replacements,
+-# plus ROOT-selected finite REPORT A/M rows. No workflow/request/control changes.
+-# New CONFIG/MANIFEST, root custody/integration/instance/trigger/resource facts
+-# remain UNBOUND. No donor replay; original T/W Git is never accessed.
++# INERT checkpoint23 source proposal: root-owned NEW V publication, not admission.
++# Reuses the reviewed U02 Git/child/temp/full-map mechanisms; never replays U02.
++# Four exact static-fixture M rows, ZERO removals, and a separately frozen finite
++# audit-control/retained-evidence/report A/M manifest, including inert unadmitted
++# successor controls as DATA only. No workflow or production/dependency edits.
++# Root prepares standalone V from the verified public URL under the separate finite
++# plan, then binds fresh namespace/config/slot/trigger/instance evidence.
++# Existing U/index/config/store, original T and retired W Git remain untouched.
+ import os,stat,pathlib,json,hashlib,re,subprocess,signal,time,fcntl,selectors
+ S=pathlib.Path('/root/projects/PassVault/passvault-linux')
+ B=S/'docs/audit-continuation/2026-09-08-linux'
+-PUB=B/'reviews/team20/resume_disk/postfix_transport/new06/publication02'
+-CONFIG=PUB/'POSTFIX-PUBLISH-U02-CONFIG.json'
+-MANIFEST=PUB/'POSTFIX-PUBLISH-U02-MANIFEST.json'
+-OUT=PUB/'POSTFIX-PUBLISH-U02-ACTUAL.json'
+-P=S.parent;T=P/'passvault-publication-20260912-02'  # T variable means existing U only
++PUB=B/'reviews/team20/resume_disk/postfix_transport/new19/publication03'
++CONFIG=PUB/'CHECKPOINT23-PUBLISH-V01-CONFIG.json'
++MANIFEST=PUB/'CHECKPOINT23-PUBLISH-V01-MANIFEST.json'
++OUT=PUB/'CHECKPOINT23-PUBLISH-V01-ACTUAL.json'
++P=S.parent;V=P/'passvault-publication-20260913-03'  # Only NEW V is a Git cwd/worktree.
+ URL='https://github.com/Apdelrahman1911/passvault.git'
+ BRANCH='codex/audit-continuation-linux-20260908'
+-BASE='b271e67adb637986d2049919227619255a75fa7c'
+-BASE_TREE='734245d6768f48a03eede363d4b46cc18396a9bb'
+-PARENT='d30abb912e35814ae977b704ed342b83a54005dc'
+-PARENT_TREE='2d469fdb96d470507f41c9d836597164f10ef6fd'
+-BASE_MEMBERS=4485
+-BASE_TREE_STREAM_BYTES=653188
+-BASE_TREE_STREAM_SHA='ec263008c7fc7ac43f857dd30245b3eb192cb6093c07ffbb39fc56a5b338f444'
+-BASE_INDEX_STREAM_BYTES=639733
+-BASE_INDEX_STREAM_SHA='55b02ac7421cc86f4821d9ace279951e832196f008187850136af1c951e986cb'
+-BASE_RECEIPT=B/'reviews/team20/resume_disk/windows_author/resumed03/agraph02_transport01/AGRAPH02-U01-ACTUAL.json'
+-BASE_RECEIPT_BYTES=36190
+-BASE_RECEIPT_SHA='1f5daa232000292c6a9139b9ea7052be4b5932d6f459909ec212aaa558d022e4'
+-BASE_REVIEW={'path': 'reviews/team20/resume_disk/windows_review/resumed03/agraph02_transport01/ACTUAL-REVIEW.json', 'bytes': 7623, 'sha256': 'c961e2dce388a3075fad8b7780634e46d6ac18868873e3d5669db4e13b796069'}
++BASE='d2d79ad52ce816a36f708bd35bd736a7d8068789'
++BASE_TREE='2e83afec1894238f59c1e9916cbf548ad54f5da2'
++PARENT='b271e67adb637986d2049919227619255a75fa7c'
++PARENT_TREE='734245d6768f48a03eede363d4b46cc18396a9bb'
++BASE_MEMBERS=4548
++BASE_TREE_STREAM_BYTES=664142
++BASE_TREE_STREAM_SHA='fd392b93cae91ad9ab62b7efda90de15edf133bc99e71f33185f04a50a8eafa8'
++BASE_INDEX_STREAM_BYTES=650498
++BASE_INDEX_STREAM_SHA='9e250aad498073a383a501eaa8c3bc6531aa695f36738b945a64127441717317'
++BASE_RECEIPT=B/'reviews/team20/resume_disk/postfix_transport/new06/publication02/POSTFIX-PUBLISH-U02-ACTUAL.json'
++BASE_RECEIPT_BYTES=53073
++BASE_RECEIPT_SHA='7956b5c5327405c404085023197898246282585c4171ea27cfaa96e706c8866b'
++RETAINED_U_PATH='/root/projects/PassVault/passvault-publication-20260912-02'  # String-only prior receipt comparison; never accessed.
+ PREFIX='docs/audit-continuation/2026-09-08-linux/'
+ REFS={'refs/heads/'+BRANCH,'refs/heads/codex/remediation-handoff-20260908',
+       'refs/heads/main','refs/heads/release','refs/heads/testing','refs/tags/v1.0.7-rc.1017001'}
+ LIVE_SLOT=B/'reviews/team20/resume_disk/root/EXECUTION_SLOT.json'
+-U_IDENTITY=[23,492256,0,16832]
+-U_CONFIG={'sha256': '036c10a0cc4303fa7de6578390ad7c8094d2a64796f8bb6a6b63cc7954f662d5', 'pin': {'dev': 24, 'ino': 13637847, 'uid': 0, 'mode': 33152, 'nlink': 1, 'bytes': 435, 'mtime_ns': 1789217998628886106, 'ctime_ns': 1789217998628886106}}
+-CORE=[{'destination': 'core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt', 'source_afterimage': 'core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt', 'bytes': 22968, 'sha256': '7f444c01177999b2fd2271e2d7ed1f005c54670fc9e2364795d37e2b2bedd2cc', 'git_mode': '100644', 'git_blob': 'cfacb806d2e685246639553557f63d48e937ae92', 'publication_change': 'M', 'before': {'bytes': 22952, 'sha256': '5d80abe70b5667a4c874e65c6b61e56f80625260bbeae8002b3ba0eb3c5de40c', 'git_mode': '100644', 'git_blob': 'df809a7941f98f0264432a93645ae2564a41189f'}}, {'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/INERT-EVIDENCE-PATH-MAP-STATIC06.json', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/INERT-EVIDENCE-PATH-MAP-STATIC06.json', 'bytes': 3719, 'sha256': 'e0bc06acb16554c9009fb535d21090e01bae796aee313259258d3625918e5317', 'git_mode': '100644', 'git_blob': '281ecc50e4b44ae4d858c4be0e51034209c602af', 'publication_change': 'A', 'before': None}, {'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/after/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt.txt', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/after/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt.txt', 'bytes': 39219, 'sha256': 'a136ec3fe0ca70b469f8b6ecf2555da65f1a480d2d39a43d21255175f96b944d', 'git_mode': '100644', 'git_blob': 'ab34678f5a0bcf7840778e159ac2314cb510ce86', 'publication_change': 'A', 'before': None}, {'destination': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/before/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt.txt', 'source_afterimage': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/before/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt.txt', 'bytes': 27452, 'sha256': 'acc3c5a8d29f2f976ed5dfd5612b325624915953937ff48b438ad6e5bcb63554', 'git_mode': '100644', 'git_blob': 'cd1fd2ca0c774422453ffdaf9631039e9d60b06c', 'publication_change': 'A', 'before': None}, {'destination': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt', 'source_afterimage': 'shared/src/desktopTest/kotlin/com/passvault/shared/credential/CredentialEditorRoomIntegrationTest.kt', 'bytes': 45386, 'sha256': '00c4396acca707549075816da9fca43048c6c0c78f6e4f076e7f47ca39787e40', 'git_mode': '100644', 'git_blob': 'c7d33789e137229f64c6b61f0c7bc22a851dc9f9', 'publication_change': 'M', 'before': {'bytes': 40037, 'sha256': 'bec3d1d8d6be6aad88585103788975f7292010282422a2bbe844efb2d5309b7c', 'git_mode': '100644', 'git_blob': '2fe042a88f6a9ea6dcfe59f0eb7aec21607ff2e5'}}]
+-REMOVALS=[{'path': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/after/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt', 'to': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/after/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt.txt', 'bytes': 39219, 'sha256': 'a136ec3fe0ca70b469f8b6ecf2555da65f1a480d2d39a43d21255175f96b944d', 'git_mode': '100644', 'git_blob': 'ab34678f5a0bcf7840778e159ac2314cb510ce86'}, {'path': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/before/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt', 'to': 'docs/audit-continuation/2026-09-08-linux/reviews/team20/resume12/cleanup_author/historical_backup/before/core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt.txt', 'bytes': 27452, 'sha256': 'acc3c5a8d29f2f976ed5dfd5612b325624915953937ff48b438ad6e5bcb63554', 'git_mode': '100644', 'git_blob': 'cd1fd2ca0c774422453ffdaf9631039e9d60b06c'}]
+-FIX_REVIEWS={'batch_scope_review': {'path': 'reviews/team20/resume_disk/linux_review/resumed06/post_sfix_batch01/SCOPE-REVIEW.json', 'bytes': 9819, 'sha256': '708c221d3cbee4609852af6678148617b6ca226bda09f0b69fe657354c11fafa'}, 'db1_source_review': {'path': 'reviews/team20/resume_disk/dependency_review/resumed05/migration_fixture_cleanup01/SOURCE-REVIEW.json', 'bytes': 6985, 'sha256': 'e45d9cfc2a6687abb7cc193976a43e0a7e528d2419eaf66d81b1120cf0b24965'}, 'editor_source_review': {'path': 'reviews/team20/resume_disk/gui_review/resumed01/pva007_ime01/REVIEW.md', 'bytes': 6793, 'sha256': '36c288ca56960b84749dd62fee2b7c049076830cb8b550ad3a7fbf370854b84c'}}
++V_IDENTITY=None  # Fresh prepared V tuple is root-bound by CONFIG; old U tuple is not admission.
++V_CONFIG=None  # Fresh V config bytes/full pin, never copied from U.
++CORE=[{'destination': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt', 'source_afterimage': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/CredentialMainNavHostRoomIntegrationTest.kt', 'bytes': 88602, 'sha256': '5fe322e48fef5fe7b6d2729817ad6fdbeb6bec182bf1cde5198ffdb1bb8c01a3', 'git_mode': '100644', 'git_blob': '91858bd15c2ab211bc263b881157cebd9a283154', 'publication_change': 'M', 'before': {'bytes': 88480, 'sha256': '992cd7bf24fdb96f5d12c38ef105d50300bca161141230b4c177d4c85938eb6f', 'git_mode': '100644', 'git_blob': '49a72fbadba678f5cfa3af72171bbeede7cbda3a'}}, {'destination': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt', 'source_afterimage': 'app-desktop/src/desktopTest/kotlin/com/passvault/desktop/security/biometric/JnaDesktopBiometricNativeLifetimeIntegrationTest.kt', 'bytes': 18846, 'sha256': 'ef20ae3ab97b3d4603d77ad11d9f16ef4a03c735a1c6f071fccfd72070beba9f', 'git_mode': '100644', 'git_blob': 'd82cee0df50c7479fe23b07bd5024ed78d61feba', 'publication_change': 'M', 'before': {'bytes': 18594, 'sha256': '4a604009911522d2ea952b37c44a3ec19724e146b2eb781016137065bbbdedf6', 'git_mode': '100644', 'git_blob': '75893c7471d59a9306caaac33660ab41be77f3d3'}}, {'destination': 'core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt', 'source_afterimage': 'core/database/src/desktopTest/kotlin/com/passvault/core/database/CredentialFolderForeignKeyMigrationTest.kt', 'bytes': 23038, 'sha256': '02f5fd29569f1ed849f19f452dd00475b5b0afd7730206d2bb4472fcef781bf6', 'git_mode': '100644', 'git_blob': '29ceac48316d9a6648dd7cab09892e9a33c05ff2', 'publication_change': 'M', 'before': {'bytes': 22968, 'sha256': '7f444c01177999b2fd2271e2d7ed1f005c54670fc9e2364795d37e2b2bedd2cc', 'git_mode': '100644', 'git_blob': 'cfacb806d2e685246639553557f63d48e937ae92'}}, {'destination': 'core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt', 'source_afterimage': 'core/database/src/desktopTest/kotlin/com/passvault/core/database/backup/VaultBackupUnicodePaginationTest.kt', 'bytes': 39278, 'sha256': '6e5422a065440d94514ade48cfe11a89453c46f0ceceecceb74a91133bc01294', 'git_mode': '100644', 'git_blob': '6efd8de7116d36b5696d55b1b04c79931aecd011', 'publication_change': 'M', 'before': {'bytes': 39219, 'sha256': 'a136ec3fe0ca70b469f8b6ecf2555da65f1a480d2d39a43d21255175f96b944d', 'git_mode': '100644', 'git_blob': 'ab34678f5a0bcf7840778e159ac2314cb510ce86'}}]
++REMOVALS=[]  # Checkpoint23 removes no parent path and performs no archive cleanup.
++FIX_REVIEWS={'static07_fix02_source_review': {'path': 'reviews/team20/resume_disk/platform_review/new09/STATIC07-FIX02-SOURCE-CUSTODY-REVIEW.json', 'bytes': 29136, 'sha256': 'bb6feb5f2402edc2eea87bb35e6bbb9514cd5c356d7a9e31f0616eb0c5fe915a'}, 'static07_fix02_W_integration': {'path': 'reviews/team20/resume_disk/root/STATIC07-FIX02-INTEGRATION01.json', 'bytes': 3868, 'sha256': 'c7a33e38dfb1c2d90acac1b5991f5417b185c4e59d372a166114972f41b446b3'}}
+ START=time.monotonic();CANCEL=False;child=None;lockfd=None;parentfd=None;rootfd=None;recfd=None
+ CFG=None;tempfd=None;temporary_pin=None;temp_path=None;installed=False;active_row=None
+-rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'source_workspace':str(S),'publication_clone':str(T),'commands':[],'resource_samples':[],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
++rec={'schema':1,'owner':'/root','status':'FAIL_HOLD_NO_AUTOMATIC_RETRY','utc':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'source_workspace':str(S),'publication_clone':str(V),'commands':[],'resource_samples':[],'additional_tests':0,'additional_closures':0,'original_stores':'NO_GIT_COMMANDS_OBJECT_COPIES_PROBES_OR_WRITES_IN_THIS_SCOPE'}
+ def req(ok,msg):
+  if not ok:raise RuntimeError(msg)
+ def check():
+@@ -52,7 +54,7 @@
+ def dtuple(a):return [a.st_dev,a.st_ino,a.st_uid,a.st_mode]
+ def durable():
+  if recfd is None:return
+- raw=(json.dumps(rec,ensure_ascii=False,indent=2)+'\n').encode();req(len(raw)<=131072,'publication receipt128KiB cap');os.lseek(recfd,0,os.SEEK_SET);os.ftruncate(recfd,0)
++ raw=(json.dumps(rec,ensure_ascii=False,indent=2)+'\n').encode();req(len(raw)<=262144,'publication receipt256KiB cap');os.lseek(recfd,0,os.SEEK_SET);os.ftruncate(recfd,0)
+  at=0
+  while at<len(raw):at+=os.write(recfd,raw[at:])
+  os.fsync(recfd)
+@@ -98,9 +100,9 @@
+ ENV.update(GIT_CONFIG_SYSTEM='/dev/null',GIT_CONFIG_GLOBAL='/dev/null',GIT_TERMINAL_PROMPT='0',GIT_OPTIONAL_LOCKS='0',GIT_NO_REPLACE_OBJECTS='1',GIT_NO_LAZY_FETCH='1',GH_PROMPT_DISABLED='1')
+ def git(args,cwd=None,seconds=60,allowed=(0,),input_bytes=None):
+  global child
+- check();argv=G+args;r={'argv':argv,'cwd':str(cwd or T),'status':'INTENT'};rec['commands'].append(r);durable()
++ check();argv=G+args;r={'argv':argv,'cwd':str(cwd or V),'status':'INTENT'};rec['commands'].append(r);durable()
+  try:
+-  child=subprocess.Popen(argv,cwd=cwd or T,env=ENV,stdin=subprocess.PIPE if input_bytes is not None else subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
++  child=subprocess.Popen(argv,cwd=cwd or V,env=ENV,stdin=subprocess.PIPE if input_bytes is not None else subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+   r['pid']=child.pid;r['owned_session']=child.pid;durable();out=bytearray();err=bytearray();sent=0;deadline=min(START+600,time.monotonic()+seconds);sample=time.monotonic()+15
+   with selectors.DefaultSelector() as sel:
+    for stream,buf,cap in ((child.stdout,out,4*1024**2),(child.stderr,err,1024**2)):
+@@ -125,10 +127,10 @@
+   decoded=bytes(out).decode('utf-8','strict')
+   r.update(status='COMPLETED',exit=rc,stdout_sha256=digest(out),stdout_bytes=len(out),stderr_sha256=digest(err),stderr_bytes=len(err))
+   if len(err)<=4096:r['stderr']=bytes(err).decode('utf-8','strict')
+-  else:r['stderr_file']=write_once('POSTFIX-PUBLISH-U02-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
++  else:r['stderr_file']=write_once('CHECKPOINT23-PUBLISH-V01-GIT-'+str(len(rec['commands']))+'.stderr.log',bytes(err))
+   if len(out)<=2048:r['stdout']=decoded
+   if args[:3]==['diff','--cached','--check']:
+-   p=PUB/'POSTFIX-PUBLISH-U02-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++   p=PUB/'CHECKPOINT23-PUBLISH-V01-WHITESPACE.log';fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+     view=memoryview(out)
+     while view:view=view[os.write(fd,view):]
+@@ -159,11 +161,11 @@
+   req(path not in result,'duplicate Git entry');result[path]=(mode,oid)
+  return result
+ def root_check():
+- req(rootfd is not None and dtuple(os.fstat(rootfd))==rec['namespace_identity'] and dtuple(T.lstat())==rec['namespace_identity'],'original clone root drift')
++ req(rootfd is not None and dtuple(os.fstat(rootfd))==rec['namespace_identity'] and dtuple(V.lstat())==rec['namespace_identity'],'original clone root drift')
+  req(dtuple(P.lstat())==CFG['namespace_parent'],'clone parent drift')
+ def inventory(label):
+  root_check();count=0;size=0;directories=0;device=os.fstat(rootfd).st_dev
+- for path,dirs,files in os.walk(T,followlinks=False):
++ for path,dirs,files in os.walk(V,followlinks=False):
+   check();p=pathlib.Path(path);a=p.lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==device and a.st_uid==0,'unsafe clone directory');directories+=1
+   for name in dirs:
+    a=(p/name).lstat();req(stat.S_ISDIR(a.st_mode) and a.st_dev==23 and a.st_uid==0,'clone symlink/special directory')
+@@ -175,7 +177,7 @@
+ def fullpin(a):
+  return {('bytes' if k=='size' else k):getattr(a,'st_'+k) for k in ('dev','ino','uid','mode','nlink','size','mtime_ns','ctime_ns')}
+ def write_once(name,raw):
+- req('/' not in name and name.startswith('POSTFIX-PUBLISH-U02-'),'fixed output name')
++ req('/' not in name and name.startswith('CHECKPOINT23-PUBLISH-V01-'),'fixed output name')
+  p=safe_parent(PUB,name);fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+  try:
+   at=0
+@@ -211,15 +213,20 @@
+  p=pathlib.PurePosixPath(path);parts=[x.lower() for x in p.parts];name=parts[-1]
+  return any(x in ('.github','workflows','requests') for x in parts) or 'request' in name or '.yml' in name or '.yaml' in name
+ 
++def workflow_path(path):
++ # No workflow/YAML change is admitted, including archived or nested workflow names.
++ p=pathlib.PurePosixPath(path);parts=[v.lower() for v in p.parts];name=parts[-1]
++ return any(v in ('.github','workflows') for v in parts) or '.yml' in name or '.yaml' in name
++
+ def map_summary(mapping):
+  raw=json.dumps([[p,*mapping[p]] for p in sorted(mapping)],ensure_ascii=True,separators=(',',':')).encode()
+  return {'members':len(mapping),'tuple_json_bytes':len(raw),'tuple_json_sha256':digest(raw),'encoding':'SORTED_PATH_MODE_OID_COMPACT_ASCII_JSON'}
+ 
+ def stable_inputs():
+  req(read_file(CONFIG,cap=32768)[0]==config_raw,'exact config changed')
+- req(read_file(MANIFEST,cap=131072)[0]==manifest_raw,'exact manifest changed')
++ req(read_file(MANIFEST,cap=393216)[0]==manifest_raw,'exact manifest changed')
+  req(read_file(LIVE_SLOT,cap=32768)[0]==slotraw,'sole reserved slot changed')
+- req(read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES)[0]==base_receipt_raw,'accepted Agraph02 actual changed')
++ req(read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES)[0]==base_receipt_raw,'accepted checkpoint22 actual changed')
+  for row in rows:source_row(row)
+  for r in REMOVALS:req(not os.path.lexists(safe_parent(S,r['path'])),'old W archive path reappeared; no alias/stub')
+  for desc in FIX_REVIEWS.values():evidence(desc)
+@@ -227,17 +234,21 @@
+ 
+ def validate_manifest(raw):
+  m=parsed(raw)
+- req(set(m)=={'schema','kind','base','fixed_afterimages','removals','reports','whitespace_paths'},'fixed manifest fields')
+- req(m['schema']==1 and m['kind']=='POSTFIX_EXACT_2D_3A_2M_PLUS_FINITE_REPORTS','fixed post-Sfix manifest kind')
+- req(m['base']=={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS},'manifest is not full Agraph02 base')
+- req(m['fixed_afterimages']==CORE and m['removals']==REMOVALS,'fixed seven-path delta drift')
+- reports=m['reports'];req(isinstance(reports,list) and len(reports)+7<=256,'finite root report set UNBOUND or too large')
++ req(set(m)=={'schema','kind','base','fixed_afterimages','removals','audit_controls','retained_evidence','reports','whitespace_paths'},'fixed manifest fields')
++ req(m['schema']==1 and m['kind']=='CHECKPOINT23_EXACT_4M_PLUS_FINITE_RETAINED_AUDIT_METADATA','fixed checkpoint23 manifest kind')
++ req(m['base']=={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS},'manifest is not full checkpoint22 base')
++ req(m['fixed_afterimages']==CORE and m['removals']==REMOVALS,'fixed four-static-fixture delta drift')
++ reports=m['reports'];controls=m['audit_controls'];retained=m['retained_evidence']
++ req(isinstance(reports,list) and isinstance(controls,list) and isinstance(retained,list) and len(CORE)+len(reports)+len(controls)+len(retained)<=640,'finite metadata set UNBOUND or640-path cap exceeded')
++ req([r['destination'] for r in controls]==sorted(set(r['destination'] for r in controls)),'sorted unique audit controls required')
++ req([r['destination'] for r in retained]==sorted(set(r['destination'] for r in retained)),'sorted unique retained evidence required')
++ control_paths={r['destination'] for r in controls}
+  req([r['destination'] for r in reports]==sorted(set(r['destination'] for r in reports)),'sorted unique reports required')
+- selected=sorted(CORE+reports,key=lambda r:r['destination']);destinations=[];total=0;before_total=sum(r['bytes'] for r in REMOVALS)
++ selected=sorted(CORE+controls+retained+reports,key=lambda r:r['destination']);destinations=[];total=0;before_total=0
+  for row in selected:
+   req(set(row)=={'destination','source_afterimage','bytes','sha256','git_mode','git_blob','publication_change','before'},'fixed afterimage row fields')
+   path=relpath(row['destination']);src=relpath(row['source_afterimage'])
+-  req(src==path and not protected_path(path),'no path remap, workflow or ANY request change')
++  req(src==path and not workflow_path(path) and (not protected_path(path) or path in control_paths),'no remap/workflow or unlisted request change')
+   req('private-fixture-residue' not in path.lower(),'private fixture residue excluded')
+   req(row['git_mode']=='100644' and row['publication_change'] in ('A','M'),'only nonexecutable afterimage A/M')
+   req(type(row['bytes']) is int and 0<=row['bytes']<=16*1024**2 and re.fullmatch(r'[0-9a-f]{64}',row['sha256']) is not None and re.fullmatch(r'[0-9a-f]{40}',row['git_blob']) is not None,'afterimage byte/hash/blob unbound')
+@@ -248,104 +259,99 @@
+    req(type(before['bytes']) is int and 0<=before['bytes']<=16*1024**2 and before['git_mode']=='100644' and re.fullmatch(r'[0-9a-f]{64}',before['sha256']) is not None and re.fullmatch(r'[0-9a-f]{40}',before['git_blob']) is not None,'unbound modification before tuple')
+    req(before['git_blob']!=row['git_blob'],'M must be a real fixed change, not republished unchanged evidence');before_total+=before['bytes']
+   destinations.append(path);total+=row['bytes']
++ for row in controls:
++  p=row['destination']
++  req((p.startswith(PREFIX) or p.startswith('scripts/audit/')) and not workflow_path(p),'audit controls, including inert unadmitted archives/successors, only in finite audit namespaces; never workflow/production/dependency paths')
++ for row in retained:
++  p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()
++  req(p.startswith(PREFIX),'retained raw evidence only in finite B archive namespaces')
++  req(pathlib.PurePosixPath(p).suffix.lower() in ('.bin','.raw','.sarif','.xml','.html','.lock','.stdout','.stderr','.tsv') and not protected_path(p) and not re.search(r'\.(py|kt|kts|ps1|sh|gradle|toml)(\.|$)',name),'raw evidence may not disguise workflow/request/control source; exact listed archives only')
+  for row in reports:
+   p=row['destination'];name=pathlib.PurePosixPath(p).name.lower()
+   req(p.startswith(PREFIX),'additional rows are finite B report evidence only')
+   req(pathlib.PurePosixPath(p).suffix.lower() in ('.md','.json','.jsonl','.txt','.log') and not re.search(r'\.(py|kt|kts|ps1|sh|gradle|toml)(\.|$)',name),'no new control/source afterimage among reports')
+  req(len(destinations)==len(set(destinations)),'duplicate selected path')
+  remove_paths={r['path'] for r in REMOVALS}
+- req(len(remove_paths)==2 and not remove_paths.intersection(destinations),'exact two removals must be disjoint from afterimages')
++ req(not remove_paths and not REMOVALS,'checkpoint23 forbids every removal')
+  allpaths=sorted(destinations+list(remove_paths))
+- req(sum(len(p.encode())+1 for p in allpaths)<=49152 and total<=16*1024**2 and before_total<=16*1024**2,'bounded paths48KiB/afterimages16MiB/originals16MiB')
++ req(sum(len(p.encode())+1 for p in allpaths)<=81920 and total<=16*1024**2 and before_total<=16*1024**2,'bounded paths80KiB/afterimages16MiB/originals16MiB')
+  bypath={r['destination']:r for r in selected}
+  for r in REMOVALS:
+   a=bypath[r['to']]
+   req(r['to']==r['path']+'.txt' and a['publication_change']=='A' and all(a[k]==r[k] for k in ('bytes','sha256','git_mode','git_blob')),'historical alias must preserve complete exact bytes/mode')
+  expected_whitespace=sorted(r['destination'] for r in CORE if r['publication_change']=='M')
+- req(m['whitespace_paths']==expected_whitespace,'only two authored fixtures get whitespace check')
++ req(m['whitespace_paths']==expected_whitespace,'exact four static fixtures get whitespace check')
+  return m,selected,bypath,total
+ 
+ try:
+- # Fresh O_EXCL receipt consumes this invocation before any Git/U mutation.
++ # Fresh O_EXCL receipt consumes this invocation before any Git/V mutation.
+  safe_parent(S,str(OUT.relative_to(S)))
+  recfd=os.open(OUT,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600);durable()
+  pfd=os.open(OUT.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  try:os.fsync(pfd)
+  finally:os.close(pfd)
+  config_raw,_=read_file(CONFIG,cap=32768);CFG=parsed(config_raw)
+- req(set(CFG)=={'namespace_parent','slot_sha256','slot_state','remotes','receipt_path','commit_message','manifest_sha256','root_admission','evidence'},'fixed post-Sfix config fields')
+- req(CFG['namespace_parent']==[23,580,0,16877],'original namespace parent required')
+- req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE,'six exact refs/Agraph02 head required')
++ req(set(CFG)=={'namespace_parent','publication_namespace','publication_config','slot_sha256','slot_state','remotes','receipt_path','commit_message','manifest_sha256','root_admission','evidence'},'fixed checkpoint23 config fields')
++ req(isinstance(CFG['namespace_parent'],list) and len(CFG['namespace_parent'])==4 and all(type(v) is int for v in CFG['namespace_parent']) and CFG['namespace_parent'][2]==0 and stat.S_ISDIR(CFG['namespace_parent'][3]),'fresh root-bound namespace parent required')
++ V_IDENTITY=CFG['publication_namespace'];V_CONFIG=CFG['publication_config']
++ req(isinstance(V_IDENTITY,list) and len(V_IDENTITY)==4 and all(type(v) is int for v in V_IDENTITY) and V_IDENTITY[2]==0 and stat.S_ISDIR(V_IDENTITY[3]) and V_IDENTITY!=[23,492256,0,16832],'fresh V tuple UNBOUND or aliases retained U tuple')
++ req(isinstance(V_CONFIG,dict) and set(V_CONFIG)=={'sha256','pin'} and isinstance(V_CONFIG['sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',V_CONFIG['sha256']) is not None and isinstance(V_CONFIG['pin'],dict) and set(V_CONFIG['pin'])=={'dev','ino','uid','mode','nlink','bytes','mtime_ns','ctime_ns'} and all(type(v) is int for v in V_CONFIG['pin'].values()) and V_CONFIG['pin']['uid']==0 and V_CONFIG['pin']['nlink']==1 and stat.S_ISREG(V_CONFIG['pin']['mode']),'fresh V config UNBOUND')
++ req(set(CFG['remotes'])==REFS and CFG['remotes']['refs/heads/'+BRANCH]==BASE,'six exact refs/checkpoint22 head required')
+  req(all(re.fullmatch(r'[0-9a-f]{40}',v) for v in CFG['remotes'].values()),'remote object format')
+- req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Publish reviewed post-Sfix fixtures and inert evidence paths','fixed receipt/message')
++ req(CFG['receipt_path']==str(OUT.relative_to(B)) and CFG['commit_message']=='Checkpoint23: reviewed static fixture corrections and audit evidence [skip ci]','fixed receipt/message')
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['manifest_sha256']) is not None,'finite manifest UNBOUND')
+- admission=CFG['root_admission'];req(admission['status']=='ADMITTED_POSTFIX_U02_ONCE_ONLY_FINITE_SOURCE','root admission UNBOUND')
+- for key in ('current_Agraph02_U_namespace_config_full_tree_index_independently_accepted',
+-             'WindowsGraph02_failure_and_cleanup_independently_reviewed_and_adopted',
+-             'unentered_original_Sfix_realJNA_GUI4_Dependency3_explicitly_disposed_without_replay',
+-             'all_other_bound_consumers_adjudicated_and_Sfix_source_index_custody_explicitly_released',
+-             'original_T_and_all_runtime_HOLDs_unaccessed_unmodified_not_released_by_this_transport',
+-             'exact_seven_path_W_integration_independently_reviewed_and_adopted',
+-             'finite_report_set_frozen_independently_reviewed_no_private_fixture_residue',
+-             'no_new_or_changed_workflow_request_or_other_control_and_parent_request_map_preserved',
+-             'fresh_all_base_head_PR_and_all_repository_queues_reviewed',
+-             'actual_finite_source_push_trigger_delta_independently_reviewed',
+-             'exclusive_local_CI_slot_reserved_and_U_mutation_scope_explicitly_released',
+-             'bounded_U_inventory_peak_resources_and_receipt_size_reviewed',
+-             'original_child_cleanup_temp_disposal_partial_mutation_HOLD_and_no_retry_admitted',
+-             'publisher_source_final_manifest_and_genuine_exact_instance_independently_accepted',
+-             'selected_W_sources_frozen'):
++ admission=CFG['root_admission'];req(admission['status']=='ADMITTED_CHECKPOINT23_V01_ONCE_ONLY_FINITE_SOURCE','root admission UNBOUND')
++ for key in ('fresh_V_namespace_config_full_tree_index_and_preparation_independently_accepted', 'V_standalone_no_shared_objects_hardlinks_alternates_redirects_or_mount_alias_to_old_stores', 'U_original_index_config_store_and_all_raw_P_consumers_remain_frozen_unmodified', 'original_T_retired_W_Git_and_all_runtime_HOLDs_unaccessed_unmodified_not_released', 'exact_four_static_fixture_W_transitions_independently_reviewed_and_adopted', 'finite_audit_control_retained_evidence_and_report_set_frozen_independently_reviewed_no_private_fixture_residue', 'no_workflow_change_and_only_exact_listed_audit_controls_requests_added_modified', 'fresh_all_base_head_PR_and_all_repository_queues_reviewed', 'skip_ci_message_and_actual_finite_source_push_trigger_delta_independently_reviewed_no_full_CI_or_publishing', 'exclusive_local_CI_slot_reserved_for_NEW_V_only', 'bounded_V_inventory_peak_resources_and_receipt_size_reviewed', 'original_child_cleanup_temp_disposal_partial_mutation_HOLD_and_no_retry_admitted', 'publisher_source_final_manifest_and_genuine_exact_instance_independently_accepted', 'selected_W_sources_frozen', 'no_open_PR_from_dedicated_branch_into_main_testing_release', 'actual_one_commit_finite_changed_paths_and_pathfilter_fallbacks_independently_reviewed'):
+   req(admission[key] is True,'missing explicit root admission:'+key)
+  req(admission['allow_3GiB_VPS_fallback'] is False,'strict12/8GiB transport; no fallback')
+- req(set(CFG['evidence'])=={'current_U_actual_review','root_all_consumer_custody_disposition_and_release','actual_source_integration_review','root_source_integration_adoption','fresh_PR_queue_preflight_actual','fresh_PR_queue_preflight_review','trigger_delta_review','publisher_source_manifest_review'},'exact independent admission evidence set')
+- req(CFG['evidence']['current_U_actual_review']==BASE_REVIEW,'exact accepted Agraph02 review required')
++ req(set(CFG['evidence'])=={'checkpoint22_publication_actual_review', 'trigger_delta_review', 'fresh_PR_queue_preflight_actual', 'fresh_V_preparation_actual', 'fresh_PR_queue_preflight_review', 'publisher_source_manifest_review', 'fresh_V_preparation_review', 'root_frozen_U_T_WGit_custody_and_V_only_scope'},'exact independent V/source/trigger evidence set')
+  for desc in CFG['evidence'].values():evidence(desc)
+  for desc in FIX_REVIEWS.values():evidence(desc)
+- manifest_raw,_=read_file(MANIFEST,cap=131072);req(digest(manifest_raw)==CFG['manifest_sha256'],'manifest hash drift')
++ manifest_raw,_=read_file(MANIFEST,cap=393216);req(digest(manifest_raw)==CFG['manifest_sha256'],'manifest hash drift')
+  manifest,rows,bypath,selected_bytes=validate_manifest(manifest_raw)
+  copies={row['destination']:source_row(row) for row in rows}
+  expected={path:('100644',rawblob(raw)) for path,raw in copies.items()}
+  base_receipt_raw,_=read_file(BASE_RECEIPT,cap=BASE_RECEIPT_BYTES)
+- req(len(base_receipt_raw)==BASE_RECEIPT_BYTES and digest(base_receipt_raw)==BASE_RECEIPT_SHA,'accepted Agraph02 receipt drift')
++ req(len(base_receipt_raw)==BASE_RECEIPT_BYTES and digest(base_receipt_raw)==BASE_RECEIPT_SHA,'accepted checkpoint22 receipt drift')
+  prior=parsed(base_receipt_raw)
+- req(prior['schema']==1 and prior['owner']=='/root' and prior['status']=='PUSHED_AGRAPH02_U01_A_ONLY_ACTIVATION_REQUEST','Agraph02 successful actual receipt required')
+- req((prior['commit'],prior['tree'],prior['parent'],prior['parent_tree'])==(BASE,BASE_TREE,PARENT,PARENT_TREE),'Agraph02 not expected Pgraph02 direct child')
+- req(prior['publication_clone']==str(T) and prior['remote_after']==CFG['remotes'] and prior['original_T_accessed'] is False,'current U lineage/sixrefs differ')
+- req(prior['namespace_identity']==U_IDENTITY and prior['preserved_config_after']==U_CONFIG,'accepted current U namespace/config pins differ')
++ req(prior['schema']==1 and prior['owner']=='/root' and prior['status']=='PUBLISHED_EXACT_POSTFIX_U02_FINITE_SOURCE','checkpoint22 successful actual receipt required')
++ req((prior['commit'],prior['tree'],prior['parent'],prior['parent_tree'])==(BASE,BASE_TREE,PARENT,PARENT_TREE),'checkpoint22 not expected prior publication direct child')
++ req(prior['publication_clone']==RETAINED_U_PATH and prior['remote_after']==CFG['remotes'] and prior['original_T_accessed'] is False,'retained checkpoint22 lineage/sixrefs differ')
++ req(prior['committed_map']=={'members':BASE_MEMBERS,'tree_stream_bytes':BASE_TREE_STREAM_BYTES,'tree_stream_sha256':BASE_TREE_STREAM_SHA,'stage0_stream_bytes':BASE_INDEX_STREAM_BYTES,'stage0_stream_sha256':BASE_INDEX_STREAM_SHA},'retained checkpoint22 complete map differs; no current U probe')
+  rec['configuration']={'path':str(CONFIG.relative_to(B)),'bytes':len(config_raw),'sha256':digest(config_raw)}
+- rec['manifest']={'path':str(MANIFEST.relative_to(B)),'bytes':len(manifest_raw),'sha256':digest(manifest_raw),'afterimages':len(rows),'removals':2,'reports':len(manifest['reports']),'selected_afterimage_raw_bytes':selected_bytes}
++ rec['manifest']={'path':str(MANIFEST.relative_to(B)),'bytes':len(manifest_raw),'sha256':digest(manifest_raw),'afterimages':len(rows),'removals':0,'audit_controls':len(manifest['audit_controls']),'retained_evidence':len(manifest['retained_evidence']),'reports':len(manifest['reports']),'selected_afterimage_raw_bytes':selected_bytes}
+  rec['root_admission']=admission;rec['adopted_evidence']=CFG['evidence'];rec['fixed_review_evidence']=FIX_REVIEWS
+- rec['accepted_Agraph02_receipt']={'path':str(BASE_RECEIPT.relative_to(B)),'bytes':BASE_RECEIPT_BYTES,'sha256':BASE_RECEIPT_SHA}
++ rec['retained_checkpoint22_U02_receipt']={'path':str(BASE_RECEIPT.relative_to(B)),'bytes':BASE_RECEIPT_BYTES,'sha256':BASE_RECEIPT_SHA}
+  rec['original_T_accessed']=False
+- rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. Source/publication review is not application or hardware credit.'
++ rec['admission_qualification']='Pinned root-reviewed evidence plus separately required genuine exact-instance acceptance, not self-authorization; PR/queue point is not continuous exclusivity. A protected-base PR from this branch forbids admission. Actual one-commit/all-changed-path review is required; GitHub path-filter300-file limits and diff-timeout/>1000-commit fallbacks are not suppressed by a path count. [skip ci] is supplementary, not proof against every event or publisher. Source/publication review and inert control storage give no execution/application/hardware credit.'
+  slotraw,_=read_file(LIVE_SLOT,cap=32768)
+  req(re.fullmatch(r'[0-9a-f]{64}',CFG['slot_sha256']) is not None and digest(slotraw)==CFG['slot_sha256'],'sole slot UNBOUND/drifted')
+- req(CFG['slot_state'].startswith('RESERVED_POSTFIX_U02') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root post-Sfix reservation required')
++ req(CFG['slot_state'].startswith('RESERVED_CHECKPOINT23_V01') and parsed(slotraw)['state']==CFG['slot_state'],'fresh root checkpoint23 reservation required')
+  lp=P/'.audit-coordination-linux-20260908';req(dtuple(lp.lstat())==[23,51356,0,16832],'original coordination parent changed')
+  parentfd=os.open(lp,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+  lockfd=os.open('build.lock',os.O_RDWR|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parentfd);a=os.fstat(lockfd)
+  req((a.st_dev,a.st_ino,a.st_uid,a.st_mode,a.st_nlink,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(24,14189001,0,33152,1,0,1788910891124735946,1788910891124735946),'original lock changed')
+  fcntl.flock(lockfd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+- stable_inputs();resource('before post-Sfix finite source transport',launch=True)
+- req(dtuple(T.lstat())==U_IDENTITY,'original admitted U namespace changed')
+- rootfd=os.open(T,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=U_IDENTITY;root_check();inventory('before post-Sfix in existing U')
+- gd=T/'.git'
++ stable_inputs();resource('before checkpoint23 finite source transport',launch=True)
++ req(dtuple(V.lstat())==V_IDENTITY,'original admitted V namespace changed')
++ rootfd=os.open(V,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC);rec['namespace_identity']=V_IDENTITY;root_check();inventory('before checkpoint23 in new V')
++ gd=V/'.git'
+  for rel in ('commondir','objects/info/alternates','objects/info/http-alternates'):req(not os.path.lexists(gd/rel),'external sharing not allowed')
+  config_before_raw,config_before_stat=read_file(gd/'config')
+  rec['preserved_config_before']={'sha256':digest(config_before_raw),'pin':fullpin(config_before_stat)}
+- req(rec['preserved_config_before']==U_CONFIG,'existing U original config bytes/full pin differ from accepted Agraph02')
+- dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((T/x).resolve()==gd for x in dirs),'external Git store')
+- req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'exact Agraph02 parent required; no interposed commit')
++ req(rec['preserved_config_before']==V_CONFIG,'new V original config bytes/full pin differ from fresh root-admitted V preparation')
++ dirs=git(['rev-parse','--absolute-git-dir','--git-common-dir']).splitlines();req(len(dirs)==2 and all((V/x).resolve()==gd for x in dirs),'external Git store')
++ req(git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()==[BASE,BASE_TREE],'exact checkpoint22 parent required; no interposed commit')
+  req(git(['symbolic-ref','--short','HEAD']).strip()==BRANCH,'dedicated continuation branch mismatch')
+- req(git(['rev-list','--parents','-n','1','HEAD']).split()==[BASE,PARENT],'Agraph02 not sole expected Pgraph02 child')
++ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[BASE,PARENT],'checkpoint22 not sole expected prior publication child')
+  base_raw=git(['ls-tree','-r','-z','--full-tree','HEAD'])
+- req(len(base_raw.encode())==BASE_TREE_STREAM_BYTES and digest(base_raw.encode())==BASE_TREE_STREAM_SHA,'complete accepted Agraph02 tree stream drift')
+- base=entries(base_raw);req(len(base)==BASE_MEMBERS,'complete Agraph02 map differs')
++ req(len(base_raw.encode())==BASE_TREE_STREAM_BYTES and digest(base_raw.encode())==BASE_TREE_STREAM_SHA,'complete accepted checkpoint22 tree stream drift')
++ base=entries(base_raw);req(len(base)==BASE_MEMBERS,'complete checkpoint22 map differs')
+  index_raw=git(['ls-files','--stage','-z'])
+- req(len(index_raw.encode())==BASE_INDEX_STREAM_BYTES and digest(index_raw.encode())==BASE_INDEX_STREAM_SHA and entries(index_raw,True)==base,'index not exact complete Agraph02')
++ req(len(index_raw.encode())==BASE_INDEX_STREAM_BYTES and digest(index_raw.encode())==BASE_INDEX_STREAM_SHA and entries(index_raw,True)==base,'index not exact complete checkpoint22')
+  protected={p:v for p,v in base.items() if protected_path(p)}
+- rec['preserved_request_workflow_map']=map_summary(protected)
+- rec['base_map']={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS,'tree_stream_bytes':BASE_TREE_STREAM_BYTES,'tree_stream_sha256':BASE_TREE_STREAM_SHA,'stage0_stream_bytes':BASE_INDEX_STREAM_BYTES,'stage0_stream_sha256':BASE_INDEX_STREAM_SHA,'qualification':'Complete accepted Agraph02 map/index, not obsolete Sfix4113 unchanged-product assertion; exact manifest M rows are intentional.'}
++ rec['retained_base_request_workflow_map']=map_summary(protected)
++ rec['base_map']={'commit':BASE,'tree':BASE_TREE,'members':BASE_MEMBERS,'tree_stream_bytes':BASE_TREE_STREAM_BYTES,'tree_stream_sha256':BASE_TREE_STREAM_SHA,'stage0_stream_bytes':BASE_INDEX_STREAM_BYTES,'stage0_stream_sha256':BASE_INDEX_STREAM_SHA,'qualification':'Complete accepted checkpoint22 map/index, not obsolete Sfix4113 unchanged-product assertion; exact manifest M rows are intentional.'}
+  req(git(['diff','--name-only','-z'])=='','preexisting unstaged work; never overwrite')
+  req(git(['ls-files','--others','--exclude-standard','-z'])=='','preexisting untracked work; never overwrite')
+  req(git(['remote','get-url','--push','--all','origin']).splitlines()==[URL],'wrong push destination')
+@@ -356,28 +362,28 @@
+  for i,row in enumerate(rows):
+   path=row['destination']
+   if row['publication_change']=='A':
+-   req(path not in base and not os.path.lexists(T/path),'A destination exists; no overwrite:'+path)
++   req(path not in base and not os.path.lexists(V/path),'A destination exists; no overwrite:'+path)
+   else:
+    b=row['before'];req(base.get(path)==(b['git_mode'],b['git_blob']),'M before not exact base tuple:'+path)
+-   before,st=read_file(safe_parent(T,path),cap=b['bytes'])
++   before,st=read_file(safe_parent(V,path),cap=b['bytes'])
+    req(len(before)==b['bytes'] and digest(before)==b['sha256'] and rawblob(before)==b['git_blob'] and not st.st_mode&0o111,'M before raw/mode differs:'+path)
+    originals[path]=(before,fullpin(st))
+-   tmp=str(pathlib.PurePosixPath(path).parent/('.postfix-publish-u02-'+str(i).zfill(3)+'.tmp'))
+-   temp_paths[path]=safe_parent(T,tmp);req(not os.path.lexists(temp_paths[path]),'fixed disposable sibling exists; no reuse')
++   tmp=str(pathlib.PurePosixPath(path).parent/('.checkpoint23-publish-v01-'+str(i).zfill(3)+'.tmp'))
++   temp_paths[path]=safe_parent(V,tmp);req(not os.path.lexists(temp_paths[path]),'fixed disposable sibling exists; no reuse')
+    mod_indices.append(i)
+  for r in REMOVALS:
+   req(base.get(r['path'])==(r['git_mode'],r['git_blob']),'removal not exact historical base tuple')
+-  raw,st=read_file(safe_parent(T,r['path']),cap=r['bytes'])
++  raw,st=read_file(safe_parent(V,r['path']),cap=r['bytes'])
+   req(len(raw)==r['bytes'] and digest(raw)==r['sha256'] and rawblob(raw)==r['git_blob'] and not st.st_mode&0o111,'historical removal original bytes/mode differ')
+   originals[r['path']]=(raw,fullpin(st))
+  rec['intended_additions_installed']=0
+  rec['replacement_states']={str(i):'PLANNED' for i in mod_indices}
+  rec['removal_states']={r['path']:'PLANNED' for r in REMOVALS};durable()
+- # Install all additions, including both exact aliases, before any unlink.
++ # Install exact finite additions; this cohort has no removals or alias operation.
+  for row in rows:
+   if row['publication_change']!='A':continue
+   check();root_check();raw=source_row(row);req(raw==copies[row['destination']],'source addition changed before install')
+-  dest=safe_parent(T,row['destination'],create=True)
++  dest=safe_parent(V,row['destination'],create=True)
+   rec['last_intended_addition']=row['destination'];durable()
+   fd=os.open(dest,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+   try:
+@@ -394,7 +400,7 @@
+  for i in mod_indices:
+   row=rows[i];path=row['destination'];before_raw,before_pin=originals[path]
+   check();root_check();after_raw=source_row(row);req(after_raw==copies[path],'replacement source changed')
+-  dest=safe_parent(T,path);temp_path=temp_paths[path];installed=False;active_row=str(i)
++  dest=safe_parent(V,path);temp_path=temp_paths[path];installed=False;active_row=str(i)
+   tempfd=os.open(temp_path,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
+   temporary_pin=dtuple(os.fstat(tempfd));rec['temporary_source']={'row':i,'path':str(temp_path),'identity':temporary_pin,'status':'OWNED_DISPOSABLE_UNINSTALLED'}
+   rec['replacement_states'][active_row]='OWNED_UNINSTALLED';durable()
+@@ -415,13 +421,13 @@
+   req(read_file(dest,cap=row['bytes'])[0]==after_raw,'installed replacement differs');durable()
+   os.close(tempfd);tempfd=None
+  frozen_rows=[{'path':r['destination'],'bytes':r['bytes'],'sha256':r['sha256'],'git_mode':r['git_mode']} for r in rows]
+- req(frozen(T,frozen_rows)==expected,'installed exact afterimages differ')
+- # C17 exact two-removal seam, with bounded per-path intent/completion only.
++ req(frozen(V,frozen_rows)==expected,'installed exact afterimages differ')
++ # Inherited removal seam is unreachable: fixed REMOVALS=[] and manifest rejects removals.
+  for r in REMOVALS:
+-  check();root_check();p=safe_parent(T,r['path']);raw,original=read_file(p,cap=r['bytes'])
++  check();root_check();p=safe_parent(V,r['path']);raw,original=read_file(p,cap=r['bytes'])
+   req(base.get(r['path'])==(r['git_mode'],r['git_blob']) and len(raw)==r['bytes'] and digest(raw)==r['sha256'] and rawblob(raw)==r['git_blob'],'removal is not exact historical original')
+   req((raw,fullpin(original))==originals[r['path']],'original removal full pin changed')
+-  req(read_file(safe_parent(T,r['to']),cap=r['bytes'])[0]==raw and not os.path.lexists(safe_parent(S,r['path'])),'alias bytes or old W absence changed')
++  req(read_file(safe_parent(V,r['to']),cap=r['bytes'])[0]==raw and not os.path.lexists(safe_parent(S,r['path'])),'alias bytes or old W absence changed')
+   rec['removal_states'][r['path']]='UNLINK_INTENT';durable()
+   pfd=os.open(p.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+   try:
+@@ -436,49 +442,54 @@
+  inp=''.join('100644 '+expected[p][1]+'\t'+p+'\0' for p in paths).encode()
+  inp+=''.join('0 '+'0'*40+'\t'+r['path']+'\0' for r in REMOVALS).encode()
+  git(['update-index','--add','-z','--index-info'],input_bytes=inp)
+- # Complete parent membership minus EXACTLY two, then exact A/M afterimages.
++ # Complete parent membership retained, then exact A/M afterimages; REMOVALS is empty.
+  whole={p:v for p,v in base.items() if p not in remove_paths};whole.update(expected)
+  additions={r['destination'] for r in rows if r['publication_change']=='A'}
+  modifications={r['destination'] for r in rows if r['publication_change']=='M'}
+- req(set(whole)==(set(base)-remove_paths)|additions and len(whole)==BASE_MEMBERS-2+len(additions),'complete-map-minus-two membership proof failed')
++ req(set(whole)==(set(base)-remove_paths)|additions and len(whole)==BASE_MEMBERS+len(additions),'complete-parent-plus-additions membership proof failed')
+  req(all(whole[p]==v for p,v in base.items() if p not in remove_paths|modifications),'unselected complete parent row changed')
+- req({p:v for p,v in whole.items() if protected_path(p)}==protected,'parent workflow/request map changed')
++ expected_protected=dict(protected);expected_protected.update({p:v for p,v in expected.items() if protected_path(p)})
++ req({p:v for p,v in whole.items() if protected_path(p)}==expected_protected,'unlisted parent request/workflow map changed')
++ req({p:v for p,v in whole.items() if workflow_path(p)}=={p:v for p,v in base.items() if workflow_path(p)},'any workflow map change forbidden')
++ rec['protected_map_policy']={'all_workflow_rows_unchanged':True,'unselected_request_rows_unchanged':True,'exact_listed_request_control_paths':sorted(p for p in expected if protected_path(p))}
+  req(entries(git(['ls-files','--stage','-z']),True)==whole,'index differs beyond finite exact A/D/M map')
+  changes={p:r['publication_change'] for p,r in bypath.items()};changes.update({p:'D' for p in remove_paths})
+  expected_delta=''.join(changes[p]+'\t'+p+'\n' for p in sorted(changes))
+  req(git(['diff','--cached','--no-renames','--name-status'])==expected_delta,'unexpected staged A/D/M names/status/order')
+  req(git(['diff','--cached','--check','--',*manifest['whitespace_paths']])=='','authored-fixture whitespace failure')
+- rec['whitespace']={'status':'PASS_TWO_AUTHORED_FIXTURES_ONLY','exit':0,'paths':manifest['whitespace_paths'],'qualification':'No historical archive, retained raw-evidence or whole-tree formatting claim.'}
+- req(frozen(T,frozen_rows)==expected and all(not os.path.lexists(T/p) for p in remove_paths),'installed afterimages/removals changed before commit')
++ rec['whitespace']={'status':'PASS_FOUR_STATIC_FIXTURES_ONLY','exit':0,'paths':manifest['whitespace_paths'],'qualification':'No historical archive, retained raw-evidence or whole-tree formatting claim.'}
++ req(frozen(V,frozen_rows)==expected and all(not os.path.lexists(V/p) for p in remove_paths),'installed afterimages/removals changed before commit')
+  req(all(not os.path.lexists(p) for p in temp_paths.values()),'disposable sibling unexpectedly remains')
+- stable_inputs();req(remote(git(remote_args))==want,'remote advanced before post-Sfix commit')
++ stable_inputs();req(remote(git(remote_args))==want,'remote advanced before checkpoint23 commit')
+  git(['-c','user.name=Codex','-c','user.email=codex@openai.com','commit','-m',CFG['commit_message']])
+  commit,tree=git(['rev-parse','HEAD','HEAD^{tree}']).splitlines()
+- req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'post-Sfix not sole Agraph02 direct child')
++ req(git(['rev-list','--parents','-n','1','HEAD']).split()==[commit,BASE],'checkpoint23 not sole checkpoint22 direct child')
++ req(git(['rev-list','--count',BASE+'..HEAD']).strip()=='1' and len(changes)<=640 and len(changes)<=1000,'actual commit count must be1 (<=1000) and changed paths finite<=640')
+  final_tree_raw=git(['ls-tree','-r','-z','--full-tree','HEAD'])
+  req(entries(final_tree_raw)==whole,'complete committed tree drift')
+  delta=git(['diff-tree','--no-commit-id','--no-renames','--name-status','-r',BASE,'HEAD'])
+  req(delta==expected_delta,'committed delta not exact sorted finite A/D/M map')
++ rec['finite_push_diff']={'actual_commit_count':1,'commit_count_ceiling':1000,'actual_changed_paths':len(changes),'selected_path_ceiling':640,'all_actual_changed_paths_equal_exact_manifest':True,'qualification':'All actual paths reviewed, never only first300. GitHub300-file filtering and diff-timeout/>1000-commit fallback remain separate trigger risks; [skip ci] supplementary only. Fresh protected-base PR/queue and genuine trigger review required.'}
+  quoted=[len(json.dumps(p,ensure_ascii=True,separators=(',',':')).encode('utf-8')) for p in whole]
+  rec['source_capture_path_aggregates']={'N':len(whole),'Q':sum(quoted),'max_json_quoted_path_bytes':max(quoted),'encoding':'UTF8_OF_COMPACT_ENSURE_ASCII_JSON_STRING_LITERAL','qualification':'Actual verified complete committed-tree path map; not raw/checkout/framed bytes, member-size or runtime proof.'}
+- rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,selected_paths=len(rows),changed_paths=len(changes),added_paths=len(additions),modified_paths=len(modifications),removed_paths=2,
+-            retained_parent_paths=BASE_MEMBERS-2,unchanged_parent_rows=BASE_MEMBERS-2-len(modifications),
+-            committed_delta={'rows':len(changes),'bytes':len(delta.encode()),'sha256':digest(delta.encode()),'qualification':'Exact manifest-reconstructable sorted A/D/M tab-path-LF stream checked; two removed memberships, M rows intentionally changed; never old Sfix4113 unchanged credit.'})
++ rec.update(commit=commit,tree=tree,parent=BASE,parent_tree=BASE_TREE,selected_paths=len(rows),changed_paths=len(changes),added_paths=len(additions),modified_paths=len(modifications),removed_paths=0,
++            retained_parent_paths=BASE_MEMBERS,unchanged_parent_rows=BASE_MEMBERS-len(modifications),
++            committed_delta={'rows':len(changes),'bytes':len(delta.encode()),'sha256':digest(delta.encode()),'qualification':'Exact manifest-reconstructable sorted A/D/M tab-path-LF stream checked; zero removed memberships, M rows intentionally changed; never old Sfix4113 unchanged credit.'})
+  final_index_raw=git(['ls-files','--stage','-z'])
+  req(entries(final_index_raw,True)==whole and git(['diff','--name-only','-z'])=='' and git(['ls-files','--others','--exclude-standard','-z'])=='','postcommit index/worktree drift')
+  rec['committed_map']={'members':len(whole),'tree_stream_bytes':len(final_tree_raw.encode()),'tree_stream_sha256':digest(final_tree_raw.encode()),'stage0_stream_bytes':len(final_index_raw.encode()),'stage0_stream_sha256':digest(final_index_raw.encode())}
+- stable_inputs();req(remote(git(remote_args))==want,'remote advanced before post-Sfix push')
+- rec['push_intent']='Dedicated non-force finite post-Sfix source/report push; unchanged complete parent request/workflow map. Successful or uncertain push is external state; no automatic retry/reset/restore.';durable()
++ stable_inputs();req(remote(git(remote_args))==want,'remote advanced before checkpoint23 push')
++ rec['push_intent']='Dedicated non-force finite checkpoint23 source/control/report push; unchanged workflows and unlisted parent requests. Successful or uncertain push is external state; no automatic retry/reset/restore.';durable()
+  git(['push','--no-signed','--no-follow-tags','--recurse-submodules=no','origin','HEAD:refs/heads/'+BRANCH],seconds=120)
+  want_after=dict(want);want_after['refs/heads/'+BRANCH]=commit
+- rec['remote_after']=remote(git(remote_args));req(rec['remote_after']==want_after,'post-Sfix remote mismatch')
+- inventory('after post-Sfix');resource('after post-Sfix finite source transport')
++ rec['remote_after']=remote(git(remote_args));req(rec['remote_after']==want_after,'checkpoint23 remote mismatch')
++ inventory('after checkpoint23');resource('after checkpoint23 finite source transport')
+  config_after_raw,config_after_stat=read_file(gd/'config')
+  rec['preserved_config_after']={'sha256':digest(config_after_raw),'pin':fullpin(config_after_stat)}
+- req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'U original config bytes/full pin changed')
++ req(config_after_raw==config_before_raw and rec['preserved_config_after']==rec['preserved_config_before'],'V original config bytes/full pin changed')
+  stable_inputs();req(all(not os.path.lexists(p) for p in temp_paths.values()),'disposable sibling unexpectedly remains')
+- rec.update(status='PUBLISHED_EXACT_POSTFIX_U02_FINITE_SOURCE',clone_is_build_workspace=False,source_workspace_modified=False,
+-            slot='UNCHANGED_ROOT_POSTFIX_U02_RESERVATION; ROOT RETAINS U FOR ACTUAL REVIEW THEN ONE FRESH FULL METADATA/SOURCE/INDEX; NO_EXECUTION_OR_READINESS_CREDIT')
++ rec.update(status='PUBLISHED_EXACT_CHECKPOINT23_V01_FINITE_SOURCE',clone_is_build_workspace=False,selected_W_afterimages_modified=False,source_W_writes_only_fixed_publication_receipt_and_logs=True,
++            slot='UNCHANGED_ROOT_CHECKPOINT23_V01_RESERVATION; ROOT RETAINS NEW V FOR INDEPENDENT ACTUAL REVIEW; U AND RAW_P_CONSUMERS REMAIN FROZEN; NO_EXECUTION_OR_READINESS_CREDIT')
+ except BaseException as error:
+  rec['error']=type(error).__name__+': '+str(error)[:3000]
+ finally:
+@@ -487,7 +498,7 @@
+  if tempfd is not None:
+   try:
+    if not installed:
+-    root_check();safe_parent(T,str(temp_path.relative_to(T)));a=os.fstat(tempfd);b=temp_path.lstat()
++    root_check();safe_parent(V,str(temp_path.relative_to(V)));a=os.fstat(tempfd);b=temp_path.lstat()
+     req(temporary_pin==dtuple(a)==dtuple(b) and stat.S_ISREG(b.st_mode) and b.st_uid==0 and b.st_nlink==1 and fullpin(a)==fullpin(b),'disposable sibling cleanup identity uncertain')
+     os.unlink(temp_path)
+     dfd=os.open(temp_path.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+@@ -509,9 +520,9 @@
+     os.close(fd)
+    except OSError as error:rec[label+'_close_error']=repr(error);rec['status']='FAIL_CLEANUP_HOLD'
+  rec['elapsed_seconds']=time.monotonic()-START
+- rec['cleanup']='Normal original foreground Git children reaped; existing U/config and every intended source/alias/removal/index/commit retained. Only original uninstalled fixed temp may be disposed by descriptor/full-pin check. Original T/W Git untouched; no build/cache/service/emulator or Gradle duty. Partial directories/additions/replacements/removals, abnormal descendants, uncertain push and hard interruption remain HOLD; no rollback/reset/restore or automatic retry. This is not release of old runtime HOLDs or the root U reservation.'
++ rec['cleanup']='Normal original foreground Git children reaped; new V/config and every intended afterimage/index/commit retained. Only original uninstalled fixed temp may be disposed by descriptor/full-pin check. Original U/index/config/store, T and retired W Git untouched; no build/cache/service/emulator or Gradle duty. Partial directories/additions/replacements/removals, abnormal descendants, uncertain push and hard interruption remain HOLD; no rollback/reset/restore or automatic retry. This is not release of old runtime HOLDs or the root V reservation or any frozen U consumer.'
+  try:durable()
+  finally:
+   if recfd is not None:os.close(recfd)
+  print(json.dumps({'status':rec['status'],'error':rec.get('error'),'commit':rec.get('commit'),'tree':rec.get('tree'),'commands':len(rec['commands']),'elapsed_seconds':rec['elapsed_seconds']}))
+- if rec['status']!='PUBLISHED_EXACT_POSTFIX_U02_FINITE_SOURCE':raise SystemExit(1)
++ if rec['status']!='PUBLISHED_EXACT_CHECKPOINT23_V01_FINITE_SOURCE':raise SystemExit(1)
